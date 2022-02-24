@@ -1,0 +1,162 @@
+/*
+ *  Copyright (c) 2021-2022.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ */
+
+/*************************          Global     *********************************/
+/* Gestion des logs */
+.log-container{ padding-left:1rem; padding-right:1rem; }
+.log{ background-color: #444; font-size:0.9rem;}
+
+/* Bouton SVG */
+.details-svg {fill:#00445b;cursor: pointer; margin-top: -0.5rem; width: 32px;height: 32px;}
+.gomme-svg {fill:#00445b;cursor: pointer; margin-bottom: -0.2rem;width: 32px;height: 32px;}
+
+.favori-svg, .statistique-svg {fill:#00445b;cursor: pointer; margin-bottom: -0.2rem;width: 28px;height: 28px;}
+.danger-svg, .gestion-de-projet-svg, .checklist-svg, .information-svg {fill:#00445b;cursor: none; margin-bottom: -0.2rem;width: 28px;height: 28px;}
+.favori-liste-svg {fill:#850385; stroke:4px; cursor: none; margin-bottom: -0.2rem; width: 28px;height: 28px;}
+.favori-svg-select {fill:#850385;}
+.favori-svg:hover, .statistique-svg:hover, .details-svg:hover {fill:#850385;}
+
+.liste-svg, .analyse-svg, .affiche-resultat-svg, .voir-analyse-svg, .pdf-svg, .graphique-svg {fill:#fff;cursor: pointer; margin-bottom: -0.6rem; width: 32px;height: 32px;}
+
+ /* bouton */
+.analyse-enabled, .affiche-liste, .affiche-resultat-enabled, .analyse-security, .analyse-anomalie, .rapport-graphique, #fermer-liste-projet, #fermer-liste-hotspot, #fermer-autre-version, #fermer-dette-technique { color: #fff; background-color: #00445b; }
+
+.analyse-enabled:hover, .affiche-liste:hover, .affiche-resultat-enabled:hover, .analyse-security:hover, .analyse-anomalie:hover, .rapport-graphique:hover, #fermer-liste-projet:hover, #fermer-autre-version:hover, #fermer-liste-hotspot:hover, #fermer-dette-technique:hover {background-color: #006182;}
+
+.analyse-disabled, .affiche-resultat-disabled {background-color: #4C7C8C; cursor: not-allowed;}
+.analyse-disabled:hover, .affiche-resultat-disabled:hover {background-color: #006182;}
+
+/*select2 custom*/
+/* placehoder */
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+  line-height: 30px;
+  color: #00445b;
+}
+.select2-container--default .select2-selection--single .select2-selection__placeholder,
+.select2-container--default .selection .select2-selection--single .select2-selection__placeholder {
+  color: #99b4bd;
+  }
+
+/* taille de la barre de selcetion */
+.select2-container--default .select2-selection--single,
+.select2-container--default .selection .select2-selection--single {
+  height: 2.4375rem;
+  line-height: 1.5;
+  padding: 0.4rem;
+  }
+
+  /* Fleche */
+  .select2-container--default .select2-selection--single .select2-selection__arrow,
+  .select2-container--default .selection .select2-selection--single .select2-selection__arrow {
+    height: 2.4375rem; position: absolute; top: 0; right: 1px; width: 20px; }
+
+    /* fleche */
+    .select2-container--default .select2-selection--single .select2-selection__arrow b,
+    .select2-container--default .selection .select2-selection--single .select2-selection__arrow b {
+        border-color: #333 transparent transparent transparent;
+        top: 50%;
+        border-style: solid;
+        border-width: 6px 4px 0 4px;
+        height: 0;
+        left: 50%;
+        margin-left: -4px;
+        margin-top: -2px;
+        position: absolute;
+        width: 0; }
+
+    /* Proposition trouvé */
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+      background-color: #006a8e;;
+      color: #fff; }
+
+    .select2-results__option {color: #00445b;}
+
+/* Information bug, vulnérabilité et code_smell  */
+.stats-list {
+  list-style-type: none;
+  clear: left;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.stats-list-vert { color: #187e3d; }
+.stats-list-orange { color: #c45d4e; }
+.stats-list-rouge-intense { color: #771404; }
+.stats-list-rouge-claire { color: #b33926; }
+.stats-list-bleu { color: #3b89a3; }
+
+.stats-list > li {
+  display: inline-block;
+  margin-right: 10px;
+  padding-right: 10px;
+  border-right: 1px solid #cacaca;
+  text-align: center;
+  font-size: 1.1em;
+  font-weight: bold;
+}
+
+.stats-list > li:last-child {
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+.stats-list > li .stats-list-label {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.9em;
+  font-weight: normal;
+}
+
+/* définit la taille de la carte */
+.callout-information {width: 20rem;border-radius: 1.5rem;}
+.resultat {padding-left : 0.5rem;color:#333;flex: 1;text-align: right;white-space: nowrap;}
+.small {font-size: 1rem;}
+.ligne{margin: 0rem;display:flex;}
+.stat {line-height: 0.9; font-size:2rem}
+.stat-note {font-size:1.5rem}
+
+.note-vert1 {background-color: #187e3d;color: #fff; border: solid 2px #00445b; border-radius: 0.2rem;padding-left: 20px; padding-right: 20px;}
+.note-vert2 { background-color: #42c070; color: #000; border: solid 2px #00445b; border-radius: 0.2rem; padding-left: 20px;padding-right: 20px;}
+.note-jaune { background-color: #dfdb1a; color: #000; border: solid 2px #00445b; border-radius: 0.2rem; padding-left: 19px;padding-right: 20px; }
+.note-orange { background-color: #c45d4e; color: #000; border: solid 2px #00445b; border-radius: 0.2rem; padding-left: 18px;padding-right:18px; }
+.note-rouge { background-color: #971c09; color: #fff; border: solid 2px #00445b; border-radius: 0.2rem; padding-left: 20px; padding-right: 20px;}
+
+@media only screen and (max-width: 20em){
+  .log{font-size: 0.75rem;}
+}
+@media only screen and (min-width: 20.025em) and (max-width: 22em) {
+  .log{font-size: 0.8rem;}
+}
+@media only screen and (min-width: 22.025em) and (max-width: 30em) {
+}
+@media only screen and (min-width: 30.025em) and (max-width:40em){
+}
+@media only screen and (min-width: 40em) and (max-width: 64em) {
+  .bouton-analyse-right {padding-right: 1rem;}
+  .bouton-afficher-left {padding-left: 1rem;}
+  }
+@media only screen and (min-width: 64.025em) and (max-width: 90em) {
+  .bouton-analyse-right {padding-right: 1rem;}
+  .bouton-afficher-left {padding-left: 1rem;}
+  }
+@media only screen and (min-width: 90.025em) and (max-width: 120em) {
+ .bouton-analyse-right {padding-right: 1rem;}
+ .bouton-afficher-left {padding-left: 1rem;}
+
+}
+@media only screen and (min-width: 120em) and (max-width: 160em) {
+  .voir-analyse-svg { margin-bottom:-0.6rem; width:48px; height:48px}
+  .gomme-svg, .details-svg, .liste-svg, .affiche-resultat-svg, .analyse-svg, .pdf-svg, .graphique-svg {margin-bottom:-0.2rem; width:48px; height:48px}
+  .bouton-analyse-right {padding-right: 1rem;}
+  .bouton-afficher-left {padding-left: 1rem;}
+
+}
