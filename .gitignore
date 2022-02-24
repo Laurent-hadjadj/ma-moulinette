@@ -1,12 +1,10 @@
-
 ###> symfony/framework-bundle ###
-/.env.local
-/.env.local.php
-/.env.*.local
+/.env
 /config/secrets/prod/prod.decrypt.private.php
 /public/bundles/
 /var/
 /vendor/
+/migrations/*
 ###< symfony/framework-bundle ###
 
 ###> symfony/webpack-encore-bundle ###
@@ -14,4 +12,9 @@
 /public/build/
 npm-debug.log
 yarn-error.log
+.npmrc
 ###< symfony/webpack-encore-bundle ###
+
+###> Git ###
+git.store
+###< Git ###

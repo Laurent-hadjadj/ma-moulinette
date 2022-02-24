@@ -1,0 +1,164 @@
+/*
+ *  Copyright (c) 2021-2022.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ */
+
+/*************************          Global     *********************************/
+/* Gestion des logs */
+.log-container{ padding-left:1rem; padding-right:1rem; }
+
+/* Bouton SVG */
+.gomme-svg, .voir-details-svg {fill:#00445b;cursor: pointer; margin-bottom: -0.2rem;width: 32px;height: 32px;}
+.analyse-svg, .voir-analyse-svg, .pdf-svg, .graphique-svg {fill:#fff;cursor: pointer; margin-bottom: -0.6rem; width: 32px;height: 32px;}
+.voir-details-svg:hover {fill:#c45d4e;}
+
+/* bouton */
+.analyse, .analyse-security, .analyse-anomalie, .rapport-graphique { color: #fff; background-color: #00445b; }
+.analyse:hover,.analyse-security:hover, .analyse-anomalie:hover, .rapport-graphique:hover {background-color: #006182;}
+
+/*select2 custom*/
+/* placehoder */
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+  line-height: 30px;
+  color: #00445b;
+}
+.select2-container--default .select2-selection--single .select2-selection__placeholder,
+.select2-container--default .selection .select2-selection--single .select2-selection__placeholder {
+  color: #99b4bd;
+  }
+
+/* taille de la barre de selcetion */
+.select2-container--default .select2-selection--single,
+.select2-container--default .selection .select2-selection--single {
+  height: 2.4375rem;
+  line-height: 1.5;
+  padding: 0.5rem;
+  }
+
+  /* Fleche */
+  .select2-container--default .select2-selection--single .select2-selection__arrow,
+  .select2-container--default .selection .select2-selection--single .select2-selection__arrow {
+    height: 2.4375rem; position: absolute; top: 0; right: 1px; width: 20px; }
+
+    /* fleche */
+    .select2-container--default .select2-selection--single .select2-selection__arrow b,
+    .select2-container--default .selection .select2-selection--single .select2-selection__arrow b {
+        border-color: #333 transparent transparent transparent;
+        top: 50%;
+        border-style: solid;
+        border-width: 6px 4px 0 4px;
+        height: 0;
+        left: 50%;
+        margin-left: -4px;
+        margin-top: -2px;
+        position: absolute;
+        width: 0; }
+
+    /* Proposition trouvé */
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+      background-color: #006a8e;;
+      color: #fff; }
+
+    .select2-results__option {color: #00445b;}
+
+/* Information bug, vulnérabilité et code_smell  */
+.stats-list {
+  list-style-type: none;
+  clear: left;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.stats-list .stats-list-vert { color: #187e3d; }
+.stats-list .stats-list-orange { color: #c45d4e; }
+.stats-list .stats-list-rouge { color: #971c09; }
+.stats-list > li {
+  display: inline-block;
+  margin-right: 10px;
+  padding-right: 10px;
+  border-right: 1px solid #cacaca;
+  text-align: center;
+  font-size: 1.1em;
+  font-weight: bold;
+}
+
+.stats-list > li:last-child {
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+.stats-list > li .stats-list-label {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.9em;
+  font-weight: normal;
+}
+
+.stats-detail-jaune {background-color: #dfdb1a;color: #000;border-radius: 0.3rem;text-align: center;padding-left: 26px;padding-right: 26px;}
+.stats-detail-orange {background-color: #c45d4e;;color: #fff;border-radius: 0.3rem;text-align: center;padding-left: 26px;padding-right: 26px;}
+.stats-detail-rouge {background-color: #971c09;color: #fff;border-radius: 0.3rem;text-align: center;padding-left: 26px;padding-right: 26px;}
+
+/* définit la taille de la carte */
+.callout-information {width: 20rem;border-radius: 1.5rem;}
+.resultat {padding-left : 0.5rem;color:#333;flex: 1;text-align: right;white-space: nowrap;}
+.small {font-size: 1rem;}
+.ligne{margin: 0rem;display:flex;}
+.stat {line-height: 0.9;font-size:2rem;}
+.stat-note {font-size:1.5rem}
+.stat-security {line-height: 0.9; font-size:1.5rem}
+.strong{font-weight:700;}
+.light{font-weight: 300;}
+
+
+.note-vert1 {background-color: #187e3d;color: #fff;border: solid 1px;border-radius: 0.3rem;padding-left: 40px;padding-right: 40px;}
+.note-vert2 { background-color: #42c070; color: #000; border: solid 1px; border-radius: 0.3rem; text-align: center;padding-left:120px;padding-right: 120px;margin-left: 8px;}
+.note-jaune { background-color: #dfdb1a; color: #000; border: solid 1px; border-radius: 0.3rem; text-align: center;padding-left:120px;padding-right: 120px;margin-left: 8px;}
+.note-orange { background-color: #c45d4e;; color: #000; border: solid 1px; border-radius: 0.3rem; text-align: center;padding-left:120px;padding-right: 120px;margin-left: 8px;}
+.note-rouge { background-color: #971c09; color: #fff; border: solid 1px; border-radius: 0.3rem; text-align: center;padding-left:120px;padding-right: 120px;margin-left: 8px;}
+
+.badge-vert1 {background-color: #187e3d;color: #fff; font-size: 1rem;}
+.badge-vert2 { background-color: #42c070; color: #000; font-size: 1rem;}
+.badge-jaune { background-color: #dfdb1a; color: #000; font-size: 1rem;}
+.badge-orange { background-color: #c45d4e;; color: #000;font-size: 1rem;}
+.badge-rouge {background-color: #971c09;color: #fff;font-size: 1rem;margin-bottom: -10px;}
+
+.severity-jaune {color: #a8a630; text-align: center;}
+.severity-orange {color: #c45d4e; text-align: center;}
+.severity-rouge {color: #971c09; text-align: center;}
+
+/* menu référentiel-owasp */
+.referentiel-owasp-menu { background-color: white; border-radius: 5px; margin-top: 0.5rem; }
+.accordion-menu .is-accordion-submenu-parent:not(.has-submenu-toggle) > a::after { border-color: #00445b;}
+.referentiel-owasp-titre:hover {color:#c45d4e; font-weight:800;};
+.referentiel-owasp-titre {color:#000; font-weight:700;};
+
+
+/* Liste des hotpost */
+.component{ word-break: break-all;}
+
+
+@media only screen and (max-width: 20em){
+}
+@media only screen and (min-width: 20.025em) and (max-width: 22em) {
+}
+@media only screen and (min-width: 22.025em) and (max-width: 30em) {
+}
+@media only screen and (min-width: 30.025em) and (max-width:40em){
+}
+@media only screen and (min-width: 40em) and (max-width: 64em) {
+}
+@media only screen and (min-width: 64.025em) and (max-width: 90em) {
+}
+@media only screen and (min-width: 90.025em) and (max-width: 120em) {
+}
+@media only screen and (min-width: 120em) and (max-width: 160em) {
+  .voir-analyse-svg { margin-bottom:-0.6rem; width:48px; height:48px}
+  .gomme-svg, .analyse-svg, .pdf-svg, .graphique-svg {margin-bottom:-0.2rem; width:48px; height:48px}
+}

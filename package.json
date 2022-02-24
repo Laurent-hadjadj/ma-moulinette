@@ -3,7 +3,10 @@
         "@hotwired/stimulus": "^3.0.0",
         "@symfony/stimulus-bridge": "^3.0.0",
         "@symfony/webpack-encore": "^1.7.0",
-        "core-js": "^3.0.0",
+        "babel-core": "^6.26.3",
+        "babel-loader": "^8.2.2",
+        "file-loader": "^6.2.0",
+        "core-js": "^3.21.1",
         "regenerator-runtime": "^0.13.2",
         "webpack-notifier": "^1.6.0"
     },
@@ -14,5 +17,20 @@
         "dev": "encore dev",
         "watch": "encore dev --watch",
         "build": "encore production --progress"
+    },
+    "dependencies": {
+        "browser-update": "^3.3.38",
+        "chart.js": "^3.7.1",
+        "chartjs-plugin-datalabels": "^2.0.0",
+        "chartjs-plugin-zoom": "^1.2.0",
+        "css-loader": "^6.6.0",
+        "foundation-sites": "^6.7.4",
+        "jquery": "^3.6.0",
+        "motion-ui": "^2.0.3",
+        "select2": "^4.1.0-rc.0",
+        "what-input": "^5.2.10"
+    },
+    "optionalDependencies": {
+        "fsevents": "^2.1.3"
     }
 }
