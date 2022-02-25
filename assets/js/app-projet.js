@@ -530,7 +530,7 @@ $('.js-analyse').on('click', function () {
   projet_anomalie(id_project, 'BUG', setup);
   projet_anomalie(id_project, 'VULNERABILITY', setup);
   projet_anomalie(id_project, 'CODE_SMELL', setup);
-  //projet_anomalie_consolidation(id_project, setup);
+  projet_anomalie_consolidation(id_project, setup);
 
   setTimeout(function () { stop_spinner(); }, 5000);
   // on active le bouton pour afficher les infos du projet
