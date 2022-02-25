@@ -34,6 +34,9 @@ class TempAnomalie
     #[ORM\Column(type: 'string', length: 255)]
     private $rule;
 
+    #[ORM\Column(type: 'text')]
+    private $component;
+
     #[ORM\Column(type: 'string', length: 255)]
     private $type;
 
@@ -143,6 +146,18 @@ class TempAnomalie
     public function setDateEnregistrement(\DateTimeInterface $date_enregistrement): self
     {
         $this->date_enregistrement = $date_enregistrement;
+
+        return $this;
+    }
+
+    public function getComponent(): ?string
+    {
+        return $this->component;
+    }
+
+    public function setComponent(string $component): self
+    {
+        $this->component = $component;
 
         return $this;
     }
