@@ -64,7 +64,6 @@ export function remplissage(maven_key) {
     url: 'http://localhost:8000/api/peinture/projet/nosonar/details', type: 'GET', dataType: 'json', data: data, contentType: contentType }
 
   $.ajax(optionsNoSonar).then((t) => {
-    console.log(t);
     $('#supress-warning').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.s1309));
     $('#no-sonar').html( new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.nosonar));
   })
