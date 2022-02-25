@@ -10,7 +10,6 @@ L'application fonctionne avec sonarqube 8.9.3 LTS. Elle s'apuie sur les API de l
 * Symfony 5.4.3, Zurb Foundation 6.7.4 ;
 * sqlLite 4 ;
 
-
 ## Architecture
 
 * Client web responsive ;
