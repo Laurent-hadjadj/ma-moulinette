@@ -111,22 +111,23 @@ export function remplissage(maven_key) {
     $('#nombre-bug').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.bug));
     $('#nombre-vulnerabilite').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.vulnerability));
     $('#nombre-mauvaise-pratique').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.code_smell));
+    if (t.code_smell==10000) { $('#nombre-mauvaise-pratique').css('color', '#771404');}
 
     /* Répartion des anomalies par sévérité */
     $('#bug-bloquante').html(t.bug_blocker);
-    $('#bug-critique').html(t.bug_crtitcal);
+    $('#bug-critique').html(t.bug_critical);
     $('#bug-info').html(t.bug_info);
     $('#bug-majeure').html(t.bug_major);
     $('#bug-mineure').html(t.bug_minor);
 
     $('#vulnerabilite-bloquante').html(t.vulnerabilty_blocker);
-    $('#vulnerabilite-critique').html(t.vulnerabilty_crtitcal);
+    $('#vulnerabilite-critique').html(t.vulnerability_critical);
     $('#vulnerabilite-info').html(t.vulnerabilty_info);
     $('#vulnerabilite-majeure').html(t.vulnerabilty_major);
     $('#vulnerabilite-mineure').html(t.vulnerabilty_minor);
 
     $('#mauvaise-pratique-bloquante').html(t.code_smell_blocker);
-    $('#mauvaise-pratique-critique').html(t.code_smell_crtitcal);
+    $('#mauvaise-pratique-critique').html(t.code_smell_critical);
     $('#mauvaise-pratique-info').html(t.code_smell_info);
     $('#mauvaise-pratique-majeure').html(t.code_smell_major);
     $('#mauvaise-pratique-mineure').html(t.code_smell_minor);
