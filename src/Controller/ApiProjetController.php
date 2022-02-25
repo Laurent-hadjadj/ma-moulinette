@@ -74,8 +74,8 @@ class ApiProjetController extends AbstractController
    * Converti les minutes en jours, heures et minutes
  */
   function minutes_to($minutes) {
-    $j = variant_fix($minutes / 1440);
-    $h = variant_fix(($minutes - ($j * 1440)) / 60);
+    $j = (int)($minutes / 1440);
+    $h = (int)(($minutes - ($j * 1440)) / 60);
     $m = round($minutes % 60);
     if (empty($h) || is_null($h)) { $h=0; }
     if ($j > 0) { return ($j."d, ".$h."h:".$m."min"); } else { return ($h."h:".$m."min"); }
@@ -930,6 +930,8 @@ class ApiProjetController extends AbstractController
           $nosonar->setRule($issue["rule"]);
           $component=str_replace($request->get('maven_key').":", "", $issue["component"]);
           $nosonar->setComponent($component);
+          if (empty($issue["line"])) { $line=0; } else { $line=$issue["line"]; }
+          $nosonar->setLine($line);
           $nosonar->setLine($issue["line"]);
           $nosonar->setDateEnregistrement($date);
           $em->persist($nosonar);
