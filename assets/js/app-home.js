@@ -122,8 +122,9 @@ function liste_projet_ajout() {
     contentType: contentType }
 
   return $.ajax(options)
-    .then(function (data) {
-      log(' - INFO : Nombre de projet disponible : ' + data.nombreProjet);
+    .then(function (t) {
+      log(' - INFO : Nombre de projet disponible : ' + t.nombreProjet);
+      $('#js-nombre-projet').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.nombreProjet));
       })
 }
 
