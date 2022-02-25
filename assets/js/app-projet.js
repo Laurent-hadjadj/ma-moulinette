@@ -255,7 +255,7 @@ function projet_anomalie_setup() {
     (t) => {
       log(' - INFO : Dernier setup : ' + t.setup);
       localStorage.setItem('setup', t.setup)
-      log(' - WARM : Attention l\'analyse des données peut durer plusieurs minutes. 6 minutes pour 10 000 défaut.');
+      log(' - WARM : Attention l\'analyse des données peut durer plusieurs minutes. 6 minutes pour 10 000 défauts.');
     });
 }
 
@@ -377,10 +377,15 @@ function projet_hotspot_owasp(maven_key, owasp) {
     url: 'http://localhost:8000/api/projet/hotspot/owasp', type: 'GET', dataType: 'json', data: data, contentType: contentType  }
 
   return $.ajax(options).then((t) => {
-    if (t.hotspots == 0) {
+    if (t.info=='effacement') {
+      log(' - INFO : Les enregistrements ont été supprimé de la table hostspot_owasp.');
+    }
+    if (t.hotspots == 0 && t.info=='enregistrement') {
       log(' - INFO : Bravo aucune faille OWASP '+ owasp +' potentielle détectée.');
     }
-    else { log(' - WARN : J\'ai trouvé ' + t.hotspots + ' faille(s) OWASP '+owasp+' potentielle(s).'); }
+    if (t.hotspots != 0 && t.info=='enregistrement') {
+      log(' - WARN : J\'ai trouvé ' + t.hotspots + ' faille(s) OWASP '+owasp+' potentielle(s).');
+    }
   })
 }
 
@@ -502,6 +507,9 @@ $('.js-analyse').on('click', function () {
   projet_owasp(id_project);
   projet_hotspot(id_project);
 
+  // On efface les traces :)
+  projet_hotspot_owasp(id_project, 'a0');
+  // On enregistre les résultats
   projet_hotspot_owasp(id_project, 'a1');
   projet_hotspot_owasp(id_project, 'a2');
   projet_hotspot_owasp(id_project, 'a3');
@@ -516,12 +524,12 @@ $('.js-analyse').on('click', function () {
   // Analyse des anomalies
   projet_nosonar_details(id_project);
 
-  //projet_anomalie_setup();
-  //const setup = localStorage.getItem('setup');
+  projet_anomalie_setup();
+  const setup = localStorage.getItem('setup');
 
-  //projet_anomalie(id_project, 'BUG', setup);
-  //projet_anomalie(id_project, 'VULNERABILITY', setup);
-  //projet_anomalie(id_project, 'CODE_SMELL', setup);
+  projet_anomalie(id_project, 'BUG', setup);
+  projet_anomalie(id_project, 'VULNERABILITY', setup);
+  projet_anomalie(id_project, 'CODE_SMELL', setup);
   //projet_anomalie_consolidation(id_project, setup);
 
   setTimeout(function () { stop_spinner(); }, 5000);
