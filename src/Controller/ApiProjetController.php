@@ -111,7 +111,7 @@ class ApiProjetController extends AbstractController
   * $pageSize = 1 à 500
   * $index = 1 à 20 max ==> 10000 anomalies
   * $type = BUG,VULNERABILITY,CODE_SMELL
-  * http://{url}https://sonarqube2.franceagrimer.fr/api/issues/search?componentKeys={key}&statuses=OPEN,CONFIRMED,REOPENED&resolutions=&s=STATUS&asc=no&types={type}&ps={pageSize}&p={index}
+  * http://{url}/api/issues/search?componentKeys={key}&statuses=OPEN,CONFIRMED,REOPENED&resolutions=&s=STATUS&asc=no&types={type}&ps={pageSize}&p={index}
   */
    function batch_anomalie($maven_key, $index, $pageSize, $type)
    {
@@ -364,12 +364,14 @@ class ApiProjetController extends AbstractController
           $rule=$issue["rule"];
           $type=$issue["type"];
           $severity=$issue["severity"];
+          $component=$issue["component"];
 
           $issue = new TempAnomalie();
           $issue->setMavenKey($request->get("maven_key"));
           $issue->setDebt($debt);
           $issue->setDebtMinute($debtMinute);
           $issue->setRule($rule);
+          $issue->setComponent($component);
           $issue->setType($type);
           $issue->setSeverity($severity);
           $issue->setSetup($setup);
@@ -851,10 +853,19 @@ class ApiProjetController extends AbstractController
   * http://{url}/api/hotspots/search?projectKey={key}{owasp}&ps=500&p=1
   * {key} = la clé du projet
   * {owasp} = le type de faille (a1, a2, etc...)
+  * si le paramétre owasp est égale ) a0 alors on supprime les enregistrements pour la clé
   */
   #[Route('/api/projet/hotspot/owasp', name: 'projet_hotspot_owasp', methods: ['GET'])]
    public function hotspot_owasp_ajout(EntityManagerInterface $em, Request $request): response
     {
+      $response = new JsonResponse();
+      if ($request->get('owasp')=='a0') {
+         // On supprime  les enregistrement correspondant à la clé
+         $sql = "DELETE FROM hotspot_owasp WHERE maven_key='".$request->get('maven_key')."'";
+         $em->getConnection()->prepare($sql)->executeQuery();
+         return $response->setData(["info"=>"effacement", Response::HTTP_OK]);
+        }
+
       $url=$this->getParameter(self::$sonarUrl)."/api/hotspots/search?projectKey=".$request->get('maven_key')."&owaspTop10=".$request->get('owasp')."&ps=500&p=1";
 
       $result=$this->http_client($url);
@@ -890,8 +901,7 @@ class ApiProjetController extends AbstractController
           $em->flush();
         }
 
-      $response = new JsonResponse();
-      return $response->setData(["hotspots"=>$result["paging"]["total"], Response::HTTP_OK]);
+      return $response->setData(["info"=>"enregistrement","hotspots"=>$result["paging"]["total"], Response::HTTP_OK]);
     }
 
   /**
