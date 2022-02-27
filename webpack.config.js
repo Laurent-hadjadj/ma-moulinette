@@ -16,6 +16,7 @@ Encore
     .addEntry('home', './assets/js/app-home.js')
     .addEntry('projet', './assets/js/app-projet.js')
     .addEntry('profil', './assets/js/app-profil.js')
+    .addEntry('owasp', './assets/js/app-owasp.js')
 
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
     .splitEntryChunks()
