@@ -13,7 +13,7 @@ namespace App\Entity;
 use App\Repository\HotspotOwaspRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: HotpsotOwaspRepository::class)]
+#[ORM\Entity(repositoryClass: HotspotOwaspRepository::class)]
 class HotspotOwasp
 {
     #[ORM\Id]
@@ -117,4 +117,3 @@ class HotspotOwasp
     }
 
 }
-
