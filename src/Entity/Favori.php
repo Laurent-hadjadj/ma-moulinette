@@ -15,7 +15,6 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: FavoriRepository::class)]
 class Favori
-
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -73,4 +72,3 @@ class Favori
     }
 
 }
-

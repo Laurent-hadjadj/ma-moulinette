@@ -13,7 +13,7 @@ namespace App\Entity;
 use App\Repository\ProfilesRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: FavoriRepository::class)]
+#[ORM\Entity(repositoryClass: ProfilesRepository::class)]
 class Profiles
 
 {
@@ -134,4 +134,3 @@ class Profiles
 
 
 }
-

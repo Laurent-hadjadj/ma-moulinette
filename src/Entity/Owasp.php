@@ -10,10 +10,9 @@
 
 namespace App\Entity;
 
-use App\Repository\OwaspRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: OwaspRepository::class)]
+//#[ORM\Entity(repositoryClass: OwasppRepository::class)]
 class Owasp
 {
     #[ORM\Id]
@@ -972,4 +971,3 @@ class Owasp
     }
 
 }
-
