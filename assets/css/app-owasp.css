@@ -7,6 +7,25 @@
  *
  */
 
+ @media only screen and (max-width: 20em){
+}
+@media only screen and (min-width: 20.025em) and (max-width: 22em) {
+}
+@media only screen and (min-width: 22.025em) and (max-width: 30em) {
+}
+@media only screen and (min-width: 30.025em) and (max-width:40em){
+}
+@media only screen and (min-width: 40em) and (max-width: 64em) {
+}
+@media only screen and (min-width: 64.025em) and (max-width: 90em) {
+}
+@media only screen and (min-width: 90.025em) and (max-width: 120em) {
+}
+@media only screen and (min-width: 120em) and (max-width: 160em) {
+  .voir-analyse-svg { margin-bottom:-0.6rem; width:48px; height:48px}
+  .gomme-svg, .analyse-svg, .pdf-svg, .graphique-svg {margin-bottom:-0.2rem; width:48px; height:48px}
+}
+
 /*************************          Global     *********************************/
 /* Gestion des logs */
 .log-container{ padding-left:1rem; padding-right:1rem; }
@@ -142,23 +161,3 @@
 
 /* Liste des hotpost */
 .component{ word-break: break-all;}
-
-
-@media only screen and (max-width: 20em){
-}
-@media only screen and (min-width: 20.025em) and (max-width: 22em) {
-}
-@media only screen and (min-width: 22.025em) and (max-width: 30em) {
-}
-@media only screen and (min-width: 30.025em) and (max-width:40em){
-}
-@media only screen and (min-width: 40em) and (max-width: 64em) {
-}
-@media only screen and (min-width: 64.025em) and (max-width: 90em) {
-}
-@media only screen and (min-width: 90.025em) and (max-width: 120em) {
-}
-@media only screen and (min-width: 120em) and (max-width: 160em) {
-  .voir-analyse-svg { margin-bottom:-0.6rem; width:48px; height:48px}
-  .gomme-svg, .analyse-svg, .pdf-svg, .graphique-svg {margin-bottom:-0.2rem; width:48px; height:48px}
-}
