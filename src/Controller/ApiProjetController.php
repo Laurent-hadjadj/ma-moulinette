@@ -28,6 +28,7 @@ use App\Entity\TempAnomalie;
 use App\Entity\Owasp;
 use App\Entity\Hotspots;
 use App\Entity\HotspotOwasp;
+use App\Entity\HotspotDetails;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\DBAL\Connection;
 use DateTime;
@@ -853,7 +854,7 @@ class ApiProjetController extends AbstractController
   * http://{url}/api/hotspots/search?projectKey={key}{owasp}&ps=500&p=1
   * {key} = la clé du projet
   * {owasp} = le type de faille (a1, a2, etc...)
-  * si le paramétre owasp est égale ) a0 alors on supprime les enregistrements pour la clé
+  * si le paramétre owasp est égale à a0 alors on supprime les enregistrements pour la clé
   */
   #[Route('/api/projet/hotspot/owasp', name: 'projet_hotspot_owasp', methods: ['GET'])]
    public function hotspot_owasp_ajout(EntityManagerInterface $em, Request $request): response
@@ -903,6 +904,111 @@ class ApiProjetController extends AbstractController
 
       return $response->setData(["info"=>"enregistrement","hotspots"=>$result["paging"]["total"], Response::HTTP_OK]);
     }
+
+
+  /**
+  * description
+  * Fonction privée qui récupère le détail d'un hotspot en fonction de sa clé
+  */
+  function hotspot_details($maven_key, $key)
+  {
+    $url=$this->getParameter(self::$sonarUrl)."/api/hotspots/show?hotspot=".$key;
+
+    $hotspot=$this->http_client($url);
+    $date= new DateTime();
+
+    // Si le niveau de sévérité n'est pos connu, on lui affecte la valeur MAJOR.
+    if (empty($hotspot["rule"]["vulnerabilityProbability"]))
+      { $severity = "MAJOR"; }
+      else
+      {
+        $severity = $hotspot["rule"]["vulnerabilityProbability"];
+      }
+
+    $frontend=0; $backend=0; $batch=0;
+    // nom du projet
+    $app=explode(":",$maven_key);
+
+    $status=$hotspot["status"];
+    $file=str_replace($maven_key.":", "", $hotspot["component"]["key"]);
+    $module=explode("/", $file);
+
+    // Application Frontend
+    if ($module[0]==$app[1]."-presentation") {$frontend++; }         //Legacy
+    if ($module[0]==$app[1]."-presentation-commun") {$frontend++; }  //Legacy
+    if ($module[0]==$app[1]."-presentation-ear") {$frontend++; }     //NUDLe | Legacy
+    if ($module[0]==$app[1]."-webapp") {$frontend++; }               //NUDLe | Legacy
+
+    // Application Backend
+    if ($module[0]==$app[1]."-metier") {$backend++; }                //Legacy
+    if ($module[0]==$app[1]."-common") {$backend++; }                //Legacy | NUDLe
+    if ($module[0]==$app[1]."-api") {$backend++; }                   //NUDLe
+    if ($module[0]==$app[1]."-dao") {$backend++; }                   //NUDLe
+    if ($module[0]==$app[1]."-metier-ear") {$backend++; }            //Legacy | NUDLe
+    if ($module[0]==$app[1]."-service") {$backend++; }               //NUDLe
+    if ($module[0]==$app[1]."-serviceweb") {$backend++; }            //NUDLe
+    if ($module[0]==$app[1]."-middleoffice") {$backend++; }          //NUDLe
+
+    // Application Batch
+    if ($module[0]==$app[1]."-batchs") {$batch++; }                  //Legacy | NUDLe
+
+    if (empty($hotspot["line"])) {$line=0;} else {$line=$hotspot["line"];}
+    $rule = $hotspot["rule"] ? $hotspot["rule"]["name"] : "/";
+    $message=$hotspot["message"];
+    $key=$hotspot["key"];
+    $date_enregistrement=$date;
+
+    return ["severity"=>$severity, "status"=>$status, "frontend"=>$frontend, "backend"=>$backend, "batch"=>$batch, "file"=>$file, "line"=>$line, "rule"=>$rule, "message"=>$message, "key"=>$key, "date_enregistrement"=>$date_enregistrement];
+  }
+
+/**
+  * description
+  * Récupère le détails des hotspot
+  * http://{url}/api/hotspots/search?projectKey={key}{owasp}&ps=500&p=1
+  * {hotspot_key} = la clé du hotspot
+  */
+  #[Route('/api/projet/hotspot/details', name: 'projet_hotspot_details', methods: ['GET'])]
+  public function hotspot_details_ajout(EntityManagerInterface $em, Request $request): response
+   {
+    $response = new JsonResponse();
+
+    // On réfcupre la liste des hotspots
+    $sql = "SELECT * FROM hotspots WHERE maven_key='".$request->get('maven_key')."' AND status='TO_REVIEW' ORDER BY niveau";
+    $r=$em->getConnection()->prepare($sql)->executeQuery();
+    $liste=$r->fetchAllAssociative();
+    if (empty($liste)){ return$response->setData(["code"=>406, Response::HTTP_OK]); }
+
+    // on efface la table hotspots_details
+    // On supprime les données de la table hotspots_details pour le projet
+    $sql = "DELETE FROM hotspot_details WHERE maven_key='".$request->get('maven_key')."'";
+    $em->getConnection()->prepare($sql)->executeQuery();
+
+    /* On boucle sur les clés pour récupérer le détails du hotspot
+     * On envoie la clé du projet et la clé du hotspot
+     */
+    foreach($liste as $elt) {
+        $key=$this->hotspot_details($request->get('maven_key') ,$elt["key"]);
+
+        $details= new  HotspotDetails();
+        $details->setMavenKey($request->get('maven_key'));
+        $details->setSeverity($key["severity"]);
+        $details->setStatus($key["status"]);
+        $details->setFrontend($key["frontend"]);
+        $details->setBackend($key["backend"]);
+        $details->setBatch($key["batch"]);
+        $details->setFile($key["file"]);
+        $details->setLine($key["line"]);
+        $details->setRule($key["rule"]);
+        $details->setMessage($key["message"]);
+        $details->setDescription($key["description"]);
+        $details->setKey($key["key"]);
+        $details->setDateEnregistrement($key["date_enregistrement"]);
+        $em->persist($details);
+        $em->flush();
+       }
+
+    return $response->setData([Response::HTTP_OK]);
+   }
 
   /**
   * description
