@@ -656,12 +656,6 @@ $('#js-version-autre').on('click', () => {
 });
 
 /**
- * description
- * Événement : Ouvre la page security.
- */
-$('.analyse-security').on('click', () => { location.href = "/security.html"; });
-
-/**
 * description
 * Événement : Ouvre la page statistiques.
 */
