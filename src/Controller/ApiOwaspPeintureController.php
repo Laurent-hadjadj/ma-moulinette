@@ -153,9 +153,45 @@ class ApiOwaspPeintureController extends AbstractController
     $list=$em->getConnection()->prepare($sql)->executeQuery();
     $details=$list->fetchAllAssociative();
     if (empty($details)){ $details="vide"; }
-    
-    //dd(json_encode($details));
 
     return $response->setData(["details"=> $details, Response::HTTP_OK]);
   }
+
+
+  /**
+   * description
+   * On récupère le détails des failles de type hotpsot
+  */
+  #[Route('/api/peinture/owasp/hotspot/severity', name: 'peinture_owasp_hotspot_severity', methods: ['GET'])]
+  public function peinture_owasp_severity (EntityManagerInterface $em, Request $request): response
+  {
+    $maven_key=$request->get('maven_key');
+    $menace=$request->get('menace');
+    $response = new JsonResponse();
+
+    $str_select="SELECT count(*) as total FROM hotspot_owasp WHERE maven_key='";
+    $str_menace="' AND menace='";
+
+    // On compte le nombre de faille OWASP u statut HIGH
+    $sql=$str_select.$maven_key.$str_menace.$menace."' AND status='TO_REVIEW' AND probability='HIGH'";
+    $count=$em->getConnection()->prepare($sql)->executeQuery();
+    $_high=$count->fetchAllAssociative();
+
+    // On compte le nombre de faille OWASP au statut MEDIUM
+    $sql=$str_select. $maven_key.$str_menace.$menace."' AND status='TO_REVIEW' AND probability='MEDIUM'";
+    $count=$em->getConnection()->prepare($sql)->executeQuery();
+    $_medium=$count->fetchAllAssociative();
+
+    // On compte le nombre de faille OWASP au statut LOW
+    $sql=$str_select.$maven_key.$str_menace.$menace."' AND status='TO_REVIEW' AND probability='LOW'";
+    $count=$em->getConnection()->prepare($sql)->executeQuery();
+    $_low=$count->fetchAllAssociative();
+
+    if (empty($_high)){ $high=0; } else {$high=$_high[0];}
+    if (empty($_medium)){ $medium=0; } else {$medium=$_medium[0];}
+    if (empty($_low)){ $low=0; } else {$low=$_low[0];}
+
+    return $response->setData(["high"=> $high, "medium"=>$medium, "low"=>$low, Response::HTTP_OK]);
+  }
+
 }

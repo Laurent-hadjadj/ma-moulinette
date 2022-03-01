@@ -35,22 +35,30 @@
     <fieldset class="fieldset cell">
       <legend>Informations.</legend>
       <p class="open-sans">Le tableau ci-dessous liste <strong>uniquement</strong> les vulnérabiltés de type OWASP et les hotspots OWASP.</p>
-
+        {# Vulnérabilité OWASP #}
         <p class="ligne open-sans"><strong>Vulnérabilité</strong>&nbsp;: <span id="nombre_faille_owasp" class="stat resultat"></span></p>
-        <p class="ligne open-sans" style="padding-left:2rem;">Bloquante&nbsp;: <span id="nombre_faille_bloquante" class="stat-security resultat light"></span></p>
-        <p class="ligne open-sans" style="padding-left:2rem;">Critique&nbsp;: <span id="nombre_faille_critique" class="stat-security resultat light"></span></p>
-        <p class="ligne open-sans" style="padding-left:2rem;">Majeure&nbsp;: <span id="nombre_faille_majeure" class="stat-security resultat light"></span></p>
-        <p class="ligne open-sans" style="padding-left:2rem;">Mineure&nbsp;: <span id="nombre_faille_mineure" class="stat-security resultat light"></span></p>
+        <p class="ligne open-sans" style="padding-left:2rem;">Bloquante&nbsp;: <span id="nombre_faille_bloquante" class="stat-owasp resultat light"></span></p>
+        <p class="ligne open-sans" style="padding-left:2rem;">Critique&nbsp;: <span id="nombre_faille_critique" class="stat-owasp resultat light"></span></p>
+        <p class="ligne open-sans" style="padding-left:2rem;">Majeure&nbsp;: <span id="nombre_faille_majeure" class="stat-owasp resultat light"></span></p>
+        <p class="ligne open-sans" style="padding-left:2rem;">Mineure&nbsp;: <span id="nombre_faille_mineure" class="stat-owasp resultat light"></span></p>
         <br />
+
+        {# Vulnérabilité Hotspot #}
         <p class="ligne open-sans"><strong>Hotspot</strong>&nbsp;: <span id="hotspot-total" class="stat resultat"></span></p>
         <p class="ligne open-sans" style="padding-left:2rem;">HIGH&nbsp;: <span
-        id="nombre_hotspot_high" class="stat-security resultat light"></span></p>
-        <p class="ligne open-sans" style="padding-left:2rem;">MEDIUM&nbsp;: <span id="nombre_hotspot_medium" class="stat-security resultat light"></span></p>
-        <p class="ligne open-sans" style="padding-left:2rem;">LOW&nbsp;: <span id="nombre_hotspot_low" class="stat-security resultat light"></span></p>
-
-        <p class="ligne open-sans">Examiné&nbsp;: <span id="hotspot-reviewed" class="stat-security resultat light"></span></p>
-        <p class="ligne open-sans">A vérifier&nbsp;: <span id="hotspot-to-review" class="stat-security resultat light"></span></p>
+        id="nombre_hotspot_high" class="stat-owasp resultat light"></span></p>
+        <p class="ligne open-sans" style="padding-left:2rem;">MEDIUM&nbsp;: <span id="nombre_hotspot_medium" class="stat-owasp resultat light"></span></p>
+        <p class="ligne open-sans" style="padding-left:2rem;">LOW&nbsp;: <span id="nombre_hotspot_low" class="stat-owasp resultat light"></span></p>
+        <p class="ligne open-sans">Examiné&nbsp;: <span id="hotspot-reviewed" class="stat-owasp resultat light"></span></p>
+        <p class="ligne open-sans">A vérifier&nbsp;: <span id="hotspot-to-review" class="stat-owasp resultat light"></span></p>
         <p class="ligne open-sans">Note&nbsp;: <span id="note-hotspot" class="stat-note resultat"></span></p>
+        <br />
+
+        {# Répartition par module #}
+        <p class="ligne open-sans"><strong>Module</strong>&nbsp;:</p>
+        <p class="ligne open-sans" style="padding-left:2rem;">Frontend&nbsp;: <span id="frontend" class="resultat"></span></p>
+        <p class="ligne open-sans" style="padding-left:2rem;">Backend&nbsp;: <span id="backend" class="resultat"></span></p>
+        <p class="ligne open-sans" style="padding-left:2rem;">Batch&nbsp;: <span id="batch" class="resultat"></span></p>
     </fieldset>
 
     <fieldset class="fieldset cell">
@@ -207,7 +215,7 @@
   <div class="grid-container grid-x">
     <h3 class="claire-hand">Liste des failles de sécurité.</h3>
     <div class="detail cell">
-      <table>
+      <table class="table-scroll">
         <caption>Liste détaillée des vulnérabilités détéctées.</caption>
         <thead>
           <tr class="open-sans">
@@ -216,7 +224,6 @@
             <th class="text-center" id="severite" scope="col">Sévérité</th>
             <th class="text-center" id="dd" scope="col">Component</th>
             <th class="text-center" id="ligne" scope="col">Ligne</th>
-            <th class="text-center" id="description" scope="col">Description</th>
             <th class="text-center" id="message" scope="col">Message</th>
             <th class="text-center" id="status" scope="col">Status</th>
           </tr>
