@@ -861,7 +861,7 @@ class ApiProjetController extends AbstractController
     {
       $response = new JsonResponse();
       if ($request->get('owasp')=='a0') {
-         // On supprime  les enregistrement correspondant à la clé
+         // On supprime  les enregistrements correspondant à la clé
          $sql = "DELETE FROM hotspot_owasp WHERE maven_key='".$request->get('maven_key')."'";
          $em->getConnection()->prepare($sql)->executeQuery();
          return $response->setData(["info"=>"effacement", Response::HTTP_OK]);
@@ -955,6 +955,8 @@ class ApiProjetController extends AbstractController
     if (empty($hotspot["line"])) {$line=0;} else {$line=$hotspot["line"];}
     $rule = $hotspot["rule"] ? $hotspot["rule"]["name"] : "/";
     $message=$hotspot["message"];
+    // On affiche pas la description, même si on la en base, car on pointe sur le serveur sonarqube directement
+    //$description=$hotspot["rule"]["riskDescription"];
     $key=$hotspot["key"];
     $date_enregistrement=$date;
 
@@ -963,9 +965,9 @@ class ApiProjetController extends AbstractController
 
 /**
   * description
-  * Récupère le détails des hotspot
-  * http://{url}/api/hotspots/search?projectKey={key}{owasp}&ps=500&p=1
-  * {hotspot_key} = la clé du hotspot
+  * Récupère le détails des hotspots et les enregistre dans la table Hotspots_details
+  * http://{url}/api/hotspot/details{maven_key};
+  * {maven_key} = la clé du projet
   */
   #[Route('/api/projet/hotspot/details', name: 'projet_hotspot_details', methods: ['GET'])]
   public function hotspot_details_ajout(EntityManagerInterface $em, Request $request): response
@@ -988,7 +990,6 @@ class ApiProjetController extends AbstractController
      */
     foreach($liste as $elt) {
         $key=$this->hotspot_details($request->get('maven_key') ,$elt["key"]);
-
         $details= new  HotspotDetails();
         $details->setMavenKey($request->get('maven_key'));
         $details->setSeverity($key["severity"]);
