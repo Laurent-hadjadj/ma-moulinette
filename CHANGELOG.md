@@ -70,3 +70,13 @@
 4. Ajouter un tableau consolidé permettant la distinction entre la partie frontend (présentation) et backend (métier) ;
 5. Ajouter une timeline pour suivre les projets dans le temps et afficher les modifications ;
 6. Ajouter les rapports PDF avec les élements détaillés nécessaire pour les développeurs ;
+
+## v0.0.3: 25/02/2022
+
+* Correction de bug ;
+* Tests de reprise de plusieurs gros projets à plus de 10000 défauts ;
+* Migration de la page security en Owasp ;
+
+## v0.0.4 - 01/03/2022
+
+* Mise en place d'un système de sauvegade pour les données calculées ;

@@ -25,12 +25,14 @@ L'application fonctionne avec sonarqube 8.9.3 LTS. Elle s'apuie sur les API de l
 * Renommer le fichier .env-prod en .env ;
 
 * Renseignez les propriétés suivantes :
-  * SONAR_URL="mon serveur"
-  * SONAR_TOKEN="mon token"
-  * SONAR_USER="mon login"
-  * SONAR_PASSWORD="mon mot de passe"
+  * SONAR_URL=<https://monsonar.a-moi-tout-seul.it>
+  * SONAR_TOKEN=mon_token
+  * SONAR_USER=mon_login
+  * SONAR_PASSWORD=mon_password
   * SONAR_PROFILES="mon profil sonar"
-  * SONAR_ORGANIZATION="ma petite entreprise"
+  * SONAR_ORGANIZATION="ma petite Entreprise"
+
+Attention, il ne faut pas mettre l'URL, le token, le user et de password entre guillemet.
 
 ## Installation des dépendances
 
