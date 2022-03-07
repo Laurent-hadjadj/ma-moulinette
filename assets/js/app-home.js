@@ -162,10 +162,15 @@ function liste_projet_date(){
   }
   return $.ajax(options)
     .then(function (r) {
-      $('#js-nombre-profil').html('<span class="stat">' + new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(r.nombre) + '</span>')
+         $('#js-nombre-profil').html('<span class="stat">' + new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(r.nombre) + '</span>')
+         if (r.nombre==0){ return $.ajax({
+           url:'http://localhost:8000/api/quality/profiles',
+           type: 'GET',
+           dataType: 'json',
+           contentType: contentType})
+          }
       });
  }
-
 
 /********* Main du programme *******/
 /**
@@ -187,4 +192,4 @@ dit_bonjour();
 // On récupère la date de la dernière analyse
 liste_projet_date()
 // On récupére le nomnbre de profil
-affiche_nombre_profil().done(()=>{stop_spinner()});
+affiche_nombre_profil();
