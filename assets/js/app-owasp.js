@@ -224,7 +224,7 @@ function remplissage_hotspot_liste(id_maven) {
     _note = calcul_note_hotspot(leTaux);
     if ( (leTaux*100)>10 && (leTaux*100)<100) { espace="&nbsp;&nbsp;&nbsp;"} else {espace=" ";}
     if ( leTaux*100==100) { console.log(espace); espace="&nbsp;"}
-    i = '<span class="stat-note">'+new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(r.menace_a1)+'</span><span class="stat-note">' + espace + new Intl.NumberFormat('fr-FR', { style: 'percent', }).format(leTaux) + '</span> <span class="badge ' + _note[0] + '">' + espace + _note[1] + '</span>';
+    i = '<span class="stat-note">'+new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(r.menace_a1)+'</span><span class="stat-note">' + espace + new Intl.NumberFormat('fr-FR', { style: 'percent', }).format(leTaux) + '</span> <span class="badge ' + _note[0] + '">' + _note[1] + '</span>';
     $('#h1').html(i);
 
     //A2
@@ -232,7 +232,7 @@ function remplissage_hotspot_liste(id_maven) {
     _note = calcul_note_hotspot(leTaux);
     if ( (leTaux*100)>10 && (leTaux*100)<100) { espace="&nbsp;&nbsp;&nbsp;"} else {espace="";}
     if ( leTaux*100==100) { espace="&nbsp;"}
-    i = '<span class="stat-note">'+new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(r.menace_a2) +'</span><span class="stat-note">' + espace + new Intl.NumberFormat('fr-FR', { style: 'percent', }).format(leTaux) + '</span> <span class="badge ' + _note[0] + '">' + espace + _note[1] + '</span>';
+    i = '<span class="stat-note">'+new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(r.menace_a2) +'</span><span class="stat-note">' + espace + new Intl.NumberFormat('fr-FR', { style: 'percent', }).format(leTaux) + '</span> <span class="badge ' + _note[0] + '">' + _note[1] + '</span>';
     $('#h2').html(i);
 
     //A3
