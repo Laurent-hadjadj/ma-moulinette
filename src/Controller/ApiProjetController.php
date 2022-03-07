@@ -380,9 +380,10 @@ class ApiProjetController extends AbstractController
 
       $facets=$result1["facets"];
       // modules
-      $frontend=0; $backend=0; $batch=0;
+      $frontend=0; $backend=0; $batch=0; $nb_ano=0;
       foreach($facets as $facet)
       {
+        $nb_ano++;
         if ($facet["property"]=="severities"){
           foreach( $facet["values"] as $severity) {
               if ($severity["val"]=="BLOCKER") { $blocker=$severity["count"]; }
@@ -455,7 +456,7 @@ class ApiProjetController extends AbstractController
       $em->persist($issue);
       $em->flush();
     }
-    $info= "Enregistrement correctement effectué.";
+    $info= "Enregistrement des défauts (".$nb_ano.") correctement effectué.";
 
     $response = new JsonResponse();
     return $response->setData(["info"=>$info, Response::HTTP_OK]);
