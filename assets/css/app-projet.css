@@ -22,15 +22,16 @@
 .favori-svg-select {fill:#850385;}
 .favori-svg:hover, .statistique-svg:hover, .details-svg:hover {fill:#850385;}
 
-.liste-svg, .analyse-svg, .affiche-resultat-svg, .voir-analyse-svg, .pdf-svg, .graphique-svg {fill:#fff;cursor: pointer; margin-bottom: -0.6rem; width: 32px;height: 32px;}
+.liste-svg, .analyse-svg, .affiche-resultat-svg, .voir-analyse-svg, .pdf-svg, .graphique-svg, .enregistrement-svg {fill:#fff;cursor: pointer; margin-bottom: -0.4rem; width: 32px;height: 32px;}
+.owasp-svg {fill:#fff;cursor: pointer; margin-bottom: -0.7rem; width: 96px;}
 
  /* bouton */
-.analyse-enabled, .affiche-liste, .affiche-resultat-enabled, .analyse-security, .analyse-anomalie, .rapport-graphique, #fermer-liste-projet, #fermer-liste-hotspot, #fermer-autre-version, #fermer-dette-technique { color: #fff; background-color: #00445b; }
+.analyse-enabled, .affiche-liste, .affiche-resultat-enabled, .analyse-owasp, .analyse-anomalie, .rapport-graphique, .enregistrement, #fermer-liste-projet, #fermer-liste-hotspot, #fermer-autre-version, #fermer-dette-technique { color: #fff; background-color: #00445b; }
 
-.analyse-enabled:hover, .affiche-liste:hover, .affiche-resultat-enabled:hover, .analyse-security:hover, .analyse-anomalie:hover, .rapport-graphique:hover, #fermer-liste-projet:hover, #fermer-autre-version:hover, #fermer-liste-hotspot:hover, #fermer-dette-technique:hover {background-color: #006182;}
+.analyse-enabled:hover, .affiche-liste:hover, .affiche-resultat-enabled:hover, .analyse-owasp:hover, .analyse-anomalie:hover, .rapport-graphique:hover, .enregistrement:hover, #fermer-liste-projet:hover, #fermer-autre-version:hover, #fermer-liste-hotspot:hover, #fermer-dette-technique:hover {background-color: #006182;}
 
-.analyse-disabled, .affiche-resultat-disabled {background-color: #4C7C8C; cursor: not-allowed;}
-.analyse-disabled:hover, .affiche-resultat-disabled:hover {background-color: #006182;}
+.analyse-disabled, .affiche-resultat-disabled, .enregistrement-disabled {background-color: #4C7C8C; cursor: not-allowed;}
+.analyse-disabled:hover, .affiche-resultat-disabled:hover, .enregistrement-disabled:hover {background-color: #006182;}
 
 /*select2 custom*/
 /* placehoder */
@@ -117,7 +118,7 @@
 }
 
 /* définit la taille de la carte */
-.callout-information {width: 20rem;border-radius: 1.5rem;}
+.callout-information {box-shadow: 2px 2px 5px #444; border-radius: 1.2rem;}
 .resultat {padding-left : 0.5rem;color:#333;flex: 1;text-align: right;white-space: nowrap;}
 .small {font-size: 1rem;}
 .ligne{margin: 0rem;display:flex;}
@@ -132,31 +133,41 @@
 
 @media only screen and (max-width: 20em){
   .log{font-size: 0.75rem;}
+  .callout-information {width: 21rem;}
 }
 @media only screen and (min-width: 20.025em) and (max-width: 22em) {
   .log{font-size: 0.8rem;}
+  .callout-information {width: 21rem;}
 }
 @media only screen and (min-width: 22.025em) and (max-width: 30em) {
+  .callout-information {width: 22rem;}
 }
 @media only screen and (min-width: 30.025em) and (max-width:40em){
+  .callout-information {width: 22rem;}
 }
 @media only screen and (min-width: 40em) and (max-width: 64em) {
   .bouton-analyse-right {padding-right: 1rem;}
   .bouton-afficher-left {padding-left: 1rem;}
+  .callout-information {width: 22rem;}
   }
 @media only screen and (min-width: 64.025em) and (max-width: 90em) {
   .bouton-analyse-right {padding-right: 1rem;}
   .bouton-afficher-left {padding-left: 1rem;}
+  .callout-information {width: 24.1rem;}
   }
 @media only screen and (min-width: 90.025em) and (max-width: 120em) {
  .bouton-analyse-right {padding-right: 1rem;}
  .bouton-afficher-left {padding-left: 1rem;}
+ .callout-information {width: 24.1rem;}
 
 }
 @media only screen and (min-width: 120em) and (max-width: 160em) {
-  .voir-analyse-svg { margin-bottom:-0.6rem; width:48px; height:48px}
-  .gomme-svg, .details-svg, .liste-svg, .affiche-resultat-svg, .analyse-svg, .pdf-svg, .graphique-svg {margin-bottom:-0.2rem; width:48px; height:48px}
+  .voir-analyse-svg {margin-bottom:-0.6rem; width:48px; height:48px;}
+  .enregistrement-svg {margin-bottom:-0.4rem; width:48px; height:48px;}
+  .owasp-svg {margin-bottom:-0.7rem; width:98px;}
+  .gomme-svg, .details-svg, .liste-svg, .affiche-resultat-svg,
+  .analyse-svg, .pdf-svg, .graphique-svg {margin-bottom:-0.2rem; width:48px; height:48px;}
   .bouton-analyse-right {padding-right: 1rem;}
   .bouton-afficher-left {padding-left: 1rem;}
-
+  .callout-information {width: 24.1rem;}
 }
