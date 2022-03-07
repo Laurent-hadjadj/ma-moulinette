@@ -249,8 +249,8 @@ function projet_mesure(maven_key) {
 * Fonction à deux balles pour ajouter une tempotisation entre les appels
 * de traitement des anomalies quand le nombre atteint 10000 !!!
 */
-function notifyUser(anomalie, info) {
-  log(' - INFO : ' +anomalie +' '+info);
+function notifyUser(info) {
+  log(' - INFO : '+ info);
 }
 
 /**
