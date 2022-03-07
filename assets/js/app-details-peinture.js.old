@@ -1,0 +1,103 @@
+/*
+ *  Copyright (c) 2021-2022.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ */
+
+/**
+ * description
+ * Affiche la log.
+ */
+function log(txt) {
+  let textarea = document.getElementById('log');
+  textarea.scrollTop = textarea.scrollHeight;
+  textarea.value += new Intl.DateTimeFormat('default', date_options).format(new Date()) + txt + '\n';
+}
+
+const date_options = {year: "numeric", month: "numeric", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric", hour12: false };
+
+const contentType='application/json; charset=utf-8';
+
+/**
+ * description
+ * Fonction de remplissage des tableaux.
+ */
+export function remplissage(maven_key) {
+  const data = { maven_key: maven_key };
+
+  //On récupère les informations sur la dette technique et les anomalies.
+  const optionsAnomalies = {
+    url: 'http://localhost:8000/api/peinture/projet/anomalies', type: 'GET', dataType: 'json', data: data, contentType: contentType
+  }
+
+  $.ajax(optionsAnomalies).then((t) => {
+    if (t[0] == '406') {
+      log(' - ERROR : Récupération des anomalies.')
+      log(t.message);
+      return;
+    }
+
+    /* Dette technique */
+    $('#dette').html(t.dette);
+    $('#dette-bug').html(t.dette_bug);
+    $('#dette-vulnerability').html(t.dette_vulnerability);
+    $('#dette-code-smell').html(t.dette_code_smell);
+
+    /* Nombre d'anomalie */
+    $('#nombre-bug').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.bug));
+    $('#nombre-vulnerabilite').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.vulnerability));
+    $('#nombre-mauvaise-pratique').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.code_smell));
+    if (t.code_smell==10000) { $('#nombre-mauvaise-pratique').css('color', '#771404');}
+
+    /* Répartion des anomalies par sévérité */
+    $('#bug-bloquante').html(t.bug_blocker);
+    $('#bug-critique').html(t.bug_critical);
+    $('#bug-info').html(t.bug_info);
+    $('#bug-majeure').html(t.bug_major);
+    $('#bug-mineure').html(t.bug_minor);
+
+    $('#vulnerabilite-bloquante').html(t.vulnerabilty_blocker);
+    $('#vulnerabilite-critique').html(t.vulnerability_critical);
+    $('#vulnerabilite-info').html(t.vulnerabilty_info);
+    $('#vulnerabilite-majeure').html(t.vulnerabilty_major);
+    $('#vulnerabilite-mineure').html(t.vulnerabilty_minor);
+
+    $('#mauvaise-pratique-bloquante').html(t.code_smell_blocker);
+    $('#mauvaise-pratique-critique').html(t.code_smell_critical);
+    $('#mauvaise-pratique-info').html(t.code_smell_info);
+    $('#mauvaise-pratique-majeure').html(t.code_smell_major);
+    $('#mauvaise-pratique-mineure').html(t.code_smell_minor);
+
+    //On récupère les notes sonarqube pour la version courante
+    let t_notes = ['', 'A', 'B', 'C', 'D', 'E'], couleur1, couleur2, couleur3 = '';
+    if (t.note_reliability == '1' ) { couleur1 = 'note-vert1'; }
+    if (t.note_security == '1') { couleur2 = 'note-vert1'; }
+    if (t.note_sqale == '1') { couleur3 = 'note-vert1'; }
+
+    if (t.note_reliability == '2') { couleur1 = 'note-vert2'; }
+    if (t.note_security == '2') { couleur2 = 'note-vert2'; }
+    if (t.note_sqale == '2') { couleur3 = 'note-vert2'; }
+
+    if (t.note_reliability == '3') { couleur1 = 'note-jaune'; }
+    if (t.note_security == '3') { couleur2 = 'note-jaune'; }
+    if (t.note_sqale == '3') { couleur3 = 'note-jaune'; }
+
+    if (t.note_reliability == '4') { couleur1 = 'note-orange'; }
+    if (t.note_security == '4') { couleur2 = 'note-orange'; }
+    if (t.note_sqale == '4') { couleur3 = 'note-orange'; }
+
+    if (t.note_reliability == '5') { couleur1 = 'note-rouge'; }
+    if (t.note_security == '5') { couleur2 = 'note-rouge'; }
+    if (t.note_sqale == '5') { couleur3 = 'note-rouge'; }
+
+    let note_reliability = t_notes[parseInt(t.note_reliability)];
+    let note_security = t_notes[parseInt(t.note_security)];
+    let note_sqale = t_notes[parseInt(t.note_sqale)];
+    $('#note-reliability').html('<span class="' + couleur1 + '">' + note_reliability + '</span>');
+    $('#note-security').html('<span class="' + couleur2 + '">' + note_security + '</span>');
+    $('#note-sqale').html('<span class="' + couleur3 + '">' + note_sqale + '</span>');
+   });
+}

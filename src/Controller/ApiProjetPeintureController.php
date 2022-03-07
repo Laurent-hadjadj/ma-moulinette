@@ -133,8 +133,8 @@ class ApiProjetPeintureController extends AbstractController
    * description
    * Récupère les informations sur la dette technique et les anamalies
   */
-  #[Route('/api/peinture/projet/anomalies', name: 'peinture_projet_anomalies', methods: ['GET'])]
-  public function peinture_projet_anomalies(EntityManagerInterface $em, Request $request): response
+  #[Route('/api/peinture/projet/anomalie', name: 'peinture_projet_anomalie', methods: ['GET'])]
+  public function peinture_projet_anomalie(EntityManagerInterface $em, Request $request): response
   {
     $maven_key=$request->get('maven_key');
     $response = new JsonResponse();
@@ -145,41 +145,40 @@ class ApiProjetPeintureController extends AbstractController
     }
 
     // On récupère la dernière version et sa date de publication
-    $sql="SELECT * FROM anomalie WHERE maven_key='". $maven_key."' ORDER BY date_enregistrement DESC LIMIT 1";
+    $sql="SELECT * FROM anomalie WHERE maven_key='". $maven_key."'";
     $r=$em->getConnection()->prepare($sql)->executeQuery();
     $anomalies=$r->fetchAllAssociative();
 
-    /* Calcul de la dette technique */
-    $dette=$anomalies[0]["total_debt"];
-    $dette_bug=$anomalies[0]["total_debt_bug"];
-    $dette_vulnerability=$anomalies[0]["total_debt_vulnerability"];
-    $dette_code_smell=$anomalies[0]["total_debt_code_smell"];
+    /* Dette : Dette total, répartition de la dette en fonction du type.
+     * On récupère la valeur en jour, heure, minute pour l'affichage et la valeur en minutes
+     * pour la historique (i.e on fera les comparaison sur cette valeur)
+    */
+    $dette=$anomalies[0]["dette"];
+    $dette_minute=$anomalies[0]["dette_minute"];
+    $dette_reliability=$anomalies[0]["dette_reliability"];
+    $dette_reliability_minute=$anomalies[0]["dette_reliability_minute"];
+    $dette_vulnerability=$anomalies[0]["dette_vulnerability"];
+    $dette_vulnerability_minute=$anomalies[0]["dette_vulnerability_minute"];
+    $dette_code_smell=$anomalies[0]["dette_code_smell"];
+    $dette_code_smell_minute=$anomalies[0]["dette_code_smell_minute"];
 
-    // Calcul du nombre total d'anomalie
-    $bug=$anomalies[0]["bug_blocker"]+$anomalies[0]["bug_critical"]+$anomalies[0]["bug_info"]+$anomalies[0]["bug_major"]+$anomalies[0]["bug_minor"];
+    // Types
+    //$anomalie_total=$anomalies[0]["anomalie_total"];
+    $type_bug=$anomalies[0]["bug"];
+    $type_vulnerability=$anomalies[0]["vulnerability"];
+    $type_code_smell=$anomalies[0]["code_smell"];
 
-    $vulnerability=$anomalies[0]["vulnerability_blocker"]+$anomalies[0]["vulnerability_critical"]+$anomalies[0]["vulnerability_info"]+$anomalies[0]["vulnerability_major"]+$anomalies[0]["vulnerability_minor"];
+    // Severity
+    $severity_blocker=$anomalies[0]["blocker"];
+    $severity_critical=$anomalies[0]["critical"];
+    $severity_major=$anomalies[0]["major"];
+    $severity_info=$anomalies[0]["info"];
+    $severity_minor=$anomalies[0]["minor"];
 
-    $codeSmell=$anomalies[0]["code_smell_blocker"]+$anomalies[0]["code_smell_critical"]+$anomalies[0]["code_smell_info"]+$anomalies[0]["code_smell_major"]+$anomalies[0]["code_smell_minor"];
-
-    /* Répartition des anomalies par sévérité et par nature*/
-    $bug_blocker=$anomalies[0]["bug_blocker"];
-    $bug_critical=$anomalies[0]["bug_critical"];
-    $bug_info=$anomalies[0]["bug_info"];
-    $bug_major=$anomalies[0]["bug_major"];
-    $bug_minor=$anomalies[0]["bug_minor"];
-
-    $vulnerability_blocker=$anomalies[0]["vulnerability_blocker"];
-    $vulnerability_critical=$anomalies[0]["vulnerability_critical"];
-    $vulnerability_info=$anomalies[0]["vulnerability_info"];
-    $vulnerability_major=$anomalies[0]["vulnerability_major"];
-    $vulnerability_minor=$anomalies[0]["vulnerability_minor"];
-
-    $code_smell_blocker=$anomalies[0]["code_smell_blocker"];
-    $code_smell_critical=$anomalies[0]["code_smell_critical"];
-    $code_smell_info=$anomalies[0]["code_smell_info"];
-    $code_smell_major=$anomalies[0]["code_smell_major"];
-    $code_smell_minor=$anomalies[0]["code_smell_minor"];
+    // Module
+    $frontend=$anomalies[0]["frontend"];
+    $backend=$anomalies[0]["backend"];
+    $batch=$anomalies[0]["batch"];
 
     /* On récupère les notes (A-F) */
     $types=["reliability", "security", "sqale"];
@@ -194,12 +193,17 @@ class ApiProjetPeintureController extends AbstractController
     }
 
     return $response->setData([
-    "dette"=>$dette, "dette_bug"=>$dette_bug, "dette_vulnerability"=>$dette_vulnerability, "dette_code_smell"=>$dette_code_smell,
-    "bug"=>$bug, "vulnerability"=>$vulnerability, "code_smell"=>$codeSmell,
-    "bug_blocker"=>$bug_blocker, "bug_critical"=>$bug_critical, "bug_info"=>$bug_info,
-    "bug_major"=>$bug_major, "bug_minor"=>$bug_minor,
-    "vulnerability_blocker"=>$vulnerability_blocker, "vulnerability_critical"=>$vulnerability_critical, "vulnerability_info"=>$vulnerability_info, "vulnerability_major"=>$vulnerability_major, "vulnerability_minor"=>$vulnerability_minor,
-    "code_smell_blocker"=>$code_smell_blocker, "code_smell_critical"=>$code_smell_critical, "code_smell_info"=>$code_smell_info, "code_smell_major"=>$code_smell_major, "code_smell_minor"=>$code_smell_minor,
+    "dette"=>$dette, "dette_min"=>$dette_minute,
+    "dette_reliability"=>$dette_reliability,
+    "dette_reliability_minute"=>$dette_reliability_minute,
+    "dette_vulnerability"=>$dette_vulnerability,
+    "dette_vulnerability_minute"=>$dette_vulnerability_minute,
+    "dette_code_smell"=>$dette_code_smell,
+    "dette_code_smell_minute"=>$dette_code_smell_minute,
+    "bug"=>$type_bug, "vulnerability"=>$type_vulnerability, "code_smell"=>$type_code_smell,
+    "blocker"=>$severity_blocker, "critical"=>$severity_critical, "info"=>$severity_info,
+    "major"=>$severity_major, "minor"=>$severity_minor,
+    "frontend"=>$frontend, "backend"=>$backend, "batch"=>$batch,
     "note_reliability"=>$note_reliability, "note_security"=>$note_security, "note_sqale"=>$note_sqale,
     Response::HTTP_OK]);
   }
