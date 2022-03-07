@@ -1130,7 +1130,6 @@ class ApiProjetController extends AbstractController
         $details->setLine($key["line"]);
         $details->setRule($key["rule"]);
         $details->setMessage($key["message"]);
-        $details->setDescription($key["description"]);
         $details->setKey($key["key"]);
         $details->setDateEnregistrement($key["date_enregistrement"]);
         $em->persist($details);
