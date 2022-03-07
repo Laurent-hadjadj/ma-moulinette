@@ -51,9 +51,6 @@ class HotspotDetails
     #[ORM\Column(type: 'string', length: 255)]
     private $message;
 
-    #[ORM\Column(type: 'text')]
-    private $description;
-
     #[ORM\Column(type: 'string', length: 128)]
     private $key;
 
@@ -208,17 +205,4 @@ class HotspotDetails
 
         return $this;
     }
-
-    public function getDescription()
-    {
-        return $this->description;
-    }
-
-    public function setDescription($description): self
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
 }
