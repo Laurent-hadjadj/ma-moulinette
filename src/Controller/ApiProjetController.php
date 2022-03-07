@@ -24,6 +24,7 @@ use App\Entity\InformationProjet;
 use App\Entity\NoSonar;
 use App\Entity\Mesures;
 use App\Entity\Anomalie;
+use App\Entity\AnomalieDetails;
 use App\Entity\TempAnomalie;
 use App\Entity\Owasp;
 use App\Entity\Hotspots;
@@ -144,10 +145,10 @@ class ApiProjetController extends AbstractController
   /**
    * description
    * Change le statut du favori pour un projet
-  * http://{url}/api/favori/ajout{key}
+  * http://{url}/api/favori{key}
   */
-  #[Route('/api/favori/ajout', name: 'favori_ajout', methods: ['GET'])]
-  public function favori_ajout(EntityManagerInterface $em, Request $request): response
+  #[Route('/api/favori', name: 'favori', methods: ['GET'])]
+  public function favori(EntityManagerInterface $em, Request $request): response
   {
     $maven_key=$request->get('maven_key');
     $statut=$request->get('statut');
@@ -223,8 +224,8 @@ class ApiProjetController extends AbstractController
    * Récupère les informations du projet (id de l'enregistrement, date de l'analyse, version, type de version)
   * http://{url}/api/project_analyses/search?project={key}
   */
-  #[Route('/api/projet/analyses/ajout', name: 'projet_analyses_ajout', methods: ['GET'])]
-  public function projet_analyses_ajout(EntityManagerInterface $em, Request $request): response
+  #[Route('/api/projet/analyses', name: 'projet_analyses', methods: ['GET'])]
+  public function projet_analyses(EntityManagerInterface $em, Request $request): response
   {
     $url=$this->getParameter(self::$sonarUrl)."/api/project_analyses/search?project=".$request->get('maven_key');
 
@@ -233,10 +234,6 @@ class ApiProjetController extends AbstractController
 
     // On récupère le manager de BD
     $date= new DateTime();
-
-    //on vérifie combien on a de page
-      $pageIndex=$result["paging"]["pageIndex"];
-      $total=$result["paging"]["total"];
 
     //on supprime les informations sur le projet
     $sql = "DELETE FROM information_projet WHERE maven_key='".$request->get('maven_key')."'";
@@ -269,8 +266,8 @@ class ApiProjetController extends AbstractController
    * Récupère les informations du projet (id de l'enregistrement, date de l'analyse, version, type de version)
   * http://{url}/api/components/app?component={key}
   */
-  #[Route('/api/projet/mesures/ajout', name: 'projet_mesures_ajout', methods: ['GET'])]
-  public function projet_mesures_ajout(EntityManagerInterface $em, Request $request): response
+  #[Route('/api/projet/mesures', name: 'projet_mesures', methods: ['GET'])]
+  public function projet_mesures(EntityManagerInterface $em, Request $request): response
   {
     $url=$this->getParameter(self::$sonarUrl)."/api/components/app?component=".$request->get('maven_key');
 
@@ -336,11 +333,142 @@ class ApiProjetController extends AbstractController
 
   /**
    * description
+   * Récupère le total des anomalies, avec un filtre par répertoire, severité et types.
+   * https://{URL}/api/issues/search?componentKeys={maven_key}&facets=directories,types,severities&p=1&ps=1&statuses=OPEN
+   * https://{URL}/api/issues/search?componentKeys={maven_key}&types={type}&p=1&ps=1
+   */
+  #[Route('/api/projet/anomalie', name: 'projet_anomalie', methods: ['GET'])]
+  public function projet_anomalie(EntityManagerInterface $em, Request $request): response
+  {
+    $url1=$this->getParameter(self::$sonarUrl)."/api/issues/search?componentKeys=".$request->get('maven_key')."&facets=directories,types,severities&p=1&ps=1&statuses=OPEN";
+
+    // On récupère le total de la Dette technique pour les BUG
+    $url2=$this->getParameter(self::$sonarUrl)."/api/issues/search?componentKeys=".$request->get('maven_key')."&types=BUG&p=1&ps=1";
+
+    // On récupère le total de la Dette technique pour les VULNERAVILITY
+    $url3=$this->getParameter(self::$sonarUrl)."/api/issues/search?componentKeys=".$request->get('maven_key')."&types=VULNERABILITY&p=1&ps=1";
+
+    // On récupère le total de la Dette technique pour les CODE_SMELL
+    $url4=$this->getParameter(self::$sonarUrl)."/api/issues/search?componentKeys=".$request->get('maven_key')."&types=CODE_SMELL&p=1&ps=1";
+
+    // on appel le client http
+    $result1=$this->http_client($url1);
+    $result2=$this->http_client($url2);
+    $result3=$this->http_client($url3);
+    $result4=$this->http_client($url4);
+
+    $date= new DateTime();
+    $maven_key=$request->get('maven_key');
+
+    if ($result1["paging"]["total"]!=0){
+      // On supprime  les enregistrement correspondant à la clé
+      $sql = "DELETE FROM anomalie WHERE maven_key='".$maven_key."'";
+      $em->getConnection()->prepare($sql)->executeQuery();
+
+      // nom du projet
+      $app=explode(":",$maven_key);
+
+      $anomalie_total=$result1["total"];
+      $dette_minute=$result1["effortTotal"];
+      $dette=$this->minutes_to($dette_minute);
+      $dette_reliability_minute=$result2["effortTotal"];
+      $dette_reliability=$this->minutes_to($dette_reliability_minute);
+      $dette_vulnerability_minute=$result3["effortTotal"];
+      $dette_vulnerability=$this->minutes_to($dette_vulnerability_minute);
+      $dette_code_smell_minute=$result4["effortTotal"];
+      $dette_code_smell=$this->minutes_to($dette_code_smell_minute);
+
+      $facets=$result1["facets"];
+      // modules
+      $frontend=0; $backend=0; $batch=0;
+      foreach($facets as $facet)
+      {
+        if ($facet["property"]=="severities"){
+          foreach( $facet["values"] as $severity) {
+              if ($severity["val"]=="BLOCKER") { $blocker=$severity["count"]; }
+              if ($severity["val"]=="CRITICAL") { $critical=$severity["count"]; }
+              if ($severity["val"]=="MAJOR") { $major=$severity["count"]; }
+              if ($severity["val"]=="INFO") { $info=$severity["count"]; }
+              if ($severity["val"]=="MINOR") { $minor=$severity["count"]; }
+             }
+         }
+         if ($facet["property"]=="types"){
+          foreach( $facet["values"] as $type) {
+              if ($type["val"]=="BUG") { $bug=$type["count"]; }
+              if ($type["val"]=="VULNERABILITY") { $vulnerability=$type["count"]; }
+              if ($type["val"]=="CODE_SMELL") { $code_smell=$type["count"]; }
+             }
+         }
+         if ($facet["property"]=="directories"){
+          foreach( $facet["values"] as $directory) {
+
+            $file=str_replace($maven_key.":", "", $directory["val"]);
+            $module=explode("/", $file);
+
+            // Application Frontend
+            if ($module[0]==$app[1]."-presentation"){$frontend=$frontend+$directory["count"];}
+            if ($module[0]==$app[1]."-presentation-commun") {$frontend=$frontend+$directory["count"];}
+            if ($module[0]==$app[1]."-presentation-ear") {$frontend=$frontend+$directory["count"];}
+            if ($module[0]==$app[1]."-webapp") {$frontend=$frontend+$directory["count"];}
+
+            // Application Backend
+            if ($module[0]==$app[1]."-metier") {$backend=$backend+$directory["count"];}
+            if ($module[0]==$app[1]."-common") {$backend=$backend+$directory["count"];}
+            if ($module[0]==$app[1]."-api") {$backend=$backend+$directory["count"];}
+            if ($module[0]==$app[1]."-dao") {$backend=$backend+$directory["count"];}
+            if ($module[0]==$app[1]."-metier-ear") {$backend=$backend+$directory["count"];}
+            if ($module[0]==$app[1]."-service") {$backend=$backend+$directory["count"];}
+            if ($module[0]==$app[1]."-serviceweb") {$backend=$backend+$directory["count"];}
+            if ($module[0]==$app[1]."-middleoffice") {$backend=$backend+$directory["count"];}
+
+            // Application Batch
+            if ($module[0]==$app[1]."-batchs") {$batch=$batch+$directory["count"]; }
+          }
+      }
+      }
+
+      // Enregitremet dans la table Anomalie
+      $issue = new Anomalie();
+      $issue->setMavenKey($maven_key);
+      $issue->setProjectName($app[1]);
+      $issue->setAnomalieTotal($anomalie_total);
+      $issue->setDette($dette);
+      $issue->setDetteMinute($dette_minute);
+      $issue->setDetteReliability($dette_reliability);
+      $issue->setDetteReliabilityMinute($dette_reliability_minute);
+      $issue->setDetteVulnerability($dette_vulnerability);
+      $issue->setDetteVulnerabilityMinute($dette_vulnerability_minute);
+      $issue->setDetteCodeSmell($dette_code_smell);
+      $issue->setDetteCodeSmellMinute($dette_code_smell_minute);
+      $issue->setFrontend($frontend);
+      $issue->setBackend($backend);
+      $issue->setBatch($batch);
+      $issue->setBlocker($blocker);
+      $issue->setCritical($critical);
+      $issue->setMajor($major);
+      $issue->setInfo($info);
+      $issue->setMinor($minor);
+      $issue->setBug($bug);
+      $issue->setVulnerability($vulnerability);
+      $issue->setCodeSmell($code_smell);
+      $issue->setDateEnregistrement($date);
+      $em->persist($issue);
+      $em->flush();
+    }
+    $info= "Enregistrement correctement effectué.";
+
+    $response = new JsonResponse();
+    return $response->setData(["info"=>$info, Response::HTTP_OK]);
+  }
+
+
+  /**
+   * description
    * Récupère les informations du projet (id de l'enregistrement, date de l'analyse, version, type de version)
   *
   */
-  #[Route('/api/projet/anomalies/ajout', name: 'projet_anomalies_ajout', methods: ['GET'])]
-  public function projet_anomalies_ajout(EntityManagerInterface $em, Request $request): response
+  #[Route('/api/projet/anomalies/details', name: 'projet_anomalies_details', methods: ['GET'])]
+  public function projet_anomalies_details(EntityManagerInterface $em, Request $request): response
   {
     $maven_key=$request->get('maven_key');
     $type=$request->get('type');
@@ -506,7 +634,7 @@ class ApiProjetController extends AbstractController
    $result_response=$result_set->fetchAllAssociative();
    $result_debt_code_smell=$this->minutes_to(intVal($result_response[0]['total']));
 
-   $issue = new Anomalie();
+   $issue = new AnomalieDetails();
    $issue->setMavenKey($request->get("maven_key"));
    $issue->setSetup($setup);
    $issue->setProjectName($project_name);
@@ -1050,6 +1178,65 @@ class ApiProjetController extends AbstractController
       return $response->setData(["nosonar"=>$result["paging"]["total"], Response::HTTP_OK]);
     }
 
+  /**
+  * description
+  * Enregistremnt des données du projet
+  */
+  #[Route('/api/enregstrement', name: 'enregistrement', methods: ['PUT'])]
+  public function enregistrement(EntityManagerInterface $em, Request $request): response
+   {
+    $date= new DateTime();
 
+    $save= new historique();
+    $save->setMavenKey($request->get('maven_key'));
+    $save->setNomProjet($request->get('nom_projet'));
+    $save->setClefProjet($request->get('clef_projet'));
+    $save->setVersionRelease($request->get('version_release'));
+    $save->setVersionSnaphot($request->get('version_snaphot'));
+    $save->setVersion($request->get('version'));
+    $save->setDateVersion($request->get('date_version'));
+    $save->setSupressWarning($request->get('supress_warning'));
+    $save->setNoSonar($request->get('no_sonar'));
+    $save->setNombreLigne($request->get('nombre_ligne'));
+    $save->setCouverture($request->get('couverture'));
+    $save->setDuplication($request->get('duplication'));
+    $save->setTestsUnitaires($request->get('tests_unitaires'));
+    $save->setNombreDefaut($request->get('nombre_defaut'));
+    $save->setDette($request->get('dette'));
+    $save->setDetteBug($request->get('dette_bug'));
+    $save->setDetteVulnerability($request->get('dette_vulnerability'));
+    $save->setDetteCode_smell($request->get('dette_code_smell'));
+    $save->setNombreBug($request->get('nombre_bug'));
+    $save->setNombreVulnerability($request->get('nombre_vulnerability'));
+    $save->setNombreCode_smell($request->get('nombre_code_smell'));
+    $save->setBugBloquant($request->get('bug_bloquant'));
+    $save->bug_critique($request->get('bug_critique'));
+    $save->setBugInfo($request->get('bug_info'));
+    $save->setBugMajeur($request->get('bug_majeur'));
+    $save->setBugMineur($request->get('bug_mineur'));
+    $save->setVulnerabiliteBloquante($request->get('vulnerabilite_bloquante')); $save->setVulnerabiliteCritique($request->get('vulnerabilite_critique'));
+    $save->setVulnerabiliteInfo($request->get('vulnerabilite_info'));
+    $save->setVulnerabiliteMajeure($request->get('vulnerabilite_majeure'));
+    $save->setVulnerabiliteMineure($request->get('vulnerabilite_mineure'));
+    $save->setCode_smellBloquant($request->get('code_smell_bloquant'));
+    $save->setCode_smellCritical($request->get('code_smell_critical'));
+    $save->setCode_smellInfo($request->get('code_smell_info'));
+    $save->setCode_smellMajeur($request->get('code_smell_majeur'));
+    $save->setCode_smellMineur($request->get('code_smell_mineur'));
+    $save->setNoteReliability($request->get('note_reliability'));
+    $save->setNoteSecurity($request->get('note_security'));
+    $save->setNoteSqale($request->get('note_sqale'));
+    $save->setNoteHotspot($request->get('note_hotspot'));
+    $save->setHotspotHigh($request->get('hotspot_high'));
+    $save->setHotpostMedium($request->get('hotspot_medium'));
+    $save->setHotspotLow($request->get('hotspot_low'));
+    $save->setHotspotTotal($request->get('hotspot_total'));
+    $save->setDateEnregistrement($date);
+    $em->persist($save);
+    $em->flush();
 
+    $response = new JsonResponse();
+    return $response->setData(["info"=>"KO", Response::HTTP_OK]);
+
+  }
 }

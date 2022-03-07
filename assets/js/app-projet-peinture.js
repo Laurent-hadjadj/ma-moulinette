@@ -89,11 +89,11 @@ export function remplissage(maven_key) {
   });
 
   //On récupère les informations sur la dette technique et les anomalies.
-  const optionsAnomalies = {
-    url: 'http://localhost:8000/api/peinture/projet/anomalies', type: 'GET', dataType: 'json', data: data, contentType: contentType
-  }
+  const optionsAnomalie = {
+    url: 'http://localhost:8000/api/peinture/projet/anomalie', type: 'GET', dataType: 'json', data: data, contentType: contentType
+   }
 
-  $.ajax(optionsAnomalies).then((t) => {
+  $.ajax(optionsAnomalie).then((t) => {
     if (t[0] == '406') {
       log(' - ERROR : Récupération des anomalies.')
       log(t.message);
@@ -102,9 +102,14 @@ export function remplissage(maven_key) {
 
     /* Dette technique */
     $('#dette').html(t.dette);
-    $('#dette-bug').html(t.dette_bug);
-    $('#dette-vulnerability').html(t.dette_vulnerability);
-    $('#dette-code-smell').html(t.dette_code_smell);
+    $("#js-dette").data('dette', t.dette_minute);
+    $('#js-dette-reliability').html(t.dette_reliability);
+    $('#js-dette-vulnerability').html(t.dette_vulnerability);
+    $('#js-dette-code-smell').html(t.dette_code_smell);
+
+    $("#js-dette-reliability").data('dette-reliability', t.dette_reliability_minute);
+    $("#js-dette-vulnerability").data('dette-vulnerability', t.dette_vulnerability_minute);
+    $("#js-dette-code-smell").data('dette-code-smell', t.dette_code_smell_minute);
 
     /* Nombre d'anomalie */
     $('#nombre-bug').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.bug));
@@ -112,24 +117,47 @@ export function remplissage(maven_key) {
     $('#nombre-mauvaise-pratique').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.code_smell));
     if (t.code_smell==10000) { $('#nombre-mauvaise-pratique').css('color', '#771404');}
 
+    /* Répartition modules*/
+    let total_module, i1, i2, i3, p1, p2, p3, e1, e2, e3;
+    total_module=parseInt(t.frontend+t.backend+t.batch);
+
+    if (total_module !=0) {
+      if (t.frontend!=0) {
+        p1=t.frontend/total_module;
+        if (p1*100>10 && p1*100<100) { e1='<span style="color:#fff;">0</span>'}
+        if (p1*100<10) { e1='<span style="color:#fff;">00</span>'}
+        i1='<span> </span></span><span>'+new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.frontend)+'</span> '+e1+'<span>'+new Intl.NumberFormat('fr-FR', { style: 'percent', }).format(t.frontend/total_module);
+      } else { i1='<span> </span></span><span>'+new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(0)+'</span>';}
+      $('#nombre-frontend').html(i1);
+
+      if (t.backend!=0) {
+        p2=t.backend/total_module;
+        if (p2*100>10 && p2*100<100) { e2='<span style="color:#fff;">0</span>'}
+        if (p2*100<10) { e2='<span style="color:#fff;">00</span>'}
+        i2='<span> </span></span><span>'+new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.backend)+'</span> '+e2+'<span>'+new Intl.NumberFormat('fr-FR', { style: 'percent', }).format(t.backend/total_module);
+      } else { i2='<span> </span></span><span>'+new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(0)+'</span>';}
+      $('#nombre-backend').html(i2);
+
+      if (t.batch!=0) {
+        p3=t.batch/total_module;
+        if (p3*100>10 && p3*100<100) { e3='<span style="color:#fff;">0</span>'}
+        if (p3*100<10) { e3='<span style="color:#fff;">00</span>'}
+        i3='<span> </span></span><span>'+new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.batch)+'</span> '+e3+' span>'+new Intl.NumberFormat('fr-FR', { style: 'percent', }).format(t.batch/total_module);
+      } else { i3='<span> </span></span><span>'+new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(0)+'</span>';}
+      $('#nombre-batch').html(i3);
+    }
+    else {
+            $('#nombre-frontend').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(0));
+            $('#nombre-backend').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(0));
+            $('#nombre-batch').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(0));
+          }
+
     /* Répartion des anomalies par sévérité */
-    $('#bug-bloquante').html(t.bug_blocker);
-    $('#bug-critique').html(t.bug_critical);
-    $('#bug-info').html(t.bug_info);
-    $('#bug-majeure').html(t.bug_major);
-    $('#bug-mineure').html(t.bug_minor);
-
-    $('#vulnerabilite-bloquante').html(t.vulnerabilty_blocker);
-    $('#vulnerabilite-critique').html(t.vulnerability_critical);
-    $('#vulnerabilite-info').html(t.vulnerabilty_info);
-    $('#vulnerabilite-majeure').html(t.vulnerabilty_major);
-    $('#vulnerabilite-mineure').html(t.vulnerabilty_minor);
-
-    $('#mauvaise-pratique-bloquante').html(t.code_smell_blocker);
-    $('#mauvaise-pratique-critique').html(t.code_smell_critical);
-    $('#mauvaise-pratique-info').html(t.code_smell_info);
-    $('#mauvaise-pratique-majeure').html(t.code_smell_major);
-    $('#mauvaise-pratique-mineure').html(t.code_smell_minor);
+    $('#nombre-anomalie-bloquante').html(t.blocker);
+    $('#nombre-anomalie-critique').html(t.critical);
+    $('#nombre-anomalie-info').html(t.info);
+    $('#nombre-anomalie-majeure').html(t.major);
+    $('#nombre-anomalie-mineure').html(t.minor);
 
     //On récupère les notes sonarqube pour la version courante
     let t_notes = ['', 'A', 'B', 'C', 'D', 'E'], couleur1, couleur2, couleur3 = '';

@@ -21,80 +21,71 @@ class Anomalie
     #[ORM\Column(type: 'integer')]
     private $id;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 128)]
     private $maven_key;
 
-    #[ORM\Column(type: 'integer')]
-    private $setup;
-
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 128)]
     private $project_name;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private $project_analyse;
-
-    #[ORM\Column(type: 'string', length: 255)]
-    private $project_version;
-
-    #[ORM\Column(type: 'string', length: 255)]
-    private $project_date;
-
-    #[ORM\Column(type: 'string', length: 255)]
-    private $total_debt;
-
-    #[ORM\Column(type: 'string', length: 255)]
-    private $total_debt_bug;
-
-    #[ORM\Column(type: 'string', length: 255)]
-    private $total_debt_vulnerability;
-
-    #[ORM\Column(type: 'string', length: 255)]
-    private $total_debt_code_smell;
+    #[ORM\Column(type: 'integer')]
+    private $anomalie_total;
 
     #[ORM\Column(type: 'integer')]
-    private $bug_blocker;
+    private $dette_minute;
 
     #[ORM\Column(type: 'integer')]
-    private $bug_critical;
+    private $dette_reliability_minute;
 
     #[ORM\Column(type: 'integer')]
-    private $bug_info;
+    private $dette_vulnerability_minute;
 
     #[ORM\Column(type: 'integer')]
-    private $bug_major;
+    private $dette_code_smell_minute;
+
+    #[ORM\Column(type: 'string', length:64)]
+    private $dette_reliability;
+
+    #[ORM\Column(type: 'string', length:64)]
+    private $dette_vulnerability;
+
+    #[ORM\Column(type: 'string', length:64)]
+    private $dette;
+
+    #[ORM\Column(type: 'string', length:64)]
+    private $dette_code_smell;
 
     #[ORM\Column(type: 'integer')]
-    private $bug_minor;
+    private $frontend;
 
     #[ORM\Column(type: 'integer')]
-    private $vulnerability_blocker;
+    private $backend;
 
     #[ORM\Column(type: 'integer')]
-    private $vulnerability_critical;
+    private $batch;
 
     #[ORM\Column(type: 'integer')]
-    private $vulnerability_info;
+    private $blocker;
 
     #[ORM\Column(type: 'integer')]
-    private $vulnerability_major;
+    private $critical;
 
     #[ORM\Column(type: 'integer')]
-    private $vulnerability_minor;
+    private $major;
 
     #[ORM\Column(type: 'integer')]
-    private $code_smell_blocker;
+    private $info;
 
     #[ORM\Column(type: 'integer')]
-    private $code_smell_critical;
+    private $minor;
 
     #[ORM\Column(type: 'integer')]
-    private $code_smell_info;
+    private $bug;
 
     #[ORM\Column(type: 'integer')]
-    private $code_smell_major;
+    private $vulnerability;
 
     #[ORM\Column(type: 'integer')]
-    private $code_smell_minor;
+    private $code_smell;
 
     #[ORM\Column(type: 'datetime')]
     private $date_enregistrement;
@@ -116,18 +107,6 @@ class Anomalie
         return $this;
     }
 
-    public function getSetup(): ?int
-    {
-        return $this->setup;
-    }
-
-    public function setSetup(int $setup): self
-    {
-        $this->setup = $setup;
-
-        return $this;
-    }
-
     public function getProjectName(): ?string
     {
         return $this->project_name;
@@ -140,266 +119,206 @@ class Anomalie
         return $this;
     }
 
-    public function getProjectAnalyse(): ?string
+    public function getAnomalieTotal(): ?int
     {
-        return $this->project_analyse;
+        return $this->anomalie_total;
     }
 
-    public function setProjectAnalyse(string $project_analyse): self
+    public function setAnomalieTotal(int $anomalie_total): self
     {
-        $this->project_analyse = $project_analyse;
+        $this->anomalie_total = $anomalie_total;
 
         return $this;
     }
 
-    public function getProjectVersion(): ?string
+    public function getDetteMinute(): ?int
     {
-        return $this->project_version;
+        return $this->dette_minute;
     }
 
-    public function setProjectVersion(string $project_version): self
+    public function setDetteMinute(int $dette_minute): self
     {
-        $this->project_version = $project_version;
+        $this->dette_minute = $dette_minute;
 
         return $this;
     }
 
-    public function getProjectDate(): ?string
+    public function getDetteReliabilityMinute(): ?int
     {
-        return $this->project_date;
+        return $this->dette_reliability_minute;
     }
 
-    public function setProjectDate(string $project_date): self
+    public function setDetteReliabilityMinute(int $dette_reliability_minute): self
     {
-        $this->project_date = $project_date;
+        $this->dette_reliability_minute = $dette_reliability_minute;
 
         return $this;
     }
 
-    public function getTotalDebt(): ?string
+    public function getDetteVulnerabilityMinute(): ?int
     {
-        return $this->total_debt;
+        return $this->dette_vulnerability_minute;
     }
 
-    public function setTotalDebt(string $total_debt): self
+    public function setDetteVulnerabilityMinute(int $dette_vulnerability_minute): self
     {
-        $this->total_debt = $total_debt;
+        $this->dette_vulnerability_minute = $dette_vulnerability_minute;
 
         return $this;
     }
 
-    public function getTotalDebtBug(): ?string
+    public function getDetteCodeSmellMinute(): ?int
     {
-        return $this->total_debt_bug;
+        return $this->dette_code_smell_minute;
     }
 
-    public function setTotalDebtBug(string $total_debt_bug): self
+    public function setDetteCodeSmellMinute(int $dette_code_smell_minute): self
     {
-        $this->total_debt_bug = $total_debt_bug;
+        $this->dette_code_smell_minute = $dette_code_smell_minute;
 
         return $this;
     }
 
-    public function getTotalDebtVulnerability(): ?string
+    public function getDetteReliability(): ?string
     {
-        return $this->total_debt_vulnerability;
+        return $this->dette_reliability;
     }
 
-    public function setTotalDebtVulnerability(string $total_debt_vulnerability): self
+    public function setDetteReliability(string $dette_reliability): self
     {
-        $this->total_debt_vulnerability = $total_debt_vulnerability;
+        $this->dette_reliability = $dette_reliability;
 
         return $this;
     }
 
-    public function getTotalDebtCodeSmell(): ?string
+    public function getDetteVulnerability(): ?string
     {
-        return $this->total_debt_code_smell;
+        return $this->dette_vulnerability;
     }
 
-    public function setTotalDebtCodeSmell(string $total_debt_code_smell): self
+    public function setDetteVulnerability(string $dette_vulnerability): self
     {
-        $this->total_debt_code_smell = $total_debt_code_smell;
+        $this->dette_vulnerability = $dette_vulnerability;
 
         return $this;
     }
 
-    public function getBugBlocker(): ?int
+    public function getDette(): ?string
     {
-        return $this->bug_blocker;
+        return $this->dette;
     }
 
-    public function setBugBlocker(int $bug_blocker): self
+    public function setDette(string $dette): self
     {
-        $this->bug_blocker = $bug_blocker;
+        $this->dette = $dette;
 
         return $this;
     }
 
-    public function getBugCritical(): ?int
+    public function getDetteCodeSmell(): ?string
     {
-        return $this->bug_critical;
+        return $this->dette_code_smell;
     }
 
-    public function setBugCritical(int $bug_critical): self
+    public function setDetteCodeSmell(string $dette_code_smell): self
     {
-        $this->bug_critical = $bug_critical;
+        $this->dette_code_smell = $dette_code_smell;
 
         return $this;
     }
 
-    public function getBugInfo(): ?int
+    public function getBlocker(): ?int
     {
-        return $this->bug_info;
+        return $this->blocker;
     }
 
-    public function setBugInfo(int $bug_info): self
+    public function setBlocker(int $blocker): self
     {
-        $this->bug_info = $bug_info;
+        $this->blocker = $blocker;
 
         return $this;
     }
 
-    public function getBugMajor(): ?int
+    public function getCritical(): ?int
     {
-        return $this->bug_major;
+        return $this->critical;
     }
 
-    public function setBugMajor(int $bug_major): self
+    public function setCritical(int $critical): self
     {
-        $this->bug_major = $bug_major;
+        $this->critical = $critical;
 
         return $this;
     }
 
-    public function getBugMinor(): ?int
+    public function getMajor(): ?int
     {
-        return $this->bug_minor;
+        return $this->major;
     }
 
-    public function setBugMinor(int $bug_minor): self
+    public function setMajor(int $major): self
     {
-        $this->bug_minor = $bug_minor;
+        $this->major = $major;
 
         return $this;
     }
 
-    public function getVulnerabilityBlocker(): ?int
+    public function getInfo(): ?int
     {
-        return $this->vulnerability_blocker;
+        return $this->info;
     }
 
-    public function setVulnerabilityBlocker(int $vulnerability_blocker): self
+    public function setInfo(int $info): self
     {
-        $this->vulnerability_blocker = $vulnerability_blocker;
+        $this->info = $info;
 
         return $this;
     }
 
-    public function getVulnerabilityCritical(): ?int
+    public function getMinor(): ?int
     {
-        return $this->vulnerability_critical;
+        return $this->minor;
     }
 
-    public function setVulnerabilityCritical(int $vulnerability_critical): self
+    public function setMinor(int $minor): self
     {
-        $this->vulnerability_critical = $vulnerability_critical;
+        $this->minor = $minor;
 
         return $this;
     }
 
-    public function getVulnerabilityInfo(): ?int
+    public function getBug(): ?int
     {
-        return $this->vulnerability_info;
+        return $this->bug;
     }
 
-    public function setVulnerabilityInfo(int $vulnerability_info): self
+    public function setBug(int $bug): self
     {
-        $this->vulnerability_info = $vulnerability_info;
+        $this->bug = $bug;
 
         return $this;
     }
 
-    public function getVulnerabilityMajor(): ?int
+    public function getVulnerability(): ?int
     {
-        return $this->vulnerability_major;
+        return $this->vulnerability;
     }
 
-    public function setVulnerabilityMajor(int $vulnerability_major): self
+    public function setVulnerability(int $vulnerability): self
     {
-        $this->vulnerability_major = $vulnerability_major;
+        $this->vulnerability = $vulnerability;
 
         return $this;
     }
 
-    public function getVulnerabilityMinor(): ?int
+    public function getCodeSmell(): ?int
     {
-        return $this->vulnerability_minor;
+        return $this->code_smell;
     }
 
-    public function setVulnerabilityMinor(int $vulnerability_minor): self
+    public function setCodeSmell(int $code_smell): self
     {
-        $this->vulnerability_minor = $vulnerability_minor;
-
-        return $this;
-    }
-
-    public function getCodeSmellBlocker(): ?int
-    {
-        return $this->code_smell_blocker;
-    }
-
-    public function setCodeSmellBlocker(int $code_smell_blocker): self
-    {
-        $this->code_smell_blocker = $code_smell_blocker;
-
-        return $this;
-    }
-
-    public function getCodeSmellCritical(): ?int
-    {
-        return $this->code_smell_critical;
-    }
-
-    public function setCodeSmellCritical(int $code_smell_critical): self
-    {
-        $this->code_smell_critical = $code_smell_critical;
-
-        return $this;
-    }
-
-    public function getCodeSmellInfo(): ?int
-    {
-        return $this->code_smell_info;
-    }
-
-    public function setCodeSmellInfo(int $code_smell_info): self
-    {
-        $this->code_smell_info = $code_smell_info;
-
-        return $this;
-    }
-
-    public function getCodeSmellMajor(): ?int
-    {
-        return $this->code_smell_major;
-    }
-
-    public function setCodeSmellMajor(int $code_smell_major): self
-    {
-        $this->code_smell_major = $code_smell_major;
-
-        return $this;
-    }
-
-    public function getCodeSmellMinor(): ?int
-    {
-        return $this->code_smell_minor;
-    }
-
-    public function setCodeSmellMinor(int $code_smell_minor): self
-    {
-        $this->code_smell_minor = $code_smell_minor;
+        $this->code_smell = $code_smell;
 
         return $this;
     }
@@ -416,4 +335,40 @@ class Anomalie
         return $this;
     }
 
-}
+    public function getFrontend(): ?int
+    {
+        return $this->frontend;
+    }
+
+    public function setFrontend(int $frontend): self
+    {
+        $this->frontend = $frontend;
+
+        return $this;
+    }
+
+    public function getBackend(): ?int
+    {
+        return $this->backend;
+    }
+
+    public function setBackend(int $backend): self
+    {
+        $this->backend = $backend;
+
+        return $this;
+    }
+
+    public function getBatch(): ?int
+    {
+        return $this->batch;
+    }
+
+    public function setBatch(int $batch): self
+    {
+        $this->batch = $batch;
+
+        return $this;
+    }
+
+    }
