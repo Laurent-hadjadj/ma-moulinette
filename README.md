@@ -45,7 +45,7 @@ Depuis la racine du projet :
 
 Depuis la racine du projet :
 
-* php bin/console make:entity --regenerate (+enter)
+* php bin/console make:entity --regenerate
 * php bin/console make:migration
 * php bin/console doctrine:migrations:migrate
 
