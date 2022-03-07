@@ -223,8 +223,8 @@ function remplissage_hotspot_liste(id_maven) {
     leTaux = 1 - (parseInt(r.menace_a1)/hotspot_total);
     _note = calcul_note_hotspot(leTaux);
     if ( (leTaux*100)>10 && (leTaux*100)<100) { espace="&nbsp;&nbsp;&nbsp;"} else {espace=" ";}
-    if ( leTaux*100==100) { espace="&nbsp;"}
-    i = '<span class="stat-note">'+new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(r.menace_a1)+'</span><span class="stat-note">' + espace + new Intl.NumberFormat('fr-FR', { style: 'percent', }).format(leTaux) + '</span> <span class="badge ' + _note[0] + '">' + _note[1] + '</span>';
+    if ( leTaux*100==100) { console.log(espace); espace="&nbsp;"}
+    i = '<span class="stat-note">'+new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(r.menace_a1)+'</span><span class="stat-note">' + espace + new Intl.NumberFormat('fr-FR', { style: 'percent', }).format(leTaux) + '</span> <span class="badge ' + _note[0] + '">' + espace + _note[1] + '</span>';
     $('#h1').html(i);
 
     //A2
@@ -232,7 +232,7 @@ function remplissage_hotspot_liste(id_maven) {
     _note = calcul_note_hotspot(leTaux);
     if ( (leTaux*100)>10 && (leTaux*100)<100) { espace="&nbsp;&nbsp;&nbsp;"} else {espace="";}
     if ( leTaux*100==100) { espace="&nbsp;"}
-    i = '<span class="stat-note">'+new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(r.menace_a2) +'</span><span class="stat-note">' + espace + new Intl.NumberFormat('fr-FR', { style: 'percent', }).format(leTaux) + '</span> <span class="badge ' + _note[0] + '">' + _note[1] + '</span>';
+    i = '<span class="stat-note">'+new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(r.menace_a2) +'</span><span class="stat-note">' + espace + new Intl.NumberFormat('fr-FR', { style: 'percent', }).format(leTaux) + '</span> <span class="badge ' + _note[0] + '">' + espace + _note[1] + '</span>';
     $('#h2').html(i);
 
     //A3
@@ -301,7 +301,7 @@ function remplissage_hotspot_liste(id_maven) {
    }
   else
   {
-    i = '<span class="stat-note">'+new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(0) +'</span><span class="stat-note">' + new Intl.NumberFormat('fr-FR', { style: 'percent', }).format(leTaux) + '</span> <span class="badge ' + _note[0] + '">' + _note[1] + '</span>';
+    i = '<span class="stat-note">'+new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(0) +'</span><span class="stat-note">&nbsp;' + new Intl.NumberFormat('fr-FR', { style: 'percent', }).format(leTaux) + '</span> <span class="badge ' + _note[0] + '">' + _note[1] + '</span>';
     $('#h1').html(i);
     $('#h2').html(i);
     $('#h3').html(i);
@@ -331,11 +331,23 @@ function remplissage_hotspot_details(id_maven) {
   $.ajax(options).then((r) => {
 
     let numero=0, mon_numero, ligne, c, frontend=0, backend=0, batch=0;
+    let _a, _b, _c, too, total_a_b_c, zero='', bc;
     const serveur=$('#js-serveur').data('serveur');
 
     if (r.details=="vide") {
+        // On met ajour la répartition par module
+        _a = '<span class="stat-note">' + new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(0) + '</span> <span class="stat-note">' + new Intl.NumberFormat('fr-FR', { style: 'percent', }).format(0) + '</span>';
+        _b = '<span class="stat-note">' + new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(0) + '</span> <span class="stat-note">' + new Intl.NumberFormat('fr-FR', { style: 'percent', }).format(0) + '</span>';
+        _c = '<span class="stat-note">' + new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(0) + '</span> <span class="stat-note">' + new Intl.NumberFormat('fr-FR', { style: 'percent', }).format(0) + '</span>';
+        $('#frontend').html(_a)
+        $('#backend').html(_b)
+        $('#batch').html(_c)
+
+        // On ajoute une ligne dans le tableau
         ligne = '<tr class="text-center"><td>N.C</td><td>N.C</td><td>N.C</td><td>N.C</td><td>N.C</td><td>N.C</td><td>Pas de failles</td><td>N.C</td></tr>';
-        $('#tbody').html(ligne); }
+        $('#tbody').html(ligne);
+      }
+
     else
     {
       // On efface le tableau et on ajoute les lignes
@@ -367,46 +379,38 @@ function remplissage_hotspot_details(id_maven) {
       }
 
     // Met à jour la répartition par module
-    let _a, _b, _c, too, total_a_b_c, zero='', bc;
     total_a_b_c=parseInt(frontend+backend+batch);
-    if (total_a_b_c!=0){
 
-      if ((frontend <10)) {zero="00"}
-      if (frontend >9 && frontend <100) {zero="0"}
+    if ((frontend <10)) {zero="00"}
+    if (frontend >9 && frontend <100) {zero="0"}
 
-      // Calcul pour le frontend
-      too=(frontend/total_a_b_c);
-      if (frontend <10) {zero="00"}
-      if (frontend >9 && frontend <100) {zero="0"}
-      if (too*100 <30) { bc='module-vert'}
-      if (too*100 >29 && too*100 <70) { bc='module-orange'}
-      if (too*100 >69) { bc='module-rouge'}
-      _a = '<span class="stat-note">' + new Intl.NumberFormat('fr-FR', { style: 'percent', }).format(too) + '</span> <span class="box '+bc+' stat-note">'+ zero + new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(frontend) + '</span>';
+    // Calcul pour le frontend
+    too=(frontend/total_a_b_c);
+    if (frontend <10) {zero="00"}
+    if (frontend >9 && frontend <100) {zero="0"}
+    if (too*100 <30) { bc='module-vert'}
+    if (too*100 >29 && too*100 <70) { bc='module-orange'}
+    if (too*100 >69) { bc='module-rouge'}
+    _a = '<span class="stat-note">' + new Intl.NumberFormat('fr-FR', { style: 'percent', }).format(too) + '</span> <span class="box '+bc+' stat-note">'+ zero + new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(frontend) + '</span>';
 
-      // Calcul pour le backend
-      too=(backend/total_a_b_c);
-      if (backend<10) {zero="00"}
-      if (backend>9 && backend<100) {zero="0"}
-      if (too*100 <30) { bc='module-vert'}
-      if (too*100 >29 && too*100 <70) { bc='module-orange'}
-      if (too*100 >69) { bc='module-rouge'}
-      _b = '<span class="stat-note">' + new Intl.NumberFormat('fr-FR', { style: 'percent', }).format(too) + '</span> <span class="box '+bc+' stat-note">'+zero+ +new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(backend) + '</span>';
+    // Calcul pour le backend
+    too=(backend/total_a_b_c);
+    if (backend<10) {zero="00"}
+    if (backend>9 && backend<100) {zero="0"}
+    if (too*100 <30) { bc='module-vert'}
+    if (too*100 >29 && too*100 <70) { bc='module-orange'}
+    if (too*100 >69) { bc='module-rouge'}
+    _b = '<span class="stat-note">' + new Intl.NumberFormat('fr-FR', { style: 'percent', }).format(too) + '</span> <span class="box '+bc+' stat-note">'+zero+ +new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(backend) + '</span>';
 
-      // Calcul pour le backend
-      too=(batch/total_a_b_c);
-      if (batch<10) {zero="00"}
-      if (batch>9 && batch<100) {zero="0"}
-      if (too*100 <30) { bc='module-vert'}
-      if (too*100 >29 && too*100 <70) { bc='module-orange'}
-      if (too*100 >69) { bc='module-rouge'}
-      _c = '<span class="stat-note">' + new Intl.NumberFormat('fr-FR', { style: 'percent', }).format(too) + '</span> <span class="box '+bc+' stat-note">'+zero+ new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(batch) + '</span>';
-    }
-    else
-    {
-      _a = '<span>' + new Intl.NumberFormat('fr-FR', { style: 'percent', }).format(0) + '</span> <span class="stat-note">' + new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(0) + '</span>';
-      _b = '<span>' + new Intl.NumberFormat('fr-FR', { style: 'percent', }).format(0) + '</span> <span class="stat-note">' + new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(0) + '</span>';
-      _c= '<span>' + new Intl.NumberFormat('fr-FR', { style: 'percent', }).format(0) + '</span> <span class="stat-note">' + new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(0) + '</span>';
-    }
+    // Calcul pour le backend
+    too=(batch/total_a_b_c);
+    if (batch<10) {zero="00"}
+    if (batch>9 && batch<100) {zero="0"}
+    if (too*100 <30) { bc='module-vert'}
+    if (too*100 >29 && too*100 <70) { bc='module-orange'}
+    if (too*100 >69) { bc='module-rouge'}
+    _c = '<span class="stat-note">' + new Intl.NumberFormat('fr-FR', { style: 'percent', }).format(too) + '</span> <span class="box '+bc+' stat-note">'+zero+ new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(batch) + '</span>';
+
     $('#frontend').html(_a)
     $('#backend').html(_b)
     $('#batch').html(_c)
