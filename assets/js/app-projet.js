@@ -32,6 +32,7 @@ import 'motion-ui';
 import './foundation.js';
 
 import {remplissage} from "./app-projet-peinture.js";
+import {enregistrement} from "./app-projet-enregistrement.js";
 
 console.log('Projet : Chargement de webpack !');
 
@@ -113,7 +114,7 @@ function dessineMoiUnMouton(label, dataset) {
 
   let ctx = document.getElementById('graphique-autre-version').getContext('2d');
   let charts = new Chart(ctx, { type: 'doughnut', data: data, options: options });
-  if (charts===null){console.info('youpi ! charts ne peut pas être null !!!');};
+  if (charts===null){console.info('youpi ! charts ne peut pas être null !!!');}
 }
 
 /**
@@ -222,7 +223,7 @@ function select_projet() {
 function projet_analyse(maven_key) {
   const data = { maven_key: maven_key };
   const options = {
-    url: 'http://localhost:8000/api/projet/analyses/ajout', type: 'GET', dataType: 'json', data: data, contentType: contentType }
+    url: 'http://localhost:8000/api/projet/analyses', type: 'GET', dataType: 'json', data: data, contentType: contentType }
 
   return $.ajax(options).then(
     (t) => {
@@ -238,25 +239,9 @@ function projet_analyse(maven_key) {
 function projet_mesure(maven_key) {
   const data = { maven_key: maven_key };
   const options = {
-    url: 'http://localhost:8000/api/projet/mesures/ajout', type: 'GET', dataType: 'json', data: data, contentType: contentType  }
+    url: 'http://localhost:8000/api/projet/mesures', type: 'GET', dataType: 'json', data: data, contentType: contentType  }
   return $.ajax(options).then(
     (t) => { log(' - INFO : Ajout des mesures.'); })
-}
-
-/**
- * description
- * Récupère les indicateurs et leur niveau de sévérité.
- */
-function projet_anomalie_setup() {
-  const options = {
-    url: 'http://localhost:8000/api/projet/anomalies/setup', type: 'GET', dataType: 'json', contentType: contentType }
-
-  return $.ajax(options).then(
-    (t) => {
-      log(' - INFO : Dernier setup : ' + t.setup);
-      localStorage.setItem('setup', t.setup)
-      log(' - WARM : Attention l\'analyse des données peut durer plusieurs minutes. 6 minutes pour 10 000 défauts.');
-    });
 }
 
 /*
@@ -264,29 +249,27 @@ function projet_anomalie_setup() {
 * Fonction à deux balles pour ajouter une tempotisation entre les appels
 * de traitement des anomalies quand le nombre atteint 10000 !!!
 */
-function notifyUser(type, nombre, info) {
-  log(' - INFO : Analyse des ' + type + ' : ' + nombre);
-  log('            : ' + info);
+function notifyUser(anomalie, info) {
+  log(' - INFO : ' +anomalie +' '+info);
 }
 
 /**
  * description
- * Récupère les défauts, la dette technique et le niveau de sévérité.
+ * On récupère le nombre total des défauts (BUGn VULNERABILITY, CODE_SMELL), la répartition par dossier la répartition par severity et la dette technique total.
  * Arguements :
- *  maven_key = clé du projet, type = BUG, VULNERABILITY, CODE_SMELL, setup = version de l'analyse.
- *
+ *  maven_key = clé du projet,
  */
-function projet_anomalie(maven_key, type, setup) {
-  const data = { maven_key: maven_key, type: type, setup: setup };
+function projet_anomalie(maven_key) {
+  const data = { maven_key: maven_key };
   const options = {
-    url: 'http://localhost:8000/api/projet/anomalies/ajout', type: 'GET', dataType: 'json', data: data, contentType: contentType }
+    url: 'http://localhost:8000/api/projet/anomalie', type: 'GET', dataType: 'json', data: data, contentType: contentType }
 
   return $.ajax(options).then(
     (t) => {
       /* On temporise pour éviter que les appels asynchronnes se lance tous en même temps.
        * Temporisation : 8 secondes.
       */
-      setTimeout(() => { notifyUser(type, t.nombre, t.info); }, 8000);
+      setTimeout(() => { notifyUser(t.anomalie, t.info); }, 8000);
     });
 }
 
@@ -465,9 +448,9 @@ function affiche_liste_hotspot(maven_key){
     /* on efface les données.*/
     $('#tableau-liste-hotspot').html("");
     let str = '<tr id="hotspot-1" class="open-sans">';
-    str += '<td class="text-center stat">' + new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.high);
-    str += '</td><td class="text-center stat">' + new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.medium) + '</td>';
-    str += '<td class="text-center stat">' + new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.low) + '</td>';
+    str += '<td id="hotspot-high" class="text-center stat">' + new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.high);
+    str += '</td><td id="hotspot-medium" class="text-center stat">' + new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.medium) + '</td>';
+    str += '<td id="hotspot-low" class="text-center stat">' + new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.low) + '</td>';
     str +='</tr>';
      $('#tableau-liste-hotspot').append(str);
      $('#affiche-total-hotspot').html('<span class="stat">' + new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.total) + '</span>')
@@ -507,6 +490,9 @@ $('.js-analyse').on('click', function () {
   projet_owasp(id_project);
   projet_hotspot(id_project);
 
+  // On récupère les infos sur les anomalies
+  projet_anomalie(id_project);
+
   // On efface les traces :)
   projet_hotspot_owasp(id_project, 'a0');
   // On enregistre les résultats
@@ -523,14 +509,6 @@ $('.js-analyse').on('click', function () {
 
   // Analyse des anomalies
   projet_nosonar_details(id_project);
-
-  projet_anomalie_setup();
-  const setup = localStorage.getItem('setup');
-
-  projet_anomalie(id_project, 'BUG', setup);
-  projet_anomalie(id_project, 'VULNERABILITY', setup);
-  projet_anomalie(id_project, 'CODE_SMELL', setup);
-  projet_anomalie_consolidation(id_project, setup);
 
   setTimeout(function () { stop_spinner(); }, 5000);
   // on active le bouton pour afficher les infos du projet
@@ -617,7 +595,7 @@ $('.favori-svg').on('click', function () {
 
     const data = { maven_key: $('#select-result').text().trim(), statut: statut };
     const options = {
-      url: 'http://localhost:8000/api/favori/ajout', type: 'GET', dataType: 'json',
+      url: 'http://localhost:8000/api/favori', type: 'GET', dataType: 'json',
       data: data, contentType: contentType
      }
     return $.ajax(options).then(
@@ -630,20 +608,9 @@ $('.favori-svg').on('click', function () {
 
 /**
  * description
- * On passe à la peinture
- */
-$('.js-affiche-resultat').on('click', function () {
-  // On récupère la clé du projet
-  let api_maven = $('#select-result').text().trim();
-  // On appel une fonction externe
-  if ( $('.js-affiche-resultat').hasClass('affiche-resultat-enabled')) { remplissage(api_maven); }
-})
-
-/**
- * description
  * On affiche la répartition des versions
  */
-$('#js-version-autre').on('click', () => {
+ $('#js-version-autre').on('click', () => {
   let version ;
   if ($('select[name="projet"]').val() != "") {
     version = document.getElementById('version-autre');
@@ -656,7 +623,29 @@ $('#js-version-autre').on('click', () => {
 });
 
 /**
-* description
-* Événement : Ouvre la page statistiques.
-*/
-$('.rapport-graphique').on('click', () => { location.href = "/graphique.html"; });
+ * description
+ * On passe à la peinture
+ */
+$('.js-affiche-resultat').on('click', function () {
+  // On récupère la clé du projet
+  let api_maven = $('#select-result').text().trim();
+  // On appel une fonction externe
+  if ( $('.js-affiche-resultat').hasClass('affiche-resultat-enabled'))
+    { remplissage(api_maven);
+      if ($('#enregistrement').hasClass('enregistrement-disabled'))
+        {
+          $('#enregistrement').addClass('enregistrement');
+          $('#enregistrement').removeClass('enregistrement-disabled');
+        }
+    }
+})
+
+/**
+ * description
+ * On lance l'enregistrement des données
+ */
+ $('.js-enregistrement').on('click', function () {
+  // On récupère la clé du projet
+  let api_maven = $('#select-result').text().trim();
+  enregistrement(api_maven);
+ })
