@@ -109,8 +109,8 @@
         <div class="callout-footer open-sans">
             <p class="ligne">Nom&nbsp;: <span id="nom-projet" class="small resultat"></span></p>
             <p class="ligne">clé&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span id="clef-projet" class="small resultat"></span></p>
-            <p class="ligne">Release&nbsp;&nbsp;&nbsp;&nbsp;: <span id="version-release" class="stat resultat"></span></p>
-            <p class="ligne">Snapshot&nbsp;: <span id="version-snapshot" class="stat resultat"></span></p>
+            <p id="js-version-release" class="ligne">Release&nbsp;&nbsp;&nbsp;&nbsp;: <span id="version-release" class="stat resultat"></span></p>
+            <p id="js-version-snapshot" class="ligne">Snapshot&nbsp;: <span id="version-snapshot" class="stat resultat"></span></p>
 
             <p class="ligne"><span id="version-autre">Autres</span>
             <svg id="js-version-autre" xmlns="http://www.w3.org/2000/svg"
@@ -121,7 +121,7 @@
             </p>
             <br />
             <p class="ligne">Version&nbsp;: <span id="version" class="small resultat"></span></p>
-            <p class="ligne">Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span id="date-version" class="small resultat"></span></p>
+            <p id="js-date-version" class="ligne">Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span id="date-version" class="small resultat"></span></p>
             <br />
             <h4 class="claire-hand text-center">
               <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="danger-svg">
@@ -130,8 +130,8 @@
               </svg>
               <span>NoS0NAR</span>
             </h4>
-            <p class="ligne">@supressWarning&nbsp;:</span><span id="supress-warning" class="stat resultat"></span></p>
-            <p class="ligne">//NOSONAR&nbsp;:</span><span id="no-sonar" class="stat resultat"></span>
+            <p id="js-suppress-warning" class="ligne">@supressWarning&nbsp;:</span><span id="suppress-warning" class="stat resultat"></span></p>
+            <p id="js-no-sonar" class="ligne">//NOSONAR&nbsp;:</span><span id="no-sonar" class="stat resultat"></span>
             </p>
         </div>
       </div>
@@ -200,6 +200,7 @@
 
           <h5 class="claire-hand">Sévérité</h5>
           <p class="ligne">Anomalie Bloquante&nbsp;: <span id="nombre-anomalie-bloquante" class="stat resultat"></span></p>
+          <p class="ligne">Anomalie Critique&nbsp;: <span id="nombre-anomalie-critique" class="stat resultat"></span></p>
           <p class="ligne">Anomalie Majeure&nbsp;: <span id="nombre-anomalie-majeure" class="stat resultat"></span></p>
           <p class="ligne">Anomalie Info&nbsp;: <span id="nombre-anomalie-info" class="stat resultat"></span></p>
           <p class="ligne">Anomalie Mineure&nbsp;: <span id="nombre-anomalie-mineure" class="stat resultat"></span></p>
@@ -299,7 +300,7 @@
 {# Affichage du tableau des hotspots #}
 <div id="modal-liste-hotspot" class="reveal" data-reveal data-close-on-click="true" data-animation-in="fade-in" data-animation-out="fade-out">
 	<h2 class="claire-hand">Hotspots.</h2>
-<h4 class="claire-hand"><span id="affiche-total-hotspot"></span> trouvé(s).</h4>
+<h4 class="claire-hand"><span id="hotspot-total"></span> trouvé(s).</h4>
 	<table>
 		<caption class="claire-hand">Répartition des hotspots.</caption>
 		<thead>
@@ -332,15 +333,15 @@
       <tbody class="open-sans">
         <tr>
           <td>Fiabilité</td>
-          <td id="js-dette-reliability" data-reliability="0"></td>
+          <td id="js-dette-reliability"></td>
         </tr>
         <tr>
           <td>Sécurité</td>
-          <td id="js-dette-vulnerability" data-vulnerability="0"></td>
+          <td id="js-dette-vulnerability"></td>
         </tr>
         <tr>
           <td>Maintenanbilité</td>
-          <td id="js-dette-code-smell" data-code-smell="0"></td>
+          <td id="js-dette-code-smell"></td>
         </tr>
       </tbody>
     </table>

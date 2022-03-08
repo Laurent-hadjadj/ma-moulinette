@@ -30,6 +30,8 @@ use App\Entity\Owasp;
 use App\Entity\Hotspots;
 use App\Entity\HotspotOwasp;
 use App\Entity\HotspotDetails;
+use App\Entity\Historique;
+
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\DBAL\Connection;
 use DateTime;
@@ -1182,61 +1184,64 @@ class ApiProjetController extends AbstractController
   * description
   * Enregistremnt des données du projet
   */
-  #[Route('/api/enregstrement', name: 'enregistrement', methods: ['PUT'])]
+  #[Route('/api/enregistrement', name: 'enregistrement', methods: ['PUT'])]
   public function enregistrement(EntityManagerInterface $em, Request $request): response
    {
-    $date= new DateTime();
+    // on décode le body
+    $data = json_decode($request->getContent());
 
-    $save= new historique();
-    $save->setMavenKey($request->get('maven_key'));
-    $save->setNomProjet($request->get('nom_projet'));
-    $save->setClefProjet($request->get('clef_projet'));
-    $save->setVersionRelease($request->get('version_release'));
-    $save->setVersionSnaphot($request->get('version_snaphot'));
-    $save->setVersion($request->get('version'));
-    $save->setDateVersion($request->get('date_version'));
-    $save->setSupressWarning($request->get('supress_warning'));
-    $save->setNoSonar($request->get('no_sonar'));
-    $save->setNombreLigne($request->get('nombre_ligne'));
-    $save->setCouverture($request->get('couverture'));
-    $save->setDuplication($request->get('duplication'));
-    $save->setTestsUnitaires($request->get('tests_unitaires'));
-    $save->setNombreDefaut($request->get('nombre_defaut'));
-    $save->setDette($request->get('dette'));
-    $save->setDetteBug($request->get('dette_bug'));
-    $save->setDetteVulnerability($request->get('dette_vulnerability'));
-    $save->setDetteCode_smell($request->get('dette_code_smell'));
-    $save->setNombreBug($request->get('nombre_bug'));
-    $save->setNombreVulnerability($request->get('nombre_vulnerability'));
-    $save->setNombreCode_smell($request->get('nombre_code_smell'));
-    $save->setBugBloquant($request->get('bug_bloquant'));
-    $save->bug_critique($request->get('bug_critique'));
-    $save->setBugInfo($request->get('bug_info'));
-    $save->setBugMajeur($request->get('bug_majeur'));
-    $save->setBugMineur($request->get('bug_mineur'));
-    $save->setVulnerabiliteBloquante($request->get('vulnerabilite_bloquante')); $save->setVulnerabiliteCritique($request->get('vulnerabilite_critique'));
-    $save->setVulnerabiliteInfo($request->get('vulnerabilite_info'));
-    $save->setVulnerabiliteMajeure($request->get('vulnerabilite_majeure'));
-    $save->setVulnerabiliteMineure($request->get('vulnerabilite_mineure'));
-    $save->setCode_smellBloquant($request->get('code_smell_bloquant'));
-    $save->setCode_smellCritical($request->get('code_smell_critical'));
-    $save->setCode_smellInfo($request->get('code_smell_info'));
-    $save->setCode_smellMajeur($request->get('code_smell_majeur'));
-    $save->setCode_smellMineur($request->get('code_smell_mineur'));
-    $save->setNoteReliability($request->get('note_reliability'));
-    $save->setNoteSecurity($request->get('note_security'));
-    $save->setNoteSqale($request->get('note_sqale'));
-    $save->setNoteHotspot($request->get('note_hotspot'));
-    $save->setHotspotHigh($request->get('hotspot_high'));
-    $save->setHotpostMedium($request->get('hotspot_medium'));
-    $save->setHotspotLow($request->get('hotspot_low'));
-    $save->setHotspotTotal($request->get('hotspot_total'));
+    $date= new DateTime();
+    $save= new Historique();
+    $save->setMavenKey($data->maven_key);
+    $save->setNomProjet($data->nom_projet);
+    $save->setVersionRelease($data->version_release);
+    $save->setVersionSnaphot($data->version_snaphot);
+    $save->setVersion($data->version);
+    $save->setDateVersion(new DateTime($data->date_version));
+    $save->setSuppressWarning($data->suppress_warning);
+    $save->setNoSonar($data->no_sonar);
+    $save->setNombreLigne($data->nombre_ligne);
+    $save->setCouverture($data->couverture);
+    $save->setDuplication($data->duplication);
+    $save->setTestsUnitaires($data->tests_unitaires);
+    $save->setNombreDefaut($data->nombre_defaut);
+
+    $save->setDette($data->dette);
+    $save->setDetteMinute($data->dette_minute);
+    $save->setDetteReliability($data->dette_reliability);
+    $save->setDetteVulnerability($data->dette_vulnerability);
+    $save->setDetteCodeSmell($data->dette_code_smell);
+    $save->setDetteReliabilityMinute($data->dette_reliability_minute);
+    $save->setDetteVulnerabilityMinute($data->dette_vulnerability_minute);
+    $save->setDetteCodeSmellMinute($data->dette_code_smell_minute);
+
+    $save->setNombreBug($data->nombre_bug);
+    $save->setNombreVulnerability($data->nombre_vulnerability);
+    $save->setNombreCodeSmell($data->nombre_code_smell);
+
+    $save->setFrontend($data->frontend);
+    $save->setBackend($data->backend);
+    $save->setBatch($data->batch);
+
+    $save->setNombreAnomalieBloquante($data->nombre_anomalie_bloquante);
+    $save->setNombreAnomalieCritique($data->nombre_anomalie_critique);
+    $save->setNombreAnomalieInfo($data->nombre_anomalie_info);
+    $save->setNombreAnomalieMajeur($data->nombre_anomalie_majeur);
+    $save->setNombreAnomalieMineur($data->nombre_anomalie_mineur);
+
+    $save->setNoteReliability($data->note_reliability);
+    $save->setNoteSecurity($data->note_security);
+    $save->setNoteSqale($data->note_sqale);
+    $save->setNoteHotspot($data->note_hotspot);
+    $save->setHotspotHigh($data->hotspot_high);
+    $save->setHotspotMedium($data->hotspot_medium);
+    $save->setHotspotLow($data->hotspot_low);
+    $save->setHotspotTotal($data->hotspot_total);
     $save->setDateEnregistrement($date);
     $em->persist($save);
     $em->flush();
-
     $response = new JsonResponse();
-    return $response->setData(["info"=>"KO", Response::HTTP_OK]);
+    return $response->setData(["info"=>"OK", Response::HTTP_OK]);
 
   }
 }

@@ -52,11 +52,20 @@ export function remplissage(maven_key) {
     if (t.version.SNAPSHOT != undefined) { snapshot = t.version.SNAPSHOT.total; } else { snapshot= '0'; }
     $('#version-release').html(release);
     $('#version-snapshot').html(snapshot);
+
     let version = document.getElementById('version-autre');
     version.dataset.label = JSON.stringify(t.label);
     version.dataset.dataset = JSON.stringify(t.dataset);
     $('#version').html(t.projet);
     $('#date-version').html(new Intl.DateTimeFormat('default', date_options).format(new Date(t.date)));
+
+    // Historique
+    let t1 = document.getElementById('no-sonar');
+    let t2 = document.getElementById('no-sonar');
+    let t3 = document.getElementById('date-version');
+    t1.dataset.release=(release);
+    t2.dataset.snapshot=(snapshot);
+    t3.dataset.date_version=(t.date);
   })
 
   //On récupère les exclusions noSonar
@@ -64,9 +73,13 @@ export function remplissage(maven_key) {
     url: 'http://localhost:8000/api/peinture/projet/nosonar/details', type: 'GET', dataType: 'json', data: data, contentType: contentType }
 
   $.ajax(optionsNoSonar).then((t) => {
-    $('#supress-warning').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.s1309));
+    $('#suppress-warning').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.s1309));
     $('#no-sonar').html( new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.nosonar));
-  })
+    let t1 = document.getElementById('suppress-warning');
+    let t2 = document.getElementById('no-sonar');
+    t1.dataset.s1309=(t.s1309);
+    t2.dataset.nosonar=(t.nosonar);
+  });
 
   //On récupère les informations du projet : lignes, couverture fonctionnelle, duplication, tests unitaires et le nombre de défaut.
   const optionsProjet = {
@@ -79,13 +92,23 @@ export function remplissage(maven_key) {
       log(t.message);
       return;
     }
-
-
     $('#nombre-ligne').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.lines));
     $('#couverture').html(new Intl.NumberFormat('fr-FR', { style: 'percent', }).format(t.coverage / 100));
     $('#duplication').html(new Intl.NumberFormat('fr-FR', { style: 'percent', }).format(t.duplication / 100));
     $('#tests-unitaires').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.tests));
     $('#nombre-defaut').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.issues));
+
+    //Historique
+    let t1 = document.getElementById('nombre-ligne');
+    let t2 = document.getElementById('couverture');
+    let t3 = document.getElementById('duplication');
+    let t4 = document.getElementById('tests-unitaires');
+    let t5 = document.getElementById('nombre-defaut');
+    t1.dataset.nombre_ligne=(t.lines);
+    t2.dataset.coverage=(t.coverage);
+    t3.dataset.duplication=(t.duplication);
+    t4.dataset.tests_unitaires=(t.tests);
+    t5.dataset.nombre_defaut=(t.issues);
   });
 
   //On récupère les informations sur la dette technique et les anomalies.
@@ -102,20 +125,33 @@ export function remplissage(maven_key) {
 
     /* Dette technique */
     $('#dette').html(t.dette);
-    $("#js-dette").data('dette', t.dette_minute);
     $('#js-dette-reliability').html(t.dette_reliability);
     $('#js-dette-vulnerability').html(t.dette_vulnerability);
     $('#js-dette-code-smell').html(t.dette_code_smell);
 
-    $("#js-dette-reliability").data('dette-reliability', t.dette_reliability_minute);
-    $("#js-dette-vulnerability").data('dette-vulnerability', t.dette_vulnerability_minute);
-    $("#js-dette-code-smell").data('dette-code-smell', t.dette_code_smell_minute);
+    // Historique
+    let t25 = document.getElementById('js-dette');
+    let t26 = document.getElementById('js-dette-reliability');
+    let t27 = document.getElementById('js-dette-vulnerability');
+    let t28 = document.getElementById('js-dette-code-smell');
+    t25.dataset.dette_minute=t.dette_minute;
+    t26.dataset.dette_reliability_minute=t.dette_reliability_minute;
+    t27.dataset.dette_vulnerability_minute=t.dette_vulnerability_minute;
+    t28.dataset.dette_code_smell_minute=t.dette_code_smell_minute;
 
     /* Nombre d'anomalie */
     $('#nombre-bug').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.bug));
     $('#nombre-vulnerabilite').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.vulnerability));
     $('#nombre-mauvaise-pratique').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.code_smell));
     if (t.code_smell==10000) { $('#nombre-mauvaise-pratique').css('color', '#771404');}
+
+    // Historique
+    let t1 = document.getElementById('nombre-bug');
+    let t2 = document.getElementById('nombre-vulnerabilite');
+    let t3 = document.getElementById('nombre-mauvaise-pratique');
+    t1.dataset.nombre_bug=(t.bug);
+    t2.dataset.nombre_vulnerabilite=(t.vulnerability);
+    t3.dataset.nombre_code_smell=(t.code_smell);
 
     /* Répartition modules*/
     let total_module, i1, i2, i3, p1, p2, p3, e1, e2, e3;
@@ -145,19 +181,44 @@ export function remplissage(maven_key) {
         i3='<span> </span></span><span>'+new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.batch)+'</span> '+e3+' span>'+new Intl.NumberFormat('fr-FR', { style: 'percent', }).format(t.batch/total_module);
       } else { i3='<span> </span></span><span>'+new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(0)+'</span>';}
       $('#nombre-batch').html(i3);
-    }
+
+      // Historique
+      let t4 = document.getElementById('nombre-frontend');
+      let t5 = document.getElementById('nombre-backend');
+      let t6 = document.getElementById('nombre-batch');
+      t4.dataset.nombre_frontend=t.frontend;
+      t5.dataset.nombre_backend=t.backend;
+      t6.dataset.nombre_batch=t.batch;
+      }
     else {
             $('#nombre-frontend').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(0));
             $('#nombre-backend').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(0));
             $('#nombre-batch').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(0));
+            let t4 = document.getElementById('nombre-frontend');
+            let t5 = document.getElementById('nombre-backend');
+            let t6 = document.getElementById('nombre-batch');
+            t4.dataset.nombre_frontend=0;
+            t5.dataset.nombre_backend=0;
+            t6.dataset.nombre_batch=0;
           }
 
-    /* Répartion des anomalies par sévérité */
+    /* Répartition des anomalies par sévérité */
     $('#nombre-anomalie-bloquante').html(t.blocker);
     $('#nombre-anomalie-critique').html(t.critical);
     $('#nombre-anomalie-info').html(t.info);
     $('#nombre-anomalie-majeure').html(t.major);
     $('#nombre-anomalie-mineure').html(t.minor);
+
+    let t16 = document.getElementById('nombre-anomalie-bloquante');
+    let t17 = document.getElementById('nombre-anomalie-critique');
+    let t18 = document.getElementById('nombre-anomalie-info');
+    let t19 = document.getElementById('nombre-anomalie-majeure');
+    let t20 = document.getElementById('nombre-anomalie-mineure');
+    t16.dataset.nombre_anomalie_bloquante=t.blocker;
+    t17.dataset.nombre_anomalie_critique=t.critical;
+    t18.dataset.nombre_anomalie_info=t.info;
+    t19.dataset.nombre_anomalie_majeure=t.major;
+    t20.dataset.nombre_anomalie_mineure=t.minor;
 
     //On récupère les notes sonarqube pour la version courante
     let t_notes = ['', 'A', 'B', 'C', 'D', 'E'], couleur1, couleur2, couleur3 = '';
@@ -184,9 +245,11 @@ export function remplissage(maven_key) {
     let note_reliability = t_notes[parseInt(t.note_reliability)];
     let note_security = t_notes[parseInt(t.note_security)];
     let note_sqale = t_notes[parseInt(t.note_sqale)];
+
     $('#note-reliability').html('<span class="' + couleur1 + '">' + note_reliability + '</span>');
     $('#note-security').html('<span class="' + couleur2 + '">' + note_security + '</span>');
     $('#note-sqale').html('<span class="' + couleur3 + '">' + note_sqale + '</span>');
+
    });
 
   //On récupère les hotspot.

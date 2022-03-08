@@ -193,19 +193,19 @@ class ApiProjetPeintureController extends AbstractController
     }
 
     return $response->setData([
-    "dette"=>$dette, "dette_min"=>$dette_minute,
+    "dette"=>$dette,
     "dette_reliability"=>$dette_reliability,
-    "dette_reliability_minute"=>$dette_reliability_minute,
     "dette_vulnerability"=>$dette_vulnerability,
-    "dette_vulnerability_minute"=>$dette_vulnerability_minute,
     "dette_code_smell"=>$dette_code_smell,
+    "dette_minute"=>$dette_minute,
+    "dette_reliability_minute"=>$dette_reliability_minute,
+    "dette_vulnerability_minute"=>$dette_vulnerability_minute,
     "dette_code_smell_minute"=>$dette_code_smell_minute,
     "bug"=>$type_bug, "vulnerability"=>$type_vulnerability, "code_smell"=>$type_code_smell,
     "blocker"=>$severity_blocker, "critical"=>$severity_critical, "info"=>$severity_info,
     "major"=>$severity_major, "minor"=>$severity_minor,
     "frontend"=>$frontend, "backend"=>$backend, "batch"=>$batch,
-    "note_reliability"=>$note_reliability, "note_security"=>$note_security, "note_sqale"=>$note_sqale,
-    Response::HTTP_OK]);
+    "note_reliability"=>$note_reliability, "note_security"=>$note_security, "note_sqale"=>$note_sqale, Response::HTTP_OK]);
   }
 
   /**
