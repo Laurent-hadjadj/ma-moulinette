@@ -21,19 +21,19 @@ class InformationProjet
     #[ORM\Column(type: 'integer')]
     private $id;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private $analyse_key;
-
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 128)]
     private $maven_key;
+
+    #[ORM\Column(type: 'string', length: 32)]
+    private $analyse_key;
 
     #[ORM\Column(type: 'datetime')]
     private $date;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 32)]
     private $project_version;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 32)]
     private $type;
 
     #[ORM\Column(type: 'datetime')]
@@ -117,4 +117,3 @@ class InformationProjet
     }
 
 }
-

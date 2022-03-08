@@ -21,11 +21,11 @@ class ListeProjet
     #[ORM\Column(type: 'integer')]
     private $id;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private $name;
-
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 128)]
     private $maven_key;
+
+    #[ORM\Column(type: 'string', length: 128)]
+    private $name;
 
     #[ORM\Column(type: 'datetime')]
     private $date_enregistrement;
