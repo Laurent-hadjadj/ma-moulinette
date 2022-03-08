@@ -17,11 +17,11 @@ use Doctrine\ORM\Mapping as ORM;
 class Notes
 {
     #[ORM\Id]
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 128)]
     private $maven_key;
 
     #[ORM\Id]
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 16)]
     private $type;
 
     #[ORM\Id]
@@ -100,4 +100,3 @@ class Notes
     }
 
 }
-

@@ -42,16 +42,16 @@ class Anomalie
     #[ORM\Column(type: 'integer')]
     private $dette_code_smell_minute;
 
-    #[ORM\Column(type: 'string', length:64)]
+    #[ORM\Column(type: 'string', length:32)]
     private $dette_reliability;
 
-    #[ORM\Column(type: 'string', length:64)]
+    #[ORM\Column(type: 'string', length:32)]
     private $dette_vulnerability;
 
-    #[ORM\Column(type: 'string', length:64)]
+    #[ORM\Column(type: 'string', length:32)]
     private $dette;
 
-    #[ORM\Column(type: 'string', length:64)]
+    #[ORM\Column(type: 'string', length:32)]
     private $dette_code_smell;
 
     #[ORM\Column(type: 'integer')]

@@ -21,13 +21,13 @@ class HotspotDetails
     #[ORM\Column(type: 'integer')]
     private $id;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 128)]
     private $maven_key;
 
-    #[ORM\Column(type: 'string', length: 32)]
+    #[ORM\Column(type: 'string', length: 8)]
     private $severity;
 
-    #[ORM\Column(type: 'string', length: 32)]
+    #[ORM\Column(type: 'string', length: 16)]
     private $status;
 
     #[ORM\Column(type: 'integer')]
@@ -51,7 +51,7 @@ class HotspotDetails
     #[ORM\Column(type: 'string', length: 255)]
     private $message;
 
-    #[ORM\Column(type: 'string', length: 128)]
+    #[ORM\Column(type: 'string', length: 32)]
     private $key;
 
     #[ORM\Column(type: 'datetime')]

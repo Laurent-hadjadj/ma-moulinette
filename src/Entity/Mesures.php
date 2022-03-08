@@ -22,10 +22,10 @@ class Mesures
     #[ORM\Column(type: 'integer')]
     private $id;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 128)]
     private $maven_key;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 128)]
     private $project_name;
 
     #[ORM\Column(type: 'integer')]
@@ -149,4 +149,3 @@ class Mesures
 
 
 }
-
