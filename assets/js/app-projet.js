@@ -433,27 +433,30 @@ function affiche_liste_projet() {
 
 /**
 * description
-* On récupére la liste des hotspots
+* On récupére la répartition des hotspots par sévérité
 * http://{url}/api/peinture/projet/hotspot/details
 */
-function affiche_liste_hotspot(maven_key){
+function affiche_hotspot_details(maven_key){
   const data = { maven_key: maven_key };
   const options = {
     url: 'http://localhost:8000/api/peinture/projet/hotspot/details', type: 'GET', dataType: 'json', data: data, contentType: contentType
   }
-
   $.ajax(options).then((t) => {
     if (t.code != '200') { log(' - ERROR : La liste des hotspot n\'a pas été trouvée.'); return; }
 
     /* on efface les données.*/
     $('#tableau-liste-hotspot').html("");
     let str = '<tr id="hotspot-1" class="open-sans">';
-    str += '<td id="hotspot-high" class="text-center stat">' + new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.high);
-    str += '</td><td id="hotspot-medium" class="text-center stat">' + new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.medium) + '</td>';
-    str += '<td id="hotspot-low" class="text-center stat">' + new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.low) + '</td>';
+    str += '<td id="hotspot-high" class="text-center stat" data-hotspot_high="'+t.high+'">' + new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.high);
+    str += '</td><td id="hotspot-medium" class="text-center stat" data-hotspot_medium="'+t.medium+'">' + new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.medium) + '</td>';
+    str += '<td id="hotspot-low" class="text-center stat" data-hotspot_low="'+t.low+'">' + new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.low) + '</td>';
     str +='</tr>';
      $('#tableau-liste-hotspot').append(str);
-     $('#affiche-total-hotspot').html('<span class="stat">' + new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.total) + '</span>')
+     $('#hotspot-total').html('<span class="stat">' + new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.total) + '</span>');
+
+     let t1 = document.getElementById('hotspot-total');
+     t1.dataset.hotspot_total=(t.total);
+
   });
   }
 
@@ -562,11 +565,8 @@ $('.js-affiche-liste').on('click', function () {
  * On affiche la liste des hotspots
  */
 $('#js-affiche-hotspot').on('click', function () {
-  let api_maven;
   if ($('select[name="projet"]').val() != "") {
-  api_maven = $('#select-result').text().trim();
-  affiche_liste_hotspot(api_maven);
-  $('#modal-liste-hotspot').foundation('open');
+     $('#modal-liste-hotspot').foundation('open');
   }
 })
 
@@ -631,7 +631,11 @@ $('.js-affiche-resultat').on('click', function () {
   let api_maven = $('#select-result').text().trim();
   // On appel une fonction externe
   if ( $('.js-affiche-resultat').hasClass('affiche-resultat-enabled'))
-    { remplissage(api_maven);
+    { 
+      // On récupère la répartition des hotspots
+      affiche_hotspot_details(api_maven);
+      // On récupère les résultats
+      remplissage(api_maven);
       if ($('#enregistrement').hasClass('enregistrement-disabled'))
         {
           $('#enregistrement').addClass('enregistrement');
