@@ -22,13 +22,13 @@
 .favori-svg-select {fill:#850385;}
 .favori-svg:hover, .statistique-svg:hover, .details-svg:hover {fill:#850385;}
 
-.liste-svg, .analyse-svg, .affiche-resultat-svg, .voir-analyse-svg, .pdf-svg, .graphique-svg, .enregistrement-svg {fill:#fff;cursor: pointer; margin-bottom: -0.4rem; width: 32px;height: 32px;}
+.liste-svg, .analyse-svg, .affiche-resultat-svg, .voir-analyse-svg, .pdf-svg, .graphique-svg, .enregistrement-svg, .dashboard-svg {fill:#fff;cursor: pointer; margin-bottom: -0.4rem; width: 32px;height: 32px;}
 .owasp-svg {fill:#fff;cursor: pointer; margin-bottom: -0.7rem; width: 96px;}
 
  /* bouton */
-.analyse-enabled, .affiche-liste, .affiche-resultat-enabled, .analyse-owasp, .analyse-anomalie, .rapport-graphique, .enregistrement, #fermer-liste-projet, #fermer-liste-hotspot, #fermer-autre-version, #fermer-dette-technique { color: #fff; background-color: #00445b; }
+.analyse-enabled, .affiche-liste, .affiche-resultat-enabled, .analyse-owasp, .analyse-anomalie, .rapport-graphique, .enregistrement, .tableau-suivi, #fermer-liste-projet, #fermer-liste-hotspot, #fermer-autre-version, #fermer-dette-technique { color: #fff; background-color: #00445b; }
 
-.analyse-enabled:hover, .affiche-liste:hover, .affiche-resultat-enabled:hover, .analyse-owasp:hover, .analyse-anomalie:hover, .rapport-graphique:hover, .enregistrement:hover, #fermer-liste-projet:hover, #fermer-autre-version:hover, #fermer-liste-hotspot:hover, #fermer-dette-technique:hover {background-color: #006182;}
+.analyse-enabled:hover, .affiche-liste:hover, .affiche-resultat-enabled:hover, .analyse-owasp:hover, .analyse-anomalie:hover, .rapport-graphique:hover, .enregistrement:hover, .tableau-suivi:hover, #fermer-liste-projet:hover, #fermer-autre-version:hover, #fermer-liste-hotspot:hover, #fermer-dette-technique:hover {background-color: #006182;}
 
 .analyse-disabled, .affiche-resultat-disabled, .enregistrement-disabled {background-color: #4C7C8C; cursor: not-allowed;}
 .analyse-disabled:hover, .affiche-resultat-disabled:hover, .enregistrement-disabled:hover {background-color: #006182;}
