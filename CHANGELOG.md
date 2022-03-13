@@ -79,4 +79,10 @@
 
 ## v0.0.4 - 01/03/2022
 
+* Refactoring de la page projet, création d'une page détails ;
 * Mise en place d'un système de sauvegade pour les données calculées ;
+* Correction de bug;
+
+## v0.0.5 - 13/03/2022
+
+* Ajout de la page dash, pour affciher des tableaux de suivi ;
