@@ -154,7 +154,7 @@ export function remplissage(maven_key) {
     t3.dataset.nombre_code_smell=(t.code_smell);
 
     /* Répartition modules*/
-    let total_module, i1, i2, i3, p1, p2, p3, e1, e2, e3;
+    let total_module, i1, i2, i3, p1, p2, p3, e1='', e2='', e3='';
     total_module=parseInt(t.frontend+t.backend+t.batch);
 
     if (total_module !=0) {
@@ -162,24 +162,25 @@ export function remplissage(maven_key) {
         p1=t.frontend/total_module;
         if (p1*100>10 && p1*100<100) { e1='<span style="color:#fff;">0</span>'}
         if (p1*100<10) { e1='<span style="color:#fff;">00</span>'}
-        i1='<span> </span></span><span>'+new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.frontend)+'</span> '+e1+'<span>'+new Intl.NumberFormat('fr-FR', { style: 'percent', }).format(t.frontend/total_module);
-      } else { i1='<span> </span></span><span>'+new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(0)+'</span>';}
+        i1='<span>'+new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.frontend)+'</span> '+e1+'<span>'+new Intl.NumberFormat('fr-FR', { style: 'percent', }).format(t.frontend/total_module);
+      } else
+        { i1='<span>'+new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(0)+'</span>';}
       $('#nombre-frontend').html(i1);
 
       if (t.backend!=0) {
         p2=t.backend/total_module;
         if (p2*100>10 && p2*100<100) { e2='<span style="color:#fff;">0</span>'}
         if (p2*100<10) { e2='<span style="color:#fff;">00</span>'}
-        i2='<span> </span></span><span>'+new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.backend)+'</span> '+e2+'<span>'+new Intl.NumberFormat('fr-FR', { style: 'percent', }).format(t.backend/total_module);
-      } else { i2='<span> </span></span><span>'+new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(0)+'</span>';}
+        i2='<span>'+new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.backend)+'</span> '+e2+'<span>'+new Intl.NumberFormat('fr-FR', { style: 'percent', }).format(t.backend/total_module);
+      } else { i2='<span>'+new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(0)+'</span>';}
       $('#nombre-backend').html(i2);
 
       if (t.batch!=0) {
         p3=t.batch/total_module;
         if (p3*100>10 && p3*100<100) { e3='<span style="color:#fff;">0</span>'}
         if (p3*100<10) { e3='<span style="color:#fff;">00</span>'}
-        i3='<span> </span></span><span>'+new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.batch)+'</span> '+e3+' span>'+new Intl.NumberFormat('fr-FR', { style: 'percent', }).format(t.batch/total_module);
-      } else { i3='<span> </span></span><span>'+new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(0)+'</span>';}
+        i3='<span>'+new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.batch)+'</span> '+e3+' <span>'+new Intl.NumberFormat('fr-FR', { style: 'percent', }).format(t.batch/total_module);
+      } else { i3='<span>'+new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(0)+'</span>';}
       $('#nombre-batch').html(i3);
 
       // Historique
