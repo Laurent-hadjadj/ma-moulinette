@@ -344,7 +344,7 @@ function remplissage_hotspot_details(id_maven) {
         $('#batch').html(_c)
 
         // On ajoute une ligne dans le tableau
-        ligne = '<tr class="text-center"><td>N.C</td><td>N.C</td><td>N.C</td><td>N.C</td><td>N.C</td><td>N.C</td><td>Pas de failles</td><td>N.C</td></tr>';
+        ligne = '<tr class="text-center"><td>N.C</td><td>N.C</td><td>N.C</td><td>N.C</td><td>N.C</td><td>N.C</td><td>Pas de failles</td></tr>';
         $('#tbody').html(ligne);
       }
 
