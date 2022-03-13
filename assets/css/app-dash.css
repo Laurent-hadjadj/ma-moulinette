@@ -1,0 +1,31 @@
+/*
+ *  Copyright (c) 2021-2022.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ */
+@media only screen and (max-width: 20em){
+}
+@media only screen and (min-width: 20.025em) and (max-width: 22em) {
+}
+@media only screen and (min-width: 22.025em) and (max-width: 30em) {
+}
+@media only screen and (min-width: 30.025em) and (max-width:40em){
+}
+@media only screen and (min-width: 40em) and (max-width: 64em) {
+}
+@media only screen and (min-width: 64.025em) and (max-width: 90em) {
+}
+@media only screen and (min-width: 90.025em) and (max-width: 120em) {
+}
+@media only screen and (min-width: 120em) and (max-width: 160em) {
+}
+
+/*************************          Global     *********************************/
+.vert1 {background-color: #187e3d;color: #fff; border: solid 2px #00445b; border-radius: 0.2rem;padding-left: 20px; padding-right: 20px;}
+.vert2 { background-color: #42c070; color: #000; border: solid 2px #00445b; border-radius: 0.2rem; padding-left: 20px;padding-right: 20px;}
+.jaune { background-color: #dfdb1a; color: #000; border: solid 2px #00445b; border-radius: 0.2rem; padding-left: 19px;padding-right: 20px; }
+.orange { background-color: #c45d4e; color: #000; border: solid 2px #00445b; border-radius: 0.2rem; padding-left: 18px;padding-right:18px; }
+.rouge { background-color: #971c09; color: #fff; border: solid 2px #00445b; border-radius: 0.2rem; padding-left: 20px; padding-right: 20px;}
