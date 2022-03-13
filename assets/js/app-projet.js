@@ -227,7 +227,7 @@ function projet_analyse(maven_key) {
 
   return $.ajax(options).then(
     (t) => {
-      log(' - INFO : Nombre de version disponible : ' + t.nombreVersion);
+      log(' - INFO : (1) Nombre de version disponible : ' + t.nombreVersion);
     })
 }
 
@@ -241,7 +241,7 @@ function projet_mesure(maven_key) {
   const options = {
     url: 'http://localhost:8000/api/projet/mesures', type: 'GET', dataType: 'json', data: data, contentType: contentType  }
   return $.ajax(options).then(
-    (t) => { log(' - INFO : Ajout des mesures.'); })
+    (t) => { log(' - INFO : (2) Ajout des mesures.'); })
 }
 
 /*
@@ -250,7 +250,7 @@ function projet_mesure(maven_key) {
 * de traitement des anomalies quand le nombre atteint 10000 !!!
 */
 function notifyUser(info) {
-  log(' - INFO : '+ info);
+  log(' - INFO : (8) '+ info);
 }
 
 /**
@@ -269,7 +269,7 @@ function projet_anomalie(maven_key) {
       /* On temporise pour éviter que les appels asynchronnes se lance tous en même temps.
        * Temporisation : 8 secondes.
       */
-      setTimeout(() => { notifyUser(t.anomalie, t.info); }, 8000);
+      setTimeout(() => { notifyUser(t.info); }, 8000);
     });
 }
 
@@ -302,8 +302,8 @@ function projet_rating(maven_key, type) {
 
   return $.ajax(options).then(
     (t) => {
-      log(' - INFO : Reprise des notes pour le type : ' + t.type);
-      log('            : ' + t.nombre + ' résultats.');
+      log(' - INFO : (3) Reprise des notes pour le type : ' + t.type);
+      log('              : ' + t.nombre + ' résultats.');
     });
 }
 
@@ -322,9 +322,9 @@ function projet_owasp(maven_key) {
 
   return $.ajax(options).then((t) => {
     if (t.owasp==0) {
-      log(' - INFO : Bravo aucune faille OWASP détectée.');
+      log(' - INFO : (4) Bravo aucune faille OWASP détectée.');
     }
-    else { log(' - WARN : J\'ai trouvé '+t.owasp+' faille(s).');}
+    else { log(' - WARN : (4) J\'ai trouvé '+t.owasp+' faille(s).');}
   })
 }
 
@@ -342,9 +342,9 @@ function projet_hotspot(maven_key) {
 
   return $.ajax(options).then((t) => {
     if (t.hotspots == 0) {
-      log(' - INFO : Bravo aucune faille potentielle détectée.');
+      log(' - INFO : (5) Bravo aucune faille potentielle détectée.');
     }
-    else { log(' - WARN : J\'ai trouvé ' + t.hotspots + ' faille(s) potentielle(s).'); }
+    else { log(' - WARN : (5) J\'ai trouvé ' + t.hotspots + ' faille(s) potentielle(s).'); }
   })
 }
 
@@ -361,13 +361,13 @@ function projet_hotspot_owasp(maven_key, owasp) {
 
   return $.ajax(options).then((t) => {
     if (t.info=='effacement') {
-      log(' - INFO : Les enregistrements ont été supprimé de la table hostspot_owasp.');
+      log(' - INFO : (9) Les enregistrements ont été supprimé de la table hostspot_owasp.');
     }
     if (t.hotspots == 0 && t.info=='enregistrement') {
-      log(' - INFO : Bravo aucune faille OWASP '+ owasp +' potentielle détectée.');
+      log(' - INFO : (10) Bravo aucune faille OWASP '+ owasp +' potentielle détectée.');
     }
     if (t.hotspots != 0 && t.info=='enregistrement') {
-      log(' - WARN : J\'ai trouvé ' + t.hotspots + ' faille(s) OWASP '+owasp+' potentielle(s).');
+      log(' - WARN : (10) J\'ai trouvé ' + t.hotspots + ' faille(s) OWASP '+owasp+' potentielle(s).');
     }
   })
 }
@@ -385,9 +385,9 @@ function projet_nosonar_details(maven_key){
 
   $.ajax(options).then((t) => {
     if (t.hotspots != 0) {
-      log(' - WARM : J\'ai trouvé '+t.nosonar +' exclusion(s) NoSonar.');
+      log(' - WARM : (12) J\'ai trouvé '+t.nosonar +' exclusion(s) NoSonar.');
     }
-    else { log(' - INFO : Bravo !!! ' + t.nosonar + ' exlusion NoSonar trouvé.'); }
+    else { log(' - INFO : (12) Bravo !!! ' + t.nosonar + ' exlusion NoSonar trouvé.'); }
     });
 }
 
@@ -631,7 +631,7 @@ $('.js-affiche-resultat').on('click', function () {
   let api_maven = $('#select-result').text().trim();
   // On appel une fonction externe
   if ( $('.js-affiche-resultat').hasClass('affiche-resultat-enabled'))
-    { 
+    {
       // On récupère la répartition des hotspots
       affiche_hotspot_details(api_maven);
       // On récupère les résultats
