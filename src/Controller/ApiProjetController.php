@@ -353,7 +353,7 @@ class ApiProjetController extends AbstractController
     // On récupère le total de la Dette technique pour les CODE_SMELL
     $url4=$this->getParameter(self::$sonarUrl)."/api/issues/search?componentKeys=".$request->get('maven_key')."&types=CODE_SMELL&p=1&ps=1";
 
-    // on appel le client http
+    // on appel le client http pour les requête 1 à 4 (2 à 4 pour la dette)
     $result1=$this->http_client($url1);
     $result2=$this->http_client($url2);
     $result3=$this->http_client($url3);
@@ -408,6 +408,15 @@ class ApiProjetController extends AbstractController
             $file=str_replace($maven_key.":", "", $directory["val"]);
             $module=explode("/", $file);
 
+            /* Cas particulier pour l'application RS et DU
+             * Le nom du projet ne correspond pas à l'artifactId du module
+             * Par exemple la clé maven it.cool:monapplication et un module de
+             * type : cool-presentation au lieu de monapplication-presentation
+             */
+            if ($module[0]=="du-presentation") {$frontend=$frontend+$directory["count"];}
+            if ($module[0]=="rs-presentation") {$frontend=$frontend+$directory["count"];}
+            if ($module[0]=="rs-metier") {$backend=$backend+$directory["count"];}
+
             // Application Frontend
             if ($module[0]==$app[1]."-presentation"){$frontend=$frontend+$directory["count"];}
             if ($module[0]==$app[1]."-presentation-commun") {$frontend=$frontend+$directory["count"];}
@@ -429,7 +438,6 @@ class ApiProjetController extends AbstractController
           }
       }
       }
-
       // Enregitremet dans la table Anomalie
       $issue = new Anomalie();
       $issue->setMavenKey($maven_key);
