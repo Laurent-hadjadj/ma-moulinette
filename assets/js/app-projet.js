@@ -34,7 +34,7 @@ import './foundation.js';
 import {remplissage} from "./app-projet-peinture.js";
 import {enregistrement} from "./app-projet-enregistrement.js";
 
-console.log('Projet : Chargement de webpack !');
+
 
 const date_options = {
   year: "numeric", month: "numeric", day: "numeric",
@@ -114,7 +114,7 @@ function dessineMoiUnMouton(label, dataset) {
 
   let ctx = document.getElementById('graphique-autre-version').getContext('2d');
   let charts = new Chart(ctx, { type: 'doughnut', data: data, options: options });
-  if (charts===null){console.info('youpi ! charts ne peut pas être null !!!');}
+  if (charts===null){}
 }
 
 /**
@@ -653,3 +653,16 @@ $('.js-affiche-resultat').on('click', function () {
   let api_maven = $('#select-result').text().trim();
   enregistrement(api_maven);
  })
+
+/**
+ * description
+ * On génére la route et on ouvre la page des tableau de suivi
+ */
+ $('.js-tableau-suivi').on('click', function () {
+  if ($('select[name="projet"]').val() != "")
+   {
+    let api_maven = $('#select-result').text().trim();
+    window.location.href='/suivi?maven_key='+api_maven;
+   }
+   else { log(' - ERROR - Vous devez chosir un projet dans la liste !! !')}
+ });
