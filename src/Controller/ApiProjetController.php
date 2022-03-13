@@ -281,8 +281,11 @@ class ApiProjetController extends AbstractController
 
     // On ajoute les mesures dans la table mesures.
     if (intval($result["measures"]["lines"])){$lines=intval($result["measures"]["lines"]);} else {$lines=0;}
-    if ($result["measures"]["coverage"]){$coverage=$result["measures"]["coverage"];} else {$coverage=0;}
-    if ($result["measures"]["duplicationDensity"]){$duplicationDensity=$result["measures"]["duplicationDensity"];} else {$duplicationDensity=0;}
+    //Warning: Undefined array key "coverage"
+    if (array_key_exists("coverage", $result["measures"]))
+      {$coverage=$result["measures"]["coverage"];} else {$coverage=0;}
+
+      if ($result["measures"]["duplicationDensity"]){$duplicationDensity=$result["measures"]["duplicationDensity"];} else {$duplicationDensity=0;}
 
     if (array_key_exists("tests", $result["measures"] ))
           {
