@@ -141,6 +141,9 @@ class Historique
   #[ORM\Column(type: 'integer')]
   private $hotspot_total;
 
+  #[ORM\Column(type: 'boolean')]
+  private $favori;
+
   #[ORM\Column(type: 'datetime')]
   private $date_enregistrement;
 
@@ -637,6 +640,18 @@ class Historique
   public function setDateEnregistrement(\DateTimeInterface $date_enregistrement): self
   {
       $this->date_enregistrement = $date_enregistrement;
+
+      return $this;
+  }
+
+  public function getFavori(): ?bool
+  {
+      return $this->favori;
+  }
+
+  public function setFavori(bool $favori): self
+  {
+      $this->favori = $favori;
 
       return $this;
   }
