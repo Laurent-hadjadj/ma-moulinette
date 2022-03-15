@@ -35,7 +35,7 @@
   .ligne-favori, .resultat-favori {font-size:1rem;}
 }
 @media only screen and (min-width: 90.025em) and (max-width: 120em) {
-  .refresh-bd-svg, .trash-bd-svg, .affiche-profil-svg, .regle-bd-svg, .projet-svg,.gomme-svg { margin-bottom:-0.2rem; width:32px; 
+  .refresh-bd-svg, .trash-bd-svg, .affiche-profil-svg, .regle-bd-svg, .projet-svg,.gomme-svg { margin-bottom:-0.2rem; width:32px;
     height:32px}
     .ligne-favori, .resultat-favori {font-size:1rem;}
 
@@ -62,17 +62,17 @@
 .bouton-disabled {cursor: not-allowed; background-color: #4C7C8C;}
 
 /* définit la taille de la carte */
-.callout-information {width: 14rem;border-radius: 0.8rem; box-shadow: 2px 2px 5px #444; margin-right:5px;}
+.callout-information {width: 14.3rem;border-radius: 0.8rem; box-shadow: 2px 2px 5px #444; margin-right:5px;}
 .resultat-favori {color:#333;}
 .small-favori {font-size: 1rem;}
 .ligne-favori {margin: 0rem;}
 .stat-favori {line-height: 0.9; font-size:2rem}
 
-.note-favori {font-size:0.9rem; color: #00445b; border: solid 1px #aaa; padding-left: 12px; padding-right: 12px; margin-left: 4px; margin-right: 4px}
+.note-favori {font-size:0.9rem; color: #00445b; border: solid 1px #aaa; padding-left: 12px; padding-right: 12px; margin-left: 1px; margin-right: 1px}
 .nombre-favori {font-size:0.9rem; color: #000; border: solid 1px #888; padding-left: 7px; padding-right: 7px; margin-left: 2px; margin-right: 2px }
 
-.note-vert1 {font-size:0.9rem; background-color: #187e3d;color: #fff; border: solid 2px #00445b; border-radius: 0.2rem;padding-left: 14px; padding-right: 14px;margin-left: 2px;}
-.note-vert2 { font-size:0.9rem; background-color: #42c070; color: #000; border: solid 2px #00445b; border-radius: 0.2rem; padding-left: 14px;padding-right: 14px; margin-left: 2px;}
-.note-jaune { font-size:0.9rem; background-color: #dfdb1a; color: #000; border: solid 2px #00445b; border-radius: 0.2rem; padding-left: 14px;padding-right: 14px; margin-left: 2px;}
-.note-orange { font-size:0.9rem; background-color: #c45d4e; color: #000; border: solid 2px #00445b; border-radius: 0.2rem; padding-left: 14px;padding-right:14px; margin-left: 2px;}
-.note-rouge { font-size:0.9rem; background-color: #971c09; color: #fff; border: solid 2px #00445b; border-radius: 0.2rem; padding-left: 14px; padding-right: 14px; margin-left: 2px;}
+.note-vert1 {font-size:0.9rem; background-color: #187e3d;color: #fff; border: solid 2px #00445b; border-radius: 0.2rem;padding-left: 15px; padding-right: 15px;margin-left: 1px;}
+.note-vert2 { font-size:0.9rem; background-color: #42c070; color: #000; border: solid 2px #00445b; border-radius: 0.2rem; padding-left: 15px;padding-right: 15px; margin-left: 2px;}
+.note-jaune { font-size:0.9rem; background-color: #dfdb1a; color: #000; border: solid 2px #00445b; border-radius: 0.2rem; padding-left: 15px;padding-right: 15px; margin-left: 1px;}
+.note-orange { font-size:0.9rem; background-color: #c45d4e; color: #000; border: solid 2px #00445b; border-radius: 0.2rem; padding-left: 15px;padding-right:15px; margin-left: 1px;}
+.note-rouge { font-size:0.9rem; background-color: #971c09; color: #fff; border: solid 2px #00445b; border-radius: 0.2rem; padding-left: 15px; padding-right:15px; margin-left: 1px;}
