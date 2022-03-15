@@ -21,9 +21,7 @@ import 'select2/dist/js/i18n/fr.js';
 
 import Chart from 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import zoomPlugin from 'chartjs-plugin-zoom';
 Chart.register(ChartDataLabels);
-Chart.register(zoomPlugin);
 
 import 'what-input';
 import 'foundation-sites';
@@ -33,8 +31,6 @@ import './foundation.js';
 
 import {remplissage} from "./app-projet-peinture.js";
 import {enregistrement} from "./app-projet-enregistrement.js";
-
-
 
 const date_options = {
   year: "numeric", month: "numeric", day: "numeric",
@@ -114,7 +110,7 @@ function dessineMoiUnMouton(label, dataset) {
 
   let ctx = document.getElementById('graphique-autre-version').getContext('2d');
   let charts = new Chart(ctx, { type: 'doughnut', data: data, options: options });
-  if (charts===null){}
+  if (charts===null){console.log();};
 }
 
 /**
