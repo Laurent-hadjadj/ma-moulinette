@@ -110,52 +110,76 @@
       <legend class="open-sans">Mes projets favoris.</legend>
         <div class="grid-x cell">
           {# Information sur les versions #}
-          <div class="callout callout-information">
-            <div class="callout-body">
-              <h5 class="claire-hand text-center">Informations</h5>
-            </div>
-            <div class="callout-footer">
-              <p class="ligne-favori open-sans">Nom&nbsp;:<span id="nom-projet" class="float-right resultat-favori">monApplication</span></p>
-              <p class="ligne-favori open-sans">Version&nbsp;:<span id="version" class="float-right resultat-favori">3.2.1-RELEASE</span></p>
-              <p class="ligne-favori open-sans">Date&nbsp;:<span id="date-version" class="float-right resultat-favori">28/02/2022</span></p>
-              <span class="note-favori" class="open-sans">F</span>
-              <span class="note-favori" class="open-sans">S</span>
-              <span class="note-favori" class="open-sans">H</span>
-              <span class="note-favori" class="open-sans">M</span><br/>
-              <span id="note-reliability" class="open-sans"><span class="note-vert1">A</span></span>
-              <span id="note-security-1" class="open-sans"><span class="note-jaune">B</span></span>
-              <span id="note-hotspot-1" class="open-sans"><span class="note-orange">C</span></span>
-              <span id="note-sqale-1" class="open-sans"><span class="note-rouge">D</span></span><br />
-              <span id="nombre-reliability-1" class="nombre-favori open-sans">000</span>
-              <span id="nombre-security-1" class="nombre-favori open-sans">999</span>
-              <span id="nombre-hotspot-1" class="nombre-favori open-sans">01k</span>
-              <span id="nombre-sqale-1" class="nombre-favori open-sans">10k</span><br/>
-            </div>
-          </div>
+          {% if nombre_favori == 1 %}
+            {% for app in favori %}
+            <div class="callout callout-information">
+              <div class="callout-body">
+                <h5 class="claire-hand text-center">Informations</h5>
+              </div>
+              <div class="callout-footer open-sans">
+                <p class="ligne-favori open-sans">Nom&nbsp;:<span class="float-right resultat-favori">{{app.nom}}</span></p>
+                <p class="ligne-favori open-sans">Version&nbsp;:<span class="float-right resultat-favori">{{app.version}}</span></p>
+                <p class="ligne-favori open-sans">Date&nbsp;:<span class="float-right resultat-favori">{{app.date|date("m/d/Y", "Europe/Paris")}}</span></p>
+                <span class="note-favori" class="open-sans">&nbsp;F&nbsp;</span>
+                <span class="note-favori" class="open-sans">&nbsp;S&nbsp;</span>
+                <span class="note-favori" class="open-sans">&nbsp;H&nbsp;</span>
+                <span class="note-favori" class="open-sans">&nbsp;M&nbsp;</span><br/>
+                <span id="note-reliability" class="open-sans">
+                {% if app.fiabilite == 'A' %} {% set couleur1='note-vert1' %} {% endif %}
+                {% if app.fiabilite == 'B' %} {% set couleur1='note-vert2' %} {% endif %}
+                {% if app.fiabilite == 'C' %} {% set couleur1='note-jaune' %} {% endif %}
+                {% if app.fiabilite == 'D' %} {% set couleur1='note-orange' %} {% endif %}
+                {% if app.fiabilite == 'E' %} {% set couleur1='note-rouge' %} {% endif %}
+                {% if app.securite == 'A' %} {% set couleur2='note-vert1' %} {% endif %}
+                {% if app.securite == 'B' %} {% set couleur2='note-vert2' %} {% endif %}
+                {% if app.securite == 'C' %} {% set couleur2='note-jaune' %} {% endif %}
+                {% if app.securite == 'D' %} {% set couleur2='note-orange' %} {% endif %}
+                {% if app.securite == 'E' %} {% set couleur2='note-rouge' %} {% endif %}
+                {% if app.hotspot == 'A' %} {% set couleur3='note-vert1' %} {% endif %}
+                {% if app.hotspot == 'B' %} {% set couleur3='note-vert2' %} {% endif %}
+                {% if app.hotspot == 'C' %} {% set couleur3='note-jaune' %} {% endif %}
+                {% if app.hotspot == 'D' %} {% set couleur3='note-orange' %} {% endif %}
+                {% if app.hotspot == 'E' %} {% set couleur3='note-rouge' %} {% endif %}
+                {% if app.sqale == 'A' %} {% set couleur4='note-vert1' %} {% endif %}
+                {% if app.sqale == 'B' %} {% set couleur4='note-vert2' %} {% endif %}
+                {% if app.sqale == 'C' %} {% set couleur4='note-jaune' %} {% endif %}
+                {% if app.sqale == 'D' %} {% set couleur4='note-orange' %} {% endif %}
+                {% if app.sqale == 'E' %} {% set couleur4='note-rouge' %} {% endif %}
+                <span class="{{couleur1}}">{{app.fiabilite}}</span></span>
+                <span id="note-security" class="open-sans">
+                <span class="{{couleur2}}">{{app.securite}}</span></span>
+                <span class="open-sans">
+                <span class="{{couleur3}}">{{app.hotspot}}</span></span>
+                <span  class="open-sans">
+                <span class="{{couleur4}}">{{app.sqale}}</span></span><br />
 
-          <div class="callout callout-information">
-            <div class="callout-body">
-              <h5 class="claire-hand text-center">Informations</h5>
+                <span class="nombre-favori open-sans">
+                {% if app.bug <10 %} 00{{app.bug}}{% endif %}
+                {% if app.bug >=10 and app.bug <100 %} 0{{app.bug}}{% endif %}
+                {% if app.bug >=100 and app.bug <1000 %} {{app.bug}}{% endif %}
+                </span>
+                <span class="nombre-favori open-sans">
+                {% if app.vulnerability <10 %} 00{{app.vulnerability}}{% endif %}
+                {% if app.vulnerability >=10 and app.vulnerability <100%} 0{{app.vulnerability}}{% endif %}
+                {% if app.vulnerability >=100 and app.vulnerability <1000 %} {{app.vulnerability}}{% endif %}
+                </span>
+                <span class="nombre-favori open-sans">
+                {% if app.hotspots <10 %} 00{{app.hotspots}}{% endif %}
+                {% if app.hotspots >=10 and app.hotspots <100%} 0{{app.hotspots}}{% endif %}
+                {% if app.hotspots >=100 and app.hotspots <1000 %} {{app.hotspots}}{% endif %}</span>
+                <span class="nombre-favori open-sans">
+                {% if app.code_smell <10 %} 00{{app.code_smell}}{% endif %}
+                {% if app.code_smell >=10 and app.code_smell <100%} 0{{app.code_smell}}{% endif %}
+                {% if app.code_smell >=100 and app.code_smell <1000 %} {{app.code_smell}}
+                {% endif %}
+                {% if app.code_smell >=1000 and app.code_smell <20000 %}
+                  {% set k=(app.code_smell/1000)|number_format(1, '.', ',') %}
+                  {{k}}K</span><br/>
+                {% endif %}
+              </div>
             </div>
-            <div class="callout-footer open-sans">
-              <p class="ligne-favori open-sans">Nom&nbsp;:<span id="nom-projet" class="float-right resultat-favori">cereobs-sp</span></p>
-              <p class="ligne-favori open-sans">Version&nbsp;:<span id="version" class="float-right resultat-favori">1.7.4-RELEASE</span></p>
-              <p class="ligne-favori open-sans">Date&nbsp;:<span id="date-version" class="float-right resultat-favori">12/02/2022</span></p>
-              <span class="note-favori" class="open-sans">F</span>
-              <span class="note-favori" class="open-sans">S</span>
-              <span class="note-favori" class="open-sans">H</span>
-              <span class="note-favori" class="open-sans">M</span><br/>
-              <span id="note-reliability" class="open-sans"><span class="note-vert1">A</span></span>
-              <span id="note-security-2" class="open-sans"><span class="note-jaune">B</span></span>
-              <span id="note-hotspot-2" class="open-sans"><span class="note-orange">C</span></span>
-              <span id="note-sqale-2" class="open-sans"><span class="note-rouge">D</span></span><br />
-              <span id="nombre-reliability-2" class="nombre-favori open-sans">000</span>
-              <span id="nombre-security-2" class="nombre-favori open-sans">999</span>
-              <span id="nombre-hotspot-2" class="nombre-favori open-sans">01k</span>
-              <span id="nombre-sqale-2" class="nombre-favori open-sans">10k</span><br/>
-            </div>
-          </div>
-
+            {% endfor %}
+          {% endif %}
         {# Fin de la zonne mes favoris #}
         </div>
     </fieldset>
