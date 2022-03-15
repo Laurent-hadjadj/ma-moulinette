@@ -42,8 +42,34 @@ class BoardController extends AbstractController
     $select=$em->getConnection()->prepare($sql)->executeQuery();
     $severite=$select->fetchAllAssociative();
 
+    // Graphique
+    $sql="SELECT nombre_bug as bug, nombre_vulnerability as secu, nombre_code_smell as code_smell, date_version as date FROM historique where maven_key='". $maven_key."' GROUP BY date_version ORDER BY date_version ASC";
+    $select=$em->getConnection()->prepare($sql)->executeQuery();
+    $graph=$select->fetchAllAssociative();
+
+    // On compte le nombre de résultat
+    $nl=count((array)$graph);
+
+    for ($i=0; $i<$nl; $i++)
+    {
+      $bug[$i]=$graph[$i]["bug"];
+      $secu[$i]=$graph[$i]["secu"];
+      $code_smell[$i]=$graph[$i]["code_smell"];
+      $date[$i]=$graph[$i]["date"];
+    }
+
+    // on ajote une valeur null a la fin de chaque serie
+    $bug[$nl+1]=0;
+    $secu[$nl+1]=0;
+    $code_smell[$nl+1]=0;
+    $dd = new \DateTime($graph[$nl-1]["date"]);
+    $dd->modify('+1 day');
+    $ddd=$dd->format('Y-m-d');
+    $date[$nl+1]=$ddd;
+
     return $this->render('dash/index.html.twig',
     [   'dash'=>$dash, 'severite'=>$severite, 'nom'=>$dash[0]["nom"],
+        'data1'=>json_encode($bug), 'data2'=>json_encode($secu), 'data3'=>json_encode($code_smell), 'labels'=>json_encode($date),
         'version' => $this->getParameter('version'), 'dateCopyright' => \date('Y')
     ]);
   }
