@@ -113,6 +113,9 @@
         </tbody>
       </table>
     </div>
+    <canvas id="graphique-anomalie" width="400" height="100"
+    data-data1="{{data1}}" data-data2="{{data2}}" data-data3="{{data3}}"
+    data-label="{{labels}}"></canvas>
 
     <div class="table-scroll">
       <table class="hover">
@@ -163,19 +166,33 @@
           <tr>
             <td class="text-left">Bloquant</td>
             {% for i in 0..severite|length-1 %}
-              <td class="text-center">{{severite[i]["bloquant"]|format_number(locale='fr')}}</td>
+             {% set lookup="" %}
+             {% if i >0 %}
+              {% if severite[i]["bloquant"] > severite[i-1]["bloquant"] and severite[i]["bloquant"] != severite[i-1]["bloquant"] %} {% set lookup = "up" %} {% else %} {% set lookup = "down" %} {% endif %}
+             {% endif %}
+              <td class="text-right">{{severite[i]["bloquant"]|format_number(locale='fr')}} <span class="{{lookup}}"></span></td>
             {% endfor %}
           </tr>
           <tr>
             <td class="text-left">Critique</td>
             {% for i in 0..severite|length-1 %}
-              <td class="text-center">{{severite[i]["critique"]|format_number(locale='fr')}}</td>
+             {% set lookup = "" %}
+             {% if i >0 %}
+              {% if severite[i]["critique"] > severite[i-1]["critique"] and severite[i]["critique"] != severite[i-1]["critique"] %} {% set lookup = "up" %} {% else %} {% set lookup = "down" %} {% endif %}
+             {% endif %}
+              <td class="text-right">{{severite[i]["critique"]|format_number(locale='fr')}} <span class="{{lookup}}"></span></td>
             {% endfor %}
           </tr>
           <tr>
             <td class="text-left">Majeur</td>
             {% for i in 0..severite|length-1 %}
-              <td class="text-center">{{severite[i]["majeur"]|format_number(locale='fr')}}</td>
+             {% set lookup="" %}
+             {% if i >0 %}
+              {% if severite[i]["majeur"] > severite[i-1]["majeur"] and severite[i]["majeur"] != severite[i-1]["majeur"] %}
+               {% set lookup = "up" %} {% else %} {% set lookup = "down" %} {% endif %}
+             {% endif %}
+
+              <td class="text-right">{{severite[i]["majeur"]|format_number(locale='fr')}} <span class="{{lookup}}"></span></td>
             {% endfor %}
           </tr>
         </tbody>
