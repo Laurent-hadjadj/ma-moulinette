@@ -21,11 +21,13 @@
     "dependencies": {
         "browser-update": "^3.3.38",
         "chart.js": "^3.7.1",
+        "chartjs-adapter-moment": "^1.0.0",
         "chartjs-plugin-datalabels": "^2.0.0",
         "chartjs-plugin-zoom": "^1.2.0",
-        "css-loader": "^6.6.0",
+        "css-loader": "^6.7.1",
         "foundation-sites": "^6.7.4",
         "jquery": "^3.6.0",
+        "moment": "^2.29.1",
         "motion-ui": "^2.0.3",
         "select2": "^4.1.0-rc.0",
         "what-input": "^5.2.10"
