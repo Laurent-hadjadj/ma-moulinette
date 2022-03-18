@@ -30,7 +30,7 @@ class ApiDetailsPeintureController extends AbstractController
  * description
  * Vérification de l'existence du projet dans la table information_projet
  */
-   function is_valide(EntityManagerInterface $em, $maven_key): array
+   protected function is_valide(EntityManagerInterface $em, $maven_key): array
    {
      // On regarde si une analyse a été réalisée.
     $sql="SELECT * FROM information_projet WHERE maven_key='". $maven_key."' LIMIT 1";
@@ -53,7 +53,7 @@ class ApiDetailsPeintureController extends AbstractController
 
     $is_valide=$this->is_valide($em, $maven_key);
     if ($is_valide["code"]==406) {
-      return $response->setData(["message"=>self::HTTP_ERROR_406, Response::HTTP_NOT_ACCEPTABLE]);
+      return $response->setData(["message"=>static::HTTP_ERROR_406, Response::HTTP_NOT_ACCEPTABLE]);
     }
 
     // On récupère la dernière version et sa date de publication

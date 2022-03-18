@@ -7,29 +7,49 @@
  *
  */
 
- @media only screen and (max-width: 20em){
-}
-@media only screen and (min-width: 20.025em) and (max-width: 22em) {
-}
-@media only screen and (min-width: 22.025em) and (max-width: 30em) {
-}
-@media only screen and (min-width: 30.025em) and (max-width:40em){
-}
-@media only screen and (min-width: 40em) and (max-width: 64em) {
-}
-@media only screen and (min-width: 64.025em) and (max-width: 90em) {
-}
-@media only screen and (min-width: 90.025em) and (max-width: 120em) {
-}
+@media only screen and (max-width: 20em) { /* vide */ }
+
+@media only screen and (min-width: 20.025em) and (max-width: 22em) { /* vide */ }
+
+@media only screen and (min-width: 22.025em) and (max-width: 30em) { /* vide */ }
+
+@media only screen and (min-width: 30.025em) and (max-width: 40em) { /* vide */ }
+
+@media only screen and (min-width: 40em) and (max-width: 64em) { /* vide */ }
+
+@media only screen and (min-width: 64.025em) and (max-width: 90em) { /* vide */ }
+
+@media only screen and (min-width: 90.025em) and (max-width: 120em) { /* vide */ }
+
 @media only screen and (min-width: 120em) and (max-width: 160em) {
-  .voir-analyse-svg { margin-bottom:-0.6rem; width:48px; height:48px}
-  .gomme-svg, .analyse-svg, .pdf-svg, .graphique-svg {margin-bottom:-0.2rem; width:48px; height:48px}
+  .voir-analyse-svg {
+    margin-bottom: -0.6rem;
+    width: 48px;
+    height: 48px;
+  }
+
+  .gomme-svg,
+  .analyse-svg,
+  .pdf-svg,
+  .graphique-svg {
+    margin-bottom: -0.2rem;
+    width: 48px;
+    height: 48px;
+  }
 }
 
 /*************************          Global     *********************************/
+
 /* Bouton SVG */
-.voir-details-svg {fill:#00445b;cursor: pointer; margin-bottom: -0.2rem;width: 32px;height: 32px;}
-.voir-details-svg:hover {fill:#c45d4e;}
+.voir-details-svg {
+  fill: #00445b;
+  cursor: pointer;
+  margin-bottom: -0.2rem;
+  width: 32px;
+  height: 32px;
+}
+
+.voir-details-svg:hover { fill: #c45d4e; }
 
 /* Information bug, vulnérabilité et code_smell  */
 .stats-list {
@@ -42,9 +62,13 @@
 }
 
 .stats-list-vert { color: #187e3d; }
+
 .stats-list-orange { color: #c45d4e; }
+
 .stats-list-rouge-intense { color: #771404; }
+
 .stats-list-rouge-claire { color: #b33926; }
+
 .stats-list-bleu { color: #3b89a3; }
 
 .stats-list > li {
@@ -71,43 +95,154 @@
 }
 
 /* Affiche les statisiques dans les modales */
-.stats-detail-jaune {background-color: #dfdb1a;color: #000;border-radius: 0.3rem;text-align: center;padding-left: 26px;padding-right: 26px;}
-.stats-detail-orange {background-color: #c45d4e;;color: #fff;border-radius: 0.3rem;text-align: center;padding-left: 26px;padding-right: 26px;}
-.stats-detail-rouge {background-color: #971c09;color: #fff;border-radius: 0.3rem;text-align: center;padding-left: 26px;padding-right: 26px;}
+.stats-detail-jaune {
+  background-color: #dfdb1a;
+  color: #000;
+  border-radius: 0.3rem;
+  text-align: center;
+  padding-left: 26px;
+  padding-right: 26px;
+}
 
-.resultat {padding-left : 0.5rem;color:#333;flex: 1;text-align: right;white-space: nowrap;}
-.small {font-size: 1rem;}
-.ligne{margin: 0rem;display:flex;}
-.stat {line-height: 0.9;font-size:2rem;}
-.stat-note {font-size:1.5rem}
-.stat-owasp {line-height: 0.9; font-size:1.5rem}
-.strong{font-weight:700;}
-.light{font-weight: 300;}
+.stats-detail-orange {
+  background-color: #c45d4e;
+  color: #fff;
+  border-radius: 0.3rem;
+  text-align: center;
+  padding-left: 26px;
+  padding-right: 26px;
+}
 
+.stats-detail-rouge {
+  background-color: #971c09;
+  color: #fff;
+  border-radius: 0.3rem;
+  text-align: center;
+  padding-left: 26px;
+  padding-right: 26px;
+}
 
-.box {color: #fff;border: solid 1px;border-radius: 0.3rem;padding-left: 30px;padding-right: 30px;}
+.resultat {
+  padding-left: 0.5rem;
+  color: #333;
+  flex: 1;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.small { font-size: 1rem; }
+
+.ligne {
+  margin: 0.1rem;
+  display: flex;
+}
+
+.stat {
+  line-height: 0.9;
+  font-size: 2rem;
+}
+
+.stat-note { font-size: 1.5rem; }
+
+.stat-owasp {
+  line-height: 0.9;
+  font-size: 1.5rem;
+}
+
+.strong { font-weight: 700; }
+
+.light { font-weight: 300; }
+
+.box {
+  color: #fff;
+  border: solid 1px;
+  border-radius: 0.3rem;
+  padding-left: 30px;
+  padding-right: 30px;
+}
 
 /* Affiche les note OWASP selon le référentiel sonarqube */
-.badge-vert1 {background-color: #187e3d;color: #fff; font-size: 1rem;}
-.badge-vert2 { background-color: #42c070; color: #000; font-size: 1rem;}
-.badge-jaune { background-color: #dfdb1a; color: #000; font-size: 1rem;}
-.badge-orange { background-color: #c45d4e;; color: #000;font-size: 1rem;}
-.badge-rouge {background-color: #971c09;color: #fff;font-size: 1rem;margin-bottom: -10px;}
+.badge-vert1 {
+  background-color: #187e3d;
+  color: #fff;
+  font-size: 1rem;
+}
 
-.module-vert {background-color: #187e3d; }
-.module-orange {background-color: #c45d4e; }
-.module-rouge {background-color: #971c09; }
+.badge-vert2 {
+  background-color: #42c070;
+  color: #000;
+  font-size: 1rem;
+}
+
+.badge-jaune {
+  background-color: #dfdb1a;
+  color: #000;
+  font-size: 1rem;
+}
+
+.badge-orange {
+  background-color: #c45d4e;
+  color: #000;
+  font-size: 1rem;
+}
+
+.badge-rouge {
+  background-color: #971c09;
+  color: #fff;
+  font-size: 1rem;
+  margin-bottom: -10px;
+}
+
+.module-vert {
+  background-color: #187e3d;
+}
+
+.module-orange {
+  background-color: #c45d4e;
+}
+
+.module-rouge {
+  background-color: #971c09;
+}
 
 /* Affiche le niveau de sévérité avec sa couleur */
-.severity-jaune {color: #a8a630; text-align: center;}
-.severity-orange {color: #c45d4e; text-align: center;}
-.severity-rouge {color: #971c09; text-align: center;}
+.severity-jaune {
+  color: #a8a630;
+  text-align: center;
+}
+
+.severity-orange {
+  color: #c45d4e;
+  text-align: center;
+}
+
+.severity-rouge {
+  color: #971c09;
+  text-align: center;
+}
 
 /* menu référentiel-owasp */
-.referentiel-owasp-menu { background-color: white; border-radius: 5px; margin-top: 0.5rem; }
-.accordion-menu .is-accordion-submenu-parent:not(.has-submenu-toggle) > a::after { border-color: #00445b;}
-.referentiel-owasp-titre:hover {color:#c45d4e; font-weight:800;};
-.referentiel-owasp-titre {color:#000; font-weight:700;};
+.referentiel-owasp-menu {
+  background-color: white;
+  border-radius: 5px;
+  margin-top: 0.5rem;
+}
+
+.accordion-menu .is-accordion-submenu-parent:not(.has-submenu-toggle) > a::after {
+  border-color: #00445b;
+}
+
+.referentiel-owasp-titre {
+  color: #000;
+  font-weight: 700;
+}
+
+.referentiel-owasp-titre:hover {
+  color: #c45d4e;
+  font-weight: 800;
+}
 
 /* Liste des hotpost */
-.component{ word-break: break-all;}
+.component {
+  word-break: break-all;
+}

@@ -6,41 +6,82 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  *
  */
+
 /*************************          Global     *********************************/
-body {background: #eee; }
-.open-sans {color: #00445b;}
-.claire-hand {color: #00445b;}
+
+body { background: #eee; }
+.open-sans { color: #00445b; }
+.claire-hand { color: #00445b; }
 
 /* Titre */
-.ma-moulinette {color:#00445b;cursor: pointer;margin-left:1rem;margin-top: .5rem;margin-bottom:0rem;}
-.ma-moulinette:hover {color:#E7552C;}
-.version {margin-left:1rem; margin-top: -1rem; margin-bottom:0rem;}
+.ma-moulinette {
+  color: #00445b;
+  cursor: pointer;
+  margin-left: 1rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.1rem;
+}
+
+.ma-moulinette:hover { color: #e7552c; }
+
+.version {
+  margin-left: 1rem;
+  margin-top: -1rem;
+  margin-bottom: 0.1rem;
+}
 
 /* Chargement de la marianne */
-.marianne {margin-top:10px;margin-left:10px;width: 122px;}
+.marianne {
+  margin-top: 10px;
+  margin-left: 10px;
+  width: 122px;
+}
 
 /* breadcrumbs */
 .breadcrumbs li { font-size: 1rem; }
 .breadcrumbs a { color: #850385; }
 
-
 .footer {
   background-color: #00445b;
-  color:#fff;
-  width:100%;
+  color: #fff;
+  width: 100%;
   bottom: 0;
   position: fixed;
 }
-.footer-padding {padding-top: 0.5rem;padding-bottom: 0.5rem;/* margin-top: 0rem; */}
-.copyright{padding-left: 0.5rem;font-size: 0.7rem;}
-.auteur{ padding-right: 0.5rem; margin-top: 5px; font-size: 0.9rem; }
-/****************** Spinner ****************************/
-/* Affiche ou non  le spinner*/
-.statut {margin-top: 1.1rem; margin-bottom: 0;}
-.loader-enabled {display: inline-block;}
-.loader-disabled {display: none;}
 
-.loader {position: relative;width: 78px;height: 40px;}
+.footer-padding {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.copyright {
+  padding-left: 0.5rem;
+  font-size: 0.7rem;
+}
+
+.auteur {
+  padding-right: 0.5rem;
+  margin-top: 5px;
+  font-size: 0.9rem;
+}
+
+/****************** Spinner ****************************/
+
+/* Affiche ou non  le spinner */
+
+.statut {
+  margin-top: 1.1rem;
+  margin-bottom: 0;
+}
+.loader-enabled { display: inline-block; }
+.loader-disabled { display: none; }
+
+.loader {
+  position: relative;
+  width: 78px;
+  height: 40px;
+}
+
 .loader div {
   position: absolute;
   top: 1.5rem;
@@ -51,67 +92,129 @@ body {background: #eee; }
   background: #eee;
   animation-timing-function: cubic-bezier(0, 1, 1, 0);
 }
+
+/* stylelint-disable-next-line no-duplicate-selectors */
 .loader div { background: #00445b; }
 
 .loader div:nth-child(1) {
   left: 8px;
   animation: loader1 0.6s infinite;
 }
+
 .loader div:nth-child(2) {
   left: 8px;
   animation: loader2 0.6s infinite;
 }
+
 .loader div:nth-child(3) {
   left: 32px;
   animation: loader2 0.6s infinite;
 }
+
 .loader div:nth-child(4) {
   left: 56px;
   animation: loader3 0.6s infinite;
 }
+
 @keyframes loader1 {
   0% { transform: scale(0); }
   100% { transform: scale(1); }
 }
+
 @keyframes loader3 {
   0% { transform: scale(1); }
   100% { transform: scale(0); }
 }
+
 @keyframes loader2 {
   0% { transform: translate(0, 0); }
   100% { transform: translate(24px, 0); }
 }
 
-@media only screen and (max-width: 20em){
-  .open-sans {font-size: 0.9rem;}
-  .logo-franceagrimer {max-width: 38%; height: auto; padding-top:0.1rem; padding-left:0.3rem;}
-}
-@media only screen and (min-width: 20.025em) and (max-width: 22em) {
-  .open-sans {font-size: 0.9rem;}
-  .logo-franceagrimer {max-width: 38%; height: auto; padding-top:0.1rem; padding-left:0.3rem;}
-}
-@media only screen and (min-width: 22.025em) and (max-width: 30em) {
-  .open-sans {font-size: 0.9rem;}
-  .logo-franceagrimer {max-width: 40%; height: auto; padding-top:0.1rem; padding-left:0.3rem;}
-}
-@media only screen and (min-width: 30.025em) and (max-width:40em){
-  .open-sans {font-size: 0.9rem;}
-  .logo-franceagrimer {max-width: 40%; height: auto; padding-top:0.1rem; padding-left:0.3rem;}
-}
-@media only screen and (min-width: 40em) and (max-width: 64em) {
-  .open-sans {font-size: 1rem;}
-  .logo-franceagrimer {max-width: 40%; height: auto; padding-top:0.1rem; padding-left:0.3rem;}
-}
-@media only screen and (min-width: 64.063em) and (max-width: 90em) {
-  .open-sans {font-size: 1rem;}
-  .logo-franceagrimer {max-width: 80%; height: auto; padding-top:2rem; padding-left:2rem;}
-}
-@media only screen and (min-width: 90.063em) and (max-width: 120em) {
-  .open-sans {font-size: 1rem;}
-  .logo-franceagrimer {max-width: 100%; height: auto; padding-top:2rem; padding-left:2rem;}
-}
-@media only screen and (min-width: 120em) and (max-width: 160em) {
-  .open-sans {font-size: 1.2rem;}
-  .logo-franceagrimer {max-width: 100%; height: auto; padding-top:2rem; padding-left:2rem;}
+@media only screen and (max-width: 20em) {
+  .open-sans { font-size: 0.9rem; }
 
+  .logo-franceagrimer {
+    max-width: 38%;
+    height: auto;
+    padding-top: 0.1rem;
+    padding-left: 0.3rem;
+  }
+}
+
+@media only screen and (min-width: 20.025em) and (max-width: 22em) {
+  .open-sans { font-size: 0.9rem; }
+
+  .logo-franceagrimer {
+    max-width: 38%;
+    height: auto;
+    padding-top: 0.1rem;
+    padding-left: 0.3rem;
+  }
+}
+
+@media only screen and (min-width: 22.025em) and (max-width: 30em) {
+  .open-sans { font-size: 0.9rem; }
+
+  .logo-franceagrimer {
+    max-width: 40%;
+    height: auto;
+    padding-top: 0.1rem;
+    padding-left: 0.3rem;
+  }
+}
+
+@media only screen and (min-width: 30.025em) and (max-width: 40em) {
+  .open-sans { font-size: 0.9rem; }
+
+  .logo-franceagrimer {
+    max-width: 40%;
+    height: auto;
+    padding-top: 0.1rem;
+    padding-left: 0.3rem;
+  }
+}
+
+@media only screen and (min-width: 40em) and (max-width: 64em) {
+  .open-sans { font-size: 1rem; }
+
+  .logo-franceagrimer {
+    max-width: 40%;
+    height: auto;
+    padding-top: 0.1rem;
+    padding-left: 0.3rem;
+  }
+}
+
+@media only screen and (min-width: 64.063em) and (max-width: 90em) {
+  .open-sans { font-size: 1rem; }
+
+  .logo-franceagrimer {
+    max-width: 80%;
+    height: auto;
+    padding-top: 2rem;
+    padding-left: 2rem;
+  }
+}
+
+@media only screen and (min-width: 90.063em) and (max-width: 120em) {
+  .open-sans { font-size: 1rem; }
+
+  .logo-franceagrimer {
+    max-width: 100%;
+    height: auto;
+    padding-top: 2rem;
+    padding-left: 2rem;
+  }
+}
+
+@media only screen and (min-width: 120em) and (max-width: 160em) {
+  .open-sans { font-size: 1.2rem; }
+
+  .logo-franceagrimer {
+    max-width: 100%;
+    height: auto;
+    padding-top: 2rem;
+    padding-left: 2rem;
+  }
 }

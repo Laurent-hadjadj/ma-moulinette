@@ -1,16 +1,11 @@
 /*
- *  Copyright (c) 2021-2022.
- *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
- *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ * Copyright (c) 2021-2022.
+ * Laurent HADJADJ <laurent_h@me.com>.
+ * Licensed Creative Common  CC-BY-NC-SA 4.0.
+ * Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ * http://creativecommons.org/licenses/by-nc-sa/4.0/
  *
  */
-/* eslint-disable jquery/no-ready */
-/* eslint-disable jquery/no-class */
-/* eslint-disable jquery/no-show */
-/* eslint-disable jquery/no-hide */
-
 import '../css/profil.css';
 
 // Intégration de jquery
@@ -44,7 +39,7 @@ const palette_couleur = [
  * Mélangeur de couleur
  */
 function shuffle(a) {
-  var j, x, i;
+  let j, x, i;
   for (i = a.length - 1; i > 0; i--) {
     j = Math.floor(Math.random() * (i + 1));
     x = a[i];
@@ -59,7 +54,7 @@ function shuffle(a) {
  * Renvoie une nouvelle palette de couleur
  */
 function palette() {
-  let nouvelle_palette = [];
+  const nouvelle_palette = [];
   shuffle(matrice);
   matrice.forEach((el) => { nouvelle_palette.push(palette_couleur[el]); });
   return nouvelle_palette;
@@ -70,8 +65,8 @@ function palette() {
  */
 function dessineMoiUnMouton(label, dataset) {
 
-  let nouvelle_palette = palette();
-  let data =
+  const nouvelle_palette = palette();
+  const data =
   {
     labels: label,
     datasets: [{
@@ -80,7 +75,7 @@ function dessineMoiUnMouton(label, dataset) {
     }],
   };
 
-  let options = {
+  const options = {
     animations: { tension: { duration: 2000, easing: 'linear', loop: false } },
     maintainAspectRatio: true,
     responsive: true,
@@ -91,7 +86,7 @@ function dessineMoiUnMouton(label, dataset) {
       datalabels: {
         color: '#fff',
         font: function (context) {
-          var w = context.chart.width; return {
+          const w = context.chart.width; return {
             size: w < 512 ? 12 : 14, weight: 'bold',
           };
         },
@@ -99,12 +94,12 @@ function dessineMoiUnMouton(label, dataset) {
     }
   };
 
-  let chartStatus = Chart.getChart("graphique-langage");
-  if (chartStatus != undefined) { chartStatus.destroy(); }
+  const chartStatus = Chart.getChart("graphique-langage");
+  if (chartStatus !== undefined) { chartStatus.destroy(); }
 
-  let ctx = document.getElementById('graphique-langage').getContext('2d');
-  let charts = new Chart(ctx, { type: 'doughnut', data: data, options: options });
-  if (charts === null) { console.info('youpi ! charts ne peut pas être null !!!'); };
+  const ctx = document.getElementById('graphique-langage').getContext('2d');
+  const charts = new Chart(ctx, { type: 'doughnut', data: data, options: options });
+  if (charts === null) { console.info('youpi ! charts ne peut pas être null !!!'); }
 }
 
 $('.graphique-langage').on('click', () => {

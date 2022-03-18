@@ -1,15 +1,11 @@
 /*
- *  Copyright (c) 2021-2022.
- *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
- *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ * Copyright (c) 2021-2022.
+ * Laurent HADJADJ <laurent_h@me.com>.
+ * Licensed Creative Common  CC-BY-NC-SA 4.0.
+ * Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ * http://creativecommons.org/licenses/by-nc-sa/4.0/
  *
  */
-/* eslint-disable jquery/no-ready */
-/* eslint-disable jquery/no-class */
-/* eslint-disable jquery/no-show */
-/* eslint-disable jquery/no-hide */
 
 import '../css/projet.css';
 
@@ -67,7 +63,7 @@ function shuffle(a) {
  * Renvoie une nouvelle palette de couleur
  */
 function palette() {
-  let nouvelle_palette = [];
+  const nouvelle_palette = [];
   shuffle(matrice);
   matrice.forEach((el) => { nouvelle_palette.push(palette_couleur[el]); });
   return nouvelle_palette;
@@ -77,16 +73,15 @@ function palette() {
  * Affiche le graphique des sources
  */
 function dessineMoiUnMouton(label, dataset) {
-
-  let nouvelle_palette = palette();
-  let data =
+  const nouvelle_palette = palette();
+  const data =
   {
     labels: label,
     datasets: [{ data: dataset, backgroundColor: nouvelle_palette, borderWidth: 1,
                  datalabels: { align: 'center', anchor: 'center' } }],
   };
 
-  let options = {
+  const options = {
     animations: { tension: { duration: 2000, easing: 'linear', loop: false } },
     maintainAspectRatio: true,
     responsive: true,
@@ -105,12 +100,12 @@ function dessineMoiUnMouton(label, dataset) {
     }
   };
 
-  let chartStatus = Chart.getChart("graphique-autre-version");
+  const chartStatus = Chart.getChart("graphique-autre-version");
   if (chartStatus != undefined) { chartStatus.destroy(); }
 
-  let ctx = document.getElementById('graphique-autre-version').getContext('2d');
-  let charts = new Chart(ctx, { type: 'doughnut', data: data, options: options });
-  if (charts===null){console.log();};
+  const ctx = document.getElementById('graphique-autre-version').getContext('2d');
+  const charts = new Chart(ctx, { type: 'doughnut', data: data, options: options });
+  if (charts===null){console.info('pour éviter une erreur sonar !!!');}
 }
 
 /**
@@ -118,7 +113,7 @@ function dessineMoiUnMouton(label, dataset) {
  * Affiche la log.
  */
 function log(txt) {
-  let textarea = document.getElementById('log');
+  const textarea = document.getElementById('log');
   textarea.scrollTop = textarea.scrollHeight;
   textarea.value += new Intl.DateTimeFormat('default', date_options).format(new Date()) + txt + '\n';
 }
@@ -133,7 +128,7 @@ function dit_bonjour() { log(' - Initialisation de la log...'); }
  * description
  * Active la gomme pour nettoyer la log.
  */
-$('.gomme-svg').on('click', function (e) {
+$('.gomme-svg').on('click', function () {
   $('.log').val('');
 });
 
@@ -163,7 +158,7 @@ function stop_spinner() {
  * description
  * Active la gomme pour nettoyer la log.
  */
-$('.gomme-svg').on('click', function (e) { $('.log').val(''); });
+$('.gomme-svg').on('click', function () { $('.log').val(''); });
 
 /**
  * description
@@ -237,7 +232,7 @@ function projet_mesure(maven_key) {
   const options = {
     url: 'http://localhost:8000/api/projet/mesures', type: 'GET', dataType: 'json', data: data, contentType: contentType  }
   return $.ajax(options).then(
-    (t) => { log(' - INFO : (2) Ajout des mesures.'); })
+    () => { log(' - INFO : (2) Ajout des mesures.'); })
 }
 
 /*
@@ -273,6 +268,7 @@ function projet_anomalie(maven_key) {
  * description
  * On calcule les stastiques consolidées sur les anomalies
  */
+// eslint-disable-next-line no-unused-vars
 function projet_anomalie_consolidation(maven_key, setup){
   const data = { maven_key: maven_key, setup: setup };
   const options = {
@@ -337,7 +333,7 @@ function projet_hotspot(maven_key) {
     url: 'http://localhost:8000/api/projet/hotspot', type: 'GET', dataType: 'json', data: data, contentType: contentType }
 
   return $.ajax(options).then((t) => {
-    if (t.hotspots == 0) {
+    if (t.hotspots === 0) {
       log(' - INFO : (5) Bravo aucune faille potentielle détectée.');
     }
     else { log(' - WARN : (5) J\'ai trouvé ' + t.hotspots + ' faille(s) potentielle(s).'); }
@@ -356,13 +352,13 @@ function projet_hotspot_owasp(maven_key, owasp) {
     url: 'http://localhost:8000/api/projet/hotspot/owasp', type: 'GET', dataType: 'json', data: data, contentType: contentType  }
 
   return $.ajax(options).then((t) => {
-    if (t.info=='effacement') {
+    if (t.info==='effacement') {
       log(' - INFO : (9) Les enregistrements ont été supprimé de la table hostspot_owasp.');
     }
-    if (t.hotspots == 0 && t.info=='enregistrement') {
+    if (t.hotspots === 0 && t.info==='enregistrement') {
       log(' - INFO : (10) Bravo aucune faille OWASP '+ owasp +' potentielle détectée.');
     }
-    if (t.hotspots != 0 && t.info=='enregistrement') {
+    if (t.hotspots != 0 && t.info==='enregistrement') {
       log(' - WARN : (10) J\'ai trouvé ' + t.hotspots + ' faille(s) OWASP '+owasp+' potentielle(s).');
     }
   })
@@ -475,7 +471,7 @@ $('.js-analyse').on('click', function () {
   $('.js-affiche-resultat').addClass('affiche-resultat-disabled');
   // On récupère la clé du projet qui est affichée.
   let id_project = $('#select-result').text().trim();
-  if (id_project == 'N.C') { log(' - ERROR : Vous devez chisir un projet !!!'); return }
+  if (id_project === 'N.C') { log(' - ERROR : Vous devez chisir un projet !!!'); return }
 
   // Analyse du projet
   projet_analyse(id_project);
@@ -530,9 +526,9 @@ $('select[name="projet"]').change(function () {
   }
 
   $.ajax(options).then((t) => {
-    if ( t.favori=='TRUE' && t.statut=='FALSE' ) {
+    if ( t.favori==='TRUE' && t.statut==='FALSE' ) {
           $('.favori-svg').removeClass('favori-svg-select'); }
-    if (t.favori == 'TRUE' && t.statut == 'TRUE') {
+    if (t.favori === 'TRUE' && t.statut === 'TRUE') {
           $('.favori-svg').addClass('favori-svg-select');
     } else { $('.favori-svg').removeClass('favori-svg-select'); }
    })
@@ -596,8 +592,8 @@ $('.favori-svg').on('click', function () {
      }
     return $.ajax(options).then(
       (t) => {
-        if (statut == t.statut){ log(' - INFO : Ajout du projet à la liste des favoris.'); }
-        if (statut == t.statut) { log(' - INFO : Suppression du projet à la liste des favoris.'); }
+        if (statut === t.statut){ log(' - INFO : Ajout du projet à la liste des favoris.'); }
+        if (statut === t.statut) { log(' - INFO : Suppression du projet à la liste des favoris.'); }
       })
   }
 });

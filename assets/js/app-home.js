@@ -1,15 +1,11 @@
 /*
- *  Copyright (c) 2021-2022.
- *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
- *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ * Copyright (c) 2021-2022.
+ * Laurent HADJADJ <laurent_h@me.com>.
+ * Licensed Creative Common  CC-BY-NC-SA 4.0.
+ * Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ * http://creativecommons.org/licenses/by-nc-sa/4.0/
  *
  */
-/* eslint-disable jquery/no-ready */
-/* eslint-disable jquery/no-class */
-/* eslint-disable jquery/no-show */
-/* eslint-disable jquery/no-hide */
 
 import '../css/home.css';
 
@@ -27,7 +23,7 @@ import browserUpdate from 'browser-update';
 console.log('Home : Chargement de webpack !');
 
 // Vérification du navigateur
-var configuration_options = {
+const configuration_options = {
   required: { i: 11, e: -3, c: -3, f: -3, o: -3, s: -3, },
   insecure: true,
   unsupported: true,
@@ -52,7 +48,7 @@ const date_options = {
  * Affiche la log.
  */
 function log(txt) {
-  let textarea = document.getElementById('log');
+  const textarea = document.getElementById('log');
   textarea.scrollTop = textarea.scrollHeight;
   textarea.value += new Intl.DateTimeFormat('default', date_options).format(new Date()) + txt + '\n';
 }
@@ -67,7 +63,7 @@ function dit_bonjour() { log(' - Initialisation de la log...'); }
  * description
  * Active la gomme pour nettoyer la log.
  */
-$('.gomme-svg').on('click', function (e) {
+$('.gomme-svg').on('click', function () {
   $('.log').val('');
 });
 
@@ -138,7 +134,7 @@ function liste_projet_date(){
     contentType: contentType }
   return $.ajax(options)
     .then((data)=> {
-      if (data.nombreProjet==0 && data.dateCreation==0){
+      if (data.nombreProjet===0 && data.dateCreation==0){
         $('#js-nombre-projet').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(0));
         log(' - ERROR : Vous devez importer la liste des projets !!!');
         }
@@ -163,7 +159,7 @@ function liste_projet_date(){
   return $.ajax(options)
     .then(function (r) {
          $('#js-nombre-profil').html('<span class="stat">' + new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(r.nombre) + '</span>')
-         if (r.nombre==0){ return $.ajax({
+         if (r.nombre===0){ return $.ajax({
            url:'http://localhost:8000/api/quality/profiles',
            type: 'GET',
            dataType: 'json',
@@ -188,8 +184,10 @@ $('.refresh-bd').on('click', function () {
 
 /**                               **/
 // On dit bonjour.
+start_spinner();
 dit_bonjour();
 // On récupère la date de la dernière analyse
 liste_projet_date()
 // On récupére le nomnbre de profil
 affiche_nombre_profil();
+stop_spinner();

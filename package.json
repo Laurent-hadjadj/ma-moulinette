@@ -1,38 +1,92 @@
 {
-    "devDependencies": {
-        "@hotwired/stimulus": "^3.0.0",
-        "@symfony/stimulus-bridge": "^3.0.0",
-        "@symfony/webpack-encore": "^1.7.0",
-        "babel-core": "^6.26.3",
-        "babel-loader": "^8.2.2",
-        "file-loader": "^6.2.0",
-        "core-js": "^3.21.1",
-        "regenerator-runtime": "^0.13.2",
-        "webpack-notifier": "^1.6.0"
+  "license": "SEE LICENCE IN licence.md",
+  "private": true,
+  "scripts": {
+    "lint": "eslint assets/js --ext .js",
+    "lint:fix": "npm run lint -- --fix",
+    "lint:export": "npm run lint -- --format json -o jslint-report.json",
+    "dev-server": "encore dev-server",
+    "dev": "encore dev",
+    "watch": "encore dev --watch",
+    "build": "encore production --progress"
+  },
+  "eslintConfig": {
+    "env": {
+      "browser": true,
+      "es6": true,
+      "es2017": true
     },
-    "license": "UNLICENSED",
-    "private": true,
-    "scripts": {
-        "dev-server": "encore dev-server",
-        "dev": "encore dev",
-        "watch": "encore dev --watch",
-        "build": "encore production --progress"
+    "plugins": [
+      "dollar-sign",
+      "html"
+    ],
+    "parserOptions": {
+      "sourceType": "module"
     },
-    "dependencies": {
-        "browser-update": "^3.3.38",
-        "chart.js": "^3.7.1",
-        "chartjs-adapter-moment": "^1.0.0",
-        "chartjs-plugin-datalabels": "^2.0.0",
-        "chartjs-plugin-zoom": "^1.2.0",
-        "css-loader": "^6.7.1",
-        "foundation-sites": "^6.7.4",
-        "jquery": "^3.6.0",
-        "moment": "^2.29.1",
-        "motion-ui": "^2.0.3",
-        "select2": "^4.1.0-rc.0",
-        "what-input": "^5.2.10"
+    "extends": [
+      "eslint:recommended"
+    ],
+    "settings": {
+      "html/html-extensions": [
+        ".html",
+        ".twig"
+      ]
     },
-    "optionalDependencies": {
-        "fsevents": "^2.1.3"
+    "rules": {
+      "dollar-sign/dollar-sign": [
+        2,
+        "ignoreProperties"
+      ]
     }
+  },
+  "dependencies": {
+    "browser-update": "^3.3.38",
+    "chart.js": "^3.7.1",
+    "chartjs-adapter-moment": "^1.0.0",
+    "chartjs-plugin-datalabels": "^2.0.0",
+    "chartjs-plugin-zoom": "^1.2.0",
+    "css-loader": "^6.7.1",
+    "foundation-sites": "^6.7.4",
+    "fsevents": "^2.1.3",
+    "jquery": "^3.6.0",
+    "moment": "^2.29.1",
+    "motion-ui": "^2.0.3",
+    "select2": "^4.1.0-rc.0",
+    "what-input": "^5.2.10"
+  },
+  "devDependencies": {
+    "@hotwired/stimulus": "^3.0.0",
+    "@symfony/stimulus-bridge": "^3.0.0",
+    "@symfony/webpack-encore": "^1.7.0",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^8.2.2",
+    "core-js": "^3.21.1",
+    "file-loader": "^6.2.0",
+    "regenerator-runtime": "^0.13.2",
+    "stylelint-config-standard": "^25.0.0",
+    "jslint": "^0.12.1",
+    "eslint": "^8.11.0",
+    "eslint-config-jquery": "^3.0.0",
+    "eslint-plugin-dollar-sign": "^1.0.2",
+    "eslint-plugin-html": "^6.2.0",
+    "eslint-plugin-jquery": "^1.5.1",
+    "stylelint": "^14.6.0",
+    "jshint": "^2.13.4",
+    "webpack-notifier": "^1.6.0"
+  },
+  "optionalDependencies": {
+    "fsevents": "^2.1.3"
+  },
+  "name": "ma-moulinette",
+  "description": "Ma Moulinette est une application qui a pour objectif de simplifier la consultation des indicateurs collectés et calculés sur la plateforme sonarqube.",
+  "version": "1.0.0",
+  "main": "webpack.config.js",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.franceagrimer.fr"
+  },
+  "keywords": [
+    "sonar"
+  ],
+  "author": "Laurent HADJADJ"
 }

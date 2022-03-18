@@ -30,8 +30,7 @@ class ApiProjetPeintureController extends AbstractController
  * description
  * Vérification de l'existence du projet dans la table information_projet
  */
-   function is_valide(EntityManagerInterface $em, $maven_key): array
-   {
+  protected function is_valide(EntityManagerInterface $em, $maven_key): array {
      // On regarde si une analyse a été réalisée.
     $sql="SELECT * FROM information_projet WHERE maven_key='". $maven_key."' LIMIT 1";
     $r=$em->getConnection()->prepare($sql)->executeQuery();
@@ -47,8 +46,7 @@ class ApiProjetPeintureController extends AbstractController
   * http://{url}/api/project_analyses/search?project={key}
   */
   #[Route('/api/liste/projet', name: 'liste_projet', methods: ['GET'])]
-  public function liste_projet(EntityManagerInterface $em): response
-  {
+  public function liste_projet(EntityManagerInterface $em): response {
     $response = new JsonResponse();
     //On récupère la liste des projets ayant déjà fait l'objet d'une analyse.
     $sql="SELECT project_name as name, maven_key as key FROM anomalie GROUP BY maven_key ORDER BY project_name ASC";
@@ -74,15 +72,13 @@ class ApiProjetPeintureController extends AbstractController
    * Récupère les informations sur le projet : type de version, dernière version, date de l'audit
   */
   #[Route('/api/peinture/projet/version', name: 'peinture_projet_version', methods: ['GET'])]
-  public function peinture_projet_version(EntityManagerInterface $em, Request $request): response
-  {
+  public function peinture_projet_version(EntityManagerInterface $em, Request $request): response {
     $maven_key=$request->get('maven_key');
     $response = new JsonResponse();
 
     $is_valide=$this->is_valide($em, $maven_key);
     if ($is_valide["code"]==406) {
-
-      return $response->setData(["message"=> self::HTTP_ERROR_406, Response::HTTP_NOT_ACCEPTABLE]);
+      return $response->setData(["message"=> static::HTTP_ERROR_406, Response::HTTP_NOT_ACCEPTABLE]);
     }
 
     // On récupere le nombre de version par type
@@ -91,10 +87,14 @@ class ApiProjetPeintureController extends AbstractController
     $infoVersion=$list->fetchAllAssociativeIndexed();
     $label=[];
     $dataset=[];
-    foreach ($infoVersion as $key => $value) { array_push($label, $key); array_push($dataset, $value["total"]); }
+    foreach ($infoVersion as $key => $value) {
+      array_push($label, $key);
+      array_push($dataset, $value["total"]);
+    }
 
     // On récupère la dernière version et sa date de publication
-    $sql="SELECT project_version as projet, date FROM information_projet WHERE maven_key='".$maven_key."' ORDER BY date DESC LIMIT 1";
+    $sql="SELECT project_version as projet, date FROM information_projet WHERE maven_key='"
+     .$maven_key."' ORDER BY date DESC LIMIT 1";
     $r=$em->getConnection()->prepare($sql)->executeQuery();
     $infoRelease=$r->fetchAllAssociative();
 
@@ -107,14 +107,13 @@ class ApiProjetPeintureController extends AbstractController
    * Récupère les informations sur le projet : type de version, dernière version, date de l'audit
   */
   #[Route('/api/peinture/projet/information', name: 'peinture_projet_information', methods: ['GET'])]
-  public function peinture_projet_information(EntityManagerInterface $em, Request $request): response
-  {
+  public function peinture_projet_information(EntityManagerInterface $em, Request $request): response {
     $maven_key=$request->get('maven_key');
     $response = new JsonResponse();
 
     $is_valide=$this->is_valide($em, $maven_key);
     if ($is_valide["code"]==406) {
-      return $response->setData(["message"=>self::HTTP_ERROR_406, Response::HTTP_NOT_ACCEPTABLE]);
+      return $response->setData(["message"=>static::HTTP_ERROR_406, Response::HTTP_NOT_ACCEPTABLE]);
     }
 
     // On récupère la dernière version et sa date de publication
@@ -134,14 +133,14 @@ class ApiProjetPeintureController extends AbstractController
    * Récupère les informations sur la dette technique et les anamalies
   */
   #[Route('/api/peinture/projet/anomalie', name: 'peinture_projet_anomalie', methods: ['GET'])]
-  public function peinture_projet_anomalie(EntityManagerInterface $em, Request $request): response
-  {
+  public function peinture_projet_anomalie(EntityManagerInterface $em, Request $request): response {
     $maven_key=$request->get('maven_key');
     $response = new JsonResponse();
 
     $is_valide=$this->is_valide($em, $maven_key);
     if ($is_valide["code"]==406) {
-      return $response->setData(["message"=>self::HTTP_ERROR_406, Response::HTTP_NOT_ACCEPTABLE]);
+      return $response->setData(
+        ["message"=>static::HTTP_ERROR_406, Response::HTTP_NOT_ACCEPTABLE]);
     }
 
     // On récupère la dernière version et sa date de publication
@@ -184,7 +183,8 @@ class ApiProjetPeintureController extends AbstractController
     $types=["reliability", "security", "sqale"];
     foreach ($types as $type)
     {
-      $sql="SELECT type, value FROM notes WHERE maven_key='". $maven_key."' AND type='".$type."' ORDER BY date DESC LIMIT 1";
+      $sql="SELECT type, value FROM notes WHERE maven_key='"
+       . $maven_key."' AND type='".$type."' ORDER BY date DESC LIMIT 1";
       $r=$em->getConnection()->prepare($sql)->executeQuery();
       $note=$r->fetchAllAssociative();
       if ($type=="reliability"){$note_reliability=$note[0]["value"];}
@@ -220,21 +220,25 @@ class ApiProjetPeintureController extends AbstractController
 
     $is_valide=$this->is_valide($em, $maven_key);
     if ($is_valide["code"]==406) {
-      return $response->setData(["message"=>self::HTTP_ERROR_406, Response::HTTP_NOT_ACCEPTABLE]);
+      return $response->setData(
+        ["message"=>static::HTTP_ERROR_406, Response::HTTP_NOT_ACCEPTABLE]);
     }
 
     // On récupère la dernière version et sa date de publication
-    $sql="select count(*) as to_review FROM hotspots WHERE maven_key='".$maven_key."' AND status='TO_REVIEW'";
+    $sql="select count(*) as to_review FROM hotspots WHERE maven_key='"
+     .$maven_key."' AND status='TO_REVIEW'";
     $r=$em->getConnection()->prepare($sql)->executeQuery();
     $to_review=$r->fetchAllAssociative();
 
-    $sql="select count(*) as reviewed FROM hotspots WHERE maven_key='".$maven_key."' AND status='REVIEWED'";
+    $sql="select count(*) as reviewed FROM hotspots WHERE maven_key='"
+     .$maven_key."' AND status='REVIEWED'";
     $r=$em->getConnection()->prepare($sql)->executeQuery();
     $reviewed=$r->fetchAllAssociative();
 
     if (empty($to_review[0]["to_review"])) { $note="A"; }
     else {
-      $ratio=intval($reviewed[0]["reviewed"])*100/intval($to_review[0]["to_review"])+intval($reviewed[0]["reviewed"]);
+      $ratio=intval($reviewed[0]["reviewed"])*100/intval($to_review[0]["to_review"])+
+       intval($reviewed[0]["reviewed"]);
       if ($ratio >= 80) { $note="A"; }
       if ($ratio >= 70 && $ratio < 80) { $note="B"; }
       if ($ratio >= 50 && $ratio < 70) { $note="C"; }
@@ -250,19 +254,20 @@ class ApiProjetPeintureController extends AbstractController
    * Récupère les hotspots du projet
   */
   #[Route('/api/peinture/projet/hotspot/details', name: 'peinture_projet_hotspot_details', methods: ['GET'])]
-  public function peinture_projet_hotspot_details(EntityManagerInterface $em, Request $request): response
-  {
+  public function peinture_projet_hotspot_details(EntityManagerInterface $em, Request $request): response {
     $maven_key=$request->get('maven_key');
     $response = new JsonResponse();
 
     $is_valide=$this->is_valide($em, $maven_key);
     if ($is_valide["code"]==406) {
-      return $response->setData(["message"=>self::HTTP_ERROR_406, Response::HTTP_NOT_ACCEPTABLE]);
+      return $response->setData(
+        ["message"=>static::HTTP_ERROR_406, Response::HTTP_NOT_ACCEPTABLE]);
     }
 
     $high=0; $medium=0; $low=0;
     // On récupère la dernière version et sa date de publication
-    $sql="select niveau, count(*) as hotspot FROM hotspots WHERE maven_key='".$maven_key."' AND status='TO_REVIEW' GROUP BY niveau";
+    $sql="select niveau, count(*) as hotspot FROM hotspots WHERE maven_key='"
+     .$maven_key."' AND status='TO_REVIEW' GROUP BY niveau";
     $r=$em->getConnection()->prepare($sql)->executeQuery();
     $niveaux=$r->fetchAllAssociative();
 
@@ -280,12 +285,12 @@ class ApiProjetPeintureController extends AbstractController
    * Récupère les exclusions nosonar et suppressWarning pour Java
   */
   #[Route('/api/peinture/projet/nosonar/details', name: 'peinture_projet_nosonar_details', methods: ['GET'])]
-  public function peinture_projet_nosonar_details(EntityManagerInterface $em, Request $request): response
-  {
+  public function peinture_projet_nosonar_details(EntityManagerInterface $em, Request $request): response {
     $maven_key=$request->get('maven_key');
     $response = new JsonResponse();
 
-    $sql="select rule, count(*) as total FROM no_sonar WHERE maven_key='".$maven_key."' GROUP BY rule";
+    $sql="select rule, count(*) as total FROM no_sonar WHERE maven_key='"
+     .$maven_key."' GROUP BY rule";
     $r=$em->getConnection()->prepare($sql)->executeQuery();
     $rules=$r->fetchAllAssociative();
     $S1309=0; $nosonar=0; $total=0;

@@ -1,19 +1,16 @@
 /*
- *  Copyright (c) 2021-2022.
- *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
- *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ * Copyright (c) 2021-2022.
+ * Laurent HADJADJ <laurent_h@me.com>.
+ * Licensed Creative Common  CC-BY-NC-SA 4.0.
+ * Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ * http://creativecommons.org/licenses/by-nc-sa/4.0/
  *
  */
-/* eslint-disable jquery/no-ready */
-/* eslint-disable jquery/no-class */
-/* eslint-disable jquery/no-show */
-/* eslint-disable jquery/no-hide */
 
 import '../css/dash.css';
 
 // Intégration de jquery
+// eslint-disable-next-line no-unused-vars
 import $ from 'jquery';
 
 import 'what-input';
@@ -24,14 +21,12 @@ import './foundation.js';
 
 import Chart from 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-//import moment from "moment";
+// eslint-disable-next-line no-unused-vars
+import moment from "moment";
 import "moment/locale/fr";
 import "chartjs-adapter-moment";
 Chart.register(ChartDataLabels);
 
-
-
-const contentType = 'application/json; charset=utf-8';
 
 const CHART_COLORS = {
   rouge: 'rgb(255, 99, 132)',
@@ -46,7 +41,7 @@ const CHART_COLORS = {
  * Affiche le graphique des sources
  */
 function dessineMoiUnMouton( labels, data1, data2, data3) {
-  let data = {
+  const data = {
     labels: labels,
     datasets: [{
       label: 'Bug',
@@ -86,7 +81,7 @@ function dessineMoiUnMouton( labels, data1, data2, data3) {
     },
     ]
   };
-let options = {
+const options = {
   animations: { radius: { duration: 400, easing: 'linear', } },
     maintainAspectRatio: true,
     responsive: true,
@@ -120,18 +115,18 @@ let options = {
         align: 'end', anchor: 'right',
         color: '#000',
         font: function (context) {
-          var w = context.chart.width;
+          const w = context.chart.width;
           return { size: w < 512 ? 11 : 12, weight: 'bold', };
         },
       }
     }};
 
-  let chartStatus = Chart.getChart("graphique-anomalie");
-  if (chartStatus != undefined) { chartStatus.destroy(); }
+  const chartStatus = Chart.getChart("graphique-anomalie");
+  if (chartStatus !== undefined) { chartStatus.destroy(); }
 
-  let ctx = document.getElementById('graphique-anomalie').getContext('2d');
-  let charts = new Chart(ctx, { type: 'line', data: data, options: options });
-  if (charts === null) { console.log()};
+  const ctx = document.getElementById('graphique-anomalie').getContext('2d');
+  const charts = new Chart(ctx, { type: 'line', data: data, options: options });
+  if (charts === null) { console.log(); }
 }
 
 
