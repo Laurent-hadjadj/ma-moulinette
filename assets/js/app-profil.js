@@ -26,7 +26,8 @@ Chart.register(zoomPlugin);
 console.log('Profil : Chargement de webpack !');
 
 const contentType = 'application/json; charset=utf-8';
-const matrice = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
+const matrice = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+  16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
 const palette_couleur = [
   '#065535', '#133337', '#000000', '#ffc0cb', '#008080', '#ff0000', '#ffd700', '#666666',
   '#ff7373', '#fa8072', '#800080', '#800000', '#003366', '#333333', '#20b2aa', '#ffc3a0',
@@ -59,6 +60,62 @@ function palette() {
   matrice.forEach((el) => { nouvelle_palette.push(palette_couleur[el]); });
   return nouvelle_palette;
 }
+
+const date_options1 = {year: "numeric", month: "numeric", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric", hour12: false };
+const date_options2 = {year: "numeric", month: "numeric", day: "numeric" };
+
+/**
+ * Description
+ * Met à jour la liste des référentiels
+ */
+ function refresh_quality() {
+  const options = {
+    url: 'http://localhost:8000/api/quality/profiles', type: 'GET', dataType: 'json',
+    contentType: contentType
+    }
+
+  return $.ajax(options)
+    .then(function (r) {
+      console.log(r);
+      let statut1="", statut2="", str="", total=0;
+
+      // On efface le tableau
+      $('#tableau-liste-profil').html('');
+      const profils=r.listeProfil;
+      profils.forEach( profil => {
+        str +='<tr class="open-sans">';
+        str +='<td>'+profil.profil+'</td>';
+        str +='<td class="text-center">'+profil.langage+'</td>';
+        str +='<td class="text-center">'+new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(profil.regle)+'</td>';
+        str +='<td class="text-center">';
+        str +='<span class="show-for-small-only">'+new Intl.DateTimeFormat('default', date_options2).format(new Date(profil.date))+'</span>';
+        str +='<span class="show-for-medium">'+new Intl.DateTimeFormat('default', date_options1).format(new Date(profil.date))+'</span>';
+        str +='</td>';
+        if (r.actif === 1) {
+          statut1='Oui';
+          statut2='O';
+        } else {
+            statut1='Non';
+            statut2='N';
+        }
+        str +='<td class="text-center">';
+        str +='<span class="show-for-small-only">'+statut2+'</span>';
+        str +='<span class="show-for-medium">'+statut1+'</span>';
+        str +='</td>';
+        str +='</tr>';
+        total = total + profil.regle;
+     });
+
+     $('#tableau-liste-profil').html(str);
+     $('.js-total').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(total));
+    });
+  }
+
+  /**
+ * Evenement
+ * Appel la fonction de mise à jour de la liste des référentiels
+ */
+$('.refresh').on('click', ()=>{ refresh_quality() })
 
 /**
  * Affiche le graphique des sources
