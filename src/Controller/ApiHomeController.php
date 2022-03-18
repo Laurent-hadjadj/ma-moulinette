@@ -30,10 +30,7 @@ class ApiHomeController extends AbstractController
 
   private $client;
 
-  public function __construct(HttpClientInterface $client)
-    {
-     $this->client = $client;
-    }
+  public function __construct(HttpClientInterface $client) { $this->client = $client; }
 
   public static $strContentType = 'application/json';
   public static $dateFormat = "Y-m-d H:m:s";
@@ -43,9 +40,9 @@ class ApiHomeController extends AbstractController
    * description
    * http_client
   */
-  function http_client($url) {
+  protected function http_client($url) {
     $response = $this->client->request(
-      'GET', $url, [ 'auth_basic' => [$this->getParameter('sonar.user'), $this->getParameter('sonar.password')], 'timeout' => 45,'headers' => [ 'Accept' => self::$strContentType, 'Content-Type' => self::$strContentType]
+      'GET', $url, [ 'auth_basic' => [$this->getParameter('sonar.user'), $this->getParameter('sonar.password')], 'timeout' => 45,'headers' => [ 'Accept' => static::$strContentType, 'Content-Type' => static::$strContentType]
     ]);
 
     if (200 !== $response->getStatusCode()) {
@@ -68,9 +65,8 @@ class ApiHomeController extends AbstractController
       * http://{url}}/api/system/status
     */
     #[Route('/api/status', name: 'sonar_status', methods: ['GET'])]
-    public function sonar_status()
-    {
-      $url=$this->getParameter(self::$sonarUrl)."/api/system/status";
+    public function sonar_status(){
+      $url=$this->getParameter(static::$sonarUrl)."/api/system/status";
 
       // on appel le client http
       $result=$this->http_client($url);
@@ -84,9 +80,8 @@ class ApiHomeController extends AbstractController
    * http://{url}}/api/components/search?qualifiers=TRK&ps=500
    */
     #[Route('/api/liste_projet/ajout', name: 'liste_projet_ajout', methods: ['GET'])]
-    public function liste_projet(EntityManagerInterface $em): response
-    {
-      $url=$this->getParameter(self::$sonarUrl)."/api/components/search?qualifiers=TRK&ps=500&p=1";
+    public function liste_projet(EntityManagerInterface $em): response{
+      $url=$this->getParameter(static::$sonarUrl)."/api/components/search?qualifiers=TRK&ps=500&p=1";
       //'auth_basic' => [$this->getParameter('sonar.token'),'']
 
       // on appel le client http
@@ -133,13 +128,11 @@ class ApiHomeController extends AbstractController
       $sql = "SELECT date_enregistrement as date from 'liste_projet' ASC LIMIT 1";
       $rq1 = $connection->fetchAllAssociative($sql);
 
-     if (!$rq1)
-      {
+     if (!$rq1){
         $dateCreation=0;
         $nombreProjet=0;
       }
-     else
-      {
+     else {
         $sql = "SELECT COUNT(*) as total from 'liste_projet'";
         $rq2 = $connection->fetchAllAssociative($sql);
         $dateCreation=$rq1[0]['date'];
@@ -157,9 +150,8 @@ class ApiHomeController extends AbstractController
   * http://{url}/api/qualityprofiles/search?qualityProfile={name}
   */
   #[Route('/api/quality/profiles', name: 'liste_quality_profiles', methods: ['GET'])]
-  public function liste_quality_profiles(EntityManagerInterface $em): response
-  {
-      $url=$this->getParameter(self::$sonarUrl)."/api/qualityprofiles/search?qualityProfile=".$this->getParameter('sonar.profiles');
+  public function liste_quality_profiles(EntityManagerInterface $em): response {
+      $url=$this->getParameter(static::$sonarUrl)."/api/qualityprofiles/search?qualityProfile=".$this->getParameter('sonar.profiles');
 
       // on appel le client http
       $result=$this->http_client($url);
@@ -204,8 +196,7 @@ class ApiHomeController extends AbstractController
    * Renvoire le nombre de profil
    */
   #[Route('/api/quality', name: 'nombre_profil', methods: ['GET'])]
-  public function nombre_profil(EntityManagerInterface $em): response
-  {
+  public function nombre_profil(EntityManagerInterface $em): response {
     // On récupère le nombre de profil dans la table profiles;
     $sql = "SELECT count(*) as nombre FROM profiles";
     $select = $em->getConnection()->prepare($sql)->executeQuery();

@@ -28,30 +28,40 @@ class BoardController extends AbstractController
    * On récupère les résultat Owasp
   */
   #[Route('/suivi', name: 'suivi', methods: ['GET'])]
-  public function suivi (EntityManagerInterface $em, Request $request): response
-  {
+  public function suivi (EntityManagerInterface $em, Request $request): response {
     $maven_key=$request->get('maven_key');
 
     // On récupere les failles owasp
-    $sql="SELECT nom_projet as nom, version, suppress_warning, no_sonar, nombre_bug as bug, nombre_vulnerability as faille, nombre_code_smell as mauvaise_pratique, hotspot_total as nombre_hotspot, frontend as presentation, backend as metier, batch, note_reliability as fiabilite, note_security as securite, note_hotspot, note_sqale as maintenabilite FROM historique WHERE maven_key='". $maven_key."' GROUP BY date_version ORDER BY date_version ASC";
+    $sql="SELECT nom_projet as nom, version, suppress_warning, no_sonar, nombre_bug as bug, nombre_vulnerability as faille, nombre_code_smell as mauvaise_pratique, hotspot_total as nombre_hotspot, frontend as presentation, backend as metier, batch,
+    note_reliability as fiabilite, note_security as securite, note_hotspot,
+    note_sqale as maintenabilite FROM historique WHERE maven_key='"
+    .$maven_key."' GROUP BY date_version ORDER BY date_version ASC";
+
     $select=$em->getConnection()->prepare($sql)->executeQuery();
     $dash=$select->fetchAllAssociative();
 
     // On récupére les anomalies par sévérité
-    $sql="SELECT nombre_anomalie_bloquante as bloquant, nombre_anomalie_critique as critique, nombre_anomalie_majeur as majeur FROM historique where maven_key='". $maven_key."' GROUP BY date_version ORDER BY date_version ASC";
+    $sql="SELECT nombre_anomalie_bloquante as bloquant,
+    nombre_anomalie_critique as critique, nombre_anomalie_majeur as majeur
+    FROM historique where maven_key='"
+    .$maven_key."' GROUP BY date_version ORDER BY date_version ASC";
+
     $select=$em->getConnection()->prepare($sql)->executeQuery();
     $severite=$select->fetchAllAssociative();
 
     // Graphique
-    $sql="SELECT nombre_bug as bug, nombre_vulnerability as secu, nombre_code_smell as code_smell, date_version as date FROM historique where maven_key='". $maven_key."' GROUP BY date_version ORDER BY date_version ASC";
+    $sql="SELECT nombre_bug as bug, nombre_vulnerability as secu,
+    nombre_code_smell as code_smell, date_version as date
+    FROM historique where maven_key='"
+    .$maven_key."' GROUP BY date_version ORDER BY date_version ASC";
+
     $select=$em->getConnection()->prepare($sql)->executeQuery();
     $graph=$select->fetchAllAssociative();
 
     // On compte le nombre de résultat
     $nl=count((array)$graph);
 
-    for ($i=0; $i<$nl; $i++)
-    {
+    for ($i=0; $i<$nl; $i++) {
       $bug[$i]=$graph[$i]["bug"];
       $secu[$i]=$graph[$i]["secu"];
       $code_smell[$i]=$graph[$i]["code_smell"];
@@ -69,7 +79,8 @@ class BoardController extends AbstractController
 
     return $this->render('dash/index.html.twig',
     [   'dash'=>$dash, 'severite'=>$severite, 'nom'=>$dash[0]["nom"],
-        'data1'=>json_encode($bug), 'data2'=>json_encode($secu), 'data3'=>json_encode($code_smell), 'labels'=>json_encode($date),
+        'data1'=>json_encode($bug), 'data2'=>json_encode($secu),
+        'data3'=>json_encode($code_smell), 'labels'=>json_encode($date),
         'version' => $this->getParameter('version'), 'dateCopyright' => \date('Y')
     ]);
   }

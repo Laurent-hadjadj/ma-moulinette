@@ -20,10 +20,12 @@ use DateTime;
 class ProfilController extends AbstractController
 {
   #[Route('/profil', name: 'profil')]
-  public function index(EntityManagerInterface $em)
-    {
+  public function index(EntityManagerInterface $em) {
       // On récupère la liste des profiles;
-      $sql = "SELECT name as profil, language_name as langage, active_rule_count as regle, rules_update_at as date, is_default as actif FROM profiles";
+      $sql = "SELECT name as profil, language_name as langage,
+      active_rule_count as regle, rules_update_at as date, is_default as actif
+      FROM profiles";
+
       $select = $em->getConnection()->prepare($sql)->executeQuery();
       $liste=$select->fetchAllAssociative();
 

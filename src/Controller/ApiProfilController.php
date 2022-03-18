@@ -29,8 +29,7 @@ class ApiProfilController extends AbstractController
    * Permet de tracer un jolie dessin sur la répartition des langages de programmation.
    */
   #[Route('/api/quality/langage', name: 'liste_quality_langage', methods: ['GET'])]
-  public function liste_quality_langage(EntityManagerInterface $em): response
-  {
+  public function liste_quality_langage(EntityManagerInterface $em): response {
       $liste_label=[];
       $liste_dataset=[];
 

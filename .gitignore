@@ -1,5 +1,3 @@
-.env
-
 ###> symfony/framework-bundle ###
 .env
 .env.example
@@ -9,7 +7,7 @@
 /public/bundles/
 /var/
 /vendor/
-/migrations/*
+/migrations/
 ###< symfony/framework-bundle ###
 
 ###> symfony/webpack-encore-bundle ###
@@ -18,8 +16,19 @@
 npm-debug.log
 yarn-error.log
 .npmrc
+package-lock.json
 ###< symfony/webpack-encore-bundle ###
 
 ###> Git ###
 git.store
 ###< Git ###
+
+###> Audit ###
+css-report.json
+jslint-report.json
+phpstan-report.json
+.scannerwork/
+
+###< Git ###
+package-lock.json
+composer.lock
