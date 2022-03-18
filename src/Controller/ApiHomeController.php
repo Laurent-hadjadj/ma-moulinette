@@ -193,7 +193,7 @@ class ApiHomeController extends AbstractController
 
    /**
    * description
-   * Renvoire le nombre de profil
+   * Renvoi le nombre de profil
    */
   #[Route('/api/quality', name: 'nombre_profil', methods: ['GET'])]
   public function nombre_profil(EntityManagerInterface $em): response {

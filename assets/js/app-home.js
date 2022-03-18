@@ -161,9 +161,7 @@ function liste_projet_date(){
          $('#js-nombre-profil').html('<span class="stat">' + new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(r.nombre) + '</span>')
          if (r.nombre===0){ return $.ajax({
            url:'http://localhost:8000/api/quality/profiles',
-           type: 'GET',
-           dataType: 'json',
-           contentType: contentType})
+           type: 'GET', dataType: 'json', contentType: contentType})
           }
       });
  }
