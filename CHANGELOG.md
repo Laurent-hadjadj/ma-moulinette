@@ -86,3 +86,7 @@
 ## v0.0.5 - 13/03/2022
 
 * Ajout de la page dash, pour affciher des tableaux de suivi ;
+
+## v0.0.6 - 17/03/2022
+
+* Corrections Sonarqube ;
