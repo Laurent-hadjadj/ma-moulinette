@@ -23,7 +23,8 @@
 @media only screen and (min-width: 120em) and (max-width: 160em) { /* vide */ }
 
 /*************************          Global     *********************************/
-.graphique-svg {
+.graphique-svg,
+.refresh-svg {
   fill: #fff;
   cursor: pointer;
   margin-bottom: -0.6rem;
@@ -31,11 +32,11 @@
   height: 32px;
 }
 
-.graphique-langage {
+.graphique-langage,
+.refresh {
   color: #fff;
   background-color: #00445b;
 }
 
-.graphique-langage:hover {
-  background-color: #006182;
-}
+.graphique-langage:hover,
+.refresh:hover { background-color: #006182; }
