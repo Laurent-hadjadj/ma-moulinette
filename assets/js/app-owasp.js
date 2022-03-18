@@ -33,7 +33,7 @@ const liste_owasp2017 = [
  * description
  * Calcul la note des hotspots
  */
-function calcul_note_hotspot(taux) {
+ function calcul_note_hotspot(taux) {
   let c, n
   if (taux > 0.79) { c = couleur[1]; n = note[1] }
   if (taux > 0.71 && taux < 0.81) {
@@ -200,21 +200,21 @@ function remplissage_hotspot_info(id_maven) {
   const html_01='</span> <span class="badge ';
 
   // On compte le nombre de hotspot au status REVIEWED
-  $('#hotspot-reviewed').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(r.reviewed)); sessionStorage.setItem('hotspot-reviewed', r.reviewed);
-
+  $('#hotspot-reviewed').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(r.reviewed));
   // On compte le nombre de hotspot au status TO_REVIEW
- $('#hotspot-to-review').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(r.to_review)); sessionStorage.setItem('hotspot-to-review', r.to_review);
+  $('#hotspot-to-review').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(r.to_review));
+  const hotspot_to_review = r.to_review;
 
-  // On affiche le nombre de hotspot OWASP et par la répartition
-  $('#hotspot-total').html(r.total); sessionStorage.setItem('hotspot-total', r.total);
+ // On affiche le nombre de hotspot OWASP et par la répartition
+  $('#hotspot-total').html(r.total);
+  const hotspot_total=r.total;
   $('#nombre_hotspot_high').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(r.high));
   $('#nombre_hotspot_medium').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(r.medium));
   $('#nombre_hotspot_low').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(r.low));
 
   let leTaux=1, _note=['badge-vert1', 'A'];
-  const hotspot_total=parseInt(sessionStorage.getItem('hotspot-total'),10);
   if ( hotspot_total !==0 ) {
-    leTaux = 1 - (parseInt(sessionStorage.getItem('hotspot-to-review'),10) / hotspot_total);
+    leTaux = 1 - (parseInt(hotspot_to_review,10) / hotspot_total);
     _note = calcul_note_hotspot(leTaux);
   }
 
@@ -236,34 +236,26 @@ function remplissage_hotspot_liste(id_maven) {
 
   $.ajax(options).then((r) => {
   let i, leTaux=1, _note=['badge-vert1', 'A'], espace="";
-  const hotspot_total=parseInt(sessionStorage.getItem('hotspot-total'),10);
-  console.log('hotspot_total: ', hotspot_total);
-  console.log("r :", r);
+  const hotspot_total=r.menace_a1+r.menace_a2+r.menace_a3+r.menace_a4+r.menace_a5+r.menace_a6
+  +r.menace_a7+r.menace_a8+r.menace_a9+r.menace_a10;
   const html_01='</span> <span class="badge ';
 
   if ( hotspot_total !==0 )
   {
     //A1
     leTaux = 1 - (parseInt(r.menace_a1,10)/hotspot_total);
-    console.log('leTaux: ', leTaux);
     _note = calcul_note_hotspot(leTaux);
-    console.log('_note: ', _note);
     if ( (leTaux*100)>10 && (leTaux*100)<100) { espace="&nbsp;&nbsp;&nbsp;"} else {espace=" ";}
     if ( leTaux*100===100) { espace="&nbsp;"}
     i = '<span class="stat-note">'+new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(r.menace_a1)+'</span><span class="stat-note">' + espace + new Intl.NumberFormat('fr-FR', { style: 'percent', }).format(leTaux) + html_01 + _note[0] + '">' + _note[1] + '</span>';
     $('#h1').html(i);
 
     //A2
-    leTaux = 1 - (parseInt(r.menace_a,10)/ hotspot_total);
-    console.log('leTaux: ', leTaux);
-
+    leTaux = 1 - (parseInt(r.menace_a2,10)/ hotspot_total);
     _note = calcul_note_hotspot(leTaux);
-    console.log('_note: ', _note);
     if ( (leTaux*100)>10 && (leTaux*100)<100) { espace="&nbsp;&nbsp;&nbsp;"} else {espace="";}
     if ( leTaux*100===100) { espace="&nbsp;"}
     i = '<span class="stat-note">'+new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(r.menace_a2) +'</span><span class="stat-note">' + espace + new Intl.NumberFormat('fr-FR', { style: 'percent', }).format(leTaux) + html_01 + _note[0] + '">' + _note[1] + '</span>';
-    console.log('i: ', i);
-
     $('#h2').html(i);
 
     //A3
@@ -360,7 +352,6 @@ function remplissage_hotspot_details(id_maven) {
     url: 'http://localhost:8000/api/peinture/owasp/hotspot/details', type: 'GET', dataType: 'json', data: data, contentType: contentType }
 
   $.ajax(options).then((r) => {
-
     let numero=0, mon_numero, ligne, c, frontend=0, backend=0, batch=0;
     let _a, _b, _c, too, total_a_b_c, zero='', bc;
     const serveur=$('#js-serveur').data('serveur');

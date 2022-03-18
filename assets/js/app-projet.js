@@ -366,6 +366,27 @@ function projet_hotspot_owasp(maven_key, owasp) {
 
 /**
 * description
+* On enregistre le détails des hostspot owasp
+* http://{url}/api/projet/hotspot/details{maven_key}
+*
+*/
+function projet_hotspot_owasp_details(maven_key) {
+  const data = { maven_key: maven_key };
+  const options = {
+    url: 'http://localhost:8000/api/projet/hotspot/details', type: 'GET', dataType: 'json', data: data, contentType: contentType  }
+
+  return $.ajax(options).then((t) => {
+    if (t.code === 406) {
+      log(' - INFO : (11) Aucun détails n\'est disponible pour les hotspots.');
+      return;
+    }
+    // On a trouvé des hotspots OWASP
+    log(' - INFO : (11) On a trouvé '+ t.ligne +' descriptions.');
+  })
+}
+
+/**
+* description
 * On récupére la liste des exculions de code
 * http://{url}/api/projet/nosonar/details
 */
@@ -426,7 +447,7 @@ function affiche_liste_projet() {
 /**
 * description
 * On récupére la répartition des hotspots par sévérité
-* http://{url}/api/peinture/projet/hotspot/details
+* http://{url}/api/peinture/projet/hotspot/details{meven_key}
 */
 function affiche_hotspot_details(maven_key){
   const data = { maven_key: maven_key };
@@ -501,6 +522,9 @@ $('.js-analyse').on('click', function () {
   projet_hotspot_owasp(id_project, 'a8');
   projet_hotspot_owasp(id_project, 'a9');
   projet_hotspot_owasp(id_project, 'a10');
+
+  // On enregistre le détails de chaque hotspot owasp
+  projet_hotspot_owasp_details(id_project);
 
   // Analyse des anomalies
   projet_nosonar_details(id_project);

@@ -1081,6 +1081,15 @@ class ApiProjetController extends AbstractController
     $file=str_replace($maven_key.":", "", $hotspot["component"]["key"]);
     $module=explode("/", $file);
 
+    /* Cas particulier pour l'application RS et DU
+     * Le nom du projet ne correspond pas à l'artifactId du module
+     * Par exemple la clé maven it.cool:monapplication et un module de
+     * type : cool-presentation au lieu de monapplication-presentation
+     */
+    if ($module[0]=="du-presentation") {$frontend++;}
+    if ($module[0]=="rs-presentation") {$frontend++;}
+    if ($module[0]=="rs-metier") {$backend++;}
+
     // Application Frontend
     if ($module[0]==$app[1]."-presentation") {$frontend++; }         //Legacy
     if ($module[0]==$app[1]."-presentation-commun") {$frontend++; }  //Legacy
@@ -1116,7 +1125,7 @@ class ApiProjetController extends AbstractController
 /**
   * description
   * Récupère le détails des hotspots et les enregistre dans la table Hotspots_details
-  * http://{url}/api/hotspot/details{maven_key};
+  * http://{url}/api/projet/hotspot/details{maven_key};
   * {maven_key} = la clé du projet
   */
   #[Route('/api/projet/hotspot/details', name: 'projet_hotspot_details', methods: ['GET'])]
@@ -1128,6 +1137,7 @@ class ApiProjetController extends AbstractController
     $sql = "SELECT * FROM hotspots WHERE maven_key='".$request->get('maven_key')."' AND status='TO_REVIEW' ORDER BY niveau";
     $r=$em->getConnection()->prepare($sql)->executeQuery();
     $liste=$r->fetchAllAssociative();
+
     if (empty($liste)){ return$response->setData(["code"=>406, Response::HTTP_OK]); }
 
     // on efface la table hotspots_details
@@ -1138,7 +1148,9 @@ class ApiProjetController extends AbstractController
     /* On boucle sur les clés pour récupérer le détails du hotspot
      * On envoie la clé du projet et la clé du hotspot
      */
+    $ligne=0;
     foreach($liste as $elt) {
+        $ligne++;
         $key=$this->hotspot_details($request->get('maven_key') ,$elt["key"]);
         $details= new  HotspotDetails();
         $details->setMavenKey($request->get('maven_key'));
@@ -1156,8 +1168,7 @@ class ApiProjetController extends AbstractController
         $em->persist($details);
         $em->flush();
        }
-
-    return $response->setData([Response::HTTP_OK]);
+    return $response->setData(["ligne"=>$ligne, Response::HTTP_OK]);
    }
 
   /**

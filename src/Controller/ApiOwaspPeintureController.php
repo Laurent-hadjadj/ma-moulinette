@@ -118,16 +118,16 @@ class ApiOwaspPeintureController extends AbstractController
     $menace_a1=0; $menace_a2=0; $menace_a3=0; $menace_a4=0; $menace_a5=0; $menace_a6=0; $menace_a7=0; $menace_a8=0; $menace_a9=0; $menace_a10=0;
 
     foreach ($menaces as $elt) {
-      if ($elt["menace"]=="a1") { $menace_a1= $elt["total"]; }
-      if ($elt["menace"]=="a2") { $menace_a2= $elt["total"]; }
-      if ($elt["menace"]=="a3") { $menace_a3= $elt["total"]; }
-      if ($elt["menace"]=="a4") { $menace_a4= $elt["total"]; }
-      if ($elt["menace"]=="a5") { $menace_a5= $elt["total"]; }
-      if ($elt["menace"]=="a6") { $menace_a6= $elt["total"]; }
-      if ($elt["menace"]=="a7") { $menace_a7= $elt["total"]; }
-      if ($elt["menace"]=="a8") { $menace_a8= $elt["total"]; }
-      if ($elt["menace"]=="a9") { $menace_a9= $elt["total"]; }
-      if ($elt["menace"]=="a10") { $menace_a10= $elt["total"]; }
+      if ($elt["menace"]==="a1") { $menace_a1= $elt["total"]; }
+      if ($elt["menace"]==="a2") { $menace_a2= $elt["total"]; }
+      if ($elt["menace"]==="a3") { $menace_a3= $elt["total"]; }
+      if ($elt["menace"]==="a4") { $menace_a4= $elt["total"]; }
+      if ($elt["menace"]==="a5") { $menace_a5= $elt["total"]; }
+      if ($elt["menace"]==="a6") { $menace_a6= $elt["total"]; }
+      if ($elt["menace"]==="a7") { $menace_a7= $elt["total"]; }
+      if ($elt["menace"]==="a8") { $menace_a8= $elt["total"]; }
+      if ($elt["menace"]==="a9") { $menace_a9= $elt["total"]; }
+      if ($elt["menace"]==="a10") { $menace_a10= $elt["total"]; }
     }
 
     return $response->setData(
