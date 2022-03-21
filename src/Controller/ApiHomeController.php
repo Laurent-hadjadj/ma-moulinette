@@ -41,8 +41,17 @@ class ApiHomeController extends AbstractController
    * http_client
   */
   protected function http_client($url) {
+    // On peut se connecter avec un user/password ou un token. Nous on préfére le token.
+    if (empty($this->getParameter('sonar.token'))) {
+      $user=$this->getParameter('sonar.user');
+      $password=$this->getParameter('sonar.password');
+    } else {
+      $user=$this->getParameter('sonar.token');
+      $password='';
+    }
+
     $response = $this->client->request(
-      'GET', $url, [ 'auth_basic' => [$this->getParameter('sonar.user'), $this->getParameter('sonar.password')], 'timeout' => 45,'headers' => [ 'Accept' => static::$strContentType, 'Content-Type' => static::$strContentType]
+      'GET', $url, [ 'auth_basic' => [$user, $password], 'timeout' => 45,'headers' => [ 'Accept' => static::$strContentType, 'Content-Type' => static::$strContentType]
     ]);
 
     if (200 !== $response->getStatusCode()) {
