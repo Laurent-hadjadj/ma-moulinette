@@ -44,8 +44,8 @@ class ApiProjetPeintureController extends AbstractController
    * Récupupère la liste de mes projets et ceux en favoris
   * http://{url}/api/project_analyses/search?project={key}
   */
-  #[Route('/api/liste/projet', name: 'liste_projet', methods: ['GET'])]
-  public function liste_projet(EntityManagerInterface $em): response {
+  #[Route('/api/projet/favori', name: 'projet_favori', methods: ['GET'])]
+  public function projet_favori(EntityManagerInterface $em): response {
     $response = new JsonResponse();
     //On récupère la liste des projets ayant déjà fait l'objet d'une analyse.
     $sql="SELECT project_name as name, maven_key as key FROM anomalie GROUP BY maven_key ORDER BY project_name ASC";
