@@ -406,12 +406,12 @@ function projet_nosonar_details(maven_key){
 
 /**
 * description
-* On récupére la liste des projets
-* http://{url}/api/liste/projet
+* On récupére la liste des projets et des favori
+* http://{url}/api/projet/favori
 */
-function affiche_liste_projet() {
+function affiche_projet_favori() {
   const options = {
-    url: 'http://localhost:8000/api/liste/projet', type: 'GET', dataType: 'json', contentType: contentType
+    url: 'http://localhost:8000/api/projet/favori', type: 'GET', dataType: 'json', contentType: contentType
   }
   $.ajax(options).then((t) => {
     let str, favori, i, liste=[], check_favori;
@@ -569,10 +569,10 @@ $('select[name="projet"]').change(function () {
 
 /**
  * description
- * On affiche la liste des projets
+ * On affiche la liste des projets déjà analysés et des favoris
  */
 $('.js-affiche-liste').on('click', function () {
-  affiche_liste_projet();
+  affiche_projet_favori();
   $('#modal-liste-projet').foundation('open');
 })
 
