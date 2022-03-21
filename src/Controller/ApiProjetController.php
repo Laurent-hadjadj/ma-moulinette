@@ -35,7 +35,6 @@ use App\Entity\Historique;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\DBAL\Connection;
 use DateTime;
-use Monolog\Logger;
 
 class ApiProjetController extends AbstractController
 {
@@ -84,14 +83,22 @@ class ApiProjetController extends AbstractController
   }
 
  /**
-   * description
-   * http_client
- */
+  * description
+  * http_client
+  */
   protected function http_client($url) {
+    if (empty($this->getParameter('sonar.token'))) {
+      $user=$this->getParameter('sonar.user');
+      $password=$this->getParameter('sonar.password');
+    } else {
+      $user=$this->getParameter('sonar.token');
+      $password='';
+    }
+
     $response = $this->client->request(
-      'GET', $url, [ 'auth_basic' => [$this->getParameter('sonar.user'),
-      $this->getParameter('sonar.password')], 'timeout' => 45,'headers' => [ 'Accept' => static::$strContentType, 'Content-Type' => static::$strContentType]
-    ]);
+      'GET', $url, [ 'auth_basic' => [$user, $password], 'timeout' => 45,
+      'headers' => [ 'Accept' => static::$strContentType, 'Content-Type' => static::$strContentType]
+      ]);
 
     if (200 !== $response->getStatusCode()) {
         if ($response->getStatusCode() == 401) {
@@ -202,17 +209,16 @@ class ApiProjetController extends AbstractController
   /*
     * description
     * récupère la liste des projets nom + clé
-    * http://{url}}/api/liste_projet/affiche
+    * http://{url}}/api/liste/projet
   */
-  #[Route('/api/liste_projet/affiche', name: 'liste_projet_affiche', methods: ['GET'])]
+  #[Route('/api/liste/projet', name: 'liste_projet', methods: ['GET'])]
   public function db_liste_projet_affiche(Connection $connection)
   {
 
     $sql = "SELECT maven_key, name from 'liste_projet'";
     $rqt = $connection->fetchAllNumeric($sql);
 
-    if (!$rqt)
-    {throw $this->createNotFoundException('Oops - Il y a un problème.');}
+    if (!$rqt){throw $this->createNotFoundException('Oops - Il y a un problème.');}
 
     $liste=[];
     //objet = { id: clé, text: "blablabla" };
