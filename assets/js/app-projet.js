@@ -186,7 +186,7 @@ function match(params, data) {
  */
 function select_projet() {
   const options = {
-    url: 'http://localhost:8000/api/liste_projet/affiche', type: 'GET', dataType: 'json',
+    url: 'http://localhost:8000/api/liste/projet', type: 'GET', dataType: 'json',
     contentType: contentType }
 
   return $.ajax(options)
