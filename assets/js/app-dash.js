@@ -13,6 +13,9 @@ import '../css/dash.css';
 // eslint-disable-next-line no-unused-vars
 import $ from 'jquery';
 
+import 'select2';
+import 'select2/dist/js/i18n/fr.js';
+
 import 'what-input';
 import 'foundation-sites';
 import 'motion-ui';
@@ -27,7 +30,6 @@ import "moment/locale/fr";
 import "chartjs-adapter-moment";
 Chart.register(ChartDataLabels);
 
-
 const CHART_COLORS = {
   rouge: 'rgb(255, 99, 132)',
   rouge_opacity: 'rgb(255, 99, 132, 0.5)',
@@ -36,6 +38,8 @@ const CHART_COLORS = {
   orange: 'rgb(170,	102,	51)',
   orange_opacity: 'rgb(170,	102, 51, 0.5)',
 };
+
+const contentType='application/json; charset=utf-8';
 
 /**
  * Affiche le graphique des sources
@@ -139,3 +143,100 @@ const _labels= data_attribut.dataset.label;
 
 
 dessineMoiUnMouton(Object.values(JSON.parse(_labels)), Object.values(JSON.parse(_data1)), Object.values(JSON.parse(_data2)), Object.values(JSON.parse(_data3)));
+
+/**
+ * description
+ * Création du selecteur de projet.
+ */
+ function select_version(maven_key) {
+  const data={ maven_key: maven_key}
+  const options = {
+    url: 'http://localhost:8000/api/liste/version', type: 'GET', dataType: 'json',
+    data: data, contentType: contentType }
+
+  return $.ajax(options)
+    .then(function (r) {
+      $('.js-version').select2({
+        placeholder: 'Cliquez pour ouvrir la liste',
+        allowClear: true,
+        selectOnClose: true,
+        width: '100%',
+        minimumResultsForSearch: 5,
+        language: "fr",
+        data: r.liste,
+      });
+      $('.analyse').removeClass('hide');
+    })
+}
+
+/**
+ * description
+ * On affiche la liste des projets
+ */
+ $('.js-ajouter-analyse').on('click', function () {
+ const maven_key=$("#js-nom").data('maven');
+ select_version(maven_key);
+ $('#modal-ajouter-analyse').foundation('open');
+})
+
+/**
+ * description
+ * On charge les données
+ */
+$('select[name="version"]').change(function () {
+  // On affiche la clé
+  $('#key-maven').html($("#js-nom").data('maven').trim());
+  // On affiche le nom
+  const n=$("#js-nom").data('maven').trim();
+  const name=n.split(':');
+  $('#nom').html(name[1]);
+
+  // On récupère la date et l'a nettoie avant de l'envoyer
+  const d=$('#liste-version :selected').text();
+  const d1=d.split('(');
+  const d2=d1[1].split(')');
+  const d3=d2[0].split('+')
+  // On affiche la version
+  $('#version').html(d1[0]);
+  // On affiche la date
+  $('#date').html(d3[0]);
+
+  const data = { maven_key: $('#key-maven').text().trim(), date:d2[0] }
+  const options = {
+    url: 'http://localhost:8000/api/get/version', type: 'PUT', dataType: 'json', data: JSON.stringify(data), contentType: contentType
+  }
+
+  $.ajax(options).then((t) => {
+    let t_notes = ['', 'A', 'B', 'C', 'D', 'E'], couleur1, couleur2, couleur3 = '';
+    if (t.note_reliability === 1 ) { couleur1 = 'vert1'; }
+    if (t.note_security === 1) { couleur2 = 'vert1'; }
+    if (t.note_sqale === 1) { couleur3 = 'vert1'; }
+
+    if (t.note_reliability === 2) { couleur1 = 'vert2'; }
+    if (t.note_security === 2) { couleur2 = 'vert2'; }
+    if (t.note_sqale === 2) { couleur3 = 'vert2'; }
+
+    if (t.note_reliability === 3) { couleur1 = 'jaune'; }
+    if (t.note_security === 3) { couleur2 = 'jaune'; }
+    if (t.note_sqale === 3) { couleur3 = 'jaune'; }
+
+    if (t.note_reliability === 4) { couleur1 = 'orange'; }
+    if (t.note_security === 4) { couleur2 = 'orange'; }
+    if (t.note_sqale === 4) { couleur3 = 'orange'; }
+
+    if (t.note_reliability === 5) { couleur1 = 'rouge'; }
+    if (t.note_security === 5) { couleur2 = 'rouge'; }
+    if (t.note_sqale === 5) { couleur3 = 'rouge'; }
+
+    const note_reliability = t_notes[parseInt(t.note_reliability,10)];
+    const note_security = t_notes[parseInt(t.note_security,10)];
+    const note_sqale = t_notes[parseInt(t.note_sqale,10)];
+
+    $('#note-reliability').html('<span class="' + couleur1 + '">' + note_reliability + '</span>');
+    $('#note-security').html('<span class="' + couleur2 + '">' + note_security + '</span>');
+    $('#note-sqale').html('<span class="' + couleur3 + '">' + note_sqale + '</span>');
+
+
+  });
+
+})
