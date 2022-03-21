@@ -39,7 +39,6 @@ class ApiProjetPeintureController extends AbstractController
     return ["code"=>200];
   }
 
-
   /**
    * description
    * Récupupère la liste de mes projets et ceux en favoris
