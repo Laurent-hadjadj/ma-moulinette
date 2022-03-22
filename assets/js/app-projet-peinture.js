@@ -104,15 +104,17 @@ export function remplissage(maven_key) {
 
     //Historique
     const t1 = document.getElementById('nombre-ligne');
-    const t2 = document.getElementById('couverture');
-    const t3 = document.getElementById('duplication');
-    const t4 = document.getElementById('tests-unitaires');
-    const t5 = document.getElementById('nombre-defaut');
+    const t2 = document.getElementById('nombre-ligne-code');
+    const t3 = document.getElementById('couverture');
+    const t4 = document.getElementById('duplication');
+    const t5 = document.getElementById('tests-unitaires');
+    const t6 = document.getElementById('nombre-defaut');
     t1.dataset.nombre_ligne=(t.lines);
-    t2.dataset.coverage=(t.coverage);
-    t3.dataset.duplication=(t.duplication);
-    t4.dataset.tests_unitaires=(t.tests);
-    t5.dataset.nombre_defaut=(t.issues);
+    t2.dataset.nombre_ligne=(t.ncloc);
+    t3.dataset.coverage=(t.coverage);
+    t4.dataset.duplication=(t.duplication);
+    t5.dataset.tests_unitaires=(t.tests);
+    t6.dataset.nombre_defaut=(t.issues);
   });
 
   //On récupère les informations sur la dette technique et les anomalies.
