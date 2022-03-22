@@ -320,7 +320,7 @@ class ApiProjetController extends AbstractController
     // On enregistre
     $mesure = new Mesures();
     $mesure->setMavenKey($request->get("maven_key"));
-    $mesure->setProjectName($result["projectName"]);
+    $mesure->setProjectName($result1["projectName"]);
     $mesure->setLines($lines);
     $mesure->setNcloc($ncloc);
     $mesure->setCoverage($coverage);
