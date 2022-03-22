@@ -31,6 +31,9 @@ class Mesures
     #[ORM\Column(type: 'integer')]
     private $lines;
 
+    #[ORM\Column(type: 'integer')]
+    private $ncloc;
+
     #[ORM\Column(type: 'float')]
     private $coverage;
 
@@ -143,6 +146,18 @@ class Mesures
     public function setDateEnregistrement(\DateTimeInterface $date_enregistrement): self
     {
         $this->date_enregistrement = $date_enregistrement;
+
+        return $this;
+    }
+
+    public function getNcloc(): ?int
+    {
+        return $this->ncloc;
+    }
+
+    public function setNcloc(int $ncloc): self
+    {
+        $this->ncloc = $ncloc;
 
         return $this;
     }
