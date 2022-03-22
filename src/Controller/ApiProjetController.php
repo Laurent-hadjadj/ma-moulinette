@@ -277,50 +277,59 @@ class ApiProjetController extends AbstractController
    * description
    * Récupère les informations du projet (id de l'enregistrement, date de l'analyse, version, type de version)
   * http://{url}/api/components/app?component={key}
+  * http://{URL}/api/measures/component?component={key}&metricKeys=ncloc
   */
   #[Route('/api/projet/mesures', name: 'projet_mesures', methods: ['GET'])]
   public function projet_mesures(EntityManagerInterface $em, Request $request): response {
-    $url=$this->getParameter(static::$sonarUrl)."/api/components/app?component=".$request->get('maven_key');
+    // mesures globales
+    $url1=$this->getParameter(static::$sonarUrl)."/api/components/app?component=".$request->get('maven_key');
 
     // on appel le client http
-    $result=$this->http_client($url);
-
-    // On récupère le manager de BD
+    $result1=$this->http_client($url1);
+ 
     $date= new DateTime();
 
     // On ajoute les mesures dans la table mesures.
-    if (intval($result["measures"]["lines"])){
-      $lines=intval($result["measures"]["lines"]);
+    if (intval($result1["measures"]["lines"])){
+      $lines=intval($result1["measures"]["lines"]);
       } else {$lines=0;}
 
     //Warning: Undefined array key "coverage"
-    if (array_key_exists("coverage", $result["measures"])){
-      $coverage=$result["measures"]["coverage"];} else {$coverage=0;}
+    if (array_key_exists("coverage", $result1["measures"])){
+      $coverage=$result1["measures"]["coverage"];} else {$coverage=0;}
 
-      if ($result["measures"]["duplicationDensity"]){
-         $duplicationDensity=$result["measures"]["duplicationDensity"];
-       } else {$duplicationDensity=0;}
+    if (array_key_exists("duplicationDensity", $result1["measures"])){
+         $duplicationDensity=$result1["measures"]["duplicationDensity"];
+        } else {$duplicationDensity=0;}
 
-    if (array_key_exists("tests", $result["measures"] ))
-          {
-            $tests=intval($result["measures"]["tests"]);
-          } else { $tests=0; }
+    if (array_key_exists("tests", $result1["measures"] )){
+         $tests=intval($result1["measures"]["tests"]);
+        } else { $tests=0; }
 
-    if (intval($result["measures"]["issues"])){
-        $issues=intval($result["measures"]["issues"]);
-      } else {$issues=0;}
+    if (array_key_exists("issues", $result1["measures"])){
+        $issues=intval($result1["measures"]["issues"]);
+        } else {$issues=0;}
 
-      $mesure = new Mesures();
-      $mesure->setMavenKey($request->get("maven_key"));
-      $mesure->setProjectName($result["projectName"]);
-      $mesure->setLines($lines);
-      $mesure->setCoverage($coverage);
-      $mesure->setDuplicationDensity($duplicationDensity);
-      $mesure->setTests(intval($tests));
-      $mesure->setIssues(intval($issues));
-      $mesure->setDateEnregistrement($date);
-      $em->persist($mesure);
-      $em->flush();
+    // On récupère le nombre de ligne de code
+    $url2=$this->getParameter(static::$sonarUrl)."/api/measures/component?component=".$request->get('maven_key')."&metricKeys=ncloc";
+    $result2=$this->http_client($url2);
+
+    if (array_key_exists("measures", $result2["component"])){
+          $ncloc=intval($result2["component"]["measures"][0]["value"]);
+          } else {$ncloc=0;}
+    // On enregistre
+    $mesure = new Mesures();
+    $mesure->setMavenKey($request->get("maven_key"));
+    $mesure->setProjectName($result["projectName"]);
+    $mesure->setLines($lines);
+    $mesure->setNcloc($ncloc);
+    $mesure->setCoverage($coverage);
+    $mesure->setDuplicationDensity($duplicationDensity);
+    $mesure->setTests(intval($tests));
+    $mesure->setIssues(intval($issues));
+    $mesure->setDateEnregistrement($date);
+    $em->persist($mesure);
+    $em->flush();
 
     $response = new JsonResponse();
     return $response->setData([Response::HTTP_OK]);
