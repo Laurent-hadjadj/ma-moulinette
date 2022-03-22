@@ -63,30 +63,6 @@ class Historique
   #[ORM\Column(type: 'integer')]
   private $nombre_defaut;
 
-  #[ORM\Column(type: 'string', length: 32)]
-  private $dette;
-
-  #[ORM\Column(type: 'integer')]
-  private $dette_minute;
-
-  #[ORM\Column(type: 'string', length: 32)]
-  private $dette_reliability;
-
-  #[ORM\Column(type: 'string', length: 32)]
-  private $dette_vulnerability;
-
-  #[ORM\Column(type: 'string', length: 32)]
-  private $dette_code_smell;
-
-  #[ORM\Column(type: 'integer')]
-  private $dette_reliability_minute;
-
-  #[ORM\Column(type: 'integer')]
-  private $dette_vulnerability_minute;
-
-  #[ORM\Column(type: 'integer')]
-  private $dette_code_smell_minute;
-
   #[ORM\Column(type: 'integer')]
   private $nombre_bug;
 
@@ -104,6 +80,9 @@ class Historique
 
   #[ORM\Column(type: 'integer')]
   private $batch;
+
+  #[ORM\Column(type: 'integer')]
+  private $dette;
 
   #[ORM\Column(type: 'integer')]
   private $nombre_anomalie_bloquante;
@@ -146,6 +125,9 @@ class Historique
 
   #[ORM\Column(type: 'boolean')]
   private $favori;
+
+  #[ORM\Column(type: 'boolean')]
+  private $initial;
 
   #[ORM\Column(type: 'datetime')]
   private $date_enregistrement;
@@ -263,6 +245,18 @@ class Historique
       return $this;
   }
 
+  public function getNombreLigneCode(): ?int
+  {
+      return $this->nombre_ligne_code;
+  }
+
+  public function setNombreLigneCode(int $nombre_ligne_code): self
+  {
+      $this->nombre_ligne_code = $nombre_ligne_code;
+
+      return $this;
+  }
+
   public function getCouverture(): ?float
   {
       return $this->couverture;
@@ -307,102 +301,6 @@ class Historique
   public function setNombreDefaut(int $nombre_defaut): self
   {
       $this->nombre_defaut = $nombre_defaut;
-
-      return $this;
-  }
-
-  public function getDette(): ?string
-  {
-      return $this->dette;
-  }
-
-  public function setDette(string $dette): self
-  {
-      $this->dette = $dette;
-
-      return $this;
-  }
-
-  public function getDetteMinute(): ?int
-  {
-      return $this->dette_minute;
-  }
-
-  public function setDetteMinute(int $dette_minute): self
-  {
-      $this->dette_minute = $dette_minute;
-
-      return $this;
-  }
-
-  public function getDetteReliability(): ?string
-  {
-      return $this->dette_reliability;
-  }
-
-  public function setDetteReliability(string $dette_reliability): self
-  {
-      $this->dette_reliability = $dette_reliability;
-
-      return $this;
-  }
-
-  public function getDetteVulnerability(): ?string
-  {
-      return $this->dette_vulnerability;
-  }
-
-  public function setDetteVulnerability(string $dette_vulnerability): self
-  {
-      $this->dette_vulnerability = $dette_vulnerability;
-
-      return $this;
-  }
-
-  public function getDetteCodeSmell(): ?string
-  {
-      return $this->dette_code_smell;
-  }
-
-  public function setDetteCodeSmell(string $dette_code_smell): self
-  {
-      $this->dette_code_smell = $dette_code_smell;
-
-      return $this;
-  }
-
-  public function getDetteReliabilityMinute(): ?int
-  {
-      return $this->dette_reliability_minute;
-  }
-
-  public function setDetteReliabilityMinute(int $dette_reliability_minute): self
-  {
-      $this->dette_reliability_minute = $dette_reliability_minute;
-
-      return $this;
-  }
-
-  public function getDetteVulnerabilityMinute(): ?int
-  {
-      return $this->dette_vulnerability_minute;
-  }
-
-  public function setDetteVulnerabilityMinute(int $dette_vulnerability_minute): self
-  {
-      $this->dette_vulnerability_minute = $dette_vulnerability_minute;
-
-      return $this;
-  }
-
-  public function getDetteCodeSmellMinute(): ?int
-  {
-      return $this->dette_code_smell_minute;
-  }
-
-  public function setDetteCodeSmellMinute(int $dette_code_smell_minute): self
-  {
-      $this->dette_code_smell_minute = $dette_code_smell_minute;
 
       return $this;
   }
@@ -635,18 +533,6 @@ class Historique
       return $this;
   }
 
-  public function getDateEnregistrement(): ?\DateTimeInterface
-  {
-      return $this->date_enregistrement;
-  }
-
-  public function setDateEnregistrement(\DateTimeInterface $date_enregistrement): self
-  {
-      $this->date_enregistrement = $date_enregistrement;
-
-      return $this;
-  }
-
   public function getFavori(): ?bool
   {
       return $this->favori;
@@ -659,16 +545,41 @@ class Historique
       return $this;
   }
 
-  public function getNombreLigneCode(): ?int
+  public function getInitial(): ?bool
   {
-      return $this->nombre_ligne_code;
+      return $this->initial;
   }
 
-  public function setNombreLigneCode(int $nombre_ligne_code): self
+  public function setInitial(bool $initial): self
   {
-      $this->nombre_ligne_code = $nombre_ligne_code;
+      $this->initial = $initial;
 
       return $this;
   }
+
+  public function getDateEnregistrement(): ?\DateTimeInterface
+  {
+      return $this->date_enregistrement;
+  }
+
+  public function setDateEnregistrement(\DateTimeInterface $date_enregistrement): self
+  {
+      $this->date_enregistrement = $date_enregistrement;
+
+      return $this;
+  }
+
+  public function getDette(): ?int
+  {
+      return $this->dette;
+  }
+
+  public function setDette(int $dette): self
+  {
+      $this->dette = $dette;
+
+      return $this;
+  }
+
 
 }
