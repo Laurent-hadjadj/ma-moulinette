@@ -48,6 +48,9 @@ class Historique
   #[ORM\Column(type: 'integer')]
   private $nombre_ligne;
 
+  #[ORM\Column(type: 'integer')]
+  private $nombre_ligne_code;
+
   #[ORM\Column(type: 'float')]
   private $couverture;
 
@@ -652,6 +655,18 @@ class Historique
   public function setFavori(bool $favori): self
   {
       $this->favori = $favori;
+
+      return $this;
+  }
+
+  public function getNombreLigneCode(): ?int
+  {
+      return $this->nombre_ligne_code;
+  }
+
+  public function setNombreLigneCode(int $nombre_ligne_code): self
+  {
+      $this->nombre_ligne_code = $nombre_ligne_code;
 
       return $this;
   }
