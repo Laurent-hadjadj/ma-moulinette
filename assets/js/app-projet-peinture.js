@@ -63,8 +63,8 @@ export function remplissage(maven_key) {
     $('#date-version').html(new Intl.DateTimeFormat('default', date_options).format(new Date(t.date)));
 
     // Historique
-    const t1 = document.getElementById('no-sonar');
-    const t2 = document.getElementById('no-sonar');
+    const t1 = document.getElementById('version-release');
+    const t2 = document.getElementById('version-snaphot');
     const t3 = document.getElementById('date-version');
     t1.dataset.release=(release);
     t2.dataset.snapshot=(snapshot);
@@ -96,6 +96,7 @@ export function remplissage(maven_key) {
       return;
     }
     $('#nombre-ligne').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.lines));
+    $('#nombre-ligne-de-code').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.ncloc));
     $('#couverture').html(new Intl.NumberFormat('fr-FR', { style: 'percent', }).format(t.coverage / 100));
     $('#duplication').html(new Intl.NumberFormat('fr-FR', { style: 'percent', }).format(t.duplication / 100));
     $('#tests-unitaires').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.tests));
