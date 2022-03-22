@@ -39,8 +39,8 @@ export function enregistrement(maven_key) {
    * On n'utilise jquery pour la gestion du data Attribute car ce n'est pas fiable.
    * On utilise à la place l'appel JS standard.
    */
-  const t1 = document.getElementById('no-sonar');
-  const t2 = document.getElementById('no-sonar');
+  const t1 = document.getElementById('version-release');
+  const t2 = document.getElementById('version-snapshot');
   const version_release=t1.dataset.release;
   const version_snaphot=t2.dataset.snapshot;
 
@@ -56,11 +56,13 @@ export function enregistrement(maven_key) {
 
   //On récupère les informations du projet : lignes, couverture fonctionnelle, duplication, tests unitaires et le nombre de défaut.
   const t6 = document.getElementById('nombre-ligne');
+  const t6b = document.getElementById('nombre-ligne-de-code');
   const t7 = document.getElementById('couverture');
   const t8 = document.getElementById('duplication');
   const t9 = document.getElementById('tests-unitaires');
   const t10 = document.getElementById('nombre-defaut');
   const nombre_ligne=t6.dataset.nombre_ligne;
+  const nombre_ligne_de_code=t6b.dataset.nombre_ligne_de_code;
   const couverture=t7.dataset.coverage;
   const duplication=t8.dataset.duplication;
   const tests_unitaires=t9.dataset.tests_unitaires;
@@ -138,7 +140,7 @@ export function enregistrement(maven_key) {
   { maven_key: maven_key, nom_projet:nom_projet,
     version_release:version_release, version_snaphot:version_snaphot, version:version,
     date_version:date_version, suppress_warning:suppress_warning, no_sonar:no_sonar,
-    nombre_ligne:nombre_ligne, couverture:couverture, duplication:duplication,
+    nombre_de_ligne_de_code:nombre_ligne_de_code, nombre_ligne:nombre_ligne, couverture:couverture, duplication:duplication,
     tests_unitaires:tests_unitaires, nombre_defaut:nombre_defaut,
     dette:dette, dette_minute: dette_minute,
     dette_reliability:dette_reliability, dette_vulnerability:dette_vulnerability, dette_code_smell:dette_code_smell,
@@ -154,7 +156,6 @@ export function enregistrement(maven_key) {
     favori: favori,
  };
 
-
   const options = {
     url: 'http://localhost:8000/api/enregistrement', type: 'PUT', dataType: 'json',
     data: JSON.stringify(data), contentType: contentType }
@@ -162,5 +163,4 @@ export function enregistrement(maven_key) {
         if (t.info=="OK") {log(' - INFO : Enregistrement des informations effectué.');}
           else { log(' - ERROR : L\'enregistrement n\'a pas été réussi !! !.'); }
       });
-
  }
