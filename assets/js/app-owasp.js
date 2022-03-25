@@ -76,10 +76,10 @@ const liste_owasp2017 = [
 
     // On ajoute les valeurs pour les vulnérabilités
     $('#nombre_faille_owasp').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(r.total));
-    $('#nombre_faille_bloquante').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(r.bloquante));
+    $('#nombre_faille_bloquant').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(r.bloquant));
     $('#nombre_faille_critique').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(r.critique));
-    $('#nombre_faille_majeure').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(r.majeure));
-    $('#nombre_faille_mineure').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(r.mineure));
+    $('#nombre_faille_majeur').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(r.majeur));
+    $('#nombre_faille_mineur').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(r.mineur));
 
     let c=[],n=[],i="";
     // Détails A1
