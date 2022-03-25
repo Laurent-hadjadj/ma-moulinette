@@ -16,6 +16,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: HistoriqueRepository::class)]
 class Historique
 {
+
   #[ORM\Id]
   #[ORM\GeneratedValue]
   #[ORM\Column(type: 'integer')]
@@ -23,6 +24,12 @@ class Historique
 
   #[ORM\Column(type: 'string', length: 128)]
   private $maven_key;
+
+  #[ORM\Column(type: 'string', length: 32)]
+  private $version;
+
+  #[ORM\Column(type: 'datetime')]
+  private $date_version;
 
   #[ORM\Column(type: 'string', length: 128)]
   private $nom_projet;
@@ -32,12 +39,6 @@ class Historique
 
   #[ORM\Column(type: 'integer')]
   private $version_snaphot;
-
-  #[ORM\Column(type: 'string', length: 32)]
-  private $version;
-
-  #[ORM\Column(type: 'datetime')]
-  private $date_version;
 
   #[ORM\Column(type: 'integer')]
   private $suppress_warning;
@@ -85,7 +86,7 @@ class Historique
   private $dette;
 
   #[ORM\Column(type: 'integer')]
-  private $nombre_anomalie_bloquante;
+  private $nombre_anomalie_bloquant;
 
   #[ORM\Column(type: 'integer')]
   private $nombre_anomalie_critique;
@@ -149,6 +150,30 @@ class Historique
       return $this;
   }
 
+  public function getVersion(): ?string
+  {
+      return $this->version;
+  }
+
+  public function setVersion(string $version): self
+  {
+      $this->version = $version;
+
+      return $this;
+  }
+
+  public function getDateVersion(): ?\DateTimeInterface
+  {
+      return $this->date_version;
+  }
+
+  public function setDateVersion(\DateTimeInterface $date_version): self
+  {
+      $this->date_version = $date_version;
+
+      return $this;
+  }
+
   public function getNomProjet(): ?string
   {
       return $this->nom_projet;
@@ -181,30 +206,6 @@ class Historique
   public function setVersionSnaphot(int $version_snaphot): self
   {
       $this->version_snaphot = $version_snaphot;
-
-      return $this;
-  }
-
-  public function getVersion(): ?string
-  {
-      return $this->version;
-  }
-
-  public function setVersion(string $version): self
-  {
-      $this->version = $version;
-
-      return $this;
-  }
-
-  public function getDateVersion(): ?\DateTimeInterface
-  {
-      return $this->date_version;
-  }
-
-  public function setDateVersion(\DateTimeInterface $date_version): self
-  {
-      $this->date_version = $date_version;
 
       return $this;
   }
@@ -377,14 +378,26 @@ class Historique
       return $this;
   }
 
-  public function getNombreAnomalieBloquante(): ?int
+  public function getDette(): ?int
   {
-      return $this->nombre_anomalie_bloquante;
+      return $this->dette;
   }
 
-  public function setNombreAnomalieBloquante(int $nombre_anomalie_bloquante): self
+  public function setDette(int $dette): self
   {
-      $this->nombre_anomalie_bloquante = $nombre_anomalie_bloquante;
+      $this->dette = $dette;
+
+      return $this;
+  }
+
+  public function getNombreAnomalieBloquant(): ?int
+  {
+      return $this->nombre_anomalie_bloquant;
+  }
+
+  public function setNombreAnomalieBloquant(int $nombre_anomalie_bloquant): self
+  {
+      $this->nombre_anomalie_bloquant = $nombre_anomalie_bloquant;
 
       return $this;
   }
@@ -565,18 +578,6 @@ class Historique
   public function setDateEnregistrement(\DateTimeInterface $date_enregistrement): self
   {
       $this->date_enregistrement = $date_enregistrement;
-
-      return $this;
-  }
-
-  public function getDette(): ?int
-  {
-      return $this->dette;
-  }
-
-  public function setDette(int $dette): self
-  {
-      $this->dette = $dette;
 
       return $this;
   }
