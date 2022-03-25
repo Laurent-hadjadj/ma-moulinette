@@ -309,9 +309,7 @@ $('select[name="version"]').change(function () {
  * Enregistrement des données
 */
 $('.js-enregistrer-analyse').on('click', ()=>{
-
   if ($('select[name="version"]').val() == '') { return }
-
 
   const maven_key=$("#js-nom").data('maven').trim();
   const nom=$("#js-nom").text().trim();
@@ -374,35 +372,15 @@ $('.js-enregistrer-analyse').on('click', ()=>{
     bloquant:bloquant, critique:critique, majeur:majeur,
     mineur:mineur, info:info, initial:initial
   }
-   console.log(data);
+  //console.log(data);
   const options = {
     url: 'http://localhost:8000/api/suivi/mise-a-jour', type: 'PUT', dataType: 'json',
     data: JSON.stringify(data), contentType: contentType }
-    /*$.ajax(options).then((t) => {
+    $.ajax(options).then((t) => {
         if (t.info=="OK") {
           $('#info').html('<span class="lead" style="color:#187e3d">INFO</span> : Enregistrement des informations effectué.');
           } else {
             $('#info').html('<span class="lead" style="color:#971c09">ERROR</span> : L\'enregistrement n\'a pas été réussi !! !.');
           }
-      });*/
+      });
 })
-
-$('.switch-paddle').on('click', ()=>{
-
-// Le bouton est à NON
-if ($('.switch-active').css('display')==='block') {
-  //console.log($('.switch-active').css('display'));
-  //console.log($('.switch-inactive').text());
-  //console.log("Non");
-}
-
-// le bouton est à OUI
-if ($('.switch-inactive').css('display')==='block') {
-  //console.log($('.switch-inactive').css('display'));
-  //console.log($('.switch-active').text());
-  //console.log("Oui");
-  
-
-}
-
-});
