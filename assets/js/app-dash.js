@@ -130,7 +130,7 @@ const options = {
 
   const ctx = document.getElementById('graphique-anomalie').getContext('2d');
   const charts = new Chart(ctx, { type: 'line', data: data, options: options });
-  if (charts === null) { console.log(); }
+  if (charts === null) { console.log(''); }
 }
 
 
@@ -176,6 +176,8 @@ dessineMoiUnMouton(Object.values(JSON.parse(_labels)), Object.values(JSON.parse(
  $('.js-ajouter-analyse').on('click', function () {
  const maven_key=$("#js-nom").data('maven');
  select_version(maven_key);
+  // On Nettoie le formulaire
+ $('#bloquant,#critique, #majeur, #mineur, #info').val('');
  $('#modal-ajouter-analyse').foundation('open');
 })
 
@@ -186,6 +188,7 @@ dessineMoiUnMouton(Object.values(JSON.parse(_labels)), Object.values(JSON.parse(
 $('select[name="version"]').change(function () {
   // On affiche la clé
   $('#key-maven').html($("#js-nom").data('maven').trim());
+
   // On affiche le nom
   const n=$("#js-nom").data('maven').trim();
   const name=n.split(':');
@@ -196,6 +199,9 @@ $('select[name="version"]').change(function () {
   const d1=d.split('(');
   const d2=d1[1].split(')');
   const d3=d2[0].split('+')
+  const t0 = document.getElementById('date');
+  t0.dataset.date=(d2[0]);
+
   // On affiche la version
   $('#version').html(d1[0]);
   // On affiche la date
@@ -207,36 +213,196 @@ $('select[name="version"]').change(function () {
   }
 
   $.ajax(options).then((t) => {
-    let t_notes = ['', 'A', 'B', 'C', 'D', 'E'], couleur1, couleur2, couleur3 = '';
+
+    const t_notes = ['', 'A', 'B', 'C', 'D', 'E'];
+    let couleur1, couleur2, couleur3, couleur4;
+
     if (t.note_reliability === 1 ) { couleur1 = 'vert1'; }
     if (t.note_security === 1) { couleur2 = 'vert1'; }
     if (t.note_sqale === 1) { couleur3 = 'vert1'; }
+    if (t.note_hotspots_review === 1) { couleur4 = 'vert1'; }
 
     if (t.note_reliability === 2) { couleur1 = 'vert2'; }
     if (t.note_security === 2) { couleur2 = 'vert2'; }
     if (t.note_sqale === 2) { couleur3 = 'vert2'; }
+    if (t.note_hotspots_review === 2) { couleur4 = 'vert2'; }
 
     if (t.note_reliability === 3) { couleur1 = 'jaune'; }
     if (t.note_security === 3) { couleur2 = 'jaune'; }
     if (t.note_sqale === 3) { couleur3 = 'jaune'; }
+    if (t.note_hotspots_review === 3) { couleur4 = 'jaune'; }
 
     if (t.note_reliability === 4) { couleur1 = 'orange'; }
     if (t.note_security === 4) { couleur2 = 'orange'; }
     if (t.note_sqale === 4) { couleur3 = 'orange'; }
+    if (t.note_hotspots_review === 4) { couleur4 = 'orange'; }
 
     if (t.note_reliability === 5) { couleur1 = 'rouge'; }
     if (t.note_security === 5) { couleur2 = 'rouge'; }
     if (t.note_sqale === 5) { couleur3 = 'rouge'; }
+    if (t.note_hotspots_review === 5) { couleur4 = 'rouge'; }
 
     const note_reliability = t_notes[parseInt(t.note_reliability,10)];
     const note_security = t_notes[parseInt(t.note_security,10)];
     const note_sqale = t_notes[parseInt(t.note_sqale,10)];
+    const note_hotspots_review = t_notes[parseInt(t.note_hotspots_review,10)];
 
+    // On affiche les notes
     $('#note-reliability').html('<span class="' + couleur1 + '">' + note_reliability + '</span>');
     $('#note-security').html('<span class="' + couleur2 + '">' + note_security + '</span>');
     $('#note-sqale').html('<span class="' + couleur3 + '">' + note_sqale + '</span>');
+    $('#note-hotspots-review').html('<span class="' + couleur4 + '">' + note_hotspots_review + '</span>');
 
+    // Historique
+    const t1 = document.getElementById('note-reliability');
+    const t2 = document.getElementById('note-security');
+    const t3 = document.getElementById('note-sqale');
+    const t4 = document.getElementById('note-hotspots-review');
+    t1.dataset.note_reliability=(t.note_reliability);
+    t2.dataset.note_security=(t.note_reliability);
+    t3.dataset.note_sqale=(t.note_reliability);
+    t4.dataset.note_hotspots_review=(t.note_hotspots_review);
 
+    // On affiche le nombre de bugs, de vulnérabilités et de mauvaises pratiques.
+    $('#bug').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.bug));
+    $('#vulnerabilities').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.vulnerabilities));
+    $('#code-smell').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.codesmell));
+    $('#hotspots-review').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.hotspots_review));
+
+    //historique
+    const t5 = document.getElementById('bug');
+    const t6 = document.getElementById('vulnerabilities');
+    const t7 = document.getElementById('code-smell');
+    const t8 = document.getElementById('hotspots-review');
+    t5.dataset.bug=(t.bug);
+    t6.dataset.vulnerabilities=(t.vulnerabilities);
+    t7.dataset.codesmell=(t.codesmell);
+    t8.dataset.hotspots_review=(t.hotspots_review);
+
+    // On affiche les autres métriques
+    $('#ncloc').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.ncloc));
+    $('#lines').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.lines));
+    $('#dette').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.dette/60/60));
+
+    $('#duplication').html(new Intl.NumberFormat('fr-FR', { style: 'percent',maximumFractionDigits: 2 }).format(t.duplication/100));
+    $('#coverage').html(new Intl.NumberFormat('fr-FR', { style: 'percent',maximumFractionDigits: 2 }).format(t.coverage/100));
+    $('#tests').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.tests));
+
+    //historique
+    const t9 = document.getElementById('ncloc');
+    const t10 = document.getElementById('lines');
+    const t11 = document.getElementById('coverage');
+    const t12 = document.getElementById('tests');
+    const t13 = document.getElementById('dette');
+    const t14 = document.getElementById('duplication');
+    t9.dataset.ncloc=(t.ncloc);
+    t10.dataset.lines=(t.lines);
+    t11.dataset.coverage=(t.coverage);
+    t12.dataset.tests=(t.tests);
+    t13.dataset.dette=(t.dette);
+    t14.dataset.duplication=(t.duplication);
   });
-
 })
+
+/**
+ * description
+ * Enregistrement des données
+*/
+$('.js-enregistrer-analyse').on('click', ()=>{
+
+  if ($('select[name="version"]').val() == '') { return }
+
+
+  const maven_key=$("#js-nom").data('maven').trim();
+  const nom=$("#js-nom").text().trim();
+  const version=$("#js-version").text().trim();
+  const t0 = document.getElementById('date');
+  const date=t0.dataset.date;
+
+  const t1 = document.getElementById('note-reliability');
+  const t2 = document.getElementById('note-security');
+  const t3 = document.getElementById('note-sqale');
+  const t4 = document.getElementById('note-hotspots-review');
+  const note_reliability=t1.dataset.note_reliability;
+  const note_security=t2.dataset.note_security;
+  const note_sqale=t3.dataset.note_sqale;
+  const note_hotspots_review=t4.dataset.note_hotspots_review;
+
+  const t5 = document.getElementById('bug');
+  const t6 = document.getElementById('vulnerabilities');
+  const t7 = document.getElementById('code-smell');
+  const t8 = document.getElementById('hotspots-review');
+  const bug=t5.dataset.bug;
+  const vulnerabilities=t6.dataset.vulnerabilities;
+  const codesmell=t7.dataset.codesmell;
+  const hotspots_review=t8.dataset.hotspots_review;
+
+  const t9 = document.getElementById('ncloc');
+  const t10 = document.getElementById('lines');
+  const t11 = document.getElementById('coverage');
+  const t12 = document.getElementById('tests');
+  const t13 = document.getElementById('dette');
+  const ncloc=t9.dataset.ncloc;
+  const lines=t10.dataset.lines;
+  const coverage=t11.dataset.coverage;
+  const tests=t12.dataset.tests;
+  const dette=t13.dataset.dette;
+
+  let bloquant=$('#bloquant').val().trim();
+  let critique=$('#critique').val().trim();
+  let majeur=$('#majeur').val().trim();
+  let mineur=$('#mineur').val().trim();
+  let info=$('#info').val().trim();
+
+  if ($('#bloquant').val()=='') { bloquant=0; }
+  if ($('#critique').val()=='') { critique=0; }
+  if ($('#majeur').val()=='') { majeur=0; }
+  if ($('#mineur').val()=='') { mineur=0; }
+  if ($('#info').val()=='') { info=0; }
+
+  let initial=1;
+  if ($('.switch-active').css('display')==='block') { initial='TRUE'; }
+  if ($('.switch-inactive').css('display')==='block') { initial='FALSE'; }
+
+  const data={
+    maven_key:maven_key, nom:nom, version:version, date:date,
+    note_reliability:note_reliability, note_security:note_security,
+    note_sqale:note_sqale, note_hotspots_review:note_hotspots_review,
+    bug:bug, vulnerabilities:vulnerabilities,
+    codesmell:codesmell, hotspots_review:hotspots_review,
+    lines:lines,ncloc:ncloc, coverage:coverage, tests:tests, dette:dette,
+    bloquant:bloquant, critique:critique, majeur:majeur,
+    mineur:mineur, info:info, initial:initial
+  }
+   console.log(data);
+  const options = {
+    url: 'http://localhost:8000/api/suivi/mise-a-jour', type: 'PUT', dataType: 'json',
+    data: JSON.stringify(data), contentType: contentType }
+    /*$.ajax(options).then((t) => {
+        if (t.info=="OK") {
+          $('#info').html('<span class="lead" style="color:#187e3d">INFO</span> : Enregistrement des informations effectué.');
+          } else {
+            $('#info').html('<span class="lead" style="color:#971c09">ERROR</span> : L\'enregistrement n\'a pas été réussi !! !.');
+          }
+      });*/
+})
+
+$('.switch-paddle').on('click', ()=>{
+
+// Le bouton est à NON
+if ($('.switch-active').css('display')==='block') {
+  //console.log($('.switch-active').css('display'));
+  //console.log($('.switch-inactive').text());
+  //console.log("Non");
+}
+
+// le bouton est à OUI
+if ($('.switch-inactive').css('display')==='block') {
+  //console.log($('.switch-inactive').css('display'));
+  //console.log($('.switch-active').text());
+  //console.log("Oui");
+  
+
+}
+
+});

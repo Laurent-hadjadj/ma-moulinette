@@ -116,13 +116,13 @@ class ApiProjetPeintureController extends AbstractController
     }
 
     // On récupère la dernière version et sa date de publication
-    $sql="SELECT project_name as name, lines, coverage, duplication_density as duplication, tests, issues FROM mesures WHERE maven_key='". $maven_key."' ORDER BY date_enregistrement DESC LIMIT 1";
+    $sql="SELECT project_name as name, ncloc, lines, coverage, duplication_density as duplication, tests, issues FROM mesures WHERE maven_key='". $maven_key."' ORDER BY date_enregistrement DESC LIMIT 1";
     $r=$em->getConnection()->prepare($sql)->executeQuery();
     $infoProjet=$r->fetchAllAssociative();
 
     return $response->setData([
-      "name"=>$infoProjet[0]["name"], "lines"=>$infoProjet[0]["lines"],
-      "coverage"=>$infoProjet[0]["coverage"], "duplication"=>$infoProjet[0]["duplication"],
+      "name"=>$infoProjet[0]["name"], "ncloc"=>$infoProjet[0]["ncloc"],
+      "lines"=>$infoProjet[0]["lines"], "coverage"=>$infoProjet[0]["coverage"], "duplication"=>$infoProjet[0]["duplication"],
       "tests"=>$infoProjet[0]["tests"], "issues"=>$infoProjet[0]["issues"],
        Response::HTTP_OK]);
   }

@@ -44,17 +44,17 @@ class ApiOwaspPeintureController extends AbstractController
     // Informations
     $total = $owasp[0]["a1"] + $owasp[0]["a2"] + $owasp[0]["a3"] + $owasp[0]["a4"] + $owasp[0]["a5"] + $owasp[0]["a6"] + $owasp[0]["a7"] + $owasp[0]["a8"] + $owasp[0]["a9"] + $owasp[0]["a10"];
 
-    $bloquante = $owasp[0]["a1_blocker"] + $owasp[0]["a2_blocker"] + $owasp[0]["a3_blocker"] + $owasp[0]["a4_blocker"] + $owasp[0]["a5_blocker"] + $owasp[0]["a6_blocker"] + $owasp[0]["a7_blocker"] + $owasp[0]["a8_blocker"] + $owasp[0]["a9_blocker"] + $owasp[0]["a10_blocker"];
+    $bloquant = $owasp[0]["a1_blocker"] + $owasp[0]["a2_blocker"] + $owasp[0]["a3_blocker"] + $owasp[0]["a4_blocker"] + $owasp[0]["a5_blocker"] + $owasp[0]["a6_blocker"] + $owasp[0]["a7_blocker"] + $owasp[0]["a8_blocker"] + $owasp[0]["a9_blocker"] + $owasp[0]["a10_blocker"];
 
     $critique=$owasp[0]["a1_critical"] + $owasp[0]["a2_critical"] + $owasp[0]["a3_critical"] + $owasp[0]["a4_critical"] + $owasp[0]["a5_critical"] + $owasp[0]["a6_critical"] + $owasp[0]["a7_critical"] + $owasp[0]["a8_critical"] + $owasp[0]["a9_critical"] + $owasp[0]["a10_critical"];
 
-    $majeure = $owasp[0]["a1_major"] + $owasp[0]["a2_major"] + $owasp[0]["a3_major"] + $owasp[0]["a4_major"] + $owasp[0]["a5_major"] + $owasp[0]["a6_major"] + $owasp[0]["a7_major"] + $owasp[0]["a8_major"] + $owasp[0]["a9_major"] + $owasp[0]["a10_major"];
+    $majeur = $owasp[0]["a1_major"] + $owasp[0]["a2_major"] + $owasp[0]["a3_major"] + $owasp[0]["a4_major"] + $owasp[0]["a5_major"] + $owasp[0]["a6_major"] + $owasp[0]["a7_major"] + $owasp[0]["a8_major"] + $owasp[0]["a9_major"] + $owasp[0]["a10_major"];
 
-     $mineure = $owasp[0]["a1_minor"] + $owasp[0]["a2_minor"] + $owasp[0]["a3_minor"] + $owasp[0]["a4_minor"] + $owasp[0]["a5_minor"] + $owasp[0]["a6_minor"] + $owasp[0]["a7_minor"] + $owasp[0]["a8_minor"] + $owasp[0]["a9_minor"] + $owasp[0]["a10_minor"];
+     $mineur = $owasp[0]["a1_minor"] + $owasp[0]["a2_minor"] + $owasp[0]["a3_minor"] + $owasp[0]["a4_minor"] + $owasp[0]["a5_minor"] + $owasp[0]["a6_minor"] + $owasp[0]["a7_minor"] + $owasp[0]["a8_minor"] + $owasp[0]["a9_minor"] + $owasp[0]["a10_minor"];
 
     return $response->setData(
       ["code"=>"200", "total"=>$total,
-      "bloquante"=>$bloquante, "critique"=>$critique, "majeure"=>$majeure, "mineure"=>$mineure,
+      "bloquant"=>$bloquant, "critique"=>$critique, "majeur"=>$majeur, "mineur"=>$mineur,
       "a1"=>$owasp[0]["a1"],"a2"=>$owasp[0]["a2"],"a3"=>$owasp[0]["a3"],"a4"=>$owasp[0]["a4"],
       "a5"=>$owasp[0]["a5"],"a6"=>$owasp[0]["a6"],"a7"=>$owasp[0]["a7"],"a8"=>$owasp[0]["a8"],
       "a9"=>$owasp[0]["a9"],"a10"=>$owasp[0]["a10"],

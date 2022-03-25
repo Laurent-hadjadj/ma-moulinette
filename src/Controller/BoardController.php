@@ -87,7 +87,7 @@ class BoardController extends AbstractController
     $dash=$select->fetchAllAssociative();
 
     // On récupére les anomalies par sévérité
-    $sql="SELECT nombre_anomalie_bloquante as bloquant,
+    $sql="SELECT nombre_anomalie_bloquant as bloquant,
     nombre_anomalie_critique as critique, nombre_anomalie_majeur as majeur
     FROM historique where maven_key='"
     .$maven_key."' GROUP BY date_version ORDER BY date_version ASC";
@@ -180,24 +180,70 @@ class BoardController extends AbstractController
     $d=new Datetime($data->date);
     $dd=$d->format('Y-m-d\TH:i:sO');
 
-    $url=$this->getParameter(static::$sonarUrl)."/api/measures/search_history?component=".$maven_key."&metrics=reliability_rating,security_rating,sqale_rating".
+    $url=$this->getParameter(static::$sonarUrl)."/api/measures/search_history?component=".$maven_key."&metrics=reliability_rating,security_rating,sqale_rating,bugs,vulnerabilities,code_smells,security_hotspots,security_review_rating,".
+    "lines,ncloc,coverage,tests,sqale_index,duplicated_lines_density".
     "&from=".urlencode($dd)."&to=".urlencode($dd);
 
     // on appel le client http
     $result=$this->http_client($url);
 
   $data=$result["measures"];
-  for ($i=0; $i<3; $i++) {
+  for ($i=0; $i<14; $i++) {
     if ($data[$i]["metric"]==="reliability_rating") {$note_reliability=intval($data[$i]["history"][0]["value"],10);}
     if ($data[$i]["metric"]==="security_rating") {$note_security=intval($data[$i]["history"][0]["value"],10);}
     if ($data[$i]["metric"]==="sqale_rating") {$note_sqale=intval($data[$i]["history"][0]["value"],10);}
+    if ($data[$i]["metric"]==="security_review_rating") {$note_hotspots_review=intval($data[$i]["history"][0]["value"],10);}
+
+    if ($data[$i]["metric"]==="bugs") {$bug=intval($data[$i]["history"][0]["value"],10);}
+    if ($data[$i]["metric"]==="vulnerabilities") {$vulnerabilities=intval($data[$i]["history"][0]["value"],10);}
+    if ($data[$i]["metric"]==="code_smells") {$codesmell=intval($data[$i]["history"][0]["value"],10);}
+    if ($data[$i]["metric"]==="security_hotspots") {$hotspots_review=intval($data[$i]["history"][0]["value"],10);}
+
+    if ($data[$i]["metric"]==="lines") {$lines=intval($data[$i]["history"][0]["value"],10);}
+    if ($data[$i]["metric"]==="ncloc") {$ncloc=intval($data[$i]["history"][0]["value"],10);}
+    if ($data[$i]["metric"]==="duplicated_lines_density") {$duplication=$data[$i]["history"][0]["value"];}
+    if ($data[$i]["metric"]==="coverage") {$coverage=$data[$i]["history"][0]["value"];}
+    if ($data[$i]["metric"]==="tests") {$tests=intval($data[$i]["history"][0]["value"],10);}
+    if ($data[$i]["metric"]==="sqale_index") {$dette=intval($data[$i]["history"][0]["value"],10);}
   }
 
     $response = new JsonResponse();
     return $response->setData([
       'note_reliability'=>$note_reliability,'note_security'=>$note_security,
-      'note_sqale'=>$note_sqale,
-    Response::HTTP_OK]);
+      'note_sqale'=>$note_sqale, 'note_hotspots_review'=>$note_hotspots_review,
+      'bug'=>$bug, 'vulnerabilities'=>$vulnerabilities, 'codesmell'=>$codesmell, 'hotspots_review'=>$hotspots_review, 'lines'=>$lines, 'ncloc'=>$ncloc,
+      'duplication'=>$duplication, 'coverage'=>$coverage, 'tests'=>$tests, 'dette'=>$dette,
+      Response::HTTP_OK]);
+  }
+
+ /*
+  * description
+  * récupère les données d'une version historisée
+  * http://{url}}/api/get/version
+  */
+  #[Route('/api/suivi/mise-a-jour', name: 'suivi_miseajour', methods: ['PUT'])]
+  public function suivi_mise_a_jour(EntityManagerInterface $em, Request $request)
+  {
+    // on décode le body
+    $data = json_decode($request->getContent());
+
+    //on modifie la date de 11-02-2022 16:02:06 à 2022-02-11 16:02:06
+    $date_enregistrement=new Datetime();
+    $sql="INSERT OR IGNORE INTO historique
+    (maven_key, version, date_version, nom_projet, version_release,
+    version_snapshot, suppress_warning, no_sonar, nombre_ligne, nombre_ligne_code,couverture, duplication, tests_unitaires, nombre_defaut, dette, nombre_bug, nombre_vulnerability, nombre_code_smell, frontend, backend, batch, nombre_anomalie_bloquant, nombre_anomalie_critique, nombre_anomalie_majeur, nombre_anomalie_info, nombre_anomalie_mineur,note_reliability, note_scurity, note_sqale, note_hotspot,hotspot_high,hotspot_medium, hotspot_low,
+    hotspot_total, favori,initial,date_enregistrement)
+    VALUES ('".$data->maven_key."','".$data->version."','".
+    $data->date."','".$data->nom."',0,0,0,0,".$data->lines.",".$data->ncloc.","
+    .$data->coverage.",".$data->duplication.",".$data->tests.",".$data->defauts.",".$data->dette.",".$data->bug.",".$data->vulnerabilities.",".$data->codesmell.
+    ",0,0,0,".$data->bloquant.",".$data->critique.",".$data->majeur.",".
+    $data->mineur.",".$data->info.",'".$data->note_reliability."','".$data->note_security."','".$data->note_sqale."','".$data->note_hotspots_review."',0,0,0,".$data->hotspots_review.",1,".$data->initial.",".$date_enregistrement.")";
+
+    $sql="UPDATE my_table SET age = 34 WHERE name='Karen'";
+
+    //On cherche si la vesion existe dans la table historique
+    $response = new JsonResponse();
+    return $response->setData([ Response::HTTP_OK]);
   }
 
 }
