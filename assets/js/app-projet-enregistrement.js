@@ -56,63 +56,50 @@ export function enregistrement(maven_key) {
 
   //On récupère les informations du projet : lignes, couverture fonctionnelle, duplication, tests unitaires et le nombre de défaut.
   const t6 = document.getElementById('nombre-ligne');
-  const t6b = document.getElementById('nombre-ligne-de-code');
-  const t7 = document.getElementById('couverture');
-  const t8 = document.getElementById('duplication');
-  const t9 = document.getElementById('tests-unitaires');
-  const t10 = document.getElementById('nombre-defaut');
+  const t7 = document.getElementById('nombre-ligne-de-code');
+  const t8 = document.getElementById('couverture');
+  const t9 = document.getElementById('duplication');
+  const t10 = document.getElementById('tests-unitaires');
+  const t11 = document.getElementById('nombre-defaut');
   const nombre_ligne=t6.dataset.nombre_ligne;
-  const nombre_ligne_de_code=t6b.dataset.nombre_ligne_de_code;
-  const couverture=t7.dataset.coverage;
-  const duplication=t8.dataset.duplication;
-  const tests_unitaires=t9.dataset.tests_unitaires;
-  const nombre_defaut=t10.dataset.nombre_defaut;
-
+  const nombre_ligne_de_code=t7.dataset.nombre_ligne_de_code;
+  const couverture=t8.dataset.coverage;
+  const duplication=t9.dataset.duplication;
+  const tests_unitaires=t10.dataset.tests_unitaires;
+  const nombre_defaut=t11.dataset.nombre_defaut;
 
   //On récupère les informations sur la dette technique et les anomalies.
    /* Dette technique */
-  const dette=$('#dette').text().trim();
-  const dette_reliability=$('#js-dette-reliability').text().trim();
-  const dette_vulnerability=$('#js-dette-vulnerability').text().trim();
-  const dette_code_smell=$('#js-dette-code-smell').text().trim();
-
-  const t26 = document.getElementById('js-dette');
-  const t27 = document.getElementById('js-dette-reliability');
-  const t28 = document.getElementById('js-dette-vulnerability');
-  const t29 = document.getElementById('js-dette-code-smell');
-  const dette_minute=t26.dataset.dette_minute;
-  const dette_reliability_minute=t27.dataset.dette_reliability_minute;
-  const dette_vulnerability_minute=t28.dataset.dette_vulnerability_minute;
-  const dette_code_smell_minute=t29.dataset.dette_code_smell_minute;
+  const t12 = document.getElementById('js-dette');
+  const dette=t12.dataset.dette_minute;
 
   /* Nombre d'anomalie par type */
-  const t11 = document.getElementById('nombre-bug');
-  const t12 = document.getElementById('nombre-vulnerabilite');
-  const t13 = document.getElementById('nombre-mauvaise-pratique');
-  const nombre_bug=t11.dataset.nombre_bug;
-  const nombre_vulnerability=t12.dataset.nombre_vulnerabilite;
-  const nombre_code_smell=t13.dataset.nombre_code_smell;
+  const t13 = document.getElementById('nombre-bug');
+  const t14 = document.getElementById('nombre-vulnerabilite');
+  const t15 = document.getElementById('nombre-mauvaise-pratique');
+  const nombre_bug=t13.dataset.nombre_bug;
+  const nombre_vulnerability=t14.dataset.nombre_vulnerabilite;
+  const nombre_code_smell=t15.dataset.nombre_code_smell;
 
   /* répartition des anomalies par module */
-  const t14 = document.getElementById('nombre-frontend');
-  const t15 = document.getElementById('nombre-backend');
-  const t16 = document.getElementById('nombre-batch');
-  const frontend=t14.dataset.nombre_frontend;
-  const backend=t15.dataset.nombre_backend;
-  const batch=t16.dataset.nombre_batch;
+  const t16 = document.getElementById('nombre-frontend');
+  const t17 = document.getElementById('nombre-backend');
+  const t18 = document.getElementById('nombre-batch');
+  const frontend=t16.dataset.nombre_frontend;
+  const backend=t17.dataset.nombre_backend;
+  const batch=t18.dataset.nombre_batch;
 
   /* Répartion des anomalies par sévérité */
-  const t17 = document.getElementById('nombre-anomalie-bloquante');
-  const t18 = document.getElementById('nombre-anomalie-critique');
-  const t19 = document.getElementById('nombre-anomalie-info');
-  const t20 = document.getElementById('nombre-anomalie-majeure');
-  const t21 = document.getElementById('nombre-anomalie-mineure');
-  const nombre_anomalie_bloquante=t17.dataset.nombre_anomalie_bloquante;
-  const nombre_anomalie_critique=t18.dataset.nombre_anomalie_critique;
-  const nombre_anomalie_info=t19.dataset.nombre_anomalie_info;
-  const nombre_anomalie_majeure=t20.dataset.nombre_anomalie_majeure;
-  const nombre_anomalie_mineure=t21.dataset.nombre_anomalie_mineure;
-
+  const t19 = document.getElementById('nombre-anomalie-bloquant');
+  const t20 = document.getElementById('nombre-anomalie-critique');
+  const t21 = document.getElementById('nombre-anomalie-info');
+  const t22 = document.getElementById('nombre-anomalie-majeur');
+  const t23 = document.getElementById('nombre-anomalie-mineur');
+  const nombre_anomalie_bloquant=t19.dataset.nombre_anomalie_bloquant;
+  const nombre_anomalie_critique=t20.dataset.nombre_anomalie_critique;
+  const nombre_anomalie_info=t21.dataset.nombre_anomalie_info;
+  const nombre_anomalie_majeur=t22.dataset.nombre_anomalie_majeur;
+  const nombre_anomalie_mineur=t23.dataset.nombre_anomalie_mineur;
 
   //On récupère les notes sonarqube pour la version courante
   const note_reliability=$('#note-reliability').text().trim();
@@ -122,17 +109,17 @@ export function enregistrement(maven_key) {
   //On récupère les hotspots.
   const note_hotspot=$('#note-hotspot').text().trim();
 
-  //On récupère les  hotspost par sévérité
-  const t22 = document.getElementById('hotspot-high');
-  const t23 = document.getElementById('hotspot-medium');
-  const t24 = document.getElementById('hotspot-low');
-  const t25 = document.getElementById('hotspot-total');
-  const hotspot_high=t22.dataset.hotspot_high;
-  const hotspot_medium=t23.dataset.hotspot_medium;
-  const hotspot_low=t24.dataset.hotspot_low;
-  const hotspot_total=t25.dataset.hotspot_total;
+  //On récupère les hotspost par sévérité
+  const t24 = document.getElementById('hotspot-high');
+  const t25 = document.getElementById('hotspot-medium');
+  const t26 = document.getElementById('hotspot-low');
+  const t27 = document.getElementById('hotspot-total');
+  const hotspot_high=t24.dataset.hotspot_high;
+  const hotspot_medium=t25.dataset.hotspot_medium;
+  const hotspot_low=t26.dataset.hotspot_low;
+  const hotspot_total=t27.dataset.hotspot_total;
 
-  let favori=false;
+  let favori='FALSE';
   //on récupère le statut du favori
   if ($('.favori-svg').hasClass('favori-svg-select')) { favori='TRUE' }
 
@@ -142,18 +129,16 @@ export function enregistrement(maven_key) {
     date_version:date_version, suppress_warning:suppress_warning, no_sonar:no_sonar,
     nombre_de_ligne_de_code:nombre_ligne_de_code, nombre_ligne:nombre_ligne, couverture:couverture, duplication:duplication,
     tests_unitaires:tests_unitaires, nombre_defaut:nombre_defaut,
-    dette:dette, dette_minute: dette_minute,
-    dette_reliability:dette_reliability, dette_vulnerability:dette_vulnerability, dette_code_smell:dette_code_smell,
-    dette_reliability_minute:dette_reliability_minute, dette_vulnerability_minute:dette_vulnerability_minute, dette_code_smell_minute:dette_code_smell_minute,
+    dette:dette,
     nombre_bug:nombre_bug, nombre_vulnerability:nombre_vulnerability, nombre_code_smell:nombre_code_smell,
     frontend:frontend, backend:backend, batch:batch,
-    nombre_anomalie_bloquante:nombre_anomalie_bloquante, nombre_anomalie_critique:nombre_anomalie_critique,
-    nombre_anomalie_info:nombre_anomalie_info, nombre_anomalie_majeur:nombre_anomalie_majeure,
-    nombre_anomalie_mineur:nombre_anomalie_mineure,
+    nombre_anomalie_bloquant:nombre_anomalie_bloquant, nombre_anomalie_critique:nombre_anomalie_critique,
+    nombre_anomalie_info:nombre_anomalie_info, nombre_anomalie_majeur:nombre_anomalie_majeur,
+    nombre_anomalie_mineur:nombre_anomalie_mineur,
     note_reliability:note_reliability, note_security:note_security,
     note_sqale:note_sqale, note_hotspot:note_hotspot, hotspot_high:hotspot_high,
     hotspot_medium:hotspot_medium, hotspot_low:hotspot_low, hotspot_total: hotspot_total,
-    favori: favori,
+    favori: favori, initial:'FALSE'
  };
 
   const options = {

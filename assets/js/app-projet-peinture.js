@@ -137,13 +137,7 @@ export function remplissage(maven_key) {
 
     // Historique
     const t25 = document.getElementById('js-dette');
-    const t26 = document.getElementById('js-dette-reliability');
-    const t27 = document.getElementById('js-dette-vulnerability');
-    const t28 = document.getElementById('js-dette-code-smell');
     t25.dataset.dette_minute=t.dette_minute;
-    t26.dataset.dette_reliability_minute=t.dette_reliability_minute;
-    t27.dataset.dette_vulnerability_minute=t.dette_vulnerability_minute;
-    t28.dataset.dette_code_smell_minute=t.dette_code_smell_minute;
 
     /* Nombre d'anomalie */
     $('#nombre-bug').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.bug));
@@ -210,22 +204,22 @@ export function remplissage(maven_key) {
           }
 
     /* Répartition des anomalies par sévérité */
-    $('#nombre-anomalie-bloquante').html(t.blocker);
+    $('#nombre-anomalie-bloquant').html(t.blocker);
     $('#nombre-anomalie-critique').html(t.critical);
     $('#nombre-anomalie-info').html(t.info);
-    $('#nombre-anomalie-majeure').html(t.major);
-    $('#nombre-anomalie-mineure').html(t.minor);
+    $('#nombre-anomalie-majeur').html(t.major);
+    $('#nombre-anomalie-mineur').html(t.minor);
 
-    const t16 = document.getElementById('nombre-anomalie-bloquante');
+    const t16 = document.getElementById('nombre-anomalie-bloquant');
     const t17 = document.getElementById('nombre-anomalie-critique');
     const t18 = document.getElementById('nombre-anomalie-info');
-    const t19 = document.getElementById('nombre-anomalie-majeure');
-    const t20 = document.getElementById('nombre-anomalie-mineure');
-    t16.dataset.nombre_anomalie_bloquante=t.blocker;
+    const t19 = document.getElementById('nombre-anomalie-majeur');
+    const t20 = document.getElementById('nombre-anomalie-mineur');
+    t16.dataset.nombre_anomalie_bloquant=t.blocker;
     t17.dataset.nombre_anomalie_critique=t.critical;
     t18.dataset.nombre_anomalie_info=t.info;
-    t19.dataset.nombre_anomalie_majeure=t.major;
-    t20.dataset.nombre_anomalie_mineure=t.minor;
+    t19.dataset.nombre_anomalie_majeur=t.major;
+    t20.dataset.nombre_anomalie_mineur=t.minor;
 
     //On récupère les notes sonarqube pour la version courante
     let t_notes = ['', 'A', 'B', 'C', 'D', 'E'], couleur1, couleur2, couleur3 = '';

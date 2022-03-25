@@ -1251,13 +1251,6 @@ class ApiProjetController extends AbstractController
     $save->setNombreDefaut($data->nombre_defaut);
 
     $save->setDette($data->dette);
-    $save->setDetteMinute($data->dette_minute);
-    $save->setDetteReliability($data->dette_reliability);
-    $save->setDetteVulnerability($data->dette_vulnerability);
-    $save->setDetteCodeSmell($data->dette_code_smell);
-    $save->setDetteReliabilityMinute($data->dette_reliability_minute);
-    $save->setDetteVulnerabilityMinute($data->dette_vulnerability_minute);
-    $save->setDetteCodeSmellMinute($data->dette_code_smell_minute);
 
     $save->setNombreBug($data->nombre_bug);
     $save->setNombreVulnerability($data->nombre_vulnerability);
@@ -1267,7 +1260,7 @@ class ApiProjetController extends AbstractController
     $save->setBackend($data->backend);
     $save->setBatch($data->batch);
 
-    $save->setNombreAnomalieBloquante($data->nombre_anomalie_bloquante);
+    $save->setNombreAnomalieBloquant($data->nombre_anomalie_bloquant);
     $save->setNombreAnomalieCritique($data->nombre_anomalie_critique);
     $save->setNombreAnomalieInfo($data->nombre_anomalie_info);
     $save->setNombreAnomalieMajeur($data->nombre_anomalie_majeur);
@@ -1282,6 +1275,7 @@ class ApiProjetController extends AbstractController
     $save->setHotspotLow($data->hotspot_low);
     $save->setHotspotTotal($data->hotspot_total);
     $save->setFavori($data->favori);
+    $save->setInitial($data->initial);
     $save->setDateEnregistrement($date);
     $em->persist($save);
     $em->flush();
