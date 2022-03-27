@@ -286,7 +286,7 @@ class ApiProjetController extends AbstractController
 
     // on appel le client http
     $result1=$this->http_client($url1);
- 
+
     $date= new DateTime();
 
     // On ajoute les mesures dans la table mesures.
@@ -313,7 +313,6 @@ class ApiProjetController extends AbstractController
     // On récupère le nombre de ligne de code
     $url2=$this->getParameter(static::$sonarUrl)."/api/measures/component?component=".$request->get('maven_key')."&metricKeys=ncloc";
     $result2=$this->http_client($url2);
-
     if (array_key_exists("measures", $result2["component"])){
           $ncloc=intval($result2["component"]["measures"][0]["value"]);
           } else {$ncloc=0;}
@@ -1234,7 +1233,11 @@ class ApiProjetController extends AbstractController
     // on décode le body
     $data = json_decode($request->getContent());
 
+    // On créé un objet response pour le retour JSON
+    $response = new JsonResponse();
+
     $date= new DateTime();
+
     $save= new Historique();
     $save->setMavenKey($data->maven_key);
     $save->setNomProjet($data->nom_projet);
@@ -1279,9 +1282,16 @@ class ApiProjetController extends AbstractController
     $save->setInitial($data->initial);
     $save->setDateEnregistrement($date);
     $em->persist($save);
-    $em->flush();
-    $response = new JsonResponse();
-    return $response->setData(["info"=>"OK", Response::HTTP_OK]);
 
+    // On catch l'erreur sur la clé composite : maven_key, version, date_version
+    try {
+      $em->flush();
+    } catch (\Doctrine\DBAL\Exception\UniqueConstraintViolationException $e) {
+      // General error: 5 database is locked"
+      // General error: 19 violation de clé
+      if ($e->getCode() === 19) { $code=19; } else { $code=$e; }
+      return $response->setData(["code"=>$code, Response::HTTP_OK]);
+    }
+    return $response->setData(["code"=>"OK", Response::HTTP_OK]);
   }
 }

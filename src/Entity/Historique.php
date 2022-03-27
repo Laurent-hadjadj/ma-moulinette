@@ -17,17 +17,16 @@ use Doctrine\ORM\Mapping as ORM;
 class Historique
 {
 
-  #[ORM\Id]
-  #[ORM\GeneratedValue]
-  #[ORM\Column(type: 'integer')]
-  private $id;
 
+  #[ORM\Id]
   #[ORM\Column(type: 'string', length: 128)]
   private $maven_key;
 
+  #[ORM\Id]
   #[ORM\Column(type: 'string', length: 32)]
   private $version;
 
+  #[ORM\Id]
   #[ORM\Column(type: 'datetime')]
   private $date_version;
 
@@ -132,11 +131,6 @@ class Historique
 
   #[ORM\Column(type: 'datetime')]
   private $date_enregistrement;
-
-  public function getId(): ?int
-  {
-      return $this->id;
-  }
 
   public function getMavenKey(): ?string
   {

@@ -145,7 +145,17 @@ export function enregistrement(maven_key) {
     url: 'http://localhost:8000/api/enregistrement', type: 'PUT', dataType: 'json',
     data: JSON.stringify(data), contentType: contentType }
     $.ajax(options).then((t) => {
-        if (t.info=="OK") {log(' - INFO : Enregistrement des informations effectué.');}
-          else { log(' - ERROR : L\'enregistrement n\'a pas été réussi !! !.'); }
+        if (t.code=="OK") {
+          const message='Enregistrement des informations effectué.'
+          log(' - INFO : '+message);
+          const callbox='<div class="callout success text-justify" data-closable="slide-out-right"><p style="color:#187e3d;" class="open-sans" cell">Bravo ! '+message+'<button class="close-button" aria-label="Fermer la fenêtre" type="button" data-close><span aria-hidden="true">&times;</span></button></div>';
+          $('#message').html(callbox);
+        } else {
+          const message='Cette version existe déjà dans l\'historique.'
+          log(' - ERROR ('+t.code +') : '+message);
+          const callbox='<div class="callout warning text-justify" data-closable="slide-out-right"><p style="color:#00445b;" class="open-sans" cell">Ooups ! '+message+'<button class="close-button" aria-label="Fermer la fenêtre" type="button" data-close><span aria-hidden="true">&times;</span></button></div>';
+          $('#message').html(callbox);
+
+        }
       });
  }
