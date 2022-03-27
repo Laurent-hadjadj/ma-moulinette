@@ -64,7 +64,7 @@ export function remplissage(maven_key) {
 
     // Historique
     const t1 = document.getElementById('version-release');
-    const t2 = document.getElementById('version-snaphot');
+    const t2 = document.getElementById('version-snapshot');
     const t3 = document.getElementById('date-version');
     t1.dataset.release=(release);
     t2.dataset.snapshot=(snapshot);
