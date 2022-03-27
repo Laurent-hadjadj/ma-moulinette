@@ -42,7 +42,7 @@ export function enregistrement(maven_key) {
   const t1 = document.getElementById('version-release');
   const t2 = document.getElementById('version-snapshot');
   const version_release=t1.dataset.release;
-  const version_snaphot=t2.dataset.snapshot;
+  const version_snapshot=t2.dataset.snapshot;
 
   const version=$('#version').text().trim();
   const t3 = document.getElementById('date-version');
@@ -125,7 +125,7 @@ export function enregistrement(maven_key) {
 
   const data =
   { maven_key: maven_key, nom_projet:nom_projet,
-    version_release:version_release, version_snaphot:version_snaphot, version:version,
+    version_release:version_release, version_snapshot:version_snapshot, version:version,
     date_version:date_version, suppress_warning:suppress_warning, no_sonar:no_sonar,
     nombre_de_ligne_de_code:nombre_ligne_de_code, nombre_ligne:nombre_ligne, couverture:couverture, duplication:duplication,
     tests_unitaires:tests_unitaires, nombre_defaut:nombre_defaut,
