@@ -158,7 +158,6 @@ dessineMoiUnMouton(Object.values(JSON.parse(_labels)), Object.values(JSON.parse(
     .then(function (r) {
       $('.js-version').select2({
         placeholder: 'Cliquez pour ouvrir la liste',
-        allowClear: true,
         selectOnClose: true,
         width: '100%',
         minimumResultsForSearch: 5,
@@ -171,13 +170,20 @@ dessineMoiUnMouton(Object.values(JSON.parse(_labels)), Object.values(JSON.parse(
 
 /**
  * description
- * On affiche la liste des projets
+ * On affiche la liste des projets et on nettoie le formulaire
  */
  $('.js-ajouter-analyse').on('click', function () {
  const maven_key=$("#js-nom").data('maven');
- select_version(maven_key);
-  // On Nettoie le formulaire
+
+ // On nettoie le formulaire
  $('#bloquant,#critique, #majeur, #mineur, #info').val('');
+ // On desactive l'option : par défaut la version que
+ // l'on ajoute n'est pas la version de référence
+ if ($('.switch-active').css('display')==='block') { $("#switch").click() }
+
+ // On charge la liste
+ select_version(maven_key);
+
  $('#modal-ajouter-analyse').foundation('open');
 })
 
