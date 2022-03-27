@@ -127,7 +127,7 @@ export function enregistrement(maven_key) {
   { maven_key: maven_key, nom_projet:nom_projet,
     version_release:version_release, version_snapshot:version_snapshot, version:version,
     date_version:date_version, suppress_warning:suppress_warning, no_sonar:no_sonar,
-    nombre_de_ligne_de_code:nombre_ligne_de_code, nombre_ligne:nombre_ligne, couverture:couverture, duplication:duplication,
+    nombre_ligne_de_code:nombre_ligne_de_code, nombre_ligne:nombre_ligne, couverture:couverture, duplication:duplication,
     tests_unitaires:tests_unitaires, nombre_defaut:nombre_defaut,
     dette:dette,
     nombre_bug:nombre_bug, nombre_vulnerability:nombre_vulnerability, nombre_code_smell:nombre_code_smell,
