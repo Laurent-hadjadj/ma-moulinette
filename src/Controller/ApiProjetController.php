@@ -1245,6 +1245,7 @@ class ApiProjetController extends AbstractController
     $save->setSuppressWarning($data->suppress_warning);
     $save->setNoSonar($data->no_sonar);
     $save->setNombreLigne($data->nombre_ligne);
+    $save->setNombreLigneCode($data->nombre_ligne_de_code);
     $save->setCouverture($data->couverture);
     $save->setDuplication($data->duplication);
     $save->setTestsUnitaires($data->tests_unitaires);
