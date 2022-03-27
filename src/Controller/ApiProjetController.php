@@ -1239,7 +1239,7 @@ class ApiProjetController extends AbstractController
     $save->setMavenKey($data->maven_key);
     $save->setNomProjet($data->nom_projet);
     $save->setVersionRelease($data->version_release);
-    $save->setVersionSnaphot($data->version_snaphot);
+    $save->setVersionSnaphot($data->version_snapshot);
     $save->setVersion($data->version);
     $save->setDateVersion(new DateTime($data->date_version));
     $save->setSuppressWarning($data->suppress_warning);
