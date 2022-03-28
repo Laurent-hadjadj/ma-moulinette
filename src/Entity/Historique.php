@@ -37,7 +37,7 @@ class Historique
   private $version_release;
 
   #[ORM\Column(type: 'integer')]
-  private $version_snaphot;
+  private $version_snapshot;
 
   #[ORM\Column(type: 'integer')]
   private $suppress_warning;
@@ -192,14 +192,14 @@ class Historique
       return $this;
   }
 
-  public function getVersionSnaphot(): ?int
+  public function getVersionSnapshot(): ?int
   {
-      return $this->version_snaphot;
+      return $this->version_snapshot;
   }
 
-  public function setVersionSnaphot(int $version_snaphot): self
+  public function setVersionSnapshot(int $version_snapshot): self
   {
-      $this->version_snaphot = $version_snaphot;
+      $this->version_snapshot = $version_snapshot;
 
       return $this;
   }
