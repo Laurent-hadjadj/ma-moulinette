@@ -218,7 +218,7 @@ $('select[name="version"]').change(function () {
 
   $.ajax(options).then((t) => {
 
-    const t_notes = ['', 'A', 'B', 'C', 'D', 'E'];
+    const t_notes = ['', 'A', 'B', 'C', 'D', 'E', 'Z'];
     let couleur1, couleur2, couleur3, couleur4;
 
     if (t.note_reliability === 1 ) { couleur1 = 'vert1'; }
@@ -245,6 +245,9 @@ $('select[name="version"]').change(function () {
     if (t.note_security === 5) { couleur2 = 'rouge'; }
     if (t.note_sqale === 5) { couleur3 = 'rouge'; }
     if (t.note_hotspots_review === 5) { couleur4 = 'rouge'; }
+
+    //  On a pas de note pour les hotspots
+    if (t.note_hotspots_review === 6) { couleur4 = 'bleu'; }
 
     const note_reliability = t_notes[parseInt(t.note_reliability,10)];
     const note_security = t_notes[parseInt(t.note_security,10)];
