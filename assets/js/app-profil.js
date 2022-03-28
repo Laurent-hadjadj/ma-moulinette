@@ -76,7 +76,6 @@ const date_options2 = {year: "numeric", month: "numeric", day: "numeric" };
 
   return $.ajax(options)
     .then(function (r) {
-      console.log(r);
       let statut1="", statut2="", str="", total=0;
 
       // On efface le tableau
