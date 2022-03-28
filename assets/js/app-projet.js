@@ -105,7 +105,7 @@ function dessineMoiUnMouton(label, dataset) {
 
   const ctx = document.getElementById('graphique-autre-version').getContext('2d');
   const charts = new Chart(ctx, { type: 'doughnut', data: data, options: options });
-  if (charts===null){console.info('pour éviter une erreur sonar !!!');}
+  if (charts===null){console.info('Pour éviter une erreur sonar !!!');}
 }
 
 /**
