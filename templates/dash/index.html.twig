@@ -42,7 +42,6 @@
           <tr>
             <th scope="col"></th>
             {% for i in 0..dash|length-1 %}
-            {{dash[i]["initial"]}}
             {% if dash[i]["initial"]==1 %} {% set reference="reference" %} {% else %} {% set reference="null" %} {% endif %}
             <th scope="col" class="open-sans text-right {{reference}}">{{dash[i]["version"]}}</th>
             {% endfor %}
@@ -129,7 +128,7 @@
       </p>
     </div>
 
-    {# Affiche le graphque #}
+    {# Affiche le graphique #}
     <canvas class="show-for-medium" id="graphique-anomalie" width="400" height="100"
     data-data1="{{data1}}" data-data2="{{data2}}" data-data3="{{data3}}"
     data-label="{{labels}}"></canvas>
@@ -142,7 +141,8 @@
           <tr>
             <th></th>
             {% for i in 0..dash|length-1 %}
-            <th class="open-sans text-center">{{dash[i]["version"]}}</th>
+            {% if dash[i]["initial"]==1 %} {% set reference="reference" %} {% else %} {% set reference="null" %} {% endif %}
+            <th class="open-sans text-center {{refrence}}">{{dash[i]["version"]}}</th>
             {% endfor %}
           </tr>
         </thead>
@@ -176,7 +176,8 @@
           <tr>
             <th></th>
             {% for i in 0..dash|length-1 %}
-            <th class="open-sans text-center">{{dash[i]["version"]}}</th>
+            {% if dash[i]["initial"]==1 %} {% set reference="reference" %} {% else %} {% set reference="null" %} {% endif %}
+            <th class="open-sans text-center {{refence}}">{{dash[i]["version"]}}</th>
             {% endfor %}
           </tr>
         </thead>
