@@ -142,7 +142,7 @@
             <th></th>
             {% for i in 0..dash|length-1 %}
             {% if dash[i]["initial"]==1 %} {% set reference="reference" %} {% else %} {% set reference="null" %} {% endif %}
-            <th class="open-sans text-center {{refrence}}">{{dash[i]["version"]}}</th>
+            <th class="open-sans text-center {{reference}}">{{dash[i]["version"]}}</th>
             {% endfor %}
           </tr>
         </thead>
@@ -177,7 +177,7 @@
             <th></th>
             {% for i in 0..dash|length-1 %}
             {% if dash[i]["initial"]==1 %} {% set reference="reference" %} {% else %} {% set reference="null" %} {% endif %}
-            <th class="open-sans text-center {{refence}}">{{dash[i]["version"]}}</th>
+            <th class="open-sans text-center {{reference}}">{{dash[i]["version"]}}</th>
             {% endfor %}
           </tr>
         </thead>
