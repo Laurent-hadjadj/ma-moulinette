@@ -87,13 +87,11 @@ function dessineMoiUnMouton( labels, data1, data2, data3) {
   };
 const options = {
   animations: { radius: { duration: 400, easing: 'linear', } },
-    maintainAspectRatio: true,
-    responsive: true,
-    layout: {
-      padding: {
-          left: 20
-      }},
-    scales: {
+  maintainAspectRatio: true,
+  responsive: true,
+  layout: {
+      padding: { left: 20 }},
+      scales: {
       x: {
           type: 'time',
           time: {
@@ -109,11 +107,11 @@ const options = {
         position: 'right',
         title: { display: true, text: 'Violations', color: '#00445b' },
         ticks: { color: '#00445b' }
-
       }
     },
     plugins: {
       tooltip: { enabled: false },
+      legend: { position: 'bottom' },
       datalabels: {
         display: true,
         align: 'end', anchor: 'right',
