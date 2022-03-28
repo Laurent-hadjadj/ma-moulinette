@@ -72,7 +72,7 @@ class BoardController extends AbstractController
 
   /**
    * description
-   * On récupère les résultat Owasp
+   * On récupère les résultats Owasp
   */
   #[Route('/suivi', name: 'suivi', methods: ['GET'])]
   public function suivi (EntityManagerInterface $em, Request $request): response {
