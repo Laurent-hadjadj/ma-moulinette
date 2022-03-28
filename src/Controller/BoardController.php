@@ -191,20 +191,35 @@ class BoardController extends AbstractController
     if ($data[$i]["metric"]==="reliability_rating") {$note_reliability=intval($data[$i]["history"][0]["value"],10);}
     if ($data[$i]["metric"]==="security_rating") {$note_security=intval($data[$i]["history"][0]["value"],10);}
     if ($data[$i]["metric"]==="sqale_rating") {$note_sqale=intval($data[$i]["history"][0]["value"],10);}
-    if ($data[$i]["metric"]==="security_review_rating") {$note_hotspots_review=intval($data[$i]["history"][0]["value"],10);}
+
+    // Sur les versions plus anciennes de sonarqube, il n'y avait pas de hostpots. La valeur 6 corsespond à pas de note  (Z)
+    if ($data[$i]["metric"]==="security_review_rating" && array_key_exists("value", $data[$i]["history"])) {
+      $note_hotspots_review=intval($data[$i]["history"][0]["value"],10);
+      } else { $note_hotspots_review=6;}
 
     if ($data[$i]["metric"]==="bugs") {$bug=intval($data[$i]["history"][0]["value"],10);}
     if ($data[$i]["metric"]==="vulnerabilities") {$vulnerabilities=intval($data[$i]["history"][0]["value"],10);}
     if ($data[$i]["metric"]==="code_smells") {$codesmell=intval($data[$i]["history"][0]["value"],10);}
-    if ($data[$i]["metric"]==="security_hotspots") {$hotspots_review=intval($data[$i]["history"][0]["value"],10);}
+
+    // Sur les versions plus anciennes de sonarqube, il n'y avait pas de hostpots
+    if ($data[$i]["metric"]==="security_hotspots" && array_key_exists("value", $data[$i]["history"])) {
+      $hotspots_review=intval($data[$i]["history"][0]["value"],10);
+      } else { $hotspots_review=0;}
 
     if ($data[$i]["metric"]==="lines") {$lines=intval($data[$i]["history"][0]["value"],10);}
     if ($data[$i]["metric"]==="ncloc") {$ncloc=intval($data[$i]["history"][0]["value"],10);}
     if ($data[$i]["metric"]==="duplicated_lines_density") {$duplication=$data[$i]["history"][0]["value"];}
-    if ($data[$i]["metric"]==="coverage") {$coverage=$data[$i]["history"][0]["value"];}
 
+    // Sur certains projets il n'y a pas de la couverture fonctionnelle
+    if ($data[$i]["metric"]==="coverage" && array_key_exists("value", $data[$i]["history"])) {
+      $coverage=$data[$i]["history"][0]["value"];
+      } else { $coverage=0;}
+
+    // Sur certains projets il n'y a pas de tests fonctionnels
     if ($data[$i]["metric"]==="tests" && array_key_exists("value", $data[$i]["history"])) {
-      $tests=intval($data[$i]["history"][0]["value"],10); } else { $tests=0;}
+      $tests=intval($data[$i]["history"][0]["value"],10);
+      } else { $tests=0;}
+
     if ($data[$i]["metric"]==="sqale_index") {$dette=intval($data[$i]["history"][0]["value"],10);}
   }
 

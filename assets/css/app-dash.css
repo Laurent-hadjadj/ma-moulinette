@@ -69,6 +69,15 @@
   padding-right: 20px;
 }
 
+.bleu {
+  background-color: #00445b;
+  color: #fff;
+  border: solid 2px #00445b;
+  border-radius: 0.2rem;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
 .resultat-note {
   padding-left: 0.5rem;
   color: #333;
