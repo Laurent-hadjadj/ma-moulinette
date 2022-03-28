@@ -81,12 +81,27 @@
 
 * Refactoring de la page projet, création d'une page détails ;
 * Mise en place d'un système de sauvegade pour les données calculées ;
-* Correction de bug;
+* Correction des bugs ;
 
 ## v0.0.5 - 13/03/2022
 
-* Ajout de la page dash, pour affciher des tableaux de suivi ;
+* Ajout de la page dash, pour afficher des tableaux de suivi ;
+* Ajout du tableau de suivi des versions analysés ;
+* Ajout de graphique pour suivre l'évolution des violations par type ;
+* Ajout du tableau de suivi des violations par modules (webapp - front, api - back et batch ) ;
+* Ajout du tableau de suivi les violations par sévérité (bloquant, critique et majeur) ;
 
-## v0.0.6 - 17/03/2022
+## v0.0.6 - 18/03/2022
 
 * Corrections Sonarqube ;
+* Amélioration de la page de suivi des indicateurs (Dash) ;
+  * Affichage de la version de référence ;
+  * Affichage des 9 dernières versions ;
+* Ajout d'un formulaire d'ajout d'une version à partir des données Sonarqube disponible dans l'historique ;
+* Refactoring de la sauvegarde ;
+* Refactoring de la méthode d'jout manuel d'une version ;
+* Corrections des bugs ;
+
+## v0.0.7 - 28/03/2022
+
+* version de recette ;
