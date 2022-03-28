@@ -23,6 +23,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 // Accès aux tables SLQLite
 use Doctrine\ORM\EntityManagerInterface;
 use DateTimeZone;
+use Symfony\Component\VarDumper\Cloner\Data;
 
 class BoardController extends AbstractController
 {
@@ -203,7 +204,9 @@ class BoardController extends AbstractController
     if ($data[$i]["metric"]==="ncloc") {$ncloc=intval($data[$i]["history"][0]["value"],10);}
     if ($data[$i]["metric"]==="duplicated_lines_density") {$duplication=$data[$i]["history"][0]["value"];}
     if ($data[$i]["metric"]==="coverage") {$coverage=$data[$i]["history"][0]["value"];}
-    if ($data[$i]["metric"]==="tests") {$tests=intval($data[$i]["history"][0]["value"],10);}
+
+    if ($data[$i]["metric"]==="tests" && array_key_exists("value", $data[$i]["history"])) {
+      $tests=intval($data[$i]["history"][0]["value"],10); } else { $tests=0;}
     if ($data[$i]["metric"]==="sqale_index") {$dette=intval($data[$i]["history"][0]["value"],10);}
   }
 
@@ -226,24 +229,46 @@ class BoardController extends AbstractController
   {
     // on décode le body
     $data = json_decode($request->getContent());
-
-    //on modifie la date de 11-02-2022 16:02:06 à 2022-02-11 16:02:06
     $date_enregistrement=new Datetime();
-    $sql="INSERT OR IGNORE INTO historique
-    (maven_key, version, date_version, nom_projet, version_release,
-    version_snapshot, suppress_warning, no_sonar, nombre_ligne, nombre_ligne_code,couverture, duplication, tests_unitaires, nombre_defaut, dette, nombre_bug, nombre_vulnerability, nombre_code_smell, frontend, backend, batch, nombre_anomalie_bloquant, nombre_anomalie_critique, nombre_anomalie_majeur, nombre_anomalie_info, nombre_anomalie_mineur,note_reliability, note_scurity, note_sqale, note_hotspot,hotspot_high,hotspot_medium, hotspot_low,
-    hotspot_total, favori,initial,date_enregistrement)
-    VALUES ('".$data->maven_key."','".$data->version."','".
-    $data->date."','".$data->nom."',0,0,0,0,".$data->lines.",".$data->ncloc.","
-    .$data->coverage.",".$data->duplication.",".$data->tests.",".$data->defauts.",".$data->dette.",".$data->bug.",".$data->vulnerabilities.",".$data->codesmell.
-    ",0,0,0,".$data->bloquant.",".$data->critique.",".$data->majeur.",".
-    $data->mineur.",".$data->info.",'".$data->note_reliability."','".$data->note_security."','".$data->note_sqale."','".$data->note_hotspots_review."',0,0,0,".$data->hotspots_review.",1,".$data->initial.",".$date_enregistrement.")";
+    $date_version = new Datetime($data->date);
 
-    $sql="UPDATE my_table SET age = 34 WHERE name='Karen'";
-
-    //On cherche si la vesion existe dans la table historique
+    // On créé un nouvel objet Json
     $response = new JsonResponse();
-    return $response->setData([ Response::HTTP_OK]);
-  }
 
+    //VALUES ('fr.franceagrimer:hubtiers','4.1.20-RELEASE','05-01-2022 08:41:00','hubtiers',0,0,0,0,50870,25506,0.0,2.6,0,4167,48011,148,7,4012,0,0,0,0,0,0,0,0,'C','C','C','E',5,0,0,0,1,FALSE,'2022-03-27 16:03:21')
+
+    $sql="INSERT OR IGNORE INTO historique
+    (maven_key,version,date_version,
+    nom_projet,version_release,version_snapshot,suppress_warning,no_sonar,
+    nombre_ligne,nombre_ligne_code,couverture,duplication,tests_unitaires,
+    nombre_defaut,dette,
+    nombre_bug,nombre_vulnerability,nombre_code_smell,
+    frontend,backend,batch,
+    nombre_anomalie_bloquant,nombre_anomalie_critique,nombre_anomalie_majeur,
+    nombre_anomalie_mineur,nombre_anomalie_info,
+    note_reliability,note_security,note_sqale,note_hotspot,
+    hotspot_total,hotspot_high,hotspot_medium,hotspot_low,
+    favori,initial,
+    date_enregistrement)
+    VALUES ('".$data->maven_key."','".$data->version."','".$date_version->format(static::$dateFormat)."','".
+    $data->nom."',0,0,0,0,".
+    $data->lines.",".$data->ncloc.",".$data->coverage.",".$data->duplication.",".$data->tests.",".$data->defauts.",".$data->dette.",".
+    $data->bug.",".$data->vulnerabilities.",".$data->codesmell.
+    ",0,0,0,".
+    $data->bloquant.",".$data->critique.",".$data->majeur.",".
+    $data->mineur.",".$data->info.",'".
+    $data->note_reliability."','".$data->note_security."','".$data->note_sqale."','".$data->note_hotspots_review."',".
+    $data->hotspots_review.",0,0,0,".
+    "false,".$data->initial.",'".
+    $date_enregistrement->format(static::$dateFormat)."')";
+
+    // On excute la requête
+    $con=$em->getConnection()->prepare($sql);
+    try {
+      $con->executeQuery();
+    } catch (\Doctrine\DBAL\Exception $e) {
+      return $response->setData(["code"=>$e, Response::HTTP_OK]);
+    }
+    return $response->setData(["code"=>"OK", Response::HTTP_OK]);
+  }
 }

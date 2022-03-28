@@ -25,7 +25,7 @@ import './foundation.js';
 import Chart from 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 // eslint-disable-next-line no-unused-vars
-import moment from "moment";
+import moment, { invalid } from "moment";
 import "moment/locale/fr";
 import "chartjs-adapter-moment";
 Chart.register(ChartDataLabels);
@@ -130,7 +130,7 @@ const options = {
 
   const ctx = document.getElementById('graphique-anomalie').getContext('2d');
   const charts = new Chart(ctx, { type: 'line', data: data, options: options });
-  if (charts === null) { console.log(''); }
+  if (charts === null) { console.info('null'); }
 }
 
 
@@ -206,7 +206,7 @@ $('select[name="version"]').change(function () {
   const d2=d1[1].split(')');
   const d3=d2[0].split('+')
   const t0 = document.getElementById('date');
-  t0.dataset.date=(d2[0]);
+  t0.dataset.date=(d3[0]);
 
   // On affiche la version
   $('#version').html(d1[0]);
@@ -264,10 +264,10 @@ $('select[name="version"]').change(function () {
     const t2 = document.getElementById('note-security');
     const t3 = document.getElementById('note-sqale');
     const t4 = document.getElementById('note-hotspots-review');
-    t1.dataset.note_reliability=(t.note_reliability);
-    t2.dataset.note_security=(t.note_reliability);
-    t3.dataset.note_sqale=(t.note_reliability);
-    t4.dataset.note_hotspots_review=(t.note_hotspots_review);
+    t1.dataset.note_reliability=(note_reliability);
+    t2.dataset.note_security=(note_reliability);
+    t3.dataset.note_sqale=(note_reliability);
+    t4.dataset.note_hotspots_review=(note_hotspots_review);
 
     // On affiche le nombre de bugs, de vulnérabilités et de mauvaises pratiques.
     $('#bug').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.bug));
@@ -319,7 +319,7 @@ $('.js-enregistrer-analyse').on('click', ()=>{
 
   const maven_key=$("#js-nom").data('maven').trim();
   const nom=$("#js-nom").text().trim();
-  const version=$("#js-version").text().trim();
+  const version=$("#version").text().trim();
   const t0 = document.getElementById('date');
   const date=t0.dataset.date;
 
@@ -340,17 +340,20 @@ $('.js-enregistrer-analyse').on('click', ()=>{
   const vulnerabilities=t6.dataset.vulnerabilities;
   const codesmell=t7.dataset.codesmell;
   const hotspots_review=t8.dataset.hotspots_review;
+  const defauts=parseInt(bug,10)+parseInt(vulnerabilities,10)+parseInt(codesmell,10);
 
   const t9 = document.getElementById('ncloc');
   const t10 = document.getElementById('lines');
   const t11 = document.getElementById('coverage');
-  const t12 = document.getElementById('tests');
-  const t13 = document.getElementById('dette');
+  const t12 = document.getElementById('duplication');
+  const t13 = document.getElementById('tests');
+  const t14 = document.getElementById('dette');
   const ncloc=t9.dataset.ncloc;
   const lines=t10.dataset.lines;
   const coverage=t11.dataset.coverage;
-  const tests=t12.dataset.tests;
-  const dette=t13.dataset.dette;
+  const duplication=t12.dataset.duplication;
+  const tests=t13.dataset.tests;
+  const dette=t14.dataset.dette;
 
   let bloquant=$('#bloquant').val().trim();
   let critique=$('#critique').val().trim();
@@ -372,21 +375,20 @@ $('.js-enregistrer-analyse').on('click', ()=>{
     maven_key:maven_key, nom:nom, version:version, date:date,
     note_reliability:note_reliability, note_security:note_security,
     note_sqale:note_sqale, note_hotspots_review:note_hotspots_review,
-    bug:bug, vulnerabilities:vulnerabilities,
-    codesmell:codesmell, hotspots_review:hotspots_review,
-    lines:lines,ncloc:ncloc, coverage:coverage, tests:tests, dette:dette,
+    defauts:defauts, bug:bug, vulnerabilities:vulnerabilities,codesmell:codesmell,
+    hotspots_review:hotspots_review,
+    lines:lines,ncloc:ncloc, coverage:coverage, duplication:duplication,  tests:tests, dette:dette,
     bloquant:bloquant, critique:critique, majeur:majeur,
     mineur:mineur, info:info, initial:initial
   }
-  //console.log(data);
   const options = {
     url: 'http://localhost:8000/api/suivi/mise-a-jour', type: 'PUT', dataType: 'json',
     data: JSON.stringify(data), contentType: contentType }
     $.ajax(options).then((t) => {
-        if (t.info=="OK") {
-          $('#info').html('<span class="lead" style="color:#187e3d">INFO</span> : Enregistrement des informations effectué.');
+        if (t.code=="OK") {
+          $('.info').html('<span class="lead" style="color:#187e3d">INFO</span> : Enregistrement des informations effectué.');
           } else {
-            $('#info').html('<span class="lead" style="color:#971c09">ERROR</span> : L\'enregistrement n\'a pas été réussi !! !.');
+            $('.info').html('<span class="lead" style="color:#971c09">ERROR ('+ t.code +')</span> : L\'enregistrement n\'a pas été effectué !! !.');
           }
       });
 })

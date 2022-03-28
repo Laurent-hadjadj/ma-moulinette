@@ -69,7 +69,7 @@ const liste_owasp2017 = [
   $.ajax(options).then((r) => {
 
     if (r['info'] === '406'){
-        console.log('Le projet n\'existe pas..');
+        console.info('Le projet n\'existe pas..');
         return;
       }
     const html_01='</span> <span class="badge ';
