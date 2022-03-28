@@ -7,21 +7,21 @@
  *
  */
 
-@media only screen and (max-width: 20em) { /* vide */ }
+@media only screen and (max-width: 20em) { .pleine-page { margin: 0.5rem; } }
 
-@media only screen and (min-width: 20.025em) and (max-width: 22em) { /* vide */ }
+@media only screen and (min-width: 20.025em) and (max-width: 22em) { .pleine-page { margin: 0.5rem; } }
 
-@media only screen and (min-width: 22.025em) and (max-width: 30em) { /* vide */ }
+@media only screen and (min-width: 22.025em) and (max-width: 30em) { .pleine-page { margin: 1rem; } }
 
-@media only screen and (min-width: 30.025em) and (max-width: 40em) { /* vide */ }
+@media only screen and (min-width: 30.025em) and (max-width: 40em) { .pleine-page { margin: 1rem; } }
 
-@media only screen and (min-width: 40em) and (max-width: 64em) { /* vide */ }
+@media only screen and (min-width: 40em) and (max-width: 64em) { .pleine-page { margin: 2rem; } }
 
-@media only screen and (min-width: 64.025em) and (max-width: 90em) { /* vide */ }
+@media only screen and (min-width: 64.025em) and (max-width: 90em) { .pleine-page { margin: 2rem; } }
 
-@media only screen and (min-width: 90.025em) and (max-width: 120em) { /* vide */ }
+@media only screen and (min-width: 90.025em) and (max-width: 120em) { .pleine-page { margin: 4rem; } }
 
-@media only screen and (min-width: 120em) and (max-width: 160em) { /* vide */ }
+@media only screen and (min-width: 120em) and (max-width: 160em) { .pleine-page { margin: 4rem; } }
 
 /*************************          Global     *********************************/
 .vert1 {
@@ -150,3 +150,6 @@
 /* Choisir la version de départ */
 .switch-paddle { width: 4.3rem; }
 input:checked ~ .switch-paddle { background-color: #00445b; }
+
+/* Affiche la version de référence */
+.reference { color: #971c09; }

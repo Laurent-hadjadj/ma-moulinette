@@ -72,27 +72,25 @@ class BoardController extends AbstractController
 
   /**
    * description
-   * On récupère les résultats Owasp
-  */
+   * On remonte les 10 dernières version + la version initiale
+   */
   #[Route('/suivi', name: 'suivi', methods: ['GET'])]
   public function suivi (EntityManagerInterface $em, Request $request): response {
     $maven_key=$request->get('maven_key');
 
-    // On récupere les failles owasp
-    $sql="SELECT nom_projet as nom, version, suppress_warning, no_sonar, nombre_bug as bug, nombre_vulnerability as faille, nombre_code_smell as mauvaise_pratique, hotspot_total as nombre_hotspot, frontend as presentation, backend as metier, batch,
-    note_reliability as fiabilite, note_security as securite, note_hotspot,
-    note_sqale as maintenabilite FROM historique WHERE maven_key='"
-    .$maven_key."' GROUP BY date_version ORDER BY date_version ASC";
+    // Tableau de suivi principal
+    $sql="SELECT * FROM  (SELECT nom_projet as nom, version, suppress_warning, no_sonar, nombre_bug as bug, nombre_vulnerability as faille, nombre_code_smell as mauvaise_pratique, hotspot_total as nombre_hotspot, frontend as presentation, backend as metier, batch, note_reliability as fiabilite, note_security as securite, note_hotspot,
+    note_sqale as maintenabilite, initial FROM historique WHERE maven_key='"
+    .$maven_key."' AND initial=1) UNION SELECT * FROM (SELECT nom_projet as nom, version, suppress_warning, no_sonar, nombre_bug as bug, nombre_vulnerability as faille, nombre_code_smell as mauvaise_pratique, hotspot_total as nombre_hotspot, frontend as presentation, backend as metier, batch, note_reliability as fiabilite, note_security as securite, note_hotspot,
+    note_sqale as maintenabilite, initial FROM historique WHERE maven_key='"
+    .$maven_key."' AND initial=0 ORDER BY date_version DESC LIMIT 9)";
 
     $select=$em->getConnection()->prepare($sql)->executeQuery();
     $dash=$select->fetchAllAssociative();
 
     // On récupére les anomalies par sévérité
-    $sql="SELECT nombre_anomalie_bloquant as bloquant,
-    nombre_anomalie_critique as critique, nombre_anomalie_majeur as majeur
-    FROM historique where maven_key='"
-    .$maven_key."' GROUP BY date_version ORDER BY date_version ASC";
-
+    $sql="SELECT * FROM  (SELECT date_version, nombre_anomalie_bloquant as bloquant, nombre_anomalie_critique as critique, nombre_anomalie_majeur as majeur FROM historique WHERE maven_key='".$maven_key."' AND initial=1)
+    UNION SELECT * FROM (SELECT date_version, nombre_anomalie_bloquant as bloquant, nombre_anomalie_critique as critique, nombre_anomalie_majeur as majeur FROM historique WHERE maven_key='".$maven_key."' AND initial=0 ORDER BY date_version DESC LIMIT 9)";
     $select=$em->getConnection()->prepare($sql)->executeQuery();
     $severite=$select->fetchAllAssociative();
 
@@ -115,7 +113,7 @@ class BoardController extends AbstractController
       $date[$i]=$graph[$i]["date"];
     }
 
-    // on ajote une valeur null a la fin de chaque serie
+    // on ajoute une valeur null a la fin de chaque serie
     $bug[$nl+1]=0;
     $secu[$nl+1]=0;
     $code_smell[$nl+1]=0;
@@ -168,11 +166,11 @@ class BoardController extends AbstractController
 
  /*
   * description
-  * récupère les données d'une version historisée
+  * On récupère les données disponibles pour une version données
   * http://{url}}/api/get/version
   */
   #[Route('/api/get/version', name: 'get_version', methods: ['PUT'])]
-  public function get_version(EntityManagerInterface $em, Request $request)
+  public function get_version(Request $request)
   {
     // on décode le body
     $data = json_decode($request->getContent());
@@ -221,8 +219,8 @@ class BoardController extends AbstractController
 
  /*
   * description
-  * récupère les données d'une version historisée
-  * http://{url}}/api/get/version
+  * Enregistre une version reconstituée dans la table historique
+  * http://{url}}/api/suivi/mise-a-jour
   */
   #[Route('/api/suivi/mise-a-jour', name: 'suivi_miseajour', methods: ['PUT'])]
   public function suivi_mise_a_jour(EntityManagerInterface $em, Request $request)

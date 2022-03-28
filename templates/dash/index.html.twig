@@ -25,7 +25,7 @@
 	</nav>
 </header>
 
-<div class="grid-container">
+<div class="pleine-page">
   <h2 id="js-nom" class="claire-hand" data-maven="{{maven_key}}">{{nom}}</h2>
   {# Suivi des anomalie #}
   <div class="cell">
@@ -42,7 +42,9 @@
           <tr>
             <th scope="col"></th>
             {% for i in 0..dash|length-1 %}
-            <th scope="col" class="open-sans text-right">{{dash[i]["version"]}}</th>
+            {{dash[i]["initial"]}}
+            {% if dash[i]["initial"]==1 %} {% set reference="reference" %} {% else %} {% set reference="null" %} {% endif %}
+            <th scope="col" class="open-sans text-right {{reference}}">{{dash[i]["version"]}}</th>
             {% endfor %}
           </tr>
         </thead>
@@ -182,9 +184,13 @@
           <tr>
             <td class="text-left">Bloquant</td>
             {% for i in 0..severite|length-1 %}
-             {% set lookup="" %}
+             {% set lookup="null" %}
              {% if i >0 %}
-              {% if severite[i]["bloquant"] > severite[i-1]["bloquant"] and severite[i]["bloquant"] != severite[i-1]["bloquant"] %} {% set lookup = "up" %} {% else %} {% set lookup = "down" %} {% endif %}
+              {% if severite[i]["bloquant"] > severite[i-1]["bloquant"] and
+                    severite[i]["bloquant"] != severite[i-1]["bloquant"] %}
+                    {% set lookup = "up" %} {% else %} {% set lookup = "down" %}
+              {% endif %}
+              {% if severite[i]["bloquant"] ==0 %} {% set lookup = "null" %} {% endif %}
              {% endif %}
               <td class="text-right">{{severite[i]["bloquant"]|format_number(locale='fr')}} <span class="{{lookup}}"></span></td>
             {% endfor %}
@@ -192,9 +198,13 @@
           <tr>
             <td class="text-left">Critique</td>
             {% for i in 0..severite|length-1 %}
-             {% set lookup = "" %}
+             {% set lookup = "null" %}
              {% if i >0 %}
-              {% if severite[i]["critique"] > severite[i-1]["critique"] and severite[i]["critique"] != severite[i-1]["critique"] %} {% set lookup = "up" %} {% else %} {% set lookup = "down" %} {% endif %}
+              {% if severite[i]["critique"] > severite[i-1]["critique"] and
+                    severite[i]["critique"] != severite[i-1]["critique"] %}
+                    {% set lookup = "up" %} {% else %} {% set lookup = "down" %}
+              {% endif %}
+              {% if severite[i]["critique"] ==0 %} {% set lookup = "null" %} {% endif %}
              {% endif %}
               <td class="text-right">{{severite[i]["critique"]|format_number(locale='fr')}} <span class="{{lookup}}"></span></td>
             {% endfor %}
@@ -202,10 +212,13 @@
           <tr>
             <td class="text-left">Majeur</td>
             {% for i in 0..severite|length-1 %}
-             {% set lookup="" %}
+             {% set lookup="null" %}
              {% if i >0 %}
-              {% if severite[i]["majeur"] > severite[i-1]["majeur"] and severite[i]["majeur"] != severite[i-1]["majeur"] %}
-               {% set lookup = "up" %} {% else %} {% set lookup = "down" %} {% endif %}
+              {% if severite[i]["majeur"] > severite[i-1]["majeur"] and
+                    severite[i]["majeur"] != severite[i-1]["majeur"] %}
+                    {% set lookup = "up" %} {% else %} {% set lookup = "down" %}
+              {% endif %}
+              {% if severite[i]["majeur"] ==0 %} {% set lookup = "null" %} {% endif %}
              {% endif %}
 
               <td class="text-right">{{severite[i]["majeur"]|format_number(locale='fr')}} <span class="{{lookup}}"></span></td>
