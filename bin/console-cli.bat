@@ -15,8 +15,8 @@
 
 @set app=c:\sonar-dash.dev
 @set nodejs=c:\environnement\tools\node-12.20.2
-@set HTTP_PROXY=http://proxy.ma-moulinette.fr:8080
-@set HTTPS_PROXY=http://proxy.ma-moulinette.fr:8080
+@set HTTP_PROXY=
+@set HTTPS_PROXY=
 
 @set PATH=%app%\symfony-cli\current;%app%\composer;%app%\php-8.1.0;%nodejs%;%PATH%
 @cd %app%\ma-moulinette
