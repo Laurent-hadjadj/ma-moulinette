@@ -1237,7 +1237,6 @@ class ApiProjetController extends AbstractController
     $response = new JsonResponse();
 
     $date=new DateTime();
-    $date_version=new DateTime($data->date_version);
 
     $save= new Historique();
     $save->setMavenKey($data->maven_key);
