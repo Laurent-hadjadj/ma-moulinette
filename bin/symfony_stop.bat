@@ -14,9 +14,8 @@
 @echo Php       : v8.1.0
 
 @set app=c:\sonar-dash.dev
-@set nodejs=c:\environnement\tools\node-12.20.2
 
-@set PATH=%app%\symfony-cli\current;%app%\composer;%app%\php-8.1.0;%PATH%
+@set PATH=%app%\symfony-cli\current;%app%\php-8.1.0;%PATH%
 @cd %app%\ma-moulinette
 
 @symfony server:stop
