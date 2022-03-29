@@ -27,7 +27,7 @@ class Historique
   private $version;
 
   #[ORM\Id]
-  #[ORM\Column(type: 'datetime')]
+  #[ORM\Column(type: 'string', length: 128)]
   private $date_version;
 
   #[ORM\Column(type: 'string', length: 128)]
@@ -132,11 +132,6 @@ class Historique
   #[ORM\Column(type: 'datetime')]
   private $date_enregistrement;
 
-  public function getMavenKey(): ?string
-  {
-      return $this->maven_key;
-  }
-
   public function setMavenKey(string $maven_key): self
   {
       $this->maven_key = $maven_key;
@@ -156,12 +151,12 @@ class Historique
       return $this;
   }
 
-  public function getDateVersion(): ?\DateTimeInterface
+  public function getDateVersion(): ?string
   {
       return $this->date_version;
   }
 
-  public function setDateVersion(\DateTimeInterface $date_version): self
+  public function setDateVersion(string $date_version): self
   {
       $this->date_version = $date_version;
 
@@ -562,6 +557,11 @@ class Historique
       $this->initial = $initial;
 
       return $this;
+  }
+
+  public function getMavenKey(): ?string
+  {
+      return $this->maven_key;
   }
 
   public function getDateEnregistrement(): ?\DateTimeInterface
