@@ -1236,7 +1236,8 @@ class ApiProjetController extends AbstractController
     // On créé un objet response pour le retour JSON
     $response = new JsonResponse();
 
-    $date= new DateTime();
+    $date=new DateTime();
+    $date_version=new DateTime($data->date_version);
 
     $save= new Historique();
     $save->setMavenKey($data->maven_key);
@@ -1244,7 +1245,7 @@ class ApiProjetController extends AbstractController
     $save->setVersionRelease($data->version_release);
     $save->setVersionSnapshot($data->version_snapshot);
     $save->setVersion($data->version);
-    $save->setDateVersion(new DateTime($data->date_version));
+    $save->setDateVersion($data->date_version);
     $save->setSuppressWarning($data->suppress_warning);
     $save->setNoSonar($data->no_sonar);
     $save->setNombreLigne($data->nombre_ligne);
