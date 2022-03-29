@@ -85,7 +85,9 @@
                 {% if dash[i]["note_hotspot"]=="C" %} {% set couleur="jaune" %}{% endif %}
                 {% if dash[i]["note_hotspot"]=="D" %} {% set couleur="orange" %}{% endif %}
                 {% if dash[i]["note_hotspot"]=="E" %} {% set couleur="rouge" %}{% endif %}
-                <span class="{{couleur}}">{{dash[i]["note_hotspot"]}}</span>
+                {% if dash[i]["note_hotspot"] is defined %} <span class="bleu">Z</span>
+                  {% else %} <span class="{{couleur}}">{{dash[i]["note_hotspot"]}}</span>
+                {% endif %}
               </td>
           {% endfor %}
           </tr>
