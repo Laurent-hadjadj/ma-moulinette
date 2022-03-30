@@ -42,7 +42,7 @@
           <tr>
             <th scope="col"></th>
             {% for i in 0..dash|length-1 %}
-            {% if dash[i]["initial"]==1 %} {% set reference="reference" %} {% else %} {% set reference="null" %} {% endif %}
+            {% if dash[i]["initial"]==0 %} {% set reference="reference" %} {% else %} {% set reference="null" %} {% endif %}
             <th scope="col" class="open-sans text-right {{reference}}">{{dash[i]["version"]}}</th>
             {% endfor %}
           </tr>
@@ -143,7 +143,7 @@
           <tr>
             <th></th>
             {% for i in 0..dash|length-1 %}
-            {% if dash[i]["initial"]==1 %} {% set reference="reference" %} {% else %} {% set reference="null" %} {% endif %}
+            {% if dash[i]["initial"]==0 %} {% set reference="reference" %} {% else %} {% set reference="null" %} {% endif %}
             <th class="open-sans text-center {{reference}}">{{dash[i]["version"]}}</th>
             {% endfor %}
           </tr>
@@ -178,7 +178,7 @@
           <tr>
             <th></th>
             {% for i in 0..dash|length-1 %}
-            {% if dash[i]["initial"]==1 %} {% set reference="reference" %} {% else %} {% set reference="null" %} {% endif %}
+            {% if dash[i]["initial"]==0 %} {% set reference="reference" %} {% else %} {% set reference="null" %} {% endif %}
             <th class="open-sans text-center {{reference}}">{{dash[i]["version"]}}</th>
             {% endfor %}
           </tr>
