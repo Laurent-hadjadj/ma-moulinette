@@ -29,13 +29,13 @@ class HomeController extends AbstractController
         note_hotspot as hotspot, note_sqale as sqale, nombre_bug as bug,
         nombre_vulnerability as vulnerability, nombre_code_smell as code_smell,
         hotspot_total as hotspots FROM historique
-        WHERE favori=true GROUP BY maven_key
+        WHERE favori=TRUE GROUP BY maven_key
         ORDER BY date_version LIMIT ".$this->getParameter('nombre.favori');
 
         $select = $em->getConnection()->prepare($sql)->executeQuery();
         $favoris=$select->fetchAllAssociative();
 
-        if (empty($favoris)){$nombre=0; $favori=0;} else { $nombre=1; $favori=$favoris; }
+        if (empty($favoris)){$nombre=0; $favori='FALSE';} else { $nombre=1; $favori=$favoris; }
 
         return $this->render('home/index.html.twig', [
             'nombre_favori'=>$nombre, 'favori'=>$favori,

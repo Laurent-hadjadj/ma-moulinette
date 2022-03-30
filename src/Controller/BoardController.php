@@ -81,16 +81,16 @@ class BoardController extends AbstractController
     // Tableau de suivi principal
     $sql="SELECT * FROM  (SELECT nom_projet as nom, version, suppress_warning, no_sonar, nombre_bug as bug, nombre_vulnerability as faille, nombre_code_smell as mauvaise_pratique, hotspot_total as nombre_hotspot, frontend as presentation, backend as metier, batch, note_reliability as fiabilite, note_security as securite, note_hotspot,
     note_sqale as maintenabilite, initial FROM historique WHERE maven_key='"
-    .$maven_key."' AND initial=1) UNION SELECT * FROM (SELECT nom_projet as nom, version, suppress_warning, no_sonar, nombre_bug as bug, nombre_vulnerability as faille, nombre_code_smell as mauvaise_pratique, hotspot_total as nombre_hotspot, frontend as presentation, backend as metier, batch, note_reliability as fiabilite, note_security as securite, note_hotspot,
+    .$maven_key."' AND initial=TRUE) UNION SELECT * FROM (SELECT nom_projet as nom, version, suppress_warning, no_sonar, nombre_bug as bug, nombre_vulnerability as faille, nombre_code_smell as mauvaise_pratique, hotspot_total as nombre_hotspot, frontend as presentation, backend as metier, batch, note_reliability as fiabilite, note_security as securite, note_hotspot,
     note_sqale as maintenabilite, initial FROM historique WHERE maven_key='"
-    .$maven_key."' AND initial=0 ORDER BY date_version DESC LIMIT 9)";
+    .$maven_key."' AND initial=FALSE ORDER BY date_version DESC LIMIT 9)";
 
     $select=$em->getConnection()->prepare($sql)->executeQuery();
     $dash=$select->fetchAllAssociative();
 
     // On récupére les anomalies par sévérité
-    $sql="SELECT * FROM  (SELECT date_version, nombre_anomalie_bloquant as bloquant, nombre_anomalie_critique as critique, nombre_anomalie_majeur as majeur FROM historique WHERE maven_key='".$maven_key."' AND initial=1)
-    UNION SELECT * FROM (SELECT date_version, nombre_anomalie_bloquant as bloquant, nombre_anomalie_critique as critique, nombre_anomalie_majeur as majeur FROM historique WHERE maven_key='".$maven_key."' AND initial=0 ORDER BY date_version DESC LIMIT 9)";
+    $sql="SELECT * FROM  (SELECT date_version, nombre_anomalie_bloquant as bloquant, nombre_anomalie_critique as critique, nombre_anomalie_majeur as majeur FROM historique WHERE maven_key='".$maven_key."' AND initial=TRUE)
+    UNION SELECT * FROM (SELECT date_version, nombre_anomalie_bloquant as bloquant, nombre_anomalie_critique as critique, nombre_anomalie_majeur as majeur FROM historique WHERE maven_key='".$maven_key."' AND initial=FALSE ORDER BY date_version DESC LIMIT 9)";
     $select=$em->getConnection()->prepare($sql)->executeQuery();
     $severite=$select->fetchAllAssociative();
 
@@ -117,7 +117,7 @@ class BoardController extends AbstractController
     $bug[$nl+1]=0;
     $secu[$nl+1]=0;
     $code_smell[$nl+1]=0;
-    $dd = new \DateTime($graph[$nl-1]["date"]);
+    $dd = new DateTime($graph[$nl-1]["date"]);
     $dd->modify('+1 day');
     $ddd=$dd->format('Y-m-d');
     $date[$nl+1]=$ddd;
@@ -272,7 +272,7 @@ class BoardController extends AbstractController
     $data->mineur.",".$data->info.",'".
     $data->note_reliability."','".$data->note_security."','".$data->note_sqale."','".$data->note_hotspots_review."',".
     $data->hotspots_review.",0,0,0,".
-    "false,".$data->initial.",'".
+    "FALSE,".$data->initial.",'".
     $date_enregistrement->format(static::$dateFormat)."')";
 
     // On excute la requête
