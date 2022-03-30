@@ -104,4 +104,16 @@
 
 ## v0.0.7 - 28/03/2022
 
-* version de recette ;
+* Version de recette ;
+* Mise à jour de la documentation ;
+* Mise à jour de la procédure de démarrage et d'arrêt ;
+
+## v0.0.8 - 29/03/2022
+
+* Corrections et amélioration ;
+  * Ajout de la note Z pour les applications n'ayant de hotposts ;
+  * Correction typographique ;
+
+## v0.0.9 - 30/03/2022
+
+* Remplacement des favivon et du logo ;

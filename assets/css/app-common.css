@@ -30,8 +30,8 @@ body { background: #eee; }
   margin-bottom: 0.1rem;
 }
 
-/* Chargement de la marianne */
-.marianne {
+/* Chargement du logo */
+.logo {
   margin-top: 10px;
   margin-left: 10px;
   width: 122px;
