@@ -171,7 +171,7 @@ class ApiProjetController extends AbstractController
     //Si on a pas trouvé l'application dans la liste des favoris, alors on la rajoute.
     if ( empty($select->fetchAllAssociative()) ) {
         $sql="INSERT INTO favori ('maven_key', 'favori', 'date_enregistrement')
-        VALUES ('".$maven_key."', 'TRUE', '".$date->format(static::$dateFormat)."')";
+        VALUES ('".$maven_key."', TRUE, '".$date->format(static::$dateFormat)."')";
         $em->getConnection()->prepare($sql)->executeQuery();
       }
       else {
