@@ -176,7 +176,7 @@ dessineMoiUnMouton(Object.values(JSON.parse(_labels)), Object.values(JSON.parse(
  // On nettoie le formulaire
  $('#bloquant,#critique, #majeur, #mineur, #info').val('');
  // On desactive l'option : par défaut la version que
- // l'on ajoute n'est pas la version de référence
+ // l'On ajoute n'est pas la version de référence
  if ($('.switch-active').css('display')==='block') { $("#switch").click() }
 
  // On charge la liste
@@ -184,6 +184,166 @@ dessineMoiUnMouton(Object.values(JSON.parse(_labels)), Object.values(JSON.parse(
 
  $('#modal-ajouter-analyse').foundation('open');
 })
+
+/**
+ * description
+ * On affiche la liste des projets et on nettoie le formulaire
+ */
+ $('.js-modifier-analyse').on('click', function () {
+
+  const poubelle='<svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="poubelle-svg"  preserveAspectRatio="xMidYMid meet"><g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)" stroke="none">    <path d="M1871 5109 c-128 -25 -257 -125 -311 -241 -37 -79 -50 -146 -50 -258 l0 -88 -292 -5 c-308 -4 -329 -7 -448 -57 -171 -72 -327 -228 -400 -400 -41 -97 -51 -152 -57 -297 l-6 -143 2253 0 2253 0 -6 143 c-6 145 -16 200 -57 297-73 172 -229 328 -400 400 -119 50 -140 53 -447 57 l-293 5 0 88 c0 48 -5 111 -10 141 -34 180 -179 325 -359 359 -66 12 -1306 12 -1370 -1z m1359 -309 c60 -31 80 -78 80 -190 l0 -90 -750 0 -750 0 0 90 c0 110 20 159 78 189 36 19 60 20 670 21 615 0 634 -1 672 -20z"/> <path d="M626 3283 c3 -21 63 -684 134 -1473 136 -1518 135 -1505 194 -1599 64 -100 180 -179 295 -201 73 -14 2549 -14 2622 0 115 22 231 101 295 201 59 94 58 81 194 1599 71 789 131 1452 134 1473 l4 37 -1938 0 -1938 0 4 -37z m1134 -283 c43 -22 65 -55 74 -110 11 -69 99 -2156 92 -2185 -10 -40 -69 -93 -112 -101 -83 -15 -167 45 -178 128 -6 46 -96 2049 -96 2134 0 118 115 188 220 134z m870 0 c26 -13 47 -34 60 -60 20 -39 20 -57 20 -1130 0 -1073 0 -1091 -20 -1130 -23 -45 -80 -80 -130 -80 -50 0 -107 35 -130 80 -20 39 -20 57 -20 1130 0 1073 0 1091 20 1130 37 73 124 99 200 60z m893 -13 c66 -50 66 20 13 -1166 -26 -592 -52 -1092 -57 -1113 -18 -69 -99 -118 -174 -104 -42 8 -101 62 -111 101 -7 29 81 2116 92 2185 9 54 35 91 79 112 52 25 114 19 158 -15z"/></g></svg>';
+
+  const data = { maven_key: $("#js-nom").data('maven') }
+  const options = {
+    url: 'http://localhost:8000/api/dash/version/liste', type: 'PUT', dataType: 'json', data: JSON.stringify(data), contentType: contentType
+  }
+
+  $.ajax(options).then((t) => {
+    // On gére le résultat de la requête
+    if (t.code!=="OK") {
+      const message='Je n\'ai pas réussi à charger la liste des versions ('+t.code+').';
+      const callbox='<div class="callout error text-justify" data-closable="slide-out-right"><p style="color:#00445b;" class="open-sans" cell">Ooups ! '+message+'<button class="close-button" aria-label="Fermer la fenêtre" type="button" data-close><span aria-hidden="true">&times;</span></button></div>';
+      $('#message').html(callbox);
+      return;
+    }
+    else {
+      const message='La liste des versions a été chargée correctement.';
+      const callbox='<div class="callout success text-justify" data-closable="slide-out-right"><p style="color:#187e3d;" class="open-sans" cell">Bravo ! '+message+'<button class="close-button" aria-label="Fermer la fenêtre" type="button" data-close><span aria-hidden="true">&times;</span></button></div>';
+      $('#message').html(callbox);
+    }
+
+    // On boucle pour construire le tableau
+    let ligne=0;
+    let html='';
+    let switch_favori='';
+    let switch_reference='';
+    let favori='FALSE';
+    let reference='FALSE';
+
+    $('#tableau-liste-version').html(html)
+
+    t.versions.forEach(version => {
+      ligne++;
+      // On défini le switch pour le favori
+      switch_favori='<div class="siwtch js-switch-favori">';
+      switch_favori+='<input class="switch-input" id="switch-favori-'+ligne+'" type="checkbox" name="switch-favori-'+ligne+'">';
+      switch_favori+='<label class="switch-paddle" for="switch-favori-'+ligne+'">';
+      switch_favori+='<span class="show-for-sr">favori</span>';
+      switch_favori+='</label></div>';
+
+      // On défini le switch pour la référence
+      switch_reference='<div class="siwtch js-switch-reference">';
+      switch_reference+='<input class="switch-input" id="switch-reference-'+ligne+'" type="checkbox" name="switch-reference-'+ligne+'">';
+      switch_reference+='<label class="switch-paddle" for="switch-reference-'+ligne+'">';
+      switch_reference+='<span class="show-for-sr">reference</span>';
+      switch_reference+='</label></div>';
+
+      // On construit le tableau
+      html='<tr id="ligne-'+ligne+'">';
+      html +='<td id="poubelle-'+ligne+'" class="text-left">'+poubelle+'</td>';
+      html +='<td id="date-'+ligne+'" class="text-left">'+version.date+'</td>';
+      html +='<td id="version-'+ligne+'" class="text-left">'+version.version+'</td>';
+      html +='<td id="favori-'+ligne+'" class="text-left">'+switch_favori+'</td>';
+      html +='<td id="reference-'+ligne+'" class="text-left">'+switch_reference+'</td>';
+      html +='</tr>'
+
+      // On ajoute la ligne
+      $('#tableau-liste-version').append(html);
+
+      //Favori|reference enable
+      // 0 = FALSE, 1 = TRUE
+      if (version.favori===1) { $('#switch-favori-'+ligne).click(); }
+      if (version.initial==1) { $('#switch-reference-'+ligne).click(); }
+    });
+
+    // On gére le changement de favori
+    $('[id^=switch-favori-]').on('click', (e)=>{
+      // on récupère la version et la date
+      const id=$(e.target).attr('id');
+      const l=id.split('-');
+      const  version = $('#version-'+l[2]).text().trim();
+      const  date = $('#date-'+l[2]).text().trim();
+
+      if ($('#'+id+':checked').length===1){ favori='TRUE' } else { favori='FALSE'}
+        const data_favori = { maven_key: $("#js-nom").data('maven'), favori: favori, version: version, date: date, }
+        const options_favori = {
+          url: 'http://localhost:8000/api/dash/version/favori', type: 'PUT', dataType: 'json',
+          data: JSON.stringify(data_favori), contentType: contentType  }
+
+      $.ajax(options_favori).then(() => {
+          if (t.code=="OK") {
+            const message='Mise à jour du favori.';
+            const callbox='<div class="callout success text-justify" data-closable="slide-out-right"><p style="color:#00445b;" class="open-sans" cell">Bravo ! '+message+'<button class="close-button" aria-label="Fermer la fenêtre" type="button" data-close><span aria-hidden="true">&times;</span></button></div>';
+            $('#message').html(callbox);
+          }
+          else {
+            const message='Erreur lors de la mise à jour ('+t.code+').';
+            const callbox='<div class="callout success text-justify" data-closable="slide-out-right"><p style="color:#187e3d;" class="open-sans" cell">Ooups ! '+message+'<button class="close-button" aria-label="Fermer la fenêtre" type="button" data-close><span aria-hidden="true">&times;</span></button></div>';
+            $('#message').html(callbox);
+          }
+        });
+    });
+
+    // On gére le changement de reference
+    $('[id^=switch-reference-]').on('click', (e)=>{
+      // on récupère la version et la date
+      const id=$(e.target).attr('id');
+      const l=id.split('-');
+      const  version = $('#version-'+l[2]).text().trim();
+      const  date = $('#date-'+l[2]).text().trim();
+
+      if ($('#'+id+':checked').length===1){ reference='TRUE' } else { reference='FALSE' }
+      const data_reference = { maven_key: $("#js-nom").data('maven'), reference: reference, version: version, date: date, }
+      const options_reference = {
+        url: 'http://localhost:8000/api/dash/version/reference', type: 'PUT', dataType: 'json',
+        data: JSON.stringify(data_reference), contentType: contentType }
+
+        $.ajax(options_reference).then(() => {
+        if (t.code=="OK") {
+          const message='Mise à jour de la version de référence.';
+          const callbox='<div class="callout success text-justify" data-closable="slide-out-right"><p style="color:#00445b;" class="open-sans" cell">Bravo ! '+message+'<button class="close-button" aria-label="Fermer la fenêtre" type="button" data-close><span aria-hidden="true">&times;</span></button></div>';
+          $('#message').html(callbox);
+        }
+        else {
+          const message='Erreur lors de la mise à jour ('+t.code+').';
+          const callbox='<div class="callout success text-justify" data-closable="slide-out-right"><p style="color:#187e3d;" class="open-sans" cell">Ooups !'+message+'<button class="close-button" aria-label="Fermer la fenêtre" type="button" data-close><span aria-hidden="true">&times;</span></button></div>';
+          $('#message').html(callbox);
+        }
+      });
+    })
+
+   $('[id^=poubelle-]').on('click', (e)=>{
+    // on récupère la version et la date
+    const id=$(e.currentTarget).attr('id');
+    const l=id.split('-');
+    const  version = $('#version-'+l[1]).text().trim();
+    const  date = $('#date-'+l[1]).text().trim();
+
+    const data_poubelle = { maven_key: $("#js-nom").data('maven'), version: version, date: date, }
+    const options_poubelle = {
+      url: 'http://localhost:8000/api/dash/version/poubelle', type: 'PUT', dataType: 'json',
+      data: JSON.stringify(data_poubelle), contentType: contentType }
+    console.log(data_poubelle);
+    $.ajax(options_poubelle).then(() => {
+    console.log(t.code);
+      if (t.code=="OK") {
+      const message='Suppresion de cette version dans l\'historique.';
+      const callbox='<div class="callout success text-justify" data-closable="slide-out-right"><p style="color:#00445b;" class="open-sans" cell">Bravo ! '+message+'<button class="close-button" aria-label="Fermer la fenêtre" type="button" data-close><span aria-hidden="true">&times;</span></button></div>';
+      $('#message').html(callbox);
+      // On masque la ligne
+      $('#ligne-'+l[1]).hide();
+    }
+    else {
+      const message='Erreur lors de la suppresion ('+t.code+').';
+      const callbox='<div class="callout success text-justify" data-closable="slide-out-right"><p style="color:#187e3d;" class="open-sans" cell">Ooups !'+message+'<button class="close-button" aria-label="Fermer la fenêtre" type="button" data-close><span aria-hidden="true">&times;</span></button></div>';
+      $('#message').html(callbox);
+    }
+  });
+
+  })
+   $('#modal-modifier-analyse').foundation('open');
+  })
+});
 
 /**
  * description
@@ -368,7 +528,7 @@ $('.js-enregistrer-analyse').on('click', ()=>{
   if ($('#mineur').val()=='') { mineur=0; }
   if ($('#info').val()=='') { info=0; }
 
-  let initial=1;
+  let initial='FALSE';
   if ($('.switch-active').css('display')==='block') { initial='TRUE'; }
   if ($('.switch-inactive').css('display')==='block') { initial='FALSE'; }
 

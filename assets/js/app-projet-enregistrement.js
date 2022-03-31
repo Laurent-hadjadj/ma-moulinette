@@ -156,7 +156,6 @@ export function enregistrement(maven_key) {
           log(' - ERROR ('+t.code +') : '+message);
           const callbox='<div class="callout warning text-justify" data-closable="slide-out-right"><p style="color:#00445b;" class="open-sans" cell">Ooups ! '+message+'<button class="close-button" aria-label="Fermer la fenêtre" type="button" data-close><span aria-hidden="true">&times;</span></button></div>';
           $('#message').html(callbox);
-
         }
       });
  }

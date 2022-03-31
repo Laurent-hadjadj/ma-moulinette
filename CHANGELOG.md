@@ -117,3 +117,5 @@
 ## v0.0.9 - 30/03/2022
 
 * Remplacement des favivon et du logo ;
+* Correction de l'afficahge de la version de référence et des favoris (problème de Boxing du Boolean);
+* Ajout d'un lien "modification" sur la page de suivi des mesures.
