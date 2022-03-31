@@ -117,65 +117,82 @@
                 <h5 class="claire-hand text-center">Informations</h5>
               </div>
               <div class="callout-footer open-sans">
-                <p class="ligne-favori open-sans">Nom&nbsp;:<span class="float-right resultat-favori">{{app.nom}}</span></p>
+                {% if app.nom|length >20 %} {% set taille="nom-small" %} {% else %} {% set taille="nom-normal" %} {% endif %}
+                <p class="ligne-favori open-sans">Nom&nbsp;:<span class="float-right resultat-favori {{taille}}">{{app.nom}}</span></p>
                 <p class="ligne-favori open-sans">Version&nbsp;:<span class="float-right resultat-favori">{{app.version}}</span></p>
                 <p class="ligne-favori open-sans">Date&nbsp;:<span class="float-right resultat-favori">{{app.date|date("m/d/Y", "Europe/Paris")}}</span></p>
-                <span class="note-favori" class="open-sans">&nbsp;F&nbsp;</span>
-                <span class="note-favori" class="open-sans">&nbsp;S&nbsp;</span>
-                <span class="note-favori" class="open-sans">&nbsp;H&nbsp;</span>
-                <span class="note-favori" class="open-sans">&nbsp;M&nbsp;</span><br/>
-                <span id="note-reliability" class="open-sans">
-                {% if app.fiabilite == 'A' %} {% set couleur1='note-vert1' %} {% endif %}
-                {% if app.fiabilite == 'B' %} {% set couleur1='note-vert2' %} {% endif %}
-                {% if app.fiabilite == 'C' %} {% set couleur1='note-jaune' %} {% endif %}
-                {% if app.fiabilite == 'D' %} {% set couleur1='note-orange' %} {% endif %}
-                {% if app.fiabilite == 'E' %} {% set couleur1='note-rouge' %} {% endif %}
-                {% if app.securite == 'A' %} {% set couleur2='note-vert1' %} {% endif %}
-                {% if app.securite == 'B' %} {% set couleur2='note-vert2' %} {% endif %}
-                {% if app.securite == 'C' %} {% set couleur2='note-jaune' %} {% endif %}
-                {% if app.securite == 'D' %} {% set couleur2='note-orange' %} {% endif %}
-                {% if app.securite == 'E' %} {% set couleur2='note-rouge' %} {% endif %}
-                {% if app.hotspot == 'A' %} {% set couleur3='note-vert1' %} {% endif %}
-                {% if app.hotspot == 'B' %} {% set couleur3='note-vert2' %} {% endif %}
-                {% if app.hotspot == 'C' %} {% set couleur3='note-jaune' %} {% endif %}
-                {% if app.hotspot == 'D' %} {% set couleur3='note-orange' %} {% endif %}
-                {% if app.hotspot == 'E' %} {% set couleur3='note-rouge' %} {% endif %}
-                {% if app.sqale == 'A' %} {% set couleur4='note-vert1' %} {% endif %}
-                {% if app.sqale == 'B' %} {% set couleur4='note-vert2' %} {% endif %}
-                {% if app.sqale == 'C' %} {% set couleur4='note-jaune' %} {% endif %}
-                {% if app.sqale == 'D' %} {% set couleur4='note-orange' %} {% endif %}
-                {% if app.sqale == 'E' %} {% set couleur4='note-rouge' %} {% endif %}
-                <span class="{{couleur1}}">{{app.fiabilite}}</span></span>
-                <span id="note-security" class="open-sans">
-                <span class="{{couleur2}}">{{app.securite}}</span></span>
-                <span class="open-sans">
-                <span class="{{couleur3}}">{{app.hotspot}}</span></span>
-                <span  class="open-sans">
-                <span class="{{couleur4}}">{{app.sqale}}</span></span><br />
-
-                <span class="nombre-favori open-sans">
-                {% if app.bug <10 %} 00{{app.bug}}{% endif %}
-                {% if app.bug >=10 and app.bug <100 %} 0{{app.bug}}{% endif %}
-                {% if app.bug >=100 and app.bug <1000 %} {{app.bug}}{% endif %}
-                </span>
-                <span class="nombre-favori open-sans">
-                {% if app.vulnerability <10 %} 00{{app.vulnerability}}{% endif %}
-                {% if app.vulnerability >=10 and app.vulnerability <100%} 0{{app.vulnerability}}{% endif %}
-                {% if app.vulnerability >=100 and app.vulnerability <1000 %} {{app.vulnerability}}{% endif %}
-                </span>
-                <span class="nombre-favori open-sans">
-                {% if app.hotspots <10 %} 00{{app.hotspots}}{% endif %}
-                {% if app.hotspots >=10 and app.hotspots <100%} 0{{app.hotspots}}{% endif %}
-                {% if app.hotspots >=100 and app.hotspots <1000 %} {{app.hotspots}}{% endif %}</span>
-                <span class="nombre-favori open-sans">
-                {% if app.code_smell <10 %} 00{{app.code_smell}}{% endif %}
-                {% if app.code_smell >=10 and app.code_smell <100%} 0{{app.code_smell}}{% endif %}
-                {% if app.code_smell >=100 and app.code_smell <1000 %} {{app.code_smell}}
-                {% endif %}
-                {% if app.code_smell >=1000 and app.code_smell <20000 %}
-                  {% set k=(app.code_smell/1000)|number_format(1, '.', ',') %}
-                  {{k}}K</span><br/>
-                {% endif %}
+                <table>
+                  <thead>
+                    <tr>
+                        <th><span class="note-favori" class="open-sans">&nbsp;F&nbsp;</span></th>
+                        <th><span class="note-favori" class="open-sans">&nbsp;S&nbsp;</span></th>
+                        <th><span class="note-favori" class="open-sans">&nbsp;H&nbsp;</span></th>
+                        <th><span class="note-favori" class="open-sans">&nbsp;M&nbsp;</span></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% if app.fiabilite == 'A' %} {% set couleur1='note-vert1' %} {% endif %}
+                    {% if app.fiabilite == 'B' %} {% set couleur1='note-vert2' %} {% endif %}
+                    {% if app.fiabilite == 'C' %} {% set couleur1='note-jaune' %} {% endif %}
+                    {% if app.fiabilite == 'D' %} {% set couleur1='note-orange' %} {% endif %}
+                    {% if app.fiabilite == 'E' %} {% set couleur1='note-rouge' %} {% endif %}
+                    {% if app.securite == 'A' %} {% set couleur2='note-vert1' %} {% endif %}
+                    {% if app.securite == 'B' %} {% set couleur2='note-vert2' %} {% endif %}
+                    {% if app.securite == 'C' %} {% set couleur2='note-jaune' %} {% endif %}
+                    {% if app.securite == 'D' %} {% set couleur2='note-orange' %} {% endif %}
+                    {% if app.securite == 'E' %} {% set couleur2='note-rouge' %} {% endif %}
+                    {% if app.hotspot == 'A' %} {% set couleur3='note-vert1' %} {% endif %}
+                    {% if app.hotspot == 'B' %} {% set couleur3='note-vert2' %} {% endif %}
+                    {% if app.hotspot == 'C' %} {% set couleur3='note-jaune' %} {% endif %}
+                    {% if app.hotspot == 'D' %} {% set couleur3='note-orange' %} {% endif %}
+                    {% if app.hotspot == 'E' %} {% set couleur3='note-rouge' %} {% endif %}
+                    {% if app.hotspot == 'Z' %} {% set couleur3='note-bleu' %} {% endif %}
+                    {% if app.sqale == 'A' %} {% set couleur4='note-vert1' %} {% endif %}
+                    {% if app.sqale == 'B' %} {% set couleur4='note-vert2' %} {% endif %}
+                    {% if app.sqale == 'C' %} {% set couleur4='note-jaune' %} {% endif %}
+                    {% if app.sqale == 'D' %} {% set couleur4='note-orange' %} {% endif %}
+                    {% if app.sqale == 'E' %} {% set couleur4='note-rouge' %} {% endif %}
+                    <tr>
+                      <td><span id="note-reliability" class="open-sans"><span class="{{couleur1}}">{{app.fiabilite}}</span></span></td>
+                      <td><span id="note-security" class="open-sans"><span class="{{couleur2}}">{{app.securite}}</span></span></td>
+                      <td><span class="open-sans"><span class="{{couleur3}}">{{app.hotspot}}</span></span></td>
+                      <td><span  class="open-sans"><span class="{{couleur4}}">{{app.sqale}}</span></span></td>
+                    </tr>
+                    <tr>
+                      <td>
+                      <span class="nombre-favori open-sans">
+                        {% if app.bug <10 %} 00{{app.bug}}{% endif %}
+                        {% if app.bug >=10 and app.bug <100 %} 0{{app.bug}}{% endif %}
+                        {% if app.bug >=100 and app.bug <1000 %} {{app.bug}}{% endif %}
+                        </span>
+                      </td>
+                      <td>
+                        <span class="nombre-favori open-sans">
+                          {% if app.vulnerability <10 %} 00{{app.vulnerability}}{% endif %}
+                          {% if app.vulnerability >=10 and app.vulnerability <100%} 0{{app.vulnerability}}{% endif %}
+                          {% if app.vulnerability >=100 and app.vulnerability <1000 %} {{app.vulnerability}}{% endif %}
+                        </span>
+                      </td>
+                      <td>
+                        <span class="nombre-favori open-sans">
+                          {% if app.hotspots <10 %} 00{{app.hotspots}} {% endif %}
+                          {% if app.hotspots >=10 and app.hotspots <100 %} 0{{app.hotspots}} {% endif %}
+                          {% if app.hotspots >=100 and app.hotspots <1000 %} {{app.hotspots}} {% endif %}
+                        </span>
+                      </td>
+                      <td>
+                        <span class="nombre-favori open-sans">
+                          {% if app.code_smell <10 %} 00{{app.code_smell}}{% endif %}
+                          {% if app.code_smell >=10 and app.code_smell <100%} 0{{app.code_smell}}{% endif %}
+                          {% if app.code_smell >=100 and app.code_smell <1000 %} {{app.code_smell}}{% endif %}
+                          {% if app.code_smell >=1000 and app.code_smell <20000 %}
+                              {% set k=(app.code_smell/1000)|number_format(1, '.', ',') %}
+                              {{k}}K</span>
+                          {% endif %}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
             {% endfor %}
@@ -184,28 +201,6 @@
         </div>
     </fieldset>
   </div>
-
-<!-- Supression de la base de données locale -->
-{#<div class="small-12 medium-12 large-12 cell">
-  <label for="suppression-bd-locale" class="button expanded float-center trash-bd">
-    <div class="show-for-medium">
-      <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 198.076 198.076" class="trash-bd-svg">
-        <path d="M192.167 8.732c-7.123-7.125-23.254-6.995-49.315.389-18.336 5.194-34.587 12.057-35.271 12.348a3.69 3.69 0 00-2.183 2.695 3.69 3.69 0 001.014 3.318l26.204 26.206-8.087 8.087-48.443-28.046-3.704 6.396 46.74 27.06-10.287 10.287-35.39-20.222-3.666 6.415 33.639 19.222L91.276 95.03 63.103 78.124 59.3 84.46l26.59 15.956-10.765 10.764-14.395-9.595-4.099 6.149 13.165 8.775-10.454 10.455c-7.078-7.151-16.565-11.48-26.735-12.013a40.67 40.67 0 00-31.589 12.587 3.695 3.695 0 00-.251 4.801 40.622 40.622 0 0032.239 15.875c6.043 0 11.926-1.386 17.294-3.916-2.827 5.999-4.225 12.642-3.869 19.426a40.623 40.623 0 0015.821 30.101 3.694 3.694 0 004.802-.251 40.613 40.613 0 0012.587-31.589c-.609-11.623-6.173-22.359-15.255-29.614l11.248-11.248 11.225 16.837 6.149-4.099-11.135-16.701.683-1.025-1.161-.774 9.831-9.831 16.291 27.149 6.336-3.803-17.241-28.732 12.864-12.865 21.448 37.532 6.415-3.666-21.688-37.952.786-1.375-.954-.545 9.679-9.679 29.305 50.616 6.396-3.704-29.521-50.988.779-1.345-.974-.564 6.694-6.693 27.738 27.74c.195.193.467.523.779.889 1.874 2.201 3.139 3.563 4.904 3.92a7.935 7.935 0 001.586.162c4.483 0 8.842-3.891 12.979-11.595 9.528-17.745 18.554-59.086 6.34-71.3zM31.254 140.779a33.223 33.223 0 01-22.487-10.428c6.468-5.575 14.832-8.458 23.454-8.021a33.217 33.217 0 0122.485 10.43 33.229 33.229 0 01-23.452 8.019zm41.007 21.592a33.229 33.229 0 01-8.021 23.454 33.23 33.23 0 01-10.43-22.487 33.229 33.229 0 018.021-23.454 33.23 33.23 0 0110.43 22.487zM188.732 47.976l-30.959 6.194 1.451 7.245 27.752-5.552c-1.977 7.672-4.617 15.007-7.658 20.671-2.957 5.504-5.156 7.206-6.123 7.596-.408-.437-.915-1.032-1.209-1.377-.473-.554-.895-1.039-1.183-1.328l-55.245-55.247c25.022-9.993 62.72-20.874 71.385-12.221 4.707 4.708 4.641 19.163 1.789 34.019z"/>
-        <path d="M156.896 29.408l-5.225-5.225 7.837-7.837 5.225 5.225z"/>
-      </svg>
-      <span class="show-for-medium open-sans" style="color:#fff; padding-right: 28px;">
-        Supprimer le référentiel.</span>
-    </div>
-    <div class="show-for-small-only">
-      <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 198.076 198.076" class="trash-bd-svg">
-        <path d="M192.167 8.732c-7.123-7.125-23.254-6.995-49.315.389-18.336 5.194-34.587 12.057-35.271 12.348a3.69 3.69 0 00-2.183 2.695 3.69 3.69 0 001.014 3.318l26.204 26.206-8.087 8.087-48.443-28.046-3.704 6.396 46.74 27.06-10.287 10.287-35.39-20.222-3.666 6.415 33.639 19.222L91.276 95.03 63.103 78.124 59.3 84.46l26.59 15.956-10.765 10.764-14.395-9.595-4.099 6.149 13.165 8.775-10.454 10.455c-7.078-7.151-16.565-11.48-26.735-12.013a40.67 40.67 0 00-31.589 12.587 3.695 3.695 0 00-.251 4.801 40.622 40.622 0 0032.239 15.875c6.043 0 11.926-1.386 17.294-3.916-2.827 5.999-4.225 12.642-3.869 19.426a40.623 40.623 0 0015.821 30.101 3.694 3.694 0 004.802-.251 40.613 40.613 0 0012.587-31.589c-.609-11.623-6.173-22.359-15.255-29.614l11.248-11.248 11.225 16.837 6.149-4.099-11.135-16.701.683-1.025-1.161-.774 9.831-9.831 16.291 27.149 6.336-3.803-17.241-28.732 12.864-12.865 21.448 37.532 6.415-3.666-21.688-37.952.786-1.375-.954-.545 9.679-9.679 29.305 50.616 6.396-3.704-29.521-50.988.779-1.345-.974-.564 6.694-6.693 27.738 27.74c.195.193.467.523.779.889 1.874 2.201 3.139 3.563 4.904 3.92a7.935 7.935 0 001.586.162c4.483 0 8.842-3.891 12.979-11.595 9.528-17.745 18.554-59.086 6.34-71.3zM31.254 140.779a33.223 33.223 0 01-22.487-10.428c6.468-5.575 14.832-8.458 23.454-8.021a33.217 33.217 0 0122.485 10.43 33.229 33.229 0 01-23.452 8.019zm41.007 21.592a33.229 33.229 0 01-8.021 23.454 33.23 33.23 0 01-10.43-22.487 33.229 33.229 0 018.021-23.454 33.23 33.23 0 0110.43 22.487zM188.732 47.976l-30.959 6.194 1.451 7.245 27.752-5.552c-1.977 7.672-4.617 15.007-7.658 20.671-2.957 5.504-5.156 7.206-6.123 7.596-.408-.437-.915-1.032-1.209-1.377-.473-.554-.895-1.039-1.183-1.328l-55.245-55.247c25.022-9.993 62.72-20.874 71.385-12.221 4.707 4.708 4.641 19.163 1.789 34.019z"/>
-        <path d="M156.896 29.408l-5.225-5.225 7.837-7.837 5.225 5.225z"/>
-      </svg>
-      <span class="open-sans" style="color:#fff; padding-right: 17px;">
-        Supprimer.</span>
-    </div>
-  </label>
-</div></div>#}
 
 <br /><br />
 {# Chargement de la section footer #}

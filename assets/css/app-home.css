@@ -20,6 +20,8 @@
 
   .log { font-size: 0.75rem; }
 
+  .callout-information { width: 17.4rem; }
+
   .ligne-favori,
   .resultat-favori { font-size: 0.9rem; }
 }
@@ -37,6 +39,8 @@
   }
 
   .log { font-size: 0.8rem; }
+
+  .callout-information { width: 17.4rem; }
 
   .ligne-favori,
   .resultat-favori { font-size: 0.9rem; }
@@ -56,6 +60,8 @@
 
   .log { font-size: 1rem; }
 
+  .callout-information { width: 17.4rem; }
+
   .ligne-favori,
   .resultat-favori { font-size: 0.9rem; }
 }
@@ -71,6 +77,8 @@
     width: 32px;
     height: 32px;
   }
+
+  .callout-information { width: 17.4rem; }
 
   .ligne-favori,
   .resultat-favori { font-size: 0.9rem; }
@@ -88,6 +96,8 @@
     height: 32px;
   }
 
+  .callout-information { width: 17.4rem; }
+
   .ligne-favori,
   .resultat-favori { font-size: 1rem; }
 }
@@ -103,6 +113,8 @@
     width: 32px;
     height: 32px;
   }
+
+  .callout-information { width: 17.4rem; }
 
   .ligne-favori,
   .resultat-favori { font-size: 1rem; }
@@ -120,6 +132,8 @@
     height: 32px;
   }
 
+  .callout-information { width: 17.4rem; }
+
   .ligne-favori,
   .resultat-favori { font-size: 1rem; }
 }
@@ -135,7 +149,7 @@
     width: 48px;
     height: 48px;
   }
-
+  .callout-information { width: 17.4rem; }
   .resultat-favori { font-size: 1rem; }
 }
 
@@ -169,7 +183,6 @@
 
 /* Bouton SVG */
 .refresh-bd-svg,
-.trash-bd-svg,
 .affiche-profil-svg,
 .regle-bd-svg,
 .projet-svg {
@@ -190,13 +203,16 @@
 
 /* définit la taille de la carte */
 .callout-information {
-  width: 14.3rem;
   border-radius: 0.8rem;
   box-shadow: 2px 2px 5px #444;
   margin-right: 5px;
 }
 
 .resultat-favori { color: #333; }
+
+.nom-small { font-size: 0.78rem; }
+
+.nom-normal { font-size: 0.9rem; }
 
 .small-favori { font-size: 1rem; }
 
@@ -208,23 +224,18 @@
 }
 
 .note-favori {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   color: #00445b;
   border: solid 1px #aaa;
-  padding-left: 12px;
-  padding-right: 12px;
-  margin-left: 1px;
-  margin-right: 1px;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 .nombre-favori {
-  font-size: 0.9rem;
   color: #000;
   border: solid 1px #888;
-  padding-left: 7px;
-  padding-right: 7px;
-  margin-left: 2px;
-  margin-right: 2px;
+  padding-left: 2px;
+  padding-right: 2px;
 }
 
 .note-vert1 {
@@ -233,9 +244,8 @@
   color: #fff;
   border: solid 2px #00445b;
   border-radius: 0.2rem;
-  padding-left: 15px;
+  padding-left: 14px;
   padding-right: 15px;
-  margin-left: 1px;
 }
 
 .note-vert2 {
@@ -246,7 +256,6 @@
   border-radius: 0.2rem;
   padding-left: 15px;
   padding-right: 15px;
-  margin-left: 2px;
 }
 
 .note-jaune {
@@ -257,7 +266,6 @@
   border-radius: 0.2rem;
   padding-left: 15px;
   padding-right: 15px;
-  margin-left: 1px;
 }
 
 .note-orange {
@@ -268,7 +276,6 @@
   border-radius: 0.2rem;
   padding-left: 15px;
   padding-right: 15px;
-  margin-left: 1px;
 }
 
 .note-rouge {
@@ -279,5 +286,14 @@
   border-radius: 0.2rem;
   padding-left: 15px;
   padding-right: 15px;
-  margin-left: 1px;
+}
+
+.note-bleu {
+  font-size: 0.9rem;
+  background-color: #00445b;
+  color: #fff;
+  border: solid 2px #00445b;
+  border-radius: 0.2rem;
+  padding-left: 15px;
+  padding-right: 15px;
 }
