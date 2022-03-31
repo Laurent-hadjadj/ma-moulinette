@@ -114,8 +114,13 @@
   * Ajout de la note Z pour les applications n'ayant de hotposts ;
   * Correction typographique ;
 
-## v0.0.9 - 30/03/2022
+## v0.0.9 - 31/03/2022
 
-* Remplacement des favivon et du logo ;
-* Correction de l'afficahge de la version de référence et des favoris (problème de Boxing du Boolean);
+* Remplacement des favicons et du logo ;
+* Correction de l'affichage de la version de référence et des favoris (problème de Boxing du Boolean initial et favori );
 * Ajout d'un lien "modification" sur la page de suivi des mesures.
+  * Permet de supprimer une version ;
+  * Active ou de désactive pour une version le statut favori ;
+  * Active ou de désactive pour une version le statut référence ;
+* Reworking des favoris dans la page home ;
+* Correction de l'affichage quand le nombre de violations est >20000 (20k) ;
