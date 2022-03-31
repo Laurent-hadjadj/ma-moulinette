@@ -114,13 +114,24 @@
   height: 28px;
 }
 
-.ajouter-analyse-svg {
+.ajouter-analyse-svg,
+.modifier-analyse-svg {
   fill: #00445b;
   cursor: none;
   margin-bottom: -0.4rem;
   width: 28px;
   height: 28px;
 }
+
+.poubelle-svg {
+  fill: #00445b;
+  cursor: pointer;
+  margin-bottom: -0.4rem;
+  width: 28px;
+  height: 28px;
+}
+
+.poubelle-svg:hover { fill: #c45d4e; }
 
 .enregistrer-analyse-svg {
   fill: #eee;
@@ -132,21 +143,25 @@
 
 /* bouton */
 .enregistrer-analyse,
-#fermer-choisir-analyse {
+#fermer-choisir-analyse,
+#fermer-modifier-analyse {
   color: #fff;
   background-color: #00445b;
 }
 
 .enregistrer-analyse:hover,
+#fermer-modifier-analyse:hover,
 #fermer-choisir-analyse:hover { background-color: #006182; }
 
-.lien-ajouter {
+.lien-ajouter,
+.lien-modifier {
   font-size: 1.2rem;
   color: #00445b;
   cursor: pointer;
 }
 
-.lien-ajouter:hover {
+.lien-ajouter:hover,
+.lien-modifier:hover {
   font-size: 1.2rem;
   color: #c45d4e;
 }

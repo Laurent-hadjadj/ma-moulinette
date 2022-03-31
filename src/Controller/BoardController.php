@@ -280,7 +280,133 @@ class BoardController extends AbstractController
     try {
       $con->executeQuery();
     } catch (\Doctrine\DBAL\Exception $e) {
-      return $response->setData(["code"=>$e, Response::HTTP_OK]);
+      return $response->setData(["code"=>$e->getCode(), Response::HTTP_OK]);
+    }
+    return $response->setData(["code"=>"OK", Response::HTTP_OK]);
+  }
+
+ /*
+   * description
+   * récupère la liste des projets nom + clé
+   * http://{url}}/api/dash/liste/version
+  */
+  #[Route('/api/dash/version/liste', name: 'dash_version_liste', methods: ['PUT'])]
+  public function dash_version_liste(EntityManagerInterface $em, Request $request)
+  {
+    // on décode le body
+    $data = json_decode($request->getContent());
+    $maven_key=$data->maven_key;
+
+    // On créé un nouvel objet Json
+    $response = new JsonResponse();
+
+    // On récupère les versions et la date pour la clé du projet
+    $sql = "SELECT maven_key, version, date_version as date, favori, initial FROM historique WHERE maven_key='".$maven_key."' ORDER BY date_version DESC";
+
+    // On excute la requête
+    $con=$em->getConnection()->prepare($sql);
+    try {
+      $select=$con->executeQuery();
+      $version=$select->fetchAllAssociative();
+    } catch (\Doctrine\DBAL\Exception $e) {
+      return $response->setData(["code"=>$e->getCode(), Response::HTTP_OK]);
+    }
+    return $response->setData(["code"=>"OK", "versions"=>$version, Response::HTTP_OK]);
+  }
+
+  /*
+   * description
+   * On ajoute ou on supprime la version favorite
+   * http://{url}}/api/dash/version/favori
+  */
+  #[Route('/api/dash/version/favori', name: 'dash_version_favori', methods: ['PUT'])]
+  public function dash_version_favori(EntityManagerInterface $em, Request $request)
+  {
+    // on décode le body
+    $data = json_decode($request->getContent());
+    $maven_key=$data->maven_key;
+    $favori=$data->favori;
+    $date=$data->date;
+    $version=$data->version;
+
+    // On créé un nouvel objet Json
+    $response = new JsonResponse();
+
+    // On récupère les versions et la date pour la clé du projet
+    $sql = "UPDATE historique SET favori=".$favori." WHERE maven_key='".$maven_key.
+           "' AND version='".$version."' AND date_version='".$date."'" ;
+
+    // On excute la requête
+    $con=$em->getConnection()->prepare($sql);
+    try {
+      $con->executeQuery();
+    } catch (\Doctrine\DBAL\Exception $e) {
+      return $response->setData(["code"=>$e->getCode(), Response::HTTP_OK]);
+    }
+    return $response->setData(["code"=>"OK", Response::HTTP_OK]);
+  }
+
+  /*
+   * description
+   * On ajoute ou on supprime la version de reference
+   * http://{url}}/api/dash/version/reference
+  */
+  #[Route('/api/dash/version/reference', name: 'dash_version_reference', methods: ['PUT'])]
+  public function dash_version_reference(EntityManagerInterface $em, Request $request)
+  {
+    // on décode le body
+    $data = json_decode($request->getContent());
+    $maven_key=$data->maven_key;
+    $reference=$data->reference;
+    $date=$data->date;
+    $version=$data->version;
+
+    // On créé un nouvel objet Json
+    $response = new JsonResponse();
+
+    // On récupère les versions et la date pour la clé du projet
+    $sql = "UPDATE historique SET initial=".$reference." WHERE maven_key='".$maven_key.
+           "' AND version='".$version."' AND date_version='".$date."'" ;
+
+    // On excute la requête
+    $con=$em->getConnection()->prepare($sql);
+    try {
+      $con->executeQuery();
+    } catch (\Doctrine\DBAL\Exception $e) {
+
+      return $response->setData(["code"=>$e->getCode(), Response::HTTP_OK]);
+    }
+    return $response->setData(["code"=>"OK", Response::HTTP_OK]);
+  }
+
+  /*
+   * description
+   * On supprime la version de historique
+   * http://{url}}/api/dash/version/poubelle
+  */
+  #[Route('/api/dash/version/poubelle', name: 'dash_version_poubelle', methods: ['PUT'])]
+  public function dash_version_poubelle(EntityManagerInterface $em, Request $request)
+  {
+    // on décode le body
+    $data = json_decode($request->getContent());
+    $maven_key=$data->maven_key;
+    $date=$data->date;
+    $version=$data->version;
+
+    // On créé un nouvel objet Json
+    $response = new JsonResponse();
+
+    // On récupère les versions et la date pour la clé du projet
+    $sql = "DELETE FROM historique WHERE maven_key='".$maven_key.
+           "' AND version='".$version."' AND date_version='".$date."'" ;
+
+    // On excute la requête
+    $con=$em->getConnection()->prepare($sql);
+    try {
+      $con->executeQuery();
+    } catch (\Doctrine\DBAL\Exception $e) {
+
+      return $response->setData(["code"=>$e->getCode(), Response::HTTP_OK]);
     }
     return $response->setData(["code"=>"OK", Response::HTTP_OK]);
   }
