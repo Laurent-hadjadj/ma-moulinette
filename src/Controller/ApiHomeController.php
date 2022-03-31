@@ -51,7 +51,8 @@ class ApiHomeController extends AbstractController
     }
 
     $response = $this->client->request(
-      'GET', $url, [ 'auth_basic' => [$user, $password], 'timeout' => 45,'headers' => [ 'Accept' => static::$strContentType, 'Content-Type' => static::$strContentType]
+      'GET', $url, [ 'auth_basic' => [$user, $password], 'timeout' => 45,
+      'headers' => [ 'Accept' => static::$strContentType, 'Content-Type' => static::$strContentType]
     ]);
 
     if (200 !== $response->getStatusCode()) {
@@ -91,7 +92,6 @@ class ApiHomeController extends AbstractController
     #[Route('/api/liste_projet/ajout', name: 'liste_projet_ajout', methods: ['GET'])]
     public function liste_projet(EntityManagerInterface $em): response{
       $url=$this->getParameter(static::$sonarUrl)."/api/components/search?qualifiers=TRK&ps=500&p=1";
-      //'auth_basic' => [$this->getParameter('sonar.token'),'']
 
       // on appel le client http
       $result=$this->http_client($url);
