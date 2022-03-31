@@ -164,13 +164,20 @@
                         {% if app.bug <10 %} 00{{app.bug}}{% endif %}
                         {% if app.bug >=10 and app.bug <100 %} 0{{app.bug}}{% endif %}
                         {% if app.bug >=100 and app.bug <1000 %} {{app.bug}}{% endif %}
-                        </span>
+                        {% if app.bug >=1000 and app.bug <100000 %}
+                              {% set k=(app.bug/1000)|number_format(1, '.', ',') %}
+                              {{k}}K
+                        {% endif %}
                       </td>
                       <td>
                         <span class="nombre-favori open-sans">
                           {% if app.vulnerability <10 %} 00{{app.vulnerability}}{% endif %}
                           {% if app.vulnerability >=10 and app.vulnerability <100%} 0{{app.vulnerability}}{% endif %}
                           {% if app.vulnerability >=100 and app.vulnerability <1000 %} {{app.vulnerability}}{% endif %}
+                          {% if app.vulnerability >=1000 and app.vulnerability <100000 %}
+                              {% set k=(app.vulnerability/1000)|number_format(1, '.', ',') %}
+                              {{k}}K
+                          {% endif %}
                         </span>
                       </td>
                       <td>
@@ -178,14 +185,17 @@
                           {% if app.hotspots <10 %} 00{{app.hotspots}} {% endif %}
                           {% if app.hotspots >=10 and app.hotspots <100 %} 0{{app.hotspots}} {% endif %}
                           {% if app.hotspots >=100 and app.hotspots <1000 %} {{app.hotspots}} {% endif %}
-                        </span>
+                          {% if app.hotspots >=1000 and app.hotspots <100000 %}
+                            {% set k=(app.hotspots/1000)|number_format(1, '.', ',') %}
+                              {{k}}K</span>
+                          {% endif %}
                       </td>
                       <td>
                         <span class="nombre-favori open-sans">
                           {% if app.code_smell <10 %} 00{{app.code_smell}}{% endif %}
                           {% if app.code_smell >=10 and app.code_smell <100%} 0{{app.code_smell}}{% endif %}
                           {% if app.code_smell >=100 and app.code_smell <1000 %} {{app.code_smell}}{% endif %}
-                          {% if app.code_smell >=1000 and app.code_smell <20000 %}
+                          {% if app.code_smell >=1000 and app.code_smell <100000 %}
                               {% set k=(app.code_smell/1000)|number_format(1, '.', ',') %}
                               {{k}}K</span>
                           {% endif %}
