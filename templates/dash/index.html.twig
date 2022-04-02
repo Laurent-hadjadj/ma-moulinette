@@ -143,9 +143,12 @@
     </div>
 
     {# Affiche le graphique #}
-    <canvas class="show-for-medium" id="graphique-anomalie" width="400" height="100"
-    data-data1="{{data1}}" data-data2="{{data2}}" data-data3="{{data3}}"
-    data-label="{{labels}}"></canvas>
+    <div class="grid-x">
+      <br />
+      <canvas class="show-for-medium" id="graphique-anomalie" width="400" height="100"
+      data-data1="{{data1}}" data-data2="{{data2}}" data-data3="{{data3}}"
+      data-label="{{labels}}"></canvas>
+    </div>
 
     {# Affiche le tableau de répartition par module #}
     <div class="table-scroll">
@@ -318,9 +321,6 @@
     </form>
    </div>
 
-  <p class="open-sans">Statut : <span class="info">Je dors...</span></p>
-
-  {# Ajouter une analyse #}
   <div class="grid-x cell">
     <div class="small-12 medium-6 large-6 cell">
       <div class="switch ligne">
@@ -343,6 +343,7 @@
         <span class="open-sans" style="color:#fff;"> Ajouter.</span>
       </div>
     </div>
+      <p class="open-sans">Statut : <span class="info">Je dors...</span></p>
   </div>
   <br />
 	<a id="fermer-choisir-analyse" class="expanded button open-sans" data-close aria-label="Close reveal" type="button">Fermer</a>
