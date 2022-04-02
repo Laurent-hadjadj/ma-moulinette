@@ -124,3 +124,7 @@
   * Active ou de désactive pour une version le statut référence ;
 * Reworking des favoris dans la page home ;
 * Correction de l'affichage quand le nombre de violations est >20000 (20k) ;
+
+## v0.0.10 - 02/04/2022
+
+* Correction de l'affichage des notes lorsque l'on importe une version manuellement depuis la fenêtre d'ajout de la page de suivi ;
