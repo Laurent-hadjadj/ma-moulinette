@@ -426,8 +426,8 @@ $('select[name="version"]').change(function () {
     const t3 = document.getElementById('note-sqale');
     const t4 = document.getElementById('note-hotspots-review');
     t1.dataset.note_reliability=(note_reliability);
-    t2.dataset.note_security=(note_reliability);
-    t3.dataset.note_sqale=(note_reliability);
+    t2.dataset.note_security=(note_security);
+    t3.dataset.note_sqale=(note_sqale);
     t4.dataset.note_hotspots_review=(note_hotspots_review);
 
     // On affiche le nombre de bugs, de vulnérabilités et de mauvaises pratiques.
