@@ -557,11 +557,18 @@ $('select[name="projet"]').change(function () {
     } else { $('.favori-svg').removeClass('favori-svg-select'); }
    })
 
-  $('.js-analyse').removeClass('analyse-disabled');
-  $('.js-analyse').addClass('analyse-enabled');
+  // On débloque les bouton
+  $('.js-analyse').removeClass('lance-analyse-disabled');
+  $('.js-analyse').addClass('lance-analyse-enabled');
 
   $('.js-affiche-resultat').removeClass('affiche-resultat-disabled');
   $('.js-affiche-resultat').addClass('affiche-resultat-enabled');
+
+  $('.js-analyse-owasp').removeClass('analyse-owasp-disabled');
+  $('.js-analyse-owasp').addClass('analyse-owasp-enabled');
+
+  $('.js-tableau-suivi').removeClass('tableau-suivi-disabled');
+  $('.js-tableau-suivi').addClass('tableau-suivi-enabled');
 
   // on ajoute la clé slectionnée dans le local storage pour les pages security et graphques
   localStorage.setItem('projet', $('select[name="projet"]').val().trim());
