@@ -98,14 +98,12 @@
 }
 
 /* bouton */
-.analyse-enabled,
+.lance-analyse-enabled,
 .affiche-liste,
 .affiche-resultat-enabled,
-.analyse-owasp,
-.analyse-anomalie,
-.rapport-graphique,
+.analyse-owasp-enabled,
+.tableau-suivi-enabled,
 .enregistrement,
-.tableau-suivi,
 #fermer-liste-projet,
 #fermer-liste-hotspot,
 #fermer-autre-version,
@@ -114,21 +112,21 @@
   background-color: #00445b;
 }
 
-.analyse-enabled:hover,
+.lance-analyse-enabled:hover,
 .affiche-liste:hover,
 .affiche-resultat-enabled:hover,
-.analyse-owasp:hover,
-.analyse-anomalie:hover,
-.rapport-graphique:hover,
+.analyse-owasp-enabled:hover,
+.tableau-suivi-enabled:hover,
 .enregistrement:hover,
-.tableau-suivi:hover,
 #fermer-liste-projet:hover,
 #fermer-autre-version:hover,
 #fermer-liste-hotspot:hover,
 #fermer-dette-technique:hover { background-color: #006182; }
 
-.analyse-disabled,
+.lance-analyse-disabled,
 .affiche-resultat-disabled,
+.analyse-owasp-disabled,
+.tableau-suivi-disabled,
 .enregistrement-disabled {
   background-color: #4c7c8c;
   cursor: not-allowed;
