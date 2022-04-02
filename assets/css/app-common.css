@@ -7,7 +7,166 @@
  *
  */
 
-/*************************          Global     *********************************/
+@media only screen and (max-width: 20em) {
+  .ma-moulinette {
+    margin-left: 1rem;
+    font-size: 1.5rem;
+  }
+
+  .version {
+    margin-left: 1rem;
+    margin-top: -1.5rem;
+    font-size: 0.9rem;
+  }
+
+  .open-sans { font-size: 0.9rem; }
+
+  .logo-svg {
+    width: 50px;
+    height: 36px;
+  }
+}
+
+@media only screen and (min-width: 20.025em) and (max-width: 22em) {
+  .ma-moulinette {
+    margin-left: 1rem;
+    font-size: 1.8rem;
+  }
+
+  .version {
+    margin-left: 1rem;
+    margin-top: -1.5rem;
+    font-size: 1rem;
+  }
+
+  .open-sans { font-size: 0.9rem; }
+
+  .logo-svg {
+    width: 90px;
+    height: 74px;
+  }
+}
+
+@media only screen and (min-width: 22.025em) and (max-width: 30em) {
+  .ma-moulinette {
+    margin-left: 1rem;
+    font-size: 1.8rem;
+  }
+
+  .version {
+    margin-left: 1rem;
+    margin-top: -1.5rem;
+    font-size: 1rem;
+  }
+
+  .open-sans { font-size: 0.9rem; }
+
+  .logo-svg {
+    width: 90px;
+    height: 54px;
+  }
+}
+
+@media only screen and (min-width: 30.025em) and (max-width: 40em) {
+  .ma-moulinette {
+    margin-left: 1rem;
+    font-size: 1.8rem;
+  }
+
+  .version {
+    margin-left: 1rem;
+    margin-top: -1.5rem;
+    font-size: 1rem;
+  }
+
+  .open-sans { font-size: 0.9rem; }
+
+  .logo-svg {
+    width: 90px;
+    height: 74px;
+  }
+}
+
+@media only screen and (min-width: 40em) and (max-width: 64em) {
+  .ma-moulinette {
+    margin-left: 1rem;
+    font-size: 1.8rem;
+  }
+
+  .version {
+    margin-left: 1rem;
+    margin-top: -1.5rem;
+    font-size: 1rem;
+  }
+
+  .open-sans { font-size: 1rem; }
+
+  .logo-svg {
+    width: 64px;
+    height: 46px;
+  }
+}
+
+@media only screen and (min-width: 64.063em) and (max-width: 90em) {
+  .ma-moulinette {
+    margin-left: 1rem;
+    font-size: 2.5rem;
+  }
+
+  .version {
+    margin-left: 1rem;
+    margin-top: -1.5rem;
+    font-size: 1.1rem;
+  }
+
+  .open-sans { font-size: 1rem; }
+
+  .logo-svg {
+    width: 80px;
+    height: 84px;
+  }
+}
+
+@media only screen and (min-width: 90.063em) and (max-width: 120em) {
+  .ma-moulinette {
+    margin-left: 1rem;
+    font-size: 2.5rem;
+  }
+
+  .version {
+    margin-left: 1rem;
+    margin-top: -1.5rem;
+    font-size: 1.1rem;
+  }
+  .open-sans { font-size: 1rem; }
+
+  .logo-svg {
+    width: 128px;
+    height: 116px;
+  }
+}
+
+@media only screen and (min-width: 120em) and (max-width: 160em) {
+  .ma-moulinette {
+    margin-left: 1rem;
+    font-size: 2.5rem;
+  }
+
+  .version {
+    margin-left: 1rem;
+    margin-top: -1.5rem;
+    font-size: 1.1rem;
+  }
+
+  .open-sans { font-size: 1.2rem; }
+
+  .logo-svg {
+    width: 128px;
+    height: 128px;
+  }
+}
+
+/* ************************     Global     ******************************* */
 
 body { background: #eee; }
 .open-sans { color: #00445b; }
@@ -17,24 +176,25 @@ body { background: #eee; }
 .ma-moulinette {
   color: #00445b;
   cursor: pointer;
-  margin-left: 1rem;
-  margin-top: 0.5rem;
-  margin-bottom: 0.1rem;
 }
 
 .ma-moulinette:hover { color: #e7552c; }
 
-.version {
-  margin-left: 1rem;
-  margin-top: -1rem;
-  margin-bottom: 0.1rem;
-}
+.version { color: #00445b; }
 
 /* Chargement du logo */
 .logo {
   margin-top: 10px;
   margin-left: 10px;
-  width: 122px;
+}
+
+.logo-svg {
+  fill: #00445b;
+  shape-rendering: geometricprecision;
+  text-rendering: geometricprecision;
+  image-rendering: optimizequality;
+  fill-rule: evenodd;
+  clip-rule: evenodd;
 }
 
 /* breadcrumbs */
@@ -129,92 +289,4 @@ body { background: #eee; }
 @keyframes loader2 {
   0% { transform: translate(0, 0); }
   100% { transform: translate(24px, 0); }
-}
-
-@media only screen and (max-width: 20em) {
-  .open-sans { font-size: 0.9rem; }
-
-  .logo-franceagrimer {
-    max-width: 38%;
-    height: auto;
-    padding-top: 0.1rem;
-    padding-left: 0.3rem;
-  }
-}
-
-@media only screen and (min-width: 20.025em) and (max-width: 22em) {
-  .open-sans { font-size: 0.9rem; }
-
-  .logo-franceagrimer {
-    max-width: 38%;
-    height: auto;
-    padding-top: 0.1rem;
-    padding-left: 0.3rem;
-  }
-}
-
-@media only screen and (min-width: 22.025em) and (max-width: 30em) {
-  .open-sans { font-size: 0.9rem; }
-
-  .logo-franceagrimer {
-    max-width: 40%;
-    height: auto;
-    padding-top: 0.1rem;
-    padding-left: 0.3rem;
-  }
-}
-
-@media only screen and (min-width: 30.025em) and (max-width: 40em) {
-  .open-sans { font-size: 0.9rem; }
-
-  .logo-franceagrimer {
-    max-width: 40%;
-    height: auto;
-    padding-top: 0.1rem;
-    padding-left: 0.3rem;
-  }
-}
-
-@media only screen and (min-width: 40em) and (max-width: 64em) {
-  .open-sans { font-size: 1rem; }
-
-  .logo-franceagrimer {
-    max-width: 40%;
-    height: auto;
-    padding-top: 0.1rem;
-    padding-left: 0.3rem;
-  }
-}
-
-@media only screen and (min-width: 64.063em) and (max-width: 90em) {
-  .open-sans { font-size: 1rem; }
-
-  .logo-franceagrimer {
-    max-width: 80%;
-    height: auto;
-    padding-top: 2rem;
-    padding-left: 2rem;
-  }
-}
-
-@media only screen and (min-width: 90.063em) and (max-width: 120em) {
-  .open-sans { font-size: 1rem; }
-
-  .logo-franceagrimer {
-    max-width: 100%;
-    height: auto;
-    padding-top: 2rem;
-    padding-left: 2rem;
-  }
-}
-
-@media only screen and (min-width: 120em) and (max-width: 160em) {
-  .open-sans { font-size: 1.2rem; }
-
-  .logo-franceagrimer {
-    max-width: 100%;
-    height: auto;
-    padding-top: 2rem;
-    padding-left: 2rem;
-  }
 }

@@ -8,14 +8,17 @@
  */
 @media only screen and (max-width: 20em) {
   .refresh-bd-svg,
-  .trash-bd-svg,
   .affiche-profil-svg,
-  .regle-bd-svg,
   .projet-svg,
   .gomme-svg {
     margin-bottom: -0.2rem;
     width: 32px;
     height: 32px;
+  }
+
+  .logger {
+    padding-left: 1rem;
+    margin-top: -2rem;
   }
 
   .log { font-size: 0.75rem; }
@@ -28,14 +31,17 @@
 
 @media only screen and (min-width: 20.025em) and (max-width: 22em) {
   .refresh-bd-svg,
-  .trash-bd-svg,
   .affiche-profil-svg,
-  .regle-bd-svg,
   .projet-svg,
   .gomme-svg {
     margin-bottom: -0.2rem;
     width: 32px;
     height: 32px;
+  }
+
+  .logger {
+    padding-left: 1rem;
+    margin-top: -2rem;
   }
 
   .log { font-size: 0.8rem; }
@@ -48,14 +54,17 @@
 
 @media only screen and (min-width: 22.025em) and (max-width: 30em) {
   .refresh-bd-svg,
-  .trash-bd-svg,
   .affiche-profil-svg,
-  .regle-bd-svg,
   .projet-svg,
   .gomme-svg {
     margin-bottom: -0.2rem;
     width: 32px;
     height: 32px;
+  }
+
+  .logger {
+    padding-left: 1rem;
+    margin-top: -2rem;
   }
 
   .log { font-size: 1rem; }
@@ -68,14 +77,17 @@
 
 @media only screen and (min-width: 30.025em) and (max-width: 40em) {
   .refresh-bd-svg,
-  .trash-bd-svg,
   .affiche-profil-svg,
-  .regle-bd-svg,
   .projet-svg,
   .gomme-svg {
     margin-bottom: -0.2rem;
     width: 32px;
     height: 32px;
+  }
+
+  .logger {
+    padding-left: 1rem;
+    margin-top: -2rem;
   }
 
   .callout-information { width: 17.4rem; }
@@ -86,14 +98,17 @@
 
 @media only screen and (min-width: 40em) and (max-width: 64em) {
   .refresh-bd-svg,
-  .trash-bd-svg,
   .affiche-profil-svg,
-  .regle-bd-svg,
   .projet-svg,
   .gomme-svg {
     margin-bottom: -0.2rem;
     width: 32px;
     height: 32px;
+  }
+
+  .logger {
+    padding-left: 1rem;
+    margin-top: -2rem;
   }
 
   .callout-information { width: 17.4rem; }
@@ -104,14 +119,17 @@
 
 @media only screen and (min-width: 64.025em) and (max-width: 90em) {
   .refresh-bd-svg,
-  .trash-bd-svg,
   .affiche-profil-svg,
-  .regle-bd-svg,
   .projet-svg,
   .gomme-svg {
     margin-bottom: -0.2rem;
     width: 32px;
     height: 32px;
+  }
+
+  .logger {
+    padding-left: 1rem;
+    margin-top: -2rem;
   }
 
   .callout-information { width: 17.4rem; }
@@ -122,14 +140,17 @@
 
 @media only screen and (min-width: 90.025em) and (max-width: 120em) {
   .refresh-bd-svg,
-  .trash-bd-svg,
   .affiche-profil-svg,
-  .regle-bd-svg,
   .projet-svg,
   .gomme-svg {
     margin-bottom: -0.2rem;
     width: 32px;
     height: 32px;
+  }
+
+  .logger {
+    padding-left: 1rem;
+    margin-top: -2rem;
   }
 
   .callout-information { width: 17.4rem; }
@@ -140,15 +161,19 @@
 
 @media only screen and (min-width: 120em) and (max-width: 160em) {
   .refresh-bd-svg,
-  .trash-bd-svg,
   .affiche-profil-svg,
-  .regle-bd-svg,
   .projet-svg,
   .gomme-svg {
     margin-bottom: -0.2rem;
     width: 48px;
     height: 48px;
   }
+
+  .logger {
+    padding-left: 1rem;
+    margin-top: -2rem;
+  }
+
   .callout-information { width: 17.4rem; }
   .resultat-favori { font-size: 1rem; }
 }
@@ -163,9 +188,7 @@
 
 /* bouton */
 .refresh-bd,
-.trash-bd,
 .affiche-profil,
-.regle-bd,
 .projet,
 #fermer-liste-profil {
   color: #fff;
@@ -173,9 +196,7 @@
 }
 
 .refresh-bd:hover,
-.trash-bd:hover,
 .affiche-profil:hover,
-.regle-bd:hover,
 .projet:hover,
 #fermer-liste-profil:hover {
   background-color: #006182;
@@ -184,7 +205,6 @@
 /* Bouton SVG */
 .refresh-bd-svg,
 .affiche-profil-svg,
-.regle-bd-svg,
 .projet-svg {
   fill: #fff;
   cursor: pointer;
