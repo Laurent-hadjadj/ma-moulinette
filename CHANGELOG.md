@@ -129,3 +129,9 @@
 
 * Correction de l'affichage des notes lorsque l'on importe une version manuellement depuis la fenêtre d'ajout de la page de suivi ;
 * Blocage des boutons quand le projet n'est pas choisi dans la page projet ;
+
+## v0.0.11 - 07/04/2022
+
+* Mise en place du socle de génération de rapport PDF ;
+* Ajout dans le tableau de suivi des vialoations par sévérité mineure ;
+* Correction de la couleur pour idniquer la version de référence(rouge) ;
