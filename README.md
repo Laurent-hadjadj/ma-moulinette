@@ -56,14 +56,14 @@ Les propriétés suivantes sont disponibles :
 
 * NOMBRE_FAVORI=10
 
-`APP_ENV` : défini le type d'environnement **dev** ou **prod** ;
-`APP_DEBUG` : active ou désactive le debug ;
-`SONAR_URL` : Correspond l'URL du serveur sonarqube ;
-`SONAR_TOKEN` : Correspond au token d'accès généré sur la plateforme sonarqube. Il suffit de faire un copier/coller sans ajouter de guillemets ;
-`SONAR_USER` : Correspond au login de l'utilisateur ;
-`SONAR_PASSWORD` : Correspond au mot de passe de l'utilisateur ;
-`SONAR_PROFILES` : Permet de définir le nom du profil correspondant au nom données pour un jeu de régles ;
-`SONAR_ORGANIZATION` : Permet de personaliser le nom de l'établissement utilisé dans les rapports ;
+`APP_ENV` : défini le type d'environnement **dev** ou **prod** ; \
+`APP_DEBUG` : active ou désactive le debug ; \
+`SONAR_URL` : Correspond l'URL du serveur sonarqube ; \
+`SONAR_TOKEN` : Correspond au token d'accès généré sur la plateforme sonarqube. Il suffit de faire un copier/coller sans ajouter de guillemets ;\
+`SONAR_USER` : Correspond au login de l'utilisateur ; \
+`SONAR_PASSWORD` : Correspond au mot de passe de l'utilisateur ; \
+`SONAR_PROFILES` : Permet de définir le nom du profil correspondant au nom données pour un jeu de régles ; \
+`SONAR_ORGANIZATION` : Permet de personaliser le nom de l'établissement utilisé dans les rapports ; \
 `NOMBRE_FAVORI` : Défini le nombre de version affiché en page d'accueil correpondant aux applications marquées comme favorites.
 
 ## Installation des dépendances
