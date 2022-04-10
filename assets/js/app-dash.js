@@ -20,16 +20,20 @@ import 'what-input';
 import 'foundation-sites';
 import 'motion-ui';
 
+import * as html2pdf from 'html2pdf.js';
+
 import './foundation.js';
 
 import Chart from 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+
 // eslint-disable-next-line no-unused-vars
 import moment, { invalid } from "moment";
-import "moment/locale/fr";
-import "chartjs-adapter-moment";
+import 'moment/locale/fr';
+import 'chartjs-adapter-moment';
 Chart.register(ChartDataLabels);
 
+// chartJS
 const CHART_COLORS = {
   rouge: 'rgb(255, 99, 132)',
   rouge_opacity: 'rgb(255, 99, 132, 0.5)',
@@ -130,7 +134,6 @@ const options = {
   const charts = new Chart(ctx, { type: 'line', data: data, options: options });
   if (charts === null) { console.info('null'); }
 }
-
 
 // On récupère les datatset
 const data_attribut = document.getElementById('graphique-anomalie');
@@ -482,7 +485,7 @@ $('.js-enregistrer-analyse').on('click', ()=>{
   const nom=$("#js-nom").text().trim();
   const version=$("#version").text().trim();
   const t0 = document.getElementById('date');
-  const date=t0.dataset.date;
+  const date1=t0.dataset.date;
 
   const t1 = document.getElementById('note-reliability');
   const t2 = document.getElementById('note-security');
@@ -533,7 +536,7 @@ $('.js-enregistrer-analyse').on('click', ()=>{
   if ($('.switch-inactive').css('display')==='block') { initial='FALSE'; }
 
   const data={
-    maven_key:maven_key, nom:nom, version:version, date:date,
+    maven_key:maven_key, nom:nom, version:version, date:date1,
     note_reliability:note_reliability, note_security:note_security,
     note_sqale:note_sqale, note_hotspots_review:note_hotspots_review,
     defauts:defauts, bug:bug, vulnerabilities:vulnerabilities,codesmell:codesmell,
@@ -553,3 +556,34 @@ $('.js-enregistrer-analyse').on('click', ()=>{
           }
       });
 })
+
+
+/**
+ * description
+ * Génére une edition PDF
+*/
+$('.js-edition-analyse').on('click', ()=>{
+  let date2 = new Date();
+  const element1 = document.getElementById('element1-to-print');
+  const element2 = document.getElementById('element2-to-print');
+  const element3 = document.getElementById('element3-to-print');
+
+  // On récupère le nom
+  const n=$("#js-nom").data('maven').trim();
+  const name=n.split(':');
+
+  const opt = {
+    margin:       10,
+    filename:     name[1]+'-suivi-'+ date2.toLocaleDateString("fr-FR")+'.pdf',
+    image:        { type: 'jpeg', quality: 0.98 },
+    html2canvas:  { scale: 2 },
+    putOnlyUsedFonts:true,
+    pagebreak: { mode: 'avoid-all'},
+    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
+  };
+
+  const debut='<h1 class="claire-hand">Rapport de suivi des indicateurs.</h1><p class="open-sans">Date :'+date2.toLocaleDateString("fr-FR")+'</p><br />';
+  const fin='<br /><br /><p class="open-sans text-center" style="font-size:4rem;">* * * *</p>';
+  const tempo=debut+element1.innerHTML+element2.innerHTML+element3.innerHTML+fin;
+  html2pdf().set(opt).from(tempo).toPdf().get('pdf').save();
+});
