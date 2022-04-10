@@ -144,7 +144,7 @@ APP_DEBUG=0
 
 ## Accès à l'application
 
-Il est possible de configuer un proxy pour lancer l'application sur un domaine local (i.e sonar-dash.wip) ou depuis l'adresse local sur le port 8000. L'adresse par défaut est : 
+Il est possible de configuer un proxy pour lancer l'application sur un domaine local (i.e sonar-dash.wip) ou depuis l'adresse local sur le port 8000. L'adresse par défaut est :
 <http://localhost:8000>
 
 L'utilisation du serveur local en https n'est pas recommandé si vous n'avez pas main sur se le serveur apache/nginx servant de proxy à la plateforme sonarqube.
