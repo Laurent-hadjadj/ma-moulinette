@@ -89,8 +89,8 @@ class BoardController extends AbstractController
     $dash=$select->fetchAllAssociative();
 
     // On récupére les anomalies par sévérité
-    $sql="SELECT * FROM  (SELECT date_version, nombre_anomalie_bloquant as bloquant, nombre_anomalie_critique as critique, nombre_anomalie_majeur as majeur FROM historique WHERE maven_key='".$maven_key."' AND initial=TRUE)
-    UNION SELECT * FROM (SELECT date_version, nombre_anomalie_bloquant as bloquant, nombre_anomalie_critique as critique, nombre_anomalie_majeur as majeur FROM historique WHERE maven_key='".$maven_key."' AND initial=FALSE ORDER BY date_version DESC LIMIT 9)";
+    $sql="SELECT * FROM  (SELECT date_version, nombre_anomalie_bloquant as bloquant, nombre_anomalie_critique as critique, nombre_anomalie_majeur as majeur, nombre_anomalie_mineur as mineur FROM historique WHERE maven_key='".$maven_key."' AND initial=TRUE)
+    UNION SELECT * FROM (SELECT date_version, nombre_anomalie_bloquant as bloquant, nombre_anomalie_critique as critique, nombre_anomalie_majeur as majeur, nombre_anomalie_mineur as mineur FROM historique WHERE maven_key='".$maven_key."' AND initial=FALSE ORDER BY date_version DESC LIMIT 9)";
     $select=$em->getConnection()->prepare($sql)->executeQuery();
     $severite=$select->fetchAllAssociative();
 
@@ -334,7 +334,7 @@ class BoardController extends AbstractController
 
     // On récupère les versions et la date pour la clé du projet
     $sql = "UPDATE historique SET favori=".$favori." WHERE maven_key='".$maven_key.
-           "' AND version='".$version."' AND date_version='".$date."'" ;
+           "'  AND version='".$version."'  AND date_version='".$date."'" ;
 
     // On excute la requête
     $con=$em->getConnection()->prepare($sql);
