@@ -134,4 +134,9 @@
 
 * Mise en place du socle de génération de rapport PDF ;
 * Ajout dans le tableau de suivi des vialoations par sévérité mineure ;
-* Correction de la couleur pour idniquer la version de référence(rouge) ;
+* Correction de la couleur pour indiquer la version de référence(rouge) ;
+
+## v1.0.0 - 10/04/2022 - Release
+
+* Ajout d'un exemple d'édition pour la page suivi des indicateurs ;
+* Amélioration de la page et indication de la sévérité en rouge ou vert en fonction de la tendance.
