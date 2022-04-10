@@ -5,7 +5,9 @@
 .env.staging
 /config/secrets/prod/prod.decrypt.private.php
 /public/bundles/
-/var/
+/var/log/dev.log
+/var/cache/dev/
+/var/data.db
 /vendor/
 /migrations/
 ###< symfony/framework-bundle ###
