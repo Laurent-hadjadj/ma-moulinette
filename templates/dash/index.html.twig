@@ -212,6 +212,7 @@
       </tbody>
     </table>
   </div>
+
   {# Affiche le tableau des anomalies par sévérité #}
   <div class="table-scroll">
     <table class="hover ">
@@ -325,6 +326,135 @@
   </div>
 </div>
 
+<div id="element4-to-print" class="html2pdf__page-break pleine-page">
+  {# Affiche le tableau des anomalies par sévérité détaillée #}
+  <div class="table-scroll">
+    <table class="hover">
+      <caption class="claire-hand">Répartition des anomalies type de sévérité.</caption>
+      <thead>
+        <tr>
+          <th scope="col"></th>
+          {% for i in details|length-1..0 %}
+          <th colspan="3" scope="col" class="open-sans text-center">{{details[i]["version"]}}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody id="tableau-anomalie-type-severite" class="open-sans">
+        <tr>
+          <th scope="col"></th>
+          {% for i in details|length-1..0 %}
+          <th scope="col" class="c-rouge text-right"><strong>Bug</strong></th>
+          <th scope="col" class="c-rouge text-right"><strong>Faille</strong></th>
+          <th scope="col" class="c-rouge text-right"><strong>MP</strong></th>
+          {% endfor %}
+        </tr>
+
+        <tr>
+          <td class="text-rouge"><strong>Bloquant</strong></td>
+          {% for i in details|length-1..0 %}
+            {% if i !=0 and details[i]["bug_blocker"] > details[i-1]["bug_blocker"] %}
+                  {% set text1 = "text-up" %} {% else %} {% set text1 = "text-down" %}
+            {% endif %}
+            {% if i !=0 and details[i]["vulnerability_blocker"] > details[i-1]["vulnerability_blocker"] %}
+                  {% set text2 = "text-up" %} {% else %} {% set text2 = "text-down" %}
+            {% endif %}
+            {% if i !=0 and details[i]["code_smell_blocker"] > details[i-1]["code_smell_blocker"] %}
+                  {% set text3 = "text-up" %} {% else %} {% set text3 = "text-down" %}
+            {% endif %}
+            {% if i==0  %}
+              {% set text1, text2, text3 = "text-noir", "text-noir", "text-noir" %}
+            {% endif %}
+
+          <td class="text-right {{text1}}">{{details[i]["bug_blocker"]|format_number(locale='fr')}} </td>
+          <td class="text-right {{text2}}">{{details[i]["vulnerability_blocker"]|format_number(locale='fr')}} </td>
+          <td class="text-right {{text3}}">{{details[i]["code_smell_blocker"]|format_number(locale='fr')}} </td>
+          {% endfor %}
+        </tr>
+        <tr>
+          <td class="text-rouge"><strong>Critique</strong></td>
+          {% for i in details|length-1..0 %}
+            {% if i !=0 and details[i]["bug_critical"] > details[i-1]["bug_critical"] %}
+                  {% set text1 = "text-up" %} {% else %} {% set text1 = "text-down" %}
+            {% endif %}
+            {% if i !=0 and details[i]["vulnerability_critical"] > details[i-1]["vulnerability_critical"] %}
+                  {% set text2 = "text-up" %} {% else %} {% set text2 = "text-down" %}
+            {% endif %}
+            {% if i !=0 and details[i]["code_smell_critical"] > details[i-1]["code_smell_critical"] %}
+                  {% set text3 = "text-up" %} {% else %} {% set text3 = "text-down" %}
+            {% endif %}
+            {% if i==0  %}
+              {% set text1, text2, text3 = "text-noir", "text-noir", "text-noir" %}
+            {% endif %}
+          <td class="text-right {{text1}}">{{details[i]["bug_critical"]|format_number(locale='fr')}} </td>
+          <td class="text-right {{text2}}">{{details[i]["vulnerability_critical"]|format_number(locale='fr')}} </td>
+          <td class="text-right {{text3}}">{{details[i]["code_smell_critical"]|format_number(locale='fr')}} </td>
+          {% endfor %}
+        </tr>
+        <tr>
+          <td class="text-rouge"><strong>Majeur</strong></td>
+          {% for i in details|length-1..0 %}
+            {% if i !=0 and details[i]["bug_major"] > details[i-1]["bug_major"] %}
+                  {% set text1 = "text-up" %} {% else %} {% set text1 = "text-down" %}
+            {% endif %}
+            {% if i !=0 and details[i]["vulnerability_major"] > details[i-1]["vulnerability_major"] %}
+                  {% set text2 = "text-up" %} {% else %} {% set text2 = "text-down" %}
+            {% endif %}
+            {% if i !=0 and details[i]["code_smell_major"] > details[i-1]["code_smell_major"] %}
+                  {% set text3 = "text-up" %} {% else %} {% set text3 = "text-down" %}
+            {% endif %}
+            {% if i==0  %}
+              {% set text1, text2, text3 = "text-noir", "text-noir", "text-noir" %}
+            {% endif %}
+          <td class="text-right {{text1}}">{{details[i]["bug_major"]|format_number(locale='fr')}} </td>
+          <td class="text-right {{text2}}">{{details[i]["vulnerability_major"]|format_number(locale='fr')}} </td>
+          <td class="text-right {{text3}}">{{details[i]["code_smell_major"]|format_number(locale='fr')}} </td>
+          {% endfor %}
+        </tr>
+        <tr>
+          <td class="text-vert"><strong>Mineur</strong></td>
+           {% for i in details|length-1..0 %}
+            {% if i !=0 and details[i]["bug_minor"] > details[i-1]["bug_minor"] %}
+                  {% set text1 = "text-up" %} {% else %} {% set text1 = "text-down" %}
+            {% endif %}
+            {% if i !=0 and details[i]["vulnerability_minor"] > details[i-1]["vulnerability_minor"] %}
+                  {% set text2 = "text-up" %} {% else %} {% set text2 = "text-down" %}
+            {% endif %}
+            {% if i !=0 and details[i]["code_smell_minor"] > details[i-1]["code_smell_minor"] %}
+                  {% set text3 = "text-up" %} {% else %} {% set text3 = "text-down" %}
+            {% endif %}
+            {% if i==0  %}
+              {% set text1, text2, text3 = "text-noir", "text-noir", "text-noir" %}
+            {% endif %}
+          <td class="text-right {{text1}}">{{details[i]["bug_minor"]|format_number(locale='fr')}} </td>
+          <td class="text-right {{text2}}">{{details[i]["vulnerability_minor"]|format_number(locale='fr')}} </td>
+          <td class="text-right {{text3}}">{{details[i]["code_smell_minor"]|format_number(locale='fr')}} </td>
+          {% endfor %}
+        </tr>
+        <tr>
+          <td class="text-bleu"><strong>Info</strong></td>
+          {% for i in details|length-1..0 %}
+            {% if i !=0 and details[i]["bug_info"] > details[i-1]["bug_info"] %}
+                  {% set text1 = "text-up" %} {% else %} {% set text1 = "text-down" %}
+            {% endif %}
+            {% if i !=0 and details[i]["vulnerability_info"] > details[i-1]["vulnerability_info"] %}
+                  {% set text2 = "text-up" %} {% else %} {% set text2 = "text-down" %}
+            {% endif %}
+            {% if i !=0 and details[i]["code_smell_info"] > details[i-1]["code_smell_info"] %}
+                  {% set text3 = "text-up" %} {% else %} {% set text3 = "text-down" %}
+            {% endif %}
+            {% if i==0  %}
+              {% set text1, text2, text3 = "text-noir", "text-noir", "text-noir" %}
+            {% endif %}
+
+          <td class="text-right {{text1}}">{{details[i]["bug_info"]|format_number(locale='fr')}} </td>
+          <td class="text-right {{text2}}">{{details[i]["vulnerability_info"]|format_number(locale='fr')}} </td>
+          <td class="text-right {{text3}}">{{details[i]["code_smell_info"]|format_number(locale='fr')}} </td>
+          {% endfor %}
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
 
 {#-- fenêtre modale --#}
 {# Affichage de la répartition des versions #}

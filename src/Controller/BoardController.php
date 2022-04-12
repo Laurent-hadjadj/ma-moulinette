@@ -99,6 +99,18 @@ class BoardController extends AbstractController
     $select=$em->getConnection()->prepare($sql)->executeQuery();
     $severite=$select->fetchAllAssociative();
 
+    // On récupére les anomalies par type et sévérité
+    $sql="SELECT version,
+    bug_blocker, bug_critical, bug_major, bug_minor, bug_info,
+    vulnerability_blocker, vulnerability_critical, vulnerability_major,
+    vulnerability_minor, vulnerability_info,
+    code_smell_blocker, code_smell_critical, code_smell_major,
+    code_smell_minor, code_smell_info
+    FROM historique
+    WHERE maven_key='".$maven_key."' ORDER BY date_version DESC LIMIT 3";
+    $select=$em->getConnection()->prepare($sql)->executeQuery();
+    $details=$select->fetchAllAssociative();
+
     // Graphique
     $sql="SELECT nombre_bug as bug, nombre_vulnerability as secu,
     nombre_code_smell as code_smell, date_version as date
@@ -128,8 +140,8 @@ class BoardController extends AbstractController
     $date[$nl+1]=$ddd;
 
     return $this->render('dash/index.html.twig',
-    [   'dash'=>$dash, 'severite'=>$severite, 'nom'=>$dash[0]["nom"],
-        'maven_key'=>$maven_key,
+    [   'dash'=>$dash, 'severite'=>$severite, 'details'=> $details,
+        'nom'=>$dash[0]["nom"], 'maven_key'=>$maven_key,
         'data1'=>json_encode($bug), 'data2'=>json_encode($secu),
         'data3'=>json_encode($code_smell), 'labels'=>json_encode($date),
         'version' => $this->getParameter('version'), 'dateCopyright' => \date('Y')
@@ -264,8 +276,6 @@ class BoardController extends AbstractController
 
     // On créé un nouvel objet Json
     $response = new JsonResponse();
-
-    //VALUES ('fr.franceagrimer:hubtiers','4.1.20-RELEASE','05-01-2022 08:41:00','hubtiers',0,0,0,0,50870,25506,0.0,2.6,0,4167,48011,148,7,4012,0,0,0,0,0,0,0,0,'C','C','C','E',5,0,0,0,1,FALSE,'2022-03-27 16:03:21')
 
     $sql="INSERT OR IGNORE INTO historique
     (maven_key,version,date_version,
