@@ -81,6 +81,12 @@
   padding-right: 20px;
 }
 
+/* couleur severite */
+.text-rouge { color: #971c09; }
+.text-vert { color: #187e3d; }
+.text-bleu { color: #3b89a3; }
+.text-noir { color: #000; }
+
 .resultat-note {
   padding-left: 0.5rem;
   color: #333;
