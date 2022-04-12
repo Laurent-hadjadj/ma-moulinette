@@ -116,7 +116,8 @@
 #fermer-liste-projet,
 #fermer-liste-hotspot,
 #fermer-autre-version,
-#fermer-dette-technique {
+#fermer-dette-technique,
+#fermer-liste-severite {
   color: #fff;
   background-color: #00445b;
 }
@@ -130,7 +131,8 @@
 #fermer-liste-projet:hover,
 #fermer-autre-version:hover,
 #fermer-liste-hotspot:hover,
-#fermer-dette-technique:hover { background-color: #006182; }
+#fermer-dette-technique:hover,
+#fermer-liste-severite { background-color: #006182; }
 
 .lance-analyse-disabled,
 .affiche-resultat-disabled,
@@ -317,6 +319,11 @@
   padding-left: 20px;
   padding-right: 20px;
 }
+
+/* couleur severite */
+.rouge { color: #971c09; }
+.vert { color: #187e3d; }
+.bleu { color: #3b89a3; }
 
 @media only screen and (max-width: 20em) {
   .log { font-size: 0.75rem; }
