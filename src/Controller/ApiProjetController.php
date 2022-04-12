@@ -1187,6 +1187,23 @@ class ApiProjetController extends AbstractController
     $save->setHotspotTotal($data->hotspot_total);
     $save->setFavori($data->favori);
     $save->setInitial($data->initial);
+
+    $save->setInitial($data->bug_blocker);
+    $save->setInitial($data->bug_critical);
+    $save->setInitial($data->bug_major);
+    $save->setInitial($data->bug_minor);
+    $save->setInitial($data->bug_info);
+    $save->setInitial($data->vulnerability_blocker);
+    $save->setInitial($data->vulnerability_critical);
+    $save->setInitial($data->vulnerability_major);
+    $save->setInitial($data->vulnerability_minor);
+    $save->setInitial($data->vulnerability_info);
+    $save->setInitial($data->code_smell_blocker);
+    $save->setInitial($data->code_smell_critical);
+    $save->setInitial($data->code_smell_major);
+    $save->setInitial($data->code_smell_minor);
+    $save->setInitial($data->code_smell_info);
+
     $save->setDateEnregistrement($date);
     $em->persist($save);
 
