@@ -27,6 +27,9 @@ const contentType='application/json; charset=utf-8';
 /**
  * description
  * Fonction de remplissage des tableaux.
+ *
+ * @export
+ * @param {*} maven_key
  */
 export function remplissage(maven_key) {
   const data = { maven_key: maven_key };
@@ -253,10 +256,76 @@ export function remplissage(maven_key) {
 
    });
 
-  //On récupère les hotspot.
+  //On récupère la sévérité par type.
+  const optionsAnomalieDetails = {
+    url: 'http://localhost:8000/api/peinture/projet/anomalie/details', type: 'GET', dataType: 'json', data: data, contentType: contentType
+  }
+
+  $.ajax(optionsAnomalieDetails).then((t) => {
+
+    if (t[0] === '406') {
+      log(' - ERROR : Récupération du détails des anomalies.')
+      log(t.message);
+      return;
+    }
+
+    $('#js-bug-blocker').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.bug_blocker));
+    $('#js-bug-critical').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.bug_critical));
+    $('#js-bug-major').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.bug_major));
+    $('#js-bug-minor').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.bug_minor));
+    $('#js-bug-info').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.bug_info));
+
+    const t21 = document.getElementById('js-bug-blocker');
+    const t22 = document.getElementById('js-bug-critical');
+    const t23 = document.getElementById('js-bug-major');
+    const t24 = document.getElementById('js-bug-minor');
+    const t25 = document.getElementById('js-bug-info');
+    t21.dataset.bug_blocker=t.bug_blocker;
+    t22.dataset.bug_critical=t.bug_critical;
+    t23.dataset.bug_major=t.bug_major;
+    t24.dataset.bug_minor=t.bug_minor;
+    t25.dataset.bug_info=t.bug_info;
+
+    $('#js-vulnerability-blocker').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.vulnerability_blocker));
+    $('#js-vulnerability-critical').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.vulnerability_critical));
+    $('#js-vulnerability-major').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.vulnerability_major));
+    $('#js-vulnerability-minor').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.vulnerability_minor));
+    $('#js-vulnerability-info').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.vulnerability_info));
+
+    const t26 = document.getElementById('js-vulnerability-blocker');
+    const t27 = document.getElementById('js-vulnerability-critical');
+    const t28 = document.getElementById('js-vulnerability-major');
+    const t29 = document.getElementById('js-vulnerability-minor');
+    const t30 = document.getElementById('js-vulnerability-info');
+    t26.dataset.vulnerability_blocker=t.vulnerability_blocker;
+    t27.dataset.vulnerability_critical=t.vulnerability_critical;
+    t28.dataset.vulnerability_major=t.vulnerability_major;
+    t29.dataset.vulnerability_minor=t.vulnerability_minor;
+    t30.dataset.vulnerability_info=t.vulnerability_info;
+
+    $('#js-code-smell-blocker').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.code_smell_blocker));
+    $('#js-code-smell-critical').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.code_smell_critical));
+    $('#js-code-smell-major').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.code_smell_major));
+    $('#js-code-smell-minor').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.code_smell_minor));
+    $('#js-code-smell-info').html(new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(t.code_smell_info));
+
+    const t31 = document.getElementById('js-code-smell-blocker');
+    const t32 = document.getElementById('js-code-smell-critical');
+    const t33 = document.getElementById('js-code-smell-major');
+    const t34 = document.getElementById('js-code-smell-minor');
+    const t35 = document.getElementById('js-code-smell-info');
+    t31.dataset.vulnerability_blocker=t.code_smell_blocker;
+    t32.dataset.vulnerability_critical=t.code_smell_critical;
+    t33.dataset.vulnerability_major=t.code_smell_major;
+    t34.dataset.vulnerability_minor=t.code_smell_minor;
+    t35.dataset.vulnerability_info=t.code_smell_info;
+  });
+
+  //On récupère les hotspots.
   const optionsHotspots = {
     url: 'http://localhost:8000/api/peinture/projet/hotspots', type: 'GET', dataType: 'json', data: data, contentType: contentType
   }
+
 
   $.ajax(optionsHotspots).then((t) => {
     let couleur='';
