@@ -160,7 +160,7 @@
           <p class="ligne">Duplication&nbsp;: <span id="duplication" class="stat resultat"></span></p>
           <p class="ligne">Défauts&nbsp;&nbsp;: <span id="nombre-defaut" class="stat resultat"></span></p><br />
           <p id="js-dette" class="ligne" date-dette="0">Dette&nbsp;
-            <svg id="js-affiche-details" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="details-svg">
+            <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="js-affiche-details details-svg">
               <path d="M84.1 49.6c-16.9 4.5-30.1 18-34.6 35.1-2.2 8.5-2.2 110.1 0 118.6 4.5 17.3 17.8 30.7 35 35.2 8.8 2.2 110.2 2.2 119 0 17.2-4.5 30.5-17.9 35-35.2 2.2-8.5 2.2-110.1 0-118.6-4.5-17.3-17.8-30.7-35-35.2-8.5-2.2-111.2-2.1-119.4.1zM308.1 49.6c-16.9 4.5-30.1 18-34.6 35.1-2.2 8.5-2.2 110.1 0 118.6 4.5 17.3 17.8 30.7 35 35.2 8.8 2.2 110.2 2.2 119 0 17.2-4.5 30.5-17.9 35-35.2 2.2-8.5 2.2-110.1 0-118.6-4.5-17.3-17.8-30.7-35-35.2-8.5-2.2-111.2-2.1-119.4.1zM84.1 273.6c-16.9 4.5-30.1 18-34.6 35.1-2.2 8.5-2.2 110.1 0 118.6 4.5 17.3 17.8 30.7 35 35.2 8.8 2.2 110.2 2.2 119 0 17.2-4.5 30.5-17.9 35-35.2 2.2-8.5 2.2-110.1 0-118.6-4.5-17.3-17.8-30.7-35-35.2-8.5-2.2-111.2-2.1-119.4.1zM351.3 273.5c-20.1 3.6-38.3 13.4-52.4 28.3-35.9 37.5-35.7 95.6.5 133 16.9 17.6 39.3 27.6 64.1 28.9 45.5 2.3 85.3-27.3 97.7-72.6 3.1-11 3.1-35.2 0-46.2-10.3-37.7-39.7-64.9-76.9-71.4-10.2-1.8-23.2-1.8-33 0z"/>
             </svg>
           <span id="dette" class="stat-dette resultat"></span></p>
@@ -200,7 +200,11 @@
           <p class="ligne">Batch&nbsp;: <span id="nombre-batch" class="stat resultat"></span></p>
           <br />
 
-          <h5 class="claire-hand">Sévérité</h5>
+          <h5 class="claire-hand">Sévérité
+             <svg id="js-affiche-severite" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="js-affiche-severite details2-svg">
+              <path d="M84.1 49.6c-16.9 4.5-30.1 18-34.6 35.1-2.2 8.5-2.2 110.1 0 118.6 4.5 17.3 17.8 30.7 35 35.2 8.8 2.2 110.2 2.2 119 0 17.2-4.5 30.5-17.9 35-35.2 2.2-8.5 2.2-110.1 0-118.6-4.5-17.3-17.8-30.7-35-35.2-8.5-2.2-111.2-2.1-119.4.1zM308.1 49.6c-16.9 4.5-30.1 18-34.6 35.1-2.2 8.5-2.2 110.1 0 118.6 4.5 17.3 17.8 30.7 35 35.2 8.8 2.2 110.2 2.2 119 0 17.2-4.5 30.5-17.9 35-35.2 2.2-8.5 2.2-110.1 0-118.6-4.5-17.3-17.8-30.7-35-35.2-8.5-2.2-111.2-2.1-119.4.1zM84.1 273.6c-16.9 4.5-30.1 18-34.6 35.1-2.2 8.5-2.2 110.1 0 118.6 4.5 17.3 17.8 30.7 35 35.2 8.8 2.2 110.2 2.2 119 0 17.2-4.5 30.5-17.9 35-35.2 2.2-8.5 2.2-110.1 0-118.6-4.5-17.3-17.8-30.7-35-35.2-8.5-2.2-111.2-2.1-119.4.1zM351.3 273.5c-20.1 3.6-38.3 13.4-52.4 28.3-35.9 37.5-35.7 95.6.5 133 16.9 17.6 39.3 27.6 64.1 28.9 45.5 2.3 85.3-27.3 97.7-72.6 3.1-11 3.1-35.2 0-46.2-10.3-37.7-39.7-64.9-76.9-71.4-10.2-1.8-23.2-1.8-33 0z"/>
+            </svg>
+          </h5>
           <p class="ligne">Anomalie Bloquante&nbsp;: <span id="nombre-anomalie-bloquant" class="stat resultat"></span></p>
           <p class="ligne">Anomalie Critique&nbsp;: <span id="nombre-anomalie-critique" class="stat resultat"></span></p>
           <p class="ligne">Anomalie Majeure&nbsp;: <span id="nombre-anomalie-majeur" class="stat resultat"></span></p>
@@ -309,9 +313,9 @@
 		<caption class="claire-hand">Répartition des hotspots.</caption>
 		<thead>
 			<tr>
-				<th class="open-sans text-center note-rouge">HIGH</th>
-        <th class="open-sans text-center note-orange">MEDIUM</th>
-        <th class="open-sans text-center note-jaune">LOW</th>
+				<th scope="col" class="open-sans text-center note-rouge">HIGH</th>
+        <th scope="col" class="open-sans text-center note-orange">MEDIUM</th>
+        <th scope="col" class="open-sans text-center note-jaune">LOW</th>
 			</tr>
 		</thead>
 		<tbody id="tableau-liste-hotspot" class="open-sans">
@@ -330,8 +334,8 @@
    <caption class="claire-hand">Répartition de la dette technique.</caption>
       <thead>
         <tr>
-          <th>Type</th>
-          <th>Dette</th>
+          <th scope="col">Type</th>
+          <th scope="col">Dette</th>
         </tr>
       </thead>
       <tbody class="open-sans">
@@ -353,6 +357,59 @@
 	<a id="fermer-dette-technique" class="expanded button open-sans" data-close aria-label="Close reveal" type="button">Fermer</a>
 	<a class="close-button" data-close aria-label="Close reveal">&#215;</a>
 </div>
+
+{# Affichage du tableau des type par sévérité #}
+<div id="modal-affiche-severite" class="reveal" data-reveal data-close-on-click="true" data-animation-in="fade-in" data-animation-out="fade-out">
+	<h2 class="claire-hand">Détails des anomalies.</h2>
+	<h4 class="claire-hand"><span id="affiche-nom-projet"></span></h4>
+	<table>
+		<caption class="claire-hand">Répartition des anomalies par type et sévérité.</caption>
+		<thead>
+			<tr>
+				<th scope="col"></th>
+        <th scope="col" class="open-sans text-center">Bug</th>
+				<th scope="col" class="open-sans text-center">Vulnérabilité</th>
+        <th scope="col" class="open-sans text-center">Mauvaise Pratique</th>
+			</tr>
+		</thead>
+		<tbody id="tableau-liste-severite" class="open-sans">
+     <tr>
+       <td class="rouge"><strong>Bloquant</strong></td>
+       <td id="js-bug-blocker" class="text-center stat"></td>
+       <td id="js-vulnerability-blocker" class="text-center stat"></td>
+       <td id="js-code-smell-blocker" class="text-center stat"></td>
+     </tr>
+     <tr>
+       <td class="rouge"><strong>Critique</strong></td>
+       <td id="js-bug-critical" class="text-center stat"></td>
+       <td id="js-vulnerability-critical" class="text-center stat"></td>
+       <td id="js-code-smell-critical" class="text-center stat"></td>
+     </tr>
+     <tr>
+       <td class="rouge"><strong>Majeur</strong></td>
+       <td id="js-bug-major" class="text-center stat"></td>
+       <td id="js-vulnerability-major" class="text-center stat"></td>
+       <td id="js-code-smell-major" class="text-center stat"></td>
+     </tr>
+     <tr>
+       <td class="vert"><strong>Mineur</strong></td>
+       <td id="js-bug-minor" class="text-center stat"></td>
+       <td id="js-vulnerability-minor" class="text-center stat"></td>
+       <td id="js-code-smell-minor" class="text-center stat"></td>
+     </tr>
+     <tr>
+       <td class="bleu"><strong>Info</strong></td>
+       <td id="js-bug-info" class="text-center stat"></td>
+       <td id="js-vulnerability-info" class="text-center stat"></td>
+       <td id="js-code-smell-info" class="text-center stat"></td>
+     </tr>
+    </tbody>
+	</table>
+	<br/>
+	<a id="fermer-liste-severite" class="expanded button open-sans" data-close aria-label="Close reveal" type="button">Fermer</a>
+	<a class="close-button" data-close aria-label="Close reveal">&#215;</a>
+</div>
+
 
 <br /><br />
 {# Chargement de la section footer #}
