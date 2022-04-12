@@ -543,8 +543,8 @@ class ApiProjetController extends AbstractController
       } catch (\Doctrine\DBAL\Exception $e) {
         return $response->setData(["code"=>$e->getCode(), Response::HTTP_OK]);
       }
-      return $response->setData(["code"=>"OK", Response::HTTP_OK]);
     }
+    return $response->setData(["code"=>"OK", Response::HTTP_OK]);
   }
 
 /**
