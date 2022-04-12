@@ -26,10 +26,14 @@ class ApiDetailsPeintureController extends AbstractController
 
   const HTTP_ERROR_406 = "                   Vous devez lancer une analyse pour ce projet !!!";
 
-/**
- * description
- * Vérification de l'existence du projet dans la table information_projet
- */
+   /**
+    * is_valide
+    * Vérification de l'existence du projet dans la table information_projet
+    *
+    * @param  mixed $em
+    * @param  mixed $maven_key
+    * @return array
+    */
    protected function is_valide(EntityManagerInterface $em, $maven_key): array
    {
      // On regarde si une analyse a été réalisée.
@@ -42,11 +46,15 @@ class ApiDetailsPeintureController extends AbstractController
 
 
   /**
-   * description
+   * peinture_projet_anomalie_details
    * Récupère les informations sur la dette technique et les anamalies
-  */
+   *
+   * @param  mixed $em
+   * @param  mixed $request
+   * @return response
+   */
   #[Route('/api/peinture/projet/anomalie/details', name: 'peinture_projet_anomalie_details', methods: ['GET'])]
-  public function peinture_projet_anomalie_details(EntityManagerInterface $em, Request $request): response
+   public function peinture_projet_anomalie_details(EntityManagerInterface $em, Request $request): response
   {
     $maven_key=$request->get('maven_key');
     $response = new JsonResponse();

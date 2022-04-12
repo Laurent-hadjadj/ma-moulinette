@@ -22,11 +22,13 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class ApiProfilController extends AbstractController
 {
-
-   /**
-   * description
+  /**
+   * liste_quality_langage
    * Revoie le tableau des laels et des dataset
    * Permet de tracer un jolie dessin sur la répartition des langages de programmation.
+   *
+   * @param  mixed $em
+   * @return response
    */
   #[Route('/api/quality/langage', name: 'liste_quality_langage', methods: ['GET'])]
   public function liste_quality_langage(EntityManagerInterface $em): response {
