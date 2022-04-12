@@ -101,7 +101,7 @@ class ApiDetailsPeintureController extends AbstractController
     $code_smell_major=$anomalies[0]["code_smell_major"];
     $code_smell_minor=$anomalies[0]["code_smell_minor"];
 
-    return $response->setData([
+    return $response->setData(["message"=>"200",
     "dette"=>$dette, "dette_bug"=>$dette_bug, "dette_vulnerability"=>$dette_vulnerability, "dette_code_smell"=>$dette_code_smell,
     "bug"=>$bug, "vulnerability"=>$vulnerability, "code_smell"=>$codeSmell,
     "bug_blocker"=>$bug_blocker, "bug_critical"=>$bug_critical, "bug_info"=>$bug_info,
