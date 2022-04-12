@@ -26,10 +26,14 @@ class ApiProjetPeintureController extends AbstractController
 
   const HTTP_ERROR_406 = "                   Vous devez lancer une analyse pour ce projet !!!";
 
-/**
- * description
- * Vérification de l'existence du projet dans la table information_projet
- */
+  /**
+   * is_valide
+   * Vérification de l'existence du projet dans la table information_projet
+   *
+   * @param  mixed $em
+   * @param  mixed $maven_key
+   * @return array
+   */
   protected function is_valide(EntityManagerInterface $em, $maven_key): array {
      // On regarde si une analyse a été réalisée.
     $sql="SELECT * FROM information_projet WHERE maven_key='". $maven_key."' LIMIT 1";
@@ -40,10 +44,13 @@ class ApiProjetPeintureController extends AbstractController
   }
 
   /**
-   * description
+   * projet_favori
    * Récupupère la liste de mes projets et ceux en favoris
-  * http://{url}/api/project_analyses/search?project={key}
-  */
+   * http://{url}/api/project_analyses/search?project={key}
+   *
+   * @param  mixed $em
+   * @return response
+   */
   #[Route('/api/projet/favori', name: 'projet_favori', methods: ['GET'])]
   public function projet_favori(EntityManagerInterface $em): response {
     $response = new JsonResponse();
@@ -67,9 +74,14 @@ class ApiProjetPeintureController extends AbstractController
   }
 
   /**
-   * description
-   * Récupère les informations sur le projet : type de version, dernière version, date de l'audit
-  */
+   * peinture_projet_version
+   * Récupère les informations sur le projet : type de version, dernière version,
+   * date de l'audit
+   *
+   * @param  mixed $em
+   * @param  mixed $request
+   * @return response
+   */
   #[Route('/api/peinture/projet/version', name: 'peinture_projet_version', methods: ['GET'])]
   public function peinture_projet_version(EntityManagerInterface $em, Request $request): response {
     $maven_key=$request->get('maven_key');
@@ -93,7 +105,7 @@ class ApiProjetPeintureController extends AbstractController
 
     // On récupère la dernière version et sa date de publication
     $sql="SELECT project_version as projet, date FROM information_projet WHERE maven_key='"
-     .$maven_key."' ORDER BY date DESC LIMIT 1";
+     .$maven_key."' ORDER BY date DESC LIMIT 1 ";
     $r=$em->getConnection()->prepare($sql)->executeQuery();
     $infoRelease=$r->fetchAllAssociative();
 
@@ -102,9 +114,15 @@ class ApiProjetPeintureController extends AbstractController
   }
 
   /**
-   * description
-   * Récupère les informations sur le projet : type de version, dernière version, date de l'audit
-  */
+   * peinture_projet_information
+   * Récupère les informations sur le projet : type de version, dernière version,
+   * date de l'audit
+
+   *
+   * @param  mixed $em
+   * @param  mixed $request
+   * @return response
+   */
   #[Route('/api/peinture/projet/information', name: 'peinture_projet_information', methods: ['GET'])]
   public function peinture_projet_information(EntityManagerInterface $em, Request $request): response {
     $maven_key=$request->get('maven_key');
@@ -128,9 +146,13 @@ class ApiProjetPeintureController extends AbstractController
   }
 
   /**
-   * description
+   * peinture_projet_anomalie
    * Récupère les informations sur la dette technique et les anamalies
-  */
+   *
+   * @param  mixed $em
+   * @param  mixed $request
+   * @return response
+   */
   #[Route('/api/peinture/projet/anomalie', name: 'peinture_projet_anomalie', methods: ['GET'])]
   public function peinture_projet_anomalie(EntityManagerInterface $em, Request $request): response {
     $maven_key=$request->get('maven_key');
@@ -208,9 +230,74 @@ class ApiProjetPeintureController extends AbstractController
   }
 
   /**
-   * description
-   * Récupère les hotspots du projet
+   * peinture_projet_anomalie_details
+   * Récupère le détauls des anomalies pour chaque type
+   *
+   * @param  mixed $em
+   * @param  mixed $request
+   * @return response
   */
+  #[Route('/api/peinture/projet/anomalie/details', name: 'peinture_projet_anomalie_details', methods: ['GET'])]
+  public function peinture_projet_anomalie_details(EntityManagerInterface $em, Request $request): response {
+
+    $maven_key=$request->get('maven_key');
+    $response = new JsonResponse();
+
+    $is_valide=$this->is_valide($em, $maven_key);
+    if ($is_valide["code"]==406) {
+      return $response->setData(
+        ["message"=>static::HTTP_ERROR_406, Response::HTTP_NOT_ACCEPTABLE]);
+    }
+
+    // On récupère les données pour le projet
+    $sql="SELECT * FROM anomalie_details WHERE maven_key='". $maven_key."'";
+    $r=$em->getConnection()->prepare($sql)->executeQuery();
+    $details=$r->fetchAllAssociative();
+
+    $bug_blocker=$details[0]["bug_blocker"];
+    $bug_critical=$details[0]["bug_critical"];
+    $bug_major=$details[0]["bug_major"];
+    $bug_minor=$details[0]["bug_minor"];
+    $bug_info=$details[0]["bug_info"];
+
+    $vulnerability_blocker=$details[0]["vulnerability_blocker"];
+    $vulnerability_critical=$details[0]["vulnerability_critical"];
+    $vulnerability_major=$details[0]["vulnerability_major"];
+    $vulnerability_minor=$details[0]["vulnerability_minor"];
+    $vulnerability_info=$details[0]["vulnerability_info"];
+
+    $code_smell_blocker=$details[0]["code_smell_blocker"];
+    $code_smell_critical=$details[0]["code_smell_critical"];
+    $code_smell_major=$details[0]["code_smell_major"];
+    $code_smell_minor=$details[0]["code_smell_minor"];
+    $code_smell_info=$details[0]["code_smell_info"];
+
+    return $response->setData([
+      "message"=>"200",
+      "bug_blocker"=>$bug_blocker,
+      "bug_critical"=>$bug_critical,
+      "bug_major"=>$bug_major,
+      "bug_minor"=>$bug_minor,
+      "bug_info"=>$bug_info,
+      "vulnerability_blocker"=>$vulnerability_blocker, "vulnerability_critical"=>$vulnerability_critical,
+      "vulnerability_major"=>$vulnerability_major, "vulnerability_minor"=>$vulnerability_minor,
+      "vulnerability_info"=>$vulnerability_info,
+      "code_smell_blocker"=>$code_smell_blocker,
+      "code_smell_critical"=>$code_smell_critical,
+      "code_smell_major"=>$code_smell_major,
+      "code_smell_minor"=>$code_smell_minor,
+      "code_smell_info"=>$code_smell_info,
+       Response::HTTP_OK]);
+  }
+
+  /**
+   * peinture_projet_hotspots
+   * Récupère les hotspots du projet
+   *
+   * @param  mixed $em
+   * @param  mixed $request
+   * @return response
+   */
   #[Route('/api/peinture/projet/hotspots', name: 'peinture_projet_hotspots', methods: ['GET'])]
   public function peinture_projet_hotspots(EntityManagerInterface $em, Request $request): response
   {
@@ -249,9 +336,13 @@ class ApiProjetPeintureController extends AbstractController
   }
 
   /**
-   * description
-   * Récupère les hotspots du projet
-  */
+   * peinture_projet_hotspot_details
+   * Récupère le détails des hotspots du projet
+   *
+   * @param  mixed $em
+   * @param  mixed $request
+   * @return response
+   */
   #[Route('/api/peinture/projet/hotspot/details', name: 'peinture_projet_hotspot_details', methods: ['GET'])]
   public function peinture_projet_hotspot_details(EntityManagerInterface $em, Request $request): response {
     $maven_key=$request->get('maven_key');
@@ -280,9 +371,13 @@ class ApiProjetPeintureController extends AbstractController
   }
 
   /**
-   * description
+   * peinture_projet_nosonar_details
    * Récupère les exclusions nosonar et suppressWarning pour Java
-  */
+   *
+   * @param  mixed $em
+   * @param  mixed $request
+   * @return response
+   */
   #[Route('/api/peinture/projet/nosonar/details', name: 'peinture_projet_nosonar_details', methods: ['GET'])]
   public function peinture_projet_nosonar_details(EntityManagerInterface $em, Request $request): response {
     $maven_key=$request->get('maven_key');
