@@ -25,7 +25,6 @@ use App\Entity\NoSonar;
 use App\Entity\Mesures;
 use App\Entity\Anomalie;
 use App\Entity\AnomalieDetails;
-use App\Entity\TempAnomalie;
 use App\Entity\Owasp;
 use App\Entity\Hotspots;
 use App\Entity\HotspotOwasp;
@@ -48,10 +47,13 @@ class ApiProjetController extends AbstractController
   public static $sonarUrl= "sonar.url";
   public static $api_issues_search="/api/issues/search?componentKeys=";
 
-  /**
-  * description
-  * Fonction pirvée pour convertir une date au format xxd aah xxmin en minutes
-  */
+   /**
+    * date_to_minute
+    * Fonction pirvée pour convertir une date au format xxd aah xxmin en minutes
+    *
+    * @param  mixed $str
+    * @return void
+    */
    protected function date_to_minute($str) {
     $jour = 0; $heure = 0; $minute = 0;
     //[2d1h1min]-- >[2] [1h1min]
@@ -71,10 +73,13 @@ class ApiProjetController extends AbstractController
   }
 
   /**
-   * description
+   * minutes_to
    * Converti les minutes en jours, heures et minutes
- */
-  protected function minutes_to($minutes) {
+   *
+   * @param  mixed $minutes
+   * @return string
+   */
+  protected function minutes_to($minutes):string {
     $j = (int)($minutes / 1440);
     $h = (int)(($minutes - ($j * 1440)) / 60);
     $m = round($minutes % 60);
@@ -83,10 +88,12 @@ class ApiProjetController extends AbstractController
       else { return ($h."h:".$m."min"); }
   }
 
- /**
-  * description
-  * http_client
-  */
+  /**
+   * http_client
+   *
+   * @param  mixed $url
+   * @return void
+   */
   protected function http_client($url) {
     if (empty($this->getParameter('sonar.token'))) {
       $user=$this->getParameter('sonar.user');
@@ -117,10 +124,14 @@ class ApiProjetController extends AbstractController
     }
 
   /**
-   * description
+   * favori
    * Change le statut du favori pour un projet
-  * http://{url}/api/favori{key}
-  */
+   * http://{url}/api/favori{key}
+   *
+   * @param  mixed $em
+   * @param  mixed $request
+   * @return response
+   */
   #[Route('/api/favori', name: 'favori', methods: ['GET'])]
   public function favori(EntityManagerInterface $em, Request $request): response  {
     $maven_key=$request->get('maven_key');
@@ -146,12 +157,15 @@ class ApiProjetController extends AbstractController
     return $response->setData(["statut"=>$statut, Response::HTTP_OK]);
   }
 
-/**
-   * description
-   * Récupére le statut d'un favori
-   *  le favoriest TRUE ou FALSE ou null
-  * http://{url}/api/favori/check={key}
-  */
+  /**
+   * favori_check
+   * Récupére le statut d'un favori. le favori est TRUE ou FALSE ou null
+   * http://{url}/api/favori/check={key}
+   *
+   * @param  mixed $em
+   * @param  mixed $request
+   * @return response
+   */
   #[Route('/api/favori/check', name: 'favori_check', methods: ['GET'])]
   public function favori_check(EntityManagerInterface $em, Request $request): response
   {
@@ -169,13 +183,16 @@ class ApiProjetController extends AbstractController
     return $response->setData(["favori"=>"TRUE", "statut"=>$r[0]['favori'], Response::HTTP_OK]);
   }
 
-  /*
-    * description
-    * récupère la liste des projets nom + clé
-    * http://{url}}/api/liste/projet
-  */
+  /**
+   * liste_projet
+   * Récupère la liste des projets nom + clé
+   * http://{url}}/api/liste/projet
+   *
+   * @param  mixed $connection
+   * @return void
+   */
   #[Route('/api/liste/projet', name: 'liste_projet', methods: ['GET'])]
-  public function liste_projet(Connection $connection)
+   public function liste_projet(Connection $connection)
   {
 
     $sql = "SELECT maven_key, name from 'liste_projet'";
@@ -195,12 +212,16 @@ class ApiProjetController extends AbstractController
   }
 
   /**
-   * description
-   * Récupère les informations du projet (id de l'enregistrement, date de l'analyse, version, type de version)
+   * projet_analyses
+   * Récupère les informations du projet (id de l'enregistrement, date de l'analyse, version, type de version).
   * http://{url}/api/project_analyses/search?project={key}
-  */
+   *
+   * @param  mixed $em
+   * @param  mixed $request
+   * @return response
+   */
   #[Route('/api/projet/analyses', name: 'projet_analyses', methods: ['GET'])]
-  public function projet_analyses(EntityManagerInterface $em, Request $request): response
+   public function projet_analyses(EntityManagerInterface $em, Request $request): response
   {
     $url=$this->getParameter(static::$sonarUrl)."/api/project_analyses/search?project=".$request->get('maven_key');
 
@@ -237,11 +258,15 @@ class ApiProjetController extends AbstractController
   }
 
   /**
-   * description
-   * Récupère les informations du projet (id de l'enregistrement, date de l'analyse, version, type de version)
-  * http://{url}/api/components/app?component={key}
-  * http://{URL}/api/measures/component?component={key}&metricKeys=ncloc
-  */
+   * projet_mesures
+   * Récupère les indicateurs de mesures
+   * http://{url}/api/components/app?component={key}
+   * http://{URL}/api/measures/component?component={key}&metricKeys=ncloc
+   *
+   * @param  mixed $em
+   * @param  mixed $request
+   * @return response
+   */
   #[Route('/api/projet/mesures', name: 'projet_mesures', methods: ['GET'])]
   public function projet_mesures(EntityManagerInterface $em, Request $request): response {
     // mesures globales
@@ -298,13 +323,17 @@ class ApiProjetController extends AbstractController
   }
 
   /**
-   * description
+   * projet_anomalie
    * Récupère le total des anomalies, avec un filtre par répertoire, severité et types.
    * https://{URL}/api/issues/search?componentKeys={maven_key}&facets=directories,types,severities&p=1&ps=1&statuses=OPEN
    * https://{URL}/api/issues/search?componentKeys={maven_key}&types={type}&p=1&ps=1
+   *
+   * @param  mixed $em
+   * @param  mixed $request
+   * @return response
    */
   #[Route('/api/projet/anomalie', name: 'projet_anomalie', methods: ['GET'])]
-  public function projet_anomalie(EntityManagerInterface $em, Request $request): response {
+   public function projet_anomalie(EntityManagerInterface $em, Request $request): response {
 
     $url1=$this->getParameter(static::$sonarUrl).static::$api_issues_search
     .$request->get('maven_key')."&facets=directories,types,severities&p=1&ps=1&statuses=OPEN";
@@ -406,7 +435,7 @@ class ApiProjetController extends AbstractController
           }
       }
       }
-      // Enregitremet dans la table Anomalie
+      // Enregistrement dans la table Anomalie
       $issue = new Anomalie();
       $issue->setMavenKey($maven_key);
       $issue->setProjectName($app[1]);
@@ -443,13 +472,20 @@ class ApiProjetController extends AbstractController
 
   /**
    * description
+  */
+  /**
+   * projet_anomalie_details
    * Récupère le détails des severités pour chaque type
    * https://{URL}/api/issues/search?componentKeys={key}&&facets=severities&types=BUG&ps=1&p=1&statuses=OPEN
    * https://{URL}/api/issues/search?componentKeys={key}&&facets=severities&types=VULNERABILITY&ps=1&p=1&statuses=OPEN
    * https://{URL}/api/issues/search?componentKeys={key}&&facets=severities&types=CODE_SMELLBUG&ps=1&p=1&statuses=OPEN
-  */
-  #[Route('/api/projet/anomalies/details', name: 'projet_anomalies_details', methods: ['GET'])]
-  public function projet_anomalies_details(EntityManagerInterface $em, Request $request): response {
+   *
+   * @param  mixed $em
+   * @param  mixed $request
+   * @return response
+   */
+  #[Route('/api/projet/anomalie/details', name: 'projet_anomalie_details', methods: ['GET'])]
+  public function projet_anomalie_details(EntityManagerInterface $em, Request $request): response {
 
     $maven_key=$request->get('maven_key');
 
@@ -547,14 +583,18 @@ class ApiProjetController extends AbstractController
     return $response->setData(["code"=>"OK", Response::HTTP_OK]);
   }
 
-/**
-* description
-* Récupère les notes pour la fiabilité, la sécurité et les mauvaises pratiques.
-* http://{url}https://{url}/api/measures/search_history?component={key}}&metrics={type}&ps=1000
-* On récupère que la première page soit 1000 résultat max.
-* Les valeurs possibles pour {type} sont : reliability_rating,security_rating,sqale_rating
-*/
-#[Route('/api/projet/historique/note', name: 'projet_historique_note', methods: ['GET'])]
+  /**
+   * historique_note_ajout
+   * Récupère les notes pour la fiabilité, la sécurité et les mauvaises pratiques.
+   * http://{url}https://{url}/api/measures/search_history?component={key}}&metrics={type}&ps=1000
+   * On récupère que la première page soit 1000 résultat max.
+   * Les valeurs possibles pour {type} sont : reliability_rating,security_rating,sqale_rating
+   *
+   * @param  mixed $em
+   * @param  mixed $request
+   * @return response
+   */
+  #[Route('/api/projet/historique/note', name: 'projet_historique_note', methods: ['GET'])]
   public function historique_note_ajout(EntityManagerInterface $em, Request $request): response {
 
     $url=$this->getParameter(static::$sonarUrl)."/api/measures/search_history?component=".$request->get('maven_key')."&metrics=".$request->get('type')."_rating&ps=1000";
@@ -584,145 +624,149 @@ class ApiProjetController extends AbstractController
   }
 
   /**
-  * description
-  * Récupère le top 10 OWASP
-  * http://{url}/api/issues/search?componentKeys={key}&facets=owaspTop10&owaspTop10=a1,a2,a3,a4,a5,a6,a7,a8,a9,a10
-  * Attention une faille peut être comptée deux fois ou plus, cela dépend du tag. Donc il  est possible d'avoir pour la clé une faille de type OWASP-A3 et OWASP-A10
-  */
+   * issues_owasp_ajout
+   * Récupère le top 10 OWASP
+   * http://{url}/api/issues/search?componentKeys={key}&facets=owaspTop10&owaspTop10=a1,a2,a3,a4,a5,a6,a7,a8,a9,a10
+   * Attention une faille peut être comptée deux fois ou plus, cela dépend du tag.
+   * Donc il  est possible d'avoir pour la clé une faille de type OWASP-A3 et OWASP-A10
+   *
+   * @param  mixed $em
+   * @param  mixed $request
+   * @return response
+   */
   #[Route('/api/projet/issues/owasp', name: 'projet_issues_owasp', methods: ['GET'])]
   public function issues_owasp_ajout(EntityManagerInterface $em, Request $request): response {
+    $url=$this->getParameter(static::$sonarUrl).static::$api_issues_search.$request->get('maven_key')
+    ."&facets=owaspTop10&owaspTop10=a1,a2,a3,a4,a5,a6,a7,a8,a9,a10";
 
-      $url=$this->getParameter(static::$sonarUrl).static::$api_issues_search.$request->get('maven_key')
-      ."&facets=owaspTop10&owaspTop10=a1,a2,a3,a4,a5,a6,a7,a8,a9,a10";
+    $result=$this->http_client($url);
+    $date= new DateTime();
+    $owasp=[$result["total"]];
+    $effortTotal=$result["effortTotal"];
 
-      $result=$this->http_client($url);
-      $date= new DateTime();
-      $owasp=[$result["total"]];
-      $effortTotal=$result["effortTotal"];
+    for ($a=0; $a < 10; $a++)
+      {
+        switch ($result["facets"][0]["values"][$a]["val"]) {
+          case 'a1': $owasp[1] = $result["facets"][0]["values"][$a]["count"];
+            break;
+          case 'a2': $owasp[2] = $result["facets"][0]["values"][$a]["count"];
+            break;
+          case 'a3': $owasp[3] = $result["facets"][0]["values"][$a]["count"];
+            break;
+          case 'a4': $owasp[4] = $result["facets"][0]["values"][$a]["count"];
+            break;
+          case 'a5': $owasp[5] = $result["facets"][0]["values"][$a]["count"];
+            break;
+          case 'a6': $owasp[6] = $result["facets"][0]["values"][$a]["count"];
+            break;
+          case 'a7': $owasp[7] = $result["facets"][0]["values"][$a]["count"];
+            break;
+          case 'a8': $owasp[8] = $result["facets"][0]["values"][$a]["count"];
+            break;
+          case 'a9': $owasp[9] = $result["facets"][0]["values"][$a]["count"];
+            break;
+          case 'a10': $owasp[10] = $result["facets"][0]["values"][$a]["count"];
+            break;
+          default : echo "OWASP TOP 10"; break;
+          }
+      }
 
-      for ($a=0; $a < 10; $a++)
-        {
-          switch ($result["facets"][0]["values"][$a]["val"]) {
-            case 'a1': $owasp[1] = $result["facets"][0]["values"][$a]["count"];
-              break;
-            case 'a2': $owasp[2] = $result["facets"][0]["values"][$a]["count"];
-              break;
-            case 'a3': $owasp[3] = $result["facets"][0]["values"][$a]["count"];
-              break;
-            case 'a4': $owasp[4] = $result["facets"][0]["values"][$a]["count"];
-              break;
-            case 'a5': $owasp[5] = $result["facets"][0]["values"][$a]["count"];
-              break;
-            case 'a6': $owasp[6] = $result["facets"][0]["values"][$a]["count"];
-              break;
-            case 'a7': $owasp[7] = $result["facets"][0]["values"][$a]["count"];
-              break;
-            case 'a8': $owasp[8] = $result["facets"][0]["values"][$a]["count"];
-              break;
-            case 'a9': $owasp[9] = $result["facets"][0]["values"][$a]["count"];
-              break;
-            case 'a10': $owasp[10] = $result["facets"][0]["values"][$a]["count"];
-              break;
-            default : echo "OWASP TOP 10"; break;
-            }
-        }
+    $a1_blocker = 0; $a1_critical = 0; $a1_major = 0; $a1_info = 0; $a1_minor = 0;
+    $a2_blocker = 0; $a2_critical = 0; $a2_major = 0; $a2_info = 0; $a2_minor = 0;
+    $a3_blocker = 0; $a3_critical = 0; $a3_major = 0; $a3_info = 0; $a3_minor = 0;
+    $a4_blocker = 0; $a4_critical = 0; $a4_major = 0; $a4_info = 0; $a4_minor = 0;
+    $a5_blocker = 0; $a5_critical = 0; $a5_major = 0; $a5_info = 0; $a5_minor = 0;
+    $a6_blocker = 0; $a6_critical = 0; $a6_major = 0; $a6_info = 0; $a6_minor = 0;
+    $a7_blocker = 0; $a7_critical = 0; $a7_major = 0; $a7_info = 0; $a7_minor = 0;
+    $a8_blocker = 0; $a8_critical = 0; $a8_major = 0; $a8_info = 0; $a8_minor = 0;
+    $a9_blocker = 0; $a9_critical = 0; $a9_major = 0; $a9_info = 0; $a9_minor = 0;
+    $a10_blocker = 0; $a10_critical = 0; $a10_major = 0; $a10_info = 0; $a10_minor = 0;
 
-      $a1_blocker = 0; $a1_critical = 0; $a1_major = 0; $a1_info = 0; $a1_minor = 0;
-      $a2_blocker = 0; $a2_critical = 0; $a2_major = 0; $a2_info = 0; $a2_minor = 0;
-      $a3_blocker = 0; $a3_critical = 0; $a3_major = 0; $a3_info = 0; $a3_minor = 0;
-      $a4_blocker = 0; $a4_critical = 0; $a4_major = 0; $a4_info = 0; $a4_minor = 0;
-      $a5_blocker = 0; $a5_critical = 0; $a5_major = 0; $a5_info = 0; $a5_minor = 0;
-      $a6_blocker = 0; $a6_critical = 0; $a6_major = 0; $a6_info = 0; $a6_minor = 0;
-      $a7_blocker = 0; $a7_critical = 0; $a7_major = 0; $a7_info = 0; $a7_minor = 0;
-      $a8_blocker = 0; $a8_critical = 0; $a8_major = 0; $a8_info = 0; $a8_minor = 0;
-      $a9_blocker = 0; $a9_critical = 0; $a9_major = 0; $a9_info = 0; $a9_minor = 0;
-      $a10_blocker = 0; $a10_critical = 0; $a10_major = 0; $a10_info = 0; $a10_minor = 0;
-
-      if ($result["total"]!=0) {
-        foreach ($result["issues"] as $issue) {
-          $severity = $issue["severity"];
-          if ($issue["status"] == 'OPEN' || $issue["status"] == 'CONFIRMED' || $issue["status"]
-              == 'REOPENED') {
-            if (preg_match("/owasp-a/is", var_export($issue["tags"], true)) !=0) {
-                foreach ($issue["tags"] as $tag) {
-                  switch ($tag) {
-                    case "owasp-a1":
-                      if ($severity == 'BLOCKER') { $a1_blocker++; }
-                      if ($severity == 'CRITICAL') { $a1_critical++; }
-                      if ($severity == 'MAJOR') { $a1_major++; }
-                      if ($severity == 'INFO') { $a1_info++; }
-                      if ($severity == 'MINOR') { $a1_minor++; }
-                      break;
-                    case "owasp-a2":
-                      if ($severity == 'BLOCKER') { $a2_blocker++; }
-                      if ($severity == 'CRITICAL') { $a2_critical++; }
-                      if ($severity == 'MAJOR') { $a2_major++; }
-                      if ($severity == 'INFO') { $a2_info++; }
-                      if ($severity == 'MINOR') { $a2_minor++; }
-                      break;
-                    case "owasp-a3":
-                      if ($severity == 'BLOCKER') { $a3_blocker++; }
-                      if ($severity == 'CRITICAL') { $a3_critical++; }
-                      if ($severity == 'MAJOR') { $a3_major++; }
-                      if ($severity == 'INFO') { $a3_info++; }
-                      if ($severity == 'MINOR') { $a3_minor++; }
-                      break;
-                    case "owasp-a4":
-                      if ($severity == 'BLOCKER') { $a4_blocker++; }
-                      if ($severity == 'CRITICAL') { $a4_critical++; }
-                      if ($severity == 'MAJOR') { $a4_major++; }
-                      if ($severity == 'INFO') { $a4_info++; }
-                      if ($severity == 'MINOR') { $a4_minor++; }
-                      break;
-                    case "owasp-a5":
-                      if ($severity == 'BLOCKER') { $a5_blocker++; }
-                      if ($severity == 'CRITICAL') { $a5_critical++; }
-                      if ($severity == 'MAJOR') { $a5_major++; }
-                      if ($severity == 'INFO') { $a5_info++; }
-                      if ($severity == 'MINOR') { $a5_minor++; }
-                      break;
-                    case "owasp-a6":
-                      if ($severity == 'BLOCKER') { $a6_blocker++; }
-                      if ($severity == 'CRITICAL') { $a6_critical++; }
-                      if ($severity == 'MAJOR') { $a6_major++; }
-                      if ($severity == 'INFO') { $a6_info++; }
-                      if ($severity == 'MINOR') { $a6_minor++; }
-                      break;
-                    case "owasp-a7":
-                      if ($severity == 'BLOCKER') { $a7_blocker++; }
-                      if ($severity == 'CRITICAL') { $a7_critical++; }
-                      if ($severity == 'MAJOR') { $a7_major++; }
-                      if ($severity == 'INFO') { $a7_info++; }
-                      if ($severity == 'MINOR') { $a7_minor++; }
-                      break;
-                    case "owasp-a8":
-                      if ($severity == 'BLOCKER') { $a8_blocker++; }
-                      if ($severity == 'CRITICAL') { $a8_critical++; }
-                      if ($severity == 'MAJOR') { $a8_major++; }
-                      if ($severity == 'INFO') { $a8_info++; }
-                      if ($severity == 'MINOR') { $a8_minor++; }
-                      break;
-                    case "owasp-a9":
-                      if ($severity == 'BLOCKER') { $a9_blocker++; }
-                      if ($severity == 'CRITICAL') { $a9_critical++; }
-                      if ($severity == 'MAJOR') { $a9_major++; }
-                      if ($severity == 'INFO') { $a9_info++; }
-                      if ($severity == 'MINOR') { $a9_minor++; }
-                      break;
-                    case "owasp-a10":
-                      if ($severity == 'BLOCKER') { $a10_blocker++; }
-                      if ($severity == 'CRITICAL') { $a10_critical++; }
-                      if ($severity == 'MAJOR') { $a10_major++; }
-                      if ($severity == 'INFO') { $a10_info++; }
-                      if ($severity == 'MINOR') { $a10_minor++; }
-                      break;
-                    default : break;
-                  }
+    if ($result["total"]!=0) {
+      foreach ($result["issues"] as $issue) {
+        $severity = $issue["severity"];
+        if ($issue["status"] == 'OPEN' || $issue["status"] == 'CONFIRMED' || $issue["status"]
+            == 'REOPENED') {
+          if (preg_match("/owasp-a/is", var_export($issue["tags"], true)) !=0) {
+              foreach ($issue["tags"] as $tag) {
+                switch ($tag) {
+                  case "owasp-a1":
+                    if ($severity == 'BLOCKER') { $a1_blocker++; }
+                    if ($severity == 'CRITICAL') { $a1_critical++; }
+                    if ($severity == 'MAJOR') { $a1_major++; }
+                    if ($severity == 'INFO') { $a1_info++; }
+                    if ($severity == 'MINOR') { $a1_minor++; }
+                    break;
+                  case "owasp-a2":
+                    if ($severity == 'BLOCKER') { $a2_blocker++; }
+                    if ($severity == 'CRITICAL') { $a2_critical++; }
+                    if ($severity == 'MAJOR') { $a2_major++; }
+                    if ($severity == 'INFO') { $a2_info++; }
+                    if ($severity == 'MINOR') { $a2_minor++; }
+                    break;
+                  case "owasp-a3":
+                    if ($severity == 'BLOCKER') { $a3_blocker++; }
+                    if ($severity == 'CRITICAL') { $a3_critical++; }
+                    if ($severity == 'MAJOR') { $a3_major++; }
+                    if ($severity == 'INFO') { $a3_info++; }
+                    if ($severity == 'MINOR') { $a3_minor++; }
+                    break;
+                  case "owasp-a4":
+                    if ($severity == 'BLOCKER') { $a4_blocker++; }
+                    if ($severity == 'CRITICAL') { $a4_critical++; }
+                    if ($severity == 'MAJOR') { $a4_major++; }
+                    if ($severity == 'INFO') { $a4_info++; }
+                    if ($severity == 'MINOR') { $a4_minor++; }
+                    break;
+                  case "owasp-a5":
+                    if ($severity == 'BLOCKER') { $a5_blocker++; }
+                    if ($severity == 'CRITICAL') { $a5_critical++; }
+                    if ($severity == 'MAJOR') { $a5_major++; }
+                    if ($severity == 'INFO') { $a5_info++; }
+                    if ($severity == 'MINOR') { $a5_minor++; }
+                    break;
+                  case "owasp-a6":
+                    if ($severity == 'BLOCKER') { $a6_blocker++; }
+                    if ($severity == 'CRITICAL') { $a6_critical++; }
+                    if ($severity == 'MAJOR') { $a6_major++; }
+                    if ($severity == 'INFO') { $a6_info++; }
+                    if ($severity == 'MINOR') { $a6_minor++; }
+                    break;
+                  case "owasp-a7":
+                    if ($severity == 'BLOCKER') { $a7_blocker++; }
+                    if ($severity == 'CRITICAL') { $a7_critical++; }
+                    if ($severity == 'MAJOR') { $a7_major++; }
+                    if ($severity == 'INFO') { $a7_info++; }
+                    if ($severity == 'MINOR') { $a7_minor++; }
+                    break;
+                  case "owasp-a8":
+                    if ($severity == 'BLOCKER') { $a8_blocker++; }
+                    if ($severity == 'CRITICAL') { $a8_critical++; }
+                    if ($severity == 'MAJOR') { $a8_major++; }
+                    if ($severity == 'INFO') { $a8_info++; }
+                    if ($severity == 'MINOR') { $a8_minor++; }
+                    break;
+                  case "owasp-a9":
+                    if ($severity == 'BLOCKER') { $a9_blocker++; }
+                    if ($severity == 'CRITICAL') { $a9_critical++; }
+                    if ($severity == 'MAJOR') { $a9_major++; }
+                    if ($severity == 'INFO') { $a9_info++; }
+                    if ($severity == 'MINOR') { $a9_minor++; }
+                    break;
+                  case "owasp-a10":
+                    if ($severity == 'BLOCKER') { $a10_blocker++; }
+                    if ($severity == 'CRITICAL') { $a10_critical++; }
+                    if ($severity == 'MAJOR') { $a10_major++; }
+                    if ($severity == 'INFO') { $a10_info++; }
+                    if ($severity == 'MINOR') { $a10_minor++; }
+                    break;
+                  default : break;
                 }
               }
             }
           }
         }
+      }
 
     //on supprime les informations sur le projet
     $sql = "DELETE FROM owasp WHERE maven_key='".$request->get('maven_key')."'";
@@ -811,13 +855,18 @@ class ApiProjetController extends AbstractController
     return $response->setData(["owasp"=>$result["total"], Response::HTTP_OK]);
   }
 
-/**
-* description
-* Traitement des hotspot de type owasp pour sonarqube 8.9 et >
-* http://{url}/api/hotspots/search?projectKey={key}&ps=500&p=1
-* On récupère les failles a examiner. Les clés sont uniques (i.e. on ne se base pas sur les tags).
-*/
-#[Route('/api/projet/hotspot', name: 'projet_hotspot', methods: ['GET'])]
+  /**
+   * hotspot_ajout
+   * Traitement des hotspot de type owasp pour sonarqube 8.9 et >
+   * http://{url}/api/hotspots/search?projectKey={key}&ps=500&p=1
+   * On récupère les failles a examiner.
+   * Les clés sont uniques (i.e. on ne se base pas sur les tags).
+   *
+   * @param  mixed $em
+   * @param  mixed $request
+   * @return response
+   */
+  #[Route('/api/projet/hotspot', name: 'projet_hotspot', methods: ['GET'])]
   public function hotspot_ajout(EntityManagerInterface $em, Request $request): response {
       $url=$this->getParameter(static::$sonarUrl)."/api/hotspots/search?projectKey="
        .$request->get('maven_key')."&ps=500&p=1";
@@ -852,16 +901,20 @@ class ApiProjetController extends AbstractController
       return $response->setData(["hotspots"=>$result["paging"]["total"], Response::HTTP_OK]);
     }
 
-  /**
-  * description
-  * Traitement des hotspots de type owasp pour sonarqube 8.9 et >
-  * http://{url}/api/hotspots/search?projectKey={key}{owasp}&ps=500&p=1
-  * {key} = la clé du projet
-  * {owasp} = le type de faille (a1, a2, etc...)
-  * si le paramétre owasp est égale à a0 alors on supprime les enregistrements pour la clé
-  */
-  #[Route('/api/projet/hotspot/owasp', name: 'projet_hotspot_owasp', methods: ['GET'])]
-   public function hotspot_owasp_ajout(EntityManagerInterface $em, Request $request): response {
+   /**
+    * hotspot_owasp_ajout
+    * Traitement des hotspots de type owasp pour sonarqube 8.9 et >
+    * http://{url}/api/hotspots/search?projectKey={key}{owasp}&ps=500&p=1
+    * {key} = la clé du projet
+    * {owasp} = le type de faille (a1, a2, etc...)
+    * si le paramétre owasp est égale à a0 alors on supprime les enregistrements pour la clé
+    *
+    * @param  mixed $em
+    * @param  mixed $request
+    * @return response
+    */
+    #[Route('/api/projet/hotspot/owasp', name: 'projet_hotspot_owasp', methods: ['GET'])]
+    public function hotspot_owasp_ajout(EntityManagerInterface $em, Request $request): response {
       $response = new JsonResponse();
       if ($request->get('owasp')=='a0') {
          // On supprime  les enregistrements correspondant à la clé
@@ -910,11 +963,14 @@ class ApiProjetController extends AbstractController
         ["info"=>"enregistrement", "hotspots"=>$result["paging"]["total"], Response::HTTP_OK]);
     }
 
-
   /**
-  * description
-  * Fonction privée qui récupère le détail d'un hotspot en fonction de sa clé
-  */
+   * hotspot_details
+   * Fonction privée qui récupère le détail d'un hotspot en fonction de sa clé.
+   *
+   * @param  mixed $maven_key
+   * @param  mixed $key
+   * @return void
+   */
   protected function hotspot_details($maven_key, $key) {
     $url=$this->getParameter(static::$sonarUrl)."/api/hotspots/show?hotspot=".$key;
 
@@ -974,12 +1030,16 @@ class ApiProjetController extends AbstractController
              "rule"=>$rule, "message"=>$message, "key"=>$key, "date_enregistrement"=>$date_enregistrement];
   }
 
-/**
-  * description
-  * Récupère le détails des hotspots et les enregistre dans la table Hotspots_details
-  * http://{url}/api/projet/hotspot/details{maven_key};
-  * {maven_key} = la clé du projet
-  */
+  /**
+   * hotspot_details_ajout
+   * Récupère le détails des hotspots et les enregistre dans la table Hotspots_details
+   * http://{url}/api/projet/hotspot/details{maven_key};
+   * {maven_key} = la clé du projet
+   *
+   * @param  mixed $em
+   * @param  mixed $request
+   * @return response
+   */
   #[Route('/api/projet/hotspot/details', name: 'projet_hotspot_details', methods: ['GET'])]
   public function hotspot_details_ajout(EntityManagerInterface $em, Request $request): response
    {
@@ -1024,14 +1084,19 @@ class ApiProjetController extends AbstractController
    }
 
   /**
-  * description
-  * On récupère la liste des fichiers ayant fait l'objet d'un @@supresswarning ou d'un noSONAR
+  * projet_nosonar_ajout
+  * On récupère la liste des fichiers ayant fait l'objet d'un
+  * @@supresswarning ou d'un noSONAR
   * http://{url}api/issues/search?componentKeys={key}&rules={rules}&ps=500&p=1
   * {key} = la clé du projet
   * {rules} = java:S1309 et java:NoSonar
+  *
+  * @param  mixed $em
+  * @param  mixed $request
+  * @return response
   */
   #[Route('/api/projet/nosonar/details', name: 'projet_nosonar', methods: ['GET'])]
-   public function projet_nosonar_ajout(EntityManagerInterface $em, Request $request): response {
+  public function projet_nosonar_ajout(EntityManagerInterface $em, Request $request): response {
       $url=$this->getParameter(static::$sonarUrl)."/api/issues/search?componentKeys="
       .$request->get('maven_key')."&rules=java:S1309,java:NoSonar&ps=500&p=1";
 
@@ -1062,11 +1127,15 @@ class ApiProjetController extends AbstractController
       return $response->setData(["nosonar"=>$result["paging"]["total"], Response::HTTP_OK]);
     }
 
-  /**
-  * description
-  * Enregistremnt des données du projet
-  */
   #[Route('/api/enregistrement', name: 'enregistrement', methods: ['PUT'])]
+  /**
+   * enregistrement
+   * Enregistremnt des données du projet
+   *
+   * @param  mixed $em
+   * @param  mixed $request
+   * @return response
+   */
   public function enregistrement(EntityManagerInterface $em, Request $request): response {
     // on décode le body
     $data = json_decode($request->getContent());
