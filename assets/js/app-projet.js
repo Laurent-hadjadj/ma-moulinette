@@ -266,19 +266,21 @@ function projet_anomalie(maven_key) {
 
 /**
  * description
- * On calcule les stastiques consolidées sur les anomalies
+ * On récupère pour chaque type (Bug, Vulnerability et Code Smell) le nombre de violation par type.
+ * Arguements :
+ *  maven_key = clé du projet,
  */
-// eslint-disable-next-line no-unused-vars
-function projet_anomalie_consolidation(maven_key, setup){
-  const data = { maven_key: maven_key, setup: setup };
+ function projet_anomalie_details(maven_key) {
+  const data = { maven_key: maven_key };
   const options = {
-    url: 'http://localhost:8000/api/projet/anomalies/consolidation', type: 'GET', dataType: 'json', data: data, contentType: contentType }
+    url: 'http://localhost:8000/api/projet/anomalie/details', type: 'GET', dataType: 'json', data: data, contentType: contentType }
 
   return $.ajax(options).then(
     (t) => {
-      log(' - INFO : ' + t.info);
+      setTimeout(() => { notifyUser(t.info); }, 8000);
     });
 }
+
 
 /**
 * description
@@ -508,6 +510,9 @@ $('.js-analyse').on('click', function () {
 
   // On récupère les infos sur les anomalies
   projet_anomalie(id_project);
+
+  // On récupère le détails surr les anomalies
+  projet_anomalie_details(id_project);
 
   // On efface les traces :)
   projet_hotspot_owasp(id_project, 'a0');
