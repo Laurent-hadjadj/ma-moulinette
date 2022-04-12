@@ -32,6 +32,14 @@
   height: 32px;
 }
 
+.details2-svg {
+  fill: #00445b;
+  cursor: pointer;
+  margin-bottom: -0.5rem;
+  width: 32px;
+  height: 32px;
+}
+
 .gomme-svg {
   fill: #00445b;
   cursor: pointer;
@@ -73,7 +81,8 @@
 
 .favori-svg:hover,
 .statistique-svg:hover,
-.details-svg:hover { fill: #850385; }
+.details-svg:hover,
+.details2-svg:hover { fill: #850385; }
 
 .liste-svg,
 .analyse-svg,
@@ -383,9 +392,13 @@
     height: 48px;
   }
 
+  .details2-svg {
+    margin-bottom: -0.4rem;
+    width: 48px;
+    height: 48px;
+  }
+
   .bouton-analyse-right { padding-right: 1rem; }
-
   .bouton-afficher-left { padding-left: 1rem; }
-
   .callout-information { width: 24.1rem; }
 }
