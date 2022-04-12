@@ -539,7 +539,7 @@ $('.js-analyse').on('click', function () {
   // Analyse des anomalies
   projet_nosonar_details(id_project);
 
-  setTimeout(function () { stop_spinner(); }, 5000);
+  setTimeout(function () { stop_spinner(); }, 8000);
   // on active le bouton pour afficher les infos du projet
   $('.js-affiche-resultat').removeClass('affiche-resultat-disabled');
   $('.js-affiche-resultat').addClass('affiche-resultat-enabled');
@@ -595,6 +595,16 @@ $('.js-affiche-liste').on('click', function () {
 
 /**
  * description
+ * On affiche la liste des types d'anomalies par sévérité.
+ */
+ $('.js-affiche-severite').on('click', function () {
+  if ($('select[name="projet"]').val() != "") {
+    $('#modal-affiche-severite').foundation('open');
+ }
+ })
+
+/**
+ * description
  * On affiche la liste des hotspots
  */
 $('#js-affiche-hotspot').on('click', function () {
@@ -607,7 +617,7 @@ $('#js-affiche-hotspot').on('click', function () {
  * description
  * Événement : Ouvre la fenêtre modale de la distribution de la dette technique.
  */
-$('#js-affiche-details').on('click', () => {
+$('.js-affiche-details').on('click', () => {
   if ($('select[name="projet"]').val() != "") {
     $('#modal-dette-technique').foundation('open');
   }
