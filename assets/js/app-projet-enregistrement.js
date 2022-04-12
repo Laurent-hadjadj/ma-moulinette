@@ -119,7 +119,39 @@ export function enregistrement(maven_key) {
   const hotspot_low=t26.dataset.hotspot_low;
   const hotspot_total=t27.dataset.hotspot_total;
 
-  let favori='FALSE';
+  const t28 = document.getElementById('js-bug-blocker');
+  const t29 = document.getElementById('js-bug-critical');
+  const t30 = document.getElementById('js-bug-major');
+  const t31 = document.getElementById('js-bug-minor');
+  const t32 = document.getElementById('js-bug-info');
+  const t33 = document.getElementById('js-vulnerability-blocker');
+  const t34 = document.getElementById('js-vulnerability-critical');
+  const t35 = document.getElementById('js-vulnerability-major');
+  const t36 = document.getElementById('js-vulnerability-minor');
+  const t37 = document.getElementById('js-vulnerability-info');
+  const t38 = document.getElementById('js-code-smell-blocker');
+  const t39 = document.getElementById('js-code-smell-critical');
+  const t40 = document.getElementById('js-code-smell-major');
+  const t41 = document.getElementById('js-code-smell-minor');
+  const t42 = document.getElementById('js-code-smell-info');
+
+  const bug_blocker=t28.dataset.bug_blocker;
+  const bug_critical=t29.dataset.bug_critical;
+  const bug_major=t30.dataset.bug_major;
+  const bug_minor=t31.dataset.bug_minor;
+  const bug_info=t32.dataset.bug_info;
+  const vulnerability_blocker=t33.dataset.vulnerability_blocker;
+  const vulnerability_critical=t34.dataset.vulnerability_critical;
+  const vulnerability_major=t35.dataset.vulnerability_major;
+  const vulnerability_minor=t36.dataset.vulnerability_minor;
+  const vulnerability_info=t37.dataset.vulnerability_info;
+  const code_smell_blocker=t38.dataset.vulnerability_blocker;
+  const code_smell_critical=t39.dataset.vulnerability_critical;
+  const code_smell_major=t40.dataset.vulnerability_major;
+  const code_smell_minor=t41.dataset.vulnerability_minor;
+  const code_smell_info=t42.dataset.vulnerability_info;
+
+    let favori='FALSE';
   //on récupère le statut du favori
   if ($('.favori-svg').hasClass('favori-svg-select')) { favori='TRUE' }
 
@@ -138,13 +170,20 @@ export function enregistrement(maven_key) {
     note_reliability:note_reliability, note_security:note_security,
     note_sqale:note_sqale, note_hotspot:note_hotspot, hotspot_high:hotspot_high,
     hotspot_medium:hotspot_medium, hotspot_low:hotspot_low, hotspot_total: hotspot_total,
+    bug_blocker:bug_blocker, bug_critical:bug_critical, bug_major:bug_major,
+    bug_minor:bug_minor, bug_info:bug_info,
+    vulnerability_blocker:vulnerability_blocker, vulnerability_critical:vulnerability_critical,
+    vulnerability_major:vulnerability_major, vulnerability_minor:vulnerability_minor,
+    vulnerability_info:vulnerability_info,
+    code_smell_blocker:code_smell_blocker,
+    code_smell_critical:code_smell_critical, code_smell_major:code_smell_major,
+    code_smell_minor:code_smell_minor, code_smell_info:code_smell_info,
     favori: favori, initial:'FALSE'
  };
 
   const options = {
     url: 'http://localhost:8000/api/enregistrement', type: 'PUT', dataType: 'json',
     data: JSON.stringify(data), contentType: contentType }
-    //console.log(data);
     $.ajax(options).then((t) => {
         if (t.code=="OK") {
           const message='Enregistrement des informations effectué.'
