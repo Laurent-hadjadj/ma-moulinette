@@ -450,7 +450,11 @@ class ApiProjetController extends AbstractController
   */
   #[Route('/api/projet/anomalies/details', name: 'projet_anomalies_details', methods: ['GET'])]
   public function projet_anomalies_details(EntityManagerInterface $em, Request $request): response {
+
     $maven_key=$request->get('maven_key');
+
+    // on créé un objet JSON
+    $response = new JsonResponse();
 
     // Pour les Bug
     $url1=$this->getParameter(static::$sonarUrl).static::$api_issues_search
@@ -508,38 +512,39 @@ class ApiProjetController extends AbstractController
       $name=$explode[1];
 
       // On enregistre en base
-      $issue = new AnomalieDetails();
-      $issue->setMavenKey($maven_key);
-      $issue->setName($name);
+      $details = new AnomalieDetails();
+      $details->setMavenKey($maven_key);
+      $details->setName($name);
 
-      $issue->setBugBlocker($bug_blocker);
-      $issue->setBugCritical($bug_critical);
-      $issue->setBugMajor($bug_major);
-      $issue->setBugMinor($bug_minor);
-      $issue->setBugInfo($bug_info);
+      $details->setBugBlocker($bug_blocker);
+      $details->setBugCritical($bug_critical);
+      $details->setBugMajor($bug_major);
+      $details->setBugMinor($bug_minor);
+      $details->setBugInfo($bug_info);
 
-      $issue->setVulnerabilityBlocker($vulnerability_blocker);
-      $issue->setVulnerabilityCritical($vulnerability_critical);
-      $issue->setVulnerabilityMajor($vulnerability_major);
-      $issue->setVulnerabilityMinor($vulnerability_minor);
-      $issue->setVulnerabilityInfo($vulnerability_info);
+      $details->setVulnerabilityBlocker($vulnerability_blocker);
+      $details->setVulnerabilityCritical($vulnerability_critical);
+      $details->setVulnerabilityMajor($vulnerability_major);
+      $details->setVulnerabilityMinor($vulnerability_minor);
+      $details->setVulnerabilityInfo($vulnerability_info);
 
-      $issue->setCodeSmellBlocker($code_smell_blocker);
-      $issue->setCodeSmellCritical($code_smell_critical);
-      $issue->setCodeSmellMajor($code_smell_major);
-      $issue->setCodeSmellMinor($code_smell_minor);
-      $issue->setCodeSmellInfo($code_smell_info);
+      $details->setCodeSmellBlocker($code_smell_blocker);
+      $details->setCodeSmellCritical($code_smell_critical);
+      $details->setCodeSmellMajor($code_smell_major);
+      $details->setCodeSmellMinor($code_smell_minor);
+      $details->setCodeSmellInfo($code_smell_info);
 
-      $issue->setDateEnregistrement($date);
-      $em->persist($issue);
+      $details->setDateEnregistrement($date);
+      $em->persist($details);
 
-      $em->flush();
-      $message="OK";
+      // On catch l'erreur sur la clé composite : maven_key, version, date_version
+      try {
+        $em->flush();
+      } catch (\Doctrine\DBAL\Exception $e) {
+        return $response->setData(["code"=>$e->getCode(), Response::HTTP_OK]);
+      }
+      return $response->setData(["code"=>"OK", Response::HTTP_OK]);
     }
-    else { $message="KO"; }
-
-    $response = new JsonResponse();
-    return $response->setData(["info"=>$message, Response::HTTP_OK]);
   }
 
    /**
@@ -547,7 +552,7 @@ class ApiProjetController extends AbstractController
    * Consolidation des statitsiques pour les défauts
   *
   */
-  #[Route('/api/projet/anomalies/consolidation', name: 'projet_anomalies_consolidation', methods: ['GET'])]
+  /*#[Route('/api/projet/anomalies/consolidation', name: 'projet_anomalies_consolidation', methods: ['GET'])]
   public function projet_anomalies_consolidation(EntityManagerInterface $em, Request $request): response {
     // On récupère les informations depuis l'URL
     $maven_key=$request->get('maven_key');
@@ -693,7 +698,7 @@ class ApiProjetController extends AbstractController
 
    $response = new JsonResponse();
    return $response->setData(["info"=>"Consolidation terminée.", Response::HTTP_OK]);
-  }
+  }*/
 
 /**
 * description
