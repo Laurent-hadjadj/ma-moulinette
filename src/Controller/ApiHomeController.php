@@ -37,9 +37,11 @@ class ApiHomeController extends AbstractController
   public static $sonarUrl= "sonar.url";
 
   /**
-   * description
    * http_client
-  */
+   *
+   * @param  mixed $url
+   * @return void
+   */
   protected function http_client($url) {
     // On peut se connecter avec un user/password ou un token. Nous on préfére le token.
     if (empty($this->getParameter('sonar.token'))) {
@@ -71,9 +73,15 @@ class ApiHomeController extends AbstractController
 
     /*
       * description
-      * Vérifie si le serveur sonarqube est UP
-      * http://{url}}/api/system/status
     */
+
+    /**
+     * sonar_status
+     * Vérifie si le serveur sonarqube est UP
+     * http://{url}}/api/system/status
+     *
+     * @return void
+     */
     #[Route('/api/status', name: 'sonar_status', methods: ['GET'])]
     public function sonar_status(){
       $url=$this->getParameter(static::$sonarUrl)."/api/system/status";
@@ -84,12 +92,15 @@ class ApiHomeController extends AbstractController
       return new JsonResponse($result, Response::HTTP_OK );
     }
 
-  /**
-   * description
-   * Récupération de la liste des projets.
-   * http://{url}}/api/components/search?qualifiers=TRK&ps=500
-   */
-    #[Route('/api/liste_projet/ajout', name: 'liste_projet_ajout', methods: ['GET'])]
+    /**
+     * liste_projet
+     * Récupération de la liste des projets.
+     * http://{url}}/api/components/search?qualifiers=TRK&ps=500
+     *
+     * @param  mixed $em
+     * @return response
+     */
+    #[Route('/api/liste_projet/ajout', name: 'liste_projet_ajout', methods: ['GET'])]    
     public function liste_projet(EntityManagerInterface $em): response{
       $url=$this->getParameter(static::$sonarUrl)."/api/components/search?qualifiers=TRK&ps=500&p=1";
 
@@ -126,11 +137,14 @@ class ApiHomeController extends AbstractController
       return $response;
     }
 
-    /*
-      * description
-      * récupère la date de mise à jour du référentiel
-      * http://{url}}/api/liste_projet/date
-    */
+    /**
+     * liste_projet_date
+     * récupère la date de mise à jour du référentiel
+     * http://{url}}/api/liste_projet/date
+     *
+     * @param  mixed $connection
+     * @return void
+     */
     #[Route('/api/liste_projet/date', name: 'liste_projet_date', methods: ['GET'])]
     public function liste_projet_date(Connection $connection) {
 
@@ -153,13 +167,16 @@ class ApiHomeController extends AbstractController
       return $response;
     }
 
-   /**
-   * description
+  /**
+   * liste_quality_profiles
    * Renvoie la liste des profils qualité
-  * http://{url}/api/qualityprofiles/search?qualityProfile={name}
-  */
+   * http://{url}/api/qualityprofiles/search?qualityProfile={name}
+   *
+   * @param  mixed $em
+   * @return response
+   */
   #[Route('/api/quality/profiles', name: 'liste_quality_profiles', methods: ['GET'])]
-  public function liste_quality_profiles(EntityManagerInterface $em): response {
+   public function liste_quality_profiles(EntityManagerInterface $em): response {
       $url=$this->getParameter(static::$sonarUrl)."/api/qualityprofiles/search?qualityProfile=".$this->getParameter('sonar.profiles');
 
       // on appel le client http
@@ -200,9 +217,12 @@ class ApiHomeController extends AbstractController
       return $response->setData(["listeProfil"=>$liste, Response::HTTP_OK]);
     }
 
-   /**
-   * description
+  /**
+   * nombre_profil
    * Renvoi le nombre de profil
+   *
+   * @param  mixed $em
+   * @return response
    */
   #[Route('/api/quality', name: 'nombre_profil', methods: ['GET'])]
   public function nombre_profil(EntityManagerInterface $em): response {

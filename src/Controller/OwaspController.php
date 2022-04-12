@@ -15,8 +15,14 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class OwaspController extends AbstractController
 {
+
+  /**
+   * index
+   *
+   * @return void
+   */
   #[Route('/owasp', name: 'owasp')]
-  public function index() {
+   public function index() {
       return $this->render('owasp/index.html.twig',
       [
         "serveur"=>$this->getParameter("sonar.url"),

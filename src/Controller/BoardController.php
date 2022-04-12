@@ -36,10 +36,12 @@ class BoardController extends AbstractController
   public static $dateFormat = "Y-m-d H:m:s";
   public static $sonarUrl= "sonar.url";
 
- /**
-  * description
-  * http_client
-  */
+  /**
+   * http_client
+   *
+   * @param  mixed $url
+   * @return void
+   */
   protected function http_client($url) {
     if (empty($this->getParameter('sonar.token'))) {
       $user=$this->getParameter('sonar.user');
@@ -69,10 +71,13 @@ class BoardController extends AbstractController
     return json_decode($responseJson, true, 512, JSON_THROW_ON_ERROR);
     }
 
-
   /**
-   * description
+   * suivi
    * On remonte les 10 dernières version + la version initiale
+   *
+   * @param  mixed $em
+   * @param  mixed $request
+   * @return response
    */
   #[Route('/suivi', name: 'suivi', methods: ['GET'])]
   public function suivi (EntityManagerInterface $em, Request $request): response {
@@ -131,11 +136,15 @@ class BoardController extends AbstractController
     ]);
   }
 
-  /*
-    * description
-    * récupère la liste des projets nom + clé
-    * http://{url}}/api/liste/version
-  */
+  /**
+   * liste_version
+   * On récupère la liste des projets nom + clé
+   * http://{url}}/api/liste/version
+   *
+   * @param  mixed $em
+   * @param  mixed $request
+   * @return void
+   */
   #[Route('/api/liste/version', name: 'liste_version', methods: ['GET'])]
   public function liste_version(EntityManagerInterface $em, Request $request)
   {
@@ -164,11 +173,14 @@ class BoardController extends AbstractController
     return $response->setData(["liste"=>$liste, Response::HTTP_OK]);
   }
 
- /*
-  * description
-  * On récupère les données disponibles pour une version données
-  * http://{url}}/api/get/version
-  */
+  /**
+   * get_version
+   * On récupère les données disponibles pour une version données
+   * http://{url}}/api/get/version
+   *
+   * @param  mixed $request
+   * @return void
+   */
   #[Route('/api/get/version', name: 'get_version', methods: ['PUT'])]
   public function get_version(Request $request)
   {
@@ -192,7 +204,8 @@ class BoardController extends AbstractController
     if ($data[$i]["metric"]==="security_rating") {$note_security=intval($data[$i]["history"][0]["value"],10);}
     if ($data[$i]["metric"]==="sqale_rating") {$note_sqale=intval($data[$i]["history"][0]["value"],10);}
 
-    // Sur les versions plus anciennes de sonarqube, il n'y avait pas de hostpots. La valeur 6 corsespond à pas de note  (Z)
+    // Sur les versions plus anciennes de sonarqube, il n'y avait pas de hostpots.
+    // La valeur 6 corsespond à pas de note  (Z)
     if ($data[$i]["metric"]==="security_review_rating" && array_key_exists("value", $data[$i]["history"])) {
       $note_hotspots_review=intval($data[$i]["history"][0]["value"],10);
       } else { $note_hotspots_review=6;}
@@ -232,11 +245,15 @@ class BoardController extends AbstractController
       Response::HTTP_OK]);
   }
 
- /*
-  * description
-  * Enregistre une version reconstituée dans la table historique
-  * http://{url}}/api/suivi/mise-a-jour
-  */
+  /**
+   * suivi_mise_a_jour
+   * Enregistre une version reconstituée dans la table historique
+   * http://{url}}/api/suivi/mise-a-jour
+   *
+   * @param  mixed $em
+   * @param  mixed $request
+   * @return void
+   */
   #[Route('/api/suivi/mise-a-jour', name: 'suivi_miseajour', methods: ['PUT'])]
   public function suivi_mise_a_jour(EntityManagerInterface $em, Request $request)
   {
@@ -285,11 +302,15 @@ class BoardController extends AbstractController
     return $response->setData(["code"=>"OK", Response::HTTP_OK]);
   }
 
- /*
-   * description
+  /**
+   * dash_version_liste
    * récupère la liste des projets nom + clé
    * http://{url}}/api/dash/liste/version
-  */
+   *
+   * @param  mixed $em
+   * @param  mixed $request
+   * @return void
+   */
   #[Route('/api/dash/version/liste', name: 'dash_version_liste', methods: ['PUT'])]
   public function dash_version_liste(EntityManagerInterface $em, Request $request)
   {
@@ -314,11 +335,15 @@ class BoardController extends AbstractController
     return $response->setData(["code"=>"OK", "versions"=>$version, Response::HTTP_OK]);
   }
 
-  /*
-   * description
+  /**
+   * dash_version_favori
    * On ajoute ou on supprime la version favorite
    * http://{url}}/api/dash/version/favori
-  */
+   *
+   * @param  mixed $em
+   * @param  mixed $request
+   * @return void
+   */
   #[Route('/api/dash/version/favori', name: 'dash_version_favori', methods: ['PUT'])]
   public function dash_version_favori(EntityManagerInterface $em, Request $request)
   {
@@ -346,11 +371,15 @@ class BoardController extends AbstractController
     return $response->setData(["code"=>"OK", Response::HTTP_OK]);
   }
 
-  /*
-   * description
+  /**
+   * dash_version_reference
    * On ajoute ou on supprime la version de reference
    * http://{url}}/api/dash/version/reference
-  */
+   *
+   * @param  mixed $em
+   * @param  mixed $request
+   * @return void
+   */
   #[Route('/api/dash/version/reference', name: 'dash_version_reference', methods: ['PUT'])]
   public function dash_version_reference(EntityManagerInterface $em, Request $request)
   {
@@ -379,11 +408,15 @@ class BoardController extends AbstractController
     return $response->setData(["code"=>"OK", Response::HTTP_OK]);
   }
 
-  /*
-   * description
+  /**
+   * dash_version_poubelle
    * On supprime la version de historique
    * http://{url}}/api/dash/version/poubelle
-  */
+   *
+   * @param  mixed $em
+   * @param  mixed $request
+   * @return void
+   */
   #[Route('/api/dash/version/poubelle', name: 'dash_version_poubelle', methods: ['PUT'])]
   public function dash_version_poubelle(EntityManagerInterface $em, Request $request)
   {

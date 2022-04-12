@@ -19,6 +19,13 @@ use DateTime;
 
 class ProfilController extends AbstractController
 {
+
+  /**
+   * index
+   *
+   * @param  mixed $em
+   * @return void
+   */
   #[Route('/profil', name: 'profil')]
   public function index(EntityManagerInterface $em) {
       // On récupère la liste des profiles;
@@ -33,7 +40,6 @@ class ProfilController extends AbstractController
       [ "liste"=>$liste,
         "version" => $this->getParameter("version"), "dateCopyright" => \date("Y")
         ]);
-
     }
 
 

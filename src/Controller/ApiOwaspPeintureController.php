@@ -23,11 +23,14 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class ApiOwaspPeintureController extends AbstractController
 {
-
   /**
-   * description
-   * On récupère les résultat Owasp
-  */
+   * peinture_owasp_liste
+   * On récupère les résultats Owasp
+   *
+   * @param  mixed $em
+   * @param  mixed $request
+   * @return response
+   */
   #[Route('/api/peinture/owasp/liste', name: 'peinture_owasp_liste', methods: ['GET'])]
   public function peinture_owasp_liste (EntityManagerInterface $em, Request $request): response {
     $maven_key=$request->get('maven_key');
@@ -66,9 +69,13 @@ class ApiOwaspPeintureController extends AbstractController
   }
 
   /**
-   * description
-   * On récupère les résultats hotspot
-  */
+   * peinture_owasp_hotspot_info
+   * On récupère les résultats des hotspots
+   *
+   * @param  mixed $em
+   * @param  mixed $request
+   * @return response
+   */
   #[Route('/api/peinture/owasp/hotspot/info', name: 'peinture_owasp_hotspot_info', methods: ['GET'])]
   public function peinture_owasp_hotspot_info (EntityManagerInterface $em, Request $request): response  {
     $maven_key=$request->get('maven_key');
@@ -102,11 +109,15 @@ class ApiOwaspPeintureController extends AbstractController
   }
 
   /**
-   * description
+   * peinture_owasp_hotspot_liste
    * On récupère les résultats de la table hotpsot_owasp
-  */
+   *
+   * @param  mixed $em
+   * @param  mixed $request
+   * @return response
+   */
   #[Route('/api/peinture/owasp/hotspot/liste', name: 'peinture_owasp_hotspot_liste', methods: ['GET'])]
-  public function peinture_owasp_hotspot_liste (EntityManagerInterface $em, Request $request): response {
+   public function peinture_owasp_hotspot_liste (EntityManagerInterface $em, Request $request): response {
     $maven_key=$request->get('maven_key');
     $response = new JsonResponse();
 
@@ -135,12 +146,16 @@ class ApiOwaspPeintureController extends AbstractController
       Response::HTTP_OK]);
   }
 
-/**
-   * description
+  /**
+   * peinture_owasp_hotspot_details
    * On récupère le détails des failles de type hotpsot
-  */
+   *
+   * @param  mixed $em
+   * @param  mixed $request
+   * @return response
+   */
   #[Route('/api/peinture/owasp/hotspot/details', name: 'peinture_owasp_hotspot_details', methods: ['GET'])]
-  public function peinture_owasp_hotspot_details (EntityManagerInterface $em, Request $request): response {
+   public function peinture_owasp_hotspot_details (EntityManagerInterface $em, Request $request): response {
     $maven_key=$request->get('maven_key');
     $response = new JsonResponse();
 
@@ -153,13 +168,16 @@ class ApiOwaspPeintureController extends AbstractController
     return $response->setData(["details"=> $details, Response::HTTP_OK]);
   }
 
-
   /**
-   * description
+   * peinture_owasp_severity
    * On récupère le détails des failles de type hotpsot
-  */
+   *
+   * @param  mixed $em
+   * @param  mixed $request
+   * @return response
+   */
   #[Route('/api/peinture/owasp/hotspot/severity', name: 'peinture_owasp_hotspot_severity', methods: ['GET'])]
-  public function peinture_owasp_severity (EntityManagerInterface $em, Request $request): response {
+   public function peinture_owasp_severity (EntityManagerInterface $em, Request $request): response {
     $maven_key=$request->get('maven_key');
     $menace=$request->get('menace');
     $response = new JsonResponse();
@@ -188,5 +206,4 @@ class ApiOwaspPeintureController extends AbstractController
 
     return $response->setData(["high"=> $high, "medium"=>$medium, "low"=>$low, Response::HTTP_OK]);
   }
-
 }
