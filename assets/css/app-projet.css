@@ -213,13 +213,9 @@
 }
 
 .stats-list-vert { color: #187e3d; }
-
 .stats-list-orange { color: #c45d4e; }
-
 .stats-list-rouge-intense { color: #771404; }
-
 .stats-list-rouge-claire { color: #b33926; }
-
 .stats-list-bleu { color: #3b89a3; }
 
 .stats-list > li {
@@ -327,13 +323,11 @@
 
 @media only screen and (max-width: 20em) {
   .log { font-size: 0.75rem; }
-
   .callout-information { width: 21rem; }
 }
 
 @media only screen and (min-width: 20.025em) and (max-width: 22em) {
   .log { font-size: 0.8rem; }
-
   .callout-information { width: 21rem; }
 }
 
@@ -347,25 +341,19 @@
 
 @media only screen and (min-width: 40em) and (max-width: 64em) {
   .bouton-analyse-right { padding-right: 1rem; }
-
   .bouton-afficher-left { padding-left: 1rem; }
-
   .callout-information { width: 22rem; }
 }
 
 @media only screen and (min-width: 64.025em) and (max-width: 90em) {
   .bouton-analyse-right { padding-right: 1rem; }
-
   .bouton-afficher-left { padding-left: 1rem; }
-
   .callout-information { width: 24.1rem; }
 }
 
 @media only screen and (min-width: 90.025em) and (max-width: 120em) {
   .bouton-analyse-right { padding-right: 1rem; }
-
   .bouton-afficher-left { padding-left: 1rem; }
-
   .callout-information { width: 24.1rem; }
 }
 
