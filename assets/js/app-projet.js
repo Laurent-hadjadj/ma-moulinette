@@ -241,7 +241,7 @@ function projet_mesure(maven_key) {
 * de traitement des anomalies quand le nombre atteint 10000 !!!
 */
 function notifyUser(info) {
-  log(' - INFO : (8) '+ info);
+  log(info);
 }
 
 /**
@@ -260,7 +260,7 @@ function projet_anomalie(maven_key) {
       /* On temporise pour éviter que les appels asynchronnes se lance tous en même temps.
        * Temporisation : 8 secondes.
       */
-      setTimeout(() => { notifyUser(t.info); }, 8000);
+      setTimeout(() => { notifyUser(' - INFO : (8) '+t.info); }, 8000);
     });
 }
 
@@ -277,7 +277,12 @@ function projet_anomalie(maven_key) {
 
   return $.ajax(options).then(
     (t) => {
-      setTimeout(() => { notifyUser(t.info); }, 8000);
+      if (t.code=="OK"){
+        setTimeout(() => { notifyUser(' - INFO : (9) Le frequence des sévérités par type a été collectée.'); }, 4000);
+      }
+      else {
+          log(' - ERROR : (9) Je n\'ai pas réussi à collecter les données ('+t.code+').');
+      }
     });
 }
 
@@ -355,10 +360,10 @@ function projet_hotspot_owasp(maven_key, owasp) {
 
   return $.ajax(options).then((t) => {
     if (t.info==='effacement') {
-      log(' - INFO : (9) Les enregistrements ont été supprimé de la table hostspot_owasp.');
+      log(' - INFO : (10) Les enregistrements ont été supprimé de la table hostspot_owasp.');
     }
     if (t.hotspots === 0 && t.info==='enregistrement') {
-      log(' - INFO : (10) Bravo aucune faille OWASP '+ owasp +' potentielle détectée.');
+      log(' - INFO : (11) Bravo aucune faille OWASP '+ owasp +' potentielle détectée.');
     }
     if (t.hotspots != 0 && t.info==='enregistrement') {
       log(' - WARN : (10) J\'ai trouvé ' + t.hotspots + ' faille(s) OWASP '+owasp+' potentielle(s).');
@@ -379,11 +384,11 @@ function projet_hotspot_owasp_details(maven_key) {
 
   return $.ajax(options).then((t) => {
     if (t.code === 406) {
-      log(' - INFO : (11) Aucun détails n\'est disponible pour les hotspots.');
+      log(' - INFO : (12) Aucun détails n\'est disponible pour les hotspots.');
       return;
     }
     // On a trouvé des hotspots OWASP
-    log(' - INFO : (11) On a trouvé '+ t.ligne +' descriptions.');
+    log(' - INFO : (12) On a trouvé '+ t.ligne +' descriptions.');
   })
 }
 
@@ -400,9 +405,9 @@ function projet_nosonar_details(maven_key){
 
   $.ajax(options).then((t) => {
     if (t.hotspots != 0) {
-      log(' - WARM : (12) J\'ai trouvé '+t.nosonar +' exclusion(s) NoSonar.');
+      log(' - WARM : (13) J\'ai trouvé '+t.nosonar +' exclusion(s) NoSonar.');
     }
-    else { log(' - INFO : (12) Bravo !!! ' + t.nosonar + ' exlusion NoSonar trouvé.'); }
+    else { log(' - INFO : (13) Bravo !!! ' + t.nosonar + ' exlusion NoSonar trouvé.'); }
     });
 }
 
@@ -487,7 +492,7 @@ select_projet();
  * Lance la collecte des données du projet sélectionné.
  */
 $('.js-analyse').on('click', function () {
-  setTimeout(function () { start_spinner(); }, 2000);
+  setTimeout(function () { start_spinner(); }, 1000);
   log(' - INFO : On lance la collecte...');
   // on bloque le bouton afficher les resultats
   $('.js-affiche-resultat').removeClass('affiche-resultat-enabled');
