@@ -180,7 +180,6 @@ export function enregistrement(maven_key) {
     code_smell_minor:code_smell_minor, code_smell_info:code_smell_info,
     favori: favori, initial:'FALSE'
  };
-
   const options = {
     url: 'http://localhost:8000/api/enregistrement', type: 'PUT', dataType: 'json',
     data: JSON.stringify(data), contentType: contentType }
