@@ -24,32 +24,8 @@ class AnomalieDetails
     #[ORM\Column(type: 'string', length: 128)]
     private $maven_key;
 
-    #[ORM\Column(type: 'integer')]
-    private $setup;
-
     #[ORM\Column(type: 'string', length: 128)]
-    private $project_name;
-
-    #[ORM\Column(type: 'string', length: 128)]
-    private $project_analyse;
-
-    #[ORM\Column(type: 'string', length: 32)]
-    private $project_version;
-
-    #[ORM\Column(type: 'datetime')]
-    private $project_date;
-
-    #[ORM\Column(type: 'string', length: 32)]
-    private $total_debt;
-
-    #[ORM\Column(type: 'string', length: 32)]
-    private $total_debt_bug;
-
-    #[ORM\Column(type: 'string', length: 32)]
-    private $total_debt_vulnerability;
-
-    #[ORM\Column(type: 'string', length: 32)]
-    private $total_debt_code_smell;
+    private $name;
 
     #[ORM\Column(type: 'integer')]
     private $bug_blocker;
@@ -116,110 +92,14 @@ class AnomalieDetails
         return $this;
     }
 
-    public function getSetup(): ?int
+    public function getName(): ?string
     {
-        return $this->setup;
+        return $this->name;
     }
 
-    public function setSetup(int $setup): self
+    public function setName(string $name): self
     {
-        $this->setup = $setup;
-
-        return $this;
-    }
-
-    public function getProjectName(): ?string
-    {
-        return $this->project_name;
-    }
-
-    public function setProjectName(string $project_name): self
-    {
-        $this->project_name = $project_name;
-
-        return $this;
-    }
-
-    public function getProjectAnalyse(): ?string
-    {
-        return $this->project_analyse;
-    }
-
-    public function setProjectAnalyse(string $project_analyse): self
-    {
-        $this->project_analyse = $project_analyse;
-
-        return $this;
-    }
-
-    public function getProjectVersion(): ?string
-    {
-        return $this->project_version;
-    }
-
-    public function setProjectVersion(string $project_version): self
-    {
-        $this->project_version = $project_version;
-
-        return $this;
-    }
-
-    public function getProjectDate(): ?string
-    {
-        return $this->project_date;
-    }
-
-    public function setProjectDate(string $project_date): self
-    {
-        $this->project_date = $project_date;
-
-        return $this;
-    }
-
-    public function getTotalDebt(): ?string
-    {
-        return $this->total_debt;
-    }
-
-    public function setTotalDebt(string $total_debt): self
-    {
-        $this->total_debt = $total_debt;
-
-        return $this;
-    }
-
-    public function getTotalDebtBug(): ?string
-    {
-        return $this->total_debt_bug;
-    }
-
-    public function setTotalDebtBug(string $total_debt_bug): self
-    {
-        $this->total_debt_bug = $total_debt_bug;
-
-        return $this;
-    }
-
-    public function getTotalDebtVulnerability(): ?string
-    {
-        return $this->total_debt_vulnerability;
-    }
-
-    public function setTotalDebtVulnerability(string $total_debt_vulnerability): self
-    {
-        $this->total_debt_vulnerability = $total_debt_vulnerability;
-
-        return $this;
-    }
-
-    public function getTotalDebtCodeSmell(): ?string
-    {
-        return $this->total_debt_code_smell;
-    }
-
-    public function setTotalDebtCodeSmell(string $total_debt_code_smell): self
-    {
-        $this->total_debt_code_smell = $total_debt_code_smell;
+        $this->name = $name;
 
         return $this;
     }
