@@ -159,7 +159,8 @@ class ApiProjetController extends AbstractController
 
   /**
    * favori_check
-   * Récupére le statut d'un favori. le favori est TRUE ou FALSE ou null
+   * Récupére le statut d'un favori. Le
+   * favori est TRUE ou FALSE ou null
    * http://{url}/api/favori/check={key}
    *
    * @param  mixed $em
