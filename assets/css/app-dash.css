@@ -207,3 +207,6 @@ input:checked ~ .switch-paddle { background-color: #00445b; }
 
 /* on remonte le menu */
 .on-remonte { margin-top: -2rem; }
+
+/* Ajoute une séparation à gauche */
+.separation-gauche { border-right: 1px solid black; }
