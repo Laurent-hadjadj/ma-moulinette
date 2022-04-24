@@ -48,7 +48,6 @@
             <th scope="col"></th>
             {% for i in 0..dash|length-1 %}
             {# 0 = FALSE, 1 = TRUE  #}
-            {{ dash[i]["initial"] }}
             {% if dash[i]["initial"]==1 %} {% set reference="reference" %} {% else %} {% set reference="null" %} {% endif %}
             <th scope="col" class="open-sans text-right {{reference}}">{{dash[i]["version"]}}</th>
             {% endfor %}
@@ -56,78 +55,86 @@
         </thead>
         <tbody id="tableau-liste-profil" class="open-sans">
           <tr class="open-sans">
-          <td class="text-left">Fiabilité</td>
-          {% for i in 0..dash|length-1 %}
-              <td class="text-right">
-                <span>{{dash[i]["bug"]|format_number(locale='fr')}}</span>
-                {% if dash[i]["fiabilite"]=="A" %} {% set couleur="vert1" %}{% endif %}
-                {% if dash[i]["fiabilite"]=="B" %} {% set couleur="vert2" %}{% endif %}
-                {% if dash[i]["fiabilite"]=="C" %} {% set couleur="jaune" %}{% endif %}
-                {% if dash[i]["fiabilite"]=="D" %} {% set couleur="orange" %}{% endif %}
-                {% if dash[i]["fiabilite"]=="E" %} {% set couleur="rouge" %}{% endif %}
-                <span class="{{couleur}}">{{dash[i]["fiabilite"]}}</span>
-              </td>
-          {% endfor %}
+            <td class="text-left">Date</td>
+            {% for i in 0..dash|length-1 %}
+                <td class="text-right"><span>{{dash[i]["date"]|date("m/d/Y", "Europe/Paris")}}
+                </span>
+                </td>
+            {% endfor %}
           </tr>
           <tr class="open-sans">
-          <td class="text-left">Sécurité</td>
-          {% for i in 0..dash|length-1 %}
-              <td class="text-right">
-                <span>{{dash[i]["faille"]|format_number(locale='fr')}}</span>
-                {% if dash[i]["securite"]=="A" %} {% set couleur="vert1" %}{% endif %}
-                {% if dash[i]["securite"]=="B" %} {% set couleur="vert2" %}{% endif %}
-                {% if dash[i]["securite"]=="C" %} {% set couleur="jaune" %}{% endif %}
-                {% if dash[i]["securite"]=="D" %} {% set couleur="orange" %}{% endif %}
-                {% if dash[i]["securite"]=="E" %} {% set couleur="rouge" %}{% endif %}
-                <span class="{{couleur}}">{{dash[i]["securite"]}}</span>
-              </td>
-          {% endfor %}
+            <td class="text-left">Fiabilité</td>
+            {% for i in 0..dash|length-1 %}
+                <td class="text-right">
+                  <span>{{dash[i]["bug"]|format_number(locale='fr')}}</span>
+                  {% if dash[i]["fiabilite"]=="A" %} {% set couleur="vert1" %}{% endif %}
+                  {% if dash[i]["fiabilite"]=="B" %} {% set couleur="vert2" %}{% endif %}
+                  {% if dash[i]["fiabilite"]=="C" %} {% set couleur="jaune" %}{% endif %}
+                  {% if dash[i]["fiabilite"]=="D" %} {% set couleur="orange" %}{% endif %}
+                  {% if dash[i]["fiabilite"]=="E" %} {% set couleur="rouge" %}{% endif %}
+                  <span class="{{couleur}}">{{dash[i]["fiabilite"]}}</span>
+            </td>
+            {% endfor %}
           </tr>
           <tr class="open-sans">
-          <td class="text-left">Hotspot</td>
-          {% for i in 0..dash|length-1 %}
-              <td class="text-right">
-                <span>{{dash[i]["nombre_hotspot"]|format_number(locale='fr')}}</span>
-                {% if dash[i]["note_hotspot"]=="A" %} {% set couleur="vert1" %}{% endif %}
-                {% if dash[i]["note_hotspot"]=="B" %} {% set couleur="vert2" %}{% endif %}
-                {% if dash[i]["note_hotspot"]=="C" %} {% set couleur="jaune" %}{% endif %}
-                {% if dash[i]["note_hotspot"]=="D" %} {% set couleur="orange" %}{% endif %}
-                {% if dash[i]["note_hotspot"]=="E" %} {% set couleur="rouge" %}{% endif %}
-                {% if dash[i]["note_hotspot"] is defined %} <span class="bleu">Z</span>
-                  {% else %} <span class="{{couleur}}">{{dash[i]["note_hotspot"]}}</span>
-                {% endif %}
-              </td>
-          {% endfor %}
+            <td class="text-left">Sécurité</td>
+            {% for i in 0..dash|length-1 %}
+                <td class="text-right">
+                  <span>{{dash[i]["faille"]|format_number(locale='fr')}}</span>
+                  {% if dash[i]["securite"]=="A" %} {% set couleur="vert1" %}{% endif %}
+                  {% if dash[i]["securite"]=="B" %} {% set couleur="vert2" %}{% endif %}
+                  {% if dash[i]["securite"]=="C" %} {% set couleur="jaune" %}{% endif %}
+                  {% if dash[i]["securite"]=="D" %} {% set couleur="orange" %}{% endif %}
+                  {% if dash[i]["securite"]=="E" %} {% set couleur="rouge" %}{% endif %}
+                  <span class="{{couleur}}">{{dash[i]["securite"]}}</span>
+            </td>
+            {% endfor %}
           </tr>
           <tr class="open-sans">
-          <td class="text-left">Maintenabilité</td>
-          {% for i in 0..dash|length-1 %}
-              <td class="text-right">
-                <span>{{dash[i]["mauvaise_pratique"]|format_number(locale='fr')}}</span>
-                {% if dash[i]["maintenabilite"]=="A" %} {% set couleur="vert1" %}{% endif %}
-                {% if dash[i]["maintenabilite"]=="B" %} {% set couleur="vert2" %}{% endif %}
-                {% if dash[i]["maintenabilite"]=="C" %} {% set couleur="jaune" %}{% endif %}
-                {% if dash[i]["maintenabilite"]=="D" %} {% set couleur="orange" %}{% endif %}
-                {% if dash[i]["maintenabilite"]=="E" %} {% set couleur="rouge" %}{% endif %}
-                <span class="{{couleur}}">{{dash[i]["maintenabilite"]}}</span>
-              </td>
-          {% endfor %}
+            <td class="text-left">Hotspot</td>
+            {% for i in 0..dash|length-1 %}
+                <td class="text-right">
+                  <span>{{dash[i]["nombre_hotspot"]|format_number(locale='fr')}}</span>
+                  {% if dash[i]["note_hotspot"]=="A" %} {% set couleur="vert1" %}{% endif %}
+                  {% if dash[i]["note_hotspot"]=="B" %} {% set couleur="vert2" %}{% endif %}
+                  {% if dash[i]["note_hotspot"]=="C" %} {% set couleur="jaune" %}{% endif %}
+                  {% if dash[i]["note_hotspot"]=="D" %} {% set couleur="orange" %}{% endif %}
+                  {% if dash[i]["note_hotspot"]=="E" %} {% set couleur="rouge" %}{% endif %}
+                  {% if dash[i]["note_hotspot"] is defined %} <span class="bleu">Z</span>
+                    {% else %} <span class="{{couleur}}">{{dash[i]["note_hotspot"]}}</span>
+                  {% endif %}
+            </td>
+            {% endfor %}
           </tr>
           <tr class="open-sans">
-          <td class="text-left">SupressWarning</td>
-          {% for i in 0..dash|length-1 %}
-              <td class="text-right">
-                {{dash[i]["suppress_warning"]|format_number(locale='fr')}}
-              </td>
-          {% endfor %}
+            <td class="text-left">Maintenabilité</td>
+            {% for i in 0..dash|length-1 %}
+                <td class="text-right">
+                  <span>{{dash[i]["mauvaise_pratique"]|format_number(locale='fr')}}</span>
+                  {% if dash[i]["maintenabilite"]=="A" %} {% set couleur="vert1" %}{% endif %}
+                  {% if dash[i]["maintenabilite"]=="B" %} {% set couleur="vert2" %}{% endif %}
+                  {% if dash[i]["maintenabilite"]=="C" %} {% set couleur="jaune" %}{% endif %}
+                  {% if dash[i]["maintenabilite"]=="D" %} {% set couleur="orange" %}{% endif %}
+                  {% if dash[i]["maintenabilite"]=="E" %} {% set couleur="rouge" %}{% endif %}
+                  <span class="{{couleur}}">{{dash[i]["maintenabilite"]}}</span>
+            </td>
+            {% endfor %}
           </tr>
           <tr class="open-sans">
-          <td class="text-left">No Sonar</td>
-          {% for i in 0..dash|length-1 %}
-              <td class="text-right">
-                {{dash[i]["no_sonar"]|format_number(locale='fr')}}
-              </td>
-          {% endfor %}
+            <td class="text-left">SupressWarning</td>
+            {% for i in 0..dash|length-1 %}
+                <td class="text-right">
+                  {{dash[i]["suppress_warning"]|format_number(locale='fr')}}
+            </td>
+            {% endfor %}
+          </tr>
+          <tr class="open-sans">
+            <td class="text-left">No Sonar</td>
+            {% for i in 0..dash|length-1 %}
+                <td class="text-right">
+                  {{dash[i]["no_sonar"]|format_number(locale='fr')}}
+            </td>
+            {% endfor %}
           </tr>
         </tbody>
       </table>
@@ -197,6 +204,14 @@
         </tr>
       </thead>
       <tbody id="tableau-module" class="open-sans">
+          <tr class="open-sans">
+            <td class="text-left">Date</td>
+            {% for i in 0..dash|length-1 %}
+                <td class="text-center"><span>{{dash[i]["date"]|date("m/d/Y", "Europe/Paris")}}
+                </span>
+                </td>
+            {% endfor %}
+          </tr>
         <tr >
           <td class="text-left">Présentation</td>
           {% for i in 0..dash|length-1 %}
@@ -234,6 +249,14 @@
         </tr>
       </thead>
       <tbody id="tableau-anomalie-severite" class="open-sans">
+          <tr class="open-sans">
+            <td class="text-left">Date</td>
+            {% for i in 0..severite|length-1 %}
+                <td class="text-right"><span>{{severite[i]["date"]|date("m/d/Y", "Europe/Paris")}}
+                </span>
+                </td>
+            {% endfor %}
+          </tr>
         <tr>
           <td class="text-left">Bloquant</td>
           {% for i in 0..severite|length-1 %}
@@ -344,6 +367,14 @@
           <th colspan="3" scope="col" class="open-sans text-center">{{details[i]["version"]}}</th>
           {% endfor %}
         </tr>
+        <tr>
+          <th scope="col"></th>
+          {% for i in 0..details|length-1 %}
+          <th colspan="3" scope="col" class="text-center"><span>{{details[i]["date"]|date("m/d/Y", "Europe/Paris")}}</span>
+          </th>
+          {% endfor %}
+        </tr>
+
       </thead>
       <tbody id="tableau-anomalie-type-severite" class="open-sans">
         <tr>
@@ -373,7 +404,7 @@
 
           <td class="text-right {{text1}}">{{details[i]["bug_blocker"]|format_number(locale='fr')}} </td>
           <td class="text-right {{text2}}">{{details[i]["vulnerability_blocker"]|format_number(locale='fr')}} </td>
-          <td class="text-right {{text3}}">{{details[i]["code_smell_blocker"]|format_number(locale='fr')}} </td>
+          <td class="text-right {{text3}} separation-gauche">{{details[i]["code_smell_blocker"]|format_number(locale='fr')}} </td>
           {% endfor %}
         </tr>
         <tr>
@@ -393,7 +424,7 @@
             {% endif %}
           <td class="text-right {{text1}}">{{details[i]["bug_critical"]|format_number(locale='fr')}} </td>
           <td class="text-right {{text2}}">{{details[i]["vulnerability_critical"]|format_number(locale='fr')}} </td>
-          <td class="text-right {{text3}}">{{details[i]["code_smell_critical"]|format_number(locale='fr')}} </td>
+          <td class="text-right {{text3}} separation-gauche">{{details[i]["code_smell_critical"]|format_number(locale='fr')}} </td>
           {% endfor %}
         </tr>
         <tr>
@@ -413,7 +444,7 @@
             {% endif %}
           <td class="text-right {{text1}}">{{details[i]["bug_major"]|format_number(locale='fr')}} </td>
           <td class="text-right {{text2}}">{{details[i]["vulnerability_major"]|format_number(locale='fr')}} </td>
-          <td class="text-right {{text3}}">{{details[i]["code_smell_major"]|format_number(locale='fr')}} </td>
+          <td class="text-right {{text3}} separation-gauche">{{details[i]["code_smell_major"]|format_number(locale='fr')}} </td>
           {% endfor %}
         </tr>
         <tr>
@@ -433,7 +464,7 @@
             {% endif %}
           <td class="text-right {{text1}}">{{details[i]["bug_minor"]|format_number(locale='fr')}} </td>
           <td class="text-right {{text2}}">{{details[i]["vulnerability_minor"]|format_number(locale='fr')}} </td>
-          <td class="text-right {{text3}}">{{details[i]["code_smell_minor"]|format_number(locale='fr')}} </td>
+          <td class="text-right {{text3}} separation-gauche">{{details[i]["code_smell_minor"]|format_number(locale='fr')}} </td>
           {% endfor %}
         </tr>
         <tr>
@@ -454,7 +485,7 @@
 
           <td class="text-right {{text1}}">{{details[i]["bug_info"]|format_number(locale='fr')}} </td>
           <td class="text-right {{text2}}">{{details[i]["vulnerability_info"]|format_number(locale='fr')}} </td>
-          <td class="text-right {{text3}}">{{details[i]["code_smell_info"]|format_number(locale='fr')}} </td>
+          <td class="text-right {{text3}} separation-gauche">{{details[i]["code_smell_info"]|format_number(locale='fr')}} </td>
           {% endfor %}
         </tr>
       </tbody>
