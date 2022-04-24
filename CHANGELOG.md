@@ -140,3 +140,12 @@
 
 * Ajout d'un exemple d'édition pour la page suivi des indicateurs ;
 * Amélioration de la page et indication de la sévérité en rouge ou vert en fonction de la tendance.
+
+## v1.1.0 - 24/04/2022 - relaase
+
+* Mise à jour du modèle de base de données ;
+* Collecte des sévérité par type lors de la collecte, enregistrement dans la table historique attention le modèle de la table est changé, il faut ajouter les nouveau attributs (cf. readme);
+* Suppresion de la table temp_anomalie et réutilisation de la table anomalie pour enregistrer le détails des sévérités par type ;
+* Ajout dans la page du suivi des indicateurs, d'un tableau permttant d'afficher par version, le type d'anomalie par severité des trois dernières versions ;
+* Correction du problème d'affichage des favori et de la valeur de référence.
+* Ajout de la date de la version pour les tableaux de suivi ;
