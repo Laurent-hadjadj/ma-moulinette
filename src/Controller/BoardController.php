@@ -92,7 +92,6 @@ class BoardController extends AbstractController
 
     $select=$em->getConnection()->prepare($sql)->executeQuery();
     $dash=$select->fetchAllAssociative();
-
     // On récupére les anomalies par sévérité
     $sql="SELECT * FROM  (SELECT date_version, nombre_anomalie_bloquant as bloquant, nombre_anomalie_critique as critique, nombre_anomalie_majeur as majeur, nombre_anomalie_mineur as mineur FROM historique WHERE maven_key='".$maven_key."' AND initial=TRUE)
     UNION SELECT * FROM (SELECT date_version, nombre_anomalie_bloquant as bloquant, nombre_anomalie_critique as critique, nombre_anomalie_majeur as majeur, nombre_anomalie_mineur as mineur FROM historique WHERE maven_key='".$maven_key."' AND initial=FALSE ORDER BY date_version DESC LIMIT 9)";
@@ -363,11 +362,12 @@ class BoardController extends AbstractController
     $favori=$data->favori;
     $date=$data->date;
     $version=$data->version;
+    $date_enregistrement= new DateTime();
 
     // On créé un nouvel objet Json
     $response = new JsonResponse();
 
-    // On récupère les versions et la date pour la clé du projet
+    // On met à jour l'attribut favori de la table historique
     $sql = "UPDATE historique SET favori=".$favori." WHERE maven_key='".$maven_key.
            "'  AND version='".$version."'  AND date_version='".$date."'" ;
 
@@ -378,6 +378,24 @@ class BoardController extends AbstractController
     } catch (\Doctrine\DBAL\Exception $e) {
       return $response->setData(["code"=>$e->getCode(), Response::HTTP_OK]);
     }
+
+    // On modifie (delete/insert) l'attribut favori de la table favori
+    // On supprime l'enregistrement
+    $sql = "DELETE FROM favori WHERE maven_key='".$maven_key."'" ;
+    $em->getConnection()->prepare($sql)->executeQuery();
+    // On ajoute l'enregistrement
+    $sql="INSERT INTO favori ('maven_key', 'favori', 'date_enregistrement')
+    VALUES ('".$maven_key."', ".$favori.", '".
+    $date_enregistrement->format(static::$dateFormat)."')";
+
+    // On excute la requête et on catch l'erreur
+    $con=$em->getConnection()->prepare($sql);
+    try {
+      $con->executeQuery();
+    } catch (\Doctrine\DBAL\Exception $e) {
+      return $response->setData(["code"=>$e->getCode(), Response::HTTP_OK]);
+    }
+
     return $response->setData(["code"=>"OK", Response::HTTP_OK]);
   }
 
@@ -439,7 +457,7 @@ class BoardController extends AbstractController
     // On créé un nouvel objet Json
     $response = new JsonResponse();
 
-    // On récupère les versions et la date pour la clé du projet
+    // On surpprime de la table historique le projet
     $sql = "DELETE FROM historique WHERE maven_key='".$maven_key.
            "' AND version='".$version."' AND date_version='".$date."'" ;
 
