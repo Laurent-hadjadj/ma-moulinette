@@ -100,7 +100,7 @@ class ApiHomeController extends AbstractController
      * @param  mixed $em
      * @return response
      */
-    #[Route('/api/liste_projet/ajout', name: 'liste_projet_ajout', methods: ['GET'])]    
+    #[Route('/api/liste_projet/ajout', name: 'liste_projet_ajout', methods: ['GET'])]
     public function liste_projet(EntityManagerInterface $em): response{
       $url=$this->getParameter(static::$sonarUrl)."/api/components/search?qualifiers=TRK&ps=500&p=1";
 
@@ -234,5 +234,33 @@ class ApiHomeController extends AbstractController
 
     $response = new JsonResponse();
     return $response->setData(["nombre"=>$nombre, Response::HTTP_OK]);
+  }
+
+  /**
+   * visibility
+   * Renvoi le nombre de projet private ou public
+   * Il faut avoir un droit Administrateur !!!
+   * http://{url}/api/projects/search?qualifiers=TRK&ps=500
+   *
+   * @param  mixed $em
+   * @return response
+   */
+  #[Route('/api/visibility', name: 'visibility', methods: ['GET'])]
+  public function visibility(): response {
+    $url=$this->getParameter(static::$sonarUrl)."/api/projects/search?qualifiers=TRK&ps=500";
+
+    // on appel le client http
+    $components=$this->http_client($url);
+
+    $private=0;
+    $public=0;
+
+    foreach ($components["components"] as $component) {
+      if ($component=="private") { $private++; }
+      if ($component=="public") { $public++; }
+    }
+
+    $response = new JsonResponse();
+    return $response->setData(["private"=>$private, "public"=>$public, Response::HTTP_OK]);
   }
 }

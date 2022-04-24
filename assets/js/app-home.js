@@ -159,13 +159,31 @@ function liste_projet_date(){
   return $.ajax(options)
     .then(function (r) {
          $('#js-nombre-profil').html('<span class="stat">' + new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(r.nombre) + '</span>')
-         if (r.nombre===0){ 
+         if (r.nombre===0){
            return $.ajax({
            url:'http://localhost:8000/api/quality/profiles',
            type: 'GET', dataType: 'json', contentType: contentType})
           }
       });
  }
+
+/**
+ * description
+ * Affiche le nombre de profil.
+ */
+ // eslint-disable-next-line no-unused-vars
+ function affiche_projet_visibility() {
+  const options = {
+    url: 'http://localhost:8000/api/visibility', type: 'GET', dataType: 'json',
+    contentType: contentType
+  }
+  return $.ajax(options)
+    .then(function (r) {
+         $('#js-projet-public').html('<span class="stat">' + new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(r.nombre) + '</span>')
+         $('#js-projet-private').html('<span class="stat">' + new Intl.NumberFormat('fr-FR', { style: 'decimal', }).format(r.nombre) + '</span>')
+      });
+ }
+
 
 /********* Main du programme *******/
 /**
@@ -189,4 +207,8 @@ dit_bonjour();
 liste_projet_date()
 // On récupére le nomnbre de profil
 affiche_nombre_profil();
+// On affiche le nombre de projet privée et public
+// Attention, il faut avoir les droits d'administration !!!
+// La fonction est désactivée par défaut.
+// affiche_projet_visibility();
 stop_spinner();
