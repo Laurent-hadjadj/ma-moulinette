@@ -254,7 +254,7 @@ dessineMoiUnMouton(Object.values(JSON.parse(_labels)), Object.values(JSON.parse(
       $('#tableau-liste-version').append(html);
 
       //Favori|reference enable
-      // 0 = FALSE, 1 = TRUE
+      // 0 = FALSE (false), 1 = TRUE (true)
       if (version.favori===1) { $('#switch-favori-'+ligne).click(); }
       if (version.initial==1) { $('#switch-reference-'+ligne).click(); }
     });
@@ -296,6 +296,7 @@ dessineMoiUnMouton(Object.values(JSON.parse(_labels)), Object.values(JSON.parse(
       const  date = $('#date-'+l[2]).text().trim();
 
       if ($('#'+id+':checked').length===1){ reference='TRUE' } else { reference='FALSE' }
+
       const data_reference = { maven_key: $("#js-nom").data('maven'), reference: reference, version: version, date: date, }
       const options_reference = {
         url: 'http://localhost:8000/api/dash/version/reference', type: 'PUT', dataType: 'json',
