@@ -1,3 +1,4 @@
+---
 framework:
     messenger:
         failure_transport: failed
@@ -22,3 +23,4 @@ framework:
 
             # Route your messages to the transports
             # 'App\Message\YourMessage': async
+...
