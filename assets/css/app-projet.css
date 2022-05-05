@@ -1,29 +1,36 @@
-/* stylelint-disable selector-class-pattern */
-
-/*
+/**
+ *  Ma-Moulinette
+ *  --------------
  *  Copyright (c) 2021-2022.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  *
  */
 
+/* stylelint-disable selector-class-pattern */
+
 /*************************          Global     *********************************/
 
-/* Gestion des logs */
+/* ***** Gestion des logs ****** */
 
+/* Cotainer de logs */
 .log-container {
   padding-left: 1rem;
   padding-right: 1rem;
 }
 
+/* Ligne de log */
 .log {
   background-color: #444;
   font-size: 0.9rem;
 }
 
-/* Bouton SVG */
+/* ****  Boutons **** */
+
+/* Bouton details SVG */
 .details-svg {
   fill: #00445b;
   cursor: pointer;
@@ -32,6 +39,7 @@
   height: 32px;
 }
 
+/* Bouton details2 SVG */
 .details2-svg {
   fill: #00445b;
   cursor: pointer;
@@ -40,6 +48,7 @@
   height: 32px;
 }
 
+/* Bouton gomme SVG */
 .gomme-svg {
   fill: #00445b;
   cursor: pointer;
@@ -48,6 +57,7 @@
   height: 32px;
 }
 
+/* Bouton favori et statistique SVG */
 .favori-svg,
 .statistique-svg {
   fill: #00445b;
@@ -57,6 +67,7 @@
   height: 28px;
 }
 
+/* Bouton danger, gestion-de-projetn checklist et information SVG */
 .danger-svg,
 .gestion-de-projet-svg,
 .checklist-svg,
@@ -68,6 +79,7 @@
   height: 28px;
 }
 
+/* Bouton favori-list SVG */
 .favori-liste-svg {
   fill: #850385;
   stroke: 4px;
@@ -77,13 +89,16 @@
   height: 28px;
 }
 
+/* Bouton favori-svg-select SVG */
 .favori-svg-select { fill: #850385; }
 
+/* Gestion du hover sur les bouton SVG */
 .favori-svg:hover,
 .statistique-svg:hover,
 .details-svg:hover,
 .details2-svg:hover { fill: #850385; }
 
+/* Taille est couleur des images SVG dans les boutons */
 .liste-svg,
 .analyse-svg,
 .affiche-resultat-svg,
@@ -99,6 +114,7 @@
   height: 32px;
 }
 
+/* Taille est couleur des images SVG dans les boutons */
 .owasp-svg {
   fill: #fff;
   cursor: pointer;
@@ -106,7 +122,7 @@
   width: 96px;
 }
 
-/* bouton */
+/* Couleur des boutons */
 .lance-analyse-enabled,
 .affiche-liste,
 .affiche-resultat-enabled,
@@ -122,6 +138,7 @@
   background-color: #00445b;
 }
 
+/* Gestion du hover sur les boutons */
 .lance-analyse-enabled:hover,
 .affiche-liste:hover,
 .affiche-resultat-enabled:hover,
@@ -134,6 +151,7 @@
 #fermer-dette-technique:hover,
 #fermer-liste-severite { background-color: #006182; }
 
+/* Gestion des boutons desactivés */
 .lance-analyse-disabled,
 .affiche-resultat-disabled,
 .analyse-owasp-disabled,
@@ -149,13 +167,16 @@
 
 /* select2 custom
  *  placehoder
+ *  Ici on surchage les class de l'api select2
  */
 
+/* Couleur du container */
 .select2-container--default .select2-selection--single .select2-selection__rendered {
   line-height: 30px;
   color: #00445b;
 }
 
+/* Couleur du placeholder */
 .select2-container--default .select2-selection--single .select2-selection__placeholder,
 .select2-container--default .selection .select2-selection--single .select2-selection__placeholder {
   color: #99b4bd;
@@ -169,7 +190,7 @@
   padding: 0.4rem;
 }
 
-/* Fleche */
+/* taille de la Flêche */
 .select2-container--default .select2-selection--single .select2-selection__arrow,
 .select2-container--default .selection .select2-selection--single .select2-selection__arrow {
   height: 2.4375rem;
@@ -179,7 +200,7 @@
   width: 20px;
 }
 
-/* fleche */
+/* Couleir de ma Flêche */
 .select2-container--default .select2-selection--single .select2-selection__arrow b,
 .select2-container--default .selection .select2-selection--single .select2-selection__arrow b {
   border-color: #333 transparent transparent;
@@ -194,12 +215,13 @@
   width: 0;
 }
 
-/* Proposition trouvé */
+/* Affichage de : Proposition trouvé */
 .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
   background-color: #006a8e;
   color: #fff;
 }
 
+/*  Couleur des options dans le selecteur */
 .select2-results__option { color: #00445b; }
 
 /* Information bug, vulnérabilité et code_smell  */
@@ -212,12 +234,14 @@
   margin-bottom: 30px;
 }
 
+/* Couleur pour la sévérité */
 .stats-list-vert { color: #187e3d; }
 .stats-list-orange { color: #c45d4e; }
 .stats-list-rouge-intense { color: #771404; }
 .stats-list-rouge-claire { color: #b33926; }
 .stats-list-bleu { color: #3b89a3; }
 
+/* propriété du selecteur */
 .stats-list > li {
   display: inline-block;
   margin-right: 10px;
@@ -241,12 +265,13 @@
   font-weight: normal;
 }
 
-/* définit la taille de la carte */
+/* Définit la taille de la carte */
 .callout-information {
   box-shadow: 2px 2px 5px #444;
   border-radius: 1.2rem;
 }
 
+/* Positionnenment et couleur des résultat dans une carte */
 .resultat {
   padding-left: 0.5rem;
   color: #333;
@@ -255,22 +280,27 @@
   white-space: nowrap;
 }
 
+/* Taille de la police en small */
 .small { font-size: 1rem; }
 
+/* Propriété de la ligne */
 .ligne {
   margin: 0.1rem;
   display: flex;
 }
 
+/* Taille de pour les stats */
 .stat {
   line-height: 0.9;
   font-size: 2rem;
 }
 
+/* Taille pour les notes */
 .stat-note {
   font-size: 1.5rem;
 }
 
+/* Couleur pour la note A */
 .note-vert1 {
   background-color: #187e3d;
   color: #fff;
@@ -280,6 +310,7 @@
   padding-right: 20px;
 }
 
+/* Couleur pour la note B */
 .note-vert2 {
   background-color: #42c070;
   color: #000;
@@ -289,6 +320,7 @@
   padding-right: 20px;
 }
 
+/* Couleur pour la note C */
 .note-jaune {
   background-color: #dfdb1a;
   color: #000;
@@ -298,6 +330,7 @@
   padding-right: 20px;
 }
 
+/* Couleur pour la note D */
 .note-orange {
   background-color: #c45d4e;
   color: #000;
@@ -307,6 +340,7 @@
   padding-right: 18px;
 }
 
+/* Couleur pour la note E */
 .note-rouge {
   background-color: #971c09;
   color: #fff;
@@ -316,47 +350,66 @@
   padding-right: 20px;
 }
 
-/* couleur severite */
+/* **** couleur severite **** */
+
+/* High */
 .rouge { color: #971c09; }
+
+/* MEDIUM */
 .vert { color: #187e3d; }
+
+/* LIGHT */
 .bleu { color: #3b89a3; }
 
+/**
+  * Propriétés pour les class en fonction des media type
+  *
+  */
+
+/* Media Small */
 @media only screen and (max-width: 20em) {
   .log { font-size: 0.75rem; }
   .callout-information { width: 21rem; }
 }
 
+/* Media Small */
 @media only screen and (min-width: 20.025em) and (max-width: 22em) {
   .log { font-size: 0.8rem; }
   .callout-information { width: 21rem; }
 }
 
+/* Media Small */
 @media only screen and (min-width: 22.025em) and (max-width: 30em) {
   .callout-information { width: 22rem; }
 }
 
+/* Media Small */
 @media only screen and (min-width: 30.025em) and (max-width: 40em) {
   .callout-information { width: 22rem; }
 }
 
+/* Media Medium */
 @media only screen and (min-width: 40em) and (max-width: 64em) {
   .bouton-analyse-right { padding-right: 1rem; }
   .bouton-afficher-left { padding-left: 1rem; }
   .callout-information { width: 22rem; }
 }
 
+/* Media Large */
 @media only screen and (min-width: 64.025em) and (max-width: 90em) {
   .bouton-analyse-right { padding-right: 1rem; }
   .bouton-afficher-left { padding-left: 1rem; }
   .callout-information { width: 24.1rem; }
 }
 
+/* Media Large */
 @media only screen and (min-width: 90.025em) and (max-width: 120em) {
   .bouton-analyse-right { padding-right: 1rem; }
   .bouton-afficher-left { padding-left: 1rem; }
   .callout-information { width: 24.1rem; }
 }
 
+/* Media Extra-Large */
 @media only screen and (min-width: 120em) and (max-width: 160em) {
   .voir-analyse-svg {
     margin-bottom: -0.6rem;

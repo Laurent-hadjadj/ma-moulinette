@@ -1,3 +1,4 @@
+---
 doctrine:
     orm:
         auto_generate_proxy_classes: false
@@ -15,3 +16,4 @@ framework:
                 adapter: cache.app
             doctrine.system_cache_pool:
                 adapter: cache.system
+...

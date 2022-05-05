@@ -119,7 +119,7 @@
       <legend class="open-sans">Mes projets favoris.</legend>
         <div class="grid-x cell">
           {# Information sur les versions #}
-          {% if nombre_favori == 1 %}
+          {% if nombreFavori == 1 %}
             {% for app in favori %}
             <div class="callout callout-information">
               <div class="callout-body">
@@ -130,7 +130,7 @@
                 <p class="ligne-favori open-sans">Nom&nbsp;:<span class="float-right resultat-favori {{taille}}">{{app.nom}}</span></p>
                 <p class="ligne-favori open-sans">Version&nbsp;:<span class="float-right resultat-favori">{{app.version}}</span></p>
                 <p class="ligne-favori open-sans">Date&nbsp;:<span class="float-right resultat-favori">{{app.date|date("m/d/Y", "Europe/Paris")}}</span></p>
-                <table>
+                <table aria-label="tableau-favori">
                   <thead>
                     <tr>
                         <th><span class="note-favori" class="open-sans">&nbsp;F&nbsp;</span></th>

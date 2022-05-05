@@ -1,11 +1,14 @@
 <?php
+
 /*
+ *  Ma-Moulinette
+ *  --------------
  *  Copyright (c) 2021-2022.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
- *
  */
 
 namespace App\Controller;
@@ -35,39 +38,63 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\DBAL\Connection;
 use DateTime;
 
+// Logger
+use Psr\Log\LoggerInterface;
+
 class ApiProjetController extends AbstractController
 {
 
   private $client;
 
-  public function __construct(HttpClientInterface $client) { $this->client = $client; }
+  public function __construct(HttpClientInterface $client)
+  {
+    $this->client = $client;
+  }
 
   public static $strContentType = 'application/json';
   public static $dateFormat = "Y-m-d H:m:s";
-  public static $sonarUrl= "sonar.url";
-  public static $api_issues_search="/api/issues/search?componentKeys=";
+  public static $sonarUrl = "sonar.url";
+  public static $apiIssuesSearch = "/api/issues/search?componentKeys=";
 
-   /**
-    * date_to_minute
-    * Fonction pirvée pour convertir une date au format xxd aah xxmin en minutes
-    *
-    * @param  mixed $str
-    * @return void
-    */
-   protected function date_to_minute($str) {
-    $jour = 0; $heure = 0; $minute = 0;
+  /**
+   * date_to_minute
+   * Fonction pirvée pour convertir une date au format xxd aah xxmin en minutes
+   *
+   * @param  mixed $str
+   * @return void
+   */
+  protected function date_to_minute($str)
+  {
+    $jour = 0;
+    $heure = 0;
+    $minute = 0;
     //[2d1h1min]-- >[2] [1h1min]
     $j = explode('d', $str);
-    if (count($j) == 1) { $h = explode('h', $j[0]); }
-    if (count($j) == 2) { $jour = $j[0]; $h = explode('h',$j[1]); }
+    if (count($j) == 1) {
+      $h = explode('h', $j[0]);
+    }
+    if (count($j) == 2) {
+      $jour = $j[0];
+      $h = explode('h', $j[1]);
+    }
 
     //heure [1], [1min]
-    if (count($h) == 1) { $m = explode('min', $h[0]); }
-    if (count($h) == 2) { $heure = $h[0]; $m = explode('min', $h[1]); }
+    if (count($h) == 1) {
+      $m = explode('min', $h[0]);
+    }
+    if (count($h) == 2) {
+      $heure = $h[0];
+      $m = explode('min', $h[1]);
+    }
 
     //minute
-    if (count($m) == 1) { $m = explode('min', $j[0]); }
-    if (count($m) == 2) { $mm =explode('min', $m[0]); $minute = $mm[0]; }
+    if (count($m) == 1) {
+      $m = explode('min', $j[0]);
+    }
+    if (count($m) == 2) {
+      $mm = explode('min', $m[0]);
+      $minute = $mm[0];
+    }
 
     return ($jour * 24 * 60) + ($heure * 60) + intval($minute);
   }
@@ -79,49 +106,62 @@ class ApiProjetController extends AbstractController
    * @param  mixed $minutes
    * @return string
    */
-  protected function minutes_to($minutes):string {
+  protected function minutesTo($minutes): string
+  {
     $j = (int)($minutes / 1440);
     $h = (int)(($minutes - ($j * 1440)) / 60);
     $m = round($minutes % 60);
-    if (empty($h) || is_null($h)) { $h=0; }
-    if ($j > 0) { return ($j."d, ".$h."h:".$m."min"); }
-      else { return ($h."h:".$m."min"); }
+    if (empty($h) || is_null($h)) {
+      $h = 0;
+    }
+    if ($j > 0) {
+      return ($j . "d, " . $h . "h:" . $m . "min");
+    } else {
+      return ($h . "h:" . $m . "min");
+    }
   }
 
   /**
-   * http_client
+   * httpClient
    *
    * @param  mixed $url
    * @return void
    */
-  protected function http_client($url) {
+  protected function httpClient($url)
+  {
     if (empty($this->getParameter('sonar.token'))) {
-      $user=$this->getParameter('sonar.user');
-      $password=$this->getParameter('sonar.password');
+      $user = $this->getParameter('sonar.user');
+      $password = $this->getParameter('sonar.password');
     } else {
-      $user=$this->getParameter('sonar.token');
-      $password='';
+      $user = $this->getParameter('sonar.token');
+      $password = '';
     }
 
-    $response = $this->client->request(
-      'GET', $url, [ 'auth_basic' => [$user, $password], 'timeout' => 45,
-      'headers' => [ 'Accept' => static::$strContentType, 'Content-Type' => static::$strContentType]
-      ]);
+    $response = $this->client->request('GET', $url,
+       [
+        'auth_basic' => [$user, $password], 'timeout' => 45,
+        'headers' => ['Accept' => static::$strContentType,
+        'Content-Type' => static::$strContentType]
+       ]
+    );
 
     if (200 !== $response->getStatusCode()) {
-        if ($response->getStatusCode() == 401) {
-          throw new \Exception('Erreur d\'Authentification. La clé n\'est pas correcte.');
-        }
-        else {
-          throw new \Exception('Retour de la réponse différent de ce qui est prévu. Erreur '
-          .$response->getStatusCode());
-        }
+      if ($response->getStatusCode() == 401) {
+        throw new \Exception('Erreur d\'Authentification. La clé n\'est pas correcte.');
+      } else {
+        throw new \Exception('Retour de la réponse différent de ce qui est prévu. Erreur '
+          . $response->getStatusCode());
       }
+    }
 
+    // La variable n'est pas utilisé, elle permet de collecter les données et de rendre la main.
+    $logger = new LoggerInterface();
     $contentType = $response->getHeaders()['content-type'][0];
+    $logger->INFO('** ContentType *** '.isset($contentType));
+
     $responseJson = $response->getContent();
     return json_decode($responseJson, true, 512, JSON_THROW_ON_ERROR);
-    }
+  }
 
   /**
    * favori
@@ -133,28 +173,31 @@ class ApiProjetController extends AbstractController
    * @return response
    */
   #[Route('/api/favori', name: 'favori', methods: ['GET'])]
-  public function favori(EntityManagerInterface $em, Request $request): response  {
-    $maven_key=$request->get('maven_key');
-    $statut=$request->get('statut');
-    $date= new DateTime();
+  public function favori(EntityManagerInterface $em, Request $request): response
+  {
+    // On bind es variables
+    $mavenKey = $request->get('mavenKey');
+    $statut = $request->get('statut');
+    $date = new DateTime();
+    $tempoDate=$date->format(static::$dateFormat);
 
     //on vérifie si le projet est déja en favori
-    $sql="SELECT * FROM favori WHERE maven_key='". $maven_key ."'";
-    $select=$em->getConnection()->prepare($sql)->executeQuery();
+    $sql = "SELECT * FROM favori WHERE maven_key='${mavenKey}'";
+    $select = $em->getConnection()->prepare($sql)->executeQuery();
 
     //Si on a pas trouvé l'application dans la liste des favoris, alors on la rajoute.
-    if ( empty($select->fetchAllAssociative()) ) {
-        $sql="INSERT INTO favori ('maven_key', 'favori', 'date_enregistrement')
-        VALUES ('".$maven_key."', TRUE, '".$date->format(static::$dateFormat)."')";
-        $em->getConnection()->prepare($sql)->executeQuery();
-      }
-      else {
-        $sql = "UPDATE favori SET favori='".$statut."', date_enregistrement='"
-         .$date->format(static::$dateFormat)."' WHERE maven_key='".$maven_key."'";
-        $em->getConnection()->prepare($sql)->executeQuery();
-      }
+    if (empty($select->fetchAllAssociative())) {
+      $sql = "INSERT INTO favori ('maven_key', 'favori', 'date_enregistrement')
+        VALUES ('${mavenKey}', TRUE, '${tempoDate}')";
+      $em->getConnection()->prepare($sql)->executeQuery();
+    } else {
+      $sql = "UPDATE favori SET favori='${statut}',
+              date_enregistrement='${tempoDate}'
+              WHERE maven_key='${mavenKey}'";
+      $em->getConnection()->prepare($sql)->executeQuery();
+    }
     $response = new JsonResponse();
-    return $response->setData(["statut"=>$statut, Response::HTTP_OK]);
+    return $response->setData(["statut" => $statut, Response::HTTP_OK]);
   }
 
   /**
@@ -168,20 +211,20 @@ class ApiProjetController extends AbstractController
    * @return response
    */
   #[Route('/api/favori/check', name: 'favori_check', methods: ['GET'])]
-  public function favori_check(EntityManagerInterface $em, Request $request): response
+  public function favoriCheck(EntityManagerInterface $em, Request $request): response
   {
-    $maven_key=$request->get('maven_key');
+    $mavenKey = $request->get('mavenKey');
     $response = new JsonResponse();
 
     //on vérifie si le projet est déja en favori
-    $sql="SELECT favori FROM favori WHERE maven_key='". $maven_key ."'";
-    $select=$em->getConnection()->prepare($sql)->executeQuery();
-    $r=$select->fetchAllAssociative();
-    if ( empty($r) ){
-      return $response->setData(["statut"=>"null", Response::HTTP_OK]);
-     }
+    $sql = "SELECT favori FROM favori WHERE maven_key='${mavenKey}'";
+    $select = $em->getConnection()->prepare($sql)->executeQuery();
+    $r = $select->fetchAllAssociative();
+    if (empty($r)) {
+      return $response->setData(["statut" => "null", Response::HTTP_OK]);
+    }
 
-    return $response->setData(["favori"=>"TRUE", "statut"=>$r[0]['favori'], Response::HTTP_OK]);
+    return $response->setData(["favori" => "TRUE", "statut" => $r[0]['favori'], Response::HTTP_OK]);
   }
 
   /**
@@ -193,59 +236,68 @@ class ApiProjetController extends AbstractController
    * @return void
    */
   #[Route('/api/liste/projet', name: 'liste_projet', methods: ['GET'])]
-   public function liste_projet(Connection $connection)
+  public function liste_projet(Connection $connection)
   {
 
     $sql = "SELECT maven_key, name from 'liste_projet'";
     $rqt = $connection->fetchAllNumeric($sql);
 
-    if (!$rqt){throw $this->createNotFoundException('Oops - Il y a un problème.');}
+    if (!$rqt) {
+      throw $this->createNotFoundException('Oops - Il y a un problème.');
+    }
 
-    $liste=[];
+    $liste = [];
     //objet = { id: clé, text: "blablabla" };
-    foreach ($rqt as $value){
-          $objet = [ 'id'=> $value[0], 'text'=> $value[1] ];
-          array_push($liste, $objet);
-      }
+    foreach ($rqt as $value) {
+      $objet = ['id' => $value[0], 'text' => $value[1]];
+      array_push($liste, $objet);
+    }
 
     $response = new JsonResponse();
-    return $response->setData(["liste"=>$liste, Response::HTTP_OK]);
+    return $response->setData(["liste" => $liste, Response::HTTP_OK]);
   }
 
   /**
    * projet_analyses
    * Récupère les informations du projet (id de l'enregistrement, date de l'analyse, version, type de version).
-  * http://{url}/api/project_analyses/search?project={key}
+   * http://{url}/api/project_analyses/search?project={key}
    *
    * @param  mixed $em
    * @param  mixed $request
    * @return response
    */
   #[Route('/api/projet/analyses', name: 'projet_analyses', methods: ['GET'])]
-   public function projet_analyses(EntityManagerInterface $em, Request $request): response
+  public function projetAnalyses(EntityManagerInterface $em, Request $request): response
   {
-    $url=$this->getParameter(static::$sonarUrl)."/api/project_analyses/search?project=".$request->get('maven_key');
+    $url = $this->getParameter(static::$sonarUrl) . "/api/project_analyses/search?project=" . $request->get('mavenKey');
 
-    // on appel le client http
-    $result=$this->http_client($url);
-
+    // On appel le client http
+    $result = $this->httpClient($url);
     // On récupère le manager de BD
-    $date= new DateTime();
+    $date = new DateTime();
+    $mavenKey=$request->get('mavenKey');
 
-    //on supprime les informations sur le projet
-    $sql = "DELETE FROM information_projet WHERE maven_key='".$request->get('maven_key')."'";
+    // On supprime les informations sur le projet
+    $sql = "DELETE FROM information_projet WHERE maven_key='$mavenKey'";
     $em->getConnection()->prepare($sql)->executeQuery();
 
     // On ajoute les informations du projets dans la table information_projet.
-    $nombreVersion=0;
+    $nombreVersion = 0;
 
     foreach ($result["analyses"] as $analyse) {
-      $nombreVersion ++;
-      $explode=explode("-", $analyse["projectVersion"]);
-      if (empty($explode[1])) { $explode[1] = 'N.C'; }
+      $nombreVersion++;
+      /**
+       *  La version du projet doit être xxx-release, xxx-snapshot ou xxx
+       *  Dans ce cas le tableau renvoi toujours [0] pour la version et
+       *  [1] pour le type de version (release, snaphot ou null)
+       */
+      $explode = explode("-", $analyse["projectVersion"]);
+      if (empty($explode[1])) {
+        $explode[1] = 'N.C';
+      }
 
       $informationProjet = new InformationProjet();
-      $informationProjet->setMavenKey($request->get('maven_key'));
+      $informationProjet->setMavenKey($mavenKey);
       $informationProjet->setAnalyseKey($analyse["key"]);
       $informationProjet->setDate(new DateTime($analyse["date"]));
       $informationProjet->setProjectVersion($analyse["projectVersion"]);
@@ -255,7 +307,7 @@ class ApiProjetController extends AbstractController
       $em->flush();
     }
     $response = new JsonResponse();
-    return $response->setData(["nombreVersion"=>$nombreVersion, Response::HTTP_OK]);
+    return $response->setData(["nombreVersion" => $nombreVersion, Response::HTTP_OK]);
   }
 
   /**
@@ -269,45 +321,63 @@ class ApiProjetController extends AbstractController
    * @return response
    */
   #[Route('/api/projet/mesures', name: 'projet_mesures', methods: ['GET'])]
-  public function projet_mesures(EntityManagerInterface $em, Request $request): response {
+  public function projetMesures(EntityManagerInterface $em, Request $request): response
+  {
+    // On bind les variables
+    $tempoUrl=$this->getParameter(static::$sonarUrl);
+    $mavenKey=$request->get('mavenKey');
+
     // mesures globales
-    $url1=$this->getParameter(static::$sonarUrl)."/api/components/app?component=".$request->get('maven_key');
+    $url1 = "${tempoUrl}/api/components/app?component=${mavenKey}";
 
     // on appel le client http
-    $result1=$this->http_client($url1);
-
-    $date= new DateTime();
+    $result1 = $this->httpClient($url1);
+    $date = new DateTime();
 
     // On ajoute les mesures dans la table mesures.
-    if (intval($result1["measures"]["lines"])){
-      $lines=intval($result1["measures"]["lines"]);
-      } else {$lines=0;}
+    if (intval($result1["measures"]["lines"])) {
+      $lines = intval($result1["measures"]["lines"]);
+    } else {
+      $lines = 0;
+    }
 
     //Warning: Undefined array key "coverage"
-    if (array_key_exists("coverage", $result1["measures"])){
-      $coverage=$result1["measures"]["coverage"];} else {$coverage=0;}
+    if (array_key_exists("coverage", $result1["measures"])) {
+      $coverage = $result1["measures"]["coverage"];
+    } else {
+      $coverage = 0;
+    }
 
-    if (array_key_exists("duplicationDensity", $result1["measures"])){
-         $duplicationDensity=$result1["measures"]["duplicationDensity"];
-        } else {$duplicationDensity=0;}
+    if (array_key_exists("duplicationDensity", $result1["measures"])) {
+      $duplicationDensity = $result1["measures"]["duplicationDensity"];
+    } else {
+      $duplicationDensity = 0;
+    }
 
-    if (array_key_exists("tests", $result1["measures"] )){
-         $tests=intval($result1["measures"]["tests"]);
-        } else { $tests=0; }
+    if (array_key_exists("tests", $result1["measures"])) {
+      $tests = intval($result1["measures"]["tests"]);
+    } else {
+      $tests = 0;
+    }
 
-    if (array_key_exists("issues", $result1["measures"])){
-        $issues=intval($result1["measures"]["issues"]);
-        } else {$issues=0;}
+    if (array_key_exists("issues", $result1["measures"])) {
+      $issues = intval($result1["measures"]["issues"]);
+    } else {
+      $issues = 0;
+    }
 
     // On récupère le nombre de ligne de code
-    $url2=$this->getParameter(static::$sonarUrl)."/api/measures/component?component=".$request->get('maven_key')."&metricKeys=ncloc";
-    $result2=$this->http_client($url2);
-    if (array_key_exists("measures", $result2["component"])){
-          $ncloc=intval($result2["component"]["measures"][0]["value"]);
-          } else {$ncloc=0;}
+    $url2 = "${tempoUrl}/api/measures/component?component=${mavenKey}&metricKeys=ncloc";
+    $result2 = $this->httpClient($url2);
+
+    if (array_key_exists("measures", $result2["component"])) {
+      $ncloc = intval($result2["component"]["measures"][0]["value"]);
+    } else {
+      $ncloc = 0;
+    }
     // On enregistre
     $mesure = new Mesures();
-    $mesure->setMavenKey($request->get("maven_key"));
+    $mesure->setMavenKey($mavenKey);
     $mesure->setProjectName($result1["projectName"]);
     $mesure->setLines($lines);
     $mesure->setNcloc($ncloc);
@@ -326,129 +396,178 @@ class ApiProjetController extends AbstractController
   /**
    * projet_anomalie
    * Récupère le total des anomalies, avec un filtre par répertoire, severité et types.
-   * https://{URL}/api/issues/search?componentKeys={maven_key}&facets=directories,types,severities&p=1&ps=1&statuses=OPEN
-   * https://{URL}/api/issues/search?componentKeys={maven_key}&types={type}&p=1&ps=1
+   * https://{URL}/api/issues/search?componentKeys={mavenKey}&facets=directories,types,severities&p=1&ps=1&statuses=OPEN
+   * https://{URL}/api/issues/search?componentKeys={mavenKey}&types={type}&p=1&ps=1
    *
    * @param  mixed $em
    * @param  mixed $request
    * @return response
    */
   #[Route('/api/projet/anomalie', name: 'projet_anomalie', methods: ['GET'])]
-   public function projet_anomalie(EntityManagerInterface $em, Request $request): response {
+  public function projetAnomalie(EntityManagerInterface $em, Request $request): response
+  {
+    // On bind les variables
+    $tempoUrlLong=$this->getParameter(static::$sonarUrl).static::$apiIssuesSearch;
+    $mavenKey=$request->get('mavenKey');
 
-    $url1=$this->getParameter(static::$sonarUrl).static::$api_issues_search
-    .$request->get('maven_key')."&facets=directories,types,severities&p=1&ps=1&statuses=OPEN";
+    // On créé un objet date
+    $date = new DateTime();
+
+    $url1 = "${tempoUrlLong}${mavenKey}&facets=directories,types,severities&p=1&ps=1&statuses=OPEN";
 
     // On récupère le total de la Dette technique pour les BUG
-    $url2=$this->getParameter(static::$sonarUrl).static::$api_issues_search
-    .$request->get('maven_key')."&types=BUG&p=1&ps=1";
+    $url2 = "${tempoUrlLong}${mavenKey}&types=BUG&p=1&ps=1";
 
     // On récupère le total de la Dette technique pour les VULNERAVILITY
-    $url3=$this->getParameter(static::$sonarUrl).static::$api_issues_search
-    .$request->get('maven_key')."&types=VULNERABILITY&p=1&ps=1";
+    $url3 = "${tempoUrlLong}${mavenKey}&types=VULNERABILITY&p=1&ps=1";
 
     // On récupère le total de la Dette technique pour les CODE_SMELL
-    $url4=$this->getParameter(static::$sonarUrl).static::$api_issues_search
-    .$request->get('maven_key')."&types=CODE_SMELL&p=1&ps=1";
+    $url4 = "${tempoUrlLong}${mavenKey}&types=CODE_SMELL&p=1&ps=1";
 
     // on appel le client http pour les requête 1 à 4 (2 à 4 pour la dette)
-    $result1=$this->http_client($url1);
-    $result2=$this->http_client($url2);
-    $result3=$this->http_client($url3);
-    $result4=$this->http_client($url4);
+    $result1 = $this->httpClient($url1);
+    $result2 = $this->httpClient($url2);
+    $result3 = $this->httpClient($url3);
+    $result4 = $this->httpClient($url4);
 
-    $date= new DateTime();
-    $maven_key=$request->get('maven_key');
-
-    if ($result1["paging"]["total"]!=0){
+    if ($result1["paging"]["total"] != 0) {
       // On supprime  les enregistrement correspondant à la clé
-      $sql = "DELETE FROM anomalie WHERE maven_key='".$maven_key."'";
+      $sql = "DELETE FROM anomalie WHERE maven_key='${mavenKey}'";
       $em->getConnection()->prepare($sql)->executeQuery();
 
       // nom du projet
-      $app=explode(":",$maven_key);
+      $app = explode(":", $mavenKey);
 
-      $anomalie_total=$result1["total"];
-      $dette_minute=$result1["effortTotal"];
-      $dette=$this->minutes_to($dette_minute);
-      $dette_reliability_minute=$result2["effortTotal"];
-      $dette_reliability=$this->minutes_to($dette_reliability_minute);
-      $dette_vulnerability_minute=$result3["effortTotal"];
-      $dette_vulnerability=$this->minutes_to($dette_vulnerability_minute);
-      $dette_code_smell_minute=$result4["effortTotal"];
-      $dette_code_smell=$this->minutes_to($dette_code_smell_minute);
+      $anomalieTotal = $result1["total"];
+      $detteMinute = $result1["effortTotal"];
+      $dette = $this->minutesTo($detteMinute);
+      $detteReliabilityMinute = $result2["effortTotal"];
+      $detteReliability = $this->minutesTo($detteReliabilityMinute);
+      $detteVulnerabilityMinute = $result3["effortTotal"];
+      $detteVulnerability = $this->minutesTo($detteVulnerabilityMinute);
+      $detteCodeSmellMinute = $result4["effortTotal"];
+      $detteCodeSmell = $this->minutesTo($detteCodeSmellMinute);
 
-      $facets=$result1["facets"];
+      $facets = $result1["facets"];
       // modules
-      $frontend=0; $backend=0; $batch=0; $nb_ano=0;
-      foreach($facets as $facet)
-      {
-        $nb_ano++;
-        if ($facet["property"]=="severities"){
-          foreach( $facet["values"] as $severity) {
-              if ($severity["val"]=="BLOCKER") { $blocker=$severity["count"]; }
-              if ($severity["val"]=="CRITICAL") { $critical=$severity["count"]; }
-              if ($severity["val"]=="MAJOR") { $major=$severity["count"]; }
-              if ($severity["val"]=="INFO") { $info=$severity["count"]; }
-              if ($severity["val"]=="MINOR") { $minor=$severity["count"]; }
-             }
-         }
-         if ($facet["property"]=="types"){
-          foreach( $facet["values"] as $type) {
-              if ($type["val"]=="BUG") { $bug=$type["count"]; }
-              if ($type["val"]=="VULNERABILITY") { $vulnerability=$type["count"]; }
-              if ($type["val"]=="CODE_SMELL") { $code_smell=$type["count"]; }
-             }
-         }
-         if ($facet["property"]=="directories"){
-          foreach( $facet["values"] as $directory) {
-
-            $file=str_replace($maven_key.":", "", $directory["val"]);
-            $module=explode("/", $file);
+      $frontend = 0;
+      $backend = 0;
+      $batch = 0;
+      $nombreAnomalie = 0;
+      foreach ($facets as $facet) {
+        $nombreAnomalie++;
+        if ($facet["property"] == "severities") {
+          foreach ($facet["values"] as $severity) {
+            if ($severity["val"] == "BLOCKER") {
+              $blocker = $severity["count"];
+            }
+            if ($severity["val"] == "CRITICAL") {
+              $critical = $severity["count"];
+            }
+            if ($severity["val"] == "MAJOR") {
+              $major = $severity["count"];
+            }
+            if ($severity["val"] == "INFO") {
+              $info = $severity["count"];
+            }
+            if ($severity["val"] == "MINOR") {
+              $minor = $severity["count"];
+            }
+          }
+        }
+        if ($facet["property"] == "types") {
+          foreach ($facet["values"] as $type) {
+            if ($type["val"] == "BUG") {
+              $bug = $type["count"];
+            }
+            if ($type["val"] == "VULNERABILITY") {
+              $vulnerability = $type["count"];
+            }
+            if ($type["val"] == "CODE_SMELL") {
+              $codeSmell = $type["count"];
+            }
+          }
+        }
+        if ($facet["property"] == "directories") {
+          foreach ($facet["values"] as $directory) {
+            $file = str_replace($mavenKey . ":", "", $directory["val"]);
+            $module = explode("/", $file);
 
             /* Cas particulier pour l'application RS et DU
              * Le nom du projet ne correspond pas à l'artifactId du module
              * Par exemple la clé maven it.cool:monapplication et un module de
              * type : cool-presentation au lieu de monapplication-presentation
              */
-            if ($module[0]=="du-presentation") {$frontend=$frontend+$directory["count"];}
-            if ($module[0]=="rs-presentation") {$frontend=$frontend+$directory["count"];}
-            if ($module[0]=="rs-metier") {$backend=$backend+$directory["count"];}
+            if ($module[0] == "du-presentation") {
+              $frontend = $frontend + $directory["count"];
+            }
+            if ($module[0] == "rs-presentation") {
+              $frontend = $frontend + $directory["count"];
+            }
+            if ($module[0] == "rs-metier") {
+              $backend = $backend + $directory["count"];
+            }
 
             // Application Frontend
-            if ($module[0]==$app[1]."-presentation"){$frontend=$frontend+$directory["count"];}
-            if ($module[0]==$app[1]."-presentation-commun") {$frontend=$frontend+$directory["count"];}
-            if ($module[0]==$app[1]."-presentation-ear") {$frontend=$frontend+$directory["count"];}
-            if ($module[0]==$app[1]."-webapp") {$frontend=$frontend+$directory["count"];}
+            if ($module[0] == $app[1] . "-presentation") {
+              $frontend = $frontend + $directory["count"];
+            }
+            if ($module[0] == $app[1] . "-presentation-commun") {
+              $frontend = $frontend + $directory["count"];
+            }
+            if ($module[0] == $app[1] . "-presentation-ear") {
+              $frontend = $frontend + $directory["count"];
+            }
+            if ($module[0] == $app[1] . "-webapp") {
+              $frontend = $frontend + $directory["count"];
+            }
 
             // Application Backend
-            if ($module[0]==$app[1]."-metier") {$backend=$backend+$directory["count"];}
-            if ($module[0]==$app[1]."-common") {$backend=$backend+$directory["count"];}
-            if ($module[0]==$app[1]."-api") {$backend=$backend+$directory["count"];}
-            if ($module[0]==$app[1]."-dao") {$backend=$backend+$directory["count"];}
-            if ($module[0]==$app[1]."-metier-ear") {$backend=$backend+$directory["count"];}
-            if ($module[0]==$app[1]."-service") {$backend=$backend+$directory["count"];}
-            if ($module[0]==$app[1]."-serviceweb") {$backend=$backend+$directory["count"];}
-            if ($module[0]==$app[1]."-middleoffice") {$backend=$backend+$directory["count"];}
+            if ($module[0] == $app[1] . "-metier") {
+              $backend = $backend + $directory["count"];
+            }
+            if ($module[0] == $app[1] . "-common") {
+              $backend = $backend + $directory["count"];
+            }
+            if ($module[0] == $app[1] . "-api") {
+              $backend = $backend + $directory["count"];
+            }
+            if ($module[0] == $app[1] . "-dao") {
+              $backend = $backend + $directory["count"];
+            }
+            if ($module[0] == $app[1] . "-metier-ear") {
+              $backend = $backend + $directory["count"];
+            }
+            if ($module[0] == $app[1] . "-service") {
+              $backend = $backend + $directory["count"];
+            }
+            if ($module[0] == $app[1] . "-serviceweb") {
+              $backend = $backend + $directory["count"];
+            }
+            if ($module[0] == $app[1] . "-middleoffice") {
+              $backend = $backend + $directory["count"];
+            }
 
-            // Application Batch
-            if ($module[0]==$app[1]."-batchs") {$batch=$batch+$directory["count"]; }
+            // Application Batch ou Autre
+            if ($module[0] == $app[1] . "-batchs") {
+              $batch = $batch + $directory["count"];
+            }
           }
-      }
+        }
       }
       // Enregistrement dans la table Anomalie
       $issue = new Anomalie();
-      $issue->setMavenKey($maven_key);
+      $issue->setMavenKey($mavenKey);
       $issue->setProjectName($app[1]);
-      $issue->setAnomalieTotal($anomalie_total);
+      $issue->setAnomalieTotal($anomalieTotal);
       $issue->setDette($dette);
-      $issue->setDetteMinute($dette_minute);
-      $issue->setDetteReliability($dette_reliability);
-      $issue->setDetteReliabilityMinute($dette_reliability_minute);
-      $issue->setDetteVulnerability($dette_vulnerability);
-      $issue->setDetteVulnerabilityMinute($dette_vulnerability_minute);
-      $issue->setDetteCodeSmell($dette_code_smell);
-      $issue->setDetteCodeSmellMinute($dette_code_smell_minute);
+      $issue->setDetteMinute($detteMinute);
+      $issue->setDetteReliability($detteReliability);
+      $issue->setDetteReliabilityMinute($detteReliabilityMinute);
+      $issue->setDetteVulnerability($detteVulnerability);
+      $issue->setDetteVulnerabilityMinute($detteVulnerabilityMinute);
+      $issue->setDetteCodeSmell($detteCodeSmell);
+      $issue->setDetteCodeSmellMinute($detteCodeSmellMinute);
       $issue->setFrontend($frontend);
       $issue->setBackend($backend);
       $issue->setBatch($batch);
@@ -459,21 +578,21 @@ class ApiProjetController extends AbstractController
       $issue->setMinor($minor);
       $issue->setBug($bug);
       $issue->setVulnerability($vulnerability);
-      $issue->setCodeSmell($code_smell);
+      $issue->setCodeSmell($codeSmell);
       $issue->setDateEnregistrement($date);
       $em->persist($issue);
       $em->flush();
     }
-    $info= "Enregistrement des défauts (".$nb_ano.") correctement effectué.";
+    $info = "Enregistrement des défauts (" . $nombreAnomalie . ") correctement effectué.";
 
     $response = new JsonResponse();
-    return $response->setData(["info"=>$info, Response::HTTP_OK]);
+    return $response->setData(["info" => $info, Response::HTTP_OK]);
   }
 
 
   /**
    * description
-  */
+   */
   /**
    * projet_anomalie_details
    * Récupère le détails des severités pour chaque type
@@ -486,90 +605,119 @@ class ApiProjetController extends AbstractController
    * @return response
    */
   #[Route('/api/projet/anomalie/details', name: 'projet_anomalie_details', methods: ['GET'])]
-  public function projet_anomalie_details(EntityManagerInterface $em, Request $request): response {
-
-    $maven_key=$request->get('maven_key');
+  public function projetAnomalieDetails(EntityManagerInterface $em, Request $request): response
+  {
+    // On bind les variables
+    $mavenKey = $request->get('mavenKey');
+    $tempoUrlLong=$this->getParameter(static::$sonarUrl).static::$apiIssuesSearch;
 
     // on créé un objet JSON
     $response = new JsonResponse();
 
     // Pour les Bug
-    $url1=$this->getParameter(static::$sonarUrl).static::$api_issues_search
-    .$request->get('maven_key')."&facets=severities&types=BUG&ps=1&p=1&statuses=OPEN";
+    $url1 = "${tempoUrlLong}${mavenKey}&facets=severities&types=BUG&ps=1&p=1&statuses=OPEN";
 
     // Pour les Vulenrabilités
-    $url2=$this->getParameter(static::$sonarUrl).static::$api_issues_search
-    .$request->get('maven_key')."&facets=severities&types=VULNERABILITY&ps=1&p=1&statuses=OPEN";
+    $url2 = "${tempoUrlLong}${mavenKey}&facets=severities&types=VULNERABILITY&ps=1&p=1&statuses=OPEN";
 
     // Pour les mauvaises pratiques
-    $url3=$this->getParameter(static::$sonarUrl).static::$api_issues_search
-    .$request->get('maven_key')."&facets=severities&types=CODE_SMELL&ps=1&p=1&statuses=OPEN";
+    $url3 = "${tempoUrlLong}${mavenKey}&facets=severities&types=CODE_SMELL&ps=1&p=1&statuses=OPEN";
 
     // on appel le client http pour les requête 1 à 3
-    $result1=$this->http_client($url1);
-    $result2=$this->http_client($url2);
-    $result3=$this->http_client($url3);
+    $result1 = $this->httpClient($url1);
+    $result2 = $this->httpClient($url2);
+    $result3 = $this->httpClient($url3);
 
-    if ($result1["paging"]["total"]!=0){
+    if ($result1["paging"]["total"] != 0) {
       // On supprime  l'enregistrement correspondant à la clé
-      $sql = "DELETE FROM anomalie_details WHERE maven_key='".$maven_key."'";
+      $sql = "DELETE FROM anomalie_details WHERE maven_key='${mavenKey}'";
       $em->getConnection()->prepare($sql)->executeQuery();
 
-      $date= new DateTime();
-      $r1=$result1["facets"];
-      $r2=$result2["facets"];
-      $r3=$result3["facets"];
+      $date = new DateTime();
+      $r1 = $result1["facets"];
+      $r2 = $result2["facets"];
+      $r3 = $result3["facets"];
 
       foreach ($r1[0]["values"] as $severity) {
-        if ($severity["val"]=== "BLOCKER") { $bug_blocker=$severity["count"]; }
-        if ($severity["val"]=== "CRITICAL") { $bug_critical=$severity["count"]; }
-        if ($severity["val"]==="MAJOR") { $bug_major=$severity["count"]; }
-        if ($severity["val"]==="MINOR") { $bug_minor=$severity["count"]; }
-        if ($severity["val"]==="INFO") { $bug_info=$severity["count"]; }
+        if ($severity["val"] === "BLOCKER") {
+          $bugBlocker = $severity["count"];
+        }
+        if ($severity["val"] === "CRITICAL") {
+          $bugCritical = $severity["count"];
+        }
+        if ($severity["val"] === "MAJOR") {
+          $bugMajor = $severity["count"];
+        }
+        if ($severity["val"] === "MINOR") {
+          $bugMinor = $severity["count"];
+        }
+        if ($severity["val"] === "INFO") {
+          $bugInfo = $severity["count"];
+        }
       }
 
       foreach ($r2[0]["values"] as $severity) {
-        if ($severity["val"]==="BLOCKER") { $vulnerability_blocker=$severity["count"]; }
-        if ($severity["val"]==="CRITICAL") { $vulnerability_critical=$severity["count"]; }
-        if ($severity["val"]==="MAJOR") { $vulnerability_major=$severity["count"]; }
-        if ($severity["val"]==="MINOR") { $vulnerability_minor=$severity["count"]; }
-        if ($severity["val"]==="INFO") { $vulnerability_info=$severity["count"]; }
+        if ($severity["val"] === "BLOCKER") {
+          $vulnerabilityBlocker = $severity["count"];
+        }
+        if ($severity["val"] === "CRITICAL") {
+          $vulnerabilityCritical = $severity["count"];
+        }
+        if ($severity["val"] === "MAJOR") {
+          $vulnerabilityMajor = $severity["count"];
+        }
+        if ($severity["val"] === "MINOR") {
+          $vulnerabilityMinor = $severity["count"];
+        }
+        if ($severity["val"] === "INFO") {
+          $vulnerabilityInfo = $severity["count"];
+        }
       }
 
       foreach ($r3[0]["values"] as $severity) {
-        if ($severity["val"]==="BLOCKER") { $code_smell_blocker=$severity["count"]; }
-        if ($severity["val"]==="CRITICAL") { $code_smell_critical=$severity["count"]; }
-        if ($severity["val"]==="MAJOR") { $code_smell_major=$severity["count"]; }
-        if ($severity["val"]==="MINOR") { $code_smell_minor=$severity["count"]; }
-        if ($severity["val"]==="INFO") { $code_smell_info=$severity["count"]; }
+        if ($severity["val"] === "BLOCKER") {
+          $codeSmellBlocker = $severity["count"];
+        }
+        if ($severity["val"] === "CRITICAL") {
+          $codeSmellCritical = $severity["count"];
+        }
+        if ($severity["val"] === "MAJOR") {
+          $codeSmellMajor = $severity["count"];
+        }
+        if ($severity["val"] === "MINOR") {
+          $codeSmellMinor = $severity["count"];
+        }
+        if ($severity["val"] === "INFO") {
+          $codeSmellInfo = $severity["count"];
+        }
       }
 
       // On récupère le nom de l'application
-      $explode=explode(":", $maven_key);
-      $name=$explode[1];
+      $explode = explode(":", $mavenKey);
+      $name = $explode[1];
 
       // On enregistre en base
       $details = new AnomalieDetails();
-      $details->setMavenKey($maven_key);
+      $details->setMavenKey($mavenKey);
       $details->setName($name);
 
-      $details->setBugBlocker($bug_blocker);
-      $details->setBugCritical($bug_critical);
-      $details->setBugMajor($bug_major);
-      $details->setBugMinor($bug_minor);
-      $details->setBugInfo($bug_info);
+      $details->setBugBlocker($bugBlocker);
+      $details->setBugCritical($bugCritical);
+      $details->setBugMajor($bugMajor);
+      $details->setBugMinor($bugMinor);
+      $details->setBugInfo($bugInfo);
 
-      $details->setVulnerabilityBlocker($vulnerability_blocker);
-      $details->setVulnerabilityCritical($vulnerability_critical);
-      $details->setVulnerabilityMajor($vulnerability_major);
-      $details->setVulnerabilityMinor($vulnerability_minor);
-      $details->setVulnerabilityInfo($vulnerability_info);
+      $details->setVulnerabilityBlocker($vulnerabilityBlocker);
+      $details->setVulnerabilityCritical($vulnerabilityCritical);
+      $details->setVulnerabilityMajor($vulnerabilityMajor);
+      $details->setVulnerabilityMinor($vulnerabilityMinor);
+      $details->setVulnerabilityInfo($vulnerabilityInfo);
 
-      $details->setCodeSmellBlocker($code_smell_blocker);
-      $details->setCodeSmellCritical($code_smell_critical);
-      $details->setCodeSmellMajor($code_smell_major);
-      $details->setCodeSmellMinor($code_smell_minor);
-      $details->setCodeSmellInfo($code_smell_info);
+      $details->setCodeSmellBlocker($codeSmellBlocker);
+      $details->setCodeSmellCritical($codeSmellCritical);
+      $details->setCodeSmellMajor($codeSmellMajor);
+      $details->setCodeSmellMinor($codeSmellMinor);
+      $details->setCodeSmellInfo($codeSmellInfo);
 
       $details->setDateEnregistrement($date);
       $em->persist($details);
@@ -578,10 +726,10 @@ class ApiProjetController extends AbstractController
       try {
         $em->flush();
       } catch (\Doctrine\DBAL\Exception $e) {
-        return $response->setData(["code"=>$e->getCode(), Response::HTTP_OK]);
+        return $response->setData(["code" => $e->getCode(), Response::HTTP_OK]);
       }
     }
-    return $response->setData(["code"=>"OK", Response::HTTP_OK]);
+    return $response->setData(["code" => "OK", Response::HTTP_OK]);
   }
 
   /**
@@ -596,32 +744,45 @@ class ApiProjetController extends AbstractController
    * @return response
    */
   #[Route('/api/projet/historique/note', name: 'projet_historique_note', methods: ['GET'])]
-  public function historique_note_ajout(EntityManagerInterface $em, Request $request): response {
+  public function historiqueNoteAjout(EntityManagerInterface $em, Request $request): response
+  {
 
-    $url=$this->getParameter(static::$sonarUrl)."/api/measures/search_history?component=".$request->get('maven_key')."&metrics=".$request->get('type')."_rating&ps=1000";
+    // On bind les variables
+    $tempoUrl=$this->getParameter(static::$sonarUrl);
+    $mavenKey=$request->get('mavenKey');
+    $type=$request->get('type');
+
+    $url = "${tempoUrl}/api/measures/search_history?component=${mavenKey}&metrics=${type}_rating&ps=1000";
 
     // on appel le client http
-    $result=$this->http_client($url);
+    $result = $this->httpClient($url);
 
-    $date= new DateTime();
-    $nombre=$result["paging"]["total"];
-    $mesures=$result["measures"][0]["history"];
+    $date = new DateTime();
+    $tempoDate=$date->format(static::$dateFormat);
+    $nombre = $result["paging"]["total"];
+    $mesures = $result["measures"][0]["history"];
 
     // Enregistrement des nouvelles valeurs
-    foreach($mesures as $mesure ) {
-      $sql="INSERT OR IGNORE INTO notes (maven_key, type, date, value, date_enregistrement)
-       VALUES ('".$request->get('maven_key')."', '".$request->get('type') ."', '"
-       .$mesure["date"] ."', '". $mesure["value"] ."', '"
-       .$date->format(static::$dateFormat)."')";
+    foreach ($mesures as $mesure) {
+      $tempoMesureDate=$mesure["date"];
+      $tempoMesureValue=$mesure["value"];
+      $sql = "INSERT OR IGNORE INTO notes (maven_key, type, date, value, date_enregistrement)
+              VALUES ('${mavenKey}')', '${type})', '${$tempoMesureDate}', '${$tempoMesureValue}', '${tempoDate}')";
       $em->getConnection()->prepare($sql)->executeQuery();
     }
 
-   if ($request->get('type')=="reliability"){$type="Fiabilité";}
-   if ($request->get('type')=="security"){$type="Sécurité";}
-   if ($request->get('type')=="sqale"){$type="Mauvaises Pratiques";}
+    if ($request->get('type') == "reliability") {
+      $type = "Fiabilité";
+    }
+    if ($request->get('type') == "security") {
+      $type = "Sécurité";
+    }
+    if ($request->get('type') == "sqale") {
+      $type = "Mauvaises Pratiques";
+    }
 
-   $response = new JsonResponse();
-   return $response->setData(["nombre"=>$nombre, "type"=>$type, Response::HTTP_OK]);
+    $response = new JsonResponse();
+    return $response->setData(["nombre" => $nombre, "type" => $type, Response::HTTP_OK]);
   }
 
   /**
@@ -636,146 +797,268 @@ class ApiProjetController extends AbstractController
    * @return response
    */
   #[Route('/api/projet/issues/owasp', name: 'projet_issues_owasp', methods: ['GET'])]
-  public function issues_owasp_ajout(EntityManagerInterface $em, Request $request): response {
-    $url=$this->getParameter(static::$sonarUrl).static::$api_issues_search.$request->get('maven_key')
-    ."&facets=owaspTop10&owaspTop10=a1,a2,a3,a4,a5,a6,a7,a8,a9,a10";
+  public function issuesOwaspAjout(EntityManagerInterface $em, Request $request): response
+  {
+    // On bind les variables
+    $mavenKey = $request->get('mavenKey');
+    $tempoUrlLong=$this->getParameter(static::$sonarUrl).static::$apiIssuesSearch;
 
-    $result=$this->http_client($url);
-    $date= new DateTime();
-    $owasp=[$result["total"]];
-    $effortTotal=$result["effortTotal"];
+    // URL de l'appel
+    $url = "${tempoUrlLong}${mavenKey}&facets=owaspTop10&owaspTop10=a1,a2,a3,a4,a5,a6,a7,a8,a9,a10";
 
-    for ($a=0; $a < 10; $a++)
-      {
-        switch ($result["facets"][0]["values"][$a]["val"]) {
-          case 'a1': $owasp[1] = $result["facets"][0]["values"][$a]["count"];
-            break;
-          case 'a2': $owasp[2] = $result["facets"][0]["values"][$a]["count"];
-            break;
-          case 'a3': $owasp[3] = $result["facets"][0]["values"][$a]["count"];
-            break;
-          case 'a4': $owasp[4] = $result["facets"][0]["values"][$a]["count"];
-            break;
-          case 'a5': $owasp[5] = $result["facets"][0]["values"][$a]["count"];
-            break;
-          case 'a6': $owasp[6] = $result["facets"][0]["values"][$a]["count"];
-            break;
-          case 'a7': $owasp[7] = $result["facets"][0]["values"][$a]["count"];
-            break;
-          case 'a8': $owasp[8] = $result["facets"][0]["values"][$a]["count"];
-            break;
-          case 'a9': $owasp[9] = $result["facets"][0]["values"][$a]["count"];
-            break;
-          case 'a10': $owasp[10] = $result["facets"][0]["values"][$a]["count"];
-            break;
-          default : echo "OWASP TOP 10"; break;
-          }
+    // On appel l'API
+    $result = $this->httpClient($url);
+
+    $date = new DateTime();
+    $owasp = [$result["total"]];
+    $effortTotal = $result["effortTotal"];
+
+    for ($a = 0; $a < 10; $a++) {
+      switch ($result["facets"][0]["values"][$a]["val"]) {
+        case 'a1':
+          $owasp[1] = $result["facets"][0]["values"][$a]["count"];
+          break;
+        case 'a2':
+          $owasp[2] = $result["facets"][0]["values"][$a]["count"];
+          break;
+        case 'a3':
+          $owasp[3] = $result["facets"][0]["values"][$a]["count"];
+          break;
+        case 'a4':
+          $owasp[4] = $result["facets"][0]["values"][$a]["count"];
+          break;
+        case 'a5':
+          $owasp[5] = $result["facets"][0]["values"][$a]["count"];
+          break;
+        case 'a6':
+          $owasp[6] = $result["facets"][0]["values"][$a]["count"];
+          break;
+        case 'a7':
+          $owasp[7] = $result["facets"][0]["values"][$a]["count"];
+          break;
+        case 'a8':
+          $owasp[8] = $result["facets"][0]["values"][$a]["count"];
+          break;
+        case 'a9':
+          $owasp[9] = $result["facets"][0]["values"][$a]["count"];
+          break;
+        case 'a10':
+          $owasp[10] = $result["facets"][0]["values"][$a]["count"];
+          break;
+        default:
+          echo "OWASP TOP 10";
+          break;
       }
+    }
 
-    $a1_blocker = 0; $a1_critical = 0; $a1_major = 0; $a1_info = 0; $a1_minor = 0;
-    $a2_blocker = 0; $a2_critical = 0; $a2_major = 0; $a2_info = 0; $a2_minor = 0;
-    $a3_blocker = 0; $a3_critical = 0; $a3_major = 0; $a3_info = 0; $a3_minor = 0;
-    $a4_blocker = 0; $a4_critical = 0; $a4_major = 0; $a4_info = 0; $a4_minor = 0;
-    $a5_blocker = 0; $a5_critical = 0; $a5_major = 0; $a5_info = 0; $a5_minor = 0;
-    $a6_blocker = 0; $a6_critical = 0; $a6_major = 0; $a6_info = 0; $a6_minor = 0;
-    $a7_blocker = 0; $a7_critical = 0; $a7_major = 0; $a7_info = 0; $a7_minor = 0;
-    $a8_blocker = 0; $a8_critical = 0; $a8_major = 0; $a8_info = 0; $a8_minor = 0;
-    $a9_blocker = 0; $a9_critical = 0; $a9_major = 0; $a9_info = 0; $a9_minor = 0;
-    $a10_blocker = 0; $a10_critical = 0; $a10_major = 0; $a10_info = 0; $a10_minor = 0;
+    $a1Blocker = 0; $a1Critical = 0; $a1Major = 0;  $a1Info = 0; $a1Minor = 0;
+    $a2Blocker = 0; $a2Critical = 0; $a2Major = 0; $a2Info = 0; $a2Minor = 0;
+    $a3Blocker = 0; $a3Critical = 0; $a3Major = 0; $a3Info = 0; $a3Minor = 0;
+    $a4Blocker = 0; $a4Critical = 0; $a4Major = 0; $a4Info = 0; $a4Minor = 0;
+    $a5Blocker = 0; $a5Critical = 0; $a5Major = 0; $a5Info = 0; $a5Minor = 0;
+    $a6Blocker = 0; $a6Critical = 0; $a6Major = 0; $a6Info = 0; $a6Minor = 0;
+    $a7Blocker = 0; $a7Critical = 0; $a7Major = 0; $a7Info = 0; $a7Minor = 0;
+    $a8Blocker = 0; $a8Critical = 0; $a8Major = 0; $a8Info = 0; $a8Minor = 0;
+    $a9Blocker = 0; $a9Critical = 0; $a9Major = 0; $a9Info = 0; $a9Minor = 0;
+    $a10Blocker = 0; $a10Critical = 0; $a10Major = 0; $a10Info = 0; $a10Minor = 0;
 
-    if ($result["total"]!=0) {
+    if ($result["total"] != 0) {
       foreach ($result["issues"] as $issue) {
         $severity = $issue["severity"];
-        if ($issue["status"] == 'OPEN' || $issue["status"] == 'CONFIRMED' || $issue["status"]
-            == 'REOPENED') {
-          if (preg_match("/owasp-a/is", var_export($issue["tags"], true)) !=0) {
-              foreach ($issue["tags"] as $tag) {
-                switch ($tag) {
-                  case "owasp-a1":
-                    if ($severity == 'BLOCKER') { $a1_blocker++; }
-                    if ($severity == 'CRITICAL') { $a1_critical++; }
-                    if ($severity == 'MAJOR') { $a1_major++; }
-                    if ($severity == 'INFO') { $a1_info++; }
-                    if ($severity == 'MINOR') { $a1_minor++; }
-                    break;
-                  case "owasp-a2":
-                    if ($severity == 'BLOCKER') { $a2_blocker++; }
-                    if ($severity == 'CRITICAL') { $a2_critical++; }
-                    if ($severity == 'MAJOR') { $a2_major++; }
-                    if ($severity == 'INFO') { $a2_info++; }
-                    if ($severity == 'MINOR') { $a2_minor++; }
-                    break;
-                  case "owasp-a3":
-                    if ($severity == 'BLOCKER') { $a3_blocker++; }
-                    if ($severity == 'CRITICAL') { $a3_critical++; }
-                    if ($severity == 'MAJOR') { $a3_major++; }
-                    if ($severity == 'INFO') { $a3_info++; }
-                    if ($severity == 'MINOR') { $a3_minor++; }
-                    break;
-                  case "owasp-a4":
-                    if ($severity == 'BLOCKER') { $a4_blocker++; }
-                    if ($severity == 'CRITICAL') { $a4_critical++; }
-                    if ($severity == 'MAJOR') { $a4_major++; }
-                    if ($severity == 'INFO') { $a4_info++; }
-                    if ($severity == 'MINOR') { $a4_minor++; }
-                    break;
-                  case "owasp-a5":
-                    if ($severity == 'BLOCKER') { $a5_blocker++; }
-                    if ($severity == 'CRITICAL') { $a5_critical++; }
-                    if ($severity == 'MAJOR') { $a5_major++; }
-                    if ($severity == 'INFO') { $a5_info++; }
-                    if ($severity == 'MINOR') { $a5_minor++; }
-                    break;
-                  case "owasp-a6":
-                    if ($severity == 'BLOCKER') { $a6_blocker++; }
-                    if ($severity == 'CRITICAL') { $a6_critical++; }
-                    if ($severity == 'MAJOR') { $a6_major++; }
-                    if ($severity == 'INFO') { $a6_info++; }
-                    if ($severity == 'MINOR') { $a6_minor++; }
-                    break;
-                  case "owasp-a7":
-                    if ($severity == 'BLOCKER') { $a7_blocker++; }
-                    if ($severity == 'CRITICAL') { $a7_critical++; }
-                    if ($severity == 'MAJOR') { $a7_major++; }
-                    if ($severity == 'INFO') { $a7_info++; }
-                    if ($severity == 'MINOR') { $a7_minor++; }
-                    break;
-                  case "owasp-a8":
-                    if ($severity == 'BLOCKER') { $a8_blocker++; }
-                    if ($severity == 'CRITICAL') { $a8_critical++; }
-                    if ($severity == 'MAJOR') { $a8_major++; }
-                    if ($severity == 'INFO') { $a8_info++; }
-                    if ($severity == 'MINOR') { $a8_minor++; }
-                    break;
-                  case "owasp-a9":
-                    if ($severity == 'BLOCKER') { $a9_blocker++; }
-                    if ($severity == 'CRITICAL') { $a9_critical++; }
-                    if ($severity == 'MAJOR') { $a9_major++; }
-                    if ($severity == 'INFO') { $a9_info++; }
-                    if ($severity == 'MINOR') { $a9_minor++; }
-                    break;
-                  case "owasp-a10":
-                    if ($severity == 'BLOCKER') { $a10_blocker++; }
-                    if ($severity == 'CRITICAL') { $a10_critical++; }
-                    if ($severity == 'MAJOR') { $a10_major++; }
-                    if ($severity == 'INFO') { $a10_info++; }
-                    if ($severity == 'MINOR') { $a10_minor++; }
-                    break;
-                  default : break;
+        if ($issue["status"] == 'OPEN' ||
+            $issue["status"] == 'CONFIRMED' ||
+            $issue["status"] == 'REOPENED')
+            {
+              $tagMatch=preg_match("/owasp-a/is", var_export($issue["tags"], true));
+              if ($tagMatch != 0) {
+                foreach ($issue["tags"] as $tag) {
+                  switch ($tag) {
+                    case "owasp-a1":
+                      if ($severity == 'BLOCKER') {
+                        $a1Blocker++;
+                      }
+                      if ($severity == 'CRITICAL') {
+                        $a1Critical++;
+                      }
+                      if ($severity == 'MAJOR') {
+                        $a1Major++;
+                      }
+                      if ($severity == 'INFO') {
+                        $a1Info++;
+                      }
+                      if ($severity == 'MINOR') {
+                        $a1Minor++;
+                      }
+                      break;
+                    case "owasp-a2":
+                      if ($severity == 'BLOCKER') {
+                        $a2Blocker++;
+                      }
+                      if ($severity == 'CRITICAL') {
+                        $a2Critical++;
+                      }
+                      if ($severity == 'MAJOR') {
+                        $a2Major++;
+                      }
+                      if ($severity == 'INFO') {
+                        $a2Info++;
+                      }
+                      if ($severity == 'MINOR') {
+                        $a2Minor++;
+                      }
+                      break;
+                    case "owasp-a3":
+                      if ($severity == 'BLOCKER') {
+                        $a3Blocker++;
+                      }
+                      if ($severity == 'CRITICAL') {
+                        $a3Critical++;
+                      }
+                      if ($severity == 'MAJOR') {
+                        $a3Major++;
+                      }
+                      if ($severity == 'INFO') {
+                        $a3Info++;
+                      }
+                      if ($severity == 'MINOR') {
+                        $a3Minor++;
+                      }
+                      break;
+                    case "owasp-a4":
+                      if ($severity == 'BLOCKER') {
+                        $a4Blocker++;
+                      }
+                      if ($severity == 'CRITICAL') {
+                        $a4Critical++;
+                      }
+                      if ($severity == 'MAJOR') {
+                        $a4Major++;
+                      }
+                      if ($severity == 'INFO') {
+                        $a4Info++;
+                      }
+                      if ($severity == 'MINOR') {
+                        $a4Minor++;
+                      }
+                      break;
+                    case "owasp-a5":
+                      if ($severity == 'BLOCKER') {
+                        $a5Blocker++;
+                      }
+                      if ($severity == 'CRITICAL') {
+                        $a5Critical++;
+                      }
+                      if ($severity == 'MAJOR') {
+                        $a5Major++;
+                      }
+                      if ($severity == 'INFO') {
+                        $a5Info++;
+                      }
+                      if ($severity == 'MINOR') {
+                        $a5Minor++;
+                      }
+                      break;
+                    case "owasp-a6":
+                      if ($severity == 'BLOCKER') {
+                        $a6Blocker++;
+                      }
+                      if ($severity == 'CRITICAL') {
+                        $a6Critical++;
+                      }
+                      if ($severity == 'MAJOR') {
+                        $a6Major++;
+                      }
+                      if ($severity == 'INFO') {
+                        $a6Info++;
+                      }
+                      if ($severity == 'MINOR') {
+                        $a6Minor++;
+                      }
+                      break;
+                    case "owasp-a7":
+                      if ($severity == 'BLOCKER') {
+                        $a7Blocker++;
+                      }
+                      if ($severity == 'CRITICAL') {
+                        $a7Critical++;
+                      }
+                      if ($severity == 'MAJOR') {
+                        $a7Major++;
+                      }
+                      if ($severity == 'INFO') {
+                        $a7Info++;
+                      }
+                      if ($severity == 'MINOR') {
+                        $a7Minor++;
+                      }
+                      break;
+                    case "owasp-a8":
+                      if ($severity == 'BLOCKER') {
+                        $a8Blocker++;
+                      }
+                      if ($severity == 'CRITICAL') {
+                        $a8Critical++;
+                      }
+                      if ($severity == 'MAJOR') {
+                        $a8Major++;
+                      }
+                      if ($severity == 'INFO') {
+                        $a8Info++;
+                      }
+                      if ($severity == 'MINOR') {
+                        $a8Minor++;
+                      }
+                      break;
+                    case "owasp-a9":
+                      if ($severity == 'BLOCKER') {
+                        $a9Blocker++;
+                      }
+                      if ($severity == 'CRITICAL') {
+                        $a9Critical++;
+                      }
+                      if ($severity == 'MAJOR') {
+                        $a9Major++;
+                      }
+                      if ($severity == 'INFO') {
+                        $a9Info++;
+                      }
+                      if ($severity == 'MINOR') {
+                        $a9Minor++;
+                      }
+                      break;
+                    case "owasp-a10":
+                      if ($severity == 'BLOCKER') {
+                        $a10Blocker++;
+                      }
+                      if ($severity == 'CRITICAL') {
+                        $a10Critical++;
+                      }
+                      if ($severity == 'MAJOR') {
+                        $a10Major++;
+                      }
+                      if ($severity == 'INFO') {
+                        $a10Info++;
+                      }
+                      if ($severity == 'MINOR') {
+                        $a10Minor++;
+                      }
+                      break;
+                    default:
+                      break;
+                  }
                 }
               }
             }
           }
-        }
       }
 
     //on supprime les informations sur le projet
-    $sql = "DELETE FROM owasp WHERE maven_key='".$request->get('maven_key')."'";
+    $sql = "DELETE FROM owasp WHERE maven_key='${mavenKey}'";
     $em->getConnection()->prepare($sql)->executeQuery();
 
     // Enregistre en base
     $owaspTop10 = new Owasp();
-    $owaspTop10->setMavenKey($request->get("maven_key"));
+    $owaspTop10->setMavenKey($request->get("mavenKey"));
     $owaspTop10->setEffortTotal($effortTotal);
     $owaspTop10->setA1($owasp[1]);
     $owaspTop10->setA2($owasp[2]);
@@ -788,72 +1071,72 @@ class ApiProjetController extends AbstractController
     $owaspTop10->setA9($owasp[9]);
     $owaspTop10->setA10($owasp[10]);
 
-    $owaspTop10->setA1Blocker($a1_blocker);
-    $owaspTop10->setA1Critical($a1_critical);
-    $owaspTop10->setA1Major($a1_major);
-    $owaspTop10->setA1Info($a1_info);
-    $owaspTop10->setA1Minor($a1_minor);
+    $owaspTop10->setA1Blocker($a1Blocker);
+    $owaspTop10->setA1Critical($a1Critical);
+    $owaspTop10->setA1Major($a1Major);
+    $owaspTop10->setA1Info($a1Info);
+    $owaspTop10->setA1Minor($a1Minor);
 
-    $owaspTop10->setA2Blocker($a2_blocker);
-    $owaspTop10->setA2Critical($a2_critical);
-    $owaspTop10->setA2Major($a2_major);
-    $owaspTop10->setA2Info($a2_info);
-    $owaspTop10->setA2Minor($a2_minor);
+    $owaspTop10->setA2Blocker($a2Blocker);
+    $owaspTop10->setA2Critical($a2Critical);
+    $owaspTop10->setA2Major($a2Major);
+    $owaspTop10->setA2Info($a2Info);
+    $owaspTop10->setA2Minor($a2Minor);
 
-    $owaspTop10->setA3Blocker($a3_blocker);
-    $owaspTop10->setA3Critical($a3_critical);
-    $owaspTop10->setA3Major($a3_major);
-    $owaspTop10->setA3Info($a3_info);
-    $owaspTop10->setA3Minor($a3_minor);
+    $owaspTop10->setA3Blocker($a3Blocker);
+    $owaspTop10->setA3Critical($a3Critical);
+    $owaspTop10->setA3Major($a3Major);
+    $owaspTop10->setA3Info($a3Info);
+    $owaspTop10->setA3Minor($a3Minor);
 
-    $owaspTop10->setA4Blocker($a4_blocker);
-    $owaspTop10->setA4Critical($a4_critical);
-    $owaspTop10->setA4Major($a4_major);
-    $owaspTop10->setA4Info($a4_info);
-    $owaspTop10->setA4Minor($a4_minor);
+    $owaspTop10->setA4Blocker($a4Blocker);
+    $owaspTop10->setA4Critical($a4Critical);
+    $owaspTop10->setA4Major($a4Major);
+    $owaspTop10->setA4Info($a4Info);
+    $owaspTop10->setA4Minor($a4Minor);
 
-    $owaspTop10->setA5Blocker($a5_blocker);
-    $owaspTop10->setA5Critical($a5_critical);
-    $owaspTop10->setA5Major($a5_major);
-    $owaspTop10->setA5Info($a5_info);
-    $owaspTop10->setA5Minor($a5_minor);
+    $owaspTop10->setA5Blocker($a5Blocker);
+    $owaspTop10->setA5Critical($a5Critical);
+    $owaspTop10->setA5Major($a5Major);
+    $owaspTop10->setA5Info($a5Info);
+    $owaspTop10->setA5Minor($a5Minor);
 
-    $owaspTop10->setA6Blocker($a6_blocker);
-    $owaspTop10->setA6Critical($a6_critical);
-    $owaspTop10->setA6Major($a6_major);
-    $owaspTop10->setA6Info($a6_info);
-    $owaspTop10->setA6Minor($a6_minor);
+    $owaspTop10->setA6Blocker($a6Blocker);
+    $owaspTop10->setA6Critical($a6Critical);
+    $owaspTop10->setA6Major($a6Major);
+    $owaspTop10->setA6Info($a6Info);
+    $owaspTop10->setA6Minor($a6Minor);
 
-    $owaspTop10->setA7Blocker($a7_blocker);
-    $owaspTop10->setA7Critical($a7_critical);
-    $owaspTop10->setA7Major($a7_major);
-    $owaspTop10->setA7Info($a7_info);
-    $owaspTop10->setA7Minor($a7_minor);
+    $owaspTop10->setA7Blocker($a7Blocker);
+    $owaspTop10->setA7Critical($a7Critical);
+    $owaspTop10->setA7Major($a7Major);
+    $owaspTop10->setA7Info($a7Info);
+    $owaspTop10->setA7Minor($a7Minor);
 
-    $owaspTop10->setA8Blocker($a8_blocker);
-    $owaspTop10->setA8Critical($a8_critical);
-    $owaspTop10->setA8Major($a8_major);
-    $owaspTop10->setA8Info($a8_info);
-    $owaspTop10->setA8Minor($a8_minor);
+    $owaspTop10->setA8Blocker($a8Blocker);
+    $owaspTop10->setA8Critical($a8Critical);
+    $owaspTop10->setA8Major($a8Major);
+    $owaspTop10->setA8Info($a8Info);
+    $owaspTop10->setA8Minor($a8Minor);
 
-    $owaspTop10->setA9Blocker($a9_blocker);
-    $owaspTop10->setA9Critical($a9_critical);
-    $owaspTop10->setA9Major($a9_major);
-    $owaspTop10->setA9Info($a9_info);
-    $owaspTop10->setA9Minor($a9_minor);
+    $owaspTop10->setA9Blocker($a9Blocker);
+    $owaspTop10->setA9Critical($a9Critical);
+    $owaspTop10->setA9Major($a9Major);
+    $owaspTop10->setA9Info($a9Info);
+    $owaspTop10->setA9Minor($a9Minor);
 
-    $owaspTop10->setA10Blocker($a10_blocker);
-    $owaspTop10->setA10Critical($a10_critical);
-    $owaspTop10->setA10Major($a10_major);
-    $owaspTop10->setA10Info($a10_info);
-    $owaspTop10->setA10Minor($a10_minor);
+    $owaspTop10->setA10Blocker($a10Blocker);
+    $owaspTop10->setA10Critical($a10Critical);
+    $owaspTop10->setA10Major($a10Major);
+    $owaspTop10->setA10Info($a10Info);
+    $owaspTop10->setA10Minor($a10Minor);
 
     $owaspTop10->setDateEnregistrement($date);
     $em->persist($owaspTop10);
     $em->flush();
 
     $response = new JsonResponse();
-    return $response->setData(["owasp"=>$result["total"], Response::HTTP_OK]);
+    return $response->setData(["owasp" => $result["total"], Response::HTTP_OK]);
   }
 
   /**
@@ -868,167 +1151,249 @@ class ApiProjetController extends AbstractController
    * @return response
    */
   #[Route('/api/projet/hotspot', name: 'projet_hotspot', methods: ['GET'])]
-  public function hotspot_ajout(EntityManagerInterface $em, Request $request): response {
-      $url=$this->getParameter(static::$sonarUrl)."/api/hotspots/search?projectKey="
-       .$request->get('maven_key')."&ps=500&p=1";
+  public function hotspotAjout(EntityManagerInterface $em, Request $request): response
+  {
+    // On bind les variables
+    $tempoUrl=$this->getParameter(static::$sonarUrl);
+    $mavenKey=$request->get('mavenKey');
 
-      $result=$this->http_client($url);
-      $date= new DateTime();
-      $niveau=0;
+    // On construit l'URL
+    $url = "${tempoUrl}/api/hotspots/search?projectKey=${mavenKey}&ps=500&p=1";
 
-      if ($result["paging"]["total"]!=0){
-        // On supprime  les enregistrement correspondant à la clé
-        $sql = "DELETE FROM hotspots WHERE maven_key='".$request->get('maven_key')."'";
-        $em->getConnection()->prepare($sql)->executeQuery();
+    // On appel l'Api
+    $result = $this->httpClient($url);
 
-        foreach ( $result["hotspots"] as $value) {
-          if ($value["vulnerabilityProbability"] == "HIGH") { $niveau=1; }
-          if ($value["vulnerabilityProbability"] == "MEDIUM") { $niveau=2; }
-          if ($value["vulnerabilityProbability"] == "LOW") { $niveau=3; }
+    // On créé un ojbet Date
+    $date = new DateTime();
+    $niveau = 0;
 
-          $hotspot= new  Hotspots();
-          $hotspot->setMavenKey($request->get('maven_key'));
-          $hotspot->setKey($value["key"]);
-          $hotspot->setProbability($value["vulnerabilityProbability"]);
-          $hotspot->setStatus($value["status"]);
-          $hotspot->setNiveau($niveau);
-          $hotspot->setDateEnregistrement($date);
-          $em->persist($hotspot);
-          $em->flush();
-         }
+    if ($result["paging"]["total"] != 0) {
+      // On supprime  les enregistrement correspondant à la clé
+      $sql = "DELETE FROM hotspots WHERE maven_key='${mavenKey}'";
+      $em->getConnection()->prepare($sql)->executeQuery();
+
+      foreach ($result["hotspots"] as $value) {
+        if ($value["vulnerabilityProbability"] == "HIGH") {
+          $niveau = 1;
+        }
+        if ($value["vulnerabilityProbability"] == "MEDIUM") {
+          $niveau = 2;
+        }
+        if ($value["vulnerabilityProbability"] == "LOW") {
+          $niveau = 3;
+        }
+
+        $hotspot = new  Hotspots();
+        $hotspot->setMavenKey($request->get('mavenKey'));
+        $hotspot->setKey($value["key"]);
+        $hotspot->setProbability($value["vulnerabilityProbability"]);
+        $hotspot->setStatus($value["status"]);
+        $hotspot->setNiveau($niveau);
+        $hotspot->setDateEnregistrement($date);
+        $em->persist($hotspot);
+        $em->flush();
       }
-
-      $response = new JsonResponse();
-      return $response->setData(["hotspots"=>$result["paging"]["total"], Response::HTTP_OK]);
     }
 
-   /**
-    * hotspot_owasp_ajout
-    * Traitement des hotspots de type owasp pour sonarqube 8.9 et >
-    * http://{url}/api/hotspots/search?projectKey={key}{owasp}&ps=500&p=1
-    * {key} = la clé du projet
-    * {owasp} = le type de faille (a1, a2, etc...)
-    * si le paramétre owasp est égale à a0 alors on supprime les enregistrements pour la clé
-    *
-    * @param  mixed $em
-    * @param  mixed $request
-    * @return response
-    */
-    #[Route('/api/projet/hotspot/owasp', name: 'projet_hotspot_owasp', methods: ['GET'])]
-    public function hotspot_owasp_ajout(EntityManagerInterface $em, Request $request): response {
-      $response = new JsonResponse();
-      if ($request->get('owasp')=='a0') {
-         // On supprime  les enregistrements correspondant à la clé
-         $sql = "DELETE FROM hotspot_owasp WHERE maven_key='"
-         .$request->get('maven_key')."'";
-         $em->getConnection()->prepare($sql)->executeQuery();
-         return $response->setData(["info"=>"effacement", Response::HTTP_OK]);
-        }
+    $response = new JsonResponse();
+    return $response->setData(
+      ["hotspots" => $result["paging"]["total"], Response::HTTP_OK]);
+  }
 
-      $url=$this->getParameter(static::$sonarUrl)."/api/hotspots/search?projectKey=".$request->get('maven_key')."&owaspTop10=".$request->get('owasp')."&ps=500&p=1";
+  /**
+   * hotspot_owasp_ajout
+   * Traitement des hotspots de type owasp pour sonarqube 8.9 et >
+   * http://{url}/api/hotspots/search?projectKey={key}{owasp}&ps=500&p=1
+   * {key} = la clé du projet
+   * {owasp} = le type de faille (a1, a2, etc...)
+   * si le paramétre owasp est égale à a0 alors on supprime les enregistrements pour la clé
+   *
+   * @param  mixed $em
+   * @param  mixed $request
+   * @return response
+   */
+  #[Route('/api/projet/hotspot/owasp', name: 'projet_hotspot_owasp', methods: ['GET'])]
+  public function hotspotOwaspAjout(EntityManagerInterface $em, Request $request): response
+  {
+    // On bind les variables
+    $tempoUrl=$this->getParameter(static::$sonarUrl);
+    $mavenKey=$request->get('mavenKey');
+    $owasp=$request->get('owasp');
 
-      $result=$this->http_client($url);
-      $date= new DateTime();
-      $niveau=0;
-
-      if ($result["paging"]["total"]!=0){
-        foreach ( $result["hotspots"] as $value) {
-          if ($value["vulnerabilityProbability"] == "HIGH") { $niveau=1; }
-          if ($value["vulnerabilityProbability"] == "MEDIUM") { $niveau=2; }
-          if ($value["vulnerabilityProbability"] == "LOW") { $niveau=3; }
-
-          $hotspot= new  HotspotOwasp();
-          $hotspot->setMavenKey($request->get('maven_key'));
-          $hotspot->setMenace($request->get('owasp'));
-          $hotspot->setProbability($value["vulnerabilityProbability"]);
-          $hotspot->setStatus($value["status"]);
-          $hotspot->setNiveau($niveau);
-          $hotspot->setDateEnregistrement($date);
-          $em->persist($hotspot);
-          $em->flush();
-         }
-       }
-      else {
-          $hotspot= new  HotspotOwasp();
-          $hotspot->setMavenKey($request->get('maven_key'));
-          $hotspot->setMenace($request->get('owasp'));
-          $hotspot->setProbability("NC");
-          $hotspot->setStatus("NC");
-          $hotspot->setNiveau("0");
-          $hotspot->setDateEnregistrement($date);
-          $em->persist($hotspot);
-          $em->flush();
-        }
-
-      return $response->setData(
-        ["info"=>"enregistrement", "hotspots"=>$result["paging"]["total"], Response::HTTP_OK]);
+    $response = new JsonResponse();
+    if ($request->get('owasp') == 'a0') {
+      // On supprime  les enregistrements correspondant à la clé
+      $sql = "DELETE FROM hotspot_owasp
+              WHERE maven_key='${mavenKey}'";
+      $em->getConnection()->prepare($sql)->executeQuery();
+      return $response->setData(["info" => "effacement", Response::HTTP_OK]);
     }
+
+    // On construit l'Url
+    $url = "${tempoUrl}/api/hotspots/search?projectKey=${mavenKey}&owaspTop10=${owasp}&ps=500&p=1";
+
+    // On appel l'URL
+    $result = $this->httpClient($url);
+
+    // On créé un objet Date
+    $date = new DateTime();
+    $niveau = 0;
+
+    // On fleche la vulnérabilité
+    if ($result["paging"]["total"] != 0) {
+      foreach ($result["hotspots"] as $value) {
+        if ($value["vulnerabilityProbability"] == "HIGH") {
+          $niveau = 1;
+        }
+        if ($value["vulnerabilityProbability"] == "MEDIUM") {
+          $niveau = 2;
+        }
+        if ($value["vulnerabilityProbability"] == "LOW") {
+          $niveau = 3;
+        }
+
+        $hotspot = new  HotspotOwasp();
+        $hotspot->setMavenKey($mavenKey);
+        $hotspot->setMenace($owasp);
+        $hotspot->setProbability($value["vulnerabilityProbability"]);
+        $hotspot->setStatus($value["status"]);
+        $hotspot->setNiveau($niveau);
+        $hotspot->setDateEnregistrement($date);
+        $em->persist($hotspot);
+        $em->flush();
+      }
+    } else {
+      $hotspot = new  HotspotOwasp();
+      $hotspot->setMavenKey($request->get('mavenKey'));
+      $hotspot->setMenace($request->get('owasp'));
+      $hotspot->setProbability("NC");
+      $hotspot->setStatus("NC");
+      $hotspot->setNiveau("0");
+      $hotspot->setDateEnregistrement($date);
+      $em->persist($hotspot);
+      $em->flush();
+    }
+
+    return $response->setData(
+      ["info" => "enregistrement",
+       "hotspots" => $result["paging"]["total"], Response::HTTP_OK]
+    );
+  }
 
   /**
    * hotspot_details
    * Fonction privée qui récupère le détail d'un hotspot en fonction de sa clé.
    *
-   * @param  mixed $maven_key
+   * @param  mixed $mavenKey
    * @param  mixed $key
    * @return void
    */
-  protected function hotspot_details($maven_key, $key) {
-    $url=$this->getParameter(static::$sonarUrl)."/api/hotspots/show?hotspot=".$key;
+  protected function hotspotDetails($mavenKey, $key)
+  {
 
-    $hotspot=$this->http_client($url);
-    $date= new DateTime();
+    // On bind les variables
+    $tempoUrl=$this->getParameter(static::$sonarUrl);
+    $url = "${tempoUrl}/api/hotspots/show?hotspot=${key}";
+    $hotspot = $this->httpClient($url);
+    $date = new DateTime();
 
     // Si le niveau de sévérité n'est pos connu, on lui affecte la valeur MAJOR.
-    if (empty($hotspot["rule"]["vulnerabilityProbability"])) { $severity = "MAJOR"; }
-      else { $severity = $hotspot["rule"]["vulnerabilityProbability"]; }
+    if (empty($hotspot["rule"]["vulnerabilityProbability"])) {
+      $severity = "MAJOR";
+    } else {
+      $severity = $hotspot["rule"]["vulnerabilityProbability"];
+    }
 
-    $frontend=0; $backend=0; $batch=0;
+    $frontend = 0;
+    $backend = 0;
+    $batch = 0;
     // nom du projet
-    $app=explode(":",$maven_key);
+    $app = explode(":", $mavenKey);
 
-    $status=$hotspot["status"];
-    $file=str_replace($maven_key.":", "", $hotspot["component"]["key"]);
-    $module=explode("/", $file);
+    $status = $hotspot["status"];
+    $file = str_replace($mavenKey . ":", "", $hotspot["component"]["key"]);
+    $module = explode("/", $file);
 
     /* Cas particulier pour l'application RS et DU
      * Le nom du projet ne correspond pas à l'artifactId du module
      * Par exemple la clé maven it.cool:monapplication et un module de
      * type : cool-presentation au lieu de monapplication-presentation
      */
-    if ($module[0]=="du-presentation") {$frontend++;}
-    if ($module[0]=="rs-presentation") {$frontend++;}
-    if ($module[0]=="rs-metier") {$backend++;}
+    if ($module[0] == "du-presentation") {
+      $frontend++;
+    }
+    if ($module[0] == "rs-presentation") {
+      $frontend++;
+    }
+    if ($module[0] == "rs-metier") {
+      $backend++;
+    }
 
     // Application Frontend
-    if ($module[0]==$app[1]."-presentation") {$frontend++; }         //Legacy
-    if ($module[0]==$app[1]."-presentation-commun") {$frontend++; }  //Legacy
-    if ($module[0]==$app[1]."-presentation-ear") {$frontend++; }     //NUDLe | Legacy
-    if ($module[0]==$app[1]."-webapp") {$frontend++; }               //NUDLe | Legacy
+    if ($module[0] == $app[1] . "-presentation") {
+      $frontend++;
+    }
+    if ($module[0] == $app[1] . "-presentation-commun") {
+      $frontend++;
+    }
+    if ($module[0] == $app[1] . "-presentation-ear") {
+      $frontend++;
+    }
+    if ($module[0] == $app[1] . "-webapp") {
+      $frontend++;
+    }
 
     // Application Backend
-    if ($module[0]==$app[1]."-metier") {$backend++; }                //Legacy
-    if ($module[0]==$app[1]."-common") {$backend++; }                //Legacy | NUDLe
-    if ($module[0]==$app[1]."-api") {$backend++; }                   //NUDLe
-    if ($module[0]==$app[1]."-dao") {$backend++; }                   //NUDLe
-    if ($module[0]==$app[1]."-metier-ear") {$backend++; }            //Legacy | NUDLe
-    if ($module[0]==$app[1]."-service") {$backend++; }               //NUDLe
-    if ($module[0]==$app[1]."-serviceweb") {$backend++; }            //NUDLe
-    if ($module[0]==$app[1]."-middleoffice") {$backend++; }          //NUDLe
+    if ($module[0] == $app[1] . "-metier") {
+      $backend++;
+    }
+    if ($module[0] == $app[1] . "-common") {
+      $backend++;
+    }
+    if ($module[0] == $app[1] . "-api") {
+      $backend++;
+    }
+    if ($module[0] == $app[1] . "-dao") {
+      $backend++;
+    }
+    if ($module[0] == $app[1] . "-metier-ear") {
+      $backend++;
+    }
+    if ($module[0] == $app[1] . "-service") {
+      $backend++;
+    }
+    if ($module[0] == $app[1] . "-serviceweb") {
+      $backend++;
+    }
+    if ($module[0] == $app[1] . "-middleoffice") {
+      $backend++;
+    }
 
-    // Application Batch
-    if ($module[0]==$app[1]."-batchs") {$batch++; }                  //Legacy | NUDLe
+    // Application Batch ou Autres
+    if ($module[0] == $app[1] . "-batchs") {
+      $batch++;
+    }
 
-    if (empty($hotspot["line"])) {$line=0;} else {$line=$hotspot["line"];}
+    if (empty($hotspot["line"])) {
+      $line = 0;
+    } else {
+      $line = $hotspot["line"];
+    }
     $rule = $hotspot["rule"] ? $hotspot["rule"]["name"] : "/";
-    $message=$hotspot["message"];
+    $message = $hotspot["message"];
     // On affiche pas la description, même si on la en base, car on pointe sur le serveur sonarqube directement
     //$description=$hotspot["rule"]["riskDescription"];
-    $key=$hotspot["key"];
-    $date_enregistrement=$date;
+    $hotspotKey=$hotspot["key"];
+    $dateEnregistrement = $date;
 
-    return ["severity"=>$severity, "status"=>$status, "frontend"=>$frontend,
-             "backend"=>$backend, "batch"=>$batch, "file"=>$file, "line"=>$line,
-             "rule"=>$rule, "message"=>$message, "key"=>$key, "date_enregistrement"=>$date_enregistrement];
+    return [
+      "severity" => $severity, "status" => $status,
+      "frontend" => $frontend, "backend" => $backend,
+      "batch" => $batch, "file" => $file,
+      "line" => $line, "rule" => $rule,
+      "message" => $message, "key" => $hotspotKey,
+      "dateEnregistrement" => $dateEnregistrement
+    ];
   }
 
   /**
@@ -1042,91 +1407,116 @@ class ApiProjetController extends AbstractController
    * @return response
    */
   #[Route('/api/projet/hotspot/details', name: 'projet_hotspot_details', methods: ['GET'])]
-  public function hotspot_details_ajout(EntityManagerInterface $em, Request $request): response
-   {
+  public function hotspotDetailsAjout(EntityManagerInterface $em, Request $request): response
+  {
     $response = new JsonResponse();
 
+    // On bind les varibales
+    $mavenKey=$request->get('mavenKey');
+
     // On réfcupre la liste des hotspots
-    $sql = "SELECT * FROM hotspots WHERE maven_key='".$request->get('maven_key')."' AND status='TO_REVIEW' ORDER BY niveau";
-    $r=$em->getConnection()->prepare($sql)->executeQuery();
-    $liste=$r->fetchAllAssociative();
+    $sql = "SELECT * FROM hotspots
+            WHERE maven_key='${mavenKey}'
+            AND status='TO_REVIEW' ORDER BY niveau";
 
-    if (empty($liste)){ return$response->setData(["code"=>406, Response::HTTP_OK]); }
+    $r = $em->getConnection()->prepare($sql)->executeQuery();
+    $liste = $r->fetchAllAssociative();
 
-    // on efface la table hotspots_details
+    // Si la liste des vide on envoi un code 406
+    if (empty($liste)) {
+      return $response->setData(["code" => 406, Response::HTTP_OK]);
+    }
+
+    // On efface la table hotspots_details
     // On supprime les données de la table hotspots_details pour le projet
-    $sql = "DELETE FROM hotspot_details WHERE maven_key='".$request->get('maven_key')."'";
+    $sql = "DELETE FROM hotspot_details
+            WHERE maven_key='${mavenKey}'";
     $em->getConnection()->prepare($sql)->executeQuery();
 
     /* On boucle sur les clés pour récupérer le détails du hotspot
      * On envoie la clé du projet et la clé du hotspot
      */
-    $ligne=0;
-    foreach($liste as $elt) {
-        $ligne++;
-        $key=$this->hotspot_details($request->get('maven_key') ,$elt["key"]);
-        $details= new  HotspotDetails();
-        $details->setMavenKey($request->get('maven_key'));
-        $details->setSeverity($key["severity"]);
-        $details->setStatus($key["status"]);
-        $details->setFrontend($key["frontend"]);
-        $details->setBackend($key["backend"]);
-        $details->setBatch($key["batch"]);
-        $details->setFile($key["file"]);
-        $details->setLine($key["line"]);
-        $details->setRule($key["rule"]);
-        $details->setMessage($key["message"]);
-        $details->setKey($key["key"]);
-        $details->setDateEnregistrement($key["date_enregistrement"]);
-        $em->persist($details);
-        $em->flush();
-       }
-    return $response->setData(["ligne"=>$ligne, Response::HTTP_OK]);
-   }
+    $ligne = 0;
+    foreach ($liste as $elt) {
+      $ligne++;
+      $key = $this->hotspotDetails($mavenKey, $elt["key"]);
+      $details = new  HotspotDetails();
+      $details->setMavenKey($mavenKey);
+      $details->setSeverity($key["severity"]);
+      $details->setStatus($key["status"]);
+      $details->setFrontend($key["frontend"]);
+      $details->setBackend($key["backend"]);
+      $details->setBatch($key["batch"]);
+      $details->setFile($key["file"]);
+      $details->setLine($key["line"]);
+      $details->setRule($key["rule"]);
+      $details->setMessage($key["message"]);
+      $details->setKey($key["key"]);
+      $details->setDateEnregistrement($key["date_enregistrement"]);
+      $em->persist($details);
+      $em->flush();
+    }
+    return $response->setData(["ligne" => $ligne, Response::HTTP_OK]);
+  }
 
   /**
-  * projet_nosonar_ajout
-  * On récupère la liste des fichiers ayant fait l'objet d'un
-  * @@supresswarning ou d'un noSONAR
-  * http://{url}api/issues/search?componentKeys={key}&rules={rules}&ps=500&p=1
-  * {key} = la clé du projet
-  * {rules} = java:S1309 et java:NoSonar
-  *
-  * @param  mixed $em
-  * @param  mixed $request
-  * @return response
-  */
+   * projet_nosonar_ajout
+   * On récupère la liste des fichiers ayant fait l'objet d'un
+   * @@supresswarning ou d'un noSONAR
+   * http://{url}api/issues/search?componentKeys={key}&rules={rules}&ps=500&p=1
+   * {key} = la clé du projet
+   * {rules} = java:S1309 et java:NoSonar
+   *
+   * @param  mixed $em
+   * @param  mixed $request
+   * @return response
+   */
   #[Route('/api/projet/nosonar/details', name: 'projet_nosonar', methods: ['GET'])]
-  public function projet_nosonar_ajout(EntityManagerInterface $em, Request $request): response {
-      $url=$this->getParameter(static::$sonarUrl)."/api/issues/search?componentKeys="
-      .$request->get('maven_key')."&rules=java:S1309,java:NoSonar&ps=500&p=1";
+  public function projetNosonarAjout(EntityManagerInterface $em, Request $request): response
+  {
+    // Bind les données
+    $tempoUrl=$this->getParameter(static::$sonarUrl);
+    $mavenKey=$request->get('mavenKey');
 
-      $result=$this->http_client($url);
-      $date= new DateTime();
+    // On construit l'URL et on appel le WS
+    $url = "${tempoUrl}/api/issues/search?componentKeys=${mavenKey}
+            &rules=java:S1309,java:NoSonar&ps=500&p=1";
+    $result = $this->httpClient($url);
+    $date = new DateTime();
 
-      // On supprime les données du projet de la table NoSonar
-      $sql = "DELETE FROM no_sonar WHERE maven_key='".$request->get('maven_key')."'";
-      $em->getConnection()->prepare($sql)->executeQuery();
+    // On supprime les données du projet de la table NoSonar
+    $sql = "DELETE FROM no_sonar WHERE maven_key='${mavenKey}'";
+    $em->getConnection()->prepare($sql)->executeQuery();
 
-      if ($result["paging"]["total"]!=0){
-        foreach ( $result["issues"] as $issue) {
-          $nosonar= new NoSonar();
-          $nosonar->setMavenKey($request->get('maven_key'));
-          $nosonar->setRule($issue["rule"]);
-          $component=str_replace($request->get('maven_key').":", "", $issue["component"]);
-          $nosonar->setComponent($component);
-          if (empty($issue["line"])) { $line=0; } else { $line=$issue["line"]; }
-          $nosonar->setLine($line);
-          $nosonar->setLine($issue["line"]);
-          $nosonar->setDateEnregistrement($date);
-          $em->persist($nosonar);
-          $em->flush();
-         }
-       }
-
-      $response = new JsonResponse();
-      return $response->setData(["nosonar"=>$result["paging"]["total"], Response::HTTP_OK]);
+    /**
+     * Si on a trouvé des @anotations de type nosSonar ou SuprresWarning.
+     * dans le code alors on les dénombre
+     */
+    if ($result["paging"]["total"] !== 0) {
+      foreach ($result["issues"] as $issue) {
+        $nosonar = new NoSonar();
+        $nosonar->setMavenKey($request->get('mavenKey'));
+        $nosonar->setRule($issue["rule"]);
+        $component = str_replace("${mavenKey} :", "", $issue["component"]);
+        $nosonar->setComponent($component);
+        if (empty($issue["line"])) {
+          $line = 0;
+        } else {
+          $line = $issue["line"];
+        }
+        $nosonar->setLine($line);
+        $nosonar->setLine($issue["line"]);
+        $nosonar->setDateEnregistrement($date);
+        $em->persist($nosonar);
+        $em->flush();
+      }
+    } else {
+      // Il n'y a pas de noSOnar ou de suppressWarning
     }
+
+    $response = new JsonResponse();
+    return $response->setData(["nosonar" => $result["paging"]["total"], Response::HTTP_OK]);
+  }
 
   #[Route('/api/enregistrement', name: 'enregistrement', methods: ['PUT'])]
   /**
@@ -1137,74 +1527,99 @@ class ApiProjetController extends AbstractController
    * @param  mixed $request
    * @return response
    */
-  public function enregistrement(EntityManagerInterface $em, Request $request): response {
-    // on décode le body
+  public function enregistrement(EntityManagerInterface $em, Request $request): response
+  {
+    // On décode le body
     $data = json_decode($request->getContent());
 
     // On créé un objet response pour le retour JSON
     $response = new JsonResponse();
 
-    $date=new DateTime();
+    // On créé un objet date, avec la date courrante
+    $date = new DateTime();
 
-    $save= new Historique();
-    $save->setMavenKey($data->maven_key);
-    $save->setNomProjet($data->nom_projet);
-    $save->setVersionRelease($data->version_release);
-    $save->setVersionSnapshot($data->version_snapshot);
+    // Enregistrement
+    $save = new Historique();
+    // Informations version
+    $save->setMavenKey($data->mavenKey);
+    $save->setNomProjet($data->nomProjet);
+    $save->setVersionRelease($data->versionRelease);
+    $save->setVersionSnapshot($data->versionSnapshot);
     $save->setVersion($data->version);
-    $save->setDateVersion($data->date_version);
-    $save->setSuppressWarning($data->suppress_warning);
-    $save->setNoSonar($data->no_sonar);
-    $save->setNombreLigne($data->nombre_ligne);
-    $save->setNombreLigneCode($data->nombre_ligne_de_code);
+    $save->setDateVersion($data->dateVersion);
+
+    // Informations sur les exceptions
+    $save->setSuppressWarning($data->suppressWarning);
+    $save->setNoSonar($data->noSonar);
+
+    // Informations projet
+    $save->setNombreLigne($data->nombreLigne);
+    $save->setNombreLigneCode($data->nombreLigneDeCode);
     $save->setCouverture($data->couverture);
     $save->setDuplication($data->duplication);
-    $save->setTestsUnitaires($data->tests_unitaires);
-    $save->setNombreDefaut($data->nombre_defaut);
+    $save->setTestsUnitaires($data->testsUnitaires);
+    $save->setNombreDefaut($data->nombreDefaut);
 
+    // Dette technique
     $save->setDette($data->dette);
 
-    $save->setNombreBug($data->nombre_bug);
-    $save->setNombreVulnerability($data->nombre_vulnerability);
-    $save->setNombreCodeSmell($data->nombre_code_smell);
+    // Nombre de défaut
+    $save->setNombreBug($data->nombreBug);
+    $save->setNombreVulnerability($data->nombreVulnerability);
+    $save->setNombreCodeSmell($data->nombreCodeSmell);
 
+    // répartition par module (Java)
     $save->setFrontend($data->frontend);
     $save->setBackend($data->backend);
     $save->setBatch($data->batch);
 
-    $save->setNombreAnomalieBloquant($data->nombre_anomalie_bloquant);
-    $save->setNombreAnomalieCritique($data->nombre_anomalie_critique);
-    $save->setNombreAnomalieInfo($data->nombre_anomalie_info);
-    $save->setNombreAnomalieMajeur($data->nombre_anomalie_majeur);
-    $save->setNombreAnomalieMineur($data->nombre_anomalie_mineur);
+    // Répartition par type
+    $save->setNombreAnomalieBloquant($data->nombreAnomalieBloquant);
+    $save->setNombreAnomalieCritique($data->nombreAnomalieCritique);
+    $save->setNombreAnomalieInfo($data->nombreAnomalieInfo);
+    $save->setNombreAnomalieMajeur($data->nombreAnomalieMajeur);
+    $save->setNombreAnomalieMineur($data->nombreAnomalieMineur);
 
-    $save->setNoteReliability($data->note_reliability);
-    $save->setNoteSecurity($data->note_security);
-    $save->setNoteSqale($data->note_sqale);
-    $save->setNoteHotspot($data->note_hotspot);
-    $save->setHotspotHigh($data->hotspot_high);
-    $save->setHotspotMedium($data->hotspot_medium);
-    $save->setHotspotLow($data->hotspot_low);
-    $save->setHotspotTotal($data->hotspot_total);
+    // Notes Fiabilité, sécrurité, hotspots et mauvaises pratique
+    $save->setNoteReliability($data->noteReliability);
+    $save->setNoteSecurity($data->noteSecurity);
+    $save->setNoteSqale($data->noteSqale);
+    $save->setNoteHotspot($data->noteHotspot);
+
+    //répartition des hotspots
+    $save->setHotspotHigh($data->hotspotHigh);
+    $save->setHotspotMedium($data->hotspotMedium);
+    $save->setHotspotLow($data->hotspotLow);
+    $save->setHotspotTotal($data->hotspotTotal);
+
+    // Je suis un favori, une verion initiale ?  0 (false) and 1 (true).
+    // On récupére 0 ou 1 et non FALSE et TRUE
     $save->setFavori($data->favori);
     $save->setInitial($data->initial);
 
-    $save->setBugBlocker($data->bug_blocker);
-    $save->setBugCritical($data->bug_critical);
-    $save->setBugMajor($data->bug_major);
-    $save->setBugMinor($data->bug_minor);
-    $save->setBugInfo($data->bug_info);
-    $save->setVulnerabilityBlocker($data->vulnerability_blocker);
-    $save->setVulnerabilityCritical($data->vulnerability_critical);
-    $save->setVulnerabilityMajor($data->vulnerability_major);
-    $save->setVulnerabilityMinor($data->vulnerability_minor);
-    $save->setVulnerabilityInfo($data->vulnerability_info);
-    $save->setCodeSmellBlocker($data->code_smell_blocker);
-    $save->setCodeSmellCritical($data->code_smell_critical);
-    $save->setCodeSmellMajor($data->code_smell_major);
-    $save->setCodeSmellMinor($data->code_smell_minor);
-    $save->setCodeSmellInfo($data->code_smell_info);
+    // Nombre de défaut par sévérité
+    // Les BUG
+    $save->setBugBlocker($data->bugBlocker);
+    $save->setBugCritical($data->bugCritical);
+    $save->setBugMajor($data->bugMajor);
+    $save->setBugMinor($data->bugMinor);
+    $save->setBugInfo($data->bugInfo);
 
+    // Les VULNERABILITY
+    $save->setVulnerabilityBlocker($data->vulnerabilityBlocker);
+    $save->setVulnerabilityCritical($data->vulnerabilityCritical);
+    $save->setVulnerabilityMajor($data->vulnerabilityMajor);
+    $save->setVulnerabilityMinor($data->vulnerabilityMinor);
+    $save->setVulnerabilityInfo($data->vulnerabilityInfo);
+
+    // Les CODE SMELL
+    $save->setCodeSmellBlocker($data->codeSmellBlocker);
+    $save->setCodeSmellCritical($data->codeSmellCritical);
+    $save->setCodeSmellMajor($data->codeSmellMajor);
+    $save->setCodeSmellMinor($data->codeSmellMinor);
+    $save->setCodeSmellInfo($data->codeSmellInfo);
+
+    // On ajoute la date et on enregistre
     $save->setDateEnregistrement($date);
     $em->persist($save);
 
@@ -1214,9 +1629,14 @@ class ApiProjetController extends AbstractController
     } catch (\Doctrine\DBAL\Exception\UniqueConstraintViolationException $e) {
       // General error: 5 database is locked"
       // General error: 19 violation de clé
-      if ($e->getCode() === 19) { $code=19; } else { $code=$e; }
-      return $response->setData(["code"=>$code, Response::HTTP_OK]);
+      if ($e->getCode() === 19) {
+        $code = 19;
+      } else {
+        $code = $e;
+      }
+      return $response->setData(["code" => $code, Response::HTTP_OK]);
     }
-    return $response->setData(["code"=>"OK", Response::HTTP_OK]);
+    // Tout va bien !
+    return $response->setData(["code" => "OK", Response::HTTP_OK]);
   }
 }

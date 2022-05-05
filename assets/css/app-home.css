@@ -1,11 +1,27 @@
-/*
+/**
+ *  Ma-Moulinette
+ *  --------------
  *  Copyright (c) 2021-2022.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  *
  */
+
+/**
+  * Proppriété pour les class :
+  *  - Pour les images SVG : refresh-bd-svg, affiche-profil-svg, projet-svg, gomme-svg
+  *  - Pour le container de log : logger
+  *  - Pour la ligne de log : log
+  *  - Pour le container des favoris : callout-information
+  *  - Pour les lignes et les résultats des favoris : ligne-favori, resultat-favori
+  *
+  *  On fixe la taille en fonction des mediaType : small, medium et large
+  */
+
+/* Media SMALL  */
 @media only screen and (max-width: 20em) {
   .refresh-bd-svg,
   .affiche-profil-svg,
@@ -29,6 +45,7 @@
   .resultat-favori { font-size: 0.9rem; }
 }
 
+/* Media SMALL  */
 @media only screen and (min-width: 20.025em) and (max-width: 22em) {
   .refresh-bd-svg,
   .affiche-profil-svg,
@@ -52,6 +69,7 @@
   .resultat-favori { font-size: 0.9rem; }
 }
 
+/* Media SMALL  */
 @media only screen and (min-width: 22.025em) and (max-width: 30em) {
   .refresh-bd-svg,
   .affiche-profil-svg,
@@ -96,6 +114,7 @@
   .resultat-favori { font-size: 0.9rem; }
 }
 
+/* Media MEDIUM  */
 @media only screen and (min-width: 40em) and (max-width: 64em) {
   .refresh-bd-svg,
   .affiche-profil-svg,
@@ -117,6 +136,7 @@
   .resultat-favori { font-size: 1rem; }
 }
 
+/* Media LARGE  */
 @media only screen and (min-width: 64.025em) and (max-width: 90em) {
   .refresh-bd-svg,
   .affiche-profil-svg,
@@ -138,6 +158,7 @@
   .resultat-favori { font-size: 1rem; }
 }
 
+/* Media LARGE  */
 @media only screen and (min-width: 90.025em) and (max-width: 120em) {
   .refresh-bd-svg,
   .affiche-profil-svg,
@@ -159,6 +180,7 @@
   .resultat-favori { font-size: 1rem; }
 }
 
+/* Media Extra-large  */
 @media only screen and (min-width: 120em) and (max-width: 160em) {
   .refresh-bd-svg,
   .affiche-profil-svg,
@@ -195,6 +217,7 @@
   background-color: #00445b;
 }
 
+/* hover des boutons */
 .refresh-bd:hover,
 .affiche-profil:hover,
 .projet:hover,
@@ -202,7 +225,13 @@
   background-color: #006182;
 }
 
-/* Bouton SVG */
+/* Bouton SVG
+ *
+ * Bouton refresh
+ * Bouton profil
+ * Bouton Projet
+ *
+ */
 .refresh-bd-svg,
 .affiche-profil-svg,
 .projet-svg {
@@ -210,39 +239,47 @@
   cursor: pointer;
 }
 
+/* Bouton Gomme */
 .gomme-svg {
   fill: #00445b;
   cursor: pointer;
 }
 
-/* bouton désactivé */
+/* Bouton désactivé */
 .bouton-disabled {
   cursor: not-allowed;
   background-color: #4c7c8c;
 }
 
-/* définit la taille de la carte */
+/* Définit la taille de la carte */
 .callout-information {
   border-radius: 0.8rem;
   box-shadow: 2px 2px 5px #444;
   margin-right: 5px;
 }
 
+/* Couleur pour les résultats des favoris */
 .resultat-favori { color: #333; }
 
+/* Taille pour le nom de l'application en mode small */
 .nom-small { font-size: 0.78rem; }
 
+/* Taille pour le nom de l'application en mode medium */
 .nom-normal { font-size: 0.9rem; }
 
+/* Taille pour les lignes des favori */
 .small-favori { font-size: 1rem; }
 
+/* Fixe une marge de 0.1 pour éviter d'avoir une erreur si la marge est à  0 */
 .ligne-favori { margin: 0.1rem; }
 
+/* Taille et hauteur pour l'affichage des statistiques */
 .stat-favori {
   line-height: 0.9;
   font-size: 2rem;
 }
 
+/* Taille, couleur, bordure et espacement */
 .note-favori {
   font-size: 0.95rem;
   color: #00445b;
@@ -251,6 +288,7 @@
   padding-right: 10px;
 }
 
+/* Taille, couleur, bordure et espacement */
 .nombre-favori {
   color: #000;
   border: solid 1px #888;
@@ -258,6 +296,7 @@
   padding-right: 2px;
 }
 
+/* Note de couleur A */
 .note-vert1 {
   font-size: 0.9rem;
   background-color: #187e3d;
@@ -268,6 +307,7 @@
   padding-right: 15px;
 }
 
+/* Note de couleur B */
 .note-vert2 {
   font-size: 0.9rem;
   background-color: #42c070;
@@ -278,6 +318,7 @@
   padding-right: 15px;
 }
 
+/* Note de couleur C */
 .note-jaune {
   font-size: 0.9rem;
   background-color: #dfdb1a;
@@ -288,6 +329,7 @@
   padding-right: 15px;
 }
 
+/* Note de couleur D */
 .note-orange {
   font-size: 0.9rem;
   background-color: #c45d4e;
@@ -298,6 +340,7 @@
   padding-right: 15px;
 }
 
+/* Note de couleur E */
 .note-rouge {
   font-size: 0.9rem;
   background-color: #971c09;

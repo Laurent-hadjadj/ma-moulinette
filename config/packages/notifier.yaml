@@ -1,3 +1,4 @@
+---
 framework:
     notifier:
         #chatter_transports:
@@ -14,3 +15,4 @@ framework:
             low: ['email']
         admin_recipients:
             - { email: admin@example.com }
+...

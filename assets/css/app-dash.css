@@ -1,27 +1,38 @@
-/*
+/**
+ *  Ma-Moulinette
+ *  --------------
  *  Copyright (c) 2021-2022.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  *
  */
 
+/* Modile */
 @media only screen and (max-width: 20em) { .pleine-page { margin: 0.5rem; } }
 
+/* Modile */
 @media only screen and (min-width: 20.025em) and (max-width: 22em) { .pleine-page { margin: 0.5rem; } }
 
+/* Modile */
 @media only screen and (min-width: 22.025em) and (max-width: 30em) { .pleine-page { margin: 1rem; } }
 
+/* Modile */
 @media only screen and (min-width: 30.025em) and (max-width: 40em) { .pleine-page { margin: 1rem; } }
 
-@media only screen and (min-width: 40em) and (max-width: 64em) { .pleine-page { margin: 2rem; } }
+/* tablette */
+@media only screen and (min-width: 40em) and (max-width: 64em) { .pleine-page { margin: 1rem; } }
 
-@media only screen and (min-width: 64.025em) and (max-width: 90em) { .pleine-page { margin: 2rem; } }
+/* desktop */
+@media only screen and (min-width: 64.025em) and (max-width: 90em) { .pleine-page { margin: 1rem; } }
 
-@media only screen and (min-width: 90.025em) and (max-width: 120em) { .pleine-page { margin: 4rem; } }
+/* desktop */
+@media only screen and (min-width: 90.025em) and (max-width: 120em) { .pleine-page { margin: 1rem; } }
 
-@media only screen and (min-width: 120em) and (max-width: 160em) { .pleine-page { margin: 4rem; } }
+/* desktop */
+@media only screen and (min-width: 120em) and (max-width: 160em) { .pleine-page { margin: 1rem; } }
 
 /*************************          Global     *********************************/
 .text-down { color: #187e3d; }
@@ -206,7 +217,7 @@ input:checked ~ .switch-paddle { background-color: #00445b; }
 .reference { color: #971c09; }
 
 /* on remonte le menu */
-.on-remonte { margin-top: -2rem; }
+.on-remonte { margin-top: -1rem; }
 
 /* Ajoute une séparation à gauche */
 .separation-gauche { border-right: 1px solid black; }

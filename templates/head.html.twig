@@ -1,50 +1,57 @@
 {% block meta %}
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
+	<meta charset="utf-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<meta
+	http-equiv="x-ua-compatible" content="ie=edge">
 
-    {#/////////// Titre de la page /////////////////////////////// #}
-    <title>{{ title }}</title>
+	{#/////////// Titre de la page /////////////////////////////// #}
+	<title>{{ title }}</title>
 
-    <!-- Informations générales -->
-    <meta name="robots" content="noodp,noydir"/>
-    <meta name="description" content={{ description }}/>
-    <meta name="copyright" content="FranceAgriMer. Copyright (c) {{dateCopyright}}"/>
+	<!-- Informations générales -->
+	<meta name="robots" content="noodp,noydir"/>
+	<meta name="description" content={{ description }}/>
+	<meta name="copyright" content="FranceAgriMer. Copyright (c) {{dateCopyright}}"/>
 {% endblock %}
 
-    {# //////////////// Déclaration favicon commune          ////////////////// #}
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('build/favicon/favicon-16x16.png') }}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('build/favicon/favicon-32x32.png') }}">
-    <link rel="icon" type="image/png" sizes="96x96" href="{{ asset('build/favicon/favicon-96x96.png') }}">
-    <link rel="shortcut icon" href="{{ asset('build/favicon/favicon.ico') }}">
+{# //////////////// Déclaration favicon commune          ////////////////// #}
+<link rel="icon" type="image/png" sizes="16x16" href="{{ asset('build/favicon/favicon-16x16.png') }}">
+<link rel="icon" type="image/png" sizes="32x32" href="{{ asset('build/favicon/favicon-32x32.png') }}">
+<link rel="icon" type="image/png" sizes="96x96" href="{{ asset('build/favicon/favicon-96x96.png') }}">
+<link
+rel="shortcut icon" href="{{ asset('build/favicon/favicon.ico') }}">
 
-    {# //////////////// Déclaration des favicon pour IOS ////////////////// #}
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('build/favicon/apple-touch-icon.png') }}">
-
-
-    <!-- Déclaration des favicon pour IOS (on peut laisser juste la dernière ligne 180x180) -->
-    <link rel="apple-touch-icon" sizes="57x57" href="{{ asset('build/favicon/apple-icon-57x57.png') }}">
-    <link rel="apple-touch-icon" sizes="60x60" href="{{ asset('build/favicon/apple-icon-60x60.png') }}">
-    <link rel="apple-touch-icon" sizes="72x72" href="{{ asset('build/favicon/apple-icon-72x72.png') }}">
-    <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('build/favicon/apple-icon-76x76.png') }}">
-    <link rel="apple-touch-icon" sizes="114x114" href="{{ asset('build/favicon/apple-icon-114x114.png') }}">
-    <link rel="apple-touch-icon" sizes="120x120" href="{{ asset('build/favicon/apple-icon-120x120.png') }}">
-    <link rel="apple-touch-icon" sizes="144x144" href="{{ asset('build/favicon/apple-icon-144x144.png') }}">
-    <link rel="apple-touch-icon" sizes="152x152" href="{{ asset('build/favicon/apple-icon-152x152.png') }}">
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('build/favicon/apple-icon-180x180.png') }}">
+{# //////////////// Déclaration des favicon pour IOS ////////////////// #}
+<link
+rel="apple-touch-icon" sizes="180x180" href="{{ asset('build/favicon/apple-touch-icon.png') }}">
 
 
-    {# //////////////// Déclaration des favicon pour ANDROID ////////////////// #}
-    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('build/favicon/android-chrome-192x192.png') }}">
+<!-- Déclaration des favicon pour IOS (on peut laisser juste la dernière ligne 180x180) -->
+<link rel="apple-touch-icon" sizes="57x57" href="{{ asset('build/favicon/apple-icon-57x57.png') }}">
+<link rel="apple-touch-icon" sizes="60x60" href="{{ asset('build/favicon/apple-icon-60x60.png') }}">
+<link rel="apple-touch-icon" sizes="72x72" href="{{ asset('build/favicon/apple-icon-72x72.png') }}">
+<link rel="apple-touch-icon" sizes="76x76" href="{{ asset('build/favicon/apple-icon-76x76.png') }}">
+<link rel="apple-touch-icon" sizes="114x114" href="{{ asset('build/favicon/apple-icon-114x114.png') }}">
+<link rel="apple-touch-icon" sizes="120x120" href="{{ asset('build/favicon/apple-icon-120x120.png') }}">
+<link rel="apple-touch-icon" sizes="144x144" href="{{ asset('build/favicon/apple-icon-144x144.png') }}">
+<link rel="apple-touch-icon" sizes="152x152" href="{{ asset('build/favicon/apple-icon-152x152.png') }}">
+<link
+rel="apple-touch-icon" sizes="180x180" href="{{ asset('build/favicon/apple-icon-180x180.png') }}">
 
-    {# ////////////// Déclaration des favicon pour Microsoft //////////////// #}
-    <meta name="msapplication-TileColor" content="#00aba9">
-    <meta name="msapplication-TileImage" content="build/favicon/mstile-144x144.png">
-    <meta name="msapplication-config" content="build/favicon/browserconfig.xml">
-    <meta name="theme-color" content="#ffffff">
 
-    {# //////////////// favicon Mac OS X ////////////////////////////////////////#}
-    <link rel="mask-icon" href="{{ asset('build/favicon/safari-pinned-tab.svg') }}" color="#00445b">
+{# //////////////// Déclaration des favicon pour ANDROID ////////////////// #}
+<link
+rel="icon" type="image/png" sizes="192x192" href="{{ asset('build/favicon/android-chrome-192x192.png') }}">
 
-    {# Manifest #}
-    <link rel="manifest" href="{{ asset('build/favicon/manifest.json') }}">
+{# ////////////// Déclaration des favicon pour Microsoft //////////////// #}
+<meta name="msapplication-TileColor" content="#00aba9">
+<meta name="msapplication-TileImage" content="build/favicon/mstile-144x144.png">
+<meta name="msapplication-config" content="build/favicon/browserconfig.xml">
+<meta
+name="theme-color" content="#ffffff">
+
+{# //////////////// favicon Mac OS X ////////////////////////////////////////#}
+<link
+rel="mask-icon" href="{{ asset('build/favicon/safari-pinned-tab.svg') }}" color="#00445b">
+
+{# Manifest #}
+<link rel="manifest" href="{{ asset('build/favicon/manifest.json') }}">
