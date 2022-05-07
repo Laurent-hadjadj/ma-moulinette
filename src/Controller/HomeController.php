@@ -18,9 +18,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 // Accès aux tables SLQLite
-use App\Entity\Historique;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Mapping\Entity;
+
 
 class HomeController extends AbstractController
 {

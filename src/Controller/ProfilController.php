@@ -18,7 +18,6 @@ use Symfony\Component\Routing\Annotation\Route;
 
 // Accès aux tables SLQLite
 use Doctrine\ORM\EntityManagerInterface;
-use DateTime;
 
 class ProfilController extends AbstractController
 {
