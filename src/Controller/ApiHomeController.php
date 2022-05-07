@@ -31,6 +31,7 @@ use DateTime;
 // Logger
 use Psr\Log\LoggerInterface;
 
+
 class ApiHomeController extends AbstractController
 {
 
@@ -51,7 +52,7 @@ class ApiHomeController extends AbstractController
    * @param  mixed $url
    * @return void
    */
-  protected function httpClient($url)
+  protected function httpClient($url, LoggerInterface $logger)
   {
     // On peut se connecter avec un user/password ou un token. Nous on préfére le token.
     if (empty($this->getParameter('sonar.token'))) {
@@ -81,7 +82,6 @@ class ApiHomeController extends AbstractController
       }
     }
 
-    $logger = new LoggerInterface();
     $contentType = $response->getHeaders()['content-type'][0];
     $logger->INFO('** ContentType *** '.isset($contentType));
     $responseJson = $response->getContent();
@@ -96,12 +96,12 @@ class ApiHomeController extends AbstractController
    * @return void
    */
   #[Route('/api/status', name: 'sonar_status', methods: ['GET'])]
-  public function sonarStatus()
+  public function sonarStatus(LoggerInterface $logger)
   {
     $url = $this->getParameter(static::$sonarUrl) . "/api/system/status";
 
     // on appel le client http
-    $result = $this->httpClient($url);
+    $result = $this->httpClient($url, $logger);
 
     return new JsonResponse($result, Response::HTTP_OK);
   }
@@ -115,12 +115,12 @@ class ApiHomeController extends AbstractController
    * @return response
    */
   #[Route('/api/liste_projet/ajout', name: 'liste_projet_ajout', methods: ['GET'])]
-  public function listeProjet(EntityManagerInterface $em): response
+  public function listeProjet(EntityManagerInterface $em, LoggerInterface $logger): response
   {
     $url = $this->getParameter(static::$sonarUrl) . "/api/components/search?qualifiers=TRK&ps=500&p=1";
 
     // on appel le client http
-    $result = $this->httpClient($url);
+    $result = $this->httpClient($url, $logger);
 
     // On récupère le manager de BD
     $date = new DateTime();
@@ -191,14 +191,14 @@ class ApiHomeController extends AbstractController
    * @return response
    */
   #[Route('/api/quality/profiles', name: 'liste_quality_profiles', methods: ['GET'])]
-  public function listeQualityProfiles(EntityManagerInterface $em): response
+  public function listeQualityProfiles(EntityManagerInterface $em, LoggerInterface $logger): response
   {
     $url = $this->getParameter(static::$sonarUrl)
     . "/api/qualityprofiles/search?qualityProfile="
     . $this->getParameter('sonar.profiles');
 
     // on appel le client http
-    $result = $this->httpClient($url);
+    $result = $this->httpClient($url, $logger);
 
     // On récupère le manager de BD
     $date = new DateTime();
@@ -271,12 +271,12 @@ class ApiHomeController extends AbstractController
    * @return response
    */
   #[Route('/api/visibility', name: 'visibility', methods: ['GET'])]
-  public function visibility(): response
+  public function visibility(LoggerInterface $logger): response
   {
     $url = $this->getParameter(static::$sonarUrl) . "/api/projects/search?qualifiers=TRK&ps=500";
 
     // on appel le client http
-    $components = $this->httpClient($url);
+    $components = $this->httpClient($url, $logger);
 
     $private = 0;
     $public = 0;

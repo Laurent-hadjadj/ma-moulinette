@@ -127,7 +127,7 @@ class ApiProjetController extends AbstractController
    * @param  mixed $url
    * @return void
    */
-  protected function httpClient($url)
+  protected function httpClient($url, LoggerInterface $logger)
   {
     if (empty($this->getParameter('sonar.token'))) {
       $user = $this->getParameter('sonar.user');
@@ -155,7 +155,6 @@ class ApiProjetController extends AbstractController
     }
 
     // La variable n'est pas utilisé, elle permet de collecter les données et de rendre la main.
-    $logger = new LoggerInterface();
     $contentType = $response->getHeaders()['content-type'][0];
     $logger->INFO('** ContentType *** '.isset($contentType));
 
@@ -267,12 +266,12 @@ class ApiProjetController extends AbstractController
    * @return response
    */
   #[Route('/api/projet/analyses', name: 'projet_analyses', methods: ['GET'])]
-  public function projetAnalyses(EntityManagerInterface $em, Request $request): response
+  public function projetAnalyses(EntityManagerInterface $em, Request $request, LoggerInterface $logger): response
   {
     $url = $this->getParameter(static::$sonarUrl) . "/api/project_analyses/search?project=" . $request->get('mavenKey');
 
     // On appel le client http
-    $result = $this->httpClient($url);
+    $result = $this->httpClient($url, $logger);
     // On récupère le manager de BD
     $date = new DateTime();
     $mavenKey=$request->get('mavenKey');
@@ -321,7 +320,7 @@ class ApiProjetController extends AbstractController
    * @return response
    */
   #[Route('/api/projet/mesures', name: 'projet_mesures', methods: ['GET'])]
-  public function projetMesures(EntityManagerInterface $em, Request $request): response
+  public function projetMesures(EntityManagerInterface $em, Request $request, LoggerInterface $logger): response
   {
     // On bind les variables
     $tempoUrl=$this->getParameter(static::$sonarUrl);
@@ -331,7 +330,7 @@ class ApiProjetController extends AbstractController
     $url1 = "${tempoUrl}/api/components/app?component=${mavenKey}";
 
     // on appel le client http
-    $result1 = $this->httpClient($url1);
+    $result1 = $this->httpClient($url1, $logger);
     $date = new DateTime();
 
     // On ajoute les mesures dans la table mesures.
@@ -368,7 +367,7 @@ class ApiProjetController extends AbstractController
 
     // On récupère le nombre de ligne de code
     $url2 = "${tempoUrl}/api/measures/component?component=${mavenKey}&metricKeys=ncloc";
-    $result2 = $this->httpClient($url2);
+    $result2 = $this->httpClient($url2, $logger);
 
     if (array_key_exists("measures", $result2["component"])) {
       $ncloc = intval($result2["component"]["measures"][0]["value"]);
@@ -404,7 +403,7 @@ class ApiProjetController extends AbstractController
    * @return response
    */
   #[Route('/api/projet/anomalie', name: 'projet_anomalie', methods: ['GET'])]
-  public function projetAnomalie(EntityManagerInterface $em, Request $request): response
+  public function projetAnomalie(EntityManagerInterface $em, Request $request, LoggerInterface $logger): response
   {
     // On bind les variables
     $tempoUrlLong=$this->getParameter(static::$sonarUrl).static::$apiIssuesSearch;
@@ -425,10 +424,10 @@ class ApiProjetController extends AbstractController
     $url4 = "${tempoUrlLong}${mavenKey}&types=CODE_SMELL&p=1&ps=1";
 
     // on appel le client http pour les requête 1 à 4 (2 à 4 pour la dette)
-    $result1 = $this->httpClient($url1);
-    $result2 = $this->httpClient($url2);
-    $result3 = $this->httpClient($url3);
-    $result4 = $this->httpClient($url4);
+    $result1 = $this->httpClient($url1, $logger);
+    $result2 = $this->httpClient($url2, $logger);
+    $result3 = $this->httpClient($url3, $logger);
+    $result4 = $this->httpClient($url4, $logger);
 
     if ($result1["paging"]["total"] != 0) {
       // On supprime  les enregistrement correspondant à la clé
@@ -605,7 +604,7 @@ class ApiProjetController extends AbstractController
    * @return response
    */
   #[Route('/api/projet/anomalie/details', name: 'projet_anomalie_details', methods: ['GET'])]
-  public function projetAnomalieDetails(EntityManagerInterface $em, Request $request): response
+  public function projetAnomalieDetails(EntityManagerInterface $em, Request $request, LoggerInterface $logger): response
   {
     // On bind les variables
     $mavenKey = $request->get('mavenKey');
@@ -624,9 +623,9 @@ class ApiProjetController extends AbstractController
     $url3 = "${tempoUrlLong}${mavenKey}&facets=severities&types=CODE_SMELL&ps=1&p=1&statuses=OPEN";
 
     // on appel le client http pour les requête 1 à 3
-    $result1 = $this->httpClient($url1);
-    $result2 = $this->httpClient($url2);
-    $result3 = $this->httpClient($url3);
+    $result1 = $this->httpClient($url1, $logger);
+    $result2 = $this->httpClient($url2, $logger);
+    $result3 = $this->httpClient($url3, $logger);
 
     if ($result1["paging"]["total"] != 0) {
       // On supprime  l'enregistrement correspondant à la clé
@@ -744,7 +743,7 @@ class ApiProjetController extends AbstractController
    * @return response
    */
   #[Route('/api/projet/historique/note', name: 'projet_historique_note', methods: ['GET'])]
-  public function historiqueNoteAjout(EntityManagerInterface $em, Request $request): response
+  public function historiqueNoteAjout(EntityManagerInterface $em, Request $request, LoggerInterface $logger): response
   {
 
     // On bind les variables
@@ -755,7 +754,7 @@ class ApiProjetController extends AbstractController
     $url = "${tempoUrl}/api/measures/search_history?component=${mavenKey}&metrics=${type}_rating&ps=1000";
 
     // on appel le client http
-    $result = $this->httpClient($url);
+    $result = $this->httpClient($url, $logger);
 
     $date = new DateTime();
     $tempoDate=$date->format(static::$dateFormat);
@@ -797,7 +796,7 @@ class ApiProjetController extends AbstractController
    * @return response
    */
   #[Route('/api/projet/issues/owasp', name: 'projet_issues_owasp', methods: ['GET'])]
-  public function issuesOwaspAjout(EntityManagerInterface $em, Request $request): response
+  public function issuesOwaspAjout(EntityManagerInterface $em, Request $request, LoggerInterface $logger): response
   {
     // On bind les variables
     $mavenKey = $request->get('mavenKey');
@@ -807,7 +806,7 @@ class ApiProjetController extends AbstractController
     $url = "${tempoUrlLong}${mavenKey}&facets=owaspTop10&owaspTop10=a1,a2,a3,a4,a5,a6,a7,a8,a9,a10";
 
     // On appel l'API
-    $result = $this->httpClient($url);
+    $result = $this->httpClient($url, $logger);
 
     $date = new DateTime();
     $owasp = [$result["total"]];
@@ -1151,7 +1150,7 @@ class ApiProjetController extends AbstractController
    * @return response
    */
   #[Route('/api/projet/hotspot', name: 'projet_hotspot', methods: ['GET'])]
-  public function hotspotAjout(EntityManagerInterface $em, Request $request): response
+  public function hotspotAjout(EntityManagerInterface $em, Request $request, LoggerInterface $logger): response
   {
     // On bind les variables
     $tempoUrl=$this->getParameter(static::$sonarUrl);
@@ -1161,7 +1160,7 @@ class ApiProjetController extends AbstractController
     $url = "${tempoUrl}/api/hotspots/search?projectKey=${mavenKey}&ps=500&p=1";
 
     // On appel l'Api
-    $result = $this->httpClient($url);
+    $result = $this->httpClient($url, $logger);
 
     // On créé un ojbet Date
     $date = new DateTime();
@@ -1213,7 +1212,7 @@ class ApiProjetController extends AbstractController
    * @return response
    */
   #[Route('/api/projet/hotspot/owasp', name: 'projet_hotspot_owasp', methods: ['GET'])]
-  public function hotspotOwaspAjout(EntityManagerInterface $em, Request $request): response
+  public function hotspotOwaspAjout(EntityManagerInterface $em, Request $request, LoggerInterface $logger): response
   {
     // On bind les variables
     $tempoUrl=$this->getParameter(static::$sonarUrl);
@@ -1233,7 +1232,7 @@ class ApiProjetController extends AbstractController
     $url = "${tempoUrl}/api/hotspots/search?projectKey=${mavenKey}&owaspTop10=${owasp}&ps=500&p=1";
 
     // On appel l'URL
-    $result = $this->httpClient($url);
+    $result = $this->httpClient($url, $logger);
 
     // On créé un objet Date
     $date = new DateTime();
@@ -1288,13 +1287,13 @@ class ApiProjetController extends AbstractController
    * @param  mixed $key
    * @return void
    */
-  protected function hotspotDetails($mavenKey, $key)
+  protected function hotspotDetails($mavenKey, $key, LoggerInterface $logger)
   {
 
     // On bind les variables
     $tempoUrl=$this->getParameter(static::$sonarUrl);
     $url = "${tempoUrl}/api/hotspots/show?hotspot=${key}";
-    $hotspot = $this->httpClient($url);
+    $hotspot = $this->httpClient($url, $logger);
     $date = new DateTime();
 
     // Si le niveau de sévérité n'est pos connu, on lui affecte la valeur MAJOR.
@@ -1407,7 +1406,7 @@ class ApiProjetController extends AbstractController
    * @return response
    */
   #[Route('/api/projet/hotspot/details', name: 'projet_hotspot_details', methods: ['GET'])]
-  public function hotspotDetailsAjout(EntityManagerInterface $em, Request $request): response
+  public function hotspotDetailsAjout(EntityManagerInterface $em, Request $request, LoggerInterface $logger): response
   {
     $response = new JsonResponse();
 
@@ -1439,7 +1438,7 @@ class ApiProjetController extends AbstractController
     $ligne = 0;
     foreach ($liste as $elt) {
       $ligne++;
-      $key = $this->hotspotDetails($mavenKey, $elt["key"]);
+      $key = $this->hotspotDetails($mavenKey, $elt["key"], $logger);
       $details = new  HotspotDetails();
       $details->setMavenKey($mavenKey);
       $details->setSeverity($key["severity"]);
@@ -1472,7 +1471,7 @@ class ApiProjetController extends AbstractController
    * @return response
    */
   #[Route('/api/projet/nosonar/details', name: 'projet_nosonar', methods: ['GET'])]
-  public function projetNosonarAjout(EntityManagerInterface $em, Request $request): response
+  public function projetNosonarAjout(EntityManagerInterface $em, Request $request, LoggerInterface $logger): response
   {
     // Bind les données
     $tempoUrl=$this->getParameter(static::$sonarUrl);
@@ -1481,7 +1480,7 @@ class ApiProjetController extends AbstractController
     // On construit l'URL et on appel le WS
     $url = "${tempoUrl}/api/issues/search?componentKeys=${mavenKey}
             &rules=java:S1309,java:NoSonar&ps=500&p=1";
-    $result = $this->httpClient($url);
+    $result = $this->httpClient($url, $logger);
     $date = new DateTime();
 
     // On supprime les données du projet de la table NoSonar
