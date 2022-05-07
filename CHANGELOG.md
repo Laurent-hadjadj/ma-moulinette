@@ -154,3 +154,11 @@
 
 * Corrections Sonarqube ;
 * Ajustement du niveau de log (debug-->info) ;
+
+## v1.2.1 - 08/05/2022 - Release
+
+* Erreur : "Cannot instantiate interface Psr\Log\LoggerInterface". On utilise plus l'instaniation (new LoggerInterface) mais l'injection de dépendance ;
+* Erreur de syntaxe dans l'utilisation de litterals dans le contrôleur ApiProjetContrôleur ;
+* Suppresion des dépendances inutiles dans HomeControleur et ProfilControleur ;
+* Correcction des fautes et erreur de typographie dans le fichier readme.md ;
+
