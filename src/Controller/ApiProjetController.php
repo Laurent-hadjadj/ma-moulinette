@@ -627,7 +627,11 @@ class ApiProjetController extends AbstractController
     $result2 = $this->httpClient($url2, $logger);
     $result3 = $this->httpClient($url3, $logger);
 
-    if ($result1["paging"]["total"] != 0) {
+    $total1=$result1["paging"]["total"];
+    $total2=$result2["paging"]["total"];
+    $total3=$result3["paging"]["total"];
+
+    if ($total1 !== 0 || $total2 !== 0 || $total3 !== 0) {
       // On supprime  l'enregistrement correspondant à la clé
       $sql = "DELETE FROM anomalie_details WHERE maven_key='${mavenKey}'";
       $em->getConnection()->prepare($sql)->executeQuery();
@@ -766,7 +770,7 @@ class ApiProjetController extends AbstractController
       $tempoMesureDate=$mesure["date"];
       $tempoMesureValue=$mesure["value"];
       $sql = "INSERT OR IGNORE INTO notes (maven_key, type, date, value, date_enregistrement)
-              VALUES ('${mavenKey}')', '${type})', '${$tempoMesureDate}', '${$tempoMesureValue}', '${tempoDate}')";
+              VALUES ('${mavenKey}', '${type}', '${tempoMesureDate}', '${tempoMesureValue}', '${tempoDate}')";
       $em->getConnection()->prepare($sql)->executeQuery();
     }
 
