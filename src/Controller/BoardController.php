@@ -50,7 +50,7 @@ class BoardController extends AbstractController
    * @param  mixed $url
    * @return void
    */
-  protected function httpClient($url)
+  protected function httpClient($url, LoggerInterface $logger)
   {
     if (empty($this->getParameter('sonar.token'))) {
       $user = $this->getParameter('sonar.user');
@@ -76,7 +76,6 @@ class BoardController extends AbstractController
       }
     }
 
-    $logger = new LoggerInterface();
     $contentType = $response->getHeaders()['content-type'][0];
     $logger->INFO('** ContentType *** '.isset($contentType));
 
@@ -250,7 +249,7 @@ class BoardController extends AbstractController
    * @return void
    */
   #[Route('/api/get/version', name: 'get_version', methods: ['PUT'])]
-  public function getVersion(Request $request)
+  public function getVersion(Request $request, LoggerInterface $logger)
   {
     // on décode le body
     $data = json_decode($request->getContent());
@@ -269,7 +268,7 @@ class BoardController extends AbstractController
              &from=${urlencode($dd)}&to=${urlencode($dd)}";
 
     // on appel le client http
-    $result = $this->httpClient($url);
+    $result = $this->httpClient($url, $logger);
 
     $data = $result["measures"];
     for ($i = 0; $i < 14; $i++) {
