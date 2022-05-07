@@ -130,7 +130,7 @@ Les tables créées sont les suivantes :
 
 La génération des entity, i.e. la création des **getter** et des \*_setter_ est réalisée avec la commande :
 
-`php bin/console make : entity --regenerate`
+`php bin/console make:entity --regenerate`
 
 **Attention** : La table `Historique` est particulière.
 En effet, cette table contient une clé primaire composée des attributs `maven_key`, `version` et `date_version`. Lors de la génération automatique, si l'annotation `#[ORM\Id]` est présente, seul le getter est créé. Une erreur se produit alors quand on veut enregistrer les données dans la table (i.e. il manque les setter).
@@ -161,11 +161,11 @@ PRIMARY KEY ("maven_key","version","date_version"));
 
 Pour créer le fichier de création automatique des relations, il suffit de lancer la commande :
 
-`php bin/console make : migration`
+`php bin/console make:migration`
 
 Pour créer la base de données, il suffit de lancer la commande :
 
-`php bin/console doctrine : migrations : migrate`
+`php bin/console doctrine:migrations:migrate`
 
 Il ne faudra pas oublier de changer le type de l'attribut `date_version` de la relation **Historique**.
 
