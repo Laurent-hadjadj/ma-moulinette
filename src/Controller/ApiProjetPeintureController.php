@@ -309,7 +309,7 @@ class ApiProjetPeintureController extends AbstractController
     }
 
     // On récupère les données pour le projet
-    $sql = "SELECT * FROM anomalie_details WHERE maven_key='" . $mavenKey . "'";
+    $sql = "SELECT * FROM anomalie_details WHERE maven_key='${mavenKey}'";
     $r = $em->getConnection()->prepare($sql)->executeQuery();
     $details = $r->fetchAllAssociative();
 
