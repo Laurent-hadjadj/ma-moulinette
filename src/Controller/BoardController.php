@@ -496,7 +496,7 @@ class BoardController extends AbstractController
            . $mavenKey ."'  AND version='" . $version
            . "'  AND date_version='" . $date . "'";
 
-    // On excute la requête
+    // On exécute la requête
     $con = $em->getConnection()->prepare($sql);
     try {
       $con->executeQuery();
@@ -551,7 +551,7 @@ class BoardController extends AbstractController
             WHERE maven_key='${mavenKey}'
                   AND version='${version}'
                   AND date_version='${date}'";
-    // On excute la requête
+    // On exécute la requête
     $con = $em->getConnection()->prepare($sql);
     try {
       $con->executeQuery();
