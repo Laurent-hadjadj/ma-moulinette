@@ -58,7 +58,7 @@ class ApiProjetController extends AbstractController
 
   /**
    * date_to_minute
-   * Fonction pirvée pour convertir une date au format xxd aah xxmin en minutes
+   * Fonction privée pour convertir une date au format xxd aah xxmin en minutes
    *
    * @param  mixed $str
    * @return void
@@ -174,17 +174,17 @@ class ApiProjetController extends AbstractController
   #[Route('/api/favori', name: 'favori', methods: ['GET'])]
   public function favori(EntityManagerInterface $em, Request $request): response
   {
-    // On bind es variables
+    // On bind les variables
     $mavenKey = $request->get('mavenKey');
     $statut = $request->get('statut');
     $date = new DateTime();
     $tempoDate=$date->format(static::$dateFormat);
 
-    //on vérifie si le projet est déja en favori
+    // On vérifie si le projet est déjà en favori
     $sql = "SELECT * FROM favori WHERE maven_key='${mavenKey}'";
     $select = $em->getConnection()->prepare($sql)->executeQuery();
 
-    //Si on a pas trouvé l'application dans la liste des favoris, alors on la rajoute.
+    // Si on a pas trouvé l'application dans la liste des favoris, alors on la rajoute.
     if (empty($select->fetchAllAssociative())) {
       $sql = "INSERT INTO favori ('maven_key', 'favori', 'date_enregistrement')
         VALUES ('${mavenKey}', TRUE, '${tempoDate}')";
@@ -201,7 +201,7 @@ class ApiProjetController extends AbstractController
 
   /**
    * favori_check
-   * Récupére le statut d'un favori. Le
+   * Récupère le statut d'un favori. Le
    * favori est TRUE ou FALSE ou null
    * http://{url}/api/favori/check={key}
    *
@@ -215,7 +215,7 @@ class ApiProjetController extends AbstractController
     $mavenKey = $request->get('mavenKey');
     $response = new JsonResponse();
 
-    //on vérifie si le projet est déja en favori
+    // On vérifie si le projet est déjà en favori
     $sql = "SELECT favori FROM favori WHERE maven_key='${mavenKey}'";
     $select = $em->getConnection()->prepare($sql)->executeQuery();
     $r = $select->fetchAllAssociative();
@@ -246,7 +246,7 @@ class ApiProjetController extends AbstractController
     }
 
     $liste = [];
-    //objet = { id: clé, text: "blablabla" };
+    // objet = { id: clé, text: "blablabla" };
     foreach ($rqt as $value) {
       $objet = ['id' => $value[0], 'text' => $value[1]];
       array_push($liste, $objet);
@@ -394,7 +394,7 @@ class ApiProjetController extends AbstractController
 
   /**
    * projet_anomalie
-   * Récupère le total des anomalies, avec un filtre par répertoire, severité et types.
+   * Récupère le total des anomalies, avec un filtre par répertoire, sévérité et types.
    * https://{URL}/api/issues/search?componentKeys={mavenKey}&facets=directories,types,severities&p=1&ps=1&statuses=OPEN
    * https://{URL}/api/issues/search?componentKeys={mavenKey}&types={type}&p=1&ps=1
    *
@@ -420,7 +420,7 @@ class ApiProjetController extends AbstractController
     // On récupère le total de la Dette technique pour les BUG
     $url2 = "${tempoUrlLong}${mavenKey}&types=BUG&p=1&ps=1";
 
-    // On récupère le total de la Dette technique pour les VULNERAVILITY
+    // On récupère le total de la Dette technique pour les VULNERABILITY
     $url3 = "${tempoUrlLong}${mavenKey}&types=VULNERABILITY&p=1&ps=1";
 
     // On récupère le total de la Dette technique pour les CODE_SMELL
@@ -597,7 +597,7 @@ class ApiProjetController extends AbstractController
    */
   /**
    * projet_anomalie_details
-   * Récupère le détails des severités pour chaque type
+   * Récupère le détails des sévérités pour chaque type
    * https://{URL}/api/issues/search?componentKeys={key}&&facets=severities&types=BUG&ps=1&p=1&statuses=OPEN
    * https://{URL}/api/issues/search?componentKeys={key}&&facets=severities&types=VULNERABILITY&ps=1&p=1&statuses=OPEN
    * https://{URL}/api/issues/search?componentKeys={key}&&facets=severities&types=CODE_SMELLBUG&ps=1&p=1&statuses=OPEN
@@ -619,13 +619,13 @@ class ApiProjetController extends AbstractController
     // Pour les Bug
     $url1 = "${tempoUrlLong}${mavenKey}&facets=severities&types=BUG&ps=1&p=1&statuses=OPEN";
 
-    // Pour les Vulenrabilités
+    // Pour les Vulnérabilités
     $url2 = "${tempoUrlLong}${mavenKey}&facets=severities&types=VULNERABILITY&ps=1&p=1&statuses=OPEN";
 
     // Pour les mauvaises pratiques
     $url3 = "${tempoUrlLong}${mavenKey}&facets=severities&types=CODE_SMELL&ps=1&p=1&statuses=OPEN";
 
-    // on appel le client http pour les requête 1 à 3
+    // On appel le client http pour les requête 1 à 3
     $result1 = $this->httpClient($url1, $logger);
     $result2 = $this->httpClient($url2, $logger);
     $result3 = $this->httpClient($url3, $logger);
@@ -1058,7 +1058,7 @@ class ApiProjetController extends AbstractController
           }
       }
 
-    //on supprime les informations sur le projet
+    // On supprime les informations sur le projet
     $sql = "DELETE FROM owasp WHERE maven_key='${mavenKey}'";
     $em->getConnection()->prepare($sql)->executeQuery();
 
@@ -1169,7 +1169,7 @@ class ApiProjetController extends AbstractController
     // On appel l'Api
     $result = $this->httpClient($url, $logger);
 
-    // On créé un ojbet Date
+    // On créé un objet Date
     $date = new DateTime();
     $niveau = 0;
 
@@ -1212,7 +1212,7 @@ class ApiProjetController extends AbstractController
    * http://{url}/api/hotspots/search?projectKey={key}{owasp}&ps=500&p=1
    * {key} = la clé du projet
    * {owasp} = le type de faille (a1, a2, etc...)
-   * si le paramétre owasp est égale à a0 alors on supprime les enregistrements pour la clé
+   * si le paramètre owasp est égale à a0 alors on supprime les enregistrements pour la clé
    *
    * @param  mixed $em
    * @param  mixed $request
@@ -1497,7 +1497,7 @@ class ApiProjetController extends AbstractController
     $em->getConnection()->prepare($sql)->executeQuery();
 
     /**
-     * Si on a trouvé des @anotations de type nosSonar ou SuprresWarning.
+     * Si on a trouvé des @notations de type nosSonar ou SuprressWarning.
      * dans le code alors on les dénombre
      */
     if ($result["paging"]["total"] !== 0) {
@@ -1529,7 +1529,7 @@ class ApiProjetController extends AbstractController
   #[Route('/api/enregistrement', name: 'enregistrement', methods: ['PUT'])]
   /**
    * enregistrement
-   * Enregistremnt des données du projet
+   * Enregistrement des données du projet
    *
    * @param  mixed $em
    * @param  mixed $request
@@ -1543,7 +1543,7 @@ class ApiProjetController extends AbstractController
     // On créé un objet response pour le retour JSON
     $response = new JsonResponse();
 
-    // On créé un objet date, avec la date courrante
+    // On créé un objet date, avec la date courante
     $date = new DateTime();
 
     // Enregistrement
@@ -1588,7 +1588,7 @@ class ApiProjetController extends AbstractController
     $save->setNombreAnomalieMajeur($data->nombreAnomalieMajeur);
     $save->setNombreAnomalieMineur($data->nombreAnomalieMineur);
 
-    // Notes Fiabilité, sécrurité, hotspots et mauvaises pratique
+    // Notes Fiabilité, sécurité, hotspots et mauvaises pratique
     $save->setNoteReliability($data->noteReliability);
     $save->setNoteSecurity($data->noteSecurity);
     $save->setNoteSqale($data->noteSqale);
@@ -1601,7 +1601,7 @@ class ApiProjetController extends AbstractController
     $save->setHotspotTotal($data->hotspotTotal);
 
     // Je suis un favori, une verion initiale ?  0 (false) and 1 (true).
-    // On récupére 0 ou 1 et non FALSE et TRUE
+    // On récupère 0 ou 1 et non FALSE et TRUE
     $save->setFavori($data->favori);
     $save->setInitial($data->initial);
 
