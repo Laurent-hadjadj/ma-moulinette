@@ -1147,7 +1147,7 @@ class ApiProjetController extends AbstractController
 
   /**
    * hotspot_ajout
-   * Traitement des hotspot de type owasp pour sonarqube 8.9 et >
+   * Traitement des hotspots de type owasp pour sonarqube 8.9 et >
    * http://{url}/api/hotspots/search?projectKey={key}&ps=500&p=1
    * On récupère les failles a examiner.
    * Les clés sont uniques (i.e. on ne se base pas sur les tags).
@@ -1173,11 +1173,11 @@ class ApiProjetController extends AbstractController
     $date = new DateTime();
     $niveau = 0;
 
-    if ($result["paging"]["total"] != 0) {
-      // On supprime  les enregistrement correspondant à la clé
-      $sql = "DELETE FROM hotspots WHERE maven_key='${mavenKey}'";
-      $em->getConnection()->prepare($sql)->executeQuery();
+    // On supprime  les enregistrements correspondant à la clé
+     $sql = "DELETE FROM hotspots WHERE maven_key='${mavenKey}'";
+     $em->getConnection()->prepare($sql)->executeQuery();
 
+    if ($result["paging"]["total"] != 0) {
       foreach ($result["hotspots"] as $value) {
         if ($value["vulnerabilityProbability"] == "HIGH") {
           $niveau = 1;
