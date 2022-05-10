@@ -194,8 +194,8 @@ class ApiHomeController extends AbstractController
   public function listeQualityProfiles(EntityManagerInterface $em, LoggerInterface $logger): response
   {
     $url = $this->getParameter(static::$sonarUrl)
-    . "/api/qualityprofiles/search?qualityProfile="
-    . $this->getParameter('sonar.profiles');
+          . "/api/qualityprofiles/search?qualityProfile="
+          . $this->getParameter('sonar.profiles');
 
     // on appel le client http
     $result = $this->httpClient($url, $logger);
@@ -273,7 +273,8 @@ class ApiHomeController extends AbstractController
   #[Route('/api/visibility', name: 'visibility', methods: ['GET'])]
   public function visibility(LoggerInterface $logger): response
   {
-    $url = $this->getParameter(static::$sonarUrl) . "/api/projects/search?qualifiers=TRK&ps=500";
+    $url = $this->getParameter(static::$sonarUrl) .
+          "/api/projects/search?qualifiers=TRK&ps=500";
 
     // on appel le client http
     $components = $this->httpClient($url, $logger);

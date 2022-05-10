@@ -268,7 +268,8 @@ class ApiProjetController extends AbstractController
   #[Route('/api/projet/analyses', name: 'projet_analyses', methods: ['GET'])]
   public function projetAnalyses(EntityManagerInterface $em, Request $request, LoggerInterface $logger): response
   {
-    $url = $this->getParameter(static::$sonarUrl) . "/api/project_analyses/search?project=" . $request->get('mavenKey');
+    $url = $this->getParameter(static::$sonarUrl) .
+          "/api/project_analyses/search?project=" . $request->get('mavenKey');
 
     // On appel le client http
     $result = $this->httpClient($url, $logger);
@@ -427,7 +428,7 @@ class ApiProjetController extends AbstractController
     $url4 = "${tempoUrlLong}${mavenKey}&types=CODE_SMELL&p=1&ps=1";
 
     // on appel le client http pour les requête 1 à 4 (2 à 4 pour la dette)
-    $result1 = $this->httpClient($url1, $logger);
+    $result1 = $this->httpClient(trim(preg_replace("/\s+/u", " ", $url1)), $logger);
     $result2 = $this->httpClient($url2, $logger);
     $result3 = $this->httpClient($url3, $logger);
     $result4 = $this->httpClient($url4, $logger);
@@ -758,10 +759,11 @@ class ApiProjetController extends AbstractController
     $mavenKey=$request->get('mavenKey');
     $type=$request->get('type');
 
-    $url = "${tempoUrl}/api/measures/search_history?component=${mavenKey}&metrics=${type}_rating&ps=1000";
+    $url = "${tempoUrl}/api/measures/search_history?component=${mavenKey}
+            &metrics=${type}_rating&ps=1000";
 
     // on appel le client http
-    $result = $this->httpClient($url, $logger);
+    $result = $this->httpClient(trim(preg_replace("/\s+/u", " ", $url)), $logger);
 
     $date = new DateTime();
     $tempoDate=$date->format(static::$dateFormat);
@@ -810,10 +812,11 @@ class ApiProjetController extends AbstractController
     $tempoUrlLong=$this->getParameter(static::$sonarUrl).static::$apiIssuesSearch;
 
     // URL de l'appel
-    $url = "${tempoUrlLong}${mavenKey}&facets=owaspTop10&owaspTop10=a1,a2,a3,a4,a5,a6,a7,a8,a9,a10";
+    $url = "${tempoUrlLong}${mavenKey}&facets=owaspTop10
+            &owaspTop10=a1,a2,a3,a4,a5,a6,a7,a8,a9,a10";
 
     // On appel l'API
-    $result = $this->httpClient($url, $logger);
+    $result = $this->httpClient(trim(preg_replace("/\s+/u", " ", $url)), $logger);
 
     $date = new DateTime();
     $owasp = [$result["total"]];
@@ -1236,10 +1239,11 @@ class ApiProjetController extends AbstractController
     }
 
     // On construit l'Url
-    $url = "${tempoUrl}/api/hotspots/search?projectKey=${mavenKey}&owaspTop10=${owasp}&ps=500&p=1";
+    $url = "${tempoUrl}/api/hotspots/search?projectKey=${mavenKey}
+            &owaspTop10=${owasp}&ps=500&p=1";
 
     // On appel l'URL
-    $result = $this->httpClient($url, $logger);
+    $result = $this->httpClient(trim(preg_replace("/\s+/u", " ", $url)), $logger);
 
     // On créé un objet Date
     $date = new DateTime();
@@ -1489,9 +1493,11 @@ class ApiProjetController extends AbstractController
     // On construit l'URL et on appel le WS
     $url = "${tempoUrl}/api/issues/search?componentKeys=${mavenKey}
             &rules=java:S1309,java:NoSonar&ps=500&p=1";
-    $result = $this->httpClient($url, $logger);
+
+    $result = $this->httpClient(trim(preg_replace("/\s+/u", " ", $url)), $logger);
     $date = new DateTime();
 
+    dd($tempoUrl, $mavenKey, $url,$result);
     // On supprime les données du projet de la table NoSonar
     $sql = "DELETE FROM no_sonar WHERE maven_key='${mavenKey}'";
     $em->getConnection()->prepare($sql)->executeQuery();
