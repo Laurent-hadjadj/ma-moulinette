@@ -165,3 +165,4 @@
 ## v1.2.2 - 10/05/2022 - Release
 
 * ApiProjectController : Warning: Undefined array key "date_enregistrement" (ligne 1461) ;
+* Correction du format de la date : date("m/d/Y) à date("d/m/Y) pour la page dash, profil, et home ;
