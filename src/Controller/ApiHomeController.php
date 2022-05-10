@@ -54,7 +54,7 @@ class ApiHomeController extends AbstractController
    */
   protected function httpClient($url, LoggerInterface $logger)
   {
-    // On peut se connecter avec un user/password ou un token. Nous on préfére le token.
+    // On peut se connecter avec un user/password ou un token. Nous on préfère le token.
     if (empty($this->getParameter('sonar.token'))) {
       $user = $this->getParameter('sonar.user');
       $password = $this->getParameter('sonar.password');
@@ -133,8 +133,8 @@ class ApiHomeController extends AbstractController
 
     // On insert les projets dans la tale liste_projet.
     foreach ($result["components"] as $component) {
-      // On exclue les projets archivés (-SVN)
-      //"project": "fr.franceagrimer:autorisation-plantation-metier-SVN"
+      // On exclue les projets archivés avec la particule "-SVN".
+      //"project": "fr.domaine:mon-application-SVN"
       $mystring = $component["project"];
       $findme   = '-SVN';
       if (!strpos($mystring, $findme)) {
