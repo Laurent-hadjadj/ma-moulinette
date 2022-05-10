@@ -74,7 +74,7 @@
 							<td class="text-left">Date</td>
 							{% for i in 0..dash|length-1 %}
 								<td class="text-right">
-									<span>{{dash[i]["date"]|date("m/d/Y", "Europe/Paris")}}
+									<span>{{dash[i]["date"]|date("d/m/Y", "Europe/Paris")}}
 									</span>
 								</td>
 							{% endfor %}
@@ -270,7 +270,7 @@
               <td class="text-left">Date</td>
               {% for i in 0..dash|length-1 %}
                 <td class="text-center">
-                  <span>{{dash[i]["date"]|date("m/d/Y", "Europe/Paris")}}
+                  <span>{{dash[i]["date"]|date("d/m/Y", "Europe/Paris")}}
                   </span>
                 </td>
               {% endfor %}
@@ -320,7 +320,7 @@
               <td class="text-left">Date</td>
               {% for i in 0..severite|length-1 %}
                 <td class="text-right">
-                  <span>{{severite[i]["date"]|date("m/d/Y", "Europe/Paris")}}
+                  <span>{{severite[i]["date"]|date("d/m/Y", "Europe/Paris")}}
                   </span>
                 </td>
               {% endfor %}
@@ -448,7 +448,7 @@
               <th scope="col"></th>
               {% for i in 0..details|length-1 %}
                 <th colspan="3" scope="col" class="text-center">
-                  <span>{{details[i]["date"]|date("m/d/Y", "Europe/Paris")}}</span>
+                  <span>{{details[i]["date"]|date("d/m/Y", "Europe/Paris")}}</span>
                 </th>
               {% endfor %}
             </tr>

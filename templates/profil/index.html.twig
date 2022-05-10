@@ -56,8 +56,8 @@
 								<td class="text-center">{{profil.langage}}</td>
 								<td class="text-center">{{profil.regle|format_number(locale='fr')}}</td>
 								<td class="text-center">
-									<span class="show-for-small-only">{{profil.date|date("m/d/Y", "Europe/Paris")}}</span>
-									<span class="show-for-medium">{{profil.date|date("m/d/Y à H:m", "Europe/Paris")}}</span>
+									<span class="show-for-small-only">{{profil.date|date("d/m/Y", "Europe/Paris")}}</span>
+									<span class="show-for-medium">{{profil.date|date("d/m/Y à H:m", "Europe/Paris")}}</span>
 								</td>
 								{% if profil.actif ==1 %}
 									{% set statut1='Oui' %}
