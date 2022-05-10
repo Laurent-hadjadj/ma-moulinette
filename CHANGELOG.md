@@ -158,10 +158,10 @@
 ## v1.2.1 - 08/05/2022 - Release
 
 * Erreur : "Cannot instantiate interface Psr\Log\LoggerInterface". On n'utilise plus l'instanciation (new LoggerInterface) mais l'injection de dépendance ;
-* Erreur de syntaxe dans l'utilisation de litterals dans le contrôleur ApiProjetContrôleur ;
+* Erreur de syntaxe dans l'utilisation de littérales dans le contrôleur ApiProjetContrôleur ;
 * Suppression des dépendances inutiles dans HomeControleur et ProfilControleur ;
 * Correction des fautes et erreur de typographie dans le fichier readme.md ;
 
-## v1.3.0 - 08/05/2022 - toDo
+## v1.2.2 - 10/05/2022 - Release
 
-* Ajout du rapport sur les modifications "faux positif" et "Ne sera pas corrigé" ;
+* ApiProjectController : Warning: Undefined array key "date_enregistrement" (ligne 1461) ;
