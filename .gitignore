@@ -30,6 +30,8 @@ css-report.json
 jslint-report.json
 phpstan-report.json
 .scannerwork/
+settings.json
+.vscode/
 
 ###< Git ###
 package-lock.json
