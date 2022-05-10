@@ -129,7 +129,7 @@
                 {% if app.nom|length >20 %} {% set taille="nom-small" %} {% else %} {% set taille="nom-normal" %} {% endif %}
                 <p class="ligne-favori open-sans">Nom&nbsp;:<span class="float-right resultat-favori {{taille}}">{{app.nom}}</span></p>
                 <p class="ligne-favori open-sans">Version&nbsp;:<span class="float-right resultat-favori">{{app.version}}</span></p>
-                <p class="ligne-favori open-sans">Date&nbsp;:<span class="float-right resultat-favori">{{app.date|date("m/d/Y", "Europe/Paris")}}</span></p>
+                <p class="ligne-favori open-sans">Date&nbsp;:<span class="float-right resultat-favori">{{app.date|date("d/m/Y", "Europe/Paris")}}</span></p>
                 <table aria-label="tableau-favori">
                   <thead>
                     <tr>
