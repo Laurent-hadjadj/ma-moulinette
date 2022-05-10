@@ -155,7 +155,7 @@ class BoardController extends AbstractController
     code_smell_minor, code_smell_info
     FROM historique
     WHERE maven_key='${mavenKey}'
-    ORDER BY date_version DESC LIMIT 3";
+    ORDER BY date_version DESC LIMIT 9";
     $select = $em->getConnection()->prepare($sql)->executeQuery();
     $details = $select->fetchAllAssociative();
 
@@ -259,7 +259,7 @@ class BoardController extends AbstractController
     $d = new Datetime($data->date);
     $dd = $d->format('Y-m-d\TH:i:sO');
     $urlStatic=$this->getParameter(static::$sonarUrl);
-    $url = " ${urlStatic}/api/measures/search_history?component=
+    $url = "${urlStatic}/api/measures/search_history?component=
              ${mavenKey}&metrics=reliability_rating,
              security_rating,sqale_rating,bugs,
              vulnerabilities,code_smells,security_hotspots,
@@ -268,7 +268,7 @@ class BoardController extends AbstractController
              &from=${urlencode($dd)}&to=${urlencode($dd)}";
 
     // on appel le client http
-    $result = $this->httpClient($url, $logger);
+    $result = $this->httpClient(trim(preg_replace("/\s+/u", " ", $url)), $logger);
 
     $data = $result["measures"];
     for ($i = 0; $i < 14; $i++) {

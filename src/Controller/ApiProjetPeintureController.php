@@ -288,7 +288,7 @@ class ApiProjetPeintureController extends AbstractController
 
   /**
    * peinture_projet_anomalie_details
-   * Récupère le détauls des anomalies pour chaque type
+   * Récupère le détails des anomalies pour chaque type
    *
    * @param  mixed $em
    * @param  mixed $request
