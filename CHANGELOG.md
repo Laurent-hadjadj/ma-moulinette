@@ -167,3 +167,4 @@
 * ApiProjectController : Warning: Undefined array key "date_enregistrement" (ligne 1461) ;
 * Correction du format de la date : date("m/d/Y) à date("d/m/Y) pour la page dash, profil, et home ;
 * Correction de l'ordre des colones pour le tableau de suivi des sévérités par type.
+* Correction des hotspots corrigés et toujours en base.
