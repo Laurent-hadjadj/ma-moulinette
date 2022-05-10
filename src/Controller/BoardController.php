@@ -123,7 +123,7 @@ class BoardController extends AbstractController
 
     $select = $em->getConnection()->prepare($sql)->executeQuery();
     $dash = $select->fetchAllAssociative();
-    // On récupére les anomalies par sévérité
+    // On récupère les anomalies par sévérité
     $sql = "SELECT * FROM
     (SELECT date_version as date,
     nombre_anomalie_bloquant as bloquant,
@@ -144,7 +144,7 @@ class BoardController extends AbstractController
     $select = $em->getConnection()->prepare($sql)->executeQuery();
     $severite = $select->fetchAllAssociative();
 
-    // On récupére les anomalies par type et sévérité
+    // On récupère les anomalies par type et sévérité
     $sql = "SELECT date_version as date, version,
     bug_blocker, bug_critical, bug_major, bug_minor,
     bug_info,
@@ -178,7 +178,7 @@ class BoardController extends AbstractController
       $date[$i] = $graph[$i]["date"];
     }
 
-    // on ajoute une valeur null a la fin de chaque serie
+    // on ajoute une valeur null a la fin de chaque série
     $bug[$nl + 1] = 0;
     $secu[$nl + 1] = 0;
     $codeSmell[$nl + 1] = 0;
@@ -422,7 +422,7 @@ class BoardController extends AbstractController
               0,0,0,FALSE, ${tempoInitial},
               '${tempoDateEnregistrement}')";
 
-    // On excute la requête
+    // On exécute la requête
     $con = $em->getConnection()->prepare($sql);
     try {
       $con->executeQuery();
@@ -457,7 +457,7 @@ class BoardController extends AbstractController
             WHERE maven_key='${mavenKey}'
             ORDER BY date_version DESC";
 
-    // On excute la requête
+    // On exécute la requête
     $con = $em->getConnection()->prepare($sql);
     try {
       $select = $con->executeQuery();
@@ -513,7 +513,7 @@ class BoardController extends AbstractController
     VALUES ('" . $mavenKey . "', " . $favori . ", '" .
       $dateEnregistrement->format(static::$dateFormat) . "')";
 
-    // On excute la requête et on catch l'erreur
+    // On exécute la requête et on catch l'erreur
     $con = $em->getConnection()->prepare($sql);
     try {
       $con->executeQuery();
