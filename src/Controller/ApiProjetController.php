@@ -412,7 +412,10 @@ class ApiProjetController extends AbstractController
     // On créé un objet date
     $date = new DateTime();
 
-    $url1 = "${tempoUrlLong}${mavenKey}&facets=directories,types,severities&p=1&ps=1&statuses=OPEN";
+    $statusesMin="OPEN,CONFIRMED,REOPENED,RESOLVED";
+    $statusesAll="OPEN,CONFIRMED,REOPENED,RESOLVED,TO_REVIEW,IN_REVIEW";
+
+    $url1 = "${tempoUrlLong}${mavenKey}&facets=directories,types,severities&p=1&ps=1&statuses=${statusesMin}";
 
     // On récupère le total de la Dette technique pour les BUG
     $url2 = "${tempoUrlLong}${mavenKey}&types=BUG&p=1&ps=1";
@@ -1384,8 +1387,11 @@ class ApiProjetController extends AbstractController
     }
     $rule = $hotspot["rule"] ? $hotspot["rule"]["name"] : "/";
     $message = $hotspot["message"];
-    // On affiche pas la description, même si on la en base, car on pointe sur le serveur sonarqube directement
-    //$description=$hotspot["rule"]["riskDescription"];
+    /**
+     * On affiche pas la description, même si on la en base,
+     * car on pointe sur le serveur sonarqube directement
+     * $description=$hotspot["rule"]["riskDescription"];
+     */
     $hotspotKey=$hotspot["key"];
     $dateEnregistrement = $date;
 
@@ -1395,7 +1401,7 @@ class ApiProjetController extends AbstractController
       "batch" => $batch, "file" => $file,
       "line" => $line, "rule" => $rule,
       "message" => $message, "key" => $hotspotKey,
-      "dateEnregistrement" => $dateEnregistrement
+      "date_enregistrement" => $dateEnregistrement
     ];
   }
 
@@ -1414,17 +1420,16 @@ class ApiProjetController extends AbstractController
   {
     $response = new JsonResponse();
 
-    // On bind les varibales
+    // On bind les variables
     $mavenKey=$request->get('mavenKey');
 
-    // On réfcupre la liste des hotspots
+    // On récupère la liste des hotspots
     $sql = "SELECT * FROM hotspots
             WHERE maven_key='${mavenKey}'
             AND status='TO_REVIEW' ORDER BY niveau";
 
     $r = $em->getConnection()->prepare($sql)->executeQuery();
     $liste = $r->fetchAllAssociative();
-
     // Si la liste des vide on envoi un code 406
     if (empty($liste)) {
       return $response->setData(["code" => 406, Response::HTTP_OK]);
