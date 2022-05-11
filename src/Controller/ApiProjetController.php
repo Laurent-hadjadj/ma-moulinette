@@ -1497,7 +1497,6 @@ class ApiProjetController extends AbstractController
     $result = $this->httpClient(trim(preg_replace("/\s+/u", " ", $url)), $logger);
     $date = new DateTime();
 
-    dd($tempoUrl, $mavenKey, $url,$result);
     // On supprime les données du projet de la table NoSonar
     $sql = "DELETE FROM no_sonar WHERE maven_key='${mavenKey}'";
     $em->getConnection()->prepare($sql)->executeQuery();
@@ -1519,7 +1518,6 @@ class ApiProjetController extends AbstractController
           $line = $issue["line"];
         }
         $nosonar->setLine($line);
-        $nosonar->setLine($issue["line"]);
         $nosonar->setDateEnregistrement($date);
         $em->persist($nosonar);
         $em->flush();
