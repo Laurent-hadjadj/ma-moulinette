@@ -298,7 +298,7 @@ const remplissageOwaspInfo=function(idMaven) {
     injectionOwaspInfo(8, r.a8, c, n);
 
     /* Détails A9 */
-    if (parseInt(r.a9Blocker + r.a9ccritical + r.a9Major + r.a9Minor,10) === 0) {
+    if (parseInt(r.a9Blocker + r.a9Critical + r.a9Major + r.a9Minor,10) === 0) {
       c = couleur[1];
       n = note[1];
     }
@@ -310,7 +310,7 @@ const remplissageOwaspInfo=function(idMaven) {
       c = couleur[3];
       n = note[3];
     }
-    if (parseInt(r.a9ccritical,10) > 1) {
+    if (parseInt(r.a9Critical,10) > 1) {
       c = couleur[4];
       n = note[4];
     }
@@ -435,7 +435,7 @@ const remplissageHotspotListe=function(idMaven) {
   const html2='&nbsp;&nbsp;&nbsp;';
 
   if ( hotspotTotal !==0 ){
-    /* caclul A1 */
+    /* calcul A1 */
     leTaux = 1 - (parseInt(r.menaceA1,10)/hotspotTotal);
     laNote = calculNoteHotspot(leTaux);
     if ( (leTaux*100)>10 && (leTaux*100)<100) {
@@ -446,7 +446,7 @@ const remplissageHotspotListe=function(idMaven) {
     if ( leTaux*100===100) {
       espace=html1;
     }
-    injectionHotspotListe(1, espace, r.menanceA1, leTaux, laNote[0], laNote[1]);
+    injectionHotspotListe(1, espace, r.menaceA1, leTaux, laNote[0], laNote[1]);
 
     /* calcul A2*/
     leTaux = 1 - (parseInt(r.menaceA2,10)/ hotspotTotal);
@@ -459,7 +459,7 @@ const remplissageHotspotListe=function(idMaven) {
     if ( leTaux*100===100) {
       espace=html1;
     }
-    injectionHotspotListe(2, espace, r.menanceA2, leTaux, laNote[0], laNote[1]);
+    injectionHotspotListe(2, espace, r.menaceA2, leTaux, laNote[0], laNote[1]);
 
     /* calcul A3 */
     leTaux = 1 - (r.menaceA3/ hotspotTotal);
@@ -472,7 +472,7 @@ const remplissageHotspotListe=function(idMaven) {
     if ( leTaux*100===100) {
       espace=html1;
      }
-     injectionHotspotListe(3, espace, r.menanceA3, leTaux, laNote[0], laNote[1]);
+     injectionHotspotListe(3, espace, r.menaceA3, leTaux, laNote[0], laNote[1]);
 
     /* Calcul A4 */
     leTaux = 1 - (r.menaceA4/ hotspotTotal);
@@ -485,7 +485,7 @@ const remplissageHotspotListe=function(idMaven) {
     if ( leTaux*100===100) {
       espace=html1;
     }
-    injectionHotspotListe(4, espace, r.menanceA4, leTaux, laNote[0], laNote[1]);
+    injectionHotspotListe(4, espace, r.menaceA4, leTaux, laNote[0], laNote[1]);
 
     /* calcul A5 */
     leTaux = 1 - (r.menaceA5/ hotspotTotal);
@@ -498,7 +498,7 @@ const remplissageHotspotListe=function(idMaven) {
     if ( leTaux*100===100) {
       espace=html1;
     }
-    injectionHotspotListe(5, espace, r.menanceA5, leTaux, laNote[0], laNote[1]);
+    injectionHotspotListe(5, espace, r.menaceA5, leTaux, laNote[0], laNote[1]);
 
     /* Calcul A6 */
     leTaux = 1 - (r.menaceA6/ hotspotTotal);
@@ -511,7 +511,7 @@ const remplissageHotspotListe=function(idMaven) {
     if ( leTaux*100===100) {
       espace=html1;
     }
-    injectionHotspotListe(6, espace, r.menanceA6, leTaux, laNote[0], laNote[1]);
+    injectionHotspotListe(6, espace, r.menaceA6, leTaux, laNote[0], laNote[1]);
 
     /* Calcul A7 */
     leTaux = 1 - (r.menaceA7 / hotspotTotal);
@@ -524,7 +524,7 @@ const remplissageHotspotListe=function(idMaven) {
     if ( leTaux*100===100) {
       espace=html1;
     }
-    injectionHotspotListe(7, espace, r.menanceA7, leTaux, laNote[0], laNote[1]);
+    injectionHotspotListe(7, espace, r.menaceA7, leTaux, laNote[0], laNote[1]);
 
     /* Calcul A8 */
     leTaux = 1 - (r.menaceA8/ hotspotTotal);
@@ -537,7 +537,7 @@ const remplissageHotspotListe=function(idMaven) {
     if ( leTaux*100===100) {
       espace=html1;
     }
-    injectionHotspotListe(8, espace, r.menanceA8, leTaux, laNote[0], laNote[1]);
+    injectionHotspotListe(8, espace, r.menaceA8, leTaux, laNote[0], laNote[1]);
 
     /* calcul A9 */
     leTaux = 1 - (r.menaceA9/ hotspotTotal);
@@ -550,7 +550,7 @@ const remplissageHotspotListe=function(idMaven) {
     if (leTaux*100===100) {
        espace=html1;
       }
-      injectionHotspotListe(9, espace, r.menanceA9, leTaux, laNote[0], laNote[1]);
+      injectionHotspotListe(9, espace, r.menaceA9, leTaux, laNote[0], laNote[1]);
 
     /* Calcul A10 */
     leTaux = 1 - (r.menaceA10/ hotspotTotal);
@@ -563,7 +563,7 @@ const remplissageHotspotListe=function(idMaven) {
     if (leTaux*100===100) {
       espace=html1;
     }
-    injectionHotspotListe(10, espace, r.menanceA10, leTaux, laNote[0], laNote[1]);
+    injectionHotspotListe(10, espace, r.menaceA10, leTaux, laNote[0], laNote[1]);
    } else {
     for (let i=1; i<11; i++){
       injectionHotspotListe(i, espace, 0, leTaux, laNote[0], laNote[1]);
@@ -575,7 +575,7 @@ const remplissageHotspotListe=function(idMaven) {
 /**
  *
  *  Description
- *  Injecte les ligne de détails piur les hotpsots
+ *  Injecte les ligne de détails pour les hotpsots
  *
  * @param {*} numero
  * @param {*} url
@@ -648,11 +648,13 @@ const remplissageHotspotDetails=function(idMaven) {
     let numero=0, monNumero, ligne, c, frontend=0, backend=0, batch=0;
     let vide, too, totalABC, zero='', bc;
     const serveur=$('#js-serveur').data('serveur');
-
+    console.log(r);
     if (r.details==='vide') {
         // On met ajour la répartition par module
-        vide = `<span class="stat-note">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(0)}</span>
-              <span class="stat-note">${Intl.NumberFormat('fr-FR', { style: 'percent' }).format(0)}</span>`;
+        vide = `<span class="stat-note">
+        ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(0)}</span>
+              <span class="stat-note">
+              ${Intl.NumberFormat('fr-FR', { style: 'percent' }).format(0)}</span>`;
         $('#frontend').html(vide);
         $('#backend').html(vide);
         $('#batch').html(vide);
