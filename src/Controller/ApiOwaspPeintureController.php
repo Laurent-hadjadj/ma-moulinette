@@ -40,7 +40,7 @@ class ApiOwaspPeintureController extends AbstractController
     $mavenKey = $request->get('mavenKey');
     $response = new JsonResponse();
 
-    // On récupere les failles owasp
+    // On récupère les failles owasp
     $sql = "SELECT * FROM owasp WHERE maven_key='${mavenKey}'
             ORDER BY date_enregistrement DESC LIMIT 1";
 
@@ -149,14 +149,14 @@ class ApiOwaspPeintureController extends AbstractController
     $mavenKey = $request->get('mavenKey');
     $response = new JsonResponse();
 
-    // On compte le nmbre de hotspot REVIEWED
+    // On compte le nombre de hotspot REVIEWED
     $sql = "SELECT count(*) as reviewed FROM hotspot_owasp
             WHERE maven_key='${mavenKey}' AND status='REVIEWED'";
 
     $list = $em->getConnection()->prepare($sql)->executeQuery();
     $reviewed = $list->fetchAllAssociative();
 
-    // On compte le nmbre de hotspot TO_REVIEW
+    // On compte le nombre de hotspot TO_REVIEW
     $sql = "SELECT count(*) as to_review FROM hotspot_owasp
             WHERE maven_key='${mavenKey}' AND status='TO_REVIEW'";
 
