@@ -1434,22 +1434,24 @@ class ApiProjetController extends AbstractController
 
     $r = $em->getConnection()->prepare($sql)->executeQuery();
     $liste = $r->fetchAllAssociative();
-    // Si la liste des vide on envoi un code 406
-    if (empty($liste)) {
-      return $response->setData(["code" => 406, Response::HTTP_OK]);
-    }
-
-    // On efface la table hotspots_details
+ 
     // On supprime les données de la table hotspots_details pour le projet
     $sql = "DELETE FROM hotspot_details
             WHERE maven_key='${mavenKey}'";
     $em->getConnection()->prepare($sql)->executeQuery();
 
+
+    // Si la liste des vide on envoi un code 406
+    if (empty($liste)) {
+      return $response->setData(["code" => 406, Response::HTTP_OK]);
+    }
+
     /* On boucle sur les clés pour récupérer le détails du hotspot
      * On envoie la clé du projet et la clé du hotspot
      */
     $ligne = 0;
-    foreach ($liste as $elt) {
+     foreach ($liste as $elt) {
+ 
       $ligne++;
       $key = $this->hotspotDetails($mavenKey, $elt["key"], $logger);
       $details = new  HotspotDetails();
