@@ -648,7 +648,6 @@ const remplissageHotspotDetails=function(idMaven) {
     let numero=0, monNumero, ligne, c, frontend=0, backend=0, batch=0;
     let vide, too, totalABC, zero='', bc;
     const serveur=$('#js-serveur').data('serveur');
-    console.log(r);
     if (r.details==='vide') {
         // On met ajour la répartition par module
         vide = `<span class="stat-note">
