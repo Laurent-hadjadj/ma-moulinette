@@ -162,9 +162,12 @@
 * Suppression des dépendances inutiles dans HomeControleur et ProfilControleur ;
 * Correction des fautes et erreur de typographie dans le fichier readme.md ;
 
-## v1.2.2 - 10/05/2022 - Release
+## v1.2.2 - 11/05/2022 - Release
 
+* Ajout d'une base vierge pour démarrer ;
 * ApiProjectController : Warning: Undefined array key "date_enregistrement" (ligne 1461) ;
 * Correction du format de la date : date("m/d/Y) à date("d/m/Y) pour la page dash, profil, et home ;
-* Correction de l'ordre des colones pour le tableau de suivi des sévérités par type.
-* Correction des hotspots corrigés et toujours en base.
+* Correction de l'ordre des colones pour le tableau de suivi des sévérités par type ;
+* Correction des hotspots corrigés et toujours en base ;
+* Correction "Warning: Undefined array key [line]", suppression de l'affectation en double ;
+* Corrections de la page OWASP (erreurs typographiques lors de refactoring) ;
