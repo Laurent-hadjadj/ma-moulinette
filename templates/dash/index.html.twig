@@ -148,9 +148,11 @@
 										{% set couleur="rouge" %}
 									{% endif %}
 									{% if dash[i]["note_hotspot"] is defined %}
-										<span class="bleu">Z</span>
+										{#<span class="bleu">Z</span>#}
+                    <span class="{{couleur}}">{{dash[i]["note_hotspot"]}}</span>
 									{% else %}
-										<span class="{{couleur}}">{{dash[i]["note_hotspot"]}}</span>
+										{#<span class="{{couleur}}">{{dash[i]["note_hotspot"]}}</span>#}
+                    <span class="bleu">Z</span>
 									{% endif %}
 								</td>
 							{% endfor %}
