@@ -604,14 +604,15 @@ const injectionHotspotDetails=function(numero,url,color,rule,severity,file,line,
  * injectionModule
  *
  * @param {*} module
+ * @param {*} total
  * @param {*} taux
  * @param {*} bc
  * @param {*} zero
  */
-const injectionModule=function (module,taux, bc, zero){
-
+const injectionModule=function (module,total, taux, bc, zero){
+console.log(module, taux, bc, zero);
   const i = ` <span class="stat-note">${new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(taux)}</span>
-              <span class="box ${bc}+ stat-note">${zero}${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(module)}</span>`;
+              <span class="box ${bc} stat-note">${zero}${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(total)}</span>`;
   switch (module) {
     case 'frontend':
       $('#frontend').html(i);
@@ -728,7 +729,7 @@ const remplissageHotspotDetails=function(idMaven) {
     if (too*100 >69) {
       bc=moduleRouge;
     }
-    injectionModule('frontend',too, bc, zero);
+    injectionModule('frontend',frontend, too, bc, zero);
 
     // Calcul pour le backend
     too=(backend/totalABC);
@@ -747,7 +748,7 @@ const remplissageHotspotDetails=function(idMaven) {
     if (too*100 >69) {
       bc=moduleRouge;
     }
-    injectionModule('backend',too, bc, zero);
+    injectionModule('backend',backend, too, bc, zero);
 
     // Calcul pour le backend
     too=(batch/totalABC);
@@ -766,7 +767,7 @@ const remplissageHotspotDetails=function(idMaven) {
     if (too*100 >69) {
       bc=moduleRouge;
     }
-    injectionModule('batch',too, bc, zero);
+    injectionModule('batch',batch, too, bc, zero);
   }
  });
 };
