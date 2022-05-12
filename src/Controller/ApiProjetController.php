@@ -1434,7 +1434,7 @@ class ApiProjetController extends AbstractController
 
     $r = $em->getConnection()->prepare($sql)->executeQuery();
     $liste = $r->fetchAllAssociative();
- 
+
     // On supprime les données de la table hotspots_details pour le projet
     $sql = "DELETE FROM hotspot_details
             WHERE maven_key='${mavenKey}'";
@@ -1451,7 +1451,7 @@ class ApiProjetController extends AbstractController
      */
     $ligne = 0;
      foreach ($liste as $elt) {
- 
+
       $ligne++;
       $key = $this->hotspotDetails($mavenKey, $elt["key"], $logger);
       $details = new  HotspotDetails();
