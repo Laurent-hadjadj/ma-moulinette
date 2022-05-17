@@ -1341,13 +1341,27 @@ class ApiProjetController extends AbstractController
     $hotspot = $this->httpClient($url, $logger);
     $date = new DateTime();
 
-    // Si le niveau de sévérité n'est pos connu, on lui affecte la valeur MAJOR.
+    // Si le niveau de sévérité n'est pas connu, on lui affecte la valeur MEDIUM.
     if (empty($hotspot["rule"]["vulnerabilityProbability"])) {
-      $severity = "MAJOR";
+      $severity = "MEDIUM";
     } else {
       $severity = $hotspot["rule"]["vulnerabilityProbability"];
     }
 
+    // On affecte le niveau en fonction de la sévérité
+    switch ($severity) {
+      case "HIGH":
+          $niveau=1;
+          break;
+      case "MEDIUM":
+          $niveau=2;
+          break;
+      case "LOW":
+          $niveau=3;
+          break;
+      default:
+         echo "oops ! je suis perdu !!!";
+    }
     $frontend = 0;
     $backend = 0;
     $autre = 0;
@@ -1388,7 +1402,6 @@ class ApiProjetController extends AbstractController
     if ($module[0] == $app[1] . "-webapp") {
       $frontend++;
     }
-
 
     /**
      * Application Backend
@@ -1466,6 +1479,7 @@ class ApiProjetController extends AbstractController
     $dateEnregistrement = $date;
 
     return [
+      "niveau" => $niveau,
       "severity" => $severity, "status" => $status,
       "frontend" => $frontend, "backend" => $backend,
       "autre" => $autre, "file" => $file,
@@ -1523,6 +1537,7 @@ class ApiProjetController extends AbstractController
       $details = new  HotspotDetails();
       $details->setMavenKey($mavenKey);
       $details->setSeverity($key["severity"]);
+      $details->setNiveau($key["niveau"]);
       $details->setStatus($key["status"]);
       $details->setFrontend($key["frontend"]);
       $details->setBackend($key["backend"]);
