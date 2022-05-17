@@ -290,9 +290,9 @@
               {% endfor %}
             </tr>
             <tr>
-              <td class="text-left">Batch</td>
+              <td class="text-left">Autres</td>
               {% for i in 0..dash|length-1 %}
-                <td class="text-center">{{dash[i]["batch"]|format_number(locale='fr')}}</td>
+                <td class="text-center">{{dash[i]["autre"]|format_number(locale='fr')}}</td>
               {% endfor %}
             </tr>
           </tbody>
