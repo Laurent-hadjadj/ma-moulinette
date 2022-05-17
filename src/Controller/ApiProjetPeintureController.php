@@ -240,7 +240,7 @@ class ApiProjetPeintureController extends AbstractController
     // Module
     $frontend = $anomalies[0]["frontend"];
     $backend = $anomalies[0]["backend"];
-    $batch = $anomalies[0]["batch"];
+    $autre = $anomalies[0]["autre"];
 
     /* On récupère les notes (A-F) */
     $types = ["reliability", "security", "sqale"];
@@ -279,7 +279,7 @@ class ApiProjetPeintureController extends AbstractController
       "info" => $severityInfo,
       "major" => $severityMajor,
       "minor" => $severityMinor,
-      "frontend" => $frontend, "backend" => $backend, "batch" => $batch,
+      "frontend" => $frontend, "backend" => $backend, "autre" => $autre,
       "noteReliability" => $noteReliability,
       "noteSecurity" => $noteSecurity,
       "noteSqale" => $noteSqale, Response::HTTP_OK

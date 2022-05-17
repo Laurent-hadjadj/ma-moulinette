@@ -455,7 +455,7 @@ class ApiProjetController extends AbstractController
       // modules
       $frontend = 0;
       $backend = 0;
-      $batch = 0;
+      $autre = 0;
       $nombreAnomalie = 0;
       foreach ($facets as $facet) {
         $nombreAnomalie++;
@@ -511,10 +511,13 @@ class ApiProjetController extends AbstractController
               $backend = $backend + $directory["count"];
             }
 
-            // Application Frontend
+            /**
+             *  Application Frontend
+             */
             if ($module[0] == $app[1] . "-presentation") {
               $frontend = $frontend + $directory["count"];
             }
+            // Application : Legacy
             if ($module[0] == $app[1] . "-presentation-commun") {
               $frontend = $frontend + $directory["count"];
             }
@@ -525,7 +528,9 @@ class ApiProjetController extends AbstractController
               $frontend = $frontend + $directory["count"];
             }
 
-            // Application Backend
+            /**
+             * Application Backend
+             */
             if ($module[0] == $app[1] . "-metier") {
               $backend = $backend + $directory["count"];
             }
@@ -544,17 +549,46 @@ class ApiProjetController extends AbstractController
             if ($module[0] == $app[1] . "-service") {
               $backend = $backend + $directory["count"];
             }
+            // Application : Legacy
             if ($module[0] == $app[1] . "-serviceweb") {
               $backend = $backend + $directory["count"];
             }
+            // Application : Dénormaliser
             if ($module[0] == $app[1] . "-middleoffice") {
               $backend = $backend + $directory["count"];
             }
-
-            // Application Batch ou Autre
-            if ($module[0] == $app[1] . "-batchs") {
-              $batch = $batch + $directory["count"];
+            // Application : Starter-Kit
+            if ($module[0] == $app[1] . "-metier-rest") {
+              $backend = $backend + $directory["count"];
             }
+            // Application : Legacy
+            if ($module[0] == $app[1] . "-entite") {
+               $backend = $backend + $directory["count"];
+            }
+            // Application : Legacy
+            if ($module[0] == $app[1] . "-serviceweb-client") {
+              $backend = $backend + $directory["count"];
+           }
+
+            /**
+             * Application Batch et Autres
+             */
+            if ($module[0] == $app[1] . "-batch") {
+              $autre = $autre + $directory["count"];
+            }
+             if ($module[0] == $app[1] . "-batchs") {
+              $autre = $autre + $directory["count"];
+            }
+            if ($module[0] == $app[1] . "-batch-envoi-dem-aval") {
+              $autre = $autre + $directory["count"];
+            }
+            if ($module[0] == $app[1] . "-batch-import-billets") {
+              $autre = $autre + $directory["count"];
+            }
+            if ($module[0] == $app[1] . "-rdd") {
+              $autre = $autre + $directory["count"];
+            }
+
           }
         }
       }
@@ -573,7 +607,7 @@ class ApiProjetController extends AbstractController
       $issue->setDetteCodeSmellMinute($detteCodeSmellMinute);
       $issue->setFrontend($frontend);
       $issue->setBackend($backend);
-      $issue->setBatch($batch);
+      $issue->setAutre($autre);
       $issue->setBlocker($blocker);
       $issue->setCritical($critical);
       $issue->setMajor($major);
@@ -1316,7 +1350,7 @@ class ApiProjetController extends AbstractController
 
     $frontend = 0;
     $backend = 0;
-    $batch = 0;
+    $autre = 0;
     // nom du projet
     $app = explode(":", $mavenKey);
 
@@ -1339,7 +1373,9 @@ class ApiProjetController extends AbstractController
       $backend++;
     }
 
-    // Application Frontend
+   /**
+     *  Application Frontend
+     */
     if ($module[0] == $app[1] . "-presentation") {
       $frontend++;
     }
@@ -1353,7 +1389,10 @@ class ApiProjetController extends AbstractController
       $frontend++;
     }
 
-    // Application Backend
+
+    /**
+     * Application Backend
+     */
     if ($module[0] == $app[1] . "-metier") {
       $backend++;
     }
@@ -1372,16 +1411,43 @@ class ApiProjetController extends AbstractController
     if ($module[0] == $app[1] . "-service") {
       $backend++;
     }
+    // Application : Legacy
     if ($module[0] == $app[1] . "-serviceweb") {
       $backend++;
     }
     if ($module[0] == $app[1] . "-middleoffice") {
       $backend++;
     }
+    // Application : Starter-Kit
+    if ($module[0] == $app[1] . "-metier-rest") {
+      $backend++;
+    }
+    // Application : Legacy
+    if ($module[0] == $app[1] . "-entite") {
+      $backend++;
+    }
+    // Application : Legacy
+    if ($module[0] == $app[1] . "-serviceweb-client") {
+      $backend++;
+    }
 
-    // Application Batch ou Autres
-    if ($module[0] == $app[1] . "-batchs") {
-      $batch++;
+    /**
+     * Application Batch et Autres
+     */
+    if ($module[0] == $app[1] . "-batch") {
+      $autre++;
+    }
+    if ($module[0] == $app[1] . "-batch") {
+      $autre++;
+    }
+    if ($module[0] == $app[1] . "-batch-envoi-dem-aval") {
+      $autre++;
+    }
+    if ($module[0] == $app[1] . "-batch-import-billets") {
+      $autre++;
+    }
+    if ($module[0] == $app[1] . "-rdd") {
+      $autre++;
     }
 
     if (empty($hotspot["line"])) {
@@ -1402,7 +1468,7 @@ class ApiProjetController extends AbstractController
     return [
       "severity" => $severity, "status" => $status,
       "frontend" => $frontend, "backend" => $backend,
-      "batch" => $batch, "file" => $file,
+      "autre" => $autre, "file" => $file,
       "line" => $line, "rule" => $rule,
       "message" => $message, "key" => $hotspotKey,
       "date_enregistrement" => $dateEnregistrement
@@ -1460,7 +1526,7 @@ class ApiProjetController extends AbstractController
       $details->setStatus($key["status"]);
       $details->setFrontend($key["frontend"]);
       $details->setBackend($key["backend"]);
-      $details->setBatch($key["batch"]);
+      $details->setAutre($key["autre"]);
       $details->setFile($key["file"]);
       $details->setLine($key["line"]);
       $details->setRule($key["rule"]);
@@ -1585,7 +1651,7 @@ class ApiProjetController extends AbstractController
     // répartition par module (Java)
     $save->setFrontend($data->frontend);
     $save->setBackend($data->backend);
-    $save->setBatch($data->batch);
+    $save->setAutre($data->autre);
 
     // Répartition par type
     $save->setNombreAnomalieBloquant($data->nombreAnomalieBloquant);
