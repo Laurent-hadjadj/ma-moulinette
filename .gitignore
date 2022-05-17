@@ -38,4 +38,5 @@ settings.json
 /var/data.db
 /var/data-rec.db
 /var/data-monapplication.db
+/var/data.db-journal
 ###< sqlite ###
