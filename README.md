@@ -134,7 +134,7 @@ La documentation de chaque faille.
 
 ### Page Suivi
 
-La page de permet l'affichage des 10 dernières version de l'application sélectionnée.
+La page de permet l'affichage des 10 dernières version de l'application sélectionnée. \
 ![suivi](assets/images/documentation/suivi-001.jpg)
 
 ![suivi](assets/images/documentation/suivi-002.jpg)
@@ -466,4 +466,4 @@ Répartiton par dossier. \
 ![sonarqube-002](assets/images/documentation/sonarqube-004.jpg)
 
 Analyse Ma-moulinette. \
-![ma-moulinette](assets/images/documentation/projet-003.jpg)
+![ma-moulinette](assets/images/documentation/ma-moulinette-001.jpg)
