@@ -37,4 +37,5 @@ settings.json
 ###> sqlite ###
 /var/data.db
 /var/data-rec.db
+/var/data-monapplication.db
 ###< sqlite ###
