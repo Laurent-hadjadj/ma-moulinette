@@ -99,7 +99,7 @@ class HotspotDetails
 
     public function setNiveau(int $niveau): self
     {
-        $this->frontend = $niveau;
+        $this->$niveau = $niveau;
 
         return $this;
     }
