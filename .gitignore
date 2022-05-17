@@ -7,9 +7,9 @@
 /public/bundles/
 /var/log/dev*.log
 /var/cache/dev/
-/var/data.db
 /vendor/
 /migrations/
+composer.lock
 ###< symfony/framework-bundle ###
 
 ###> symfony/webpack-encore-bundle ###
@@ -21,18 +21,20 @@ yarn-error.log
 package-lock.json
 ###< symfony/webpack-encore-bundle ###
 
-###> Git ###
+###> git ###
 git.store
-###< Git ###
+###< git ###
 
-###> Audit ###
+###> audit ###
 css-report.json
 jslint-report.json
 phpstan-report.json
 .scannerwork/
 settings.json
 .vscode/
+###< audit ###
 
-###< Git ###
-package-lock.json
-composer.lock
+###> sqlite ###
+/var/data.db
+/var/data-rec.db
+###< sqlite ###
