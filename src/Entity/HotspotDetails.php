@@ -30,6 +30,9 @@ class HotspotDetails
     #[ORM\Column(type: 'string', length: 8)]
     private $severity;
 
+    #[ORM\Column(type: 'integer')]
+    private $niveau;
+
     #[ORM\Column(type: 'string', length: 16)]
     private $status;
 
@@ -85,6 +88,18 @@ class HotspotDetails
     public function setSeverity(string $severity): self
     {
         $this->severity = $severity;
+
+        return $this;
+    }
+
+    public function getNiveau(): ?int
+    {
+        return $this->niveau;
+    }
+
+    public function setNiveau(int $niveau): self
+    {
+        $this->frontend = $niveau;
 
         return $this;
     }
