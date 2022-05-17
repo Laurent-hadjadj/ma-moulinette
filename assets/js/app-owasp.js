@@ -661,7 +661,7 @@ const remplissageHotspotDetails=function(idMaven) {
 
         // On ajoute une ligne dans le tableau
         ligne = `<tr class="text-center">
-                  <td>N.C</td><td>N.C</td><td>N.C</td><td>N.C</td><td>N.C</td><td>N.C</td><td>Pas de failles</td>
+                  <td>N.C</td><td>N.C</td><td>N.C</td><td>N.C</td><td>N.C</td><td>N.C</td><td>Pas de faille.</td>
                  </tr>`;
          $('#tbody').html(ligne);
       } else {
