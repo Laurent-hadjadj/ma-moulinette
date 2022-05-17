@@ -11,4 +11,9 @@ ALTER TABLE hotspot_details RENAME batch TO autre;
 -- ## Ajout de la colonne niveau à la table hotspot_details
 ALTER TABLE hotspot_details ADD COLUMN niveau INTERGER;
 
+-- ## Mise à jour de la colonne niveau
+UPDATE hotspot_details SET niveau=1 WHERE severity='HIGH';
+UPDATE hotspot_details SET niveau=2 WHERE severity='MEDIUM';
+UPDATE hotspot_details SET niveau=3 WHERE severity='LOW';
+
 COMMIT;
