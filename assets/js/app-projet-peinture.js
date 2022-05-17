@@ -175,7 +175,7 @@ export const remplissage=function(mavenKey) {
     const html01='<span style="color:#fff;">0</span>';
     const html02='<span style="color:#fff;">00</span>';
 
-    const totalModule=parseInt(t.frontend+t.backend+t.batch,10);
+    const totalModule=parseInt(t.frontend+t.backend+t.autre,10);
 
     if (totalModule !==0) {
       if (t.frontend!==0) {
@@ -208,38 +208,38 @@ export const remplissage=function(mavenKey) {
       }
       $('#nombre-backend').html(i2);
 
-      if (t.batch!==0) {
-        p3=t.batch/totalModule;
+      if (t.autre!==0) {
+        p3=t.autre/totalModule;
         if (p3*100>10 && p3*100<100) {
           e3=html01;
         }
         if (p3*100<10) {
           e3=html02;
         }
-        i3=`<span>${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.batch)}</span> ${e3}
-            <span>${new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(t.batch/totalModule)}</span>`;
+        i3=`<span>${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.autre)}</span> ${e3}
+            <span>${new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(t.autre/totalModule)}</span>`;
       } else {
         i3=`<span>${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(0)}</span>`;
       }
-      $('#nombre-batch').html(i3);
+      $('#nombre-autre').html(i3);
 
       // Historique
       const t4 = document.getElementById('nombre-frontend');
       const t5 = document.getElementById('nombre-backend');
-      const t6 = document.getElementById('nombre-batch');
+      const t6 = document.getElementById('nombre-autre');
       t4.dataset.nombreFrontend=t.frontend;
       t5.dataset.nombreBackend=t.backend;
-      t6.dataset.nombreBatch=t.batch;
+      t6.dataset.nombreAutre=t.autre;
       } else {
           $('#nombre-frontend').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(0));
           $('#nombre-backend').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(0));
-          $('#nombre-batch').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(0));
+          $('#nombre-autre').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(0));
           const t4 = document.getElementById('nombre-frontend');
           const t5 = document.getElementById('nombre-backend');
-          const t6 = document.getElementById('nombre-batch');
+          const t6 = document.getElementById('nombre-autre');
           t4.dataset.nombreFrontend=0;
           t5.dataset.nombreBackend=0;
-          t6.dataset.nombreBatch=0;
+          t6.dataset.nombreAutre=0;
           }
 
     /* Répartition des anomalies par sévérité */

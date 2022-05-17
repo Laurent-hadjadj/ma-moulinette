@@ -620,8 +620,8 @@ console.log(module, taux, bc, zero);
     case 'backend':
       $('#backend').html(i);
       break;
-    case 'batch':
-      $('#batch').html(i);
+    case 'autre':
+      $('#autre').html(i);
       break;
     default:
       console.info(`Oops !!!, je ne connais pas ${module}.`);
@@ -646,7 +646,7 @@ const remplissageHotspotDetails=function(idMaven) {
     dataType: 'json', data, contentType };
 
   $.ajax(options).then(r=> {
-    let numero=0, monNumero, ligne, c, frontend=0, backend=0, batch=0;
+    let numero=0, monNumero, ligne, c, frontend=0, backend=0, autre=0;
     let vide, too, totalABC, zero='', bc;
     const serveur=$('#js-serveur').data('serveur');
     if (r.details==='vide') {
@@ -657,7 +657,7 @@ const remplissageHotspotDetails=function(idMaven) {
               ${Intl.NumberFormat('fr-FR', { style: 'percent' }).format(0)}</span>`;
         $('#frontend').html(vide);
         $('#backend').html(vide);
-        $('#batch').html(vide);
+        $('#autre').html(vide);
 
         // On ajoute une ligne dans le tableau
         ligne = `<tr class="text-center">
@@ -691,8 +691,8 @@ const remplissageHotspotDetails=function(idMaven) {
         if (detail.backend === 1) {
           backend++;
         }
-        if (detail.batch === 1) {
-          batch++;
+        if (detail.autre === 1) {
+          autre++;
         }
 
         injectionHotspotDetails(monNumero, serveur, c, detail.rule, detail.severity,
@@ -700,7 +700,7 @@ const remplissageHotspotDetails=function(idMaven) {
       }
 
     // Met à jour la répartition par module
-    totalABC=parseInt(frontend+backend+batch,10);
+    totalABC=parseInt(frontend+backend+autre,10);
     const moduleVert='module-vert';
     const moduleOrange='module-orange';
     const moduleRouge='module-rouge';
@@ -751,11 +751,11 @@ const remplissageHotspotDetails=function(idMaven) {
     injectionModule('backend',backend, too, bc, zero);
 
     // Calcul pour le backend
-    too=(batch/totalABC);
-    if (batch<10) {
+    too=(autre/totalABC);
+    if (autre<10) {
       zero='00';
     }
-    if (batch>9 && batch<100) {
+    if (autre>9 && autre<100) {
       zero='0';
     }
     if (too*100 <30) {
@@ -767,7 +767,7 @@ const remplissageHotspotDetails=function(idMaven) {
     if (too*100 >69) {
       bc=moduleRouge;
     }
-    injectionModule('batch',batch, too, bc, zero);
+    injectionModule('autre',autre, too, bc, zero);
   }
  });
 };
