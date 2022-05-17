@@ -102,7 +102,7 @@ class BoardController extends AbstractController
     nombre_vulnerability as faille,
     nombre_code_smell as mauvaise_pratique,
     hotspot_total as nombre_hotspot,
-    frontend as presentation, backend as metier, batch,
+    frontend as presentation, backend as metier, autre,
     note_reliability as fiabilite,
     note_security as securite, note_hotspot,
     note_sqale as maintenabilite, initial
@@ -114,7 +114,7 @@ class BoardController extends AbstractController
     nombre_code_smell as mauvaise_pratique,
     hotspot_total as nombre_hotspot,
     frontend as presentation, backend as metier,
-    batch, note_reliability as fiabilite,
+    autre, note_reliability as fiabilite,
     note_security as securite, note_hotspot,
     note_sqale as maintenabilite, initial
     FROM historique
@@ -401,7 +401,7 @@ class BoardController extends AbstractController
              nombre_ligne_code,couverture,
              duplication,tests_unitaires,nombre_defaut,dette,
              nombre_bug,nombre_vulnerability,nombre_code_smell,
-             frontend,backend,batch,
+             frontend,backend,autre,
              nombre_anomalie_bloquant,nombre_anomalie_critique,
              nombre_anomalie_majeur,
              nombre_anomalie_mineur,nombre_anomalie_info,
