@@ -6,7 +6,7 @@
 
 * Reprise du projet développé eb HTML/CSS, Javascript + DexieJS ;
 * Migration sous symfony 5.4, php 8.1.0 ;
-* Migration dexieJs vers sqlite 4 ;
+* Migration dexieJs vers SQLite 4 ;
 * Migration du code en HTML/JS vers PHP, Twig ;
 * Migration vers webpack ;
 
@@ -33,26 +33,26 @@
   * Ajout d'un spinner (à revoir) ;
   * Ajout d'un bouton pour lancer la collecte des données depuis le serveur Sonar ;
   * Ajout d'une liste de sélection avec recherche à partir de deux lettres ;
-  * Ajout d'un petit-coeur, pour marquer les projets Favoris;
+  * Ajout d'un petit-cœur, pour marquer les projets Favoris ;
   * Ajout d'un bouton permettant d'afficher l'ensemble des projets présents dans la base locale et ceux en favoris ;
   * Ajout d'un bouton permettant la génération et la restitution des indicateurs (i.e. la peinture) ;
   * Ajout d'une zone **Information** et NoSonar permettant d'afficher les informations générales sur le projet sélectionné :
     * Le nom ;
     * La clé ;
-    * Le nombre de version release ;
-    * Le nombre de version snapshot ;
+    * Le nombre de versions release ;
+    * Le nombre de versions snapshot ;
     * Un bouton "Autre" qui permet d'afficher un graphique représentant la distribution des versions ;
     * La version de la dernière application analysée ;
     * La date de la dernière version analysée ;
-    * Le nombre d'exclusion de type @supressWarbing et NoSonar ;
+    * Le nombre d'exclusions de type @supressWarbing et NoSonar ;
   * Ajout de la zone **Projet** permettant l'affichage des informations techniques du projet :
-    * Le nombre de ligne de code ;
+    * Le nombre de lignes de code ;
     * La couverture de tests ;
     * Le nombre de tests unitaire ;
-    * Le niveau de duplication du code ;
-    * Le nombre de défaut ;
+    * Le niveau de duplications du code ;
+    * Le nombre de défauts ;
     * La répartition de la dette technique : fiabilité, sécurité et mauvaise pratique ;
-    * Les notes pour les indicateurs qualités et la répartiton des hotspots ;
+    * Les notes pour les indicateurs qualités et la répartition des hotspots ;
   * Ajout de la zone **Qualité** permettant d'afficher pour chaque indicateur qualité la distribution selon la sévérité ;
   * Ajout d'un bouton permettant d'aller sur la page **Sécurité** OWASP (en cours de migration) ;
 
@@ -64,7 +64,7 @@
 
 ### Reste à faire
 
-1. Afficher sur le page Home, les projets favori ;
+1. Afficher sur le page Home, les projets favoris ;
 2. Ajouter la page OWASP Top 10 ;
 3. Ajouter le Top 10 des violations ;
 4. Ajouter un tableau consolidé permettant la distinction entre la partie frontend (présentation) et backend (métier) ;
@@ -88,7 +88,7 @@
 * Ajout de la page dash, pour afficher des tableaux de suivi ;
 * Ajout du tableau de suivi des versions analysées ;
 * Ajout de graphique pour suivre l'évolution des violations par type ;
-* Ajout du tableau de suivi des violations par modules (webapp - front, api - back et batch ) ;
+* Ajout du tableau de suivi des violations par modules (webapp - front, api - back et batch) ;
 * Ajout du tableau de suivi les violations par sévérité (bloquant, critique et majeur) ;
 
 ## v0.0.6 - 18/03/2022
@@ -120,8 +120,8 @@
 * Correction de l'affichage de la version de référence et des favoris (problème de Boxing du Boolean initial et favori );
 * Ajout d'un lien "modification" sur la page de suivi des mesures.
   * Permet de supprimer une version ;
-  * Active ou désactive, pour une version le statut favori ;
-  * Active ou désactive, pour une version le statut référence ;
+  * Active ou désactive, pour une version, le statut favori ;
+  * Active ou désactive, pour une version, le statut référence ;
 * Reworking des favoris dans la page home ;
 * Correction de l'affichage quand le nombre de violations est >20000 (20k) ;
 
@@ -134,7 +134,7 @@
 
 * Mise en place du socle de génération de rapport PDF ;
 * Ajout dans le tableau de suivi des violations par sévérité mineure ;
-* Correction de la couleur pour indiquer la version de référence(rouge) ;
+* Correction de la couleur pour indiquer la version de référence (rouge) ;
 
 ## v1.0.0 - 10/04/2022 - Release
 
@@ -144,10 +144,10 @@
 ## v1.1.0 - 24/04/2022 - Release
 
 * Mise à jour du modèle de base de données ;
-* Collecte des sévérités par type lors de la collecte, enregistrement dans la table historique attention le modèle de la table est changé, il faut ajouter les nouveaux attributs (cf. readme);
-* Suppression de la table temp_anomalie et réutilisation de la table anomalie pour enregistrer le détail des sévérités par type ;
+* Collecte des sévérités par type lors de la collecte, enregistrement dans la table historique, attention le modèle de la table est changé, il faut ajouter les nouveaux attributs (cf. readme);
+* Suppression de la table temp_anomalie et réutilisation de la table anomalie, pour enregistrer le détail des sévérités par type ;
 * Ajout dans la page du suivi des indicateurs, d'un tableau permettant d'afficher par version, le type d'anomalie par sévérité des trois dernières versions ;
-* Correction du problème d'affichage des favoris et de la valeur de référence;
+* Correction du problème d'affichage des favoris et de la valeur de référence ;
 * Ajout de la date de la version pour les tableaux de suivi ;
 
 ## v1.2.0 - 05/05/2022 - Release
@@ -175,3 +175,12 @@
 ## v1.2.3 - 12/05/2022 - Release
 
 * Correction du traitement et de l'affichage de failles par module.
+
+## v1.2.4 - 17/05/2022 - Release
+
+* Ajout de nouvelles exceptions sur les modules Backend et Autre ;
+* Mise à de la documentation
+* Correction du tri sur le tableau des hotspots (page OWASP / Détails).
+* Ajout de l'attribut "niveau" à la table hotpsot_details pour gérer le tri ;
+* Remplacement du mot "Batch" par "Autre" pour prendre en compte les modules de type "Batch" ou les Autres ;
+* Modification des tables : Anomalie, Historique et HotspotDetails pour prendre en compte le changement de l'attribut "batch" par "autre" ;
