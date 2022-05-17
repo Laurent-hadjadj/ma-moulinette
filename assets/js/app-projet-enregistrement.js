@@ -91,12 +91,12 @@ export const enregistrement=function(mavenKey) {
   /* répartition des anomalies par module */
   const t16 = document.getElementById('nombre-frontend');
   const t17 = document.getElementById('nombre-backend');
-  const t18 = document.getElementById('nombre-batch');
+  const t18 = document.getElementById('nombre-autre');
   const frontend=t16.dataset.nombreFrontend;
   const backend=t17.dataset.nombreBackend;
-  const batch=t18.dataset.nombreBatch;
+  const autre=t18.dataset.nombreAutre;
 
-  /* Répartion des anomalies par sévérité */
+  /* Répartition des anomalies par sévérité */
   const t19 = document.getElementById('nombre-anomalie-bloquant');
   const t20 = document.getElementById('nombre-anomalie-critique');
   const t21 = document.getElementById('nombre-anomalie-info');
@@ -175,7 +175,7 @@ export const enregistrement=function(mavenKey) {
     testsUnitaires, nombreDefaut,
     dette,
     nombreBug, nombreVulnerability, nombreCodeSmell,
-    frontend,backend, batch,
+    frontend,backend, autre,
     nombreAnomalieBloquant, nombreAnomalieCritique,
     nombreAnomalieInfo, nombreAnomalieMajeur,
     nombreAnomalieMineur,
