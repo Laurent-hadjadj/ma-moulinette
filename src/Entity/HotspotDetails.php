@@ -40,7 +40,7 @@ class HotspotDetails
     private $backend;
 
     #[ORM\Column(type: 'integer')]
-    private $batch;
+    private $autre;
 
     #[ORM\Column(type: 'string', length: 255)]
     private $file;
@@ -125,14 +125,14 @@ class HotspotDetails
         return $this;
     }
 
-    public function getBatch(): ?int
+    public function getAutre(): ?int
     {
-        return $this->batch;
+        return $this->autre;
     }
 
-    public function setBatch(int $batch): self
+    public function setAutre(int $autre): self
     {
-        $this->batch = $batch;
+        $this->autre = $autre;
 
         return $this;
     }

@@ -65,7 +65,7 @@ class Anomalie
     private $backend;
 
     #[ORM\Column(type: 'integer')]
-    private $batch;
+    private $autre;
 
     #[ORM\Column(type: 'integer')]
     private $blocker;
@@ -362,14 +362,14 @@ class Anomalie
         return $this;
     }
 
-    public function getBatch(): ?int
+    public function getAutre(): ?int
     {
-        return $this->batch;
+        return $this->autre;
     }
 
-    public function setBatch(int $batch): self
+    public function setAutre(int $autre): self
     {
-        $this->batch = $batch;
+        $this->autre = $autre;
 
         return $this;
     }
