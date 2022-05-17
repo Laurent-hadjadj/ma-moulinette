@@ -8,7 +8,7 @@
 /var/log/dev*.log
 /var/cache/dev/
 /vendor/
-/migrations/
+/migrations/*.php
 composer.lock
 ###< symfony/framework-bundle ###
 
