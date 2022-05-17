@@ -293,7 +293,7 @@ class ApiOwaspPeintureController extends AbstractController
     // On compte le nombre de hotspot de type OWASP au statut TO_REVIEWED
     $sql = "SELECT * FROM hotspot_details
             WHERE maven_key='${mavenKey}'
-            ORDER BY severity";
+            ORDER BY niveau";
 
     $list = $em->getConnection()->prepare($sql)->executeQuery();
     $details = $list->fetchAllAssociative();
