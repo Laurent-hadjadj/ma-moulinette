@@ -610,7 +610,6 @@ const injectionHotspotDetails=function(numero,url,color,rule,severity,file,line,
  * @param {*} zero
  */
 const injectionModule=function (module,total, taux, bc, zero){
-console.log(module, taux, bc, zero);
   const i = ` <span class="stat-note">${new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(taux)}</span>
               <span class="box ${bc} stat-note">${zero}${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(total)}</span>`;
   switch (module) {
