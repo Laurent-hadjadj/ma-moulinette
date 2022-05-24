@@ -497,7 +497,7 @@ $('select[name="version"]').change(function () {
 
     /*  On affiche les notes */
     $('#note-reliability').html(`<span  class="${couleur1}">${noteReliability}</span>`);
-    $('#note-security').html(`<span  class="${couleur2}">{$noteSecurity}</span>`);
+    $('#note-security').html(`<span  class="${couleur2}">${noteSecurity}</span>`);
     $('#note-sqale').html(`<span  class="${couleur3}">${noteSqale}</span>`);
     $('#note-hotspots-review').html(`<span  class="${couleur4}">${noteHotspotsReview}</span>`);
 
@@ -514,7 +514,7 @@ $('select[name="version"]').change(function () {
     /* On affiche le nombre de bugs, de vulnérabilités et de mauvaises pratiques. */
     $('#bug').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.bug));
     $('#vulnerabilities').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.vulnerabilities));
-    $('#code-smell').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.codesmell));
+    $('#code-smell').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.codeSmell));
     $('#hotspots-review').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.hotspotsReview));
 
     /* historique */
@@ -524,7 +524,7 @@ $('select[name="version"]').change(function () {
     const t8 = document.getElementById('hotspots-review');
     t5.dataset.bug=(t.bug);
     t6.dataset.vulnerabilities=(t.vulnerabilities);
-    t7.dataset.codesmell=(t.codesmell);
+    t7.dataset.codeSmell=(t.codeSmell);
     t8.dataset.hotspotsReview=(t.hotspotsReview);
 
     /* On affiche les autres métriques */
