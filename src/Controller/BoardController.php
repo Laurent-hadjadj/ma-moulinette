@@ -253,19 +253,21 @@ class BoardController extends AbstractController
   {
     // on décode le body
     $data = json_decode($request->getContent());
-    $mavenKey = $data->maven_key;
+    $mavenKey = $data->mavenKey;
 
     // On modifie la date de 11-02-2022 16:02:06 à 2022-02-11 16:02:06
     $d = new Datetime($data->date);
     $dd = $d->format('Y-m-d\TH:i:sO');
+    $urlencodeDate=urlencode($dd);
     $urlStatic=$this->getParameter(static::$sonarUrl);
+
     $url = "${urlStatic}/api/measures/search_history?component=
              ${mavenKey}&metrics=reliability_rating,
              security_rating,sqale_rating,bugs,
              vulnerabilities,code_smells,security_hotspots,
              security_review_rating,lines,ncloc,coverage,
              tests,sqale_index,duplicated_lines_density
-             &from=${urlencode($dd)}&to=${urlencode($dd)}";
+             &from=${urlencodeDate}&to=${urlencodeDate}";
 
     // on appel le client http
     $result = $this->httpClient(trim(preg_replace("/\s+/u", " ", $url)), $logger);
