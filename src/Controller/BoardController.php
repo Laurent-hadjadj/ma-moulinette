@@ -286,9 +286,13 @@ class BoardController extends AbstractController
 
       // Sur les versions plus anciennes de sonarqube, il n'y avait pas de hostpots.
       // La valeur 6 corsespond à pas de note  (Z)
-      if ($data[$i]["metric"] === "security_review_rating" && array_key_exists("value", $data[$i]["history"])) {
-        $noteHotspotsReview = intval($data[$i]["history"][0]["value"], 10);
-      } else {
+      if ($data[$i]["metric"] === "security_review_rating" &&
+          array_key_exists("value", $data[$i]["history"][0])) {
+          $noteHotspotsReview = intval($data[$i]["history"][0]["value"], 10);
+      }
+
+      if ($data[$i]["metric"] === "security_review_rating" &&
+          array_key_exists("value", $data[$i]["history"][0])===false) {
         $noteHotspotsReview = 6;
       }
 
@@ -303,10 +307,13 @@ class BoardController extends AbstractController
       }
 
       // Sur les versions plus anciennes de sonarqube, il n'y avait pas de hostpots
-      if ($data[$i]["metric"] === "security_hotspots" && array_key_exists("value", $data[$i]["history"])) {
+      if ($data[$i]["metric"] === "security_hotspots" &&
+        array_key_exists("value", $data[$i]["history"][0])) {
         $hotspotsReview = intval($data[$i]["history"][0]["value"], 10);
-      } else {
-        $hotspotsReview = 0;
+      }
+      if ($data[$i]["metric"] === "security_hotspots" &&
+        array_key_exists("value", $data[$i]["history"][0])===false) {
+        $hotspotsReview = -1;
       }
 
       if ($data[$i]["metric"] === "lines") {
