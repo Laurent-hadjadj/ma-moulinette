@@ -121,7 +121,7 @@ class BoardController extends AbstractController
     WHERE maven_key='${mavenKey}' AND initial=FALSE
     ORDER BY date_version DESC LIMIT 9)";
 
-    $select = $em->getConnection()->prepare($sql)->executeQuery();
+    $select = $em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)))->executeQuery();
     $dash = $select->fetchAllAssociative();
     // On récupère les anomalies par sévérité
     $sql = "SELECT * FROM
@@ -165,7 +165,7 @@ class BoardController extends AbstractController
     FROM historique where maven_key='${mavenKey}'
     GROUP BY date_version ORDER BY date_version ASC";
 
-    $select = $em->getConnection()->prepare($sql)->executeQuery();
+    $select = $em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)))->executeQuery();
     $graph = $select->fetchAllAssociative();
 
     // On compte le nombre de résultat
@@ -526,7 +526,7 @@ class BoardController extends AbstractController
       $dateEnregistrement->format(static::$dateFormat) . "')";
 
     // On exécute la requête et on catch l'erreur
-    $con = $em->getConnection()->prepare($sql);
+    $con = $em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)));
     try {
       $con->executeQuery();
     } catch (\Doctrine\DBAL\Exception $e) {
@@ -564,7 +564,7 @@ class BoardController extends AbstractController
                   AND version='${version}'
                   AND date_version='${date}'";
     // On exécute la requête
-    $con = $em->getConnection()->prepare($sql);
+    $con = $em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)));
     try {
       $con->executeQuery();
     } catch (\Doctrine\DBAL\Exception $e) {
