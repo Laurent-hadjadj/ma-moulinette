@@ -396,36 +396,46 @@ class BoardController extends AbstractController
     $tempoNoteHotspotsReview=$data->noteHotspotsReview;
     $tempoHotspotsReview=$data->hotspotsReview;
     $tempoInitial=$data->initial;
+
     $sql = "INSERT OR IGNORE INTO historique
-            (maven_key,version,date_version,
-             nom_projet,version_release,version_snapshot,
-             suppress_warning,no_sonar,nombre_ligne,
-             nombre_ligne_code,couverture,
-             duplication,tests_unitaires,nombre_defaut,dette,
-             nombre_bug,nombre_vulnerability,nombre_code_smell,
-             frontend,backend,autre,
-             nombre_anomalie_bloquant,nombre_anomalie_critique,
-             nombre_anomalie_majeur,
-             nombre_anomalie_mineur,nombre_anomalie_info,
-             note_reliability,note_security,
-             note_sqale,note_hotspot,hotspot_total,
-             hotspot_high,hotspot_medium,hotspot_low,
-             favori,initial,date_enregistrement)
-             VALUES ('${tempoMavenKey}','${tempoVersion}',
-             '${tempoDateVersion}','${tempoNom}',0,0,0,0,
-              ${tempoLines},${tempoNcloc},
-              ${tempoCoverage},${tempoDuplication},${tempoTests},
-              ${tempoDefauts},${tempoDette},${tempoBug},
-              ${tempoVulnerabilities},${tempoCodeSmell},0,0,0,
-              ${tempoBloquant},${tempoCritique},${tempoMajeur},
-              ${tempoMineur},${tempoInfo},'${tempoNoteReliability}',
-              '${tempoNoteSecurity}','${tempoNoteSqale}',
-              '${tempoNoteHotspotsReview}',${tempoHotspotsReview},
-              0,0,0,FALSE, ${tempoInitial},
-              '${tempoDateEnregistrement}')";
+      (maven_key,version,date_version,
+       nom_projet,version_release,version_snapshot,
+       suppress_warning,no_sonar,nombre_ligne,
+       nombre_ligne_code,couverture,
+       duplication,tests_unitaires,nombre_defaut,dette,
+       nombre_bug,nombre_vulnerability,nombre_code_smell,
+       bug_blocker, bug_critical, bug_major, bug_minor, bug_info,
+       vulnerability_blocker, vulnerability_critical, vulnerability_major, vulnerability_minor, vulnerability_info,
+       code_smell_blocker, code_smell_critical, code_smell_major,
+       code_smell_minor, code_smell_info,
+       frontend,backend,autre,
+       nombre_anomalie_bloquant,nombre_anomalie_critique,
+       nombre_anomalie_majeur,
+       nombre_anomalie_mineur,nombre_anomalie_info,
+       note_reliability,note_security,
+       note_sqale,note_hotspot,hotspot_total,
+       hotspot_high,hotspot_medium,hotspot_low,
+       favori,initial,date_enregistrement)
+       VALUES
+       ('${tempoMavenKey}','${tempoVersion}',
+        '${tempoDateVersion}','${tempoNom}',0,0,0,0,
+         ${tempoLines},${tempoNcloc},
+         ${tempoCoverage},${tempoDuplication},${tempoTests},
+         ${tempoDefauts},${tempoDette},${tempoBug},
+         ${tempoVulnerabilities},${tempoCodeSmell},
+         -1,-1,-1,-1,-1,
+         -1,-1,-1,-1,-1,
+         -1,-1,-1,-1,-1,
+         0,0,0,
+         ${tempoBloquant},${tempoCritique},${tempoMajeur},
+         ${tempoMineur},${tempoInfo},'${tempoNoteReliability}',
+         '${tempoNoteSecurity}','${tempoNoteSqale}',
+         '${tempoNoteHotspotsReview}',${tempoHotspotsReview},
+          0,0,0,FALSE, ${tempoInitial},
+         '${tempoDateEnregistrement}')";
 
     // On exécute la requête
-    $con = $em->getConnection()->prepare($sql);
+    $con = $em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)));
     try {
       $con->executeQuery();
     } catch (\Doctrine\DBAL\Exception $e) {
