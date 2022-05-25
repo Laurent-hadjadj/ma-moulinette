@@ -230,7 +230,7 @@ class ApiHomeController extends AbstractController
     $sql = "SELECT name as profil, language_name as langage,
             active_rule_count as regle, rules_update_at as date,
             is_default as actif FROM profiles";
-    $select = $em->getConnection()->prepare($sql)->executeQuery();
+    $select = $em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)))->executeQuery();
     $liste = $select->fetchAllAssociative();
 
     $response = new JsonResponse();

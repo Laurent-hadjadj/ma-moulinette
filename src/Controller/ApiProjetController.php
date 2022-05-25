@@ -193,7 +193,7 @@ class ApiProjetController extends AbstractController
       $sql = "UPDATE favori SET favori='${statut}',
               date_enregistrement='${tempoDate}'
               WHERE maven_key='${mavenKey}'";
-      $em->getConnection()->prepare($sql)->executeQuery();
+      $em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)))->executeQuery();
     }
     $response = new JsonResponse();
     return $response->setData(["statut" => $statut, Response::HTTP_OK]);

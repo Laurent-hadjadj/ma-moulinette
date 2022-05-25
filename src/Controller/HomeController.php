@@ -49,7 +49,7 @@ class HomeController extends AbstractController
                 FROM historique
                 WHERE favori=TRUE
                 ORDER BY date_version LIMIT $nombreFavori";
-        $select = $em->getConnection()->prepare($sql)->executeQuery();
+        $select = $em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)))->executeQuery();
         $favoris = $select->fetchAllAssociative();
 
         if (empty($favoris)) {

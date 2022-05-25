@@ -36,7 +36,7 @@ class ProfilController extends AbstractController
       active_rule_count as regle, rules_update_at as date, is_default as actif
       FROM profiles";
 
-    $select = $em->getConnection()->prepare($sql)->executeQuery();
+    $select = $em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)))->executeQuery();
     $liste = $select->fetchAllAssociative();
 
     return $this->render('profil/index.html.twig',
