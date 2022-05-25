@@ -131,7 +131,11 @@
 							<td class="text-left">Hotspot</td>
 							{% for i in 0..dash|length-1 %}
 								<td class="text-right">
-									<span>{{dash[i]["nombre_hotspot"]|format_number(locale='fr')}}</span>
+                  {% if dash[i]["nombre_hotspot"]!=-1 %}
+                    <span>{{dash[i]["nombre_hotspot"]|format_number(locale='fr')}}</span>
+                  {% else %}
+                    <span>&nbsp;-&nbsp;</span>
+                  {% endif %}
 									{% if dash[i]["note_hotspot"]=="A" %}
 										{% set couleur="vert1" %}
 									{% endif %}
@@ -147,12 +151,10 @@
 									{% if dash[i]["note_hotspot"]=="E" %}
 										{% set couleur="rouge" %}
 									{% endif %}
-									{% if dash[i]["note_hotspot"] is defined %}
-										{#<span class="bleu">Z</span>#}
-                    <span class="{{couleur}}">{{dash[i]["note_hotspot"]}}</span>
-									{% else %}
-										{#<span class="{{couleur}}">{{dash[i]["note_hotspot"]}}</span>#}
+ 									{% if dash[i]["note_hotspot"]=="Z" %}
                     <span class="bleu">Z</span>
+                  {% else %}
+                    <span class="{{couleur}}">{{dash[i]["note_hotspot"]}}</span>
 									{% endif %}
 								</td>
 							{% endfor %}
