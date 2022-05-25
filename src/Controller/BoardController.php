@@ -377,8 +377,8 @@ class BoardController extends AbstractController
     // On créé un nouvel objet Json
     $response = new JsonResponse();
     // On bind chaque valeur
-    $tempoDateVersion=$dateEnregistrement->format(static::$dateFormat);
-    $tempoDateEnregistrement=$dateVersion->format(static::$dateFormat);
+    $tempoDateVersion=$dateVersion->format(static::$dateFormat);
+    $tempoDateEnregistrement=$dateEnregistrement->format(static::$dateFormat);
     $tempoMavenKey=$data->mavenKey;
     $tempoVersion=$data->version;
     $tempoNom=$data->nom;
