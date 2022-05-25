@@ -576,7 +576,7 @@ $('.js-enregistrer-analyse').on('click', ()=>{
   const nom=$('#js-nom').text().trim();
   const version=$('#version').text().trim();
   const t0 = document.getElementById('date');
-  const date1=t0.dataset.date;
+  const dateVersion=t0.dataset.date;
 
   const t1 = document.getElementById('note-reliability');
   const t2 = document.getElementById('note-security');
@@ -641,7 +641,7 @@ $('.js-enregistrer-analyse').on('click', ()=>{
   }
 
   const data={
-    date:date1,
+    date:dateVersion,
     mavenKey, nom, version,
     noteReliability, noteSecurity,
     noteSqale, noteHotspotsReview,
