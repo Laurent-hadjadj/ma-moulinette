@@ -202,6 +202,11 @@ dessineMoiUnMouton(
  $('#modal-ajouter-analyse').foundation('open');
 });
 
+/* On recharge la page pour mettre à jour la vue */
+$('#fermer-choisir-analyse').on('click', ()=>{
+  location.reload();
+});
+
 /**
  * description
  * On affiche la liste des projets et on nettoie le formulaire
