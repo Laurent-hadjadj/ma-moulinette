@@ -159,7 +159,7 @@ dessineMoiUnMouton(
 
 /**
  * description
- * Création du selecteur de projet.
+ * Création du sélecteur de projet.
  */
  const selectVersion=function(mavenKey) {
   const data={ mavenKey };
@@ -520,7 +520,13 @@ $('select[name="version"]').change(function () {
     $('#bug').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.bug));
     $('#vulnerabilities').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.vulnerabilities));
     $('#code-smell').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.codeSmell));
-    $('#hotspots-review').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.hotspotsReview));
+    let verifyHotspotsReview=t.hotspotsReview;
+    if (verifyHotspotsReview !== -1) {
+      $('#hotspots-review').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(verifyHotspotsReview));
+    }
+    else {
+      $('#hotspots-review').html('-');
+    }
 
     /* historique */
     const t5 = document.getElementById('bug');
@@ -668,7 +674,7 @@ $('.js-enregistrer-analyse').on('click', ()=>{
 
 /**
  * description
- * Génére une edition PDF
+ * Génère une edition PDF
 */
 $('.lien-editer').on('click', ()=>{
   console.log('impression en cours');
