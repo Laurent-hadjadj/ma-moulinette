@@ -187,10 +187,10 @@
 
 ## v1.2.5 - 24/05/2022 - Release
 
-* Corrections de l'affichage de la note pour les vulnérabilités et du nombre de mauvaises pratiques, le tableau de la fenêtre modale "ajouter une analyse" (BoardController.php et app-dash.sj) ;
-* Correction de l'enregistrement des données collectées lors de l'ajout d'une analyse historisé. Ajout des attributs obligatoire dans la requête, non obligatoire en version 1.2.0.
+* Corrections de l'affichage de la note pour les vulnérabilités et du nombre de mauvaises pratiques, du tableau de la fenêtre modale "ajouter une analyse" (BoardController.php et app-dash.sj) ;
+* Correction de l'enregistrement des données collectées lors de l'ajout d'une analyse historisée. Ajout des attributs obligatoires dans la requête (facultatifs en version 1.2.0).
 * Formatage et nettoyage de toutes les requêtes complexes SQL : `trim(preg_replace("/\s+/u", " ", $sql))` ;
 * Remplacement dans la page de suivi des indicateurs des valeurs null enregistrées avec la valeur "-1" par un tiret "-" ;
-* Ajout du rechargement de la page de suivi des indicateurs quand on clique le bouton "fermer" de la page "ajouter une analyse" ;
-* Correction du problème des valeurs null pour les hotsposts ;
-* Correction de la date dans le tableau de suivi quand on ajoute une version depuis l'historique ;
+* Ajout du rechargement de la page de suivi des indicateurs quand on clique sur le bouton "fermer" de la fenêtre "ajouter une analyse" ;
+* Correction du problème des valeurs "null" pour les hotsposts (valeurs non calculés sur les anciennes version de sonarqube) ;
+* Correction de la date dans le tableau de suivi quand on ajoute une version depuis l'historique (date du jour au lieu de la date de la version) ;
