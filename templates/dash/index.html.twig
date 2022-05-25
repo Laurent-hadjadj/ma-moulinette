@@ -482,11 +482,13 @@
                 {% else %}
                   {% set text1 = "text-down" %}
                 {% endif %}
+
                 {% if i !=0 and details[i]["vulnerability_blocker"] > details[i-1]["vulnerability_blocker"] %}
                   {% set text2 = "text-up" %}
                 {% else %}
                   {% set text2 = "text-down" %}
                 {% endif %}
+
                 {% if i !=0 and details[i]["code_smell_blocker"] > details[i-1]["code_smell_blocker"] %}
                   {% set text3 = "text-up" %}
                 {% else %}
@@ -496,11 +498,25 @@
                   {% set text1, text2, text3 = "text-noir", "text-noir", "text-noir" %}
                 {% endif %}
 
+                {% if details[i]["bug_blocker"]==-1  %}
+                <td class="text-center text-noir separation-gauche">-
+                {% else %}
                 <td class="text-right {{text1}}">{{details[i]["bug_blocker"]|format_number(locale='fr')}}
+                {% endif %}
                 </td>
+
+                {% if details[i]["vulnerability_blocker"]==-1  %}
+                <td class="text-center text-noir separation-gauche">-
+                {% else %}
                 <td class="text-right {{text2}}">{{details[i]["vulnerability_blocker"]|format_number(locale='fr')}}
+                {% endif %}
                 </td>
+
+                {% if details[i]["code_smell_blocker"]==-1  %}
+                <td class="text-center text-noir separation-gauche">-
+                {% else %}
                 <td class="text-right {{text3}} separation-gauche">{{details[i]["code_smell_blocker"]|format_number(locale='fr')}}
+                {% endif %}
                 </td>
               {% endfor %}
             </tr>
@@ -527,11 +543,24 @@
                 {% if i==0  %}
                   {% set text1, text2, text3 = "text-noir", "text-noir", "text-noir" %}
                 {% endif %}
+
+                {% if details[i]["bug_critical"]==-1  %}
+                <td class="text-center text-noir separation-gauche">-
+                {% else %}
                 <td class="text-right {{text1}}">{{details[i]["bug_critical"]|format_number(locale='fr')}}
+                {% endif %}
                 </td>
+                {% if details[i]["vulnerability_critical"]==-1  %}
+                <td class="text-center text-noir separation-gauche">-
+                {% else %}
                 <td class="text-right {{text2}}">{{details[i]["vulnerability_critical"]|format_number(locale='fr')}}
+                {% endif %}
                 </td>
+                {% if details[i]["code_smell_critical"]==-1  %}
+                <td class="text-center text-noir separation-gauche">-
+                {% else %}
                 <td class="text-right {{text3}} separation-gauche">{{details[i]["code_smell_critical"]|format_number(locale='fr')}}
+                {% endif %}
                 </td>
               {% endfor %}
             </tr>
@@ -558,11 +587,24 @@
                 {% if i==0  %}
                   {% set text1, text2, text3 = "text-noir", "text-noir", "text-noir" %}
                 {% endif %}
+
+                {% if details[i]["bug_major"]==-1  %}
+                <td class="text-center text-noir separation-gauche">-
+                {% else %}
                 <td class="text-right {{text1}}">{{details[i]["bug_major"]|format_number(locale='fr')}}
+                {% endif %}
                 </td>
+                {% if details[i]["vulnerability_major"]==-1  %}
+                <td class="text-center text-noir separation-gauche">-
+                {% else %}
                 <td class="text-right {{text2}}">{{details[i]["vulnerability_major"]|format_number(locale='fr')}}
+                {% endif %}
                 </td>
+                {% if details[i]["code_smell_major"]==-1  %}
+                <td class="text-center text-noir separation-gauche">-
+                {% else %}
                 <td class="text-right {{text3}} separation-gauche">{{details[i]["code_smell_major"]|format_number(locale='fr')}}
+                {% endif %}
                 </td>
               {% endfor %}
             </tr>
@@ -589,11 +631,24 @@
                 {% if i==0  %}
                   {% set text1, text2, text3 = "text-noir", "text-noir", "text-noir" %}
                 {% endif %}
+
+                {% if details[i]["bug_minor"]==-1  %}
+                <td class="text-center text-noir separation-gauche">-
+                {% else %}
                 <td class="text-right {{text1}}">{{details[i]["bug_minor"]|format_number(locale='fr')}}
+                {% endif %}
                 </td>
+                {% if details[i]["vulnerability_minor"]==-1  %}
+                <td class="text-center text-noir separation-gauche">-
+                {% else %}
                 <td class="text-right {{text2}}">{{details[i]["vulnerability_minor"]|format_number(locale='fr')}}
+                {% endif %}
                 </td>
+                {% if details[i]["code_smell_minor"]==-1  %}
+                <td class="text-center text-noir separation-gauche">-
+                {% else %}
                 <td class="text-right {{text3}} separation-gauche">{{details[i]["code_smell_minor"]|format_number(locale='fr')}}
+                {% endif %}
                 </td>
               {% endfor %}
             </tr>
@@ -621,11 +676,23 @@
                   {% set text1, text2, text3 = "text-noir", "text-noir", "text-noir" %}
                 {% endif %}
 
+                {% if details[i]["bug_info"]==-1  %}
+                <td class="text-center text-noir separation-gauche">-
+                {% else %}
                 <td class="text-right {{text1}}">{{details[i]["bug_info"]|format_number(locale='fr')}}
+                {% endif %}
                 </td>
+                {% if details[i]["vulnerability_info"]==-1  %}
+                <td class="text-center text-noir separation-gauche">-
+                {% else %}
                 <td class="text-right {{text2}}">{{details[i]["vulnerability_info"]|format_number(locale='fr')}}
+                {% endif %}
                 </td>
+                {% if details[i]["code_smell_info"]==-1  %}
+                <td class="text-center text-noir separation-gauche">-
+                {% else %}
                 <td class="text-right {{text3}} separation-gauche">{{details[i]["code_smell_info"]|format_number(locale='fr')}}
+                {% endif %}
                 </td>
               {% endfor %}
             </tr>
