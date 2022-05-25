@@ -406,7 +406,21 @@ APP_DEBUG = 0
 * Supprimer le dossier **dev** et **prod** du dossier **var/cache**
 * Supprimer le fichier dev.log du dossier **var/log**
 * Lancez la commande pour compiler le fichier **. env** : `composer dump-env prod`
-* Lancez la commande pour compiler les fichiers css/js : `npm run build`
+* Lancez la commande pour compiler les fichiers css/js : `npm run-script build`
+
+```plaintext
+npm run-script build
+
+> ma-moulinette@1.2.4 build c:\sonar-dash.dev\ma-moulinette
+> encore production --progress
+
+Running webpack ...
+
+99% done plugins FriendlyErrorsWebpackPlugin DONE  Compiled successfully in 18856ms                                           20:45:28
+
+131 files written to public\build
+webpack compiled successfully
+```
 
 ## Accès à l'application
 
