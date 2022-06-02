@@ -197,10 +197,12 @@
 
 ## v1.2.6 - 02/06/2022 - Release
 
-* [Suivi des indicateurs] : Correction de la méthode de suppression d'une version dans dans la fenêtre modale "Modifier les paramètres" ;
+* [Suivi des indicateurs] : Correction de la méthode de suppression d'une version dans la fenêtre modale "Modifier les paramètres" ;
 
 ```plaintext
-Uncaught PHP Exception Doctrine\DBAL\Exception\SyntaxErrorException: "An exception occurred while executing a query: SQLSTATE[HY000]: General error: 1 near "4.1": syntax error"
+Uncaught PHP Exception Doctrine\DBAL\Exception\SyntaxErrorException:
+"An exception occurred while executing a query: SQLSTATE[HY000]:
+General error: 1 near "4.1": syntax error"
 ```
 
 * [Suivi des indicateurs] : Amélioration de l'affichage du graphique (mode responsive) ;
