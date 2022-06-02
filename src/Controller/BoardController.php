@@ -602,13 +602,13 @@ class BoardController extends AbstractController
     // On créé un nouvel objet Json
     $response = new JsonResponse();
 
-    // On surpprime de la table historique le projet
+    // On surprime de la table historique le projet
     $sql = "DELETE FROM historique
-            WHERE maven_key='${mavenKey}
+            WHERE maven_key='${mavenKey}'
                   AND version='${version}'
                   AND date_version='${date}'";
 
-    // On excute la requête
+    // On exécute la requête
     $con = $em->getConnection()->prepare($sql);
     try {
       $con->executeQuery();
