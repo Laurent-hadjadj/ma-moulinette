@@ -80,7 +80,7 @@
   },
   "name": "ma-moulinette",
   "description": "Ma Moulinette est une application qui a pour objectif de simplifier la consultation des indicateurs collectés et calculés sur la plateforme sonarqube.",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "main": "webpack.config.js",
   "repository": {
     "type": "git",
