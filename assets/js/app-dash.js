@@ -145,11 +145,14 @@ const options = {
 };
 
 /* On récupère les datatset */
-const dataAttribut = document.getElementById('graphique-anomalie');
-const _data1= dataAttribut.dataset.data1;
-const _data2= dataAttribut.dataset.data2;
-const _data3= dataAttribut.dataset.data3;
-const _labels= dataAttribut.dataset.label;
+const dataAttribut1 = document.getElementById('graphique-anomalie-data1');
+const dataAttribut2 = document.getElementById('graphique-anomalie-data2');
+const dataAttribut3 = document.getElementById('graphique-anomalie-data3');
+const dataAttribut4 = document.getElementById('graphique-anomalie-labels');
+const _data1= dataAttribut1.dataset.data1;
+const _data2= dataAttribut2.dataset.data2;
+const _data3= dataAttribut3.dataset.data3;
+const _labels= dataAttribut4.dataset.label;
 
 /** je ne sais pas d'ou cela sort ! */
 dessineMoiUnMouton(
