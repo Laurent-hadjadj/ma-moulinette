@@ -194,3 +194,15 @@
 * Ajout du rechargement de la page de suivi des indicateurs quand on clique sur le bouton "fermer" de la fenêtre "ajouter une analyse" ;
 * Correction du problème des valeurs "null" pour les hotsposts (valeurs non calculés sur les anciennes version de sonarqube) ;
 * Correction de la date dans le tableau de suivi quand on ajoute une version depuis l'historique (date du jour au lieu de la date de la version) ;
+
+## v1.2.6 - 02/06/2022 - Release
+
+* [Suivi des indicateurs] : Correction de la méthode de suppression d'une version dans dans la fenêtre modale "Modifier les paramètres" ;
+
+```plaintext
+Uncaught PHP Exception Doctrine\DBAL\Exception\SyntaxErrorException: "An exception occurred while executing a query: SQLSTATE[HY000]: General error: 1 near "4.1": syntax error"
+```
+
+* [Suivi des indicateurs] : Amélioration de l'affichage du graphique (mode responsive) ;
+* [Suivi des indicateurs] : Correction des labels tronqués en haut du graphique ;
+* [Suivi des indicateurs] : Modification de la méthode d'injection des données pour le graphique ;
