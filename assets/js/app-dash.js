@@ -37,7 +37,7 @@ Chart.register(ChartDataLabels);
 
 /* Initialisation de moments */
 const a= moment().toString();
-/* Pour éviter d'avoir une erreu sonar */
+/* Pour éviter d'avoir une erreur sonar */
 console.info(a);
 
 /* chartJS */
@@ -97,11 +97,12 @@ const dessineMoiUnMouton= function( labels, data1, data2, data3) {
       backgroundColor: chartColors.bleuOpacity,
       tension: 0.2}]};
 const options = {
+  aspectRatio:3,
   animations: { radius: { duration: 400, easing: 'linear' } },
   maintainAspectRatio: true,
   responsive: true,
   layout: {
-      padding: { left: 20 }},
+      padding: { left: 20, top: 20 }},
       scales: {
       x: {
           type: 'time',
