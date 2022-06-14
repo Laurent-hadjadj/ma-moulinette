@@ -453,7 +453,7 @@
             </tr>
             <tr>
               <th scope="col"></th>
-              {% for i in 0..details|length-1 %}
+              {% for i in details|length-1..0 %}
                 <th colspan="3" scope="col" class="text-center">
                   <span>{{details[i]["date"]|date("d/m/Y", "Europe/Paris")}}</span>
                 </th>
@@ -464,7 +464,7 @@
           <tbody id="tableau-anomalie-type-severite" class="open-sans">
             <tr>
               <th scope="col"></th>
-              {% for i in 0..details|length-1 %}
+              {% for i in details|length-1..0 %}
                 <th scope="col" class="c-rouge text-right">
                   <strong>Bug</strong>
                 </th>
@@ -481,7 +481,7 @@
               <td class="text-rouge">
                 <strong>Bloquant</strong>
               </td>
-              {% for i in 0..details|length-1 %}
+              {% for i in details|length-1..0 %}
                 {% if i !=0 and details[i]["bug_blocker"] > details[i-1]["bug_blocker"] %}
                   {% set text1 = "text-up" %}
                 {% else %}
@@ -529,7 +529,7 @@
               <td class="text-rouge">
                 <strong>Critique</strong>
               </td>
-              {% for i in 0..details|length-1 %}
+              {% for i in details|length-1..0 %}
                 {% if i !=0 and details[i]["bug_critical"] > details[i-1]["bug_critical"] %}
                   {% set text1 = "text-up" %}
                 {% else %}
@@ -573,7 +573,7 @@
               <td class="text-rouge">
                 <strong>Majeur</strong>
               </td>
-              {% for i in 0..details|length-1 %}
+              {% for i in details|length-1..0 %}
                 {% if i !=0 and details[i]["bug_major"] > details[i-1]["bug_major"] %}
                   {% set text1 = "text-up" %}
                 {% else %}
@@ -617,7 +617,7 @@
               <td class="text-vert">
                 <strong>Mineur</strong>
               </td>
-              {% for i in 0..details|length-1 %}
+              {% for i in details|length-1..0 %}
                 {% if i !=0 and details[i]["bug_minor"] > details[i-1]["bug_minor"] %}
                   {% set text1 = "text-up" %}
                 {% else %}
@@ -661,7 +661,7 @@
               <td class="text-bleu">
                 <strong>Info</strong>
               </td>
-              {% for i in 0..details|length-1 %}
+              {% for i in details|length-1..0 %}
                 {% if i !=0 and details[i]["bug_info"] > details[i-1]["bug_info"] %}
                   {% set text1 = "text-up" %}
                 {% else %}
