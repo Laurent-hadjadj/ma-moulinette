@@ -425,7 +425,7 @@ class BoardController extends AbstractController
        favori,initial,date_enregistrement)
        VALUES
        ('${tempoMavenKey}','${tempoVersion}',
-        '${tempoDateVersion}','${tempoNom}',0,0,0,0,
+        '${tempoDateVersion}','${tempoNom}',-1,-1,-1,-1,
          ${tempoLines},${tempoNcloc},
          ${tempoCoverage},${tempoDuplication},${tempoTests},
          ${tempoDefauts},${tempoDette},${tempoBug},
@@ -433,12 +433,12 @@ class BoardController extends AbstractController
          -1,-1,-1,-1,-1,
          -1,-1,-1,-1,-1,
          -1,-1,-1,-1,-1,
-         0,0,0,
+         -1,-1,-1,
          ${tempoBloquant},${tempoCritique},${tempoMajeur},
          ${tempoMineur},${tempoInfo},'${tempoNoteReliability}',
          '${tempoNoteSecurity}','${tempoNoteSqale}',
          '${tempoNoteHotspotsReview}',${tempoHotspotsReview},
-          0,0,0,FALSE, ${tempoInitial},
+          -1,-1,-1,FALSE, ${tempoInitial},
          '${tempoDateEnregistrement}')";
 
     // On exécute la requête

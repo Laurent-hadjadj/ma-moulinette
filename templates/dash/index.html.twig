@@ -285,19 +285,37 @@
             <tr>
               <td class="text-left">Présentation</td>
               {% for i in 0..dash|length-1 %}
-                <td class="text-center">{{dash[i]["presentation"]|format_number(locale='fr')}}</td>
+                <td class="text-center">
+                {% if dash[i]["presentation"]!=-1 %}
+                    <span>{{dash[i]["presentation"]|format_number(locale='fr')}}</span>
+                  {% else %}
+                    <span>&nbsp;-&nbsp;</span>
+                  {% endif %}
+                </td>
               {% endfor %}
             </tr>
             <tr>
               <td class="text-left">Métier</td>
               {% for i in 0..dash|length-1 %}
-                <td class="text-center">{{dash[i]["metier"]|format_number(locale='fr')}}</td>
+                <td class="text-center">
+                  {% if dash[i]["metier"]!=-1 %}
+                    <span>{{dash[i]["metier"]|format_number(locale='fr')}}</span>
+                  {% else %}
+                    <span>&nbsp;-&nbsp;</span>
+                  {% endif %}
+
+                </td>
               {% endfor %}
             </tr>
             <tr>
               <td class="text-left">Autres</td>
               {% for i in 0..dash|length-1 %}
-                <td class="text-center">{{dash[i]["autre"]|format_number(locale='fr')}}</td>
+                <td class="text-center">
+                  {% if dash[i]["autre"]!=-1 %}
+                    <span>{{dash[i]["autre"]|format_number(locale='fr')}}</span>
+                  {% else %}
+                    <span>&nbsp;-&nbsp;</span>
+                  {% endif %}
               {% endfor %}
             </tr>
           </tbody>
@@ -335,7 +353,7 @@
             <tr>
               <td class="text-left">Bloquant</td>
               {% for i in 0..severite|length-1 %}
-                {% set lookup="equal" %}
+                {% set lookup="" %}
                 {% set text = "" %}
 
                 {% if i >0 %}
@@ -351,8 +369,17 @@
                     {% set lookup = "equal" %}
                     {% set text = "" %}
                   {% endif %}
+                  {% if severite[i]["bloquant"] == -1 %}
+                    {% set lookup = "" %}
+                    {% set text = "" %}
+                  {% endif %}
                 {% endif %}
-                <td class="text-right {{text}}">{{severite[i]["bloquant"]|format_number(locale='fr')}}
+                <td class="text-right {{text}}">
+                  {% if severite[i]["bloquant"]!=-1 %}
+                    <span>{{severite[i]["bloquant"]|format_number(locale='fr')}}</span>
+                  {% else %}
+                    <span>&nbsp;-&nbsp;</span>
+                  {% endif %}
                   <span class="{{lookup}}"></span>
                 </td>
               {% endfor %}
@@ -360,7 +387,7 @@
             <tr>
               <td class="text-left">Critique</td>
               {% for i in 0..severite|length-1 %}
-                {% set lookup = "equal" %}
+                {% set lookup = "" %}
                 {% set text = "" %}
 
                 {% if i >0 %}
@@ -376,8 +403,17 @@
                     {% set lookup = "equal" %}
                     {% set text = "" %}
                   {% endif %}
+                  {% if severite[i]["bloquant"] == -1 %}
+                    {% set lookup = "" %}
+                    {% set text = "" %}
+                  {% endif %}
                 {% endif %}
-                <td class="text-right {{text}}">{{severite[i]["critique"]|format_number(locale='fr')}}
+                <td class="text-right {{text}}">
+                 {% if severite[i]["critique"]!=-1 %}
+                    <span>{{severite[i]["critique"]|format_number(locale='fr')}}</span>
+                  {% else %}
+                    <span>&nbsp;-&nbsp;</span>
+                  {% endif %}
                   <span class="{{lookup}}"></span>
                 </td>
               {% endfor %}
@@ -385,7 +421,7 @@
             <tr>
               <td class="text-left">Majeur</td>
               {% for i in 0..severite|length-1 %}
-                {% set lookup="equal" %}
+                {% set lookup="" %}
                 {% set text = "" %}
 
                 {% if i >0 %}
@@ -401,9 +437,18 @@
                     {% set lookup = "equal" %}
                     {% set text = "" %}
                   {% endif %}
+                  {% if severite[i]["bloquant"] == -1 %}
+                    {% set lookup = "" %}
+                    {% set text = "" %}
+                  {% endif %}
                 {% endif %}
 
-                <td class="text-right {{text}}">{{severite[i]["majeur"]|format_number(locale='fr')}}
+                <td class="text-right {{text}}">
+                 {% if severite[i]["majeur"]!=-1 %}
+                    <span>{{severite[i]["majeur"]|format_number(locale='fr')}}</span>
+                  {% else %}
+                    <span>&nbsp;-&nbsp;</span>
+                  {% endif %}
                   <span class="{{lookup}}"></span>
                 </td>
               {% endfor %}
@@ -411,7 +456,7 @@
             <tr>
               <td class="text-left">Mineur</td>
               {% for i in 0..severite|length-1 %}
-                {% set lookup="equal" %}
+                {% set lookup="" %}
                 {% set text = "" %}
 
                 {% if i >0 %}
@@ -427,8 +472,17 @@
                     {% set lookup = "equal" %}
                     {% set text = "" %}
                   {% endif %}
+                  {% if severite[i]["bloquant"] == -1 %}
+                    {% set lookup = "" %}
+                    {% set text = "" %}
+                  {% endif %}
                 {% endif %}
-                <td class="text-right {{text}}">{{severite[i]["mineur"]|format_number(locale='fr')}}
+                <td class="text-right {{text}}">
+                 {% if severite[i]["mineur"]!=-1 %}
+                    <span>{{severite[i]["mineur"]|format_number(locale='fr')}}</span>
+                  {% else %}
+                    <span>&nbsp;-&nbsp;</span>
+                  {% endif %}
                   <span class="{{lookup}}"></span>
                 </td>
               {% endfor %}
