@@ -106,7 +106,8 @@ class BoardController extends AbstractController
     note_reliability as fiabilite,
     note_security as securite, note_hotspot,
     note_sqale as maintenabilite, initial
-    FROM historique WHERE maven_key='${mavenKey}' AND initial=TRUE)
+    FROM historique
+    WHERE maven_key='${mavenKey}' AND initial=TRUE)
     UNION SELECT * FROM
     (SELECT nom_projet as nom, date_version as date,
     version, suppress_warning, no_sonar, nombre_bug as bug,
@@ -120,9 +121,9 @@ class BoardController extends AbstractController
     FROM historique
     WHERE maven_key='${mavenKey}' AND initial=FALSE
     ORDER BY date_version DESC LIMIT 9)";
-
     $select = $em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)))->executeQuery();
     $dash = $select->fetchAllAssociative();
+
     // On récupère les anomalies par sévérité
     $sql = "SELECT * FROM
     (SELECT date_version as date,
@@ -141,22 +142,37 @@ class BoardController extends AbstractController
     FROM historique
     WHERE maven_key='${mavenKey}' AND initial=FALSE
     ORDER BY date_version DESC LIMIT 9)";
-    $select = $em->getConnection()->prepare($sql)->executeQuery();
+    $select = $em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)))->executeQuery();
     $severite = $select->fetchAllAssociative();
 
     // On récupère les anomalies par type et sévérité
-    $sql = "SELECT date_version as date, version,
-    bug_blocker, bug_critical, bug_major, bug_minor,
-    bug_info,
+    $sql = "SELECT * FROM
+    (SELECT date_version as date, version,
+    bug_blocker, bug_critical, bug_major,
+    bug_minor, bug_info,
     vulnerability_blocker, vulnerability_critical,
     vulnerability_major, vulnerability_minor,
     vulnerability_info,
-    code_smell_blocker, code_smell_critical, code_smell_major,
-    code_smell_minor, code_smell_info
+    code_smell_blocker, code_smell_critical,
+    code_smell_major, code_smell_minor,
+    code_smell_info, initial
     FROM historique
-    WHERE maven_key='${mavenKey}'
-    ORDER BY date_version DESC LIMIT 9";
-    $select = $em->getConnection()->prepare($sql)->executeQuery();
+    WHERE maven_key='${mavenKey}' AND initial=TRUE)
+    UNION SELECT * FROM
+    (SELECT date_version as date, version,
+    bug_blocker, bug_critical, bug_major,
+    bug_minor, bug_info,
+    vulnerability_blocker, vulnerability_critical,
+    vulnerability_major, vulnerability_minor,
+    vulnerability_info,
+    code_smell_blocker, code_smell_critical,
+    code_smell_major, code_smell_minor,
+    code_smell_info, initial
+    FROM historique
+    WHERE maven_key='${mavenKey}' AND initial=FALSE
+    ORDER BY date_version DESC LIMIT 9)";
+
+    $select = $em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)))->executeQuery();
     $details = $select->fetchAllAssociative();
 
     // Graphique
