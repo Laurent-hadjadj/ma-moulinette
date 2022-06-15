@@ -134,4 +134,9 @@ class Profiles
 
         return $this;
     }
+
+    public function isIsDefault(): ?bool
+    {
+        return $this->is_default;
+    }
 }

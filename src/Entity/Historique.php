@@ -802,4 +802,14 @@ class Historique
 
         return $this;
     }
+
+    public function isFavori(): ?bool
+    {
+        return $this->favori;
+    }
+
+    public function isInitial(): ?bool
+    {
+        return $this->initial;
+    }
 }
