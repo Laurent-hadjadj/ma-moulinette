@@ -74,4 +74,9 @@ class Favori
 
         return $this;
     }
+
+    public function isFavori(): ?bool
+    {
+        return $this->favori;
+    }
 }
