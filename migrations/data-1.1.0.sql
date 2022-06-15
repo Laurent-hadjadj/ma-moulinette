@@ -6,7 +6,6 @@ BEGIN TRANSACTION;
 -- ## Supression des tables
 DROP TABLE anomalie_details;
 DROP TABLE temp_anomalie;
-DROP TABLE temp_anomalie;
 
 -- ## Ajout de la table anomalie_details
 CREATE TABLE anomalie_details
