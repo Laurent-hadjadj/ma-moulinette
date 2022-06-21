@@ -52,7 +52,7 @@ const chartColors = {
 const contentType='application/json; charset=utf-8';
 
 /* Construction des callbox de type success */
-const callboxInformation='<div class="callout primary text-justify" data-closable="slide-out-right"><p style="color:#00445b;" class="open-sans" cell">Information! ';
+const callboxInformation='<div class="callout primary text-justify" data-closable="slide-out-right"><p style="color:#00445b;" class="open-sans" cell">Information ! ';
 const callboxSuccess='<div class="callout success text-justify" data-closable="slide-out-right"><p style="color:#00445b;" class="open-sans" cell">Bravo ! ';
 const callboxError='<div class="callout error text-justify" data-closable="slide-out-right"><p style="color:#00445b;" class="open-sans" cell">Ooups ! ';
 const callboxFermer='<button class="close-button" aria-label="Fermer la fenêtre" type="button" data-close><span aria-hidden="true">&times;</span></button></div>';
