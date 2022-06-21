@@ -1,6 +1,8 @@
+// eslint-disable-next-line no-undef
 const Encore = require('@symfony/webpack-encore');
 
 if (!Encore.isRuntimeEnvironmentConfigured()) {
+    // eslint-disable-next-line no-undef
     Encore.configureRuntimeEnvironment(process.env.NODE_ENV || 'dev');
 }
 
@@ -18,6 +20,7 @@ Encore
     .addEntry('profil', './assets/js/app-profil.js')
     .addEntry('owasp', './assets/js/app-owasp.js')
     .addEntry('dash', './assets/js/app-dash.js')
+    .addEntry('repartition', './assets/js/app-repartition.js')
 
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
     .splitEntryChunks()
@@ -64,4 +67,5 @@ Encore
         context: './assets'
     })*/
 
+// eslint-disable-next-line no-undef
 module.exports = Encore.getWebpackConfig();
