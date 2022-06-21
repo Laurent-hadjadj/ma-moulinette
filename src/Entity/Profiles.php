@@ -18,7 +18,6 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ProfilesRepository::class)]
 class Profiles
-
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
