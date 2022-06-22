@@ -40,6 +40,9 @@ class TempRepartition
     #[ORM\Column(type: 'string', length: 8)]
     private $severity;
 
+    #[ORM\Column(type: 'integer')]
+    private $setup;
+
     #[ORM\Column(type: 'datetime')]
     private $date_enregistrement;
 
@@ -116,6 +119,18 @@ class TempRepartition
     public function setDateEnregistrement(\DateTimeInterface $date_enregistrement): self
     {
         $this->date_enregistrement = $date_enregistrement;
+
+        return $this;
+    }
+
+    public function getSetup(): ?int
+    {
+        return $this->setup;
+    }
+
+    public function setSetup(int $setup): self
+    {
+        $this->setup = $setup;
 
         return $this;
     }
