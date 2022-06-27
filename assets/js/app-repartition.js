@@ -28,7 +28,7 @@ const callboxError='<div class="callout error text-justify" data-closable="slide
 const callboxFermer='<button class="close-button" aria-label="Fermer la fenêtre" type="button" data-close><span aria-hidden="true">&times;</span></button></div>';
 
 // On récupère la clé maven de la clé de l'application.
-const t0 = document.getElementById('application');
+const t0 = document.getElementById('app');
 const maven_key=t0.dataset.application;
 
 /**
@@ -100,38 +100,144 @@ const maven_key=t0.dataset.application;
   // On utilise une promise et un callback
   return new Promise((resolve) => {
     $.ajax(options).then( t => {
+
+      let alert, idc;
+
+      // On récupère les valeurs des anomalies
+      const t2 = document.getElementById('bug-bloquant');
+      const t3 = document.getElementById('bug-critique');
+      const t4 = document.getElementById('bug-info');
+      const t5 = document.getElementById('bug-majeur');
+      const t6 = document.getElementById('bug-mineur');
+      const t8 = document.getElementById('vulnerabilite-bloquant');
+      const t9 = document.getElementById('vulnerabilite-critique');
+      const t10 = document.getElementById('vulnerabilite-info');
+      const t11 = document.getElementById('vulnerabilite-majeur');
+      const t12 = document.getElementById('vulnerabilite-mineur');
+      const t14 = document.getElementById('mauvaise-pratique-bloquant');
+      const t15 = document.getElementById('mauvaise-pratique-critique');
+      const t16 = document.getElementById('mauvaise-pratique-info');
+      const t17 = document.getElementById('mauvaise-pratique-majeur');
+      const t18 = document.getElementById('mauvaise-pratique-mineur');
+
+     // On calcule la somme des anomalies
+      const somme=t.repartition.frontend+t.repartition.backend+t.repartition.autre;
+
       // On affiche le tableau pour la fiabilité
       if (type=='BUG')
       {
-        let tab_bug=`<tr>
+       if (severity==='BLOCKER') {
+        if (t2.dataset.nombreBugBloquant==='0')
+          { idc='-' } else {
+            idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t2.dataset.nombreBugBloquant);
+          }
+        }
+       if (severity==='CRITICAL') {
+        if (t3.dataset.nombreBugCritique==='0')
+        { idc='-' } else {
+          idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t3.dataset.nombreBugCritique);
+        }
+        }
+       if (severity==='INFO') {
+        if (t4.dataset.nombreBugInfo==='0')
+          { idc='-' } else {
+            idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t4.dataset.nombreBugInfo);
+          }
+        }
+       if (severity==='MAJOR') {
+        if (t5.dataset.nombreBugMajeur==='0')
+          { idc='-' } else {
+            idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t5.dataset.nombreBugMajeur);
+          }
+       }
+      if (severity==='MINOR') {
+        if (t6.dataset.nombreBugMineur==='0')
+          { idc='-' } else {
+            idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t6.dataset.nombreBugMineur);
+          }
+       }
+       if (idc !=='100 %' && idc !=='-') { alert='texte-rouge'; } else { alert='texte-vert'; }
+      let tab_bug=`<tr>
           <td class="${css}"><strong>${severity}</strong></td>
-          <td id="presenation-01" class="text-right">${t.repartition.frontend}</td>
-          <td id="metier-01" class="text-right">${t.repartition.backend}</td>
-          <td id="autre-01" class="text-right">${t.repartition.autre}</td></tr>`;
+          <td id="presenation-01" class="text-center">${t.repartition.frontend}</td>
+          <td id="metier-01" class="text-center">${t.repartition.backend}</td>
+          <td id="autre-01" class="text-center">${t.repartition.autre}</td>
+          <td id="indice-confience-01" class="text-center ${alert}">${idc}</td></tr>`;
           $("#mon-bo-tableau1").append(tab_bug);
       }
 
       // On affiche le tableau pour la sécurité
       if (type=='VULNERABILITY')
       {
-        let tab_vulnerability=`
-        <tr>
-          <td class="${css}"><strong>${severity}</strong></td>
-          <td id="presenation-02" class="text-right">${t.repartition.frontend}</td>
-          <td id="metier-02" class="text-right">${t.repartition.backend}</td>
-          <td id="autre-02" class="text-right">${t.repartition.autre}</td></tr>`;
-          $("#mon-bo-tableau2").append(tab_vulnerability);
+        if (severity==='BLOCKER') {
+          if (t8.dataset.nombreVulnerabiliteBloquant==='0')
+            { idc='-' } else {
+              idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t8.dataset.nombreVulnerabiliteBloquant);
+            }
+        }
+        if (severity==='CRITICAL') {
+          if (t9.dataset.nombreVulnerabiliteCritique==='0')
+            { idc='-' } else {
+              idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t9.dataset.nombreVulnerabiliteCritique);
+            }
+          }
+        if (severity==='INFO') {
+          if (t10.dataset.nombreVulnerabiliteInfo==='0')
+            { idc='-' } else {
+              idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t10.dataset.nombreVulnerabiliteInfo);
+            }
+          }
+      if (severity==='MAJOR') {
+        if (t11.dataset.nombreVulnerabiliteMajeur==='0')
+          { idc='-' } else {
+            idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t11.dataset.nombreVulnerabiliteMajeur);
+          }
+        }
+     if (severity==='MINOR') {
+       if (t12.dataset.nombreVulnerabiliteMineur==='0')
+        { idc='-' } else {
+          idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t12.dataset.nombreVulnerabiliteMineur);
+        }
+      }
+      if (idc !=='100 %' && idc !=='-') { alert='texte-rouge'; } else { alert='texte-vert'; }
+
+      let tab_vulnerability=`
+      <tr>
+        <td class="${css}"><strong>${severity}</strong></td>
+        <td id="presenation-01" class="text-center">${t.repartition.frontend}</td>
+        <td id="metier-01" class="text-center">${t.repartition.backend}</td>
+        <td id="autre-01" class="text-center">${t.repartition.autre}</td>
+        <td id="indice-confience-01" class="text-center ${alert}">${idc}</td></tr>`;
+        $("#mon-bo-tableau2").append(tab_vulnerability);
       }
 
       // On affiche le tableau pour la maintenabilité
       if (type=='CODE_SMELL')
       {
+      if (severity==='BLOCKER') {
+          idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t14.dataset.nombreMauvaisePratiqueBloquant);
+       }
+      if (severity==='CRITICAL') {
+          idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t15.dataset.nombreMauvaisePratiqueCritique);
+       }
+      if (severity==='INFO') {
+          idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t16.dataset.nombreMauvaisePratiqueInfo);
+       }
+      if (severity==='MAJOR') {
+          idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t17.dataset.nombreMauvaisePratiqueMajeur);
+      }
+     if (severity==='MINOR') {
+          idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t18.dataset.nombreMauvaisePratiqueMineur);
+      }
+     if (idc !=='100 %' && idc !=='-') { alert='texte-rouge'; } else { alert='texte-vert'; }
+
         let tab_code_smell=`
         <tr>
           <td class="${css}"><strong>${severity}</strong></td>
-          <td id="presenation-03" class="text-right">${t.repartition.frontend}</td>
-          <td id="metier-03" class="text-right">${t.repartition.backend}</td>
-          <td id="autre-03" class="text-right">${t.repartition.autre}</td></tr>`;
+          <td id="presenation-01" class="text-center">${t.repartition.frontend}</td>
+          <td id="metier-01" class="text-center">${t.repartition.backend}</td>
+          <td id="autre-01" class="text-center">${t.repartition.autre}</td>
+          <td id="indice-confience-01" class="text-center ${alert}">${idc}</td></tr>`;
           $("#mon-bo-tableau3").append(tab_code_smell);
       }
       resolve();
@@ -584,10 +690,12 @@ $('.bouton-supprime-donnees').on('click', ()=>{
 $('.bouton-repartition-traitement-donnees').on('click', ()=>{
   async function fnAsync() {
     let tab_Titre=`
-    <tr><th scope="col"></th>
-    <th scope="col" class="c-rouge text-right"><strong>Présentaton</strong></th>
-    <th scope="col" class="c-rouge text-right"><strong>Métier</strong></th>
-    <th scope="col" class="c-rouge text-right"><strong>Autre</strong></th></tr>`;
+    <tr>
+    <th scope="col"></th>
+    <th scope="col" class="text-center"><strong>Application Présentaton</strong></th>
+    <th scope="col" class="text-center"><strong>Application Métier</strong></th>
+    <th scope="col" class="text-center"><strong>Autres</strong></th>
+    <th scope="col" class="text-center"><strong>IdC</strong></th></tr>`;
 
     // BLOCKER
     $("#mon-bo-tableau1").html(tab_Titre);
