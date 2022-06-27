@@ -664,18 +664,27 @@ $('select[name="projet"]').change(function () {
     }
    });
 
-  // On débloque les bouton
+  // On débloque les boutons
+
+  // Bouton : Lance la collecte
   $('.js-analyse').removeClass('lance-analyse-disabled');
   $('.js-analyse').addClass('lance-analyse-enabled');
 
+  // Bouton : Affiche les résultats
   $('.js-affiche-resultat').removeClass('affiche-resultat-disabled');
   $('.js-affiche-resultat').addClass('affiche-resultat-enabled');
 
+  // Bouton : Ouvre la page d'analyse OWASP
   $('.js-analyse-owasp').removeClass('analyse-owasp-disabled');
   $('.js-analyse-owasp').addClass('analyse-owasp-enabled');
 
-  $( '.js-tableau-suivi').removeClass('tableau-suivi-disabled');
+  // Bouton : Ouvre la page de suivi des indicateurs
+  $('.js-tableau-suivi').removeClass('tableau-suivi-disabled');
   $('.js-tableau-suivi' ).addClass('tableau-suivi-enabled');
+
+  // Bouton : Ouvre la page de répartition des indicateurs par Module
+  $('.js-repartition-module').removeClass('repartition-module-disabled');
+  $('.js-repartition-module' ).addClass('repartition-module-enabled');
 
   // on ajoute la clé slectionnée dans le local storage pour les pages security et graphques
   localStorage.setItem('projet', $('select[name="projet"]').val().trim());
@@ -813,5 +822,31 @@ $('.js-tableau-suivi').on('click', () => {
     window.location.href='/suivi?mavenKey='+apiMaven;
    } else {
      log(' - ERROR - Vous devez chosir un projet dans la liste !! !');
+    }
+ });
+
+ /**
+ * description
+ * On génére la route et on ouvre la page de répartition des indicateurs par module
+ */
+  $('.js-analyse-owasp').on('click', () => {
+    if ($('select[name="projet"]').val() !==''){
+      const apiMaven = $('#select-result').text().trim();
+      window.location.href='/analyse/owasp?mavenKey='+apiMaven;
+     } else {
+       log(' - ERROR - [OWASP] Vous devez chosir un projet dans la liste !! !');
+      }
+   });
+
+ /**
+ * description
+ * On génére la route et on ouvre la page de répartition des indicateurs par module
+ */
+$('.js-repartition-module').on('click', () => {
+  if ($('select[name="projet"]').val() !==''){
+    const apiMaven = $('#select-result').text().trim();
+    window.location.href='/projet/repartition?mavenKey='+apiMaven;
+   } else {
+     log(' - ERROR - [Répartition] Vous devez chosir un projet dans la liste !! !');
     }
  });
