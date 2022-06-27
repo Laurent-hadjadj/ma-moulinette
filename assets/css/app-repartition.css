@@ -36,7 +36,8 @@
 /* Gestion des boutons desactivés */
 .bouton-collecte-bug-disabled,
 .bouton-collecte-vulnerabilite-disabled,
-.bouton-collecte-mauvaise-pratique-disabled {
+.bouton-collecte-mauvaise-pratique-disabled,
+.bouton-repartition-affiche-resultat-disabled {
   background-color: #4c7c8c;
   cursor: not-allowed;
 }
