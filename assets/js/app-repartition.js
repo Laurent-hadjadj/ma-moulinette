@@ -84,7 +84,7 @@ const maven_key=t0.dataset.application;
   // Traitement lancé à la fin du 'appel.
   const stopAnalyse = () => {
     $('#analyse-animation').removeClass('sp-volume');
-    $('#analyse-texte').html('');
+    $('#analyse-texte').html('<span class="open-sans">Satut : Fin du traitement.</span>');
   }
 
   // On déclare les options du web services.
@@ -594,7 +594,7 @@ $('#collecte-vulnerabilite').on('click', ()=>{
   fnAsync();
 });
 
-// On lance la collecte ppour les CODE_SMELL
+// On lance la collecte pour les CODE_SMELL
 $('#collecte-mauvaise-pratique').on('click', ()=>{
 
   // on récupère les résultats binder dans la page.
@@ -688,7 +688,10 @@ $('.bouton-supprime-donnees').on('click', ()=>{
 })
 
 $('.bouton-repartition-traitement-donnees').on('click', ()=>{
+
+  // On lance la fonction asynchonne
   async function fnAsync() {
+
     let tab_Titre=`
     <tr>
     <th scope="col"></th>
@@ -698,6 +701,8 @@ $('.bouton-repartition-traitement-donnees').on('click', ()=>{
     <th scope="col" class="text-center"><strong>IdC</strong></th></tr>`;
 
     // BLOCKER
+    // On affiche le tableau
+    $("#tableau-1").removeClass('hide');
     $("#mon-bo-tableau1").html(tab_Titre);
     await analyse(maven_key, 'BUG', 'BLOCKER', 1, 'texte-rouge');
     await analyse(maven_key, 'BUG', 'CRITICAL', 1, 'texte-rouge');
@@ -706,6 +711,7 @@ $('.bouton-repartition-traitement-donnees').on('click', ()=>{
     await analyse(maven_key, 'BUG', 'MINOR', 1, 'texte-vert');
 
     // VULNERABILITY
+    $("#tableau-2").removeClass('hide');
     $("#mon-bo-tableau2").html(tab_Titre);
     await analyse(maven_key, 'VULNERABILITY', 'BLOCKER', 1, 'texte-rouge');
     await analyse(maven_key, 'VULNERABILITY', 'CRITICAL', 1, 'texte-rouge');
@@ -714,6 +720,7 @@ $('.bouton-repartition-traitement-donnees').on('click', ()=>{
     await analyse(maven_key, 'VULNERABILITY', 'MINOR', 1, 'texte-vert');
 
     // CODE_SMELL
+    $("#tableau-3").removeClass('hide');
     $("#mon-bo-tableau3").html(tab_Titre);
     await analyse(maven_key, 'CODE_SMELL', 'BLOCKER', 1,'texte-rouge');
     await analyse(maven_key, 'CODE_SMELL', 'CRITICAL', 1,'texte-rouge');
@@ -721,6 +728,8 @@ $('.bouton-repartition-traitement-donnees').on('click', ()=>{
     await analyse(maven_key, 'CODE_SMELL', 'MAJOR', 1,'texte-orange');
     await analyse(maven_key, 'CODE_SMELL', 'MINOR', 1, 'texte-vert');
   }
+
+  // On lance la fonction assynchrone
   fnAsync();
 });
 
