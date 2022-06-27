@@ -832,7 +832,7 @@ $('.js-tableau-suivi').on('click', () => {
   $('.js-analyse-owasp').on('click', () => {
     if ($('select[name="projet"]').val() !==''){
       const apiMaven = $('#select-result').text().trim();
-      window.location.href='/analyse/owasp?mavenKey='+apiMaven;
+      window.location.href='/owasp?mavenKey='+apiMaven;
      } else {
        log(' - ERROR - [OWASP] Vous devez chosir un projet dans la liste !! !');
       }
