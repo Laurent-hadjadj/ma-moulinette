@@ -167,6 +167,9 @@
 
 .analyse-disabled:hover,
 .affiche-resultat-disabled:hover,
+.analyse-owasp-disabled:hover,
+.tableau-suivi-disabled:hover,
+.repartition-module-disabled:hover,
 .enregistrement-disabled:hover { background-color: #006182; }
 
 /* select2 custom
