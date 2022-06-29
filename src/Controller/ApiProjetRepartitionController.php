@@ -278,12 +278,18 @@ class ApiProjetRepartitionController extends AbstractController
    * @return response
    *
    */
-  #[Route('/api/projet/repartition/collecte', name: 'projet_repartition_collecte', methods: ['GET'])]
+  #[Route('/api/projet/repartition/collecte', name: 'projet_repartition_collecte', methods: ['PUT'])]
   public function projetRepartitionCollecte(EntityManagerInterface $em, Request $request, LoggerInterface $logger): response
   {
-    $mavenKey=$request->get('mavenKey');
-    $type=$request->get('type');
-    $severity=$request->get('severity');
+    // On décode le body
+    $data = json_decode($request->getContent());
+
+    // On bind les variables
+    $mavenKey = $data->mavenKey;
+    $type = $data->type;
+    $severity = $data->severity;
+    $setup = $data->setup;
+
     // nom du projet
     $name = explode(":", $mavenKey);
     $date= new DateTime();
@@ -300,11 +306,12 @@ class ApiProjetRepartitionController extends AbstractController
           $component=$issue["component"];
 
           $issue = new TempRepartition();
-          $issue->setMavenKey($request->get("mavenKey"));
+          $issue->setMavenKey($mavenKey);
           $issue->setName($name[1]);
           $issue->setComponent($component);
           $issue->setType($type);
           $issue->setSeverity($severity);
+          $issue->setSetup($setup);
           $issue->setDateEnregistrement($date);
           $em->persist($issue);
           $em->flush();
@@ -317,6 +324,7 @@ class ApiProjetRepartitionController extends AbstractController
       ["total" => $result["total"],
        "type" => $type,
        "severity"=> $severity,
+       "setup"=> $setup,
        "temps" => abs($date1 - $date2)+2,
       Response::HTTP_OK]);
   }
@@ -356,14 +364,17 @@ class ApiProjetRepartitionController extends AbstractController
    * @param  mixed $request
    * @return Response
    */
-  #[Route('/api/projet/repartition/analyse', name: 'projet_repartition_analyse', methods: ['GET'])]
+  #[Route('/api/projet/repartition/analyse', name: 'projet_repartition_analyse', methods: ['PUT'])]
   public function projetRepartitionAnalyse(EntityManagerInterface $em, Request $request): Response
   {
+    // On décode le body
+    $data = json_decode($request->getContent());
+
     // On bind les variables
-    $mavenKey = $request->get('mavenKey');
-    $type = $request->get('type');
-    $severity = $request->get('severity');
-    $setup = $request->get('setup');
+    $mavenKey = $data->mavenKey;
+    $type = $data->type;
+    $severity = $data->severity;
+    $setup = $data->setup;
 
     // On créé un nouvel objet Json
     $response = new JsonResponse();
@@ -375,8 +386,6 @@ class ApiProjetRepartitionController extends AbstractController
           AND type='${type}'
           AND severity='${severity}'
           AND setup=${setup}";
-    //$select = $em->getConnection()->prepare($sql)->executeQuery();
-    //$r = $select->fetchAllAssociative();
     // On exécute la requête
     $con = $em->getConnection()->prepare($sql);
     try {
@@ -389,23 +398,5 @@ class ApiProjetRepartitionController extends AbstractController
     return $response->setData(["code" => "OK", "repartition"=>$result, Response::HTTP_OK]);
   }
 
-  /**
-   * projetRepartition
-   *
-   * @param  mixed $request
-   * @return Response
-   */
-  #[Route('/projet/repartition', name: 'projet_repartition')]
-  public function projetRepartition(Request $request): Response
-  {
-    $mavenKey = $request->get('mavenKey');
-    $app=explode(":", $mavenKey);
-    return $this->render('projet/anomalie.details.html.twig',
-    [
-        'monApplication' => $app[1],
-        'mavenKey' => $mavenKey,
-        'version' => $this->getParameter('version'), 'dateCopyright' => \date('Y')
-      ]);
-  }
 
 }
