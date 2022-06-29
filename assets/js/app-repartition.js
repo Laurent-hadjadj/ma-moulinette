@@ -35,6 +35,67 @@ const maven_key=t0.dataset.application;
  * description
  * On lance le service de suppression des données pour le projet
  *
+ * @returns
+ */
+ const timestamp=function(bypass) {
+  /**
+   * On récupère la version du setup
+   *  Si le projet n'a pas de setup (i.e. la valeur est à NaN), on en créé un.
+   *  Si le projet à déjà un setup, on en créé un aussi pour ajouter une nouvelle version
+   */
+
+  // On récupère les propriétés de l'élément.
+  const t99 = document.getElementById('js-setup');
+
+  // On renvoie la valeur du setup
+  if (bypass==='by-pass') {
+      return $('#js-setup').text();
+    }
+
+  /**
+   * Si on a pas de setup pour le projet, on en ajoute un
+   * on passe du statut 'NaN' à 'nouveau'
+   */
+  if ($('#js-setup').text()==='NaN') {
+      t99.dataset.setup=Date.now();
+      $('#js-setup').text(t99.dataset.setup);
+      t99.dataset.statut='nouveau';
+      const message1=`Je n'ai pas trouvé de setup. Un nouveau setup a été créé : ${t99.dataset.setup}.`;
+      $('#message').html(callboxInformation+message1+callboxFermer);
+      return t99.dataset.setup;
+    }
+
+  /**
+   * Si le setup existe et que son statut est égal à 'nouveau'
+   * alors on renvoie le même numéro de setup
+   */
+  if ($('#js-setup').text()!=='NaN' && t99.dataset.statut==='nouveau') {
+      return t99.dataset.setup;
+  }
+
+  /**
+   * Si le setup existe et que son statut est égal à 'actuel'
+   * alors on renvoie un nouveau setup et on passe au statut 'nouveau'
+   */
+  if  ($('#js-setup').text()!=='NaN' && t99.dataset.statut=='actuel') {
+      t99.dataset.setup=Date.now();
+      const archive=$('#js-setup').text();
+      const message2=`La version ${archive} est archivée. Un nouveau setup a été créé : ${t99.dataset.setup}.`;
+      $('#js-setup').text(t99.dataset.setup);
+      t99.dataset.statut='nouveau';
+      $('#message').html(callboxInformation+message2+callboxFermer);
+      return t99.dataset.setup;
+  }
+
+  // si je suis perdu, j'affiche une alerte !!!
+  const message3=`Je suis perdu !!!`;
+  $('#message').html(callboxError+message3+callboxFermer);
+ }
+
+/**
+ * description
+ * On lance le service de suppression des données pour le projet
+ *
  * @param {*} mavenKey
  * @returns
  */
@@ -69,7 +130,7 @@ const maven_key=t0.dataset.application;
   * @param {*} css
   * @returns
   */
- const analyse=function(mavenKey, type, severity, setup, css) {
+ const analyse=function(mavenKey, type, severity, css) {
 
   // Traitement lancé au moment moment de l'appel.
   const startAnalyse = (a) => {
@@ -87,11 +148,14 @@ const maven_key=t0.dataset.application;
     $('#analyse-texte').html('<span class="open-sans">Satut : Fin du traitement.</span>');
   }
 
+  // On récupère le setup affiché à l'écran.
+  const setup=timestamp('by-pass');
+
   // On déclare les options du web services.
   const data = { mavenKey, type, severity, setup };
   const options = {
-    url: 'http://localhost:8000/api/projet/repartition/analyse', type: 'GET',
-    dataType: 'json', data, contentType,
+    url: 'http://localhost:8000/api/projet/repartition/analyse', type: 'PUT',
+    dataType: 'json', data: JSON.stringify(data), contentType,
     beforeSend: function () { setTimeout(() => startAnalyse(type), 1); },
     complete: function () { setTimeout(() => stopAnalyse(), 1); },
     }
@@ -276,6 +340,12 @@ const collecte=function(mavenKey, type, severity, start, stop, counter, timer) {
     $(".progress-meter-text").text(`${progress}%`);
   };
 
+  // On test si on est arrivé à la fin du traitement
+  if (mavenKey==='NaN') {
+    setTimeout(() => changeProgress(stop), 1000);
+    return;
+  }
+
   let type_time;
   if (type==='BUG') { type_time='bug'; }
   if (type==='VULNERABILITY') { type_time='vulnerabilite'; }
@@ -289,18 +359,21 @@ const collecte=function(mavenKey, type, severity, start, stop, counter, timer) {
     $('#js-'+type_time.toLowerCase()+'-time').html(new_timer);
   };
 
+  // On récupère le setup par défaut de l'application
+  const setup=timestamp('collecte');
+
   // Déclaration des parametres de l'appel du service
-  const data = { mavenKey, type, severity };
+  const data = { mavenKey, type, severity, setup };
   const options = {
-    url: 'http://localhost:8000/api/projet/repartition/collecte', type: 'GET',
-    dataType: 'json', data, contentType,
+    url: 'http://localhost:8000/api/projet/repartition/collecte', type: 'PUT',
+    dataType: 'json', data: JSON.stringify(data), contentType,
     beforeSend: function () {
       setTimeout(() => startCollecte(), 1000);
       setTimeout(() => changeProgress(start), 1000); },
     complete: function () {
-      stopCollecte();
-      changeProgress(stop);
-      changeTimer(timer);
+      setTimeout(() => stopCollecte(), 1000);
+      setTimeout(() => changeProgress(stop), 1000);
+      setTimeout(() => changeTimer(timer), 1000);
     },
   };
 
@@ -422,7 +495,7 @@ const collecte=function(mavenKey, type, severity, start, stop, counter, timer) {
   });
 };
 
-// On lance la collecte ppour les BUG
+// On lance la collecte pour les BUG
 $('#collecte-bug').on('click', ()=>{
   // on récupère les résultats binder dans la page.
   const t1 = document.getElementById('nombre-bug');
@@ -456,7 +529,7 @@ $('#collecte-bug').on('click', ()=>{
   async function fnAsync() {
     let start=0, stop=0, counter, tempo=0;
 
-    if (parseInt(blocker,10)!==0) {
+   if (parseInt(blocker,10)!==0) {
       stop=Math.trunc((parseInt(blocker,10)/parseInt(total,10))*100);
       if (stop === 0) {stop=stop+1;}
       counter=parseInt(blocker,10);
@@ -503,6 +576,8 @@ $('#collecte-bug').on('click', ()=>{
       tempo= parseInt(tempo,10) + parseInt(timer5.dataset.timer,10);
       await collecte(maven_key, 'BUG', 'MINOR', start, stop, counter, tempo);
     }
+
+    $('#etape-1').css('color', '#c45d4e');
   }
   // On appelle la fonction de récupèration des sévérités pour les BUG
   fnAsync();
@@ -580,6 +655,7 @@ $('#collecte-vulnerabilite').on('click', ()=>{
       tempo = parseInt(tempo,10) + parseInt(timer4.dataset.timer,10);
       await collecte(maven_key, 'VULNERABILITY', 'MAJOR', start, stop, counter, tempo);
     }
+
     if (parseInt(minor,10)!==0) {
       start=stop;
       stop=100;
@@ -587,7 +663,9 @@ $('#collecte-vulnerabilite').on('click', ()=>{
       const timer5 = document.getElementById('js-vulnerabilite-time');
       tempo= parseInt(tempo,10) + parseInt(timer5.dataset.timer,10);
       await collecte(maven_key, 'VULNERABILITY', 'MINOR', start, stop, counter, tempo);
-      }
+    }
+
+    $('#etape-2').css('color', '#c45d4e');
   }
 
   // On appelle la fonction de récupèration des sévérités pour les VULNERABILITY
@@ -675,7 +753,11 @@ $('#collecte-mauvaise-pratique').on('click', ()=>{
       const timer5 = document.getElementById('js-mauvaise-pratique-time');
       tempo= parseInt(tempo,10) + parseInt(timer5.dataset.timer,10);
       await collecte(maven_key, 'CODE_SMELL', 'MINOR', start, stop, counter, tempo);
-      }
+    } else {
+      await collecte('NaN', 'NaN', 'NaN', 'NaN', 100, 'NaN', 'NaN');
+    }
+
+    $('#etape-3').css('color', '#c45d4e');
   }
 
   // On appelle la fonction de récupèration des sévérités pour les VULNERABILITY
