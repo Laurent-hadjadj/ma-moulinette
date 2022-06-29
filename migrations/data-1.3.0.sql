@@ -9,6 +9,6 @@ CREATE TABLE temp_repartition (
   maven_key VARCHAR(128) NOT NULL, name VARCHAR(128) NOT NULL,
   component CLOB NOT NULL, type VARCHAR(16) NOT NULL,
   severity VARCHAR(8) NOT NULL, setup UNSIGNED BIG INT NOT NULL,
-  date_enregistrement DATETIME NOT NULL)
+  date_enregistrement DATETIME NOT NULL);
 
 COMMIT;
