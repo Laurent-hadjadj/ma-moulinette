@@ -278,21 +278,36 @@ const maven_key=t0.dataset.application;
       // On affiche le tableau pour la maintenabilité
       if (type=='CODE_SMELL')
       {
-      if (severity==='BLOCKER') {
-          idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t14.dataset.nombreMauvaisePratiqueBloquant);
-       }
-      if (severity==='CRITICAL') {
-          idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t15.dataset.nombreMauvaisePratiqueCritique);
-       }
-      if (severity==='INFO') {
-          idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t16.dataset.nombreMauvaisePratiqueInfo);
-       }
-      if (severity==='MAJOR') {
-          idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t17.dataset.nombreMauvaisePratiqueMajeur);
-      }
-     if (severity==='MINOR') {
-          idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t18.dataset.nombreMauvaisePratiqueMineur);
-      }
+      if (severity==='BLOCKER')
+        if (t14.dataset.nombreMauvaisePratiqueBloquant==='0')
+          { idc='-' } else {
+            idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t14.dataset.nombreMauvaisePratiqueBloquant);
+          }
+
+      if (severity==='CRITICAL')
+        if (t15.dataset.nombreMauvaisePratiqueCritique==='0')
+          { idc='-' } else {
+            idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t15.dataset.nombreMauvaisePratiqueCritique);
+          }
+
+      if (severity==='INFO')
+        if (t16.dataset.nombreMauvaisePratiqueInfo==='0')
+          { idc='-' } else {
+            idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t16.dataset.nombreMauvaisePratiqueInfo);
+          }
+
+      if (severity==='MAJOR')
+        if (t17.dataset.nombreMauvaisePratiqueMajeur==='0')
+        { idc='-' } else {
+              idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t17.dataset.nombreMauvaisePratiqueMajeur);
+          }
+
+     if (severity==='MINOR')
+       if (t18.dataset.nombreMauvaisePratiqueMinor==='0')
+         { idc='-' } else {
+            idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t18.dataset.nombreMauvaisePratiqueMineur);
+          }
+
      if (idc !=='100 %' && idc !=='-') { alert='texte-rouge'; } else { alert='texte-vert'; }
 
         let tab_code_smell=`
