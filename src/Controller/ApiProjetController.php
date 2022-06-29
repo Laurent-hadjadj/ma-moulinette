@@ -1613,7 +1613,6 @@ class ApiProjetController extends AbstractController
     return $response->setData(["nosonar" => $result["paging"]["total"], Response::HTTP_OK]);
   }
 
-  #[Route('/api/enregistrement', name: 'enregistrement', methods: ['PUT'])]
   /**
    * enregistrement
    * Enregistrement des données du projet
@@ -1622,7 +1621,8 @@ class ApiProjetController extends AbstractController
    * @param  mixed $request
    * @return response
    */
-  public function enregistrement(EntityManagerInterface $em, Request $request): response
+  #[Route('/api/enregistrement', name: 'enregistrement', methods: ['PUT'])]
+   public function enregistrement(EntityManagerInterface $em, Request $request): response
   {
     // On décode le body
     $data = json_decode($request->getContent());
