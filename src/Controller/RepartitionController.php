@@ -54,7 +54,7 @@ class RepartitionController extends AbstractController
        $reponse = $select->fetchAllAssociative();
 
        if (empty($reponse)) {
-           $setup="NaN";
+           $setup=["setup"=>"NaN"];
            $statut="NaN";
         } else {
             $setup=$reponse[0];
