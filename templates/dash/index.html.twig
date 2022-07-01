@@ -71,7 +71,7 @@
 					</thead>
 					<tbody id="tableau-liste-profil" class="open-sans">
 						<tr class="open-sans">
-							<td class="text-left">Date</td>
+							<td class="text-left text-noir">Date</td>
 							{% for i in 0..dash|length-1 %}
 								<td class="text-right">
 									<span>{{dash[i]["date"]|date("d/m/Y", "Europe/Paris")}}
@@ -80,7 +80,7 @@
 							{% endfor %}
 						</tr>
 						<tr class="open-sans">
-							<td class="text-left">Fiabilité</td>
+							<td class="text-left text-noir">Fiabilité</td>
 							{% for i in 0..dash|length-1 %}
 								<td class="text-right">
 									<span>{{dash[i]["bug"]|format_number(locale='fr')}}</span>
@@ -104,7 +104,7 @@
 							{% endfor %}
 						</tr>
 						<tr class="open-sans">
-							<td class="text-left">Sécurité</td>
+							<td class="text-left text-noir">Sécurité</td>
 							{% for i in 0..dash|length-1 %}
 								<td class="text-right">
 									<span>{{dash[i]["faille"]|format_number(locale='fr')}}</span>
@@ -128,7 +128,7 @@
 							{% endfor %}
 						</tr>
 						<tr class="open-sans">
-							<td class="text-left">Hotspot</td>
+							<td class="text-left text-noir">Hotspot</td>
 							{% for i in 0..dash|length-1 %}
 								<td class="text-right">
                   {% if dash[i]["nombre_hotspot"]!=-1 %}
@@ -160,7 +160,7 @@
 							{% endfor %}
 						</tr>
 						<tr class="open-sans">
-							<td class="text-left">Maintenabilité</td>
+							<td class="text-left text-noir">Maintenabilité</td>
 							{% for i in 0..dash|length-1 %}
 								<td class="text-right">
 									<span>{{dash[i]["mauvaise_pratique"]|format_number(locale='fr')}}</span>
@@ -184,7 +184,7 @@
 							{% endfor %}
 						</tr>
 						<tr class="open-sans">
-							<td class="text-left">SupressWarning</td>
+							<td class="text-left text-noir">SupressWarning</td>
 							{% for i in 0..dash|length-1 %}
                 <td class="text-right">
 								{% if dash[i]["suppress_warning"]!=-1 %}
@@ -196,7 +196,7 @@
 							{% endfor %}
 						</tr>
 						<tr class="open-sans">
-							<td class="text-left">No Sonar</td>
+							<td class="text-left text-noir">No Sonar</td>
 							{% for i in 0..dash|length-1 %}
 								<td class="text-right">
 								{% if dash[i]["no_sonar"]!=-1 %}
@@ -282,7 +282,7 @@
           </thead>
           <tbody id="tableau-module" class="open-sans">
             <tr class="open-sans">
-              <td class="text-left">Date</td>
+              <td class="text-left text-noir">Date</td>
               {% for i in 0..dash|length-1 %}
                 <td class="text-center">
                   <span>{{dash[i]["date"]|date("d/m/Y", "Europe/Paris")}}
@@ -291,7 +291,7 @@
               {% endfor %}
             </tr>
             <tr>
-              <td class="text-left">Présentation</td>
+              <td class="text-left text-noir">Présentation</td>
               {% for i in 0..dash|length-1 %}
                 <td class="text-center">
                 {% if dash[i]["presentation"]!=-1 %}
@@ -303,7 +303,7 @@
               {% endfor %}
             </tr>
             <tr>
-              <td class="text-left">Métier</td>
+              <td class="text-left text-noir">Métier</td>
               {% for i in 0..dash|length-1 %}
                 <td class="text-center">
                   {% if dash[i]["metier"]!=-1 %}
@@ -316,7 +316,7 @@
               {% endfor %}
             </tr>
             <tr>
-              <td class="text-left">Autres</td>
+              <td class="text-left text-noir">Autres</td>
               {% for i in 0..dash|length-1 %}
                 <td class="text-center">
                   {% if dash[i]["autre"]!=-1 %}
@@ -350,7 +350,7 @@
           </thead>
           <tbody id="tableau-anomalie-severite" class="open-sans">
             <tr class="open-sans">
-              <td class="text-left">Date</td>
+              <td class="text-left text-noir">Date</td>
               {% for i in 0..severite|length-1 %}
                 <td class="text-right">
                   <span>{{severite[i]["date"]|date("d/m/Y", "Europe/Paris")}}
@@ -359,7 +359,7 @@
               {% endfor %}
             </tr>
             <tr>
-              <td class="text-left">Bloquant</td>
+              <td class="text-left text-rouge">Bloquant</td>
               {% for i in 0..severite|length-1 %}
                 {% set lookup="" %}
                 {% set text = "" %}
@@ -393,7 +393,7 @@
               {% endfor %}
             </tr>
             <tr>
-              <td class="text-left">Critique</td>
+              <td class="text-left text-rouge">Critique</td>
               {% for i in 0..severite|length-1 %}
                 {% set lookup = "" %}
                 {% set text = "" %}
@@ -427,7 +427,7 @@
               {% endfor %}
             </tr>
             <tr>
-              <td class="text-left">Majeur</td>
+              <td class="text-left text-orange">Majeur</td>
               {% for i in 0..severite|length-1 %}
                 {% set lookup="" %}
                 {% set text = "" %}
@@ -462,7 +462,7 @@
               {% endfor %}
             </tr>
             <tr>
-              <td class="text-left">Mineur</td>
+              <td class="text-left text-vert">Mineur</td>
               {% for i in 0..severite|length-1 %}
                 {% set lookup="" %}
                 {% set text = "" %}
@@ -546,9 +546,7 @@
             </tr>
 
             <tr>
-              <td class="text-rouge">
-                <strong>Bloquant</strong>
-              </td>
+              <td class="text-rouge">Bloquant</td>
               {% for i in 0..details|length-1 %}
                 {% if i !=0 and details[i]["bug_blocker"] > details[i-1]["bug_blocker"] %}
                   {% set text1 = "text-up" %}
@@ -594,9 +592,7 @@
               {% endfor %}
             </tr>
             <tr>
-              <td class="text-rouge">
-                <strong>Critique</strong>
-              </td>
+              <td class="text-rouge">Critique</td>
               {% for i in 0..details|length-1 %}
                 {% if i !=0 and details[i]["bug_critical"] > details[i-1]["bug_critical"] %}
                   {% set text1 = "text-up" %}
@@ -638,9 +634,7 @@
               {% endfor %}
             </tr>
             <tr>
-              <td class="text-rouge">
-                <strong>Majeur</strong>
-              </td>
+              <td class="text-orange">Majeur</td>
               {% for i in 0..details|length-1 %}
                 {% if i !=0 and details[i]["bug_major"] > details[i-1]["bug_major"] %}
                   {% set text1 = "text-up" %}
@@ -682,9 +676,7 @@
               {% endfor %}
             </tr>
             <tr>
-              <td class="text-vert">
-                <strong>Mineur</strong>
-              </td>
+              <td class="text-vert">Mineur</td>
               {% for i in 0..details|length-1 %}
                 {% if i !=0 and details[i]["bug_minor"] > details[i-1]["bug_minor"] %}
                   {% set text1 = "text-up" %}
@@ -726,9 +718,7 @@
               {% endfor %}
             </tr>
             <tr>
-              <td class="text-bleu">
-                <strong>Info</strong>
-              </td>
+              <td class="text-bleu">Info</td>
               {% for i in 0..details|length-1 %}
                 {% if i !=0 and details[i]["bug_info"] > details[i-1]["bug_info"] %}
                   {% set text1 = "text-up" %}
@@ -796,16 +786,16 @@
       <div class="fieldset cell">
         <div class="grid-x">
           <div class="small-12 medium-7 large-7 cell">
-            <p class="open-sans ligne">Clé maven :
+            <p class="open-sans ligne text-noir">Clé maven :
               <span id="key-maven" class="resultat"></span>
             </p>
-            <p class="open-sans ligne">nom :
+            <p class="open-sans ligne text-noir">nom :
               <span id="nom" class="resultat"></span>
             </p>
-            <p class="open-sans ligne">Version :
+            <p class="open-sans ligne text-noir">Version :
               <span id="version" class="resultat"></span>
             </p>
-            <p class="open-sans ligne">Date :
+            <p class="open-sans ligne text-noir">Date :
               <span id="date" class="resultat"></span>
             </p>
           </div>
@@ -814,15 +804,15 @@
               <span id="bug" class="resultat"></span>
               <span id="note-reliability" class="resultat-note"></span>
             </p>
-            <p class="open-sans ligne">Securité :
+            <p class="open-sans ligne text-noir">Securité :
               <span id="vulnerabilities" class="resultat"></span>
               <span id="note-security" class="resultat-note"></span>
             </p>
-            <p class="open-sans ligne">Hotspot :
+            <p class="open-sans ligne text-noir">Hotspot :
               <span id="hotspots-review" class="resultat"></span>
               <span id="note-hotspots-review" class="resultat-note"></span>
             </p>
-            <p class="open-sans ligne">Maintenabilité :
+            <p class="open-sans ligne text-noir">Maintenabilité :
               <span id="code-smell" class="resultat"></span>
               <span id="note-sqale" class="resultat-note"></span>
             </p>
