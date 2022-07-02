@@ -4,13 +4,13 @@ doctrine:
         default_connection: default
         connections:
             default:
-                url: '%env(resolve:DATABASE_URL)%'
+                url: '%env(resolve:DATABASE_DEFAULT_URL)%'
                 driver: pdo_sqlite
                 host: 127.0.0.1
                 charset: UTF8
                 server_version: '4'
             secondary:
-                url: '%env(resolve:DATABASE_CUSTOMER_URL)%'
+                url: '%env(resolve:DATABASE_SECONDARY_URL)%'
                 driver: pdo_sqlite
                 host: 127.0.0.1
                 charset: UTF8
