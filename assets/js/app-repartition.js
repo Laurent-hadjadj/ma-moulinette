@@ -46,7 +46,6 @@ const maven_key=t0.dataset.application;
 
   // On récupère les propriétés de l'élément.
   const t99 = document.getElementById('js-setup');
-
   // On renvoie la valeur du setup
   if (bypass==='by-pass') {
       return $('#js-setup').text();
@@ -63,6 +62,7 @@ const maven_key=t0.dataset.application;
       const message1=`Je n'ai pas trouvé de setup. Un nouveau setup a été créé : ${t99.dataset.setup}.`;
       $('#message').html(callboxInformation+message1+callboxFermer);
       return t99.dataset.setup;
+
     }
 
   /**
@@ -801,29 +801,29 @@ $('.bouton-repartition-traitement-donnees').on('click', ()=>{
     // On affiche le tableau
     $("#tableau-1").removeClass('hide');
     $("#mon-bo-tableau1").html(tab_Titre);
-    await analyse(maven_key, 'BUG', 'BLOCKER', 1, 'texte-rouge');
-    await analyse(maven_key, 'BUG', 'CRITICAL', 1, 'texte-rouge');
-    await analyse(maven_key, 'BUG', 'INFO', 1, 'texte-bleu');
-    await analyse(maven_key, 'BUG', 'MAJOR', 1, 'texte-orange');
-    await analyse(maven_key, 'BUG', 'MINOR', 1, 'texte-vert');
+    await analyse(maven_key, 'BUG', 'BLOCKER', 'texte-rouge');
+    await analyse(maven_key, 'BUG', 'CRITICAL', 'texte-rouge');
+    await analyse(maven_key, 'BUG', 'INFO', 'texte-bleu');
+    await analyse(maven_key, 'BUG', 'MAJOR','texte-orange');
+    await analyse(maven_key, 'BUG', 'MINOR', 'texte-vert');
 
     // VULNERABILITY
     $("#tableau-2").removeClass('hide');
     $("#mon-bo-tableau2").html(tab_Titre);
-    await analyse(maven_key, 'VULNERABILITY', 'BLOCKER', 1, 'texte-rouge');
-    await analyse(maven_key, 'VULNERABILITY', 'CRITICAL', 1, 'texte-rouge');
-    await analyse(maven_key, 'VULNERABILITY', 'INFO', 1, 'texte-bleu');
-    await analyse(maven_key, 'VULNERABILITY', 'MAJOR', 1, 'texte-orange');
-    await analyse(maven_key, 'VULNERABILITY', 'MINOR', 1, 'texte-vert');
+    await analyse(maven_key, 'VULNERABILITY', 'BLOCKER', 'texte-rouge');
+    await analyse(maven_key, 'VULNERABILITY', 'CRITICAL', 'texte-rouge');
+    await analyse(maven_key, 'VULNERABILITY', 'INFO', 'texte-bleu');
+    await analyse(maven_key, 'VULNERABILITY', 'MAJOR', 'texte-orange');
+    await analyse(maven_key, 'VULNERABILITY', 'MINOR', 'texte-vert');
 
     // CODE_SMELL
     $("#tableau-3").removeClass('hide');
     $("#mon-bo-tableau3").html(tab_Titre);
-    await analyse(maven_key, 'CODE_SMELL', 'BLOCKER', 1,'texte-rouge');
-    await analyse(maven_key, 'CODE_SMELL', 'CRITICAL', 1,'texte-rouge');
-    await analyse(maven_key, 'CODE_SMELL', 'INFO', 1,'texte-bleu');
-    await analyse(maven_key, 'CODE_SMELL', 'MAJOR', 1,'texte-orange');
-    await analyse(maven_key, 'CODE_SMELL', 'MINOR', 1, 'texte-vert');
+    await analyse(maven_key, 'CODE_SMELL', 'BLOCKER', 'texte-rouge');
+    await analyse(maven_key, 'CODE_SMELL', 'CRITICAL', 'texte-rouge');
+    await analyse(maven_key, 'CODE_SMELL', 'INFO', 'texte-bleu');
+    await analyse(maven_key, 'CODE_SMELL', 'MAJOR', 'texte-orange');
+    await analyse(maven_key, 'CODE_SMELL', 'MINOR', 'texte-vert');
   }
 
   // On lance la fonction assynchrone
