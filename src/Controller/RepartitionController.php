@@ -19,8 +19,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 // Accès aux tables SLQLite
-use Doctrine\ORM\EntityManagerInterface;
-
+use Doctrine\Persistence\ManagerRegistry;
+use App\Entity\Secondary\Repartition;
 
 class RepartitionController extends AbstractController
 {
@@ -32,7 +32,7 @@ class RepartitionController extends AbstractController
      * @return Response
      */
     #[Route('/projet/repartition', name: 'projet_repartition')]
-    public function projetRepartition(EntityManagerInterface $em, Request $request): Response
+    public function projetRepartition(ManagerRegistry $doctrine, Request $request): Response
     {
         // On récupère la clé du projet
         $mavenKey = $request->get('mavenKey');
@@ -40,26 +40,17 @@ class RepartitionController extends AbstractController
         $app=explode(":", $mavenKey);
 
         // On se connecte à la base pour connaitre la version du dernier setup pour le projet.
-        $sql = "SELECT setup
-                FROM temp_repartition
-                WHERE maven_key='${mavenKey}'
-                ORDER by setup DESC";
+        $reponse = $doctrine->getManager('secondary')
+                            ->getRepository(Repartition::class)
+                             ->findBy(['maven_key' => $mavenKey],['setup' => 'DESC'],1);
 
-        // On execute la requête
-        $select = $em->getConnection()
-                     ->prepare(trim(preg_replace("/\s+/u", " ", $sql)))
-                     ->executeQuery();
-
-       //On récupère le résultat
-       $reponse = $select->fetchAllAssociative();
-
-       if (empty($reponse)) {
-           $setup=["setup"=>"NaN"];
-           $statut="NaN";
-        } else {
-            $setup=$reponse[0];
-            $statut="actuel";
-        }
+        if (empty($reponse)) {
+            $setup="NaN";
+            $statut="NaN";
+            } else {
+                $setup=$reponse[0]->getSetup();
+                $statut="actuel";
+            }
 
         return $this->render('projet/anomalie.details.html.twig',
         [
