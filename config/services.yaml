@@ -9,6 +9,7 @@ imports:
 parameters:
     env(DATABASE_HOST): localhost
     sqlite.path: '%env(SQLITE_PATH)%'
+    sqlite.secondary.path: '%env(DATABASE_SECONDARY_URL)%'
     sonar.url: '%env(SONAR_URL)%'
     sonar.token: '%env(SONAR_TOKEN)%'
     sonar.user: '%env(SONAR_USER)%'
