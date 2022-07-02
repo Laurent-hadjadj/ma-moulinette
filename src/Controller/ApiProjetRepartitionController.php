@@ -23,10 +23,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 // Accès aux tables SLQLite
-use App\Entity\TempRepartition;
-
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\DBAL\Connection;
+use App\Entity\Secondary\Repartition;
+use Doctrine\Persistence\ManagerRegistry;
 use DateTime;
 
 // Logger
@@ -59,12 +57,11 @@ class ApiProjetRepartitionController extends AbstractController
     $frontend = 0;
     $backend = 0;
     $autre = 0;
-
     // nom du projet
     $app = explode(":", $mavenKey);
     foreach ($elements as $element) {
-      $file = str_replace($mavenKey . ":", "", $element);
-      $module = explode("/", $file["component"]);
+      $file = str_replace($mavenKey . ":", "", $element->getComponent());
+      $module = explode("/", $file);
 
       if ($module[0] == "du-presentation") {
         $frontend = $frontend + 1;
@@ -279,7 +276,7 @@ class ApiProjetRepartitionController extends AbstractController
    *
    */
   #[Route('/api/projet/repartition/collecte', name: 'projet_repartition_collecte', methods: ['PUT'])]
-  public function projetRepartitionCollecte(EntityManagerInterface $em, Request $request, LoggerInterface $logger): response
+  public function projetRepartitionCollecte(ManagerRegistry $doctrine, Request $request, LoggerInterface $logger): response
   {
     // On décode le body
     $data = json_decode($request->getContent());
@@ -305,7 +302,8 @@ class ApiProjetRepartitionController extends AbstractController
           $severity=$issue["severity"];
           $component=$issue["component"];
 
-          $issue = new TempRepartition();
+
+          $issue = new Repartition();
           $issue->setMavenKey($mavenKey);
           $issue->setName($name[1]);
           $issue->setComponent($component);
@@ -313,8 +311,10 @@ class ApiProjetRepartitionController extends AbstractController
           $issue->setSeverity($severity);
           $issue->setSetup($setup);
           $issue->setDateEnregistrement($date);
-          $em->persist($issue);
-          $em->flush();
+
+          $manager = $doctrine->getManager('secondary');
+          $manager->persist($issue);
+          $manager->flush();
         }
         $i++;
     }
@@ -332,12 +332,12 @@ class ApiProjetRepartitionController extends AbstractController
   /**
    * projetRepartitionClear
    *
-   * @param  mixed $em
+   * @param  mixed $dm
    * @param  mixed $request
    * @return Response
    */
   #[Route('/api/projet/repartition/clear', name: 'projet_repartition_clear', methods: ['GET'])]
-  public function projetRepartitionClear(EntityManagerInterface $em, Request $request): Response
+  public function projetRepartitionClear(Request $request): Response
   {
     $mavenKey = $request->get('mavenKey');
 
@@ -345,12 +345,10 @@ class ApiProjetRepartitionController extends AbstractController
     $response = new JsonResponse();
 
     // On surprime de la table historique le projet
-    $sql = "DELETE FROM temp_repartition WHERE maven_key='${mavenKey}'";
-
-    // On exécute la requête
-    $con = $em->getConnection()->prepare($sql);
+    $sql = "DELETE FROM repartition WHERE maven_key='${mavenKey}'";
+    $conn = \Doctrine\DBAL\DriverManager::getConnection(['url' => $this->getParameter('sqlite.secondary.path')]);
     try {
-      $con->executeQuery();
+      $conn->prepare($sql)->executeQuery();
     } catch (\Doctrine\DBAL\Exception $e) {
       return $response->setData(["code" => $e->getCode(), Response::HTTP_OK]);
     }
@@ -358,14 +356,14 @@ class ApiProjetRepartitionController extends AbstractController
   }
 
   /**
-   * projetRepartitionClear
+   * projetRepartitionAnalyse
    *
-   * @param  mixed $em
+   * @param  mixed $coctrine
    * @param  mixed $request
    * @return Response
    */
   #[Route('/api/projet/repartition/analyse', name: 'projet_repartition_analyse', methods: ['PUT'])]
-  public function projetRepartitionAnalyse(EntityManagerInterface $em, Request $request): Response
+  public function projetRepartitionAnalyse(ManagerRegistry $doctrine, Request $request): Response
   {
     // On décode le body
     $data = json_decode($request->getContent());
@@ -379,22 +377,16 @@ class ApiProjetRepartitionController extends AbstractController
     // On créé un nouvel objet Json
     $response = new JsonResponse();
 
-    // On récupère les bug
-    $sql="SELECT component
-          FROM temp_repartition
-          WHERE maven_key='${mavenKey}'
-          AND type='${type}'
-          AND severity='${severity}'
-          AND setup=${setup}";
-    // On exécute la requête
-    $con = $em->getConnection()->prepare($sql);
-    try {
-      $liste = $con->executeQuery()->fetchAllAssociative();
-    } catch (\Doctrine\DBAL\Exception $e) {
-      return $response->setData(["code" => $e->getCode(), Response::HTTP_OK]);
-    }
+    // On récupère la liste des bugs
+    $liste = $doctrine->getManager('secondary')
+                        ->getRepository(Repartition::class)
+                        ->findBy(
+                          ['maven_key' => $mavenKey,
+                           'type' => $type,
+                           'severity' => $severity,
+                           'setup' => $setup]);
     // on appelle le service d'analyse
-    $result=$this->batch_analyse($liste, $mavenKey );
+    $result=$this->batch_analyse($liste, $mavenKey);
     return $response->setData(["code" => "OK", "repartition"=>$result, Response::HTTP_OK]);
   }
 
