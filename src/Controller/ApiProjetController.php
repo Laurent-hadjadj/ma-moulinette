@@ -23,16 +23,16 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 // Accès aux tables SLQLite
-use App\Entity\InformationProjet;
-use App\Entity\NoSonar;
-use App\Entity\Mesures;
-use App\Entity\Anomalie;
-use App\Entity\AnomalieDetails;
-use App\Entity\Owasp;
-use App\Entity\Hotspots;
-use App\Entity\HotspotOwasp;
-use App\Entity\HotspotDetails;
-use App\Entity\Historique;
+use App\Entity\Main\InformationProjet;
+use App\Entity\Main\NoSonar;
+use App\Entity\Main\Mesures;
+use App\Entity\Main\Anomalie;
+use App\Entity\Main\AnomalieDetails;
+use App\Entity\Main\Owasp;
+use App\Entity\Main\Hotspots;
+use App\Entity\Main\HotspotOwasp;
+use App\Entity\Main\HotspotDetails;
+use App\Entity\Main\Historique;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\DBAL\Connection;
@@ -137,12 +137,16 @@ class ApiProjetController extends AbstractController
       $password = '';
     }
 
-    $response = $this->client->request('GET', $url,
-       [
+    $response = $this->client->request(
+      'GET',
+      $url,
+      [
         'auth_basic' => [$user, $password], 'timeout' => 45,
-        'headers' => ['Accept' => static::$strContentType,
-        'Content-Type' => static::$strContentType]
-       ]
+        'headers' => [
+          'Accept' => static::$strContentType,
+          'Content-Type' => static::$strContentType
+        ]
+      ]
     );
 
     if (200 !== $response->getStatusCode()) {
@@ -156,7 +160,7 @@ class ApiProjetController extends AbstractController
 
     // La variable n'est pas utilisé, elle permet de collecter les données et de rendre la main.
     $contentType = $response->getHeaders()['content-type'][0];
-    $logger->INFO('** ContentType *** '.isset($contentType));
+    $logger->INFO('** ContentType *** ' . isset($contentType));
 
     $responseJson = $response->getContent();
     return json_decode($responseJson, true, 512, JSON_THROW_ON_ERROR);
@@ -178,7 +182,7 @@ class ApiProjetController extends AbstractController
     $mavenKey = $request->get('mavenKey');
     $statut = $request->get('statut');
     $date = new DateTime();
-    $tempoDate=$date->format(static::$dateFormat);
+    $tempoDate = $date->format(static::$dateFormat);
 
     // On vérifie si le projet est déjà en favori
     $sql = "SELECT * FROM favori WHERE maven_key='${mavenKey}'";
@@ -269,13 +273,13 @@ class ApiProjetController extends AbstractController
   public function projetAnalyses(EntityManagerInterface $em, Request $request, LoggerInterface $logger): response
   {
     $url = $this->getParameter(static::$sonarUrl) .
-          "/api/project_analyses/search?project=" . $request->get('mavenKey');
+      "/api/project_analyses/search?project=" . $request->get('mavenKey');
 
     // On appel le client http
     $result = $this->httpClient($url, $logger);
     // On récupère le manager de BD
     $date = new DateTime();
-    $mavenKey=$request->get('mavenKey');
+    $mavenKey = $request->get('mavenKey');
 
     // On supprime les informations sur le projet
     $sql = "DELETE FROM information_projet WHERE maven_key='$mavenKey'";
@@ -324,8 +328,8 @@ class ApiProjetController extends AbstractController
   public function projetMesures(EntityManagerInterface $em, Request $request, LoggerInterface $logger): response
   {
     // On bind les variables
-    $tempoUrl=$this->getParameter(static::$sonarUrl);
-    $mavenKey=$request->get('mavenKey');
+    $tempoUrl = $this->getParameter(static::$sonarUrl);
+    $mavenKey = $request->get('mavenKey');
 
     // mesures globales
     $url1 = "${tempoUrl}/api/components/app?component=${mavenKey}";
@@ -407,14 +411,14 @@ class ApiProjetController extends AbstractController
   public function projetAnomalie(EntityManagerInterface $em, Request $request, LoggerInterface $logger): response
   {
     // On bind les variables
-    $tempoUrlLong=$this->getParameter(static::$sonarUrl).static::$apiIssuesSearch;
-    $mavenKey=$request->get('mavenKey');
+    $tempoUrlLong = $this->getParameter(static::$sonarUrl) . static::$apiIssuesSearch;
+    $mavenKey = $request->get('mavenKey');
 
     // On créé un objet date
     $date = new DateTime();
 
-    $statusesMin="OPEN,CONFIRMED,REOPENED,RESOLVED";
-    $statusesAll="OPEN,CONFIRMED,REOPENED,RESOLVED,TO_REVIEW,IN_REVIEW";
+    $statusesMin = "OPEN,CONFIRMED,REOPENED,RESOLVED";
+    $statusesAll = "OPEN,CONFIRMED,REOPENED,RESOLVED,TO_REVIEW,IN_REVIEW";
 
     $url1 = "${tempoUrlLong}${mavenKey}&facets=directories,types,severities&p=1&ps=1&statuses=${statusesMin}";
 
@@ -563,12 +567,12 @@ class ApiProjetController extends AbstractController
             }
             // Application : Legacy
             if ($module[0] == $app[1] . "-entite") {
-               $backend = $backend + $directory["count"];
+              $backend = $backend + $directory["count"];
             }
             // Application : Legacy
             if ($module[0] == $app[1] . "-serviceweb-client") {
               $backend = $backend + $directory["count"];
-           }
+            }
 
             /**
              * Application Batch et Autres
@@ -576,7 +580,7 @@ class ApiProjetController extends AbstractController
             if ($module[0] == $app[1] . "-batch") {
               $autre = $autre + $directory["count"];
             }
-             if ($module[0] == $app[1] . "-batchs") {
+            if ($module[0] == $app[1] . "-batchs") {
               $autre = $autre + $directory["count"];
             }
             if ($module[0] == $app[1] . "-batch-envoi-dem-aval") {
@@ -588,7 +592,6 @@ class ApiProjetController extends AbstractController
             if ($module[0] == $app[1] . "-rdd") {
               $autre = $autre + $directory["count"];
             }
-
           }
         }
       }
@@ -646,7 +649,7 @@ class ApiProjetController extends AbstractController
   {
     // On bind les variables
     $mavenKey = $request->get('mavenKey');
-    $tempoUrlLong=$this->getParameter(static::$sonarUrl).static::$apiIssuesSearch;
+    $tempoUrlLong = $this->getParameter(static::$sonarUrl) . static::$apiIssuesSearch;
 
     // on créé un objet JSON
     $response = new JsonResponse();
@@ -665,9 +668,9 @@ class ApiProjetController extends AbstractController
     $result2 = $this->httpClient($url2, $logger);
     $result3 = $this->httpClient($url3, $logger);
 
-    $total1=$result1["paging"]["total"];
-    $total2=$result2["paging"]["total"];
-    $total3=$result3["paging"]["total"];
+    $total1 = $result1["paging"]["total"];
+    $total2 = $result2["paging"]["total"];
+    $total3 = $result3["paging"]["total"];
 
     if ($total1 !== 0 || $total2 !== 0 || $total3 !== 0) {
       // On supprime  l'enregistrement correspondant à la clé
@@ -789,9 +792,9 @@ class ApiProjetController extends AbstractController
   {
 
     // On bind les variables
-    $tempoUrl=$this->getParameter(static::$sonarUrl);
-    $mavenKey=$request->get('mavenKey');
-    $type=$request->get('type');
+    $tempoUrl = $this->getParameter(static::$sonarUrl);
+    $mavenKey = $request->get('mavenKey');
+    $type = $request->get('type');
 
     $url = "${tempoUrl}/api/measures/search_history?component=${mavenKey}
             &metrics=${type}_rating&ps=1000";
@@ -800,14 +803,14 @@ class ApiProjetController extends AbstractController
     $result = $this->httpClient(trim(preg_replace("/\s+/u", " ", $url)), $logger);
 
     $date = new DateTime();
-    $tempoDate=$date->format(static::$dateFormat);
+    $tempoDate = $date->format(static::$dateFormat);
     $nombre = $result["paging"]["total"];
     $mesures = $result["measures"][0]["history"];
 
     // Enregistrement des nouvelles valeurs
     foreach ($mesures as $mesure) {
-      $tempoMesureDate=$mesure["date"];
-      $tempoMesureValue=$mesure["value"];
+      $tempoMesureDate = $mesure["date"];
+      $tempoMesureValue = $mesure["value"];
       $sql = "INSERT OR IGNORE INTO notes (maven_key, type, date, value, date_enregistrement)
               VALUES ('${mavenKey}', '${type}', '${tempoMesureDate}', '${tempoMesureValue}', '${tempoDate}')";
       $em->getConnection()->prepare($sql)->executeQuery();
@@ -843,7 +846,7 @@ class ApiProjetController extends AbstractController
   {
     // On bind les variables
     $mavenKey = $request->get('mavenKey');
-    $tempoUrlLong=$this->getParameter(static::$sonarUrl).static::$apiIssuesSearch;
+    $tempoUrlLong = $this->getParameter(static::$sonarUrl) . static::$apiIssuesSearch;
 
     // URL de l'appel
     $url = "${tempoUrlLong}${mavenKey}&facets=owaspTop10
@@ -894,206 +897,247 @@ class ApiProjetController extends AbstractController
       }
     }
 
-    $a1Blocker = 0; $a1Critical = 0; $a1Major = 0;  $a1Info = 0; $a1Minor = 0;
-    $a2Blocker = 0; $a2Critical = 0; $a2Major = 0; $a2Info = 0; $a2Minor = 0;
-    $a3Blocker = 0; $a3Critical = 0; $a3Major = 0; $a3Info = 0; $a3Minor = 0;
-    $a4Blocker = 0; $a4Critical = 0; $a4Major = 0; $a4Info = 0; $a4Minor = 0;
-    $a5Blocker = 0; $a5Critical = 0; $a5Major = 0; $a5Info = 0; $a5Minor = 0;
-    $a6Blocker = 0; $a6Critical = 0; $a6Major = 0; $a6Info = 0; $a6Minor = 0;
-    $a7Blocker = 0; $a7Critical = 0; $a7Major = 0; $a7Info = 0; $a7Minor = 0;
-    $a8Blocker = 0; $a8Critical = 0; $a8Major = 0; $a8Info = 0; $a8Minor = 0;
-    $a9Blocker = 0; $a9Critical = 0; $a9Major = 0; $a9Info = 0; $a9Minor = 0;
-    $a10Blocker = 0; $a10Critical = 0; $a10Major = 0; $a10Info = 0; $a10Minor = 0;
+    $a1Blocker = 0;
+    $a1Critical = 0;
+    $a1Major = 0;
+    $a1Info = 0;
+    $a1Minor = 0;
+    $a2Blocker = 0;
+    $a2Critical = 0;
+    $a2Major = 0;
+    $a2Info = 0;
+    $a2Minor = 0;
+    $a3Blocker = 0;
+    $a3Critical = 0;
+    $a3Major = 0;
+    $a3Info = 0;
+    $a3Minor = 0;
+    $a4Blocker = 0;
+    $a4Critical = 0;
+    $a4Major = 0;
+    $a4Info = 0;
+    $a4Minor = 0;
+    $a5Blocker = 0;
+    $a5Critical = 0;
+    $a5Major = 0;
+    $a5Info = 0;
+    $a5Minor = 0;
+    $a6Blocker = 0;
+    $a6Critical = 0;
+    $a6Major = 0;
+    $a6Info = 0;
+    $a6Minor = 0;
+    $a7Blocker = 0;
+    $a7Critical = 0;
+    $a7Major = 0;
+    $a7Info = 0;
+    $a7Minor = 0;
+    $a8Blocker = 0;
+    $a8Critical = 0;
+    $a8Major = 0;
+    $a8Info = 0;
+    $a8Minor = 0;
+    $a9Blocker = 0;
+    $a9Critical = 0;
+    $a9Major = 0;
+    $a9Info = 0;
+    $a9Minor = 0;
+    $a10Blocker = 0;
+    $a10Critical = 0;
+    $a10Major = 0;
+    $a10Info = 0;
+    $a10Minor = 0;
 
     if ($result["total"] != 0) {
       foreach ($result["issues"] as $issue) {
         $severity = $issue["severity"];
-        if ($issue["status"] == 'OPEN' ||
-            $issue["status"] == 'CONFIRMED' ||
-            $issue["status"] == 'REOPENED')
-            {
-              $tagMatch=preg_match("/owasp-a/is", var_export($issue["tags"], true));
-              if ($tagMatch != 0) {
-                foreach ($issue["tags"] as $tag) {
-                  switch ($tag) {
-                    case "owasp-a1":
-                      if ($severity == 'BLOCKER') {
-                        $a1Blocker++;
-                      }
-                      if ($severity == 'CRITICAL') {
-                        $a1Critical++;
-                      }
-                      if ($severity == 'MAJOR') {
-                        $a1Major++;
-                      }
-                      if ($severity == 'INFO') {
-                        $a1Info++;
-                      }
-                      if ($severity == 'MINOR') {
-                        $a1Minor++;
-                      }
-                      break;
-                    case "owasp-a2":
-                      if ($severity == 'BLOCKER') {
-                        $a2Blocker++;
-                      }
-                      if ($severity == 'CRITICAL') {
-                        $a2Critical++;
-                      }
-                      if ($severity == 'MAJOR') {
-                        $a2Major++;
-                      }
-                      if ($severity == 'INFO') {
-                        $a2Info++;
-                      }
-                      if ($severity == 'MINOR') {
-                        $a2Minor++;
-                      }
-                      break;
-                    case "owasp-a3":
-                      if ($severity == 'BLOCKER') {
-                        $a3Blocker++;
-                      }
-                      if ($severity == 'CRITICAL') {
-                        $a3Critical++;
-                      }
-                      if ($severity == 'MAJOR') {
-                        $a3Major++;
-                      }
-                      if ($severity == 'INFO') {
-                        $a3Info++;
-                      }
-                      if ($severity == 'MINOR') {
-                        $a3Minor++;
-                      }
-                      break;
-                    case "owasp-a4":
-                      if ($severity == 'BLOCKER') {
-                        $a4Blocker++;
-                      }
-                      if ($severity == 'CRITICAL') {
-                        $a4Critical++;
-                      }
-                      if ($severity == 'MAJOR') {
-                        $a4Major++;
-                      }
-                      if ($severity == 'INFO') {
-                        $a4Info++;
-                      }
-                      if ($severity == 'MINOR') {
-                        $a4Minor++;
-                      }
-                      break;
-                    case "owasp-a5":
-                      if ($severity == 'BLOCKER') {
-                        $a5Blocker++;
-                      }
-                      if ($severity == 'CRITICAL') {
-                        $a5Critical++;
-                      }
-                      if ($severity == 'MAJOR') {
-                        $a5Major++;
-                      }
-                      if ($severity == 'INFO') {
-                        $a5Info++;
-                      }
-                      if ($severity == 'MINOR') {
-                        $a5Minor++;
-                      }
-                      break;
-                    case "owasp-a6":
-                      if ($severity == 'BLOCKER') {
-                        $a6Blocker++;
-                      }
-                      if ($severity == 'CRITICAL') {
-                        $a6Critical++;
-                      }
-                      if ($severity == 'MAJOR') {
-                        $a6Major++;
-                      }
-                      if ($severity == 'INFO') {
-                        $a6Info++;
-                      }
-                      if ($severity == 'MINOR') {
-                        $a6Minor++;
-                      }
-                      break;
-                    case "owasp-a7":
-                      if ($severity == 'BLOCKER') {
-                        $a7Blocker++;
-                      }
-                      if ($severity == 'CRITICAL') {
-                        $a7Critical++;
-                      }
-                      if ($severity == 'MAJOR') {
-                        $a7Major++;
-                      }
-                      if ($severity == 'INFO') {
-                        $a7Info++;
-                      }
-                      if ($severity == 'MINOR') {
-                        $a7Minor++;
-                      }
-                      break;
-                    case "owasp-a8":
-                      if ($severity == 'BLOCKER') {
-                        $a8Blocker++;
-                      }
-                      if ($severity == 'CRITICAL') {
-                        $a8Critical++;
-                      }
-                      if ($severity == 'MAJOR') {
-                        $a8Major++;
-                      }
-                      if ($severity == 'INFO') {
-                        $a8Info++;
-                      }
-                      if ($severity == 'MINOR') {
-                        $a8Minor++;
-                      }
-                      break;
-                    case "owasp-a9":
-                      if ($severity == 'BLOCKER') {
-                        $a9Blocker++;
-                      }
-                      if ($severity == 'CRITICAL') {
-                        $a9Critical++;
-                      }
-                      if ($severity == 'MAJOR') {
-                        $a9Major++;
-                      }
-                      if ($severity == 'INFO') {
-                        $a9Info++;
-                      }
-                      if ($severity == 'MINOR') {
-                        $a9Minor++;
-                      }
-                      break;
-                    case "owasp-a10":
-                      if ($severity == 'BLOCKER') {
-                        $a10Blocker++;
-                      }
-                      if ($severity == 'CRITICAL') {
-                        $a10Critical++;
-                      }
-                      if ($severity == 'MAJOR') {
-                        $a10Major++;
-                      }
-                      if ($severity == 'INFO') {
-                        $a10Info++;
-                      }
-                      if ($severity == 'MINOR') {
-                        $a10Minor++;
-                      }
-                      break;
-                    default:
-                      break;
+        if (
+          $issue["status"] == 'OPEN' ||
+          $issue["status"] == 'CONFIRMED' ||
+          $issue["status"] == 'REOPENED'
+        ) {
+          $tagMatch = preg_match("/owasp-a/is", var_export($issue["tags"], true));
+          if ($tagMatch != 0) {
+            foreach ($issue["tags"] as $tag) {
+              switch ($tag) {
+                case "owasp-a1":
+                  if ($severity == 'BLOCKER') {
+                    $a1Blocker++;
                   }
-                }
+                  if ($severity == 'CRITICAL') {
+                    $a1Critical++;
+                  }
+                  if ($severity == 'MAJOR') {
+                    $a1Major++;
+                  }
+                  if ($severity == 'INFO') {
+                    $a1Info++;
+                  }
+                  if ($severity == 'MINOR') {
+                    $a1Minor++;
+                  }
+                  break;
+                case "owasp-a2":
+                  if ($severity == 'BLOCKER') {
+                    $a2Blocker++;
+                  }
+                  if ($severity == 'CRITICAL') {
+                    $a2Critical++;
+                  }
+                  if ($severity == 'MAJOR') {
+                    $a2Major++;
+                  }
+                  if ($severity == 'INFO') {
+                    $a2Info++;
+                  }
+                  if ($severity == 'MINOR') {
+                    $a2Minor++;
+                  }
+                  break;
+                case "owasp-a3":
+                  if ($severity == 'BLOCKER') {
+                    $a3Blocker++;
+                  }
+                  if ($severity == 'CRITICAL') {
+                    $a3Critical++;
+                  }
+                  if ($severity == 'MAJOR') {
+                    $a3Major++;
+                  }
+                  if ($severity == 'INFO') {
+                    $a3Info++;
+                  }
+                  if ($severity == 'MINOR') {
+                    $a3Minor++;
+                  }
+                  break;
+                case "owasp-a4":
+                  if ($severity == 'BLOCKER') {
+                    $a4Blocker++;
+                  }
+                  if ($severity == 'CRITICAL') {
+                    $a4Critical++;
+                  }
+                  if ($severity == 'MAJOR') {
+                    $a4Major++;
+                  }
+                  if ($severity == 'INFO') {
+                    $a4Info++;
+                  }
+                  if ($severity == 'MINOR') {
+                    $a4Minor++;
+                  }
+                  break;
+                case "owasp-a5":
+                  if ($severity == 'BLOCKER') {
+                    $a5Blocker++;
+                  }
+                  if ($severity == 'CRITICAL') {
+                    $a5Critical++;
+                  }
+                  if ($severity == 'MAJOR') {
+                    $a5Major++;
+                  }
+                  if ($severity == 'INFO') {
+                    $a5Info++;
+                  }
+                  if ($severity == 'MINOR') {
+                    $a5Minor++;
+                  }
+                  break;
+                case "owasp-a6":
+                  if ($severity == 'BLOCKER') {
+                    $a6Blocker++;
+                  }
+                  if ($severity == 'CRITICAL') {
+                    $a6Critical++;
+                  }
+                  if ($severity == 'MAJOR') {
+                    $a6Major++;
+                  }
+                  if ($severity == 'INFO') {
+                    $a6Info++;
+                  }
+                  if ($severity == 'MINOR') {
+                    $a6Minor++;
+                  }
+                  break;
+                case "owasp-a7":
+                  if ($severity == 'BLOCKER') {
+                    $a7Blocker++;
+                  }
+                  if ($severity == 'CRITICAL') {
+                    $a7Critical++;
+                  }
+                  if ($severity == 'MAJOR') {
+                    $a7Major++;
+                  }
+                  if ($severity == 'INFO') {
+                    $a7Info++;
+                  }
+                  if ($severity == 'MINOR') {
+                    $a7Minor++;
+                  }
+                  break;
+                case "owasp-a8":
+                  if ($severity == 'BLOCKER') {
+                    $a8Blocker++;
+                  }
+                  if ($severity == 'CRITICAL') {
+                    $a8Critical++;
+                  }
+                  if ($severity == 'MAJOR') {
+                    $a8Major++;
+                  }
+                  if ($severity == 'INFO') {
+                    $a8Info++;
+                  }
+                  if ($severity == 'MINOR') {
+                    $a8Minor++;
+                  }
+                  break;
+                case "owasp-a9":
+                  if ($severity == 'BLOCKER') {
+                    $a9Blocker++;
+                  }
+                  if ($severity == 'CRITICAL') {
+                    $a9Critical++;
+                  }
+                  if ($severity == 'MAJOR') {
+                    $a9Major++;
+                  }
+                  if ($severity == 'INFO') {
+                    $a9Info++;
+                  }
+                  if ($severity == 'MINOR') {
+                    $a9Minor++;
+                  }
+                  break;
+                case "owasp-a10":
+                  if ($severity == 'BLOCKER') {
+                    $a10Blocker++;
+                  }
+                  if ($severity == 'CRITICAL') {
+                    $a10Critical++;
+                  }
+                  if ($severity == 'MAJOR') {
+                    $a10Major++;
+                  }
+                  if ($severity == 'INFO') {
+                    $a10Info++;
+                  }
+                  if ($severity == 'MINOR') {
+                    $a10Minor++;
+                  }
+                  break;
+                default:
+                  break;
               }
             }
           }
+        }
       }
+    }
 
     // On supprime les informations sur le projet
     $sql = "DELETE FROM owasp WHERE maven_key='${mavenKey}'";
@@ -1197,8 +1241,8 @@ class ApiProjetController extends AbstractController
   public function hotspotAjout(EntityManagerInterface $em, Request $request, LoggerInterface $logger): response
   {
     // On bind les variables
-    $tempoUrl=$this->getParameter(static::$sonarUrl);
-    $mavenKey=$request->get('mavenKey');
+    $tempoUrl = $this->getParameter(static::$sonarUrl);
+    $mavenKey = $request->get('mavenKey');
 
     // On construit l'URL
     $url = "${tempoUrl}/api/hotspots/search?projectKey=${mavenKey}&ps=500&p=1";
@@ -1211,8 +1255,8 @@ class ApiProjetController extends AbstractController
     $niveau = 0;
 
     // On supprime  les enregistrements correspondant à la clé
-     $sql = "DELETE FROM hotspots WHERE maven_key='${mavenKey}'";
-     $em->getConnection()->prepare($sql)->executeQuery();
+    $sql = "DELETE FROM hotspots WHERE maven_key='${mavenKey}'";
+    $em->getConnection()->prepare($sql)->executeQuery();
 
     if ($result["paging"]["total"] != 0) {
       foreach ($result["hotspots"] as $value) {
@@ -1240,7 +1284,8 @@ class ApiProjetController extends AbstractController
 
     $response = new JsonResponse();
     return $response->setData(
-      ["hotspots" => $result["paging"]["total"], Response::HTTP_OK]);
+      ["hotspots" => $result["paging"]["total"], Response::HTTP_OK]
+    );
   }
 
   /**
@@ -1259,9 +1304,9 @@ class ApiProjetController extends AbstractController
   public function hotspotOwaspAjout(EntityManagerInterface $em, Request $request, LoggerInterface $logger): response
   {
     // On bind les variables
-    $tempoUrl=$this->getParameter(static::$sonarUrl);
-    $mavenKey=$request->get('mavenKey');
-    $owasp=$request->get('owasp');
+    $tempoUrl = $this->getParameter(static::$sonarUrl);
+    $mavenKey = $request->get('mavenKey');
+    $owasp = $request->get('owasp');
 
     $response = new JsonResponse();
     if ($request->get('owasp') == 'a0') {
@@ -1319,8 +1364,10 @@ class ApiProjetController extends AbstractController
     }
 
     return $response->setData(
-      ["info" => "enregistrement",
-       "hotspots" => $result["paging"]["total"], Response::HTTP_OK]
+      [
+        "info" => "enregistrement",
+        "hotspots" => $result["paging"]["total"], Response::HTTP_OK
+      ]
     );
   }
 
@@ -1336,7 +1383,7 @@ class ApiProjetController extends AbstractController
   {
 
     // On bind les variables
-    $tempoUrl=$this->getParameter(static::$sonarUrl);
+    $tempoUrl = $this->getParameter(static::$sonarUrl);
     $url = "${tempoUrl}/api/hotspots/show?hotspot=${key}";
     $hotspot = $this->httpClient($url, $logger);
     $date = new DateTime();
@@ -1351,16 +1398,16 @@ class ApiProjetController extends AbstractController
     // On affecte le niveau en fonction de la sévérité
     switch ($severity) {
       case "HIGH":
-          $niveau=1;
-          break;
+        $niveau = 1;
+        break;
       case "MEDIUM":
-          $niveau=2;
-          break;
+        $niveau = 2;
+        break;
       case "LOW":
-          $niveau=3;
-          break;
+        $niveau = 3;
+        break;
       default:
-         echo "oops ! je suis perdu !!!";
+        echo "oops ! je suis perdu !!!";
     }
     $frontend = 0;
     $backend = 0;
@@ -1387,7 +1434,7 @@ class ApiProjetController extends AbstractController
       $backend++;
     }
 
-   /**
+    /**
      *  Application Frontend
      */
     if ($module[0] == $app[1] . "-presentation") {
@@ -1475,7 +1522,7 @@ class ApiProjetController extends AbstractController
      * car on pointe sur le serveur sonarqube directement
      * $description=$hotspot["rule"]["riskDescription"];
      */
-    $hotspotKey=$hotspot["key"];
+    $hotspotKey = $hotspot["key"];
     $dateEnregistrement = $date;
 
     return [
@@ -1505,7 +1552,7 @@ class ApiProjetController extends AbstractController
     $response = new JsonResponse();
 
     // On bind les variables
-    $mavenKey=$request->get('mavenKey');
+    $mavenKey = $request->get('mavenKey');
 
     // On récupère la liste des hotspots
     $sql = "SELECT * FROM hotspots
@@ -1530,7 +1577,7 @@ class ApiProjetController extends AbstractController
      * On envoie la clé du projet et la clé du hotspot
      */
     $ligne = 0;
-     foreach ($liste as $elt) {
+    foreach ($liste as $elt) {
 
       $ligne++;
       $key = $this->hotspotDetails($mavenKey, $elt["key"], $logger);
@@ -1570,8 +1617,8 @@ class ApiProjetController extends AbstractController
   public function projetNosonarAjout(EntityManagerInterface $em, Request $request, LoggerInterface $logger): response
   {
     // Bind les données
-    $tempoUrl=$this->getParameter(static::$sonarUrl);
-    $mavenKey=$request->get('mavenKey');
+    $tempoUrl = $this->getParameter(static::$sonarUrl);
+    $mavenKey = $request->get('mavenKey');
 
     // On construit l'URL et on appel le WS
     $url = "${tempoUrl}/api/issues/search?componentKeys=${mavenKey}
@@ -1622,7 +1669,7 @@ class ApiProjetController extends AbstractController
    * @return response
    */
   #[Route('/api/enregistrement', name: 'enregistrement', methods: ['PUT'])]
-   public function enregistrement(EntityManagerInterface $em, Request $request): response
+  public function enregistrement(EntityManagerInterface $em, Request $request): response
   {
     // On décode le body
     $data = json_decode($request->getContent());

@@ -22,9 +22,10 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 // Accès aux tables SLQLite
-use App\Entity\ListeProjet;
-use App\Entity\Profiles;
+use App\Entity\Main\ListeProjet;
+use App\Entity\Main\Profiles;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\DBAL\Connection;
 use DateTime;
 
@@ -115,7 +116,7 @@ class ApiHomeController extends AbstractController
    * @return response
    */
   #[Route('/api/liste_projet/ajout', name: 'liste_projet_ajout', methods: ['GET'])]
-  public function listeProjet(EntityManagerInterface $em, LoggerInterface $logger): response
+  public function listeProjet(EntityManagerInterface $em, ManagerRegistry $doctrine, LoggerInterface $logger): response
   {
     $url = $this->getParameter(static::$sonarUrl) . "/api/components/search?qualifiers=TRK&ps=500&p=1";
 
