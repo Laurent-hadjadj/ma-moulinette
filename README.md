@@ -105,7 +105,6 @@ Je peux aussi afficher la répartition détaillé des anomalies :\
 Et je peux afficher la liste des projets que j'ai déjà analysé et ceux qui sont favoris :\
 ![projet](assets/images/documentation/projet-007.jpg)
 
-
 ### Page OWASP
 
 Cette page permet l'affichage des vulnérabilités et des hotspots selon le référentiel OWASP 2017.
@@ -137,15 +136,16 @@ La documentation de chaque faille.
 La page de permet l'affichage des 10 dernières version de l'application sélectionnée. \
 ![suivi](assets/images/documentation/suivi-001.jpg)
 
+Le tableau de suivi :
 ![suivi](assets/images/documentation/suivi-002.jpg)
 
-Le tableau de suivi :
+La jolie courbe :
 ![suivi](assets/images/documentation/suivi-003.jpg)
 
-La jolie courbe :
+La répartition par module :
 ![suivi](assets/images/documentation/suivi-004.jpg)
 
-La répartition par module :
+La répartition par type :
 ![suivi](assets/images/documentation/suivi-005.jpg)
 
 La répartition par type et sévérité :
@@ -154,18 +154,62 @@ La répartition par type et sévérité :
 ### Page Suivi/modification
 
 Il est possible de modifier les paramètres d'affichage d'une version en activant ou non l'option favori et/ou l'option version de référence.
+
 ![suivi-modification](assets/images/documentation/suivi-modification-001.jpg)
 
 ![suivi-modification](assets/images/documentation/suivi-modification-002.jpg)
 
 `Note :` la version de référence est la version qui sera utilisé pour comparer la tendance.
 
+### Page de suivi/répartition-module
+
+Cette page affiche la liste des anomalies totales par type et sévérité. Il est possible de lancer une collecte pour chaque type (fiabilité, sécurité et maintenabilité) et d'en calculer la répartition par module.
+
+Tableau de répartition des sévérités par type :
+![repartition-module](assets/images/documentation/repartition-module-001.jpg)
+
+Le menu est ouvert.
+![repartition-module](assets/images/documentation/repartition-module-001a.jpg)
+
+La page permet d'accèder au processus de **Collecte** (1) et au processus d'**Analyse** (2).
+
+Pour chaque type (fiabilité, sécurité et maintenabilité), il est possible de collecter jusqu'à 50 000 signalement.
+
+![repartition-module](assets/images/documentation/repartition-module-002.jpg)
+
+Au lancement, on vérifie si, il existe un "set-up", une collecte déjà présente pour ce projet. Si un set-up existe on en créé un nouveau pour la nouvelle collecte.
+
+![repartition-module](assets/images/documentation/repartition-module-004.jpg)
+
+A la fin du traitement, l'indicateur de l'étape passe en orange. Attention,le traitement peu prendre plusieurs minutes.
+
+Le bouton supprimer permet de purger la base "tampon" des données du projets. Il faudra alors lancer un VACCUM sur la base pour la défragmenter.
+
+L'indicateur de progression indique l'état d'avancement de la collecte. La durée est exprimée en minutes et secondes.
+
+La collete progresse :)
+![repartition-module](assets/images/documentation/repartition-module-005.jpg)
+
+La collecte est terminée.
+![repartition-module](assets/images/documentation/repartition-module-006.jpg)
+
+La phase d'analyse permet de lancer et afficher le tableau de répartition par module des signalements sonarqube. Il faut pour cela choisir le bouton **Analyser**.
+
+Le bouton **Afficher** permet quant à lui d'afficher la dernière analyse si elle existe pour le projet.
+
+![repartition-module](assets/images/documentation/repartition-module-003.jpg)
+
+Le processus va permettre de répartir les signalements en pour chacun des type en fonction de leur nature (frontend, backend, autres).
+
+![repartition-module](assets/images/documentation/repartition-module-007.jpg)
+![repartition-module](assets/images/documentation/repartition-module-008.jpg)
+
 ## Technologie
 
 Ma moulinette s'appuie sur les technologies suivantes :
 
 * PHP 8.1.0, HTML5, CSS 3 & Javascript ES2015 ;
-* symfony 5.4.3, Zurb Foundation 6.7.4 ;
+* symfony 5.4.10, Zurb Foundation 6.7.4 ;
 * SQLite 4 ;
 * select2, chartjs.
 
@@ -175,6 +219,7 @@ Elle est développée selon les principes "Mobile First" et "API First".
 
 * Client web responsive (Zurb Foundation) ;
 * Serveur d'application local (symfony server) ;
+* Deux bases de données (data et temp) ;
 * Accès aux API sur un serveur local ou distant via Token ou Login/Mot de passe ;
 
 ![Ma-Moulinette](assets/images/documentation/architecture-technique.jpg)
@@ -218,10 +263,14 @@ En mode production, seul le dossier **vendor** est utilisé, les dépendances np
 
 ## Création de la base de données
 
-La base de données est disponible dans le dossier : **ma-moulinette\var\data.db**
-Elle contient l'ensemble des tables définies depuis les class du dossier **entity**.
+Les deux bases de données sont disponible dans le dossier `ma-moulinette\var\` :
 
-Les tables créées sont les suivantes :
+[x] **ma-moulinette\var\data.db**
+[x] **ma-moulinette\var\temp.db**
+
+Elles contienent l'ensemble des tables définies depuis les class du dossier **Entity/Main** et **Entity/Secondary**.
+
+Les tables pour la base **data** sont les suivantes :
 
 * Anomalie
 * AnomalieDetails
@@ -238,36 +287,14 @@ Les tables créées sont les suivantes :
 * Owasp
 * Profiles
 
+Les tables pour la base **temp** sont les suivantes :
+
+* Repartition
+
 La génération des entity, i.e. la création des **getter** et des \*_setter_ est réalisée avec la commande :
 
-`php bin/console make:entity --regenerate`
-
-**Attention** : La table `Historique` est particulière.
-En effet, cette table contient une clé primaire composée des attributs `maven_key`, `version` et `date_version`. Lors de la génération automatique, si l'annotation `#[ORM\Id]` est présente, seul le getter est créé. Une erreur se produit alors quand on veut enregistrer les données dans la table (i.e. il manque les setter).
-
-L'astuce est de générer ces trois attributs sans le marqueur de clé primaire puis de les ajouter pour avoir les setter et les getter sur ces trois attributs.
-
-Enfin, l'enregistrement ne fonctionne pas si l'attribut **date_version** est de type `Datetime`, il a été modifié en **varChar ()** mais est typé manuellement en Datetime dans la base. En d'autres termes, si l'on souhaite recréer la base de données depuis les class d'Entity, il ne faudra pas oublier de re-typer l’attribut **date_version** de la relation **Historique** en Datetime.
-
-Création de la table :
-
-```sql
-CREATE TABLE "historique" (
-"maven_key" VARCHAR (128) NOT NULL, "version" VARCHAR (32) NOT NULL, "date_version" VARCHAR (128) NOT NULL,
-"nom_projet" VARCHAR (128) NOT NULL,"version_release" INTEGER NOT NULL, "version_snapshot" INTEGER NOT NULL,
-"suppress_warning" INTEGER NOT NULL, "no_sonar" INTEGER NOT NULL, "nombre_ligne" INTEGER NOT NULL,
-"nombre_ligne_code" INTEGER NOT NULL, "couverture" DOUBLE PRECISION NOT NULL, "duplication" DOUBLE PRECISION NOT NULL,
-"tests_unitaires" INTEGER NOT NULL, "nombre_defaut" INTEGER NOT NULL, "nombre_bug" INTEGER NOT NULL,
-"nombre_vulnerability" INTEGER NOT NULL, "nombre_code_smell" INTEGER NOT NULL, "frontend" INTEGER NOT NULL,
-"backend" INTEGER NOT NULL, "batch" INTEGER NOT NULL, "dette" INTEGER NOT NULL,
-"nombre_anomalie_bloquant" INTEGER NOT NULL, "nombre_anomalie_critique" INTEGER NOT NULL,
-"nombre_anomalie_info" INTEGER NOT NULL, "nombre_anomalie_majeur" INTEGER NOT NULL,
-"nombre_anomalie_mineur" INTEGER NOT NULL, "note_reliability" VARCHAR (4) NOT NULL, "note_security" VARCHAR (4) NOT NULL,
-"note_sqale" VARCHAR (4) NOT NULL, "note_hotspot" VARCHAR (4) NOT NULL, "hotspot_high" VARCHAR (4) NOT NULL,
-"hotspot_medium" INTEGER NOT NULL, "hotspot_low" INTEGER NOT NULL, "hotspot_total" INTEGER NOT NULL,
-"favori" BOOLEAN NOT NULL, "initial" BOOLEAN NOT NULL, "date_enregistrement" DATETIME NOT NULL,
-PRIMARY KEY ("maven_key","version","date_version"));
-```
+`php bin/console make:entity --regenerate --overwrite App\Entity\Main\`
+`php bin/console make:entity --regenerate --overwrite App\Entity\Secondary\`
 
 Pour créer le fichier de création automatique des relations, il suffit de lancer la commande :
 
@@ -275,9 +302,25 @@ Pour créer le fichier de création automatique des relations, il suffit de lanc
 
 Pour créer la base de données, il suffit de lancer la commande :
 
-`php bin/console doctrine:migrations:migrate`
+Pour la base de données **data** :
 
-Il ne faudra pas oublier de changer le type de l'attribut `date_version` de la relation **Historique**.
+* Création du script.
+`php bin/console doctrine:migrations:diff --em default --namespace MigrationsDefault --no-interaction`
+
+* Création de la base.
+`php bin/console doctrine:migrations:migrate --em default --no-interaction`
+
+Pour la base de données **temp** :
+
+* Création du script.
+`php bin/console doctrine:migrations:diff --em secondary --namespace MigrationsSecondary --no-interaction`
+
+* Création de la base.
+`php bin/console doctrine:migrations:migrate --em secondary --no-interaction`
+
+`Attention` : Il y a un bug en version 3.2.2 qui ne permet plus la gestion des fichiers de configuration. Cela se traduit par l'exécution de tous les fichiers de version pour la base **temp**.
+
+La base intégrée a été nettoyée.
 
 ## Migration 1.0.0 vers 1.1.0
 
@@ -378,6 +421,23 @@ UPDATE hotspot_details SET niveau=2 WHERE severity='MEDIUM';
 UPDATE hotspot_details SET niveau=3 WHERE severity='LOW';
 ```
 
+## Migration 1.2.4 vers 1.3.0
+
+Note : le fichier SQL `data-1.3.0.sql`, de mise à jour est disponible dans le dossier **/migrations/**.
+
+La version 1.3.0 introduit un changement majeur :
+
+* Ajout d'une table 'repartition' pour réaliser les calculs temporaires sur les indicateurs de sévérité par module.
+
+```sql
+CREATE TABLE repartition (
+  id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  maven_key VARCHAR(128) NOT NULL, name VARCHAR(128) NOT NULL,
+  component CLOB NOT NULL, type VARCHAR(16) NOT NULL,
+  severity VARCHAR(8) NOT NULL, setup UNSIGNED BIG INT NOT NULL,
+  date_enregistrement DATETIME NOT NULL);
+```
+
 ## Démarrage de l'environnement de développement
 
 * Modifiez les paramètres APP_ENV et APP_DEBUG :
@@ -392,6 +452,7 @@ Par défaut, les programmes de démarrage et d'arrêt sont dans le dossier bin/ 
 * Lancez le programme **symfony_start.bat** pour démarrer le serveur symfony ;
 * Lancez le programme **symfony_stop.bat** pour arrêter le serveur symfony ;
 * Lancez le programme **encore.bat** pour démarrer la compilation à la volée des ressources JS/CSS ;
+
 
 ## Mise en production
 
