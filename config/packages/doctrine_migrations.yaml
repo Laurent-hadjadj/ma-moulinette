@@ -1,8 +1,8 @@
 ---
 doctrine_migrations:
-#    em: default
     migrations_paths:
-        'DefaultMigrations': '%kernel.project_dir%/migrations/default'
-        'SecondaryMigrations': '%kernel.project_dir%/migrations/secondary'
-    enable_profiler: '%kernel.debug%'
+        'MigrationsDefault': '%kernel.project_dir%/migrations/default'
+        'MigrationsSecondary': '%kernel.project_dir%/migrations/secondary'
+    enable_profiler: true
+    check_database_platform: true
 ...
