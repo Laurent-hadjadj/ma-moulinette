@@ -209,13 +209,13 @@ General error: 1 near "4.1": syntax error"
 * [Suivi des indicateurs] : Correction des labels tronqués en haut du graphique ;
 * [Suivi des indicateurs] : Modification de la méthode d'injection des données pour le graphique ;
 
-## v1.3.0 - 01/07/2022 - RELEASE
+## v1.3.0 - 03/07/2022 - RELEASE
 
 * Correction de l'affichage du tableau de suivi des anomalies par type et sévérité ;
 * Correction : le bouton analyse Owasp est bloqué tant que l'utilisateur n'a pas choisi un projet ;
 * Correction : "Impossible to access a key ("setup") on a string variable ("NaN")." ;
 * Remplacement des valeurs null par -1 au lieu de 0 ;
-* Amélioration de l'affiachage du tableau de suivi par type d'anomalies (i.e. mise en couleur des type) ;
+* Amélioration de l'affichage du tableau de suivi par type d'anomalies (i.e. mise en couleur des type) ;
 * Prise en compte de la version de référence pour le tableau de suivi des anomalies par type et sévérité ;
 * Ajout du tableau de bord par répartition : frontend, backend, autre ;
 * Ajout de l'Indice de Confiance ;
