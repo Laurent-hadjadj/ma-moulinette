@@ -208,3 +208,19 @@ General error: 1 near "4.1": syntax error"
 * [Suivi des indicateurs] : Amélioration de l'affichage du graphique (mode responsive) ;
 * [Suivi des indicateurs] : Correction des labels tronqués en haut du graphique ;
 * [Suivi des indicateurs] : Modification de la méthode d'injection des données pour le graphique ;
+
+## v1.3.0 - 01/07/2022 - RELEASE
+
+* Correction de l'affichage du tableau de suivi des anomalies par type et sévérité ;
+* Correction : le bouton analyse Owasp est bloqué tant que l'utilisateur n'a pas choisi un projet ;
+* Correction : "Impossible to access a key ("setup") on a string variable ("NaN")." ;
+* Remplacement des valeurs null par -1 au lieu de 0 ;
+* Amélioration de l'affiachage du tableau de suivi par type d'anomalies (i.e. mise en couleur des type) ;
+* Prise en compte de la version de référence pour le tableau de suivi des anomalies par type et sévérité ;
+* Ajout du tableau de bord par répartition : frontend, backend, autre ;
+* Ajout de l'Indice de Confiance ;
+* Masquage des tableaux vides (Fiabilité, sécurité et maintenabilité) ;
+* Ajout de la notion de set-up pour la getion des versions collectées dans la table temp_repartition ;
+* Séparation des EntityProviders : **default** pour la base des données agrégées et **secondary** pour la base des données d'analyse ;
+* Reworking des requêtes pour la base temp. Suppression des requêtes avec EntityManager (SQL), ajout des requêtes en utilisant le ManagerRegistry (findBy,etc...) ;
+* Amélioration de l'affichage du tableau des sévérités par type de la page "Repartition". Utilisation d'un accordéon pour réduire la taille de la page.
