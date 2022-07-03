@@ -1,5 +1,0 @@
----
-em: secondary
-migrations_paths:
-    'SecondaryMigrations': 'migrations/secondary'
-...
