@@ -368,6 +368,56 @@
 /* LIGHT */
 .bleu { color: #3b89a3; }
 
+/* bouton actions */
+
+.capsule {
+  cursor: pointer;
+  width: 38px;
+  height: 34px;
+  background-color: #eee;
+  text-align: center;
+  line-height: 34px;
+  display: block;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid #00445b;
+}
+
+/* Validation */
+.V { color: #187e3d; }
+
+/* suPprimer */
+.P { color: #771404; }
+
+/* Collecte, Analyse, Owasp, Répartition-Module */
+.C,
+.A,
+.O,
+.RM { color: #3b89a3; }
+
+.V,
+.P,
+.C,
+.A,
+.O,
+.RM {
+  position: relative;
+  transition: 0.5s;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.V:hover,
+.P:hover,
+.C:hover,
+.A:hover,
+.O:hover,
+.RM:hover {
+  color: #fff;
+  background-color: #b33926;
+  transform: rotateY(360deg);
+}
+
 /**
   * Propriétés pour les class en fonction des medias type
   *
