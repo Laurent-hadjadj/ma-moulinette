@@ -456,7 +456,7 @@ const projetHotspotOwaspDetails=function(mavenKey) {
 
 /**
  * description
- * On récupére la liste des exculions de code
+ * On récupére la liste des exclusions de code
  * http://{url}/api/projet/nosonar/details
  *
  * @param {*} mavenKey
