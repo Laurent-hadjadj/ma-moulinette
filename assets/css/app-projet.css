@@ -366,20 +366,27 @@
 .vert { color: #187e3d; }
 
 /* LIGHT */
-.bleu { color: #3b89a3; }
+.bleu { color: #00445b; }
 
 /* bouton actions */
 
 .capsule {
+  padding-left: 0.1rem;
+}
+
+.capsule-bulle {
   cursor: pointer;
-  width: 38px;
+  width: 34px;
   height: 34px;
   background-color: #eee;
   text-align: center;
-  line-height: 34px;
+  line-height: 32px;
   display: block;
-  border-radius: 50%;
-  overflow: hidden;
+
+  /* border-radius: 50%; */
+
+  /* overflow: hidden; */
+
   border: 1px solid #00445b;
 }
 
@@ -391,14 +398,16 @@
 
 /* Collecte, Analyse, Owasp, Répartition-Module */
 .C,
-.A,
+.R,
+.I,
 .O,
 .RM { color: #3b89a3; }
 
 .V,
 .P,
 .C,
-.A,
+.R,
+.I,
 .O,
 .RM {
   position: relative;
@@ -410,7 +419,8 @@
 .V:hover,
 .P:hover,
 .C:hover,
-.A:hover,
+.R:hover,
+.I:hover,
 .O:hover,
 .RM:hover {
   color: #fff;
