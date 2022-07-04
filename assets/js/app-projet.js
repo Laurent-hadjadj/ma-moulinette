@@ -519,21 +519,140 @@ const afficheProjetFavori=function() {
       }
 
       str = `<tr id="name-${i}" class="open-sans">
-              <td>${element.name}</td>
+              <td id="key-${i}" data-mavenkey="${element.key}">${element.name}</td>
               <td class="text-center">${favori}</td>
-              <td class="text-center"><span class="capsule V">V</span></td>
-              <td class="text-center"><span class="capsule P">P</span></td>
-              <td class="text-center"><span class="capsule C">C</span></td>
-              <td class="text-center"><span class="capsule A">A</span></td>
-              <td class="text-center"><span class="capsule O">O</span></td>
-              <td class="text-center"><span class="capsule RM">RM</span></td>
+              <td class="text-center capsule">
+                <span id="V-${i}" class="capsule-bulle V js-liste-valider">
+                  <span id="tooltips-${i}" data-tooltip tabindex="1" title="Je choisi ce projet.">V</span>
+                <span>
+              </td>
+              <td class="text-center capsule">
+                <span id="P-${i}" class="capsule-bulle P js-liste-supprimer">
+                  <span id="tooltips-${i}" data-tooltip tabindex="2" title="Je supprime ce projet de la liste.">P</span>
+                </span>
+              </td>
+              <td class="text-center capsule">
+                <span id="C-${i}" class="capsule-bulle C js-liste-collecter">
+                  <span id="tooltips-${i}" data-tooltip tabindex="3" title="Je lance la collecte des données.">C</span>
+                </span>
+              </td>
+              <td class="text-center capsule">
+                <span id="R-${i}" class="capsule-bulle R js-liste-afficher-resultat">
+                  <span id="tooltips-${i}" data-tooltip tabindex="4" title="J'affiche les résultats.">R</span>
+                </span>
+              </td>
+              <td class="text-center capsule">
+                <span id="I-${i}" class="capsule-bulle I js-liste-afficher-indicateur">
+                  <span id="tooltips-${i}" data-tooltip tabindex="5" title="J'affiche le tableau de suivi.">I</span>
+                </span>
+              </td>
+              <td class="text-center capsule">
+                <span id="O-${i}" class="capsule-bulle O js-liste-owasp">
+                  <span id="tooltips-${i}" data-tooltip tabindex="6" title="J'affiche le rapport OWASP.">O</span>
+                </span>
+              </td>
+              <td class="text-center capsule">
+                <span id="RM-${i}" class="capsule-bulle RM js-liste-repartition-module">
+                  <span id="tooltips-${i}" data-tooltip tabindex="7" title="J'affiche le tableau de répartition par module.">RM</span>
+                </span>
+              </td>
               </tr>`;
       $('#tableau-liste-projet').append(str);
      });
-
+     $(document).foundation();
     // On met à jour le nombre des projets collectés
     $('#affiche-total-projet').html(`<span class="stat">${i}</span>`);
+
+    /* On gére le click sur le bouton V (Valider) */
+    $('.js-liste-valider').on('click', (e) => {
+      // On récupère la valeur de l'ID
+      const id = e.target.id;
+      const a = id.split('-');
+      const key='key-'+a[1];
+
+      // On récupère la clé maven du projet
+      const element = document.getElementById(key);
+      const mavenKey=element.dataset.mavenkey;
+
+      // On récupère le nom du projet
+      const b = mavenKey.split(':');
+      const nom = b[1];
+      const $newOption = $("<option selected='selected'></option>").val(mavenKey).text(nom)
+       $('select[name="projet"]').append($newOption).trigger('change');
+    });
+
+    /* On gére le click sur le bouton R (afficher les Résulats) */
+    $('.js-liste-afficher-resultat').on('click', (e) => {
+
+      // On récupère la valeur de l'ID
+      const id = e.target.id;
+      const a = id.split('-');
+      const key='key-'+a[1];
+
+      // On récupère la clé maven du projet
+      const element = document.getElementById(key);
+      const mavenKey=element.dataset.mavenkey;
+      $('#select-result').html(`<strong>${mavenKey}</strong>`);
+      // on active le bouton pour afficher les infos du projet
+      $('.js-affiche-resultat').removeClass('affiche-resultat-disabled');
+      $('.js-affiche-resultat').addClass('affiche-resultat-enabled');
+      // On clique sur le bouton afficher les résultats
+      $('.js-affiche-resultat').trigger('click');
+    });
+
+    /* On gére le click sur le bouton I (afficher le tableau de suivi) */
+    $('.js-liste-afficher-indicateur').on('click', (e) => {
+
+      // On récupère la valeur de l'ID
+      const id = e.target.id;
+      const a = id.split('-');
+      const key='key-'+a[1];
+
+      // On récupère la clé maven du projet
+      const element = document.getElementById(key);
+      const mavenKey=element.dataset.mavenkey;
+      console.log(mavenKey);
+      $('#select-result').html(`<strong>${mavenKey}</strong>`);
+      // On clique sur le bouton tableau de suivi
+      $('.js-tableau-suivi').trigger('click');
+    });
+
+    /* On gére le click sur le bouton O (afficher le rapport OWASP) */
+    $('.js-liste-owasp').on('click', (e) => {
+
+      // On récupère la valeur de l'ID
+      const id = e.target.id;
+      const a = id.split('-');
+      const key='key-'+a[1];
+
+      // On récupère la clé maven du projet
+      const element = document.getElementById(key);
+      const mavenKey=element.dataset.mavenkey;
+      console.log(mavenKey);
+      $('#select-result').html(`<strong>${mavenKey}</strong>`);
+      // On clique sur le bouton OWASP
+      $('.js-analyse-owasp').trigger('click');
+    });
+
+    /* On gére le click sur le bouton O (afficher le rapport OWASP) */
+    $('.js-liste-repartition-module').on('click', (e) => {
+
+      // On récupère la valeur de l'ID
+      const id = e.target.id;
+      const a = id.split('-');
+      const key='key-'+a[1];
+
+      // On récupère la clé maven du projet
+      const element = document.getElementById(key);
+      const mavenKey=element.dataset.mavenkey;
+      console.log(mavenKey);
+      $('#select-result').html(`<strong>${mavenKey}</strong>`);
+      // On clique sur le bouton OWASP
+      $('.js-repartition-module').trigger('click');
+    });
+
   });
+
 };
 
 /**
@@ -591,6 +710,7 @@ $('.js-analyse').on('click', function () {
   // on bloque le bouton afficher les resultats
   $('.js-affiche-resultat').removeClass('affiche-resultat-enabled');
   $('.js-affiche-resultat').addClass('affiche-resultat-disabled');
+
   // On récupère la clé du projet qui est affichée.
   const idProject = $('#select-result').text().trim();
   if (idProject === 'N.C') {
