@@ -521,6 +521,12 @@ const afficheProjetFavori=function() {
       str = `<tr id="name-${i}" class="open-sans">
               <td>${element.name}</td>
               <td class="text-center">${favori}</td>
+              <td class="text-center"><span class="capsule V">V</span></td>
+              <td class="text-center"><span class="capsule P">P</span></td>
+              <td class="text-center"><span class="capsule C">C</span></td>
+              <td class="text-center"><span class="capsule A">A</span></td>
+              <td class="text-center"><span class="capsule O">O</span></td>
+              <td class="text-center"><span class="capsule RM">RM</span></td>
               </tr>`;
       $('#tableau-liste-projet').append(str);
      });
