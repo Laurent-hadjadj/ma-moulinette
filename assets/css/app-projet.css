@@ -106,7 +106,8 @@
 .pdf-svg,
 .graphique-svg,
 .enregistrement-svg,
-.dashboard-svg {
+.dashboard-svg,
+.switch-svg {
   fill: #fff;
   cursor: pointer;
   margin-bottom: -0.4rem;
@@ -147,12 +148,11 @@
 .tableau-suivi-enabled:hover,
 .js-repartition-module:hover,
 .enregistrement:hover,
-.repartition-module,
 #fermer-liste-projet:hover,
 #fermer-autre-version:hover,
 #fermer-liste-hotspot:hover,
 #fermer-dette-technique:hover,
-#fermer-liste-severite { background-color: #006182; }
+#fermer-liste-severite:hover { background-color: #006182; }
 
 /* Gestion des boutons desactivés */
 .lance-analyse-disabled,
