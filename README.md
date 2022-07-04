@@ -75,20 +75,20 @@ Cette page permet le chargement du référentiel des applications pris en charge
 
 ![home](assets/images/documentation/home-001.jpg)
 
-La liste des applications favorites est affiché.
+La liste des applications favorites est affichée.
 ![home](assets/images/documentation/home-002.jpg)
 
 ### Page Projet
 
-La page projet permet une fois sélectionné un projet, de collecter les données et/ou d'afficher les résultats de la dernière collecte.
+La page projet permet, une fois sélectionné un projet, de collecter les données et/ou d'afficher les résultats de la dernière collecte.
 
 Je choisi mon projet à partie du référentiel local.
 ![projet](assets/images/documentation/projet-001.jpg)
 
-Je lance la collecte et j'affiche le résultat.
+Je lance la collecte et j'affiche les résultats.
 ![projet](assets/images/documentation/projet-002.jpg)
 
-Je peux ensuite enregistrer les indicateurs dans la base locale. Cette base sera utilisé pour le suivi des version du projet.
+Je peux ensuite enregistrer les indicateurs dans la base locale. Cette base sera utilisée pour le suivi des versions du projet.
 
 Je peux afficher la répartition des versions (Release et SNAPSHOT). \
 ![projet](assets/images/documentation/projet-008.jpg)
@@ -96,10 +96,10 @@ Je peux afficher la répartition des versions (Release et SNAPSHOT). \
 Je peux afficher la répartition de la la dette technique : \
 ![projet](assets/images/documentation/projet-004.jpg)
 
-Je peux afficher le détails des hotspots :\
+Je peux afficher le détail des hotspots :\
 ![projet](assets/images/documentation/projet-005.jpg)
 
-Je peux aussi afficher la répartition détaillé des anomalies :\
+Je peux aussi afficher la répartition détaillée des anomalies :\
 ![projet](assets/images/documentation/projet-006.jpg)
 
 Et je peux afficher la liste des projets que j'ai déjà analysé et ceux qui sont favoris :\
@@ -133,7 +133,7 @@ La documentation de chaque faille.
 
 ### Page Suivi
 
-La page de permet l'affichage des 10 dernières version de l'application sélectionnée. \
+La page de permet l'affichage des 10 dernières versions de l'application sélectionnée. \
 ![suivi](assets/images/documentation/suivi-001.jpg)
 
 Le tableau de suivi :
@@ -181,13 +181,13 @@ Au lancement, on vérifie si, il existe un "set-up", une collecte déjà présen
 
 ![repartition-module](assets/images/documentation/repartition-module-004.jpg)
 
-A la fin du traitement, l'indicateur de l'étape passe en orange. Attention,le traitement peu prendre plusieurs minutes.
+A la fin du traitement, l'indicateur de l'étape passe en orange. Attention, le traitement peut prendre plusieurs minutes.
 
 Le bouton supprimer permet de purger la base "tampon" des données du projets. Il faudra alors lancer un VACCUM sur la base pour la défragmenter.
 
 L'indicateur de progression indique l'état d'avancement de la collecte. La durée est exprimée en minutes et secondes.
 
-La collete progresse :)
+La collecte progresse :)
 ![repartition-module](assets/images/documentation/repartition-module-005.jpg)
 
 La collecte est terminée.
@@ -199,7 +199,7 @@ Le bouton **Afficher** permet quant à lui d'afficher la dernière analyse si el
 
 ![repartition-module](assets/images/documentation/repartition-module-003.jpg)
 
-Le processus va permettre de répartir les signalements en pour chacun des type en fonction de leur nature (frontend, backend, autres).
+Le processus va permettre de répartir les signalements en pour chacun des types en fonction de leur nature (frontend, backend, autres).
 
 ![repartition-module](assets/images/documentation/repartition-module-007.jpg)
 ![repartition-module](assets/images/documentation/repartition-module-008.jpg)
@@ -263,7 +263,7 @@ En mode production, seul le dossier **vendor** est utilisé, les dépendances np
 
 ## Création de la base de données
 
-Les deux bases de données sont disponible dans le dossier `ma-moulinette\var\` :
+Les deux bases de données sont disponibles dans le dossier `ma-moulinette\var\` :
 
 [x] **ma-moulinette\var\data.db**
 [x] **ma-moulinette\var\temp.db**
