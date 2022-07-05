@@ -156,6 +156,7 @@ $('.gomme-svg').on('click', function () {
 /**
  * description
  * Active le spinner.
+ * before: function () { setTimeout(() => startSpinner(), 1000);
  */
 const startSpinner=function() {
   if ($('#loader').hasClass('loader-disabled')) {
@@ -167,6 +168,7 @@ const startSpinner=function() {
 /**
  * description
  * Désactive le spinner.
+ * complete: function () { setTimeout(() => stopSpinner(), 1000);
  */
 const stopSpinner=function() {
   if ($('#loader').hasClass('loader-enabled')) {
@@ -245,11 +247,15 @@ const projetAnalyse=function(mavenKey) {
   const data = { mavenKey };
   const options = {
     url: 'http://localhost:8000/api/projet/analyses', type: 'GET',
-    dataType: 'json', data, contentType };
+    dataType: 'json', data, contentType,
+  };
 
-  return $.ajax(options).then(t => {
+  return new Promise((resolve) => {
+    $.ajax(options).then(t => {
       log(` - INFO : (1) Nombre de version disponible : ${t.nombreVersion}`);
+      resolve();
     });
+  });
 };
 
 /**
@@ -264,17 +270,13 @@ const projetAnalyse=function(mavenKey) {
   const options = {
     url: 'http://localhost:8000/api/projet/mesures', type: 'GET',
     dataType: 'json', data, contentType };
-  return $.ajax(options).then(
-    () => { log(' - INFO : (2) Ajout des mesures.'); });
-};
-
-/*
- * description
-* Fonction à deux balles pour ajouter une tempotisation entre les appels
-* de traitement des anomalies quand le nombre atteint 10000 !!!
-*/
-const notifyUser=function(info) {
-  log(info);
+  return new Promise((resolve) => {
+    $.ajax(options).then(
+      () => {
+        log(' - INFO : (2) Ajout des mesures.');
+        resolve();
+    });
+  });
 };
 
 /**
@@ -292,14 +294,12 @@ const projetAnomalie=function(mavenKey) {
     url: 'http://localhost:8000/api/projet/anomalie', type: 'GET',
     dataType: 'json', data, contentType };
 
-  return $.ajax(options).then(t => {
-      /* On temporise pour éviter que les appels asynchronnes se lance tous en même temps.
-       * Temporisation : 8 secondes.
-      */
-      setTimeout(() => {
-        notifyUser(` - INFO : (8) ${t.info}`);
-        }, 8000);
+  return new Promise((resolve) => {
+    $.ajax(options).then(t => {
+        log(` - INFO : (6) ${t.info}`);
+        resolve();
     });
+  });
 };
 
 /**
@@ -316,16 +316,17 @@ const projetAnomalieDetails=function(mavenKey) {
     url: 'http://localhost:8000/api/projet/anomalie/details', type: 'GET',
     dataType: 'json', data, contentType };
 
-  return $.ajax(options).then(
-    t => {
-      if (t.code==='OK'){
-        setTimeout(() => {
-           notifyUser(' - INFO : (9) Le frequence des sévérités par type a été collectée.');
-          }, 4000);
-      } else {
-          log(` - ERROR : (9) Je n'ai pas réussi à collecter les données (${t.code}).`);
-      }
-    });
+  return new Promise((resolve) => {
+    $.ajax(options).then(
+      t => {
+        if (t.code==='OK'){
+           log(' - INFO : (7) Le frequence des sévérités par type a été collectée.');
+        } else {
+            log(` - ERROR : (7) Je n'ai pas réussi à collecter les données (${t.code}).`);
+        }
+      resolve();
+      });
+  });
 };
 
 /**
@@ -345,10 +346,13 @@ const projetRating=function(mavenKey, type) {
     url: 'http://localhost:8000/api/projet/historique/note', type: 'GET',
     dataType: 'json', data, contentType };
 
-  return $.ajax(options).then(t => {
-      log(` - INFO : (3) Reprise des notes pour le type : ${t.type}`);
-      log(`              : ${t.nombre} résultats.`);
-    });
+  return new Promise((resolve) => {
+    $.ajax(options).then(t => {
+        log(` - INFO : (3) Reprise des notes pour le type : ${t.type}`);
+        log(`              : ${t.nombre} résultats.`);
+        resolve();
+      });
+  });
 };
 
 /**
@@ -367,12 +371,15 @@ const projetOwasp=function(mavenKey) {
     url: 'http://localhost:8000/api/projet/issues/owasp', type: 'GET',
     dataType: 'json', data, contentType };
 
-  return $.ajax(options).then(t=> {
-    if (t.owasp===0) {
-      log(' - INFO : (4) Bravo aucune faille OWASP détectée.');
-    } else {
-      log(` - WARN : (4) J'ai trouvé ${t.owasp} faille(s).`);
-    }
+  return new Promise((resolve) => {
+    $.ajax(options).then(t=> {
+      if (t.owasp===0) {
+        log(' - INFO : (4) Bravo aucune faille OWASP détectée.');
+      } else {
+        log(` - WARN : (4) J'ai trouvé ${t.owasp} faille(s).`);
+      }
+      resolve();
+    });
   });
 };
 
@@ -392,12 +399,15 @@ const projetHotspot=function(mavenKey) {
     url: 'http://localhost:8000/api/projet/hotspot', type: 'GET',
     dataType: 'json', data, contentType };
 
-  return $.ajax(options).then(t=> {
-    if (t.hotspots === 0) {
-      log(' - INFO : (5) Bravo aucune faille potentielle détectée.');
-    } else {
-      log(` - WARN : (5) J'ai trouvé ${t.hotspots} faille(s) potentielle(s).`);
-    }
+  return new Promise((resolve) => {
+    $.ajax(options).then(t=> {
+      if (t.hotspots === 0) {
+        log(' - INFO : (5) Bravo aucune faille potentielle détectée.');
+      } else {
+        log(` - WARN : (5) J'ai trouvé ${t.hotspots} faille(s) potentielle(s).`);
+      }
+    resolve();
+    });
   });
 };
 
@@ -417,17 +427,21 @@ const projetHotspotOwasp=function(mavenKey, owasp) {
     url: 'http://localhost:8000/api/projet/hotspot/owasp', type: 'GET',
     dataType: 'json', data, contentType };
 
-  return $.ajax(options).then(t=> {
-    if (t.info==='effacement') {
-      log(' - INFO : (10) Les enregistrements ont été supprimé de la table hostspot_owasp.');
-    }
-    if (t.hotspots === 0 && t.info==='enregistrement') {
-      log(` - INFO : (11) Bravo aucune faille OWASP ${owasp} potentielle détectée.`);
-    }
-    if (t.hotspots !== 0 && t.info==='enregistrement') {
-      log(` - WARN : (10) J'ai trouvé ${t.hotspots} faille(s) OWASP ${owasp} potentielle(s).`);
-    }
+  return new Promise((resolve) => {
+    $.ajax(options).then(t=> {
+        if (t.info==='effacement') {
+          log(' - INFO : (8) Les enregistrements ont été supprimé de la table hostspot_owasp.');
+        }
+        if (t.hotspots === 0 && t.info==='enregistrement') {
+          log(` - INFO : (9) Bravo aucune faille OWASP ${owasp} potentielle détectée.`);
+        }
+        if (t.hotspots !== 0 && t.info==='enregistrement') {
+          log(` - WARN : (9) J'ai trouvé ${t.hotspots} faille(s) OWASP ${owasp} potentielle(s).`);
+        }
+      resolve();
+    });
   });
+
 };
 
 /**
@@ -444,13 +458,17 @@ const projetHotspotOwaspDetails=function(mavenKey) {
     url: 'http://localhost:8000/api/projet/hotspot/details', type: 'GET',
     dataType: 'json', data, contentType };
 
-  return $.ajax(options).then(t=> {
-    if (t.code === 406) {
-      log(' - INFO : (12) Aucun détails n\'est disponible pour les hotspots.');
-      return;
-    }
-    // On a trouvé des hotspots OWASP
-    log(` - INFO : (12) On a trouvé ${t.ligne} descriptions.`);
+  return new Promise((resolve) => {
+    $.ajax(options).then(t=> {
+      if (t.code === 406) {
+        log(' - INFO : (10) Aucun détails n\'est disponible pour les hotspots.');
+      }
+      else {
+        // On a trouvé des hotspots OWASP
+        log(` - INFO : (10) On a trouvé ${t.ligne} descriptions.`);
+      }
+      resolve();
+    });
   });
 };
 
@@ -467,13 +485,16 @@ const projetNosonarDetails=function(mavenKey){
     url: 'http://localhost:8000/api/projet/nosonar/details', type: 'GET',
     dataType: 'json', data, contentType };
 
-  $.ajax(options).then(t=> {
-    if (t.hotspots !== 0) {
-      log(` - WARM : (13) J'ai trouvé ${t.nosonar} exclusion(s) NoSonar.`);
-    } else {
-      log(` - INFO : (13) Bravo !!! ${t.nosonar} exclusion NoSonar trouvée.`);
-    }
+  return new Promise((resolve) => {
+    $.ajax(options).then(t=> {
+      if (t.hotspots !== 0) {
+        log(` - WARM : (11) J'ai trouvé ${t.nosonar} exclusion(s) NoSonar.`);
+      } else {
+        log(` - INFO : (11) Bravo !!! ${t.nosonar} exclusion NoSonar trouvée.`);
+      }
+      resolve();
     });
+  });
 };
 
 /**
@@ -484,13 +505,16 @@ const projetNosonarDetails=function(mavenKey){
 const afficheProjetFavori=function() {
   const options = {
     url: 'http://localhost:8000/api/projet/favori', type: 'GET',
-    dataType: 'json', contentType };
-  $.ajax(options).then(t=> {
-    let str, favori, i, liste=[], checkFavori;
-    if (t.code !== 200) {
-      log(' - ERROR : La liste des projets n\'a pas été trouvée.');
-      return;
-    }
+    dataType: 'json', contentType
+  };
+
+  return new Promise((resolve) => {
+    $.ajax(options).then(t=> {
+      let str, favori, i, liste=[], checkFavori;
+      if (t.code !== 200) {
+        log(' - ERROR : La liste des projets n\'a pas été trouvée.');
+        return;
+      }
 
     /* on efface les données.*/
     $('#tableau-liste-projet').html('');
@@ -650,9 +674,9 @@ const afficheProjetFavori=function() {
       // On clique sur le bouton Répartition par module
       $('.js-repartition-module').trigger('click');
     });
-
+    resolve();
   });
-
+  });
 };
 
 /**
@@ -700,13 +724,10 @@ selectProjet();
 /**
  * description
  * Lance la collecte des données du projet sélectionné.
+ * rework de la méthode : utilisation des promises
  */
 $('.js-analyse').on('click', function () {
-  setTimeout(()=> {
-    startSpinner();
-  }, 1000);
-
-    log(' - INFO : On lance la collecte...');
+  log(' - INFO : On lance la collecte...');
   // on bloque le bouton afficher les resultats
   $('.js-affiche-resultat').removeClass('affiche-resultat-enabled');
   $('.js-affiche-resultat').addClass('affiche-resultat-disabled');
@@ -718,47 +739,48 @@ $('.js-analyse').on('click', function () {
     return;
   }
 
-  // Analyse du projet
-  projetAnalyse(idProject);
-  projetMesure(idProject);
+  async function fnAsync() {
+    // Analyse du projet
+    await projetAnalyse(idProject);               //(1)
+    await projetMesure(idProject);                //(2)
 
- // Analyse Sécurité et Owasp
-  projetRating(idProject, 'reliability');
-  projetRating(idProject, 'security');
-  projetRating(idProject, 'sqale');
+    // Analyse Sécurité et Owasp
+    await projetRating(idProject, 'reliability'); //(3)
+    await projetRating(idProject, 'security');    //(3)
+    await projetRating(idProject, 'sqale');       //(3)
 
-  projetOwasp(idProject);
-  projetHotspot(idProject);
+    await projetOwasp(idProject);                 //(4)
+    await projetHotspot(idProject);               //(5)
 
-  // On récupère les infos sur les anomalies
-  projetAnomalie(idProject);
+    // On récupère les infos sur les anomalies
+    await projetAnomalie(idProject);              //(6)
 
-  // On récupère le détails surr les anomalies
-  projetAnomalieDetails(idProject);
+    // On récupère le détails surr les anomalies
+    await projetAnomalieDetails(idProject);       //(7)
 
-  // On efface les traces :)
-  projetHotspotOwasp(idProject, 'a0');
-  // On enregistre les résultats
-  projetHotspotOwasp(idProject, 'a1');
-  projetHotspotOwasp(idProject, 'a2');
-  projetHotspotOwasp(idProject, 'a3');
-  projetHotspotOwasp(idProject, 'a4');
-  projetHotspotOwasp(idProject, 'a5');
-  projetHotspotOwasp(idProject, 'a6');
-  projetHotspotOwasp(idProject, 'a7');
-  projetHotspotOwasp(idProject, 'a8');
-  projetHotspotOwasp(idProject, 'a9');
-  projetHotspotOwasp(idProject, 'a10');
+    // On efface les traces :)
+    await projetHotspotOwasp(idProject, 'a0');    //(8)
+    // On enregistre les résultats
+    await projetHotspotOwasp(idProject, 'a1');    //(9)
+    await projetHotspotOwasp(idProject, 'a2');    //(9)
+    await projetHotspotOwasp(idProject, 'a3');    //(9)
+    await projetHotspotOwasp(idProject, 'a4');    //(9)
+    await projetHotspotOwasp(idProject, 'a5');    //(9)
+    await projetHotspotOwasp(idProject, 'a6');    //(9)
+    await projetHotspotOwasp(idProject, 'a7');    //(9)
+    await projetHotspotOwasp(idProject, 'a8');    //(9)
+    await projetHotspotOwasp(idProject, 'a9');    //(9)
+    await projetHotspotOwasp(idProject, 'a10');   //(9)
 
-  // On enregistre le détails de chaque hotspot owasp
-  projetHotspotOwaspDetails(idProject);
+    // On enregistre le détails de chaque hotspot owasp
+    await projetHotspotOwaspDetails(idProject);   //(10)
 
-  // Analyse des anomalies
-  projetNosonarDetails(idProject);
+    // Analyse des anomalies
+    await projetNosonarDetails(idProject);        //(11)
+  }
 
-  setTimeout(()=> {
-    stopSpinner();
-  }, 8000);
+  // On appelle la fonction de récupèration des sévérités pour les VULNERABILITY
+  fnAsync();
 
   // on active le bouton pour afficher les infos du projet
   $('.js-affiche-resultat').removeClass('affiche-resultat-disabled');
