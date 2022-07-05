@@ -634,7 +634,7 @@ const afficheProjetFavori=function() {
       $('.js-analyse-owasp').trigger('click');
     });
 
-    /* On gére le click sur le bouton O (afficher le rapport OWASP) */
+    /* On gére le click sur le bouton RM (afficher le rapport de Répartition par Module) */
     $('.js-liste-repartition-module').on('click', (e) => {
 
       // On récupère la valeur de l'ID
@@ -647,7 +647,7 @@ const afficheProjetFavori=function() {
       const mavenKey=element.dataset.mavenkey;
       console.log(mavenKey);
       $('#select-result').html(`<strong>${mavenKey}</strong>`);
-      // On clique sur le bouton OWASP
+      // On clique sur le bouton Répartition par module
       $('.js-repartition-module').trigger('click');
     });
 
