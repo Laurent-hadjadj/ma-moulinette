@@ -67,7 +67,7 @@ Ci-dessous la liste des filtres pour les autres modules backend :
 
 ## Ma-Moulinette en images
 
-Version 1.2.4
+`Version 1.4.0-Release`
 
 ### Page d'accueil
 
@@ -90,7 +90,7 @@ Je lance la collecte et j'affiche les résultats.
 
 Je peux ensuite enregistrer les indicateurs dans la base locale. Cette base sera utilisée pour le suivi des versions du projet.
 
-Note : Dans la version 1.3.0, un nouveau bouton est disponible.
+Note : Dans la version `1.3.0`, un nouveau bouton est disponible.
 En effet, le bouton "Répartition par module" permet l'accès à la page de collecte et l'analyse des signalements par type de sévérité. Elle permet l'affichage des signalements par module applicatif.
 
 ![projet](assets/images/documentation/projet-009.jpg)
@@ -148,7 +148,7 @@ Exemple de remonté de hotspots :
 La documentation de chaque faille.
 ![projet](assets/images/documentation/owasp-005.jpg)
 
-### Page Suivi
+### Page Suivi des indicateurs
 
 La page permet l'affichage des 10 dernières versions de l'application sélectionnée. \
 ![suivi](assets/images/documentation/suivi-001.jpg)
@@ -225,42 +225,74 @@ Le processus va permettre de répartir les signalements en pour chacun des types
 
 Ma moulinette s'appuie sur les technologies suivantes :
 
+### En production
+
 * PHP 8.1.0, HTML5, CSS 3 & Javascript ES2015 ;
-* symfony 5.4.10, Zurb Foundation 6.7.4 ;
+* symfony-cli 5.4.10, Zurb Foundation 6.7.4 ;
 * SQLite 4 ;
 * select2, chartjs.
+
+### En développement
+
+* nodejs 12.22.12
+* composer
+* sqlite3
 
 ## Architecture
 
 Elle est développée selon les principes "Mobile First" et "API First".
-
 * Client web responsive (Zurb Foundation) ;
 * Serveur d'application local (symfony server) ;
-* Deux bases de données (data et temp) ;
+* Deux bases de données (data.db et temp.db) ;
 * Accès aux API sur un serveur local ou distant via Token ou Login/Mot de passe ;
 
 ![Ma-Moulinette](assets/images/documentation/architecture-technique.jpg)
 
 ## Configuration
 
-Le fichier **.env-prod** est un template de configuration. Il est nécessaire de le renommer en **.env** et de le paramétrer en fonction de vos besoins ;
+### Les dossiers
+
+Il existe deux environnements : développement et production
+
+La version de production contient l'application symfony, deux bases vides, la version compilée des sources JS et CSS (dans le dossier /public/build). Le repository git n'est pas présent. Enfin, Le dossier **node_modules** n'étant pas nécessaire, il a été supprimé (car il est utilisé uniquement en développement).
+
+Le dossier racine du projet est `ma-moulinette`. La version de production et la version de développement sont dans deux dossiers différents.
+
+* [prod] : c:\\sonar-dash.prod
+* [dev] : c:\\sonar-dash.dev
+
+Ce point et important, pour le paramétrage des accès et le lancemment de symfony-cli.
+
+### Les environnements
+
+Le fichier **.env-prod** est un template de configuration.
+
+Il peut être utilisé pour l'environnement de dev ou de prod. Il suffit pour cela de le renommer en **.env** et de le paramétrer en fonction de vos besoins ;
 
 Les propriétés suivantes sont disponibles :
-
+Pour l'environement de production.
 * APP_ENV = 'prod'
 * APP_DEBUG = '0'
 
+Pour l'environement de développement
+* APP_ENV = 'dev'
+* APP_DEBUG = '1'
+
+La configuration nécessaire pour se connecter à sonarqube. Il est recommandé d'utiliser un token. Attention, le token n'est pas entre simple ou double cote.
 * SONAR_URL = <https://monsonar.a-moi-tout-seul.it>
 * SONAR_TOKEN = 'mon_token'
 * SONAR_USER = 'mon_login'
 * SONAR_PASSWORD = 'mon_password'
+
+Le nom du profil utilisé pour tous les profils qualités. 
 * SONAR_PROFILES = 'mon profil sonar'
 * SONAR_ORGANIZATION = 'ma petite Entreprise'
 
+Le nombre d'application suivi en favori.
 * NOMBRE_FAVORI = 10
 
 `APP_ENV` : définit le type d'environnement **dev** ou **prod** ; \
-`APP_DEBUG` : active ou désactive, le debug ; \
+`APP_DEBUG` : active ou désactive, le debug (1, 0) ; \
 `SONAR_URL` : Correspond l'URL du serveur sonarqube ; \
 `SONAR_TOKEN` : Correspond au token d'accès généré sur la plateforme sonarqube. Il suffit de faire un copier et coller sans ajouter de guillemets ;\
 `SONAR_USER` : Correspond au login de l’utilisateur ; \
@@ -276,7 +308,11 @@ En mode développement, il est nécessaire d'installer les dépendances PHP et N
 * `composer install`
 * `npm install`
 
+Il n'est pas nécessaire de compiler les ressources JS et CSS. Il faut cependant ne pas oublier de lancer `encore` avec la commande : `npm run watch`
+
 En mode production, seul le dossier **vendor** est utilisé, les dépendances npm ne sont pas nécessaires.
+
+Par contre, il faut compiler la version avec la commande : `npm run build`
 
 ## Création de la base de données
 
