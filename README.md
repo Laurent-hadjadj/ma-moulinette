@@ -90,10 +90,15 @@ Je lance la collecte et j'affiche les résultats.
 
 Je peux ensuite enregistrer les indicateurs dans la base locale. Cette base sera utilisée pour le suivi des versions du projet.
 
-Je peux afficher la répartition des versions (Release et SNAPSHOT). \
+Note : Dans la version 1.3.0, un nouveau bouton est disponible.
+En effet, le bouton "Répartition par module" permet l'accès à la page de collecte et l'analyse des signalements par type de sévérité. Elle permet l'affichage des signalements par module applicatif.
+
+![projet](assets/images/documentation/projet-009.jpg)
+
+Je peux afficher la répartition des versions (Release et SNAPSHOT).\
 ![projet](assets/images/documentation/projet-008.jpg)
 
-Je peux afficher la répartition de la la dette technique : \
+Je peux afficher la répartition de la dette technique :\
 ![projet](assets/images/documentation/projet-004.jpg)
 
 Je peux afficher le détail des hotspots :\
@@ -102,8 +107,18 @@ Je peux afficher le détail des hotspots :\
 Je peux aussi afficher la répartition détaillée des anomalies :\
 ![projet](assets/images/documentation/projet-006.jpg)
 
-Et je peux afficher la liste des projets que j'ai déjà analysé et ceux qui sont favoris :\
+Et je peux afficher la liste des projets que j'ai déjà analysés et ceux qui sont favoris :\
 ![projet](assets/images/documentation/projet-007.jpg)
+
+En version `1.4.0`, un bloc d'actions a été ajouté pour permettre de :
+
+* [V] Sélectionner un projet de la liste et déverrouiller tous les boutons ;
+* [S] Supprimer le projet de la liste des projets déjà analysés ;
+* [C] Lancer la collecte des indicateurs sonarqube et le calcul des agrégats ;
+* [R] Lancer la restitution des données calculés ;
+* [I] Ouvrir la page de suivi des indicateurs ;
+* [O] Ouvrir la page du rapport OWASP ;
+* [RM] Ouvrir la page de suivi de la répartition par module ;
 
 ### Page OWASP
 
@@ -133,7 +148,7 @@ La documentation de chaque faille.
 
 ### Page Suivi
 
-La page de permet l'affichage des 10 dernières versions de l'application sélectionnée. \
+La page permet l'affichage des 10 dernières versions de l'application sélectionnée. \
 ![suivi](assets/images/documentation/suivi-001.jpg)
 
 Le tableau de suivi :
@@ -171,19 +186,19 @@ Tableau de répartition des sévérités par type :
 Le menu est ouvert.
 ![repartition-module](assets/images/documentation/repartition-module-001a.jpg)
 
-La page permet d'accèder au processus de **Collecte** (1) et au processus d'**Analyse** (2).
+La page permet d'accéder au processus de **Collecte** (1) et au processus d'**Analyse** (2).
 
-Pour chaque type (fiabilité, sécurité et maintenabilité), il est possible de collecter jusqu'à 50 000 signalement.
+Pour chaque type (fiabilité, sécurité et maintenabilité), il est possible de collecter jusqu'à 50 000 signalements.
 
 ![repartition-module](assets/images/documentation/repartition-module-002.jpg)
 
-Au lancement, on vérifie si, il existe un "set-up", une collecte déjà présente pour ce projet. Si un set-up existe on en créé un nouveau pour la nouvelle collecte.
+Au lancement, on vérifie si, il existe un "set-up", une collecte déjà présente pour ce projet. Si un "set-up" existe, on en créé un nouveau pour la nouvelle collecte.
 
 ![repartition-module](assets/images/documentation/repartition-module-004.jpg)
 
-A la fin du traitement, l'indicateur de l'étape passe en orange. Attention, le traitement peut prendre plusieurs minutes.
+À la fin du traitement, l'indicateur de l'étape passe en orange. Attention, le traitement peut prendre plusieurs minutes.
 
-Le bouton supprimer permet de purger la base "tampon" des données du projets. Il faudra alors lancer un VACCUM sur la base pour la défragmenter.
+Le bouton "supprimer" permet de purger la base "tampon" des données du projet. Il faudra alors lancer un VACCUM sur la base pour la défragmenter.
 
 L'indicateur de progression indique l'état d'avancement de la collecte. La durée est exprimée en minutes et secondes.
 
@@ -226,7 +241,7 @@ Elle est développée selon les principes "Mobile First" et "API First".
 
 ## Configuration
 
-Le fichier **. env-prod** est un template de configuration. Il est nécessaire de le renommer en **. env** et de le paramétrer en fonction de vos besoins ;
+Le fichier **.env-prod** est un template de configuration. Il est nécessaire de le renommer en **.env** et de le paramétrer en fonction de vos besoins ;
 
 Les propriétés suivantes sont disponibles :
 
@@ -243,14 +258,14 @@ Les propriétés suivantes sont disponibles :
 * NOMBRE_FAVORI = 10
 
 `APP_ENV` : définit le type d'environnement **dev** ou **prod** ; \
-`APP_DEBUG` : active ou désactive le debug ; \
+`APP_DEBUG` : active ou désactive, le debug ; \
 `SONAR_URL` : Correspond l'URL du serveur sonarqube ; \
-`SONAR_TOKEN` : Correspond au token d'accès généré sur la plateforme sonarqube. Il suffit de faire un copier/coller sans ajouter de guillemets ;\
+`SONAR_TOKEN` : Correspond au token d'accès généré sur la plateforme sonarqube. Il suffit de faire un copier et coller sans ajouter de guillemets ;\
 `SONAR_USER` : Correspond au login de l’utilisateur ; \
 `SONAR_PASSWORD` : Correspond au mot de passe de l'utilisateur ; \
 `SONAR_PROFILES` : Permet de définir le nom du profil correspondant au nom donné pour un jeu de règles ; \
 `SONAR_ORGANIZATION` : Permet de personnaliser le nom de l'établissement utilisé dans les rapports ; \
-`NOMBRE_FAVORI` : Définit le nombre de version affiché en page d'accueil correspondant aux applications marquées comme favorites.
+`NOMBRE_FAVORI` : Définit le nombre de versions affiché en page d'accueil correspondant aux applications marquées comme favorites.
 
 ## Installation des dépendances
 
@@ -268,7 +283,7 @@ Les deux bases de données sont disponibles dans le dossier `ma-moulinette\var\
 [x] **ma-moulinette\var\data.db**
 [x] **ma-moulinette\var\temp.db**
 
-Elles contienent l'ensemble des tables définies depuis les class du dossier **Entity/Main** et **Entity/Secondary**.
+Elles contiennent l'ensemble des tables définies depuis les class du dossier **Entity/Main** et **Entity/Secondary**.
 
 Les tables pour la base **data** sont les suivantes :
 
@@ -389,7 +404,7 @@ Note : le fichier SQL `data-1.2.4.sql`, de mise à jour est disponible dans le d
 
 La version 1.2.4 introduit plusieurs changements :
 
-* Remplacement de l'attribut "batch" par "autre" sur les tables Anomalie, Historique et HotspotDetails ;
+* Remplacement de l'attribut "batch" par "autre" sur les tables "Anomalie", "Historique" et "HotspotDetails" ;
 * Ajout de l'attribut "niveau" pour la gestion du tri sur la table HotspotDetails ;
 
 Les instructions suivantes permettent de remplacer, pour chaque table, l'attribut "batch" par "autre".
@@ -452,7 +467,6 @@ Par défaut, les programmes de démarrage et d'arrêt sont dans le dossier bin/ 
 * Lancez le programme **symfony_start.bat** pour démarrer le serveur symfony ;
 * Lancez le programme **symfony_stop.bat** pour arrêter le serveur symfony ;
 * Lancez le programme **encore.bat** pour démarrer la compilation à la volée des ressources JS/CSS ;
-
 
 ## Mise en production
 
