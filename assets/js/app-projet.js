@@ -551,8 +551,8 @@ const afficheProjetFavori=function() {
                 <span>
               </td>
               <td class="text-center capsule">
-                <span id="P-${i}" class="capsule-bulle P js-liste-supprimer">
-                  <span id="tooltips-${i}" data-tooltip tabindex="2" title="Je supprime ce projet de la liste.">P</span>
+                <span id="S-${i}" class="capsule-bulle S js-liste-supprimer">
+                  <span id="tooltips-${i}" data-tooltip tabindex="2" title="Je supprime ce projet de la liste.">S</span>
                 </span>
               </td>
               <td class="text-center capsule">
