@@ -30,10 +30,12 @@ Les indicateurs de suivi par module (frontend, backend et autre) sont calculés 
 
 Le projet Java doit avoir au moins les modules suivants :
 
-Pour l'application frontend : \
+Pour l'application frontend :
+
 ![Ma-Moulinette](assets/images/documentation/architecture-applicative-presentation.jpg)
 
-Pour l'application frontend : \
+Pour l'application frontend :
+
 ![Ma-Moulinette](assets/images/documentation/architecture-applicative-metier.jpg)
 
 Le filtrage est utilisé par la méthode hotspotDetails() et la méthode projetAnomalie() du controller ApiProjet.
@@ -95,19 +97,24 @@ En effet, le bouton "Répartition par module" permet l'accès à la page de coll
 
 ![projet](assets/images/documentation/projet-009.jpg)
 
-Je peux afficher la répartition des versions (Release et SNAPSHOT).\
+Je peux afficher la répartition des versions (Release et SNAPSHOT).
+
 ![projet](assets/images/documentation/projet-008.jpg)
 
-Je peux afficher la répartition de la dette technique :\
+Je peux afficher la répartition de la dette technique :
+
 ![projet](assets/images/documentation/projet-004.jpg)
 
-Je peux afficher le détail des hotspots :\
+Je peux afficher le détail des hotspots :
+
 ![projet](assets/images/documentation/projet-005.jpg)
 
-Je peux aussi afficher la répartition détaillée des anomalies :\
+Je peux aussi afficher la répartition détaillée des anomalies :
+
 ![projet](assets/images/documentation/projet-006.jpg)
 
-Et je peux afficher la liste des projets que j'ai déjà analysés et ceux qui sont favoris :\
+Et je peux afficher la liste des projets que j'ai déjà analysés et ceux qui sont favoris :
+
 ![projet](assets/images/documentation/projet-007.jpg)
 
 En version `1.4.0`, un bloc d'actions a été ajouté pour permettre de :
@@ -126,7 +133,8 @@ En version `1.4.0`, un bloc d'actions a été ajouté pour permettre de :
 
 Cette page permet l'affichage des vulnérabilités et des hotspots selon le référentiel OWASP 2017.
 
-Quand tout va bien :) \
+Quand tout va bien :)
+
 ![projet](assets/images/documentation/owasp-001.jpg)
 
 Exemple de remonté de hotspots :
@@ -136,7 +144,8 @@ Les vulnérabilités et hotspots sont affichées en fonction du type de faille.
 ![projet](assets/images/documentation/owasp-002.jpg)
 
 Il est possible d'afficher le nombre et la sévérité d'une faille OWASP.
-![projet](assets/images/documentation/owasp-003.jpg)\
+![projet](assets/images/documentation/owasp-003.jpg)
+
 ![projet](assets/images/documentation/owasp-007.jpg)
 
 Quand tout va bien le tableau est vide.
@@ -150,22 +159,28 @@ La documentation de chaque faille.
 
 ### Page Suivi des indicateurs
 
-La page permet l'affichage des 10 dernières versions de l'application sélectionnée. \
+La page permet l'affichage des 10 dernières versions de l'application sélectionnée.
+
 ![suivi](assets/images/documentation/suivi-001.jpg)
 
 Le tableau de suivi :
+
 ![suivi](assets/images/documentation/suivi-002.jpg)
 
 La jolie courbe :
+
 ![suivi](assets/images/documentation/suivi-003.jpg)
 
 La répartition par module :
+
 ![suivi](assets/images/documentation/suivi-004.jpg)
 
 La répartition par type :
+
 ![suivi](assets/images/documentation/suivi-005.jpg)
 
 La répartition par type et sévérité :
+
 ![suivi](assets/images/documentation/suivi-006.jpg)
 
 ### Page Suivi/modification
@@ -183,6 +198,7 @@ Il est possible de modifier les paramètres d'affichage d'une version en activan
 Cette page affiche la liste des anomalies totales par type et sévérité. Il est possible de lancer une collecte pour chaque type (fiabilité, sécurité et maintenabilité) et d'en calculer la répartition par module.
 
 Tableau de répartition des sévérités par type :
+
 ![repartition-module](assets/images/documentation/repartition-module-001.jpg)
 
 Le menu est ouvert.
@@ -241,6 +257,7 @@ Ma moulinette s'appuie sur les technologies suivantes :
 ## Architecture
 
 Elle est développée selon les principes "Mobile First" et "API First".
+
 * Client web responsive (Zurb Foundation) ;
 * Serveur d'application local (symfony server) ;
 * Deux bases de données (data.db et temp.db) ;
@@ -258,8 +275,8 @@ La version de production contient l'application symfony, deux bases vides, la ve
 
 Le dossier racine du projet est `ma-moulinette`. La version de production et la version de développement sont dans deux dossiers différents.
 
-* [prod] : c:\\sonar-dash.prod
-* [dev] : c:\\sonar-dash.dev
+* [prod] : c:\sonar-dash.prod
+* [dev] : c:\sonar-dash.dev
 
 Ce point et important, pour le paramétrage des accès et le lancemment de symfony-cli.
 
@@ -271,35 +288,39 @@ Il peut être utilisé pour l'environnement de dev ou de prod. Il suffit pour ce
 
 Les propriétés suivantes sont disponibles :
 Pour l'environement de production.
+
 * APP_ENV = 'prod'
 * APP_DEBUG = '0'
 
 Pour l'environement de développement
+
 * APP_ENV = 'dev'
 * APP_DEBUG = '1'
 
 La configuration nécessaire pour se connecter à sonarqube. Il est recommandé d'utiliser un token. Attention, le token n'est pas entre simple ou double cote.
+
 * SONAR_URL = <https://monsonar.a-moi-tout-seul.it>
 * SONAR_TOKEN = 'mon_token'
 * SONAR_USER = 'mon_login'
 * SONAR_PASSWORD = 'mon_password'
 
-Le nom du profil utilisé pour tous les profils qualités. 
+Le nom du profil utilisé pour tous les profils qualités.
+
 * SONAR_PROFILES = 'mon profil sonar'
 * SONAR_ORGANIZATION = 'ma petite Entreprise'
-
-Le nombre d'application suivi en favori.
 * NOMBRE_FAVORI = 10
 
-`APP_ENV` : définit le type d'environnement **dev** ou **prod** ; \
-`APP_DEBUG` : active ou désactive, le debug (1, 0) ; \
-`SONAR_URL` : Correspond l'URL du serveur sonarqube ; \
-`SONAR_TOKEN` : Correspond au token d'accès généré sur la plateforme sonarqube. Il suffit de faire un copier et coller sans ajouter de guillemets ;\
-`SONAR_USER` : Correspond au login de l’utilisateur ; \
-`SONAR_PASSWORD` : Correspond au mot de passe de l'utilisateur ; \
-`SONAR_PROFILES` : Permet de définir le nom du profil correspondant au nom donné pour un jeu de règles ; \
-`SONAR_ORGANIZATION` : Permet de personnaliser le nom de l'établissement utilisé dans les rapports ; \
-`NOMBRE_FAVORI` : Définit le nombre de versions affiché en page d'accueil correspondant aux applications marquées comme favorites.
+Explications:
+
+* `APP_ENV` : définit le type d'environnement **dev** ou **prod** ;
+* `APP_DEBUG` : active ou désactive, le debug (1, 0) ;
+* `SONAR_URL` : Correspond l'URL du serveur sonarqube ;
+* `SONAR_TOKEN` : Correspond au token d'accès généré sur la plateforme sonarqube. Il suffit de faire un copier et coller sans ajouter de guillemets ;
+* `SONAR_USER` : Correspond au login de l’utilisateur ;
+* `SONAR_PASSWORD` : Correspond au mot de passe de l'utilisateur ;
+* `SONAR_PROFILES` : Permet de définir le nom du profil correspondant au nom donné pour un jeu de règles ;
+* `SONAR_ORGANIZATION` : Permet de personnaliser le nom de l'établissement utilisé dans les rapports ;
+* `NOMBRE_FAVORI` : Définit le nombre de versions affiché en page d'accueil correspondant aux applications marquées comme favorites.
 
 ## Installation des dépendances
 
@@ -591,17 +612,24 @@ Pour identifier l'extension en cause, il suffit de désactiver toutes les extens
 
 ### Analyse de code sonarqube
 
-Analyse de la version 1.1.0. \
+Analyse de la version 1.1.0.
+
 ![sonarqube-001](assets/images/documentation/sonarqube-001.jpg)
 
-New code. \
+New code.
+
 ![sonarqube-002](assets/images/documentation/sonarqube-002.jpg)
 
-Overall code. \
+Overall code.
+
 ![sonarqube-003](assets/images/documentation/sonarqube-003.jpg)
 
-Répartiton par dossier. \
+Répartiton par dossier.
+
 ![sonarqube-002](assets/images/documentation/sonarqube-004.jpg)
 
-Analyse Ma-moulinette. \
+Analyse Ma-moulinette.
+
 ![ma-moulinette](assets/images/documentation/ma-moulinette-001.jpg)
+
+**-- FIN --**
