@@ -153,29 +153,6 @@ $('.gomme-svg').on('click', function () {
   $('.log').val('');
 });
 
-/**
- * description
- * Active le spinner.
- * before: function () { setTimeout(() => startSpinner(), 1000);
- */
-const startSpinner=function() {
-  if ($('#loader').hasClass('loader-disabled')) {
-    $('#loader').removeClass('loader-disabled');
-    $('#loader').addClass('loader-enabled');
-  }
-};
-
-/**
- * description
- * Désactive le spinner.
- * complete: function () { setTimeout(() => stopSpinner(), 1000);
- */
-const stopSpinner=function() {
-  if ($('#loader').hasClass('loader-enabled')) {
-    $('#loader').removeClass('loader-enabled');
-    $('#loader').addClass('loader-disabled');
-  }
-};
 
 /**
  * description
