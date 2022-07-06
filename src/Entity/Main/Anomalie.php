@@ -91,6 +91,9 @@ class Anomalie
     #[ORM\Column(type: 'integer')]
     private $code_smell;
 
+    #[ORM\Column(type: 'boolean')]
+    private $liste;
+
     #[ORM\Column(type: 'datetime')]
     private $date_enregistrement;
 
@@ -371,6 +374,18 @@ class Anomalie
     public function setAutre(int $autre): self
     {
         $this->autre = $autre;
+
+        return $this;
+    }
+
+    public function isListe(): ?bool
+    {
+        return $this->liste;
+    }
+
+    public function setListe(bool $liste): self
+    {
+        $this->liste = $liste;
 
         return $this;
     }
