@@ -619,6 +619,7 @@ class ApiProjetController extends AbstractController
       $issue->setBug($bug);
       $issue->setVulnerability($vulnerability);
       $issue->setCodeSmell($codeSmell);
+      $issue->setListe('TRUE');
       $issue->setDateEnregistrement($date);
       $em->persist($issue);
       $em->flush();
