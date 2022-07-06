@@ -211,16 +211,30 @@ General error: 1 near "4.1": syntax error"
 
 ## v1.3.0 - 03/07/2022 - RELEASE
 
-* Correction de l'affichage du tableau de suivi des anomalies par type et sévérité ;
-* Correction : le bouton analyse Owasp est bloqué tant que l'utilisateur n'a pas choisi un projet ;
-* Correction : "Impossible to access a key ("setup") on a string variable ("NaN")." ;
-* Remplacement des valeurs null par -1 au lieu de 0 ;
-* Amélioration de l'affichage du tableau de suivi par type d'anomalies (i.e. mise en couleur des type) ;
-* Prise en compte de la version de référence pour le tableau de suivi des anomalies par type et sévérité ;
-* Ajout du tableau de bord par répartition : frontend, backend, autre ;
-* Ajout de l'Indice de Confiance ;
-* Masquage des tableaux vides (Fiabilité, sécurité et maintenabilité) ;
-* Ajout de la notion de set-up pour la getion des versions collectées dans la table temp_repartition ;
-* Séparation des EntityProviders : **default** pour la base des données agrégées et **secondary** pour la base des données d'analyse ;
-* Reworking des requêtes pour la base temp. Suppression des requêtes avec EntityManager (SQL), ajout des requêtes en utilisant le ManagerRegistry (findBy,etc...) ;
-* Amélioration de l'affichage du tableau des sévérités par type de la page "Repartition". Utilisation d'un accordéon pour réduire la taille de la page.
+* [Page Suivi] : Correction de l'affichage du tableau de suivi des anomalies par type et sévérité ;
+* [Page Projet] : Correction - le bouton analyse Owasp est bloqué tant que l'utilisateur n'a pas choisi un projet ;
+* [Page Répartition] Correction - "Impossible to access a key ("setup") on a string variable ("NaN")." ;
+* [Page Suivi] : Remplacement des valeurs "null" par -1 au lieu de 0 ;
+* [Page Suivi] : Amélioration de l'affichage du tableau de suivi par type d'anomalies (i.e. mise en couleur des types) ;
+* [Page Suivi] : Prise en compte de la version de référence pour le tableau de suivi des anomalies par type et sévérité ;
+* [Page Répartition] : Ajout du tableau de bord par répartition : frontend, backend, autre ;
+* [Page Répartition] : Ajout de l'Indice de Confiance ;
+* [Page Répartition] : Masquage des tableaux vides (Fiabilité, sécurité et maintenabilité) ;
+* [Page Répartition] : Ajout de la notion de set-up pour la gestion des versions collectées dans la table temp_repartition ;
+* [Architecture] :Séparation des EntityProviders : **default** pour la base des données agrégées et **secondary** pour la base des données d'analyse ;
+* [Architecture] : Reworking des requêtes pour la base temp. Suppression des requêtes avec EntityManager (SQL), ajout des requêtes en utilisant le ManagerRegistry (findBy,etc...) ;
+* [Page Répartition] : Amélioration de l'affichage du tableau des sévérités par type de la page "Repartition". Utilisation d'un accordéon pour réduire la taille de la page ;
+
+## v1.4.0 - 06/07/2022 - RELEASE
+
+* [Page Projet] : Modification du pictogramme (SVG) pour le bouton répartition ;
+* Modification des appels de web-service Asynchrones (11). Utilisation de la méthode Promise + Callback (await) ;
+* [Page Projet] : Modification de la fenêtre modale 'liste des projets'. Ajout des actions suivantes :
+  * [V] Sélectionner un projet de la liste et déverrouiller tous les boutons ;
+  * [S] Supprimer le projet de la liste des projets déjà analysés ;
+  * [C] Lance la collecte des indicateurs sonarqube et le calcul des agrégats ;
+  * [R] Lance la restitution des données calculés ;
+  * [I] Ouvre la page de suivi des indicateurs ;
+  * [O] Ouvre la page du rapport OWASP ;
+  * [RM] Ouvre la page de suivi de la répartition par module ;
+* [Page Projet] : Ajout de l'attribut "liste" de type boolean à la table "Anomalie" pour gérer l'affichage ou non, du projet, dans la liste des projets déjà analysés.
