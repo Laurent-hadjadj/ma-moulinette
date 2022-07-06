@@ -120,6 +120,8 @@ En version `1.4.0`, un bloc d'actions a été ajouté pour permettre de :
 * [O] Ouvrir la page du rapport OWASP ;
 * [RM] Ouvrir la page de suivi de la répartition par module ;
 
+![projet](assets/images/documentation/projet-007b.jpg)
+
 ### Page OWASP
 
 Cette page permet l'affichage des vulnérabilités et des hotspots selon le référentiel OWASP 2017.
@@ -402,7 +404,7 @@ ALTER TABLE historique ADD COLUMN code_smell_info INTEGER ;
 
 Note : le fichier SQL `data-1.2.4.sql`, de mise à jour est disponible dans le dossier **/migrations/**.
 
-La version 1.2.4 introduit plusieurs changements :
+La version **1.2.4** introduit plusieurs changements :
 
 * Remplacement de l'attribut "batch" par "autre" sur les tables "Anomalie", "Historique" et "HotspotDetails" ;
 * Ajout de l'attribut "niveau" pour la gestion du tri sur la table HotspotDetails ;
@@ -440,7 +442,7 @@ UPDATE hotspot_details SET niveau=3 WHERE severity='LOW';
 
 Note : le fichier SQL `data-1.3.0.sql`, de mise à jour est disponible dans le dossier **/migrations/**.
 
-La version 1.3.0 introduit un changement majeur :
+La version **1.3.0** introduit un changement majeur :
 
 * Ajout d'une table 'repartition' pour réaliser les calculs temporaires sur les indicateurs de sévérité par module.
 
@@ -451,6 +453,17 @@ CREATE TABLE repartition (
   component CLOB NOT NULL, type VARCHAR(16) NOT NULL,
   severity VARCHAR(8) NOT NULL, setup UNSIGNED BIG INT NOT NULL,
   date_enregistrement DATETIME NOT NULL);
+```
+
+## Migration 1.3. vers 1.4.0
+
+Note : le fichier SQL `data-1.4.0.sql`, de mise à jour est disponible dans le dossier **/migrations/**.
+
+La version **1.4.0** introduit un changement mineur :
+
+```sql
+ALTER TABLE anomalie ADD COLUMN liste BOOLEAN DEFAULT 1 NOT NULL;
+
 ```
 
 ## Démarrage de l'environnement de développement
