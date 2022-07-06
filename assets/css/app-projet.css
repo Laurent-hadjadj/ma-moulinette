@@ -368,8 +368,7 @@
 /* LIGHT */
 .bleu { color: #00445b; }
 
-/* bouton actions */
-
+/* bouton actions pour la liste des projets */
 .capsule {
   padding-left: 0.1rem;
 }
@@ -382,29 +381,24 @@
   text-align: center;
   line-height: 32px;
   display: block;
-
-  /* border-radius: 50%; */
-
-  /* overflow: hidden; */
-
   border: 1px solid #00445b;
 }
 
 /* Validation */
 .V { color: #187e3d; }
 
-/* suPprimer */
-.P { color: #771404; }
+/* Supprimer */
+.S { color: #771404; }
 
-/* Collecte, Analyse, Owasp, Répartition-Module */
+/* Collecte, Restitution, Indicateurs, Owasp, Répartition-Module */
 .C,
 .R,
 .I,
 .O,
-.RM { color: #3b89a3; }
+.RM { color: #00445b; }
 
 .V,
-.P,
+.S,
 .C,
 .R,
 .I,
@@ -417,7 +411,7 @@
 }
 
 .V:hover,
-.P:hover,
+.S:hover,
 .C:hover,
 .R:hover,
 .I:hover,
