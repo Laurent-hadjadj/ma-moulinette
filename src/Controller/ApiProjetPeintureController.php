@@ -50,20 +50,21 @@ class ApiProjetPeintureController extends AbstractController
   }
 
   /**
-   * projet_favori
+   * projet_mes_applictaions_liste
    * Récupupère la liste de mes projets et ceux en favoris
-   * http://{url}/api/project_analyses/search?project={key}
    *
    * @param  mixed $em
    * @return response
    */
-  #[Route('/api/projet/favori', name: 'projet_favori', methods: ['GET'])]
-  public function projetFavori(EntityManagerInterface $em): response
+  #[Route('/api/projet/mes-applications/liste', name: 'projet_mesapplications_liste', methods: ['GET'])]
+  public function projetMesApplicationsListe(EntityManagerInterface $em): response
   {
     $response = new JsonResponse();
     //On récupère la liste des projets ayant déjà fait l'objet d'une analyse.
     $sql = "SELECT project_name as name, maven_key AS key
-            FROM anomalie GROUP BY maven_key
+            FROM anomalie
+            WHERE liste = TRUE
+            GROUP BY maven_key
             ORDER BY project_name ASC";
 
     $select = $em->getConnection()->prepare($sql)->executeQuery();
@@ -88,6 +89,30 @@ class ApiProjetPeintureController extends AbstractController
 
     return $response->setData(["code" => 200, "liste" => $listeProjet,
     "favori" => $listeFavori, Response::HTTP_OK]);
+  }
+
+    /**
+   * projet_mes_applictaions_liste
+   * Désactive l'affichage du projet dans la liste des projets déjà analysés.
+   *
+   * @param  mixed $em
+   * @return response
+   */
+  #[Route('/api/projet/mes-applications/delete', name: 'projet_mesapplications_delete', methods: ['GET'])]
+  public function projetMesApplicationsDelete(EntityManagerInterface $em, Request $request): response
+  {
+    // On bind la variables
+    $mavenKey = $request->get('mavenKey');
+
+    $response = new JsonResponse();
+    //On récupère la liste des projets ayant déjà fait l'objet d'une analyse.
+    $sql = "UPDATE anomalie
+           SET liste = FALSE
+           WHERE maven_key='${mavenKey}';";
+
+    $em->getConnection()->prepare($sql)->executeQuery();
+
+    return $response->setData(["code" => 200, Response::HTTP_OK]);
   }
 
   /**
