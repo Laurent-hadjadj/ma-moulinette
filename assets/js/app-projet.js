@@ -477,12 +477,12 @@ const projetNosonarDetails=function(mavenKey){
 /**
  * description
  * On récupére la liste des projets et des favori
- * http://{url}/api/projet/favori
+ * http://{url}/api/projet/mes-applications/liste
 */
 const afficheProjetFavori=function() {
   const options = {
-    url: 'http://localhost:8000/api/projet/favori', type: 'GET',
-    dataType: 'json', contentType
+    url: 'http://localhost:8000/api/projet/mes-applications/liste',
+    type: 'GET', dataType: 'json', contentType
   };
 
   return new Promise((resolve) => {
@@ -502,7 +502,7 @@ const afficheProjetFavori=function() {
     <path d="m1215 4984c-531-89-963-456-1139-966-52-151-69-268-70-463 0-144 4-203 22-297 99-527 412-1085 962-1713 365-418 941-950 1436-1326l134-102 134 102c495 376 1071 908 1436 1326 550 628 863 1186 962 1713 31 167 31 432-1 582-109 513-470 924-951 1084-162 54-239 67-420 73-139 4-183 2-280-16-310-55-567-188-782-403l-98-98-98 98c-213 213-472 347-777 402-128 24-346 25-470 4zm438-341c274-52 521-211 691-444 23-30 79-123 125-207 47-84 88-152 91-152s44 68 91 152c128 231 214 337 362 449 218 164 482 241 755 218 276-23 512-137 708-340 127-133 222-302 271-486 24-88 27-116 27-278 0-163-3-191-28-300-105-447-394-942-865-1480-326-373-749-775-1196-1135l-125-101-125 101c-325 262-717 620-952 868-633 668-987 1227-1109 1747-25 109-28 137-28 300 0 162 3 190 27 278 92 343 335 620 657 750 201 81 411 101 623 60z" />
     </g></svg>`;
 
-    // Si on a pas trouvé de favori on marque l'absence par un tiret sinon on créé une liste
+    // Si on a pas trouvé de favori on marque l'absence par un tiret sinon on créé une liste.
     if (t.favori[0] !== 'vide') {
       liste=t.favori;
     }
@@ -562,7 +562,7 @@ const afficheProjetFavori=function() {
      });
      $(document).foundation();
     // On met à jour le nombre des projets collectés
-    $('#affiche-total-projet').html(`<span class="stat">${i}</span>`);
+    $('#affiche-total-projet').html(`<span id="nombre-projet" class="stat">${i}</span>`);
 
     /* On gére le click sur le bouton V (Valider) */
     $('.js-liste-valider').on('click', (e) => {
@@ -580,6 +580,50 @@ const afficheProjetFavori=function() {
       const nom = b[1];
       const $newOption = $("<option selected='selected'></option>").val(mavenKey).text(nom)
        $('select[name="projet"]').append($newOption).trigger('change');
+    });
+
+    /* On gére le click sur le bouton S (Supprimer) */
+    $('.js-liste-supprimer').on('click', (e) => {
+      // On récupère la valeur de l'ID
+      const id = e.target.id;
+      const a = id.split('-');
+      const key='key-'+a[1];
+
+      // On récupère la clé maven du projet
+      const element = document.getElementById(key);
+      const mavenKey = element.dataset.mavenkey;
+      const data = { mavenKey };
+      const options2 = {
+        url: 'http://localhost:8000/api/projet/mes-applications/delete',
+        type: 'GET',  dataType: 'json', data, contentType
+      };
+
+      // On Ajoute une fonction assynchrone pour désactiver le projet de la liste
+      const supprime_projet=function supprime() {
+        return new Promise((resolve2) => {
+          $.ajax(options2).then(t=> {
+            if (t.code !== 200) {
+              log(` - ERROR : Je n'ai réussi à supprimer le projet !`);
+            } else {
+              log(` - INFO : J'ai réussi à supprimer le projet !`);
+            }
+            resolve2();
+          });
+        });
+      }
+
+      // On appelle la fonction asynchrone et on attend la fin.
+      async function fnAsync() {
+        await supprime_projet();
+      }
+      fnAsync();
+
+      // On met à jour le nombre des projets collectés
+      const nbr=parseInt($('#affiche-total-projet').text(),10)-1;
+      $('#affiche-total-projet').html(`<span id="nombre-projet" class="stat">${nbr}</span>`);
+      // Supprime la ligne
+      $('#name-'+a[1]).hide();
+
     });
 
     /* On gére le click sur le bouton R (afficher les Résulats) */
