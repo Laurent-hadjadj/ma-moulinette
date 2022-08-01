@@ -14,6 +14,7 @@
 namespace App\Entity\Main;
 
 use App\Repository\Main\OwaspRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: OwaspRepository::class)]
