@@ -14,6 +14,7 @@
 namespace App\Entity\Secondary;
 
 use App\Repository\Secondary\RepartitionRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: RepartitionRepository::class)]
