@@ -8,7 +8,7 @@ imports:
     - { resource: ma-moulinette.yaml }
 parameters:
     env(DATABASE_HOST): localhost
-    sqlite.path: '%env(SQLITE_PATH)%'
+    sqlite.pirmary.path: '%env(DATABASE_DEFAULT_URL)%'
     sqlite.secondary.path: '%env(DATABASE_SECONDARY_URL)%'
     sonar.url: '%env(SONAR_URL)%'
     sonar.token: '%env(SONAR_TOKEN)%'
