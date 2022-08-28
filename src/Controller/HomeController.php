@@ -14,8 +14,11 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
+
+// Annotation
 use Symfony\Component\Routing\Annotation\Route;
+
+use Symfony\Component\HttpFoundation\Response;
 
 // Accès aux tables SLQLite
 use Doctrine\ORM\EntityManagerInterface;
@@ -64,10 +67,10 @@ class HomeController extends AbstractController
         $version=$this->getParameter('version');
 
         // On récupère la dernière en base
-        $sql = "SELECT version
-                FROM ma_moulinette
-                ORDER BY date_version DESC LIMIT 1";
-        $select = $em->getConnection()->prepare()->executeQuery();
+        //$sql = "SELECT version
+        //        FROM ma_moulinette
+        //        ORDER BY date_version DESC LIMIT 1";
+        //$select = $em->getConnection()->prepare()->executeQuery();
 
         return $this->render('home/index.html.twig',
         [
