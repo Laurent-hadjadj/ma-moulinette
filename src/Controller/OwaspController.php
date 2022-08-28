@@ -11,7 +11,7 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
- namespace App\Controller;
+namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
@@ -28,10 +28,10 @@ class OwaspController extends AbstractController
   public function index()
   {
     return $this->render('owasp/index.html.twig',
-       [
+      [
           "serveur" => $this->getParameter("sonar.url"),
           "version" => $this->getParameter("version"), "dateCopyright" => \date("Y")
-       ]
+      ]
     );
   }
 }
