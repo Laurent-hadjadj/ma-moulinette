@@ -37,15 +37,15 @@ class HomeController extends AbstractController
 
         // On récupère les projets en favori. Pour le moment on limite le nombre de projet à 10.
         $sql = "SELECT DISTINCT nom_projet as nom,
-                       version, date_version as date,
-                       note_reliability as fiabilite,
-                       note_security as securite,
-                       note_hotspot as hotspot,
-                       note_sqale as sqale,
-                       nombre_bug as bug,
-                       nombre_vulnerability as vulnerability,
-                       nombre_code_smell as code_smell,
-                       hotspot_total as hotspots
+                        version, date_version as date,
+                        note_reliability as fiabilite,
+                        note_security as securite,
+                        note_hotspot as hotspot,
+                        note_sqale as sqale,
+                        nombre_bug as bug,
+                        nombre_vulnerability as vulnerability,
+                        nombre_code_smell as code_smell,
+                        hotspot_total as hotspots
                 FROM historique
                 WHERE favori=TRUE
                 ORDER BY date_version LIMIT $nombreFavori";
@@ -60,10 +60,19 @@ class HomeController extends AbstractController
             $favori = $favoris;
         }
 
+        // On récupère la version de l'application
+        $version=$this->getParameter('version');
+
+        // On récupère la dernière en base
+        $sql = "SELECT version
+                FROM ma_moulinette
+                ORDER BY date_version DESC LIMIT 1";
+        $select = $em->getConnection()->prepare()->executeQuery();
+
         return $this->render('home/index.html.twig',
         [
             'nombreFavori' => $nombre, 'favori' => $favori,
-            'version' => $this->getParameter('version'), 'dateCopyright' => \date('Y')
+            'version' => $version, 'dateCopyright' => \date('Y')
         ]);
     }
 }
