@@ -6,7 +6,7 @@ BEGIN TRANSACTION;
 CREATE TABLE ma_moulinette
 (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
 version VARCHAR(8) NOT NULL,
-version_date VARCHAR(8) NOT NULL,
+date_version DATETIME NOT NULL,
 is_default BOOLEAN DEFAULT FALSE NOT NULL,
 date_enregistrement DATETIME NOT NULL);
 
@@ -15,12 +15,12 @@ COMMIT;
 BEGIN TRANSACTION;
 
 -- ## Initialise la table des versions.
-INSERT INTO ma_moulinette (version, version_date, is_default, date_enregistrement) VALUES ('1.0.0', '10/04/2022', FALSE, date('now'));
-INSERT INTO ma_moulinette (version, version_date, is_default, date_enregistrement) VALUES ('1.1.0', '24/04/2022', FALSE, date('now'));
-INSERT INTO ma_moulinette (version, version_date, is_default, date_enregistrement) VALUES ('1.2.0', '05/05/2022', FALSE, date('now'));
-INSERT INTO ma_moulinette (version, version_date, is_default, date_enregistrement) VALUES ('1.2.6', '02/06/2022', FALSE, date('now'));
-INSERT INTO ma_moulinette (version, version_date, is_default, date_enregistrement) VALUES ('1.3.0', '03/07/2022', FALSE, date('now'));
-INSERT INTO ma_moulinette (version, version_date, is_default, date_enregistrement) VALUES ('1.4.0', '06/07/2022', FALSE, date('now'));
-INSERT INTO ma_moulinette (version, version_date, is_default, date_enregistrement) VALUES ('1.5.0', '01/08/2022', TRUE, date('now'));
+INSERT INTO ma_moulinette (version, date_version, is_default, date_enregistrement) VALUES ('1.0.0', '2022-01-04', FALSE, date('now'));
+INSERT INTO ma_moulinette (version, date_version, is_default, date_enregistrement) VALUES ('1.1.0', '2022-04-24', FALSE, date('now'));
+INSERT INTO ma_moulinette (version, date_version, is_default, date_enregistrement) VALUES ('1.2.0', '2022-05-05', FALSE, date('now'));
+INSERT INTO ma_moulinette (version, date_version, is_default, date_enregistrement) VALUES ('1.2.6', '2022-06-02', FALSE, date('now'));
+INSERT INTO ma_moulinette (version, date_version, is_default, date_enregistrement) VALUES ('1.3.0', '2022-07-03', FALSE, date('now'));
+INSERT INTO ma_moulinette (version, date_version, is_default, date_enregistrement) VALUES ('1.4.0', '2022-07-06', FALSE, date('now'));
+INSERT INTO ma_moulinette (version, date_version, is_default, date_enregistrement) VALUES ('1.5.0', '2022-08-01', TRUE, date('now'));
 
-BEGIN TRANSACTION;
+COMMIT;
