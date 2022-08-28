@@ -57,7 +57,7 @@
     },
     "config": {
         "allow-plugins": {
-            "composer/package-versions-deprecated": true,
+            "composer/package-versions-deprecated": false,
             "symfony/flex": true,
             "symfony/runtime": true
         },
