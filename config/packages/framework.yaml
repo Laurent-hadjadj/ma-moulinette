@@ -1,7 +1,7 @@
 ---
 # see https://symfony.com/doc/current/reference/configuration/framework.html
 framework:
-    trusted_hosts:  '%env(TRUST_HOSTS)%'
+    trusted_hosts: ['%env(TRUST_HOST1)%','%env(TRUST_HOST2)%',]
     secret: '%env(APP_SECRET)%'
     csrf_protection: true
     http_method_override: false
