@@ -20,6 +20,9 @@ import 'motion-ui';
 
 import './foundation.js';
 
+// On importe les paramètres serveur
+import {serveur} from "./properties.js";
+
 const contentType='application/json; charset=utf-8';
 
 /* Construction des callbox pour les messages utilisateurs */
@@ -37,7 +40,7 @@ const maven_key=t0.dataset.application;
  *
  * @returns
  */
- const timestamp=function(bypass) {
+const timestamp=function(bypass) {
   /**
    * On récupère la version du setup
    *  Si le projet n'a pas de setup (i.e. la valeur est à NaN), on en créé un.
@@ -90,7 +93,7 @@ const maven_key=t0.dataset.application;
   // si je suis perdu, j'affiche une alerte !!!
   const message3=`Je suis perdu !!!`;
   $('#message').html(callboxError+message3+callboxFermer);
- }
+}
 
 /**
  * description
@@ -99,13 +102,13 @@ const maven_key=t0.dataset.application;
  * @param {*} mavenKey
  * @returns
  */
- const clear=function(mavenKey) {
+const clear=function(mavenKey) {
 
   // On bind les variables
   const data = { mavenKey };
   const options = {
-    url: 'http://localhost:8000/api/projet/repartition/clear', type: 'GET',
-    dataType: 'json', data, contentType,
+      url: `${serveur()}/api/projet/repartition/clear`,
+      type: 'GET', dataType: 'json', data, contentType,
     }
 
   // On appel le web service.
@@ -120,7 +123,7 @@ const maven_key=t0.dataset.application;
   });
 };
 
- /**
+/**
   * description
   * On lance le service d'analyse des données pour le projet
   * @param {*} mavenKey
@@ -130,7 +133,7 @@ const maven_key=t0.dataset.application;
   * @param {*} css
   * @returns
   */
- const analyse=function(mavenKey, type, severity, css) {
+const analyse=function(mavenKey, type, severity, css) {
 
   // Traitement lancé au moment moment de l'appel.
   const startAnalyse = (a) => {
@@ -140,7 +143,7 @@ const maven_key=t0.dataset.application;
     if (a==='CODE_SMELL'){ dino='Mauvaise Pratique :'; }
     $('#analyse-animation').addClass('sp-volume');
     $('#analyse-texte').html(dino + ' Analyse en cours...');
-   }
+  }
 
   // Traitement lancé à la fin du 'appel.
   const stopAnalyse = () => {
@@ -154,11 +157,11 @@ const maven_key=t0.dataset.application;
   // On déclare les options du web services.
   const data = { mavenKey, type, severity, setup };
   const options = {
-    url: 'http://localhost:8000/api/projet/repartition/analyse', type: 'PUT',
+    url: `${serveur()}/api/projet/repartition/analyse`, type: 'PUT',
     dataType: 'json', data: JSON.stringify(data), contentType,
     beforeSend: function () { setTimeout(() => startAnalyse(type), 1); },
     complete: function () { setTimeout(() => stopAnalyse(), 1); },
-    }
+  }
 
   // On appel le web service.
   // On utilise une promise et un callback
@@ -190,37 +193,37 @@ const maven_key=t0.dataset.application;
       // On affiche le tableau pour la fiabilité
       if (type=='BUG')
       {
-       if (severity==='BLOCKER') {
+      if (severity==='BLOCKER') {
         if (t2.dataset.nombreBugBloquant==='0')
           { idc='-' } else {
             idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t2.dataset.nombreBugBloquant);
           }
         }
-       if (severity==='CRITICAL') {
+      if (severity==='CRITICAL') {
         if (t3.dataset.nombreBugCritique==='0')
         { idc='-' } else {
           idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t3.dataset.nombreBugCritique);
         }
         }
-       if (severity==='INFO') {
+      if (severity==='INFO') {
         if (t4.dataset.nombreBugInfo==='0')
           { idc='-' } else {
             idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t4.dataset.nombreBugInfo);
           }
         }
-       if (severity==='MAJOR') {
+      if (severity==='MAJOR') {
         if (t5.dataset.nombreBugMajeur==='0')
           { idc='-' } else {
             idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t5.dataset.nombreBugMajeur);
           }
-       }
+      }
       if (severity==='MINOR') {
         if (t6.dataset.nombreBugMineur==='0')
           { idc='-' } else {
             idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t6.dataset.nombreBugMineur);
           }
-       }
-       if (idc !=='100 %' && idc !=='-') { alert='texte-rouge'; } else { alert='texte-vert'; }
+      }
+      if (idc !=='100 %' && idc !=='-') { alert='texte-rouge'; } else { alert='texte-vert'; }
       let tab_bug=`<tr>
           <td class="${css}"><strong>${severity}</strong></td>
           <td id="presenation-01" class="text-center">${t.repartition.frontend}</td>
@@ -257,8 +260,8 @@ const maven_key=t0.dataset.application;
             idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t11.dataset.nombreVulnerabiliteMajeur);
           }
         }
-     if (severity==='MINOR') {
-       if (t12.dataset.nombreVulnerabiliteMineur==='0')
+    if (severity==='MINOR') {
+      if (t12.dataset.nombreVulnerabiliteMineur==='0')
         { idc='-' } else {
           idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t12.dataset.nombreVulnerabiliteMineur);
         }
@@ -302,13 +305,13 @@ const maven_key=t0.dataset.application;
               idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t17.dataset.nombreMauvaisePratiqueMajeur);
           }
 
-     if (severity==='MINOR')
-       if (t18.dataset.nombreMauvaisePratiqueMinor==='0')
-         { idc='-' } else {
+    if (severity==='MINOR')
+      if (t18.dataset.nombreMauvaisePratiqueMinor==='0')
+        { idc='-' } else {
             idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t18.dataset.nombreMauvaisePratiqueMineur);
           }
 
-     if (idc !=='100 %' && idc !=='-') { alert='texte-rouge'; } else { alert='texte-vert'; }
+    if (idc !=='100 %' && idc !=='-') { alert='texte-rouge'; } else { alert='texte-vert'; }
 
         let tab_code_smell=`
         <tr>
@@ -342,12 +345,12 @@ const collecte=function(mavenKey, type, severity, start, stop, counter, timer) {
   // Début de l'animation
   const startCollecte = () => {
     $('#collecte-animation').addClass('sp-volume');
-   }
+  }
 
   // Fin de l'animation
-   const stopCollecte = () => {
+  const stopCollecte = () => {
     $('#collecte-animation').removeClass('sp-volume');
-   }
+  }
 
   // Initialisation de la barre de progression et mise à jour dynamique
   const changeProgress = (progress) => {
@@ -380,8 +383,8 @@ const collecte=function(mavenKey, type, severity, start, stop, counter, timer) {
   // Déclaration des parametres de l'appel du service
   const data = { mavenKey, type, severity, setup };
   const options = {
-    url: 'http://localhost:8000/api/projet/repartition/collecte', type: 'PUT',
-    dataType: 'json', data: JSON.stringify(data), contentType,
+    url: `${serveur()}/api/projet/repartition/collecte`,
+    type: 'PUT',dataType: 'json', data: JSON.stringify(data), contentType,
     beforeSend: function () {
       setTimeout(() => startCollecte(), 1000);
       setTimeout(() => changeProgress(start), 1000); },
@@ -416,12 +419,12 @@ const collecte=function(mavenKey, type, severity, start, stop, counter, timer) {
  *
  * @returns
  */
- const resultat=function(mavenKey, type) {
+const resultat=function(mavenKey, type) {
 
   // On bind les variables
   const data = { mavenKey, type };
   const options = {
-    url: 'http://localhost:8000/api/projet/repartition/details', type: 'GET',
+    url: `${serveur()}/api/projet/repartition/details`, type: 'GET',
     dataType: 'json', data, contentType,
     }
 
@@ -506,7 +509,6 @@ const collecte=function(mavenKey, type, severity, start, stop, counter, timer) {
       $('#mauvaise-pratique-mineur').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.minor));
       $('#mauvaise-pratique-info').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.info));
     }
-
   });
 };
 
@@ -544,7 +546,7 @@ $('#collecte-bug').on('click', ()=>{
   async function fnAsync() {
     let start=0, stop=0, counter, tempo=0;
 
-   if (parseInt(blocker,10)!==0) {
+  if (parseInt(blocker,10)!==0) {
       stop=Math.trunc((parseInt(blocker,10)/parseInt(total,10))*100);
       if (stop === 0) {stop=stop+1;}
       counter=parseInt(blocker,10);

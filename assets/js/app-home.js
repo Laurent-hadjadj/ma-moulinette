@@ -21,6 +21,9 @@ import 'motion-ui';
 
 import './foundation.js';
 
+// On importe les paramètres serveur
+import {serveur} from "./properties.js";
+
 import browserUpdate from 'browser-update';
 
 console.log('Home : Chargement de webpack !');
@@ -100,7 +103,7 @@ const stopSpinner=function() {
  */
 const sonarIsUp=function() {
   const options = {
-    url: 'http://localhost:8000/api/status', type: 'GET',
+    url: `${serveur()}/api/status`, type: 'GET',
     dataType: 'json',  contentType };
   return $.ajax(options)
     .then( data => {
@@ -121,7 +124,7 @@ const sonarIsUp=function() {
  */
 const listeProjetAjout=function() {
   const options = {
-    url: 'http://localhost:8000/api/liste_projet/ajout', type: 'GET',
+    url: `${serveur()}/api/liste_projet/ajout`, type: 'GET',
     dataType: 'json', contentType };
 
   return $.ajax(options)
@@ -137,10 +140,10 @@ const listeProjetAjout=function() {
  */
 const listeProjetDate=function(){
   const options = {
-    url: 'http://localhost:8000/api/liste_projet/date', type: 'GET',
+    url: `${serveur()}/api/liste_projet/date`, type: 'GET',
     dataType: 'json', contentType };
 
-   return $.ajax(options)
+  return $.ajax(options)
     .then(data=> {
       if (data.nombreProjet===0 && data.dateCreation===0){
         $('#js-nombre-projet').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(0));
@@ -159,37 +162,39 @@ const listeProjetDate=function(){
  */
 const afficheNombreProfil=function() {
   const options = {
-    url: 'http://localhost:8000/api/quality', type: 'GET',
+    url: `${serveur()}/api/quality`, type: 'GET',
     dataType: 'json', contentType };
 
   $.ajax(options)
     .then(r => {
-         $('#js-nombre-profil').html(`<span class="stat">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.nombre)}</span>`);
-         if (r.nombre===0){
-           $.ajax({ url:'http://localhost:8000/api/quality/profiles',
-           type: 'GET', dataType: 'json', contentType});
+        $('#js-nombre-profil').html(`<span class="stat">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.nombre)}</span>`);
+        if (r.nombre===0){
+          $.ajax({  url: `${serveur()}/api/quality/profiles`,
+                    type: 'GET', dataType: 'json', contentType});
           }
       });
 };
 
- /**
+/**
   * description
   * Affiche le nombre de profil.
   * @returns
   */
  // eslint-disable-next-line no-unused-vars
- const  afficheProjetVisibility=function() {
+const  afficheProjetVisibility=function() {
   const options = {
-    url: 'http://localhost:8000/api/visibility', type: 'GET', dataType: 'json',
-    contentType  };
+          url: `${serveur()}/api/visibility`, type: 'GET',
+          dataType: 'json', contentType
+  };
+
   return $.ajax(options)
     .then(function (r) {
-         $('#js-projet-public').html(`<span class="stat">
-         ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.nombre)}</span>`);
-         $('#js-projet-private').html(`<span class="stat">
-         ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.nombre)}</span>`);
+        $('#js-projet-public').html(`<span class="stat">
+        ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.nombre)}</span>`);
+        $('#js-projet-private').html(`<span class="stat">
+        ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.nombre)}</span>`);
       });
- };
+};
 
 /********* Main du programme *******/
 /**

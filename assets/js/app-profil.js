@@ -20,6 +20,9 @@ import 'motion-ui';
 
 import './foundation.js';
 
+// On importe les paramètres serveur
+import {serveur} from "./properties.js";
+
 import Chart from 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import zoomPlugin from 'chartjs-plugin-zoom';
@@ -81,7 +84,7 @@ const dateOptions2 = {year: 'numeric', month: 'numeric', day: 'numeric' };
  */
 const refreshQuality=function() {
   const options = {
-    url: 'http://localhost:8000/api/quality/profiles', type: 'GET',
+    url: `${serveur()}/api/quality/profiles`, type: 'GET',
     dataType: 'json',  contentType };
 
   return $.ajax(options)
@@ -119,10 +122,10 @@ const refreshQuality=function() {
                 </td>
               </tr>`;
         total = total + profil.regle;
-     });
+      });
 
-     $('#tableau-liste-profil').html(str);
-     $('.js-total').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(total));
+      $('#tableau-liste-profil').html(str);
+      $('.js-total').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(total));
     });
 };
 
@@ -178,7 +181,7 @@ const dessineMoiUnMouton=function(label, dataset) {
 // Création du graphique par language
 $('.graphique-langage').on('click', () => {
     const options = {
-          url: 'http://localhost:8000/api/quality/langage', type: 'GET',
+          url: `${serveur()}/api/quality/langage`, type: 'GET',
           dataType: 'json', contentType };
 
   return $.ajax(options)
@@ -198,6 +201,6 @@ $('.graphique-langage').on('click', () => {
  * Evenement
  * Appel la fonction de mise à jour de la liste des référentiels
  */
- $('.refresh').on('click', ()=>{
+$('.refresh').on('click', ()=>{
   refreshQuality();
 });

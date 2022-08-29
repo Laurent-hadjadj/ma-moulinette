@@ -13,6 +13,9 @@
 // Intégration de jquery
 import $ from 'jquery';
 
+// On importe les paramètres serveur
+import {serveur} from "./properties.js";
+
 const dateOptions = {
   year: 'numeric', month: 'numeric', day: 'numeric',
   hour: 'numeric', minute: 'numeric', second: 'numeric',
@@ -22,7 +25,7 @@ const dateOptions = {
  * description
  * Affiche la log.
  */
- const log=function(txt) {
+const log=function(txt) {
   const textarea = document.getElementById('log');
   textarea.scrollTop = textarea.scrollHeight;
   textarea.value += `${new Intl.DateTimeFormat('default',
@@ -189,8 +192,8 @@ export const enregistrement=function(mavenKey) {
     codeSmellMinor, codeSmellInfo,
     favori, initial:0 };
 
- const options = {
-    url: 'http://localhost:8000/api/enregistrement', type: 'PUT',
+const options = {
+    url: `${serveur()}/api/enregistrement`, type: 'PUT',
     dataType: 'json', data: JSON.stringify(data), contentType };
 
   $.ajax(options).then(t=> {
@@ -206,9 +209,9 @@ export const enregistrement=function(mavenKey) {
         const message='Cette version existe déjà dans l\'historique.';
         log(` - ERROR (${t.code}) : ${message}`);
         const callbox=`<div class="callout warning text-justify" data-closable="slide-out-right">
-                       <p style="color:#00445b;" class="open-sans" cell">Ooups ! ${message}</p>
-                       <button class="close-button" aria-label="Fermer la fenêtre" type="button" data-close>
-                       <span aria-hidden="true">&times;</span></button></div>`;
+                      <p style="color:#00445b;" class="open-sans" cell">Ooups ! ${message}</p>
+                      <button class="close-button" aria-label="Fermer la fenêtre" type="button" data-close>
+                      <span aria-hidden="true">&times;</span></button></div>`;
         $('#message').html(callbox);
       }
     });
