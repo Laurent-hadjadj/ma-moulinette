@@ -82,6 +82,7 @@
   "description": "Ma Moulinette est une application qui a pour objectif de simplifier la consultation des indicateurs collectés et calculés sur la plateforme sonarqube.",
   "version": "1.5.0",
   "main": "webpack.config.js",
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "https://gitlab.franceagrimer.fr"
