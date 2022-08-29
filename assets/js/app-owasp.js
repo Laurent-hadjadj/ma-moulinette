@@ -21,6 +21,10 @@ import 'motion-ui';
 
 import './foundation.js';
 
+// On importe les paramètres serveur
+import {serveur} from "./properties.js";
+
+
 console.log('Owasp : Chargement de webpack !');
 
 const contentType='application/json; charset=utf-8';
@@ -95,7 +99,7 @@ const remplissageOwaspInfo=function(idMaven) {
 
   const data={'mavenKey': idMaven };
   const options = {
-    url: 'http://localhost:8000/api/peinture/owasp/liste', type: 'GET',
+    url: `${serveur()}/api/peinture/owasp/liste`, type: 'GET',
     dataType: 'json', data, contentType };
 
   $.ajax(options).then(r => {
@@ -124,7 +128,7 @@ const remplissageOwaspInfo=function(idMaven) {
     if (parseInt(r.a1Major,10) > 1) {
       c = couleur[3];
       n = note[3];
-     }
+    }
     if (parseInt(r.a1Critical,10) > 1) {
       c = couleur[4];
       n = note[4];
@@ -188,9 +192,9 @@ const remplissageOwaspInfo=function(idMaven) {
       n = note[1];
     }
     if (parseInt(r.a4Minor,10) > 1) {
-       c = couleur[2];
-       n = note[2];
-      }
+      c = couleur[2];
+      n = note[2];
+    }
     if (parseInt(r.a4Major,10) > 1) {
       c = couleur[3];
       n = note[3];
@@ -253,9 +257,9 @@ const remplissageOwaspInfo=function(idMaven) {
 
     /* Détails A7 */
     if (parseInt(r.a7Blocker + r.a7Critical + r.a7Major + r.a7Minor,10) === 0) {
-       c = couleur[1];
-       n = note[1];
-      }
+      c = couleur[1];
+      n = note[1];
+    }
     if (parseInt(r.a7Minor,10) > 1) {
       c = couleur[2];
       n = note[2];
@@ -280,9 +284,9 @@ const remplissageOwaspInfo=function(idMaven) {
       n = note[1];
     }
     if (parseInt(r.a8Minor,10) > 1) {
-       c = couleur[2];
-       n = note[2];
-      }
+      c = couleur[2];
+      n = note[2];
+    }
     if (parseInt(r.a8Major,10) > 1) {
       c = couleur[3];
       n = note[3];
@@ -332,15 +336,15 @@ const remplissageOwaspInfo=function(idMaven) {
     if (parseInt(r.a10Major,10) > 1) {
       c = couleur[3];
       n = note[3];
-     }
+    }
     if (parseInt(r.a10Critical,10) > 1) {
-       c = couleur[4];
-       n = note[4];
-      }
+      c = couleur[4];
+      n = note[4];
+    }
     if (parseInt(r.a10Blocker,10) > 1) {
-       c = couleur[5];
-       n = note[5];
-      }
+      c = couleur[5];
+      n = note[5];
+    }
       injectionOwaspInfo(10, r.a10, c, n);
   });
 };
@@ -355,11 +359,11 @@ const remplissageOwaspInfo=function(idMaven) {
 const remplissageHotspotInfo=function(idMaven) {
   if (idMaven === undefined) {
     return;
-   }
+  }
 
   const data={'mavenKey': idMaven };
   const options = {
-    url: 'http://localhost:8000/api/peinture/owasp/hotspot/info/', type: 'GET',
+    url: `${serveur()}/api/peinture/owasp/hotspot/info/`, type: 'GET',
     dataType: 'json', data, contentType };
 
   $.ajax(options).then(r=> {
@@ -384,7 +388,7 @@ const remplissageHotspotInfo=function(idMaven) {
   }
 
   i = `<span>${new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(leTaux)}</span>
-       <span class="badge ${laNote[0]}"> ${laNote[1]}</span>`;
+      <span class="badge ${laNote[0]}"> ${laNote[1]}</span>`;
   $('#note-hotspot').html(i);
   });
 };
@@ -423,13 +427,13 @@ const remplissageHotspotListe=function(idMaven) {
  */
   const data={'mavenKey': idMaven };
   const options = {
-    url: 'http://localhost:8000/api/peinture/owasp/hotspot/liste', type: 'GET',
-    dataType: 'json', data, contentType };
+    url: `${serveur()}/api/peinture/owasp/hotspot/liste`, type: 'GET',
+          dataType: 'json', data, contentType };
 
   $.ajax(options).then(r=> {
   let leTaux=1, laNote=['badge-vert1', 'A'], espace='';
   const hotspotTotal=r.menaceA1+r.menaceA2+r.menaceA3+r.menaceA4+r.menaceA5+
-                     r.menaceA6+r.menaceA7+r.menaceA8+r.menaceA9+r.menaceA10;
+                    r.menaceA6+r.menaceA7+r.menaceA8+r.menaceA9+r.menaceA10;
 
   const html1='&nbsp;';
   const html2='&nbsp;&nbsp;&nbsp;';
@@ -471,8 +475,8 @@ const remplissageHotspotListe=function(idMaven) {
     }
     if ( leTaux*100===100) {
       espace=html1;
-     }
-     injectionHotspotListe(3, espace, r.menaceA3, leTaux, laNote[0], laNote[1]);
+    }
+    injectionHotspotListe(3, espace, r.menaceA3, leTaux, laNote[0], laNote[1]);
 
     /* Calcul A4 */
     leTaux = 1 - (r.menaceA4/ hotspotTotal);
@@ -519,7 +523,7 @@ const remplissageHotspotListe=function(idMaven) {
     if ( (leTaux*100)>10 && (leTaux*100)<100) {
       espace=html2;
     } else {
-         espace='';
+        espace='';
     }
     if ( leTaux*100===100) {
       espace=html1;
@@ -548,7 +552,7 @@ const remplissageHotspotListe=function(idMaven) {
         espace='';
       }
     if (leTaux*100===100) {
-       espace=html1;
+      espace=html1;
       }
       injectionHotspotListe(9, espace, r.menaceA9, leTaux, laNote[0], laNote[1]);
 
@@ -564,11 +568,11 @@ const remplissageHotspotListe=function(idMaven) {
       espace=html1;
     }
     injectionHotspotListe(10, espace, r.menaceA10, leTaux, laNote[0], laNote[1]);
-   } else {
+  } else {
     for (let i=1; i<11; i++){
       injectionHotspotListe(i, espace, 0, leTaux, laNote[0], laNote[1]);
     }
-   }
+  }
   });
 };
 
@@ -589,13 +593,13 @@ const remplissageHotspotListe=function(idMaven) {
  */
 const injectionHotspotDetails=function(numero,url,color,rule,severity,file,line,message,status){
   const ligne = `<tr>
-                 <td class="stat-note">${numero}</td>
-                 <td><a href="${url}/coding_rules?open=${rule}&q=${rule}">${rule}</a></td>
-                 <td class="${color}">${severity}</td>
-                 <td class="component">${file}</td>
-                 <td>${line}</td>
-                 <td>${message}</td>
-                 <td>${status}</td>
+                  <td class="stat-note">${numero}</td>
+                  <td><a href="${url}/coding_rules?open=${rule}&q=${rule}">${rule}</a></td>
+                  <td class="${color}">${severity}</td>
+                  <td class="component">${file}</td>
+                  <td>${line}</td>
+                  <td>${message}</td>
+                  <td>${status}</td>
                 </tr>`;
   $('#tbody').append(ligne);
 };
@@ -641,7 +645,7 @@ const remplissageHotspotDetails=function(idMaven) {
 
   const data={'mavenKey': idMaven };
   const options = {
-    url: 'http://localhost:8000/api/peinture/owasp/hotspot/details', type: 'GET',
+    url: `${serveur()}/api/peinture/owasp/hotspot/details`, type: 'GET',
     dataType: 'json', data, contentType };
 
   $.ajax(options).then(r=> {
@@ -661,8 +665,8 @@ const remplissageHotspotDetails=function(idMaven) {
         // On ajoute une ligne dans le tableau
         ligne = `<tr class="text-center">
                   <td>N.C</td><td>N.C</td><td>N.C</td><td>N.C</td><td>N.C</td><td>N.C</td><td>Pas de faille.</td>
-                 </tr>`;
-         $('#tbody').html(ligne);
+                </tr>`;
+        $('#tbody').html(ligne);
       } else {
       // On efface le tableau et on ajoute les lignes
       // On calcul l'impact sur les modules
@@ -742,8 +746,8 @@ const remplissageHotspotDetails=function(idMaven) {
       bc=moduleVert;
     }
     if (too*100 >29 && too*100 <70) {
-       bc=moduleOrange;
-      }
+      bc=moduleOrange;
+    }
     if (too*100 >69) {
       bc=moduleRouge;
     }
@@ -768,7 +772,7 @@ const remplissageHotspotDetails=function(idMaven) {
     }
     injectionModule('autre',autre, too, bc, zero);
   }
- });
+  });
 };
 
 /**
@@ -787,8 +791,8 @@ const remplissageDetailsHotspotOwasp=function(idMaven, menace, titre) {
 
   const data={'mavenKey': idMaven, menace };
   const options = {
-    url: 'http://localhost:8000/api/peinture/owasp/hotspot/severity', type: 'GET',
-    dataType: 'json', data, contentType };
+    url: `${serveur()}/api/peinture/owasp/hotspot/severity`, type: 'GET',
+          dataType: 'json', data, contentType };
 
   $.ajax(options).then(r=> {
   $('.details-titre').html(listeOwasp2017[titre]);

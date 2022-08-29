@@ -27,6 +27,9 @@ import 'motion-ui';
 
 import './foundation.js';
 
+// On importe les paramètres serveur
+import {serveur} from "./properties.js";
+
 import {remplissage} from './app-projet-peinture.js';
 import {enregistrement} from './app-projet-enregistrement.js';
 
@@ -37,7 +40,7 @@ const dateOptions = {
 
 const contentType='application/json; charset=utf-8';
 const matrice = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
-                 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
+                  18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
 const paletteCouleur = [
   '#065535', '#133337', '#000000', '#ffc0cb', '#008080', '#ff0000', '#ffd700', '#666666',
   '#ff7373', '#fa8072', '#800080', '#800000', '#003366', '#333333', '#20b2aa', '#ffc3a0',
@@ -86,11 +89,11 @@ const palette=function() {
  */
 const dessineMoiUnMouton=function(label, dataset) {
   const nouvellePalette = palette();
-  const data = { labels: label,
-                 datasets: [{ data: dataset, backgroundColor: nouvellePalette,
+  const data = {labels: label,
+                datasets: [{ data: dataset, backgroundColor: nouvellePalette,
                               borderWidth: 1,
                               datalabels: { align: 'center', anchor: 'center' }
-                           }]
+                          }]
                 };
 
   const options = {
@@ -194,8 +197,8 @@ const match=function(params, data) {
  */
 const selectProjet=function() {
   const options = {
-    url: 'http://localhost:8000/api/liste/projet', type: 'GET',
-    dataType: 'json', contentType };
+    url: `${serveur()}/api/liste/projet`, type: 'GET',
+          dataType: 'json', contentType };
 
   return $.ajax(options)
     .then(function (data) {
@@ -223,8 +226,8 @@ const selectProjet=function() {
 const projetAnalyse=function(mavenKey) {
   const data = { mavenKey };
   const options = {
-    url: 'http://localhost:8000/api/projet/analyses', type: 'GET',
-    dataType: 'json', data, contentType,
+    url: `${serveur()}/api/projet/analyses`, type: 'GET',
+          dataType: 'json', data, contentType,
   };
 
   return new Promise((resolve) => {
@@ -242,11 +245,11 @@ const projetAnalyse=function(mavenKey) {
  * @param {*} mavenKey
  * @returns
  */
- const projetMesure=function(mavenKey) {
+const projetMesure=function(mavenKey) {
   const data = { mavenKey };
   const options = {
-    url: 'http://localhost:8000/api/projet/mesures', type: 'GET',
-    dataType: 'json', data, contentType };
+    url: `${serveur()}/api/projet/mesures`, type: 'GET',
+          dataType: 'json', data, contentType };
   return new Promise((resolve) => {
     $.ajax(options).then(
       () => {
@@ -268,8 +271,8 @@ const projetAnalyse=function(mavenKey) {
 const projetAnomalie=function(mavenKey) {
   const data = { mavenKey };
   const options = {
-    url: 'http://localhost:8000/api/projet/anomalie', type: 'GET',
-    dataType: 'json', data, contentType };
+    url: `${serveur()}/api/projet/anomalie`, type: 'GET',
+          dataType: 'json', data, contentType };
 
   return new Promise((resolve) => {
     $.ajax(options).then(t => {
@@ -290,14 +293,14 @@ const projetAnomalie=function(mavenKey) {
 const projetAnomalieDetails=function(mavenKey) {
   const data = { mavenKey };
   const options = {
-    url: 'http://localhost:8000/api/projet/anomalie/details', type: 'GET',
-    dataType: 'json', data, contentType };
+    url: `${serveur()}/api/projet/anomalie/details`, type: 'GET',
+          dataType: 'json', data, contentType };
 
   return new Promise((resolve) => {
     $.ajax(options).then(
       t => {
         if (t.code==='OK'){
-           log(' - INFO : (7) Le frequence des sévérités par type a été collectée.');
+            log(' - INFO : (7) Le frequence des sévérités par type a été collectée.');
         } else {
             log(` - ERROR : (7) Je n'ai pas réussi à collecter les données (${t.code}).`);
         }
@@ -320,7 +323,7 @@ const projetAnomalieDetails=function(mavenKey) {
 const projetRating=function(mavenKey, type) {
   const data = { mavenKey, type };
   const options = {
-    url: 'http://localhost:8000/api/projet/historique/note', type: 'GET',
+    url: `${serveur()}/api/projet/historique/note`, type: 'GET',
     dataType: 'json', data, contentType };
 
   return new Promise((resolve) => {
@@ -345,8 +348,8 @@ const projetRating=function(mavenKey, type) {
 const projetOwasp=function(mavenKey) {
   const data = { mavenKey };
   const options = {
-    url: 'http://localhost:8000/api/projet/issues/owasp', type: 'GET',
-    dataType: 'json', data, contentType };
+    url: `${serveur()}/api/projet/issues/owasp`, type: 'GET',
+          dataType: 'json', data, contentType };
 
   return new Promise((resolve) => {
     $.ajax(options).then(t=> {
@@ -373,7 +376,7 @@ const projetOwasp=function(mavenKey) {
 const projetHotspot=function(mavenKey) {
   const data = { mavenKey };
   const options = {
-    url: 'http://localhost:8000/api/projet/hotspot', type: 'GET',
+    url: `${serveur()}/api/projet/hotspot`, type: 'GET',
     dataType: 'json', data, contentType };
 
   return new Promise((resolve) => {
@@ -401,8 +404,8 @@ const projetHotspot=function(mavenKey) {
 const projetHotspotOwasp=function(mavenKey, owasp) {
   const data = { mavenKey, owasp };
   const options = {
-    url: 'http://localhost:8000/api/projet/hotspot/owasp', type: 'GET',
-    dataType: 'json', data, contentType };
+    url: `${serveur()}/api/projet/hotspot/owasp`, type: 'GET',
+          dataType: 'json', data, contentType };
 
   return new Promise((resolve) => {
     $.ajax(options).then(t=> {
@@ -432,8 +435,8 @@ const projetHotspotOwasp=function(mavenKey, owasp) {
 const projetHotspotOwaspDetails=function(mavenKey) {
   const data = { mavenKey };
   const options = {
-    url: 'http://localhost:8000/api/projet/hotspot/details', type: 'GET',
-    dataType: 'json', data, contentType };
+    url: `${serveur()}/api/projet/hotspot/details`, type: 'GET',
+          dataType: 'json', data, contentType };
 
   return new Promise((resolve) => {
     $.ajax(options).then(t=> {
@@ -459,8 +462,8 @@ const projetHotspotOwaspDetails=function(mavenKey) {
 const projetNosonarDetails=function(mavenKey){
   const data = { mavenKey };
   const options = {
-    url: 'http://localhost:8000/api/projet/nosonar/details', type: 'GET',
-    dataType: 'json', data, contentType };
+    url: `${serveur()}/api/projet/nosonar/details`, type: 'GET',
+          dataType: 'json', data, contentType };
 
   return new Promise((resolve) => {
     $.ajax(options).then(t=> {
@@ -481,8 +484,8 @@ const projetNosonarDetails=function(mavenKey){
 */
 const afficheProjetFavori=function() {
   const options = {
-    url: 'http://localhost:8000/api/projet/mes-applications/liste',
-    type: 'GET', dataType: 'json', contentType
+    url: `${serveur()}/api/projet/mes-applications/liste`,
+          type: 'GET', dataType: 'json', contentType
   };
 
   return new Promise((resolve) => {
@@ -559,8 +562,8 @@ const afficheProjetFavori=function() {
               </td>
               </tr>`;
       $('#tableau-liste-projet').append(str);
-     });
-     $(document).foundation();
+    });
+    $(document).foundation();
     // On met à jour le nombre des projets collectés
     $('#affiche-total-projet').html(`<span id="nombre-projet" class="stat">${i}</span>`);
 
@@ -579,7 +582,7 @@ const afficheProjetFavori=function() {
       const b = mavenKey.split(':');
       const nom = b[1];
       const $newOption = $("<option selected='selected'></option>").val(mavenKey).text(nom)
-       $('select[name="projet"]').append($newOption).trigger('change');
+      $('select[name="projet"]').append($newOption).trigger('change');
     });
 
     /* On gére le click sur le bouton S (Supprimer) */
@@ -594,8 +597,8 @@ const afficheProjetFavori=function() {
       const mavenKey = element.dataset.mavenkey;
       const data = { mavenKey };
       const options2 = {
-        url: 'http://localhost:8000/api/projet/mes-applications/delete',
-        type: 'GET',  dataType: 'json', data, contentType
+        url: `${serveur()}/api/projet/mes-applications/delete`,
+              type: 'GET',  dataType: 'json', data, contentType
       };
 
       // On Ajoute une fonction assynchrone pour désactiver le projet de la liste
@@ -710,7 +713,7 @@ const afficheProjetFavori=function() {
 const afficheHotspotDetails=function (mavenKey){
   const data = { mavenKey };
   const options = {
-    url: 'http://localhost:8000/api/peinture/projet/hotspot/details',
+    url: `${serveur()}/api/peinture/projet/hotspot/details`,
     type: 'GET', dataType: 'json', data, contentType };
   $.ajax(options).then(t=> {
     if (t.code !== 200) {
@@ -728,11 +731,11 @@ const afficheHotspotDetails=function (mavenKey){
               <td id="hotspot-low" class="text-center stat" data-hotspot-low="${t.low}">
               ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.low)}</td>
               </tr>`;
-     $('#tableau-liste-hotspot').append(str);
-     $('#hotspot-total').html(`<span class="stat">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.total)}</span>`);
+    $('#tableau-liste-hotspot').append(str);
+    $('#hotspot-total').html(`<span class="stat">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.total)}</span>`);
 
-     const t1 = document.getElementById('hotspot-total');
-     t1.dataset.hotspotTotal=(t.total);
+    const t1 = document.getElementById('hotspot-total');
+    t1.dataset.hotspotTotal=(t.total);
   });
 };
 
@@ -819,8 +822,8 @@ $('select[name="projet"]').change(function () {
   // On regarde si le projet est en favori, on récupère son statut
   const data = { mavenKey: $('#select-result').text().trim() };
   const options = {
-    url: 'http://localhost:8000/api/favori/check', type: 'GET',
-    dataType: 'json', data, contentType };
+    url: `${serveur()}/api/favori/check`, type: 'GET',
+          dataType: 'json', data, contentType };
 
   $.ajax(options).then(t=> {
     if ( t.favori==='TRUE' && t.statut==='FALSE' ) {
@@ -831,7 +834,7 @@ $('select[name="projet"]').change(function () {
     } else {
       $('.favori-svg').removeClass('favori-svg-select');
     }
-   });
+  });
 
   // On débloque les boutons
 
@@ -875,8 +878,8 @@ $('.js-affiche-liste').on('click', function () {
 $('.js-affiche-severite').on('click', function () {
   if ($('select[name="projet"]').val() !=='') {
     $('#modal-affiche-severite').foundation('open');
- }
- });
+  }
+});
 
 /**
  * description
@@ -884,7 +887,7 @@ $('.js-affiche-severite').on('click', function () {
  */
 $('#js-affiche-hotspot').on('click', function () {
   if ($('select[name="projet"]').val() !=='') {
-     $('#modal-liste-hotspot').foundation('open');
+      $('#modal-liste-hotspot').foundation('open');
   }
 });
 
@@ -911,13 +914,13 @@ $('.favori-svg').on('click', () => {
           $('.favori-svg').removeClass('favori-svg-select');
           statut='FALSE';
       } else {
-       $('.favori-svg').addClass('favori-svg-select');
-       statut='TRUE';
+        $('.favori-svg').addClass('favori-svg-select');
+        statut='TRUE';
       }
 
     const data = { mavenKey: $('#select-result').text().trim(), statut };
     const options = {
-      url: 'http://localhost:8000/api/favori', type: 'GET',
+      url: `${serveur()}/api/favori`, type: 'GET',
       dataType: 'json',  data, contentType };
       $.ajax(options).then( t => {
         if (statut === t.statut){
@@ -934,7 +937,7 @@ $('.favori-svg').on('click', () => {
  * description
  * On affiche la répartition des versions
  */
- $('#js-version-autre').on('click', () => {
+$('#js-version-autre').on('click', () => {
   let version ;
   if ($('select[name="projet"]').val() !=='') {
     version = document.getElementById('version-autre');
@@ -979,7 +982,7 @@ $('.js-enregistrement').on('click', () => {
   // On récupère la clé du projet
   const apiMaven = $('#select-result').text().trim();
   enregistrement(apiMaven);
- });
+});
 
 /**
  * description
@@ -989,12 +992,12 @@ $('.js-tableau-suivi').on('click', () => {
   if ($('select[name="projet"]').val() !==''){
     const apiMaven = $('#select-result').text().trim();
     window.location.href='/suivi?mavenKey='+apiMaven;
-   } else {
-     log(' - ERROR - Vous devez chosir un projet dans la liste !! !');
+    } else {
+    log(' - ERROR - Vous devez chosir un projet dans la liste !! !');
     }
- });
+});
 
- /**
+/**
  * description
  * On génére la route et on ouvre la page de répartition des indicateurs par module
  */
@@ -1002,12 +1005,12 @@ $('.js-tableau-suivi').on('click', () => {
     if ($('select[name="projet"]').val() !==''){
       const apiMaven = $('#select-result').text().trim();
       window.location.href='/owasp?mavenKey='+apiMaven;
-     } else {
-       log(' - ERROR - [OWASP] Vous devez chosir un projet dans la liste !! !');
+    } else {
+      log(' - ERROR - [OWASP] Vous devez chosir un projet dans la liste !! !');
       }
-   });
+  });
 
- /**
+/**
  * description
  * On génére la route et on ouvre la page de répartition des indicateurs par module
  */
@@ -1015,7 +1018,7 @@ $('.js-repartition-module').on('click', () => {
   if ($('select[name="projet"]').val() !==''){
     const apiMaven = $('#select-result').text().trim();
     window.location.href='/projet/repartition?mavenKey='+apiMaven;
-   } else {
-     log(' - ERROR - [Répartition] Vous devez chosir un projet dans la liste !! !');
+  } else {
+    log(' - ERROR - [Répartition] Vous devez chosir un projet dans la liste !! !');
     }
- });
+});

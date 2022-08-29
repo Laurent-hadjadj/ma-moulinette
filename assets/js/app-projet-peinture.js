@@ -12,6 +12,9 @@
 // Intégration de jquery
 import $ from 'jquery';
 
+// On importe les paramètres serveur
+import {serveur} from "./properties.js";
+
 const dateOptions = {year: 'numeric', month: 'numeric', day: 'numeric',
 hour: 'numeric', minute: 'numeric', second: 'numeric',
 hour12: false };
@@ -22,7 +25,7 @@ const contentType='application/json; charset=utf-8';
  * description
  * Affiche la log.
  */
- const log=function(txt) {
+const log=function(txt) {
   const textarea = document.getElementById('log');
   textarea.scrollTop = textarea.scrollHeight;
   textarea.value += `${new Intl.DateTimeFormat('default',
@@ -41,7 +44,7 @@ export const remplissage=function(mavenKey) {
 
   //On récupère les informations sur les versions, et le dernier audit.
   const optionsInfo = {
-    url: 'http://localhost:8000/api/peinture/projet/version', type: 'GET',
+    url: `${serveur()}/api/peinture/projet/version`, type: 'GET',
     dataType: 'json', data, contentType };
 
   $.ajax(optionsInfo).then(t=> {
@@ -87,7 +90,7 @@ export const remplissage=function(mavenKey) {
 
   //On récupère les exclusions noSonar
   const optionsNoSonar = {
-    url: 'http://localhost:8000/api/peinture/projet/nosonar/details', type: 'GET',
+    url: `${serveur()}/api/peinture/projet/nosonar/details`, type: 'GET',
     dataType: 'json', data, contentType };
 
   $.ajax(optionsNoSonar).then(t=> {
@@ -101,7 +104,7 @@ export const remplissage=function(mavenKey) {
 
   //On récupère les informations du projet : lignes, couverture fonctionnelle, duplication, tests unitaires et le nombre de défaut.
   const optionsProjet = {
-    url: 'http://localhost:8000/api/peinture/projet/information', type: 'GET',
+    url: `${serveur()}/api/peinture/projet/information`, type: 'GET',
     dataType: 'json', data, contentType };
 
   $.ajax(optionsProjet).then(t=> {
@@ -134,8 +137,8 @@ export const remplissage=function(mavenKey) {
 
   //On récupère les informations sur la dette technique et les anomalies.
   const optionsAnomalie = {
-    url: 'http://localhost:8000/api/peinture/projet/anomalie', type: 'GET',
-     dataType: 'json', data, contentType };
+    url: `${serveur()}/api/peinture/projet/anomalie`, type: 'GET',
+          dataType: 'json', data, contentType };
 
   $.ajax(optionsAnomalie).then(t=> {
     if (t[0] === 406) {
@@ -187,7 +190,7 @@ export const remplissage=function(mavenKey) {
           e1=html02;
         }
         i1=`<span>${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.frontend)}</span> ${e1}
-           <span>${new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(t.frontend/totalModule)}</span>`;
+          <span>${new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(t.frontend/totalModule)}</span>`;
       } else {
         i1=`<span>${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(0)}</span>`;
       }
@@ -202,7 +205,7 @@ export const remplissage=function(mavenKey) {
           e2=html02;
         }
         i2=`<span>${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.backend)}</span> ${e2}
-           <span>${new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(t.backend/totalModule)}</span>`;
+          <span>${new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(t.backend/totalModule)}</span>`;
       } else {
         i2=`<span>${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(0)}</span>`;
       }
@@ -327,12 +330,12 @@ export const remplissage=function(mavenKey) {
     $('#note-reliability').html(`<span class="${couleur1}">${noteReliability}</span>`);
     $('#note-security').html(`<span class="${couleur2}">${noteSecurity}</span>`);
     $('#note-sqale').html(`<span class="${couleur3}">${noteSqale}</span>`);
-   });
+  });
 
   //On récupère la sévérité par type.
   const optionsAnomalieDetails = {
-    url: 'http://localhost:8000/api/peinture/projet/anomalie/details', type: 'GET',
-    dataType: 'json', data, contentType };
+    url: `${serveur()}/api/peinture/projet/anomalie/details`, type: 'GET',
+          dataType: 'json', data, contentType };
 
   $.ajax(optionsAnomalieDetails).then(t=> {
 
@@ -396,8 +399,8 @@ export const remplissage=function(mavenKey) {
 
   //On récupère les hotspots.
   const optionsHotspots = {
-    url: 'http://localhost:8000/api/peinture/projet/hotspots', type: 'GET',
-    dataType: 'json', data, contentType };
+    url: `${serveur()}/api/peinture/projet/hotspots`, type: 'GET',
+          dataType: 'json', data, contentType };
 
   $.ajax(optionsHotspots).then(t=> {
     let couleur='';
@@ -409,19 +412,19 @@ export const remplissage=function(mavenKey) {
     }
 
     if (t.note === 'E') {
-      couleur = 'note-rouge';
+        couleur = 'note-rouge';
     }
     if (t.note === 'D') {
-      couleur = 'note-orange';
+        couleur = 'note-orange';
     }
     if (t.note === 'C') {
-      couleur = 'note-jaune';
+        couleur = 'note-jaune';
     }
     if (t.note === 'B') {
-       couleur = 'note-vert2';
+        couleur = 'note-vert2';
       }
     if (t.note === 'A') {
-      couleur = 'note-vert1';
+        couleur = 'note-vert1';
     }
 
     $('#note-hotspot').html(`<span class="${couleur}">${t.note}</span>`);
