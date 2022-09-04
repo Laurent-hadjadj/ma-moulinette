@@ -16,6 +16,7 @@ Encore
      *
      */
     .addEntry('login', './assets/js/app-login.js')
+    .addEntry('register', './assets/js/app-register.js')
     .addEntry('home', './assets/js/app-home.js')
     .addEntry('projet', './assets/js/app-projet.js')
     .addEntry('profil', './assets/js/app-profil.js')
