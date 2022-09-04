@@ -28,8 +28,8 @@ class MaMoulinette
     #[ORM\Column(type: 'string', length: 8)]
     private $version;
 
-    #[ORM\Column(type: 'string', length: 8)]
-    private $version_date;
+    #[ORM\Column(type: 'datetime')]
+    private $date_version;
 
     #[ORM\Column(type: 'boolean')]
     private $is_default;
@@ -54,14 +54,14 @@ class MaMoulinette
         return $this;
     }
 
-    public function getVersionDate(): ?string
+    public function getDateVersion(): ?\DateTimeInterface
     {
-        return $this->version_date;
+        return $this->date_version;
     }
 
-    public function setVersionDate(string $version_date): self
+    public function setDateVersion(\DateTimeInterface $date_version): self
     {
-        $this->version_date = $version_date;
+        $this->date_version = $date_version;
 
         return $this;
     }
@@ -89,6 +89,5 @@ class MaMoulinette
 
         return $this;
     }
-
 
 }
