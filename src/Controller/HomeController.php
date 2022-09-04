@@ -33,7 +33,7 @@ class HomeController extends AbstractController
      * @param  mixed $em
      * @return Response
      */
-    #[Route('/', name: 'home')]
+    #[Route('/home', name: 'home')]
     public function index(EntityManagerInterface $em): Response
     {
         $nombreFavori=$this->getParameter('nombre.favori');
