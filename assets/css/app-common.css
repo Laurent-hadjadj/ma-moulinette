@@ -22,6 +22,10 @@
     font-size: 1.5rem;
   }
 
+  .logout-svg {
+    margin-top: 1rem;
+  }
+
   .version {
     margin-left: 1rem;
     margin-top: -1.5rem;
@@ -45,6 +49,10 @@
     font-size: 1.8rem;
   }
 
+  .logout-svg {
+    margin-top: 1rem;
+  }
+
   .version {
     margin-left: 1rem;
     margin-top: -1.5rem;
@@ -64,6 +72,10 @@
   .ma-moulinette {
     margin-left: 1rem;
     font-size: 1.8rem;
+  }
+
+  .logout-svg {
+    margin-top: 1rem;
   }
 
   .version {
@@ -87,6 +99,10 @@
     font-size: 1.8rem;
   }
 
+  .logout-svg {
+    margin-top: 1.5rem;
+  }
+
   .version {
     margin-left: 1rem;
     margin-top: -1.5rem;
@@ -108,6 +124,10 @@
     font-size: 1.8rem;
   }
 
+  .logout-svg {
+    margin-top: 1.5rem;
+  }
+
   .version {
     margin-left: 1rem;
     margin-top: -1.5rem;
@@ -127,6 +147,10 @@
   .ma-moulinette {
     margin-left: 1rem;
     font-size: 2.5rem;
+  }
+
+  .logout-svg {
+    margin-top: 1.5rem;
   }
 
   /* Desktop */
@@ -151,6 +175,10 @@
     font-size: 2.5rem;
   }
 
+  .logout-svg {
+    margin-top: 1.5rem;
+  }
+
   .version {
     margin-left: 1rem;
     margin-top: -1.5rem;
@@ -169,6 +197,10 @@
   .ma-moulinette {
     margin-left: 1rem;
     font-size: 2.5rem;
+  }
+
+  .logout-svg {
+    margin-top: 1.5rem;
   }
 
   .version {
@@ -216,6 +248,21 @@ body { background: #eee; }
   fill-rule: evenodd;
   clip-rule: evenodd;
 }
+
+/* Définition du logout SVG */
+.logout-svg {
+  fill: #00445b;
+  cursor: pointer;
+  margin-right: 1rem;
+  width: 32px;
+  height: 32px;
+  shape-rendering: geometricprecision;
+  text-rendering: geometricprecision;
+  fill-rule: evenodd;
+  clip-rule: evenodd;
+}
+
+.logout-svg:hover { fill: #e7552c; }
 
 /* breadcrumbs */
 .breadcrumbs li { font-size: 1rem; }
