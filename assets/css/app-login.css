@@ -1,0 +1,140 @@
+/**
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2021-2022.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ */
+
+/**
+  * Propriétés pour les class en fonction des medias type
+  *
+  */
+
+/* Media Small */
+@media only screen and (max-width: 20em) {
+  .video-hongkong {
+    height: auto;
+    width: 100%;
+  }
+}
+
+/* Media Small */
+@media only screen and (min-width: 20.025em) and (max-width: 22em) {
+  .video-hongkong {
+    height: auto;
+    width: 100%;
+  }
+}
+
+/* Media Small */
+@media only screen and (min-width: 22.025em) and (max-width: 30em) {
+  .video-hongkong {
+    height: auto;
+    width: 100%;
+  }
+}
+
+/* Media Small */
+@media only screen and (min-width: 30.025em) and (max-width: 40em) {
+  .video-hongkong {
+    height: auto;
+    width: 100%;
+  }
+}
+
+/* Media Medium */
+@media only screen and (min-width: 40em) and (max-width: 64em) {
+  .video-hongkong {
+    height: auto;
+    width: 95%;
+  }
+}
+
+/* Media Large */
+@media only screen and (min-width: 64.025em) and (max-width: 90em) {
+  .video-hongkong {
+    height: auto;
+    width: 95%;
+  }
+}
+
+/* Media Large */
+@media only screen and (min-width: 90.025em) and (max-width: 120em) {
+  .video-hongkong {
+    height: auto;
+    width: 95%;
+  }
+}
+
+/* Media Extra-Large */
+@media only screen and (min-width: 120em) and (max-width: 160em) {
+  .video-hongkong {
+    height: auto;
+    width: 95%;
+  }
+}
+
+/*************************          Global     *********************************/
+
+/* Bouton de validation */
+#valider-formulaire-login {
+  color: #fff;
+  background-color: #00445b;
+}
+
+/* hover des boutons */
+#valider-formulaire-login:hover {
+  background-color: #006182;
+}
+
+/* affichage du crédit */
+.credit {
+  font-size: 0.8rem;
+  color: #021e28;
+}
+
+.credit:hover { color: #ba401b; }
+
+#sur { font-size: 0.8rem; }
+
+.pas-encore-inscrit:hover { color: #ba401b; }
+
+.remember-me { margin-top: -0.5rem; }
+
+/* gestion du formulaire de connexion */
+.floated-label-wrapper {
+  position: relative;
+}
+
+.floated-label-wrapper label {
+  background: #fefefe;
+  color: #1779ba;
+  font-size: 0.75rem;
+  font-weight: 600;
+  left: 0.75rem;
+  opacity: 0;
+  padding: 0 0.25rem;
+  position: absolute;
+  top: 2rem;
+  transition: all 0.15s ease-in;
+  z-index: -1;
+}
+
+.floated-label-wrapper label input[type="email"],
+.floated-label-wrapper label input[type="password"] {
+  border-radius: 4px;
+  font-size: 1.75em;
+  padding: 0.5em;
+}
+
+.floated-label-wrapper label.show {
+  opacity: 1;
+  top: -0.85rem;
+  z-index: 1;
+  transition: all 0.15s ease-in;
+}
