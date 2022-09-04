@@ -15,6 +15,7 @@ Encore
      * ENTRY CONFIG
      *
      */
+    .addEntry('login', './assets/js/app-login.js')
     .addEntry('home', './assets/js/app-home.js')
     .addEntry('projet', './assets/js/app-projet.js')
     .addEntry('profil', './assets/js/app-profil.js')
@@ -60,12 +61,12 @@ Encore
         to: '[path][name].[ext]',
         context: './assets'
     })
-    // copy les webfonts dans /build/polices depuis assets/polices
-    /*.copyFiles({
-        from: './assets/fonts',
+    // copy les videos dans build/video depuis asset/video
+    .copyFiles({
+        from: './assets/video',
         to: '[path][name].[ext]',
         context: './assets'
-    })*/
+    })
 
 // eslint-disable-next-line no-undef
 module.exports = Encore.getWebpackConfig();
