@@ -1,0 +1,63 @@
+{% set title = 'Inscription' %}
+{% set description = 'Incription à MaMoulinette' %}
+
+<!DOCTYPE html>
+
+<html  lang="fr">
+
+{# Chargement de la section HEAD #}
+<head>
+{{ include('head.html.twig') }}
+{% block stylesheets %}
+    {{ encore_entry_link_tags('register') }}
+{% endblock %}
+</head>
+
+<body>
+{# Chargement de la section header #}
+{{ include('header.html.twig') }}
+<br /><br />
+
+<div class="grid-container">
+  <div class="grid-x">
+    <div class="small-12 medium-7 large-7 cell">
+      <video id="video-arbres" class="video-arbres" preload="metadata" loop autoplay muted
+        src="{{ asset('build/video/ArbresEnneiges.mp4') }}" type="video/mp4" />
+      </video>
+      <span class="open-sans float-center text-center">
+        <a class="open-sans credit" href="https://pixabay.com/fr/users/invisiblepower-3810957/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=video&amp;utm_content=7328">invisiblepower</a> <span id="sur">sur</span> <a class="open-sans credit" href="https://pixabay.com/fr//?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=video&amp;utm_content=7328">Pixabay</a>
+      </span>
+    </div>
+    <div class="small-12 medium-5 large-5 cell">
+      {% form_theme registrationForm 'foundation_6_layout.html.twig' %}
+      {{ form_start(registrationForm) }}
+      <div class="callout">
+        <h2 class="claire-hand text-center">Inscription.</h2>
+        <div class="cell">
+          <div class="floated-label-wrapper">
+            {{ form_label(registrationForm.courriel) }}
+          </div>
+          {{ form_widget(registrationForm.courriel, {'attr': {'style':'color:#00445b;'}}) }}
+          <div class='form_erreur'>{{ form_errors(registrationForm.courriel) }}</div>
+        </div>
+        <div class="cell">
+          <div class="floated-label-wrapper">
+            {{ form_label(registrationForm.plainPassword) }}
+          </div>
+          {{ form_widget(registrationForm.plainPassword, {'attr': {'style':'color:#00445b;'}}) }}
+          <div class='form_erreur'>{{ form_errors(registrationForm.plainPassword) }}</div>
+        </div>
+        <input id="valider-formulaire-enregistrement" class="button expanded" type="submit" value="M'inscrire">
+      {{ form_end(registrationForm) }}
+    </div>
+</div>
+
+<br /><br />
+{# Chargement de la section footer #}
+{{ include('footer.html.twig') }}
+{# Chargement du code javascript #}
+{% block javascripts %}
+  {{ encore_entry_script_tags('register') }}
+{% endblock %}
+</body>
+</html>
