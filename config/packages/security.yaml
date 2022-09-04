@@ -1,19 +1,45 @@
 ---
 security:
+    # On active le mécanisme d'authentification
     enable_authenticator_manager: true
-    # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
+    # On ne léve pas d'exception si l'utilisateur n'xiste pas
+    #hide_user_not_found: false
+
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
-    # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
+        App\Entity\Main\utilisateur:
+            algorithm: auto
+
     providers:
-        users_in_memory: { memory: null }
+        app_utilisateur_provider:
+            entity:
+                class: App\Entity\Main\Utilisateur
+                property: courriel
+
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
             lazy: true
-            provider: users_in_memory
+            provider: app_utilisateur_provider
+            custom_authenticator:
+                - App\Security\LoginFormAuthenticator
+
+            logout:
+                path: logout
+                target: login
+
+            remember_me:
+                secret: '%kernel.secret%'
+                # si le mot de passe change, le cookie est invalide
+                signature_properties: [password]
+
+            # Maximum login par minutes
+            # composer require symfony/rate-limiter
+            login_throttling:
+                max_attempts: 3
+
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
@@ -24,8 +50,11 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+        #- { path: ^/admin, roles: ROLE_ADMIN }
+        - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/register, roles: PUBLIC_ACCESS }
+        - { path: ^/admin, roles: ROLE_ADMIN }
+        - { path: ^/, roles: ROLE_USER }
 
 when@test:
     security:
