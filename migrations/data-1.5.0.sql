@@ -24,3 +24,19 @@ INSERT INTO ma_moulinette (version, date_version, is_default, date_enregistremen
 INSERT INTO ma_moulinette (version, date_version, is_default, date_enregistrement) VALUES ('1.5.0', '2022-08-01', TRUE, date('now'));
 
 COMMIT;
+
+BEGIN TRANSACTION;
+
+-- ## Initialise la table des utiliasteurs.
+-- roles : (DC2Type:json)
+
+CREATE TABLE utilisateur
+(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    courriel VARCHAR(180) NOT NULL,
+    roles CLOB NOT NULL,
+    password VARCHAR(255) NOT NULL)
+);
+
+CREATE UNIQUE INDEX UNIQ_1D1C63B344FB41C9 ON utilisateur (courriel);
+
+COMMIT;
