@@ -7,7 +7,7 @@
 <head>
   {{ include('head.html.twig') }}
   {% block stylesheets %}
-     {{ encore_entry_link_tags('home') }}
+    {{ encore_entry_link_tags('home') }}
   {% endblock %}
 </head>
 
@@ -23,7 +23,7 @@
       -<path d="M2.904 23.686l7.828 6.019a3.302 3.302 0 001.993.692c.865 0 1.644-.366 2.136-1.008L29.814 9.926c-.003-.074-.006-.15-.012-.219-.07-.912-.47-2.623-1.652-3.533L21.199.832A3.981 3.981 0 0018.793 0c-.972 0-1.658.35-2.112.697L2.143 19.617c-.006.007-.009.016-.015.023-.262.606-.381 1.33-.196 2.207.11.604.14.764.177.973.209.326.474.619.795.866zM16.292 2.5c.641-.834 1.64-1.313 2.739-1.313.854 0 1.708.296 2.405.832l5.777 4.21c1.183.909 1.503 1.596 1.572 2.508.028.527-.125.99-.292 1.327l.007.005-.036.057a2.567 2.567 0 01-.201.326l-.428.685-.079.104a2.86 2.86 0 00.314-.563 1.083 1.083 0 01-.098.161l-.221.407L22.73 17.8l-.721-.552-.014.018-9.075-6.973-1.564-1.194L16.292 2.5z"/>
     </svg>
   </label>
-    <div class="log-container"><textarea id="log" name="log" class="open-sans log" readonly="readonly" rows="2"></textarea></div>
+  <div class="log-container"><textarea id="log" name="log" class="open-sans log" readonly="readonly" rows="2"></textarea></div>
 
   <header class="grid-container">
     <nav aria-label="Ici : " role="navigation">
@@ -34,18 +34,18 @@
   </header>
 
   <div class="grid-container">
-  <h4>Informations et outils.</h4>
-   <fieldset class="fieldset cell" style="padding-bottom:0.5rem;">
-    <legend class="open-sans">Référentiel local.</legend>
+    <h4>Informations et outils.</h4>
+    <fieldset class="fieldset cell" style="padding-bottom:0.5rem;">
+      <legend class="open-sans">Référentiel local.</legend>
+      {#<div class="grid-x cell">
+        {# Affichage désactivé en raison du droit nécessaire pour afficher l'information #}
+        {#<div class="small-12 medium-6 large-6 cell" style="padding-right: .4rem;">
+          <p class="open-sans">Projet Public : <span id="js-projet-public"></span></p>
+        </div>
+        <div class="small-12 medium-6 large-6 cell" style="padding-right: .4rem;">
+          <p class="open-sans">Projet Privée : <span id="js-projet-private"></span></p>
+        </div>#}
 
-    <div class="grid-x cell">
-      {# Affichage désactivé en raison du droit nécessaire pour afficher l'information #}
-      {#<div class="small-12 medium-6 large-6 cell" style="padding-right: .4rem;">
-        <p class="open-sans">Projet Public : <span id="js-projet-public"></span></p>
-      </div>
-      <div class="small-12 medium-6 large-6 cell" style="padding-right: .4rem;">
-        <p class="open-sans">Projet Privée : <span id="js-projet-private"></span></p>
-      </div>#}
 
       <!-- Mise à jour de référentiel des projets sonarqube -->
       <div class="small-9 medium-10 large-10 cell" style="padding-right: .4rem;">
@@ -63,44 +63,46 @@
               <span class="open-sans" style="color:#fff;">Projets.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
           </div>
         </label>
-        </div>
+      </div>
       <div class="small-3 medium-2 large-2 cell" style="padding-left: .4rem;">
           <p id="js-nombre-projet" class="text-center stat" style="color:#000; padding-top:0.5rem;"></p>
       </div>
 
-   {# Profl qualité #}
-    <div class="grid-x cell">
-      <div class="small-9 medium-10 large-10 cell" style="padding-right: .4rem;">
-        <div class="button expanded float-center affiche-profil">
-         <a href="{{ path('profil', {}) }}" rel="next" title="Aller sur la page des proils.">
-          <div class="cell">
-            <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="affiche-profil-svg">
-              <path d="M256 0C141.158 0 51.2 44.979 51.2 102.4c0 57.421 89.958 102.4 204.8 102.4s204.8-44.979 204.8-102.4C460.8 44.979 370.842 0 256 0zm0 187.733c-101.76 0-187.733-39.083-187.733-85.333S154.24 17.067 256 17.067 443.733 56.149 443.733 102.4 357.76 187.733 256 187.733z"/>
-              <path d="M443.733 102.4v76.8c0 46.251-85.973 85.333-187.733 85.333S68.267 225.451 68.267 179.2v-76.8H51.2v76.8c0 57.421 89.958 102.4 204.8 102.4s204.8-44.979 204.8-102.4v-76.8h-17.067z"/>
-              <path d="M443.733 179.2V256c0 46.259-85.973 85.333-187.733 85.333S68.267 302.259 68.267 256v-76.8H51.2V256c0 57.421 89.958 102.4 204.8 102.4S460.8 313.421 460.8 256v-76.8h-17.067z"/>
-              <path d="M443.733 256v76.8c0 46.259-85.973 85.333-187.733 85.333S68.267 379.059 68.267 332.8V256H51.2v76.8c0 57.421 89.958 102.4 204.8 102.4s204.8-44.979 204.8-102.4V256h-17.067z"/>
-              <path d="M443.733 332.8v76.8c0 46.259-85.973 85.333-187.733 85.333S68.267 455.859 68.267 409.6v-76.8H51.2v76.8C51.2 467.021 141.158 512 256 512s204.8-44.979 204.8-102.4v-76.8h-17.067z"/>
-            </svg>
-              <span unselectable="on" class="open-sans" style="color:#fff;"> Profils qualités
-                <span class="show-for-medium">Sonarqube&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span>
-           </div>
-          </div>
-         </a>
-      </div>
-      <div class="small-3 medium-2 large-2 cell" style="padding-left: .4rem;">
-        <p id="js-nombre-profil" class="text-center stat" style="color:#000; padding-top:0.5rem;"></p>
-      </div>
-
-
+      {# Profl qualité #}
       <div class="grid-x cell">
-       <div class="small-3 medium-2 large-2 cell">
-         <p class="open-sans statut">Statut : Je dors.</p>
+        <div class="small-9 medium-10 large-10 cell" style="padding-right: .4rem;">
+          <div class="button expanded float-center affiche-profil">
+            <a href="{{ path('profil', {}) }}" rel="next" title="Aller sur la page des proils.">
+              <div class="cell">
+                <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="affiche-profil-svg">
+                  <path d="M256 0C141.158 0 51.2 44.979 51.2 102.4c0 57.421 89.958 102.4 204.8 102.4s204.8-44.979 204.8-102.4C460.8 44.979 370.842 0 256 0zm0 187.733c-101.76 0-187.733-39.083-187.733-85.333S154.24 17.067 256 17.067 443.733 56.149 443.733 102.4 357.76 187.733 256 187.733z"/>
+                  <path d="M443.733 102.4v76.8c0 46.251-85.973 85.333-187.733 85.333S68.267 225.451 68.267 179.2v-76.8H51.2v76.8c0 57.421 89.958 102.4 204.8 102.4s204.8-44.979 204.8-102.4v-76.8h-17.067z"/>
+                  <path d="M443.733 179.2V256c0 46.259-85.973 85.333-187.733 85.333S68.267 302.259 68.267 256v-76.8H51.2V256c0 57.421 89.958 102.4 204.8 102.4S460.8 313.421 460.8 256v-76.8h-17.067z"/>
+                  <path d="M443.733 256v76.8c0 46.259-85.973 85.333-187.733 85.333S68.267 379.059 68.267 332.8V256H51.2v76.8c0 57.421 89.958 102.4 204.8 102.4s204.8-44.979 204.8-102.4V256h-17.067z"/>
+                  <path d="M443.733 332.8v76.8c0 46.259-85.973 85.333-187.733 85.333S68.267 455.859 68.267 409.6v-76.8H51.2v76.8C51.2 467.021 141.158 512 256 512s204.8-44.979 204.8-102.4v-76.8h-17.067z"/>
+                </svg>
+                  <span unselectable="on" class="open-sans" style="color:#fff;"> Profils qualités
+                    <span class="show-for-medium">Sonarqube&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span>
+                </div>
+              </div>
+            </a>
+          </div>
         </div>
-        <div class="small-2 medium-2 large-2 cell">
-        <div id="loader" class="loader loader-disabled"><div></div><div></div><div></div><div></div></div>
-    </div>
-  </div>
-   </fieldset>
+        <div class="small-3 medium-2 large-2 cell" style="padding-left: .4rem;">
+          <p id="js-nombre-profil" class="text-center stat" style="color:#000; padding-top:0.5rem;"></p>
+        </div>
+        <div class="grid-x cell">
+          <div class="small-3 medium-2 large-2 cell">
+            <p class="open-sans statut">Statut : Je dors.</p>
+          </div>
+          <div class="small-2 medium-2 large-2 cell">
+            <div id="loader" class="loader loader-disabled">
+              <div></div><div></div><div></div><div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </fieldset>
   </div>
 
   <div class="grid-container grid-padding-x">
@@ -117,107 +119,107 @@
   <div class="grid-container grid-padding-x">
     <fieldset class="fieldset cell" style="padding-bottom:0.5rem;">
       <legend class="open-sans">Mes projets favoris.</legend>
-        <div class="grid-x cell">
-          {# Information sur les versions #}
-          {% if nombreFavori == 1 %}
-            {% for app in favori %}
-            <div class="callout callout-information">
-              <div class="callout-body">
-                <h5 class="claire-hand text-center">Informations</h5>
-              </div>
-              <div class="callout-footer open-sans">
-                {% if app.nom|length >20 %} {% set taille="nom-small" %} {% else %} {% set taille="nom-normal" %} {% endif %}
-                <p class="ligne-favori open-sans">Nom&nbsp;:<span class="float-right resultat-favori {{taille}}">{{app.nom}}</span></p>
-                <p class="ligne-favori open-sans">Version&nbsp;:<span class="float-right resultat-favori">{{app.version}}</span></p>
-                <p class="ligne-favori open-sans">Date&nbsp;:<span class="float-right resultat-favori">{{app.date|date("d/m/Y", "Europe/Paris")}}</span></p>
-                <table aria-label="tableau-favori">
-                  <thead>
-                    <tr>
-                        <th><span class="note-favori" class="open-sans">&nbsp;F&nbsp;</span></th>
-                        <th><span class="note-favori" class="open-sans">&nbsp;S&nbsp;</span></th>
-                        <th><span class="note-favori" class="open-sans">&nbsp;H&nbsp;</span></th>
-                        <th><span class="note-favori" class="open-sans">&nbsp;M&nbsp;</span></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% if app.fiabilite == 'A' %} {% set couleur1='note-vert1' %} {% endif %}
-                    {% if app.fiabilite == 'B' %} {% set couleur1='note-vert2' %} {% endif %}
-                    {% if app.fiabilite == 'C' %} {% set couleur1='note-jaune' %} {% endif %}
-                    {% if app.fiabilite == 'D' %} {% set couleur1='note-orange' %} {% endif %}
-                    {% if app.fiabilite == 'E' %} {% set couleur1='note-rouge' %} {% endif %}
-                    {% if app.securite == 'A' %} {% set couleur2='note-vert1' %} {% endif %}
-                    {% if app.securite == 'B' %} {% set couleur2='note-vert2' %} {% endif %}
-                    {% if app.securite == 'C' %} {% set couleur2='note-jaune' %} {% endif %}
-                    {% if app.securite == 'D' %} {% set couleur2='note-orange' %} {% endif %}
-                    {% if app.securite == 'E' %} {% set couleur2='note-rouge' %} {% endif %}
-                    {% if app.hotspot == 'A' %} {% set couleur3='note-vert1' %} {% endif %}
-                    {% if app.hotspot == 'B' %} {% set couleur3='note-vert2' %} {% endif %}
-                    {% if app.hotspot == 'C' %} {% set couleur3='note-jaune' %} {% endif %}
-                    {% if app.hotspot == 'D' %} {% set couleur3='note-orange' %} {% endif %}
-                    {% if app.hotspot == 'E' %} {% set couleur3='note-rouge' %} {% endif %}
-                    {% if app.hotspot == 'Z' %} {% set couleur3='note-bleu' %} {% endif %}
-                    {% if app.sqale == 'A' %} {% set couleur4='note-vert1' %} {% endif %}
-                    {% if app.sqale == 'B' %} {% set couleur4='note-vert2' %} {% endif %}
-                    {% if app.sqale == 'C' %} {% set couleur4='note-jaune' %} {% endif %}
-                    {% if app.sqale == 'D' %} {% set couleur4='note-orange' %} {% endif %}
-                    {% if app.sqale == 'E' %} {% set couleur4='note-rouge' %} {% endif %}
-                    <tr>
-                      <td><span id="note-reliability" class="open-sans"><span class="{{couleur1}}">{{app.fiabilite}}</span></span></td>
-                      <td><span id="note-security" class="open-sans"><span class="{{couleur2}}">{{app.securite}}</span></span></td>
-                      <td><span class="open-sans"><span class="{{couleur3}}">{{app.hotspot}}</span></span></td>
-                      <td><span  class="open-sans"><span class="{{couleur4}}">{{app.sqale}}</span></span></td>
-                    </tr>
-                    <tr>
-                      <td>
-                      <span class="nombre-favori open-sans">
-                        {% if app.bug <10 %} 00{{app.bug}}{% endif %}
-                        {% if app.bug >=10 and app.bug <100 %} 0{{app.bug}}{% endif %}
-                        {% if app.bug >=100 and app.bug <1000 %} {{app.bug}}{% endif %}
-                        {% if app.bug >=1000 and app.bug <100000 %}
-                              {% set k=(app.bug/1000)|number_format(1, '.', ',') %}
-                              {{k}}K
-                        {% endif %}
-                      </td>
-                      <td>
-                        <span class="nombre-favori open-sans">
-                          {% if app.vulnerability <10 %} 00{{app.vulnerability}}{% endif %}
-                          {% if app.vulnerability >=10 and app.vulnerability <100%} 0{{app.vulnerability}}{% endif %}
-                          {% if app.vulnerability >=100 and app.vulnerability <1000 %} {{app.vulnerability}}{% endif %}
-                          {% if app.vulnerability >=1000 and app.vulnerability <100000 %}
-                              {% set k=(app.vulnerability/1000)|number_format(1, '.', ',') %}
-                              {{k}}K
-                          {% endif %}
-                        </span>
-                      </td>
-                      <td>
-                        <span class="nombre-favori open-sans">
-                          {% if app.hotspots <10 %} 00{{app.hotspots}} {% endif %}
-                          {% if app.hotspots >=10 and app.hotspots <100 %} 0{{app.hotspots}} {% endif %}
-                          {% if app.hotspots >=100 and app.hotspots <1000 %} {{app.hotspots}} {% endif %}
-                          {% if app.hotspots >=1000 and app.hotspots <100000 %}
-                            {% set k=(app.hotspots/1000)|number_format(1, '.', ',') %}
-                              {{k}}K</span>
-                          {% endif %}
-                      </td>
-                      <td>
-                        <span class="nombre-favori open-sans">
-                          {% if app.code_smell <10 %} 00{{app.code_smell}}{% endif %}
-                          {% if app.code_smell >=10 and app.code_smell <100%} 0{{app.code_smell}}{% endif %}
-                          {% if app.code_smell >=100 and app.code_smell <1000 %} {{app.code_smell}}{% endif %}
-                          {% if app.code_smell >=1000 and app.code_smell <100000 %}
-                              {% set k=(app.code_smell/1000)|number_format(1, '.', ',') %}
-                              {{k}}K</span>
-                          {% endif %}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+      <div class="grid-x cell">
+        {# Information sur les versions #}
+        {% if nombreFavori == 1 %}
+          {% for app in favori %}
+          <div class="callout callout-information">
+            <div class="callout-body">
+              <h5 class="claire-hand text-center">Informations</h5>
             </div>
-            {% endfor %}
-          {% endif %}
-        {# Fin de la zonne mes favoris #}
-        </div>
+            <div class="callout-footer open-sans">
+              {% if app.nom|length >20 %} {% set taille="nom-small" %} {% else %} {% set taille="nom-normal" %} {% endif %}
+              <p class="ligne-favori open-sans">Nom&nbsp;:<span class="float-right resultat-favori {{taille}}">{{app.nom}}</span></p>
+              <p class="ligne-favori open-sans">Version&nbsp;:<span class="float-right resultat-favori">{{app.version}}</span></p>
+              <p class="ligne-favori open-sans">Date&nbsp;:<span class="float-right resultat-favori">{{app.date|date("d/m/Y", "Europe/Paris")}}</span></p>
+              <table aria-label="tableau-favori">
+                <thead>
+                  <tr>
+                      <th><span class="note-favori" class="open-sans">&nbsp;F&nbsp;</span></th>
+                      <th><span class="note-favori" class="open-sans">&nbsp;S&nbsp;</span></th>
+                      <th><span class="note-favori" class="open-sans">&nbsp;H&nbsp;</span></th>
+                      <th><span class="note-favori" class="open-sans">&nbsp;M&nbsp;</span></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% if app.fiabilite == 'A' %} {% set couleur1='note-vert1' %} {% endif %}
+                  {% if app.fiabilite == 'B' %} {% set couleur1='note-vert2' %} {% endif %}
+                  {% if app.fiabilite == 'C' %} {% set couleur1='note-jaune' %} {% endif %}
+                  {% if app.fiabilite == 'D' %} {% set couleur1='note-orange' %} {% endif %}
+                  {% if app.fiabilite == 'E' %} {% set couleur1='note-rouge' %} {% endif %}
+                  {% if app.securite == 'A' %} {% set couleur2='note-vert1' %} {% endif %}
+                  {% if app.securite == 'B' %} {% set couleur2='note-vert2' %} {% endif %}
+                  {% if app.securite == 'C' %} {% set couleur2='note-jaune' %} {% endif %}
+                  {% if app.securite == 'D' %} {% set couleur2='note-orange' %} {% endif %}
+                  {% if app.securite == 'E' %} {% set couleur2='note-rouge' %} {% endif %}
+                  {% if app.hotspot == 'A' %} {% set couleur3='note-vert1' %} {% endif %}
+                  {% if app.hotspot == 'B' %} {% set couleur3='note-vert2' %} {% endif %}
+                  {% if app.hotspot == 'C' %} {% set couleur3='note-jaune' %} {% endif %}
+                  {% if app.hotspot == 'D' %} {% set couleur3='note-orange' %} {% endif %}
+                  {% if app.hotspot == 'E' %} {% set couleur3='note-rouge' %} {% endif %}
+                  {% if app.hotspot == 'Z' %} {% set couleur3='note-bleu' %} {% endif %}
+                  {% if app.sqale == 'A' %} {% set couleur4='note-vert1' %} {% endif %}
+                  {% if app.sqale == 'B' %} {% set couleur4='note-vert2' %} {% endif %}
+                  {% if app.sqale == 'C' %} {% set couleur4='note-jaune' %} {% endif %}
+                  {% if app.sqale == 'D' %} {% set couleur4='note-orange' %} {% endif %}
+                  {% if app.sqale == 'E' %} {% set couleur4='note-rouge' %} {% endif %}
+                  <tr>
+                    <td><span id="note-reliability" class="open-sans"><span class="{{couleur1}}">{{app.fiabilite}}</span></span></td>
+                    <td><span id="note-security" class="open-sans"><span class="{{couleur2}}">{{app.securite}}</span></span></td>
+                    <td><span class="open-sans"><span class="{{couleur3}}">{{app.hotspot}}</span></span></td>
+                    <td><span  class="open-sans"><span class="{{couleur4}}">{{app.sqale}}</span></span></td>
+                  </tr>
+                  <tr>
+                    <td>
+                    <span class="nombre-favori open-sans">
+                      {% if app.bug <10 %} 00{{app.bug}}{% endif %}
+                      {% if app.bug >=10 and app.bug <100 %} 0{{app.bug}}{% endif %}
+                      {% if app.bug >=100 and app.bug <1000 %} {{app.bug}}{% endif %}
+                      {% if app.bug >=1000 and app.bug <100000 %}
+                            {% set k=(app.bug/1000)|number_format(1, '.', ',') %}
+                            {{k}}K
+                      {% endif %}
+                    </td>
+                    <td>
+                      <span class="nombre-favori open-sans">
+                        {% if app.vulnerability <10 %} 00{{app.vulnerability}}{% endif %}
+                        {% if app.vulnerability >=10 and app.vulnerability <100%} 0{{app.vulnerability}}{% endif %}
+                        {% if app.vulnerability >=100 and app.vulnerability <1000 %} {{app.vulnerability}}{% endif %}
+                        {% if app.vulnerability >=1000 and app.vulnerability <100000 %}
+                            {% set k=(app.vulnerability/1000)|number_format(1, '.', ',') %}
+                            {{k}}K
+                        {% endif %}
+                      </span>
+                    </td>
+                    <td>
+                      <span class="nombre-favori open-sans">
+                        {% if app.hotspots <10 %} 00{{app.hotspots}} {% endif %}
+                        {% if app.hotspots >=10 and app.hotspots <100 %} 0{{app.hotspots}} {% endif %}
+                        {% if app.hotspots >=100 and app.hotspots <1000 %} {{app.hotspots}} {% endif %}
+                        {% if app.hotspots >=1000 and app.hotspots <100000 %}
+                          {% set k=(app.hotspots/1000)|number_format(1, '.', ',') %}
+                            {{k}}K</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                      <span class="nombre-favori open-sans">
+                        {% if app.code_smell <10 %} 00{{app.code_smell}}{% endif %}
+                        {% if app.code_smell >=10 and app.code_smell <100%} 0{{app.code_smell}}{% endif %}
+                        {% if app.code_smell >=100 and app.code_smell <1000 %} {{app.code_smell}}{% endif %}
+                        {% if app.code_smell >=1000 and app.code_smell <100000 %}
+                            {% set k=(app.code_smell/1000)|number_format(1, '.', ',') %}
+                            {{k}}K</span>
+                        {% endif %}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          {% endfor %}
+        {% endif %}
+      {# Fin de la zonne mes favoris #}
+      </div>
     </fieldset>
   </div>
 
