@@ -28,13 +28,14 @@ COMMIT;
 BEGIN TRANSACTION;
 
 -- ## Initialise la table des utiliasteurs.
--- roles : (DC2Type:json)
 
 CREATE TABLE utilisateur
 (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     courriel VARCHAR(180) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    is_valide BOOLEAN DEFAULT 0 NOT NULL,
     roles CLOB NOT NULL,
-    password VARCHAR(255) NOT NULL)
+    date_enregistrement DATETIME NOT NULL
 );
 
 CREATE UNIQUE INDEX UNIQ_1D1C63B344FB41C9 ON utilisateur (courriel);
