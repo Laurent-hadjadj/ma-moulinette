@@ -27,6 +27,9 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', length: 255)]
     private $password;
 
+    #[ORM\Column(type: 'boolean')]
+    private $is_valide;
+
     #[ORM\Column(type: 'datetime')]
     private $date_enregistrement;
 
@@ -91,6 +94,18 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getIsValide()
+    {
+        return $this->is_valide;
+    }
+
+    public function setIsValide(bool $is_valide): self
+    {
+        $this->is_valide = $is_valide;
+
+        return $this;
+    }
+
     public function getDateEnregistrement(): ?\DateTimeInterface
     {
         return $this->date_enregistrement;
@@ -121,5 +136,10 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    public function isIsValide(): ?bool
+    {
+        return $this->is_valide;
     }
 }
