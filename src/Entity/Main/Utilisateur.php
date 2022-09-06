@@ -31,6 +31,9 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private $is_valide;
 
     #[ORM\Column(type: 'datetime')]
+    private $date_modification;
+
+    #[ORM\Column(type: 'datetime')]
     private $date_enregistrement;
 
     public function getId(): ?int
@@ -102,6 +105,17 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIsValide(bool $is_valide): self
     {
         $this->is_valide = $is_valide;
+
+        return $this;
+    }
+    public function getDateModification(): ?\DateTimeInterface
+    {
+        return $this->date_modification;
+    }
+
+    public function setDateModification(\DateTimeInterface $date_modification): self
+    {
+        $this->date_modification = $date_modification;
 
         return $this;
     }
