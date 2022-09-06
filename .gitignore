@@ -10,6 +10,7 @@
 /vendor/
 /migrations/*.php
 composer.lock
+/var/sessions/*
 ###< symfony/framework-bundle ###
 
 ###> symfony/webpack-encore-bundle ###
