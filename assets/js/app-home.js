@@ -106,8 +106,10 @@ const sonarIsUp=function() {
 /**
  * description :
  * On récupère le nombre de ligne de code total
- *
+ * Nécessite le rôle sonar Administrateur -->
+ * c'est null d'avoir mis le nombre total de ligne dans les infos systmes !!!!
  */
+// eslint-disable-next-line no-unused-vars
 const nloc=function(){
   const options = {
     url: `${serveur()}/api/system/info`, type: 'GET',
@@ -115,6 +117,7 @@ const nloc=function(){
   return new Promise((resolve) => {
     $.ajax(options).then( t => {
       console.log(t);
+      // todo : afficher le nombre de ligne total quand l'API ne necéssitera pas un rôle Admin
       resolve();
     });
   });
@@ -221,11 +224,14 @@ $('.refresh-bd').on('click', function () {
 
 /**         main                    **/
 
-// Fonctions asynchronnes de récupération des infos systèmes
-async function informationSystemeAsync() {
-  // Nombre de ligne de code total.
-  await nloc();
-}
+
+/**
+ * Fonctions asynchronnes de récupération des infos systèmes
+ * La fonction est désactivée par défaut.
+    async function informationSystemeAsync() {
+      await nloc();
+    }
+*/
 
 // Fonctions asynchronnes (liste et profils)
 async function informationsAsync() {
@@ -238,8 +244,7 @@ async function informationsAsync() {
   /**  On affiche le nombre de projet privée et public
   * Attention, il faut avoir les droits d'administration !!!
   * La fonction est désactivée par défaut.
-  *
-  * await afficheProjetVisibility();
+    await afficheProjetVisibility();
  */
 
 }
@@ -247,8 +252,9 @@ async function informationsAsync() {
 // On dit bonjour.
 startSpinner();
 ditBonjour();
-// On appelle la fonction de récupèration des infos systèmes
-informationSystemeAsync();
 // On appelle la fonction de récupèration des infos sonar
 informationsAsync();
 stopSpinner();
+
+// On appelle la fonction de récupèration des infos systèmes
+//informationSystemeAsync();
