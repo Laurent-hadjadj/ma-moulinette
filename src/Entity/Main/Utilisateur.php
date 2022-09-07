@@ -18,6 +18,9 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'integer')]
     private $id;
 
+    #[ORM\Column(type: 'string', length: 255)]
+    private $avatar_url;
+
     #[ORM\Column(type: 'string', length: 180, unique: true)]
     private $courriel;
 
@@ -28,7 +31,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private $password;
 
     #[ORM\Column(type: 'boolean')]
-    private $is_valide;
+    private $actif;
 
     #[ORM\Column(type: 'datetime')]
     private $date_modification;
@@ -97,14 +100,14 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getIsValide()
+    public function getActif()
     {
-        return $this->is_valide;
+        return $this->actif;
     }
 
-    public function setIsValide(bool $is_valide): self
+    public function setActif(bool $actif): self
     {
-        $this->is_valide = $is_valide;
+        $this->actif = $actif;
 
         return $this;
     }
@@ -152,8 +155,20 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         // $this->plainPassword = null;
     }
 
-    public function isIsValide(): ?bool
+    public function isActif(): ?bool
     {
-        return $this->is_valide;
+        return $this->actif;
+    }
+
+    public function getAvatarUrl(): ?string
+    {
+        return $this->avatar_url;
+    }
+
+    public function setAvatarUrl(string $avatar_url): self
+    {
+        $this->avatar_url = $avatar_url;
+
+        return $this;
     }
 }
