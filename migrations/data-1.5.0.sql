@@ -38,6 +38,8 @@ CREATE TABLE utilisateur
     date_enregistrement DATETIME NOT NULL
 );
 
+ALTER TABLE utilisateur ADD COLUMN date_modification DATETIME;
+
 CREATE UNIQUE INDEX UNIQ_1D1C63B344FB41C9 ON utilisateur (courriel);
 
 COMMIT;
