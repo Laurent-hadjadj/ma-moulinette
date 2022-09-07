@@ -218,7 +218,8 @@ const selectProjet=function() {
 
 /**
  * description
- * Récupère les informations du projet (id de l'enregistrement, date de l'analyse, version, type de version)
+ * Récupère les informations du projet
+ * (id de l'enregistrement, date de l'analyse, version, type de version)
  *
  * @param {*} mavenKey
  * @returns
