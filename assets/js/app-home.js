@@ -33,7 +33,6 @@ const dateOptions = {
   hour: 'numeric', minute: 'numeric', second: 'numeric',
   hour12: false };
 
-
 /**
  * description
  * Affiche la log.
@@ -84,7 +83,7 @@ const stopSpinner=function() {
 };
 
 /**
- * description
+ * description :
  * Vérifie si le serveur sonarqube est UP
  * Affiche la version du seveur
  */
@@ -105,7 +104,24 @@ const sonarIsUp=function() {
 };
 
 /**
- * description
+ * description :
+ * On récupère le nombre de ligne de code total
+ *
+ */
+const nloc=function(){
+  const options = {
+    url: `${serveur()}/api/system/info`, type: 'GET',
+    dataType: 'json',  contentType };
+  return new Promise((resolve) => {
+    $.ajax(options).then( t => {
+      console.log(t);
+      resolve();
+    });
+  });
+}
+
+/**
+ * description :
  * Récupération de la liste des projets.
  *
  */
@@ -114,15 +130,17 @@ const listeProjetAjout=function() {
     url: `${serveur()}/api/liste_projet/ajout`, type: 'GET',
     dataType: 'json', contentType };
 
-  return $.ajax(options)
-    .then(t => {
-      log(` - INFO : Nombre de projet disponible : ${t.nombreProjet}`);
-      $('#js-nombre-projet').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.nombreProjet));
+    return new Promise((resolve) => {
+      $.ajax(options).then(t => {
+        log(` - INFO : Nombre de projet disponible : ${t.nombreProjet}`);
+        $('#js-nombre-projet').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.nombreProjet));
+        resolve();
       });
+    });
 };
 
 /**
- * description
+ * description :
  * Date de la dernière mise à jour.
  */
 const listeProjetDate=function(){
@@ -130,8 +148,8 @@ const listeProjetDate=function(){
     url: `${serveur()}/api/liste_projet/date`, type: 'GET',
     dataType: 'json', contentType };
 
-  return $.ajax(options)
-    .then(data=> {
+    return new Promise((resolve) => {
+      $.ajax(options).then(data=> {
       if (data.nombreProjet===0 && data.dateCreation===0){
         $('#js-nombre-projet').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(0));
         log(` - ERROR : Vous devez importer la liste des projets !!!`);
@@ -140,7 +158,9 @@ const listeProjetDate=function(){
           log(` - INFO : Nombre de projet disponible : ${data.nombreProjet}`);
           log(` - INFO : Derrnière mise à jour : ${data.dateCreation}`);
         }
+      resolve();
     });
+  });
 };
 
 /**
@@ -152,14 +172,16 @@ const afficheNombreProfil=function() {
     url: `${serveur()}/api/quality`, type: 'GET',
     dataType: 'json', contentType };
 
-  $.ajax(options)
-    .then(r => {
+  return new Promise((resolve) => {
+    $.ajax(options).then(r => {
         $('#js-nombre-profil').html(`<span class="stat">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.nombre)}</span>`);
         if (r.nombre===0){
           $.ajax({  url: `${serveur()}/api/quality/profiles`,
                     type: 'GET', dataType: 'json', contentType});
           }
+      resolve();
       });
+  });
 };
 
 /**
@@ -197,19 +219,36 @@ $('.refresh-bd').on('click', function () {
     });
 });
 
-/**         %ain                    **/
-// On dit bonjour.
-startSpinner();
-ditBonjour();
-// On récupère la date de la dernière analyse
-listeProjetDate();
-// On récupére le nomnbre de profil
-afficheNombreProfil();
+/**         main                    **/
 
-/**  On affiche le nombre de projet privée et public
+// Fonctions asynchronnes de récupération des infos systèmes
+async function informationSystemeAsync() {
+  // Nombre de ligne de code total.
+  await nloc();
+}
+
+// Fonctions asynchronnes (liste et profils)
+async function informationsAsync() {
+  // On récupère la date de la dernière analyse
+  await listeProjetDate();
+
+  // On récupére le nomnbre de profil
+  await afficheNombreProfil();
+
+  /**  On affiche le nombre de projet privée et public
   * Attention, il faut avoir les droits d'administration !!!
   * La fonction est désactivée par défaut.
   *
-  * afficheProjetVisibility();
+  * await afficheProjetVisibility();
  */
+
+}
+
+// On dit bonjour.
+startSpinner();
+ditBonjour();
+// On appelle la fonction de récupèration des infos systèmes
+informationSystemeAsync();
+// On appelle la fonction de récupèration des infos sonar
+informationsAsync();
 stopSpinner();
