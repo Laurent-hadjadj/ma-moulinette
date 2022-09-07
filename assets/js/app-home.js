@@ -24,20 +24,7 @@ import './foundation.js';
 // On importe les paramètres serveur
 import {serveur} from "./properties.js";
 
-import browserUpdate from 'browser-update';
-
 console.log('Home : Chargement de webpack !');
-
-/* Vérification du navigateur*/
-const configurationOptions = {
-  required: { i: 11, e: -3, c: -3, f: -3, o: -3, s: -3 },
-  insecure: true,
-  unsupported: true,
-  api: 2021.10,
-  reminder: 24 };
-
-/* Chargement de browser update */
-browserUpdate([configurationOptions]);
 
 const contentType = 'application/json; charset=utf-8';
 
