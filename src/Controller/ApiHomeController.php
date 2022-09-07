@@ -108,6 +108,25 @@ class ApiHomeController extends AbstractController
     return new JsonResponse($result, Response::HTTP_OK);
   }
 
+/**
+   * information_systeme
+   * On récupère les informations système du serveur
+   * http://{url}}/api/system/info
+   *
+   * Attention, il faut avoir le role sonar administrateur
+   *
+   * @return void
+   */
+  #[Route('/api/system/info', name: 'information_systemes', methods: ['GET'])]
+  public function informationSysteme(LoggerInterface $logger)
+  {
+    $url = $this->getParameter(static::$sonarUrl) . "/api/system/info";
+
+    // on appel le client http
+    $result = $this->httpClient($url, $logger);
+    return new JsonResponse($result, Response::HTTP_OK);
+  }
+
   /**
    * liste_projet
    * Récupération de la liste des projets.
