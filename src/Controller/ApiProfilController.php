@@ -25,6 +25,12 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class ApiProfilController extends AbstractController
 {
+  private $em;
+
+  public function __construct(EntityManagerInterface $em)
+  {
+    $this->em = $em;
+  }
   /**
    * liste_quality_langage
    * Revoie le tableau des laels et des dataset
@@ -34,21 +40,21 @@ class ApiProfilController extends AbstractController
    * @return response
    */
   #[Route('/api/quality/langage', name: 'liste_quality_langage', methods: ['GET'])]
-  public function listeQualityLangage(EntityManagerInterface $em): response
+  public function listeQualityLangage(): response
   {
     $listeLabel = [];
     $listeDataset = [];
 
     // On créé la liste des libellés et des données
     $sql = "SELECT language_name AS profile FROM profiles";
-    $select = $em->getConnection()->prepare($sql)->executeQuery();
+    $select = $this->em->getConnection()->prepare($sql)->executeQuery();
     $labels = $select->fetchAllAssociative();
     foreach ($labels as $label) {
       array_push($listeLabel, $label["profile"]);
     }
 
     $sql = "SELECT active_rule_count AS total FROM profiles";
-    $select = $em->getConnection()->prepare($sql)->executeQuery();
+    $select = $this->em->getConnection()->prepare($sql)->executeQuery();
     $dataSets = $select->fetchAllAssociative();
     foreach ($dataSets as $dataSet) {
       array_push($listeDataset, $dataSet["total"]);
