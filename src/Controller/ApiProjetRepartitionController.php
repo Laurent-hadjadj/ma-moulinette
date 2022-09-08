@@ -33,11 +33,20 @@ use Psr\Log\LoggerInterface;
 class ApiProjetRepartitionController extends AbstractController
 {
 
+  private $doctrine;
   private $client;
+  private $logger;
 
-  public function __construct(HttpClientInterface $client)
+  public function __construct(
+    ManagerRegistry $doctrine,
+    HttpClientInterface $client,
+    LoggerInterface $logger
+
+    )
   {
     $this->client = $client;
+    $this->doctrine = $doctrine;
+    $this->logger = $logger;
   }
 
   public static $strContentType = 'application/json';
@@ -50,7 +59,7 @@ class ApiProjetRepartitionController extends AbstractController
    *
    * @param  mixed $elements
    * @param  mixed $mavenKey
-   * @return void
+   * @return ['frontend'=>$frontend, 'backend'=>$backend, 'autre'=>$autre];
    */
   protected function batch_Analyse($elements, $mavenKey)
   {
@@ -125,12 +134,12 @@ class ApiProjetRepartitionController extends AbstractController
       }
       // Application : Legacy
       if ($module[0] == $app[1] . "-entite") {
-         $backend = $backend + 1;
+        $backend = $backend + 1;
       }
       // Application : Legacy
       if ($module[0] == $app[1] . "-serviceweb-client") {
         $backend = $backend + 1;
-     }
+    }
 
       /**
        * Application Batch et Autres
@@ -138,7 +147,7 @@ class ApiProjetRepartitionController extends AbstractController
       if ($module[0] == $app[1] . "-batch") {
         $autre = $autre + 1;
       }
-       if ($module[0] == $app[1] . "-batchs") {
+      if ($module[0] == $app[1] . "-batchs") {
         $autre = $autre + 1;
       }
       if ($module[0] == $app[1] . "-batch-envoi-dem-aval") {
@@ -158,10 +167,9 @@ class ApiProjetRepartitionController extends AbstractController
    * httpClient
    *
    * @param  mixed $url
-   * @param  mixed $logger
-   * @return void
+   * @return $responseJson
    */
-  protected function httpClient($url, LoggerInterface $logger)
+  protected function httpClient($url)
   {
     if (empty($this->getParameter('sonar.token'))) {
       $user = $this->getParameter('sonar.user');
@@ -191,7 +199,7 @@ class ApiProjetRepartitionController extends AbstractController
 
     // La variable n'est pas utilisé, elle permet de collecter les données et de rendre la main.
     $contentType = $response->getHeaders()['content-type'][0];
-    $logger->INFO('** ContentType *** '.isset($contentType));
+    $this->logger->INFO('** ContentType *** '.isset($contentType));
 
     $responseJson = $response->getContent();
     return json_decode($responseJson, true, 512, JSON_THROW_ON_ERROR);
@@ -206,7 +214,7 @@ class ApiProjetRepartitionController extends AbstractController
   * $severite = INFO,MINOR,MAJOR,CRITICAL,BLOCKER
   * http://{url}/api/issues/search?componentKeys={key}&statuses=OPEN,CONFIRMED,REOPENED&resolutions=&s=STATUS&asc=no&types={type}&severities={severite}=&ps={pageSize}&p={index}
   */
-  protected function batch_anomalie($mavenKey, $index, $pageSize, $type, $severity,LoggerInterface $logger)
+  protected function batch_anomalie($mavenKey, $index, $pageSize, $type, $severity)
   {
 
     // On bind les variables
@@ -222,8 +230,8 @@ class ApiProjetRepartitionController extends AbstractController
 
     // On construit l'URL
     $url = "${tempoUrl}${tempoApi}${mavenKey}${tempoStates}${tempoType}${tempoSeverity}${tempoPageSize}${tempoPageindex}";
-    // On appel l'Api et on renvoie le résultat
-    return $this->httpClient($url, $logger);
+    // On appel l'Api et on renvoie le résultat ($logger)
+    return $this->httpClient($url);
   }
 
   /**
@@ -236,7 +244,7 @@ class ApiProjetRepartitionController extends AbstractController
    * INFO,MINOR,MAJOR,CRITICAL,BLOCKER
    */
   #[Route('/api/projet/repartition/details', name: 'projet_repartition_details', methods: ['GET'])]
-  public function projetRepartitionDetails(Request $request, LoggerInterface $logger): response
+  public function projetRepartitionDetails(Request $request): response
   {
     $mavenKey=$request->get('mavenKey');
     $type=$request->get('type');
@@ -245,7 +253,7 @@ class ApiProjetRepartitionController extends AbstractController
     $severity=['INFO','MINOR','MAJOR','CRITICAL','BLOCKER'];
     $total=0;
     foreach ($severity as $value) {
-      $result=$this->batch_anomalie($mavenKey, 1, 1, $type, $value, $logger);
+      $result=$this->batch_anomalie($mavenKey, 1, 1, $type, $value);
       if ($value==='INFO') { $info=$result['total'];}
       if ($value==='MINOR') { $minor=$result['total'];}
       if ($value==='MAJOR') { $major=$result['total'];}
@@ -255,29 +263,27 @@ class ApiProjetRepartitionController extends AbstractController
     }
 
     $response = new JsonResponse();
-     return $response->setData(
+    return $response->setData(
       ["total" => $total,
-       "type" => $type,
-       "blocker"=> $blocker,
-       "critical"=> $critical,
-       "major"=> $major,
-       "minor"=> $minor,
-       "info"=> $info,
-       Response::HTTP_OK]);
+        "type" => $type,
+        "blocker"=> $blocker,
+        "critical"=> $critical,
+        "major"=> $major,
+        "minor"=> $minor,
+        "info"=> $info,
+        Response::HTTP_OK]);
   }
 
-   /**
+  /**
    * projetRepartitionCollecte
    * Calcul la répartition entre front, back et autre pour tout les type et les sévérités.
    *
-   * @param  mixed $em
    * @param  mixed $request
-   * @param  mixed $logger
    * @return response
    *
    */
   #[Route('/api/projet/repartition/collecte', name: 'projet_repartition_collecte', methods: ['PUT'])]
-  public function projetRepartitionCollecte(ManagerRegistry $doctrine, Request $request, LoggerInterface $logger): response
+  public function projetRepartitionCollecte(Request $request): response
   {
     // On décode le body
     $data = json_decode($request->getContent());
@@ -293,11 +299,11 @@ class ApiProjetRepartitionController extends AbstractController
     $date= new DateTime();
 
     // On récupère le nombre d'anomalie pour le type
-    $result=$this->batch_anomalie($mavenKey, 1, 1, $type, $severity, $logger);
+    $result=$this->batch_anomalie($mavenKey, 1, 1, $type, $severity);
     $i = 1;
     $date1=time();
     while (!empty($result["issues"]) && $i<21) {
-        $result=$this->batch_anomalie($mavenKey, $i, 500, $type, $severity, $logger );
+        $result=$this->batch_anomalie($mavenKey, $i, 500, $type, $severity);
         foreach ($result["issues"] as $issue) {
           $type=$issue["type"];
           $severity=$issue["severity"];
@@ -313,7 +319,7 @@ class ApiProjetRepartitionController extends AbstractController
           $issue->setSetup($setup);
           $issue->setDateEnregistrement($date);
 
-          $manager = $doctrine->getManager('secondary');
+          $manager = $this->doctrine->getManager('secondary');
           $manager->persist($issue);
           $manager->flush();
         }
@@ -323,17 +329,16 @@ class ApiProjetRepartitionController extends AbstractController
     $response = new JsonResponse();
     return $response->setData(
       ["total" => $result["total"],
-       "type" => $type,
-       "severity"=> $severity,
-       "setup"=> $setup,
-       "temps" => abs($date1 - $date2)+2,
+        "type" => $type,
+        "severity"=> $severity,
+        "setup"=> $setup,
+        "temps" => abs($date1 - $date2)+2,
       Response::HTTP_OK]);
   }
 
   /**
    * projetRepartitionClear
    *
-   * @param  mixed $dm
    * @param  mixed $request
    * @return Response
    */
@@ -361,10 +366,10 @@ class ApiProjetRepartitionController extends AbstractController
    *
    * @param  mixed $coctrine
    * @param  mixed $request
-   * @return Response
+   * @return ["code" => "OK", "repartition"=>$result, Response::HTTP_OK]
    */
   #[Route('/api/projet/repartition/analyse', name: 'projet_repartition_analyse', methods: ['PUT'])]
-  public function projetRepartitionAnalyse(ManagerRegistry $doctrine, Request $request): Response
+  public function projetRepartitionAnalyse(Request $request): Response
   {
     // On décode le body
     $data = json_decode($request->getContent());
@@ -379,17 +384,17 @@ class ApiProjetRepartitionController extends AbstractController
     $response = new JsonResponse();
 
     // On récupère la liste des bugs
-    $liste = $doctrine->getManager('secondary')
-                        ->getRepository(Repartition::class)
-                        ->findBy(
-                          ['maven_key' => $mavenKey,
-                           'type' => $type,
-                           'severity' => $severity,
-                           'setup' => $setup]);
+    $liste = $this->doctrine
+      ->getManager('secondary')
+      ->getRepository(Repartition::class)
+      ->findBy(
+        ['maven_key' => $mavenKey,
+          'type' => $type,
+          'severity' => $severity,
+          'setup' => $setup]);
     // on appelle le service d'analyse
     $result=$this->batch_analyse($liste, $mavenKey);
     return $response->setData(["code" => "OK", "repartition"=>$result, Response::HTTP_OK]);
   }
-
 
 }
