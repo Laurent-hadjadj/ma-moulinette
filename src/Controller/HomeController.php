@@ -26,15 +26,20 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class HomeController extends AbstractController
 {
+    private $em;
+
+    // On ajoute un constructeur pour éviter à chaque fois la même class
+    public function __construct(EntityManagerInterface $em) {
+        $this->em = $em;
+    }
 
     /**
      * index
      *
-     * @param  mixed $em
      * @return Response
      */
     #[Route('/home', name: 'home')]
-    public function index(EntityManagerInterface $em): Response
+    public function index(): Response
     {
         $nombreFavori=$this->getParameter('nombre.favori');
 
@@ -52,7 +57,7 @@ class HomeController extends AbstractController
                 FROM historique
                 WHERE favori=TRUE
                 ORDER BY date_version LIMIT $nombreFavori";
-        $select = $em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)))->executeQuery();
+        $select = $this->em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)))->executeQuery();
         $favoris = $select->fetchAllAssociative();
 
         if (empty($favoris)) {
