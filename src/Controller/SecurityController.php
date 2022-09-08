@@ -32,8 +32,6 @@ class SecurityController extends AbstractController
          * Si on la page /login"
          */
 
-        //$this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
-
         if ($this->getUser()->getUserIdentifier()) {
             return $this->redirectToRoute('home');
         } else {
