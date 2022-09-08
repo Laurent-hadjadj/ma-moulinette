@@ -26,16 +26,22 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class ApiOwaspPeintureController extends AbstractController
 {
+  private $em;
+
+  public function __construct(EntityManagerInterface $em)
+  {
+    $this->em = $em;
+  }
+
   /**
    * peinture_owasp_liste
    * On récupère les résultats Owasp
    *
-   * @param  mixed $em
    * @param  mixed $request
    * @return response
    */
   #[Route('/api/peinture/owasp/liste', name: 'peinture_owasp_liste', methods: ['GET'])]
-  public function peintureOwaspListe(EntityManagerInterface $em, Request $request): response
+  public function peintureOwaspListe(Request $request): response
   {
     $mavenKey = $request->get('mavenKey');
     $response = new JsonResponse();
@@ -44,7 +50,7 @@ class ApiOwaspPeintureController extends AbstractController
     $sql = "SELECT * FROM owasp WHERE maven_key='${mavenKey}'
             ORDER BY date_enregistrement DESC LIMIT 1";
 
-    $list = $em->getConnection()->prepare($sql)->executeQuery();
+    $list = $this->em->getConnection()->prepare($sql)->executeQuery();
     $owasp = $list->fetchAllAssociative();
 
     // si on ne trouve pas la liste
@@ -54,8 +60,8 @@ class ApiOwaspPeintureController extends AbstractController
 
     // Informations
     $total = $owasp[0]["a1"] + $owasp[0]["a2"] + $owasp[0]["a3"] + $owasp[0]["a4"]
-           + $owasp[0]["a5"] + $owasp[0]["a6"] + $owasp[0]["a7"] + $owasp[0]["a8"]
-           + $owasp[0]["a9"] + $owasp[0]["a10"];
+            + $owasp[0]["a5"] + $owasp[0]["a6"] + $owasp[0]["a7"] + $owasp[0]["a8"]
+            + $owasp[0]["a9"] + $owasp[0]["a10"];
 
     $bloquant = $owasp[0]["a1_blocker"] + $owasp[0]["a2_blocker"] + $owasp[0]["a3_blocker"]
               + $owasp[0]["a4_blocker"] + $owasp[0]["a5_blocker"] + $owasp[0]["a6_blocker"]
@@ -139,12 +145,11 @@ class ApiOwaspPeintureController extends AbstractController
    * peinture_owasp_hotspot_info
    * On récupère les résultats des hotspots
    *
-   * @param  mixed $em
    * @param  mixed $request
    * @return response
    */
   #[Route('/api/peinture/owasp/hotspot/info', name: 'peinture_owasp_hotspot_info', methods: ['GET'])]
-  public function peintureOwaspHotspotInfo(EntityManagerInterface $em, Request $request): response
+  public function peintureOwaspHotspotInfo(Request $request): response
   {
     $mavenKey = $request->get('mavenKey');
     $response = new JsonResponse();
@@ -153,14 +158,14 @@ class ApiOwaspPeintureController extends AbstractController
     $sql = "SELECT count(*) as reviewed FROM hotspot_owasp
             WHERE maven_key='${mavenKey}' AND status='REVIEWED'";
 
-    $list = $em->getConnection()->prepare($sql)->executeQuery();
+    $list = $this->em->getConnection()->prepare($sql)->executeQuery();
     $reviewed = $list->fetchAllAssociative();
 
     // On compte le nombre de hotspot TO_REVIEW
     $sql = "SELECT count(*) as to_review FROM hotspot_owasp
             WHERE maven_key='${mavenKey}' AND status='TO_REVIEW'";
 
-    $list = $em->getConnection()->prepare($sql)->executeQuery();
+    $list = $this->em->getConnection()->prepare($sql)->executeQuery();
     $toReview = $list->fetchAllAssociative();
 
     // On récupère le nombre de hotspot owasp par niveau de sévérité potentiel
@@ -168,7 +173,7 @@ class ApiOwaspPeintureController extends AbstractController
             FROM hotspot_owasp WHERE maven_key='${mavenKey}'
             AND status='TO_REVIEW' GROUP BY probability";
 
-    $count = $em->getConnection()->prepare($sql)->executeQuery();
+    $count = $this->em->getConnection()->prepare($sql)->executeQuery();
     $probability = $count->fetchAllAssociative();
     $high = 0;
     $medium = 0;
@@ -280,12 +285,11 @@ class ApiOwaspPeintureController extends AbstractController
    * peinture_owasp_hotspot_details
    * On récupère le détails des failles de type hotpsot
    *
-   * @param  mixed $em
    * @param  mixed $request
    * @return response
    */
   #[Route('/api/peinture/owasp/hotspot/details', name: 'peinture_owasp_hotspot_details', methods: ['GET'])]
-  public function peintureOwaspHotspotDetails(EntityManagerInterface $em, Request $request): response
+  public function peintureOwaspHotspotDetails(Request $request): response
   {
     $mavenKey = $request->get('mavenKey');
     $response = new JsonResponse();
@@ -295,7 +299,7 @@ class ApiOwaspPeintureController extends AbstractController
             WHERE maven_key='${mavenKey}'
             ORDER BY niveau ASC";
 
-    $list = $em->getConnection()->prepare($sql)->executeQuery();
+    $list = $this->em->getConnection()->prepare($sql)->executeQuery();
     $details = $list->fetchAllAssociative();
 
     if (empty($details)) {
@@ -309,12 +313,11 @@ class ApiOwaspPeintureController extends AbstractController
    * peinture_owasp_severity
    * On récupère le détails des failles de type hotpsot
    *
-   * @param  mixed $em
    * @param  mixed $request
    * @return response
    */
   #[Route('/api/peinture/owasp/hotspot/severity', name: 'peinture_owasp_hotspot_severity', methods: ['GET'])]
-  public function peintureOwaspSeverity(EntityManagerInterface $em, Request $request): response
+  public function peintureOwaspSeverity(Request $request): response
   {
     $mavenKey = $request->get('mavenKey');
     $menace = $request->get('menace');
@@ -325,17 +328,17 @@ class ApiOwaspPeintureController extends AbstractController
 
     // On compte le nombre de faille OWASP u statut HIGH
     $sql = $strSelect . $mavenKey . $strMenace . $menace . "' AND status='TO_REVIEW' AND probability='HIGH'";
-    $count = $em->getConnection()->prepare($sql)->executeQuery();
+    $count = $this->em->getConnection()->prepare($sql)->executeQuery();
     $hhigh = $count->fetchAllAssociative();
 
     // On compte le nombre de faille OWASP au statut MEDIUM
     $sql = $strSelect . $mavenKey . $strMenace . $menace . "' AND status='TO_REVIEW' AND probability='MEDIUM'";
-    $count = $em->getConnection()->prepare($sql)->executeQuery();
+    $count = $this->em->getConnection()->prepare($sql)->executeQuery();
     $mmedium = $count->fetchAllAssociative();
 
     // On compte le nombre de faille OWASP au statut LOW
     $sql = $strSelect . $mavenKey . $strMenace . $menace . "' AND status='TO_REVIEW' AND probability='LOW'";
-    $count = $em->getConnection()->prepare($sql)->executeQuery();
+    $count = $this->em->getConnection()->prepare($sql)->executeQuery();
     $llow = $count->fetchAllAssociative();
 
     /**
