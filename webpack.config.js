@@ -56,6 +56,12 @@ Encore
         to: '[path][name].[ext]',
         context: './assets'
     })
+    // copy les images dans build/avatar depuis asset/avatar
+    .copyFiles({
+        from: './assets/avatar',
+        to: '[path][name].[ext]',
+        context: './assets'
+    })
     // copy les favicon dans build/favicon depuis asset/favicon
     .copyFiles({
         from: './assets/favicon',
