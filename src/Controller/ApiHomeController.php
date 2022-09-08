@@ -25,7 +25,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Entity\Main\ListeProjet;
 use App\Entity\Main\Profiles;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\DBAL\Connection;
 use DateTime;
 
@@ -37,10 +36,15 @@ class ApiHomeController extends AbstractController
 {
 
   private $client;
+  private $em;
 
-  public function __construct(HttpClientInterface $client)
+  public function __construct(
+    HttpClientInterface $client,
+    EntityManagerInterface $em,
+    )
   {
     $this->client = $client;
+    $this->em = $em;
   }
 
   public static $strContentType = 'application/json';
@@ -51,9 +55,9 @@ class ApiHomeController extends AbstractController
    * httpClient
    *
    * @param  mixed $url
-   * @return void
+   * @return reponse
    */
-  protected function httpClient($url, LoggerInterface $logger)
+  protected function httpClient($url): response
   {
     // On peut se connecter avec un user/password ou un token. Nous on préfère le token.
     if (empty($this->getParameter('sonar.token'))) {
@@ -85,7 +89,7 @@ class ApiHomeController extends AbstractController
     }
 
     $contentType = $response->getHeaders()['content-type'][0];
-    $logger->INFO('** ContentType *** '.isset($contentType));
+    $this->logger->INFO('** ContentType *** '.isset($contentType));
     $responseJson = $response->getContent();
     return json_decode($responseJson, true, 512, JSON_THROW_ON_ERROR);
   }
@@ -95,15 +99,15 @@ class ApiHomeController extends AbstractController
    * Vérifie si le serveur sonarqube est UP
    * http://{url}}/api/system/status
    *
-   * @return void
+   * @return response
    */
   #[Route('/api/status', name: 'sonar_status', methods: ['GET'])]
-  public function sonarStatus(LoggerInterface $logger)
+  public function sonarStatus():response
   {
     $url = $this->getParameter(static::$sonarUrl) . "/api/system/status";
 
     // on appel le client http
-    $result = $this->httpClient($url, $logger);
+    $result = $this->httpClient($url);
 
     return new JsonResponse($result, Response::HTTP_OK);
   }
@@ -115,15 +119,15 @@ class ApiHomeController extends AbstractController
    *
    * Attention, il faut avoir le role sonar administrateur
    *
-   * @return void
+   * @return response
    */
   #[Route('/api/system/info', name: 'information_systemes', methods: ['GET'])]
-  public function informationSysteme(LoggerInterface $logger)
+  public function informationSysteme():response
   {
     $url = $this->getParameter(static::$sonarUrl) . "/api/system/info";
 
     // on appel le client http
-    $result = $this->httpClient($url, $logger);
+    $result = $this->httpClient($url);
     return new JsonResponse($result, Response::HTTP_OK);
   }
 
@@ -136,12 +140,12 @@ class ApiHomeController extends AbstractController
    * @return response
    */
   #[Route('/api/liste_projet/ajout', name: 'liste_projet_ajout', methods: ['GET'])]
-  public function listeProjet(EntityManagerInterface $em, ManagerRegistry $doctrine, LoggerInterface $logger): response
+  public function listeProjet(): response
   {
     $url = $this->getParameter(static::$sonarUrl) . "/api/components/search?qualifiers=TRK&ps=500&p=1";
 
     // on appel le client http
-    $result = $this->httpClient($url, $logger);
+    $result = $this->httpClient($url);
 
     // On récupère le manager de BD
     $date = new DateTime();
@@ -149,7 +153,7 @@ class ApiHomeController extends AbstractController
 
     // On supprime les données de la table avant d'importer les données;
     $sql = "DELETE FROM liste_projet";
-    $delete = $em->getConnection()->prepare($sql);
+    $delete = $this->em->getConnection()->prepare($sql);
     $delete->executeQuery();
 
     // On insert les projets dans la tale liste_projet.
@@ -164,8 +168,8 @@ class ApiHomeController extends AbstractController
         $listeProjet->setName($component["name"]);
         $listeProjet->setMavenKey($component["project"]);
         $listeProjet->setDateEnregistrement($date);
-        $em->persist($listeProjet);
-        $em->flush();
+        $this->em->persist($listeProjet);
+        $this->em->flush();
       }
     }
     $response = new JsonResponse();
@@ -182,7 +186,7 @@ class ApiHomeController extends AbstractController
    * @return void
    */
   #[Route('/api/liste_projet/date', name: 'liste_projet_date', methods: ['GET'])]
-  public function listeProjetDate(Connection $connection)
+  public function listeProjetDate(Connection $connection):response
   {
 
     $sql = "SELECT date_enregistrement as date from 'liste_projet' ASC LIMIT 1";
@@ -199,8 +203,7 @@ class ApiHomeController extends AbstractController
     }
 
     $response = new JsonResponse();
-    $response->setData(["dateCreation" => $dateCreation, "nombreProjet" => $nombreProjet, Response::HTTP_OK]);
-    return $response;
+    return $response->setData(["dateCreation" => $dateCreation, "nombreProjet" => $nombreProjet, Response::HTTP_OK]);
   }
 
   /**
@@ -212,14 +215,14 @@ class ApiHomeController extends AbstractController
    * @return response
    */
   #[Route('/api/quality/profiles', name: 'liste_quality_profiles', methods: ['GET'])]
-  public function listeQualityProfiles(EntityManagerInterface $em, LoggerInterface $logger): response
+  public function listeQualityProfiles(): response
   {
     $url = $this->getParameter(static::$sonarUrl)
           . "/api/qualityprofiles/search?qualityProfile="
           . $this->getParameter('sonar.profiles');
 
     // on appel le client http
-    $result = $this->httpClient($url, $logger);
+    $result = $this->httpClient($url);
 
     // On récupère le manager de BD
     $date = new DateTime();
@@ -227,7 +230,7 @@ class ApiHomeController extends AbstractController
 
     // On supprime les données de la table avant d'importer les données;
     $sql = "DELETE FROM profiles";
-    $delete = $em->getConnection()->prepare($sql);
+    $delete = $this->em->getConnection()->prepare($sql);
     $delete->executeQuery();
 
     // On insert les profiles dans la table profiles.
@@ -243,15 +246,15 @@ class ApiHomeController extends AbstractController
       $rulesDate = new DateTime($profil["rulesUpdatedAt"]);
       $profils->setRulesUpdateAt($rulesDate);
       $profils->setDateEnregistrement($date);
-      $em->persist($profils);
-      $em->flush();
+      $this->em->persist($profils);
+      $this->em->flush();
     }
 
     // On récupère la liste des profiles;
     $sql = "SELECT name as profil, language_name as langage,
             active_rule_count as regle, rules_update_at as date,
             is_default as actif FROM profiles";
-    $select = $em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)))->executeQuery();
+    $select = $this->em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)))->executeQuery();
     $liste = $select->fetchAllAssociative();
 
     $response = new JsonResponse();
@@ -266,11 +269,11 @@ class ApiHomeController extends AbstractController
    * @return response
    */
   #[Route('/api/quality', name: 'nombre_profil', methods: ['GET'])]
-  public function nombreProfil(EntityManagerInterface $em): response
+  public function nombreProfil(): response
   {
     // On récupère le nombre de profil dans la table profiles;
     $sql = "SELECT count(*) as nombre FROM profiles";
-    $select = $em->getConnection()->prepare($sql)->executeQuery();
+    $select = $this->em->getConnection()->prepare($sql)->executeQuery();
     $result = $select->fetchAllAssociative();
     if (empty($result)) {
       $nombre = 0;

@@ -34,10 +34,12 @@ class BoardController extends AbstractController
 {
 
   private $client;
+  private $em;
 
-  public function __construct(HttpClientInterface $client)
+  public function __construct(HttpClientInterface $client, EntityManagerInterface $em)
   {
     $this->client = $client;
+    $this->em = $em;
   }
 
   public static $strContentType = 'application/json';
@@ -88,12 +90,11 @@ class BoardController extends AbstractController
    * suivi
    * On remonte les 10 dernières version + la version initiale
    *
-   * @param  mixed $em
    * @param  mixed $request
    * @return response
    */
   #[Route('/suivi', name: 'suivi', methods: ['GET'])]
-  public function suivi(EntityManagerInterface $em, Request $request): response
+  public function suivi(Request $request): response
   {
     $mavenKey = $request->get('mavenKey');
     // Tableau de suivi principal
@@ -122,7 +123,7 @@ class BoardController extends AbstractController
     FROM historique
     WHERE maven_key='${mavenKey}' AND initial=FALSE
     ORDER BY date_version DESC LIMIT 9)";
-    $select = $em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)))->executeQuery();
+    $select = $this->em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)))->executeQuery();
     $dash = $select->fetchAllAssociative();
 
     // On récupère les anomalies par sévérité
@@ -143,7 +144,7 @@ class BoardController extends AbstractController
     FROM historique
     WHERE maven_key='${mavenKey}' AND initial=FALSE
     ORDER BY date_version DESC LIMIT 9)";
-    $select = $em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)))->executeQuery();
+    $select = $this->em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)))->executeQuery();
     $severite = $select->fetchAllAssociative();
 
     // On récupère les anomalies par type et sévérité
@@ -173,7 +174,7 @@ class BoardController extends AbstractController
     WHERE maven_key='${mavenKey}' AND initial=FALSE
     ORDER BY date_version DESC LIMIT 9)";
 
-    $select = $em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)))->executeQuery();
+    $select = $this->em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)))->executeQuery();
     $details = $select->fetchAllAssociative();
 
     // Graphique
@@ -182,7 +183,7 @@ class BoardController extends AbstractController
     FROM historique where maven_key='${mavenKey}'
     GROUP BY date_version ORDER BY date_version ASC";
 
-    $select = $em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)))->executeQuery();
+    $select = $this->em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)))->executeQuery();
     $graph = $select->fetchAllAssociative();
 
     // On compte le nombre de résultat
@@ -205,13 +206,13 @@ class BoardController extends AbstractController
     $date[$nl + 1] = $ddd;
 
     return $this->render('dash/index.html.twig',
-     [
+      [
         'dash' => $dash, 'severite' => $severite, 'details' => $details,
         'nom' => $dash[0]["nom"], 'mavenKey' => $mavenKey,
         'data1' => json_encode($bug), 'data2' => json_encode($secu),
         'data3' => json_encode($codeSmell), 'labels' => json_encode($date),
         'version' => $this->getParameter('version'), 'dateCopyright' => \date('Y')
-       ]
+      ]
     );
   }
 
@@ -220,12 +221,11 @@ class BoardController extends AbstractController
    * On récupère la liste des projets nom + clé
    * http://{url}}/api/liste/version
    *
-   * @param  mixed $em
    * @param  mixed $request
-   * @return void
+   * @return Response
    */
   #[Route('/api/liste/version', name: 'liste_version', methods: ['GET'])]
-  public function listeVersion(EntityManagerInterface $em, Request $request)
+  public function listeVersion(Request $request): Response
   {
     $mavenKey = $request->get('mavenKey');
 
@@ -233,7 +233,7 @@ class BoardController extends AbstractController
     $sql = "SELECT maven_key, project_version as version, date
             FROM information_projet
             WHERE maven_key='" . $mavenKey . "'";
-    $select = $em->getConnection()->prepare($sql)->executeQuery();
+    $select = $this->em->getConnection()->prepare($sql)->executeQuery();
     $versions = $select->fetchAllAssociative();
 
     if (!$versions) {
@@ -263,10 +263,10 @@ class BoardController extends AbstractController
    * http://{url}}/api/get/version
    *
    * @param  mixed $request
-   * @return void
+   * @return response
    */
   #[Route('/api/get/version', name: 'get_version', methods: ['PUT'])]
-  public function getVersion(Request $request, LoggerInterface $logger)
+  public function getVersion(Request $request, LoggerInterface $logger): Response
   {
     // on décode le body
     $data = json_decode($request->getContent());
@@ -279,12 +279,12 @@ class BoardController extends AbstractController
     $urlStatic=$this->getParameter(static::$sonarUrl);
 
     $url = "${urlStatic}/api/measures/search_history?component=
-             ${mavenKey}&metrics=reliability_rating,
-             security_rating,sqale_rating,bugs,
-             vulnerabilities,code_smells,security_hotspots,
-             security_review_rating,lines,ncloc,coverage,
-             tests,sqale_index,duplicated_lines_density
-             &from=${urlencodeDate}&to=${urlencodeDate}";
+            ${mavenKey}&metrics=reliability_rating,
+            security_rating,sqale_rating,bugs,
+            vulnerabilities,code_smells,security_hotspots,
+            security_review_rating,lines,ncloc,coverage,
+            tests,sqale_index,duplicated_lines_density
+            &from=${urlencodeDate}&to=${urlencodeDate}";
 
     // on appel le client http
     $result = $this->httpClient(trim(preg_replace("/\s+/u", " ", $url)), $logger);
@@ -379,12 +379,11 @@ class BoardController extends AbstractController
    * Enregistre une version reconstituée dans la table historique
    * http://{url}}/api/suivi/mise-a-jour
    *
-   * @param  mixed $em
    * @param  mixed $request
-   * @return void
+   * @return response
    */
   #[Route('/api/suivi/mise-a-jour', name: 'suivi_miseajour', methods: ['PUT'])]
-  public function suiviMiseAJour(EntityManagerInterface $em, Request $request)
+  public function suiviMiseAJour(Request $request): Response
   {
     // on décode le body
     $data = json_decode($request->getContent());
@@ -423,44 +422,44 @@ class BoardController extends AbstractController
 
     $sql = "INSERT OR IGNORE INTO historique
       (maven_key,version,date_version,
-       nom_projet,version_release,version_snapshot,
-       suppress_warning,no_sonar,nombre_ligne,
-       nombre_ligne_code,couverture,
-       duplication,tests_unitaires,nombre_defaut,dette,
-       nombre_bug,nombre_vulnerability,nombre_code_smell,
-       bug_blocker, bug_critical, bug_major, bug_minor, bug_info,
-       vulnerability_blocker, vulnerability_critical, vulnerability_major,
-       vulnerability_minor, vulnerability_info,
-       code_smell_blocker, code_smell_critical, code_smell_major,
-       code_smell_minor, code_smell_info,
-       frontend,backend,autre,
-       nombre_anomalie_bloquant,nombre_anomalie_critique,
-       nombre_anomalie_majeur,
-       nombre_anomalie_mineur,nombre_anomalie_info,
-       note_reliability,note_security,
-       note_sqale,note_hotspot,hotspot_total,
-       hotspot_high,hotspot_medium,hotspot_low,
-       favori,initial,date_enregistrement)
-       VALUES
-       ('${tempoMavenKey}','${tempoVersion}',
+        nom_projet,version_release,version_snapshot,
+        suppress_warning,no_sonar,nombre_ligne,
+        nombre_ligne_code,couverture,
+        duplication,tests_unitaires,nombre_defaut,dette,
+        nombre_bug,nombre_vulnerability,nombre_code_smell,
+        bug_blocker, bug_critical, bug_major, bug_minor, bug_info,
+        vulnerability_blocker, vulnerability_critical, vulnerability_major,
+        vulnerability_minor, vulnerability_info,
+        code_smell_blocker, code_smell_critical, code_smell_major,
+        code_smell_minor, code_smell_info,
+        frontend,backend,autre,
+        nombre_anomalie_bloquant,nombre_anomalie_critique,
+        nombre_anomalie_majeur,
+        nombre_anomalie_mineur,nombre_anomalie_info,
+        note_reliability,note_security,
+        note_sqale,note_hotspot,hotspot_total,
+        hotspot_high,hotspot_medium,hotspot_low,
+        favori,initial,date_enregistrement)
+      VALUES
+      ('${tempoMavenKey}','${tempoVersion}',
         '${tempoDateVersion}','${tempoNom}',-1,-1,-1,-1,
-         ${tempoLines},${tempoNcloc},
-         ${tempoCoverage},${tempoDuplication},${tempoTests},
-         ${tempoDefauts},${tempoDette},${tempoBug},
-         ${tempoVulnerabilities},${tempoCodeSmell},
-         -1,-1,-1,-1,-1,
-         -1,-1,-1,-1,-1,
-         -1,-1,-1,-1,-1,
-         -1,-1,-1,
-         ${tempoBloquant},${tempoCritique},${tempoMajeur},
-         ${tempoMineur},${tempoInfo},'${tempoNoteReliability}',
-         '${tempoNoteSecurity}','${tempoNoteSqale}',
-         '${tempoNoteHotspotsReview}',${tempoHotspotsReview},
-          -1,-1,-1,FALSE, ${tempoInitial},
-         '${tempoDateEnregistrement}')";
+        ${tempoLines},${tempoNcloc},
+        ${tempoCoverage},${tempoDuplication},${tempoTests},
+        ${tempoDefauts},${tempoDette},${tempoBug},
+        ${tempoVulnerabilities},${tempoCodeSmell},
+        -1,-1,-1,-1,-1,
+        -1,-1,-1,-1,-1,
+        -1,-1,-1,-1,-1,
+        -1,-1,-1,
+        ${tempoBloquant},${tempoCritique},${tempoMajeur},
+        ${tempoMineur},${tempoInfo},'${tempoNoteReliability}',
+        '${tempoNoteSecurity}','${tempoNoteSqale}',
+        '${tempoNoteHotspotsReview}',${tempoHotspotsReview},
+        -1,-1,-1,FALSE, ${tempoInitial},
+        '${tempoDateEnregistrement}')";
 
     // On exécute la requête
-    $con = $em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)));
+    $con = $this->em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)));
     try {
       $con->executeQuery();
     } catch (\Doctrine\DBAL\Exception $e) {
@@ -474,12 +473,11 @@ class BoardController extends AbstractController
    * récupère la liste des projets nom + clé
    * http://{url}}/api/dash/liste/version
    *
-   * @param  mixed $em
    * @param  mixed $request
-   * @return void
+   * @return response
    */
   #[Route('/api/dash/version/liste', name: 'dash_version_liste', methods: ['PUT'])]
-  public function dashVersionListe(EntityManagerInterface $em, Request $request)
+  public function dashVersionListe(Request $request): Response
   {
     // on décode le body
     $data = json_decode($request->getContent());
@@ -495,7 +493,7 @@ class BoardController extends AbstractController
             ORDER BY date_version DESC";
 
     // On exécute la requête
-    $con = $em->getConnection()->prepare($sql);
+    $con = $this->em->getConnection()->prepare($sql);
     try {
       $select = $con->executeQuery();
       $version = $select->fetchAllAssociative();
@@ -510,12 +508,11 @@ class BoardController extends AbstractController
    * On ajoute ou on supprime la version favorite
    * http://{url}}/api/dash/version/favori
    *
-   * @param  mixed $em
    * @param  mixed $request
-   * @return void
+   * @return response
    */
   #[Route('/api/dash/version/favori', name: 'dash_version_favori', methods: ['PUT'])]
-  public function dashVersionFavori(EntityManagerInterface $em, Request $request)
+  public function dashVersionFavori(Request $request):response
   {
     // on décode le body
     $data = json_decode($request->getContent());
@@ -530,11 +527,11 @@ class BoardController extends AbstractController
 
     // On met à jour l'attribut favori de la table historique
     $sql = "UPDATE historique SET favori=" . $favori . " WHERE maven_key='"
-           . $mavenKey ."'  AND version='" . $version
-           . "'  AND date_version='" . $date . "'";
+            . $mavenKey ."'  AND version='" . $version
+            . "'  AND date_version='" . $date . "'";
 
     // On exécute la requête
-    $con = $em->getConnection()->prepare($sql);
+    $con = $this->em->getConnection()->prepare($sql);
     try {
       $con->executeQuery();
     } catch (\Doctrine\DBAL\Exception $e) {
@@ -544,14 +541,14 @@ class BoardController extends AbstractController
     // On modifie (delete/insert) l'attribut favori de la table favori
     // On supprime l'enregistrement
     $sql = "DELETE FROM favori WHERE maven_key='" . $mavenKey . "'";
-    $em->getConnection()->prepare($sql)->executeQuery();
+    $this->em->getConnection()->prepare($sql)->executeQuery();
     // On ajoute l'enregistrement
     $sql = "INSERT INTO favori ('maven_key', 'favori', 'date_enregistrement')
     VALUES ('" . $mavenKey . "', " . $favori . ", '" .
       $dateEnregistrement->format(static::$dateFormat) . "')";
 
     // On exécute la requête et on catch l'erreur
-    $con = $em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)));
+    $con = $this->em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)));
     try {
       $con->executeQuery();
     } catch (\Doctrine\DBAL\Exception $e) {
@@ -566,12 +563,11 @@ class BoardController extends AbstractController
    * On ajoute ou on supprime la version de reference
    * http://{url}}/api/dash/version/reference
    *
-   * @param  mixed $em
    * @param  mixed $request
-   * @return void
+   * @return response
    */
   #[Route('/api/dash/version/reference', name: 'dash_version_reference', methods: ['PUT'])]
-  public function dashVersionReference(EntityManagerInterface $em, Request $request)
+  public function dashVersionReference(Request $request)
   {
     // on décode le body
     $data = json_decode($request->getContent());
@@ -589,7 +585,7 @@ class BoardController extends AbstractController
                   AND version='${version}'
                   AND date_version='${date}'";
     // On exécute la requête
-    $con = $em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)));
+    $con = $this->em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)));
     try {
       $con->executeQuery();
     } catch (\Doctrine\DBAL\Exception $e) {
@@ -604,12 +600,11 @@ class BoardController extends AbstractController
    * On supprime la version de historique
    * http://{url}}/api/dash/version/poubelle
    *
-   * @param  mixed $em
    * @param  mixed $request
-   * @return void
+   * @return response
    */
   #[Route('/api/dash/version/poubelle', name: 'dash_version_poubelle', methods: ['PUT'])]
-  public function dashVersionPoubelle(EntityManagerInterface $em, Request $request)
+  public function dashVersionPoubelle(Request $request)
   {
     // on décode le body
     $data = json_decode($request->getContent());
@@ -627,7 +622,7 @@ class BoardController extends AbstractController
                   AND date_version='${date}'";
 
     // On exécute la requête
-    $con = $em->getConnection()->prepare($sql);
+    $con = $this->em->getConnection()->prepare($sql);
     try {
       $con->executeQuery();
     } catch (\Doctrine\DBAL\Exception $e) {
