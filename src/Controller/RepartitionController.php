@@ -24,15 +24,20 @@ use App\Entity\Secondary\Repartition;
 
 class RepartitionController extends AbstractController
 {
+    private $doctrine;
+
+    // On ajoute un constructeur pour éviter à chaque fois d'injecter la même class.
+    public function __construct(ManagerRegistry $doctrine) {
+        $this->doctrine = $doctrine;
+    }
 
     /**
      * projetRepartition
-     * @param  mixed $em
      * @param  mixed $request
      * @return Response
      */
     #[Route('/projet/repartition', name: 'projet_repartition')]
-    public function projetRepartition(ManagerRegistry $doctrine, Request $request): Response
+    public function projetRepartition(Request $request): Response
     {
         // On récupère la clé du projet
         $mavenKey = $request->get('mavenKey');
@@ -40,9 +45,9 @@ class RepartitionController extends AbstractController
         $app=explode(":", $mavenKey);
 
         // On se connecte à la base pour connaitre la version du dernier setup pour le projet.
-        $reponse = $doctrine->getManager('secondary')
+        $reponse = $this->doctrine->getManager('secondary')
                             ->getRepository(Repartition::class)
-                             ->findBy(['maven_key' => $mavenKey],['setup' => 'DESC'],1);
+                            ->findBy(['maven_key' => $mavenKey],['setup' => 'DESC'],1);
 
         if (empty($reponse)) {
             $setup="NaN";
