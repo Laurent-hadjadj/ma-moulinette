@@ -28,7 +28,7 @@ class HomeController extends AbstractController
 {
     private $em;
 
-    // On ajoute un constructeur pour éviter à chaque fois la même class
+    // On ajoute un constructeur pour éviter à chaque fois d'injecter la même class
     public function __construct(EntityManagerInterface $em) {
         $this->em = $em;
     }
