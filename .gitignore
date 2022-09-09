@@ -33,6 +33,7 @@ phpstan-report.json
 .scannerwork/
 settings.json
 .vscode/
+.VSCodeCounter/
 ###< audit ###
 
 ###> sqlite ###
@@ -40,3 +41,7 @@ settings.json
 /var/data-monapplication.db
 /var/data.db-journal
 ###< sqlite ###
+
+###> docker ###
+composer.bat
+###< docker ###
