@@ -23,6 +23,7 @@ Encore
     .addEntry('owasp', './assets/js/app-owasp.js')
     .addEntry('dash', './assets/js/app-dash.js')
     .addEntry('repartition', './assets/js/app-repartition.js')
+    .addStyleEntry('admin', './assets/styles/admin.css')
 
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
     .splitEntryChunks()
