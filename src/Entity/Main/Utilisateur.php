@@ -18,8 +18,14 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'integer')]
     private $id;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private $avatar_url;
+    #[ORM\Column(type: 'string', length: 32)]
+    private $prenom;
+
+    #[ORM\Column(type: 'string', length: 64)]
+    private $nom;
+
+    #[ORM\Column(type: 'string', length: 128, nullable: true)]
+    private $avatar;
 
     #[ORM\Column(type: 'string', length: 180, unique: true)]
     private $courriel;
@@ -33,7 +39,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'boolean')]
     private $actif;
 
-    #[ORM\Column(type: 'datetime')]
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private $date_modification;
 
     #[ORM\Column(type: 'datetime')]
@@ -113,11 +119,14 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     }
     public function getDateModification(): ?\DateTimeInterface
     {
+
         return $this->date_modification;
     }
 
-    public function setDateModification(\DateTimeInterface $date_modification): self
+    public function setDateModification($date_modification): self
     {
+        // On test si la date de modification est vide.
+        if (is_null($date_modification)) {$date_modification= new \DateTime();}
         $this->date_modification = $date_modification;
 
         return $this;
@@ -160,15 +169,54 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->actif;
     }
 
-    public function getAvatarUrl(): ?string
+    public function getPrenom(): ?string
     {
-        return $this->avatar_url;
+        return $this->prenom;
     }
 
-    public function setAvatarUrl(string $avatar_url): self
+    public function setPrenom(string $prenom): self
     {
-        $this->avatar_url = $avatar_url;
+        $this->prenom = $prenom;
 
         return $this;
     }
+
+    public function getNom(): ?string
+    {
+        return $this->nom;
+    }
+
+    public function setNom(string $nom): self
+    {
+        $this->nom = $nom;
+
+        return $this;
+    }
+
+    public function getPersonne(): ?string
+    {
+        return $this->nom.' '.$this->prenom;
+    }
+
+    public function getAvatar(): ?string
+    {
+        return $this->avatar;
+    }
+
+    public function setAvatar(?string $avatar): self
+    {
+        $this->avatar = $avatar;
+
+        return $this;
+    }
+
+    public function getAvatarUrl(): ?string
+    {
+        if (!$this->avatar) {
+            return null;
+        }
+        return sprintf('avatar/%s', $this->avatar);
+    }
+
+
 }
