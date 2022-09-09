@@ -1,0 +1,213 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+{#{% form_theme form '@EasyAdmin/crud/form_theme.html.twig' %}#}
+
+{% block page_title %}
+    Informations générales
+{% endblock %}
+
+{% block main %}
+<h4>Système.</h4>
+<div class="row">
+  <div class="col-sm-12 col-md-3 col-lg-2">
+    <div class="card border-dark mb-3" style="font-size:1.2rem;">
+      <div class="card-header text-center tool-tip">PHP<span class="tool-tip-text">Version de PHP.</span></div>
+      <div class="card-body">
+        <p class="card-text text-center" style="font-size:2.5rem;">{{php_version}}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-12 col-md-3 col-lg-2">
+    <div class="card border-dark mb-3" style="font-size:1.2rem;">
+      <div class="card-header text-center tool-tip">Symfony <span class="tool-tip-text">Version de Symfony.</span></div>
+      <div class="card-body">
+        <p class="card-text text-center" style="font-size:2.5rem;">{{symfony_version}}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-12 col-md-3 col-lg-2">
+    <div class="card border-dark mb-3" style="font-size:1.2rem;">
+      <div class="card-header text-center tool-tip">Utilisateur<span class="tool-tip-text">Nombre d'utilisateur inscrit.</span></div>
+      <div class="card-body">
+        <p class="card-text text-center" style="font-size:2.5rem;">{{application_utilisateur}}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-12 col-md-3 col-lg-2">
+    <div class="card border-dark mb-3" style="font-size:1.2rem;">
+      <div class="card-header text-center tool-tip">Mémoire<span class="tool-tip-text">Mémoire utilisée par PHP.</span></div>
+      <div class="card-body">
+        <p class="card-text text-center" style="font-size:2.5rem;">{{ram}}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h4>Ma Moulinette.</h4>
+<div class="row">
+  <div class="col-sm-12 col-md-3 col-lg-2">
+    <div class="card border-dark mb-3" style="font-size:1.2rem;">
+      <div class="card-header text-center tool-tip">Version<span class="tool-tip-text">Nombre de version Release.</span></div>
+      <div class="card-body">
+        <p class="card-text text-center" style="font-size:2.5rem;">{{application_version}}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-12 col-md-3 col-lg-2">
+    <div class="card border-dark mb-3" style="font-size:1.2rem;">
+      <div class="card-header text-center tool-tip">Release<span class="tool-tip-text">Verison de l'application.</span></div>
+      <div class="card-body">
+        <p class="card-text text-center" style="font-size:2.5rem;">{{application_versions}}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-12 col-md-3 col-lg-2">
+    <div class="card border-dark mb-3" style="font-size:1.2rem;">
+      <div class="card-header text-center tool-tip">Table<span class="tool-tip-text">Nombre de table.</span></div>
+      <div class="card-body">
+        <p class="card-text text-center" style="font-size:2.5rem;">{{application_table}}</p>
+      </div>
+    </div>
+  </div>
+  <div class="table-responsive">
+    <table class="table align-middle table-bordered table-sm">
+      <caption>Données 1.5.0-RC1 du 08/09/2022.</caption>
+      <thead class="table-light text-center">
+        <tr>
+          <th scope="col">Langage</th>
+          <th scope="col">Fichier</th>
+          <th scope="col">Code</th>
+          <th scope="col">Comment</th>
+          <th scope="col">Ligne Vide</th>
+          <th scope="col">Total</th>
+        </tr>
+      </thead>
+      <tbody class="text-center">
+        <tr>
+          <th scope="row">PHP</th>
+          {% for indicateur in php %}
+          <td>{{indicateur|number_format(0, '.', ' ')}}</td>
+          {% endfor %}
+        </tr>
+        <tr>
+          <th scope="row">HTML</th>
+          {% for indicateur in html %}
+          <td>{{indicateur|number_format(0, '.', ' ')}}</td>
+          {% endfor %}
+        </tr>
+        <tr>
+          <th scope="row">CSS</th>
+          {% for indicateur in css %}
+          <td>{{indicateur|number_format(0, '.', ' ')}}</td>
+          {% endfor %}
+        </tr>
+        <tr>
+          <th scope="row">ECMA</th>
+          {% for indicateur in js %}
+          <td>{{indicateur|number_format(0, '.', ' ')}}</td>
+          {% endfor %}
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<h4>Mes projets.</h4>
+<div class="row">
+  <div class="col-sm-12 col-md-3 col-lg-2">
+    <div class="card border-dark mb-3" style="font-size:1.2rem;">
+      <div class="card-header text-center tool-tip">Projet<span class="tool-tip-text">Nombre de projet disponible sur sonarqube.</span></div>
+      <div class="card-body">
+        <p class="card-text text-center" style="font-size:2.5rem;">{{projet_projet}}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-2">
+    <div class="card border-dark mb-3" style="font-size:1.2rem;">
+      <div class="card-header text-center tool-tip">Profiles<span class="tool-tip-text">Nombre de profiles qualités disponible sur sonarqube.</span></div>
+      <div class="card-body">
+        <p class="card-text text-center" style="font-size:2.5rem;">{{projet_profile}}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-12 col-md-3 col-lg-2">
+    <div class="card border-dark mb-3" style="font-size:1.2rem;">
+      <div class="card-header text-center tool-tip">Règle<span class="tool-tip-text">Nombre de règle total.</span></div>
+      <div class="card-body">
+        <p class="card-text text-center" style="font-size:2.5rem;">{{projet_regle|number_format(0, '.', ' ')}}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-12 col-md-3 col-lg-2">
+    <div class="card border-dark mb-3" style="font-size:1.2rem;">
+      <div class="card-header text-center tool-tip">Analyse<span class="tool-tip-text">Projets analysés.</span></div>
+      <div class="card-body">
+        <p class="card-text text-center" style="font-size:2.5rem;">{{projet_anomalie}}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-12 col-md-3 col-lg-2">
+    <div class="card border-dark mb-3" style="font-size:1.2rem;">
+      <div class="card-header text-center tool-tip">Historique<span class="tool-tip-text">Projets suivis</span></div>
+      <div class="card-body">
+        <p class="card-text text-center" style="font-size:2.5rem;">{{projet_historique}}</p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-12 col-md-3 col-lg-2">
+    <div class="card border-dark mb-3" style="font-size:1.2rem;">
+      <div class="card-header text-center tool-tip">Lignes<span class="tool-tip-text">Nombre de lignes de code.</span></div>
+      <div class="card-body">
+        <p class="card-text text-center" style="font-size:2.5rem;">{{projet_line|number_format(0, '.', ' ')}}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-12 col-md-3 col-lg-2">
+    <div class="card border-dark mb-3" style="font-size:1.2rem;">
+      <div class="card-header text-center tool-tip">Tests<span class="tool-tip-text">Nombre de tests unitaires.</span></div>
+      <div class="card-body">
+        <p class="card-text text-center" style="font-size:2.5rem;">{{projet_test}}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h4>Mesures globles.</h4>
+<div class="row">
+  <div class="col-sm-12 col-md-3 col-lg-2">
+    <div class="card border-dark mb-3" style="font-size:1.2rem;">
+      <div class="card-header text-center tool-tip">Signalement<span class="tool-tip-text">Nombre de signalement des projets analysés.</span></div>
+      <div class="card-body">
+        <p class="card-text text-center" style="font-size:2.5rem;">{{mesure_signalement|number_format(0, '.', ' ')}}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-12 col-md-3 col-lg-2">
+    <div class="card border-dark mb-3" style="font-size:1.2rem;">
+      <div class="card-header text-center tool-tip">Fiabilité<span class="tool-tip-text">Nombre de signalement lié à la fiabilité du code.</span></div>
+      <div class="card-body">
+        <p class="card-text text-center" style="font-size:2.5rem;">{{mesure_bug|number_format(0, '.', ' ')}}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-12 col-md-3 col-lg-2">
+    <div class="card border-dark mb-3" style="font-size:1.2rem;">
+      <div class="card-header text-center tool-tip">Sécurité<span class="tool-tip-text">Nombre de signalement lié aux risques de sécurité.</span></div>
+      <div class="card-body">
+        <p class="card-text text-center" style="font-size:2.5rem;">{{mesure_vulnerability|number_format(0, '.', ' ')}}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-12 col-md-3 col-lg-2">
+    <div class="card border-dark mb-3" style="font-size:1.2rem;">
+      <div class="card-header text-center tool-tip">Maintenabilité<span class="tool-tip-text">Nombre de signalement lié à la maintenabilité du code.</span></div>
+      <div class="card-body">
+        <p class="card-text text-center" style="font-size:2.5rem;">{{mesure_codesmell|number_format(0, '.', ' ')}}</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}
