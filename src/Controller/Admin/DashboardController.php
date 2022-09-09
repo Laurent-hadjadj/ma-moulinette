@@ -245,9 +245,12 @@ class DashboardController extends AbstractDashboardController
      */
     public function configureMenuItems(): iterable
     {
-        yield MenuItem::linkToUrl('Home', 'fas fa-home', $this->generateUrl('home'));
-        yield MenuItem::linkToDashboard('Dashboard', 'fa fa-dashboard');
-        yield MenuItem::linkToCrud('Utilisateur', 'fas fa-user', Utilisateur::class);
+        yield MenuItem::linkToUrl('Home', 'fas fa-home', $this->generateUrl('home'))
+            ->setPermission('ROLE_USER');
+        yield MenuItem::linkToDashboard('Dashboard', 'fa fa-dashboard')
+        ->setPermission('ROLE_USER');
+        yield MenuItem::linkToCrud('Utilisateur', 'fas fa-user', Utilisateur::class)
+        ->setPermission('ROLE_ADMIN');
     }
 
     /**
