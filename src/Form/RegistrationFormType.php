@@ -45,8 +45,9 @@ class RegistrationFormType extends AbstractType
                 'label' => 'label.prenom',
                 'trim' => true
             ])
+            //RFC 3696 (64+1+255).
             ->add('courriel',EmailType::class, [
-                'attr' => ['maxlength' => 72],
+                'attr' => ['maxlength' => 320],
                 'attr' => ['placeholder' => 'placeholder.courriel'],
                 'label' => 'label.courriel',
                 'trim' => true
@@ -63,7 +64,7 @@ class RegistrationFormType extends AbstractType
                     new Length([
                         'min' => 8,
                         'minMessage' => 'Votre mot de passe doit avoir au moins {{ limit }} caratères.',
-                        'max' => 255,
+                        'max' => 46,
                     ]),
                 ],
             ])
