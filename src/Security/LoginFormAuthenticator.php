@@ -63,7 +63,7 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
              * Si l'utilisateur n'existe pas on génére une exception.
              * Si l'utilisateur existe mais que son ststut est 'FALSE',
              *  i.e. l'attribut 'actif', on génére une excption.
-             * Si l'utilisateur existe et son statut est à "TRUE" et 
+             * Si l'utilisateur existe et son statut est à "TRUE" et
              *  que le mot de passe est correcte :
              * 1 - On ajoute le support CSRF ;
              * 2 - On ajoute le support de "Remember-me" ;
