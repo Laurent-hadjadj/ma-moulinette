@@ -10,6 +10,8 @@
  *
  */
 
+/* stylelint-disable selector-id-pattern */
+
 /**
   * Propriétés pour les class en fonction des medias type
   *
@@ -133,4 +135,65 @@
   top: -0.65rem;
   z-index: 1;
   transition: all 0.15s ease-in;
+}
+
+.floated-label-wrapper label.prenom {
+  opacity: 1;
+  top: -2.45rem;
+  z-index: 1;
+  transition: all 0.15s ease-in;
+}
+
+/*************** Ajouter un utilisateur *****************/
+.profil-bouton {
+  border: 1px solid #00445b;
+  border-radius: 4px;
+  background-color: #00445b;
+  cursor: pointer;
+  color: white;
+  padding: 0.1rem;
+  margin-left: -0.2rem;
+}
+
+.profil-bouton:hover {
+  border: 1px solid #00445b;
+  background-color: #eee;
+  color: #e7552c;
+}
+
+:focus { outline: none; }
+
+#registration_form_nom {
+  margin-top: 0.2rem;
+}
+
+#registration_form_prenom {
+  margin-top: -1.8rem;
+}
+
+/***************  Avatar                        *******************************/
+.sepia { filter: sepia(0); }
+.sepia:hover { filter: sepia(1); }
+.grayscale { filter: grayscale(1); }
+.grayscale:hover { filter: grayscale(0); }
+
+/* Accordeon */
+.menu-accordeon {
+  background-color: white;
+  border-radius: 5px;
+  margin-top: 0.1rem;
+}
+
+#ajouter-mon-avatar {
+  margin-left: 0.6rem;
+}
+
+/* Formulaires                                        */
+/* stylelint-disable-next-line selector-class-pattern */
+.form_erreur { color: #761f11; }
+
+/* stylelint-disable-next-line selector-class-pattern */
+.form_erreur ul {
+  font-size: 0.9rem;
+  list-style-type: none;
 }
