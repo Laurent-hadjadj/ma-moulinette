@@ -200,6 +200,7 @@ class DashboardController extends AbstractDashboardController
 
         return $this->render('admin/index.html.twig',
         [
+            'dateCopyright' => \date('Y'),
             'php_version' => $php_version,
             'symfony_version' => $symfony_version,
             'application_utilisateur' => $application_utilisateur,
@@ -245,7 +246,7 @@ class DashboardController extends AbstractDashboardController
      */
     public function configureMenuItems(): iterable
     {
-        yield MenuItem::linkToUrl('Home', 'fas fa-home', $this->generateUrl('home'))
+        yield MenuItem::linkToUrl('Home', 'fas fa-desktop', $this->generateUrl('home'))
             ->setPermission('ROLE_USER');
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-dashboard')
         ->setPermission('ROLE_USER');
@@ -262,7 +263,7 @@ class DashboardController extends AbstractDashboardController
     public function configureUserMenu(UserInterface $utilisateur): UserMenu
     {
         if (!$utilisateur instanceof Utilisateur) {
-            throw new \Exception('Wrong user');
+            throw new \Exception('Mauvais utilisateur !!!');
         }
 
         return parent::configureUserMenu($utilisateur)
