@@ -42,7 +42,9 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
     private UtilisateurRepository $utilisateurRepository;
     private UrlGeneratorInterface $urlGenerator;
 
-    public function __construct(UtilisateurRepository $utilisateurRepository, UrlGeneratorInterface $urlGenerator)
+    public function __construct(
+        UtilisateurRepository $utilisateurRepository,
+        UrlGeneratorInterface $urlGenerator)
     {
         $this->utilisateurRepository = $utilisateurRepository;
         $this->urlGenerator = $urlGenerator;
@@ -58,18 +60,24 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
         // On cherche si l'utilisateur existe !
         return new Passport(
             /**
-             * Si l'utilisateur n'existe pas (i.e. l'adresse de courriel) on génére une
-             * exception.
-             * Si le mot de passe est correcte
-             * On ajoute le support CSRF
-             * On ajoute le support de "Remember-me"
+             * Si l'utilisateur n'existe pas on génére une exception.
+             * Si l'utilisateur existe mais que son ststut est 'FALSE',
+             *  i.e. l'attribut 'actif', on génére une excption.
+             * Si l'utilisateur existe et son statut est à "TRUE" et 
+             *  que le mot de passe est correcte :
+             * 1 - On ajoute le support CSRF ;
+             * 2 - On ajoute le support de "Remember-me" ;
              */
 
-            new UserBadge($courriel, function($utilisateurIdentifier){
-                $utilisateur = $this->utilisateurRepository->findOneBy(['courriel' => $utilisateurIdentifier]);
-            if (!$utilisateur) {
+            new UserBadge($courriel, function($utilisateurIdentifier)
+            {
+                $utilisateur = $this->utilisateurRepository
+                    ->findOneBy(['courriel' => $utilisateurIdentifier, 'actif'=>FALSE]);
+                    dd($utilisateur);
+                    if (!$utilisateur) {
                     throw new UserNotFoundException();
                 }
+                dd($utilisateur);
                 return $utilisateur;
             }),
                 new PasswordCredentials($motDePasse),
@@ -83,6 +91,7 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
     // si le courriel existe et le credential est bon on redirige vers home
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
+
         if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
             return new RedirectResponse($targetPath);
         }
