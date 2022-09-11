@@ -1,6 +1,4 @@
-{% extends '@EasyAdmin/page/content.html.twig' %}
-{#{% form_theme form '@EasyAdmin/crud/form_theme.html.twig' %}#}
-
+{% extends '@!EasyAdmin/layout.html.twig' %}
 {% block page_title %}
     Informations générales
 {% endblock %}
@@ -155,7 +153,7 @@
   </div>
 </div>
 <div class="row">
-  <div class="col-sm-12 col-md-3 col-lg-2">
+  <div class="col-sm-12 col-md-4 col-lg-4">
     <div class="card border-dark mb-3" style="font-size:1.2rem;">
       <div class="card-header text-center tool-tip">Lignes<span class="tool-tip-text">Nombre de lignes de code.</span></div>
       <div class="card-body">
@@ -175,7 +173,7 @@
 
 <h4>Mesures globles.</h4>
 <div class="row">
-  <div class="col-sm-12 col-md-3 col-lg-2">
+  <div class="col-sm-12 col-md-3 col-lg-3">
     <div class="card border-dark mb-3" style="font-size:1.2rem;">
       <div class="card-header text-center tool-tip">Signalement<span class="tool-tip-text">Nombre de signalement des projets analysés.</span></div>
       <div class="card-body">
@@ -191,7 +189,7 @@
       </div>
     </div>
   </div>
-  <div class="col-sm-12 col-md-3 col-lg-2">
+  <div class="col-sm-12 col-md-3 col-lg-3">
     <div class="card border-dark mb-3" style="font-size:1.2rem;">
       <div class="card-header text-center tool-tip">Sécurité<span class="tool-tip-text">Nombre de signalement lié aux risques de sécurité.</span></div>
       <div class="card-body">
@@ -199,7 +197,7 @@
       </div>
     </div>
   </div>
-  <div class="col-sm-12 col-md-3 col-lg-2">
+  <div class="col-sm-12 col-md-3 col-lg-3">
     <div class="card border-dark mb-3" style="font-size:1.2rem;">
       <div class="card-header text-center tool-tip">Maintenabilité<span class="tool-tip-text">Nombre de signalement lié à la maintenabilité du code.</span></div>
       <div class="card-body">
@@ -207,7 +205,18 @@
       </div>
     </div>
   </div>
-
 </div>
+<div class="raw"><br /><br /><br /></div>
+{% endblock %}
 
+{% block configured_body_contents %}
+<footer class="raw footer">
+  <div class="footer-padding">
+    <div class="d-flex justify-content-between mb-3">
+      <div class="copyright">© {{dateCopyright}}	- CC BY-SA-NC 4.0</div>
+      <div class=""></div>
+      <div class="auteur" style="color:#fff;">Laurent HADJADJ</div>
+    </div>
+  </div>
+</footer>
 {% endblock %}
