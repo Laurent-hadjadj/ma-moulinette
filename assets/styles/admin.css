@@ -1,9 +1,11 @@
+/** Ajout d'un tooltip CSS */
 .tool-tip {
   position: relative;
   display: inline-block;
   border-bottom: 1px dotted black;
 }
 
+/* Propriété du texte qui sera affiché dans le tooltype */
 .tool-tip .tool-tip-text {
   visibility: hidden;
   width: 180px;
@@ -23,6 +25,7 @@
   hyphens: auto;
 }
 
+/* Action après le survol du tooltype */
 .tool-tip .tool-tip-text::after {
   content: "";
   position: absolute;
@@ -34,7 +37,37 @@
   border-color: #555 transparent transparent;
 }
 
+/* Action au moment du survol du tooltype */
 .tool-tip:hover .tool-tip-text {
   visibility: visible;
   opacity: 1;
+}
+
+/******************** Mise en place d'un footer *****************
+*  bas de page pour la pag dashboard
+*/
+
+/* zone de bas de page */
+.footer {
+  background-color: #00445b;
+  color: #fff;
+  width: 100%;
+  bottom: 0;
+  position: fixed;
+}
+
+/* Copyright */
+.copyright {
+  padding-left: 0.8rem;
+  margin-top: 0.5rem;
+  margin-bottom: -0.8rem;
+  font-size: 0.7rem;
+}
+
+/* Auteur */
+.auteur {
+  padding-right: 0.5rem;
+  padding-top: 0.3rem;
+  margin-bottom: -0.8rem;
+  font-size: 0.9rem;
 }
