@@ -53,6 +53,7 @@ security:
         #- { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/register, roles: PUBLIC_ACCESS }
+        - { path: ^/welcome, roles: PUBLIC_ACCESS }
         - { path: ^/admin, roles: ROLE_USER }
         - { path: ^/, roles: ROLE_USER }
 
