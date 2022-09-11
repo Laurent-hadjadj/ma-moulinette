@@ -19,11 +19,20 @@
 @media only screen and (max-width: 20em) {
   .ma-moulinette {
     margin-left: 1rem;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
   }
 
   .logout-svg {
+    margin-top: 1.1rem;
+    width: 24px;
+    height: 24px;
+  }
+
+  .dashboard-svg {
     margin-top: 1rem;
+    margin-right: 0.8rem;
+    width: 28px;
+    height: 28px;
   }
 
   .version {
@@ -46,11 +55,20 @@
 @media only screen and (min-width: 20.025em) and (max-width: 22em) {
   .ma-moulinette {
     margin-left: 1rem;
-    font-size: 1.8rem;
+    font-size: 1.2rem;
   }
 
   .logout-svg {
+    margin-top: 1.1rem;
+    width: 28px;
+    height: 28px;
+  }
+
+  .dashboard-svg {
     margin-top: 1rem;
+    margin-right: 0.5rem;
+    width: 32px;
+    height: 32px;
   }
 
   .version {
@@ -71,11 +89,21 @@
 @media only screen and (min-width: 22.025em) and (max-width: 30em) {
   .ma-moulinette {
     margin-left: 1rem;
-    font-size: 1.8rem;
+    font-size: 1.6rem;
   }
 
   .logout-svg {
+    margin-top: 1.1rem;
+    margin-left: 0.3rem;
+    width: 24px;
+    height: 24px;
+  }
+
+  .dashboard-svg {
     margin-top: 1rem;
+    margin-left: 0.1rem;
+    width: 28px;
+    height: 28px;
   }
 
   .version {
@@ -101,6 +129,16 @@
 
   .logout-svg {
     margin-top: 1.5rem;
+    margin-left: 0.2rem;
+    width: 32px;
+    height: 32px;
+  }
+
+  .dashboard-svg {
+    margin-top: 1.1rem;
+    margin-right: 0.5rem;
+    width: 46px;
+    height: 46px;
   }
 
   .version {
@@ -126,6 +164,16 @@
 
   .logout-svg {
     margin-top: 1.5rem;
+    margin-left: 1rem;
+    width: 32px;
+    height: 32px;
+  }
+
+  .dashboard-svg {
+    margin-top: 1.1rem;
+    margin-left: 1rem;
+    width: 46px;
+    height: 46px;
   }
 
   .version {
@@ -136,7 +184,7 @@
 
   .open-sans { font-size: 1rem; }
 
-  .logo-svg {
+  .logo-svg .dashboard-svg {
     width: 64px;
     height: 46px;
   }
@@ -151,6 +199,16 @@
 
   .logout-svg {
     margin-top: 1.5rem;
+    margin-left: 1rem;
+    width: 32px;
+    height: 32px;
+  }
+
+  .dashboard-svg {
+    margin-top: 1.1rem;
+    margin-left: 1rem;
+    width: 46px;
+    height: 46px;
   }
 
   /* Desktop */
@@ -177,6 +235,16 @@
 
   .logout-svg {
     margin-top: 1.5rem;
+    margin-left: 1rem;
+    width: 32px;
+    height: 32px;
+  }
+
+  .dashboard-svg {
+    margin-top: 1.1rem;
+    margin-left: 1rem;
+    width: 46px;
+    height: 46px;
   }
 
   .version {
@@ -201,6 +269,16 @@
 
   .logout-svg {
     margin-top: 1.5rem;
+    margin-left: 1rem;
+    width: 32px;
+    height: 32px;
+  }
+
+  .dashboard-svg {
+    margin-top: 1.1rem;
+    margin-left: 1rem;
+    width: 46px;
+    height: 46px;
   }
 
   .version {
@@ -250,19 +328,18 @@ body { background: #eee; }
 }
 
 /* Définition du logout SVG */
-.logout-svg {
+.logout-svg,
+.dashboard-svg {
   fill: #00445b;
   cursor: pointer;
-  margin-right: 1rem;
-  width: 32px;
-  height: 32px;
   shape-rendering: geometricprecision;
   text-rendering: geometricprecision;
   fill-rule: evenodd;
   clip-rule: evenodd;
 }
 
-.logout-svg:hover { fill: #e7552c; }
+.logout-svg:hover,
+.dashboard-svg:hover { fill: #e7552c; }
 
 /* breadcrumbs */
 .breadcrumbs li { font-size: 1rem; }
