@@ -144,6 +144,20 @@
   transition: all 0.15s ease-in;
 }
 
+.info-check-ko-svg {
+  padding-left: 0.3rem;
+  padding-top: 0.4rem;
+  fill: #761f11;
+  width: 32px;
+}
+
+.info-check-ok-svg {
+  padding-left: 0.3rem;
+  padding-top: 0.4rem;
+  fill: #188a4f;
+  width: 32px;
+}
+
 /*************** Ajouter un utilisateur *****************/
 .profil-bouton {
   border: 1px solid #00445b;
