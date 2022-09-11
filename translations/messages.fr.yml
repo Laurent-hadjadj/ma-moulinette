@@ -1,3 +1,7 @@
+placeholder.nom: HADJADJ
+placeholder.prenom: Laurent
 placeholder.courriel: laurent.hadjadj@ma-petite-entreprise.fr
-label.motdepasse: Mot de Passe
 label.courriel: Courriel
+label.motdepasse: Mot de Passe
+label.nom: Nom
+label.prenom: Prénom
