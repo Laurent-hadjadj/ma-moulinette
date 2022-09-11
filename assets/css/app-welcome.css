@@ -1,0 +1,94 @@
+/**
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2021-2022.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ */
+
+/* stylelint-disable selector-id-pattern */
+
+/**
+  * Propriétés pour les class en fonction des medias type
+  *
+  */
+
+/* Media Small */
+@media only screen and (max-width: 20em) {
+  .video-ville {
+    height: auto;
+    width: 100%;
+  }
+}
+
+/* Media Small */
+@media only screen and (min-width: 20.025em) and (max-width: 22em) {
+  .video-ville {
+    height: auto;
+    width: 100%;
+  }
+}
+
+/* Media Small */
+@media only screen and (min-width: 22.025em) and (max-width: 30em) {
+  .video-ville {
+    height: auto;
+    width: 100%;
+  }
+}
+
+/* Media Small */
+@media only screen and (min-width: 30.025em) and (max-width: 40em) {
+  .video-ville {
+    height: auto;
+    width: 100%;
+  }
+}
+
+/* Media Medium */
+@media only screen and (min-width: 40em) and (max-width: 64em) {
+  .video-ville {
+    height: auto;
+    width: 95%;
+  }
+}
+
+/* Media Large */
+@media only screen and (min-width: 64.025em) and (max-width: 90em) {
+  .video-ville {
+    height: auto;
+    width: 95%;
+  }
+}
+
+/* Media Large */
+@media only screen and (min-width: 90.025em) and (max-width: 120em) {
+  .video-ville {
+    height: auto;
+    width: 95%;
+  }
+}
+
+/* Media Extra-Large */
+@media only screen and (min-width: 120em) and (max-width: 160em) {
+  .video-ville {
+    height: auto;
+    width: 95%;
+  }
+}
+
+/*************************          Global     *********************************/
+
+/* affichage du crédit */
+.credit {
+  font-size: 0.8rem;
+  color: #021e28;
+}
+
+.credit:hover { color: #ba401b; }
+
+#sur { font-size: 0.8rem; }
