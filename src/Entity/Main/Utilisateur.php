@@ -27,7 +27,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', length: 128, nullable: true)]
     private $avatar;
 
-    #[ORM\Column(type: 'string', length: 180, unique: true)]
+    #[ORM\Column(type: 'string', length: 320, unique: true)]
     private $courriel;
 
     #[ORM\Column(type: 'json')]
