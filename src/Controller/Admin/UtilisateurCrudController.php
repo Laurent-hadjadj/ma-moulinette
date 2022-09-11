@@ -43,13 +43,6 @@ class UtilisateurCrudController extends AbstractCrudController
                 $pageName !== Crud::PAGE_DETAIL
             )
             ->hideOnForm();
-
-        yield ImageField::new('avatar', 'Image')
-            ->setBasePath('public/avatar')
-            ->setUploadDir('public/avatar')
-            ->setUploadedFileNamePattern('[slug]-[timestamp].[extension]')
-            ->hideOnDetail()
-            ->hideOnIndex();
         yield EmailField::new('courriel');
         yield TextField::new('personne')
             ->hideOnForm();
