@@ -20,36 +20,180 @@
 
 <div class="grid-container">
   <div class="grid-x">
-    <div class="small-12 medium-7 large-7 cell">
+    <div class="small-12 medium-6 large-6 cell">
       <video id="video-arbres" class="video-arbres" preload="metadata" loop autoplay muted
-        src="{{ asset('build/video/ArbresEnneiges.mp4') }}" type="video/mp4" />
-      </video>
+        src="{{ asset('build/video/ArbresEnneiges.mp4') }}" />
       <span class="open-sans float-center text-center">
         <a class="open-sans credit" href="https://pixabay.com/fr/users/invisiblepower-3810957/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=video&amp;utm_content=7328">invisiblepower</a> <span id="sur">sur</span> <a class="open-sans credit" href="https://pixabay.com/fr//?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=video&amp;utm_content=7328">Pixabay</a>
       </span>
     </div>
-    <div class="small-12 medium-5 large-5 cell">
+    <div class="small-12 medium-6 large-6 cell">
       {% form_theme registrationForm 'foundation_6_layout.html.twig' %}
       {{ form_start(registrationForm) }}
       <div class="callout">
         <h2 class="claire-hand text-center">Inscription.</h2>
-        <div class="cell">
-          <div class="floated-label-wrapper">
-            {{ form_label(registrationForm.courriel) }}
+        <div class="grid-x cell">
+          <div class="small-12 medium-4 large-4 cell">
+            <div style="display: inline-flex;">
+              <img id="ajouter-mon-avatar"
+                  src="{{ asset('build/avatar/personne.png') }}"
+                  alt="Mon avatar" height="52" width="52" data-theme="racine" data-image="personne" />
+            </div><br />
+              <span id="bouton-changer-avatar" class="open-sans profil-bouton" data-open="mes-avatars">&nbsp;Changer&nbsp;</span>
           </div>
-          {{ form_widget(registrationForm.courriel, {'attr': {'style':'color:#00445b;'}}) }}
-          <div class='form_erreur'>{{ form_errors(registrationForm.courriel) }}</div>
-        </div>
-        <div class="cell">
-          <div class="floated-label-wrapper">
-            {{ form_label(registrationForm.plainPassword) }}
+          <div class="small-12 medium-8 large-8 cell">
+              <div class="floated-label-wrapper">
+                {{ form_label(registrationForm.nom) }}
+              </div>
+              {{ form_widget(registrationForm.nom, {'attr': {'style':'color:#00445b;'}}) }}
+              <div class='form_erreur'>{{ form_errors(registrationForm.nom) }}</div>
+            </div>
+          <div class="small-12 medium-4 large-4 cell"></div>
+          <div class="small-12 medium-8 large-8 cell">
+            <div class="floated-label-wrapper prenom">
+              {{ form_label(registrationForm.prenom) }}
+            </div>
+            {{ form_widget(registrationForm.prenom, {'attr': {'style':'color:#00445b;'}}) }}
+            <div class='form_erreur'>{{ form_errors(registrationForm.prenom) }}</div>
           </div>
-          {{ form_widget(registrationForm.plainPassword, {'attr': {'style':'color:#00445b;'}}) }}
-          <div class='form_erreur'>{{ form_errors(registrationForm.plainPassword) }}</div>
-        </div>
-        <input id="valider-formulaire-enregistrement" class="button expanded" type="submit" value="M'inscrire">
+          <div class="small-11 medium-11 large-11 cell">
+            <div class="floated-label-wrapper">
+              {{ form_label(registrationForm.courriel) }}
+            </div>
+            {{ form_widget(registrationForm.courriel, {'attr': {'style':'color:#00445b;'}}) }}
+            <div class='form_erreur'>{{ form_errors(registrationForm.courriel) }}</div>
+          </div>
+          <div class="small-1 medium-1 large-1 cell">
+            <span id="register-info-check-courriel"></span>
+          </div>
+
+          <div class="small-11 medium-11 large-11 cell">
+            <div class="floated-label-wrapper">
+              {{ form_label(registrationForm.plainPassword) }}
+            </div>
+            {{ form_widget(registrationForm.plainPassword, {'attr': {'style':'color:#00445b;'}}) }}
+            <div class='form_erreur'>{{ form_errors(registrationForm.plainPassword) }}</div>
+          </div>
+          <div class="small-1 medium-1 large-1 cell">
+            <span id="register-info-check-password"></span>
+          </div>
+      </div>
+
+      <input id="valider-formulaire-enregistrement" class="button expanded" type="submit" value="M'inscrire">
       {{ form_end(registrationForm) }}
     </div>
+  </div>
+</div>
+
+{# affiche la liste des avatar #}
+<div id="mes-avatars" class="grid-container large reveal" data-reveal>
+  <ul id="ajouter-mes-avatars" class="accordion" data-accordion data-multi-open="true">
+    <li class="accordion-item menu-accordeon" data-accordion-item>
+      <a href="#" class="accordion-title" style="color:#00445b;">
+        <span class="open-sans"><strong>Chiffres</strong></span>
+        <span class="open-sans float-right" style="font-size:1.5rem; padding-right:3rem; margin-top: -0.2rem;">10</span>
+      </a>
+      <div class="accordion-content" data-tab-content style="background-color:#eee;">
+        {% for i in 1..10 %}
+        {% if i<10 %}
+        <img id="ajouter-chiffre-0{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/chiffre/0{{i}}.png" data-theme="chiffre" data-image="0{{i}}" />
+        {% else %}
+        <img id="ajouter-chiffre-{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/chiffre/{{i}}.png"  data-theme="chiffre" data-image="{{i}}" />
+        {% endif %}
+        {% endfor %}
+      </div>
+    </li>
+    <li class="accordion-item menu-accordeon" data-accordion-item>
+      <a href="#" class="accordion-title" style="color:#00445b;">
+        <span class="open-sans"><strong>Emoticônes</strong></span>
+        <span class="open-sans float-right" style="font-size:1.5rem; padding-right:3rem; margin-top: -0.2rem;">35</span>
+      </a>
+      <div class="accordion-content" data-tab-content style="background-color:#eee;">
+        {% for i in 1..35 %}
+        {% if i<10 %}
+        <img id="ajouter-emoticon-0{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/emoticon/0{{i}}.png" data-theme="emoticon" data-image="0{{i}}" />
+        {% else %}
+        <img id="ajouter-emoticon-{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/emoticon/{{i}}.png"  data-theme="emoticon" data-image="{{i}}" />
+        {% endif %}
+        {% endfor %}
+      </div>
+    </li>
+    <li class="accordion-item menu-accordeon" data-accordion-item>
+      <a href="#" class="accordion-title" style="color:#00445b;">
+        <span class="open-sans"><strong>Filles (1)</strong></span>
+        <span class="open-sans float-right" style="font-size:1.5rem; padding-right:3rem; margin-top: -0.2rem;">27</span>
+      </a>
+      <div class="accordion-content" data-tab-content style="background-color:#eee;">
+        {% for i in 1..27 %}
+        {% if i<10 %}
+        <img id="ajouter-fille-1-0{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/fille-1/0{{i}}.png" data-theme="fille-1" data-image="0{{i}}" />
+        {% else %}
+        <img id="ajouter-fille-1-{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/fille-1/{{i}}.png"  data-theme="fille-1" data-image="{{i}}" />
+        {% endif %}
+        {% endfor %}
+      </div>
+    </li>
+    <li class="accordion-item menu-accordeon" data-accordion-item>
+      <a href="#" class="accordion-title" style="color:#00445b;">
+        <span class="open-sans"><strong>Filles (2)</strong></span>
+        <span class="open-sans float-right" style="font-size:1.5rem; padding-right:3rem; margin-top: -0.2rem;">27</span>
+      </a>
+      <div class="accordion-content" data-tab-content style="background-color:#eee;">
+        {% for i in 1..26 %}
+        {% if i<10 %}
+        <img id="ajouter-fille-2-0{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/fille-2/0{{i}}.png" data-theme="fille-2" data-image="0{{i}}" />
+        {% else %}
+        <img id="ajouter-fille-2-{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/fille-2/{{i}}.png"  data-theme="fille-2" data-image="{{i}}" />
+        {% endif %}
+        {% endfor %}
+      </div>
+    </li>
+    <li class="accordion-item menu-accordeon" data-accordion-item>
+      <a href="#" class="accordion-title" style="color:#00445b;">
+        <span class="open-sans"><strong>Garçon (1)</strong></span>
+        <span class="open-sans float-right" style="font-size:1.5rem; padding-right:3rem; margin-top: -0.2rem;">23</span>
+      </a>
+      <div class="accordion-content" data-tab-content style="background-color:#eee;">
+        {% for i in 1..23 %}
+        {% if i<10 %}
+        <img id="ajouter-garcon-1-0{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/garcon-1/0{{i}}.png" data-theme="garcon-1" data-image="0{{i}}" />
+        {% else %}
+        <img id="ajouter-garcon-1-{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/garcon-1/{{i}}.png"  data-theme="garcon-1" data-image="{{i}}" />
+        {% endif %}
+        {% endfor %}
+      </div>
+    </li>
+    <li class="accordion-item menu-accordeon" data-accordion-item>
+      <a href="#" class="accordion-title" style="color:#00445b;">
+        <span class="open-sans"><strong>Garçon (2)</strong></span>
+        <span class="open-sans float-right" style="font-size:1.5rem; padding-right:3rem; margin-top: -0.2rem;">23</span>
+      </a>
+      <div class="accordion-content" data-tab-content style="background-color:#eee;">
+        {% for i in 1..24 %}
+        {% if i<10 %}
+        <img id="ajouter-garcon-2-0{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/garcon-2/0{{i}}.png" data-theme="garcon-2" data-image="0{{i}}" />
+        {% else %}
+        <img id="ajouter-garcon-2-{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/garcon-2/{{i}}.png"  data-theme="garcon-2" data-image="{{i}}" />
+        {% endif %}
+        {% endfor %}
+      </div>
+    </li>
+    <li class="accordion-item menu-accordeon" data-accordion-item>
+      <a href="#" class="accordion-title" style="color:#00445b;">
+        <span class="open-sans"><strong>Lettres</strong></span>
+        <span class="open-sans float-right" style="font-size:1.5rem; padding-right:3rem; margin-top: -0.2rem;">26</span>
+      </a>
+      <div class="accordion-content" data-tab-content style="background-color:#eee;">
+        {% for i in 1..26 %}
+        {% if i<10 %}
+        <img id="ajouter-lettre-0{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/lettre/0{{i}}.png" data-theme="lettre" data-image="0{{i}}" />
+        {% else %}
+        <img id="ajouter-lettre-{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/lettre/{{i}}.png"  data-theme="lettre" data-image="{{i}}" />
+        {% endif %}
+        {% endfor %}
+      </div>
+    </li>
+  </ul>
 </div>
 
 <br /><br />
