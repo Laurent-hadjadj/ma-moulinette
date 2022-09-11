@@ -215,7 +215,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         if (!$this->avatar) {
             return null;
         }
-        return sprintf('avatar/%s', $this->avatar);
+        return sprintf('build/avatar/%s', $this->avatar);
     }
 
 
