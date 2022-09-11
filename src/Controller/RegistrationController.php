@@ -77,18 +77,24 @@ class RegistrationController extends AbstractController
             $em->persist($utilisateur);
             $em->flush();
 
-            return $userAuthenticator->authenticateUser(
-                $utilisateur,
-                $authenticator,
-                $request
-            );
+            // Connexion automatique ?
+            //return $userAuthenticator->authenticateUser($utilisateur, $authenticator,$request);
+
+            // On préfére redirider l'utilisateur sur la page de bienvenu des nouveaux tiliasteur
+            return $this->render('welcome/register.html.twig', [
+                'nom' =>$utilisateur['nom'],
+                'nom' =>$utilisateur['prenom'],
+                'courriel' =>$utilisateur['courriel'],
+                'avatar' =>$utilisateur['avatar'],
+                'version' => $this->getParameter('version'),
+                'dateCopyright' => \date('Y')
+            ]);
         }
 
         return $this->render('registration/register.html.twig', [
             'registrationForm' => $form->createView(),
             'version' => $this->getParameter('version'),
             'dateCopyright' => \date('Y')
-
         ]);
     }
 }
