@@ -81,11 +81,10 @@ class RegistrationController extends AbstractController
             //return $userAuthenticator->authenticateUser($utilisateur, $authenticator,$request);
 
             // On préfére redirider l'utilisateur sur la page de bienvenu des nouveaux tiliasteur
-            return $this->render('welcome/register.html.twig', [
+            return $this->render('welcome/index.html.twig', [
                 'nom' =>$utilisateur['nom'],
-                'nom' =>$utilisateur['prenom'],
+                'prenom' =>$utilisateur['prenom'],
                 'courriel' =>$utilisateur['courriel'],
-                'avatar' =>$utilisateur['avatar'],
                 'version' => $this->getParameter('version'),
                 'dateCopyright' => \date('Y')
             ]);
@@ -97,4 +96,17 @@ class RegistrationController extends AbstractController
             'dateCopyright' => \date('Y')
         ]);
     }
+
+    #[Route('/welcome', name: 'welcome')]
+    public function welcome()
+    {
+        return $this->render('welcome/index.html.twig', [
+            'nom' =>'HADJADJ',
+            'prenom' =>'Laurent',
+            'courriel' =>'laurent.hadjadj@ma-petite-entreprise.fr',
+            'version' => $this->getParameter('version'),
+            'dateCopyright' => \date('Y')
+        ]);
+    }
+
 }
