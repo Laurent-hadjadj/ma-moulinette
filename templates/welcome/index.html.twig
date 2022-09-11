@@ -1,0 +1,52 @@
+{% set title = 'Bienvenue' %}
+{% set description = 'Inscription réaisée avec succés.' %}
+<!DOCTYPE html>
+<html  lang="fr">
+
+{# Chargement de la section HEAD #}
+<head>
+  {{ include('head.html.twig') }}
+  {% block stylesheets %}
+    {{ encore_entry_link_tags('welcome') }}
+  {% endblock %}
+</head>
+
+<body>
+{# Chargement de la section header #}
+{{ include('header.html.twig') }}
+<br /><br />
+
+<div class="grid-container">
+  <div class="grid-x">
+    <div class="small-12 medium-6 large-6 cell">
+      <video id="video-ville" class="video-ville" preload="metadata" loop autoplay muted
+        src="{{ asset('build/video/Ville.mp4') }}"></video>
+      <span class="open-sans float-center text-center">
+        <a class="open-sans credit" ref="https://pixabay.com/fr/users/cassiosaguiar-6583616/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=video&amp;utm_content=34687">Cássio Aguiar</a> <span id="sur">sur</span> <a class="open-sans credit" href="https://pixabay.com/fr//?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=video&amp;utm_content=34687">Pixabay</a>
+      </span>
+    </div>
+    <div class="small-12 medium-6 large-6 cell">
+      <h2 class="claire-hand">Bienvenue.</h2>
+      <p class="open-sans text-justify">Vous venez de réaliser votre inscription à l'application ma-moulinette. Bravo !!!</p>
+      <p class="open-sans text-justify">Toutefois, il vous reste encore une étape importante. Vous devez contacter le gestionnaire en charge de valider votre inscription afin qu'il active manuellement votre compte.</p>
+    </div>
+  </div>
+  <br /><br />
+  <div class="grid-container ">
+    <div class="fieldset">
+      <div class="callout open-sans"><span class="lead"><strong>Nom : </strong></span> {{nom}}</div>
+      <div class="callout open-sans"><span class="lead"><strong>Prénom : </strong></span> {{prenom}}</div>
+      <div class="callout open-sans"><span class="lead"><strong>Mel : </strong></span> {{courriel}}</div>
+    </div>
+  </div>
+</div>
+
+<br /><br />
+{# Chargement de la section footer #}
+{{ include('footer.html.twig') }}
+{# Chargement du code javascript #}
+{% block javascripts %}
+  {{ encore_entry_script_tags('welcome') }}
+{% endblock %}
+</body>
+</html>
