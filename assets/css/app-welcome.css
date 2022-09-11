@@ -92,3 +92,6 @@
 .credit:hover { color: #ba401b; }
 
 #sur { font-size: 0.8rem; }
+
+/* Fieldset des informations d'inscription */
+.information-inscription { padding-bottom: 0.1rem; }
