@@ -41,15 +41,25 @@ class RegistrationController extends AbstractController
         // On récupère la requête.
         $form->handleRequest($request);
 
-        // le formulaire est valide
+        // Le formulaire est valide
         if ($form->isSubmitted() && $form->isValid()) {
-
             $date = new DateTime();
 
-            #j'enregistre en base de données
+            // J'enregistre l'url de l'image
+            $avatar=$form->get('avatar')->getData();
+            $utilisateur->setAvatar($avatar);
+
+            // J'enregistre le nom en majuscule
+            $utilisateur->setNom(strtoupper($form->get('nom')->getData()));
+
+            // J'enregistre le Prenom
+            $utilisateur->setPrenom(ucfirst($form->get('prenom')->getData()));
+
+            // J'enregistre en base de données
             $courriel=$form->get('courriel')->getData();
             // On canonise l'adresse.
             $utilisateur->setCourriel(strtolower($courriel));
+
             // On hash le mot de passe
             $utilisateur->setPassword(
                 $userPasswordHasher->hashPassword(
@@ -58,6 +68,10 @@ class RegistrationController extends AbstractController
                 )
             );
 
+            // On desactive l'utilisateur
+            $utilisateur->setActif(FALSE);
+
+            // En enregistre la date de création
             $utilisateur->setDateEnregistrement($date);
 
             $em->persist($utilisateur);
