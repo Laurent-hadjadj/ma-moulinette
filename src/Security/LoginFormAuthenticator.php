@@ -73,7 +73,6 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
             {
                 $utilisateur = $this->utilisateurRepository
                     ->findOneBy(['courriel' => $utilisateurIdentifier, 'actif'=>FALSE]);
-                    dd($utilisateur);
                     if (!$utilisateur) {
                     throw new UserNotFoundException();
                 }
