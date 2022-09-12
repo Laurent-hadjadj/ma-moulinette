@@ -76,7 +76,6 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
                     if (!$utilisateur) {
                     throw new UserNotFoundException();
                 }
-                dd($utilisateur);
                 return $utilisateur;
             }),
                 new PasswordCredentials($motDePasse),
