@@ -480,7 +480,7 @@ const projetNosonarDetails=function(mavenKey){
 
 /**
  * description
- * On récupére la liste des projets et des favori
+ * On récupére la liste des projets et des favoris
  * http://{url}/api/projet/mes-applications/liste
 */
 const afficheProjetFavori=function() {
@@ -825,12 +825,12 @@ $('select[name="projet"]').change(function () {
   const options = {
     url: `${serveur()}/api/favori/check`, type: 'GET',
           dataType: 'json', data, contentType };
-
   $.ajax(options).then(t=> {
-    if ( t.favori==='TRUE' && t.statut==='FALSE' ) {
+    //SQLite : 0 (false) and 1 (true).
+    if ( t.favori===1 && t.statut===0 ) {
           $('.favori-svg').removeClass('favori-svg-select');
         }
-    if (t.favori === 'TRUE' && t.statut === 'TRUE') {
+    if (t.favori===1 && t.statut===1) {
           $('.favori-svg').addClass('favori-svg-select');
     } else {
       $('.favori-svg').removeClass('favori-svg-select');
@@ -913,10 +913,10 @@ $('.favori-svg').on('click', () => {
   if ($('select[name="projet"]').val() !=='') {
     if ($('.favori-svg').hasClass('favori-svg-select')){
           $('.favori-svg').removeClass('favori-svg-select');
-          statut='FALSE';
+          statut=0;
       } else {
         $('.favori-svg').addClass('favori-svg-select');
-        statut='TRUE';
+        statut=1;
       }
 
     const data = { mavenKey: $('#select-result').text().trim(), statut };

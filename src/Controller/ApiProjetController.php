@@ -196,9 +196,11 @@ class ApiProjetController extends AbstractController
     $select = $this->em->getConnection()->prepare($sql)->executeQuery();
 
     // Si on a pas trouvé l'application dans la liste des favoris, alors on la rajoute.
+    //SQLite : 0 (false) and 1 (true).
+
     if (empty($select->fetchAllAssociative())) {
       $sql = "INSERT INTO favori ('maven_key', 'favori', 'date_enregistrement')
-        VALUES ('${mavenKey}', TRUE, '${tempoDate}')";
+        VALUES ('${mavenKey}', 1, '${tempoDate}')";
       $this->em->getConnection()->prepare($sql)->executeQuery();
     } else {
       $sql = "UPDATE favori SET favori='${statut}',
@@ -229,11 +231,12 @@ class ApiProjetController extends AbstractController
     $sql = "SELECT favori FROM favori WHERE maven_key='${mavenKey}'";
     $select = $em->getConnection()->prepare($sql)->executeQuery();
     $r = $select->fetchAllAssociative();
+
     if (empty($r)) {
       return $response->setData(["statut" => "null", Response::HTTP_OK]);
     }
 
-    return $response->setData(["favori" => "TRUE", "statut" => $r[0]['favori'], Response::HTTP_OK]);
+    return $response->setData(["favori" => 0, "statut" => $r[0]['favori'], Response::HTTP_OK]);
   }
 
   /**

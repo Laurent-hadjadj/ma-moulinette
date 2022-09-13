@@ -280,7 +280,7 @@ $('.js-modifier-analyse').on('click', function () {
 
       /**
         * Favori|reference enable
-        * 0 = FALSE (false), 1 = TRUE (true)
+        * SQLite : 0 (false) and 1 (true).
         */
       if (version.favori===1) {
         $(`#switch-favori-${ligne}`).click();
@@ -300,9 +300,10 @@ $('.js-modifier-analyse').on('click', function () {
       const  date = $(`#date-${l[2]}`).text().trim();
 
       if ($(`#${id}:checked`).length===1) {
-        favori='TRUE';
+        //SQLite : 0 (false) and 1 (true).
+        favori=1;
       } else {
-        favori='FALSE';
+        favori=0;
       }
         const dataFavori = { mavenKey: $('#js-nom').data('maven'), favori, version, date };
         const optionsFavori = {
@@ -331,9 +332,10 @@ $('.js-modifier-analyse').on('click', function () {
       const  date=$(`#date-${l[2]}`).text().trim();
 
       if ($(`#${id}:checked`).length===1){
-        reference='TRUE';
+        //SQLite : 0 (false) and 1 (true).
+        reference=1;
       } else {
-        reference='FALSE';
+        reference=0;
       }
 
       /**
@@ -640,12 +642,13 @@ $('.js-enregistrer-analyse').on('click', ()=>{
     info=0;
   }
 
-  let initial='FALSE';
+  let initial=0;
+  //SQLite : 0 (false) and 1 (true).
   if ($('.switch-active').css('display')==='block') {
-    initial='TRUE';
+    initial=1;
   }
   if ($('.switch-inactive').css('display')==='block') {
-    initial='FALSE';
+    initial=0;
   }
 
   const data={

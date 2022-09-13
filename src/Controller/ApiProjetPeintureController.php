@@ -83,7 +83,8 @@ class ApiProjetPeintureController extends AbstractController
     }
 
     //On récupère la liste des projets favori.
-    $sql = "SELECT maven_key AS key FROM favori WHERE favori=TRUE";
+    //SQLite : 0 (false) and 1 (true).
+    $sql = "SELECT maven_key AS key FROM favori WHERE favori=1";
     $select = $this->em->getConnection()->prepare($sql)->executeQuery();
     $favori = $select->fetchAllAssociative();
 
