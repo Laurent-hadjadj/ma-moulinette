@@ -72,7 +72,7 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
             new UserBadge($courriel, function($utilisateurIdentifier)
             {
                 $utilisateur = $this->utilisateurRepository
-                    ->findOneBy(['courriel' => $utilisateurIdentifier, 'actif'=>FALSE]);
+                    ->findOneBy(['courriel' => $utilisateurIdentifier, 'actif'=>TRUE]);
                     if (!$utilisateur) {
                     throw new UserNotFoundException();
                 }
