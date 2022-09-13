@@ -3,18 +3,18 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Main\Utilisateur;
-use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
-use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\AvatarField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\EmailField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\EmailField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\AvatarField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
+use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 
 
 class UtilisateurCrudController extends AbstractCrudController
@@ -58,4 +58,12 @@ class UtilisateurCrudController extends AbstractCrudController
             ->setTimezone('Europe/Paris')
             ->hideOnForm();
     }
+
+    public function updateEntity(EntityManagerInterface $em, $entityInstance): void
+    {
+        if (!$entityInstance instanceof Utilisateur) { return; }
+        $entityInstance->setdateModification(new \DateTimeImmutable);
+        parent::updateEntity($em, $entityInstance);
+    }
+
 }
