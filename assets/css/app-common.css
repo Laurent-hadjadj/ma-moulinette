@@ -23,15 +23,14 @@
   }
 
   .logout-svg {
-    margin-top: 1.1rem;
-    width: 24px;
+    width: 23px;
     height: 24px;
   }
 
-  .dashboard-svg {
-    margin-top: 1rem;
-    margin-right: 0.8rem;
-    width: 28px;
+  .e-dashboard-svg,
+  .utilisateurs-svg {
+    margin-top: 0.5rem;
+    width: 27px;
     height: 28px;
   }
 
@@ -59,16 +58,15 @@
   }
 
   .logout-svg {
-    margin-top: 1.1rem;
-    width: 28px;
+    width: 23px;
     height: 28px;
   }
 
-  .dashboard-svg {
-    margin-top: 1rem;
-    margin-right: 0.5rem;
-    width: 32px;
-    height: 32px;
+  .e-dashboard-svg,
+  .utilisateurs-svg {
+    margin-top: 0.5rem;
+    width: 27px;
+    height: 28px;
   }
 
   .version {
@@ -93,16 +91,15 @@
   }
 
   .logout-svg {
-    margin-top: 1.1rem;
-    margin-left: 0.3rem;
-    width: 24px;
+    margin-right: 0.1rem;
+    width: 23px;
     height: 24px;
   }
 
-  .dashboard-svg {
-    margin-top: 1rem;
-    margin-left: 0.1rem;
-    width: 28px;
+  .e-dashboard-svg,
+  .utilisateurs-svg {
+    margin-top: 0.5rem;
+    width: 27px;
     height: 28px;
   }
 
@@ -128,17 +125,18 @@
   }
 
   .logout-svg {
-    margin-top: 1.5rem;
-    margin-left: 0.2rem;
-    width: 32px;
-    height: 32px;
+    margin-left: 0.1rem;
+    margin-right: 0.2rem;
+    width: 28px;
+    height: 34px;
   }
 
-  .dashboard-svg {
+  .e-dashboard-svg,
+  .utilisateurs-svg {
     margin-top: 1.1rem;
-    margin-right: 0.5rem;
-    width: 46px;
-    height: 46px;
+    margin-right: 0.1rem;
+    width: 33px;
+    height: 38px;
   }
 
   .version {
@@ -163,15 +161,16 @@
   }
 
   .logout-svg {
-    margin-top: 1.5rem;
-    margin-left: 1rem;
-    width: 32px;
-    height: 32px;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+    width: 40px;
+    height: 45px;
   }
 
-  .dashboard-svg {
+  .e-dashboard-svg,
+  .utilisateurs-svg {
     margin-top: 1.1rem;
-    margin-left: 1rem;
+    margin-left: 0.4rem;
     width: 46px;
     height: 46px;
   }
@@ -184,7 +183,7 @@
 
   .open-sans { font-size: 1rem; }
 
-  .logo-svg .dashboard-svg {
+  .logo-svg .e-dashboard-svg {
     width: 64px;
     height: 46px;
   }
@@ -198,15 +197,16 @@
   }
 
   .logout-svg {
-    margin-top: 1.5rem;
-    margin-left: 1rem;
-    width: 32px;
-    height: 32px;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+    width: 40px;
+    height: 45px;
   }
 
-  .dashboard-svg {
+  .e-dashboard-svg,
+  .utilisateurs-svg {
     margin-top: 1.1rem;
-    margin-left: 1rem;
+    margin-left: 0.4rem;
     width: 46px;
     height: 46px;
   }
@@ -234,15 +234,15 @@
   }
 
   .logout-svg {
-    margin-top: 1.5rem;
-    margin-left: 1rem;
-    width: 32px;
-    height: 32px;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+    width: 40px;
+    height: 45px;
   }
 
-  .dashboard-svg {
+  .e-dashboard-svg {
     margin-top: 1.1rem;
-    margin-left: 1rem;
+    margin-left: 0.4rem;
     width: 46px;
     height: 46px;
   }
@@ -274,7 +274,7 @@
     height: 32px;
   }
 
-  .dashboard-svg {
+  .e-dashboard-svg {
     margin-top: 1.1rem;
     margin-left: 1rem;
     width: 46px;
@@ -329,7 +329,8 @@ body { background: #eee; }
 
 /* Définition du logout SVG */
 .logout-svg,
-.dashboard-svg {
+.e-dashboard-svg,
+.utilisateurs-svg {
   fill: #00445b;
   cursor: pointer;
   shape-rendering: geometricprecision;
@@ -339,7 +340,8 @@ body { background: #eee; }
 }
 
 .logout-svg:hover,
-.dashboard-svg:hover { fill: #e7552c; }
+.e-dashboard-svg:hover,
+.utilisateurs-svg:hover { fill: #e7552c; }
 
 /* breadcrumbs */
 .breadcrumbs li { font-size: 1rem; }
