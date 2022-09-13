@@ -113,8 +113,15 @@ $('#registration_form_courriel').on('keyup', function()
       $('#register-info-check-courriel').html(checkKoSvg);
     }
 
+    // On vérifie que le nom domau=ine est correcte
+    if (domaine[1].length==1 && point>1) {
+      $('#register-info-check-courriel').html(checkKoSvg);
+    }
+
     // On verifie que le domaine est <256
-    if (domaine[1].length >255) {
+    const points=(domaine[1].match(/\./g)||[]).length
+    console.log(points);
+    if (points >1) {
       $('#register-info-check-courriel').html(checkKoSvg);
     }
 });
