@@ -44,6 +44,7 @@ class HomeController extends AbstractController
         $nombreFavori=$this->getParameter('nombre.favori');
 
         // On récupère les projets en favori. Pour le moment on limite le nombre de projet à 10.
+        //SQLite : 0 (false) and 1 (true).
         $sql = "SELECT DISTINCT nom_projet as nom,
                         version, date_version as date,
                         note_reliability as fiabilite,
@@ -55,11 +56,10 @@ class HomeController extends AbstractController
                         nombre_code_smell as code_smell,
                         hotspot_total as hotspots
                 FROM historique
-                WHERE favori=TRUE
+                WHERE favori=1
                 ORDER BY date_version LIMIT $nombreFavori";
         $select = $this->em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)))->executeQuery();
         $favoris = $select->fetchAllAssociative();
-
         if (empty($favoris)) {
             $nombre = 0;
             $favori = 'FALSE';
@@ -72,10 +72,11 @@ class HomeController extends AbstractController
         $version=$this->getParameter('version');
 
         // On récupère la dernière en base
-        //$sql = "SELECT version
-        //        FROM ma_moulinette
-        //        ORDER BY date_version DESC LIMIT 1";
-        //$select = $em->getConnection()->prepare()->executeQuery();
+        $sql = "SELECT version
+                FROM ma_moulinette
+                ORDER BY date_version DESC LIMIT 1";
+        $select = $this->em->getConnection()->prepare($sql)->executeQuery();
+        dd($select->fetchAllAssociative());
 
         return $this->render('home/index.html.twig',
         [
