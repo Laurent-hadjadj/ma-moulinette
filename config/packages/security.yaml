@@ -6,7 +6,7 @@ security:
     hide_user_not_found: false
 
     role_hierarchy:
-        ROLE_GESTIONNAIRE: ROLE_USER
+        ROLE_GESTIONNAIRE: ROLE_UTILISATEUR
 
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
@@ -50,8 +50,8 @@ security:
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/register, roles: PUBLIC_ACCESS }
         - { path: ^/welcome, roles: PUBLIC_ACCESS }
-        - { path: ^/admin, roles: ROLE_USER }
-        - { path: ^/, roles: ROLE_USER }
+        - { path: ^/admin, roles: ROLE_UTILISATEUR }
+        - { path: ^/, roles: ROLE_UTILISATEUR }
 
 when@test:
     security:
