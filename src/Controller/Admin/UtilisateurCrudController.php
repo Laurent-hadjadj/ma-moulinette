@@ -32,9 +32,7 @@ class UtilisateurCrudController extends AbstractCrudController
 
     public function configureFields(string $pageName): iterable
     {
-        yield idField::new('id')->onlyOnIndex();
         yield AvatarField::new('avatar')
-            // If we have a User, then call getAvatarUrl() and return that string. But if we don't have a user, skip calling the method and just return null.
             ->formatValue(static function ($value, ?Utilisateur $utilisateur) {
                 return $utilisateur?->getAvatarUrl();
             })
@@ -43,15 +41,15 @@ class UtilisateurCrudController extends AbstractCrudController
                 $pageName !== Crud::PAGE_DETAIL
             )
             ->hideOnForm();
-        yield EmailField::new('courriel');
         yield TextField::new('personne')
             ->hideOnForm();
+        yield EmailField::new('courriel');
             $roles = ['ROLE_UTILISATEUR', 'ROLE_GESTIONNAIRE'];
         yield ChoiceField::new('roles')
             ->setChoices(array_combine($roles, $roles))
             ->allowMultipleChoices()
             ->renderExpanded()
-            ->renderAsBadges();
+            ->renderAsBadges(['ROLE_UTILISATEUR' => 'success', 'ROLE_GESTIONNAIRE' => 'danger']);
         yield BooleanField::new('actif')->renderAsSwitch(false);
         yield DateTimeField::new('dateEnregistrement')->hideOnForm();
         yield DateTimeField::new('dateModification')
