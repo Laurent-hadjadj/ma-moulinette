@@ -72,9 +72,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return (string) $this->courriel;
     }
 
-    /**
-     * @see UserInterface
-     */
     public function getRoles(): array
     {
         $roles = $this->roles;
@@ -91,10 +88,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @see PasswordAuthenticatedUserInterface
-     */
-    public function getPassword(): string
+    public function getPassword(): ?string
     {
         return $this->password;
     }
@@ -117,16 +111,14 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
     public function getDateModification(): ?\DateTimeInterface
     {
-
         return $this->date_modification;
     }
 
-    public function setDateModification($date_modification): self
+    public function setDateModification(\DateTimeInterface $date_modification): self
     {
-        // On test si la date de modification est vide.
-        if (is_null($date_modification)) {$date_modification= new \DateTime();}
         $this->date_modification = $date_modification;
 
         return $this;
