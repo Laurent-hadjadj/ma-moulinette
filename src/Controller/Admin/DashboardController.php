@@ -34,7 +34,7 @@ class DashboardController extends AbstractDashboardController
      *
      * @return Response
      */
-    #[IsGranted('ROLE_USER')]
+    #[IsGranted('ROLE_UTILISATEUR')]
     #[Route('/admin', name: 'admin')]
     public function index(): Response
     {
@@ -247,11 +247,11 @@ class DashboardController extends AbstractDashboardController
     public function configureMenuItems(): iterable
     {
         yield MenuItem::linkToUrl('Home', 'fas fa-desktop', $this->generateUrl('home'))
-            ->setPermission('ROLE_USER');
+            ->setPermission('ROLE_UTILISATEUR');
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-dashboard')
-        ->setPermission('ROLE_USER');
+        ->setPermission('ROLE_UTILISATEUR');
         yield MenuItem::linkToCrud('Utilisateur', 'fas fa-user', Utilisateur::class)
-        ->setPermission('ROLE_ADMIN');
+        ->setPermission('ROLE_GESTIONNAIRE');
     }
 
     /**

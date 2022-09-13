@@ -18,7 +18,7 @@
 			{{version}}</p>
 	</div>
 	<div class="small-1 medium-1 large-1 cell">
-		{% if is_granted('ROLE_USER') %}
+		{% if is_granted('ROLE_UTILISATEUR') %}
 		<div class="float-right right">
 			<a href="/admin?menuIndex=1&submenuIndex=-1">
 				<svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="dashboard-svg">
@@ -31,7 +31,7 @@
 	</div>
 
 	<div class="small-1 medium-1 large-1 cell">
-	{% if is_granted('ROLE_USER') %}
+	{% if is_granted('ROLE_UTILISATEUR') %}
 			<a href="/logout">
 				<svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="logout-svg">
 					<path style="opacity:.986" d="M48.5-.5h263c26.426 6.594 42.592 23.26 48.5 50 .5 29.998.667 59.998.5 90h-41c.167-28.335 0-56.669-.5-85-2.992-8.76-9.159-13.593-18.5-14.5L180 39.5c-42.198-.15-84.365.35-126.5 1.5-8.52 3.196-13.02 9.363-13.5 18.5a38414.33 38414.33 0 0 0 0 392c.644 7.969 4.477 13.802 11.5 17.5a4172.915 4172.915 0 0 0 128.5 1.5 4172.9 4172.9 0 0 0 128.5-1.5c4.973-2.969 8.473-7.136 10.5-12.5.5-28.665.667-57.331.5-86h41c.167 30.002 0 60.002-.5 90-5.68 28.18-22.513 45.18-50.5 51h-259c-27.114-5.78-44.114-22.114-51-49v-414c6.667-26 23-42.333 49-49Z"/>

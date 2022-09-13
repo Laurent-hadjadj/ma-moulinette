@@ -46,7 +46,7 @@ class UtilisateurCrudController extends AbstractCrudController
         yield EmailField::new('courriel');
         yield TextField::new('personne')
             ->hideOnForm();
-            $roles = ['ROLE_ADMIN', 'ROLE_USER'];
+            $roles = ['ROLE_UTILISATEUR', 'ROLE_GESTIONNAIRE'];
         yield ChoiceField::new('roles')
             ->setChoices(array_combine($roles, $roles))
             ->allowMultipleChoices()
