@@ -72,13 +72,10 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return (string) $this->courriel;
     }
 
+    // on ne veut pas que l'utilisateur aut un rôle par défaut.
     public function getRoles(): array
     {
-        $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
-
-        return array_unique($roles);
+        return $this->roles;
     }
 
     public function setRoles(array $roles): self
