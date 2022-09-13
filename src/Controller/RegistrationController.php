@@ -73,7 +73,6 @@ class RegistrationController extends AbstractController
 
             // En enregistre la date de création
             $utilisateur->setDateEnregistrement($date);
-
             $em->persist($utilisateur);
             $em->flush();
 
@@ -82,9 +81,10 @@ class RegistrationController extends AbstractController
 
             // On préfére redirider l'utilisateur sur la page de bienvenu des nouveaux tiliasteur
             return $this->render('welcome/index.html.twig', [
-                'nom' =>$utilisateur['nom'],
-                'prenom' =>$utilisateur['prenom'],
-                'courriel' =>$utilisateur['courriel'],
+
+                'nom'=>$utilisateur->getNom(),
+                'prenom'=>$utilisateur->getPrenom(),
+                'courriel'=>$utilisateur->getCourriel(),
                 'version' => $this->getParameter('version'),
                 'dateCopyright' => \date('Y')
             ]);
