@@ -46,13 +46,16 @@ class ApiProjetController extends AbstractController
 
   private $client;
   private $logger;
+  private $em;
 
   public function __construct(
     HttpClientInterface $client,
-    LoggerInterface $logger)
+    LoggerInterface $logger,
+    EntityManagerInterface $em)
   {
     $this->client = $client;
     $this->logger = $logger;
+    $this->em = $em;
   }
 
   public static $strContentType = 'application/json';
