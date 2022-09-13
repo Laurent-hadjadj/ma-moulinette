@@ -24,7 +24,13 @@ Cette page permet le chargement du référentiel des applications pris en charge
 
 ![home](/documentation/ressources/home-001.jpg)
 
-La liste des applications favorites est affichée.
+Notez en haut à droite, l'affichage trois liens, en finction des droits de l'utilisateur (cf. chapitre sécurité) :
+
+- Gestion des utilisateurs ;
+- Dashboard, des indicateurs applicatifs ;
+- Logout, pour se déconnecter de l'application ;
+
+Dans la partie inférieure, la liste des applications favorites est affichée.
 ![home](/documentation/ressources/home-002.jpg)
 
 -**-- FIN --**-
