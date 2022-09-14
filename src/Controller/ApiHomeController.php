@@ -250,7 +250,7 @@ class ApiHomeController extends AbstractController
       $this->em->flush();
     }
 
-    // On récupère la liste des profiles;
+    // On récupère la liste des profils;
     $sql = "SELECT name as profil, language_name as langage,
             active_rule_count as regle, rules_update_at as date,
             is_default as actif FROM profiles";
