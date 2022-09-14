@@ -511,3 +511,7 @@
   .bouton-afficher-left { padding-left: 1rem; }
   .callout-information { width: 24.1rem; }
 }
+
+/** Information projet et statut */
+.information-statut { font-size: 1.2rem; }
+.information-projet { color: #38761d; }
