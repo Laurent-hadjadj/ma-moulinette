@@ -630,6 +630,27 @@ const afficheProjetFavori=function() {
 
     });
 
+    /* On gére le click sur le bouton C (Collecte) */
+    $('.js-liste-collecter').on('click', (e) => {
+      // On récupère la valeur de l'ID
+      const id = e.target.id;
+      const a = id.split('-');
+      const key='key-'+a[1];
+
+      // On récupère la clé maven du projet
+      const element = document.getElementById(key);
+      const mavenKey=element.dataset.mavenkey;
+
+      // On récupère le nom du projet
+      const b = mavenKey.split(':');
+      const nom = b[1];
+      const $newOption = $("<option selected='selected'></option>").val(mavenKey).text(nom)
+      $('select[name="projet"]').append($newOption).trigger('change');
+
+      // On clique sur le bouton afficher les résultats
+      $('.js-affiche').trigger('click');
+    });
+
     /* On gére le click sur le bouton R (afficher les Résulats) */
     $('.js-liste-afficher-resultat').on('click', (e) => {
 
@@ -760,7 +781,7 @@ $('.js-analyse').on('click', function () {
   // On récupère la clé du projet qui est affichée.
   const idProject = $('#select-result').text().trim();
   if (idProject === 'N.C') {
-    log(' - ERROR : Vous devez chisir un projet !!!');
+    log(' - ERROR : Vous devez choisir un projet !!!');
     return;
   }
 
