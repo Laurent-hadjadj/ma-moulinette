@@ -299,7 +299,9 @@
 
 /* couleurs par défaut */
 body { background: #eee; }
-.open-sans { color: #00445b; }
+
+.open-sans,
+.open-sans-bold,
 .claire-hand { color: #00445b; }
 
 /* Titre */
