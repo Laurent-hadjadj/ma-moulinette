@@ -89,6 +89,10 @@ Ci-dessous la liste des messages.
 - [x] [04] - La collecte des données est terminée.
 - [x] [05] - L'affichage des résultats est terminé.
 
+Par exemple, à la fin du traitement de l'action `R` :
+
+![projet](/documentation/ressources/projet-007aa.jpg)
+
 ### Petit mémos
 
 - [] Si l'on souhaite ne pas utilisé le selecteur de recherche, il suffit de cliquer sur le bouton **V** pour séléctionner le projet directement depuis la liste.
