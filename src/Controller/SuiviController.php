@@ -30,7 +30,7 @@ use DateTimeZone;
 // Logger
 use Psr\Log\LoggerInterface;
 
-class BoardController extends AbstractController
+class SuiviController extends AbstractController
 {
 
   private $client;
@@ -124,7 +124,7 @@ class BoardController extends AbstractController
     WHERE maven_key='${mavenKey}' AND initial=FALSE
     ORDER BY date_version DESC LIMIT 9)";
     $select = $this->em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)))->executeQuery();
-    $dash = $select->fetchAllAssociative();
+    $suivi = $select->fetchAllAssociative();
 
     // On récupère les anomalies par sévérité
     $sql = "SELECT * FROM
@@ -205,10 +205,10 @@ class BoardController extends AbstractController
     $ddd = $dd->format('Y-m-d');
     $date[$nl + 1] = $ddd;
 
-    return $this->render('dash/index.html.twig',
+    return $this->render('suivi/index.html.twig',
       [
-        'dash' => $dash, 'severite' => $severite, 'details' => $details,
-        'nom' => $dash[0]["nom"], 'mavenKey' => $mavenKey,
+        'suivi' => $suivi, 'severite' => $severite, 'details' => $details,
+        'nom' => $suivi[0]["nom"], 'mavenKey' => $mavenKey,
         'data1' => json_encode($bug), 'data2' => json_encode($secu),
         'data3' => json_encode($codeSmell), 'labels' => json_encode($date),
         'version' => $this->getParameter('version'), 'dateCopyright' => \date('Y')
@@ -469,15 +469,15 @@ class BoardController extends AbstractController
   }
 
   /**
-   * dash_version_liste
+   * suivi_version_liste
    * récupère la liste des projets nom + clé
-   * http://{url}}/api/dash/liste/version
+   * http://{url}}/api/suivi/liste/version
    *
    * @param  mixed $request
    * @return response
    */
-  #[Route('/api/dash/version/liste', name: 'dash_version_liste', methods: ['PUT'])]
-  public function dashVersionListe(Request $request): Response
+  #[Route('/api/suivi/version/liste', name: 'suivi_version_liste', methods: ['PUT'])]
+  public function suiviVersionListe(Request $request): Response
   {
     // on décode le body
     $data = json_decode($request->getContent());
@@ -504,15 +504,15 @@ class BoardController extends AbstractController
   }
 
   /**
-   * dash_version_favori
+   * suivi_version_favori
    * On ajoute ou on supprime la version favorite
-   * http://{url}}/api/dash/version/favori
+   * http://{url}}/api/suivi/version/favori
    *
    * @param  mixed $request
    * @return response
    */
-  #[Route('/api/dash/version/favori', name: 'dash_version_favori', methods: ['PUT'])]
-  public function dashVersionFavori(Request $request):response
+  #[Route('/api/suivi/version/favori', name: 'suivi_version_favori', methods: ['PUT'])]
+  public function suiviVersionFavori(Request $request):response
   {
     // on décode le body
     $data = json_decode($request->getContent());
@@ -559,15 +559,15 @@ class BoardController extends AbstractController
   }
 
   /**
-   * dash_version_reference
+   * suivi_version_reference
    * On ajoute ou on supprime la version de reference
-   * http://{url}}/api/dash/version/reference
+   * http://{url}}/api/suivi/version/reference
    *
    * @param  mixed $request
    * @return response
    */
-  #[Route('/api/dash/version/reference', name: 'dash_version_reference', methods: ['PUT'])]
-  public function dashVersionReference(Request $request)
+  #[Route('/api/suivi/version/reference', name: 'suivi_version_reference', methods: ['PUT'])]
+  public function suiviVersionReference(Request $request)
   {
     // on décode le body
     $data = json_decode($request->getContent());
@@ -596,15 +596,15 @@ class BoardController extends AbstractController
   }
 
   /**
-   * dash_version_poubelle
+   * suivi_version_poubelle
    * On supprime la version de historique
-   * http://{url}}/api/dash/version/poubelle
+   * http://{url}}/api/suivi/version/poubelle
    *
    * @param  mixed $request
    * @return response
    */
-  #[Route('/api/dash/version/poubelle', name: 'dash_version_poubelle', methods: ['PUT'])]
-  public function dashVersionPoubelle(Request $request)
+  #[Route('/api/suivi/version/poubelle', name: 'suivi_version_poubelle', methods: ['PUT'])]
+  public function suiviVersionPoubelle(Request $request)
   {
     // on décode le body
     $data = json_decode($request->getContent());
