@@ -13,10 +13,12 @@
 
 ### Ma-Moulinette
 
-[Accueil](/documentation/accueil.md)
+[**Accueil**](/documentation/accueil.md)
 [Projet](/documentation/projet.md)
 [OWASP](/documentation/owasp.md)
 [Suivi](/documentation/suivi.md)
+[Répartition détaillée](/documentation/repartition_details.md)
+
 
 ### Page d'accueil
 
