@@ -1,3 +1,4 @@
+#Formulaire de d'inscription et de connexion
 placeholder.nom: HADJADJ
 placeholder.prenom: Laurent
 placeholder.courriel: laurent.hadjadj@ma-petite-entreprise.fr
@@ -5,3 +6,8 @@ label.courriel: Courriel
 label.motdepasse: Mot de Passe
 label.nom: Nom
 label.prenom: Prénom
+
+# Menu EasyAdmin
+Home: Home
+Dashboard:	Dashboard
+Utilisateur:	Utilisateur
