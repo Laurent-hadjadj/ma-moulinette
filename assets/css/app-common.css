@@ -240,7 +240,8 @@
     height: 45px;
   }
 
-  .e-dashboard-svg {
+  .e-dashboard-svg,
+  .utilisateurs-svg {
     margin-top: 1.1rem;
     margin-left: 0.4rem;
     width: 46px;
@@ -274,7 +275,8 @@
     height: 32px;
   }
 
-  .e-dashboard-svg {
+  .e-dashboard-svg,
+  .utilisateurs-svg {
     margin-top: 1.1rem;
     margin-left: 1rem;
     width: 46px;
