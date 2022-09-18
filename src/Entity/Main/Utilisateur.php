@@ -36,7 +36,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', length: 64)]
     private $password;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: 'boolean', nullable: false,  options: ['default' => 0]) ]
     private $actif;
 
     #[ORM\Column(type: 'datetime', nullable: true)]
