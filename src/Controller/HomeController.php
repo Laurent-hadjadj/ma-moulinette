@@ -71,12 +71,19 @@ class HomeController extends AbstractController
         // On récupère la version de l'application
         $version=$this->getParameter('version');
 
-        // On récupère la dernière en base
+        // On récupère le numéro de la dernère version en base
         $sql = "SELECT version
                 FROM ma_moulinette
                 ORDER BY date_version DESC LIMIT 1";
         $select = $this->em->getConnection()->prepare($sql)->executeQuery();
-        dd($select->fetchAllAssociative());
+        $get_version=$select->fetchAllAssociative();
+        $bd_version=$get_version[0]['version'];
+
+        // si la dernière version en base est inférieure, on renvoie une alerte ;
+        if ($version !== $bd_version ) {
+            $message = 'Oooups !!! La base de données est en version '.$bd_version.'. Vous devez passer le script de migration '.$version.'.';
+            $this->addFlash('alert', $message);
+        }
 
         return $this->render('home/index.html.twig',
         [
