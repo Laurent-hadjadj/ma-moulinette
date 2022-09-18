@@ -35,7 +35,7 @@ La réécriture totale de l'application a débuté le **28 janvier 2022**, aprè
 
 [Authentification](/documentation/authentification.md)
 [Inscription](/documentation/inscription.md)
-[Bienvenue]((/documentation/bienvenue.md))
+[Bienvenue](/documentation/bienvenue.md)
 [Gestion des utilisateurs](utilisateur.md)
 
 ### Ma-Moulinette
