@@ -35,7 +35,13 @@
     </nav>
   </header>
 
+
   <div class="grid-container">
+    {% for message in app.flashes('alert') %}
+      <div class="callout alert">
+        <p class="open-sans">{{ message }}</p>
+      </div>
+    {% endfor %}
     <h4 class="claire-hand">Informations et outils.</h4>
     <fieldset class="fieldset cell" style="padding-bottom:0.5rem;">
       <legend class="open-sans">Référentiel local.</legend>
