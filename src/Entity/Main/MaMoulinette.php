@@ -31,9 +31,6 @@ class MaMoulinette
     #[ORM\Column(type: 'datetime')]
     private $date_version;
 
-    #[ORM\Column(type: 'boolean')]
-    private $is_default;
-
     #[ORM\Column(type: 'datetime')]
     private $date_enregistrement;
 
@@ -62,18 +59,6 @@ class MaMoulinette
     public function setDateVersion(\DateTimeInterface $date_version): self
     {
         $this->date_version = $date_version;
-
-        return $this;
-    }
-
-    public function isIsDefault(): ?bool
-    {
-        return $this->is_default;
-    }
-
-    public function setIsDefault(bool $is_default): self
-    {
-        $this->is_default = $is_default;
 
         return $this;
     }
