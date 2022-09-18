@@ -257,13 +257,13 @@ CREATE TABLE ma_moulinette
 - [x] Mise à jour de la table des versions ;
 
 ```sql
-INSERT INTO ma_moulinette (version, date_version, is_default, date_enregistrement)VALUES ('1.0.0', '2022-01-04', FALSE, date('now'));
-INSERT INTO ma_moulinette (version, date_version, is_default, date_enregistrement) VALUES ('1.1.0', '2022-04-24', FALSE, date('now'));
-INSERT INTO ma_moulinette (version, date_version, is_default, date_enregistrement) VALUES ('1.2.0', '2022-05-05', FALSE, date('now'));
-INSERT INTO ma_moulinette (version, date_version, is_default, date_enregistrement) VALUES ('1.2.6', '2022-06-02', FALSE, date('now'));
-INSERT INTO ma_moulinette (version, date_version, is_default, date_enregistrement) VALUES ('1.3.0', '2022-07-03', FALSE, date('now'));
-INSERT INTO ma_moulinette (version, date_version, is_default, date_enregistrement) VALUES ('1.4.0', '2022-07-06', FALSE, date('now'));
-INSERT INTO ma_moulinette (version, date_version, is_default, date_enregistrement) VALUES ('1.5.0', '2022-08-01', TRUE, date('now'));
+INSERT INTO ma_moulinette (version, date_version, date_enregistrement)VALUES ('1.0.0', '2022-01-04', date('now'));
+INSERT INTO ma_moulinette (version, date_version, date_enregistrement) VALUES ('1.1.0', '2022-04-24', date('now'));
+INSERT INTO ma_moulinette (version, date_version, date_enregistrement) VALUES ('1.2.0', '2022-05-05', date('now'));
+INSERT INTO ma_moulinette (version, date_version, date_enregistrement) VALUES ('1.2.6', '2022-06-02', date('now'));
+INSERT INTO ma_moulinette (version, date_version, date_enregistrement) VALUES ('1.3.0', '2022-07-03', date('now'));
+INSERT INTO ma_moulinette (version, date_version, date_enregistrement) VALUES ('1.4.0', '2022-07-06', date('now'));
+INSERT INTO ma_moulinette (version, date_version, date_enregistrement) VALUES ('1.5.0', '2022-09-18', date('now'));
 ```
 
 - [x] Ajout de la table des utilisateurs  ;
@@ -276,7 +276,7 @@ CREATE TABLE utilisateur
   nom VARCHAR(64) NOT NULL,
   courriel VARCHAR(180) NOT NULL,
   password VARCHAR(255) NOT NULL,
-  actif BOOLEAN NOT NULL,
+  actif BOOLEAN DEFAULT 0 NOT NULL,
   date_modification DATETIME DEFAULT NULL,
   date_enregistrement DATETIME NOT NULL,
   roles CLOB NOT NULL --(DC2Type:json)
