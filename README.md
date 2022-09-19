@@ -48,6 +48,10 @@ La réécriture totale de l'application a débuté le **28 janvier 2022**, aprè
 ### Pour bien démarrer
 
 [Pour bien démarrer](/documentation/pour_bien_démarre.md)
+
+### Gestion des erreurs
+
+[Erreur HTTP](/documentation/http-erreur.md)
 [Erreurs courrantes](/documentation/erreur.md)
 
 ### Audit de sécurité
