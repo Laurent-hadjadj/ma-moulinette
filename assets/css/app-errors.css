@@ -1,0 +1,143 @@
+/**
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2021-2022.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ */
+
+@font-face {
+  font-family: Poppins;
+  src: url("../fonts/Poppins-Regular-webfont.eot");
+  src:
+    url("../fonts/Poppins-Regular-webfont.eot#iefix") format("embedded-opentype"),
+    url("../fonts/Poppins-Regular-webfont.woff2") format("woff2"),
+    url("../fonts/Poppins-Regular-webfont.woff") format("woff"),
+    url("../fonts/Poppins-Regular-webfont.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+.poppins { font-family: Poppins, sans-serif; }
+
+body {
+  margin: 0;
+  background: #00445b;
+}
+
+/* Définition du logo SVG */
+.logo-svg {
+  fill: #fff;
+  shape-rendering: geometricprecision;
+  text-rendering: geometricprecision;
+  image-rendering: optimizequality;
+  fill-rule: evenodd;
+  clip-rule: evenodd;
+  width: 118px;
+}
+
+#error-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#error-page .content {
+  max-width: 600px;
+  text-align: center;
+}
+
+.content h2.header {
+  font-size: 26vw;
+  color: #fff;
+  line-height: 1em;
+  position: relative;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+.content h4 {
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  color: #fff;
+  font-size: 2em;
+  max-width: 600px;
+  position: relative;
+}
+
+.content p {
+  font-size: 1.2em;
+  color: #eee;
+}
+
+.content .btns {
+  margin: 25px 0;
+  display: inline-flex;
+}
+
+.content .btns a {
+  display: inline-block;
+  margin: 0 10px;
+  text-decoration: none;
+  border: 2px solid #fff;
+  color: #fff;
+  font-weight: 500;
+  padding: 10px 25px;
+  border-radius: 10px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+
+.content .btns a:hover {
+  background: #8f0f0f;
+  color: #fff;
+}
+
+#guru {
+  background: #222b;
+  color: #f73939;
+  text-align: center;
+  border: 7px solid #f73939;
+  font-family: monospace;
+  font-size: 16px;
+  font-weight: bold;
+  animation: border 1.5s infinite;
+}
+
+@keyframes border {
+  50% {
+    border: 7px solid #f73939;
+  }
+
+  100% {
+    border: 7px solid #222b;
+  }
+}
+
+@media only screen and (max-width: 20em) {
+  .logo-svg { width: 32px; }
+  .content h4 { font-size: 1.4rem; }
+  .content p { font-size: 1.1rem; }
+  .press-left-button { padding-left: 2rem; }
+}
+
+@media only screen and (min-width: 20.025em) and (max-width: 30em) {
+  .logo-svg { width: 32px; }
+  .content h4 { font-size: 1.4rem; }
+  .content p { font-size: 1.1rem; }
+  .press-left-button { padding-left: 2rem; }
+}
+
+@media only screen and (min-width: 30.025em) and (max-width: 40em) {
+  .logo-svg { width: 64px; }
+  .content h4 { font-size: 1.3rem; }
+  .content p { font-size: 1rem; }
+  .press-left-button { display: none; }
+}
+
+@media only screen and (min-width: 40em) {
+  .press-left-button { padding-left: 4rem; }
+}
