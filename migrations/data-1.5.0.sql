@@ -85,7 +85,7 @@ COMMIT;
 
 BEGIN TRANSACTION;
 
--- ## Ajoute le compte admin
+-- ## Ajout du compte admin
 
 INSERT INTO utilisateur
 (courriel, roles,  password, nom, prenom, date_enregistrement, actif, avatar )
