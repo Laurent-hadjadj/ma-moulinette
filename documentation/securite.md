@@ -2,6 +2,12 @@
 
 ![Ma-Moulinette](/documentation/ressources/home-000.jpg)
 
+## Compte admin
+
+Le compte **Admin** est ajouté par déafut en version  `1.5.0`. Son identifiant de connexion est  <admin@ma-moulinette.fr>. Son mot de passe est `-OuvreMoiL@Porte`.
+
+L'utilisateur **Admin** permet d'accèder à la page de gestion des utilisateur. Une fois un gestionnaire applicatif assigné, il est **recommandé** de désactiver le compte en utilisant l'option **Actif** de la page d'édition du compte.
+
 ## Filtrage pas IP/Host
 
 Le filtrage est activé par défaut depuis le fichier de configuration `framework.yaml'.
