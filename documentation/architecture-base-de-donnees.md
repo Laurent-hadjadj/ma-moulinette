@@ -289,6 +289,19 @@ CREATE TABLE utilisateur
 CREATE UNIQUE INDEX UNIQ_1D1C63B344FB41C9 ON utilisateur (courriel);
 ```
 
+- [x] Ajout du compte admin
+
+```sql
+-- ## Ajoute le compte admin
+
+INSERT INTO utilisateur
+(courriel, roles,  password, nom, prenom, date_enregistrement, actif, avatar )
+VALUES
+('admin@ma-moulinette.fr', '["ROLE_GESTIONNAIRE"]',
+'$2y$10$g1KdFM/ARBc7DG0UClLOl./4Cv.urhltS8zWPtOVzq78qkcSjliGa',
+'admin','@ma-moulinette','1980-01-01 00:00:00', 1, 'chiffre/01.png');
+```
+
 -**-- FIN --**-
 
 [Retour au menu principal](/README.md)
