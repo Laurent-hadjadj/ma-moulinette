@@ -113,7 +113,7 @@ $('#registration_form_courriel').on('keyup', function()
       $('#register-info-check-courriel').html(checkKoSvg);
     }
 
-    // On vérifie que le nom domau=ine est correcte
+    // On vérifie que le nom de domaine est correcte
     if (domaine[1].length==1 && point>1) {
       $('#register-info-check-courriel').html(checkKoSvg);
     }
