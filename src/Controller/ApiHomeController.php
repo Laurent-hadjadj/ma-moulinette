@@ -60,7 +60,7 @@ class ApiHomeController extends AbstractController
    * @param  mixed $url
    * @return reponse
    */
-  protected function httpClient($url): response
+  protected function httpClient($url): array
   {
     // On peut se connecter avec un user/password ou un token. Nous on préfère le token.
     if (empty($this->getParameter('sonar.token'))) {
