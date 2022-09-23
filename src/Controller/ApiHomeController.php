@@ -119,6 +119,7 @@ class ApiHomeController extends AbstractController
    * sonar_health
    * Vérifie l'état du serveur
    * http://{url}}/api/system/health
+   * Encore une fois, c'est null, il faut être admin pour récupérrer le résultat.
    *
    * @return response
    */
@@ -142,7 +143,7 @@ class ApiHomeController extends AbstractController
    *
    * @return response
    */
-  #[Route('/api/system/info', name: 'information_systemes', methods: ['GET'])]
+  #[Route('/api/system/info', name: 'information_systeme', methods: ['GET'])]
   public function informationSysteme():response
   {
     $url = $this->getParameter(static::$sonarUrl) . "/api/system/info";
