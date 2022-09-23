@@ -115,6 +115,24 @@ class ApiHomeController extends AbstractController
     return new JsonResponse($result, Response::HTTP_OK);
   }
 
+  /**
+   * sonar_health
+   * Vérifie l'état du serveur
+   * http://{url}}/api/system/health
+   *
+   * @return response
+   */
+  #[Route('/api/health', name: 'sonar_health', methods: ['GET'])]
+  public function sonarHealth():response
+  {
+    $url = $this->getParameter(static::$sonarUrl) . "/api/system/health";
+
+    // on appel le client http
+    $result = $this->httpClient($url);
+
+    return new JsonResponse($result, Response::HTTP_OK);
+  }
+
 /**
    * information_systeme
    * On récupère les informations système du serveur
