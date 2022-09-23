@@ -28,7 +28,7 @@ class HomeController extends AbstractController
 {
     private $em;
 
-    // On ajoute un constructeur pour éviter à chaque fois d'injecter la même class
+    /** On ajoute un constructeur pour éviter à chaque fois d'injecter la même class */
     public function __construct(EntityManagerInterface $em) {
         $this->em = $em;
     }
@@ -43,8 +43,9 @@ class HomeController extends AbstractController
     {
         $nombreFavori=$this->getParameter('nombre.favori');
 
-        // On récupère les projets en favori. Pour le moment on limite le nombre de projet à 10.
-        //SQLite : 0 (false) and 1 (true).
+        /** On récupère les projets en favori. Pour le moment on limite le nombre de projet à 10.
+         * SQLite : 0 (false) and 1 (true).
+         */
         $sql = "SELECT DISTINCT nom_projet as nom,
                         version, date_version as date,
                         note_reliability as fiabilite,
@@ -68,10 +69,10 @@ class HomeController extends AbstractController
             $favori = $favoris;
         }
 
-        // On récupère la version de l'application
+        /** On récupère la version de l'application */
         $version=$this->getParameter('version');
 
-        // On récupère le numéro de la dernère version en base
+        /** On récupère le numéro de la dernère version en base */
         $sql = "SELECT version
                 FROM ma_moulinette
                 ORDER BY date_version DESC LIMIT 1";
@@ -79,7 +80,7 @@ class HomeController extends AbstractController
         $get_version=$select->fetchAllAssociative();
         $bd_version=$get_version[0]['version'];
 
-        // si la dernière version en base est inférieure, on renvoie une alerte ;
+        /** si la dernière version en base est inférieure, on renvoie une alerte ; */
         if ($version !== $bd_version ) {
             $message = 'Oooups !!! La base de données est en version '.$bd_version.'. Vous devez passer le script de migration '.$version.'.';
             $this->addFlash('alert', $message);
