@@ -12,7 +12,7 @@
 
 import '../css/home.css';
 
-// Intégration de jquery
+/** Intégration de jquery */
 import $ from 'jquery';
 
 import 'what-input';
@@ -21,7 +21,7 @@ import 'motion-ui';
 
 import './foundation.js';
 
-// On importe les paramètres serveur
+/** On importe les paramètres serveur */
 import {serveur} from "./properties.js";
 
 console.log('Home : Chargement de webpack !');
@@ -235,10 +235,10 @@ $('.refresh-bd').on('click', function () {
 
 // Fonctions asynchronnes (liste et profils)
 async function informationsAsync() {
-  // On récupère la date de la dernière analyse
+  /** On récupère la date de la dernière analyse */
   await listeProjetDate();
 
-  // On récupére le nomnbre de profil
+  /** On récupére le nomnbre de profil */
   await afficheNombreProfil();
 
   /**  On affiche le nombre de projet privée et public
