@@ -17,18 +17,18 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-// Gestion de accès aux API
+/** Gestion de accès aux API */
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-// Accès aux tables SLQLite
+/** Accès aux tables SLQLite */
 use App\Entity\Main\ListeProjet;
 use App\Entity\Main\Profiles;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\DBAL\Connection;
 use DateTime;
 
-// Logger
+/** Logger */
 use Psr\Log\LoggerInterface;
 
 
@@ -62,7 +62,7 @@ class ApiHomeController extends AbstractController
    */
   protected function httpClient($url): array
   {
-    // On peut se connecter avec un user/password ou un token. Nous on préfère le token.
+    /** On peut se connecter avec un user/password ou un token. Nous on préfère le token. */
     if (empty($this->getParameter('sonar.token'))) {
       $user = $this->getParameter('sonar.user');
       $password = $this->getParameter('sonar.password');
@@ -80,7 +80,7 @@ class ApiHomeController extends AbstractController
       ]
     );
 
-    //Si la réponse est différente de HTTP: 200 alors...
+    /** Si la réponse est différente de HTTP: 200 alors... */
     if (200 !== $response->getStatusCode()) {
       // Le token ou le password n'est pas correct.
       if ($response->getStatusCode() == 401) {
@@ -109,7 +109,7 @@ class ApiHomeController extends AbstractController
   {
     $url = $this->getParameter(static::$sonarUrl) . "/api/system/status";
 
-    // on appel le client http
+    /** On appel le client http */
     $result = $this->httpClient($url);
 
     return new JsonResponse($result, Response::HTTP_OK);
@@ -128,7 +128,7 @@ class ApiHomeController extends AbstractController
   {
     $url = $this->getParameter(static::$sonarUrl) . "/api/system/health";
 
-    // on appel le client http
+    /** On appel le client http */
     $result = $this->httpClient($url);
 
     return new JsonResponse($result, Response::HTTP_OK);
@@ -148,7 +148,7 @@ class ApiHomeController extends AbstractController
   {
     $url = $this->getParameter(static::$sonarUrl) . "/api/system/info";
 
-    // on appel le client http
+    /** On appel le client http */
     $result = $this->httpClient($url);
     return new JsonResponse($result, Response::HTTP_OK);
   }
@@ -166,22 +166,23 @@ class ApiHomeController extends AbstractController
   {
     $url = $this->getParameter(static::$sonarUrl) . "/api/components/search?qualifiers=TRK&ps=500&p=1";
 
-    // on appel le client http
+    /** On appel le client http */
     $result = $this->httpClient($url);
 
-    // On récupère le manager de BD
+    /** On récupère le manager de BD */
     $date = new DateTime();
     $nombreProjet = 0;
 
-    // On supprime les données de la table avant d'importer les données;
+    /** On supprime les données de la table avant d'importer les données; */
     $sql = "DELETE FROM liste_projet";
     $delete = $this->em->getConnection()->prepare($sql);
     $delete->executeQuery();
 
-    // On insert les projets dans la tale liste_projet.
+    /**  On insert les projets dans la table liste_projet. */
     foreach ($result["components"] as $component) {
-      // On exclue les projets archivés avec la particule "-SVN".
-      //"project": "fr.domaine:mon-application-SVN"
+      /** On exclue les projets archivés avec la particule "-SVN".
+       *  "project": "fr.domaine:mon-application-SVN"
+       */
       $mystring = $component["project"];
       $findme   = '-SVN';
       if (!strpos($mystring, $findme)) {
@@ -243,19 +244,19 @@ class ApiHomeController extends AbstractController
           . "/api/qualityprofiles/search?qualityProfile="
           . $this->getParameter('sonar.profiles');
 
-    // on appel le client http
+    /** On appel le client http */
     $result = $this->httpClient($url);
 
-    // On récupère le manager de BD
+    /** On récupère le manager de BD */
     $date = new DateTime();
     $nombreProfil = 0;
 
-    // On supprime les données de la table avant d'importer les données;
+    /** On supprime les données de la table avant d'importer les données;*/
     $sql = "DELETE FROM profiles";
     $delete = $this->em->getConnection()->prepare($sql);
     $delete->executeQuery();
 
-    // On insert les profiles dans la table profiles.
+    /** On insert les profiles dans la table profiles. */
     foreach ($result["profiles"] as $profil) {
       $nombreProfil = $nombreProfil + 1;
 
@@ -272,7 +273,7 @@ class ApiHomeController extends AbstractController
       $this->em->flush();
     }
 
-    // On récupère la liste des profils;
+    /** On récupère la liste des profils; */
     $sql = "SELECT name as profil, language_name as langage,
             active_rule_count as regle, rules_update_at as date,
             is_default as actif FROM profiles";
@@ -293,7 +294,7 @@ class ApiHomeController extends AbstractController
   #[Route('/api/quality', name: 'nombre_profil', methods: ['GET'])]
   public function nombreProfil(): response
   {
-    // On récupère le nombre de profil dans la table profiles;
+    /** On récupère le nombre de profil dans la table profiles; */
     $sql = "SELECT count(*) as nombre FROM profiles";
     $select = $this->em->getConnection()->prepare($sql)->executeQuery();
     $result = $select->fetchAllAssociative();
@@ -322,7 +323,7 @@ class ApiHomeController extends AbstractController
     $url = $this->getParameter(static::$sonarUrl) .
           "/api/projects/search?qualifiers=TRK&ps=500";
 
-    // on appel le client http
+    /** On appel le client http */
     $components = $this->httpClient($url, $logger);
 
     $private = 0;
