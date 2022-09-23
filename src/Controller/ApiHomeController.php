@@ -37,12 +37,15 @@ class ApiHomeController extends AbstractController
 
   private $client;
   private $em;
+  private $logger;
 
   public function __construct(
+    LoggerInterface $logger,
     HttpClientInterface $client,
     EntityManagerInterface $em,
     )
   {
+    $this->logger = $logger;
     $this->client = $client;
     $this->em = $em;
   }
