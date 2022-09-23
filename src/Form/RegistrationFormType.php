@@ -34,28 +34,38 @@ class RegistrationFormType extends AbstractType
             ->add('nom',TextType::class, [
                 'required' => true,
                 'attr' => ['maxlength' => 64],
-                'attr' => ['placeholder' => 'placeholder.nom'],
+                'attr' => [ 'placeholder' => 'placeholder.nom',
+                            'style'=>'color:#00445b;',
+                            'autocomplete'=> 'family-name'
+                        ],
                 'label' => 'label.nom',
                 'trim' => true
             ])
             ->add('prenom',TextType::class, [
                 'required' => true,
                 'attr' => ['maxlength' => 32],
-                'attr' => ['placeholder' => 'placeholder.prenom'],
+                'attr' => ['placeholder' => 'placeholder.prenom',
+                'style'=>'color:#00445b;',
+                'autocomplete'=> 'given-name'
+            ],
                 'label' => 'label.prenom',
                 'trim' => true
             ])
             //RFC 3696 (64+1+255).
             ->add('courriel',EmailType::class, [
                 'attr' => ['maxlength' => 320],
-                'attr' => ['placeholder' => 'placeholder.courriel'],
+                'attr' => ['placeholder' => 'placeholder.courriel',
+                'style'=>'color:#00445b;',
+                'autocomplete'=> 'email'
+            ],
                 'label' => 'label.courriel',
                 'trim' => true
                 //There is already an account with this courriel
             ])
             ->add('plainPassword', PasswordType::class, [
                 'mapped' => false,
-                'attr' => ['autocomplete' => 'new-password'],
+                'attr' => [ 'style'=>'color:#00445b;',
+                            'autocomplete' => 'new-password'],
                 'label' => 'label.motdepasse',
                 'constraints' => [
                     new NotBlank([
