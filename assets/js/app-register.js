@@ -87,24 +87,31 @@ $('#registration_form_courriel').on('keyup', function()
     }
 
     // Si le permier caractère est @
-    if (courriel.length === 1 && arobase ===0 ) {
+    if (courriel.length === 1 && arobase === 0 ) {
       $('#register-info-check-courriel').html(checkKoSvg);
       return;
     }
 
-    // Si on à un @  à la 65eme position
-    if (courriel.length > 64 && arobase >0 ){
+    // Si on à un @ à la 65eme position
+    if (courriel.length > 64 && arobase > 0 ){
       $('#register-info-check-courriel').html(checkKoSvg);
       return;
     }
 
-    if (courriel.length < 64 && arobase <0 ){
+    // Si on a pas de @ avant la 64eme position
+    if (courriel.length < 64 && arobase < 0 ){
       $('#register-info-check-courriel').html(checkKoSvg);
       return;
     }
 
-    if (courriel.length < 64 && arobase >0 ) {
+    // Si on a un @ avant 65eme posistion
+    if (courriel.length < 64 && arobase > 0 ) {
       domaine=courriel.split('@');
+      /* Si le tableau contient plus de 2 éléments on sort */
+      if (domaine.length>2) {
+        $('#register-info-check-courriel').html(checkKoSvg);
+        return;
+      }
       $('#register-info-check-courriel').html(checkOkSvg);
     }
 
@@ -120,10 +127,10 @@ $('#registration_form_courriel').on('keyup', function()
 
     // On verifie que le domaine est <256
     const points=(domaine[1].match(/\./g)||[]).length
-    console.log(points);
     if (points >1) {
       $('#register-info-check-courriel').html(checkKoSvg);
     }
+
 });
 
 // Vérification du mot de passe
