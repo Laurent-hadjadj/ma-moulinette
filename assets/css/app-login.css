@@ -81,6 +81,10 @@
 
 /*************************          Global     *********************************/
 
+/* couleur input */
+#courriel,
+#password { color: #00445b; }
+
 /* Bouton de validation */
 #valider-formulaire-login {
   color: #fff;
@@ -113,7 +117,8 @@
 
 .floated-label-wrapper label {
   background: #fefefe;
-  color: #1779ba;
+  color: #00445b;
+  font-family: "open sans", sans-serif;
   font-size: 0.75rem;
   font-weight: 600;
   left: 0.75rem;
