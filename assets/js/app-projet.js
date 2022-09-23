@@ -481,6 +481,27 @@ const projetNosonarDetails=function(mavenKey){
 
 /**
  * description
+ * Affiche un messag de fin de collecte
+ *
+ * @param {*} mavenKey
+ */
+const finCollecte=function(){
+/**
+   * Si le message d'information de la "liste box" commence pas  [03]
+   * alors le traitement a été lancé depuis le menu rapide, bouton C.
+   * On affiche un message de fin pour indiquer la fin des traitements asynchronnes.
+   *
+ */
+  let info=$('.information-texte').text();
+  if (info.substring(0, 4)==='[03]') {
+    setTimeout(function(){
+      $('.information-texte').html('[04] - La collecte des données est terminée.');
+    }, 3000);
+  }
+}
+
+/**
+ * description
  * On récupére la liste des projets et des favoris
  * http://{url}/api/projet/mes-applications/liste
 */
@@ -660,7 +681,7 @@ const afficheProjetFavori=function() {
       $('.js-analyse').trigger('click');
       setTimeout(function(){
         $('.information-texte').html('[03] - La collecte est en cours. ...');
-      }, 5000);
+      }, 2000);
     });
 
     /* On gére le click sur le bouton R (afficher les Résulats) */
@@ -839,6 +860,8 @@ $('.js-analyse').on('click', function () {
 
     /* Analyse des anomalies. */
     await projetNosonarDetails(idProject);        /*(11)*/
+    /* Renvoie le statut de fin */
+    await finCollecte();
   }
 
   /* On appelle la fonction de récupèration des sévérités pour les VULNERABILITY. */
@@ -847,18 +870,6 @@ $('.js-analyse').on('click', function () {
   /* on active le bouton pour afficher les infos du projet. */
   $('.js-affiche-resultat').removeClass('affiche-resultat-disabled');
   $('.js-affiche-resultat').addClass('affiche-resultat-enabled');
-
-  /**
-   * Si le message d'information de la "liste box" commence pas  [03]
-   * alors le traitement a été lancé depuis le menu rapide, bouton C.
-   * On affiche un message de fin pour indiquer la fin des traitements asynchronnes.
-   * */
-  const info=$('.information-texte').text();
-  if (info.substring(0, 4)==='[03]') {
-    setTimeout(function(){
-      $('.information-texte').html('[04] - La collecte des données est terminée.');
-    }, 3000);
-  }
 });
 
 /************* Events ***************************/
