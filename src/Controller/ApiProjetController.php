@@ -134,7 +134,7 @@ class ApiProjetController extends AbstractController
    * @param  mixed $url
    * @return void
    */
-  protected function httpClient($url)
+  protected function httpClient($url):array
   {
     if (empty($this->getParameter('sonar.token'))) {
       $user = $this->getParameter('sonar.user');
