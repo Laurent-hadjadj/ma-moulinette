@@ -9,7 +9,6 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
-
 import '../css/home.css';
 
 /** Intégration de jquery */
@@ -22,9 +21,7 @@ import 'motion-ui';
 import './foundation.js';
 
 /** On importe les paramètres serveur */
-import {serveur} from "./properties.js";
-
-console.log('Home : Chargement de webpack !');
+import {serveur} from './properties.js';
 
 const contentType = 'application/json; charset=utf-8';
 
@@ -114,9 +111,9 @@ const nloc=function(){
   const options = {
     url: `${serveur()}/api/system/info`, type: 'GET',
     dataType: 'json',  contentType };
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     $.ajax(options).then( t => {
-      console.log(t);
+      console.info(t);
       // todo : afficher le nombre de ligne total quand l'API ne necéssitera pas un rôle Admin
       resolve();
     });
@@ -128,12 +125,13 @@ const nloc=function(){
  * Récupération de la liste des projets.
  *
  */
-const listeProjetAjout=function() {
+const listeProjetMaj=function() {
+  const data = {action: 'update' };
   const options = {
-    url: `${serveur()}/api/liste_projet/ajout`, type: 'GET',
-    dataType: 'json', contentType };
+    url: `${serveur()}/api/liste_projet/get`, type: 'GET',
+    data, dataType: 'json', contentType };
 
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       $.ajax(options).then(t => {
         log(` - INFO : Nombre de projet disponible : ${t.nombreProjet}`);
         $('#js-nombre-projet').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.nombreProjet));
@@ -144,20 +142,53 @@ const listeProjetAjout=function() {
 
 /**
  * description :
- * Date de la dernière mise à jour.
+ * On récupere le nombre de projet sur le serveur sonarqube
  */
-const listeProjetDate=function(){
+const listeProjetNouveau=function(){
+  const data={ action : 'new' }
   const options = {
-    url: `${serveur()}/api/liste_projet/date`, type: 'GET',
+    url: `${serveur()}/api/liste_projet/get`, type: 'GET',
+    data, tdataType: 'json', contentType };
+
+    return new Promise(resolve => {
+      $.ajax(options).then(data1=> {
+        const nombreProjet=$('#js-nombre-projet').text();
+        const difference=parseInt(nombreProjet,10)-parseInt(data1.nombreProjet,10);
+
+        const number=new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(nombreProjet);
+
+        if (difference>0) {
+          $('#js-nombre-projet').html(`${number}+${difference}`);
+        }
+
+        if (difference<0) {
+          $('#js-nombre-projet').html(`${number}${difference}`);
+        }
+
+        if (difference===0) {
+          $('#js-nombre-projet').html(`${number}=${difference}`);
+        }
+      resolve();
+    });
+  });
+}
+
+/**
+ * description :
+ * Nombre et Date de la dernière mise à jour.
+ */
+const listeProjetAffiche=function(){
+  const options = {
+    url: `${serveur()}/api/liste_projet/affiche`, type: 'GET',
     dataType: 'json', contentType };
 
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       $.ajax(options).then(data=> {
       if (data.nombreProjet===0 && data.dateCreation===0){
         $('#js-nombre-projet').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(0));
         log(` - ERROR : Vous devez importer la liste des projets !!!`);
         } else {
-        $('#js-nombre-projet').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(data.nombreProjet));
+          $('#js-nombre-projet').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(data.nombreProjet));
           log(` - INFO : Nombre de projet disponible : ${data.nombreProjet}`);
           log(` - INFO : Derrnière mise à jour : ${data.dateCreation}`);
         }
@@ -217,13 +248,12 @@ $('.refresh-bd').on('click', function () {
   sonarIsUp()
     .then(function (result) {
       if (result !== 'error') {
-        listeProjetAjout();
+        listeProjetMaj();
       }
     });
 });
 
-/**         main                    **/
-
+/** ******************** main *************************** */
 
 /**
  * Fonctions asynchronnes de récupération des infos systèmes
@@ -234,9 +264,13 @@ $('.refresh-bd').on('click', function () {
 */
 
 // Fonctions asynchronnes (liste et profils)
-async function informationsAsync() {
-  /** On récupère la date de la dernière analyse */
-  await listeProjetDate();
+const informationsAsync= async function() {
+
+  /** On récupère, depuis la base, le nombre et la date de la dernière analyse */
+  await listeProjetAffiche();
+
+  /** On regarde si il y a des nouveaux projets */
+  await listeProjetNouveau();
 
   /** On récupére le nomnbre de profil */
   await afficheNombreProfil();
