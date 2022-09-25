@@ -94,7 +94,7 @@ const refreshQuality=function() {
       const profils=r.listeProfil;
 
       profils.forEach( profil => {
-        if (r.actif === 1) {
+        if (profil.actif === 1) {
           statut1='Oui';
           statut2='O';
         } else {
