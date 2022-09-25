@@ -440,7 +440,7 @@ const projetHotspotOwaspDetails=function(mavenKey) {
     url: `${serveur()}/api/projet/hotspot/details`, type: 'GET',
           dataType: 'json', data, contentType };
 
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     $.ajax(options).then(t=> {
       if (t.code === 406) {
         log(' - INFO : (10) Aucun détails n\'est disponible pour les hotspots.');
@@ -492,7 +492,7 @@ const finCollecte=function(){
    * On affiche un message de fin pour indiquer la fin des traitements asynchronnes.
    *
  */
-  let info=$('.information-texte').text();
+  const info=$('.information-texte').text();
   if (info.substring(0, 4)==='[03]') {
     setTimeout(function(){
       $('.information-texte').html('[04] - La collecte des données est terminée.');
@@ -511,7 +511,7 @@ const afficheProjetFavori=function() {
           type: 'GET', dataType: 'json', contentType
   };
 
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     $.ajax(options).then(t=> {
       let str, favori, i, liste=[], checkFavori;
       if (t.code !== 200) {
@@ -615,7 +615,7 @@ const afficheProjetFavori=function() {
     });
 
     /* On gére le click sur le bouton S (Supprimer) */
-    $('.js-liste-supprimer').on('click', (e) => {
+    $('.js-liste-supprimer').on('click', e => {
       /* On récupère la valeur de l'ID */
       const id = e.target.id;
       const a = id.split('-');
@@ -632,7 +632,7 @@ const afficheProjetFavori=function() {
 
       /* On Ajoute une fonction assynchrone pour désactiver le projet de la liste. */
       const supprime_projet=function supprime() {
-        return new Promise((resolve2) => {
+        return new Promise(resolve2 => {
           $.ajax(options2).then(t=> {
             if (t.code !== 200) {
               log(` - ERROR : Je n'ai réussi à supprimer le projet !`);
@@ -661,7 +661,7 @@ const afficheProjetFavori=function() {
     });
 
     /* On gére le click sur le bouton C (Collecte) */
-    $('.js-liste-collecter').on('click', (e) => {
+    $('.js-liste-collecter').on('click', e => {
       /* On récupère la valeur de l'ID */
       const id = e.target.id;
       const a = id.split('-');
@@ -674,7 +674,7 @@ const afficheProjetFavori=function() {
       /* On récupère le nom du projet */
       const b = mavenKey.split(':');
       const nom = b[1];
-      const $newOption = $("<option selected='selected'></option>").val(mavenKey).text(nom)
+      const $newOption = $("<option selected='selected'></option>").val(mavenKey).text(nom);
       $('select[name="projet"]').append($newOption).trigger('change');
 
       /* On clique sur le bouton afficher les résultats */
@@ -685,7 +685,7 @@ const afficheProjetFavori=function() {
     });
 
     /* On gére le click sur le bouton R (afficher les Résulats) */
-    $('.js-liste-afficher-resultat').on('click', (e) => {
+    $('.js-liste-afficher-resultat').on('click', e => {
 
       /* On récupère la valeur de l'ID */
       const id = e.target.id;
@@ -707,7 +707,7 @@ const afficheProjetFavori=function() {
     });
 
     /* On gére le click sur le bouton I (afficher le tableau de suivi) */
-    $('.js-liste-afficher-indicateur').on('click', (e) => {
+    $('.js-liste-afficher-indicateur').on('click', e => {
 
       /* On récupère la valeur de l'ID. */
       const id = e.target.id;
@@ -717,14 +717,13 @@ const afficheProjetFavori=function() {
       /* On récupère la clé maven du projet */
       const element = document.getElementById(key);
       const mavenKey=element.dataset.mavenkey;
-      console.log(mavenKey);
       $('#select-result').html(`<strong>${mavenKey}</strong>`);
       /* On clique sur le bouton tableau de suivi */
       $('.js-tableau-suivi').trigger('click');
     });
 
     /* On gére le click sur le bouton O (afficher le rapport OWASP) */
-    $('.js-liste-owasp').on('click', (e) => {
+    $('.js-liste-owasp').on('click', e => {
 
       /* On récupère la valeur de l'ID */
       const id = e.target.id;
@@ -741,7 +740,7 @@ const afficheProjetFavori=function() {
     });
 
     /* On gére le click sur le bouton RM (afficher le rapport de Répartition par Module) */
-    $('.js-liste-repartition-module').on('click', (e) => {
+    $('.js-liste-repartition-module').on('click', e => {
 
       /* On récupère la valeur de l'ID */
       const id = e.target.id;
@@ -816,7 +815,6 @@ $('.js-analyse').on('click', function () {
 
   /* On récupère la clé du projet qui est affichée. */
   const idProject = $('#select-result').text().trim();
-  console.log(idProject);
   if (idProject === 'N.C') {
     log(' - ERROR : Vous devez choisir un projet !!!');
     return;
