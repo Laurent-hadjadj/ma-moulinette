@@ -14,6 +14,7 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -35,19 +36,17 @@ use Psr\Log\LoggerInterface;
 class ApiHomeController extends AbstractController
 {
 
-  private $client;
-  private $em;
-  private $logger;
-
   public function __construct(
-    LoggerInterface $logger,
-    HttpClientInterface $client,
-    EntityManagerInterface $em,
+    private LoggerInterface $logger,
+    private HttpClientInterface $client,
+    private EntityManagerInterface $em,
+    private Connection $connection
     )
   {
     $this->logger = $logger;
     $this->client = $client;
     $this->em = $em;
+    $this->connection = $connection;
   }
 
   public static $strContentType = 'application/json';
@@ -73,7 +72,9 @@ class ApiHomeController extends AbstractController
 
     $response = $this->client->request('GET', $url,
       [
-        'ciphers' => 'AES128-SHA AES256-SHA DH-DSS-AES128-SHA DH-DSS-AES256-SHA DH-RSA-AES128-SHA DH-RSA-AES256-SHA DHE-DSS-AES128-SHA DHE-DSS-AES256-SHA DHE-RSA-AES128-SHA DHE-RSA-AES256-SHA ADH-AES128-SHA ADH-AES256-SHA',
+        'ciphers' => `AES128-SHA AES256-SHA DH-DSS-AES128-SHA DH-DSS-AES256-SHA DH-RSA-AES128-SHA
+          DH-RSA-AES256-SHA DHE-DSS-AES128-SHA DHE-DSS-AES256-SHA DHE-RSA-AES128-SHA
+          DHE-RSA-AES256-SHA ADH-AES128-SHA ADH-AES256-SHA`,
         'auth_basic' => [$user, $password], 'timeout' => 45,
         'headers' => ['Accept' => static::$strContentType,
         'Content-Type' => static::$strContentType]
@@ -154,31 +155,27 @@ class ApiHomeController extends AbstractController
   }
 
   /**
-   * liste_projet
+   * projet_liste
    * Récupération de la liste des projets.
    * http://{url}}/api/components/search?qualifiers=TRK&ps=500
-   *
-   * @param  mixed $em
    * @return response
    */
-  #[Route('/api/liste_projet/ajout', name: 'liste_projet_ajout', methods: ['GET'])]
-  public function listeProjet(): response
+  #[Route('/api/projet/liste', name: 'projet_liste', methods: ['GET'])]
+  public function projetListe(): response
   {
     $url = $this->getParameter(static::$sonarUrl) . "/api/components/search?qualifiers=TRK&ps=500&p=1";
 
     /** On appel le client http */
     $result = $this->httpClient($url);
-
-    /** On récupère le manager de BD */
     $date = new DateTime();
-    $nombreProjet = 0;
+    $nombre = 0;
 
-    /** On supprime les données de la table avant d'importer les données; */
+    /** On supprime les données de la table avant d'importer les données. */
     $sql = "DELETE FROM liste_projet";
     $delete = $this->em->getConnection()->prepare($sql);
     $delete->executeQuery();
 
-    /**  On insert les projets dans la table liste_projet. */
+    /**  On compte le nombre de projet et on insert les projets dans la table liste_projet. */
     foreach ($result["components"] as $component) {
       /** On exclue les projets archivés avec la particule "-SVN".
        *  "project": "fr.domaine:mon-application-SVN"
@@ -186,7 +183,7 @@ class ApiHomeController extends AbstractController
       $mystring = $component["project"];
       $findme   = '-SVN';
       if (!strpos($mystring, $findme)) {
-        $nombreProjet = $nombreProjet + 1;
+        $nombre = $nombre + 1;
         $listeProjet = new ListeProjet();
         $listeProjet->setName($component["name"]);
         $listeProjet->setMavenKey($component["project"]);
@@ -195,39 +192,22 @@ class ApiHomeController extends AbstractController
         $this->em->flush();
       }
     }
+
+    /** On met à jour la table propietes */
+    $dateModificationProjet = $date->format("Y-m-d H:m:s");
+
+    $sql="UPDATE proprietes
+    SET projet_bd = ${nombre},
+        projet_sonar = ${nombre},
+        date_modification_projet = '${dateModificationProjet}'
+    WHERE type = 'properties'";
+    $this->em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)))->executeQuery();
+
     $response = new JsonResponse();
-    $response->setData(["nombreProjet" => $nombreProjet, Response::HTTP_OK]);
+    $response->setData(["nombre" => $nombre, Response::HTTP_OK]);
     return $response;
   }
 
-  /**
-   * liste_projet_date
-   * récupère la date de mise à jour du référentiel
-   * http://{url}}/api/liste_projet/date
-   *
-   * @param  mixed $connection
-   * @return void
-   */
-  #[Route('/api/liste_projet/date', name: 'liste_projet_date', methods: ['GET'])]
-  public function listeProjetDate(Connection $connection):response
-  {
-
-    $sql = "SELECT date_enregistrement as date from 'liste_projet' ASC LIMIT 1";
-    $rq1 = $connection->fetchAllAssociative($sql);
-
-    if (!$rq1) {
-      $dateCreation = 0;
-      $nombreProjet = 0;
-    } else {
-      $sql = "SELECT COUNT(*) as total from 'liste_projet'";
-      $rq2 = $connection->fetchAllAssociative($sql);
-      $dateCreation = $rq1[0]['date'];
-      $nombreProjet = $rq2[0]['total'];
-    }
-
-    $response = new JsonResponse();
-    return $response->setData(["dateCreation" => $dateCreation, "nombreProjet" => $nombreProjet, Response::HTTP_OK]);
-  }
 
   /**
    * liste_quality_profiles
@@ -247,9 +227,8 @@ class ApiHomeController extends AbstractController
     /** On appel le client http */
     $result = $this->httpClient($url);
 
-    /** On récupère le manager de BD */
     $date = new DateTime();
-    $nombreProfil = 0;
+    $nombre = 0;
 
     /** On supprime les données de la table avant d'importer les données;*/
     $sql = "DELETE FROM profiles";
@@ -258,7 +237,7 @@ class ApiHomeController extends AbstractController
 
     /** On insert les profiles dans la table profiles. */
     foreach ($result["profiles"] as $profil) {
-      $nombreProfil = $nombreProfil + 1;
+      $nombre = $nombre + 1;
 
       $profils = new Profiles();
       $profils->setKey($profil["key"]);
@@ -280,32 +259,18 @@ class ApiHomeController extends AbstractController
     $select = $this->em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)))->executeQuery();
     $liste = $select->fetchAllAssociative();
 
+    /** On met à jour la table propietes */
+    $dateModificationProfil = $date->format("Y-m-d H:m:s");
+
+    $sql="UPDATE proprietes
+    SET profil_bd = ${nombre},
+        profil_sonar = ${nombre},
+        date_modification_profil = '${dateModificationProfil}'
+    WHERE type = 'properties'";
+    $this->em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)))->executeQuery();
+
     $response = new JsonResponse();
     return $response->setData(["listeProfil" => $liste, Response::HTTP_OK]);
-  }
-
-  /**
-   * nombre_profil
-   * Renvoi le nombre de profil
-   *
-   * @param  mixed $em
-   * @return response
-   */
-  #[Route('/api/quality', name: 'nombre_profil', methods: ['GET'])]
-  public function nombreProfil(): response
-  {
-    /** On récupère le nombre de profil dans la table profiles; */
-    $sql = "SELECT count(*) as nombre FROM profiles";
-    $select = $this->em->getConnection()->prepare($sql)->executeQuery();
-    $result = $select->fetchAllAssociative();
-    if (empty($result)) {
-      $nombre = 0;
-    } else {
-      $nombre = $result[0]["nombre"];
-    }
-
-    $response = new JsonResponse();
-    return $response->setData(["nombre" => $nombre, Response::HTTP_OK]);
   }
 
   /**
