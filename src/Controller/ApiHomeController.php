@@ -196,7 +196,7 @@ class ApiHomeController extends AbstractController
     /** On met à jour la table propietes */
     $dateModificationProjet = $date->format("Y-m-d H:m:s");
 
-    $sql="UPDATE proprietes
+    $sql="UPDATE properties
     SET projet_bd = ${nombre},
         projet_sonar = ${nombre},
         date_modification_projet = '${dateModificationProjet}'
@@ -262,7 +262,7 @@ class ApiHomeController extends AbstractController
     /** On met à jour la table propietes */
     $dateModificationProfil = $date->format("Y-m-d H:m:s");
 
-    $sql="UPDATE proprietes
+    $sql="UPDATE properties
     SET profil_bd = ${nombre},
         profil_sonar = ${nombre},
         date_modification_profil = '${dateModificationProfil}'
