@@ -19,7 +19,6 @@
 [Suivi](/documentation/suivi.md)
 [Répartition détaillée](/documentation/repartition_details.md)
 
-
 ### Page d'accueil
 
 Cette page permet le chargement du référentiel des applications pris en charge par le serveur sonarqube et la consultation et la mise à jour des référentiels de règles.
