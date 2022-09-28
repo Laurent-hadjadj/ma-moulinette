@@ -157,9 +157,9 @@ class ApiProjetController extends AbstractController
 
     if (200 !== $response->getStatusCode()) {
       if ($response->getStatusCode() == 401) {
-        throw new \Exception('Erreur d\'Authentification. La clé n\'est pas correcte.');
+        throw new \UnexpectedValueException('Erreur d\'Authentification. La clé n\'est pas correcte.');
       } else {
-        throw new \Exception('Retour de la réponse différent de ce qui est prévu. Erreur '
+        throw new \UnexpectedValueException('Retour de la réponse différent de ce qui est prévu. Erreur '
           . $response->getStatusCode());
       }
     }
