@@ -302,6 +302,21 @@ VALUES
 'admin','@ma-moulinette','1980-01-01 00:00:00', 1, 'chiffre/01.png');
 ```
 
+- [x] Ajout de la table des properties
+
+```sql
+CREATE TABLE properties (
+  id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  type VARCHAR(255) NOT NULL,
+  projet_bd INTEGER NOT NULL,
+  projet_sonar INTEGER NOT NULL,
+  profil_bd INTEGER NOT NULL,
+  profil_sonar INTEGER NOT NULL,
+  date_creation DATETIME NOT NULL,
+  date_modification_projet DATETIME DEFAULT NULL,
+  date_modification_profil DATETIME DEFAULT NULL);
+  ```
+
 -**-- FIN --**-
 
 [Retour au menu principal](/README.md)
