@@ -17,6 +17,8 @@ parameters:
     sonar.profiles: '%env(SONAR_PROFILES)%'
     sonar.organization: '%env(SONAR_ORGANOZATION)%'
     nombre.favori: '%env(NOMBRE_FAVORI)%'
+    maj.projet: '%env(MAJ_PROJET)%'
+    maj.profil: '%env(MAJ_PROFIL)%'
 
 services:
     # default configuration for services in *this* file
