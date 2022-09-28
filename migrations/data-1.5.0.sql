@@ -100,3 +100,20 @@ VALUES
 'chiffre/01.png');
 
 COMMIT;
+
+BEGIN TRANSACTION;
+
+-- ## Ajout de la table Properties
+
+CREATE TABLE properties (
+  id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  type VARCHAR(255) NOT NULL,
+  projet_bd INTEGER NOT NULL,
+  projet_sonar INTEGER NOT NULL,
+  profil_bd INTEGER NOT NULL,
+  profil_sonar INTEGER NOT NULL,
+  date_creation DATETIME NOT NULL,
+  date_modification_projet DATETIME DEFAULT NULL,
+  date_modification_profil DATETIME DEFAULT NULL);
+
+COMMIT;
