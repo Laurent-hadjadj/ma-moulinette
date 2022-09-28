@@ -58,28 +58,6 @@ $('.gomme-svg').on('click', function () {
 });
 
 /**
- * description
- * Active le spinner.
- */
-const startSpinner=function() {
-  if ($('#loader').hasClass('loader-disabled')) {
-    $('#loader').removeClass('loader-disabled');
-    $('#loader').addClass('loader-enabled');
-  }
-};
-
-/**
- * description
- * Désactive le spinner.
- */
-const stopSpinner=function() {
-  if ($('#loader').hasClass('loader-enabled')) {
-    $('#loader').removeClass('loader-enabled');
-    $('#loader').addClass('loader-disabled');
-  }
-};
-
-/**
  * description :
  * Vérifie si le serveur sonarqube est UP
  * Affiche la version du seveur
@@ -102,141 +80,30 @@ const sonarIsUp=function() {
 
 /**
  * description :
- * On récupère le nombre de ligne de code total
- * Nécessite le rôle sonar Administrateur -->
- * c'est null d'avoir mis le nombre total de ligne dans les infos systmes !!!!
- */
-// eslint-disable-next-line no-unused-vars
-const nloc=function(){
-  const options = {
-    url: `${serveur()}/api/system/info`, type: 'GET',
-    dataType: 'json',  contentType };
-  return new Promise(resolve => {
-    $.ajax(options).then( t => {
-      console.info(t);
-      // todo : afficher le nombre de ligne total quand l'API ne necéssitera pas un rôle Admin
-      resolve();
-    });
-  });
-}
-
-/**
- * description :
  * Récupération de la liste des projets.
  *
  */
-const listeProjetMaj=function() {
-  const data = {action: 'update' };
+const miseAjourListe=function() {
   const options = {
-    url: `${serveur()}/api/liste_projet/get`, type: 'GET',
-    data, dataType: 'json', contentType };
+    url: `${serveur()}/api/projet/liste`, type: 'GET',
+    dataType: 'json', contentType };
 
     return new Promise(resolve => {
       $.ajax(options).then(t => {
-        log(` - INFO : Nombre de projet disponible : ${t.nombreProjet}`);
-        $('#js-nombre-projet').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.nombreProjet));
+        log(` - INFO : Nombre de projet disponible : ${t.nombre}`);
+        $('#js-nombre-projet').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.nombre));
+        /** On efface le plus|moins */
+        $('#js-moins, #js-plus').html('');
+        /** On ferme la callout */
+        $('#info-close').trigger('click');
         resolve();
       });
     });
 };
 
-/**
- * description :
- * On récupere le nombre de projet sur le serveur sonarqube
- */
-const listeProjetNouveau=function(){
-  const data={ action : 'new' }
-  const options = {
-    url: `${serveur()}/api/liste_projet/get`, type: 'GET',
-    data, tdataType: 'json', contentType };
-
-    return new Promise(resolve => {
-      $.ajax(options).then(data1=> {
-        const nombreProjet=$('#js-nombre-projet').text();
-        const difference=parseInt(nombreProjet,10)-parseInt(data1.nombreProjet,10);
-
-        const number=new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(nombreProjet);
-
-        if (difference>0) {
-          $('#js-nombre-projet').html(`${number}+${difference}`);
-        }
-
-        if (difference<0) {
-          $('#js-nombre-projet').html(`${number}${difference}`);
-        }
-
-        if (difference===0) {
-          $('#js-nombre-projet').html(`${number}=${difference}`);
-        }
-      resolve();
-    });
-  });
-}
-
-/**
- * description :
- * Nombre et Date de la dernière mise à jour.
- */
-const listeProjetAffiche=function(){
-  const options = {
-    url: `${serveur()}/api/liste_projet/affiche`, type: 'GET',
-    dataType: 'json', contentType };
-
-    return new Promise(resolve => {
-      $.ajax(options).then(data=> {
-      if (data.nombreProjet===0 && data.dateCreation===0){
-        $('#js-nombre-projet').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(0));
-        log(` - ERROR : Vous devez importer la liste des projets !!!`);
-        } else {
-          $('#js-nombre-projet').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(data.nombreProjet));
-          log(` - INFO : Nombre de projet disponible : ${data.nombreProjet}`);
-          log(` - INFO : Derrnière mise à jour : ${data.dateCreation}`);
-        }
-      resolve();
-    });
-  });
-};
-
-/**
- * description
- * Affiche le nombre de profil.
- */
-const afficheNombreProfil=function() {
-  const options = {
-    url: `${serveur()}/api/quality`, type: 'GET',
-    dataType: 'json', contentType };
-
-  return new Promise((resolve) => {
-    $.ajax(options).then(r => {
-        $('#js-nombre-profil').html(`<span class="stat">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.nombre)}</span>`);
-        if (r.nombre===0){
-          $.ajax({  url: `${serveur()}/api/quality/profiles`,
-                    type: 'GET', dataType: 'json', contentType});
-          }
-      resolve();
-      });
-  });
-};
-
-/**
-  * description
-  * Affiche le nombre de profil.
-  * @returns
-  */
- // eslint-disable-next-line no-unused-vars
-const  afficheProjetVisibility=function() {
-  const options = {
-          url: `${serveur()}/api/visibility`, type: 'GET',
-          dataType: 'json', contentType
-  };
-
-  return $.ajax(options)
-    .then(function (r) {
-        $('#js-projet-public').html(`<span class="stat">
-        ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.nombre)}</span>`);
-        $('#js-projet-private').html(`<span class="stat">
-        ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.nombre)}</span>`);
-      });
+// Fonctions asynchronnes (liste et profils)
+const miseAjourListeAsync= async function() {
+  await miseAjourListe();
 };
 
 /********* Main du programme *******/
@@ -248,47 +115,12 @@ $('.refresh-bd').on('click', function () {
   sonarIsUp()
     .then(function (result) {
       if (result !== 'error') {
-        listeProjetMaj();
+        miseAjourListeAsync();
       }
     });
 });
 
 /** ******************** main *************************** */
 
-/**
- * Fonctions asynchronnes de récupération des infos systèmes
- * La fonction est désactivée par défaut.
-    async function informationSystemeAsync() {
-      await nloc();
-    }
-*/
-
-// Fonctions asynchronnes (liste et profils)
-const informationsAsync= async function() {
-
-  /** On récupère, depuis la base, le nombre et la date de la dernière analyse */
-  await listeProjetAffiche();
-
-  /** On regarde si il y a des nouveaux projets */
-  await listeProjetNouveau();
-
-  /** On récupére le nomnbre de profil */
-  await afficheNombreProfil();
-
-  /**  On affiche le nombre de projet privée et public
-  * Attention, il faut avoir les droits d'administration !!!
-  * La fonction est désactivée par défaut.
-    await afficheProjetVisibility();
- */
-
-}
-
 // On dit bonjour.
-startSpinner();
 ditBonjour();
-// On appelle la fonction de récupèration des infos sonar
-informationsAsync();
-stopSpinner();
-
-// On appelle la fonction de récupèration des infos systèmes
-//informationSystemeAsync();
