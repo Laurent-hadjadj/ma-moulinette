@@ -50,7 +50,6 @@ class ApiHomeController extends AbstractController
   }
 
   public static $strContentType = 'application/json';
-  public static $dateFormat = "Y-m-d H:m:s";
   public static $sonarUrl = "sonar.url";
 
   /**
@@ -85,9 +84,9 @@ class ApiHomeController extends AbstractController
     if (200 !== $response->getStatusCode()) {
       // Le token ou le password n'est pas correct.
       if ($response->getStatusCode() == 401) {
-        throw new \Exception('Erreur d\'Authentification. La clé n\'est pas correcte.');
+        throw new \UnexpectedValueException('Erreur d\'Authentification. La clé n\'est pas correcte.');
       } else {
-        throw new \Exception('Retour de la réponse différent de ce qui est prévu. Erreur ' .
+        throw new \UnexpectedValueException('Retour de la réponse différent de ce qui est prévu. Erreur ' .
           $response->getStatusCode());
       }
     }

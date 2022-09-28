@@ -181,7 +181,9 @@ class ApiProjetRepartitionController extends AbstractController
 
     $response = $this->client->request('GET', $url,
       [
-        'ciphers' => 'AES128-SHA AES256-SHA DH-DSS-AES128-SHA DH-DSS-AES256-SHA DH-RSA-AES128-SHA DH-RSA-AES256-SHA DHE-DSS-AES128-SHA DHE-DSS-AES256-SHA DHE-RSA-AES128-SHA DHE-RSA-AES256-SHA ADH-AES128-SHA ADH-AES256-SHA',
+        'ciphers' => `AES128-SHA AES256-SHA DH-DSS-AES128-SHA DH-DSS-AES256-SHA
+        DH-RSA-AES128-SHA DH-RSA-AES256-SHA DHE-DSS-AES128-SHA DHE-DSS-AES256-SHA
+        DHE-RSA-AES128-SHA DHE-RSA-AES256-SHA ADH-AES128-SHA ADH-AES256-SHA`,
         'auth_basic' => [$user, $password], 'timeout' => 45,
         'headers' => ['Accept' => static::$strContentType,
         'Content-Type' => static::$strContentType]
@@ -190,9 +192,9 @@ class ApiProjetRepartitionController extends AbstractController
 
     if (200 !== $response->getStatusCode()) {
       if ($response->getStatusCode() == 401) {
-        throw new \Exception('Erreur d\'Authentification. La clé n\'est pas correcte.');
+        throw new \UnexpectedValueException('Erreur d\'Authentification. La clé n\'est pas correcte.');
       } else {
-        throw new \Exception('Retour de la réponse différent de ce qui est prévu. Erreur '
+        throw new \UnexpectedValueException('Retour de la réponse différent de ce qui est prévu. Erreur '
           . $response->getStatusCode());
       }
     }
@@ -212,7 +214,8 @@ class ApiProjetRepartitionController extends AbstractController
   * $index = 1 à 20 max ==> 10000 anomalies
   * $type = BUG,VULNERABILITY,CODE_SMELL
   * $severite = INFO,MINOR,MAJOR,CRITICAL,BLOCKER
-  * http://{url}/api/issues/search?componentKeys={key}&statuses=OPEN,CONFIRMED,REOPENED&resolutions=&s=STATUS&asc=no&types={type}&severities={severite}=&ps={pageSize}&p={index}
+  * http://{url}/api/issues/search?componentKeys={key}&statuses=OPEN,CONFIRMED,REOPENED&
+  * resolutions=&s=STATUS&asc=no&types={type}&severities={severite}=&ps={pageSize}&p={index}
   */
   protected function batch_anomalie($mavenKey, $index, $pageSize, $type, $severity)
   {
@@ -229,9 +232,10 @@ class ApiProjetRepartitionController extends AbstractController
     $tempoApi=static::$apiIssuesSearch;
 
     // On construit l'URL
-    $url = "${tempoUrl}${tempoApi}${mavenKey}${tempoStates}${tempoType}${tempoSeverity}${tempoPageSize}${tempoPageindex}";
+    $url1 = "${tempoUrl}${tempoApi}${mavenKey}${tempoStates}${tempoType}";
+    $url2 = "${tempoSeverity}${tempoPageSize}${tempoPageindex}";
     // On appel l'Api et on renvoie le résultat ($logger)
-    return $this->httpClient($url);
+    return $this->httpClient($url1.$url2);
   }
 
   /**
@@ -254,11 +258,21 @@ class ApiProjetRepartitionController extends AbstractController
     $total=0;
     foreach ($severity as $value) {
       $result=$this->batch_anomalie($mavenKey, 1, 1, $type, $value);
-      if ($value==='INFO') { $info=$result['total'];}
-      if ($value==='MINOR') { $minor=$result['total'];}
-      if ($value==='MAJOR') { $major=$result['total'];}
-      if ($value==='CRITICAL') { $critical=$result['total'];}
-      if ($value==='BLOCKER') { $blocker=$result['total'];}
+      if ( $value==='INFO' ) {
+        $info=$result['total'];
+      }
+      if ( $value==='MINOR' ) {
+        $minor=$result['total'];
+      }
+      if ( $value==='MAJOR' ) {
+        $major=$result['total'];
+      }
+      if ( $value==='CRITICAL' ) {
+        $critical=$result['total'];
+      }
+      if ( $value==='BLOCKER' ) {
+        $blocker=$result['total'];
+      }
       $total=$total+$result['total'];
     }
 

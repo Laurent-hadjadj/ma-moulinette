@@ -32,7 +32,8 @@ use DateTime;
 class RegistrationController extends AbstractController
 {
     #[Route('/register', name: 'app_register')]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $em): Response
+    public function register(Request $request,
+    UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $em): Response
     {
         // On créé un objet utilisateur.
         $utilisateur = new Utilisateur();
@@ -69,7 +70,7 @@ class RegistrationController extends AbstractController
             );
 
             // On desactive l'utilisateur
-            $utilisateur->setActif(FALSE);
+            $utilisateur->setActif(false);
 
             // En enregistre la date de création
             $utilisateur->setDateEnregistrement($date);
