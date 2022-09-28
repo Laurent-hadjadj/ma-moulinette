@@ -208,6 +208,10 @@
   padding-right: 1rem;
 }
 
+/* callout de message */
+.plus { color: #971c09; }
+.moins { color: #187e3d; }
+
 /* bouton */
 .refresh-bd,
 .affiche-profil,
