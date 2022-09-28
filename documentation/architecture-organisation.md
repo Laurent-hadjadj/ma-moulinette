@@ -87,9 +87,13 @@ Ici, nous allons spécifier le nom du profil commun à tous les référentiels q
 - [x] NOMBRE_FAVORI = 10
 - [x] TRUST_HOST1="^ma-petite-entreprise\.fr$"
 - [x] TRUST_HOST2="10.0.0.1"
-- [X] SECRET='>Yw5<3pR]$lFeVg147';
+- [x] SECRET='>Yw5<3pR]$lFeVg147';
+- [x] MAJ_PROJET = 0 ;
+- [x] MAJ_PROFIL = 30;
 
 `Note :` Pour les **TRUST_HOST**, on peut utiliser une URL, un domaine ou une adresse IP.
+
+`Note :` Pour **MAJ_PROJET**, la valeur 0 indique la date d'aujourd'hui. 1 indiquera la date d'hier, etc... De la même façon, pour le variable **MAJ_PROFIL**, la valeur 30 correspond à 30 jours à partir d'aujourd'hui.
 
 ## Installation des dépendances
 
