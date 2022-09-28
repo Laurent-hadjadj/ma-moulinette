@@ -44,14 +44,10 @@ use Psr\Log\LoggerInterface;
 class ApiProjetController extends AbstractController
 {
 
-  private $client;
-  private $logger;
-  private $em;
-
   public function __construct(
-    HttpClientInterface $client,
-    LoggerInterface $logger,
-    EntityManagerInterface $em)
+    private HttpClientInterface $client,
+    private LoggerInterface $logger,
+    private EntityManagerInterface $em)
   {
     $this->client = $client;
     $this->logger = $logger;
