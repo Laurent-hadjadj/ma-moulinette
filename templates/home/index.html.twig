@@ -38,30 +38,25 @@
 
   <div class="grid-container">
     {% for message in app.flashes('alert') %}
-      <div class="callout alert">
-        <p class="open-sans">{{ message }}</p>
+      <div class="callout alert" data-closable>
+        <p class="open-sans text-justify" style="padding-right:1rem;">{{ message }}</p>
+        <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
     {% endfor %}
     <h4 class="claire-hand">Informations et outils.</h4>
     <fieldset class="fieldset cell" style="padding-bottom:0.5rem;">
       <legend class="open-sans">Référentiel local.</legend>
       <div class="grid-x cell">
-        {# Affichage désactivé en raison du droit nécessaire pour afficher l'information #}
-        {#<div class="small-12 medium-6 large-6 cell" style="padding-right: .4rem;">
-          <p class="open-sans">Projet Public : <span id="js-projet-public"></span></p>
-        </div>
-        <div class="small-12 medium-6 large-6 cell" style="padding-right: .4rem;">
-          <p class="open-sans">Projet Privée : <span id="js-projet-private"></span></p>
-        </div>#}
-
         <!-- Mise à jour de référentiel des projets sonarqube -->
-        <div class="small-9 medium-10 large-10 cell" style="padding-right: .4rem;">
+        <div class="small-8 medium-10 large-10 cell" style="padding-right: .4rem;">
           <div id="mise-a-jour-referentiel" class="button expanded float-center refresh-bd">
             <div class="show-for-medium">
               <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="refresh-bd-svg">
                 <path d="M234 1C154.4 8.5 84.7 50.6 41 117.6c-8.2 12.6-21.4 38.8-22.9 45.4-4.4 19.1 5.2 38.8 22.9 46.9 16.2 7.5 34.1 4.1 46.3-8.8 4-4.2 7-9 11.9-19.1 16.9-34.6 41.1-60.4 73.5-78.3 50.4-27.8 113.1-28.4 163.3-1.5 8.9 4.7 24 14.6 24 15.7 0 .4-5 1.5-11.2 2.4-18.1 2.7-23.8 6.8-24.6 17.8-.5 6.8 1.6 11.9 6.2 15.3 5.1 3.8 130.6 59.8 135.3 60.4 7.8.9 16-4.9 18.3-12.9.5-1.7 1-35.7 1.1-75.5l.1-72.3-2.4-4.3c-5.2-9.5-18.7-11.8-26.7-4.5-1.3 1.2-6.3 8.2-11.2 15.4C440 67 435.7 73 435.4 73c-.3 0-3.6-2.8-7.2-6.1C396.1 37.4 354.2 15.6 311 6c-21.7-4.8-55.4-7-77-5zM37.2 300.1c-4.6 2.3-7.8 6.2-9.2 11-.5 1.7-1 35.7-1.1 75.5l-.1 72.3 2.4 4.3c5.2 9.5 18.7 11.8 26.7 4.5 1.3-1.2 6.3-8.2 11.2-15.4C72 445 76.3 439 76.6 439c.3 0 3.6 2.8 7.2 6.1 27.2 25 63.1 45.4 98.4 55.9 61.4 18.3 125.9 13.3 183.8-14.1 51.9-24.7 93.6-66 119.5-118.4 7.8-15.8 9.5-20.8 9.5-29 0-25.6-24.4-45.9-48.9-40.6-15.1 3.2-23.7 11.3-33.3 31.1-16.9 34.6-41.1 60.4-73.5 78.3-50.4 27.8-113.1 28.4-163.3 1.5-8.9-4.7-24-14.6-24-15.7 0-.4 5-1.5 11.2-2.4 18.1-2.7 23.8-6.8 24.6-17.8.5-6.8-1.6-11.9-6.2-15.3-1.7-1.3-31.9-15.3-67.1-31.1-44.8-20.2-65.3-28.9-68.5-29.2-3.3-.3-5.7.2-8.8 1.8z"/>
               </svg>
-              <span class="show-for-medium open-sans" style="color:#fff;"> Mise à jour de la liste des projets.</span>
+              <span class="show-for-medium open-sans" style="color:#fff;">&nbsp;Mise à jour de la liste des projets.</span>
             </div>
             <div class="show-for-small-only">
               <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="refresh-bd-svg">
@@ -71,14 +66,22 @@
             </div>
           </div>
         </div>
-        <div class="small-3 medium-2 large-2 cell" style="padding-left: .4rem;">
-            <p id="js-nombre-projet" class="text-center stat" style="color:#000; padding-top:0.5rem;"></p>
+        <div class="small-4 medium-2 large-2 cell" style="padding-left: .4rem;">
+            <p class="text-center"><span id="js-nombre-projet" class="stat" style="color:#000; padding-top:0.5rem;">{{projetBD|format_number}}</span>
+            {% set difference = projetBD - projetSonar %}
+            {% if difference > 0 %}
+              <span id="js-plus" class="plus"><strong>-{{difference}}</strong><span>
+            {% endif %}
+            {% if difference < 0 %}
+              <span id="js-moins" class="moins"><strong>+{{difference|abs}}</strong><span>
+            {% endif %}
+            </p>
         </div>
       </div>
 
-      {# Profl qualité #}
+      {# Profil qualité #}
       <div class="grid-x cell">
-        <div class="small-9 medium-10 large-10 cell" style="padding-right: .4rem;">
+        <div class="small-8 medium-10 large-10 cell" style="padding-right: .4rem;">
           <div class="button expanded float-center affiche-profil">
             <a href="{{ path('profil', {}) }}" rel="next" title="Aller sur la page des proils.">
               <div class="cell">
@@ -89,24 +92,37 @@
                   <path d="M443.733 256v76.8c0 46.259-85.973 85.333-187.733 85.333S68.267 379.059 68.267 332.8V256H51.2v76.8c0 57.421 89.958 102.4 204.8 102.4s204.8-44.979 204.8-102.4V256h-17.067z"/>
                   <path d="M443.733 332.8v76.8c0 46.259-85.973 85.333-187.733 85.333S68.267 455.859 68.267 409.6v-76.8H51.2v76.8C51.2 467.021 141.158 512 256 512s204.8-44.979 204.8-102.4v-76.8h-17.067z"/>
                 </svg>
-                <span class="open-sans" style="color:#fff;"> Profils qualités
-                  <span class="show-for-medium">Sonarqube&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <span class="open-sans" style="color:#fff;">&nbsp;Profils qualités
+                  <span class="show-for-medium">Sonarqube.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
                 </span>
               </div>
             </a>
           </div>
         </div>
-        <div class="small-3 medium-2 large-2 cell" style="padding-left: .4rem;">
-          <p id="js-nombre-profil" class="text-center stat" style="color:#000; padding-top:0.5rem;"></p>
+        <div class="small-4 medium-2 large-2 cell" style="padding-left: .4rem;">
+          <p id="nombre-profil" class="text-center">
+            <span class="stat" style="color:#000; padding-top:0.5rem;">
+            {{profilBD|format_number}}</span>
+              {% set difference = profilBD - profilSonar %}
+              {% if difference > 0 %}
+                <span class="plus"><strong>-{{difference}}</strong><span>
+              {% endif %}
+              {% if difference < 0 %}
+                <span class="moins"><strong>+{{difference|abs}}</strong><span>
+              {% endif %}
+          </p>
         </div>
       </div>
 
       <div class="grid-x cell">
-        <div class="small-3 medium-2 large-2 cell">
-          <p class="open-sans statut">Statut : Je dors.</p>
-        </div>
-        <div class="small-2 medium-2 large-2 cell">
-          <div id="loader" class="loader loader-disabled"><div></div><div></div><div></div><div></div></div>
+        {% for message in app.flashes('info') %}
+          <div class="callout primary cell" data-closable>
+            <p class="open-sans text-justify" style="padding-right:1rem;">{{ message }}</p>
+            <button id="info-close" class="close-button" aria-label="Dismiss alert" type="button" data-close>
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        {% endfor %}
         </div>
       </div>
     </fieldset>
