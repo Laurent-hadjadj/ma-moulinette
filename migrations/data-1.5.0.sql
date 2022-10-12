@@ -59,6 +59,7 @@ INSERT INTO ma_moulinette (version, date_version, date_enregistrement) VALUES ('
 INSERT INTO ma_moulinette (version, date_version, date_enregistrement) VALUES ('1.3.0', '2022-07-03', date('now'));
 INSERT INTO ma_moulinette (version, date_version, date_enregistrement) VALUES ('1.4.0', '2022-07-06', date('now'));
 INSERT INTO ma_moulinette (version, date_version, date_enregistrement) VALUES ('1.5.0-RC1', '2022-10-06', date('now'));
+INSERT INTO ma_moulinette (version, date_version, date_enregistrement) VALUES ('1.5.0', '2022-10-12', date('now'));
 
 COMMIT;
 
