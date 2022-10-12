@@ -1,8 +1,7 @@
 ###> symfony/framework-bundle ###
 .env
-.env.example
-.env.local
-.env.staging
+.env.local.php
+.env.staging.php
 /config/secrets/prod/prod.decrypt.private.php
 /public/bundles/
 /var/log/dev*.log
