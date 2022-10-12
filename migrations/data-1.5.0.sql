@@ -1,11 +1,11 @@
+BEGIN TRANSACTION;
+
 -- ############### Reprise          #####################
 -- ###  1.2.4 --> 1.3.0
 -- ###  1.3.0 --> 1.4.0
 
 -- ############### Evolutions 1.3.0 #####################
 -- ## Migration 1.2.4 vers 1.3.0
-
-BEGIN TRANSACTION;
 
 -- ## Ajout de la table repartition
 CREATE TABLE IF NOT EXISTS repartition (
@@ -20,12 +20,12 @@ COMMIT;
 -- ############### Evolutions 1.4.0 #####################
 -- ## Migration 1.3.0 vers 1.4.0
 
-BEGIN TRANSACTION;
+--BEGIN TRANSACTION;
 
 -- ## Ajout de l'attribut liste dans la table anomalie avec comme valeur par défaut 1.
-ALTER TABLE anomalie ADD COLUMN liste BOOLEAN DEFAULT 1 NOT NULL;
+--ALTER TABLE anomalie ADD COLUMN liste BOOLEAN DEFAULT 1 NOT NULL;
 
-COMMIT;
+--COMMIT;
 
 -- ############### Evolutions 1.5.0 #####################
 -- ## Migration 1.4.0 vers 1.5.0
@@ -68,7 +68,7 @@ BEGIN TRANSACTION;
 
 CREATE TABLE IF NOT EXISTS utilisateur
 (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-  avatar VARCHAR(128) DEFAULT NULL),
+  avatar VARCHAR(128) DEFAULT NULL,
   prenom VARCHAR(32) NOT NULL,
   nom VARCHAR(64) NOT NULL,
   courriel VARCHAR(180) NOT NULL,
@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS utilisateur
   roles CLOB NOT NULL --(DC2Type:json)
 );
 
-CREATE UNIQUE INDEX UNIQ_1D1C63B344FB41C9 ON utilisateur (courriel);
+CREATE UNIQUE INDEX IF NOT EXISTS UNIQ_1D1C63B344FB41C9 ON utilisateur (courriel);
 
 COMMIT;
 
@@ -105,7 +105,7 @@ BEGIN TRANSACTION;
 
 -- ## Ajout de la table Properties
 
-CREATE TABLE properties (
+CREATE TABLE IF NOT EXISTS properties (
   id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
   type VARCHAR(255) NOT NULL,
   projet_bd INTEGER NOT NULL,
