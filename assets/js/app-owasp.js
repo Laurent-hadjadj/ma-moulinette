@@ -24,9 +24,6 @@ import './foundation.js';
 // On importe les paramètres serveur
 import {serveur} from "./properties.js";
 
-
-console.log('Owasp : Chargement de webpack !');
-
 const contentType='application/json; charset=utf-8';
 const note = ['', 'A', 'B', 'C', 'D', 'E'];
 const couleur = ['', 'badge-vert1', 'badge-vert2', 'badge-jaune', 'badge-orange', 'badge-rouge'];

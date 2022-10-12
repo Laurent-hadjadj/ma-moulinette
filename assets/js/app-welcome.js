@@ -12,14 +12,8 @@
 
 import '../css/welcome.css';
 
-// Intégration de jquery
-//import $ from 'jquery';
-
 import 'what-input';
 import 'foundation-sites';
 import 'motion-ui';
 
 import './foundation.js';
-
-console.log('Welcome : Chargement de webpack !');
-

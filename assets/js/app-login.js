@@ -23,8 +23,6 @@ import './foundation.js';
 
 import browserUpdate from 'browser-update';
 
-console.log('Login : Chargement de webpack !');
-
 /* Vérification du navigateur*/
 const configurationOptions = {
   required: { i: 11, e: -3, c: -3, f: -3, o: -3, s: -3 },

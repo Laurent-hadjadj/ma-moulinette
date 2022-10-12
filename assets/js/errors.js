@@ -10,5 +10,3 @@
  */
 
 import '../css/app-errors.css';
-
-console.log('Errors : Chargement de webpack !');
