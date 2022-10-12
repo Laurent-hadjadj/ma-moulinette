@@ -233,8 +233,8 @@ class ApiProjetController extends AbstractController
     if (empty($r)) {
       return $response->setData(["statut" => "null", Response::HTTP_OK]);
     }
-
-    return $response->setData(["favori" => 0, "statut" => $r[0]['favori'], Response::HTTP_OK]);
+    /* la requete a remonté un résultat donc statut =1,*/
+    return $response->setData(["favori" => $r[0]['favori'], "statut" => 1, Response::HTTP_OK]);
   }
 
   /**
