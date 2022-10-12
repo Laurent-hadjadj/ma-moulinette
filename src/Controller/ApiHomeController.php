@@ -26,7 +26,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Entity\Main\ListeProjet;
 use App\Entity\Main\Profiles;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\DBAL\Connection;
 use DateTime;
 
 /** Logger */
@@ -40,13 +39,11 @@ class ApiHomeController extends AbstractController
     private LoggerInterface $logger,
     private HttpClientInterface $client,
     private EntityManagerInterface $em,
-    private Connection $connection
     )
   {
     $this->logger = $logger;
     $this->client = $client;
     $this->em = $em;
-    $this->connection = $connection;
   }
 
   public static $strContentType = 'application/json';
