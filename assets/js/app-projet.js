@@ -877,7 +877,7 @@ $('.js-analyse').on('click', function () {
  */
 $('select[name="projet"]').change(function () {
   $('#select-result').html(`<strong>${$('select[name="projet"]').val().trim()}</strong>`);
-
+  console.log('check favori');
   /* On regarde si le projet est en favori, on récupère son statut. */
   const data = { mavenKey: $('#select-result').text().trim() };
   const options = {
@@ -885,12 +885,12 @@ $('select[name="projet"]').change(function () {
           dataType: 'json', data, contentType };
   $.ajax(options).then(t=> {
     /*SQLite : 0 (false) and 1 (true). */
-    if ( t.favori===1 && t.statut===0 ) {
+    if ( t.favori===0 && t.statut===1 ) {
           $('.favori-svg').removeClass('favori-svg-select');
         }
     if (t.favori===1 && t.statut===1) {
           $('.favori-svg').addClass('favori-svg-select');
-    } else {
+    } else { //favori = 0 statut=1
       $('.favori-svg').removeClass('favori-svg-select');
     }
   });
