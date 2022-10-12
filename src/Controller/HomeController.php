@@ -386,7 +386,8 @@ class HomeController extends AbstractController
         /** On récupère les projets en favori. Pour le moment on limite le nombre de projet à 10.
          * SQLite : 0 (false) and 1 (true).
          */
-        $sql = "SELECT DISTINCT nom_projet as nom,
+        $sql = "SELECT DISTINCT
+                        nom_projet as nom,
                         version, date_version as date,
                         note_reliability as fiabilite,
                         note_security as securite,
