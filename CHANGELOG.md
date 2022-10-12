@@ -238,3 +238,43 @@ General error: 1 near "4.1": syntax error"
   * [O] Ouvre la page du rapport OWASP ;
   * [RM] Ouvre la page de suivi de la répartition par module ;
 * [Page Projet] : Ajout de l'attribut "liste" de type boolean à la table "Anomalie" pour gérer l'affichage ou non, du projet, dans la liste des projets déjà analysés.
+
+## v1.5.0 - 12/10/2022 - RELEASE
+
+* [Page_Home] : Gestion des versions ;
+  * On vérifie si la version de l'application est dans la table [ma_moulinette] ;
+  * On affiche un message  à l'utilisateur si la version de la base est plus ancienne que la version de l'application ;
+* [Docker] : Mise à jour de la configuration pour la stack docker ;
+* [Symfony] Migration 5.4.4 vers 6.1.4 ;
+* [PHP] Migration 8.1.10 ;
+* [Securité] Ajout d'un cipher de type legacy pour les accès depuis un serveur NGINX ;
+* [Configuration] Remplacement des chemins absolus par des chemins relatifs pour la BD ;
+* [Sécurité] Filtrage des connexions par type d'HOST (domaine, IP, RegEx) ;
+* [Authentification] Gestion des utilisateurs.
+  * Ajout de la table [utilisateur] ;
+  * Ajout d'un formulaire de connexion [login] ;
+  * Ajout d'un formulaire d'inscription [register];
+  * Aout d'un formulaire de bienvenue [welcome], une fois l'inscription réalisée ;
+  * Ajout de l'option **remember-me** ;
+  * Ajout d'un firewall et des rôles [USER], [GESTIONNAIRE] et [PUBLIC_ACCESS] ;
+  * Ajout des icônes **logout** et **dashboard** et **utilisateurs** dans le haut de page ;
+* Ajout du module EasyAdmin :
+  * Personalisation des pages, du menu et des contrôleurs CRUD ;
+  * Ajout des indicateurs et des statistiques globales sur la page Dashboard ;
+  * Ajout de la page de gestion des comptes utilsiateurs [ROLE_GESTIONNAIRE] ;
+  * Ajout d'un lien vers la page [HOME] ;
+* Activation et optimisation du cache opCahe (pour la prod uniquement);
+* Refactoring complet de la documentation ;
+* [Projet] Ajout de l'événement **Collecte** sur le bouton `C` du menu rapide ;
+* [Erreurs] Personnalisation des erreurs HTTP (en production) ;
+* [Utilisateur] Ajout du compte admin ;
+* [Home] refactoring de la page :
+  * Suppression du code JS et HTML pour les composants nécessitant un droits Admin dans sonarqube ;
+  * Suppression des appels Asynchronne JS pour afficher le nombre de projet et de profil ;
+  * Ajout de la table properties, contenant la nombre de projet, de profil en base et sur le serveur et leur date de modification ;
+  * Ajout dans le contôleur du processus de gestion des projets et des profils (anciennenent en JS) ;
+  * Amélioration de l'affichage des messages d'alerte. Suppression du statut pour des callout ;
+  * Affichage du nombre de projet et de profil en plus/moins ;
+  * Correction Sonarqube ;
+* [Profil] Correction de l'affichage du statut Actif lors du rechargement de la liste ;
+* [Paramétrage] Choix de la fréquence de mise ) jour. Par défaut 1 jour ;
