@@ -11,6 +11,7 @@
 /migrations/*.php
 composer.lock
 /var/sessions/*
+/var/cache/*
 ###< symfony/framework-bundle ###
 
 ###> symfony/webpack-encore-bundle ###
