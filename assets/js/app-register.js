@@ -21,8 +21,6 @@ import 'motion-ui';
 
 import './foundation.js';
 
-console.log('Register : Chargement de webpack !');
-
 let checkOkSvg, checkKoSvg;
 
 checkOkSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -46 417.813 417" class="info-check-ok-svg">';

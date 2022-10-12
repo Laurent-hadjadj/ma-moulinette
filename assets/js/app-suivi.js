@@ -688,7 +688,6 @@ $('.js-enregistrer-analyse').on('click', ()=>{
  * Génère une edition PDF
 */
 $('.lien-editer').on('click', ()=>{
-  console.log('impression en cours');
   const date2 = new Date();
   const element1 = document.getElementById('element1-to-print');
   const element2 = document.getElementById('element2-to-print');

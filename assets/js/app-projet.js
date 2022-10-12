@@ -733,7 +733,6 @@ const afficheProjetFavori=function() {
       /* On récupère la clé maven du projet */
       const element = document.getElementById(key);
       const mavenKey=element.dataset.mavenkey;
-      console.log(mavenKey);
       $('#select-result').html(`<strong>${mavenKey}</strong>`);
       /* On clique sur le bouton OWASP */
       $('.js-analyse-owasp').trigger('click');
@@ -750,7 +749,6 @@ const afficheProjetFavori=function() {
       /* On récupère la clé maven du projet */
       const element = document.getElementById(key);
       const mavenKey=element.dataset.mavenkey;
-      console.log(mavenKey);
       $('#select-result').html(`<strong>${mavenKey}</strong>`);
       /* On clique sur le bouton Répartition par module */
       $('.js-repartition-module').trigger('click');
@@ -877,7 +875,6 @@ $('.js-analyse').on('click', function () {
  */
 $('select[name="projet"]').change(function () {
   $('#select-result').html(`<strong>${$('select[name="projet"]').val().trim()}</strong>`);
-  console.log('check favori');
   /* On regarde si le projet est en favori, on récupère son statut. */
   const data = { mavenKey: $('#select-result').text().trim() };
   const options = {
