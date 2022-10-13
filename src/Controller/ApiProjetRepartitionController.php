@@ -37,7 +37,6 @@ class ApiProjetRepartitionController extends AbstractController
     private ManagerRegistry $doctrine,
     private HttpClientInterface $client,
     private LoggerInterface $logger
-
     )
   {
     $this->client = $client;
@@ -62,6 +61,8 @@ class ApiProjetRepartitionController extends AbstractController
     $frontend = 0;
     $backend = 0;
     $autre = 0;
+    $erreur=0;
+
     // nom du projet
     $app = explode(":", $mavenKey);
     foreach ($elements as $element) {
@@ -78,85 +79,39 @@ class ApiProjetRepartitionController extends AbstractController
         $backend = $backend + 1;
       }
 
-      /**
-       *  Application Frontend
-       */
-      if ($module[0] == $app[1] . "-presentation") {
-        $frontend = $frontend + 1;
-      }
-      // Application : Legacy
-      if ($module[0] == $app[1] . "-presentation-commun") {
-        $frontend = $frontend + 1;
-      }
-      if ($module[0] == $app[1] . "-presentation-ear") {
-        $frontend = $frontend + 1;
-      }
-      if ($module[0] == $app[1] . "-webapp") {
-        $frontend = $frontend + 1;
-      }
-
-      /**
-       * Application Backend
-       */
-      if ($module[0] == $app[1] . "-metier") {
-        $backend = $backend + 1;
-      }
-      if ($module[0] == $app[1] . "-common") {
-        $backend = $backend + 1;
-      }
-      if ($module[0] == $app[1] . "-api") {
-        $backend = $backend + 1;
-      }
-      if ($module[0] == $app[1] . "-dao") {
-        $backend = $backend + 1;
-      }
-      if ($module[0] == $app[1] . "-metier-ear") {
-        $backend = $backend + 1;
-      }
-      if ($module[0] == $app[1] . "-service") {
-        $backend = $backend + 1;
-      }
-      // Application : Legacy
-      if ($module[0] == $app[1] . "-serviceweb") {
-        $backend = $backend + 1;
-      }
-      // Application : Dénormaliser
-      if ($module[0] == $app[1] . "-middleoffice") {
-        $backend = $backend + 1;
-      }
-      // Application : Starter-Kit
-      if ($module[0] == $app[1] . "-metier-rest") {
-        $backend = $backend + 1;
-      }
-      // Application : Legacy
-      if ($module[0] == $app[1] . "-entite") {
-        $backend = $backend + 1;
-      }
-      // Application : Legacy
-      if ($module[0] == $app[1] . "-serviceweb-client") {
-        $backend = $backend + 1;
-    }
-
-      /**
-       * Application Batch et Autres
-       */
-      if ($module[0] == $app[1] . "-batch") {
-        $autre = $autre + 1;
-      }
-      if ($module[0] == $app[1] . "-batchs") {
-        $autre = $autre + 1;
-      }
-      if ($module[0] == $app[1] . "-batch-envoi-dem-aval") {
-        $autre = $autre + 1;
-      }
-      if ($module[0] == $app[1] . "-batch-import-billets") {
-        $autre = $autre + 1;
-      }
-      if ($module[0] == $app[1] . "-rdd") {
-        $autre = $autre + 1;
+      switch ($module[0]) {
+        case  $app[1] . "-presentation" ||
+              $app[1] . "-presentation-commun" ||
+              $app[1] . "-presentation-ear" ||
+              $app[1] . "-webapp": $frontend = $frontend + 1;
+              break;
+        case  $app[1] . "-metier" ||
+              $app[1] . "-common" ||
+              $app[1] . "-api" ||
+              $app[1] . "-dao": $backend = $backend + 1;
+              break;
+        case  $app[1] . "-metier-ear" ||
+              $app[1] . "-service" ||
+              $app[1] . $app[1] . "-serviceweb" ||
+              $app[1] . "-middleoffice": $backend = $backend + 1;
+              break;
+        case  $app[1] . "-metier-rest" ||
+              $app[1] . "-entite" ||
+              $app[1] . "-serviceweb-client": $backend = $backend + 1;
+              break;
+        case  $app[1] . "-batch" ||
+              $app[1] . "-batchs" ||
+              $app[1] . $app[1] . "-batch-envoi-dem-aval" ||
+              $app[1] . "-batch-import-billets": $autre = $autre + 1;
+              break;
+        case  $app[1] . $app[1] . "-rdd" : $autre = $autre + 1;
+              break;
+        default:
+            $erreur=$erreur+1;
       }
     }
-    return ['frontend'=>$frontend, 'backend'=>$backend, 'autre'=>$autre];
+
+    return ['erreur'=>$erreur, 'frontend'=>$frontend, 'backend'=>$backend, 'autre'=>$autre];
   }
 
   /**
