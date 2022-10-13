@@ -33,14 +33,10 @@ use Psr\Log\LoggerInterface;
 class ApiProjetRepartitionController extends AbstractController
 {
 
-  private $doctrine;
-  private $client;
-  private $logger;
-
   public function __construct(
-    ManagerRegistry $doctrine,
-    HttpClientInterface $client,
-    LoggerInterface $logger
+    private ManagerRegistry $doctrine,
+    private HttpClientInterface $client,
+    private LoggerInterface $logger
 
     )
   {
