@@ -26,9 +26,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class ApiOwaspPeintureController extends AbstractController
 {
-  private $em;
-
-  public function __construct(EntityManagerInterface $em)
+  public function __construct(private EntityManagerInterface $em)
   {
     $this->em = $em;
   }
@@ -207,12 +205,11 @@ class ApiOwaspPeintureController extends AbstractController
    * peinture_owasp_hotspot_liste
    * On récupère les résultats de la table hotpsot_owasp
    *
-   * @param  mixed $em
    * @param  mixed $request
    * @return response
    */
   #[Route('/api/peinture/owasp/hotspot/liste', name: 'peinture_owasp_hotspot_liste', methods: ['GET'])]
-  public function peintureOwaspHotspotListe(EntityManagerInterface $em, Request $request): response
+  public function peintureOwaspHotspotListe(Request $request): response
   {
     $mavenKey = $request->get('mavenKey');
     $response = new JsonResponse();
@@ -222,7 +219,7 @@ class ApiOwaspPeintureController extends AbstractController
             WHERE maven_key='${mavenKey}'
             AND status='TO_REVIEW' GROUP BY menace";
 
-    $list = $em->getConnection()->prepare($sql)->executeQuery();
+    $list = $this->$em->getConnection()->prepare($sql)->executeQuery();
     $menaces = $list->fetchAllAssociative();
 
     $menaceA1 = 0;

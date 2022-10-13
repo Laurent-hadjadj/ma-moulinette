@@ -24,10 +24,8 @@ use App\Entity\Secondary\Repartition;
 
 class RepartitionController extends AbstractController
 {
-    private $doctrine;
-
     // On ajoute un constructeur pour éviter à chaque fois d'injecter la même class.
-    public function __construct(ManagerRegistry $doctrine) {
+    public function __construct( private ManagerRegistry $doctrine) {
         $this->doctrine = $doctrine;
     }
 
