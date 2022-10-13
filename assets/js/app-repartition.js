@@ -187,11 +187,25 @@ const analyse=function(mavenKey, type, severity, css) {
       const t17 = document.getElementById('mauvaise-pratique-majeur');
       const t18 = document.getElementById('mauvaise-pratique-mineur');
 
-     // On calcule la somme des anomalies
+     /* On calcule la somme des anomalies */
       const somme=t.repartition.frontend+t.repartition.backend+t.repartition.autre;
+      /* On regarde si la somme est =0 et erreur > 0 */
+      let parser="OK"
+      if (somme==0 && t.repartition.erreur>0) {
+        parser="KO";
+        const erreur=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(t.repartition.erreur);
+        const message2=`Il y a eu ${erreur} erreurs lors de l'analyse.`;
+        $('#message-analyse').html(callboxError+message2+callboxFermer);
+      }
+      else
+      {
+        const message2=`Tout va bien.`;
+        $('#message-analyse').html(callboxInformation+message2+callboxFermer);
+      }
 
-      // On affiche le tableau pour la fiabilité
-      if (type=='BUG')
+
+      /* On affiche le tableau pour la fiabilité si le parser est OK */
+      if (type=='BUG' && parser=="OK")
       {
       if (severity==='BLOCKER') {
         if (t2.dataset.nombreBugBloquant==='0')
@@ -233,8 +247,8 @@ const analyse=function(mavenKey, type, severity, css) {
           $("#mon-bo-tableau1").append(tab_bug);
       }
 
-      // On affiche le tableau pour la sécurité
-      if (type=='VULNERABILITY')
+      /* On affiche le tableau pour la sécurité si le parser est OK */
+      if (type=='VULNERABILITY' && parser=="OK")
       {
         if (severity==='BLOCKER') {
           if (t8.dataset.nombreVulnerabiliteBloquant==='0')
@@ -278,8 +292,8 @@ const analyse=function(mavenKey, type, severity, css) {
         $("#mon-bo-tableau2").append(tab_vulnerability);
       }
 
-      // On affiche le tableau pour la maintenabilité
-      if (type=='CODE_SMELL')
+      /* On affiche le tableau pour la maintenabilité si le parser est OK */
+      if (type=='CODE_SMELL' && parser=="OK")
       {
       if (severity==='BLOCKER')
         if (t14.dataset.nombreMauvaisePratiqueBloquant==='0')
