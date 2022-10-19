@@ -203,35 +203,40 @@ const analyse=function(mavenKey, type, severity, css) {
         $('#message-analyse').html(callboxInformation+message2+callboxFermer);
       }
 
-
       /* On affiche le tableau pour la fiabilité si le parser est OK */
+      let label_severity;
       if (type=='BUG' && parser=="OK")
       {
       if (severity==='BLOCKER') {
+        label_severity='Bloquant';
         if (t2.dataset.nombreBugBloquant==='0')
           { idc='-' } else {
             idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t2.dataset.nombreBugBloquant);
           }
         }
       if (severity==='CRITICAL') {
+        label_severity='Critique';
         if (t3.dataset.nombreBugCritique==='0')
         { idc='-' } else {
           idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t3.dataset.nombreBugCritique);
         }
         }
       if (severity==='INFO') {
+        label_severity='Info';
         if (t4.dataset.nombreBugInfo==='0')
           { idc='-' } else {
             idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t4.dataset.nombreBugInfo);
           }
         }
       if (severity==='MAJOR') {
+        label_severity='Majeur';
         if (t5.dataset.nombreBugMajeur==='0')
           { idc='-' } else {
             idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t5.dataset.nombreBugMajeur);
           }
       }
       if (severity==='MINOR') {
+        label_severity='Mineur';
         if (t6.dataset.nombreBugMineur==='0')
           { idc='-' } else {
             idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t6.dataset.nombreBugMineur);
@@ -239,7 +244,7 @@ const analyse=function(mavenKey, type, severity, css) {
       }
       if (idc !=='100 %' && idc !=='-') { alert='texte-rouge'; } else { alert='texte-vert'; }
       let tab_bug=`<tr>
-          <td class="${css}"><strong>${severity}</strong></td>
+          <td class="${css}"><strong>${label_severity}</strong></td>
           <td id="presenation-01" class="text-center">${t.repartition.frontend}</td>
           <td id="metier-01" class="text-center">${t.repartition.backend}</td>
           <td id="autre-01" class="text-center">${t.repartition.autre}</td>
