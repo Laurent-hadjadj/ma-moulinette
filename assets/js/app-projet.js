@@ -887,7 +887,7 @@ $('select[name="projet"]').change(function () {
         }
     if (t.favori===1 && t.statut===1) {
           $('.favori-svg').addClass('favori-svg-select');
-    } else { //favori = 0 statut=1
+    } else {
       $('.favori-svg').removeClass('favori-svg-select');
     }
   });
