@@ -206,6 +206,8 @@ class ApiProjetController extends AbstractController
               WHERE maven_key='${mavenKey}'";
       $this->em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)))->executeQuery();
     }
+
+    /** on met à jour la table historique */
     $response = new JsonResponse();
     return $response->setData(["statut" => $statut, Response::HTTP_OK]);
   }
