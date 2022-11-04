@@ -219,7 +219,7 @@ class ApiOwaspPeintureController extends AbstractController
             WHERE maven_key='${mavenKey}'
             AND status='TO_REVIEW' GROUP BY menace";
 
-    $list = $this->$em->getConnection()->prepare($sql)->executeQuery();
+    $list = $this->em->getConnection()->prepare($sql)->executeQuery();
     $menaces = $list->fetchAllAssociative();
 
     $menaceA1 = 0;
