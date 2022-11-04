@@ -7,8 +7,6 @@
  *
  */
 
-/* stylelint-disable selector-class-pattern */
-
 /**
  * Gestion de l'affichage du titre et du logo
  * ma-moulinette : titre
@@ -380,18 +378,18 @@ body { background: #eee; }
   font-size: 0.9rem;
 }
 
-.A,
-.B,
-.C,
-.D,
-.E {
+.note-a,
+.note-b,
+.note-c,
+.note-d,
+.note-e {
   font-size: 0.9rem;
   color: #fff;
 }
 
-.A { background-color: #0a0; }    /* Note de couleur A */
-.B { background-color: #b0d513; } /* Note de couleur B */
-.C { background-color: #eabe06; } /* Note de couleur C */
-.D { background-color: #ed7d20; } /* Note de couleur D */
-.E { background-color: #d4333f; } /* Note de couleur E */
-.Z { background-color: #00445b; } /* Note de couleur Z */
+.note-a { background-color: #0a0; }    /* Note de couleur A */
+.note-b { background-color: #b0d513; } /* Note de couleur B */
+.note-c { background-color: #eabe06; } /* Note de couleur C */
+.note-d { background-color: #ed7d20; } /* Note de couleur D */
+.note-e { background-color: #d4333f; } /* Note de couleur E */
+.note-z { background-color: #00445b; } /* Note de couleur Z */
