@@ -21,12 +21,12 @@ import 'motion-ui';
 
 import './foundation.js';
 
-// On importe les paramètres serveur
+/** On importe les paramètres serveur */
 import {serveur} from "./properties.js";
 
 const contentType='application/json; charset=utf-8';
 const note = ['', 'A', 'B', 'C', 'D', 'E'];
-const couleur = ['', 'badge-vert1', 'badge-vert2', 'badge-jaune', 'badge-orange', 'badge-rouge'];
+const couleur = ['', 'note-a', 'note-b', 'note-c', 'note-d', 'note-e'];
 
 const listeOwasp2017 = [
   '', 'A1 - Attaques d\'injection', 'A2 - Authentification défaillante', 'A3 - Fuites de données sensibles',
@@ -104,7 +104,7 @@ const remplissageOwaspInfo=function(idMaven) {
         console.info('Le projet n\'existe pas..');
         return;
       }
-    // On ajoute les valeurs pour les vulnérabilités
+    /** On ajoute les valeurs pour les vulnérabilités */
     $('#nombre-faille-owasp').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.total));
     $('#nombre-faille-bloquant').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.bloquant));
     $('#nombre-faille-critique').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.critique));
@@ -378,14 +378,15 @@ const remplissageHotspotInfo=function(idMaven) {
   $('#nombre-hotspot-medium').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.medium));
   $('#nombre-hotspot-low').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.low));
 
-  let leTaux=1, laNote=['badge-vert1', 'A'];
+  let leTaux=1, laNote=['a', 'A'];
   if ( hotspotTotal !==0 ) {
     leTaux = 1 - (parseInt(hotspotToReview,10) / hotspotTotal);
     laNote = calculNoteHotspot(leTaux);
   }
 
+  const lowerLaNote=laNote[0].toLowerCase();
   i = `<span>${new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(leTaux)}</span>
-      <span class="badge ${laNote[0]}"> ${laNote[1]}</span>`;
+      <span class="badge ${lowerLaNote}"> ${laNote[1]}</span>`;
   $('#note-hotspot').html(i);
   });
 };
@@ -428,7 +429,7 @@ const remplissageHotspotListe=function(idMaven) {
           dataType: 'json', data, contentType };
 
   $.ajax(options).then(r=> {
-  let leTaux=1, laNote=['badge-vert1', 'A'], espace='';
+  let leTaux=1, laNote=['a','A'], espace='';
   const hotspotTotal=r.menaceA1+r.menaceA2+r.menaceA3+r.menaceA4+r.menaceA5+
                     r.menaceA6+r.menaceA7+r.menaceA8+r.menaceA9+r.menaceA10;
 
@@ -610,7 +611,7 @@ const injectionHotspotDetails=function(numero,url,color,rule,severity,file,line,
  * @param {*} bc
  * @param {*} zero
  */
-const injectionModule=function (module,total, taux, bc, zero){
+const injectionModule=function (module, total, taux, bc, zero){
   const i = ` <span class="stat-note">${new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(taux)}</span>
               <span class="box ${bc} stat-note">${zero}${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(total)}</span>`;
   switch (module) {
@@ -676,13 +677,13 @@ const remplissageHotspotDetails=function(idMaven) {
           monNumero = numero;
         }
         if (detail.severity === 'LOW') {
-          c = 'severity-jaune';
+          c = 'text-center note-c';
         }
         if (detail.severity === 'MEDIUM') {
-          c = 'severity-orange';
+          c = 'text-center note-d';
         }
         if (detail.severity === 'HIGH') {
-          c = 'severity-rouge';
+          c = 'text-center note-e';
         }
 
         if (detail.frontend === 1) {
@@ -701,9 +702,9 @@ const remplissageHotspotDetails=function(idMaven) {
 
     // Met à jour la répartition par module
     totalABC=parseInt(frontend+backend+autre,10);
-    const moduleVert='module-vert';
-    const moduleOrange='module-orange';
-    const moduleRouge='module-rouge';
+    const moduleVert='note-a';
+    const moduleOrange='note-d';
+    const moduleRouge='note-e';
 
     if ((frontend <10)) {
       zero='00';
