@@ -69,21 +69,15 @@ class ApiProjetRepartitionController extends AbstractController
       $file = str_replace($mavenKey . ":", "", $element->getComponent());
       $module = explode("/", $file);
 
-      if ($module[0] == "du-presentation") {
-        $frontend = $frontend + 1;
-      }
-      if ($module[0] == "rs-presentation") {
-        $frontend = $frontend + 1;
-      }
-      if ($module[0] == "rs-metier") {
-        $backend = $backend + 1;
-      }
-
       switch ($module[0]) {
+        case "du-presentation" || "rs-presentation" : $frontend = $frontend + 1;
+              break;
         case  $app[1] . "-presentation" ||
               $app[1] . "-presentation-commun" ||
               $app[1] . "-presentation-ear" ||
               $app[1] . "-webapp": $frontend = $frontend + 1;
+              break;
+        case "rs-metier" : $backend = $backend + 1;
               break;
         case  $app[1] . "-metier" ||
               $app[1] . "-common" ||
@@ -92,7 +86,7 @@ class ApiProjetRepartitionController extends AbstractController
               break;
         case  $app[1] . "-metier-ear" ||
               $app[1] . "-service" ||
-              $app[1] . $app[1] . "-serviceweb" ||
+              $app[1] . "-serviceweb" ||
               $app[1] . "-middleoffice": $backend = $backend + 1;
               break;
         case  $app[1] . "-metier-rest" ||
