@@ -181,7 +181,7 @@
 }
 
 /* Media Extra-large  */
-@media only screen and (min-width: 120em) and (max-width: 160em) {
+@media only screen and (min-width: 120.063em) and (max-width: 160em) {
   .refresh-bd-svg,
   .affiche-profil-svg,
   .projet-svg,
@@ -300,67 +300,20 @@
   padding-right: 2px;
 }
 
-/* Note de couleur A */
-.note-vert1 {
+/* box pour les notes B, C, D, E et Z */
+.note {
   font-size: 0.9rem;
-  background-color: #187e3d;
-  color: #fff;
-  border: solid 2px #00445b;
+  border: solid 1px #00445b;
+  border-radius: 0.2rem;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+/* box pour les notes A */
+.note-a {
+  font-size: 0.9rem;
+  border: solid 1px #00445b;
   border-radius: 0.2rem;
   padding-left: 14px;
-  padding-right: 15px;
-}
-
-/* Note de couleur B */
-.note-vert2 {
-  font-size: 0.9rem;
-  background-color: #42c070;
-  color: #000;
-  border: solid 2px #00445b;
-  border-radius: 0.2rem;
-  padding-left: 15px;
-  padding-right: 15px;
-}
-
-/* Note de couleur C */
-.note-jaune {
-  font-size: 0.9rem;
-  background-color: #dfdb1a;
-  color: #000;
-  border: solid 2px #00445b;
-  border-radius: 0.2rem;
-  padding-left: 15px;
-  padding-right: 15px;
-}
-
-/* Note de couleur D */
-.note-orange {
-  font-size: 0.9rem;
-  background-color: #c45d4e;
-  color: #000;
-  border: solid 2px #00445b;
-  border-radius: 0.2rem;
-  padding-left: 15px;
-  padding-right: 15px;
-}
-
-/* Note de couleur E */
-.note-rouge {
-  font-size: 0.9rem;
-  background-color: #971c09;
-  color: #fff;
-  border: solid 2px #00445b;
-  border-radius: 0.2rem;
-  padding-left: 15px;
-  padding-right: 15px;
-}
-
-.note-bleu {
-  font-size: 0.9rem;
-  background-color: #00445b;
-  color: #fff;
-  border: solid 2px #00445b;
-  border-radius: 0.2rem;
-  padding-left: 15px;
   padding-right: 15px;
 }
