@@ -165,32 +165,11 @@
                   </tr>
                 </thead>
                 <tbody>
-                  {% if app.fiabilite == 'A' %} {% set couleur1='note-vert1' %} {% endif %}
-                  {% if app.fiabilite == 'B' %} {% set couleur1='note-vert2' %} {% endif %}
-                  {% if app.fiabilite == 'C' %} {% set couleur1='note-jaune' %} {% endif %}
-                  {% if app.fiabilite == 'D' %} {% set couleur1='note-orange' %} {% endif %}
-                  {% if app.fiabilite == 'E' %} {% set couleur1='note-rouge' %} {% endif %}
-                  {% if app.securite == 'A' %} {% set couleur2='note-vert1' %} {% endif %}
-                  {% if app.securite == 'B' %} {% set couleur2='note-vert2' %} {% endif %}
-                  {% if app.securite == 'C' %} {% set couleur2='note-jaune' %} {% endif %}
-                  {% if app.securite == 'D' %} {% set couleur2='note-orange' %} {% endif %}
-                  {% if app.securite == 'E' %} {% set couleur2='note-rouge' %} {% endif %}
-                  {% if app.hotspot == 'A' %} {% set couleur3='note-vert1' %} {% endif %}
-                  {% if app.hotspot == 'B' %} {% set couleur3='note-vert2' %} {% endif %}
-                  {% if app.hotspot == 'C' %} {% set couleur3='note-jaune' %} {% endif %}
-                  {% if app.hotspot == 'D' %} {% set couleur3='note-orange' %} {% endif %}
-                  {% if app.hotspot == 'E' %} {% set couleur3='note-rouge' %} {% endif %}
-                  {% if app.hotspot == 'Z' %} {% set couleur3='note-bleu' %} {% endif %}
-                  {% if app.sqale == 'A' %} {% set couleur4='note-vert1' %} {% endif %}
-                  {% if app.sqale == 'B' %} {% set couleur4='note-vert2' %} {% endif %}
-                  {% if app.sqale == 'C' %} {% set couleur4='note-jaune' %} {% endif %}
-                  {% if app.sqale == 'D' %} {% set couleur4='note-orange' %} {% endif %}
-                  {% if app.sqale == 'E' %} {% set couleur4='note-rouge' %} {% endif %}
                   <tr>
-                    <td><span id="note-reliability" class="open-sans"><span class="{{couleur1}}">{{app.fiabilite}}</span></span></td>
-                    <td><span id="note-security" class="open-sans"><span class="{{couleur2}}">{{app.securite}}</span></span></td>
-                    <td><span class="open-sans"><span class="{{couleur3}}">{{app.hotspot}}</span></span></td>
-                    <td><span  class="open-sans"><span class="{{couleur4}}">{{app.sqale}}</span></span></td>
+                    <td><span id="note-reliability" class="open-sans"><span class="note note-{{app.fiabilite|lower}}">{{app.fiabilite}}</span></span></td>
+                    <td><span id="note-security" class="open-sans"><span class="note note-{{app.securite|lower}}">{{app.securite}}</span></span></td>
+                    <td><span class="open-sans"><span class="note note-{{app.hotspot|lower}}">{{app.hotspot}}</span></span></td>
+                    <td><span  class="open-sans"><span class="note note-{{app.sqale|lower}}">{{app.sqale}}</span></span></td>
                   </tr>
                   <tr>
                     <td>
