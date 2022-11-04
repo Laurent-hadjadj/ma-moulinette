@@ -7,6 +7,8 @@
  *
  */
 
+/* stylelint-disable selector-class-pattern */
+
 /**
  * Gestion de l'affichage du titre et du logo
  * ma-moulinette : titre
@@ -262,7 +264,7 @@
 }
 
 /* Desktop 4K */
-@media only screen and (min-width: 120em) and (max-width: 160em) {
+@media only screen and (min-width: 120.063em) and (max-width: 160em) {
   .ma-moulinette {
     margin-left: 1rem;
     font-size: 2.5rem;
@@ -377,3 +379,19 @@ body { background: #eee; }
   margin-top: 5px;
   font-size: 0.9rem;
 }
+
+.A,
+.B,
+.C,
+.D,
+.E {
+  font-size: 0.9rem;
+  color: #fff;
+}
+
+.A { background-color: #0a0; }    /* Note de couleur A */
+.B { background-color: #b0d513; } /* Note de couleur B */
+.C { background-color: #eabe06; } /* Note de couleur C */
+.D { background-color: #ed7d20; } /* Note de couleur D */
+.E { background-color: #d4333f; } /* Note de couleur E */
+.Z { background-color: #00445b; } /* Note de couleur Z */
