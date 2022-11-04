@@ -24,7 +24,7 @@
 
 @media only screen and (min-width: 90.025em) and (max-width: 120em) { /* vide */ }
 
-@media only screen and (min-width: 120em) and (max-width: 160em) {
+@media only screen and (min-width: 120.63em) and (max-width: 160em) {
   .voir-analyse-svg {
     margin-bottom: -0.6rem;
     width: 48px;
@@ -55,7 +55,7 @@
 .voir-details-svg:hover { fill: #c45d4e; }
 
 /* Information bug, vulnérabilité et code_smell  */
-.stats-list {
+.stat-list {
   list-style-type: none;
   clear: left;
   margin: 0;
@@ -64,17 +64,11 @@
   margin-bottom: 30px;
 }
 
-.stats-list-vert { color: #187e3d; }
+.stat-list-bleu {
+  color: #00445b;
+}
 
-.stats-list-orange { color: #c45d4e; }
-
-.stats-list-rouge-intense { color: #771404; }
-
-.stats-list-rouge-claire { color: #b33926; }
-
-.stats-list-bleu { color: #3b89a3; }
-
-.stats-list > li {
+.stat-list > li {
   display: inline-block;
   margin-right: 10px;
   padding-right: 10px;
@@ -84,45 +78,26 @@
   font-weight: bold;
 }
 
-.stats-list > li:last-child {
+.stat-list > li:last-child {
   border: none;
   margin: 0;
   padding: 0;
 }
 
-.stats-list > li .stats-list-label {
+.stat-list > li .stat-list-label {
   display: block;
   margin-top: 2px;
-  font-size: 0.9em;
+  font-size: 1.2em;
   font-weight: normal;
 }
 
 /* Affiche les statisiques dans les modales */
-.stats-detail-jaune {
-  background-color: #dfdb1a;
-  color: #000;
+.stat-detail {
   border-radius: 0.3rem;
   text-align: center;
   padding-left: 26px;
   padding-right: 26px;
-}
-
-.stats-detail-orange {
-  background-color: #c45d4e;
-  color: #fff;
-  border-radius: 0.3rem;
-  text-align: center;
-  padding-left: 26px;
-  padding-right: 26px;
-}
-
-.stats-detail-rouge {
-  background-color: #971c09;
-  color: #fff;
-  border-radius: 0.3rem;
-  text-align: center;
-  padding-left: 26px;
-  padding-right: 26px;
+  margin-bottom: 0.8rem;
 }
 
 .resultat {
@@ -153,7 +128,6 @@
 }
 
 .strong { font-weight: 700; }
-
 .light { font-weight: 300; }
 
 .box {
@@ -164,65 +138,11 @@
   padding-right: 30px;
 }
 
-/* Affiche les note OWASP selon le référentiel sonarqube */
-.badge-vert1 {
-  background-color: #187e3d;
-  color: #fff;
-  font-size: 1rem;
-}
+/* Ajuste ka taille des badge */
+.badge { font-size: 1rem; }
 
-.badge-vert2 {
-  background-color: #42c070;
-  color: #000;
-  font-size: 1rem;
-}
-
-.badge-jaune {
-  background-color: #dfdb1a;
-  color: #000;
-  font-size: 1rem;
-}
-
-.badge-orange {
-  background-color: #c45d4e;
-  color: #000;
-  font-size: 1rem;
-}
-
-.badge-rouge {
-  background-color: #971c09;
-  color: #fff;
-  font-size: 1rem;
-  margin-bottom: -10px;
-}
-
-.module-vert {
-  background-color: #187e3d;
-}
-
-.module-orange {
-  background-color: #c45d4e;
-}
-
-.module-rouge {
-  background-color: #971c09;
-}
-
-/* Affiche le niveau de sévérité avec sa couleur */
-.severity-jaune {
-  color: #a8a630;
-  text-align: center;
-}
-
-.severity-orange {
-  color: #c45d4e;
-  text-align: center;
-}
-
-.severity-rouge {
-  color: #971c09;
-  text-align: center;
-}
+/* a supprimer dans la prochaine version */
+.badge-rouge { margin-bottom: -10px; }
 
 /* menu référentiel-owasp */
 .referentiel-owasp-menu {
