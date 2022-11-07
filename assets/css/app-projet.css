@@ -107,7 +107,8 @@
 .graphique-svg,
 .enregistrement-svg,
 .suivi-svg,
-.switch-svg {
+.switch-svg,
+.entrevue-svg {
   fill: #fff;
   cursor: pointer;
   margin-bottom: -0.4rem;
@@ -125,12 +126,13 @@
 
 /* Couleur des boutons */
 .lance-analyse-enabled,
-.affiche-liste,
+.affiche-liste-enabled,
 .affiche-resultat-enabled,
 .analyse-owasp-enabled,
 .tableau-suivi-enabled,
-.js-repartition-module,
-.enregistrement,
+.cosui-enabled,
+.repartition-module-enabled,
+.enregistrement-enabled,
 #fermer-liste-projet,
 #fermer-liste-hotspot,
 #fermer-autre-version,
@@ -142,12 +144,13 @@
 
 /* Gestion du hover sur les boutons */
 .lance-analyse-enabled:hover,
-.affiche-liste:hover,
+.affiche-liste-enabled:hover,
 .affiche-resultat-enabled:hover,
 .analyse-owasp-enabled:hover,
 .tableau-suivi-enabled:hover,
-.js-repartition-module:hover,
-.enregistrement:hover,
+.cosui-enabled:hover,
+.repartition-module-enabled:hover,
+.enregistrement-enabled:hover,
 #fermer-liste-projet:hover,
 #fermer-autre-version:hover,
 #fermer-liste-hotspot:hover,
@@ -159,16 +162,18 @@
 .affiche-resultat-disabled,
 .analyse-owasp-disabled,
 .tableau-suivi-disabled,
-.enregistrement-disabled,
-.repartition-module-disabled {
+.cosui-disabled,
+.repartition-module-disabled,
+.enregistrement-disabled {
   background-color: #4c7c8c;
   cursor: not-allowed;
 }
 
-.analyse-disabled:hover,
+.lance-analyse-disabled:hover,
 .affiche-resultat-disabled:hover,
 .analyse-owasp-disabled:hover,
 .tableau-suivi-disabled:hover,
+.cosui-disabled:hover,
 .repartition-module-disabled:hover,
 .enregistrement-disabled:hover { background-color: #006182; }
 
@@ -303,25 +308,23 @@
 }
 
 /* Taille pour les notes */
-.stat-note {
-  font-size: 1.5rem;
-}
+.stat-note { font-size: 1.5rem; }
 
 /* Couleur pour la note A */
 .note-vert1 {
-  background-color: #187e3d;
+  background-color: #0a0;
   color: #fff;
   border: solid 2px #00445b;
-  border-radius: 0.2rem;
+  border-radius: 0.1rem;
   padding-left: 20px;
   padding-right: 20px;
 }
 
 /* Couleur pour la note B */
 .note-vert2 {
-  background-color: #42c070;
-  color: #000;
-  border: solid 2px #00445b;
+  background-color: #b0d513;
+  color: #fff;
+  border: solid 1px #00445b;
   border-radius: 0.2rem;
   padding-left: 20px;
   padding-right: 20px;
@@ -329,9 +332,9 @@
 
 /* Couleur pour la note C */
 .note-jaune {
-  background-color: #dfdb1a;
-  color: #000;
-  border: solid 2px #00445b;
+  background-color: #eabe06;
+  color: #fff;
+  border: solid 1px #00445b;
   border-radius: 0.2rem;
   padding-left: 19px;
   padding-right: 20px;
@@ -339,9 +342,9 @@
 
 /* Couleur pour la note D */
 .note-orange {
-  background-color: #c45d4e;
-  color: #000;
-  border: solid 2px #00445b;
+  background-color: #ed7d20;
+  color: #fff;
+  border: solid 1px #00445b;
   border-radius: 0.2rem;
   padding-left: 18px;
   padding-right: 18px;
@@ -349,9 +352,9 @@
 
 /* Couleur pour la note E */
 .note-rouge {
-  background-color: #971c09;
+  background-color: #d4333f;
   color: #fff;
-  border: solid 2px #00445b;
+  border: solid 1px #00445b;
   border-radius: 0.2rem;
   padding-left: 20px;
   padding-right: 20px;
@@ -360,10 +363,10 @@
 /* **** couleur severite **** */
 
 /* High */
-.rouge { color: #971c09; }
+.rouge { color: #d4333f; }
 
 /* MEDIUM */
-.vert { color: #187e3d; }
+.vert { color: #0a0; }
 
 /* LIGHT */
 .bleu { color: #00445b; }
@@ -471,7 +474,7 @@
 }
 
 /* Media Extra-Large */
-@media only screen and (min-width: 120em) and (max-width: 160em) {
+@media only screen and (min-width: 120.63em) and (max-width: 160em) {
   .voir-analyse-svg {
     margin-bottom: -0.6rem;
     width: 48px;
