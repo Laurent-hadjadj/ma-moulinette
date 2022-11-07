@@ -940,7 +940,7 @@ $('.js-affiche-liste').on('click', function () {
  * On affiche la liste des types d'anomalies par sévérité.
  */
 $('.js-affiche-severite').on('click', function () {
-  if ($('select[name="projet"]').val() !=='') {
+  if ($('select[name="projet"]').val() !=='' && $('select[name="projet"]').val() !=='TheID') {
     $('#modal-affiche-severite').foundation('open');
   }
 });
@@ -950,7 +950,7 @@ $('.js-affiche-severite').on('click', function () {
  * On affiche la liste des hotspots
  */
 $('#js-affiche-hotspot').on('click', function () {
-  if ($('select[name="projet"]').val() !=='') {
+  if ($('select[name="projet"]').val() !=='' && $('select[name="projet"]').val() !=='TheID') {
       $('#modal-liste-hotspot').foundation('open');
   }
 });
@@ -960,7 +960,7 @@ $('#js-affiche-hotspot').on('click', function () {
  * Événement : Ouvre la fenêtre modale de la distribution de la dette technique.
  */
 $('.js-affiche-details').on('click', () => {
-  if ($('select[name="projet"]').val() !=='') {
+  if ($('select[name="projet"]').val() !=='' && $('select[name="projet"]').val() !=='TheID') {
     $('#modal-dette-technique').foundation('open');
   }
 });
@@ -973,7 +973,7 @@ $('.favori-svg').on('click', () => {
   let statut;
 
   /* On regarde si le projet est déjà en favori. */
-  if ($('select[name="projet"]').val() !=='') {
+  if ($('select[name="projet"]').val() !=='' && $('select[name="projet"]').val() !=='TheID') {
     if ($('.favori-svg').hasClass('favori-svg-select')){
           $('.favori-svg').removeClass('favori-svg-select');
           statut=0;
@@ -1003,7 +1003,7 @@ $('.favori-svg').on('click', () => {
  */
 $('#js-version-autre').on('click', () => {
   let version ;
-  if ($('select[name="projet"]').val() !=='') {
+  if ($('select[name="projet"]').val() !=='' && $('select[name="projet"]').val() !=='TheID') {
     version = document.getElementById('version-autre');
     if (version.dataset.label === undefined) {
       return;
@@ -1053,7 +1053,7 @@ $('.js-enregistrement').on('click', () => {
  * On génére la route et on ouvre la page des tableau de suivi
  */
 $('.js-tableau-suivi').on('click', () => {
-  if ($('select[name="projet"]').val() !==''){
+  if ($('select[name="projet"]').val() !=='' && $('select[name="projet"]').val() !=='TheID'){
     const apiMaven = $('#select-result').text().trim();
     window.location.href='/suivi?mavenKey='+apiMaven;
     } else {
@@ -1079,7 +1079,7 @@ $('.js-cosui').on('click', () => {
  * On génére la route et on ouvre la page de répartition des indicateurs par module
  */
   $('.js-analyse-owasp').on('click', () => {
-    if ($('select[name="projet"]').val() !==''){
+    if ($('select[name="projet"]').val() !=='' && $('select[name="projet"]').val() !=='TheID'){
       const apiMaven = $('#select-result').text().trim();
       window.location.href='/owasp?mavenKey='+apiMaven;
     } else {
@@ -1092,7 +1092,7 @@ $('.js-cosui').on('click', () => {
  * On génére la route et on ouvre la page de répartition des indicateurs par module
  */
 $('.js-repartition-module').on('click', () => {
-  if ($('select[name="projet"]').val() !==''){
+  if ($('select[name="projet"]').val() !=='' && $('select[name="projet"]').val() !=='TheID'){
     const apiMaven = $('#select-result').text().trim();
     window.location.href='/projet/repartition?mavenKey='+apiMaven;
   } else {
