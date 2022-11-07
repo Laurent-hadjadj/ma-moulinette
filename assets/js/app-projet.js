@@ -821,7 +821,7 @@ $('.js-analyse').on('click', function () {
   async function fnAsync() {
     /* Analyse du projet */
     await projetAnalyse(idProject);               /*(1)*/
-    await projetMesure(idProject);                /*(2)
+    await projetMesure(idProject);                /*(2)*/
 
     /* Analyse Sécurité et Owasp. */
     await projetRating(idProject, 'reliability'); /*(3)*/
@@ -910,10 +910,18 @@ $('select[name="projet"]').change(function () {
   $('.js-tableau-suivi').removeClass('tableau-suivi-disabled');
   $('.js-tableau-suivi' ).addClass('tableau-suivi-enabled');
 
+  /* Bouton : Ouvre la page du Comité de Suivi. */
+  $('.js-cosui').removeClass('cosui-disabled');
+  $('.js-cosui' ).addClass('cosui-enabled');
+
   /* Bouton : Ouvre la page de répartition des indicateurs par Module. */
   $('.js-repartition-module').removeClass('repartition-module-disabled');
   $('.js-repartition-module' ).addClass('repartition-module-enabled');
 
+  /* Bouton : active le bouton enregistrement. */
+  $('.js-enregistrement').removeClass('enregistrement-disabled');
+  $('.js-enregistrement' ).addClass('enregistrement-enabled');
+  
   /* on ajoute la clé slectionnée dans le local storage pour les pages security et graphques. */
   localStorage.setItem('projet', $('select[name="projet"]').val().trim());
 });
@@ -1048,6 +1056,19 @@ $('.js-tableau-suivi').on('click', () => {
   if ($('select[name="projet"]').val() !==''){
     const apiMaven = $('#select-result').text().trim();
     window.location.href='/suivi?mavenKey='+apiMaven;
+    } else {
+    log(' - ERROR - Vous devez chosir un projet dans la liste !! !');
+    }
+});
+
+/**
+ * description
+ * On ouvre la page COSUI
+ */
+$('.js-cosui').on('click', () => {
+  if ($('select[name="projet"]').val() !=='' && $('select[name="projet"]').val() !=='TheID'){
+    const apiMaven = $('#select-result').text().trim();
+    window.location.href='/projet/cosui?mavenKey='+apiMaven;
     } else {
     log(' - ERROR - Vous devez chosir un projet dans la liste !! !');
     }
