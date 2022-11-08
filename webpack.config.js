@@ -25,6 +25,7 @@ Encore
     .addEntry('owasp', './assets/js/app-owasp.js')
     .addEntry('suivi', './assets/js/app-suivi.js')
     .addEntry('repartition', './assets/js/app-repartition.js')
+    .addEntry('cosui', './assets/js/app-cosui.js')
     .addStyleEntry('admin', './assets/styles/admin.css')
 
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
