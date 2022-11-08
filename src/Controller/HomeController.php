@@ -387,6 +387,7 @@ class HomeController extends AbstractController
          * SQLite : 0 (false) and 1 (true).
          */
         $sql = "SELECT DISTINCT
+                        maven_key as mavenkey,
                         nom_projet as nom,
                         version, date_version as date,
                         note_reliability as fiabilite,
@@ -401,7 +402,8 @@ class HomeController extends AbstractController
                 WHERE favori=1
                 ORDER BY date_version LIMIT $nombreFavori";
 
-        $select = $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
+        $select = $this->em->getConnection()
+                        ->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
         $favoris = $select->fetchAllAssociative();
         if (empty($favoris)) {
             $nombre = 0;
