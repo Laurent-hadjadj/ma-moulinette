@@ -55,7 +55,7 @@ class RepartitionController extends AbstractController
                 $statut="actuel";
             }
 
-        return $this->render('projet/anomalie.details.html.twig',
+        return $this->render('projet/details.html.twig',
         [
             'monApplication' => $app[1],
             'mavenKey' => $mavenKey,
