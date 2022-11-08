@@ -156,15 +156,6 @@ $('.gomme-svg').on('click', function () {
   $('.log').val('');
 });
 
-
-/**
- * description
- * Active la gomme pour nettoyer la log.
- */
-$('.gomme-svg').on('click', function () {
-  $('.log').val('');
-});
-
 /**
  * description
  * Propriétés du selecteur de recherche.
