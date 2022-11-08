@@ -26,7 +26,8 @@
   .refresh-bd-svg,
   .affiche-profil-svg,
   .projet-svg,
-  .gomme-svg {
+  .gomme-svg,
+  .suivi-svg {
     margin-bottom: -0.2rem;
     width: 32px;
     height: 32px;
@@ -50,7 +51,8 @@
   .refresh-bd-svg,
   .affiche-profil-svg,
   .projet-svg,
-  .gomme-svg {
+  .gomme-svg,
+  .suivi-svg {
     margin-bottom: -0.2rem;
     width: 32px;
     height: 32px;
@@ -74,7 +76,8 @@
   .refresh-bd-svg,
   .affiche-profil-svg,
   .projet-svg,
-  .gomme-svg {
+  .gomme-svg,
+  .suivi-svg {
     margin-bottom: -0.2rem;
     width: 32px;
     height: 32px;
@@ -97,7 +100,8 @@
   .refresh-bd-svg,
   .affiche-profil-svg,
   .projet-svg,
-  .gomme-svg {
+  .gomme-svg,
+  .suivi-svg {
     margin-bottom: -0.2rem;
     width: 32px;
     height: 32px;
@@ -119,7 +123,8 @@
   .refresh-bd-svg,
   .affiche-profil-svg,
   .projet-svg,
-  .gomme-svg {
+  .gomme-svg,
+  .suivi-svg {
     margin-bottom: -0.2rem;
     width: 32px;
     height: 32px;
@@ -141,7 +146,8 @@
   .refresh-bd-svg,
   .affiche-profil-svg,
   .projet-svg,
-  .gomme-svg {
+  .gomme-svg,
+  .suivi-svg {
     margin-bottom: -0.2rem;
     width: 32px;
     height: 32px;
@@ -163,7 +169,8 @@
   .refresh-bd-svg,
   .affiche-profil-svg,
   .projet-svg,
-  .gomme-svg {
+  .gomme-svg,
+  .suivi-svg {
     margin-bottom: -0.2rem;
     width: 32px;
     height: 32px;
@@ -185,7 +192,8 @@
   .refresh-bd-svg,
   .affiche-profil-svg,
   .projet-svg,
-  .gomme-svg {
+  .gomme-svg,
+  .suivi-svg {
     margin-bottom: -0.2rem;
     width: 48px;
     height: 48px;
@@ -243,11 +251,18 @@
   cursor: pointer;
 }
 
-/* Bouton Gomme */
-.gomme-svg {
+/*
+ * Bouton Gomme
+ * Raccourci tableau de suivi
+ *
+ */
+.gomme-svg,
+.suivi-svg {
   fill: #00445b;
   cursor: pointer;
 }
+
+.suivi-svg:hover { fill: #850385; }
 
 /* Bouton désactivé */
 .bouton-disabled {
@@ -286,7 +301,6 @@
 /* Taille, couleur, bordure et espacement */
 .note-favori {
   font-size: 0.95rem;
-  color: #00445b;
   border: solid 1px #aaa;
   padding-left: 10px;
   padding-right: 10px;
@@ -317,3 +331,9 @@
   padding-left: 14px;
   padding-right: 15px;
 }
+
+/* couleur pour la legende des indicateur */
+.color-reliability { color: #696969; }
+.color-security { color: #794044; }
+.color-hotspot { color: #065535; }
+.color-codesmell { color: #670267; }

@@ -106,18 +106,36 @@ const miseAjourListeAsync= async function() {
   await miseAjourListe();
 };
 
-/********* Main du programme *******/
+/********* Evenement *******/
+
 /**
  * description
  * Événement : on recharge la liste des projets.
  */
-$('.refresh-bd').on('click', function () {
+$('.refresh-bd').on('click', function() {
   sonarIsUp()
     .then(function (result) {
       if (result !== 'error') {
         miseAjourListeAsync();
       }
     });
+});
+
+/**
+ * description
+ * Événement : On ouvre le tableau de suivi pour le projet.
+ */
+$('.suivi-svg').on('click', function(e) {
+  const id = e.target.id;
+
+  /* On récupère la clé maven du projet. */
+  const element = document.getElementById(id);
+  const mavenKey=element.dataset.mavenkey;
+  if (mavenKey!=''){
+    window.location.href='/suivi?mavenKey='+mavenKey;
+    } else {
+    log(' - ERROR - La clé n\'est pas correcte !! !');
+  }
 });
 
 /** ******************** main *************************** */
