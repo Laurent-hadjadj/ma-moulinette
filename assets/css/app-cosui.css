@@ -1,0 +1,67 @@
+/**
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2021-2022.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ */
+
+/* Couleur des niveaux d'importances */
+.couleur-niveau-01,
+.couleur-niveau-02,
+.couleur-niveau-03,
+.couleur-niveau-04,
+.couleur-niveau-05 { color: #fff; }
+
+.couleur-niveau-01 { background: #00b9f8; }
+.couleur-niveau-02 { background: #008dbd; }
+.couleur-niveau-03 { background: #006182; }
+.couleur-niveau-04 { background: #00445b; }
+
+/* couleur blanche utiliser dans le tableau pour uniformiser la couleur des cellules fusionnées */
+.blanc { background-color: #fff; }
+
+.no-caption {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/** Ajoute une icône information pour la version de référence */
+
+/* Bouton information SVG */
+.information-svg {
+  fill: #00445b;
+  cursor: pointer;
+  margin-bottom: -0.2rem;
+  width: 28px;
+  height: 28px;
+}
+
+/* hover sur l'icône information */
+.information-svg:hover { fill: #ed7d20; }
+
+/** Ajoute un bouton fermer à la fenêtre modale */
+#fermer-projet-reference {
+  color: #fff;
+  background-color: #00445b;
+}
+
+#fermer-projet-reference:hover { background-color: #006182; }
+
+/** Gestion du switch variation */
+
+/* Changement de la couleur par défaut par 00445b */
+input:checked ~ .switch-paddle { background: #00445b; }
+
+/* Réduction de la marge gauche */
+.switch-inactive {
+  right: 10%;
+  color: #00445b;
+}
+
+/* décalage vers la droite */
+.switch { padding-left: 1rem; }
