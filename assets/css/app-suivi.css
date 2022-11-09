@@ -35,8 +35,8 @@
 @media only screen and (min-width: 120.063em) and (max-width: 160em) { .pleine-page { margin: 1rem; } }
 
 /*************************          Global     *********************************/
-.text-down { color: #187e3d; }
-.text-up { color: #971c09; }
+.text-up { color: #187e3d; }
+.text-down { color: #971c09; }
 
 .error { background-color: #ab493a; }
 

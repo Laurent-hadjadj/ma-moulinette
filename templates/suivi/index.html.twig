@@ -303,11 +303,11 @@
                 {% if i >0 %}
                   {% if severite[i]["bloquant"] > severite[i-1]["bloquant"] and
                         severite[i]["bloquant"] != severite[i-1]["bloquant"] %}
-                    {% set lookup = "up" %}
-                    {% set text = "text-up" %}
-                  {% else %}
                     {% set lookup = "down" %}
                     {% set text = "text-down" %}
+                  {% else %}
+                    {% set lookup = "up" %}
+                    {% set text = "text-up" %}
                   {% endif %}
                   {% if severite[i]["bloquant"] == 0 %}
                     {% set lookup = "equal" %}
@@ -337,11 +337,11 @@
                 {% if i >0 %}
                   {% if severite[i]["critique"] > severite[i-1]["critique"] and
                         severite[i]["critique"] != severite[i-1]["critique"] %}
-                    {% set lookup = "up" %}
-                    {% set text = "text-up" %}
-                  {% else %}
                     {% set lookup = "down" %}
                     {% set text = "text-down" %}
+                  {% else %}
+                    {% set lookup = "up" %}
+                    {% set text = "text-up" %}
                   {% endif %}
                   {% if severite[i]["critique"] ==0 %}
                     {% set lookup = "equal" %}
@@ -371,11 +371,11 @@
                 {% if i >0 %}
                   {% if severite[i]["majeur"] > severite[i-1]["majeur"] and
                         severite[i]["majeur"] != severite[i-1]["majeur"] %}
-                    {% set lookup = "up" %}
-                    {% set text = "text-up" %}
-                  {% else %}
                     {% set lookup = "down" %}
                     {% set text = "text-down" %}
+                  {% else %}
+                    {% set lookup = "up" %}
+                    {% set text = "text-up" %}
                   {% endif %}
                   {% if severite[i]["majeur"] ==0 %}
                     {% set lookup = "equal" %}
@@ -406,11 +406,11 @@
                 {% if i >0 %}
                   {% if severite[i]["mineur"] > severite[i-1]["mineur"] and
                         severite[i]["mineur"] != severite[i-1]["mineur"] %}
-                    {% set lookup = "up" %}
-                    {% set text = "text-up" %}
-                  {% else %}
                     {% set lookup = "down" %}
                     {% set text = "text-down" %}
+                  {% else %}
+                    {% set lookup = "up" %}
+                    {% set text = "text-up" %}
                   {% endif %}
                   {% if severite[i]["mineur"] ==0 %}
                     {% set lookup = "equal" %}
@@ -485,21 +485,21 @@
               <td class="text-rouge">Bloquant</td>
               {% for i in 0..details|length-1 %}
                 {% if i !=0 and details[i]["bug_blocker"] > details[i-1]["bug_blocker"] %}
-                  {% set text1 = "text-up" %}
-                {% else %}
                   {% set text1 = "text-down" %}
+                {% else %}
+                  {% set text1 = "text-up" %}
                 {% endif %}
 
                 {% if i !=0 and details[i]["vulnerability_blocker"] > details[i-1]["vulnerability_blocker"] %}
-                  {% set text2 = "text-up" %}
-                {% else %}
                   {% set text2 = "text-down" %}
+                {% else %}
+                  {% set text2 = "text-up" %}
                 {% endif %}
 
                 {% if i !=0 and details[i]["code_smell_blocker"] > details[i-1]["code_smell_blocker"] %}
-                  {% set text3 = "text-up" %}
-                {% else %}
                   {% set text3 = "text-down" %}
+                {% else %}
+                  {% set text3 = "text-up" %}
                 {% endif %}
                 {% if i==0  %}
                   {% set text1, text2, text3 = "text-noir", "text-noir", "text-noir" %}
@@ -531,19 +531,19 @@
               <td class="text-orange">Critique</td>
               {% for i in 0..details|length-1 %}
                 {% if i !=0 and details[i]["bug_critical"] > details[i-1]["bug_critical"] %}
-                  {% set text1 = "text-up" %}
-                {% else %}
                   {% set text1 = "text-down" %}
+                {% else %}
+                  {% set text1 = "text-up" %}
                 {% endif %}
                 {% if i !=0 and details[i]["vulnerability_critical"] > details[i-1]["vulnerability_critical"] %}
-                  {% set text2 = "text-up" %}
-                {% else %}
                   {% set text2 = "text-down" %}
+                {% else %}
+                  {% set text2 = "text-up" %}
                 {% endif %}
                 {% if i !=0 and details[i]["code_smell_critical"] > details[i-1]["code_smell_critical"] %}
-                  {% set text3 = "text-up" %}
-                {% else %}
                   {% set text3 = "text-down" %}
+                {% else %}
+                  {% set text3 = "text-up" %}
                 {% endif %}
                 {% if i==0  %}
                   {% set text1, text2, text3 = "text-noir", "text-noir", "text-noir" %}
@@ -573,19 +573,19 @@
               <td class="text-jaune">Majeur</td>
               {% for i in 0..details|length-1 %}
                 {% if i !=0 and details[i]["bug_major"] > details[i-1]["bug_major"] %}
-                  {% set text1 = "text-up" %}
-                {% else %}
                   {% set text1 = "text-down" %}
+                {% else %}
+                  {% set text1 = "text-up" %}
                 {% endif %}
                 {% if i !=0 and details[i]["vulnerability_major"] > details[i-1]["vulnerability_major"] %}
-                  {% set text2 = "text-up" %}
-                {% else %}
                   {% set text2 = "text-down" %}
+                {% else %}
+                  {% set text2 = "text-up" %}
                 {% endif %}
                 {% if i !=0 and details[i]["code_smell_major"] > details[i-1]["code_smell_major"] %}
-                  {% set text3 = "text-up" %}
-                {% else %}
                   {% set text3 = "text-down" %}
+                {% else %}
+                  {% set text3 = "text-up" %}
                 {% endif %}
                 {% if i==0  %}
                   {% set text1, text2, text3 = "text-noir", "text-noir", "text-noir" %}
@@ -615,19 +615,19 @@
               <td class="text-vert">Mineur</td>
               {% for i in 0..details|length-1 %}
                 {% if i !=0 and details[i]["bug_minor"] > details[i-1]["bug_minor"] %}
-                  {% set text1 = "text-up" %}
-                {% else %}
                   {% set text1 = "text-down" %}
+                {% else %}
+                  {% set text1 = "text-up" %}
                 {% endif %}
                 {% if i !=0 and details[i]["vulnerability_minor"] > details[i-1]["vulnerability_minor"] %}
-                  {% set text2 = "text-up" %}
-                {% else %}
                   {% set text2 = "text-down" %}
+                {% else %}
+                  {% set text2 = "text-up" %}
                 {% endif %}
                 {% if i !=0 and details[i]["code_smell_minor"] > details[i-1]["code_smell_minor"] %}
-                  {% set text3 = "text-up" %}
-                {% else %}
                   {% set text3 = "text-down" %}
+                {% else %}
+                  {% set text3 = "text-up" %}
                 {% endif %}
                 {% if i==0  %}
                   {% set text1, text2, text3 = "text-noir", "text-noir", "text-noir" %}
@@ -657,19 +657,19 @@
               <td class="text-bleu">Info</td>
               {% for i in 0..details|length-1 %}
                 {% if i !=0 and details[i]["bug_info"] > details[i-1]["bug_info"] %}
-                  {% set text1 = "text-up" %}
-                {% else %}
                   {% set text1 = "text-down" %}
+                {% else %}
+                  {% set text1 = "text-up" %}
                 {% endif %}
                 {% if i !=0 and details[i]["vulnerability_info"] > details[i-1]["vulnerability_info"] %}
-                  {% set text2 = "text-up" %}
-                {% else %}
                   {% set text2 = "text-down" %}
+                {% else %}
+                  {% set text2 = "text-up" %}
                 {% endif %}
                 {% if i !=0 and details[i]["code_smell_info"] > details[i-1]["code_smell_info"] %}
-                  {% set text3 = "text-up" %}
-                {% else %}
                   {% set text3 = "text-down" %}
+                {% else %}
+                  {% set text3 = "text-up" %}
                 {% endif %}
                 {% if i==0  %}
                   {% set text1, text2, text3 = "text-noir", "text-noir", "text-noir" %}
