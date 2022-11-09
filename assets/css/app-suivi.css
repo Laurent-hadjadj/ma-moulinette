@@ -38,55 +38,10 @@
 .text-down { color: #187e3d; }
 .text-up { color: #971c09; }
 
-.vert1 {
-  background-color: #187e3d;
-  color: #fff;
-  border: solid 2px #00445b;
-  border-radius: 0.2rem;
-  padding-left: 20px;
-  padding-right: 20px;
-}
+.error { background-color: #ab493a; }
 
-.vert2 {
-  background-color: #42c070;
-  color: #000;
-  border: solid 2px #00445b;
-  border-radius: 0.2rem;
-  padding-left: 20px;
-  padding-right: 20px;
-}
-
-.jaune {
-  background-color: #dfdb1a;
-  color: #000;
-  border: solid 2px #00445b;
-  border-radius: 0.2rem;
-  padding-left: 19px;
-  padding-right: 20px;
-}
-
-.orange {
-  background-color: #c45d4e;
-  color: #000;
-  border: solid 2px #00445b;
-  border-radius: 0.2rem;
-  padding-left: 18px;
-  padding-right: 18px;
-}
-
-.rouge {
-  background-color: #971c09;
-  color: #fff;
-  border: solid 2px #00445b;
-  border-radius: 0.2rem;
-  padding-left: 20px;
-  padding-right: 20px;
-}
-
-.bleu {
-  background-color: #00445b;
-  color: #fff;
-  border: solid 2px #00445b;
+.note {
+  border: solid 1px #00445b;
   border-radius: 0.2rem;
   padding-left: 20px;
   padding-right: 20px;
