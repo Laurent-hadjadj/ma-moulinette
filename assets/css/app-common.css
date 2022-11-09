@@ -382,7 +382,8 @@ body { background: #eee; }
 .note-b,
 .note-c,
 .note-d,
-.note-e {
+.note-e,
+.note-z {
   font-size: 0.9rem;
   color: #fff;
 }
