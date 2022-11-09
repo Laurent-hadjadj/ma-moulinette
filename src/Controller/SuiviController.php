@@ -410,11 +410,6 @@ class SuiviController extends AbstractController
     $tempoBug=$data->bug;
     $tempoVulnerabilities=$data->vulnerabilities;
     $tempoCodeSmell=$data->codeSmell;
-    $tempoBloquant=$data->bloquant;
-    $tempoCritique=$data->critique;
-    $tempoMajeur=$data->majeur;
-    $tempoMineur=$data->mineur;
-    $tempoInfo=$data->info;
     $tempoNoteReliability=$data->noteReliability;
     $tempoNoteSecurity=$data->noteSecurity;
     $tempoNoteSqale=$data->noteSqale;
@@ -453,9 +448,8 @@ class SuiviController extends AbstractController
         -1,-1,-1,-1,-1,
         -1,-1,-1,-1,-1,
         -1,-1,-1,
-        ${tempoBloquant},${tempoCritique},${tempoMajeur},
-        ${tempoMineur},${tempoInfo},'${tempoNoteReliability}',
-        '${tempoNoteSecurity}','${tempoNoteSqale}',
+        -1,-1,-1,-1,-1,
+        '${tempoNoteReliability}','${tempoNoteSecurity}','${tempoNoteSqale}',
         '${tempoNoteHotspotsReview}',${tempoHotspotsReview},
         -1,-1,-1,FALSE, ${tempoInitial},
         '${tempoDateEnregistrement}')";
