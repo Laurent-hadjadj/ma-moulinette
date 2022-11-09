@@ -84,22 +84,7 @@
 							{% for i in 0..suivi|length-1 %}
 								<td class="text-right">
 									<span>{{suivi[i]["bug"]|format_number(locale='fr')}}</span>
-									{% if suivi[i]["fiabilite"]=="A" %}
-										{% set couleur="vert1" %}
-									{% endif %}
-									{% if suivi[i]["fiabilite"]=="B" %}
-										{% set couleur="vert2" %}
-									{% endif %}
-									{% if suivi[i]["fiabilite"]=="C" %}
-										{% set couleur="jaune" %}
-									{% endif %}
-									{% if suivi[i]["fiabilite"]=="D" %}
-										{% set couleur="orange" %}
-									{% endif %}
-									{% if suivi[i]["fiabilite"]=="E" %}
-										{% set couleur="rouge" %}
-									{% endif %}
-									<span class="{{couleur}}">{{suivi[i]["fiabilite"]}}</span>
+									<span class="note note-{{suivi[i]["fiabilite"]|lower}}">{{suivi[i]["fiabilite"]}}</span>
 								</td>
 							{% endfor %}
 						</tr>
@@ -108,22 +93,7 @@
 							{% for i in 0..suivi|length-1 %}
 								<td class="text-right">
 									<span>{{suivi[i]["faille"]|format_number(locale='fr')}}</span>
-									{% if suivi[i]["securite"]=="A" %}
-										{% set couleur="vert1" %}
-									{% endif %}
-									{% if suivi[i]["securite"]=="B" %}
-										{% set couleur="vert2" %}
-									{% endif %}
-									{% if suivi[i]["securite"]=="C" %}
-										{% set couleur="jaune" %}
-									{% endif %}
-									{% if suivi[i]["securite"]=="D" %}
-										{% set couleur="orange" %}
-									{% endif %}
-									{% if suivi[i]["securite"]=="E" %}
-										{% set couleur="rouge" %}
-									{% endif %}
-									<span class="{{couleur}}">{{suivi[i]["securite"]}}</span>
+									<span class="note note-{{suivi[i]["securite"]|lower}}">{{suivi[i]["securite"]}}</span>
 								</td>
 							{% endfor %}
 						</tr>
@@ -136,26 +106,7 @@
                   {% else %}
                     <span>&nbsp;-&nbsp;</span>
                   {% endif %}
-									{% if suivi[i]["note_hotspot"]=="A" %}
-										{% set couleur="vert1" %}
-									{% endif %}
-									{% if suivi[i]["note_hotspot"]=="B" %}
-										{% set couleur="vert2" %}
-									{% endif %}
-									{% if suivi[i]["note_hotspot"]=="C" %}
-										{% set couleur="jaune" %}
-									{% endif %}
-									{% if suivi[i]["note_hotspot"]=="D" %}
-										{% set couleur="orange" %}
-									{% endif %}
-									{% if suivi[i]["note_hotspot"]=="E" %}
-										{% set couleur="rouge" %}
-									{% endif %}
- 								   {% if suivi[i]["note_hotspot"]=="Z" %}
-                    <span class="bleu">Z</span>
-                  {% else %}
-                    <span class="{{couleur}}">{{suivi[i]["note_hotspot"]}}</span>
-									{% endif %}
+                  <span class="note note-{{suivi[i]["note_hotspot"]|lower}}">{{suivi[i]["note_hotspot"]}}</span>
 								</td>
 							{% endfor %}
 						</tr>
@@ -164,22 +115,7 @@
 							{% for i in 0..suivi|length-1 %}
 								<td class="text-right">
 									<span>{{suivi[i]["mauvaise_pratique"]|format_number(locale='fr')}}</span>
-									{% if suivi[i]["maintenabilite"]=="A" %}
-										{% set couleur="vert1" %}
-									{% endif %}
-									{% if suivi[i]["maintenabilite"]=="B" %}
-										{% set couleur="vert2" %}
-									{% endif %}
-									{% if suivi[i]["maintenabilite"]=="C" %}
-										{% set couleur="jaune" %}
-									{% endif %}
-									{% if suivi[i]["maintenabilite"]=="D" %}
-										{% set couleur="orange" %}
-									{% endif %}
-									{% if suivi[i]["maintenabilite"]=="E" %}
-										{% set couleur="rouge" %}
-									{% endif %}
-									<span class="{{couleur}}">{{suivi[i]["maintenabilite"]}}</span>
+									<span class="note note-{{suivi[i]["maintenabilite"]|lower}}">{{suivi[i]["maintenabilite"]}}</span>
 								</td>
 							{% endfor %}
 						</tr>
@@ -393,7 +329,7 @@
               {% endfor %}
             </tr>
             <tr>
-              <td class="text-left text-rouge">Critique</td>
+              <td class="text-left text-orange">Critique</td>
               {% for i in 0..severite|length-1 %}
                 {% set lookup = "" %}
                 {% set text = "" %}
@@ -427,7 +363,7 @@
               {% endfor %}
             </tr>
             <tr>
-              <td class="text-left text-orange">Majeur</td>
+              <td class="text-left text-jaune">Majeur</td>
               {% for i in 0..severite|length-1 %}
                 {% set lookup="" %}
                 {% set text = "" %}
@@ -592,7 +528,7 @@
               {% endfor %}
             </tr>
             <tr>
-              <td class="text-rouge">Critique</td>
+              <td class="text-orange">Critique</td>
               {% for i in 0..details|length-1 %}
                 {% if i !=0 and details[i]["bug_critical"] > details[i-1]["bug_critical"] %}
                   {% set text1 = "text-up" %}
@@ -634,7 +570,7 @@
               {% endfor %}
             </tr>
             <tr>
-              <td class="text-orange">Majeur</td>
+              <td class="text-jaune">Majeur</td>
               {% for i in 0..details|length-1 %}
                 {% if i !=0 and details[i]["bug_major"] > details[i-1]["bug_major"] %}
                   {% set text1 = "text-up" %}

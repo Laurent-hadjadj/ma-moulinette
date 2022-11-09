@@ -48,10 +48,11 @@
 }
 
 /* couleur severite */
-.text-rouge { color: #971c09; }
-.text-orange { color: #c45d4e; }
-.text-vert { color: #187e3d; }
-.text-bleu { color: #3b89a3; }
+.text-rouge { color: #971c09; }   /* Bloquant */
+.text-orange { color: #e69500; }  /* Critique */
+.text-jaune { color: #b3b300; }   /* Majeur */
+.text-vert { color: #187e3d; }    /* Mineur */
+.text-bleu { color: #3b89a3; }    /* Info */
 .text-noir { color: #000; }
 
 .resultat-note {
