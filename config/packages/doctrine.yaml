@@ -8,13 +8,13 @@ doctrine:
                 driver: pdo_sqlite
                 host: 127.0.0.1
                 charset: UTF8
-                server_version: '4'
+                server_version: '3'
             secondary:
                 url: '%env(resolve:DATABASE_SECONDARY_URL)%'
                 driver: pdo_sqlite
                 host: 127.0.0.1
                 charset: UTF8
-                server_version: '4'
+                server_version: '3'
     orm:
         default_entity_manager: default
         auto_generate_proxy_classes: true
