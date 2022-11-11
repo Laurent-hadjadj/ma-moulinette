@@ -44,21 +44,21 @@ class DashboardController extends AbstractDashboardController
     {
         /** Systeme **/
         /** On récupère la version de symfony et de PHP. */
-        $symfony_version = \Symfony\Component\HttpKernel\Kernel::VERSION;
-        $php_version = PHP_VERSION;
+        $symfonyVersion = \Symfony\Component\HttpKernel\Kernel::VERSION;
+        $phpVersion = PHP_VERSION;
         $ram=round(memory_get_usage()/1048576,2);
         /** On récupère le nombre d'utilisateur. */
         $sql="SELECT count() as total FROM utilisateur;";
         $select=$this->em->getConnection()->prepare($sql)->executeQuery();
         $resultat = $select->fetchAllAssociative();
         if (empty($resultat)) {
-            $application_utilisateur = 0;
+            $applicationUtilisateur = 0;
         } else {
-            $application_utilisateur=$resultat[0]['total'];
+            $applicationUtilisateur=$resultat[0]['total'];
         }
         /** On récupère la version de la base de données. */
         $dbh = new PDO('sqlite::memory:');
-        $version_sqlite=$dbh->query('select sqlite_version()')->fetch()[0];
+        $versionSqlite=$dbh->query('select sqlite_version()')->fetch()[0];
         $dbh = null;
 
         /** Application */
@@ -67,9 +67,9 @@ class DashboardController extends AbstractDashboardController
         $select=$this->em->getConnection()->prepare($sql)->executeQuery();
         $resultat = $select->fetchAllAssociative();
         if (empty($resultat)) {
-            $application_versions=0;
+            $applicationVersion=0;
         } else {
-            $application_versions=$resultat[0]['total'];
+            $applicationVersion=$resultat[0]['total'];
         }
 
         /** Statistiques sur le code. */
@@ -83,19 +83,19 @@ class DashboardController extends AbstractDashboardController
         $select=$this->em->getConnection()->prepare($sql)->executeQuery();
         $resultat = $select->fetchAllAssociative();
         if (empty($resultat)) {
-            $projet_nombre = 0;
+            $applicationTable = 0;
         } else {
-            $application_table=$resultat[0]['total'];
+            $applicationTable=$resultat[0]['total'];
         }
 
-        /** On récupère le nombre de projet en base. */
+        /** On récupère le nombre de projet sonarqube en base. */
         $sql="SELECT count() as total FROM liste_projet;";
         $select=$this->em->getConnection()->prepare($sql)->executeQuery();
         $resultat = $select->fetchAllAssociative();
         if (empty($resultat)) {
-            $projet_nombre = 0;
+            $projetNombre = 0;
         } else {
-            $projet_nombre=$resultat[0]['total'];
+            $projetNombre=$resultat[0]['total'];
         }
 
         /** On récupère le nombre de profil sonar. */
@@ -103,9 +103,9 @@ class DashboardController extends AbstractDashboardController
         $select=$this->em->getConnection()->prepare($sql)->executeQuery();
         $resultat = $select->fetchAllAssociative();
         if (empty($resultat)) {
-            $projet_profile = 0;
+            $projetProfile = 0;
         } else {
-            $projet_profile=$resultat[0]['total'];
+            $projetProfile=$resultat[0]['total'];
         }
 
         /** On récupère le nombre de règle. */
@@ -113,9 +113,9 @@ class DashboardController extends AbstractDashboardController
         $select=$this->em->getConnection()->prepare($sql)->executeQuery();
         $resultat = $select->fetchAllAssociative();
         if (empty($resultat)) {
-            $projet_regle = 0;
+            $projetRegle = 0;
         } else {
-            $projet_regle=$resultat[0]['total'];
+            $projetRegle=$resultat[0]['total'];
         }
 
         /** On récupère le nombre de projet dans l'historique. */
@@ -123,9 +123,9 @@ class DashboardController extends AbstractDashboardController
         $select=$this->em->getConnection()->prepare($sql)->executeQuery();
         $resultat = $select->fetchAllAssociative();
         if (empty($resultat)) {
-            $projet_anomalie = 0;
+            $projetAnomalie = 0;
         } else {
-            $projet_anomalie=$resultat[0]['total'];
+            $projetAnomalie=$resultat[0]['total'];
         }
 
         /** On récupère le nombre de projet dans l'historique. */
@@ -133,9 +133,9 @@ class DashboardController extends AbstractDashboardController
         $select=$this->em->getConnection()->prepare($sql)->executeQuery();
         $resultat = $select->fetchAllAssociative();
         if (empty($resultat)) {
-            $projet_historique = 0;
+            $projetHistorique = 0;
         } else {
-            $projet_historique=$resultat[0]['total'];
+            $projetHistorique=$resultat[0]['total'];
         }
 
         /** On récupère le nombre de ligne de code analysé. */
@@ -143,8 +143,8 @@ class DashboardController extends AbstractDashboardController
         $select=$this->em->getConnection()->prepare($sql)->executeQuery();
         $resultat = $select->fetchAllAssociative();
         if (empty($resultat)) {
-            $projet_lines = 0;
-            $projet_tests = 0;
+            $projetLines = 0;
+            $projetTests = 0;
         } else {
             /** On récupère le nombre de projet unique. */
             $limit=$resultat[0]['total'];
@@ -163,8 +163,8 @@ class DashboardController extends AbstractDashboardController
                 $lines=$lines+ $projet['lines'];
                 $tests=$tests+$projet['tests'];
             }
-            $projet_lines=$lines;
-            $projet_tests=$tests;
+            $projetLines=$lines;
+            $projetTests=$tests;
         }
 
         /**  Mesures */
@@ -173,27 +173,27 @@ class DashboardController extends AbstractDashboardController
         $select=$this->em->getConnection()->prepare($sql)->executeQuery();
         $resultat = $select->fetchAllAssociative();
         if (empty($resultat)) {
-            $mesure_signalement = 0;
+            $mesureSignalement = 0;
         } else {
-            $mesure_signalement=$resultat[0]['total'];
+            $mesureSignalement=$resultat[0]['total'];
         }
         /** On récupère le nombre de bug. */
         $sql="SELECT sum(bug) as total FROM anomalie;";
         $select=$this->em->getConnection()->prepare($sql)->executeQuery();
         $resultat = $select->fetchAllAssociative();
         if (empty($resultat)) {
-            $mesure_bug = 0;
+            $mesureBug = 0;
         } else {
-            $mesure_bug=$resultat[0]['total'];
+            $mesureBug=$resultat[0]['total'];
         }
         /** On récupère le nombre de vulnérabilité. */
         $sql="SELECT sum(vulnerability) as total FROM anomalie;";
         $select=$this->em->getConnection()->prepare($sql)->executeQuery();
         $resultat = $select->fetchAllAssociative();
         if (empty($resultat)) {
-            $mesure_vulnerability = 0;
+            $mesureVulnerability = 0;
         } else {
-            $mesure_vulnerability=$resultat[0]['total'];
+            $mesureVulnerability=$resultat[0]['total'];
         }
 
         /** On récupère le nombre de signalement. */
@@ -201,35 +201,35 @@ class DashboardController extends AbstractDashboardController
         $select=$this->em->getConnection()->prepare($sql)->executeQuery();
         $resultat = $select->fetchAllAssociative();
         if (empty($resultat)) {
-            $mesure_codesmell = 0;
+            $mesureCodeSmell = 0;
         } else {
-            $mesure_codesmell=$resultat[0]['total'];
+            $mesureCodeSmell=$resultat[0]['total'];
         }
 
 
         return $this->render('admin/index.html.twig',
         [
             'dateCopyright' => \date('Y'),
-            'php_version' => $php_version,
-            'symfony_version' => $symfony_version,
-            'sllite_version' => $version_sqlite,
-            'application_utilisateur' => $application_utilisateur,
+            'php_version' => $phpVersion,
+            'symfony_version' => $symfonyVersion,
+            'sqlite_version' => $versionSqlite,
+            'application_utilisateur' => $applicationUtilisateur,
             'ram' => $ram,
             'html'=>$html,'php'=>$php,'css'=>$css, 'js'=>$js,
-            'application_versions' => $application_versions,
+            'application_version' => $applicationVersion,
             'application_version' => $this->getParameter('version'),
-            'application_table' => $application_table,
-            'projet_projet' => $projet_nombre,
-            'projet_profile' => $projet_profile,
-            'projet_regle' => $projet_regle,
-            'projet_historique' => $projet_historique,
-            'projet_anomalie' => $projet_anomalie,
-            'projet_line' => $projet_lines,
-            'projet_test' => $projet_tests,
-            'mesure_signalement' => $mesure_signalement,
-            'mesure_bug' => $mesure_bug,
-            'mesure_vulnerability' => $mesure_vulnerability,
-            'mesure_codesmell' => $mesure_codesmell,
+            'application_table' => $applicationTable,
+            'projet_projet' => $projetNombre,
+            'projet_profile' => $projetProfile,
+            'projet_regle' => $projetRegle,
+            'projet_historique' => $projetHistorique,
+            'projet_anomalie' => $projetAnomalie,
+            'projet_line' => $projetLines,
+            'projet_test' => $projetTests,
+            'mesure_signalement' => $mesureSignalement,
+            'mesure_bug' => $mesureBug,
+            'mesure_vulnerability' => $mesureVulnerability,
+            'mesure_codesmell' => $mesureCodeSmell,
         ]);
     }
 
