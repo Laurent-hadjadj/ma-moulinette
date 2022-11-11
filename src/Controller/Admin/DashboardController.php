@@ -56,6 +56,10 @@ class DashboardController extends AbstractDashboardController
         } else {
             $application_utilisateur=$resultat[0]['total'];
         }
+        /** On récupère la version de la base de données. */
+        $dbh = new PDO('sqlite::memory:');
+        $version_sqlite=$dbh->query('select sqlite_version()')->fetch()[0];
+        $dbh = null;
 
         /** Application */
         /** On récupère le nombre de version de ma-moulinette */
@@ -208,6 +212,7 @@ class DashboardController extends AbstractDashboardController
             'dateCopyright' => \date('Y'),
             'php_version' => $php_version,
             'symfony_version' => $symfony_version,
+            'sllite_version' => $version_sqlite,
             'application_utilisateur' => $application_utilisateur,
             'ram' => $ram,
             'html'=>$html,'php'=>$php,'css'=>$css, 'js'=>$js,
