@@ -24,6 +24,16 @@
   </div>
   <div class="col-sm-12 col-md-3 col-lg-2">
     <div class="card border-dark mb-3" style="font-size:1.2rem;">
+      <div class="card-header text-center tool-tip">SQLite
+      <span class="tool-tip-text">Version de de la base de données.</span></div>
+      <div class="card-body">
+        <p class="card-text text-center" style="font-size:2.5rem;">{{sqlite_version}}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-sm-12 col-md-3 col-lg-2">
+    <div class="card border-dark mb-3" style="font-size:1.2rem;">
       <div class="card-header text-center tool-tip">Utilisateur<span class="tool-tip-text">Nombre d'utilisateur inscrit.</span></div>
       <div class="card-body">
         <p class="card-text text-center" style="font-size:2.5rem;">{{application_utilisateur}}</p>
@@ -32,7 +42,7 @@
   </div>
   <div class="col-sm-12 col-md-3 col-lg-2">
     <div class="card border-dark mb-3" style="font-size:1.2rem;">
-      <div class="card-header text-center tool-tip">Mémoire<span class="tool-tip-text">Mémoire utilisée par PHP.</span></div>
+      <div class="card-header text-center tool-tip">Mémoire<span class="tool-tip-text">Mémoire en MO utilisée par PHP.</span></div>
       <div class="card-body">
         <p class="card-text text-center" style="font-size:2.5rem;">{{ram}}</p>
       </div>
@@ -54,7 +64,7 @@
     <div class="card border-dark mb-3" style="font-size:1.2rem;">
       <div class="card-header text-center tool-tip">Release<span class="tool-tip-text">Verison de l'application.</span></div>
       <div class="card-body">
-        <p class="card-text text-center" style="font-size:2.5rem;">{{application_versions}}</p>
+        <p class="card-text text-center" style="font-size:2.5rem;">{{application_version}}</p>
       </div>
     </div>
   </div>
