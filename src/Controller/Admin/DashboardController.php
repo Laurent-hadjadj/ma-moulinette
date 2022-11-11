@@ -2,47 +2,52 @@
 
 namespace App\Controller\Admin;
 
-use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
-use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
-use EasyCorp\Bundle\EasyAdminBundle\Config\UserMenu;
-
-use Symfony\Component\Security\Core\User\UserInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-
-use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Main\Utilisateur;
+use App\Entity\Main\Equipe;
+use App\Entity\Main\Portefeuille;
+
+use PDO;
+use Doctrine\ORM\EntityManagerInterface;
 
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+
+use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
+use EasyCorp\Bundle\EasyAdminBundle\Config\UserMenu;
+
+use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
+use Symfony\Component\Security\Core\User\UserInterface;
+
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 
 class DashboardController extends AbstractDashboardController
 {
-    private $em;
-
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(
+        private EntityManagerInterface $em,
+        )
     {
         $this->em = $em;
     }
 
     /**
      * index
-     *
-     * @return Response
+     * @return response
      */
     #[IsGranted('ROLE_UTILISATEUR')]
     #[Route('/admin', name: 'admin')]
     public function index(): Response
     {
-        // Systeme
+        /** Systeme **/
+        /** On récupère la version de symfony et de PHP. */
         $symfony_version = \Symfony\Component\HttpKernel\Kernel::VERSION;
         $php_version = PHP_VERSION;
         $ram=round(memory_get_usage()/1048576,2);
-        // On récupère le nombre d'utilisateur
+        /** On récupère le nombre d'utilisateur. */
         $sql="SELECT count() as total FROM utilisateur;";
         $select=$this->em->getConnection()->prepare($sql)->executeQuery();
         $resultat = $select->fetchAllAssociative();
@@ -52,9 +57,8 @@ class DashboardController extends AbstractDashboardController
             $application_utilisateur=$resultat[0]['total'];
         }
 
-
-        //Application
-        // On récupère le nombre de version de ma-moulinette
+        /** Application */
+        /** On récupère le nombre de version de ma-moulinette */
         $sql="SELECT count() as total FROM ma_moulinette;";
         $select=$this->em->getConnection()->prepare($sql)->executeQuery();
         $resultat = $select->fetchAllAssociative();
@@ -63,13 +67,14 @@ class DashboardController extends AbstractDashboardController
         } else {
             $application_versions=$resultat[0]['total'];
         }
-        // Statistiques sur le code
+
+        /** Statistiques sur le code. */
         $html= ['fichier'=>12, 'code'=>2510, 'comment'=>102, 'vide'=>150, 'total'=>2762 ];
         $php= ['fichier'=>53, 'code'=>6782, 'comment'=>1708, 'vide'=>1851, 'total'=>10341 ];
         $css= ['fichier'=>18, 'code'=>1676, 'comment'=>440, 'vide'=>395, 'total'=>2511 ];
         $js= ['fichier'=>12, 'code'=>3190, 'comment'=>947, 'vide'=>538, 'total'=>4675 ];
 
-        // On récupère le nombre de projet en base
+        /** On récupère le nombre de projet en base. */
         $sql="SELECT count() as total FROM sqlite_master WHERE type = 'table'";
         $select=$this->em->getConnection()->prepare($sql)->executeQuery();
         $resultat = $select->fetchAllAssociative();
@@ -79,7 +84,7 @@ class DashboardController extends AbstractDashboardController
             $application_table=$resultat[0]['total'];
         }
 
-        // On récupère le nombre de projet en base
+        /** On récupère le nombre de projet en base. */
         $sql="SELECT count() as total FROM liste_projet;";
         $select=$this->em->getConnection()->prepare($sql)->executeQuery();
         $resultat = $select->fetchAllAssociative();
@@ -89,7 +94,7 @@ class DashboardController extends AbstractDashboardController
             $projet_nombre=$resultat[0]['total'];
         }
 
-        // On récupère le nombre de profil sonar
+        /** On récupère le nombre de profil sonar. */
         $sql="SELECT count() as total FROM profiles;";
         $select=$this->em->getConnection()->prepare($sql)->executeQuery();
         $resultat = $select->fetchAllAssociative();
@@ -99,7 +104,7 @@ class DashboardController extends AbstractDashboardController
             $projet_profile=$resultat[0]['total'];
         }
 
-        // On récupère le nombre de règle
+        /** On récupère le nombre de règle. */
         $sql="SELECT sum(active_rule_count) as total FROM profiles;";
         $select=$this->em->getConnection()->prepare($sql)->executeQuery();
         $resultat = $select->fetchAllAssociative();
@@ -109,7 +114,7 @@ class DashboardController extends AbstractDashboardController
             $projet_regle=$resultat[0]['total'];
         }
 
-        // On récupère le nombre de projet dans l'historique
+        /** On récupère le nombre de projet dans l'historique. */
         $sql="SELECT count() as total FROM anomalie;";
         $select=$this->em->getConnection()->prepare($sql)->executeQuery();
         $resultat = $select->fetchAllAssociative();
@@ -119,7 +124,7 @@ class DashboardController extends AbstractDashboardController
             $projet_anomalie=$resultat[0]['total'];
         }
 
-        // On récupère le nombre de projet dans l'historique
+        /** On récupère le nombre de projet dans l'historique. */
         $sql="SELECT count() as total FROM historique;";
         $select=$this->em->getConnection()->prepare($sql)->executeQuery();
         $resultat = $select->fetchAllAssociative();
@@ -129,7 +134,7 @@ class DashboardController extends AbstractDashboardController
             $projet_historique=$resultat[0]['total'];
         }
 
-        // On récupère le nombre de ligne de code analysé
+        /** On récupère le nombre de ligne de code analysé. */
         $sql="SELECT count(DISTINCT project_name) as total FROM mesures;";
         $select=$this->em->getConnection()->prepare($sql)->executeQuery();
         $resultat = $select->fetchAllAssociative();
@@ -137,9 +142,9 @@ class DashboardController extends AbstractDashboardController
             $projet_lines = 0;
             $projet_tests = 0;
         } else {
-            // on récupère le nombre de projet unique
+            /** On récupère le nombre de projet unique. */
             $limit=$resultat[0]['total'];
-            // On récupère les n premier projet
+            /** On récupère les n premier projet. */
             $sql="SELECT DISTINCT project_name, lines, tests, date_enregistrement
                     FROM mesures
                     GROUP BY project_name, date_enregistrement
@@ -147,7 +152,7 @@ class DashboardController extends AbstractDashboardController
                     DESC LIMIT ${limit};";
             $select=$this->em->getConnection()->prepare ($sql)->executeQuery();
             $projets = $select->fetchAllAssociative();
-            // on calcul la somme des nloc et des tests unitaires
+            /** On calcul la somme des nloc et des tests unitaires. */
             $lines=0;
             $tests=0;
             foreach ($projets as $projet) {
@@ -158,8 +163,8 @@ class DashboardController extends AbstractDashboardController
             $projet_tests=$tests;
         }
 
-        // Mesures
-        // On récupère le nombre de signalement
+        /**  Mesures */
+        /** On récupère le nombre de signalement. */
         $sql="SELECT sum(anomalie_total) as total FROM anomalie;";
         $select=$this->em->getConnection()->prepare($sql)->executeQuery();
         $resultat = $select->fetchAllAssociative();
@@ -168,7 +173,7 @@ class DashboardController extends AbstractDashboardController
         } else {
             $mesure_signalement=$resultat[0]['total'];
         }
-        // On récupère le nombre de bug
+        /** On récupère le nombre de bug. */
         $sql="SELECT sum(bug) as total FROM anomalie;";
         $select=$this->em->getConnection()->prepare($sql)->executeQuery();
         $resultat = $select->fetchAllAssociative();
@@ -177,7 +182,7 @@ class DashboardController extends AbstractDashboardController
         } else {
             $mesure_bug=$resultat[0]['total'];
         }
-        // On récupère le nombre de vulnérabilité
+        /** On récupère le nombre de vulnérabilité. */
         $sql="SELECT sum(vulnerability) as total FROM anomalie;";
         $select=$this->em->getConnection()->prepare($sql)->executeQuery();
         $resultat = $select->fetchAllAssociative();
@@ -187,7 +192,7 @@ class DashboardController extends AbstractDashboardController
             $mesure_vulnerability=$resultat[0]['total'];
         }
 
-        // On récupère le nombre de signalement
+        /** On récupère le nombre de signalement. */
         $sql="SELECT sum(code_smell) as total FROM anomalie;";
         $select=$this->em->getConnection()->prepare($sql)->executeQuery();
         $resultat = $select->fetchAllAssociative();
@@ -250,7 +255,11 @@ class DashboardController extends AbstractDashboardController
             ->setPermission('ROLE_UTILISATEUR');
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-dashboard')
         ->setPermission('ROLE_UTILISATEUR');
+        yield MenuItem::linkToCrud('Equipe', 'fas fa-users', Equipe::class)
+        ->setPermission('ROLE_GESTIONNAIRE');
         yield MenuItem::linkToCrud('Utilisateur', 'fas fa-user', Utilisateur::class)
+        ->setPermission('ROLE_GESTIONNAIRE');
+        yield MenuItem::linkToCrud('Portefeuille', 'fas fa-gamepad', Portefeuille::class)
         ->setPermission('ROLE_GESTIONNAIRE');
     }
 
