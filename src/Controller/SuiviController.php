@@ -182,7 +182,7 @@ class SuiviController extends AbstractController
     // Graphique
     $sql = "SELECT nombre_bug as bug, nombre_vulnerability as secu,
     nombre_code_smell as code_smell, date_version as date
-    FROM historique where maven_key='${mavenKey}'
+    FROM historique WHERE maven_key='${mavenKey}'
     GROUP BY date_version ORDER BY date_version ASC";
 
     $select = $this->em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)))->executeQuery();
@@ -522,9 +522,10 @@ class SuiviController extends AbstractController
     $response = new JsonResponse();
 
     // On met à jour l'attribut favori de la table historique
-    $sql = "UPDATE historique SET favori=" . $favori . " WHERE maven_key='"
-            . $mavenKey ."'  AND version='" . $version
-            . "'  AND date_version='" . $date . "'";
+    $sql = "UPDATE historique SET favori=${favori}
+            WHERE maven_key='${mavenKey}'
+            AND version='${version}'
+            AND date_version='${date}'";
 
     // On exécute la requête
     $con = $this->em->getConnection()->prepare($sql);
@@ -536,12 +537,11 @@ class SuiviController extends AbstractController
 
     // On modifie (delete/insert) l'attribut favori de la table favori
     // On supprime l'enregistrement
-    $sql = "DELETE FROM favori WHERE maven_key='" . $mavenKey . "'";
+    $sql = "DELETE FROM favori WHERE maven_key='${mavenKey}'";
     $this->em->getConnection()->prepare($sql)->executeQuery();
     // On ajoute l'enregistrement
     $sql = "INSERT INTO favori ('maven_key', 'favori', 'date_enregistrement')
-    VALUES ('" . $mavenKey . "', " . $favori . ", '" .
-      $dateEnregistrement->format(static::$dateFormat) . "')";
+    VALUES ('${mavenKey}', ${favori}, '$dateEnregistrement->format(static::$dateFormat)')";
 
     // On exécute la requête et on catch l'erreur
     $con = $this->em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)));
