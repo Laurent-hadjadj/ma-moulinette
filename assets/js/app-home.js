@@ -79,11 +79,12 @@ const sonarIsUp=function() {
 };
 
 /**
- * description :
+ * miseAJourListe
  * Récupération de la liste des projets.
  *
+ * @var [type]
  */
-const miseAjourListe=function() {
+const miseAJourListe=function() {
   const options = {
     url: `${serveur()}/api/projet/liste`, type: 'GET',
     dataType: 'json', contentType };
@@ -101,9 +102,34 @@ const miseAjourListe=function() {
     });
 };
 
+/**
+ * miseAJourListeProjet
+ *
+ * @var [type]
+ */
+const miseAJourListeProjet=function() {
+  const options = {
+    url: `${serveur()}/api/tags`, type: 'GET',
+    dataType: 'json', contentType };
+    return new Promise(resolve => {
+      $.ajax(options).then(t => {
+        console.log(t);
+        log(` - INFO : ${t.message}`);
+        $('#js-public').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.visibility.public));
+        $('#js-private').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.visibility.private));
+        resolve();
+      });
+    });
+};
+
 // Fonctions asynchronnes (liste et profils)
-const miseAjourListeAsync= async function() {
-  await miseAjourListe();
+const miseAJourListeAsync= async function() {
+  await miseAJourListe();
+};
+
+// Fonctions asynchronnes (Mise à jour de la liste de prjet et des tags)
+const miseAJourListeProjetAsync= async function() {
+  await miseAJourListeProjet();
 };
 
 /********* Evenement *******/
@@ -116,7 +142,7 @@ $('.refresh-bd').on('click', function() {
   sonarIsUp()
     .then(function (result) {
       if (result !== 'error') {
-        miseAjourListeAsync();
+        miseAJourListeAsync();
       }
     });
 });
@@ -142,3 +168,4 @@ $('.suivi-svg').on('click', function(e) {
 
 // On dit bonjour.
 ditBonjour();
+miseAJourListeProjetAsync();
