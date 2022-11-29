@@ -11,3 +11,10 @@ label.prenom: Prénom
 Home: Home
 Dashboard:	Dashboard
 Utilisateur:	Utilisateur
+Equipe: Équipe
+
+# EquipeCrud
+Nom: Nom
+Description:	Description
+Date Modification:	Date de modification
+Date Enregistrement: Date d'enregistrement
