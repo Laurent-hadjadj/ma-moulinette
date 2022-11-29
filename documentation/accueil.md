@@ -17,6 +17,7 @@
 [Projet](/documentation/projet.md)
 [OWASP](/documentation/owasp.md)
 [Suivi](/documentation/suivi.md)
+[COSUI](/documentation/cosui.md)
 [Répartition détaillée](/documentation/repartition_details.md)
 
 ### Page d'accueil
