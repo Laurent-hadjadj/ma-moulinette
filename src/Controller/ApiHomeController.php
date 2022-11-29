@@ -13,23 +13,25 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use DateTime;
+use DateTimeZone;
+use App\Entity\Main\Tags;
+use Psr\Log\LoggerInterface;
+
+/** Gestion de accès aux API */
+use App\Entity\Main\Profiles;
+use App\Entity\Main\ListeProjet;
+
+/** Accès aux tables SLQLite */
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-
-/** Gestion de accès aux API */
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-/** Accès aux tables SLQLite */
-use App\Entity\Main\ListeProjet;
-use App\Entity\Main\Profiles;
-use Doctrine\ORM\EntityManagerInterface;
-use DateTime;
-
 /** Logger */
-use Psr\Log\LoggerInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 
 class ApiHomeController extends AbstractController
@@ -48,6 +50,8 @@ class ApiHomeController extends AbstractController
 
   public static $strContentType = 'application/json';
   public static $sonarUrl = "sonar.url";
+  public static $dateFormatShort = "Y-m-d";
+  public static $dateFormat = "Y-m-d H:i:s";
 
   /**
    * httpClient
@@ -270,6 +274,158 @@ class ApiHomeController extends AbstractController
   }
 
   /**
+   * Tags
+   *
+   * http://{url}/api/components/search_projects
+   *
+   * @return response
+   */
+  #[Route('/api/tags', name: 'tags', methods: ['GET'])]
+  public function tags(): response
+  {
+    /** oN créé un objet réponse */
+    $response = new JsonResponse();
+
+    $url = $this->getParameter(static::$sonarUrl)."/api/components/search_projects?ps=500";
+
+    /** On appel le client http */
+    $result = $this->httpClient($url);
+
+    /** On, initialiser les variables  */
+    $public=$private=$emptyTags=0;
+
+    /** On créé un objet DateTime */
+    $date = new DateTime();
+    $timezone = new DateTimeZone('Europe/Paris');
+    $date->setTimezone($timezone);
+
+    /** On vérifie que sonarqube a au moins 1 projet */
+    if (!$result){
+      $message="[001] Je n'ai pas trouvé de projet sur le serveur sonarqube.";
+      return $response->setData(["message" => $message, Response::HTTP_OK]);
+    }
+
+    /** On récupère le dernier enregistrement */
+    $s0 = "SELECT *
+            FROM tags
+            ORDER BY date_enregistrement
+            DESC LIMIT 1";
+    $select=$this->em->getConnection()->prepare($s0)->executeQuery();
+    $liste = $select->fetchAllAssociative();
+
+    /** Si la table est vide on insert les résultats et
+     * on revoie les résultats.
+     */
+    if (empty($liste)) {
+      foreach ($result["components"] as $projet) {
+        $tags = new Tags();
+        $tags->setMavenKey($projet["key"]);
+        $tags->setName($projet["name"]);
+        $tags->setTags($projet["tags"]);
+        $tags->setVisibility($projet["visibility"]);
+        $tags->setDateEnregistrement($date);
+        $this->em->persist($tags);
+        $this->em->flush();
+
+        /** On calcul le nombre de projet public et privé */
+        if ($projet["visibility"]=='public') {
+          $public++;
+          } else {
+          $private++;
+        }
+
+        /** On calcul le nombre de projet sans tags */
+        if (empty($projet["tags"])) {
+          $emptyTags++;
+        }
+      }
+      /** on renvoie les résultats */
+      $message="Création";
+      return $response->setData(
+        [
+          "message" => $message,
+          "visibility"=> ['public'=>$public, 'pivate'=>$private],
+          "empty_tags"=>$emptyTags,
+          Response::HTTP_OK
+        ]);
+    }
+
+    /**
+     * La liste des projet existe,
+     * On regarde si on doit mettre à jour ou afficher la liste des projets
+     */
+    if (empty($liste)===false) {
+      /** On récupère la date du jour */
+      $dateDuJour=$date->format(static::$dateFormatShort);
+      $dateEnregistrement= new DateTime($liste[0]['date_enregistrement']);
+      /** Si la date d'enregistrement est > 1 jour à alors on met à jour */
+      if ($dateDuJour > $dateEnregistrement->format(static::$dateFormatShort)) {
+        /** On insert les données dans la tables des projet et tags. */
+        foreach ($result["components"] as $projet) {
+          $tags = new Tags();
+          $tags->setMavenKey($projet["key"]);
+          $tags->setName($projet["name"]);
+          $tags->setTags($projet["tags"]);
+          $tags->setVisibility($projet["visibility"]);
+          $tags->setDateEnregistrement($date);
+          $this->em->persist($tags);
+          $this->em->flush();
+
+          /** On calcul le nombre de projet public et privé */
+          if ($projet["visibility"]=='public') {
+            $public++;
+            } else {
+            $private++;
+          }
+
+          /** On calcul le nombre de projet sans tags */
+          if (empty($projet["tags"])) {
+            $emptyTags++;
+          }
+        }
+        $message="[002] On met à jour la liste des projets.";
+      } else {
+        /** On a déjà mis à jour la table, on récupère les données nécessaires. */
+        $tempo=$dateEnregistrement->format(static::$dateFormat);
+        $s1="SELECT count(*) as visibility
+                FROM tags
+                WHERE date_enregistrement='${tempo}'
+                AND visibility='public'";
+        $r1 = $this->em->getConnection()->prepare($s1)->executeQuery();
+        $t = $r1->fetchAllAssociative();
+        $public=$t[0]['visibility'];
+
+        $s2="SELECT count(*) as visibility
+                FROM tags
+                WHERE date_enregistrement='${tempo}'
+                AND visibility='private'";
+        $r2 = $this->em->getConnection()->prepare($s2)->executeQuery();
+        $t = $r2->fetchAllAssociative();
+        $private=$t[0]['visibility'];
+
+        $s3="SELECT count(*) as tags
+                FROM tags
+                WHERE date_enregistrement='${tempo}'
+                AND tags='[]'";
+        $r3 = $this->em->getConnection()->prepare($s3)->executeQuery();
+        $t = $r3->fetchAllAssociative();
+        $emptyTags=$t[0]['tags'];
+
+        $message="[003] On collecte les données conernant les projets.";
+      }
+    }
+    //select json_extract(tags, '$.lot.name') as father_name from tags
+
+    return $response->setData(
+      [
+        "message" => $message,
+        "visibility"=> ['public'=>$public, 'private'=>$private],
+        "empty_tags"=>$emptyTags,
+        Response::HTTP_OK
+    ]);
+  }
+
+/**
    * visibility
    * Renvoi le nombre de projet private ou public
    * Il faut avoir un droit Administrateur !!!
@@ -279,7 +435,7 @@ class ApiHomeController extends AbstractController
    * @return response
    */
   #[Route('/api/visibility', name: 'visibility', methods: ['GET'])]
-  public function visibility(LoggerInterface $logger): response
+  public function visibility(): response
   {
     $url = $this->getParameter(static::$sonarUrl) .
           "/api/projects/search?qualifiers=TRK&ps=500";
