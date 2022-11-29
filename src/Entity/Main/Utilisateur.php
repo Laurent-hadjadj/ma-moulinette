@@ -4,6 +4,7 @@ namespace App\Entity\Main;
 
 use App\Repository\Main\UtilisateurRepository;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\DBAL\Types\BigIntType;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -32,6 +33,9 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: 'json')]
     private $roles= [];
+
+    #[ORM\Column(type: 'json')]
+    private $equipe= [];
 
     #[ORM\Column(type: 'string', length: 64)]
     private $password;
@@ -207,5 +211,16 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return sprintf('build/avatar/%s', $this->avatar);
     }
 
+    public function getEquipe(): array
+    {
+        return $this->equipe;
+    }
+
+    public function setEquipe(array $equipe): self
+    {
+        $this->equipe = $equipe;
+
+        return $this;
+    }
 
 }
