@@ -19,7 +19,6 @@
 [Suivi](/documentation/suivi.md)
 [Répartition détaillée](/documentation/repartition_details.md)
 
-
 ### Page OWASP
 
 Cette page permet l'affichage des vulnérabilités et des hotspots selon le référentiel OWASP 2017.
@@ -28,8 +27,8 @@ Quand tout va bien :)
 
 ![projet](/documentation/ressources/owasp-001.jpg)
 
-Exemple de remonté de hotspots :
-![projet](/documentation/ressources/owasp-006.jpg)
+Quand il y a des hotspots détéctés :(
+![projet](/documentation/ressources/owasp-001a.jpg)
 
 Les vulnérabilités et hotspots sont affichées en fonction du type de faille.
 ![projet](/documentation/ressources/owasp-002.jpg)
@@ -37,16 +36,14 @@ Les vulnérabilités et hotspots sont affichées en fonction du type de faille.
 Il est possible d'afficher le nombre et la sévérité d'une faille OWASP.
 ![projet](/documentation/ressources/owasp-003.jpg)
 
-![projet](/documentation/ressources/owasp-007.jpg)
-
 Quand tout va bien le tableau est vide.
 ![projet](/documentation/ressources/owasp-004.jpg)
 
 Exemple de remonté de hotspots :
-![projet](/documentation/ressources/owasp-008.jpg)
+![projet](/documentation/ressources/owasp-005.jpg)
 
 La documentation de chaque faille.
-![projet](/documentation/ressources/owasp-005.jpg)
+![projet](/documentation/ressources/owasp-006.jpg)
 
 -**-- FIN --**-
 
