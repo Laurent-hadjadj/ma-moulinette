@@ -23,6 +23,8 @@
 
 /* Media SMALL  */
 @media only screen and (max-width: 20em) {
+  .stat-visibility { line-height: 0.7; }
+
   .refresh-bd-svg,
   .affiche-profil-svg,
   .projet-svg,
@@ -48,6 +50,8 @@
 
 /* Media SMALL  */
 @media only screen and (min-width: 20.025em) and (max-width: 22em) {
+  .stat-visibility { line-height: 0.7; }
+
   .refresh-bd-svg,
   .affiche-profil-svg,
   .projet-svg,
@@ -73,6 +77,8 @@
 
 /* Media SMALL  */
 @media only screen and (min-width: 22.025em) and (max-width: 30em) {
+  .stat-visibility { line-height: 0.7; }
+
   .refresh-bd-svg,
   .affiche-profil-svg,
   .projet-svg,
@@ -97,6 +103,8 @@
 }
 
 @media only screen and (min-width: 30.025em) and (max-width: 40em) {
+  .stat-visibility { line-height: 0.7; }
+
   .refresh-bd-svg,
   .affiche-profil-svg,
   .projet-svg,
@@ -120,6 +128,10 @@
 
 /* Media MEDIUM  */
 @media only screen and (min-width: 40em) and (max-width: 64em) {
+  .projet { margin-top: 1rem; }
+  .visibility-box-public { margin-right: 0.2rem; }
+  .visibility-box-private { margin-left: 0.2rem; }
+
   .refresh-bd-svg,
   .affiche-profil-svg,
   .projet-svg,
@@ -143,6 +155,10 @@
 
 /* Media LARGE  */
 @media only screen and (min-width: 64.025em) and (max-width: 90em) {
+  .projet { margin-top: 1rem; }
+  .visibility-box-public { margin-right: 0.2rem; }
+  .visibility-box-private { margin-left: 0.2rem; }
+
   .refresh-bd-svg,
   .affiche-profil-svg,
   .projet-svg,
@@ -166,6 +182,10 @@
 
 /* Media LARGE  */
 @media only screen and (min-width: 90.025em) and (max-width: 120em) {
+  .projet { margin-top: 1rem; }
+  .visibility-box-public { margin-right: 0.2rem; }
+  .visibility-box-private { margin-left: 0.2rem; }
+
   .refresh-bd-svg,
   .affiche-profil-svg,
   .projet-svg,
@@ -189,6 +209,10 @@
 
 /* Media Extra-large  */
 @media only screen and (min-width: 120.063em) and (max-width: 160em) {
+  .projet { margin-top: 1rem; }
+  .visibility-box-public { margin-right: 0.4rem; }
+  .visibility-box-private { margin-left: 0.4rem; }
+
   .refresh-bd-svg,
   .affiche-profil-svg,
   .projet-svg,
@@ -337,3 +361,23 @@
 .color-security { color: #794044; }
 .color-hotspot { color: #065535; }
 .color-codesmell { color: #670267; }
+
+/* Affichage de la visibilité des projets */
+
+.fieldset-visibility {
+  /* haut | droit | bas | gauche */
+  padding: 0.5rem;
+  margin-top: -1rem;
+}
+
+.visibility-box {
+  padding: 0.6rem;
+  border: solid 1px #00445b;
+  border-radius: 0.2rem;
+  background-color: #fff;
+}
+
+.stat-visibility {
+  color: #222;
+  font-family: "open sans", sans-serif;
+}
