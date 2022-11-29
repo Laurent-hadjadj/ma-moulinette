@@ -8,7 +8,7 @@ DROP TABLE anomalie_details;
 DROP TABLE temp_anomalie;
 
 -- ## Ajout de la table anomalie_details
-CREATE TABLE anomalie_details
+CREATE TABLE IF NOT EXISTS anomalie_details
   (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     maven_key VARCHAR (128) NOT NULL,
     name VARCHAR (128) NOT NULL,
