@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS repartition (
   id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
   maven_key VARCHAR(128) NOT NULL, name VARCHAR(128) NOT NULL,
   component CLOB NOT NULL, type VARCHAR(16) NOT NULL,
-  severity VARCHAR(8) NOT NULL, setup UNSIGNED BIG INT NOT NULL,
+  severity VARCHAR(8) NOT NULL, setup integer INT NOT NULL,
   date_enregistrement DATETIME NOT NULL);
 
 COMMIT;
@@ -34,7 +34,7 @@ BEGIN TRANSACTION;
 --  ## correction des boolean ---
 --  ## TRUE = 1 et FALSE = 0
 UPDATE favori SET favori=1 WHERE favori='TRUE';
-UPDATE favori SET favori=0 WHERE favori='FALSE'
+UPDATE favori SET favori=0 WHERE favori='FALSE';
 
 COMMIT;
 
@@ -79,8 +79,6 @@ CREATE TABLE IF NOT EXISTS utilisateur
   date_enregistrement DATETIME NOT NULL,
   roles CLOB NOT NULL --(DC2Type:json)
 );
-
-CREATE UNIQUE INDEX IF NOT EXISTS UNIQ_1D1C63B344FB41C9 ON utilisateur (courriel);
 
 COMMIT;
 
