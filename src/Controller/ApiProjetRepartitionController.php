@@ -44,10 +44,7 @@ class ApiProjetRepartitionController extends AbstractController
     $this->logger = $logger;
   }
 
-  public static $strContentType = 'application/json';
-  public static $dateFormat = "Y-m-d H:m:s";
   public static $sonarUrl = "sonar.url";
-  public static $apiIssuesSearch = "/api/issues/search?componentKeys=";
 
   /**
    * batch_Analyse
