@@ -13,18 +13,17 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Psr\Log\LoggerInterface;
+use Doctrine\DBAL\Connection;
 
 // Accès aux tables SLQLite
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\DBAL\Connection;
+use Symfony\Component\HttpFoundation\Response;
 
 /** Logger */
-use Psr\Log\LoggerInterface;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class HomeController extends AbstractController
 {
