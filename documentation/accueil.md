@@ -57,12 +57,20 @@ Lorque l'on clique sur le bouton de mise à jour des projets ou des profils, l'i
 
 Notez en haut à droite, l'affichage de trois liens, en fonction des droits de l'utilisateur (cf. chapitre sécurité) :
 
+![home](/documentation/ressources/home-002.jpg)
+
 - Gestion des utilisateurs ;
-- Dashboard. Indicateurs applicatifs ;
-- Logout. Pour se déconnecter de l'application ;
+- Dashboard : indicateurs ;
+- Logout : pour se déconnecter de l'application ;
+
+En version **1.6.0** deux (2) nouevaux indicateurs apparaissent pour afficher le nombre de projet dont la visibilité est de type **public** ou **privé**.
+
+Le bouton **mon projet** permet l'accès à la page des projets.
+
+![home](/documentation/ressources/home-003.jpg)
 
 Dans la partie inférieure, la liste des applications favorites est affichée.
-![home](/documentation/ressources/home-002.jpg)
+![home](/documentation/ressources/home-004.jpg)
 
 -**-- FIN --**-
 
