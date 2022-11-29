@@ -20,7 +20,6 @@
 [COSUI](/documentation/cosui.md)
 [Répartition détaillée](/documentation/repartition_details.md)
 
-
 ## Page Projet
 
 La page projet permet, une fois sélectionné un projet, la collecte des données et/ou l'affichage des résultats de la dernière collecte.
@@ -42,10 +41,15 @@ Note : Dans le journal d'activité, je vérifie que l'étape 11 est terminée.
 
 Je peux ensuite enregistrer les indicateurs dans la base locale. Cette base sera utilisée pour le suivi des versions du projet.
 
-Note : Dans la version `1.3.0`, un nouveau bouton est disponible.
+**Note** : Dans la version `1.3.0`, un nouveau bouton est disponible.
 En effet, le bouton **Répartition par module** permet l'accès à la page de collecte et l'analyse des signalements par type de sévérité. Il permet l'affichage des signalements par module applicatif.
 
 ![projet](/documentation/ressources/projet-003b.jpg)
+
+**Note** : Dans la version `1.6.0`, un nouveau bouton est disponible.
+A côté du bouton **Tableaux de suivi**, le bouton **Comité de Suivi** a été ajouté.
+
+![projet](/documentation/ressources/projet-003c.jpg)
 
 - [x] Je peux afficher la répartition des versions (Release et SNAPSHOT).
 
