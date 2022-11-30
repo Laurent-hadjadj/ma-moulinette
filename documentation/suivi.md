@@ -51,6 +51,34 @@ Les tableaux sont les suivants :
 - [X] Le tableau de suvivi du niveau de criticité en fonction de la nature du signalement et leur évolution ;
 ![suivi](/documentation/ressources/suivi-006.jpg)
 
+### Ajouter une analyse
+
+Cette page permet d'ajouter une version présente dans l'historique, i.e. dont avous avez déjà collecter les informations et enregistré dans la table historique.
+
+![suivi](/documentation/ressources/suivi-ajout-001.jpg)
+
+Choisissez une version disponible dans la liste des versions.
+
+![suivi](/documentation/ressources/suivi-ajout-002.jpg)
+
+Si le projet n'existe plus dans sonarqube, un message d'erreur est affiché et aucune valeur n'est remontée.
+
+![suivi](/documentation/ressources/suivi-ajout-003.jpg)
+
+Si le projet n'est pas selectionné ou que le projet n'existe, mais que l'on clique quand même sur le bouton **Ajouter** alors **badaboum**.
+
+![suivi](/documentation/ressources/suivi-ajout-004.jpg)
+
+Si tout vas bien :) Les informations sont affichées.
+
+![suivi](/documentation/ressources/suivi-ajout-005.jpg)
+
+Il suffit de cliquer sur le bouton **Ajouter** pour ajouter cette version dans le tableau de comparaisons.
+
+![suivi](/documentation/ressources/suivi-ajout-006.jpg)
+
+**Note** : en version **1.6.0**, le formulaire a été simplifié. Il n'est plus possible de saisir les données manquantes lors de la collecte.
+
 ### Modifier la configuration
 
 Il est possible de modifier les paramètres d'affichage d'une version en activant ou non l'option **favori** et/ou l'option **version de référence**.
