@@ -47,6 +47,12 @@ class DashboardController extends AbstractDashboardController
         $symfonyVersion = \Symfony\Component\HttpKernel\Kernel::VERSION;
         $phpVersion = PHP_VERSION;
         $ram=round(memory_get_usage()/1048576,2);
+        /** On vérifie l'intégrité de la base */
+        $sql="PRAGMA integrity_check;";
+        $s=$this->em->getConnection()->prepare($sql)->executeQuery();
+        $resultat = $s->fetchAllAssociative();
+        $integrity=$resultat[0]['integrity_check'];
+
         /** On récupère le nombre d'utilisateur. */
         $sql="SELECT count() as total FROM utilisateur;";
         $select=$this->em->getConnection()->prepare($sql)->executeQuery();
@@ -215,6 +221,7 @@ class DashboardController extends AbstractDashboardController
             'sqlite_version' => $versionSqlite,
             'application_utilisateur' => $applicationUtilisateur,
             'ram' => $ram,
+            'integrity' => $integrity,
             'html'=>$html,'php'=>$php,'css'=>$css, 'js'=>$js,
             'application_version' => $applicationVersion,
             'application_version' => $this->getParameter('version'),
