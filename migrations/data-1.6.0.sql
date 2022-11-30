@@ -9,7 +9,6 @@ INSERT INTO ma_moulinette (version, date_version, date_enregistrement) VALUES ('
 
 COMMIT;
 
-
 BEGIN TRANSACTION;
 
 -- ## Ajout de la table tags
