@@ -79,10 +79,13 @@ class DashboardController extends AbstractDashboardController
         }
 
         /** Statistiques sur le code. */
-        $html= ['fichier'=>12, 'code'=>2510, 'comment'=>102, 'vide'=>150, 'total'=>2762 ];
-        $php= ['fichier'=>53, 'code'=>6782, 'comment'=>1708, 'vide'=>1851, 'total'=>10341 ];
-        $css= ['fichier'=>18, 'code'=>1676, 'comment'=>440, 'vide'=>395, 'total'=>2511 ];
-        $js= ['fichier'=>12, 'code'=>3190, 'comment'=>947, 'vide'=>538, 'total'=>4675 ];
+        $html= ['fichier'=>21, 'code'=>3389, 'comment'=>120, 'vide'=>196, 'total'=>3705 ];
+        $php= ['fichier'=>64, 'code'=>8255, 'comment'=>2123, 'vide'=>2173, 'total'=>12551 ];
+        $css= ['fichier'=>24, 'code'=>1998, 'comment'=>550, 'vide'=>475, 'total'=>3023 ];
+        $js= ['fichier'=>15, 'code'=>3229, 'comment'=>1001, 'vide'=>546, 'total'=>4776 ];
+        $md= ['fichier'=>20, 'code'=>1077, 'comment'=>0, 'vide'=>570, 'total'=>1647 ];
+        $updateSql= ['fichier'=>7, 'code'=>191, 'comment'=>66, 'vide'=>75, 'total'=>332 ];
+        $migration= ['fichier'=>2, 'code'=>881, 'comment'=>10, 'vide'=>14, 'total'=>112 ];
 
         /** On récupère le nombre de projet en base. */
         $sql="SELECT count() as total FROM sqlite_master WHERE type = 'table'";
@@ -216,13 +219,15 @@ class DashboardController extends AbstractDashboardController
         return $this->render('admin/index.html.twig',
         [
             'dateCopyright' => \date('Y'),
+            'date'=> $this->getParameter("date"),
+            'version' => $this->getParameter("version"),
             'php_version' => $phpVersion,
             'symfony_version' => $symfonyVersion,
             'sqlite_version' => $versionSqlite,
             'application_utilisateur' => $applicationUtilisateur,
             'ram' => $ram,
             'integrity' => $integrity,
-            'html'=>$html,'php'=>$php,'css'=>$css, 'js'=>$js,
+            'html'=>$html,'php'=>$php,'css'=>$css, 'js'=>$js, 'md'=>$md, 'sql'=>$updateSql, 'migration'=>$migration,
             'application_version' => $applicationVersion,
             'application_version' => $this->getParameter('version'),
             'application_table' => $applicationTable,
