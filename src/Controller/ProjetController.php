@@ -337,27 +337,27 @@ class ProjetController extends AbstractController
 
       $message="[COSUI] Il n'y a pas de données dans la babase !";
       $this->addFlash('alert', $message);
-
     }
-
-    $nameApplication=$n["name"];
-    $versionApplication=$n["version"];
-    $typeApplication=$n["type"];
-    $dateApplication=$n["date_version"];
-    $noteCodeSmell=$n["note_code_smell"];
-    $noteReliability=$n["note_reliability"];
-    $noteSecurity=$n["note_security"];
-    $noteHotspot=$n["note_hotspot"];
-    $bugBlocker=$n["bug_blocker"];
-    $bugCritical=$n["bug_critical"];
-    $bugMajor=$n["bug_major"];
-    $vulnerabilityBlocker=$n["vulnerability_blocker"];
-    $vulnerabilityCritical=$n["vulnerability_critical"];
-    $vulnerabilityMajor=$n["vulnerability_major"];
-    $codeSmellBlocker=$n["code_smell_blocker"];
-    $codeSmellCritical=$n["code_smell_critical"];
-    $codeSmellMajor=$n["code_smell_major"];
-    $hotspot=$n["hotspot_total"];
+    else {
+      $nameApplication=$n["name"];
+      $versionApplication=$n["version"];
+      $typeApplication=$n["type"];
+      $dateApplication=$n["date_version"];
+      $noteCodeSmell=$n["note_code_smell"];
+      $noteReliability=$n["note_reliability"];
+      $noteSecurity=$n["note_security"];
+      $noteHotspot=$n["note_hotspot"];
+      $bugBlocker=$n["bug_blocker"];
+      $bugCritical=$n["bug_critical"];
+      $bugMajor=$n["bug_major"];
+      $vulnerabilityBlocker=$n["vulnerability_blocker"];
+      $vulnerabilityCritical=$n["vulnerability_critical"];
+      $vulnerabilityMajor=$n["vulnerability_major"];
+      $codeSmellBlocker=$n["code_smell_blocker"];
+      $codeSmellCritical=$n["code_smell_critical"];
+      $codeSmellMajor=$n["code_smell_major"];
+      $hotspot=$n["hotspot_total"];
+    }
 
     /** On récupères les indicateurs de la version de référence */
     $nn=self::reference($mavenKey);
@@ -374,23 +374,24 @@ class ProjetController extends AbstractController
       $message="[COSUI] Vous devez choisir un projet comme référence !";
       $this->addFlash('alert', $message);
     }
-
-    $initialVersionApplication=$nn["initial_version_application"];
-    $initialDateApplication=$nn["initial_date_version"];
-    $initialNoteCodeSmell=$nn["initial_note_code_smell"];
-    $initialNoteReliability=$nn["initial_note_reliability"];
-    $initialNoteSecurity=$nn["initial_note_security"];
-    $initialNoteHotspot=$nn["initial_note_hotspot"];
-    $initialBugBlocker=$nn["initial_bug_blocker"];
-    $initialBugCritical=$nn["initial_bug_critical"];
-    $initialBugMajor=$nn["initial_bug_major"];
-    $initialVulnerabilityBlocker=$nn["initial_vulnerability_blocker"];
-    $initialVulnerabilityCritical=$nn["initial_vulnerability_critical"];
-    $initialVulnerabilityMajor=$nn["initial_vulnerability_major"];
-    $initialCodeSmellBlocker=$nn["initial_code_smell_blocker"];
-    $initialCodeSmellCritical=$nn["initial_code_smell_critical"];
-    $initialCodeSmellMajor=$nn["initial_code_smell_major"];
-    $initialHotspot=$nn["initial_hotspot_total"];
+    else {
+        $initialVersionApplication=$nn["initial_version_application"];
+        $initialDateApplication=$nn["initial_date_version"];
+        $initialNoteCodeSmell=$nn["initial_note_code_smell"];
+        $initialNoteReliability=$nn["initial_note_reliability"];
+        $initialNoteSecurity=$nn["initial_note_security"];
+        $initialNoteHotspot=$nn["initial_note_hotspot"];
+        $initialBugBlocker=$nn["initial_bug_blocker"];
+        $initialBugCritical=$nn["initial_bug_critical"];
+        $initialBugMajor=$nn["initial_bug_major"];
+        $initialVulnerabilityBlocker=$nn["initial_vulnerability_blocker"];
+        $initialVulnerabilityCritical=$nn["initial_vulnerability_critical"];
+        $initialVulnerabilityMajor=$nn["initial_vulnerability_major"];
+        $initialCodeSmellBlocker=$nn["initial_code_smell_blocker"];
+        $initialCodeSmellCritical=$nn["initial_code_smell_critical"];
+        $initialCodeSmellMajor=$nn["initial_code_smell_major"];
+        $initialHotspot=$nn["initial_hotspot_total"];
+      }
 
     /** on récupère le dernier setup pour le projet */
     $setup=self::setup($mavenKey);
