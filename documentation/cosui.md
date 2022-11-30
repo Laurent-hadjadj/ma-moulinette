@@ -44,6 +44,10 @@ En cliquant sur l'icône située à côté de la date de référence présente d
 
 ![suivi](/documentation/ressources/cosui-003.jpg)
 
+Si vous n'avez pas chosi de projet de référence vous aurez un message d'erreur.
+
+![suivi](/documentation/ressources/cosui-002a.jpg)
+
 Il est possible d'afficher les variations entre la version de référence et la dernière version en cliquant sur le bouton **Afficher le variations ?**
 
 ![suivi](/documentation/ressources/cosui-004.jpg)
