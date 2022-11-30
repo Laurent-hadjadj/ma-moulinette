@@ -20,23 +20,25 @@ No packages have known vulnerabilities.
 | 1.3.0   | 03/07/2022 | PASS  |
 | 1.4.0   | 06/07/2022 | PASS  |
 | 1.5.0   | 12/09/2022 | PASS  |
+| 1.6.0   | 30/11/2022 | PASS  |
 
 ## npm audit
 
 Lancez la commande : `npm audit`
 
-`Audit du 24/04/2022`
+`Audit du 30/11/2022`
 
 ```console
 === npm audit security report ===
 
 found 0 vulnerabilities
-in 926 scanned packages
+ in 734 scanned packages
 ```
 
 | version |   date     | package | check |
 |:-------:|------------|---------|-------|
 | 1.5.0   | 12/09/2022 |  926    | PASS  |
+| 1.6.0   | 30/11/2022 |  734    | PASS  |
 
 ## Analyse de code sonarqube
 

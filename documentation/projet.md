@@ -6,19 +6,19 @@
 
 ### Authentification
 
-[Authentification](/documentation/authentification.md)
-[Inscription](/documentation/inscription.md)
-[Bienvenue]((/documentation/bienvenue.md))
-[Gestion des utilisateurs](utilisateur.md)
+* [Authentification](/documentation/authentification.md)
+* [Inscription](/documentation/inscription.md)
+* [Bienvenue]((/documentation/bienvenue.md))
+* [Gestion des utilisateurs](utilisateur.md)
 
 ### Ma-Moulinette
 
-[Accueil](/documentation/accueil.md)
-[**Projet**](/documentation/projet.md)
-[OWASP](/documentation/owasp.md)
-[Suivi](/documentation/suivi.md)
-[COSUI](/documentation/cosui.md)
-[Répartition détaillée](/documentation/repartition_details.md)
+* [Accueil](/documentation/accueil.md)
+* [**Projet**](/documentation/projet.md)
+* [OWASP](/documentation/owasp.md)
+* [Suivi](/documentation/suivi.md)
+* [COSUI](/documentation/cosui.md)
+* [Répartition détaillée](/documentation/repartition_details.md)
 
 ## Page Projet
 
@@ -32,8 +32,8 @@ Dans le selecteur des projets, je saisie les trois premières lettres de mon pro
 Je choisi mon projet à partie du référentiel local.
 ![projet](/documentation/ressources/projet-001b.jpg)
 
-- [x] Je lance la collecte.
-- [X] J'affiche les résultats.
+* [x] Je lance la collecte.
+* [X] J'affiche les résultats.
 
 Note : Dans le journal d'activité, je vérifie que l'étape 11 est terminée.
 
@@ -51,19 +51,19 @@ A côté du bouton **Tableaux de suivi**, le bouton **Comité de Suivi** a été
 
 ![projet](/documentation/ressources/projet-003c.jpg)
 
-- [x] Je peux afficher la répartition des versions (Release et SNAPSHOT).
+* [x] Je peux afficher la répartition des versions (Release et SNAPSHOT).
 
 ![projet](/documentation/ressources/projet-008.jpg)
 
-- [x] Je peux afficher la répartition de la dette technique.
+* [x] Je peux afficher la répartition de la dette technique.
 
 ![projet](/documentation/ressources/projet-004.jpg)
 
-- [x] Je peux afficher le détail des hotspots.
+* [x] Je peux afficher le détail des hotspots.
 
 ![projet](/documentation/ressources/projet-005.jpg)
 
-- [x] Je peux aussi afficher la répartition détaillée des anomalies.
+* [x] Je peux aussi afficher la répartition détaillée des anomalies.
 
 ![projet](/documentation/ressources/projet-006.jpg)
 
@@ -73,13 +73,13 @@ Et enfin, je peux afficher la liste des projets que j'ai déjà analysés et ceu
 
 En version `1.4.0`, un bloc d'actions a été ajouté pour permettre de :
 
-- [V] Sélectionner un projet de la liste et déverrouiller tous les boutons ;
-- [S] Supprimer le projet de la liste des projets déjà analysés ;
-- [C] Lancer la collecte des indicateurs sonarqube et le calcul des agrégats ;
-- [R] Lancer la restitution des données calculés ;
-- [I] Ouvrir la page de suivi des indicateurs ;
-- [O] Ouvrir la page du rapport OWASP ;
-- [RM] Ouvrir la page de suivi de la répartition par module ;
+* [V] Sélectionner un projet de la liste et déverrouiller tous les boutons ;
+* [S] Supprimer le projet de la liste des projets déjà analysés ;
+* [C] Lancer la collecte des indicateurs sonarqube et le calcul des agrégats ;
+* [R] Lancer la restitution des données calculés ;
+* [I] Ouvrir la page de suivi des indicateurs ;
+* [O] Ouvrir la page du rapport OWASP ;
+* [RM] Ouvrir la page de suivi de la répartition par module ;
 
 ![projet](/documentation/ressources/projet-007b.jpg)
 
@@ -89,12 +89,12 @@ En version `1.5.0`, l'implémentation de l'action `C` **coolecte des données** 
 
 Ci-dessous la liste des messages.
 
-- [x] [00] - Je dors !!!
-- [x] [01] - Le choix du projet a été validé.
-- [x] [02] - La suppression de la liste est terminée.
-- [x] [03] - La collecte est en cours. ...
-- [x] [04] - La collecte des données est terminée.
-- [x] [05] - L'affichage des résultats est terminé.
+* [x] [00] - Je dors !!!
+* [x] [01] - Le choix du projet a été validé.
+* [x] [02] - La suppression de la liste est terminée.
+* [x] [03] - La collecte est en cours. ...
+* [x] [04] - La collecte des données est terminée.
+* [x] [05] - L'affichage des résultats est terminé.
 
 Par exemple, à la fin du traitement de l'action `R` :
 
@@ -102,25 +102,25 @@ Par exemple, à la fin du traitement de l'action `R` :
 
 ### Petit mémos
 
-- [] Si l'on souhaite ne pas utilisé le selecteur de recherche, il suffit de cliquer sur le bouton **V** pour séléctionner le projet directement depuis la liste.
+* [] Si l'on souhaite ne pas utilisé le selecteur de recherche, il suffit de cliquer sur le bouton **V** pour séléctionner le projet directement depuis la liste.
 ![projet](/documentation/ressources/projet-007c.jpg)
 
-- [] Si l'on souhaite supprimer le projet de la liste, il suffit de cliquer sur le bouton **S**.
+* [] Si l'on souhaite supprimer le projet de la liste, il suffit de cliquer sur le bouton **S**.
 ![projet](/documentation/ressources/projet-007d.jpg)
 
-- []  Si l'on souhaite lancer une collecte pour ce projet directement, il suffit de cliquer sur le bouton **C**.
+* []  Si l'on souhaite lancer une collecte pour ce projet directement, il suffit de cliquer sur le bouton **C**.
 ![projet](/documentation/ressources/projet-007e.jpg)
 
-- [] Si l'on souhaite afficher les résultats de la derniére collecte pour ce projet, il suffit de cliquer sur le bouton **R**.
+* [] Si l'on souhaite afficher les résultats de la derniére collecte pour ce projet, il suffit de cliquer sur le bouton **R**.
 ![projet](/documentation/ressources/projet-007f.jpg)
 
-- [] Si l'on souhaite ouvrir la page de suivi pour le projet, il suffit de cliquer sur le bouton **I**.
+* [] Si l'on souhaite ouvrir la page de suivi pour le projet, il suffit de cliquer sur le bouton **I**.
 ![projet](/documentation/ressources/projet-007g.jpg)
 
-- []  Si l'on souhaite ouvrir la page OWASP pour le projet, il suffit de cliquer sur le bouton **O**.
+* []  Si l'on souhaite ouvrir la page OWASP pour le projet, il suffit de cliquer sur le bouton **O**.
 ![projet](/documentation/ressources/projet-007h.jpg)
 
-- []  Si l'on souhaite ouvrir le rapport des signalmements par module pour le projet, il suffit de cliquer sur le bouton **RM**.
+* []  Si l'on souhaite ouvrir le rapport des signalmements par module pour le projet, il suffit de cliquer sur le bouton **RM**.
 ![projet](/documentation/ressources/projet-007i.jpg)
 
 -**-- FIN --**-

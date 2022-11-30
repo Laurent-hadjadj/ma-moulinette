@@ -6,19 +6,19 @@
 
 ### Authentification
 
-[Authentification](/documentation/authentification.md)
-[Inscription](/documentation/inscription.md)
-[Bienvenue]((/documentation/bienvenue.md))
-[Gestion des utilisateurs](utilisateur.md)
+* [Authentification](/documentation/authentification.md)
+* [Inscription](/documentation/inscription.md)
+* [Bienvenue]((/documentation/bienvenue.md))
+* [Gestion des utilisateurs](utilisateur.md)
 
 ### Ma-Moulinette
 
-[Accueil](/documentation/accueil.md)
-[Projet](/documentation/projet.md)
-[**OWASP**](/documentation/owasp.md)
-[Suivi](/documentation/suivi.md)
-[COSUI](/documentation/cosui.md)
-[Répartition détaillée](/documentation/repartition_details.md)
+* [Accueil](/documentation/accueil.md)
+* [Projet](/documentation/projet.md)
+* [**OWASP**](/documentation/owasp.md)
+* [Suivi](/documentation/suivi.md)
+* [COSUI](/documentation/cosui.md)
+* [Répartition détaillée](/documentation/repartition_details.md)
 
 ### Page OWASP
 

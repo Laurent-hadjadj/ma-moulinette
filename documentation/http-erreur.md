@@ -30,7 +30,6 @@
 
 ![HTTP-504](/documentation/ressources/guru-meditation-504.jpg)
 
-
 -**-- FIN --**-
 
 [Retour au menu principal](/README.md)

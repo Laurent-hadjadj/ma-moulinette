@@ -24,26 +24,26 @@ La réécriture totale de l'application a débuté le **28 janvier 2022**, aprè
 
 ## Architecture
 
-[Architecture technique](/documentation/architecture-technique.md)
-[Architecture des applications JAVA](/documentation/architecture-java.md)
-[Configuration et organisation](/documentation/architecture-organisation.md)
-[Base de données](/documentation/architecture-base-de-donnees.md)
+* [Architecture technique](/documentation/architecture-technique.md)
+* [Architecture des applications JAVA](/documentation/architecture-java.md)
+* [Configuration et organisation](/documentation/architecture-organisation.md)
+* [Base de données](/documentation/architecture-base-de-donnees.md)
 
 ## Ma-Moulinette en images
 
 ### Authentification
 
-[Authentification](/documentation/authentification.md)
-[Inscription](/documentation/inscription.md)
-[Bienvenue](/documentation/bienvenue.md)
-[Gestion des utilisateurs](utilisateur.md)
+* [Authentification](/documentation/authentification.md)
+* [Inscription](/documentation/inscription.md)
+* [Bienvenue](/documentation/bienvenue.md)
+* [Gestion des utilisateurs](utilisateur.md)
 
 ### Ma-Moulinette
 
-[Accueil](/documentation/accueil.md)
-[Projet](/documentation/projet.md)
-[OWASP](/documentation/owasp.md)
-[Suivi](/documentation/suivi.md)
+* [Accueil](/documentation/accueil.md)
+* [Projet](/documentation/projet.md)
+* [OWASP](/documentation/owasp.md)
+* [Suivi](/documentation/suivi.md)
 
 ### Pour bien démarrer
 
@@ -51,8 +51,8 @@ La réécriture totale de l'application a débuté le **28 janvier 2022**, aprè
 
 ### Gestion des erreurs
 
-[Erreur HTTP](/documentation/http-erreur.md)
-[Erreurs courrantes](/documentation/erreur.md)
+* [Erreur HTTP](/documentation/http-erreur.md)
+* [Erreurs courrantes](/documentation/erreur.md)
 
 ### Audit de sécurité
 
