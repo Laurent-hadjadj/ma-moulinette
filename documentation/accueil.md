@@ -6,19 +6,19 @@
 
 ### Authentification
 
-[Authentification](/documentation/authentification.md)
-[Inscription](/documentation/inscription.md)
-[Bienvenue]((/documentation/bienvenue.md))
-[Gestion des utilisateurs](utilisateur.md)
+* [Authentification](/documentation/authentification.md)
+* [Inscription](/documentation/inscription.md)
+* [Bienvenue]((/documentation/bienvenue.md))
+* [Gestion des utilisateurs](utilisateur.md)
 
 ### Ma-Moulinette
 
-[**Accueil**](/documentation/accueil.md)
-[Projet](/documentation/projet.md)
-[OWASP](/documentation/owasp.md)
-[Suivi](/documentation/suivi.md)
-[COSUI](/documentation/cosui.md)
-[Répartition détaillée](/documentation/repartition_details.md)
+* [**Accueil**](/documentation/accueil.md)
+* [Projet](/documentation/projet.md)
+* [OWASP](/documentation/owasp.md)
+* [Suivi](/documentation/suivi.md)
+* [COSUI](/documentation/cosui.md)
+* [Répartition détaillée](/documentation/repartition_details.md)
 
 ### Page d'accueil
 
@@ -38,12 +38,12 @@ Une nouvelle table a été créée pour enregistrer les mises à jour des réfé
 
 La mise à jour est signalée quand :
 
-- [x] Le nombre de projet et ou de profil est différent de ceux présents sur le serveur sonarqube ;
+* [x] Le nombre de projet et ou de profil est différent de ceux présents sur le serveur sonarqube ;
 
 Le contrôle se fait en fonction de la fréquence choisi, par défaut :
 
-- [x] 1 jour pour les projets ;
-- [x] 30 jours pour les profils ;
+* [x] 1 jour pour les projets ;
+* [x] 30 jours pour les profils ;
 
 Cela veux dire que si la table de référence des projets et profils a été mise à jour dans la journée, il n'y aura pas de signalement en cas de différences avec le serveur sonarqube. En d'autres termes, il faudra lancer la mise à jour de la table locale manuellement, comme on le faisant précédement.
 
@@ -59,9 +59,9 @@ Notez en haut à droite, l'affichage de trois liens, en fonction des droits de l
 
 ![home](/documentation/ressources/home-002.jpg)
 
-- Gestion des utilisateurs ;
-- Dashboard : indicateurs ;
-- Logout : pour se déconnecter de l'application ;
+* Gestion des utilisateurs ;
+* Dashboard : indicateurs ;
+* Logout : pour se déconnecter de l'application ;
 
 En version **1.6.0** deux (2) nouevaux indicateurs apparaissent pour afficher le nombre de projet dont la visibilité est de type **public** ou **privé**.
 
