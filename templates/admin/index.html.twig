@@ -85,9 +85,10 @@
       </div>
     </div>
   </div>
+
   <div class="table-responsive">
     <table class="table align-middle table-bordered table-sm">
-      <caption>Données 1.5.0-RC1 du 08/09/2022.</caption>
+      <caption>Données {{version}} du {{date}}.</caption>
       <thead class="table-light text-center">
         <tr>
           <th scope="col">Langage</th>
@@ -118,8 +119,26 @@
           {% endfor %}
         </tr>
         <tr>
-          <th scope="row">ECMA</th>
+          <th scope="row">JS</th>
           {% for indicateur in js %}
+          <td>{{indicateur|number_format(0, '.', ' ')}}</td>
+          {% endfor %}
+        </tr>
+        <tr>
+          <th scope="row">Markdown</th>
+          {% for indicateur in md %}
+          <td>{{indicateur|number_format(0, '.', ' ')}}</td>
+          {% endfor %}
+        </tr>
+        <tr>
+          <th scope="row">SQL</th>
+          {% for indicateur in sql %}
+          <td>{{indicateur|number_format(0, '.', ' ')}}</td>
+          {% endfor %}
+        </tr>
+        <tr>
+          <th scope="row">Migration</th>
+          {% for indicateur in migration %}
           <td>{{indicateur|number_format(0, '.', ' ')}}</td>
           {% endfor %}
         </tr>
