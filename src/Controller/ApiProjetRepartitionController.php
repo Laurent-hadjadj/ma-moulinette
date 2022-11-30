@@ -185,7 +185,6 @@ class ApiProjetRepartitionController extends AbstractController
    * Rcéupère le total des anomalies par severité.
    *
    * @param  mixed $request
-   * @param  mixed $logger
    * @return response
    * INFO,MINOR,MAJOR,CRITICAL,BLOCKER
    */
