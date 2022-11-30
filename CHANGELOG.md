@@ -279,18 +279,18 @@ General error: 1 near "4.1": syntax error"
 * [Profil] Correction de l'affichage du statut Actif lors du rechargement de la liste ;
 * [Paramétrage] Choix de la fréquence de mise ) jour. Par défaut 1 jour ;
 
-## v1.6.0 - 01/12/2022 - RC1
+## v1.6.0 - 30/11/2022 - Release
 
-* [CSS] Utilisation du référentiel des couleurs Sonarqube pour afficher les notes. Pages concernées : [home], [projet], [owasp], [suivi] et [cossui].
+* [CSS] Utilisation du référentiel des couleurs Sonarqube pour afficher les notes. Pages concernées : [home], [projet], [owasp], [suivi] et [cosui].
 * [Page_COSUI] Ajout d'une page de synthèse de type Comité de Suivi (i.e COSUI) ;
 * [CSS] La variation des indicateurs utilise maintenant la class [down] pour marquer une amélioration c'est-à-dire une baisse des signalements, la flèche est verte et pointe vers le bas et [up] pour marquer une augmentation des défauts. La flèche pointe vers le haut sa couleur est rouge ;
 * [Page_Projet] Ajout du bouton COSUI ;
 * [CSS] Refactorisation des class js- et -enabled pour la page [PROJET] ;
-* [Page_Projet] Renomage de la page anomalie.details.html.twig en details.html.twig ;
+* [Page_Projet] Renommage de la page anomalie.details.html.twig en details.html.twig ;
 * [Page_Home] Ajout d'un raccourci pour ouvrir directement la page de suivi ;
 * [Page_Suivi] Amélioration de l'information utilisateur de la fenêtre modale d'ajout d'une version ;
-* [Page_Suivi] Refactorisation de la page pour prendre en compte le référentiel des couleurs donar ;
-* [Page_Home] Ajout des indicateurs de visvibilités ;
+* [Page_Suivi] Refactorisation de la page pour prendre en compte le référentiel des couleurs sonar ;
+* [Page_Home] Ajout des indicateurs de visibilités ;
 * [Page_Suivi] Amélioration de la gestion des codes HTTP (404) ;
 * [Page_Dashbord] Ajout du contrôle d'intégrité de la base de données ;
 * Mise à jour symfony 6.1.8 ;
