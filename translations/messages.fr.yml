@@ -12,6 +12,14 @@ Home: Home
 Dashboard:	Dashboard
 Utilisateur:	Utilisateur
 Equipe: Équipe
+Portefeuille: PorteFeuille
+
+# UtilisateurCrud
+Personne:	Personne
+Courriel:	Courriel
+Roles: Roles
+Actif:	Actif
+Gestionnaire: Gestionnaire
 
 # EquipeCrud
 Nom: Nom
