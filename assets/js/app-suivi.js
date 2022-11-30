@@ -238,10 +238,20 @@ $('select[name="version"]').change(function () {
   */
   const data = { mavenKey: $('#key-maven').text().trim(), date:d2[0] };
   const options = {
-    url: `${serveur()}/api/get/version`, type: 'PUT',
+    url: `${serveur()}/api/get/version`, type: 'POST',
     dataType: 'json', data: JSON.stringify(data), contentType };
 
-  $.ajax(options).then(t => {
+    $.ajax(options).then(t => {
+    /** On récupère le message
+     * Si 404 --> le projet n'existe plus
+     * Si 200 --> on continue
+     * si <> 200 et 404, exception symfony
+    */
+    if (t.message==404) {
+      const message='Le projet n\'existe plus sur le serveur sonarqube !';
+      $('#message-ajout-projet').html(callboxError+message+callboxFermer);
+      return;
+    }
 
     const tNotes1 = ['', 'a', 'b', 'c', 'd', 'e', 'z'];
     const tNotes2 = ['', 'A', 'B', 'C', 'D', 'E', 'Z'];
@@ -261,7 +271,6 @@ $('select[name="version"]').change(function () {
     $('#note-security').html(`<span class="note note-${couleurSecurity}">${noteSecurity}</span>`);
     $('#note-sqale').html(`<span class="note note-${couleurSqale}">${noteSqale}</span>`);
     $('#note-hotspots-review').html(`<span class="note note-${couleurHotspotsReview}">${noteHotspotsReview}</span>`);
-
 
     /* Historique*/
     const t1 = document.getElementById('note-reliability');

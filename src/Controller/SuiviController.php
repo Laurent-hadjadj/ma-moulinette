@@ -33,13 +33,15 @@ use Psr\Log\LoggerInterface;
 class SuiviController extends AbstractController
 {
 
-  private $client;
-  private $em;
-
-  public function __construct(HttpClientInterface $client, EntityManagerInterface $em)
+  public function __construct(
+    private HttpClientInterface $client,
+    private EntityManagerInterface $em,
+    private LoggerInterface $logger
+    )
   {
     $this->client = $client;
     $this->em = $em;
+    $this->logger = $logger;
   }
 
   public static $strContentType = 'application/json';
@@ -52,7 +54,7 @@ class SuiviController extends AbstractController
    * @param  mixed $url
    * @return void
    */
-  protected function httpClient($url, LoggerInterface $logger)
+  protected function httpClient($url)
   {
     if (empty($this->getParameter('sonar.token'))) {
       $user = $this->getParameter('sonar.user');
@@ -69,10 +71,12 @@ class SuiviController extends AbstractController
         DHE-RSA-AES128-SHA DHE-RSA-AES256-SHA ADH-AES128-SHA ADH-AES256-SHA`,
         'auth_basic' => [$user, $password], 'timeout' => 45,
         'headers' => ['Accept' => static::$strContentType, 'Content-Type' => static::$strContentType]
-      ]
-    );
+      ]);
+      /** on désactive le code retour pour catcher l'erreur nous même. */
+      $response->getHeaders(false);
 
-    if (200 !== $response->getStatusCode()) {
+    /** si le code erreur est différent de 200 ou 404 on léve une exception */
+    if ($response->getStatusCode() !==200 && $response->getStatusCode() !== 404) {
       if ($response->getStatusCode() == 401) {
         throw new \UnexpectedValueException('Erreur d\'Authentification. La clé n\'est pas correcte.');
       } else {
@@ -81,10 +85,16 @@ class SuiviController extends AbstractController
       }
     }
 
-    $contentType = $response->getHeaders()['content-type'][0];
-    $logger->INFO('** ContentType *** '.isset($contentType));
+    /** Erreur 404 = je n'ai pas trouvé le projet */
+    if ($response->getStatusCode()==404) {
+        $responseJson=json_encode(["message"=>404]);
+        return json_decode($responseJson, true, 512, JSON_THROW_ON_ERROR);
+    }
 
+    $contentType = $response->getHeaders()['content-type'][0];
+    $this->logger->INFO('** ContentType *** '.isset($contentType));
     $responseJson = $response->getContent();
+
     return json_decode($responseJson, true, 512, JSON_THROW_ON_ERROR);
   }
 
@@ -234,7 +244,7 @@ class SuiviController extends AbstractController
     // On récupère les versions et la date pour la clé du projet
     $sql = "SELECT maven_key, project_version as version, date
             FROM information_projet
-            WHERE maven_key='" . $mavenKey . "'";
+            WHERE maven_key='${mavenKey}'";
     $select = $this->em->getConnection()->prepare($sql)->executeQuery();
     $versions = $select->fetchAllAssociative();
 
@@ -267,12 +277,12 @@ class SuiviController extends AbstractController
    * @param  mixed $request
    * @return response
    */
-  #[Route('/api/get/version', name: 'get_version', methods: ['PUT'])]
-  public function getVersion(Request $request, LoggerInterface $logger): Response
+  #[Route('/api/get/version', name: 'get_version', methods: ['GET','POST'])]
+  public function getVersion(Request $request): Response
   {
     // on décode le body
     $data = json_decode($request->getContent());
-    $mavenKey = $data->mavenKey;
+    $mavenKey=$data->mavenKey;
 
     // On modifie la date de 11-02-2022 16:02:06 à 2022-02-11 16:02:06
     $d = new Datetime($data->date);
@@ -288,8 +298,15 @@ class SuiviController extends AbstractController
             tests,sqale_index,duplicated_lines_density
             &from=${urlencodeDate}&to=${urlencodeDate}";
 
-    // on appel le client http
-    $result = $this->httpClient(trim(preg_replace("/\s+/u", " ", $url)), $logger);
+    /** on appel le client http */
+    $result = $this->httpClient(trim(preg_replace("/\s+/u", " ", $url)));
+    /** On créé un objet json */
+    $response = new JsonResponse();
+
+    /** Si on récupère un message alors on a un problème. */
+    if (array_key_exists("message", $result)){
+      return $response->setData(['message' => 404]);
+    };
 
     $data = $result["measures"];
     for ($i = 0; $i < 14; $i++) {
@@ -364,8 +381,8 @@ class SuiviController extends AbstractController
       }
     }
 
-    $response = new JsonResponse();
     return $response->setData([
+      'message'=>200,
       'noteReliability' => $noteReliability, 'noteSecurity' => $noteSecurity,
       'noteSqale' => $noteSqale, 'noteHotspotsReview' => $noteHotspotsReview,
       'bug' => $bug, 'vulnerabilities' => $vulnerabilities,
@@ -384,7 +401,7 @@ class SuiviController extends AbstractController
    * @param  mixed $request
    * @return response
    */
-  #[Route('/api/suivi/mise-a-jour', name: 'suivi_miseajour', methods: ['PUT'])]
+  #[Route('/api/suivi/mise-a-jour', name: 'suivi_mise_a_jour', methods: ['PUT'])]
   public function suiviMiseAJour(Request $request): Response
   {
     // on décode le body
@@ -394,6 +411,7 @@ class SuiviController extends AbstractController
 
     // On créé un nouvel objet Json
     $response = new JsonResponse();
+
     // On bind chaque valeur
     $tempoDateVersion=$dateVersion->format(static::$dateFormat);
     $tempoDateEnregistrement=$dateEnregistrement->format(static::$dateFormat);
