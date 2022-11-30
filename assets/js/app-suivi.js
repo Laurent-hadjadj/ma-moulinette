@@ -56,8 +56,8 @@ const contentType='application/json; charset=utf-8';
 
 /* Construction des callbox de type success */
 const callboxInformation='<div class="callout primary text-justify" data-closable="slide-out-right"><p style="color:#00445b;" class="open-sans" cell">Information ! ';
-const callboxSuccess='<div class="callout success text-justify" data-closable="slide-out-right"><p style="color:#00445b;" class="open-sans" cell">Bravo ! ';
-const callboxError='<div class="callout error text-justify" data-closable="slide-out-right"><p style="color:#fff;" class="open-sans" cell">Ooups ! ';
+const callboxSuccess='<div id="js-message" class="callout success text-justify" data-closable="slide-out-right"><p style="color:#00445b;" class="open-sans" cell">Bravo ! ';
+const callboxError='<div id="js-message" class="callout error text-justify" data-closable="slide-out-right"><p style="color:#fff;" class="open-sans" cell">Ooups ! ';
 const callboxFermer='<button class="close-button" aria-label="Fermer la fenêtre" type="button" data-close><span aria-hidden="true">&times;</span></button></div>';
 
 /**
@@ -334,9 +334,15 @@ $('select[name="version"]').change(function () {
  * Ajouter/Enregistrement les données
 */
 $('.js-enregistrer-analyse').on('click', ()=>{
+  /** Si le projet n'a pas été selectionné */
   if ($('select[name="version"]').val()==='') {
     const message='Vous devez choisir un projet !';
     $('#message-ajout-projet').html(callboxError+message+callboxFermer);
+    return;
+  }
+
+  /** Si le projet n'existe plus dans sonarqube 'error 404' */
+  if ($('#js-message').hasClass('error')==true) {
     return;
   }
 
