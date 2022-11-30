@@ -25,7 +25,6 @@ import './foundation.js';
  * On affiche/desactive les indicateurs de variation
  */
 $('#js-oui-non').on('click', function () {
-  console.log($('#js-oui-non').is(":checked"));
   if ($('#js-oui-non').is(":checked")==true) {
     $('.up, .down, .equal').removeClass('hide');
   }

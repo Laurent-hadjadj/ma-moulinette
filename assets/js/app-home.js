@@ -113,7 +113,6 @@ const miseAJourListeProjet=function() {
     dataType: 'json', contentType };
     return new Promise(resolve => {
       $.ajax(options).then(t => {
-        console.log(t);
         log(` - INFO : ${t.message}`);
         $('#js-public').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.visibility.public));
         $('#js-private').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.visibility.private));
