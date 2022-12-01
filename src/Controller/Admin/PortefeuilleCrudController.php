@@ -27,27 +27,64 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 
 class PortefeuilleCrudController extends AbstractCrudController
 {
+    /**
+     * [Description for __construct]
+     *
+     * @param  private
+     *
+     */
     public function __construct(private EntityManagerInterface $emm)
     {
     $this->emm = $emm;
     }
 
+    /**
+     * [Description for getEntityFqcn]
+     *
+     * @return string
+     *
+     */
     public static function getEntityFqcn(): string
     {
         return Portefeuille::class;
     }
 
+    /**
+     * [Description for configureFilters]
+     * On ajoute un filtre de recherche
+     * @param Filters $filters
+     *
+     * @return Filters
+     *
+     */
     public function configureFilters(Filters $filters): Filters
     {
         return $filters
-            ->add('nom');
+            ->add('nom')
+            ->add('equipe');
     }
 
+    /**
+     * [Description for configureActions]
+     *
+     * @param Actions $actions
+     *
+     * @return Actions
+     *
+     */
     public function configureActions(Actions $actions): Actions
     {
         return parent::configureActions($actions);
     }
 
+    /**
+     * [Description for configureFields]
+     * Configuration et propriétés des champs
+     * @param string $pageName
+     *
+     * @return iterable
+     *
+     */
     public function configureFields(string $pageName): iterable
     {
         yield TextField::new('nom')
@@ -73,7 +110,7 @@ class PortefeuilleCrudController extends AbstractCrudController
             ->renderExpanded()
             ->setHelp('Choisi l\'équipe pour laquelle tu veux ajouter les projets.');
 
-        // On récupère la liste des projets
+        /** On récupère la liste des projets */
         $sql="SELECT name, maven_key FROM liste_projet ORDER BY name ASC";
         $l = $this->emm->getConnection()->prepare($sql)->executeQuery();
         $resultat = $l->fetchAllAssociative();
@@ -95,7 +132,7 @@ class PortefeuilleCrudController extends AbstractCrudController
         yield ChoiceField::new('liste')
             ->setChoices(array_combine($key2, $val2))
             ->allowMultipleChoices()
-            ->setHelp('Choisi les projets que tu souhaites ajouter à la liste.');
+            ->setHelp('Choisi lles projets que tu souhaites ajouter à la liste.');
 
         yield DateTimeField::new('dateModification')
             ->setTimezone('Europe/Paris')
@@ -106,11 +143,44 @@ class PortefeuilleCrudController extends AbstractCrudController
 
     }
 
+    /**
+     * [Description for persistEntity]
+     * On enregistre les données lors de la création
+     * @param EntityManagerInterface $em
+     * @param mixed $entityInstance
+     *
+     * @return void
+     *
+     */
+    public function persistEntity(EntityManagerInterface $em, $entityInstance): void
+    {
+        if (!$entityInstance instanceof Portefeuille) {
+            return;
+        }
+        /** On récèpere le nom du portefeuille */
+        $nom=$entityInstance->getNom();
+        /** On enregistre le données que l'on veut modifier */
+        $entityInstance->setNom(strtoupper($nom));
+        $entityInstance->setDateEnregistrement(new \DateTimeImmutable());
+        parent::persistEntity($em, $entityInstance);
+    }
+
+    /**
+     * [Description for updateEntity]
+     * Mise à jour des données du formulaire
+     *
+     * @param EntityManagerInterface $em
+     * @param mixed $entityInstance
+     *
+     * @return void
+     *
+     */
     public function updateEntity(EntityManagerInterface $em, $entityInstance): void
     {
         if (!$entityInstance instanceof Portefeuille) {
             return;
         }
+        /** On ajoute la date de modification  */
         $entityInstance->setdateModification(new \DateTimeImmutable);
         parent::updateEntity($em, $entityInstance);
     }
