@@ -16,7 +16,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
@@ -86,9 +86,7 @@ class BatchCrudController extends AbstractCrudController
      */
     public function configureFields(string $pageName): iterable
     {
-        yield ChoiceField::new('statut')
-            ->setChoices()
-            ->renderExpanded()
+        yield BooleanField::new('actif')->renderAsSwitch(false)
             ->setHelp('Statut du traitement (Activé/Désactivé).');
 
         yield TextField::new('nom')
