@@ -2,6 +2,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\Main\Batch;
 use App\Entity\Main\Portefeuille;
 use App\Entity\Main\ListeProjet;
 
@@ -20,7 +21,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
-
 
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 
