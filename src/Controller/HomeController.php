@@ -347,8 +347,9 @@ class HomeController extends AbstractController
                 $this->addFlash('info', $message);
             }
 
-            /** Si le referentiel sonar est égale de celui sur le serveur et que la table
-             *  de properties n'est pas à jour, on met à jour la table.
+            /**
+             * Si le referentiel sonar est égale de celui sur le serveur et que la table
+             * de properties n'est pas à jour, on met à jour la table.
              */
             if ($projetSonar == $projetBD  && $projetSonar !== $properties['projetSonar'] ) {
             $this->majProperties("projet", $projetBD, $projetSonar);
@@ -366,8 +367,9 @@ class HomeController extends AbstractController
             $message="[PROFIL] Vous devez mettre à jour le référentiel local !";
             $this->addFlash('info', $message);
             }
-            /** Si le referentiel sonar est égale de celui sur le serveur et que la table
-             *  de properties n'est pas à jour, on met à jour la table.
+            /** 
+             * Si le referentiel sonar est égale de celui sur le serveur et que la table
+             * de properties n'est pas à jour, on met à jour la table.
              */
             if ($profilSonar == $profilBD  && $profilSonar !== $properties['profilSonar'] ) {
                 $this->majProperties("profil", $profilBD, $profilSonar);
@@ -389,7 +391,8 @@ class HomeController extends AbstractController
 
         $nombreFavori=$this->getParameter('nombre.favori');
 
-        /** On récupère les projets en favori. Pour le moment on limite le nombre de projet à 10.
+        /**
+         * On récupère les projets en favori. Pour le moment on limite le nombre de projet à 10.
          * SQLite : 0 (false) and 1 (true).
          */
         $sql = "SELECT DISTINCT
