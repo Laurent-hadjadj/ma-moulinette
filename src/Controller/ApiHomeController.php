@@ -420,7 +420,7 @@ class ApiHomeController extends AbstractController
     return $response->setData(
       [
         "message" => $message,
-        "visibility"=> ['public'=>$public, 'private'=>$private],
+        "public"=>$public, "private"=>$private,
         "empty_tags"=>$emptyTags,
         Response::HTTP_OK
     ]);
