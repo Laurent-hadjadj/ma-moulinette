@@ -16,7 +16,7 @@ namespace App\Controller;
 use Psr\Log\LoggerInterface;
 use Doctrine\DBAL\Connection;
 
-// Accès aux tables SLQLite
+/** Accès aux tables SLQLitec*/
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -53,7 +53,10 @@ class HomeController extends AbstractController
      */
     protected function httpClient($url): array
     {
-        /** On peut se connecter avec un user/password ou un token. Nous on préfère le token. */
+        /**
+         * On peut se connecter avec un user/password ou un token.
+         * Nous on préfère le token.
+         */
         if (empty($this->getParameter('sonar.token'))) {
         $user = $this->getParameter('sonar.user');
         $password = $this->getParameter('sonar.password');
@@ -95,7 +98,9 @@ class HomeController extends AbstractController
      */
     private function countProjetBD(): Int
     {
-        /** On récupère le nombre de projet depuis la table liste_projet */
+        /**
+         * On récupère le nombre de projet depuis la table liste_projet
+         */
         $sql = "SELECT COUNT(*) as total from liste_projet";
         $r = $this->connection->fetchAllAssociative($sql);
         if (!$r) {
@@ -314,7 +319,9 @@ class HomeController extends AbstractController
         }
 
         /** ***** Date - Profil ***** */
-        /** Si la base n'a pas été mise à jour, on récupère le nombre de projet */
+        /**
+         * Si la base n'a pas été mise à jour, on récupère le nombre de projet
+         */
         if (date_diff($dateModificationProfil,$date)->format('%a') >=
         $this->getParameter('maj.profil')){
             /** On récupère le nombre de profil en base. */
