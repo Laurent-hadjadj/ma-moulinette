@@ -367,7 +367,7 @@ class HomeController extends AbstractController
             $message="[PROFIL] Vous devez mettre à jour le référentiel local !";
             $this->addFlash('info', $message);
             }
-            /** 
+            /**
              * Si le referentiel sonar est égale de celui sur le serveur et que la table
              * de properties n'est pas à jour, on met à jour la table.
              */
