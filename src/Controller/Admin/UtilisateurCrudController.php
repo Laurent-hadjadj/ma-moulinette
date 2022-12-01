@@ -94,6 +94,7 @@ class UtilisateurCrudController extends AbstractCrudController
             ->setHelp('Sélectionne ton équipe.');
 
         yield BooleanField::new('actif')->renderAsSwitch(false);
+
         yield DateTimeField::new('dateModification')
             ->setTimezone('Europe/Paris')
             ->hideOnForm();
