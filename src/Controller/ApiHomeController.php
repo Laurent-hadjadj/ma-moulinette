@@ -340,11 +340,12 @@ class ApiHomeController extends AbstractController
         }
       }
       /** on renvoie les résultats */
-      $message="Création";
+      $message="Initialisation de la liste des Tags...";
       return $response->setData(
         [
           "message" => $message,
-          "visibility"=> ['public'=>$public, 'pivate'=>$private],
+          "public"=> $public,
+          "private"=>$private,
           "empty_tags"=>$emptyTags,
           Response::HTTP_OK
         ]);
