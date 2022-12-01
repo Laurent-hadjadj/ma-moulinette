@@ -5,6 +5,7 @@ namespace App\Controller\Admin;
 use App\Entity\Main\Utilisateur;
 use App\Entity\Main\Equipe;
 use App\Entity\Main\Portefeuille;
+use App\Entity\Main\Batch;
 
 use PDO;
 use Doctrine\ORM\EntityManagerInterface;
@@ -270,13 +271,20 @@ class DashboardController extends AbstractDashboardController
     {
         yield MenuItem::linkToUrl('Home', 'fas fa-desktop', $this->generateUrl('home'))
             ->setPermission('ROLE_UTILISATEUR');
+
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-dashboard')
         ->setPermission('ROLE_UTILISATEUR');
-        yield MenuItem::linkToCrud('Equipe', 'fas fa-users', Equipe::class)
-        ->setPermission('ROLE_GESTIONNAIRE');
+
         yield MenuItem::linkToCrud('Utilisateur', 'fas fa-user', Utilisateur::class)
         ->setPermission('ROLE_GESTIONNAIRE');
+
+        yield MenuItem::linkToCrud('Equipe', 'fas fa-users', Equipe::class)
+        ->setPermission('ROLE_GESTIONNAIRE');
+
         yield MenuItem::linkToCrud('Portefeuille', 'fas fa-gamepad', Portefeuille::class)
+        ->setPermission('ROLE_GESTIONNAIRE');
+
+        yield MenuItem::linkToCrud('Batch', 'fas fa-gears', Batch::class)
         ->setPermission('ROLE_GESTIONNAIRE');
     }
 
@@ -302,6 +310,12 @@ class DashboardController extends AbstractDashboardController
             ->add(Crud::PAGE_INDEX, Action::DETAIL);
     }
 
+    /**
+     * [Description for configureAssets]
+     * Metà jour les ressources publiques
+     * @return Assets
+     *
+     */
     public function configureAssets(): Assets
     {
         return parent::configureAssets()
