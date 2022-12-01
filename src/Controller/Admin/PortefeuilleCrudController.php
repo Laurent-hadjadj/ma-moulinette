@@ -77,11 +77,19 @@ class PortefeuilleCrudController extends AbstractCrudController
         $sql="SELECT name, maven_key FROM liste_projet ORDER BY name ASC";
         $l = $this->emm->getConnection()->prepare($sql)->executeQuery();
         $resultat = $l->fetchAllAssociative();
+        /**
+         * Si la liste des projets vide on renvoi un tableau vide
+         */
         $i=0;
-        foreach($resultat as $value) {
-            $key2[$i]=$value['name'];
-            $val2[$i]=$value['maven_key'];
-            $i++;
+        if (empty($resultat)) {
+            $key2=['Aucun Projet'];
+            $val2=[''];
+        } else {
+            foreach($resultat as $value) {
+                $key2[$i]=$value['name'];
+                $val2[$i]=$value['maven_key'];
+                $i++;
+            }
         }
 
         yield ChoiceField::new('liste')
