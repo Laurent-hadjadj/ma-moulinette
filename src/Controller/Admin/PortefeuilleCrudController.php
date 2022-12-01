@@ -88,7 +88,7 @@ class PortefeuilleCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         yield TextField::new('nom')
-        ->setHelp('Donne un nom à ta liste.');
+        ->setHelp('Nom de la liste des projets.');
 
         // On récupère la liste des équipes
         $sql="SELECT nom, description FROM equipe ORDER BY nom ASC";
@@ -108,7 +108,7 @@ class PortefeuilleCrudController extends AbstractCrudController
         yield ChoiceField::new('equipe')
             ->setChoices(array_combine($key1, $val1))
             ->renderExpanded()
-            ->setHelp('Choisi l\'équipe pour laquelle tu veux ajouter les projets.');
+            ->setHelp('Nom de l\'équipe en charge des projets.');
 
         /** On récupère la liste des projets */
         $sql="SELECT name, maven_key FROM liste_projet ORDER BY name ASC";
@@ -132,7 +132,7 @@ class PortefeuilleCrudController extends AbstractCrudController
         yield ChoiceField::new('liste')
             ->setChoices(array_combine($key2, $val2))
             ->allowMultipleChoices()
-            ->setHelp('Choisi lles projets que tu souhaites ajouter à la liste.');
+            ->setHelp('Liste des projets du portefeuille.');
 
         yield DateTimeField::new('dateModification')
             ->setTimezone('Europe/Paris')
