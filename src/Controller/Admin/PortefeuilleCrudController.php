@@ -95,7 +95,7 @@ class PortefeuilleCrudController extends AbstractCrudController
         yield ChoiceField::new('liste')
             ->setChoices(array_combine($key2, $val2))
             ->allowMultipleChoices()
-            ->setHelp('Choisi les projets que tu souhaites à jouter à la liste.');
+            ->setHelp('Choisi les projets que tu souhaites ajouter à la liste.');
 
         yield DateTimeField::new('dateModification')
             ->setTimezone('Europe/Paris')
