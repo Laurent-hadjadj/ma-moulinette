@@ -65,7 +65,7 @@ class BatchCrudController extends AbstractCrudController
     public function configureFilters(Filters $filters): Filters
     {
         return $filters
-            ->add('nom')
+            ->add('titre')
             ->add('statut');
     }
 
@@ -95,7 +95,7 @@ class BatchCrudController extends AbstractCrudController
         yield BooleanField::new('statut')->renderAsSwitch(false)
             ->setHelp('Statut du traitement (Activé/Désactivé).');
 
-        yield TextField::new('nom')
+        yield TextField::new('titre')
         ->setHelp('Nom du traitement de données.');
 
         /** On récupère la liste des projets */
@@ -105,20 +105,30 @@ class BatchCrudController extends AbstractCrudController
         /**
          * Si la liste des portefeuille est vide on renvoi"Aucun"
          */
+        $i=0;
         if (empty($resultat)) {
-            $restultat=['Aucun'];
+            $key=$i;
+            $val="Aucun";
+
+        } else {
+            foreach($resultat as $value) {
+                $key[$i]=$value['nom'];
+                $val[$i]=$value['nom'];
+                $i++;
+            }
         }
 
         yield ChoiceField::new('portefeuille')
-        //array_combine($key2, $val2)
-            ->setChoices($resultat)
+            ->setChoices(array_combine($key, $val))
             ->setHelp('Nom du portefeuille de projets.');
 
         yield TextField::new('description')
         ->setHelp('Nom du traitement de données.');
 
-        yield TextField::new('utilisateur')
+        yield TextField::new('responsbale')
+        ->hideOnForm()
         ->setHelp('Responsable du traitement.');
+
 
         yield DateTimeField::new('dateModification')
             ->setTimezone('Europe/Paris')
@@ -144,16 +154,24 @@ class BatchCrudController extends AbstractCrudController
         if (!$entityInstance instanceof Batch) {
             return;
         }
-        $user = $this->token->getToken()->getUser();
-        dd($user);
         /** On récèpere le nom du batch */
-        $nom=$entityInstance->getNom();
-        //** On récupère le nombre de projet séléctionné */
-        //$nombre_projet=array_count($entityInstance->getNom());
+        $titre=$entityInstance->getTitre();
+
+        /** On récupère l'objet user */
         $user = $this->token->getToken()->getUser();
+
+        //** On récupère le nombre de projet du portefeuille */
+        $sql="SELECT liste FROM portefeuille ORDER BY nom ASC";
+        $l = $this->emm->getConnection()->prepare($sql)->executeQuery();
+        $r = $l->fetchAssociative();
+        $nombreProjet=count(json_decode($r['liste']));
+
         /** On enregistre le données que l'on veut modifier */
-        $entityInstance->setNom(strtoupper($nom));
+        $entityInstance->setTitre(mb_strtoupper($titre));
+        $entityInstance->setResponsable($user->getPrenom().' '.$user->getNom());
+        $entityInstance->setNombreProjet($nombreProjet);
         $entityInstance->setDateEnregistrement(new \DateTimeImmutable());
+
         parent::persistEntity($em, $entityInstance);
     }
 
