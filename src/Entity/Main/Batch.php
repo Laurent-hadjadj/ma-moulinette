@@ -34,6 +34,9 @@ class Batch
     #[ORM\Column(type: 'string', length: 128)]
     private $description;
 
+    #[ORM\Column(type: 'integer')]
+    private $nombre_projet=0;
+
     #[ORM\Column(type: 'datetime', nullable: true)]
     private $date_modification;
 
@@ -101,6 +104,18 @@ class Batch
     public function setStatut(bool $statut): self
     {
         $this->statut = $statut;
+
+        return $this;
+    }
+
+    public function getNombreProjet(): ?int
+    {
+        return $this->nombre_projet;
+    }
+
+    public function setNombreProjet(int $nombre_projet): self
+    {
+        $this->nombre_projet = $nombre_projet;
 
         return $this;
     }
