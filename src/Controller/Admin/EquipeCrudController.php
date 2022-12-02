@@ -44,7 +44,7 @@ class EquipeCrudController extends AbstractCrudController
             return;
         }
         $nom=$entityInstance->getNom();
-        $entityInstance->setNom(strtoupper($nom));
+        $entityInstance->setNom(mb_strtoupper($nom));
         $entityInstance->setDateEnregistrement(new \DateTimeImmutable());
         parent::persistEntity($em, $entityInstance);
     }
