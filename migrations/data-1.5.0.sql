@@ -87,7 +87,7 @@ BEGIN TRANSACTION;
 -- ## Ajout du compte admin
 
 INSERT INTO utilisateur
-(courriel, roles,  password, nom, prenom, date_enregistrement, actif, avatar )
+(courriel, roles,  password, prenom, nom, date_enregistrement, actif, avatar )
 VALUES
 ('admin@ma-moulinette.fr',
 '["ROLE_GESTIONNAIRE"]',

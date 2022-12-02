@@ -9,7 +9,7 @@
  * Vous pouvez obtenir une copie de la licence à l'adresse suivante :
  * http://creativecommons.org/licenses/by-nc-sa/4.0/
  * ----------------------------------------------------------------------
- * Last Modified: Wed Nov 30 2022
+ * Last Modified: Fri Dec 02 2022
  * Modified By: Laurent HADJADJ
  * ----------------------------------------------------------------------
  * HISTORY:
@@ -33,11 +33,11 @@ INSERT INTO ma_moulinette (version, date_version, date_enregistrement) VALUES ('
 INSERT INTO ma_moulinette (version, date_version, date_enregistrement) VALUES ('1.5.0-RC1', '2022-10-06', date('now'));
 INSERT INTO ma_moulinette (version, date_version, date_enregistrement) VALUES ('1.5.0', '2022-10-12', date('now'));
 -- ## Ajout de la version 1.6.0 dans la table ma_moulinette
-INSERT INTO ma_moulinette (version, date_version, date_enregistrement) VALUES ('1.6.0', '2022-11-29', date('now'));
+INSERT INTO ma_moulinette (version, date_version, date_enregistrement) VALUES ('2.0.0', '2023-01-01', date('now'));
 
 -- ## Ajout du compte admin
 INSERT INTO utilisateur
-(courriel, roles,  password, nom, prenom, date_enregistrement, actif, avatar, equipe)
+(courriel, roles,  password, prenom, nom, date_enregistrement, actif, avatar, equipe)
 VALUES
 ('admin@ma-moulinette.fr',
 '["ROLE_GESTIONNAIRE"]',
@@ -48,6 +48,5 @@ VALUES
 1,
 'chiffre/01.png',
 '');
-
 
 COMMIT;
