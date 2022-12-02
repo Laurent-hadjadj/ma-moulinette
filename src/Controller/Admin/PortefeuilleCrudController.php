@@ -160,7 +160,7 @@ class PortefeuilleCrudController extends AbstractCrudController
         /** On récèpere le nom du portefeuille */
         $nom=$entityInstance->getNom();
         /** On enregistre le données que l'on veut modifier */
-        $entityInstance->setNom(strtoupper($nom));
+        $entityInstance->setNom(mb_strtoupper($nom));
         $entityInstance->setDateEnregistrement(new \DateTimeImmutable());
         parent::persistEntity($em, $entityInstance);
     }
