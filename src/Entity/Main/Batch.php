@@ -25,21 +25,35 @@ class Batch
     #[ORM\Column(type: 'integer')]
     private $id;
 
+    /** Statut d'activité du traitement */
     #[ORM\Column(type: 'boolean' )]
     private $statut=false;
 
+    /** Nom du traitement */
     #[ORM\Column(type: 'string', length: 32)]
     private $nom;
 
+    /** Description du traitement */
     #[ORM\Column(type: 'string', length: 128)]
     private $description;
 
+    /** Nom de l'utilisateur */
+    #[ORM\Column(type: 'string', length: 128)]
+    private $utilisateur;
+
+    /** Nom du portefeuille de projet */
+    #[ORM\Column(type: 'string', length: 32)]
+    private $portefeuille="Aucun";
+
+    /** Nombre de projet */
     #[ORM\Column(type: 'integer')]
     private $nombre_projet=0;
 
+    /** Date de modification */
     #[ORM\Column(type: 'datetime', nullable: true)]
     private $date_modification;
 
+    /** Date d'enregistrement */
     #[ORM\Column(type: 'datetime')]
     private $date_enregistrement;
 
@@ -116,6 +130,30 @@ class Batch
     public function setNombreProjet(int $nombre_projet): self
     {
         $this->nombre_projet = $nombre_projet;
+
+        return $this;
+    }
+
+    public function getPortefeuille(): ?string
+    {
+        return $this->portefeuille;
+    }
+
+    public function setPortefeuille(string $portefeuille): self
+    {
+        $this->portefeuille = $portefeuille;
+
+        return $this;
+    }
+
+    public function getUtilisateur(): ?string
+    {
+        return $this->utilisateur;
+    }
+
+    public function setUtilisateur(string $utilisateur): self
+    {
+        $this->utilisateur = $utilisateur;
 
         return $this;
     }
