@@ -31,7 +31,7 @@ class Batch
 
     /** Nom du traitement */
     #[ORM\Column(type: 'string', length: 32)]
-    private $nom;
+    private $titre;
 
     /** Description du traitement */
     #[ORM\Column(type: 'string', length: 128)]
@@ -39,7 +39,7 @@ class Batch
 
     /** Nom de l'utilisateur */
     #[ORM\Column(type: 'string', length: 128)]
-    private $utilisateur;
+    private $responsable;
 
     /** Nom du portefeuille de projet */
     #[ORM\Column(type: 'string', length: 32)]
@@ -62,14 +62,26 @@ class Batch
         return $this->id;
     }
 
-    public function getNom(): ?string
+    public function isStatut(): ?bool
     {
-        return $this->nom;
+        return $this->statut;
     }
 
-    public function setNom(string $nom): self
+    public function setStatut(bool $statut): self
     {
-        $this->nom = $nom;
+        $this->statut = $statut;
+
+        return $this;
+    }
+
+    public function getTitre(): ?string
+    {
+        return $this->titre;
+    }
+
+    public function setTitre(string $titre): self
+    {
+        $this->titre = $titre;
 
         return $this;
     }
@@ -82,6 +94,42 @@ class Batch
     public function setDescription(string $description): self
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getResponsable(): ?string
+    {
+        return $this->responsable;
+    }
+
+    public function setResponsable(string $responsable): self
+    {
+        $this->responsable = $responsable;
+
+        return $this;
+    }
+
+    public function getPortefeuille(): ?string
+    {
+        return $this->portefeuille;
+    }
+
+    public function setPortefeuille(string $portefeuille): self
+    {
+        $this->portefeuille = $portefeuille;
+
+        return $this;
+    }
+
+    public function getNombreProjet(): ?int
+    {
+        return $this->nombre_projet;
+    }
+
+    public function setNombreProjet(int $nombre_projet): self
+    {
+        $this->nombre_projet = $nombre_projet;
 
         return $this;
     }
@@ -109,55 +157,6 @@ class Batch
 
         return $this;
     }
-
-    public function isStatut(): ?bool
-    {
-        return $this->statut;
-    }
-
-    public function setStatut(bool $statut): self
-    {
-        $this->statut = $statut;
-
-        return $this;
-    }
-
-    public function getNombreProjet(): ?int
-    {
-        return $this->nombre_projet;
-    }
-
-    public function setNombreProjet(int $nombre_projet): self
-    {
-        $this->nombre_projet = $nombre_projet;
-
-        return $this;
-    }
-
-    public function getPortefeuille(): ?string
-    {
-        return $this->portefeuille;
-    }
-
-    public function setPortefeuille(string $portefeuille): self
-    {
-        $this->portefeuille = $portefeuille;
-
-        return $this;
-    }
-
-    public function getUtilisateur(): ?string
-    {
-        return $this->utilisateur;
-    }
-
-    public function setUtilisateur(string $utilisateur): self
-    {
-        $this->utilisateur = $utilisateur;
-
-        return $this;
-    }
-
 
 
 }
