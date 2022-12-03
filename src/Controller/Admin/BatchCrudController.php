@@ -11,11 +11,12 @@ use Symfony\Component\Form\FormTypeInterface;
 
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
-use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
@@ -99,7 +100,7 @@ class BatchCrudController extends AbstractCrudController
         ->setHelp('Nom du traitement de données.');
 
         /** On récupère la liste des projets */
-        $sql="SELECT nom FROM portefeuille ORDER BY nom ASC";
+        $sql="SELECT titre FROM portefeuille ORDER BY titre ASC";
         $l = $this->emm->getConnection()->prepare($sql)->executeQuery();
         $resultat = $l->fetchAllAssociative();
         /**
@@ -112,8 +113,8 @@ class BatchCrudController extends AbstractCrudController
 
         } else {
             foreach($resultat as $value) {
-                $key[$i]=$value['nom'];
-                $val[$i]=$value['nom'];
+                $key[$i]=$value['titre'];
+                $val[$i]=$value['titre'];
                 $i++;
             }
         }
@@ -125,17 +126,21 @@ class BatchCrudController extends AbstractCrudController
         yield TextField::new('description')
         ->setHelp('Nom du traitement de données.');
 
+        yield IntegerField::new('nombre_projet')
+        ->hideOnForm()
+        ->setHelp('Nombre de projet dans le portefeuille.');
+
         yield TextField::new('responsbale')
         ->hideOnForm()
         ->setHelp('Responsable du traitement.');
 
-
         yield DateTimeField::new('dateModification')
             ->setTimezone('Europe/Paris')
             ->hideOnForm();
+
         yield DateTimeField::new('dateEnregistrement')
-            ->setTimezone('Europe/Paris')
-            ->hideOnForm();
+        ->setTimezone('Europe/Paris')
+        ->hideOnForm();
 
     }
 
@@ -161,7 +166,7 @@ class BatchCrudController extends AbstractCrudController
         $user = $this->token->getToken()->getUser();
 
         //** On récupère le nombre de projet du portefeuille */
-        $sql="SELECT liste FROM portefeuille ORDER BY nom ASC";
+        $sql="SELECT liste FROM portefeuille ORDER BY titre ASC";
         $l = $this->emm->getConnection()->prepare($sql)->executeQuery();
         $r = $l->fetchAssociative();
         $nombreProjet=count(json_decode($r['liste']));
@@ -194,4 +199,5 @@ class BatchCrudController extends AbstractCrudController
         $entityInstance->setdateModification(new \DateTimeImmutable);
         parent::updateEntity($em, $entityInstance);
     }
+
 }
