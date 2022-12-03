@@ -36,7 +36,7 @@ class Batch
     private $statut=false;
 
     /** Nom du traitement */
-    #[ORM\Column(type: 'string', length: 3, unique: true)]
+    #[ORM\Column(type: 'string', length: 32, unique: true)]
     private $titre;
 
     /** Description du traitement */
