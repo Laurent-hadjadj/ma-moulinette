@@ -27,6 +27,7 @@ Encore
     .addEntry('repartition', './assets/js/app-repartition.js')
     .addEntry('cosui', './assets/js/app-cosui.js')
     .addStyleEntry('admin', './assets/styles/admin.css')
+    .addStyleEntry('batch', './assets/styles/batch.css')
 
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
     .splitEntryChunks()
