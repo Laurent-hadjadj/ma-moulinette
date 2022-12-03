@@ -60,7 +60,7 @@ class PortefeuilleCrudController extends AbstractCrudController
     public function configureFilters(Filters $filters): Filters
     {
         return $filters
-            ->add('nom')
+            ->add('titre')
             ->add('equipe');
     }
 
@@ -87,21 +87,21 @@ class PortefeuilleCrudController extends AbstractCrudController
      */
     public function configureFields(string $pageName): iterable
     {
-        yield TextField::new('nom')
+        yield TextField::new('titre')
         ->setHelp('Nom de la liste des projets.');
 
         // On récupère la liste des équipes
-        $sql="SELECT nom, description FROM equipe ORDER BY nom ASC";
+        $sql="SELECT titre, description FROM equipe ORDER BY titre ASC";
         $l = $this->emm->getConnection()->prepare($sql)->executeQuery();
         $resultat = $l->fetchAllAssociative();
         $i=0;
         /** si la table est vide */
         if (empty($resultat)) {
-            $resultat=[["nom" => "Aucune", "description" => "Aucune équipe."]];
+            $resultat=[["titre" => "Aucune", "description" => "Aucune équipe."]];
         }
         foreach($resultat as $value) {
-            $key1[$i]=$value['nom']." - ".$value['description'];
-            $val1[$i]=$value['nom'];
+            $key1[$i]=$value['titre']." - ".$value['description'];
+            $val1[$i]=$value['titre'];
             $i++;
         }
 
@@ -157,10 +157,10 @@ class PortefeuilleCrudController extends AbstractCrudController
         if (!$entityInstance instanceof Portefeuille) {
             return;
         }
-        /** On récèpere le nom du portefeuille */
-        $nom=$entityInstance->getNom();
+        /** On récèpere le titre du portefeuille */
+        $titre=$entityInstance->getNom();
         /** On enregistre le données que l'on veut modifier */
-        $entityInstance->setNom(mb_strtoupper($nom));
+        $entityInstance->setNom(mb_strtoupper($titre));
         $entityInstance->setDateEnregistrement(new \DateTimeImmutable());
         parent::persistEntity($em, $entityInstance);
     }
