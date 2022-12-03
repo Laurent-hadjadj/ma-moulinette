@@ -26,7 +26,7 @@ class Portefeuille
     private $id;
 
     #[ORM\Column(type: 'string', length: 32)]
-    private $nom;
+    private $titre;
 
     #[ORM\Column(type: 'string', length: 32)]
     private $equipe;
@@ -45,14 +45,14 @@ class Portefeuille
         return $this->id;
     }
 
-    public function getNom(): ?string
+    public function getTitre(): ?string
     {
-        return $this->nom;
+        return $this->titre;
     }
 
-    public function setNom(string $nom): self
+    public function setTitre(string $titre): self
     {
-        $this->nom = $nom;
+        $this->titre = $titre;
 
         return $this;
     }
