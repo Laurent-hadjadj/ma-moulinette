@@ -22,11 +22,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: BatchRepository::class)]
-#[UniqueEntity(
-    fields: ['titre'],
-    errorPath: 'titre',
-    message: 'Le batch existe déjà.',
-)]
+#[UniqueEntity(fields: ['titre'], message: 'Le {{ label }} : {{ value }} existe déjà.')]
+#[UniqueEntity(fields: ['portefeuille'], message: 'Le {{ label }} : {{ value }} existe déjà.')]
 class Batch
 {
     #[ORM\Id]
@@ -50,8 +47,9 @@ class Batch
     #[ORM\Column(type: 'string', length: 128)]
     private $responsable;
 
+
     /** Nom du portefeuille de projet */
-    #[ORM\Column(type: 'string', length: 32)]
+    #[ORM\Column(type: 'string', length: 32, unique: true)]
     private $portefeuille="Aucun";
 
     /** Nombre de projet */
