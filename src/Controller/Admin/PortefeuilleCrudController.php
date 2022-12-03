@@ -137,6 +137,7 @@ class PortefeuilleCrudController extends AbstractCrudController
         yield DateTimeField::new('dateModification')
             ->setTimezone('Europe/Paris')
             ->hideOnForm();
+
         yield DateTimeField::new('dateEnregistrement')
             ->setTimezone('Europe/Paris')
             ->hideOnForm();
@@ -158,9 +159,9 @@ class PortefeuilleCrudController extends AbstractCrudController
             return;
         }
         /** On récèpere le titre du portefeuille */
-        $titre=$entityInstance->getNom();
+        $titre=$entityInstance->getTitre();
         /** On enregistre le données que l'on veut modifier */
-        $entityInstance->setNom(mb_strtoupper($titre));
+        $entityInstance->setTitre(mb_strtoupper($titre));
         $entityInstance->setDateEnregistrement(new \DateTimeImmutable());
         parent::persistEntity($em, $entityInstance);
     }
