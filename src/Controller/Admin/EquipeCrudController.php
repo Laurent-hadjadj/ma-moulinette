@@ -28,7 +28,7 @@ class EquipeCrudController extends AbstractCrudController
 
     public function configureFields(string $pageName): iterable
     {
-        yield TextField::new('nom');
+        yield TextField::new('titre');
         yield TextField::new('description');
         yield DateTimeField::new('dateModification')
             ->setTimezone('Europe/Paris')
@@ -43,8 +43,8 @@ class EquipeCrudController extends AbstractCrudController
         if (!$entityInstance instanceof Equipe) {
             return;
         }
-        $nom=$entityInstance->getNom();
-        $entityInstance->setNom(mb_strtoupper($nom));
+        $nom=$entityInstance->getTitre();
+        $entityInstance->setTitre(mb_strtoupper($titre));
         $entityInstance->setDateEnregistrement(new \DateTimeImmutable());
         parent::persistEntity($em, $entityInstance);
     }
