@@ -17,7 +17,16 @@ use App\Repository\Main\BatchRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
+/** gstion des containtes */
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
+
 #[ORM\Entity(repositoryClass: BatchRepository::class)]
+#[UniqueEntity(
+    fields: ['titre'],
+    errorPath: 'titre',
+    message: 'Le batch existe déjà.',
+)]
 class Batch
 {
     #[ORM\Id]
@@ -30,7 +39,7 @@ class Batch
     private $statut=false;
 
     /** Nom du traitement */
-    #[ORM\Column(type: 'string', length: 32)]
+    #[ORM\Column(type: 'string', length: 3, unique: true)]
     private $titre;
 
     /** Description du traitement */

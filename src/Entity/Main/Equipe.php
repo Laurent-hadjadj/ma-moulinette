@@ -17,7 +17,16 @@ use App\Repository\Main\EquipeRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
+/** gstion des containtes */
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
+
 #[ORM\Entity(repositoryClass: EquipeRepository::class)]
+#[UniqueEntity(
+    fields: ['titre'],
+    errorPath: 'titre',
+    message: 'L\'équipe existe déjà.',
+)]
 class Equipe
 {
     #[ORM\Id]
@@ -25,7 +34,7 @@ class Equipe
     #[ORM\Column(type: 'integer')]
     private $id;
 
-    #[ORM\Column(type: 'string', length: 32)]
+    #[ORM\Column(type: 'string', length: 32, unique: true)]
     private $titre;
 
     #[ORM\Column(type: 'string', length: 128)]
