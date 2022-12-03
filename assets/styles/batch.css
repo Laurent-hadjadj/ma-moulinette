@@ -1,0 +1,31 @@
+/* stylelint-disable-next-line selector-class-pattern */
+td.text-.field-integer { text-align: center; }
+
+/******************** Mise en place d'un footer *****************
+*  bas de page pour la page suivi
+*/
+
+/* zone de bas de page */
+.footer {
+  background-color: #00445b;
+  color: #fff;
+  width: 100%;
+  bottom: 0;
+  position: fixed;
+}
+
+/* Copyright */
+.copyright {
+  padding-left: 0.8rem;
+  margin-top: 0.5rem;
+  margin-bottom: -0.8rem;
+  font-size: 0.7rem;
+}
+
+/* Auteur */
+.auteur {
+  padding-right: 0.5rem;
+  padding-top: 0.3rem;
+  margin-bottom: -0.8rem;
+  font-size: 0.9rem;
+}
