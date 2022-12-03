@@ -22,11 +22,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: EquipeRepository::class)]
-#[UniqueEntity(
-    fields: ['titre'],
-    errorPath: 'titre',
-    message: 'L\'équipe existe déjà.',
-)]
+#[UniqueEntity(fields: ['titre'], message: 'Le {{ label }} : {{ value }} existe déjà.')]
 class Equipe
 {
     #[ORM\Id]
