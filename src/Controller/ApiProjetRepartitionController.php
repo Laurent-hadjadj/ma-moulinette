@@ -18,21 +18,34 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-// Gestion de accès aux API
+/** Gestion de accès aux API */
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-// Accès aux tables SLQLite
+/** Accès aux tables SLQLite */
 use App\Entity\Secondary\Repartition;
 use Doctrine\Persistence\ManagerRegistry;
 use DateTime;
 
-// Logger
+/** Logger */
 use Psr\Log\LoggerInterface;
 
+/**
+ * [Description ApiProjetRepartitionController]
+ */
 class ApiProjetRepartitionController extends AbstractController
 {
 
+  /**
+   * [Description for __construct]
+   *
+   * @param  private
+   * @param  private
+   * @param  private
+   *
+   * Created at: 04/12/2022, 09:00:38 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   */
   public function __construct(
     private ManagerRegistry $doctrine,
     private HttpClientInterface $client,
@@ -47,11 +60,15 @@ class ApiProjetRepartitionController extends AbstractController
   public static $sonarUrl = "sonar.url";
 
   /**
-   * batch_Analyse
+   * [Description for batch_Analyse]
    *
-   * @param  mixed $elements
-   * @param  mixed $mavenKey
+   * @param mixed $elements
+   * @param mixed $mavenKey
+   *
    * @return ['frontend'=>$frontend, 'backend'=>$backend, 'autre'=>$autre];
+   *
+   * Created at: 04/12/2022, 09:00:59 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
    */
   protected function batch_Analyse($elements, $mavenKey)
   {
@@ -60,7 +77,7 @@ class ApiProjetRepartitionController extends AbstractController
     $autre = 0;
     $erreur=0;
 
-    // nom du projet
+    /** nom du projet */
     $app = explode(":", $mavenKey);
     foreach ($elements as $element) {
       $file = str_replace($mavenKey . ":", "", $element->getComponent());
@@ -106,10 +123,14 @@ class ApiProjetRepartitionController extends AbstractController
   }
 
   /**
+   * [Description for httpClient]
    * httpClient
+   * @param mixed $url
    *
-   * @param  mixed $url
-   * @return $responseJson
+   * @return array
+   *
+   * Created at: 04/12/2022, 09:01:28 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
    */
   protected function httpClient($url): array
   {
@@ -141,7 +162,8 @@ class ApiProjetRepartitionController extends AbstractController
       }
     }
 
-    // La variable n'est pas utilisé, elle permet de collecter les données et de rendre la main.
+    /** La variable n'est pas utilisé, elle permet de collecter
+     *  les données et de rendre la main. */
     $contentType = $response->getHeaders()['content-type'][0];
     $this->logger->INFO('** ContentType *** '.isset($contentType));
 
@@ -150,43 +172,59 @@ class ApiProjetRepartitionController extends AbstractController
   }
 
   /**
-  * description
-  * Fonction qui permet de parser les anomalies par type selon le nombre de page disponible
-  * $pageSize = 1 à 500
-  * $index = 1 à 20 max ==> 10000 anomalies
-  * $type = BUG,VULNERABILITY,CODE_SMELL
-  * $severite = INFO,MINOR,MAJOR,CRITICAL,BLOCKER
-  * http://{url}/api/issues/search?componentKeys={key}&statuses=OPEN,CONFIRMED,REOPENED&
-  * resolutions=&s=STATUS&asc=no&types={type}&severities={severite}=&ps={pageSize}&p={index}
-  */
+   * [Description for batch_anomalie]
+   * Fonction qui permet de parser les anomalies par type selon le nombre
+   * de page disponible.
+   * $pageSize = 1 à 500
+   * $index = 1 à 20 max ==> 10000 anomalies
+   * $type = BUG,VULNERABILITY,CODE_SMELL
+   * $severite = INFO,MINOR,MAJOR,CRITICAL,BLOCKER
+   * http://{url}/api/issues/search?componentKeys={key}&statuses=OPEN,CONFIRMED,REOPENED&
+   * resolutions=&s=STATUS&asc=no&types={type}&severities={severite}=&ps={pageSize}&p=
+   *
+   * @param mixed $mavenKey
+   * @param mixed $index
+   * @param mixed $pageSize
+   * @param mixed $type
+   * @param mixed $severity
+   *
+   * @return [type]
+   *
+   * Created at: 04/12/2022, 09:02:29 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   */
   protected function batch_anomalie($mavenKey, $index, $pageSize, $type, $severity)
   {
 
-    // On bind les variables
+    /** On bind les variables */
     $tempoPageSize = "&ps=${pageSize}";
     $tempoPageindex = "&p=${index}";
     $tempoStates = "&statuses=OPEN,CONFIRMED,REOPENED&resolutions=&s=STATUS&asc=no";
     $tempoType = "&types=${type}";
     $tempoSeverity= "&severities=${severity}";
 
-    // On bind les variables
+    /** On bind les variables */
     $tempoUrl=$this->getParameter(static::$sonarUrl);
     $tempoApi=static::$apiIssuesSearch;
 
-    // On construit l'URL
+    /** On construit l'URL */
     $url1 = "${tempoUrl}${tempoApi}${mavenKey}${tempoStates}${tempoType}";
     $url2 = "${tempoSeverity}${tempoPageSize}${tempoPageindex}";
-    // On appel l'Api et on renvoie le résultat ($logger)
+    /** On appel l'Api et on renvoie le résultat */
     return $this->httpClient($url1.$url2);
   }
 
   /**
-   * projetRepartitionDetails
+   * [Description for projetRepartitionDetails]
    * Rcéupère le total des anomalies par severité.
    *
-   * @param  mixed $request
+   * @param Request $request
+   *
    * @return response
    * INFO,MINOR,MAJOR,CRITICAL,BLOCKER
+   *
+   * Created at: 04/12/2022, 09:03:46 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
    */
   #[Route('/api/projet/repartition/details', name: 'projet_repartition_details', methods: ['GET'])]
   public function projetRepartitionDetails(Request $request): response
@@ -194,7 +232,7 @@ class ApiProjetRepartitionController extends AbstractController
     $mavenKey=$request->get('mavenKey');
     $type=$request->get('type');
 
-    // On récupère le nombre d'anomalie pour le type
+    /** On récupère le nombre d'anomalie pour le type */
     $severity=['INFO','MINOR','MAJOR','CRITICAL','BLOCKER'];
     $total=0;
     foreach ($severity as $value) {
@@ -230,30 +268,33 @@ class ApiProjetRepartitionController extends AbstractController
   }
 
   /**
-   * projetRepartitionCollecte
+   * [Description for projetRepartitionCollecte]
    * Calcul la répartition entre front, back et autre pour tout les type et les sévérités.
    *
-   * @param  mixed $request
+   * @param Request $request
+   *
    * @return response
    *
+   * Created at: 04/12/2022, 09:04:35 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
    */
   #[Route('/api/projet/repartition/collecte', name: 'projet_repartition_collecte', methods: ['PUT'])]
   public function projetRepartitionCollecte(Request $request): response
   {
-    // On décode le body
+    /** On décode le body */
     $data = json_decode($request->getContent());
 
-    // On bind les variables
+    /** On bind les variables */
     $mavenKey = $data->mavenKey;
     $type = $data->type;
     $severity = $data->severity;
     $setup = $data->setup;
 
-    // nom du projet
+    /** nom du projet */
     $name = explode(":", $mavenKey);
     $date= new DateTime();
 
-    // On récupère le nombre d'anomalie pour le type
+    /** On récupère le nombre d'anomalie pour le type */
     $result=$this->batch_anomalie($mavenKey, 1, 1, $type, $severity);
     $i = 1;
     $date1=time();
@@ -292,20 +333,24 @@ class ApiProjetRepartitionController extends AbstractController
   }
 
   /**
-   * projetRepartitionClear
+   * [Description for projetRepartitionClear]
    *
-   * @param  mixed $request
+   * @param Request $request
+   *
    * @return Response
+   *
+   * Created at: 04/12/2022, 09:05:01 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
    */
   #[Route('/api/projet/repartition/clear', name: 'projet_repartition_clear', methods: ['GET'])]
   public function projetRepartitionClear(Request $request): Response
   {
     $mavenKey = $request->get('mavenKey');
 
-    // On créé un nouvel objet Json
+    /** On créé un nouvel objet Json */
     $response = new JsonResponse();
 
-    // On surprime de la table historique le projet
+    /** On surprime de la table historique le projet */
     $sql = "DELETE FROM repartition WHERE maven_key='${mavenKey}'";
     $conn = \Doctrine\DBAL\DriverManager::getConnection(['url' => $this->getParameter('sqlite.secondary.path')]);
     try {
@@ -317,28 +362,32 @@ class ApiProjetRepartitionController extends AbstractController
   }
 
   /**
-   * projetRepartitionAnalyse
+   * [Description for projetRepartitionAnalyse]
    *
-   * @param  mixed $coctrine
-   * @param  mixed $request
-   * @return ["code" => "OK", "repartition"=>$result, Response::HTTP_OK]
+   * @param Request $request
+   *
+   * @return Response
+   * ["code" => "OK", "repartition"=>$result, Response::HTTP_OK]
+   *
+   * Created at: 04/12/2022, 09:05:20 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
    */
   #[Route('/api/projet/repartition/analyse', name: 'projet_repartition_analyse', methods: ['PUT'])]
   public function projetRepartitionAnalyse(Request $request): Response
   {
-    // On décode le body
+    /** On décode le body */
     $data = json_decode($request->getContent());
 
-    // On bind les variables
+    /** On bind les variables */
     $mavenKey = $data->mavenKey;
     $type = $data->type;
     $severity = $data->severity;
     $setup = $data->setup;
 
-    // On créé un nouvel objet Json
+    /** On créé un nouvel objet Json */
     $response = new JsonResponse();
 
-    // On récupère la liste des bugs
+    /** On récupère la liste des bugs */
     $liste = $this->doctrine
       ->getManager('secondary')
       ->getRepository(Repartition::class)
@@ -347,7 +396,7 @@ class ApiProjetRepartitionController extends AbstractController
           'type' => $type,
           'severity' => $severity,
           'setup' => $setup]);
-    // on appelle le service d'analyse
+    /** on appelle le service d'analyse */
     $result=$this->batch_analyse($liste, $mavenKey);
     return $response->setData(["code" => "OK", "repartition"=>$result, Response::HTTP_OK]);
   }
