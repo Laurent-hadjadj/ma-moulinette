@@ -335,7 +335,7 @@ class ProjetController extends AbstractController
       $nombrePresentationHotspotBlocker=$nombrePresentationHotspotCritical=0;
       $nombrePresentationHotspotMajor=0;
 
-      $message="[COSUI] Il n'y a pas de données dans la babase !";
+      $message="[COSUI-001] Il n'y a pas de données dans la babase !";
       $this->addFlash('alert', $message);
     }
     else {
@@ -371,7 +371,7 @@ class ProjetController extends AbstractController
       $initialCodeSmellBlocker=$initialCodeSmellCritical=$initialCodeSmellMajor=0;
       $initialHotspot=0;
 
-      $message="[COSUI] Vous devez choisir un projet comme référence !";
+      $message="[COSUI-002] Vous devez choisir un projet comme référence !";
       $this->addFlash('alert', $message);
     }
     else {
