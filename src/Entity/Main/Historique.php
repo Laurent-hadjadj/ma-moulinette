@@ -43,6 +43,9 @@ class Historique
     private $version_snapshot;
 
     #[ORM\Column(type: 'integer')]
+    private $version_autre;
+
+    #[ORM\Column(type: 'integer')]
     private $suppress_warning;
 
     #[ORM\Column(type: 'integer')]
@@ -114,7 +117,7 @@ class Historique
     #[ORM\Column(type: 'string', length: 4)]
     private $note_hotspot;
 
-    #[ORM\Column(type: 'string', length: 4)]
+    #[ORM\Column(type: 'integer')]
     private $hotspot_high;
 
     #[ORM\Column(type: 'integer')]
@@ -180,11 +183,9 @@ class Historique
     #[ORM\Column(type: 'datetime')]
     private $date_enregistrement;
 
-    public function setMavenKey(string $maven_key): self
+    public function getMavenKey(): ?string
     {
-        $this->maven_key = $maven_key;
-
-        return $this;
+        return $this->maven_key;
     }
 
     public function getVersion(): ?string
@@ -192,23 +193,9 @@ class Historique
         return $this->version;
     }
 
-    public function setVersion(string $version): self
-    {
-        $this->version = $version;
-
-        return $this;
-    }
-
     public function getDateVersion(): ?string
     {
         return $this->date_version;
-    }
-
-    public function setDateVersion(string $date_version): self
-    {
-        $this->date_version = $date_version;
-
-        return $this;
     }
 
     public function getNomProjet(): ?string
@@ -243,6 +230,18 @@ class Historique
     public function setVersionSnapshot(int $version_snapshot): self
     {
         $this->version_snapshot = $version_snapshot;
+
+        return $this;
+    }
+
+    public function getVersionAutre(): ?int
+    {
+        return $this->version_autre;
+    }
+
+    public function setVersionAutre(int $version_autre): self
+    {
+        $this->version_autre = $version_autre;
 
         return $this;
     }
@@ -535,12 +534,12 @@ class Historique
         return $this;
     }
 
-    public function getHotspotHigh(): ?string
+    public function getHotspotHigh(): ?int
     {
         return $this->hotspot_high;
     }
 
-    public function setHotspotHigh(string $hotspot_high): self
+    public function setHotspotHigh(int $hotspot_high): self
     {
         $this->hotspot_high = $hotspot_high;
 
@@ -583,7 +582,7 @@ class Historique
         return $this;
     }
 
-    public function getFavori(): ?bool
+    public function isFavori(): ?bool
     {
         return $this->favori;
     }
@@ -595,7 +594,7 @@ class Historique
         return $this;
     }
 
-    public function getInitial(): ?bool
+    public function isInitial(): ?bool
     {
         return $this->initial;
     }
@@ -603,23 +602,6 @@ class Historique
     public function setInitial(bool $initial): self
     {
         $this->initial = $initial;
-
-        return $this;
-    }
-
-    public function getMavenKey(): ?string
-    {
-        return $this->maven_key;
-    }
-
-    public function getDateEnregistrement(): ?\DateTimeInterface
-    {
-        return $this->date_enregistrement;
-    }
-
-    public function setDateEnregistrement(\DateTimeInterface $date_enregistrement): self
-    {
-        $this->date_enregistrement = $date_enregistrement;
 
         return $this;
     }
@@ -804,13 +786,16 @@ class Historique
         return $this;
     }
 
-    public function isFavori(): ?bool
+    public function getDateEnregistrement(): ?\DateTimeInterface
     {
-        return $this->favori;
+        return $this->date_enregistrement;
     }
 
-    public function isInitial(): ?bool
+    public function setDateEnregistrement(\DateTimeInterface $date_enregistrement): self
     {
-        return $this->initial;
+        $this->date_enregistrement = $date_enregistrement;
+
+        return $this;
     }
+
 }
