@@ -13,17 +13,24 @@
 
 namespace App\Controller;
 
+/** Core */
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Routing\Annotation\Route;
+
+/** Gestion du temps */
+use DateTime;
+use DateTimeZone;
+
+/** Logger */
 use Psr\Log\LoggerInterface;
-use Doctrine\DBAL\Connection;
 
 /** Accès aux tables SLQLitec*/
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\Response;
+use Doctrine\DBAL\Connection;
 
-/** Logger */
-use Symfony\Component\Routing\Annotation\Route;
+/** API */
 use Symfony\Contracts\HttpClient\HttpClientInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
 
 class HomeController extends AbstractController
 {
@@ -180,7 +187,9 @@ class HomeController extends AbstractController
     private function majProperties($type, $bd, $sonar)
     {
     /** On met à jour la date de modification */
-    $date = new \DateTime();
+    $date = new DateTime();
+    $date->setTimezone(new DateTimeZone('Europe/Paris'));
+
     $dateModificationProjet = $date->format(static::$dateFormat);
     $dateModificationProfil = $date->format(static::$dateFormat);
 
@@ -219,7 +228,9 @@ class HomeController extends AbstractController
             $profilBD=0;
             $profilSonar=0;
 
-            $date = new \DateTime();
+            $date = new DateTime();
+            $date->setTimezone(new DateTimeZone('Europe/Paris'));
+
             $dateCreationFormat = $date->format(static::$dateFormat);
             $projetModificationDate = $date->format(static::$dateFormat);
             $profilModificationDate = $date->format(static::$dateFormat);
@@ -284,7 +295,8 @@ class HomeController extends AbstractController
          *     properties.
          */
 
-        $date = new \DateTime();
+        $date = new DateTime();
+        $date->setTimezone(new DateTimeZone('Europe/Paris'));
 
         /** On récupère les properties des projets et profils */
         $properties=self::getProperties();

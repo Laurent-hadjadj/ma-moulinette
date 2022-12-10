@@ -45,6 +45,7 @@ class RegistrationController extends AbstractController
         // Le formulaire est valide
         if ($form->isSubmitted() && $form->isValid()) {
             $date = new DateTime();
+            $date->setTimezone(new DateTimeZone('Europe/Paris'));
 
             // J'enregistre l'url de l'image
             $avatar=$form->get('avatar')->getData();

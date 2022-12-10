@@ -25,7 +25,10 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 /** Accès aux tables SLQLite */
 use App\Entity\Secondary\Repartition;
 use Doctrine\Persistence\ManagerRegistry;
+
+/** Gestion du temps */
 use DateTime;
+use DateTimeZone;
 
 /** Logger */
 use Psr\Log\LoggerInterface;
@@ -144,7 +147,7 @@ class ApiProjetRepartitionController extends AbstractController
 
     $response = $this->client->request('GET', $url,
       [
-        'ciphers' => `AES128-SHA AES256-SHA DH-DSS-AES128-SHA DH-DSS-AES256-SHA
+        'ciphers' => `AES256-SHA DH-DSS-AES128-SHA DH-DSS-AES256-SHA
         DH-RSA-AES128-SHA DH-RSA-AES256-SHA DHE-DSS-AES128-SHA DHE-DSS-AES256-SHA
         DHE-RSA-AES128-SHA DHE-RSA-AES256-SHA ADH-AES128-SHA ADH-AES256-SHA`,
         'auth_basic' => [$user, $password], 'timeout' => 45,
@@ -293,6 +296,7 @@ class ApiProjetRepartitionController extends AbstractController
     /** nom du projet */
     $name = explode(":", $mavenKey);
     $date= new DateTime();
+    $date->setTimezone(new DateTimeZone('Europe/Paris'));
 
     /** On récupère le nombre d'anomalie pour le type */
     $result=$this->batch_anomalie($mavenKey, 1, 1, $type, $severity);

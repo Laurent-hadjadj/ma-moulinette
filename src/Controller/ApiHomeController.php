@@ -13,30 +13,32 @@
 
 namespace App\Controller;
 
+use Symfony\Component\Routing\Annotation\Route;
+
+/** Core */
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+/** Gestion du temps */
 use DateTime;
 use DateTimeZone;
-use App\Entity\Main\Tags;
-use Psr\Log\LoggerInterface;
-
-/** Gestion de accès aux API */
-use App\Entity\Main\Profiles;
-use App\Entity\Main\ListeProjet;
 
 /** Accès aux tables SLQLite */
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use App\Entity\Main\Tags;
+use App\Entity\Main\Profiles;
+use App\Entity\Main\ListeProjet;
+
+/** Gestion de accès aux API */
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 /** Logger */
-use Symfony\Contracts\HttpClient\HttpClientInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
+use Psr\Log\LoggerInterface;
 
 class ApiHomeController extends AbstractController
 {
-
   public function __construct(
     private LoggerInterface $logger,
     private HttpClientInterface $client,
@@ -168,6 +170,7 @@ class ApiHomeController extends AbstractController
     /** On appel le client http */
     $result = $this->httpClient($url);
     $date = new DateTime();
+    $date->setTimezone(new DateTimeZone('Europe/Paris'));
     $nombre = 0;
 
     /** On supprime les données de la table avant d'importer les données. */
@@ -228,6 +231,7 @@ class ApiHomeController extends AbstractController
     $result = $this->httpClient($url);
 
     $date = new DateTime();
+    $date->setTimezone(new DateTimeZone('Europe/Paris'));
     $nombre = 0;
 
     /** On supprime les données de la table avant d'importer les données;*/

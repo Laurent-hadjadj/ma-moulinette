@@ -22,6 +22,10 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
+/** Gestion du temps */
+use DateTime;
+use DateTimeZone;
+
 // Accès aux tables SLQLite
 use App\Entity\Main\InformationProjet;
 use App\Entity\Main\NoSonar;
@@ -36,7 +40,6 @@ use App\Entity\Main\Historique;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\DBAL\Connection;
-use DateTime;
 
 // Logger
 use Psr\Log\LoggerInterface;
@@ -144,7 +147,7 @@ class ApiProjetController extends AbstractController
       'GET',
       $url,
       [
-        'ciphers' => `AES128-SHA AES256-SHA DH-DSS-AES128-SHA DH-DSS-AES256-SHA
+        'ciphers' => `AES256-SHA DH-DSS-AES128-SHA DH-DSS-AES256-SHA
         DH-RSA-AES128-SHA DH-RSA-AES256-SHA DHE-DSS-AES128-SHA DHE-DSS-AES256-SHA
         DHE-RSA-AES128-SHA DHE-RSA-AES256-SHA ADH-AES128-SHA ADH-AES256-SHA`,
         'auth_basic' => [$user, $password], 'timeout' => 45,
@@ -187,6 +190,7 @@ class ApiProjetController extends AbstractController
     $mavenKey = $request->get('mavenKey');
     $statut = $request->get('statut');
     $date = new DateTime();
+    $date->setTimezone(new DateTimeZone('Europe/Paris'));
     $tempoDate = $date->format(static::$dateFormat);
 
     // On vérifie si le projet est déjà en favori
@@ -288,6 +292,7 @@ class ApiProjetController extends AbstractController
     $result = $this->httpClient($url);
     // On récupère le manager de BD
     $date = new DateTime();
+    $date->setTimezone(new DateTimeZone('Europe/Paris'));
     $mavenKey = $request->get('mavenKey');
 
     // On supprime les informations sur le projet
@@ -319,6 +324,7 @@ class ApiProjetController extends AbstractController
       $this->em->persist($informationProjet);
       $this->em->flush();
     }
+
     $response = new JsonResponse();
     return $response->setData(["nombreVersion" => $nombreVersion, Response::HTTP_OK]);
   }
@@ -345,6 +351,7 @@ class ApiProjetController extends AbstractController
     // on appel le client http
     $result1 = $this->httpClient($url1);
     $date = new DateTime();
+    $date->setTimezone(new DateTimeZone('Europe/Paris'));
 
     // On ajoute les mesures dans la table mesures.
     if (intval($result1["measures"]["lines"])) {
@@ -423,6 +430,7 @@ class ApiProjetController extends AbstractController
 
     // On créé un objet date
     $date = new DateTime();
+    $date->setTimezone(new DateTimeZone('Europe/Paris'));
 
     $statusesMin = "OPEN,CONFIRMED,REOPENED,RESOLVED";
     $statusesAll = "OPEN,CONFIRMED,REOPENED,RESOLVED,TO_REVIEW,IN_REVIEW";
@@ -685,6 +693,7 @@ class ApiProjetController extends AbstractController
       $this->em->getConnection()->prepare($sql)->executeQuery();
 
       $date = new DateTime();
+      $date->setTimezone(new DateTimeZone('Europe/Paris'));
       $r1 = $result1["facets"];
       $r2 = $result2["facets"];
       $r3 = $result3["facets"];
@@ -810,6 +819,7 @@ class ApiProjetController extends AbstractController
     $result = $this->httpClient(trim(preg_replace("/\s+/u", " ", $url)));
 
     $date = new DateTime();
+    $date->setTimezone(new DateTimeZone('Europe/Paris'));
     $tempoDate = $date->format(static::$dateFormat);
     $nombre = $result["paging"]["total"];
     $mesures = $result["measures"][0]["history"];
@@ -863,6 +873,7 @@ class ApiProjetController extends AbstractController
     $result = $this->httpClient(trim(preg_replace("/\s+/u", " ", $url)));
 
     $date = new DateTime();
+    $date->setTimezone(new DateTimeZone('Europe/Paris'));
     $owasp = [$result["total"]];
     $effortTotal = $result["effortTotal"];
 
@@ -1258,6 +1269,7 @@ class ApiProjetController extends AbstractController
 
     // On créé un objet Date
     $date = new DateTime();
+    $date->setTimezone(new DateTimeZone('Europe/Paris'));
     $niveau = 0;
 
     // On supprime  les enregistrements correspondant à la clé
@@ -1332,6 +1344,7 @@ class ApiProjetController extends AbstractController
 
     // On créé un objet Date
     $date = new DateTime();
+    $date->setTimezone(new DateTimeZone('Europe/Paris'));
     $niveau = 0;
 
     // On fleche la vulnérabilité
@@ -1393,6 +1406,7 @@ class ApiProjetController extends AbstractController
     $url = "${tempoUrl}/api/hotspots/show?hotspot=${key}";
     $hotspot = $this->httpClient($url);
     $date = new DateTime();
+    $date->setTimezone(new DateTimeZone('Europe/Paris'));
 
     // Si le niveau de sévérité n'est pas connu, on lui affecte la valeur MEDIUM.
     if (empty($hotspot["rule"]["vulnerabilityProbability"])) {
@@ -1630,6 +1644,7 @@ class ApiProjetController extends AbstractController
 
     $result = $this->httpClient(trim(preg_replace("/\s+/u", " ", $url)));
     $date = new DateTime();
+    $date->setTimezone(new DateTimeZone('Europe/Paris'));
 
     // On supprime les données du projet de la table NoSonar
     $sql = "DELETE FROM no_sonar WHERE maven_key='${mavenKey}'";
@@ -1683,6 +1698,7 @@ class ApiProjetController extends AbstractController
 
     // On créé un objet date, avec la date courante
     $date = new DateTime();
+    $date->setTimezone(new DateTimeZone('Europe/Paris'));
 
     // Enregistrement
     $save = new Historique();
