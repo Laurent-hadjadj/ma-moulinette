@@ -13,11 +13,15 @@
 
 namespace App\Controller;
 
-use DateTime;
+/** Core */
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+
+/** Gestion du temps */
+use DateTime;
+use DateTimeZone;
 
 // Gestion de accès aux API
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -25,7 +29,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 // Accès aux tables SLQLite
 use Doctrine\ORM\EntityManagerInterface;
-use DateTimeZone;
 
 // Logger
 use Psr\Log\LoggerInterface;
@@ -407,6 +410,7 @@ class SuiviController extends AbstractController
     // on décode le body
     $data = json_decode($request->getContent());
     $dateEnregistrement = new Datetime();
+    $dateEnregistrement->setTimezone(new DateTimeZone('Europe/Paris'));
     $dateVersion = new Datetime($data->date);
 
     // On créé un nouvel objet Json
@@ -535,6 +539,7 @@ class SuiviController extends AbstractController
     $date = $data->date;
     $version = $data->version;
     $dateEnregistrement = new DateTime();
+    $dateEbregistrement->setTimezone(new DateTimeZone('Europe/Paris'));
 
     // On créé un nouvel objet Json
     $response = new JsonResponse();
