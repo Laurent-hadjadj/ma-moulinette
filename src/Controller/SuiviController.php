@@ -48,7 +48,7 @@ class SuiviController extends AbstractController
   }
 
   public static $strContentType = 'application/json';
-  public static $dateFormat = "Y-m-d H:m:s";
+  public static $dateFormat = "Y-m-d H:i:s";
   public static $sonarUrl = "sonar.url";
 
   /**

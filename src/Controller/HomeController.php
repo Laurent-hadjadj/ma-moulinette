@@ -36,7 +36,7 @@ class HomeController extends AbstractController
 {
     public static $strContentType = 'application/json';
     public static $sonarUrl = "sonar.url";
-    public static $dateFormat = "Y-m-d H:m:s";
+    public static $dateFormat = "Y-m-d H:i:s";
     public static $regex = "/\s+/u";
 
     /** On ajoute un constructeur pour éviter à chaque fois d'injecter la même class */

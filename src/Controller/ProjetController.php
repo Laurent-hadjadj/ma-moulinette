@@ -30,7 +30,7 @@ class ProjetController extends AbstractController
    *
    * @var string
    */
-  public static $dateFormat = "Y-m-d H:m:s";
+  public static $dateFormat = "Y-m-d H:i:s";
 
   /**
    * [Description for $regex]
