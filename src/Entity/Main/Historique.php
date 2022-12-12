@@ -188,15 +188,60 @@ class Historique
         return $this->maven_key;
     }
 
+    public function setMavenKey(string $maven_key): self
+    {
+        $this->maven_key = $maven_key;
+        return $this;
+    }
+
+    /*
+     * Le généarteur d'entity ne génére pas le setter pour une clé multiple
+        public function setMavenKey(string $maven_key): self
+        {
+            $this->maven_key = $maven_key;
+            return $this;
+        }
+    */
+
     public function getVersion(): ?string
     {
         return $this->version;
+    }
+
+    /*
+     * Le généarteur d'entity ne génére pas le setter pour une clé multiple
+        public function setVersion(string $version): self
+        {
+            $this->version = $version;
+            return $this;
+        }
+    */
+
+    public function setVersion(string $version): self
+    {
+        $this->version = $version;
+        return $this;
     }
 
     public function getDateVersion(): ?string
     {
         return $this->date_version;
     }
+
+    public function setDateVersion(string $date_version): self
+    {
+        $this->date_version = $date_version;
+        return $this;
+    }
+
+    /*
+     * Le généarteur d'entity ne génére pas le setter pour une clé multiple
+        public function setDateVersion(string $date_version): self
+        {
+            $this->date_version = $date_version;
+            return $this;
+        }
+    */
 
     public function getNomProjet(): ?string
     {
