@@ -147,7 +147,7 @@ class ApiProjetController extends AbstractController
       'GET',
       $url,
       [
-        'ciphers' => `DH-DSS-AES128-SHA DH-DSS-AES256-SHA
+        'ciphers' => ` 
         DH-RSA-AES128-SHA DH-RSA-AES256-SHA DHE-DSS-AES128-SHA DHE-DSS-AES256-SHA
         DHE-RSA-AES128-SHA DHE-RSA-AES256-SHA ADH-AES128-SHA ADH-AES256-SHA`,
         'auth_basic' => [$user, $password], 'timeout' => 45,
@@ -869,7 +869,7 @@ class ApiProjetController extends AbstractController
     $a7Blocker=$a7Critical=$a7Major=$a7Info=$a7Minor=0;
     $a8Blocker=$a8Critical=$a8Major=$a8Info=$a8Minor=0;
     $a9Blocker=$a9Critical=$a9Major=$a9Info=$a9Minor=0;
-    $a01Blocker=$a10Critical=$a10Major=$a10Info=$a10Minor=0;
+    $a10Blocker=$a10Critical=$a10Major=$a10Info=$a10Minor=0;
 
     if ($result["total"] != 0) {
       foreach ($result["issues"] as $issue) {
@@ -1342,7 +1342,8 @@ class ApiProjetController extends AbstractController
     $file = str_replace($mavenKey . ":", "", $hotspot["component"]["key"]);
     $module = explode("/", $file);
 
-    /* Cas particulier pour l'application RS et DU
+    /**
+     * Cas particulier pour l'application RS et DU
      * Le nom du projet ne correspond pas à l'artifactId du module
      * Par exemple la clé maven it.cool:monapplication et un module de
      * type : cool-presentation au lieu de monapplication-presentation
