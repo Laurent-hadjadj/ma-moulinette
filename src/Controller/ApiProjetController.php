@@ -478,167 +478,113 @@ class ApiProjetController extends AbstractController
       $nombreAnomalie = 0;
       foreach ($facets as $facet) {
         $nombreAnomalie++;
+        //** On récupère le nombre de signalement par sévérité */
         if ($facet["property"] == "severities") {
           foreach ($facet["values"] as $severity) {
-            if ($severity["val"] == "BLOCKER") {
-              $blocker = $severity["count"];
-            }
-            if ($severity["val"] == "CRITICAL") {
-              $critical = $severity["count"];
-            }
-            if ($severity["val"] == "MAJOR") {
-              $major = $severity["count"];
-            }
-            if ($severity["val"] == "INFO") {
-              $info = $severity["count"];
-            }
-            if ($severity["val"] == "MINOR") {
-              $minor = $severity["count"];
+            switch ($severity["val"]) {
+              case "BLOCKER" : $blocker = $severity["count"];
+                    break;
+              case "CRITICAL" : $critical = $severity["count"];
+                    break;
+              case "MAJOR" : $major = $severity["count"];
+                    break;
+              case "INFO" : $info = $severity["count"];
+                    break;
+              case "MINOR" : $minor = $severity["count"];
+                    break;
             }
           }
         }
+
+        //** On récupère le nombre de signalement par type */
         if ($facet["property"] == "types") {
           foreach ($facet["values"] as $type) {
-            if ($type["val"] == "BUG") {
-              $bug = $type["count"];
-            }
-            if ($type["val"] == "VULNERABILITY") {
-              $vulnerability = $type["count"];
-            }
-            if ($type["val"] == "CODE_SMELL") {
-              $codeSmell = $type["count"];
+            switch ($type["val"]) {
+              case "BUG" : $bug = $type["count"];
+                    break;
+              case "VULNERABILITY" : $vulnerability = $type["count"];
+                    break;
+              case "CODE_SMELL" : $codeSmell = $type["count"];
+              break;
             }
           }
         }
+
+        //** On récupère le nombre de signalement par module */
         if ($facet["property"] == "directories") {
           foreach ($facet["values"] as $directory) {
             $file = str_replace($mavenKey . ":", "", $directory["val"]);
             $module = explode("/", $file);
 
-            /* Cas particulier pour l'application RS et DU
-             * Le nom du projet ne correspond pas à l'artifactId du module
-             * Par exemple la clé maven it.cool:monapplication et un module de
-             * type : cool-presentation au lieu de monapplication-presentation
-             */
-            if ($module[0] == "du-presentation") {
-              $frontend = $frontend + $directory["count"];
-            }
-            if ($module[0] == "rs-presentation") {
-              $frontend = $frontend + $directory["count"];
-            }
-            if ($module[0] == "rs-metier") {
-              $backend = $backend + $directory["count"];
-            }
-
-            /**
-             *  Application Frontend
-             */
-            if ($module[0] == $app[1] . "-presentation") {
-              $frontend = $frontend + $directory["count"];
-            }
-            // Application : Legacy
-            if ($module[0] == $app[1] . "-presentation-commun") {
-              $frontend = $frontend + $directory["count"];
-            }
-            if ($module[0] == $app[1] . "-presentation-ear") {
-              $frontend = $frontend + $directory["count"];
-            }
-            if ($module[0] == $app[1] . "-webapp") {
-              $frontend = $frontend + $directory["count"];
-            }
-
-            /**
-             * Application Backend
-             */
-            if ($module[0] == $app[1] . "-metier") {
-              $backend = $backend + $directory["count"];
-            }
-            if ($module[0] == $app[1] . "-common") {
-              $backend = $backend + $directory["count"];
-            }
-            if ($module[0] == $app[1] . "-api") {
-              $backend = $backend + $directory["count"];
-            }
-            if ($module[0] == $app[1] . "-dao") {
-              $backend = $backend + $directory["count"];
-            }
-            if ($module[0] == $app[1] . "-metier-ear") {
-              $backend = $backend + $directory["count"];
-            }
-            if ($module[0] == $app[1] . "-service") {
-              $backend = $backend + $directory["count"];
-            }
-            // Application : Legacy
-            if ($module[0] == $app[1] . "-serviceweb") {
-              $backend = $backend + $directory["count"];
-            }
-            // Application : Dénormaliser
-            if ($module[0] == $app[1] . "-middleoffice") {
-              $backend = $backend + $directory["count"];
-            }
-            // Application : Starter-Kit
-            if ($module[0] == $app[1] . "-metier-rest") {
-              $backend = $backend + $directory["count"];
-            }
-            // Application : Legacy
-            if ($module[0] == $app[1] . "-entite") {
-              $backend = $backend + $directory["count"];
-            }
-            // Application : Legacy
-            if ($module[0] == $app[1] . "-serviceweb-client") {
-              $backend = $backend + $directory["count"];
-            }
-
-            /**
-             * Application Batch et Autres
-             */
-            if ($module[0] == $app[1] . "-batch") {
-              $autre = $autre + $directory["count"];
-            }
-            if ($module[0] == $app[1] . "-batchs") {
-              $autre = $autre + $directory["count"];
-            }
-            if ($module[0] == $app[1] . "-batch-envoi-dem-aval") {
-              $autre = $autre + $directory["count"];
-            }
-            if ($module[0] == $app[1] . "-batch-import-billets") {
-              $autre = $autre + $directory["count"];
-            }
-            if ($module[0] == $app[1] . "-rdd") {
-              $autre = $autre + $directory["count"];
-            }
+            switch ($module[0]) {
+              case "du-presentation" || "rs-presentation" : $frontend = $frontend + $directory["count"];
+                    break;
+              case  $app[1] . "-presentation" ||
+                    $app[1] . "-presentation-commun" ||
+                    $app[1] . "-presentation-ear" ||
+                    $app[1] . "-webapp": $frontend = $frontend + $directory["count"];
+                    break;
+              case "rs-metier" : $backend = $backend + $directory["count"];
+                    break;
+              case  $app[1] . "-metier" ||
+                    $app[1] . "-common" ||
+                    $app[1] . "-api" ||
+                    $app[1] . "-dao": $backend = $backend + $directory["count"];
+                    break;
+              case  $app[1] . "-metier-ear" ||
+                    $app[1] . "-service" ||
+                    $app[1] . "-serviceweb" ||
+                    $app[1] . "-middleoffice": $backend = $backend + $directory["count"];
+                    break;
+              case  $app[1] . "-metier-rest" ||
+                    $app[1] . "-entite" ||
+                    $app[1] . "-serviceweb-client": $backend = $backend + $directory["count"];
+                    break;
+              case  $app[1] . "-batch" ||
+                    $app[1] . "-batchs" ||
+                    $app[1] . $app[1] . "-batch-envoi-dem-aval" ||
+                    $app[1] . "-batch-import-billets": $autre = $autre + $directory["count"];
+                    break;
+              case  $app[1] . $app[1] . "-rdd" : $autre = $autre + $directory["count"];
+                    break;
+              default:
+                  $erreur=$erreur+$directory["count"];
+                  $this->logger->INFO("MODULE : Nombre d'erreur !", $erreur);
+              }
           }
         }
+
+        // Enregistrement dans la table Anomalie
+        $issue = new Anomalie();
+        $issue->setMavenKey($mavenKey);
+        $issue->setProjectName($app[1]);
+        $issue->setAnomalieTotal($anomalieTotal);
+        $issue->setDette($dette);
+        $issue->setDetteMinute($detteMinute);
+        $issue->setDetteReliability($detteReliability);
+        $issue->setDetteReliabilityMinute($detteReliabilityMinute);
+        $issue->setDetteVulnerability($detteVulnerability);
+        $issue->setDetteVulnerabilityMinute($detteVulnerabilityMinute);
+        $issue->setDetteCodeSmell($detteCodeSmell);
+        $issue->setDetteCodeSmellMinute($detteCodeSmellMinute);
+        $issue->setFrontend($frontend);
+        $issue->setBackend($backend);
+        $issue->setAutre($autre);
+        $issue->setBlocker($blocker);
+        $issue->setCritical($critical);
+        $issue->setMajor($major);
+        $issue->setInfo($info);
+        $issue->setMinor($minor);
+        $issue->setBug($bug);
+        $issue->setVulnerability($vulnerability);
+        $issue->setCodeSmell($codeSmell);
+        $issue->setListe('TRUE');
+        $issue->setDateEnregistrement($date);
+        $this->em->persist($issue);
+        $this->em->flush();
       }
-      // Enregistrement dans la table Anomalie
-      $issue = new Anomalie();
-      $issue->setMavenKey($mavenKey);
-      $issue->setProjectName($app[1]);
-      $issue->setAnomalieTotal($anomalieTotal);
-      $issue->setDette($dette);
-      $issue->setDetteMinute($detteMinute);
-      $issue->setDetteReliability($detteReliability);
-      $issue->setDetteReliabilityMinute($detteReliabilityMinute);
-      $issue->setDetteVulnerability($detteVulnerability);
-      $issue->setDetteVulnerabilityMinute($detteVulnerabilityMinute);
-      $issue->setDetteCodeSmell($detteCodeSmell);
-      $issue->setDetteCodeSmellMinute($detteCodeSmellMinute);
-      $issue->setFrontend($frontend);
-      $issue->setBackend($backend);
-      $issue->setAutre($autre);
-      $issue->setBlocker($blocker);
-      $issue->setCritical($critical);
-      $issue->setMajor($major);
-      $issue->setInfo($info);
-      $issue->setMinor($minor);
-      $issue->setBug($bug);
-      $issue->setVulnerability($vulnerability);
-      $issue->setCodeSmell($codeSmell);
-      $issue->setListe('TRUE');
-      $issue->setDateEnregistrement($date);
-      $this->em->persist($issue);
-      $this->em->flush();
     }
+
     $info = "Enregistrement des défauts (" . $nombreAnomalie . ") correctement effectué.";
 
     $response = new JsonResponse();
@@ -910,8 +856,7 @@ class ApiProjetController extends AbstractController
           $owasp[10] = $result["facets"][0]["values"][$a]["count"];
           break;
         default:
-          echo "OWASP TOP 10";
-          break;
+          $this->logger->NOTICE("HoneyPot : Référentiel OWASP !");
       }
     }
 
@@ -1149,7 +1094,7 @@ class ApiProjetController extends AbstractController
                   }
                   break;
                 default:
-                  break;
+                  $this->logger->NOTICE("HoneyPot : Référentiel OWASP !");
               }
             }
           }
@@ -1427,7 +1372,7 @@ class ApiProjetController extends AbstractController
         $niveau = 3;
         break;
       default:
-        echo "oops ! je suis perdu !!!";
+        $this->logger->NOTICE("HoneyPot : Liste des sévérités !");
     }
     $frontend = 0;
     $backend = 0;
