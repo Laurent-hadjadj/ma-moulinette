@@ -403,15 +403,17 @@ class ApiProjetPeintureController extends AbstractController
       );
     }
 
-    // On récupère la dernière version et sa date de publication
+    /** On le nombre de hotspot au statut TO_REVIEW */
     $sql="SELECT COUNT(*) as to_review FROM hotspots WHERE maven_key='${mavenKey}' AND status='TO_REVIEW'";
     $r = $this->em->getConnection()->prepare($sql)->executeQuery();
     $toReview = $r->fetchAllAssociative();
 
+    /** On le nombre de hotspot au statut REVIEWED */
     $sql = "SELECT COUNT(*) as reviewed FROM hotspots WHERE maven_key='${mavenKey}' AND status='REVIEWED'";
     $r = $this->em->getConnection()->prepare($sql)->executeQuery();
     $reviewed = $r->fetchAllAssociative();
 
+    /** On calul la note sonar  */
     if (empty($toReview[0]["to_review"])) {
       $note = "A";
     } else {
