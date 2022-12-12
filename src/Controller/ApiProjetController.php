@@ -549,7 +549,7 @@ class ApiProjetController extends AbstractController
                     break;
               default:
                   $erreur=$erreur+$directory["count"];
-                  $this->logger->INFO("MODULE : Nombre d'erreur !", $erreur);
+                  $this->logger->INFO("MODULE : Nombre d'erreur ! ". $erreur);
               }
           }
         }
@@ -860,56 +860,16 @@ class ApiProjetController extends AbstractController
       }
     }
 
-    $a1Blocker = 0;
-    $a1Critical = 0;
-    $a1Major = 0;
-    $a1Info = 0;
-    $a1Minor = 0;
-    $a2Blocker = 0;
-    $a2Critical = 0;
-    $a2Major = 0;
-    $a2Info = 0;
-    $a2Minor = 0;
-    $a3Blocker = 0;
-    $a3Critical = 0;
-    $a3Major = 0;
-    $a3Info = 0;
-    $a3Minor = 0;
-    $a4Blocker = 0;
-    $a4Critical = 0;
-    $a4Major = 0;
-    $a4Info = 0;
-    $a4Minor = 0;
-    $a5Blocker = 0;
-    $a5Critical = 0;
-    $a5Major = 0;
-    $a5Info = 0;
-    $a5Minor = 0;
-    $a6Blocker = 0;
-    $a6Critical = 0;
-    $a6Major = 0;
-    $a6Info = 0;
-    $a6Minor = 0;
-    $a7Blocker = 0;
-    $a7Critical = 0;
-    $a7Major = 0;
-    $a7Info = 0;
-    $a7Minor = 0;
-    $a8Blocker = 0;
-    $a8Critical = 0;
-    $a8Major = 0;
-    $a8Info = 0;
-    $a8Minor = 0;
-    $a9Blocker = 0;
-    $a9Critical = 0;
-    $a9Major = 0;
-    $a9Info = 0;
-    $a9Minor = 0;
-    $a10Blocker = 0;
-    $a10Critical = 0;
-    $a10Major = 0;
-    $a10Info = 0;
-    $a10Minor = 0;
+    $a1Blocker=$a1Critical=$a1Major=$a1Info=$a1Minor=0;
+    $a2Blocker=$a2Critical=$a2Major=$a2Info=$a2Minor=0;
+    $a3Blocker=$a3Critical=$a3Major=$a3Info=$a3Minor=0;
+    $a4Blocker=$a4Critical=$a4Major=$a4Info=$a4Minor=0;
+    $a5Blocker=$a5Critical=$a5Major=$a5Info=$a5Minor=0;
+    $a6Blocker=$a6Critical=$a6Major=$a6Info=$a6Minor=0;
+    $a7Blocker=$a7Critical=$a7Major=$a7Info=$a7Minor=0;
+    $a8Blocker=$a8Critical=$a8Major=$a8Info=$a8Minor=0;
+    $a9Blocker=$a9Critical=$a9Major=$a9Info=$a9Minor=0;
+    $a01Blocker=$a10Critical=$a10Major=$a10Info=$a10Minor=0;
 
     if ($result["total"] != 0) {
       foreach ($result["issues"] as $issue) {
