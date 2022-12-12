@@ -472,31 +472,27 @@ class ApiProjetController extends AbstractController
 
       $facets = $result1["facets"];
       // modules
-      $frontend = 0;
-      $backend = 0;
-      $autre = 0;
-      $nombreAnomalie = 0;
+      $frontend=$backend=$autre=$erreur=$nombreAnomalie= 0;
       foreach ($facets as $facet) {
         $nombreAnomalie++;
         //** On récupère le nombre de signalement par sévérité */
         if ($facet["property"] == "severities") {
           foreach ($facet["values"] as $severity) {
-            switch ($severity["val"]) {
-              case "BLOCKER" : $blocker = $severity["count"];
-                    break;
-              case "CRITICAL" : $critical = $severity["count"];
-                    break;
-              case "MAJOR" : $major = $severity["count"];
-                    break;
-              case "INFO" : $info = $severity["count"];
-                    break;
-              case "MINOR" : $minor = $severity["count"];
-                    break;
+              switch ($severity["val"]) {
+                case "BLOCKER" : $blocker = $severity["count"];
+                      break;
+                case "CRITICAL" : $critical = $severity["count"];
+                      break;
+                case "MAJOR" : $major = $severity["count"];
+                      break;
+                case "INFO" : $info = $severity["count"];
+                      break;
+                case "MINOR" : $minor = $severity["count"];
+                      break;
+              }
             }
-          }
         }
-
-        //** On récupère le nombre de signalement par type */
+        /** On récupère le nombre de signalement par type */
         if ($facet["property"] == "types") {
           foreach ($facet["values"] as $type) {
             switch ($type["val"]) {
@@ -510,7 +506,7 @@ class ApiProjetController extends AbstractController
           }
         }
 
-        //** On récupère le nombre de signalement par module */
+        /** On récupère le nombre de signalement par module */
         if ($facet["property"] == "directories") {
           foreach ($facet["values"] as $directory) {
             $file = str_replace($mavenKey . ":", "", $directory["val"]);
@@ -550,39 +546,39 @@ class ApiProjetController extends AbstractController
               default:
                   $erreur=$erreur+$directory["count"];
                   $this->logger->INFO("MODULE : Nombre d'erreur ! ". $erreur);
-              }
+            }
           }
         }
-
-        // Enregistrement dans la table Anomalie
-        $issue = new Anomalie();
-        $issue->setMavenKey($mavenKey);
-        $issue->setProjectName($app[1]);
-        $issue->setAnomalieTotal($anomalieTotal);
-        $issue->setDette($dette);
-        $issue->setDetteMinute($detteMinute);
-        $issue->setDetteReliability($detteReliability);
-        $issue->setDetteReliabilityMinute($detteReliabilityMinute);
-        $issue->setDetteVulnerability($detteVulnerability);
-        $issue->setDetteVulnerabilityMinute($detteVulnerabilityMinute);
-        $issue->setDetteCodeSmell($detteCodeSmell);
-        $issue->setDetteCodeSmellMinute($detteCodeSmellMinute);
-        $issue->setFrontend($frontend);
-        $issue->setBackend($backend);
-        $issue->setAutre($autre);
-        $issue->setBlocker($blocker);
-        $issue->setCritical($critical);
-        $issue->setMajor($major);
-        $issue->setInfo($info);
-        $issue->setMinor($minor);
-        $issue->setBug($bug);
-        $issue->setVulnerability($vulnerability);
-        $issue->setCodeSmell($codeSmell);
-        $issue->setListe('TRUE');
-        $issue->setDateEnregistrement($date);
-        $this->em->persist($issue);
-        $this->em->flush();
       }
+
+      // Enregistrement dans la table Anomalie
+      $issue = new Anomalie();
+      $issue->setMavenKey($mavenKey);
+      $issue->setProjectName($app[1]);
+      $issue->setAnomalieTotal($anomalieTotal);
+      $issue->setDette($dette);
+      $issue->setDetteMinute($detteMinute);
+      $issue->setDetteReliability($detteReliability);
+      $issue->setDetteReliabilityMinute($detteReliabilityMinute);
+      $issue->setDetteVulnerability($detteVulnerability);
+      $issue->setDetteVulnerabilityMinute($detteVulnerabilityMinute);
+      $issue->setDetteCodeSmell($detteCodeSmell);
+      $issue->setDetteCodeSmellMinute($detteCodeSmellMinute);
+      $issue->setFrontend($frontend);
+      $issue->setBackend($backend);
+      $issue->setAutre($autre);
+      $issue->setBlocker($blocker);
+      $issue->setCritical($critical);
+      $issue->setMajor($major);
+      $issue->setInfo($info);
+      $issue->setMinor($minor);
+      $issue->setBug($bug);
+      $issue->setVulnerability($vulnerability);
+      $issue->setCodeSmell($codeSmell);
+      $issue->setListe('TRUE');
+      $issue->setDateEnregistrement($date);
+      $this->em->persist($issue);
+      $this->em->flush();
     }
 
     $info = "Enregistrement des défauts (" . $nombreAnomalie . ") correctement effectué.";
@@ -1612,6 +1608,7 @@ class ApiProjetController extends AbstractController
     $save->setNomProjet($data->nomProjet);
     $save->setVersionRelease($data->versionRelease);
     $save->setVersionSnapshot($data->versionSnapshot);
+    $save->setVersionAutre($data->versionAutre);
     $save->setVersion($data->version);
     $save->setDateVersion($data->dateVersion);
 
