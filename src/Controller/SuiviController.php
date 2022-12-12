@@ -69,7 +69,7 @@ class SuiviController extends AbstractController
 
     $response = $this->client->request('GET', $url,
       [
-        'ciphers' => `AES128-SHA DH-DSS-AES128-SHA DH-DSS-AES256-SHA
+        'ciphers' => `AES128-SHA  
         DH-RSA-AES128-SHA DH-RSA-AES256-SHA DHE-DSS-AES128-SHA DHE-DSS-AES256-SHA
         DHE-RSA-AES128-SHA DHE-RSA-AES256-SHA ADH-AES128-SHA ADH-AES256-SHA`,
         'auth_basic' => [$user, $password], 'timeout' => 45,
