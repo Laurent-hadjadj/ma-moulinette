@@ -1334,9 +1334,7 @@ class ApiProjetController extends AbstractController
       default:
         $this->logger->NOTICE("HoneyPot : Liste des sévérités !");
     }
-    $frontend = 0;
-    $backend = 0;
-    $autre = 0;
+    $frontend=$backend=$autre = 0;
     // nom du projet
     $app = explode(":", $mavenKey);
 
