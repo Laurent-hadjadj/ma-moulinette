@@ -10,10 +10,10 @@
  */
 
 
-// Intégration de jquery
+/** Intégration de jquery */
 import $ from 'jquery';
 
-// On importe les paramètres serveur
+/** On importe les paramètres serveur */
 import {serveur} from "./properties.js";
 
 const dateOptions = {
@@ -22,8 +22,15 @@ const dateOptions = {
   hour12: false };
 
 /**
- * description
+ * [Description for log]
  * Affiche la log.
+ *
+ * @param mixed txt
+ *
+ * @return [type]
+ *
+ * Created at: 13/12/2022, 12:58:45 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const log=function(txt) {
   const textarea = document.getElementById('log');
@@ -33,37 +40,47 @@ const log=function(txt) {
 };
 
 /**
- * description
- * Fonction de remplissage des tableaux.
- *
- * @param {*} mavenKey
- */
+* [Description for enregistrement]
+* Fonction de remplissage des tableaux.
+*
+* @param mixed mavenKey
+*
+* @return [type]
+*
+* Created at: 13/12/2022, 12:59:18 (Europe/Paris)
+* @author     Laurent HADJADJ <laurent_h@me.com>
+*/
 export const enregistrement=function(mavenKey) {
   const contentType='application/json; charset=utf-8';
 
-  //On récupère les informations sur les versions
+  /** On récupère les informations sur les versions */
   const nomProjet=$('#nom-projet').text().trim();
-  /* On enregistre des données brutes pour l'enregistrement.
+  /*
+   * On enregistre des données brutes pour l'enregistrement.
    * On n'utilise jquery pour la gestion du data Attribute car ce n'est pas fiable.
    * On utilise à la place l'appel JS standard.
    */
   const t1 = document.getElementById('version-release');
-  const t2 = document.getElementById('version-snapshot');
+  const t2a = document.getElementById('version-snapshot');
+  const t2b = document.getElementById('version-autre');
   const versionRelease=t1.dataset.release;
-  const versionSnapshot=t2.dataset.snapshot;
+  const versionSnapshot=t2a.dataset.snapshot;
+  const versionAutre=t2b.dataset.autre;
 
   const version=$('#version').text().trim();
   const t3 = document.getElementById('date-version');
   const dateVersion=t3.dataset.dateVersion;
 
-  //On récupère les exclusions noSonar
+  /** On récupère les exclusions noSonar */
   const t4 = document.getElementById('suppress-warning');
   const t5 = document.getElementById('no-sonar');
   const suppressWarning=t4.dataset.s1309;
   const noSonar=t5.dataset.nosonar;
 
-  /**  On récupère les informations du projet :
-    * lignes, couverture fonctionnelle, duplication, tests unitaires et le nombre de défaut.
+  /**
+   * On récupère les informations du projet :
+   * lignes, couverture fonctionnelle, duplication, tests unitaires et
+   * le nombre de défaut.
     */
   const t6 = document.getElementById('nombre-ligne');
   const t7 = document.getElementById('nombre-ligne-de-code');
@@ -78,8 +95,8 @@ export const enregistrement=function(mavenKey) {
   const testsUnitaires=t10.dataset.testsUnitaires;
   const nombreDefaut=t11.dataset.nombreDefaut;
 
-    //On récupère les informations sur la dette technique et les anomalies.
-   /* Dette technique */
+  /** On récupère les informations sur la dette technique et les anomalies. */
+  /* Dette technique */
   const t12 = document.getElementById('js-dette');
   const dette=t12.dataset.detteMinute;
 
@@ -111,15 +128,15 @@ export const enregistrement=function(mavenKey) {
   const nombreAnomalieMajeur=t22.dataset.nombreAnomalieMajeur;
   const nombreAnomalieMineur=t23.dataset.nombreAnomalieMineur;
 
-  //On récupère les notes sonarqube pour la version courante
+  /** On récupère les notes sonarqube pour la version courante */
   const noteReliability=$('#note-reliability').text().trim();
   const noteSecurity=$('#note-security').text().trim();
   const noteSqale=$('#note-sqale').text().trim();
 
-  //On récupère les hotspots.
+  /** On récupère les hotspots. */
   const noteHotspot=$('#note-hotspot').text().trim();
 
-  //On récupère les hotspost par sévérité
+  /** On récupère les hotspost par sévérité */
   const t24 = document.getElementById('hotspot-high');
   const t25 = document.getElementById('hotspot-medium');
   const t26 = document.getElementById('hotspot-low');
@@ -162,17 +179,21 @@ export const enregistrement=function(mavenKey) {
   const codeSmellInfo=t42.dataset.vulnerabilityInfo;
 
   let favori=0;
-  //on récupère le statut du favori
+
+  /** On récupère le statut du favori */
+
+  /** POur SQLITE 0 (false) and 1 (true).
+   * Lors de l'insert avec doctrine l'utilisation de TRUE et FALSE n'est
+   * pas correcte
+   */
   if ($('.favori-svg').hasClass('favori-svg-select')) {
-     // POur SQLITE 0 (false) and 1 (true).
-     // Lors de l'insert avec doctrine l'utilisation de TRUE et FALSE n'est pas correcte
-    favori=1;
+      favori=1;
   }
 
   const data =
   {
     mavenKey, nomProjet,
-    versionRelease, versionSnapshot, version,
+    versionRelease, versionSnapshot, versionAutre, version,
     dateVersion, suppressWarning, noSonar,
     nombreLigneDeCode, nombreLigne, couverture, duplication,
     testsUnitaires, nombreDefaut,
