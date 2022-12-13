@@ -191,7 +191,7 @@ class ApiProjetPeintureController extends AbstractController
     return $response->setData(
       [
       "release"=>$release[0]['total'],
-      "snapshot"=>$snapshot[0]['snapshot'],
+      "snapshot"=>$snapshot[0]['total'],
       "lesautres"=>$lesAutres,
       "version" => $infoVersion, "label" => $label,
       "dataset" => $dataset, "projet" => $infoRelease[0]["projet"],
