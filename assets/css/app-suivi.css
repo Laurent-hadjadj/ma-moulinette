@@ -10,16 +10,16 @@
  *
  */
 
-/* Modile */
+/* Mobile */
 @media only screen and (max-width: 20em) { .pleine-page { margin: 0.5rem; } }
 
-/* Modile */
+/* Mobile */
 @media only screen and (min-width: 20.025em) and (max-width: 22em) { .pleine-page { margin: 0.5rem; } }
 
-/* Modile */
+/* Mobile */
 @media only screen and (min-width: 22.025em) and (max-width: 30em) { .pleine-page { margin: 1rem; } }
 
-/* Modile */
+/* Mobile */
 @media only screen and (min-width: 30.025em) and (max-width: 40em) { .pleine-page { margin: 1rem; } }
 
 /* tablette */
