@@ -39,6 +39,14 @@ Note : Dans le journal d'activité, je vérifie que l'étape 11 est terminée.
 
 ![projet](/documentation/ressources/projet-002.jpg)
 
+Lorqsue je clique sur le bouton **Afficher les résultats** l'ensemble des indicateurs collecté et calculé est affiché.
+
+![projet](/documentation/ressources/projet-003.jpg)
+
+**Note** : Dans la version `2.0.0`, le bloc **type de version** a été modifié pour afficher les versions **autres** que Release ou Snashop.
+
+![projet](/documentation/ressources/projet-003a.jpg)
+
 Je peux ensuite enregistrer les indicateurs dans la base locale. Cette base sera utilisée pour le suivi des versions du projet.
 
 **Note** : Dans la version `1.3.0`, un nouveau bouton est disponible.
