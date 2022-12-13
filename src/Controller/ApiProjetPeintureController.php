@@ -141,14 +141,37 @@ class ApiProjetPeintureController extends AbstractController
       return $response->setData(["message" => static::HTTP_ERROR_406, Response::HTTP_NOT_ACCEPTABLE]);
     }
 
-    // On récupere le nombre de version par type
+    /** Toutes les versions */
+    $sql = "SELECT COUNT(type) AS 'total'
+    FROM information_projet
+    WHERE maven_key='${mavenKey}'";
+    $e=$this->em->getConnection()->prepare($sql)->executeQuery();
+    $toutesLesVersions=$e->fetchAllAssociative();
+
+    /** Les releases */
+    $sql = "SELECT type, COUNT(type) AS 'total'
+    FROM information_projet
+    WHERE maven_key='${mavenKey}' AND type='RELEASE'";
+    $e=$this->em->getConnection()->prepare($sql)->executeQuery();
+    $release=$e->fetchAllAssociative();
+
+    /** Les snapshots */
+    $sql = "SELECT type, COUNT(type) AS 'total'
+    FROM information_projet
+    WHERE maven_key='${mavenKey}' AND type='SNAPSHOT'";
+    $e=$this->em->getConnection()->prepare($sql)->executeQuery();
+    $snapshot=$e->fetchAllAssociative();
+    /** On calcul la valeur pour les autres types de version */
+    $lesAutres=$toutesLesVersions[0]['total']-$release[0]['total']-$snapshot[0]['total'];
+
+    /** On récupere le nombre de version par type */
     $sql = "SELECT type, COUNT(type) AS 'total'
             FROM information_projet
             WHERE maven_key='${mavenKey}'
             GROUP BY type";
-
     $list = $this->em->getConnection()->prepare($sql)->executeQuery();
     $infoVersion = $list->fetchAllAssociativeIndexed();
+
     $label = [];
     $dataset = [];
     foreach ($infoVersion as $key => $value) {
@@ -156,7 +179,7 @@ class ApiProjetPeintureController extends AbstractController
       array_push($dataset, $value["total"]);
     }
 
-    // On récupère la dernière version et sa date de publication
+    /** On récupère la dernière version et sa date de publication */
     $sql = "SELECT project_version as projet, date
             FROM information_projet
             WHERE maven_key='${mavenKey}'
@@ -166,7 +189,11 @@ class ApiProjetPeintureController extends AbstractController
     $infoRelease = $r->fetchAllAssociative();
 
     return $response->setData(
-      ["version" => $infoVersion, "label" => $label,
+      [
+      "release"=>$release[0]['total'],
+      "snapshot"=>$snapshot[0]['snapshot'],
+      "lesautres"=>$lesAutres,
+      "version" => $infoVersion, "label" => $label,
       "dataset" => $dataset, "projet" => $infoRelease[0]["projet"],
       "date" => $infoRelease[0]["date"], Response::HTTP_OK]
     );
