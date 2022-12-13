@@ -164,13 +164,13 @@ class ApiProjetPeintureController extends AbstractController
     /** On calcul la valeur pour les autres types de version */
     $lesAutres=$toutesLesVersions[0]['total']-$release[0]['total']-$snapshot[0]['total'];
 
-    /** On récupere le nombre de version par type */
+    /** On récupére le nombre de version par type pour le graphique */
     $sql = "SELECT type, COUNT(type) AS 'total'
             FROM information_projet
             WHERE maven_key='${mavenKey}'
             GROUP BY type";
-    $list = $this->em->getConnection()->prepare($sql)->executeQuery();
-    $infoVersion = $list->fetchAllAssociativeIndexed();
+    $e = $this->em->getConnection()->prepare($sql)->executeQuery();
+    $infoVersion = $e->fetchAllAssociativeIndexed();
 
     $label = [];
     $dataset = [];
@@ -188,12 +188,32 @@ class ApiProjetPeintureController extends AbstractController
     $r = $this->em->getConnection()->prepare($sql)->executeQuery();
     $infoRelease = $r->fetchAllAssociative();
 
+    /** Contrôle de la valeur des versions  release, snapshot et release */
+    if (empty($release[0]['total']))
+      {
+        $release=0;
+      } else {
+        $release=$release[0]['total'];
+      }
+
+    if (empty($snapshot[0]['total']))
+    {
+      $snapshot=0;
+    } else {
+      $snapshot=$snapshot[0]['total'];
+    }
+
+    if (empty($autre[0]['total']))
+    {
+      $autre=0;
+    } else {
+      $autre=$autre[0]['total'];
+    }
+
     return $response->setData(
       [
-      "release"=>$release[0]['total'],
-      "snapshot"=>$snapshot[0]['total'],
-      "lesautres"=>$lesAutres,
-      "version" => $infoVersion, "label" => $label,
+      "release"=>$release, "snapshot"=>$snapshot,  "autre"=>$autre,
+      "label" => $label,
       "dataset" => $dataset, "projet" => $infoRelease[0]["projet"],
       "date" => $infoRelease[0]["date"], Response::HTTP_OK]
     );
