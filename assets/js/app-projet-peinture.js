@@ -33,22 +33,27 @@ const log=function(txt) {
 };
 
 /**
- * description
+ * [Description for remplissage]
  * Fonction de remplissage des tableaux.
  *
- * @export
- * @param {*} mavenKey
+ * @param mixed mavenKey
+ *
+ * @return [type]
+ *
+ * Created at: 13/12/2022, 10:08:02 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 export const remplissage=function(mavenKey) {
   const data = { mavenKey };
 
-  //On récupère les informations sur les versions, et le dernier audit.
+  /** On récupère les informations sur les versions, et le dernier audit. */
   const optionsInfo = {
     url: `${serveur()}/api/peinture/projet/version`, type: 'GET',
     dataType: 'json', data, contentType };
 
   $.ajax(optionsInfo).then(t=> {
-    /* On regarde le code http de retour.
+    /*
+     * On regarde le code http de retour.
      * Si la requête à un résultat, il est toujours égal à 200
      * sinon 406 pour signaler que le projet n'a pas encore été analysé.
      */
@@ -58,20 +63,13 @@ export const remplissage=function(mavenKey) {
         return;
       }
 
-    let release=0, snapshot=0;
+    let release=0, snapshot=0, autre=0;
     const nom = mavenKey.split(':');
     $('#nom-projet').html(nom[1]);
     $('#clef-projet').html(mavenKey);
-    if (t.version.RELEASE !== undefined) {
-      release = t.version.RELEASE.total;
-    }
-    if (t.version.SNAPSHOT !== undefined) {
-      snapshot = t.version.SNAPSHOT.total;
-    } else {
-      snapshot= '0';
-    }
-    $('#version-release').html(release);
-    $('#version-snapshot').html(snapshot);
+    $('#version-release').html(t.release);
+    $('#version-snapshot').html(t.snapshot);
+    $('#version-autre').html(t.autre);
 
     const version = document.getElementById('version-autre');
     version.dataset.label = JSON.stringify(t.label);
@@ -82,10 +80,12 @@ export const remplissage=function(mavenKey) {
     // Historique
     const t1 = document.getElementById('version-release');
     const t2 = document.getElementById('version-snapshot');
-    const t3 = document.getElementById('date-version');
+    const t3 = document.getElementById('version-autre');
+    const t4 = document.getElementById('date-version');
     t1.dataset.release=(release);
     t2.dataset.snapshot=(snapshot);
-    t3.dataset.dateVersion=(t.date);
+    t3.dataset.autre=(autre);
+    t4.dataset.dateVersion=(t.date);
   });
 
   //On récupère les exclusions noSonar
@@ -96,10 +96,10 @@ export const remplissage=function(mavenKey) {
   $.ajax(optionsNoSonar).then(t=> {
     $('#suppress-warning').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.s1309));
     $('#no-sonar').html( new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.nosonar));
-    const t1 = document.getElementById('suppress-warning');
-    const t2 = document.getElementById('no-sonar');
-    t1.dataset.s1309=(t.s1309);
-    t2.dataset.nosonar=(t.nosonar);
+    const t5 = document.getElementById('suppress-warning');
+    const t6 = document.getElementById('no-sonar');
+    t5.dataset.s1309=(t.s1309);
+    t6.dataset.nosonar=(t.nosonar);
   });
 
   //On récupère les informations du projet : lignes, couverture fonctionnelle, duplication, tests unitaires et le nombre de défaut.
@@ -121,18 +121,18 @@ export const remplissage=function(mavenKey) {
     $('#nombre-defaut').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.issues));
 
     //Historique
-    const t1 = document.getElementById('nombre-ligne');
-    const t2 = document.getElementById('nombre-ligne-de-code');
-    const t3 = document.getElementById('couverture');
-    const t4 = document.getElementById('duplication');
-    const t5 = document.getElementById('tests-unitaires');
-    const t6 = document.getElementById('nombre-defaut');
-    t1.dataset.nombreLigne=(t.lines);
-    t2.dataset.nombreLigneDeCode=(t.ncloc);
-    t3.dataset.coverage=(t.coverage);
-    t4.dataset.duplication=(t.duplication);
-    t5.dataset.testsUnitaires=(t.tests);
-    t6.dataset.nombreDefaut=(t.issues);
+    const t7 = document.getElementById('nombre-ligne');
+    const t8 = document.getElementById('nombre-ligne-de-code');
+    const t9 = document.getElementById('couverture');
+    const t10 = document.getElementById('duplication');
+    const t11 = document.getElementById('tests-unitaires');
+    const t12 = document.getElementById('nombre-defaut');
+    t7.dataset.nombreLigne=(t.lines);
+    t8.dataset.nombreLigneDeCode=(t.ncloc);
+    t9.dataset.coverage=(t.coverage);
+    t10.dataset.duplication=(t.duplication);
+    t11.dataset.testsUnitaires=(t.tests);
+    t12.dataset.nombreDefaut=(t.issues);
   });
 
   //On récupère les informations sur la dette technique et les anomalies.
@@ -154,8 +154,8 @@ export const remplissage=function(mavenKey) {
     $('#js-dette-code-smell').html(t.detteCodeSmell);
 
     // Historique
-    const t25 = document.getElementById('js-dette');
-    t25.dataset.detteMinute=t.detteMinute;
+    const t13 = document.getElementById('js-dette');
+    t13.dataset.detteMinute=t.detteMinute;
 
     /* Nombre d'anomalie */
     $('#nombre-bug').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.bug));
@@ -166,12 +166,12 @@ export const remplissage=function(mavenKey) {
     }
 
     // Historique
-    const t1 = document.getElementById('nombre-bug');
-    const t2 = document.getElementById('nombre-vulnerabilite');
-    const t3 = document.getElementById('nombre-mauvaise-pratique');
-    t1.dataset.nombreBug=(t.bug);
-    t2.dataset.nombreVulnerability=(t.vulnerability);
-    t3.dataset.nombreCodeSmell=(t.codeSmell);
+    const t14 = document.getElementById('nombre-bug');
+    const t15 = document.getElementById('nombre-vulnerabilite');
+    const t16 = document.getElementById('nombre-mauvaise-pratique');
+    t14.dataset.nombreBug=(t.bug);
+    t15.dataset.nombreVulnerability=(t.vulnerability);
+    t16.dataset.nombreCodeSmell=(t.codeSmell);
 
     /* Répartition modules*/
     let i1, i2, i3, p1, p2, p3, e1='', e2='', e3='';
@@ -227,22 +227,22 @@ export const remplissage=function(mavenKey) {
       $('#nombre-autre').html(i3);
 
       // Historique
-      const t4 = document.getElementById('nombre-frontend');
-      const t5 = document.getElementById('nombre-backend');
-      const t6 = document.getElementById('nombre-autre');
-      t4.dataset.nombreFrontend=t.frontend;
-      t5.dataset.nombreBackend=t.backend;
-      t6.dataset.nombreAutre=t.autre;
+      const t17 = document.getElementById('nombre-frontend');
+      const t18 = document.getElementById('nombre-backend');
+      const t19 = document.getElementById('nombre-autre');
+      t17.dataset.nombreFrontend=t.frontend;
+      t18.dataset.nombreBackend=t.backend;
+      t19.dataset.nombreAutre=t.autre;
       } else {
           $('#nombre-frontend').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(0));
           $('#nombre-backend').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(0));
           $('#nombre-autre').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(0));
-          const t4 = document.getElementById('nombre-frontend');
-          const t5 = document.getElementById('nombre-backend');
-          const t6 = document.getElementById('nombre-autre');
-          t4.dataset.nombreFrontend=0;
-          t5.dataset.nombreBackend=0;
-          t6.dataset.nombreAutre=0;
+          const t20 = document.getElementById('nombre-frontend');
+          const t21 = document.getElementById('nombre-backend');
+          const t22 = document.getElementById('nombre-autre');
+          t20.dataset.nombreFrontend=0;
+          t21.dataset.nombreBackend=0;
+          t22.dataset.nombreAutre=0;
           }
 
     /* Répartition des anomalies par sévérité */
@@ -252,16 +252,16 @@ export const remplissage=function(mavenKey) {
     $('#nombre-anomalie-majeur').html(t.major);
     $('#nombre-anomalie-mineur').html(t.minor);
 
-    const t16 = document.getElementById('nombre-anomalie-bloquant');
-    const t17 = document.getElementById('nombre-anomalie-critique');
-    const t18 = document.getElementById('nombre-anomalie-info');
-    const t19 = document.getElementById('nombre-anomalie-majeur');
-    const t20 = document.getElementById('nombre-anomalie-mineur');
-    t16.dataset.nombreAnomalieBloquant=t.blocker;
-    t17.dataset.nombreAnomalieCritique=t.critical;
-    t18.dataset.nombreAnomalieInfo=t.info;
-    t19.dataset.nombreAnomalieMajeur=t.major;
-    t20.dataset.nombreAnomalieMineur=t.minor;
+    const t23 = document.getElementById('nombre-anomalie-bloquant');
+    const t24 = document.getElementById('nombre-anomalie-critique');
+    const t25 = document.getElementById('nombre-anomalie-info');
+    const t26 = document.getElementById('nombre-anomalie-majeur');
+    const t27 = document.getElementById('nombre-anomalie-mineur');
+    t23.dataset.nombreAnomalieBloquant=t.blocker;
+    t24.dataset.nombreAnomalieCritique=t.critical;
+    t25.dataset.nombreAnomalieInfo=t.info;
+    t26.dataset.nombreAnomalieMajeur=t.major;
+    t27.dataset.nombreAnomalieMineur=t.minor;
 
     //On récupère les notes sonarqube pour la version courante
     let couleur1, couleur2, couleur3 = '';
@@ -351,16 +351,16 @@ export const remplissage=function(mavenKey) {
     $('#js-bug-minor').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.bugMinor));
     $('#js-bug-info').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.bugInfo));
 
-    const t21 = document.getElementById('js-bug-blocker');
-    const t22 = document.getElementById('js-bug-critical');
-    const t23 = document.getElementById('js-bug-major');
-    const t24 = document.getElementById('js-bug-minor');
-    const t25 = document.getElementById('js-bug-info');
-    t21.dataset.bugBlocker=t.bugBlocker;
-    t22.dataset.bugCritical=t.bugCritical;
-    t23.dataset.bugMajor=t.bugMajor;
-    t24.dataset.bugMinor=t.bugMinor;
-    t25.dataset.bugInfo=t.bugInfo;
+    const t28 = document.getElementById('js-bug-blocker');
+    const t29 = document.getElementById('js-bug-critical');
+    const t30 = document.getElementById('js-bug-major');
+    const t31 = document.getElementById('js-bug-minor');
+    const t32 = document.getElementById('js-bug-info');
+    t28.dataset.bugBlocker=t.bugBlocker;
+    t29.dataset.bugCritical=t.bugCritical;
+    t30.dataset.bugMajor=t.bugMajor;
+    t31.dataset.bugMinor=t.bugMinor;
+    t32.dataset.bugInfo=t.bugInfo;
 
     $('#js-vulnerability-blocker').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.vulnerabilityBlocker));
     $('#js-vulnerability-critical').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.vulnerabilityCritical));
@@ -368,16 +368,16 @@ export const remplissage=function(mavenKey) {
     $('#js-vulnerability-minor').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.vulnerabilityMinor));
     $('#js-vulnerability-info').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.vulnerabilityInfo));
 
-    const t26 = document.getElementById('js-vulnerability-blocker');
-    const t27 = document.getElementById('js-vulnerability-critical');
-    const t28 = document.getElementById('js-vulnerability-major');
-    const t29 = document.getElementById('js-vulnerability-minor');
-    const t30 = document.getElementById('js-vulnerability-info');
-    t26.dataset.vulnerabilityBlocker=t.vulnerabilityBlocker;
-    t27.dataset.vulnerabilityCritical=t.vulnerabilityCritical;
-    t28.dataset.vulnerabilityMajor=t.vulnerabilityMajor;
-    t29.dataset.vulnerabilityMinor=t.vulnerabilityMinor;
-    t30.dataset.vulnerabilityInfo=t.vulnerabilityInfo;
+    const t33 = document.getElementById('js-vulnerability-blocker');
+    const t34 = document.getElementById('js-vulnerability-critical');
+    const t35 = document.getElementById('js-vulnerability-major');
+    const t36 = document.getElementById('js-vulnerability-minor');
+    const t37 = document.getElementById('js-vulnerability-info');
+    t33.dataset.vulnerabilityBlocker=t.vulnerabilityBlocker;
+    t34.dataset.vulnerabilityCritical=t.vulnerabilityCritical;
+    t35.dataset.vulnerabilityMajor=t.vulnerabilityMajor;
+    t36.dataset.vulnerabilityMinor=t.vulnerabilityMinor;
+    t37.dataset.vulnerabilityInfo=t.vulnerabilityInfo;
 
     $('#js-code-smell-blocker').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.codeSmellBlocker));
     $('#js-code-smell-critical').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.codeSmellCritical));
@@ -385,16 +385,16 @@ export const remplissage=function(mavenKey) {
     $('#js-code-smell-minor').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.codeSmellMinor));
     $('#js-code-smell-info').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.codeSmellInfo));
 
-    const t31 = document.getElementById('js-code-smell-blocker');
-    const t32 = document.getElementById('js-code-smell-critical');
-    const t33 = document.getElementById('js-code-smell-major');
-    const t34 = document.getElementById('js-code-smell-minor');
-    const t35 = document.getElementById('js-code-smell-info');
-    t31.dataset.vulnerabilityBlocker=t.codeSmellBlocker;
-    t32.dataset.vulnerabilityCritical=t.codeSmellCritical;
-    t33.dataset.vulnerabilityMajor=t.codeSmellMajor;
-    t34.dataset.vulnerabilityMinor=t.codeSmellMinor;
-    t35.dataset.vulnerabilityInfo=t.codeSmellInfo;
+    const t38 = document.getElementById('js-code-smell-blocker');
+    const t39 = document.getElementById('js-code-smell-critical');
+    const t40 = document.getElementById('js-code-smell-major');
+    const t41 = document.getElementById('js-code-smell-minor');
+    const t42 = document.getElementById('js-code-smell-info');
+    t38.dataset.vulnerabilityBlocker=t.codeSmellBlocker;
+    t39.dataset.vulnerabilityCritical=t.codeSmellCritical;
+    t40.dataset.vulnerabilityMajor=t.codeSmellMajor;
+    t41.dataset.vulnerabilityMinor=t.codeSmellMinor;
+    t42.dataset.vulnerabilityInfo=t.codeSmellInfo;
   });
 
   //On récupère les hotspots.
