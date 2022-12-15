@@ -1,15 +1,15 @@
 <?php
 
 /*
- *  Ma-Moulinette
- *  --------------
- *  Copyright (c) 2021-2022.
- *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
- *  ---
- *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
- */
+*  Ma-Moulinette
+*  --------------
+*  Copyright (c) 2021-2022.
+*  Laurent HADJADJ <laurent_h@me.com>.
+*  Licensed Creative Common  CC-BY-NC-SA 4.0.
+*  ---
+*  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+*  http://creativecommons.org/licenses/by-nc-sa/4.0/
+*/
 
 namespace App\Controller;
 
@@ -39,7 +39,18 @@ class HomeController extends AbstractController
     public static $dateFormat = "Y-m-d H:i:s";
     public static $regex = "/\s+/u";
 
-    /** On ajoute un constructeur pour éviter à chaque fois d'injecter la même class */
+    /**
+     * [Description for __construct]
+     *
+     * @param  private
+     * @param  private
+     * @param  private
+     * @param  private
+     *
+     * Created at: 15/12/2022, 22:06:26 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function __construct (
         private LoggerInterface $logger,
         private EntityManagerInterface $em,
@@ -53,10 +64,15 @@ class HomeController extends AbstractController
             $this->client = $client;
         }
     /**
-     * httpClient
+     * [Description for httpClient]
      *
-     * @param  mixed $url
-     * @return reponse
+     * @param mixed $url
+     *
+     * @return array
+     *
+     * Created at: 15/12/2022, 22:06:38 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     protected function httpClient($url): array
     {
@@ -85,7 +101,7 @@ class HomeController extends AbstractController
 
         /** Si la réponse est différente de HTTP: 200 alors... */
         if (200 !== $response->getStatusCode()) {
-        // Le token ou le password n'est pas correct.
+        /** Le token ou le password n'est pas correct. */
         if ($response->getStatusCode() == 401) {
             throw new \UnexpectedValueException('Erreur d\'Authentification. La clé n\'est pas correcte.');
         } else {
@@ -101,7 +117,14 @@ class HomeController extends AbstractController
     }
 
     /**
+     * [Description for countProjetBD]
      * Récupère le nombre de projet enregistré en base
+     *
+     * @return Int
+     *
+     * Created at: 15/12/2022, 22:06:59 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     private function countProjetBD(): Int
     {
@@ -119,7 +142,14 @@ class HomeController extends AbstractController
     }
 
     /**
+     * [Description for countProjetSonar]
      * Récupère le nombre de projet disponible sur le serveur sonarqube
+     *
+     * @return Int
+     *
+     * Created at: 15/12/2022, 22:07:31 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     private function countProjetSonar(): Int
     {
@@ -148,7 +178,14 @@ class HomeController extends AbstractController
     }
 
     /**
+     * [Description for countProfilBD]
      * Récupère le nombre de profil enregistré en base
+     *
+     * @return Int
+     *
+     * Created at: 15/12/2022, 22:07:46 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     private function countProfilBD(): Int
     {
@@ -164,7 +201,14 @@ class HomeController extends AbstractController
     }
 
     /**
+     * [Description for countProfilSonar]
      * Récupère le nombre de profil disponible sur sonarqube
+     *
+     * @return Int
+     *
+     * Created at: 15/12/2022, 22:07:58 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     private function countProfilSonar(): Int
     {
@@ -175,14 +219,23 @@ class HomeController extends AbstractController
         /** On appel le client http */
         $result = $this->httpClient($url);
 
-        // Si les profils custom n'existent pas on envoi un message
+        /** Si les profils custom n'existent pas on envoi un message */
         return count($result['profiles']);
     }
 
     /**
+     * [Description for majProperties]
      * On met à jour la table de référence
      *
-     * @return array
+     * @param mixed $type
+     * @param mixed $bd
+     * @param mixed $sonar
+     *
+     * @return [type]
+     *
+     * Created at: 15/12/2022, 22:08:18 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     private function majProperties($type, $bd, $sonar)
     {
@@ -213,7 +266,14 @@ class HomeController extends AbstractController
     }
 
     /**
+     * [Description for getProperties]
      * Récupère les properties
+     *
+     * @return array
+     *
+     * Created at: 15/12/2022, 22:08:36 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     private function getProperties(): array
     {
@@ -223,10 +283,7 @@ class HomeController extends AbstractController
 
         /** La table est vide. On initialise les valeurs */
         if (!$r){
-            $projetBD=0;
-            $projetSonar=0;
-            $profilBD=0;
-            $profilSonar=0;
+            $projetBD=$projetSonar=$profilBD=$profilSonar=0;
 
             $date = new DateTime();
             $date->setTimezone(new DateTimeZone('Europe/Paris'));
@@ -261,7 +318,14 @@ class HomeController extends AbstractController
     }
 
     /**
+     * [Description for getVersion]
      * On récupère le numéro de version en base
+     *
+     * @return string
+     *
+     * Created at: 15/12/2022, 22:09:07 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     private function getVersion(): string
     {
@@ -276,9 +340,13 @@ class HomeController extends AbstractController
 
 
     /**
-     * index
+     * [Description for index]
      *
      * @return Response
+     *
+     * Created at: 15/12/2022, 22:09:19 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/home', name: 'home')]
     public function index(): Response

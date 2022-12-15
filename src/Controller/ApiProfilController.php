@@ -32,12 +32,15 @@ class ApiProfilController extends AbstractController
     $this->em = $em;
   }
   /**
-   * liste_quality_langage
+   * [Description for listeQualityLangage]
    * Revoie le tableau des laels et des dataset
    * Permet de tracer un jolie dessin sur la répartition des langages de programmation.
    *
-   * @param  mixed $em
    * @return response
+   *
+   * Created at: 15/12/2022, 21:24:33 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/quality/langage', name: 'liste_quality_langage', methods: ['GET'])]
   public function listeQualityLangage(): response

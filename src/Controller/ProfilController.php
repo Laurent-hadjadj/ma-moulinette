@@ -18,28 +18,37 @@ use Symfony\Component\Routing\Annotation\Route;
 
 // Accès aux tables SLQLite
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bridge\Twig\Node\RenderBlockNode;
 use Symfony\Component\HttpFoundation\Response;
 
 class ProfilController extends AbstractController
 {
-  private $em;
 
-  // On ajoute un constructeur pour éviter à chaque fois d'injecter la même class
-  public function __construct(EntityManagerInterface $em) {
+  /**
+   * [Description for __construct]
+   *
+   * @param  private
+   *
+   * Created at: 15/12/2022, 22:14:50 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function __construct(private EntityManagerInterface $em) {
       $this->em = $em;
   }
 
-  /**
-   * index
-   *
-   * @param  mixed $em
-   * @return void
-   */
   #[Route('/profil', name: 'profil')]
+  /**
+   * [Description for index]
+   *
+   * @return Response
+   *
+   * Created at: 15/12/2022, 22:14:55 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
   public function index(): Response
   {
-    // On récupère la liste des profiles;
+    /** On récupère la liste des profiles; */
     $sql = "SELECT name as profil, language_name as langage,
       active_rule_count as regle, rules_update_at as date, is_default as actif
       FROM profiles";

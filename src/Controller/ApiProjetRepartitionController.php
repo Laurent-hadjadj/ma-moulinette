@@ -48,6 +48,7 @@ class ApiProjetRepartitionController extends AbstractController
    *
    * Created at: 04/12/2022, 09:00:38 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   public function __construct(
     private ManagerRegistry $doctrine,
@@ -61,6 +62,9 @@ class ApiProjetRepartitionController extends AbstractController
   }
 
   public static $sonarUrl = "sonar.url";
+  public static $strContentType = 'application/json';
+  public static $apiIssuesSearch = "/api/issues/search?componentKeys=";
+
 
   /**
    * [Description for batch_Analyse]
@@ -72,6 +76,8 @@ class ApiProjetRepartitionController extends AbstractController
    *
    * Created at: 04/12/2022, 09:00:59 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   *
    */
   protected function batch_Analyse($elements, $mavenKey)
   {
@@ -134,6 +140,7 @@ class ApiProjetRepartitionController extends AbstractController
    *
    * Created at: 04/12/2022, 09:01:28 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   protected function httpClient($url): array
   {
@@ -165,8 +172,10 @@ class ApiProjetRepartitionController extends AbstractController
       }
     }
 
-    /** La variable n'est pas utilisé, elle permet de collecter
-     *  les données et de rendre la main. */
+    /**
+     * La variable n'est pas utilisé, elle permet de collecter
+     *  les données et de rendre la main.
+     */
     $contentType = $response->getHeaders()['content-type'][0];
     $this->logger->INFO('** ContentType *** '.isset($contentType));
 
@@ -195,6 +204,7 @@ class ApiProjetRepartitionController extends AbstractController
    *
    * Created at: 04/12/2022, 09:02:29 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   protected function batch_anomalie($mavenKey, $index, $pageSize, $type, $severity)
   {
@@ -219,7 +229,7 @@ class ApiProjetRepartitionController extends AbstractController
 
   /**
    * [Description for projetRepartitionDetails]
-   * Rcéupère le total des anomalies par severité.
+   * Récupère le total des anomalies par severité.
    *
    * @param Request $request
    *
@@ -228,6 +238,7 @@ class ApiProjetRepartitionController extends AbstractController
    *
    * Created at: 04/12/2022, 09:03:46 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/projet/repartition/details', name: 'projet_repartition_details', methods: ['GET'])]
   public function projetRepartitionDetails(Request $request): response
@@ -280,6 +291,7 @@ class ApiProjetRepartitionController extends AbstractController
    *
    * Created at: 04/12/2022, 09:04:35 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/projet/repartition/collecte', name: 'projet_repartition_collecte', methods: ['PUT'])]
   public function projetRepartitionCollecte(Request $request): response
@@ -345,6 +357,7 @@ class ApiProjetRepartitionController extends AbstractController
    *
    * Created at: 04/12/2022, 09:05:01 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/projet/repartition/clear', name: 'projet_repartition_clear', methods: ['GET'])]
   public function projetRepartitionClear(Request $request): Response
@@ -375,6 +388,7 @@ class ApiProjetRepartitionController extends AbstractController
    *
    * Created at: 04/12/2022, 09:05:20 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/projet/repartition/analyse', name: 'projet_repartition_analyse', methods: ['PUT'])]
   public function projetRepartitionAnalyse(Request $request): Response
