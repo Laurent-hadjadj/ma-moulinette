@@ -32,11 +32,16 @@ class ApiOwaspPeintureController extends AbstractController
   }
 
   /**
-   * peinture_owasp_liste
+   * [Description for peintureOwaspListe]
    * On récupère les résultats Owasp
    *
-   * @param  mixed $request
+   * @param Request $request
+   * 
    * @return response
+   * 
+   * Created at: 15/12/2022, 21:19:10 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com> 
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0. 
    */
   #[Route('/api/peinture/owasp/liste', name: 'peinture_owasp_liste', methods: ['GET'])]
   public function peintureOwaspListe(Request $request): response
@@ -140,11 +145,16 @@ class ApiOwaspPeintureController extends AbstractController
   }
 
   /**
-   * peinture_owasp_hotspot_info
+   * [Description for peintureOwaspHotspotInfo]
    * On récupère les résultats des hotspots
    *
-   * @param  mixed $request
+   * @param Request $request
+   * 
    * @return response
+   * 
+   * Created at: 15/12/2022, 21:19:54 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com> 
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0. 
    */
   #[Route('/api/peinture/owasp/hotspot/info', name: 'peinture_owasp_hotspot_info', methods: ['GET'])]
   public function peintureOwaspHotspotInfo(Request $request): response
@@ -202,11 +212,16 @@ class ApiOwaspPeintureController extends AbstractController
   }
 
   /**
-   * peinture_owasp_hotspot_liste
+   * [Description for peintureOwaspHotspotListe]
    * On récupère les résultats de la table hotpsot_owasp
    *
-   * @param  mixed $request
+   * @param Request $request
+   * 
    * @return response
+   * 
+   * Created at: 15/12/2022, 21:20:20 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com> 
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0. 
    */
   #[Route('/api/peinture/owasp/hotspot/liste', name: 'peinture_owasp_hotspot_liste', methods: ['GET'])]
   public function peintureOwaspHotspotListe(Request $request): response
@@ -279,11 +294,16 @@ class ApiOwaspPeintureController extends AbstractController
   }
 
   /**
-   * peinture_owasp_hotspot_details
+   * [Description for peintureOwaspHotspotDetails]
    * On récupère le détails des failles de type hotpsot
    *
-   * @param  mixed $request
+   * @param Request $request
+   * 
    * @return response
+   * 
+   * Created at: 15/12/2022, 21:20:54 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com> 
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0. 
    */
   #[Route('/api/peinture/owasp/hotspot/details', name: 'peinture_owasp_hotspot_details', methods: ['GET'])]
   public function peintureOwaspHotspotDetails(Request $request): response
@@ -307,11 +327,16 @@ class ApiOwaspPeintureController extends AbstractController
   }
 
   /**
-   * peinture_owasp_severity
+   * [Description for peintureOwaspSeverity]
    * On récupère le détails des failles de type hotpsot
    *
-   * @param  mixed $request
+   * @param Request $request
+   * 
    * @return response
+   * 
+   * Created at: 15/12/2022, 21:21:20 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com> 
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0. 
    */
   #[Route('/api/peinture/owasp/hotspot/severity', name: 'peinture_owasp_hotspot_severity', methods: ['GET'])]
   public function peintureOwaspSeverity(Request $request): response
