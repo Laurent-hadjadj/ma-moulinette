@@ -14,9 +14,15 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Routing\Annotation\Route;
+
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+
+/** Gestion du temps */
+use DateTime;
+use DateTimeZone;
+
 
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Main\Utilisateur;
@@ -26,8 +32,6 @@ use App\Security\LoginFormAuthenticator;
 
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
-
-use DateTime;
 
 class RegistrationController extends AbstractController
 {
