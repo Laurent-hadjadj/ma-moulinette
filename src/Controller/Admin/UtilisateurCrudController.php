@@ -73,18 +73,18 @@ class UtilisateurCrudController extends AbstractCrudController
             ->setHelp('Sélectionne le ou les rôles.');
 
         /** On récupère la liste des équipes */
-        $sql="SELECT nom, description FROM equipe ORDER BY nom ASC";
+        $sql="SELECT titre, description FROM equipe ORDER BY titre ASC";
         $l = $this->emm->getConnection()->prepare($sql)->executeQuery();
         $resultat = $l->fetchAllAssociative();
         /** si la table est vide */
         if (empty($resultat)) {
-            $resultat=[["nom" => "Aucune", "description" => "Aucune équipe."]];
+            $resultat=[["titre" => "Aucune", "description" => "Aucune équipe."]];
         }
         $key=[];
         $val=[];
         foreach($resultat as $value) {
-            array_push($key,$value['nom']." - ".$value['description']);
-            array_push($val,$value['nom']);
+            array_push($key,$value['titre']." - ".$value['description']);
+            array_push($val,$value['titre']);
         }
 
         yield ChoiceField::new('equipe')
