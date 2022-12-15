@@ -12,7 +12,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 
-use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
+//use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\EmailField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AvatarField;
@@ -63,8 +63,8 @@ class UtilisateurCrudController extends AbstractCrudController
             ->hideOnForm();
         yield EmailField::new('courriel');
 
-        $key1=['Utilisateur', 'Gestionnaire'];
-        $value1 = ['ROLE_UTILISATEUR', 'ROLE_GESTIONNAIRE'];
+        $key1=['Utilisateur', 'batch', 'Gestionnaire'];
+        $value1 = ['ROLE_UTILISATEUR', 'ROLE_BATCH', 'ROLE_GESTIONNAIRE'];
         yield ChoiceField::new('roles')
             ->setChoices(array_combine($key1, $value1))
             ->allowMultipleChoices()
