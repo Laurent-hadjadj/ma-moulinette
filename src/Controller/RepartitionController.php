@@ -22,24 +22,41 @@ use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Entity\Secondary\Repartition;
 
+/**
+ * [Description RepartitionController]
+ */
 class RepartitionController extends AbstractController
 {
-    // On ajoute un constructeur pour éviter à chaque fois d'injecter la même class.
+    /**
+     * [Description for __construct]
+     *
+     * @param  private
+     *
+     * Created at: 15/12/2022, 22:32:06 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function __construct( private ManagerRegistry $doctrine) {
         $this->doctrine = $doctrine;
     }
 
     /**
-     * projetRepartition
-     * @param  mixed $request
+     * [Description for projetRepartition]
+     *
+     * @param Request $request
+     *
      * @return Response
+     *
+     * Created at: 15/12/2022, 22:32:12 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/projet/repartition', name: 'projet_repartition')]
     public function projetRepartition(Request $request): Response
     {
-        // On récupère la clé du projet
+        /** On récupère la clé du projet */
         $mavenKey = $request->get('mavenKey');
-        // On enregistre le nom du projet
+        /** On enregistre le nom du projet */
         $app=explode(":", $mavenKey);
 
         // On se connecte à la base pour connaitre la version du dernier setup pour le projet.

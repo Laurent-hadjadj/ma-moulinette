@@ -20,9 +20,13 @@ class OwaspController extends AbstractController
 {
 
   /**
-   * index
+   * [Description for index]
    *
-   * @return void
+   * @return [type]
+   *
+   * Created at: 15/12/2022, 22:14:00 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/owasp', name: 'owasp')]
   public function index()

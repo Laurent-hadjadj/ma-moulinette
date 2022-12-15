@@ -25,25 +25,19 @@ use Doctrine\DBAL\Connection;
 
 class ProjetController extends AbstractController
 {
-  /**
-   * [Description for $dateFormat]
-   *
-   * @var string
-   */
   public static $dateFormat = "Y-m-d H:i:s";
-
-  /**
-   * [Description for $regex]
-   *
-   * @var string
-   */
   public static $regex = "/\s+/u";
 
   /**
    * [Description for __construct]
    *
    * @param  private
+   * @param  private
+   * @param mixed
    *
+   * Created at: 15/12/2022, 22:15:51 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   public function __construct (
     private Connection $connection,
@@ -59,6 +53,9 @@ class ProjetController extends AbstractController
    *
    * @return Response
    *
+   * Created at: 15/12/2022, 22:16:04 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/projet', name: 'projet')]
   public function index(): Response
@@ -69,9 +66,20 @@ class ProjetController extends AbstractController
     ]);
   }
 
+    /**
+     * [Description for setup]
+     *
+     * @param mixed $mavenKey
+     *
+     * @return string
+     *
+     * Created at: 15/12/2022, 22:16:17 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     private function setup($mavenKey): string
     {
-      // On se connecte à la base pour connaitre la version du dernier setup pour le projet.
+      /** On se connecte à la base pour connaitre la version du dernier setup pour le projet. */
       $reponse = $this->manager->getManager('secondary')
       ->getRepository(Repartition::class)
       ->findBy(['maven_key' => $mavenKey],['setup' => 'DESC'],1);
@@ -90,6 +98,9 @@ class ProjetController extends AbstractController
      *
      * @return array
      *
+     * Created at: 15/12/2022, 22:16:32 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     private function notes($mavenKey): array
     {
@@ -146,6 +157,9 @@ class ProjetController extends AbstractController
      *
      * @return array
      *
+     * Created at: 15/12/2022, 22:16:56 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     private function reference($mavenKey): array
     {
@@ -181,10 +195,21 @@ class ProjetController extends AbstractController
                 'initial_code_smell_critical'=>$r[0]["code_smell_critical"],
                 'initial_code_smell_major'=>$r[0]["code_smell_major"],
                 'initial_hotspot_total'=>$r[0]["hotspot_total"],
-
               ];
     }
 
+    /**
+     * [Description for repartition]
+     *
+     * @param mixed $mavenKey
+     * @param mixed $contents
+     *
+     * @return array
+     *
+     * Created at: 15/12/2022, 22:17:19 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     private function repartition($mavenKey, $contents): array
     {
       $erreur=$frontend=$backend=$autre=0;
@@ -202,7 +227,7 @@ class ProjetController extends AbstractController
         $file = str_replace($mavenKey . ":", "", $el->getComponent());
       /**
        * On découpe le chemin.
-       *  monapplication-metier, monapplication-metier-service, src,...
+       * monapplication-metier, monapplication-metier-service, src,...
        */
         $module = explode("/", $file);
         /** On prend la première entrée */
@@ -237,12 +262,18 @@ class ProjetController extends AbstractController
     }
 
     /**
-     * [Description for metier]
+     * [Description for traitement]
      *
      * @param mixed $mavenKey
+     * @param mixed $setup
+     * @param mixed $type
+     * @param mixed $severity
      *
      * @return array
      *
+     * Created at: 15/12/2022, 22:17:46 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     private function traitement($mavenKey, $setup, $type, $severity): array
     {
@@ -273,6 +304,9 @@ class ProjetController extends AbstractController
    *
    * @return string
    *
+   * Created at: 15/12/2022, 22:17:57 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   private function variation ($a, $b): string
   {
@@ -305,20 +339,25 @@ class ProjetController extends AbstractController
   /**
    * [Description for projetCosui]
    *
+   * @param Request $request
+   *
    * @return Response
    *
+   * Created at: 15/12/2022, 22:18:08 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/projet/cosui', name: 'projet_cosui')]
   public function projetCosui(Request $request): Response
   {
-    // On bind les variables
+    /** On bind les variables */
     $mavenKey = $request->get('mavenKey');
 
     /** On récupère les notes */
     $n=self::notes($mavenKey);
 
     if ($n["resultat"]===false) {
-      $name=$versionApplication=$typeApplication="NaN";
+      $nameApplication=$versionApplication=$typeApplication="NaN";
       $dateApplication="01/01/1980";
       $noteCodeSmell=$noteReliability=$noteSecurity=$noteHotspot="F";
       $nombreMetierCodeSmellBlocker=$nombreMetierCodeSmellCritical=$nombreMetierCodeSmellMajor=0;
@@ -329,11 +368,10 @@ class ProjetController extends AbstractController
       $codeSmellBlocker=$codeSmellCritical=$codeSmellMajor=0;
       $hotspot=0;
 
-      $nombrePresentationReliabilityBlocker=$nombrePresentationReliabilityCritical= $nombrePresentationReliabilityMajor=0;    $nombreMetierVulnerabilityBlocker=$nombreMetierVulnerabilityCritical=      $nombreMetierVulnerabilityMajor=0;
-      $nombrePresentationVulnerabilityBlocker=$nombrePresentationVulnerabilityCritical=     $nombrePresentationVulnerabilityMajor=0;
-      $nombreMetierHotspotBlocker=$nombreMetierHotspotCritical=$nombreMetierHotspotMajor=0;
-      $nombrePresentationHotspotBlocker=$nombrePresentationHotspotCritical=0;
-      $nombrePresentationHotspotMajor=0;
+      $nombrePresentationReliabilityBlocker=$nombrePresentationReliabilityCritical=$nombrePresentationReliabilityMajor=0;
+
+      $nombrePresentationVulnerabilityBlocker=$nombrePresentationVulnerabilityCritical=$nombrePresentationVulnerabilityMajor=0;
+      $nombreMetierVulnerabilityBlocker=$nombreMetierVulnerabilityCritical=$nombreMetierVulnerabilityMajor=0;
 
       $message="[COSUI-001] Il n'y a pas de données dans la babase !";
       $this->addFlash('alert', $message);
@@ -414,18 +452,18 @@ class ProjetController extends AbstractController
 
     /** Vulnérabilité Blocker */
     $vulnerabilite01=self::traitement($mavenKey, $setup, 'VULNERABILITY', 'BLOCKER');
-    $nombrePresentationVulnerabiliteBlocker=$vulnerabilite01["frontend"];
-    $nombreMetierVulnerabiliteBlocker=$vulnerabilite01["backend"];
+    $nombrePresentationVulnerabilityBlocker=$vulnerabilite01["frontend"];
+    $nombreMetierVulnerabilityBlocker=$vulnerabilite01["backend"];
 
     /** Vulnérabilité Critical */
     $vulnerabilite02=self::traitement($mavenKey, $setup, 'VULNERABILITY', 'CRITICAL');
-    $nombrePresentationVulnerabiliteCritical=$vulnerabilite02["frontend"];
-    $nombreMetierVulnerabiliteCritical=$vulnerabilite02["backend"];
+    $nombrePresentationVulnerabilityCritical=$vulnerabilite02["frontend"];
+    $nombreMetierVulnerabilityCritical=$vulnerabilite02["backend"];
 
     /** Vulnérabilité Major */
     $vulnerabilite03=self::traitement($mavenKey, $setup, 'VULNERABILITY', 'MAJOR');
-    $nombrePresentationVulnerabiliteMajor=$vulnerabilite03["frontend"];
-    $nombreMetierVulnerabiliteMajor=$vulnerabilite03["backend"];
+    $nombrePresentationVulnerabilityMajor=$vulnerabilite03["frontend"];
+    $nombreMetierVulnerabilityMajor=$vulnerabilite03["backend"];
 
     /** Maintenabilité Bloqant*/
     $codeSmell01=self::traitement($mavenKey, $setup, 'CODE_SMELL', 'BLOCKER');
@@ -486,7 +524,7 @@ class ProjetController extends AbstractController
       'code_smell_major'=>$codeSmellMajor,
       'hotspot'=>$hotspot,
       'initial_version_application'=>$initialVersionApplication,
-      'initial_date_application'=>$dateApplication,
+      'initial_date_application'=>$initialDateApplication,
       'initial_note_code_smell'=>$initialNoteCodeSmell,
       'initial_note_reliability'=>$initialNoteReliability,
       'initial_note_security'=>$initialNoteSecurity,
@@ -532,12 +570,12 @@ class ProjetController extends AbstractController
       'nombre_presentation_reliability_blocker'=>$nombrePresentationReliabilityBlocker,
       'nombre_presentation_reliability_critical'=>$nombrePresentationReliabilityCritical,
       'nombre_presentation_reliability_major'=>$nombrePresentationReliabilityMajor,
-      'nombre_metier_vulnerability_blocker'=>$nombreMetierVulnerabiliteBlocker,
-      'nombre_metier_vulnerability_critical'=>$nombreMetierVulnerabiliteCritical,
-      'nombre_metier_vulnerability_major'=>$nombreMetierVulnerabiliteMajor,
-      'nombre_presentation_vulnerability_blocker'=>$nombrePresentationVulnerabiliteBlocker,
-      'nombre_presentation_vulnerability_critical'=>$nombrePresentationVulnerabiliteCritical,
-      'nombre_presentation_vulnerability_major'=>$nombrePresentationVulnerabiliteMajor,
+      'nombre_metier_vulnerability_blocker'=>$nombreMetierVulnerabilityBlocker,
+      'nombre_metier_vulnerability_critical'=>$nombreMetierVulnerabilityCritical,
+      'nombre_metier_vulnerability_major'=>$nombreMetierVulnerabilityMajor,
+      'nombre_presentation_vulnerability_blocker'=>$nombrePresentationVulnerabilityBlocker,
+      'nombre_presentation_vulnerability_critical'=>$nombrePresentationVulnerabilityCritical,
+      'nombre_presentation_vulnerability_major'=>$nombrePresentationVulnerabilityMajor,
       'version' => $this->getParameter('version'), 'dateCopyright' => \date('Y')
     ]);
   }

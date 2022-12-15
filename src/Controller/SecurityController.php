@@ -21,10 +21,24 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 
+/**
+ * [Description SecurityController]
+ */
 class SecurityController extends AbstractController
 {
+    /**
+     * [Description for relogin]
+     *
+     * @param AuthenticationUtils $authenticationUtils
+     *
+     * @return Response
+     *
+     * Created at: 15/12/2022, 22:33:09 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     #[Route('/', name: 're_login')]
-    public function relogin(AuthenticationUtils $authenticationUtils): Response
+     public function relogin(AuthenticationUtils $authenticationUtils): Response
     {
         /**
          * Si on est déjà connecté
@@ -43,6 +57,17 @@ class SecurityController extends AbstractController
         }
     }
 
+    /**
+     * [Description for login]
+     *
+     * @param AuthenticationUtils $authenticationUtils
+     *
+     * @return Response
+     *
+     * Created at: 15/12/2022, 22:33:25 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     #[Route('/login', name: 'login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {

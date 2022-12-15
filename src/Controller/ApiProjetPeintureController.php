@@ -39,15 +39,20 @@ class ApiProjetPeintureController extends AbstractController
   const HTTP_ERROR_406 = "                   Vous devez lancer une analyse pour ce projet !!!";
 
   /**
-   * isValide
+   * [Description for isValide]
+   *
+   * @param mixed $mavenKey
    * Vérification de l'existence du projet dans la table information_projet
    *
-   * @param  mixed $mavenKey
    * @return array
+   *
+   * Created at: 15/12/2022, 21:51:16 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   protected function isValide($mavenKey): array
   {
-    // On regarde si une analyse a été réalisée.
+    /** On regarde si une analyse a été réalisée. */
     $sql = "SELECT * FROM information_projet WHERE maven_key='${mavenKey}' LIMIT 1";
     $r = $this->em->getConnection()->prepare($sql)->executeQuery();
     $response = $r->fetchAllAssociative();
@@ -58,16 +63,20 @@ class ApiProjetPeintureController extends AbstractController
   }
 
   /**
-   * projet_mes_applictaions_liste
+   * [Description for projetMesApplicationsListe]
    * Récupupère la liste de mes projets et ceux en favoris
    *
    * @return response
+   *
+   * Created at: 15/12/2022, 21:51:40 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/projet/mes-applications/liste', name: 'projet_mesapplications_liste', methods: ['GET'])]
   public function projetMesApplicationsListe(): response
   {
     $response = new JsonResponse();
-    //On récupère la liste des projets ayant déjà fait l'objet d'une analyse.
+    /** On récupère la liste des projets ayant déjà fait l'objet d'une analyse. */
     $sql = "SELECT project_name as name, maven_key AS key
             FROM anomalie
             WHERE liste = TRUE
@@ -77,18 +86,18 @@ class ApiProjetPeintureController extends AbstractController
     $select = $this->em->getConnection()->prepare($sql)->executeQuery();
     $listeProjet = $select->fetchAllAssociative();
 
-    // Si on a pas trouvé d'application.
+    /** Si on a pas trouvé d'application. */
     if (empty($listeProjet)) {
       return $response->setData(["code" => 406, Response::HTTP_OK]);
     }
 
-    //On récupère la liste des projets favori.
-    //SQLite : 0 (false) and 1 (true).
+    /** On récupère la liste des projets favori. */
+    /** SQLite : 0 (false) and 1 (true). */
     $sql = "SELECT maven_key AS key FROM favori WHERE favori=1";
     $select = $this->em->getConnection()->prepare($sql)->executeQuery();
     $favori = $select->fetchAllAssociative();
 
-    // Si on a pas trouvé de favori.
+    /** Si on a pas trouvé de favori. */
     if (empty($favori)) {
       $listeFavori = ["vide"];
     } else {
@@ -99,20 +108,26 @@ class ApiProjetPeintureController extends AbstractController
     "favori" => $listeFavori, Response::HTTP_OK]);
   }
 
-    /**
-   * projet_mes_applictaions_liste
+  /**
+   * [Description for projetMesApplicationsDelete]
    * Désactive l'affichage du projet dans la liste des projets déjà analysés.
    *
+   * @param Request $request
+   *
    * @return response
+   *
+   * Created at: 15/12/2022, 21:52:55 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/projet/mes-applications/delete', name: 'projet_mesapplications_delete', methods: ['GET'])]
   public function projetMesApplicationsDelete(Request $request): response
   {
-    // On bind la variables
+    /** On bind la variables */
     $mavenKey = $request->get('mavenKey');
 
     $response = new JsonResponse();
-    //On récupère la liste des projets ayant déjà fait l'objet d'une analyse.
+    /** On récupère la liste des projets ayant déjà fait l'objet d'une analyse. */
     $sql = "UPDATE anomalie
             SET liste = FALSE
             WHERE maven_key='${mavenKey}';";
@@ -123,12 +138,17 @@ class ApiProjetPeintureController extends AbstractController
   }
 
   /**
-   * peinture_projet_version
+   * [Description for peintureProjetVersion]
    * Récupère les informations sur le projet : type de version, dernière version,
    * date de l'audit
    *
-   * @param  mixed $request
+   * @param Request $request
+   *
    * @return response
+   *
+   * Created at: 15/12/2022, 21:53:31 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/peinture/projet/version', name: 'peinture_projet_version', methods: ['GET'])]
   public function peintureProjetVersion(Request $request): response
@@ -220,13 +240,17 @@ class ApiProjetPeintureController extends AbstractController
   }
 
   /**
-   * peinture_projet_information
+   * [Description for peintureProjetInformation]
    * Récupère les informations sur le projet : type de version, dernière version,
    * date de l'audit
-
    *
-   * @param  mixed $request
+   * @param Request $request
+   *
    * @return response
+   *
+   * Created at: 15/12/2022, 21:53:58 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/peinture/projet/information', name: 'peinture_projet_information', methods: ['GET'])]
   public function peintureProjetInformation(Request $request): response
@@ -239,7 +263,7 @@ class ApiProjetPeintureController extends AbstractController
       return $response->setData(["message" => static::HTTP_ERROR_406, Response::HTTP_NOT_ACCEPTABLE]);
     }
 
-    // On récupère la dernière version et sa date de publication
+    /** On récupère la dernière version et sa date de publication */
     $sql = "SELECT project_name as name, ncloc, lines, coverage,
             duplication_density as duplication, tests, issues
             FROM mesures
@@ -259,20 +283,26 @@ class ApiProjetPeintureController extends AbstractController
     ]);
   }
 
+
   /**
-   * peinture_projet_anomalie
+   * [Description for peintureProjetAnomalie]
    * Récupère les informations sur la dette technique et les anamalies
    *
-   * @param  mixed $request
+   * @param Request $request
+   *
    * @return response
+   *
+   * Created at: 15/12/2022, 21:54:30 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/peinture/projet/anomalie', name: 'peinture_projet_anomalie', methods: ['GET'])]
   public function peintureProjetAnomalie(Request $request): response
   {
-    // On bind les variables
+    /** On bind les variables. */
     $mavenKey = $request->get('mavenKey');
 
-    // On créé un objet json
+    /** On créé un objet json. */
     $response = new JsonResponse();
 
     $isValide = $this->isValide($mavenKey);
@@ -282,12 +312,13 @@ class ApiProjetPeintureController extends AbstractController
       );
     }
 
-    // On récupère la dernière version et sa date de publication
+    /** On récupère la dernière version et sa date de publication. */
     $sql = "SELECT * FROM anomalie WHERE maven_key='${mavenKey}'";
     $r = $this->em->getConnection()->prepare($sql)->executeQuery();
     $anomalies = $r->fetchAllAssociative();
 
-    /* Dette : Dette total, répartition de la dette en fonction du type.
+    /**
+     * Dette : Dette total, répartition de la dette en fonction du type.
      * On récupère la valeur en jour, heure, minute pour l'affichage et la valeur en minutes
      * pour la historique (i.e on fera les comparaison sur cette valeur)
     */
@@ -300,20 +331,20 @@ class ApiProjetPeintureController extends AbstractController
     $detteCodeSmell = $anomalies[0]["dette_code_smell"];
     $detteCodeSmellMinute = $anomalies[0]["dette_code_smell_minute"];
 
-    // Types
-    //$anomalie_total=$anomalies[0]["anomalie_total"];
+    /** Types */
+    /** $anomalie_total=$anomalies[0]["anomalie_total"]; */
     $typeBug = $anomalies[0]["bug"];
     $typeVulnerability = $anomalies[0]["vulnerability"];
     $typeCodeSmell = $anomalies[0]["code_smell"];
 
-    // Severity
+    /** Severity */
     $severityBlocker = $anomalies[0]["blocker"];
     $severityCritical = $anomalies[0]["critical"];
     $severityMajor = $anomalies[0]["major"];
     $severityInfo = $anomalies[0]["info"];
     $severityMinor = $anomalies[0]["minor"];
 
-    // Module
+    /** Module */
     $frontend = $anomalies[0]["frontend"];
     $backend = $anomalies[0]["backend"];
     $autre = $anomalies[0]["autre"];
@@ -363,11 +394,16 @@ class ApiProjetPeintureController extends AbstractController
   }
 
   /**
-   * peinture_projet_anomalie_details
+   * [Description for peintureProjetAnomalie_details]
    * Récupère le détails des anomalies pour chaque type
    *
-   * @param  mixed $request
+   * @param Request $request
+   *
    * @return response
+   *
+   * Created at: 15/12/2022, 21:56:17 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/peinture/projet/anomalie/details', name: 'peinture_projet_anomalie_details', methods: ['GET'])]
   public function peintureProjetAnomalie_details(Request $request): response
@@ -382,7 +418,7 @@ class ApiProjetPeintureController extends AbstractController
       );
     }
 
-    // On récupère les données pour le projet
+    /** On récupère les données pour le projet */
     $sql = "SELECT * FROM anomalie_details WHERE maven_key='${mavenKey}'";
     $r = $this->em->getConnection()->prepare($sql)->executeQuery();
     $details = $r->fetchAllAssociative();
@@ -427,22 +463,27 @@ class ApiProjetPeintureController extends AbstractController
   }
 
   /**
-   * peinture_projet_hotspots
+   * [Description for peintureProjetHotspots]
    * Récupère les hotspots du projet
    *
-   * @param  mixed $request
+   * @param Request $request
+   *
    * @return response
+   *
+   * Created at: 15/12/2022, 21:56:43 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/peinture/projet/hotspots', name: 'peinture_projet_hotspots', methods: ['GET'])]
   public function peintureProjetHotspots(Request $request): response
   {
-   // On Bind les variables
+   /** On Bind les variables. */
     $mavenKey = $request->get('mavenKey');
 
-    // On créé un objet JSON
+    /** On créé un objet JSON. */
     $response = new JsonResponse();
 
-    // On envoi un code 406 si aucun éléments n'est trouvé
+    /** On envoi un code 406 si aucun éléments n'est trouvé. */
     $isValide = $this->isValide($mavenKey);
     if ($isValide["code"] == 406) {
       return $response->setData(
@@ -460,7 +501,7 @@ class ApiProjetPeintureController extends AbstractController
     $r = $this->em->getConnection()->prepare($sql)->executeQuery();
     $reviewed = $r->fetchAllAssociative();
 
-    /** On calul la note sonar  */
+    /** On calul la note sonar */
     if (empty($toReview[0]["to_review"])) {
       $note = "A";
     } else {
@@ -487,16 +528,21 @@ class ApiProjetPeintureController extends AbstractController
   }
 
   /**
-   * peinture_projet_hotspot_details
+   * [Description for peintureProjetHotspotDetails]
    * Récupère le détails des hotspots du projet
    *
-   * @param  mixed $request
+   * @param Request $request
+   *
    * @return response
+   *
+   * Created at: 15/12/2022, 21:57:40 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/peinture/projet/hotspot/details', name: 'peinture_projet_hotspot_details', methods: ['GET'])]
   public function peintureProjetHotspotDetails(Request $request): response
   {
-    // On bind  les variables
+    /** On bind  les variables. */
     $mavenKey = $request->get('mavenKey');
     $response = new JsonResponse();
 
@@ -507,10 +553,8 @@ class ApiProjetPeintureController extends AbstractController
       );
     }
 
-    $high = 0;
-    $medium = 0;
-    $low = 0;
-    // On récupère la dernière version et sa date de publication
+    $high=$medium=$low=0;
+    /** On récupère la dernière version et sa date de publication. */
     $sql="SELECT niveau, count(*) as hotspot
           FROM hotspots
           WHERE maven_key='${mavenKey}'
@@ -537,12 +581,16 @@ class ApiProjetPeintureController extends AbstractController
   }
 
   /**
-   * peinture_projet_nosonar_details
+   * [Description for peintureProjetNosonarDetails]
    * Récupère les exclusions nosonar et suppressWarning pour Java
    *
-   * @param  mixed $em
-   * @param  mixed $request
+   * @param Request $request
+   *
    * @return response
+   *
+   * Created at: 15/12/2022, 21:58:42 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/peinture/projet/nosonar/details', name: 'peinture_projet_nosonar_details', methods: ['GET'])]
   public function peintureProjetNosonarDetails(Request $request): response

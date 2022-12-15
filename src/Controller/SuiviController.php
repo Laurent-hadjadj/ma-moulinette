@@ -33,9 +33,23 @@ use Doctrine\ORM\EntityManagerInterface;
 // Logger
 use Psr\Log\LoggerInterface;
 
+/**
+ * [Description SuiviController]
+ */
 class SuiviController extends AbstractController
 {
 
+  /**
+   * [Description for __construct]
+   *
+   * @param  private
+   * @param  private
+   * @param  private
+   *
+   * Created at: 15/12/2022, 22:34:06 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
   public function __construct(
     private HttpClientInterface $client,
     private EntityManagerInterface $em,
@@ -52,10 +66,15 @@ class SuiviController extends AbstractController
   public static $sonarUrl = "sonar.url";
 
   /**
-   * httpClient
+   * [Description for httpClient]
    *
-   * @param  mixed $url
-   * @return void
+   * @param mixed $url
+   *
+   * @return [type]
+   *
+   * Created at: 15/12/2022, 22:34:12 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   protected function httpClient($url)
   {
@@ -69,7 +88,7 @@ class SuiviController extends AbstractController
 
     $response = $this->client->request('GET', $url,
       [
-        'ciphers' => `AES128-SHA  
+        'ciphers' => `AES128-SHA
         DH-RSA-AES128-SHA DH-RSA-AES256-SHA DHE-DSS-AES128-SHA DHE-DSS-AES256-SHA
         DHE-RSA-AES128-SHA DHE-RSA-AES256-SHA ADH-AES128-SHA ADH-AES256-SHA`,
         'auth_basic' => [$user, $password], 'timeout' => 45,
@@ -102,17 +121,22 @@ class SuiviController extends AbstractController
   }
 
   /**
-   * suivi
+   * [Description for suivi]
    * On remonte les 10 dernières version + la version initiale
    *
-   * @param  mixed $request
+   * @param Request $request
+   *
    * @return response
+   *
+   * Created at: 15/12/2022, 22:34:25 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/suivi', name: 'suivi', methods: ['GET'])]
   public function suivi(Request $request): response
   {
     $mavenKey = $request->get('mavenKey');
-    // Tableau de suivi principal
+    /** Tableau de suivi principal */
     $sql = "SELECT * FROM
     (SELECT nom_projet as nom, date_version as date, version,
     suppress_warning, no_sonar, nombre_bug as bug,
@@ -141,7 +165,7 @@ class SuiviController extends AbstractController
     $select = $this->em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)))->executeQuery();
     $suivi = $select->fetchAllAssociative();
 
-    // On récupère les anomalies par sévérité
+    /** On récupère les anomalies par sévérité */
     $sql = "SELECT * FROM
     (SELECT date_version as date,
     nombre_anomalie_bloquant as bloquant,
@@ -162,7 +186,7 @@ class SuiviController extends AbstractController
     $select = $this->em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)))->executeQuery();
     $severite = $select->fetchAllAssociative();
 
-    // On récupère les anomalies par type et sévérité
+    /** On récupère les anomalies par type et sévérité. */
     $sql = "SELECT * FROM
     (SELECT date_version as date, version,
     bug_blocker, bug_critical, bug_major,
@@ -192,7 +216,7 @@ class SuiviController extends AbstractController
     $select = $this->em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)))->executeQuery();
     $details = $select->fetchAllAssociative();
 
-    // Graphique
+    /** Graphique */
     $sql = "SELECT nombre_bug as bug, nombre_vulnerability as secu,
     nombre_code_smell as code_smell, date_version as date
     FROM historique WHERE maven_key='${mavenKey}'
@@ -201,7 +225,7 @@ class SuiviController extends AbstractController
     $select = $this->em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)))->executeQuery();
     $graph = $select->fetchAllAssociative();
 
-    // On compte le nombre de résultat
+    /** On compte le nombre de résultat */
     $nl = count((array)$graph);
 
     for ($i = 0; $i < $nl; $i++) {
@@ -211,7 +235,7 @@ class SuiviController extends AbstractController
       $date[$i] = $graph[$i]["date"];
     }
 
-    // on ajoute une valeur null a la fin de chaque série
+    /** On ajoute une valeur null a la fin de chaque série. */
     $bug[$nl + 1] = 0;
     $secu[$nl + 1] = 0;
     $codeSmell[$nl + 1] = 0;
@@ -232,19 +256,24 @@ class SuiviController extends AbstractController
   }
 
   /**
-   * liste_version
+   * [Description for listeVersion]
    * On récupère la liste des projets nom + clé
    * http://{url}}/api/liste/version
    *
-   * @param  mixed $request
+   * @param Request $request
+   *
    * @return Response
+   *
+   * Created at: 15/12/2022, 22:35:41 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/liste/version', name: 'liste_version', methods: ['GET'])]
   public function listeVersion(Request $request): Response
   {
     $mavenKey = $request->get('mavenKey');
 
-    // On récupère les versions et la date pour la clé du projet
+    /** On récupère les versions et la date pour la clé du projet */
     $sql = "SELECT maven_key, project_version as version, date
             FROM information_projet
             WHERE maven_key='${mavenKey}'";
@@ -257,7 +286,7 @@ class SuiviController extends AbstractController
 
     $liste = [];
     $id = 0;
-    //objet = { id: clé, text: "blablabla" };
+    /** objet = { id: clé, text: "blablabla" }; */
     foreach ($versions as $version) {
       $ts = new DateTime($version['date'], new DateTimeZone('Europe/Paris'));
       $cc = $ts->format("d-m-Y H:i:sO");
@@ -273,21 +302,26 @@ class SuiviController extends AbstractController
   }
 
   /**
-   * get_version
+   * [Description for getVersion]
    * On récupère les données disponibles pour une version données
    * http://{url}}/api/get/version
    *
-   * @param  mixed $request
-   * @return response
+   * @param Request $request
+   *
+   * @return Response
+   *
+   * Created at: 15/12/2022, 22:36:17 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/get/version', name: 'get_version', methods: ['GET','POST'])]
   public function getVersion(Request $request): Response
   {
-    // on décode le body
+    /** on décode le body */
     $data = json_decode($request->getContent());
     $mavenKey=$data->mavenKey;
 
-    // On modifie la date de 11-02-2022 16:02:06 à 2022-02-11 16:02:06
+    /**  On modifie la date de 11-02-2022 16:02:06 à 2022-02-11 16:02:06 */
     $d = new Datetime($data->date);
     $dd = $d->format('Y-m-d\TH:i:sO');
     $urlencodeDate=urlencode($dd);
@@ -301,7 +335,7 @@ class SuiviController extends AbstractController
             tests,sqale_index,duplicated_lines_density
             &from=${urlencodeDate}&to=${urlencodeDate}";
 
-    /** on appel le client http */
+    /** On appel le client http */
     $result = $this->httpClient(trim(preg_replace("/\s+/u", " ", $url)));
     /** On créé un objet json */
     $response = new JsonResponse();
@@ -323,8 +357,8 @@ class SuiviController extends AbstractController
         $noteSqale = intval($data[$i]["history"][0]["value"], 10);
       }
 
-      // Sur les versions plus anciennes de sonarqube, il n'y avait pas de hostpots.
-      // La valeur 6 corsespond à pas de note  (Z)
+      /** Sur les versions plus anciennes de sonarqube, il n'y avait pas de hostpots. */
+      /** La valeur 6 corsespond à pas de note  (Z) */
       if ($data[$i]["metric"] === "security_review_rating" &&
           array_key_exists("value", $data[$i]["history"][0])) {
           $noteHotspotsReview = intval($data[$i]["history"][0]["value"], 10);
@@ -345,7 +379,7 @@ class SuiviController extends AbstractController
         $codeSmell = intval($data[$i]["history"][0]["value"], 10);
       }
 
-      // Sur les versions plus anciennes de sonarqube, il n'y avait pas de hostpots
+      /**  Sur les versions plus anciennes de sonarqube, il n'y avait pas de hostpots */
       if ($data[$i]["metric"] === "security_hotspots" &&
         array_key_exists("value", $data[$i]["history"][0])) {
         $hotspotsReview = intval($data[$i]["history"][0]["value"], 10);
@@ -365,14 +399,14 @@ class SuiviController extends AbstractController
         $duplication = $data[$i]["history"][0]["value"];
       }
 
-      // Sur certains projets il n'y a pas de la couverture fonctionnelle
+      /**  Sur certains projets il n'y a pas de la couverture fonctionnelle */
       if ($data[$i]["metric"] === "coverage" && array_key_exists("value", $data[$i]["history"])) {
         $coverage = $data[$i]["history"][0]["value"];
       } else {
         $coverage = 0;
       }
 
-      // Sur certains projets il n'y a pas de tests fonctionnels
+      /**  Sur certains projets il n'y a pas de tests fonctionnels */
       if ($data[$i]["metric"] === "tests" && array_key_exists("value", $data[$i]["history"])) {
         $tests = intval($data[$i]["history"][0]["value"], 10);
       } else {
@@ -397,26 +431,31 @@ class SuiviController extends AbstractController
   }
 
   /**
-   * suivi_mise_a_jour
+   * [Description for suiviMiseAJour]
    * Enregistre une version reconstituée dans la table historique
    * http://{url}}/api/suivi/mise-a-jour
    *
-   * @param  mixed $request
-   * @return response
+   * @param Request $request
+   *
+   * @return Response
+   *
+   * Created at: 15/12/2022, 22:37:32 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/suivi/mise-a-jour', name: 'suivi_mise_a_jour', methods: ['PUT'])]
   public function suiviMiseAJour(Request $request): Response
   {
-    // on décode le body
+    /** On décode le body */
     $data = json_decode($request->getContent());
     $dateEnregistrement = new Datetime();
     $dateEnregistrement->setTimezone(new DateTimeZone('Europe/Paris'));
     $dateVersion = new Datetime($data->date);
 
-    // On créé un nouvel objet Json
+    /** On créé un nouvel objet Json. */
     $response = new JsonResponse();
 
-    // On bind chaque valeur
+    /** On bind chaque valeur. */
     $tempoDateVersion=$dateVersion->format(static::$dateFormat);
     $tempoDateEnregistrement=$dateEnregistrement->format(static::$dateFormat);
     $tempoMavenKey=$data->mavenKey;
@@ -487,30 +526,35 @@ class SuiviController extends AbstractController
   }
 
   /**
-   * suivi_version_liste
+   * [Description for suiviVersionListe]
    * récupère la liste des projets nom + clé
    * http://{url}}/api/suivi/liste/version
    *
-   * @param  mixed $request
-   * @return response
+   * @param Request $request
+   *
+   * @return Response
+   *
+   * Created at: 15/12/2022, 22:38:29 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/suivi/version/liste', name: 'suivi_version_liste', methods: ['PUT'])]
-  public function suiviVersionListe(Request $request): Response
+ public function suiviVersionListe(Request $request): Response
   {
-    // on décode le body
+    /** On décode le body */
     $data = json_decode($request->getContent());
     $mavenKey = $data->mavenKey;
 
-    // On créé un nouvel objet Json
+    /**  On créé un nouvel objet Json. */
     $response = new JsonResponse();
 
-    // On récupère les versions et la date pour la clé du projet
+    /**  On récupère les versions et la date pour la clé du projet. */
     $sql = "SELECT maven_key, version, date_version as date, favori, initial
             FROM historique
             WHERE maven_key='${mavenKey}'
             ORDER BY date_version DESC";
 
-    // On exécute la requête
+    /** On exécute la requête. */
     $con = $this->em->getConnection()->prepare($sql);
     try {
       $select = $con->executeQuery();
@@ -522,35 +566,41 @@ class SuiviController extends AbstractController
   }
 
   /**
-   * suivi_version_favori
+   * [Description for suiviVersionFavori]
    * On ajoute ou on supprime la version favorite
    * http://{url}}/api/suivi/version/favori
    *
-   * @param  mixed $request
+   * @param Request $request
+   *
    * @return response
+   *
+   * Created at: 15/12/2022, 22:39:11 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/suivi/version/favori', name: 'suivi_version_favori', methods: ['PUT'])]
   public function suiviVersionFavori(Request $request):response
   {
-    // on décode le body
+    /** on décode le body */
     $data = json_decode($request->getContent());
     $mavenKey = $data->mavenKey;
     $favori = $data->favori;
     $date = $data->date;
     $version = $data->version;
     $dateEnregistrement = new DateTime();
-    $dateEbregistrement->setTimezone(new DateTimeZone('Europe/Paris'));
+    $dateEnregistrement->setTimezone(new DateTimeZone('Europe/Paris'));
+    $dateEnregistrement->format(static::$dateFormat);
 
-    // On créé un nouvel objet Json
+    /** On créé un nouvel objet Json */
     $response = new JsonResponse();
 
-    // On met à jour l'attribut favori de la table historique
+    /** On met à jour l'attribut favori de la table historique */
     $sql = "UPDATE historique SET favori=${favori}
             WHERE maven_key='${mavenKey}'
             AND version='${version}'
             AND date_version='${date}'";
 
-    // On exécute la requête
+    /** On exécute la requête */
     $con = $this->em->getConnection()->prepare($sql);
     try {
       $con->executeQuery();
@@ -558,15 +608,15 @@ class SuiviController extends AbstractController
       return $response->setData(["code" => $e->getCode(), Response::HTTP_OK]);
     }
 
-    // On modifie (delete/insert) l'attribut favori de la table favori
-    // On supprime l'enregistrement
+    /** On modifie (delete/insert) l'attribut favori de la table favori */
+    /** On supprime l'enregistrement */
     $sql = "DELETE FROM favori WHERE maven_key='${mavenKey}'";
     $this->em->getConnection()->prepare($sql)->executeQuery();
-    // On ajoute l'enregistrement
+    /** On ajoute l'enregistrement */
     $sql = "INSERT INTO favori ('maven_key', 'favori', 'date_enregistrement')
-    VALUES ('${mavenKey}', ${favori}, '$dateEnregistrement->format(static::$dateFormat)')";
+    VALUES ('${mavenKey}', ${favori}, '${dateEnregistrement}')";
 
-    // On exécute la requête et on catch l'erreur
+    /** On exécute la requête et on catch l'erreur */
     $con = $this->em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)));
     try {
       $con->executeQuery();
@@ -578,12 +628,17 @@ class SuiviController extends AbstractController
   }
 
   /**
-   * suivi_version_reference
+   * [Description for suiviVersionReference]
    * On ajoute ou on supprime la version de reference
    * http://{url}}/api/suivi/version/reference
    *
-   * @param  mixed $request
-   * @return response
+   * @param Request $request
+   *
+   * @return [type]
+   *
+   * Created at: 15/12/2022, 22:40:34 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/suivi/version/reference', name: 'suivi_version_reference', methods: ['PUT'])]
   public function suiviVersionReference(Request $request)
@@ -615,32 +670,37 @@ class SuiviController extends AbstractController
   }
 
   /**
-   * suivi_version_poubelle
+   * [Description for suiviVersionPoubelle]
    * On supprime la version de historique
    * http://{url}}/api/suivi/version/poubelle
    *
-   * @param  mixed $request
-   * @return response
+   * @param Request $request
+   *
+   * @return [type]
+   *
+   * Created at: 15/12/2022, 22:41:09 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/suivi/version/poubelle', name: 'suivi_version_poubelle', methods: ['PUT'])]
   public function suiviVersionPoubelle(Request $request)
   {
-    // on décode le body
+    /** on décode le body */
     $data = json_decode($request->getContent());
     $mavenKey = $data->mavenKey;
     $date = $data->date;
     $version = $data->version;
 
-    // On créé un nouvel objet Json
+    /** On créé un nouvel objet Json */
     $response = new JsonResponse();
 
-    // On surprime de la table historique le projet
+    /** On surprime de la table historique le projet */
     $sql = "DELETE FROM historique
             WHERE maven_key='${mavenKey}'
                   AND version='${version}'
                   AND date_version='${date}'";
 
-    // On exécute la requête
+    /**  On exécute la requête */
     $con = $this->em->getConnection()->prepare($sql);
     try {
       $con->executeQuery();
