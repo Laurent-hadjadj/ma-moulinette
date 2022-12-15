@@ -17,7 +17,6 @@ use Symfony\Component\Routing\Annotation\Route;
 
 /** Core */
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /** Gestion du temps */
@@ -39,6 +38,18 @@ use Psr\Log\LoggerInterface;
 
 class ApiHomeController extends AbstractController
 {
+  /**
+   * [Description for __construct]
+   *
+   * @param  private
+   * @param  private
+   * @param  private
+   * @param mixed
+   *
+   * Created at: 15/12/2022, 21:12:55 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
   public function __construct(
     private LoggerInterface $logger,
     private HttpClientInterface $client,
@@ -56,10 +67,15 @@ class ApiHomeController extends AbstractController
   public static $dateFormat = "Y-m-d H:i:s";
 
   /**
-   * httpClient
+   * [Description for httpClient]
    *
-   * @param  mixed $url
-   * @return reponse
+   * @param mixed $url
+   *
+   * @return array
+   *
+   * Created at: 15/12/2022, 21:13:06 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   protected function httpClient($url): array
   {
@@ -101,11 +117,15 @@ class ApiHomeController extends AbstractController
   }
 
   /**
-   * sonar_status
+   * [Description for sonarStatus]
    * Vérifie si le serveur sonarqube est UP
    * http://{url}}/api/system/status
    *
    * @return response
+   *
+   * Created at: 15/12/2022, 21:13:23 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/status', name: 'sonar_status', methods: ['GET'])]
   public function sonarStatus():response
@@ -119,12 +139,16 @@ class ApiHomeController extends AbstractController
   }
 
   /**
-   * sonar_health
+   * [Description for sonarHealth]
    * Vérifie l'état du serveur
    * http://{url}}/api/system/health
    * Encore une fois, c'est null, il faut être admin pour récupérrer le résultat.
    *
    * @return response
+   *
+   * Created at: 15/12/2022, 21:14:20 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/health', name: 'sonar_health', methods: ['GET'])]
   public function sonarHealth():response
@@ -137,17 +161,21 @@ class ApiHomeController extends AbstractController
     return new JsonResponse($result, Response::HTTP_OK);
   }
 
-/**
-   * information_systeme
+  /**
+   * [Description for informationSysteme]
    * On récupère les informations système du serveur
    * http://{url}}/api/system/info
    *
    * Attention, il faut avoir le role sonar administrateur
    *
    * @return response
+   *
+   * Created at: 15/12/2022, 21:14:39 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/system/info', name: 'information_systeme', methods: ['GET'])]
-  public function informationSysteme():response
+   public function informationSysteme():response
   {
     $url = $this->getParameter(static::$sonarUrl) . "/api/system/info";
 
@@ -157,10 +185,15 @@ class ApiHomeController extends AbstractController
   }
 
   /**
-   * projet_liste
+   * [Description for projetListe]
    * Récupération de la liste des projets.
    * http://{url}}/api/components/search?qualifiers=TRK&ps=500
+   *
    * @return response
+   *
+   * Created at: 15/12/2022, 21:15:04 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/projet/liste', name: 'projet_liste', methods: ['GET'])]
   public function projetListe(): response
@@ -180,7 +213,8 @@ class ApiHomeController extends AbstractController
 
     /**  On compte le nombre de projet et on insert les projets dans la table liste_projet. */
     foreach ($result["components"] as $component) {
-      /** On exclue les projets archivés avec la particule "-SVN".
+      /**
+       *  On exclue les projets archivés avec la particule "-SVN".
        *  "project": "fr.domaine:mon-application-SVN"
        */
       $mystring = $component["project"];
@@ -213,12 +247,16 @@ class ApiHomeController extends AbstractController
 
 
   /**
+   * [Description for listeQualityProfiles]
    * liste_quality_profiles
    * Renvoie la liste des profils qualité
    * http://{url}/api/qualityprofiles/search?qualityProfile={name}
    *
-   * @param  mixed $em
    * @return response
+   *
+   * Created at: 15/12/2022, 21:15:43 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/quality/profiles', name: 'liste_quality_profiles', methods: ['GET'])]
   public function listeQualityProfiles(): response
@@ -278,11 +316,14 @@ class ApiHomeController extends AbstractController
   }
 
   /**
-   * Tags
-   *
+   * [Description for tags]
    * http://{url}/api/components/search_projects
    *
    * @return response
+   *
+   * Created at: 15/12/2022, 21:16:25 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/tags', name: 'tags', methods: ['GET'])]
   public function tags(): response
@@ -317,7 +358,8 @@ class ApiHomeController extends AbstractController
     $select=$this->em->getConnection()->prepare($s0)->executeQuery();
     $liste = $select->fetchAllAssociative();
 
-    /** Si la table est vide on insert les résultats et
+    /**
+     * Si la table est vide on insert les résultats et
      * on revoie les résultats.
      */
     if (empty($liste)) {
@@ -430,14 +472,17 @@ class ApiHomeController extends AbstractController
     ]);
   }
 
-/**
-   * visibility
+  /**
+   * [Description for visibility]
    * Renvoi le nombre de projet private ou public
    * Il faut avoir un droit Administrateur !!!
    * http://{url}/api/projects/search?qualifiers=TRK&ps=500
    *
-   * @param  mixed $em
    * @return response
+   *
+   * Created at: 15/12/2022, 21:17:03 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/visibility', name: 'visibility', methods: ['GET'])]
   public function visibility(): response
@@ -446,7 +491,7 @@ class ApiHomeController extends AbstractController
           "/api/projects/search?qualifiers=TRK&ps=500";
 
     /** On appel le client http */
-    $components = $this->httpClient($url, $logger);
+    $components = $this->httpClient($url);
 
     $private = 0;
     $public = 0;
