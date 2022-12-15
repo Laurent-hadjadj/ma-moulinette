@@ -539,7 +539,7 @@ class SuiviController extends AbstractController
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/suivi/version/liste', name: 'suivi_version_liste', methods: ['PUT'])]
- public function suiviVersionListe(Request $request): Response
+  public function suiviVersionListe(Request $request): Response
   {
     /** On décode le body */
     $data = json_decode($request->getContent());
