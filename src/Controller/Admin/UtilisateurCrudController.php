@@ -63,13 +63,13 @@ class UtilisateurCrudController extends AbstractCrudController
             ->hideOnForm();
         yield EmailField::new('courriel');
 
-        $key1=['Utilisateur', 'batch', 'Gestionnaire'];
+        $key1=['Utilisateur', 'Batch', 'Gestionnaire'];
         $value1 = ['ROLE_UTILISATEUR', 'ROLE_BATCH', 'ROLE_GESTIONNAIRE'];
         yield ChoiceField::new('roles')
             ->setChoices(array_combine($key1, $value1))
             ->allowMultipleChoices()
             ->renderExpanded()
-            ->renderAsBadges(['ROLE_UTILISATEUR' => 'success', 'ROLE_GESTIONNAIRE' => 'danger'])
+            ->renderAsBadges(['ROLE_UTILISATEUR' => 'success', 'ROLE_BATCH' => 'warning', 'ROLE_GESTIONNAIRE' => 'danger'])
             ->setHelp('Sélectionne le ou les rôles.');
 
         /** On récupère la liste des équipes */
