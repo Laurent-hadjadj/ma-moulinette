@@ -134,7 +134,8 @@
         <legend class="open-sans">Visibilité.</legend>
         <div class="grid-x cell">
           <div class="small-12 medium-6 large-6 cell">
-            <h4 class="claire-hand visibility-box visibility-box-public">Public <span id="js-public" class="stat stat-visibility float-right"></span></h4>
+            <h4 class="claire-hand visibility-box visibility-box-public">Public&nbsp;
+              <span id="js-public" class="stat stat-visibility float-right"></span></h4>
           </div>
 
           <div class="small-12 medium-6 large-6 cell">
@@ -190,21 +191,25 @@
               <table aria-label="tableau-favori">
                 <thead>
                   <tr>
-                      <th><span class="note-favori color-reliability">&nbsp;F&nbsp;</span></th>
-                      <th><span class="note-favori color-security">&nbsp;S&nbsp;</span></th>
-                      <th><span class="note-favori color-hotspot">&nbsp;H&nbsp;</span></th>
-                      <th><span class="note-favori color-codesmell">&nbsp;M&nbsp;</span></th>
+                    <th scope="col"><span class="note-favori color-reliability">&nbsp;F&nbsp;</span></th>
+                    <th scope="col"><span class="note-favori color-security">&nbsp;S&nbsp;</span></th>
+                    <th scope="col"><span class="note-favori color-hotspot">&nbsp;H&nbsp;</span></th>
+                    <th scope="col"><span class="note-favori color-codesmell">&nbsp;M&nbsp;</span></th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td><span id="note-reliability" class="open-sans"><span class="note note-{{app.fiabilite|lower}}">{{app.fiabilite}}</span></span></td>
-                    <td><span id="note-security" class="open-sans"><span class="note note-{{app.securite|lower}}">{{app.securite}}</span></span></td>
-                    <td><span class="open-sans"><span class="note note-{{app.hotspot|lower}}">{{app.hotspot}}</span></span></td>
-                    <td><span  class="open-sans"><span class="note note-{{app.sqale|lower}}">{{app.sqale}}</span></span></td>
+                    <td scope="row"><span id="note-reliability" class="open-sans">
+                      <span class="note note-{{app.fiabilite|lower}}">{{app.fiabilite}}</span></span></td>
+                    <td scope="row"><span id="note-security" class="open-sans">
+                      <span class="note note-{{app.securite|lower}}">{{app.securite}}</span></span></td>
+                    <td scope="row"><span class="open-sans">
+                      <span class="note note-{{app.hotspot|lower}}">{{app.hotspot}}</span></span></td>
+                    <td scope="row"><span  class="open-sans">
+                      <span class="note note-{{app.sqale|lower}}">{{app.sqale}}</span></span></td>
                   </tr>
                   <tr>
-                    <td>
+                    <td scope="row">
                     <span class="nombre-favori open-sans">
                       {% if app.bug <10 %} 00{{app.bug}}{% endif %}
                       {% if app.bug >=10 and app.bug <100 %} 0{{app.bug}}{% endif %}
@@ -214,7 +219,7 @@
                             {{k}}K
                       {% endif %}
                     </td>
-                    <td>
+                    <td scope="row">
                       <span class="nombre-favori open-sans">
                         {% if app.vulnerability <10 %} 00{{app.vulnerability}}{% endif %}
                         {% if app.vulnerability >=10 and app.vulnerability <100%} 0{{app.vulnerability}}{% endif %}
@@ -225,7 +230,7 @@
                         {% endif %}
                       </span>
                     </td>
-                    <td>
+                    <td scope="row">
                       <span class="nombre-favori open-sans">
                         {% if app.hotspots <10 %} 00{{app.hotspots}} {% endif %}
                         {% if app.hotspots >=10 and app.hotspots <100 %} 0{{app.hotspots}} {% endif %}
@@ -235,7 +240,7 @@
                             {{k}}K</span>
                         {% endif %}
                     </td>
-                    <td>
+                    <td scope="row">
                       <span class="nombre-favori open-sans">
                         {% if app.code_smell <10 %} 00{{app.code_smell}}{% endif %}
                         {% if app.code_smell >=10 and app.code_smell <100%} 0{{app.code_smell}}{% endif %}
