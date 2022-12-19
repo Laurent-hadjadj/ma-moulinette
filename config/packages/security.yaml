@@ -6,7 +6,8 @@ security:
     hide_user_not_found: false
 
     role_hierarchy:
-        ROLE_GESTIONNAIRE: ROLE_UTILISATEUR
+        ROLE_GESTIONNAIRE: ['ROLE_UTILISATEUR', 'ROLE_BATCH']
+        ROLE_BATCH: ROLE_UTILISATEUR
 
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
