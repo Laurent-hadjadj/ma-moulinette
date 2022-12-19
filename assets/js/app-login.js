@@ -9,7 +9,6 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
-
 import '../css/login.css';
 
 // Intégration de jquery
@@ -35,10 +34,10 @@ const configurationOptions = {
 browserUpdate([configurationOptions]);
 
 $(function () {
-  let showClass = 'show';
+  const showClass = 'show';
 
   $('input').on('checkval', function () {
-    let label = $(this).prev('label');
+    const label = $(this).prev('label');
     if(this.value !== '') {
       label.addClass(showClass);
     } else {

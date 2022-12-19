@@ -25,11 +25,11 @@ import './foundation.js';
  * On affiche/desactive les indicateurs de variation
  */
 $('#js-oui-non').on('click', function () {
-  if ($('#js-oui-non').is(":checked")==true) {
+  if ($('#js-oui-non').is(':checked')===true) {
     $('.up, .down, .equal').removeClass('hide');
   }
-  if ($('#js-oui-non').is(":checked")==false) {
-    if ($('.up, .down, .equal').hasClass('hide')==false) {
+  if ($('#js-oui-non').is(':checked')===false) {
+    if ($('.up, .down, .equal').hasClass('hide')===false) {
       $('.up, .down, .equal').addClass('hide');
     }
   }
