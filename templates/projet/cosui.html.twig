@@ -34,13 +34,13 @@
 {{ include('header.html.twig') }}
 <br />
 <header class="grid-container">
-	<nav aria-label="Ici : " role="navigation">
-		<ul class="claire-hand breadcrumbs">
-			<li><a href="/">Accueil</a></li>
+  <nav aria-label="Ici : " role="navigation">
+    <ul class="claire-hand breadcrumbs">
+      <li><a href="/">Accueil</a></li>
       <li><a href="/projet">Projet</a></li>
-			<li><span class="show-for-sr">Current:</span>COSUI</li>
-		</ul>
-	</nav>
+      <li><span class="show-for-sr">Current:</span>COSUI</li>
+    </ul>
+  </nav>
 </header>
 
 <div class="grid-container">
@@ -172,7 +172,7 @@
                 <h4>{{monApplication}}</h4>
                 Date référence<br />
                 {{initial_date_application|date("d/m/Y")}}</td>
-          <td id="code-smell" class="text-left couleur-niveau-01">Maintenabilité</td>
+          <th  scope="row" id="code-smell" class="text-left couleur-niveau-01">Maintenabilité</th>
           <td id="application-03" rowspan="3" class="text-center blanc">
                 {{version_application}}<br />
                 {{type_application}}<br>
@@ -180,17 +180,26 @@
                 </td>
 
           <td id="metier-codes-smell-01" class="text-center">
-          {{nombre_metier_code_smell_blocker|number_format(0, '.', ' ')}}</td>
+            {{nombre_metier_code_smell_blocker|number_format(0, '.', ' ')}}
+          </td>
           <td id="metier-code-smell-02" class="text-center">
-          {{nombre_metier_code_smell_critical|number_format(0, '.', ' ')}}</td>
+            {{nombre_metier_code_smell_critical|number_format(0, '.', ' ')}}
+          </td>
           <td id="metier-code_smell-03" class="text-center">
-          {{nombre_metier_code_smell_major|number_format(0, '.', ' ')}}</td>
-          <td id="presentation-code_smell-04" class="text-center">{{nombre_presentation_code_smell_blocker|number_format(0, '.', ' ')}}</td>
-          <td id="presentation-code_smell-05" class="text-center">{{nombre_presentation_code_smell_critical|number_format(0, '.', ' ')}}</td>
-          <td id="presentation-code_smell-06" class="text-center">{{nombre_presentation_code_smell_major|number_format(0, '.', ' ')}}</td>
+            {{nombre_metier_code_smell_major|number_format(0, '.', ' ')}}
+          </td>
+          <td id="presentation-code_smell-04" class="text-center">
+            {{nombre_presentation_code_smell_blocker|number_format(0, '.', ' ')}}
+          </td>
+          <td id="presentation-code_smell-05" class="text-center">
+            {{nombre_presentation_code_smell_critical|number_format(0, '.', ' ')}}
+          </td>
+          <td id="presentation-code_smell-06" class="text-center">
+            {{nombre_presentation_code_smell_major|number_format(0, '.', ' ')}}
+          </td>
         </tr>
         <tr>
-          <td id="fiabilite" class="text-left couleur-niveau-02">Fiabilité</td>
+          <th scope="row "id="fiabilite" class="text-left couleur-niveau-02">Fiabilité</th>
           <td id="metier-fiabilite-01" class="text-center">
           {{nombre_metier_reliability_blocker|number_format(0, '.', ' ')}}</td>
           <td id="metier-fiabilite-02" class="text-center">
@@ -205,16 +214,25 @@
           {{nombre_presentation_reliability_major|number_format(0, '.', ' ')}}</td>
         </tr>
         <tr>
-          <td id="indicateur-03" class="text-left couleur-niveau-03">Vulnérabilité</td>
+          <th  scope="row" id="indicateur-03" class="text-left couleur-niveau-03">Vulnérabilité</th>
           <td id="metier-vulnerabilite-01" class="text-center">
-          {{nombre_metier_vulnerability_blocker|number_format(0, '.', ' ')}}</td>
+            {{nombre_metier_vulnerability_blocker|number_format(0, '.', ' ')}}
+          </td>
           <td id="metier-vulnerabilite-02" class="text-center">
-          {{nombre_metier_vulnerability_critical|number_format(0, '.', ' ')}}</td>
+            {{nombre_metier_vulnerability_critical|number_format(0, '.', ' ')}}
+          </td>
           <td id="metier-vulnerabilite-03" class="text-center">
-          {{nombre_metier_vulnerability_major|number_format(0, '.', ' ')}}</td>
-          <td id="presentation-vulnerabilite-04" class="text-center">{{nombre_presentation_vulnerability_blocker|number_format(0, '.', ' ')}}</td>
-          <td id="presentation-vulnerabilite-05" class="text-center">{{nombre_presentation_vulnerability_critical|number_format(0, '.', ' ')}}</td>
-          <td id="presentation-vulnerabilite-06" class="text-center">{{nombre_presentation_vulnerability_major|number_format(0, '.', ' ')}}</td>
+            {{nombre_metier_vulnerability_major|number_format(0, '.', ' ')}}
+          </td>
+          <td id="presentation-vulnerabilite-04" class="text-center">
+            {{nombre_presentation_vulnerability_blocker|number_format(0, '.', ' ')}}
+          </td>
+          <td id="presentation-vulnerabilite-05" class="text-center">
+            {{nombre_presentation_vulnerability_critical|number_format(0, '.', ' ')}}
+          </td>
+          <td id="presentation-vulnerabilite-06" class="text-center">
+            {{nombre_presentation_vulnerability_major|number_format(0, '.', ' ')}}
+          </td>
         </tr>
         </tbody>
       </table>
@@ -223,10 +241,11 @@
 </div>
 
 {# Affichage du tableau des projets #}
-<div id="modal-projet-reference" class="reveal" data-reveal data-close-on-click="true" data-animation-in="fade-in" data-animation-out="fade-out">
-	<h2 class="claire-hand">Projet de référence.</h2>
-	<h4 class="claire-hand">{{monApplication}}</h4>
-	<h4 class="open-sans">{{initial_date_application|format_datetime('full', 'short', locale='fr') }}</h4>
+<div id="modal-projet-reference" class="reveal" data-reveal data-close-on-click="true"
+data-animation-in="fade-in" data-animation-out="fade-out">
+  <h2 class="claire-hand">Projet de référence.</h2>
+  <h4 class="claire-hand">{{monApplication}}</h4>
+  <h4 class="open-sans">{{initial_date_application|format_datetime('full', 'short', locale='fr') }}</h4>
   <table>
       <caption class="claire-hand"></caption>
       <thead>
@@ -240,35 +259,64 @@
       </thead>
       <tbody id="mon-bo-tableau03" class="open-sans">
         <tr>
-          <td id="initial-indicateur-01" class="text-left couleur-niveau-01">Maintenabilité</td>
-          <td id="initial-blocker-01" class="text-center">{{modal_initial_code_smell_blocker|number_format(0, '.', ' ')}}</td>
-          <td id="initial-critical-01" class="text-center">{{modal_initial_code_smell_critical|number_format(0, '.', ' ')}}</td>
-          <td id="initial-major-01" class="text-center">{{modal_initial_code_smell_major|number_format(0, '.', ' ')}}</td>
-          <td id="initial-note-01" class="text-center note-{{initial_note_code_smell|lower}}">{{initial_note_code_smell}}</td>
+          <th  scope="row" id="initial-indicateur-01" class="text-left couleur-niveau-01">Maintenabilité</th>
+          <td id="initial-blocker-01" class="text-center">
+            {{modal_initial_code_smell_blocker|number_format(0, '.', ' ')}}
+          </td>
+          <td id="initial-critical-01" class="text-center">
+            {{modal_initial_code_smell_critical|number_format(0, '.', ' ')}}
+          </td>
+          <td id="initial-major-01" class="text-center">
+            {{modal_initial_code_smell_major|number_format(0, '.', ' ')}}
+          </td>
+          <td id="initial-note-01" class="text-center note-{{initial_note_code_smell|lower}}">
+            {{initial_note_code_smell}}
+          </td>
         </tr>
         <tr>
-          <td id="initial-indicateur-02" class="text-left couleur-niveau-02">Fiabilité</td>
-          <td id="initial-blocker-02" class="text-center">{{modal_initial_bug_blocker|number_format(0, '.', ' ')}}</td>
-          <td id="initial-critical-02" class="text-center">{{modal_initial_bug_critical|number_format(0, '.', ' ')}}</td>
-          <td id="initial-major-02" class="text-center">{{modal_initial_bug_major|number_format(0, '.', ' ')}}</td>
-          <td id="initial-note-02" class="text-center note-{{initial_note_reliability|lower}}">{{initial_note_reliability}}</td>
+          <th  scope="row" id="initial-indicateur-02" class="text-left couleur-niveau-02">Fiabilité</th>
+          <td id="initial-blocker-02" class="text-center">
+            {{modal_initial_bug_blocker|number_format(0, '.', ' ')}}
+          </td>
+          <td id="initial-critical-02" class="text-center">
+            {{modal_initial_bug_critical|number_format(0, '.', ' ')}}
+          </td>
+          <td id="initial-major-02" class="text-center">
+            {{modal_initial_bug_major|number_format(0, '.', ' ')}}
+          </td>
+          <td id="initial-note-02" class="text-center note-{{initial_note_reliability|lower}}">
+            {{initial_note_reliability}}
+          </td>
         </tr>
         <tr>
-          <td id="initial-indicateur-03" class="text-left couleur-niveau-03">Sécurité</td>
-          <td id="initial-blocker-03" class="text-center">{{modal_initial_vulnerability_blocker|number_format(0, '.', ' ')}}</td>
-          <td id="initial-critical-03" class="text-center">{{modal_initial_vulnerability_critical|number_format(0, '.', ' ')}}</td>
-          <td id="initial-major-03" class="text-center">{{modal_initial_vulnerability_major|number_format(0, '.', ' ')}}</td>
-          <td id="initial-note-03" class="text-center note-{{initial_note_security|lower}}">{{initial_note_security}}</td>
+          <th  scope="row" id="initial-indicateur-03" class="text-left couleur-niveau-03">Sécurité</th>
+          <td id="initial-blocker-03" class="text-center">
+            {{modal_initial_vulnerability_blocker|number_format(0, '.', ' ')}}
+          </td>
+          <td id="initial-critical-03" class="text-center">
+            {{modal_initial_vulnerability_critical|number_format(0, '.', ' ')}}
+          </td>
+          <td id="initial-major-03" class="text-center">
+            {{modal_initial_vulnerability_major|number_format(0, '.', ' ')}}
+          </td>
+          <td id="initial-note-03" class="text-center note-{{initial_note_security|lower}}">
+            {{initial_note_security}}
+          </td>
         </tr>
         <tr>
           <td id="initial-indicateur-03" class="text-left couleur-niveau-04">Hotspot</td>
-          <td id="initial_hotspot-01" class="text-center" colspan="3">{{modal_initial_hotspot|number_format(0, '.', ' ')}}</td>
-          <td id="initial_note-04" class="text-center note-{{initial_note_hotspot|lower}}">{{initial_note_hotspot}}</td>
+          <td id="initial_hotspot-01" class="text-center" colspan="3">
+            {{modal_initial_hotspot|number_format(0, '.', ' ')}}
+          </td>
+          <td id="initial_note-04" class="text-center note-{{initial_note_hotspot|lower}}">
+            {{initial_note_hotspot}}
+          </td>
         </tr>
       </tbody>
     </table>
-  <a id="fermer-projet-reference" class="expanded button open-sans" data-close aria-label="Close reveal" type="button">Fermer</a>
-	<a class="close-button" data-close aria-label="Close reveal">&#215;</a>
+  <a id="fermer-projet-reference" class="expanded button open-sans"
+    data-close aria-label="Close reveal" type="button">Fermer</a>
+  <a class="close-button" data-close aria-label="Close reveal">&#215;</a>
 </div>
 
 <br /><br />

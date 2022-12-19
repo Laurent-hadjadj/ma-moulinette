@@ -192,8 +192,7 @@
       <div id="graphique-anomalie-data2" data-data2="{{data2}}"></div>
       <div id="graphique-anomalie-data3" data-data3="{{data3}}"></div>
       <div id="graphique-anomalie-labels" data-label="{{labels}}"></div>
-      <canvas class="show-for-medium" id="graphique-anomalie"
-      style="position: relative; height:36vh; width:80vw">
+      <canvas class="show-for-medium" id="graphique-anomalie">
       </canvas>
     </div>
 
@@ -616,7 +615,7 @@
               {% endfor %}
             </tr>
             <tr>
-              <td scope="row" class="text-vert">Mineur</td>
+              <th scope="row" class="text-vert">Mineur</th>
               {% for i in 0..details|length-1 %}
                 {% if i !=0 and details[i]["bug_minor"] > details[i-1]["bug_minor"] %}
                   {% set text1 = "text-down" %}
@@ -659,7 +658,7 @@
               {% endfor %}
             </tr>
             <tr>
-              <td scope="row" class="text-bleu">Info</td>
+              <th scope="row" class="text-bleu">Info</th>
               {% for i in 0..details|length-1 %}
                 {% if i !=0 and details[i]["bug_info"] > details[i-1]["bug_info"] %}
                   {% set text1 = "text-down" %}
@@ -717,6 +716,7 @@
       <div class="grid-x cell">
         <div class="small-12 medium-12 large-12 cell">
           <h4>Liste des versions disponibles.</h4>
+          <label for="liste-version"></label>
           <select id="liste-version" class="js-version open-class" name="version">
             <option></option>
           </select>
