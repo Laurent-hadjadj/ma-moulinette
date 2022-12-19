@@ -234,6 +234,16 @@
 
 /*************************          Global     *********************************/
 
+/** Suppression du style inline */
+.callout-message { padding-right: 1rem; }
+.fieldset-container { padding-bottom: 0.5rem; }
+.referentiel-bouton { padding-right: 0.4rem; }
+
+.referentiel-resultat {
+  padding-left: 0.4rem;
+  padding-top: 0.5rem;
+}
+
 /* Gestion des logs */
 .log-container {
   padding-left: 1rem;
