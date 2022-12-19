@@ -10,6 +10,10 @@
  *
  */
 
+/** Suppression du style inline */
+.callout-message { padding-right: 1rem; }
+.version-initiale { font-size: 1.1rem; }
+
 /* Couleur des niveaux d'importances */
 .couleur-niveau-01,
 .couleur-niveau-02,
