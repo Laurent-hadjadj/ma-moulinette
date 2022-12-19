@@ -39,18 +39,18 @@
   <div class="grid-container">
     {% for message in app.flashes('alert') %}
       <div class="callout alert" data-closable>
-        <p class="open-sans text-justify" style="padding-right: 1rem;">{{ message }}</p>
+        <p class="open-sans text-justify callout-message">{{ message }}</p>
         <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
     {% endfor %}
     <h4 class="claire-hand">Informations et outils.</h4>
-    <fieldset class="fieldset cell" style="padding-bottom:0.5rem;">
+    <fieldset class="fieldset cell fieldset-container">
       <legend class="open-sans">Référentiel local.</legend>
       <div class="grid-x cell">
         <!-- Mise à jour de référentiel des projets sonarqube -->
-        <div class="small-8 medium-10 large-10 cell" style="padding-right: .4rem;">
+        <div class="small-8 medium-10 large-10 referentiel-bouton cell">
           <div id="mise-a-jour-referentiel" class="button expanded float-center refresh-bd">
             <div class="show-for-medium">
               <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="refresh-bd-svg">
@@ -67,9 +67,9 @@
             </div>
           </div>
         </div>
-        <div class="small-4 medium-2 large-2 cell" style="padding-left: .4rem;">
+        <div class="small-4 medium-2 large-2 referentiel-resultat cell">
             <p class="text-center">
-            <span id="js-nombre-projet" class="stat color-noir" style="padding-top:0.5rem;">{{projetBD|format_number}}</span>
+            <span id="js-nombre-projet" class="stat color-noir">{{projetBD|format_number}}</span>
             {% set difference = projetBD - projetSonar %}
             {% if difference > 0 %}
               <span id="js-plus" class="plus"><strong>-{{difference}}</strong><span>
@@ -83,7 +83,7 @@
 
       {# Profil qualité #}
       <div class="grid-x cell">
-        <div class="small-8 medium-10 large-10 cell" style="padding-right: .4rem;">
+        <div class="small-8 medium-10 large-10 referentiel-bouton cell">
           <div class="button expanded float-center affiche-profil">
             <a href="{{ path('profil', {}) }}" rel="next" title="Aller sur la page des proils.">
               <div class="cell">
@@ -102,9 +102,9 @@
             </a>
           </div>
         </div>
-        <div class="small-4 medium-2 large-2 cell" style="padding-left: .4rem;">
+        <div class="small-4 medium-2 large-2 referentiel-resultat cell">
           <p id="nombre-profil" class="text-center">
-            <span class="stat color-noir" style="padding-top:0.5rem;">
+            <span class="stat color-noir">
             {{profilBD|format_number}}</span>
               {% set difference = profilBD - profilSonar %}
               {% if difference > 0 %}
@@ -120,7 +120,7 @@
       <div class="grid-x cell">
         {% for message in app.flashes('info') %}
           <div class="callout primary cell" data-closable>
-            <p class="open-sans text-justify" style="padding-right:1rem;">{{ message }}</p>
+            <p class="open-sans text-justify callout-message">{{ message }}</p>
             <button id="info-close" class="close-button" aria-label="Dismiss alert" type="button" data-close>
               <span aria-hidden="true">&times;</span>
             </button>
@@ -162,7 +162,7 @@
   </div>
 
   <div class="grid-container grid-padding-x">
-    <fieldset class="fieldset cell" style="padding-bottom:0.5rem;">
+    <fieldset class="fieldset fieldset-container cell">
       <legend class="open-sans">Mes projets favoris.</legend>
         {% if nombreFavori == 1 %}
         <p class="open-sans">
@@ -180,17 +180,25 @@
           <div class="callout callout-information">
             <div class="callout-body">
               <h5 class="claire-hand text-center">Informations
-                <svg id="raccourci-{{n}}" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="suivi-svg" data-mavenkey="{{app.mavenkey}}">
+                <svg id="raccourci-{{n}}" xmlns="http://www.w3.org/2000/svg"
+                viewbox="0 0 512 512" class="suivi-svg" data-mavenkey="{{app.mavenkey}}">
                   <path d="M32 17.3c-4.9 1.6-13.3 10.2-14.8 15.3-1.8 6-1.8 440.8 0 446.8 1.6 5.5 9.9 13.8 15.4 15.4 6 1.8 440.8 1.8 446.8 0 5.5-1.6 13.8-9.9 15.4-15.4 1.8-6 1.8-440.8 0-446.8-1.6-5.5-9.9-13.8-15.4-15.4-5.7-1.7-442.1-1.6-447.4.1zm445.5 17.2c2.5 2.4 2.5 2.4 2.5 24V80H32V58.5c0-21.6 0-21.6 2.5-24l2.4-2.5h438.2l2.4 2.5zm2.5 251v189.6l-2.5 2.4-2.4 2.5H36.9l-2.4-2.5-2.5-2.4V96h448v189.5z"/>
                   <path d="M50.5 50.5C48.9 52 48 54.1 48 56s.9 4 2.5 5.5c2.1 2.2 3.3 2.5 9.5 2.5s7.4-.3 9.5-2.5c3.3-3.2 3.3-7.8 0-11-2.1-2.2-3.3-2.5-9.5-2.5s-7.4.3-9.5 2.5zM90.5 50.5C88.9 52 88 54.1 88 56s.9 4 2.5 5.5c2.1 2.2 3.3 2.5 9.5 2.5s7.4-.3 9.5-2.5c3.3-3.2 3.3-7.8 0-11-2.1-2.2-3.3-2.5-9.5-2.5s-7.4.3-9.5 2.5zM130.5 50.5c-1.6 1.5-2.5 3.6-2.5 5.5s.9 4 2.5 5.5c2.1 2.2 3.3 2.5 9.5 2.5s7.4-.3 9.5-2.5c1.6-1.5 2.5-3.6 2.5-5.5s-.9-4-2.5-5.5c-2.1-2.2-3.3-2.5-9.5-2.5s-7.4.3-9.5 2.5zM218.5 50.5c-1.6 1.5-2.5 3.6-2.5 5.5s.9 4 2.5 5.5l2.4 2.5h198.2l2.4-2.5c1.6-1.5 2.5-3.6 2.5-5.5s-.9-4-2.5-5.5l-2.4-2.5H220.9l-2.4 2.5zM442.5 50.5c-1.6 1.5-2.5 3.6-2.5 5.5s.9 4 2.5 5.5c2.1 2.2 3.3 2.5 9.5 2.5s7.4-.3 9.5-2.5c1.6-1.5 2.5-3.6 2.5-5.5s-.9-4-2.5-5.5c-2.1-2.2-3.3-2.5-9.5-2.5s-7.4.3-9.5 2.5zM138 129.4c-21.6 4.6-40.4 18.9-49.9 37.8-6.1 12.3-7.6 19-7.5 33.8.1 10.7.5 13.7 2.7 20.5 3.8 11.5 9 19.8 18.2 29 13.1 13.1 27.7 19.9 45.4 21.2 43.4 3 79.6-33 76.7-76.5-.6-10.7-4.3-22.8-9.7-32-4.9-8.2-18-21.1-26.2-25.7-14.8-8.2-34.3-11.3-49.7-8.1zm6 44.8v29.2l20.6 20.7 20.7 20.8-4.9 3.1c-8.1 5.1-17.4 7.5-28.9 7.5-24.9-.1-44.8-14.9-53.1-39.5-2.6-7.6-2.6-24.4 0-32 4.5-13.4 13.8-25.5 24.3-31.7 5.5-3.2 15.9-7.2 19.1-7.2l2.2-.1v29.2zm25.8-27.1c16 5.4 29.7 19.1 35.1 35.1 3.6 10.7 5.5 9.8-21.4 9.8H160v-23.5c0-26.9-.9-25 9.8-21.4zm37.2 62.3c0 3.2-4.1 14.4-6.9 18.8-1.7 2.7-3.2 4.8-3.3 4.8-.2 0-5.9-5.6-12.8-12.5L171.5 208h17.8c14.5 0 17.7.3 17.7 1.4zM274.5 130.5c-1.6 1.5-2.5 3.6-2.5 5.5s.9 4 2.5 5.5c2.1 2.2 3.3 2.5 9.5 2.5s7.4-.3 9.5-2.5c1.6-1.5 2.5-3.6 2.5-5.5s-.9-4-2.5-5.5c-2.1-2.2-3.3-2.5-9.5-2.5s-7.4.3-9.5 2.5zM314.5 130.5c-1.6 1.5-2.5 3.6-2.5 5.5s.9 4 2.5 5.5l2.4 2.5h126.2l2.4-2.5c1.6-1.5 2.5-3.6 2.5-5.5s-.9-4-2.5-5.5l-2.4-2.5H316.9l-2.4 2.5zM274.5 162.5c-1.6 1.5-2.5 3.6-2.5 5.5s.9 4 2.5 5.5l2.4 2.5h166.2l2.4-2.5c1.6-1.5 2.5-3.6 2.5-5.5s-.9-4-2.5-5.5l-2.4-2.5H276.9l-2.4 2.5zM274.5 194.5c-1.6 1.5-2.5 3.6-2.5 5.5s.9 4 2.5 5.5l2.4 2.5h166.2l2.4-2.5c1.6-1.5 2.5-3.6 2.5-5.5s-.9-4-2.5-5.5l-2.4-2.5H276.9l-2.4 2.5zM274.5 226.5c-1.6 1.5-2.5 3.6-2.5 5.5s.9 4 2.5 5.5l2.4 2.5h166.2l2.4-2.5c1.6-1.5 2.5-3.6 2.5-5.5s-.9-4-2.5-5.5l-2.4-2.5H276.9l-2.4 2.5zM274.5 258.5c-1.6 1.5-2.5 3.6-2.5 5.5s.9 4 2.5 5.5l2.4 2.5h126.2l2.4-2.5c1.6-1.5 2.5-3.6 2.5-5.5s-.9-4-2.5-5.5l-2.4-2.5H276.9l-2.4 2.5zM426.5 258.5c-1.6 1.5-2.5 3.6-2.5 5.5s.9 4 2.5 5.5c2.1 2.2 3.3 2.5 9.5 2.5s7.4-.3 9.5-2.5c1.6-1.5 2.5-3.6 2.5-5.5s-.9-4-2.5-5.5c-2.1-2.2-3.3-2.5-9.5-2.5s-7.4.3-9.5 2.5zM66.5 306.5c-1.6 1.5-2.5 3.6-2.5 5.5s.9 4 2.5 5.5c2.1 2.2 3.3 2.5 9.5 2.5s7.4-.3 9.5-2.5c3.3-3.2 3.3-7.8 0-11-2.1-2.2-3.3-2.5-9.5-2.5s-7.4.3-9.5 2.5zM106.5 306.5c-1.6 1.5-2.5 3.6-2.5 5.5s.9 4 2.5 5.5l2.4 2.5h126.2l2.4-2.5c1.6-1.5 2.5-3.6 2.5-5.5s-.9-4-2.5-5.5l-2.4-2.5H108.9l-2.4 2.5zM274.5 306.5l-2.5 2.4v134.2l2.5 2.4 2.4 2.5h166.2l2.4-2.5 2.5-2.4V308.9l-2.5-2.4-2.4-2.5H276.9l-2.4 2.5zM432 342.7l-.1 22.8-9.2-18c-7.6-14.9-9.7-18.2-11.9-18.9-5.8-2-7.4-.4-19.7 20.2L379.5 368h-10.7c-5.8 0-11.3.3-12.2.6-.8.3-5.9 6.4-11.2 13.5-5.3 7.1-9.9 12.9-10.2 12.9-.3 0-3.1-2.5-6.3-5.5-8.9-8.5-9.4-8.3-25.7 7.7-7.4 7.3-13.8 14.2-14.2 15.3-.5 1.1-.9-18.8-.9-45.3L288 320h144v22.7zM419.9 375c3.3 1.7 7.1 1.1 9.6-1.5l2.5-2.4V432H288v-7.8c0-6.9.2-7.4 1.3-5.2 1.8 3.6 5.8 5.3 9.4 4 1.5-.6 6.9-5.2 12-10.2l9.2-9.2 6.5 6.2c7 6.7 10.5 7.8 14.4 4.4 1.1-.9 6.8-8.1 12.6-16l10.7-14.2h11.3c9.4 0 11.7-.3 13.4-1.8 1.1-.9 5.7-8 10.2-15.6l8.3-13.9 5.3 10.6c3 5.8 6.3 11.1 7.3 11.7zM66.5 338.5c-1.6 1.5-2.5 3.6-2.5 5.5s.9 4 2.5 5.5l2.4 2.5h166.2l2.4-2.5c3.3-3.2 3.3-7.8 0-11l-2.4-2.5H68.9l-2.4 2.5zM66.5 370.5c-1.6 1.5-2.5 3.6-2.5 5.5s.9 4 2.5 5.5l2.4 2.5h166.2l2.4-2.5c3.3-3.2 3.3-7.8 0-11l-2.4-2.5H68.9l-2.4 2.5zM66.5 402.5c-1.6 1.5-2.5 3.6-2.5 5.5s.9 4 2.5 5.5l2.4 2.5h166.2l2.4-2.5c3.3-3.2 3.3-7.8 0-11l-2.4-2.5H68.9l-2.4 2.5zM66.5 434.5c-1.6 1.5-2.5 3.6-2.5 5.5s.9 4 2.5 5.5l2.4 2.5h126.2l2.4-2.5c1.6-1.5 2.5-3.6 2.5-5.5s-.9-4-2.5-5.5l-2.4-2.5H68.9l-2.4 2.5zM218.5 434.5c-1.6 1.5-2.5 3.6-2.5 5.5s.9 4 2.5 5.5c2.1 2.2 3.3 2.5 9.5 2.5s7.4-.3 9.5-2.5c1.6-1.5 2.5-3.6 2.5-5.5s-.9-4-2.5-5.5c-2.1-2.2-3.3-2.5-9.5-2.5s-7.4.3-9.5 2.5z"/>
                 </svg>
               </h5>
             </div>
             <div class="callout-footer open-sans">
-              {% if app.nom|length >20 %} {% set taille="nom-small" %} {% else %} {% set taille="nom-normal" %} {% endif %}
-              <p class="ligne-favori open-sans">Nom&nbsp;:<span class="float-right resultat-favori {{taille}}">{{app.nom}}</span></p>
-              <p class="ligne-favori open-sans">Version&nbsp;:<span class="float-right resultat-favori">{{app.version}}</span></p>
-              <p class="ligne-favori open-sans">Date&nbsp;:<span class="float-right resultat-favori">{{app.date|date("d/m/Y", "Europe/Paris")}}</span></p>
+              {% if app.nom|length >20 %}
+                {% set taille="nom-small" %} {% else %} {% set taille="nom-normal" %} {% endif %}
+              <p class="ligne-favori open-sans">
+                Nom&nbsp;:<span class="float-right resultat-favori {{taille}}">{{app.nom}}</span>
+              </p>
+              <p class="ligne-favori open-sans">Version&nbsp;:
+                <span class="float-right resultat-favori">{{app.version}}</span>
+              </p>
+              <p class="ligne-favori open-sans">Date&nbsp;:
+                <span class="float-right resultat-favori">{{app.date|date("d/m/Y", "Europe/Paris")}}</span>
+              </p>
               <table aria-label="tableau-favori">
                 <thead>
                   <tr>
@@ -201,28 +209,38 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td scope="row"><span id="note-reliability" class="open-sans">
-                      <span class="note note-{{app.fiabilite|lower}}">{{app.fiabilite}}</span></span></td>
-                    <td scope="row"><span id="note-security" class="open-sans">
-                      <span class="note note-{{app.securite|lower}}">{{app.securite}}</span></span></td>
-                    <td scope="row"><span class="open-sans">
-                      <span class="note note-{{app.hotspot|lower}}">{{app.hotspot}}</span></span></td>
-                    <td scope="row"><span  class="open-sans">
-                      <span class="note note-{{app.sqale|lower}}">{{app.sqale}}</span></span></td>
+                  <tr scope="row">
+                    <td>
+                      <span id="note-reliability" class="open-sans">
+                        <span class="note note-{{app.fiabilite|lower}}">{{app.fiabilite}}</span>
+                      </span>
+                    </td>
+                    <td>
+                      <span id="note-security" class="open-sans">
+                        <span class="note note-{{app.securite|lower}}">{{app.securite}}</span>
+                      </span></td>
+                    <td>
+                      <span class="open-sans">
+                        <span class="note note-{{app.hotspot|lower}}">{{app.hotspot}}</span>
+                      </span>
+                    </td>
+                    <td>
+                      <span  class="open-sans">
+                        <span class="note note-{{app.sqale|lower}}">{{app.sqale}}</span>
+                      </span>
+                    </td>
                   </tr>
-                  <tr>
-                    <td scope="row">
-                    <span class="nombre-favori open-sans">
+                  <tr scope="row">
+                    <td>
+                      <span class="nombre-favori open-sans">
                       {% if app.bug <10 %} 00{{app.bug}}{% endif %}
                       {% if app.bug >=10 and app.bug <100 %} 0{{app.bug}}{% endif %}
                       {% if app.bug >=100 and app.bug <1000 %} {{app.bug}}{% endif %}
                       {% if app.bug >=1000 and app.bug <100000 %}
-                            {% set k=(app.bug/1000)|number_format(1, '.', ',') %}
-                            {{k}}K
+                        {% set k=(app.bug/1000)|number_format(1, '.', ',') %}{{k}}K
                       {% endif %}
                     </td>
-                    <td scope="row">
+                    <td>
                       <span class="nombre-favori open-sans">
                         {% if app.vulnerability <10 %} 00{{app.vulnerability}}{% endif %}
                         {% if app.vulnerability >=10 and app.vulnerability <100%} 0{{app.vulnerability}}{% endif %}
@@ -233,7 +251,7 @@
                         {% endif %}
                       </span>
                     </td>
-                    <td scope="row">
+                    <td>
                       <span class="nombre-favori open-sans">
                         {% if app.hotspots <10 %} 00{{app.hotspots}} {% endif %}
                         {% if app.hotspots >=10 and app.hotspots <100 %} 0{{app.hotspots}} {% endif %}
@@ -243,7 +261,7 @@
                             {{k}}K</span>
                         {% endif %}
                     </td>
-                    <td scope="row">
+                    <td>
                       <span class="nombre-favori open-sans">
                         {% if app.code_smell <10 %} 00{{app.code_smell}}{% endif %}
                         {% if app.code_smell >=10 and app.code_smell <100%} 0{{app.code_smell}}{% endif %}
