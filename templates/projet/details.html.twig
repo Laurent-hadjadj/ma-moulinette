@@ -16,19 +16,19 @@
 {{ include('header.html.twig') }}
 <br />
 <header class="grid-container">
-	<nav aria-label="Ici : " role="navigation">
-		<ul class="claire-hand breadcrumbs">
-			<li><a href="/">Accueil</a></li>
+  <nav aria-label="Ici : " role="navigation">
+    <ul class="claire-hand breadcrumbs">
+      <li><a href="/">Accueil</a></li>
       <li><a href="/projet">Projet</a></li>
-			<li><span class="show-for-sr">Current:</span>Répartition</li>
-		</ul>
-	</nav>
+      <li><span class="show-for-sr">Current:</span>Répartition</li>
+    </ul>
+  </nav>
 </header>
 
 <div class="grid-container">
   <h3 id="app" class="claire-hand grid-x" data-application="{{mavenKey}}">
     <div id="collecte-animation" class="sp"></div>
-    <span style="margin-left:1rem; margin-top:-3px;">{{monApplication}}</span>
+    <span class"spinner-titre">{{monApplication}}</span>
   </h3>
 
   <p class="open-sans"><span class="open-sans">Setup : </span>
@@ -164,7 +164,7 @@
       <div class="progress" role="progressbar"
           aria-valuenow="0" aria-valuemin="0"
           aria-valuetext="0 percent" aria-valuemax="100">
-          <span class="progress-meter" style="width: 0%">
+          <span class="progress-meter progress-meter-custom">
             <span class="progress-meter-text open-sans">0%</span>
           </span>
       </div>
@@ -190,8 +190,7 @@
       <div class="fieldset">
         <div class="grid-x cell">
           <div id="analyse-animation" class="sp"></div>
-          <div id="analyse-texte" class="open-sans"
-              style="margin-left: 16px; margin-top: 4px;">Statut : Je dors !!!</div>
+          <div id="analyse-texte" class="open-sans je-dors">Statut : Je dors !!!</div>
         </div>
       </div>
 
