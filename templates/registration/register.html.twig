@@ -39,14 +39,19 @@
                   src="{{ asset('build/avatar/personne.png') }}"
                   alt="Mon avatar" height="52" width="52" data-theme="racine" data-image="personne" />
             </div><br />
-              <span id="bouton-changer-avatar" class="open-sans profil-bouton" data-open="mes-avatars">&nbsp;Changer&nbsp;</span>
+              <span id="bouton-changer-avatar"
+                class="open-sans profil-bouton"
+                data-open="mes-avatars">&nbsp;Changer&nbsp;
+              </span>
           </div>
           <div class="small-12 medium-8 large-8 cell">
               <div class="floated-label-wrapper">
                 {{ form_label(registrationForm.nom) }}
               </div>
               {{ form_widget(registrationForm.nom) }}
-              <div class='form_erreur'>{{ form_errors(registrationForm.nom) }}</div>
+              <div class="form_erreur">
+                {{ form_errors(registrationForm.nom) }}
+              </div>
             </div>
           <div class="small-12 medium-4 large-4 cell"></div>
           <div class="small-12 medium-8 large-8 cell">
@@ -54,14 +59,18 @@
               {{ form_label(registrationForm.prenom) }}
             </div>
             {{ form_widget(registrationForm.prenom,) }}
-            <div class='form_erreur'>{{ form_errors(registrationForm.prenom) }}</div>
+            <div class="form_erreur">
+              {{ form_errors(registrationForm.prenom) }}
+            </div>
           </div>
           <div class="small-11 medium-11 large-11 cell">
             <div class="floated-label-wrapper">
               {{ form_label(registrationForm.courriel) }}
             </div>
             {{ form_widget(registrationForm.courriel, {'attr': {'class':'color-bleu'}}) }}
-            <div class='form_erreur'>{{ form_errors(registrationForm.courriel) }}</div>
+            <div class="form_erreur">
+              {{ form_errors(registrationForm.courriel) }}
+            </div>
           </div>
           <div class="small-1 medium-1 large-1 cell">
             <span id="register-info-check-courriel"></span>
@@ -72,7 +81,9 @@
               {{ form_label(registrationForm.plainPassword) }}
             </div>
             {{ form_widget(registrationForm.plainPassword, {'attr': {'class':'color-bleu'}}) }}
-            <div class='form_erreur'>{{ form_errors(registrationForm.plainPassword) }}</div>
+            <div class="form_erreur">
+              {{ form_errors(registrationForm.plainPassword) }}
+            </div>
           </div>
           <div class="small-1 medium-1 large-1 cell">
             <span id="register-info-check-password"></span>
@@ -96,9 +107,13 @@
       <div class="accordion-content background-color-blanc" data-tab-content >
         {% for i in 1..10 %}
         {% if i<10 %}
-        <img id="ajouter-chiffre-0{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/chiffre/0{{i}}.png" data-theme="chiffre" data-image="0{{i}}" />
+        <img id="ajouter-chiffre-0{{i}}"
+          class="thumbnail grayscale" alt="m0i"
+          height="42" width="42" src="/build/avatar/chiffre/0{{i}}.png" data-theme="chiffre" data-image="0{{i}}" />
         {% else %}
-        <img id="ajouter-chiffre-{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/chiffre/{{i}}.png"  data-theme="chiffre" data-image="{{i}}" />
+        <img id="ajouter-chiffre-{{i}}"
+          class="thumbnail grayscale" alt="m0i"
+          height="42" width="42" src="/build/avatar/chiffre/{{i}}.png"  data-theme="chiffre" data-image="{{i}}" />
         {% endif %}
         {% endfor %}
       </div>
@@ -111,9 +126,13 @@
       <div class="accordion-content background-color-blanc" data-tab-content>
         {% for i in 1..35 %}
         {% if i<10 %}
-        <img id="ajouter-emoticon-0{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/emoticon/0{{i}}.png" data-theme="emoticon" data-image="0{{i}}" />
+        <img id="ajouter-emoticon-0{{i}}"
+          class="thumbnail grayscale" alt="m0i"
+          height="42" width="42" src="/build/avatar/emoticon/0{{i}}.png" data-theme="emoticon" data-image="0{{i}}" />
         {% else %}
-        <img id="ajouter-emoticon-{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/emoticon/{{i}}.png"  data-theme="emoticon" data-image="{{i}}" />
+        <img id="ajouter-emoticon-{{i}}"
+        class="thumbnail grayscale"
+        alt="m0i" height="42" width="42" src="/build/avatar/emoticon/{{i}}.png"  data-theme="emoticon" data-image="{{i}}" />
         {% endif %}
         {% endfor %}
       </div>
@@ -126,9 +145,13 @@
       <div class="accordion-content background-color-blanc" data-tab-content>
         {% for i in 1..27 %}
         {% if i<10 %}
-        <img id="ajouter-fille-1-0{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/fille-1/0{{i}}.png" data-theme="fille-1" data-image="0{{i}}" />
+        <img id="ajouter-fille-1-0{{i}}"
+          class="thumbnail grayscale" alt="m0i"
+          height="42" width="42" src="/build/avatar/fille-1/0{{i}}.png" data-theme="fille-1" data-image="0{{i}}" />
         {% else %}
-        <img id="ajouter-fille-1-{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/fille-1/{{i}}.png"  data-theme="fille-1" data-image="{{i}}" />
+        <img id="ajouter-fille-1-{{i}}"
+          class="thumbnail grayscale" alt="m0i"
+          height="42" width="42" src="/build/avatar/fille-1/{{i}}.png"  data-theme="fille-1" data-image="{{i}}" />
         {% endif %}
         {% endfor %}
       </div>
@@ -141,9 +164,13 @@
       <div class="accordion-content background-color-blanc" data-tab-content>
         {% for i in 1..26 %}
         {% if i<10 %}
-        <img id="ajouter-fille-2-0{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/fille-2/0{{i}}.png" data-theme="fille-2" data-image="0{{i}}" />
+        <img id="ajouter-fille-2-0{{i}}"
+          class="thumbnail grayscale" alt="m0i"
+          height="42" width="42" src="/build/avatar/fille-2/0{{i}}.png" data-theme="fille-2" data-image="0{{i}}" />
         {% else %}
-        <img id="ajouter-fille-2-{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/fille-2/{{i}}.png"  data-theme="fille-2" data-image="{{i}}" />
+        <img id="ajouter-fille-2-{{i}}"
+          class="thumbnail grayscale" alt="m0i"
+          height="42" width="42" src="/build/avatar/fille-2/{{i}}.png"  data-theme="fille-2" data-image="{{i}}" />
         {% endif %}
         {% endfor %}
       </div>
@@ -156,9 +183,13 @@
       <div class="accordion-content background-color-blanc" data-tab-content>
         {% for i in 1..23 %}
         {% if i<10 %}
-        <img id="ajouter-garcon-1-0{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/garcon-1/0{{i}}.png" data-theme="garcon-1" data-image="0{{i}}" />
+        <img id="ajouter-garcon-1-0{{i}}"
+        class="thumbnail grayscale" alt="m0i"
+        height="42" width="42" src="/build/avatar/garcon-1/0{{i}}.png" data-theme="garcon-1" data-image="0{{i}}" />
         {% else %}
-        <img id="ajouter-garcon-1-{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/garcon-1/{{i}}.png"  data-theme="garcon-1" data-image="{{i}}" />
+        <img id="ajouter-garcon-1-{{i}}"
+        class="thumbnail grayscale" alt="m0i"
+        height="42" width="42" src="/build/avatar/garcon-1/{{i}}.png"  data-theme="garcon-1" data-image="{{i}}" />
         {% endif %}
         {% endfor %}
       </div>
@@ -171,9 +202,13 @@
       <div class="accordion-content background-color-blanc" data-tab-content>
         {% for i in 1..24 %}
         {% if i<10 %}
-        <img id="ajouter-garcon-2-0{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/garcon-2/0{{i}}.png" data-theme="garcon-2" data-image="0{{i}}" />
+        <img id="ajouter-garcon-2-0{{i}}" class="thumbnail grayscale"
+          alt="m0i" height="42" width="42"
+          src="/build/avatar/garcon-2/0{{i}}.png" data-theme="garcon-2" data-image="0{{i}}" />
         {% else %}
-        <img id="ajouter-garcon-2-{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/garcon-2/{{i}}.png"  data-theme="garcon-2" data-image="{{i}}" />
+        <img id="ajouter-garcon-2-{{i}}" class="thumbnail grayscale"
+          alt="m0i" height="42" width="42"
+          src="/build/avatar/garcon-2/{{i}}.png"  data-theme="garcon-2" data-image="{{i}}" />
         {% endif %}
         {% endfor %}
       </div>
@@ -186,9 +221,13 @@
       <div class="accordion-content background-color-blanc" data-tab-content>
         {% for i in 1..26 %}
         {% if i<10 %}
-        <img id="ajouter-lettre-0{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/lettre/0{{i}}.png" data-theme="lettre" data-image="0{{i}}" />
+        <img id="ajouter-lettre-0{{i}}"
+        class="thumbnail grayscale" alt="m0i"
+        height="42" width="42" src="/build/avatar/lettre/0{{i}}.png" data-theme="lettre" data-image="0{{i}}" />
         {% else %}
-        <img id="ajouter-lettre-{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/lettre/{{i}}.png"  data-theme="lettre" data-image="{{i}}" />
+        <img id="ajouter-lettre-{{i}}"
+        class="thumbnail grayscale" alt="m0i"
+        height="42" width="42" src="/build/avatar/lettre/{{i}}.png"  data-theme="lettre" data-image="{{i}}" />
         {% endif %}
         {% endfor %}
       </div>
