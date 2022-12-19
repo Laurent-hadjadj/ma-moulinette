@@ -1,3 +1,4 @@
+---
 #Formulaire de d'inscription et de connexion
 placeholder.nom: HADJADJ
 placeholder.prenom: Laurent
@@ -35,3 +36,4 @@ Liste: Liste
 Batch: Traitement
 Statut: Programmé
 Nombre Projet: Projets
+...
