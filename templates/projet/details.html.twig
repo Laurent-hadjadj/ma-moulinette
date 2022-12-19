@@ -32,10 +32,9 @@
   </h3>
 
   <p class="open-sans"><span class="open-sans">Setup : </span>
-                        <span id="js-setup"
-                              class="open-sans"
-                              style="color:#000"
-                              data-statut={{statut}}>{{setup}}</span>
+                        <span id="js-setup" class="open-sans color-noir"
+                              data-statut={{statut}}>{{setup}}
+                        </span>
   </p>
 
   {# On affiche les messages #}
@@ -43,7 +42,7 @@
 
   <ul class="vertical menu accordion-menu" data-accordion-menu>
     <li>
-      <a href="#" class="callout open-sans">Tableau des sévérités par type.</a>
+      <a class="callout open-sans">Tableau des sévérités par type.</a>
       <ul class="menu vertical">
         <div class="fieldset open-sans">
           <legend><strong>Informations</strong></legend>
@@ -61,7 +60,9 @@
             <li><span class="stats-list-label">m</span>
                 <span id="bug-mineur" class="stats-list-vert">0</span></li>
           </ul>
-          <p class="ligne"><strong>Sécurité</strong>&nbsp;: <span id="nombre-vulnerabilite" class="stat resultat"></span></p>
+          <p class="ligne"><strong>Sécurité</strong>&nbsp;:
+            <span id="nombre-vulnerabilite" class="stat resultat"></span>
+          </p>
           <ul class="stats-list">
             <li><span class="stats-list-label">B</span>
               <span id="vulnerabilite-bloquant" class="stats-list-rouge-intense">0</span></li>
@@ -75,17 +76,26 @@
               <span id="vulnerabilite-mineur" class=" stats-list-vert">0</span></li>
           </ul>
 
-          <p class="ligne"><strong>Maintenalibité</strong>&nbsp;: <span id="nombre-mauvaise-pratique" class="stat resultat"></span></p>
+          <p class="ligne"><strong>Maintenalibité</strong>&nbsp;:
+            <span id="nombre-mauvaise-pratique" class="stat resultat"></span>
+          </p>
           <ul class="stats-list">
             <li><span class="stats-list-label">B</span>
               <span id="mauvaise-pratique-bloquant" class="stats-list-rouge-intense">0</span></li>
             <li><span class="stats-list-label">C</span>
               <span id="mauvaise-pratique-critique" class="stats-list-rouge-claire">0</span></li>
-            <li><span class="stats-list-label">I</span><span id="mauvaise-pratique-info" class="stats-list-bleu">0</span></li>
-            <li><span class="stats-list-label">M</span>
-              <span id="mauvaise-pratique-majeur" class="stats-list-orange">0</span></li>
-            <li><span class="stats-list-label">m</span>
-              <span id="mauvaise-pratique-mineur" class="stats-list-vert">0</span></li>
+            <li>
+              <span class="stats-list-label">I</span>
+              <span id="mauvaise-pratique-info" class="stats-list-bleu">0</span>
+            </li>
+            <li>
+              <span class="stats-list-label">M</span>
+              <span id="mauvaise-pratique-majeur" class="stats-list-orange">0</span>
+            </li>
+            <li>
+              <span class="stats-list-label">m</span>
+              <span id="mauvaise-pratique-mineur" class="stats-list-vert">0</span>
+            </li>
           </ul>
         </div>
       </ul>
@@ -173,7 +183,8 @@
           bouton-repartition-affiche-resultat bouton-repartition-affiche-resultat-disabled open-sans">Afficher</div>
         </div>
         <div class="small-12 medium-6 large-6 bouton-afficher-left cell">
-          <div id="repartition-traitement-donnees" class="button expanded bouton-repartition-traitement-donnees open-sans">Analyser</div>
+          <div id="repartition-traitement-donnees"
+          class="button expanded bouton-repartition-traitement-donnees open-sans">Analyser</div>
         </div>
       </div>
       <div class="fieldset">

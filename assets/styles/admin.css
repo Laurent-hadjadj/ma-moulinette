@@ -71,3 +71,6 @@
   margin-bottom: -0.8rem;
   font-size: 0.9rem;
 }
+
+.card-fontsize { font-size: 1.2rem; }
+.card-text-fontsize { font-size: 2.4rem; }

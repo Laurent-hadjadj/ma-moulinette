@@ -60,7 +60,7 @@
             <div class="floated-label-wrapper">
               {{ form_label(registrationForm.courriel) }}
             </div>
-            {{ form_widget(registrationForm.courriel, {'attr': {'style':'color:#00445b;'}}) }}
+            {{ form_widget(registrationForm.courriel, {'attr': {'class':'color-bleu'}}) }}
             <div class='form_erreur'>{{ form_errors(registrationForm.courriel) }}</div>
           </div>
           <div class="small-1 medium-1 large-1 cell">
@@ -71,7 +71,7 @@
             <div class="floated-label-wrapper">
               {{ form_label(registrationForm.plainPassword) }}
             </div>
-            {{ form_widget(registrationForm.plainPassword, {'attr': {'style':'color:#00445b;'}}) }}
+            {{ form_widget(registrationForm.plainPassword, {'attr': {'class':'color-bleu'}}) }}
             <div class='form_erreur'>{{ form_errors(registrationForm.plainPassword) }}</div>
           </div>
           <div class="small-1 medium-1 large-1 cell">
@@ -89,11 +89,11 @@
 <div id="mes-avatars" class="grid-container large reveal" data-reveal>
   <ul id="ajouter-mes-avatars" class="accordion" data-accordion data-multi-open="true">
     <li class="accordion-item menu-accordeon" data-accordion-item>
-      <a href="#" class="accordion-title" style="color:#00445b;">
+      <a href="#" class="accordion-title color-bleu">
         <span class="open-sans"><strong>Chiffres</strong></span>
         <span class="open-sans float-right" style="font-size:1.5rem; padding-right:3rem; margin-top: -0.2rem;">10</span>
       </a>
-      <div class="accordion-content" data-tab-content style="background-color:#eee;">
+      <div class="accordion-content background-color-blanc" data-tab-content >
         {% for i in 1..10 %}
         {% if i<10 %}
         <img id="ajouter-chiffre-0{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/chiffre/0{{i}}.png" data-theme="chiffre" data-image="0{{i}}" />
@@ -104,11 +104,11 @@
       </div>
     </li>
     <li class="accordion-item menu-accordeon" data-accordion-item>
-      <a href="#" class="accordion-title" style="color:#00445b;">
+      <a href="#" class="accordion-title color-bleu">
         <span class="open-sans"><strong>Emoticônes</strong></span>
         <span class="open-sans float-right" style="font-size:1.5rem; padding-right:3rem; margin-top: -0.2rem;">35</span>
       </a>
-      <div class="accordion-content" data-tab-content style="background-color:#eee;">
+      <div class="accordion-content background-color-blanc" data-tab-content>
         {% for i in 1..35 %}
         {% if i<10 %}
         <img id="ajouter-emoticon-0{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/emoticon/0{{i}}.png" data-theme="emoticon" data-image="0{{i}}" />
@@ -119,11 +119,11 @@
       </div>
     </li>
     <li class="accordion-item menu-accordeon" data-accordion-item>
-      <a href="#" class="accordion-title" style="color:#00445b;">
+      <a href="#" class="accordion-title color-bleu">
         <span class="open-sans"><strong>Filles (1)</strong></span>
         <span class="open-sans float-right" style="font-size:1.5rem; padding-right:3rem; margin-top: -0.2rem;">27</span>
       </a>
-      <div class="accordion-content" data-tab-content style="background-color:#eee;">
+      <div class="accordion-content background-color-blanc" data-tab-content>
         {% for i in 1..27 %}
         {% if i<10 %}
         <img id="ajouter-fille-1-0{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/fille-1/0{{i}}.png" data-theme="fille-1" data-image="0{{i}}" />
@@ -134,11 +134,11 @@
       </div>
     </li>
     <li class="accordion-item menu-accordeon" data-accordion-item>
-      <a href="#" class="accordion-title" style="color:#00445b;">
+      <a href="#" class="accordion-title color-bleu">
         <span class="open-sans"><strong>Filles (2)</strong></span>
         <span class="open-sans float-right" style="font-size:1.5rem; padding-right:3rem; margin-top: -0.2rem;">27</span>
       </a>
-      <div class="accordion-content" data-tab-content style="background-color:#eee;">
+      <div class="accordion-content background-color-blanc" data-tab-content>
         {% for i in 1..26 %}
         {% if i<10 %}
         <img id="ajouter-fille-2-0{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/fille-2/0{{i}}.png" data-theme="fille-2" data-image="0{{i}}" />
@@ -149,11 +149,11 @@
       </div>
     </li>
     <li class="accordion-item menu-accordeon" data-accordion-item>
-      <a href="#" class="accordion-title" style="color:#00445b;">
+      <a href="#" class="accordion-titl color-bleu">
         <span class="open-sans"><strong>Garçon (1)</strong></span>
         <span class="open-sans float-right" style="font-size:1.5rem; padding-right:3rem; margin-top: -0.2rem;">23</span>
       </a>
-      <div class="accordion-content" data-tab-content style="background-color:#eee;">
+      <div class="accordion-content background-color-blanc" data-tab-content>
         {% for i in 1..23 %}
         {% if i<10 %}
         <img id="ajouter-garcon-1-0{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/garcon-1/0{{i}}.png" data-theme="garcon-1" data-image="0{{i}}" />
@@ -164,11 +164,11 @@
       </div>
     </li>
     <li class="accordion-item menu-accordeon" data-accordion-item>
-      <a href="#" class="accordion-title" style="color:#00445b;">
+      <a href="#" class="accordion-title color-bleu">
         <span class="open-sans"><strong>Garçon (2)</strong></span>
         <span class="open-sans float-right" style="font-size:1.5rem; padding-right:3rem; margin-top: -0.2rem;">23</span>
       </a>
-      <div class="accordion-content" data-tab-content style="background-color:#eee;">
+      <div class="accordion-content background-color-blanc" data-tab-content>
         {% for i in 1..24 %}
         {% if i<10 %}
         <img id="ajouter-garcon-2-0{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/garcon-2/0{{i}}.png" data-theme="garcon-2" data-image="0{{i}}" />
@@ -179,11 +179,11 @@
       </div>
     </li>
     <li class="accordion-item menu-accordeon" data-accordion-item>
-      <a href="#" class="accordion-title" style="color:#00445b;">
+      <a href="#" class="accordion-title color-bleu">
         <span class="open-sans"><strong>Lettres</strong></span>
         <span class="open-sans float-right" style="font-size:1.5rem; padding-right:3rem; margin-top: -0.2rem;">26</span>
       </a>
-      <div class="accordion-content" data-tab-content style="background-color:#eee;">
+      <div class="accordion-content background-color-blanc" data-tab-content>
         {% for i in 1..26 %}
         {% if i<10 %}
         <img id="ajouter-lettre-0{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/lettre/0{{i}}.png" data-theme="lettre" data-image="0{{i}}" />

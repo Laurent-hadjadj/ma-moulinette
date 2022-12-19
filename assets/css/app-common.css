@@ -323,6 +323,9 @@ body { background: #eee; }
 
 /** Suppression du style inline */
 .color-blanc { color: #fff; }
+.color-noir { color: #000; }
+.color-bleu { color: #00445b; }
+.background-color-blanc { background-color: #eee; }
 
 /* Titre */
 .ma-moulinette {
