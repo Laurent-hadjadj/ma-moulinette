@@ -43,6 +43,9 @@
 
 /*************************          Global     *********************************/
 
+/** Suppression du style in line */
+.owasp-padding-left { padding-left: 2rem; }
+
 /* Bouton SVG */
 .voir-details-svg {
   fill: #00445b;
