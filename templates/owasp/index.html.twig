@@ -288,13 +288,12 @@
         <ul class="vertical menu accordion-menu" data-accordion-menu>
           <li id="o1" class="referentiel-owasp-menu">
             <a class="claire-hand referentiel-owasp-titre" href="javascript:void(0);">A1 - Attaques d'injection.</a>
-            <ul class="menu vertical" style="padding-left:1rem; padding-right:1rem;">
+            <ul class="menu vertical owasp-padding-left-right">
               <p class="open-sans text-justify">
-                Les failles d'injection, telles que l'injection SQL, NoSQL, OS et LDAP, se produisent lorsque des données non
-                                fiables sont envoyées à un interpréteur dans le cadre d'une commande ou d'une requête.</p>
+                Les failles d'injection, telles que l'injection SQL, NoSQL, OS et LDAP, se produisent lorsque des données non fiables sont envoyées à un interpréteur dans le cadre d'une commande ou d'une requête.
+              </p>
               <p class="open-sans text-justify">
-                Les données hostiles de l'attaquant peuvent inciter l'interpréteur à exécuter des commandes non souhaitées ou
-                                à accéder à des données sans autorisation appropriée.
+                Les données hostiles de l'attaquant peuvent inciter l'interpréteur à exécuter des commandes non souhaitées ou à accéder à des données sans autorisation appropriée.
               </p>
             </ul>
           </li>
@@ -303,12 +302,9 @@
         <ul class="vertical menu accordion-menu" data-accordion-menu>
           <li id="o2" class="referentiel-owasp-menu">
             <a class="claire-hand referentiel-owasp-titre" href="javascript:void(0);">A2 - Authentification défaillante.</a>
-            <ul class="menu vertical" style="padding-left:1rem; padding-right:1rem;">
+            <ul class="menu vertical owasp-padding-left-right">
               <p class="open-sans text-justify">
-                Les fonctions d'application liées à l'authentification et à la gestion des sessions sont souvent mises en œuvre de
-                manière incorrecte, ce qui permet aux attaquants de compromettre les mots de passe, les clés ou les jetons de
-                session, ou d'exploiter d'autres défauts de mise en œuvre pour prendre l'identité d'autres utilisateurs de manière
-                temporaire ou permanente.
+                Les fonctions d'application liées à l'authentification et à la gestion des sessions sont souvent mises en œuvre de manière incorrecte, ce qui permet aux attaquants de compromettre les mots de passe, les clés ou les jetons de session, ou d'exploiter d'autres défauts de mise en œuvre pour prendre l'identité d'autres utilisateurs de manière  temporaire ou permanente.
               </p>
             </ul>
           </li>
@@ -316,15 +312,11 @@
         <ul class="vertical menu accordion-menu" data-accordion-menu>
           <li id="o3" class="referentiel-owasp-menu">
             <a class="claire-hand referentiel-owasp-titre" href="javascript:void(0);">A3 - Fuites de données sensibles.</a>
-            <ul class="menu vertical" style="padding-left:1rem; padding-right:1rem;">
+            <ul class="menu vertical owasp-padding-left-right">
               <p class="open-sans text-justify">
-                De nombreuses applications Web et API ne protègent pas correctement les données sensibles, telles que les données
-                financières, les données relatives à la santé et les informations nominatives. Les attaquants peuvent voler ou
-                modifier ces données faiblement protégées pour commettre des fraudes à la carte de crédit, des vols d'identité
-                ou d'autres délits.</p>
+                De nombreuses applications Web et API ne protègent pas correctement les données sensibles, telles que les données financières, les données relatives à la santé et les informations nominatives. Les attaquants peuvent voler ou modifier ces données faiblement protégées pour commettre des fraudes à la carte de crédit, des vols d'identité ou d'autres délits.</p>
               <p class="open-sans text-justify">
-                Les données sensibles peuvent être compromises sans protection supplémentaire, comme le cryptage au repos ou
-                en transit, et nécessitent des précautions particulières lorsqu'elles sont échangées avec le navigateur.
+                Les données sensibles peuvent être compromises sans protection supplémentaire, comme le cryptage au repos ou en transit, et nécessitent des précautions particulières lorsqu'elles sont échangées avec le navigateur.
               </p>
             </ul>
           </li>
@@ -332,7 +324,7 @@
         <ul class="vertical menu accordion-menu" data-accordion-menu>
           <li id="o4" class="referentiel-owasp-menu">
             <a class="claire-hand referentiel-owasp-titre" href="javascript:void(0);">A4 - Entités externes XML (XXE).</a>
-            <ul class="menu vertical" style="padding-left:1rem; padding-right:1rem;">
+            <ul class="menu vertical owasp-padding-left-right">
               <p class="open-sans text-justify">
                 De nombreux processeurs XML anciens ou mal configurés évaluent les références à des entités externes dans les documents XML. Les entités externes peuvent être utilisées pour divulguer des fichiers internes à l'aide du gestionnaire URI de fichiers, des partages de fichiers internes, l'analyse de ports internes, l'exécution de code à distance et des attaques par déni de service.
               </p>
@@ -342,12 +334,9 @@
         <ul class="vertical menu accordion-menu" data-accordion-menu>
           <li id="o5" class="referentiel-owasp-menu">
             <a class="claire-hand referentiel-owasp-titre" href="javascript:void(0);">A5 - Contrôle d'accès défaillant.</a>
-            <ul class="menu vertical" style="padding-left:1rem; padding-right:1rem;">
+            <ul class="menu vertical owasp-padding-left-right">
               <p class="open-sans text-justify">
-                Les restrictions sur ce que les utilisateurs authentifiés sont autorisés à faire ne sont souvent pas correctement
-                appliquées. Les attaquants peuvent exploiter ces failles pour accéder à des fonctionnalités et/ou des données non
-                autorisées, comme l'accès aux comptes d'autres utilisateurs, la visualisation de fichiers sensibles, la modification
-                des données d'autres utilisateurs, la modification des droits d'accès, etc.
+                Les restrictions sur ce que les utilisateurs authentifiés sont autorisés à faire ne sont souvent pas correctement appliquées. Les attaquants peuvent exploiter ces failles pour accéder à des fonctionnalités et/ou des données non autorisées, comme l'accès aux comptes d'autres utilisateurs, la visualisation de fichiers sensibles, la modification des données d'autres utilisateurs, la modification des droits d'accès, etc.
               </p>
             </ul>
           </li>
@@ -355,16 +344,12 @@
         <ul class="vertical menu accordion-menu" data-accordion-menu>
           <li id="o6" class="referentiel-owasp-menu">
             <a class="claire-hand referentiel-owasp-titre" href="javascript:void(0);">A6 - Configurations défaillantes.</a>
-            <ul class="menu vertical" style="padding-left:1rem; padding-right:1rem;">
+            <ul class="menu vertical owasp-padding-left-right">
               <p class="open-sans text-justify">
-                La mauvaise configuration de la sécurité est le problème le plus fréquemment rencontré. Elle résulte généralement
-                de configurations par défaut non sécurisées, de configurations incomplètes ou ad hoc, d'un stockage en nuage ouvert,
-                d'en-têtes HTTP mal configurés et de messages d'erreur verbeux contenant des informations sensibles.
+                La mauvaise configuration de la sécurité est le problème le plus fréquemment rencontré. Elle résulte généralement de configurations par défaut non sécurisées, de configurations incomplètes ou ad hoc, d'un stockage en nuage ouvert, d'en-têtes HTTP mal configurés et de messages d'erreur verbeux contenant des informations sensibles.
               </p>
               <p class="open-sans text-justify">
-                Non seulement tous les systèmes d'exploitation, les frameworks, les bibliothèques et les applications doivent être
-                configurés de manière sécurisée, mais ils doivent également faire l'objet de correctifs ou de mises à jour en temps
-                utile.
+                Non seulement tous les systèmes d'exploitation, les frameworks, les bibliothèques et les applications doivent être configurés de manière sécurisée, mais ils doivent également faire l'objet de correctifs ou de mises à jour en temps utile.
               </p>
             </ul>
           </li>
@@ -372,15 +357,12 @@
         <ul class="vertical menu accordion-menu" data-accordion-menu>
           <li id="o7" class="referentiel-owasp-menu">
             <a class="claire-hand referentiel-owasp-titre" href="javascript:void(0);">A7 - Attaques cross-site scripting (XSS).</a>
-            <ul class="menu vertical" style="padding-left:1rem; padding-right:1rem;">
+            <ul class="menu vertical owasp-padding-left-right">
               <p class="open-sans text-justify">
-                Les failles XSS se produisent chaque fois qu'une application inclut des données non fiables dans une nouvelle
-                page Web sans validation ni échappement appropriés, ou met à jour une page Web existante avec des données fournies
-                par l'utilisateur en utilisant une API de navigateur capable de créer du HTML ou du JavaScript.
+                Les failles XSS se produisent chaque fois qu'une application inclut des données non fiables dans une nouvelle page Web sans validation ni échappement appropriés, ou met à jour une page Web existante avec des données fournies par l'utilisateur en utilisant une API de navigateur capable de créer du HTML ou du JavaScript.
               </p>
               <p class="open-sans text-justify">
-                Le XSS permet aux attaquants d'exécuter des scripts dans le navigateur de la victime, ce qui peut détourner les
-                sessions de l'utilisateur, défigurer les sites Web ou rediriger l'utilisateur vers des sites malveillants.
+                Le XSS permet aux attaquants d'exécuter des scripts dans le navigateur de la victime, ce qui peut détourner les sessions de l'utilisateur, défigurer les sites Web ou rediriger l'utilisateur vers des sites malveillants.
               </p>
             </ul>
           </li>
@@ -388,7 +370,7 @@
         <ul class="vertical menu accordion-menu" data-accordion-menu>
           <li id="o8" class="referentiel-owasp-menu">
             <a class="claire-hand referentiel-owasp-titre" href="javascript:void(0);">A8 - Désérialisation sans validation.</a>
-            <ul class="menu vertical" style="padding-left:1rem; padding-right:1rem;">
+            <ul class="menu vertical owasp-padding-left-right">
               <p class="open-sans text-justify">
                 Une désérialisation non sécurisée conduit souvent à l'exécution de code à distance. Même si les défauts de désérialisation n'entraînent pas l'exécution de code à distance, ils peuvent être utilisés pour réaliser des attaques, notamment des attaques par rejeu, des attaques par injection et des attaques par élévation de privilèges.
               </p>
@@ -398,13 +380,12 @@
         <ul class="vertical menu accordion-menu" data-accordion-menu>
           <li id="o9" class="referentiel-owasp-menu">
             <a class="claire-hand referentiel-owasp-titre" href="javascript:void(0);">A9 - Composants tiers vulnérables.</a>
-            <ul class="menu vertical" style="padding-left:1rem; padding-right:1rem;">
+            <ul class="menu vertical owasp-padding-left-right">
               <p class="open-sans text-justify">
                 Les composants, tels que les bibliothèques, les frameworks et autres modules logiciels, s'exécutent avec les mêmes privilèges que l'application. Si un composant vulnérable est exploité, une telle attaque peut faciliter de graves pertes de données ou la prise de contrôle du serveur.
               </p>
               <p class="open-sans text-justify">
-                Les applications et les API utilisant des composants présentant des vulnérabilités connues peuvent miner les défenses
-                des applications et permettre diverses attaques et incidences.
+                Les applications et les API utilisant des composants présentant des vulnérabilités connues peuvent miner les défenses des applications et permettre diverses attaques et incidences.
               </p>
             </ul>
           </li>
@@ -412,13 +393,12 @@
         <ul class="vertical menu accordion-menu" data-accordion-menu>
           <li id="o10" class="referentiel-owasp-menu">
             <a class="claire-hand referentiel-owasp-titre" href="javascript:void(0);">A10 - Journalisation et surveillance insuffisantes.</a>
-            <ul class="menu vertical" style="padding-left:1rem; padding-right:1rem;">
+            <ul class="menu vertical owasp-padding-left-right">
               <p class="open-sans text-justify">
                 L'insuffisance de la journalisation et de la surveillance, associée à l'absence ou à l'inefficacité de l'intégration avec la réponse aux incidents, permet aux attaquants d'attaquer davantage les systèmes, de maintenir la persistance, de pivoter vers d'autres systèmes et d'altérer, d'extraire ou de détruire des données.
               </p>
               <p class="open-sans text-justify">
-                La plupart des études sur les brèches montrent que le délai de détection d'une brèche est supérieur à 200 jours,
-                généralement détectée par des parties externes plutôt que par des processus ou une surveillance internes.
+                La plupart des études sur les brèches montrent que le délai de détection d'une brèche est supérieur à 200 jours, généralement détectée par des parties externes plutôt que par des processus ou une surveillance internes.
               </p>
             </ul>
           </li>
