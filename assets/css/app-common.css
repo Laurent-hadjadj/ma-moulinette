@@ -321,6 +321,9 @@ body { background: #eee; }
 .open-sans-bold,
 .claire-hand { color: #00445b; }
 
+/** Suppression du style inline */
+.color-blanc { color: #fff; }
+
 /* Titre */
 .ma-moulinette {
   color: #00445b;
