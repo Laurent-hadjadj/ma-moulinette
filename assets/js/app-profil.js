@@ -21,7 +21,7 @@ import 'motion-ui';
 import './foundation.js';
 
 // On importe les paramètres serveur
-import {serveur} from "./properties.js";
+import {serveur} from './properties.js';
 
 import Chart from 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -39,11 +39,15 @@ const paletteCouleur = [
   '#660066', '#008000', '#088da5', '#808080', '#8b0000', '#0e2f44', '#3b5998', '#cc0000' ];
 
 /**
- * description
+ * [Description for shuffle]
  * Mélangeur de couleur
  *
- * @param {*} a
- * @returns
+ * @param mixed a
+ *
+ * @return [type]
+ *
+ * Created at: 19/12/2022, 21:51:11 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const shuffle=function(a) {
   let j, x, i;
@@ -57,10 +61,13 @@ const shuffle=function(a) {
 };
 
 /**
- * description
+ * [Description for palette]
  * Renvoie une nouvelle palette de couleur
  *
- * @returns
+ * @return [type]
+ *
+ * Created at: 19/12/2022, 21:52:05 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const palette=function() {
   const nouvellePalette = [];
@@ -76,9 +83,13 @@ const dateOptions1 = {year: 'numeric', month: 'numeric', day: 'numeric', hour: '
 const dateOptions2 = {year: 'numeric', month: 'numeric', day: 'numeric' };
 
 /**
- * Description
+ * [Description for refreshQuality]
  * Met à jour la liste des référentiels
- * @returns
+ *
+ * @return [type]
+ *
+ * Created at: 19/12/2022, 21:52:39 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const refreshQuality=function() {
   const options = {
@@ -128,14 +139,18 @@ const refreshQuality=function() {
 };
 
 /**
- * Description
+ * [Description for dessineMoiUnMouton]
  * Affiche le graphique des sources
  *
- * @param {*} label
- * @param {*} dataset
+ * @param mixed label
+ * @param mixed dataset
+ *
+ * @return [type]
+ *
+ * Created at: 19/12/2022, 21:53:26 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const dessineMoiUnMouton=function(label, dataset) {
-
   const nouvellePalette = palette();
   const data =
   {
@@ -176,7 +191,7 @@ const dessineMoiUnMouton=function(label, dataset) {
   }
 };
 
-// Création du graphique par language
+/** Création du graphique par language */
 $('.graphique-langage').on('click', () => {
     const options = {
           url: `${serveur()}/api/quality/langage`, type: 'GET',
@@ -190,7 +205,7 @@ $('.graphique-langage').on('click', () => {
        */
 
       const {label, dataset} = t;
-      // On appel la fonction de dessin
+      /** On appel la fonction de dessin */
     dessineMoiUnMouton(label, dataset);
     });
 });

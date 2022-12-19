@@ -12,5 +12,5 @@
 /************ Démarrage de Zurb Foundation ************************************/
 import $ from 'jquery';
 
-// Démarrage de Zurb foundation
+/** Démarrage de Zurb foundation */
 $(document).foundation();

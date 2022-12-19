@@ -22,10 +22,12 @@ import 'motion-ui';
 import './foundation.js';
 
 /** On importe les paramètres serveur */
-import {serveur} from "./properties.js";
+import {serveur} from './properties.js';
 
 const contentType='application/json; charset=utf-8';
+/** Tableau des notes sonarqube */
 const note = ['', 'A', 'B', 'C', 'D', 'E'];
+/** Tableau des couleurs pour les notes */
 const couleur = ['', 'note-a', 'note-b', 'note-c', 'note-d', 'note-e'];
 
 const listeOwasp2017 = [
@@ -35,13 +37,17 @@ const listeOwasp2017 = [
   'A10 - Journalisation et surveillance insuffisantes'];
 
 /**
- * description
+ * [Description for calculNoteHotspot]
  * Calcul la note des hotspots
+ * @param mixed taux
  *
- * @param {*} taux
- * @returns
+ * @return [type]
+ *
+ * Created at: 19/12/2022, 21:30:26 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const calculNoteHotspot=function(taux) {
+  /** C = couleur, n = note */
   let c, n;
   if (taux > 0.79) {
     c = couleur[1];
@@ -67,14 +73,18 @@ const calculNoteHotspot=function(taux) {
 };
 
 /**
- *
- * description
+ * [Description for injectionOwaspInfo]
  * Fonction qui permet d'injecter dans la page les calcul des Owasp
  *
- * @param {*} id
- * @param {*} menace
- * @param {*} badge
- * @param {*} laNote
+ * @param mixed id
+ * @param mixed menace
+ * @param mixed badge
+ * @param mixed laNote
+ *
+ * @return [type]
+ *
+ * Created at: 19/12/2022, 21:31:50 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const injectionOwaspInfo=function(id, menace, badge, laNote) {
   const i =`<span class="stat-note">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(menace)}</span>
@@ -82,13 +92,18 @@ const injectionOwaspInfo=function(id, menace, badge, laNote) {
   $(`#a${id}`).html(i);
 };
 
+
 /**
- * description
- * Récupération des informations sur les vulnérabilités OWASP.
- *
- * @param {*} idMaven
- * @returns
- */
+* [Description for remplissageOwaspInfo]
+* Récupération des informations sur les vulnérabilités OWASP.
+*
+* @param mixed idMaven
+*
+* @return [type]
+*
+* Created at: 19/12/2022, 21:32:27 (Europe/Paris)
+* @author     Laurent HADJADJ <laurent_h@me.com>
+*/
 const remplissageOwaspInfo=function(idMaven) {
   if (idMaven === undefined) {
     return;
@@ -100,6 +115,7 @@ const remplissageOwaspInfo=function(idMaven) {
     dataType: 'json', data, contentType };
 
   $.ajax(options).then(r => {
+    /** 406 = code HTTP */
     if (r.code === 406){
         console.info('Le projet n\'existe pas..');
         return;
@@ -346,12 +362,17 @@ const remplissageOwaspInfo=function(idMaven) {
   });
 };
 
+
 /**
- * description
+ * [Description for remplissageHotspotInfo]
  * Récupération des informations sur les hotspots OWASP
  *
- * @param {*} idMaven
- * @returns
+ * @param mixed idMaven
+ *
+ * @return [type]
+ *
+ * Created at: 19/12/2022, 21:39:57 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const remplissageHotspotInfo=function(idMaven) {
   if (idMaven === undefined) {
@@ -365,13 +386,13 @@ const remplissageHotspotInfo=function(idMaven) {
 
   $.ajax(options).then(r=> {
   let i='';
-  // On compte le nombre de hotspot au status REVIEWED
+  /** On compte le nombre de hotspot au status REVIEWED */
   $('#hotspot-reviewed').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.reviewed));
-  // On compte le nombre de hotspot au status TO_REVIEW
+  /** On compte le nombre de hotspot au status TO_REVIEW */
   $('#hotspot-to-review').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.toReview));
   const hotspotToReview = r.toReview;
 
- // On affiche le nombre de hotspot OWASP et par la répartition
+ /** On affiche le nombre de hotspot OWASP et par la répartition */
   $('#hotspot-total').html(r.total);
   const hotspotTotal=r.total;
   $('#nombre-hotspot-high').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.high));
@@ -392,15 +413,21 @@ const remplissageHotspotInfo=function(idMaven) {
 };
 
 /**
- * description
- * Fonction qui permet d'injecter dans la page les calcul des hotspots
- *
- * @param {*} id
- * @param {*} espace
- * @param {*} menace
- * @param {*} badge
- * @param {*} note
- */
+* [Description for injectionHotspotListe]
+* Fonction qui permet d'injecter dans la page les calcul des hotspots
+*
+* @param mixed id
+* @param mixed espace
+* @param mixed menace
+* @param mixed leTaux
+* @param mixed badge
+* @param mixed laNote
+*
+* @return [type]
+*
+* Created at: 19/12/2022, 21:41:13 (Europe/Paris)
+* @author     Laurent HADJADJ <laurent_h@me.com>
+*/
 const injectionHotspotListe=function(id, espace, menace, leTaux, badge, laNote) {
   const i = `<span class="stat-note">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(menace)}</span>
   <span class="stat-note">${espace} ${Intl.NumberFormat('fr-FR', { style: 'percent' }).format(leTaux)}
@@ -409,12 +436,16 @@ $(`#h${id}`).html(i);
 };
 
 /**
- * description
- * Fonction de remplissage du tableau avec les infos hotspot owasp A1-A10.
- *
- * @param {*} idMaven
- * @returns
- */
+* [Description for remplissageHotspotListe]
+* Fonction de remplissage du tableau avec les infos hotspot owasp A1-A10.
+*
+* @param mixed idMaven
+*
+* @return [type]
+*
+* Created at: 19/12/2022, 21:42:09 (Europe/Paris)
+* @author     Laurent HADJADJ <laurent_h@me.com>
+*/
 const remplissageHotspotListe=function(idMaven) {
   if (idMaven === undefined) {
     return;
@@ -484,6 +515,7 @@ const remplissageHotspotListe=function(idMaven) {
     } else {
       espace='';
     }
+    /** 100 = 100% */
     if ( leTaux*100===100) {
       espace=html1;
     }
@@ -575,19 +607,23 @@ const remplissageHotspotListe=function(idMaven) {
 };
 
 /**
+ * [Description for injectionHotspotDetails]
+ * Injecte les ligne de détails pour les hotpsots
  *
- *  Description
- *  Injecte les ligne de détails pour les hotpsots
+ * @param mixed numero
+ * @param mixed url
+ * @param mixed color
+ * @param mixed rule
+ * @param mixed severity
+ * @param mixed file
+ * @param mixed line
+ * @param mixed message
+ * @param mixed status
  *
- * @param {*} numero
- * @param {*} url
- * @param {*} couleur
- * @param {*} rule
- * @param {*} severity
- * @param {*} file
- * @param {*} line
- * @param {*} message
- * @param {*} status
+ * @return [type]
+ *
+ * Created at: 19/12/2022, 21:44:32 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const injectionHotspotDetails=function(numero,url,color,rule,severity,file,line,message,status){
   const ligne = `<tr>
@@ -603,13 +639,18 @@ const injectionHotspotDetails=function(numero,url,color,rule,severity,file,line,
 };
 
 /**
- * injectionModule
+ * [Description for injectionModule]
  *
- * @param {*} module
- * @param {*} total
- * @param {*} taux
- * @param {*} bc
- * @param {*} zero
+ * @param mixed module
+ * @param mixed total
+ * @param mixed taux
+ * @param mixed bc
+ * @param mixed zero
+ *
+ * @return [type]
+ *
+ * Created at: 19/12/2022, 21:45:32 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const injectionModule=function (module, total, taux, bc, zero){
   const i = ` <span class="stat-note">${new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(taux)}</span>
@@ -630,11 +671,15 @@ const injectionModule=function (module, total, taux, bc, zero){
 };
 
 /**
- * description
+ * [Description for remplissageHotspotDetails]
  * Affiche le tableau du détails des hotspots
  *
- * @param {*} idMaven
- * @returns
+ * @param mixed idMaven
+ *
+ * @return [type]
+ *
+ * Created at: 19/12/2022, 21:46:30 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const remplissageHotspotDetails=function(idMaven) {
   if (idMaven === undefined) {
@@ -651,7 +696,7 @@ const remplissageHotspotDetails=function(idMaven) {
     let vide, too, totalABC, zero='', bc;
     const serveur=$('#js-serveur').data('serveur');
     if (r.details==='vide') {
-        // On met ajour la répartition par module
+        /** On met ajour la répartition par module */
         vide = `<span class="stat-note">
         ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(0)}</span>
               <span class="stat-note">
@@ -660,14 +705,14 @@ const remplissageHotspotDetails=function(idMaven) {
         $('#backend').html(vide);
         $('#autre').html(vide);
 
-        // On ajoute une ligne dans le tableau
+        /** On ajoute une ligne dans le tableau */
         ligne = `<tr class="text-center">
                   <td>N.C</td><td>N.C</td><td>N.C</td><td>N.C</td><td>N.C</td><td>N.C</td><td>Pas de faille.</td>
                 </tr>`;
         $('#tbody').html(ligne);
       } else {
-      // On efface le tableau et on ajoute les lignes
-      // On calcul l'impact sur les modules
+      /** On efface le tableau et on ajoute les lignes */
+      /** On calcul l'impact sur les modules */
       $('#tbody').html('');
       for ( const detail of r.details){
         numero++;
@@ -700,7 +745,7 @@ const remplissageHotspotDetails=function(idMaven) {
                                 detail.file, detail.line, detail.message, detail.status);
       }
 
-    // Met à jour la répartition par module
+    /** Met à jour la répartition par module */
     totalABC=parseInt(frontend+backend+autre,10);
     const moduleVert='note-a';
     const moduleOrange='note-d';
@@ -713,7 +758,7 @@ const remplissageHotspotDetails=function(idMaven) {
       zero='0';
     }
 
-    // Calcul pour le frontend
+    /** Calcul pour le frontend */
     too=(frontend/totalABC);
     if (frontend <10) {
       zero='00';
@@ -732,7 +777,7 @@ const remplissageHotspotDetails=function(idMaven) {
     }
     injectionModule('frontend',frontend, too, bc, zero);
 
-    // Calcul pour le backend
+    /** Calcul pour le backend */
     too=(backend/totalABC);
     if (backend<10) {
       zero='00';
@@ -751,7 +796,7 @@ const remplissageHotspotDetails=function(idMaven) {
     }
     injectionModule('backend',backend, too, bc, zero);
 
-    // Calcul pour le backend
+    /** Calcul pour le backend */
     too=(autre/totalABC);
     if (autre<10) {
       zero='00';
@@ -774,13 +819,17 @@ const remplissageHotspotDetails=function(idMaven) {
 };
 
 /**
- * Description
+ * [Description for remplissageDetailsHotspotOwasp]
  * Permet d'afficher le détails de chaque hotspot
  *
- * @param {*} idMaven
- * @param {*} menace
- * @param {*} titre
- * @returns
+ * @param mixed idMaven
+ * @param mixed menace
+ * @param mixed titre
+ *
+ * @return [type]
+ *
+ * Created at: 19/12/2022, 21:49:48 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const remplissageDetailsHotspotOwasp=function(idMaven, menace, titre) {
   if (idMaven === undefined) {
@@ -837,13 +886,13 @@ $('.js-details').on('click', function () {
 });
 
 /*************** Main du programme **************/
-// On récupère la clé du projet
+/** On récupère la clé du projet */
 const key=localStorage.getItem('projet');
 const projet=key.split(':');
-// On met à jour la page
+/** On met à jour la page */
 $('#js-application').html(projet[1]);
 
-// On appel les fonctions de remplissage
+/** On appel les fonctions de remplissage */
 remplissageOwaspInfo(key);
 remplissageHotspotInfo(key);
 remplissageHotspotListe(key);
