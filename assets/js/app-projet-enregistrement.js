@@ -14,7 +14,7 @@
 import $ from 'jquery';
 
 /** On importe les paramètres serveur */
-import {serveur} from "./properties.js";
+import {serveur} from './properties.js';
 
 const dateOptions = {
   year: 'numeric', month: 'numeric', day: 'numeric',

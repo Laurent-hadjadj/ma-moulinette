@@ -20,7 +20,7 @@ import 'motion-ui';
 
 import './foundation.js';
 
-// On importe les paramètres serveur
+/** On importe les paramètres serveur */
 import {serveur} from "./properties.js";
 
 const contentType='application/json; charset=utf-8';
@@ -35,10 +35,15 @@ const t0 = document.getElementById('app');
 const maven_key=t0.dataset.application;
 
 /**
- * description
+ * [Description for timestamp]
  * On lance le service de suppression des données pour le projet
  *
- * @returns
+ * @param mixed bypass
+ *
+ * @return [type]
+ *
+ * Created at: 19/12/2022, 22:30:53 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const timestamp=function(bypass) {
   /**
@@ -47,9 +52,9 @@ const timestamp=function(bypass) {
    *  Si le projet à déjà un setup, on en créé un aussi pour ajouter une nouvelle version
    */
 
-  // On récupère les propriétés de l'élément.
+  /** On récupère les propriétés de l'élément. */
   const t99 = document.getElementById('js-setup');
-  // On renvoie la valeur du setup
+  /** On renvoie la valeur du setup. */
   if (bypass==='by-pass') {
       return $('#js-setup').text();
     }
@@ -90,28 +95,32 @@ const timestamp=function(bypass) {
       return t99.dataset.setup;
   }
 
-  // si je suis perdu, j'affiche une alerte !!!
+  /** si je suis perdu, j'affiche une alerte !!! */
   const message3=`Je suis perdu !!!`;
   $('#message').html(callboxError+message3+callboxFermer);
 }
 
-/**
- * description
- * On lance le service de suppression des données pour le projet
- *
- * @param {*} mavenKey
- * @returns
- */
+ /**
+  * [Description for clear]
+  * On lance le service de suppression des données pour le projet
+  *
+  * @param mixed mavenKey
+  *
+  * @return [type]
+  *
+  * Created at: 19/12/2022, 22:32:17 (Europe/Paris)
+  * @author     Laurent HADJADJ <laurent_h@me.com>
+  */
 const clear=function(mavenKey) {
 
-  // On bind les variables
+  /** On bind les variables */
   const data = { mavenKey };
   const options = {
       url: `${serveur()}/api/projet/repartition/clear`,
       type: 'GET', dataType: 'json', data, contentType,
-    }
+    };
 
-  // On appel le web service.
+  /** On appel le web service. */
   return $.ajax(options).then( t => {
     if (t.code!=='OK') {
       const message=`Je n'ai pas réussi à supprimer les données du projet (${t.code}).`;
@@ -124,53 +133,63 @@ const clear=function(mavenKey) {
 };
 
 /**
-  * description
+  * [Description for analyse]
   * On lance le service d'analyse des données pour le projet
-  * @param {*} mavenKey
-  * @param {*} type
-  * @param {*} severity
-  * @param {*} setup
-  * @param {*} css
-  * @returns
+  *
+  * @param mixed mavenKey
+  * @param mixed type
+  * @param mixed severity
+  * @param mixed css
+  *
+  * @return [type]
+  *
+  * Created at: 19/12/2022, 22:33:18 (Europe/Paris)
+  * @author     Laurent HADJADJ <laurent_h@me.com>
   */
 const analyse=function(mavenKey, type, severity, css) {
 
-  // Traitement lancé au moment moment de l'appel.
-  const startAnalyse = (a) => {
+  /** Traitement lancé au moment moment de l'appel. */
+  const startAnalyse = a => {
     let dino;
-    if (a==='BUG'){ dino='Bug :'; }
-    if (a==='VULNERABILITY'){ dino='Vulnérabilité :'; }
-    if (a==='CODE_SMELL'){ dino='Mauvaise Pratique :'; }
+    if (a==='BUG'){
+        dino='Bug :';
+      }
+    if (a==='VULNERABILITY'){
+        dino='Vulnérabilité :';
+      }
+    if (a==='CODE_SMELL'){
+      dino='Mauvaise Pratique :';
+    }
     $('#analyse-animation').addClass('sp-volume');
     $('#analyse-texte').html(dino + ' Analyse en cours...');
-  }
+  };
 
-  // Traitement lancé à la fin du 'appel.
+  /** Traitement lancé à la fin du 'appel. */
   const stopAnalyse = () => {
     $('#analyse-animation').removeClass('sp-volume');
     $('#analyse-texte').html('<span class="open-sans">Satut : Fin du traitement.</span>');
-  }
+  };
 
-  // On récupère le setup affiché à l'écran.
+  /** On récupère le setup affiché à l'écran. */
   const setup=timestamp('by-pass');
 
-  // On déclare les options du web services.
+  /** On déclare les options du web services. */
   const data = { mavenKey, type, severity, setup };
   const options = {
     url: `${serveur()}/api/projet/repartition/analyse`, type: 'PUT',
     dataType: 'json', data: JSON.stringify(data), contentType,
     beforeSend: function () { setTimeout(() => startAnalyse(type), 1); },
-    complete: function () { setTimeout(() => stopAnalyse(), 1); },
-  }
+    complete: function () { setTimeout(() => stopAnalyse(), 1); }
+  };
 
-  // On appel le web service.
-  // On utilise une promise et un callback
-  return new Promise((resolve) => {
+  /** On appel le web service. */
+  /** On utilise une promise et un callback */
+  return new Promise(resolve => {
     $.ajax(options).then( t => {
 
       let alert, idc;
 
-      // On récupère les valeurs des anomalies
+      /** On récupère les valeurs des anomalies */
       const t2 = document.getElementById('bug-bloquant');
       const t3 = document.getElementById('bug-critique');
       const t4 = document.getElementById('bug-info');
@@ -190,9 +209,9 @@ const analyse=function(mavenKey, type, severity, css) {
      /* On calcule la somme des anomalies */
       const somme=t.repartition.frontend+t.repartition.backend+t.repartition.autre;
       /* On regarde si la somme est =0 et erreur > 0 */
-      let parser="OK"
-      if (somme==0 && t.repartition.erreur>0) {
-        parser="KO";
+      let parser='OK';
+      if (somme===0 && t.repartition.erreur>0) {
+        parser='KO';
         const erreur=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(t.repartition.erreur);
         const message2=`Il y a eu ${erreur} erreurs lors de l'analyse.`;
         $('#message-analyse').html(callboxError+message2+callboxFermer);
@@ -204,202 +223,224 @@ const analyse=function(mavenKey, type, severity, css) {
       }
 
       /* On affiche le tableau pour la fiabilité si le parser est OK */
-      let label_severity;
-      if (type=='BUG' && parser=="OK")
+      let labelSeverity;
+      if (type==='BUG' && parser==='OK')
       {
       if (severity==='BLOCKER') {
-        label_severity='Bloquant';
+        labelSeverity='Bloquant';
         if (t2.dataset.nombreBugBloquant==='0')
-          { idc='-' } else {
+          { idc='-'; } else {
             idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t2.dataset.nombreBugBloquant);
           }
         }
       if (severity==='CRITICAL') {
-        label_severity='Critique';
+        labelSeverity='Critique';
         if (t3.dataset.nombreBugCritique==='0')
-        { idc='-' } else {
+        { idc='-'; } else {
           idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t3.dataset.nombreBugCritique);
         }
         }
       if (severity==='INFO') {
-        label_severity='Info';
+        labelSeverity='Info';
         if (t4.dataset.nombreBugInfo==='0')
-          { idc='-' } else {
+          { idc='-'; } else {
             idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t4.dataset.nombreBugInfo);
           }
         }
       if (severity==='MAJOR') {
-        label_severity='Majeur';
+        labelSeverity='Majeur';
         if (t5.dataset.nombreBugMajeur==='0')
-          { idc='-' } else {
+          { idc='-'; } else {
             idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t5.dataset.nombreBugMajeur);
           }
       }
       if (severity==='MINOR') {
-        label_severity='Mineur';
+        labelSeverity='Mineur';
         if (t6.dataset.nombreBugMineur==='0')
-          { idc='-' } else {
+          { idc='-'; } else {
             idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t6.dataset.nombreBugMineur);
           }
       }
-      if (idc !=='100 %' && idc !=='-') { alert='texte-rouge'; } else { alert='texte-vert'; }
-      let tab_bug=`<tr>
-          <td class="${css}"><strong>${label_severity}</strong></td>
+      if (idc !=='100 %' && idc !=='-') {
+          alert='texte-rouge';
+        } else {
+          alert='texte-vert';
+        }
+      let tabBug=`<tr>
+          <td class="${css}"><strong>${labelSeverity}</strong></td>
           <td id="presenation-01" class="text-center">${t.repartition.frontend}</td>
           <td id="metier-01" class="text-center">${t.repartition.backend}</td>
           <td id="autre-01" class="text-center">${t.repartition.autre}</td>
           <td id="indice-confience-01" class="text-center ${alert}">${idc}</td></tr>`;
-          $("#mon-bo-tableau1").append(tab_bug);
+          $('#mon-bo-tableau1').append(tabBug);
       }
 
       /* On affiche le tableau pour la sécurité si le parser est OK */
-      if (type=='VULNERABILITY' && parser=="OK")
+      if (type==='VULNERABILITY' && parser==='OK')
       {
         if (severity==='BLOCKER') {
           if (t8.dataset.nombreVulnerabiliteBloquant==='0')
-            { idc='-' } else {
+            { idc='-'; } else {
               idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t8.dataset.nombreVulnerabiliteBloquant);
             }
         }
         if (severity==='CRITICAL') {
           if (t9.dataset.nombreVulnerabiliteCritique==='0')
-            { idc='-' } else {
+            { idc='-'; } else {
               idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t9.dataset.nombreVulnerabiliteCritique);
             }
           }
         if (severity==='INFO') {
           if (t10.dataset.nombreVulnerabiliteInfo==='0')
-            { idc='-' } else {
+            { idc='-'; } else {
               idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t10.dataset.nombreVulnerabiliteInfo);
             }
           }
       if (severity==='MAJOR') {
         if (t11.dataset.nombreVulnerabiliteMajeur==='0')
-          { idc='-' } else {
+          { idc='-'; } else {
             idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t11.dataset.nombreVulnerabiliteMajeur);
           }
         }
     if (severity==='MINOR') {
       if (t12.dataset.nombreVulnerabiliteMineur==='0')
-        { idc='-' } else {
+        { idc='-'; } else {
           idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t12.dataset.nombreVulnerabiliteMineur);
         }
       }
-      if (idc !=='100 %' && idc !=='-') { alert='texte-rouge'; } else { alert='texte-vert'; }
+      if (idc !=='100 %' && idc !=='-') {
+        alert='texte-rouge';
+      } else {
+        alert='texte-vert';
+      }
 
-      let tab_vulnerability=`
+      let tabVulnerability=`
       <tr>
         <td class="${css}"><strong>${severity}</strong></td>
         <td id="presenation-01" class="text-center">${t.repartition.frontend}</td>
         <td id="metier-01" class="text-center">${t.repartition.backend}</td>
         <td id="autre-01" class="text-center">${t.repartition.autre}</td>
         <td id="indice-confience-01" class="text-center ${alert}">${idc}</td></tr>`;
-        $("#mon-bo-tableau2").append(tab_vulnerability);
+        $("#mon-bo-tableau2").append(tabVulnerability);
       }
 
       /* On affiche le tableau pour la maintenabilité si le parser est OK */
-      if (type=='CODE_SMELL' && parser=="OK")
+      if (type==='CODE_SMELL' && parser==='OK')
       {
       if (severity==='BLOCKER')
-        if (t14.dataset.nombreMauvaisePratiqueBloquant==='0')
-          { idc='-' } else {
+        if (t14.dataset.nombreMauvaisePratiqueBloquant==='0'){
+            idc='-'; } else {
             idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t14.dataset.nombreMauvaisePratiqueBloquant);
           }
 
       if (severity==='CRITICAL')
         if (t15.dataset.nombreMauvaisePratiqueCritique==='0')
-          { idc='-' } else {
+          { idc='-'; } else {
             idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t15.dataset.nombreMauvaisePratiqueCritique);
           }
 
       if (severity==='INFO')
         if (t16.dataset.nombreMauvaisePratiqueInfo==='0')
-          { idc='-' } else {
+          { idc='-'; } else {
             idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t16.dataset.nombreMauvaisePratiqueInfo);
           }
 
       if (severity==='MAJOR')
         if (t17.dataset.nombreMauvaisePratiqueMajeur==='0')
-        { idc='-' } else {
+        { idc='-'; } else {
               idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t17.dataset.nombreMauvaisePratiqueMajeur);
           }
 
     if (severity==='MINOR')
       if (t18.dataset.nombreMauvaisePratiqueMinor==='0')
-        { idc='-' } else {
+        { idc='-'; } else {
             idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t18.dataset.nombreMauvaisePratiqueMineur);
           }
 
-    if (idc !=='100 %' && idc !=='-') { alert='texte-rouge'; } else { alert='texte-vert'; }
-
-        let tab_code_smell=`
-        <tr>
-          <td class="${css}"><strong>${severity}</strong></td>
-          <td id="presenation-01" class="text-center">${t.repartition.frontend}</td>
-          <td id="metier-01" class="text-center">${t.repartition.backend}</td>
-          <td id="autre-01" class="text-center">${t.repartition.autre}</td>
-          <td id="indice-confience-01" class="text-center ${alert}">${idc}</td></tr>`;
-          $("#mon-bo-tableau3").append(tab_code_smell);
+    if (idc !=='100 %' && idc !=='-') {
+        alert='texte-rouge';
+      } else {
+        alert='texte-vert';
       }
-      resolve();
+
+      let tabCcodeSmell=`
+      <tr>
+        <td class="${css}"><strong>${severity}</strong></td>
+        <td id="presenation-01" class="text-center">${t.repartition.frontend}</td>
+        <td id="metier-01" class="text-center">${t.repartition.backend}</td>
+        <td id="autre-01" class="text-center">${t.repartition.autre}</td>
+        <td id="indice-confience-01" class="text-center ${alert}">${idc}</td></tr>`;
+        $("#mon-bo-tableau3").append(tabCodeSmell);
+    }
+    resolve();
     });
   });
 };
 
-/**
- *
- * description
- * On lance la collecte et on affiche la répartition
- * @param {*} mavenKey
- * @param {*} type
- * @param {*} severity
- * @param {*} start
- * @param {*} stop
- * @param {*} counter
- * @returns
- *
- */
+ /**
+  * [Description for collecte]
+  * On lance la collecte et on affiche la répartition
+  *
+  * @param mixed mavenKey
+  * @param mixed type
+  * @param mixed severity
+  * @param mixed start
+  * @param mixed stop
+  * @param mixed counter
+  * @param mixed timer
+  *
+  * @return [type]
+  *
+  * Created at: 19/12/2022, 22:46:29 (Europe/Paris)
+  * @author     Laurent HADJADJ <laurent_h@me.com>
+  */
 const collecte=function(mavenKey, type, severity, start, stop, counter, timer) {
 
-  // Début de l'animation
+  /** Début de l'animation */
   const startCollecte = () => {
     $('#collecte-animation').addClass('sp-volume');
-  }
+  };
 
-  // Fin de l'animation
+  /** Fin de l'animation */
   const stopCollecte = () => {
     $('#collecte-animation').removeClass('sp-volume');
-  }
+  };
 
-  // Initialisation de la barre de progression et mise à jour dynamique
-  const changeProgress = (progress) => {
+  /** Initialisation de la barre de progression et mise à jour dynamique */
+  const changeProgress = progress => {
     $(".progress-meter").css('width', `${progress}%`,);
     $(".progress-meter-text").text(`${progress}%`);
   };
 
-  // On test si on est arrivé à la fin du traitement
+  /** On test si on est arrivé à la fin du traitement */
   if (mavenKey==='NaN') {
     setTimeout(() => changeProgress(stop), 1000);
     return;
   }
 
-  let type_time;
-  if (type==='BUG') { type_time='bug'; }
-  if (type==='VULNERABILITY') { type_time='vulnerabilite'; }
-  if (type==='CODE_SMELL') { type_time='mauvaise-pratique'; }
+  let typeTime;
+  if (type==='BUG') {
+    typeTime='bug';
+  }
+  if (type==='VULNERABILITY') {
+    typeTime='vulnerabilite';
+  }
+  if (type==='CODE_SMELL') {
+    typeTime='mauvaise-pratique';
+  }
 
-  // On affiche la durée d'execution
-  const changeTimer = (value) => {
+  /** On affiche la durée d'execution */
+  const changeTimer = value => {
     const minute = Math.floor(value/60);
-    const rest_seconds = value%60;
-    const new_timer=minute+'.'+rest_seconds;
-    $('#js-'+type_time.toLowerCase()+'-time').html(new_timer);
+    const restSeconds = value%60;
+    const newTimer=minute+'.'+restSeconds;
+    $('#js-'+typeTime.toLowerCase()+'-time').html(newTimer);
   };
 
-  // On récupère le setup par défaut de l'application
+  /** On récupère le setup par défaut de l'application */
   const setup=timestamp('collecte');
 
-  // Déclaration des parametres de l'appel du service
+  /** Déclaration des parametres de l'appel du service */
   const data = { mavenKey, type, severity, setup };
   const options = {
     url: `${serveur()}/api/projet/repartition/collecte`,
@@ -414,44 +455,46 @@ const collecte=function(mavenKey, type, severity, start, stop, counter, timer) {
     },
   };
 
-  // La requête utilise une promise et un callback.
-  return new Promise((resolve) => {
+  /** La requête utilise une promise et un callback. */
+  return new Promise(resolve => {
     $.ajax(options).then( t=> {
-      // On affiche le nombre d'anomalie
+      /** On affiche le nombre d'anomalie */
       $('#nombre-anomalie').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(counter));
 
-      // On injecte la temps passé
-      const t1 = document.getElementById('js-'+type_time.toLowerCase()+'-time');
+      /** On injecte la temps passé */
+      const t1 = document.getElementById('js-'+typeTime.toLowerCase()+'-time');
       t1.dataset.timer=t.temps;
     resolve();
     });
   });
 };
 
-
 /**
- * description
+ * [Description for resultat]
  * On récupère le nombre d'anomalie par type
  *
- * @param {*} mavenKey
- * @param {*} type
+ * @param mixed mavenKey
+ * @param mixed type
  *
- * @returns
+ * @return [type]
+ *
+ * Created at: 19/12/2022, 22:50:37 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const resultat=function(mavenKey, type) {
 
-  // On bind les variables
+  /** On bind les variables */
   const data = { mavenKey, type };
   const options = {
     url: `${serveur()}/api/projet/repartition/details`, type: 'GET',
     dataType: 'json', data, contentType,
-    }
+    };
 
-  // On va chercher les resutats.
+  /** On va chercher les resutats. */
   return $.ajax(options).then(t => {
 
     if ( type==='BUG') {
-      // On en registre les résultats dans des dataset de la page
+      /** On en registre les résultats dans des dataset de la page */
       const t1 = document.getElementById('nombre-bug');
       const t2 = document.getElementById('bug-bloquant');
       const t3 = document.getElementById('bug-critique');
@@ -467,7 +510,7 @@ const resultat=function(mavenKey, type) {
     }
 
     if ( type==='VULNERABILITY') {
-      // On en registre les résultats dans des dataset de la page
+      /** On en registre les résultats dans des dataset de la page */
       const t7 = document.getElementById('nombre-vulnerabilite');
       const t8 = document.getElementById('vulnerabilite-bloquant');
       const t9 = document.getElementById('vulnerabilite-critique');
@@ -483,7 +526,7 @@ const resultat=function(mavenKey, type) {
     }
 
     if ( type==='CODE_SMELL') {
-      // On en registre les résultats dans des dataset de la page
+      /** On en registre les résultats dans des dataset de la page */
       const t13 = document.getElementById('nombre-mauvaise-pratique');
       const t14 = document.getElementById('mauvaise-pratique-bloquant');
       const t15 = document.getElementById('mauvaise-pratique-critique');
@@ -498,7 +541,7 @@ const resultat=function(mavenKey, type) {
       t18.dataset.nombreMauvaisePratiqueMineur=t.minor;
     }
 
-    // On affiche les résultats pour les BUG
+    /** On affiche les résultats pour les BUG */
     if ( type==='BUG') {
       // On affiche les résultats
       $('#nombre-bug').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.total));
@@ -509,7 +552,7 @@ const resultat=function(mavenKey, type) {
       $('#bug-info').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.info));
       }
 
-    // On affiche les résultats pour les vulnérabilités
+    /** On affiche les résultats pour les vulnérabilités */
     if ( type==='VULNERABILITY') {
       $('#nombre-vulnerabilite').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.total));
       $('#vulnerabilite-bloquant').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.blocker));
@@ -519,7 +562,7 @@ const resultat=function(mavenKey, type) {
       $('#vulnerabilite-info').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.info));
     }
 
-    // On affiche les résultats pour les mauvaises pratiques
+    /** On affiche les résultats pour les mauvaises pratiques */
     if ( type==='CODE_SMELL') {
       $('#nombre-mauvaise-pratique').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.total));
       $('#mauvaise-pratique-bloquant').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.blocker));
@@ -531,7 +574,7 @@ const resultat=function(mavenKey, type) {
   });
 };
 
-// On lance la collecte pour les BUG
+/** On lance la collecte pour les BUG */
 $('#collecte-bug').on('click', ()=>{
   // on récupère les résultats binder dans la page.
   const t1 = document.getElementById('nombre-bug');
@@ -542,13 +585,13 @@ $('#collecte-bug').on('click', ()=>{
   const t6 = document.getElementById('bug-mineur');
 
   const total=t1.dataset.nombreBug;
-  const blocker=t2.dataset.nombreBugBloquant
-  const critical=t3.dataset.nombreBugCritique
-  const info=t4.dataset.nombreBugInfo
-  const major=t5.dataset.nombreBugMajeur
-  const minor=t6.dataset.nombreBugMineur
+  const blocker=t2.dataset.nombreBugBloquant;
+  const critical=t3.dataset.nombreBugCritique;
+  const info=t4.dataset.nombreBugInfo;
+  const major=t5.dataset.nombreBugMajeur;
+  const minor=t6.dataset.nombreBugMineur;
 
-  // On initialise le timer pour les BUG
+  /** On initialise le timer pour les BUG */
   const timer = document.getElementById('js-bug-time');
   timer.dataset.timer=0;
 
@@ -567,7 +610,9 @@ $('#collecte-bug').on('click', ()=>{
 
   if (parseInt(blocker,10)!==0) {
       stop=Math.trunc((parseInt(blocker,10)/parseInt(total,10))*100);
-      if (stop === 0) {stop=stop+1;}
+      if (stop === 0) {
+          stop=stop+1;
+        }
       counter=parseInt(blocker,10);
       const timer1 = document.getElementById('js-bug-time');
       tempo =parseInt(timer1.dataset.timer,10);
@@ -577,7 +622,9 @@ $('#collecte-bug').on('click', ()=>{
     if (parseInt(critical,10)!==0) {
       start=stop;
       stop=stop+Math.trunc((parseInt(critical,10)/parseInt(total,10))*100);
-      if (stop === 0) {stop=stop+1;}
+      if (stop === 0) {
+        stop=stop+1;
+      }
       counter=parseInt(blocker,10)+parseInt(critical,10);
       const timer2 = document.getElementById('js-bug-time');
       tempo = parseInt(tempo,10) + parseInt(timer2.dataset.timer,10);
@@ -587,7 +634,9 @@ $('#collecte-bug').on('click', ()=>{
     if (parseInt(info,10)!==0) {
       start=stop;
       stop=stop+Math.trunc((parseInt(info,10)/parseInt(total,10))*100);
-      if (stop === 0) {stop=stop+1;}
+      if (stop === 0) {
+        stop=stop+1;
+      }
       counter=parseInt(blocker,10)+parseInt(critical,10)+parseInt(info,10);
       const timer3 = document.getElementById('js-bug-time');
       tempo = parseInt(tempo,10) + parseInt(timer3.dataset.timer,10);
@@ -597,7 +646,9 @@ $('#collecte-bug').on('click', ()=>{
     if (parseInt(major,10)!==0) {
       start=stop;
       stop=stop+Math.trunc((parseInt(major,10)/parseInt(total,10))*100);
-      if (stop === 0) {stop=stop+1;}
+      if (stop === 0) {
+        stop=stop+1;
+      }
       counter=parseInt(blocker,10)+parseInt(critical,10)+parseInt(info,10)+parseInt(major,10);
       const timer4 = document.getElementById('js-bug-time');
       tempo = parseInt(tempo,10) + parseInt(timer4.dataset.timer,10);
@@ -615,14 +666,14 @@ $('#collecte-bug').on('click', ()=>{
 
     $('#etape-1').css('color', '#c45d4e');
   }
-  // On appelle la fonction de récupèration des sévérités pour les BUG
+  /** On appelle la fonction de récupèration des sévérités pour les BUG */
   fnAsync();
 });
 
-// On lance la collecte ppour les VULNERABILITY
+/** On lance la collecte ppour les VULNERABILITY */
 $('#collecte-vulnerabilite').on('click', ()=>{
 
-  // on récupère les résultats binder dans la page.
+  /** on récupère les résultats binder dans la page. */
   const t1 = document.getElementById('nombre-vulnerabilite');
   const t2 = document.getElementById('vulnerabilite-bloquant');
   const t3 = document.getElementById('vulnerabilite-critique');
@@ -631,13 +682,13 @@ $('#collecte-vulnerabilite').on('click', ()=>{
   const t6 = document.getElementById('vulnerabilite-mineur');
 
   const total=t1.dataset.nombreVulnerabilite;
-  const blocker=t2.dataset.nombreVulnerabiliteBloquant
-  const critical=t3.dataset.nombreVulnerabiliteCritique
-  const info=t4.dataset.nombreVulnerabiliteInfo
-  const major=t5.dataset.nombreVulnerabiliteMajeur
-  const minor=t6.dataset.nombreVulnerabiliteMineur
+  const blocker=t2.dataset.nombreVulnerabiliteBloquant;
+  const critical=t3.dataset.nombreVulnerabiliteCritique;
+  const info=t4.dataset.nombreVulnerabiliteInfo;
+  const major=t5.dataset.nombreVulnerabiliteMajeur;
+  const minor=t6.dataset.nombreVulnerabiliteMineur;
 
-  // On initialise le timer pour les vulnerabilités
+  /** On initialise le timer pour les vulnerabilités */
   const timer = document.getElementById('js-vulnerabilite-time');
   timer.dataset.timer=0;
 
@@ -656,7 +707,9 @@ $('#collecte-vulnerabilite').on('click', ()=>{
 
     if (parseInt(blocker,10)!==0) {
       stop=Math.trunc((parseInt(blocker,10)/parseInt(total,10))*100);
-      if (stop === 0) {stop=stop+1;}
+      if (stop === 0) {
+        stop=stop+1;
+      }
       counter=parseInt(blocker,10);
       const timer1 = document.getElementById('js-vulnerabilite-time');
       tempo=parseInt(timer1.dataset.timer,10);
@@ -666,7 +719,9 @@ $('#collecte-vulnerabilite').on('click', ()=>{
     if (parseInt(critical,10)!==0) {
       start=stop;
       stop=stop+Math.trunc((parseInt(critical,10)/parseInt(total,10))*100);
-      if (stop === 0) {stop=stop+1;}
+      if (stop === 0) {
+        stop=stop+1;
+      }
       counter=parseInt(blocker,10)+parseInt(critical,10);
       const timer2 = document.getElementById('js-vulnerabilite-time');
       tempo = parseInt(tempo,10) + parseInt(timer2.dataset.timer,10);
@@ -676,7 +731,9 @@ $('#collecte-vulnerabilite').on('click', ()=>{
     if (parseInt(info,10)!==0) {
       start=stop;
       stop=stop+Math.trunc((parseInt(info,10)/parseInt(total,10))*100);
-      if (stop === 0) {stop=stop+1;}
+      if (stop === 0) {
+        stop=stop+1;
+      }
       counter=parseInt(blocker,10)+parseInt(critical,10)+parseInt(info,10);
       const timer3 = document.getElementById('js-vulnerabilite-time');
       tempo = parseInt(tempo,10) + parseInt(timer3.dataset.timer,10);
@@ -704,14 +761,14 @@ $('#collecte-vulnerabilite').on('click', ()=>{
     $('#etape-2').css('color', '#c45d4e');
   }
 
-  // On appelle la fonction de récupèration des sévérités pour les VULNERABILITY
+  /** On appelle la fonction de récupèration des sévérités pour les VULNERABILITY */
   fnAsync();
 });
 
-// On lance la collecte pour les CODE_SMELL
+/** On lance la collecte pour les CODE_SMELL */
 $('#collecte-mauvaise-pratique').on('click', ()=>{
 
-  // on récupère les résultats binder dans la page.
+  /** on récupère les résultats binder dans la page. */
   const t1 = document.getElementById('nombre-mauvaise-pratique');
   const t2 = document.getElementById('mauvaise-pratique-bloquant');
   const t3 = document.getElementById('mauvaise-pratique-critique');
@@ -720,13 +777,13 @@ $('#collecte-mauvaise-pratique').on('click', ()=>{
   const t6 = document.getElementById('mauvaise-pratique-mineur');
 
   const total=t1.dataset.nombreMauvaisePratique;
-  const blocker=t2.dataset.nombreMauvaisePratiqueBloquant
-  const critical=t3.dataset.nombreMauvaisePratiqueCritique
-  const info=t4.dataset.nombreMauvaisePratiqueInfo
-  const major=t5.dataset.nombreMauvaisePratiqueMajeur
-  const minor=t6.dataset.nombreMauvaisePratiqueMineur
+  const blocker=t2.dataset.nombreMauvaisePratiqueBloquant;
+  const critical=t3.dataset.nombreMauvaisePratiqueCritique;
+  const info=t4.dataset.nombreMauvaisePratiqueInfo;
+  const major=t5.dataset.nombreMauvaisePratiqueMajeur;
+  const minor=t6.dataset.nombreMauvaisePratiqueMineur;
 
-  // On initialise le timer pour les vulnerabilités
+  /** On initialise le timer pour les vulnerabilités */
   const timer = document.getElementById('js-mauvaise-pratique-time');
   timer.dataset.timer=0;
 
@@ -740,13 +797,14 @@ $('#collecte-mauvaise-pratique').on('click', ()=>{
    * tempo : durée en seconde
    *
    */
-
   async function fnAsync() {
     let start=0, stop=0, counter, tempo=0;
 
     if (parseInt(blocker,10)!==0) {
       stop=Math.trunc((parseInt(blocker,10)/parseInt(total,10))*100);
-      if (stop === 0) {stop=stop+1;}
+      if (stop === 0) {
+        stop=stop+1;
+      }
       counter=parseInt(blocker,10);
       const timer1 = document.getElementById('js-mauvaise-pratique-time');
       tempo=parseInt(timer1.dataset.timer,10);
@@ -756,7 +814,9 @@ $('#collecte-mauvaise-pratique').on('click', ()=>{
     if (parseInt(critical,10)!==0) {
       start=stop;
       stop=stop+Math.trunc((parseInt(critical,10)/parseInt(total,10))*100);
-      if (stop === 0) {stop=stop+1;}
+      if (stop === 0) {
+        stop=stop+1;
+      }
       counter=parseInt(blocker,10)+parseInt(critical,10);
       const timer2 = document.getElementById('js-mauvaise-pratique-time');
       tempo = parseInt(tempo,10) + parseInt(timer2.dataset.timer,10);
@@ -766,7 +826,9 @@ $('#collecte-mauvaise-pratique').on('click', ()=>{
     if (parseInt(info,10)!==0) {
       start=stop;
       stop=stop+Math.trunc((parseInt(info,10)/parseInt(total,10))*100);
-      if (stop === 0) {stop=stop+1;}
+      if (stop === 0) {
+        stop=stop+1;
+      }
       counter=parseInt(blocker,10)+parseInt(critical,10)+parseInt(info,10);
       const timer3 = document.getElementById('js-mauvaise-pratique-time');
       tempo = parseInt(tempo,10) + parseInt(timer3.dataset.timer,10);
@@ -796,21 +858,21 @@ $('#collecte-mauvaise-pratique').on('click', ()=>{
     $('#etape-3').css('color', '#c45d4e');
   }
 
-  // On appelle la fonction de récupèration des sévérités pour les VULNERABILITY
+  /** On appelle la fonction de récupèration des sévérités pour les VULNERABILITY */
   fnAsync();
 });
 
-// On appelle le service de suppression des données du projet.
+/** On appelle le service de suppression des données du projet. */
 $('.bouton-supprime-donnees').on('click', ()=>{
   clear(maven_key);
-})
+});
 
 $('.bouton-repartition-traitement-donnees').on('click', ()=>{
 
-  // On lance la fonction asynchonne
+  /** On lance la fonction asynchonne */
   async function fnAsync() {
 
-    let tab_Titre=`
+    let tabTitre=`
     <tr>
     <th scope="col"></th>
     <th scope="col" class="text-center"><strong>Application Présentaton</strong></th>
@@ -818,28 +880,28 @@ $('.bouton-repartition-traitement-donnees').on('click', ()=>{
     <th scope="col" class="text-center"><strong>Autres</strong></th>
     <th scope="col" class="text-center"><strong>IdC</strong></th></tr>`;
 
-    // BLOCKER
-    // On affiche le tableau
+    /** BLOCKER */
+    /** On affiche le tableau */
     $("#tableau-1").removeClass('hide');
-    $("#mon-bo-tableau1").html(tab_Titre);
+    $("#mon-bo-tableau1").html(tabTitre);
     await analyse(maven_key, 'BUG', 'BLOCKER', 'texte-rouge');
     await analyse(maven_key, 'BUG', 'CRITICAL', 'texte-rouge');
     await analyse(maven_key, 'BUG', 'INFO', 'texte-bleu');
     await analyse(maven_key, 'BUG', 'MAJOR','texte-orange');
     await analyse(maven_key, 'BUG', 'MINOR', 'texte-vert');
 
-    // VULNERABILITY
+    /** VULNERABILITY */
     $("#tableau-2").removeClass('hide');
-    $("#mon-bo-tableau2").html(tab_Titre);
+    $("#mon-bo-tableau2").html(tabTitre);
     await analyse(maven_key, 'VULNERABILITY', 'BLOCKER', 'texte-rouge');
     await analyse(maven_key, 'VULNERABILITY', 'CRITICAL', 'texte-rouge');
     await analyse(maven_key, 'VULNERABILITY', 'INFO', 'texte-bleu');
     await analyse(maven_key, 'VULNERABILITY', 'MAJOR', 'texte-orange');
     await analyse(maven_key, 'VULNERABILITY', 'MINOR', 'texte-vert');
 
-    // CODE_SMELL
+    /** CODE_SMELL */
     $("#tableau-3").removeClass('hide');
-    $("#mon-bo-tableau3").html(tab_Titre);
+    $("#mon-bo-tableau3").html(tabTitre);
     await analyse(maven_key, 'CODE_SMELL', 'BLOCKER', 'texte-rouge');
     await analyse(maven_key, 'CODE_SMELL', 'CRITICAL', 'texte-rouge');
     await analyse(maven_key, 'CODE_SMELL', 'INFO', 'texte-bleu');
@@ -847,7 +909,7 @@ $('.bouton-repartition-traitement-donnees').on('click', ()=>{
     await analyse(maven_key, 'CODE_SMELL', 'MINOR', 'texte-vert');
   }
 
-  // On lance la fonction assynchrone
+  /** On lance la fonction assynchrone */
   fnAsync();
 });
 
@@ -857,7 +919,7 @@ $('.bouton-repartition-traitement-donnees').on('click', ()=>{
  *
  */
 
-// On va chercher les informations par type et par séverité
+/** On va chercher les informations par type et par séverité */
 resultat(maven_key, 'BUG' );
 resultat(maven_key, 'VULNERABILITY' );
 resultat(maven_key, 'CODE_SMELL' );

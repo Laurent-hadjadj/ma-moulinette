@@ -21,22 +21,32 @@ import 'motion-ui';
 
 import './foundation.js';
 
+/**
+ * checkOkSvg
+ *
+ * @var [type]
+ */
 const checkOkSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -46 417.813 417" class="info-check-ok-svg">
 <path d="M159.988 318.582c-3.988 4.012-9.43 6.25-15.082 6.25s-11.094-2.238-15.082-6.25L9.375
 198.113c-12.5-12.5-12.5-32.77 0-45.246l15.082-15.086c12.504-12.5 32.75-12.5 45.25 0l75.2 75.203L348.104 9.781c12.504-12.5 32.77-12.5 45.25 0l15.082 15.086c12.5 12.5 12.5 32.766 0
 45.246zm0 0"/></svg>`;
 
+/**
+ * checkKoSvg
+ *
+ * @var [type]
+ */
 const checkKoSvg = `<svg xmlns="http://www.w3.org/2000/svg" overflow="visible" x="620" y="239.5" viewBox="0 0 64 64" class="info-check-ko-svg">
 <g class="layer" pointer-events="all">
 <path d="M45.413 32l12.914-13.593c3.565-3.753 3.565-9.84 0-13.593-3.566-3.753-9.348-3.753-12.914 0L32.5 18.407 19.587
 4.814c-3.566-3.753-9.348-3.753-12.914 0s-3.565 9.84 0 13.593L19.587 32 6.673 45.593c-3.565 3.753-3.565 9.84 0 13.593 3.566 3.753 9.348
 3.753 12.914 0L32.5 45.593l12.913 13.593c3.566 3.753 9.348 3.753 12.914 0 3.565-3.753 3.565-9.84 0-13.593L45.413 32z"/></g></svg>`;
 
-// Nettoyage de formulaire
+/** Nettoyage de formulaire */
 $('#registration_form_courriel').val('');
 $('#registration_form_plainPassword').val('');
 
-// Affichage des libellés
+/** Affichage des libellés */
 $('#registration_form_nom').on('keyup', function () {
   if(this.value !== '') {
     $('label[for="registration_form_nom"]').addClass('show');
@@ -85,25 +95,25 @@ $('#registration_form_courriel').on('keyup', function()
       return;
     }
 
-    // Si le permier caractère est @
+    /** Si le permier caractère est @ */
     if (courriel.length === 1 && arobase === 0 ) {
       $('#register-info-check-courriel').html(checkKoSvg);
       return;
     }
 
-    // Si on à un @ à la 65eme position
+    /** Si on à un @ à la 65eme position */
     if (courriel.length > 64 && arobase > 0 ){
       $('#register-info-check-courriel').html(checkKoSvg);
       return;
     }
 
-    // Si on a pas de @ avant la 64eme position
+    /** Si on a pas de @ avant la 64eme position */
     if (courriel.length < 64 && arobase < 0 ){
       $('#register-info-check-courriel').html(checkKoSvg);
       return;
     }
 
-    // Si on a un @ avant 65eme posistion
+    /** Si on a un @ avant 65eme posistion */
     if (courriel.length < 64 && arobase > 0 ) {
       domaine=courriel.split('@');
       /* Si le tableau contient plus de 2 éléments on sort */
@@ -114,17 +124,17 @@ $('#registration_form_courriel').on('keyup', function()
       $('#register-info-check-courriel').html(checkOkSvg);
     }
 
-    // si le domaine n'est pas correcte
+    /** Si le domaine n'est pas correcte. */
     if (domaine[1].length===1 && point>1) {
       $('#register-info-check-courriel').html(checkKoSvg);
     }
 
-    // On vérifie que le nom de domaine est correcte
+    /** On vérifie que le nom de domaine est correcte */
     if (domaine[1].length===1 && point>1) {
       $('#register-info-check-courriel').html(checkKoSvg);
     }
 
-    // On verifie que le domaine est <256
+    /** On verifie que le domaine est <256 */
     const points=(domaine[1].match(/\./g)||[]).length;
     if (points >1) {
       $('#register-info-check-courriel').html(checkKoSvg);
@@ -132,7 +142,7 @@ $('#registration_form_courriel').on('keyup', function()
 
 });
 
-// Vérification du mot de passe
+/** Vérification du mot de passe */
 $('#registration_form_plainPassword').on('keyup', function()
   {
     const password=$('#registration_form_plainPassword').val();
@@ -148,10 +158,12 @@ $('#registration_form_plainPassword').on('keyup', function()
         $('#register-info-check-password').html(checkOkSvg);
       }
       else {
-        $('#register-info-check-password').html(checkKoSvg);} }
+        $('#register-info-check-password').html(checkKoSvg);
+      }
+    }
   );
 
-// Validation du choix de l'avatar
+/** Validation du choix de l'avatar */
 $('.thumbnail').on('click', function()
   {
     const id = $(this).attr('id');

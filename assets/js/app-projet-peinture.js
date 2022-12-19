@@ -22,8 +22,15 @@ hour12: false };
 const contentType='application/json; charset=utf-8';
 
 /**
- * description
+ * [Description for log]
  * Affiche la log.
+ *
+ * @param mixed txt
+ *
+ * @return [type]
+ *
+ * Created at: 19/12/2022, 21:57:03 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const log=function(txt) {
   const textarea = document.getElementById('log');
@@ -63,7 +70,6 @@ export const remplissage=function(mavenKey) {
         return;
       }
 
-    let release=0, snapshot=0, autre=0;
     const nom = mavenKey.split(':');
     $('#nom-projet').html(nom[1]);
     $('#clef-projet').html(mavenKey);
@@ -77,18 +83,18 @@ export const remplissage=function(mavenKey) {
     $('#version').html(t.projet);
     $('#date-version').html(new Intl.DateTimeFormat('default', dateOptions).format(new Date(t.date)));
 
-    // Historique
+    /** Historique */
     const t1 = document.getElementById('version-release');
     const t2 = document.getElementById('version-snapshot');
     const t3 = document.getElementById('version-autre');
     const t4 = document.getElementById('date-version');
-    t1.dataset.release=(release);
-    t2.dataset.snapshot=(snapshot);
-    t3.dataset.autre=(autre);
+    t1.dataset.release=(t.release);
+    t2.dataset.snapshot=(t.snapshot);
+    t3.dataset.autre=(t.autre);
     t4.dataset.dateVersion=(t.date);
   });
 
-  //On récupère les exclusions noSonar
+  /** On récupère les exclusions noSonar */
   const optionsNoSonar = {
     url: `${serveur()}/api/peinture/projet/nosonar/details`, type: 'GET',
     dataType: 'json', data, contentType };
@@ -102,7 +108,10 @@ export const remplissage=function(mavenKey) {
     t6.dataset.nosonar=(t.nosonar);
   });
 
-  //On récupère les informations du projet : lignes, couverture fonctionnelle, duplication, tests unitaires et le nombre de défaut.
+  /**
+   * On récupère les informations du projet :
+   * lignes, couverture fonctionnelle, duplication, tests unitaires et le nombre de défaut.
+   */
   const optionsProjet = {
     url: `${serveur()}/api/peinture/projet/information`, type: 'GET',
     dataType: 'json', data, contentType };
@@ -135,7 +144,7 @@ export const remplissage=function(mavenKey) {
     t12.dataset.nombreDefaut=(t.issues);
   });
 
-  //On récupère les informations sur la dette technique et les anomalies.
+  /** On récupère les informations sur la dette technique et les anomalies. */
   const optionsAnomalie = {
     url: `${serveur()}/api/peinture/projet/anomalie`, type: 'GET',
           dataType: 'json', data, contentType };
@@ -153,7 +162,7 @@ export const remplissage=function(mavenKey) {
     $('#js-dette-vulnerability').html(t.detteVulnerability);
     $('#js-dette-code-smell').html(t.detteCodeSmell);
 
-    // Historique
+    /** Historique */
     const t13 = document.getElementById('js-dette');
     t13.dataset.detteMinute=t.detteMinute;
 
@@ -161,11 +170,12 @@ export const remplissage=function(mavenKey) {
     $('#nombre-bug').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.bug));
     $('#nombre-vulnerabilite').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.vulnerability));
     $('#nombre-mauvaise-pratique').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.codeSmell));
+    /** 10000 = le nombre max des retours possibles */
     if (t.codeSmell===10000) {
       $('#nombre-mauvaise-pratique').css('color', '#771404');
     }
 
-    // Historique
+    /** Historique */
     const t14 = document.getElementById('nombre-bug');
     const t15 = document.getElementById('nombre-vulnerabilite');
     const t16 = document.getElementById('nombre-mauvaise-pratique');
@@ -226,7 +236,7 @@ export const remplissage=function(mavenKey) {
       }
       $('#nombre-autre').html(i3);
 
-      // Historique
+      /** Historique */
       const t17 = document.getElementById('nombre-frontend');
       const t18 = document.getElementById('nombre-backend');
       const t19 = document.getElementById('nombre-autre');
@@ -263,7 +273,7 @@ export const remplissage=function(mavenKey) {
     t26.dataset.nombreAnomalieMajeur=t.major;
     t27.dataset.nombreAnomalieMineur=t.minor;
 
-    //On récupère les notes sonarqube pour la version courante
+    /** On récupère les notes sonarqube pour la version courante */
     let couleur1, couleur2, couleur3 = '';
     const tNotes = ['', 'A', 'B', 'C', 'D', 'E'];
 
@@ -332,7 +342,7 @@ export const remplissage=function(mavenKey) {
     $('#note-sqale').html(`<span class="${couleur3}">${noteSqale}</span>`);
   });
 
-  //On récupère la sévérité par type.
+  /** On récupère la sévérité par type. */
   const optionsAnomalieDetails = {
     url: `${serveur()}/api/peinture/projet/anomalie/details`, type: 'GET',
           dataType: 'json', data, contentType };
@@ -397,7 +407,7 @@ export const remplissage=function(mavenKey) {
     t42.dataset.vulnerabilityInfo=t.codeSmellInfo;
   });
 
-  //On récupère les hotspots.
+  /** On récupère les hotspots. */
   const optionsHotspots = {
     url: `${serveur()}/api/peinture/projet/hotspots`, type: 'GET',
           dataType: 'json', data, contentType };

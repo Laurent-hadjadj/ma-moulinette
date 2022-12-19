@@ -28,7 +28,7 @@ import 'motion-ui';
 import './foundation.js';
 
 /* On importe les paramètres serveur. */
-import {serveur} from "./properties.js";
+import {serveur} from './properties.js';
 
 import {remplissage} from './app-projet-peinture.js';
 import {enregistrement} from './app-projet-enregistrement.js';
@@ -48,11 +48,15 @@ const paletteCouleur = [
   '#660066', '#008000', '#088da5', '#808080', '#8b0000', '#0e2f44', '#3b5998', '#cc0000'];
 
 /**
- * description
+ * [Description for shuffle]
  * Mélangeur de couleur
  *
- * @param {*} a
- * @returns
+ * @param mixed a
+ *
+ * @return [type]
+ *
+ * Created at: 19/12/2022, 22:08:24 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const shuffle=function(a) {
   let j, x, i;
@@ -66,10 +70,13 @@ const shuffle=function(a) {
 };
 
 /**
- * description
+ * [Description for palette]
  * Renvoie une nouvelle palette de couleur
  *
- * @returns
+ * @return [type]
+ *
+ * Created at: 19/12/2022, 22:09:07 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const palette=function() {
   const nouvellePalette = [];
@@ -81,11 +88,16 @@ const palette=function() {
 };
 
 /**
- * description
+ * [Description for dessineMoiUnMouton]
  * Affiche le graphique des sources
  *
- * @param {*} label
- * @param {*} dataset
+ * @param mixed label
+ * @param mixed dataset
+ *
+ * @return [type]
+ *
+ * Created at: 19/12/2022, 22:09:45 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const dessineMoiUnMouton=function(label, dataset) {
   const nouvellePalette = palette();
@@ -128,10 +140,15 @@ const dessineMoiUnMouton=function(label, dataset) {
 };
 
 /**
- * description
+ * [Description for log]
  * Affiche la log.
  *
- * @param {*} txt
+ * @param mixed txt
+ *
+ * @return [type]
+ *
+ * Created at: 19/12/2022, 22:10:19 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const log=function(txt) {
   const textarea = document.getElementById('log');
@@ -141,8 +158,13 @@ const log=function(txt) {
 };
 
 /**
- * description
+ * [Description for ditBonjour]
  * Initialisation de la log.
+ *
+ * @return [type]
+ *
+ * Created at: 19/12/2022, 22:10:52 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const ditBonjour=function() {
   log(' - Initialisation de la log...');
@@ -157,12 +179,16 @@ $('.gomme-svg').on('click', function () {
 });
 
 /**
- * description
+ * [Description for match]
  * Propriétés du selecteur de recherche.
  *
- * @param {*} params
- * @param {*} data
- * @returns
+ * @param mixed params
+ * @param mixed data
+ *
+ * @return [type]
+ *
+ * Created at: 19/12/2022, 22:11:27 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const match=function(params, data) {
   if ($.trim(params.term) === '') {
@@ -181,10 +207,13 @@ const match=function(params, data) {
 };
 
 /**
- * description
+ * [Description for selectProjet]
  * Création du selecteur de projet.
  *
- * @returns
+ * @return [type]
+ *
+ * Created at: 19/12/2022, 22:11:56 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const selectProjet=function() {
   const options = {
@@ -208,12 +237,16 @@ const selectProjet=function() {
 };
 
 /**
- * description
+ * [Description for projetAnalyse]
  * Récupère les informations du projet
  * (id de l'enregistrement, date de l'analyse, version, type de version)
  *
- * @param {*} mavenKey
- * @returns
+ * @param mixed mavenKey
+ *
+ * @return [type]
+ *
+ * Created at: 19/12/2022, 22:12:44 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const projetAnalyse=function(mavenKey) {
   const data = { mavenKey };
@@ -231,11 +264,15 @@ const projetAnalyse=function(mavenKey) {
 };
 
 /**
- * description
+ * [Description for projetMesure]
  * Met à jour les indicateurs du projet (lignes, couvertures, duplication, défauts).
  *
- * @param {*} mavenKey
- * @returns
+ * @param mixed mavenKey
+ *
+ * @return [type]
+ *
+ * Created at: 19/12/2022, 22:13:13 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const projetMesure=function(mavenKey) {
   const data = { mavenKey };
@@ -252,13 +289,17 @@ const projetMesure=function(mavenKey) {
 };
 
 /**
- * description
+ * [Description for projetAnomalie]
  * On récupère le nombre total des défauts (BUG, VULNERABILITY, CODE_SMELL),
  * la répartition par dossier la répartition par severity et la dette technique total.
  * Arguements : mavenKey = clé du projet,
  *
- * @param {*} mavenKey
- * @returns
+ * @param mixed mavenKey
+ *
+ * @return [type]
+ *
+ * Created at: 19/12/2022, 22:13:42 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const projetAnomalie=function(mavenKey) {
   const data = { mavenKey };
@@ -275,13 +316,17 @@ const projetAnomalie=function(mavenKey) {
 };
 
 /**
- * description
+ * [Description for projetAnomalieDetails]
  * On récupère pour chaque type (Bug, Vulnerability et Code Smell)
  * le nombre de violation par type.
  * Arguements : mavenKey = clé du projet,
  *
- * @param {*} mavenKey
- * @returns
+ * @param mixed mavenKey
+ *
+ * @return [type]
+ *
+ * Created at: 19/12/2022, 22:14:11 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const projetAnomalieDetails=function(mavenKey) {
   const data = { mavenKey };
@@ -289,7 +334,7 @@ const projetAnomalieDetails=function(mavenKey) {
     url: `${serveur()}/api/projet/anomalie/details`, type: 'GET',
           dataType: 'json', data, contentType };
 
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     $.ajax(options).then(
       t => {
         if (t.code==='OK'){
@@ -303,23 +348,27 @@ const projetAnomalieDetails=function(mavenKey) {
 };
 
 /**
- * description
- * Récupère la note pour la fiabilité, la sécurité et les mauvaises pratiques.
- * http://{url}'/api/projet/historique/note
- * {mavenKey} = clé du projet
- * {type} = reliability, security, sqale
- *
- * @param {*} mavenKey
- * @param {*} type
- * @returns
- */
+  * [Description for projetRating]
+  * Récupère la note pour la fiabilité, la sécurité et les mauvaises pratiques.
+  * http://{url}'/api/projet/historique/note
+  * {mavenKey} = clé du projet
+  * {type} = reliability, security, sqale
+  *
+  * @param mixed mavenKey
+  * @param mixed type
+  *
+  * @return [type]
+  *
+  * Created at: 19/12/2022, 22:15:12 (Europe/Paris)
+  * @author     Laurent HADJADJ <laurent_h@me.com>
+  */
 const projetRating=function(mavenKey, type) {
   const data = { mavenKey, type };
   const options = {
     url: `${serveur()}/api/projet/historique/note`, type: 'GET',
     dataType: 'json', data, contentType };
 
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     $.ajax(options).then(t => {
         log(` - INFO : (3) Reprise des notes pour le type : ${t.type}`);
         log(`              : ${t.nombre} résultats.`);
@@ -329,15 +378,20 @@ const projetRating=function(mavenKey, type) {
 };
 
 /**
-* description
-* Récupère le top 10 OWASP et construit la vue
-* http://{url}/api/issues/search?componentKeys={key}&facets=owaspTop10&owaspTop10=a1,a2,a3,a4,a5,a6,a7,a8,a9,a10
-* Attention une faille peut être comptée deux fois ou plus, cela dépend du tag. Donc il est
-* possible d'avoir pour la clé une faille de type OWASP-A3 et OWASP-A10
-*
-* @param {*} mavenKey
-* @returns
-*/
+ * [Description for projetOwasp]
+ * Récupère le top 10 OWASP et construit la vue
+ * http://{url}/api/issues/search?componentKeys={key}&facets=owaspTop10&
+ * owaspTop10=a1,a2,a3,a4,a5,a6,a7,a8,a9,a10
+ * Attention une faille peut être comptée deux fois ou plus, cela dépend du tag. Donc il est
+ * possible d'avoir pour la clé une faille de type OWASP-A3 et OWASP-A10
+ *
+ * @param mixed mavenKey
+ *
+ * @return [type]
+ *
+ * Created at: 19/12/2022, 22:16:16 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ */
 const projetOwasp=function(mavenKey) {
   const data = { mavenKey };
   const options = {
@@ -356,15 +410,19 @@ const projetOwasp=function(mavenKey) {
   });
 };
 
-
 /**
- * description
+ * [Description for projetHotspot]
  * Traitement des hotspots de type owasp pour sonarqube 8.9 et >
  * http://{url}/api/hotspots/search?projectKey={key}&ps=500&p=1
- * On récupère les Hotspot a examiner. Les clés sont uniques (i.e. on ne se base pas sur les tags).
+ * On récupère les Hotspot a examiner. Les clés sont uniques
+ * (i.e. on ne se base pas sur les tags).
  *
- * @param {*} mavenKey
- * @returns
+ * @param mixed mavenKey
+ *
+ * @return [type]
+ *
+ * Created at: 19/12/2022, 22:17:17 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const projetHotspot=function(mavenKey) {
   const data = { mavenKey };
@@ -372,7 +430,7 @@ const projetHotspot=function(mavenKey) {
     url: `${serveur()}/api/projet/hotspot`, type: 'GET',
     dataType: 'json', data, contentType };
 
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     $.ajax(options).then(t=> {
       if (t.hotspots === 0) {
         log(' - INFO : (5) Bravo aucune faille potentielle détectée.');
@@ -385,14 +443,19 @@ const projetHotspot=function(mavenKey) {
 };
 
 /**
- * description
+ * [Description for projetHotspotOwasp]
  * Traitement des hotspot de type owasp pour sonarqube 8.9 et >
  * http://{url}/api/hotspots/search?projectKey={key}{owasp}&ps=500&p=1
- * Pour chaque faille OWASP on récupère les information. Il est possible d'avoir des doublons (i.e. a cause des tags).
+ * Pour chaque faille OWASP on récupère les information. Il est possible d'avoir des doublons
+ * (i.e. a cause des tags).
  *
- * @param {*} mavenKey
- * @param {*} owasp
- * @returns
+ * @param mixed mavenKey
+ * @param mixed owasp
+ *
+ * @return [type]
+ *
+ * Created at: 19/12/2022, 22:18:07 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const projetHotspotOwasp=function(mavenKey, owasp) {
   const data = { mavenKey, owasp };
@@ -400,7 +463,7 @@ const projetHotspotOwasp=function(mavenKey, owasp) {
     url: `${serveur()}/api/projet/hotspot/owasp`, type: 'GET',
           dataType: 'json', data, contentType };
 
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     $.ajax(options).then(t=> {
         if (t.info==='effacement') {
           log(' - INFO : (8) Les enregistrements ont été supprimé de la table hostspot_owasp.');
@@ -414,16 +477,19 @@ const projetHotspotOwasp=function(mavenKey, owasp) {
       resolve();
     });
   });
-
 };
 
 /**
- * description
+ * [Description for projetHotspotOwaspDetails]
  * On enregistre le détails des hostspot owasp
  * http://{url}/api/projet/hotspot/details{mavenKey}
  *
- * @param {*} mavenKey
- * @returns
+ * @param mixed mavenKey
+ *
+ * @return [type]
+ *
+ * Created at: 19/12/2022, 22:19:07 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const projetHotspotOwaspDetails=function(mavenKey) {
   const data = { mavenKey };
@@ -446,11 +512,15 @@ const projetHotspotOwaspDetails=function(mavenKey) {
 };
 
 /**
- * description
+ * [Description for projetNosonarDetails]
  * On récupére la liste des exclusions de code
- * http://{url}/api/projet/nosonar/details
  *
- * @param {*} mavenKey
+ * @param mixed mavenKey
+ *
+ * @return [type]
+ *
+ * Created at: 19/12/2022, 22:19:44 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const projetNosonarDetails=function(mavenKey){
   const data = { mavenKey };
@@ -471,10 +541,13 @@ const projetNosonarDetails=function(mavenKey){
 };
 
 /**
- * description
+ * [Description for finCollecte]
  * Affiche un messag de fin de collecte
  *
- * @param {*} mavenKey
+ * @return [type]
+ *
+ * Created at: 19/12/2022, 22:20:20 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const finCollecte=function(){
 /**
@@ -489,13 +562,18 @@ const finCollecte=function(){
       $('.information-texte').html('[04] - La collecte des données est terminée.');
     }, 3000);
   }
-}
+};
 
 /**
- * description
+ * [Description for afficheProjetFavori]
  * On récupére la liste des projets et des favoris
  * http://{url}/api/projet/mes-applications/liste
-*/
+ *
+ * @return [type]
+ *
+ * Created at: 19/12/2022, 22:21:16 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ */
 const afficheProjetFavori=function() {
   const options = {
     url: `${serveur()}/api/projet/mes-applications/liste`,
@@ -505,12 +583,13 @@ const afficheProjetFavori=function() {
   return new Promise(resolve => {
     $.ajax(options).then(t=> {
       let str, favori, i, liste=[], checkFavori;
+      /** http 200 */
       if (t.code !== 200) {
         log(' - ERROR : La liste des projets n\'a pas été trouvée.');
         return;
       }
 
-    /* on efface les données.*/
+    /* On efface les données.*/
     $('#tableau-liste-projet').html('');
     $('.information-texte').html('[00] - Je dors !!!');
 
@@ -520,13 +599,14 @@ const afficheProjetFavori=function() {
     <path d="m1215 4984c-531-89-963-456-1139-966-52-151-69-268-70-463 0-144 4-203 22-297 99-527 412-1085 962-1713 365-418 941-950 1436-1326l134-102 134 102c495 376 1071 908 1436 1326 550 628 863 1186 962 1713 31 167 31 432-1 582-109 513-470 924-951 1084-162 54-239 67-420 73-139 4-183 2-280-16-310-55-567-188-782-403l-98-98-98 98c-213 213-472 347-777 402-128 24-346 25-470 4zm438-341c274-52 521-211 691-444 23-30 79-123 125-207 47-84 88-152 91-152s44 68 91 152c128 231 214 337 362 449 218 164 482 241 755 218 276-23 512-137 708-340 127-133 222-302 271-486 24-88 27-116 27-278 0-163-3-191-28-300-105-447-394-942-865-1480-326-373-749-775-1196-1135l-125-101-125 101c-325 262-717 620-952 868-633 668-987 1227-1109 1747-25 109-28 137-28 300 0 162 3 190 27 278 92 343 335 620 657 750 201 81 411 101 623 60z" />
     </g></svg>`;
 
-    /* Si on a pas trouvé de favori on marque l'absence par un tiret sinon on créé une liste. */
+    /*
+     * Si on a pas trouvé de favori on marque l'absence par un tiret sinon on créé une liste. */
     if (t.favori[0] !== 'vide') {
       liste=t.favori;
     }
 
     /**
-     *Pour chaque élément de la liste des projets analysés, on affiche le projet
+     * Pour chaque élément de la liste des projets analysés, on affiche le projet
      * et si le projet est en favori on ajoute un petit-coeur
      */
     t.liste.forEach(element => {
@@ -597,7 +677,7 @@ const afficheProjetFavori=function() {
       /* On récupère le nom du projet */
       const b = mavenKey.split(':');
       const nom = b[1];
-      const $newOption = $("<option selected='selected'></option>").val(mavenKey).text(nom)
+      const $newOption = $("<option selected='selected'></option>").val(mavenKey).text(nom);
       /* On  active le projet */
       $('select[name="projet"]').append($newOption).trigger('change');
       setTimeout(function(){
@@ -622,9 +702,10 @@ const afficheProjetFavori=function() {
       };
 
       /* On Ajoute une fonction assynchrone pour désactiver le projet de la liste. */
-      const supprime_projet=function supprime() {
+      const supprimeProjet=function supprime() {
         return new Promise(resolve2 => {
           $.ajax(options2).then(t=> {
+            /** Http 200 */
             if (t.code !== 200) {
               log(` - ERROR : Je n'ai réussi à supprimer le projet !`);
             } else {
@@ -633,11 +714,11 @@ const afficheProjetFavori=function() {
             resolve2();
           });
         });
-      }
+      };
 
       /* On appelle la fonction asynchrone et on attend la fin. */
       async function fnAsync() {
-        await supprime_projet();
+        await supprimeProjet();
       }
       fnAsync();
 
@@ -750,11 +831,16 @@ const afficheProjetFavori=function() {
 };
 
 /**
- * description
+ * [Description for afficheHotspotDetails]
  * On récupére la répartition des hotspots par sévérité
  * http://{url}/api/peinture/projet/hotspot/details{meven_key}
  *
- * @param {*} mavenKey
+ * @param mixed mavenKey
+ *
+ * @return [type]
+ *
+ * Created at: 19/12/2022, 22:25:28 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const afficheHotspotDetails=function (mavenKey){
   const data = { mavenKey };
@@ -767,7 +853,7 @@ const afficheHotspotDetails=function (mavenKey){
       return;
     }
 
-    /* on efface les données.*/
+    /* On efface les données.*/
     $('#tableau-liste-hotspot').html('');
     const str =`<tr id="hotspot-1" class="open-sans">
               <td id="hotspot-high" class="text-center stat" data-hotspot-high="${t.high}">
@@ -912,7 +998,7 @@ $('select[name="projet"]').change(function () {
   /* Bouton : active le bouton enregistrement. */
   $('.js-enregistrement').removeClass('enregistrement-disabled');
   $('.js-enregistrement' ).addClass('enregistrement-enabled');
-  
+
   /* on ajoute la clé slectionnée dans le local storage pour les pages security et graphques. */
   localStorage.setItem('projet', $('select[name="projet"]').val().trim());
 });
@@ -1003,7 +1089,7 @@ $('#js-version-autre').on('click', () => {
      * const label = version.dataset.label;
      * const dataset = version.dataset.dataset;
     */
-    const {label, dataset} = version.dataset
+    const {label, dataset} = version.dataset;
     dessineMoiUnMouton(JSON.parse(label), JSON.parse(dataset));
     $('#modal-autre-version').foundation('open');
   }

@@ -13,7 +13,6 @@
 import '../css/suivi.css';
 
 /* Intégration de jquery */
-// eslint-disable-next-line no-unused-vars
 import $ from 'jquery';
 
 import 'select2';
@@ -61,7 +60,17 @@ const callboxError='<div id="js-message" class="callout error text-justify" data
 const callboxFermer='<button class="close-button" aria-label="Fermer la fenêtre" type="button" data-close><span aria-hidden="true">&times;</span></button></div>';
 
 /**
- * Affiche le graphique des sources
+ * [Description for dessineMoiUnMouton]
+ * Affiche le graphique des sources *
+ * @param mixed labels
+ * @param mixed data1
+ * @param mixed data2
+ * @param mixed data3
+ * 
+ * @return [type]
+ * 
+ * Created at: 19/12/2022, 22:58:54 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com> 
  */
 const dessineMoiUnMouton= function( labels, data1, data2, data3) {
   const data = {
@@ -166,10 +175,17 @@ dessineMoiUnMouton(
 );
 
 /**
- * description
- * Création du sélecteur de projet.
- */
-  const selectVersion=function(mavenKey) {
+* [Description for selectVersion]
+* Création du sélecteur de projet.
+*
+* @param mixed mavenKey
+* 
+* @return [type]
+* 
+* Created at: 19/12/2022, 23:00:07 (Europe/Paris)
+* @author     Laurent HADJADJ <laurent_h@me.com> 
+*/
+const selectVersion=function(mavenKey) {
   const data={ mavenKey };
   const options = {
     url: `${serveur()}/api/liste/version`, type: 'GET',
@@ -186,7 +202,7 @@ dessineMoiUnMouton(
         data: r.liste});
       $('.analyse').removeClass('hide');
     });
-};
+  };
 
 /**
  * description
@@ -286,7 +302,7 @@ $('select[name="version"]').change(function () {
     $('#bug').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.bug));
     $('#vulnerabilities').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.vulnerabilities));
     $('#code-smell').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.codeSmell));
-    let verifyHotspotsReview=t.hotspotsReview;
+    const verifyHotspotsReview=t.hotspotsReview;
     if (verifyHotspotsReview !== -1) {
       $('#hotspots-review').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(verifyHotspotsReview));
     }
@@ -342,7 +358,7 @@ $('.js-enregistrer-analyse').on('click', ()=>{
   }
 
   /** Si le projet n'existe plus dans sonarqube 'error 404' */
-  if ($('#js-message').hasClass('error')==true) {
+  if ($('#js-message').hasClass('error')===true) {
     return;
   }
 
@@ -384,7 +400,7 @@ $('.js-enregistrer-analyse').on('click', ()=>{
   const tests=t13.dataset.tests;
   const dette=t14.dataset.dette;
 
-  let initial=0;
+  const initial=0;
   const data={
     date:dateVersion,
     mavenKey, nom, version,
@@ -524,11 +540,11 @@ $('.js-modifier-analyse').on('click', function () {
       // on récupère la version et la date
       const id=$(e.target).attr('id');
       const l=id.split('-');
-      const  version = $(`#version-${l[2]}`).text().trim();
-      const  date = $(`#date-${l[2]}`).text().trim();
+      const version = $(`#version-${l[2]}`).text().trim();
+      const date = $(`#date-${l[2]}`).text().trim();
 
       if ($(`#${id}:checked`).length===1) {
-        //SQLite : 0 (false) and 1 (true).
+        /** SQLite : 0 (false) and 1 (true). */
         favori=1;
       } else {
         favori=0;
@@ -560,7 +576,7 @@ $('.js-modifier-analyse').on('click', function () {
       const  date=$(`#date-${l[2]}`).text().trim();
 
       if ($(`#${id}:checked`).length===1){
-        //SQLite : 0 (false) and 1 (true).
+        /** SQLite : 0 (false) and 1 (true). */
         reference=1;
       } else {
         reference=0;
@@ -586,7 +602,7 @@ $('.js-modifier-analyse').on('click', function () {
     });
 
   $('[id^=poubelle-]').on('click', e=>{
-    /* on récupère la version et la date */
+    /* On récupère la version et la date */
     const id=$(e.currentTarget).attr('id');
     const l=id.split('-');
     const  version = $(`#version-${l[1]}`).text().trim();
