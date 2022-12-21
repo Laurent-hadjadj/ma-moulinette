@@ -158,7 +158,6 @@ class HomeController extends AbstractController
 
         /** On appel le client http */
         $result = $this->httpClient($url);
-
         /**
          * On compte le nombre de projet.
          */
