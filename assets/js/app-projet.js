@@ -934,7 +934,7 @@ $('.js-analyse').on('click', function () {
     /* Analyse des anomalies. */
     await projetNosonarDetails(idProject);        /*(11)*/
     /* Renvoie le statut de fin */
-    await finCollecte();
+    finCollecte();
   }
 
   /* On appelle la fonction de récupèration des sévérités pour les VULNERABILITY. */
