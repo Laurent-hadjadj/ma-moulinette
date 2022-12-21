@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-// Gestion de accès aux API
+/** Gestion de accès aux API */
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -47,6 +47,14 @@ use Psr\Log\LoggerInterface;
 class ApiProjetController extends AbstractController
 {
 
+  /** Définition des constantes */
+  public static $strContentType = 'application/json';
+  public static $sonarUrl = "sonar.url";
+  public static $dateFormat = "Y-m-d H:i:s";
+  public static $europeParis = "Europe/Paris";
+  public static $apiIssuesSearch = "/api/issues/search?componentKeys=";
+
+
   /**
    * [Description for __construct]
    *
@@ -68,11 +76,6 @@ class ApiProjetController extends AbstractController
     $this->em = $em;
   }
 
-  public static $strContentType = 'application/json';
-  public static $dateFormat = "Y-m-d H:i:s";
-  public static $sonarUrl = "sonar.url";
-  public static $apiIssuesSearch = "/api/issues/search?componentKeys=";
-
   /**
    * date_to_minute
    *
@@ -85,7 +88,7 @@ class ApiProjetController extends AbstractController
    *
    * @param mixed $str
    *
-   * @return ($jour * 24 * 60) + ($heure * 60) + intval($minute)
+   * return ($jour * 24 * 60) + ($heure * 60) + intval($minute)
    *
    * Created at: 15/12/2022, 21:25:32 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -225,7 +228,7 @@ class ApiProjetController extends AbstractController
     $mavenKey = $request->get('mavenKey');
     $statut = $request->get('statut');
     $date = new DateTime();
-    $date->setTimezone(new DateTimeZone('Europe/Paris'));
+    $date->setTimezone(new DateTimeZone(static::$europeParis));
     $tempoDate = $date->format(static::$dateFormat);
 
     /** On vérifie si le projet est déjà en favori */
@@ -341,7 +344,7 @@ class ApiProjetController extends AbstractController
     $result = $this->httpClient($url);
     /** On récupère le manager de BD */
     $date = new DateTime();
-    $date->setTimezone(new DateTimeZone('Europe/Paris'));
+    $date->setTimezone(new DateTimeZone(static::$europeParis));
     $mavenKey = $request->get('mavenKey');
 
     /** On supprime les informations sur le projet */
@@ -405,7 +408,7 @@ class ApiProjetController extends AbstractController
     /** on appel le client http */
     $result1 = $this->httpClient($url1);
     $date = new DateTime();
-    $date->setTimezone(new DateTimeZone('Europe/Paris'));
+    $date->setTimezone(new DateTimeZone(static::$europeParis));
 
     /** On ajoute les mesures dans la table mesures. */
     if (intval($result1["measures"]["lines"])) {
@@ -494,7 +497,7 @@ class ApiProjetController extends AbstractController
 
     /** On créé un objet date. */
     $date = new DateTime();
-    $date->setTimezone(new DateTimeZone('Europe/Paris'));
+    $date->setTimezone(new DateTimeZone(static::$europeParis));
 
     $statusesMin = "OPEN,CONFIRMED,REOPENED,RESOLVED";
     $statusesAll = "OPEN,CONFIRMED,REOPENED,RESOLVED,TO_REVIEW,IN_REVIEW";
@@ -702,7 +705,7 @@ class ApiProjetController extends AbstractController
       $this->em->getConnection()->prepare($sql)->executeQuery();
 
       $date = new DateTime();
-      $date->setTimezone(new DateTimeZone('Europe/Paris'));
+      $date->setTimezone(new DateTimeZone(static::$europeParis));
       $r1 = $result1["facets"];
       $r2 = $result2["facets"];
       $r3 = $result3["facets"];
@@ -832,7 +835,7 @@ class ApiProjetController extends AbstractController
     $result = $this->httpClient(trim(preg_replace("/\s+/u", " ", $url)));
 
     $date = new DateTime();
-    $date->setTimezone(new DateTimeZone('Europe/Paris'));
+    $date->setTimezone(new DateTimeZone(static::$europeParis));
     $tempoDate = $date->format(static::$dateFormat);
     $nombre = $result["paging"]["total"];
     $mesures = $result["measures"][0]["history"];
@@ -890,7 +893,7 @@ class ApiProjetController extends AbstractController
     $result = $this->httpClient(trim(preg_replace("/\s+/u", " ", $url)));
 
     $date = new DateTime();
-    $date->setTimezone(new DateTimeZone('Europe/Paris'));
+    $date->setTimezone(new DateTimeZone(static::$europeParis));
     $owasp = [$result["total"]];
     $effortTotal = $result["effortTotal"];
 
@@ -1250,7 +1253,7 @@ class ApiProjetController extends AbstractController
 
     // On créé un objet Date
     $date = new DateTime();
-    $date->setTimezone(new DateTimeZone('Europe/Paris'));
+    $date->setTimezone(new DateTimeZone(static::$europeParis));
     $niveau = 0;
 
     // On supprime  les enregistrements correspondant à la clé
@@ -1330,7 +1333,7 @@ class ApiProjetController extends AbstractController
 
     /** On créé un objet Date. */
     $date = new DateTime();
-    $date->setTimezone(new DateTimeZone('Europe/Paris'));
+    $date->setTimezone(new DateTimeZone(static::$europeParis));
     $niveau = 0;
 
     /** On fleche la vulnérabilité */
@@ -1398,7 +1401,7 @@ class ApiProjetController extends AbstractController
     $url = "${tempoUrl}/api/hotspots/show?hotspot=${key}";
     $hotspot = $this->httpClient($url);
     $date = new DateTime();
-    $date->setTimezone(new DateTimeZone('Europe/Paris'));
+    $date->setTimezone(new DateTimeZone(static::$europeParis));
 
     /** Si le niveau de sévérité n'est pas connu, on lui affecte la valeur MEDIUM. */
     if (empty($hotspot["rule"]["vulnerabilityProbability"])) {
@@ -1647,7 +1650,7 @@ class ApiProjetController extends AbstractController
 
     $result = $this->httpClient(trim(preg_replace("/\s+/u", " ", $url)));
     $date = new DateTime();
-    $date->setTimezone(new DateTimeZone('Europe/Paris'));
+    $date->setTimezone(new DateTimeZone(static::$europeParis));
 
     /** On supprime les données du projet de la table NoSonar. */
     $sql = "DELETE FROM no_sonar WHERE maven_key='${mavenKey}'";
@@ -1706,7 +1709,7 @@ class ApiProjetController extends AbstractController
 
     /** On créé un objet date, avec la date courante. */
     $date = new DateTime();
-    $date->setTimezone(new DateTimeZone('Europe/Paris'));
+    $date->setTimezone(new DateTimeZone(static::$europeParis));
 
     /** Enregistrement */
     $save = new Historique();
