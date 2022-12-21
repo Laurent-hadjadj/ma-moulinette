@@ -35,6 +35,14 @@
 @media only screen and (min-width: 120.063em) and (max-width: 160em) { .pleine-page { margin: 1rem; } }
 
 /*************************          Global     *********************************/
+
+/** Suppression du style online */
+#graphique-anomalie {
+  position: relative;
+  height: 36vh;
+  width: 80vw;
+}
+
 .text-up { color: #187e3d; }
 .text-down { color: #971c09; }
 
