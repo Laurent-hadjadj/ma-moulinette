@@ -19,10 +19,13 @@
 <div class="grid-container">
   <div class="grid-x">
     <div class="small-12 medium-6 large-6 cell">
-      <video id="video-ville" class="video-ville" preload="metadata" loop autoplay muted
-        src="{{ asset('build/video/Ville.mp4') }}"></video>
+      <video id="video-ville" class="video-ville" preload="metadata" loop autoplay muted>
+        <source src="{{ asset('build/video/Ville.mp4') }}" />
+        <track label="Français" kind="captions" srclang="fr" default />
+        </video>
       <span class="open-sans float-center text-center">
-        <a class="open-sans credit" ref="https://pixabay.com/fr/users/cassiosaguiar-6583616/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=video&amp;utm_content=34687">Cássio Aguiar</a> <span id="sur">sur</span> <a class="open-sans credit" href="https://pixabay.com/fr//?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=video&amp;utm_content=34687">Pixabay</a>
+        <a class="open-sans credit" ref="https://pixabay.com/fr/users/cassiosaguiar-6583616/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=video&amp;utm_content=34687">Cássio Aguiar</a> <span id="sur">sur</span>
+        <a class="open-sans credit" href="https://pixabay.com/fr//?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=video&amp;utm_content=34687">Pixabay</a>
       </span>
     </div>
     <div class="small-12 medium-6 large-6 cell">
