@@ -44,6 +44,7 @@ class ApiHomeController extends AbstractController
   public static $dateFormatShort = "Y-m-d";
   public static $dateFormat = "Y-m-d H:i:s";
   public static $europeParis = "Europe/Paris";
+  public static $regex = "/\s+/u";
 
   /**
    * [Description for __construct]
@@ -240,7 +241,7 @@ class ApiHomeController extends AbstractController
         projet_sonar = ${nombre},
         date_modification_projet = '${dateModificationProjet}'
     WHERE type = 'properties'";
-    $this->em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)))->executeQuery();
+    $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
 
     $response = new JsonResponse();
     $response->setData(["nombre" => $nombre, Response::HTTP_OK]);
@@ -300,7 +301,7 @@ class ApiHomeController extends AbstractController
     $sql = "SELECT name as profil, language_name as langage,
             active_rule_count as regle, rules_update_at as date,
             is_default as actif FROM profiles";
-    $select = $this->em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)))->executeQuery();
+    $select = $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
     $liste = $select->fetchAllAssociative();
 
     /** On met à jour la table propietes */
@@ -311,7 +312,7 @@ class ApiHomeController extends AbstractController
         profil_sonar = ${nombre},
         date_modification_profil = '${dateModificationProfil}'
     WHERE type = 'properties'";
-    $this->em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)))->executeQuery();
+    $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
 
     $response = new JsonResponse();
     return $response->setData(["listeProfil" => $liste, Response::HTTP_OK]);

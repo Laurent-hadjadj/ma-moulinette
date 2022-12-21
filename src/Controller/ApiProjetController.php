@@ -53,7 +53,7 @@ class ApiProjetController extends AbstractController
   public static $dateFormat = "Y-m-d H:i:s";
   public static $europeParis = "Europe/Paris";
   public static $apiIssuesSearch = "/api/issues/search?componentKeys=";
-
+  public static $regex = "/\s+/u";
 
   /**
    * [Description for __construct]
@@ -246,7 +246,7 @@ class ApiProjetController extends AbstractController
       $sql = "UPDATE favori SET favori='${statut}',
               date_enregistrement='${tempoDate}'
               WHERE maven_key='${mavenKey}'";
-      $this->em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)))->executeQuery();
+      $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
     }
 
     /** On met à jour la table historique. */
@@ -514,7 +514,7 @@ class ApiProjetController extends AbstractController
     $url4 = "${tempoUrlLong}${mavenKey}&types=CODE_SMELL&p=1&ps=1";
 
     /** On appel le client http pour les requête 1 à 4 (2 à 4 pour la dette). */
-    $result1 = $this->httpClient(trim(preg_replace("/\s+/u", " ", $url1)));
+    $result1 = $this->httpClient(trim(preg_replace(static::$regex, " ", $url1)));
     $result2 = $this->httpClient($url2);
     $result3 = $this->httpClient($url3);
     $result4 = $this->httpClient($url4);
@@ -836,7 +836,7 @@ class ApiProjetController extends AbstractController
             &metrics=${type}_rating&ps=1000";
 
     /** On appel le client http. */
-    $result = $this->httpClient(trim(preg_replace("/\s+/u", " ", $url)));
+    $result = $this->httpClient(trim(preg_replace(static::$regex, " ", $url)));
 
     $date = new DateTime();
     $date->setTimezone(new DateTimeZone(static::$europeParis));
@@ -894,7 +894,7 @@ class ApiProjetController extends AbstractController
             &owaspTop10=a1,a2,a3,a4,a5,a6,a7,a8,a9,a10";
 
     /** On appel l'API. */
-    $result = $this->httpClient(trim(preg_replace("/\s+/u", " ", $url)));
+    $result = $this->httpClient(trim(preg_replace(static::$regex, " ", $url)));
 
     $date = new DateTime();
     $date->setTimezone(new DateTimeZone(static::$europeParis));
@@ -1333,7 +1333,7 @@ class ApiProjetController extends AbstractController
             &owaspTop10=${owasp}&ps=500&p=1";
 
     /** On appel l'URL. */
-    $result = $this->httpClient(trim(preg_replace("/\s+/u", " ", $url)));
+    $result = $this->httpClient(trim(preg_replace(static::$regex, " ", $url)));
 
     /** On créé un objet Date. */
     $date = new DateTime();
@@ -1652,7 +1652,7 @@ class ApiProjetController extends AbstractController
     $url = "${tempoUrl}/api/issues/search?componentKeys=${mavenKey}
             &rules=java:S1309,java:NoSonar&ps=500&p=1";
 
-    $result = $this->httpClient(trim(preg_replace("/\s+/u", " ", $url)));
+    $result = $this->httpClient(trim(preg_replace(static::$regex, " ", $url)));
     $date = new DateTime();
     $date->setTimezone(new DateTimeZone(static::$europeParis));
 
