@@ -38,6 +38,13 @@ use Psr\Log\LoggerInterface;
 
 class ApiHomeController extends AbstractController
 {
+  /** Définition des constantes */
+  public static $strContentType = 'application/json';
+  public static $sonarUrl = "sonar.url";
+  public static $dateFormatShort = "Y-m-d";
+  public static $dateFormat = "Y-m-d H:i:s";
+  public static $europeParis = "Europe/Paris";
+
   /**
    * [Description for __construct]
    *
@@ -60,11 +67,6 @@ class ApiHomeController extends AbstractController
     $this->client = $client;
     $this->em = $em;
   }
-
-  public static $strContentType = 'application/json';
-  public static $sonarUrl = "sonar.url";
-  public static $dateFormatShort = "Y-m-d";
-  public static $dateFormat = "Y-m-d H:i:s";
 
   /**
    * [Description for httpClient]
@@ -175,7 +177,7 @@ class ApiHomeController extends AbstractController
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/system/info', name: 'information_systeme', methods: ['GET'])]
-   public function informationSysteme():response
+  public function informationSysteme():response
   {
     $url = $this->getParameter(static::$sonarUrl) . "/api/system/info";
 
@@ -203,7 +205,7 @@ class ApiHomeController extends AbstractController
     /** On appel le client http */
     $result = $this->httpClient($url);
     $date = new DateTime();
-    $date->setTimezone(new DateTimeZone('Europe/Paris'));
+    $date->setTimezone(new DateTimeZone(static::$europeParis));
     $nombre = 0;
 
     /** On supprime les données de la table avant d'importer les données. */
@@ -231,7 +233,7 @@ class ApiHomeController extends AbstractController
     }
 
     /** On met à jour la table propietes */
-    $dateModificationProjet = $date->format("Y-m-d H:i:s");
+    $dateModificationProjet = $date->format(static::$dateFormatShort);
 
     $sql="UPDATE properties
     SET projet_bd = ${nombre},
@@ -269,7 +271,7 @@ class ApiHomeController extends AbstractController
     $result = $this->httpClient($url);
 
     $date = new DateTime();
-    $date->setTimezone(new DateTimeZone('Europe/Paris'));
+    $date->setTimezone(new DateTimeZone(static::$europeParis));
     $nombre = 0;
 
     /** On supprime les données de la table avant d'importer les données;*/
@@ -302,7 +304,7 @@ class ApiHomeController extends AbstractController
     $liste = $select->fetchAllAssociative();
 
     /** On met à jour la table propietes */
-    $dateModificationProfil = $date->format("Y-m-d H:i:s");
+    $dateModificationProfil = $date->format(static::$dateFormatShort);
 
     $sql="UPDATE properties
     SET profil_bd = ${nombre},
@@ -341,7 +343,7 @@ class ApiHomeController extends AbstractController
 
     /** On créé un objet DateTime */
     $date = new DateTime();
-    $timezone = new DateTimeZone('Europe/Paris');
+    $timezone = new DateTimeZone(static::$europeParis);
     $date->setTimezone($timezone);
 
     /** On vérifie que sonarqube a au moins 1 projet */
