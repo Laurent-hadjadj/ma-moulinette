@@ -27,6 +27,7 @@
 @media only screen and (min-width: 120.63em) and (max-width: 160em) { /* vide */ }
 
 /*************************          Global     *********************************/
+
 .graphique-svg,
 .refresh-svg {
   fill: #fff;
@@ -35,6 +36,9 @@
   width: 32px;
   height: 32px;
 }
+
+/** Suppression style inline */
+.graphique-langage-container { width: 54vw; }
 
 .graphique-langage,
 .refresh {
