@@ -11,22 +11,22 @@ label.prenom: Prénom
 # Menu EasyAdmin
 Home: Home
 Titre: Titre
-Dashboard:	Dashboard
-Utilisateur:	Utilisateur
+Dashboard: Dashboard
+Utilisateur: Utilisateur
 Equipe: Équipe
 Portefeuille: Portefeuille
 
 # UtilisateurCrud
-Personne:	Personne
-Courriel:	Courriel
+Personne: Personne
+Courriel: Courriel
 Roles: Roles
-Actif:	Actif
+Actif: Actif
 Gestionnaire: Gestionnaire
 
 # EquipeCrud
 
-Description:	Description
-Date Modification:	Date de modification
+Description: Description
+Date Modification: Date de modification
 Date Enregistrement: Date d'enregistrement
 
 # PorteFeuilleCrud
