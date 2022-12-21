@@ -326,7 +326,6 @@ class ApiProjetPeintureController extends AbstractController
     $detteCodeSmellMinute = $anomalies[0]["dette_code_smell_minute"];
 
     /** Types */
-    /** $anomalie_total=$anomalies[0]["anomalie_total"]; */
     $typeBug = $anomalies[0]["bug"];
     $typeVulnerability = $anomalies[0]["vulnerability"];
     $typeCodeSmell = $anomalies[0]["code_smell"];
