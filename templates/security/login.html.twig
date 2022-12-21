@@ -37,11 +37,13 @@
 					<h2 class="claire-hand">Authentification.</h2>
 					<div class="floated-label-wrapper">
 						<label for="courriel">Courriel</label>
-						<input type="email" id="courriel" name="courriel" placeholder="laurent.hadjadj@ma-petite-entreprise.fr" required autofocus autocomplete="email">
+						<input type="email" id="courriel" name="courriel"
+						placeholder="laurent.hadjadj@ma-petite-entreprise.fr" required autofocus autocomplete="email">
 					</div>
 					<div class="floated-label-wrapper">
 						<label for="pass">Mot de passe</label>
-						<input type="password" id="pass" name="password" placeholder="Mot de passe" required autocomplete="current-password">
+						<input type="password" id="pass" name="password"
+						placeholder="Mot de passe" required autocomplete="current-password">
 					</div>
 					<label>
 						<input type="checkbox" name="_remember_me" class="float-left text-left"/>
@@ -63,6 +65,13 @@
 				{% endif %}
 			</div>
 		</div>
+	</div>
+	<br><br>
+	{# Chargement de la section footer #}
+	{{ include('footer.html.twig') }}
+		{# Chargement du code javascript #}
+		{% block javascripts %}
+			{{ encore_entry_script_tags('login') }}
+		{% endblock %}
 	</body>
-</html></div><br><br>{# Chargement de la section footer #}{{ include('footer.html.twig') }}{# Chargement du code javascript #}{% block javascripts %}
-{{ encore_entry_script_tags('login') }}{% endblock %}</body></html>
+</html>
