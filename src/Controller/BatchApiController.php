@@ -28,22 +28,17 @@ use DateTimeZone;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 
-use App\Entity\Main\BatchTraitement;
 use App\Entity\Main\InformationProjet;
 use App\Entity\Main\NoSonar;
 use App\Entity\Main\Mesures;
 use App\Entity\Main\Anomalie;
 use App\Entity\Main\AnomalieDetails;
-use App\Entity\Main\Owasp;
 use App\Entity\Main\Hotspots;
 use App\Entity\Main\HotspotOwasp;
-use App\Entity\Main\HotspotDetails;
 use App\Entity\Main\Historique;
 
 /** Gestion des accès aux API */
 use Symfony\Contracts\HttpClient\HttpClientInterface;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
  * [Description BatchController]
@@ -103,7 +98,9 @@ class BatchApiController extends AbstractController
 
     $response = $this->client->request('GET', $url,
       [
-        'ciphers' => `DH-RSA-AES128-SHA DH-RSA-AES256-SHA DHE-DSS-AES128-SHA DHE-DSS-AES256-SHA DHE-RSA-AES128-SHA DHE-RSA-AES256-SHA ADH-AES128-SHA ADH-AES256-SHA`,
+        'ciphers' => `DH-RSA-AES128-SHA DH-RSA-AES256-SHA DHE-DSS-AES128-SHA
+        DHE-DSS-AES256-SHA DHE-RSA-AES128-SHA DHE-RSA-AES256-SHA ADH-AES128-SHA
+        ADH-AES256-SHA`,
         'auth_basic' => [$user, $password], 'timeout' => 45,
         'headers' => ['Accept' => static::$strContentType,
         'Content-Type' => static::$strContentType]
@@ -176,9 +173,15 @@ class BatchApiController extends AbstractController
     $autre=0;
     //"SNAPSHOT" => array:1 ["total" => 2]
     foreach ($list as $key => $value) {
-      if ($key==="RELEASE") { $release=$value["total"]; }
-      if ($key==="SNAPSHOT") { $snapshot=$value["total"]; }
-      if ($key==="N.C") { $autre=$value["total"]; }
+      if ($key==="RELEASE") {
+          $release=$value["total"];
+        }
+      if ($key==="SNAPSHOT") {
+        $snapshot=$value["total"];
+      }
+      if ($key==="N.C") {
+        $autre=$value["total"];
+        }
     }
 
     /** On récupère la dernière version et sa date de publication */
@@ -763,7 +766,7 @@ class BatchApiController extends AbstractController
                     break;
               case "CODE_SMELL" : $codeSmell = $type["count"];
               break;
-              default:
+            default:
               $this->logger->NOTICE("HoneyPot : Répartition par type !");
 
             }
@@ -917,7 +920,7 @@ class BatchApiController extends AbstractController
               case "MINOR" : $bugMinor = $severity["count"];
                     break;
               default:
-                    $this->logger->NOTICE("HoneyPot : Répartition des bugs par sévérité !");
+                    $this->logger->NOTICE("HoneyPot: Répartition des bugs par sévérité !");
             }
           }
 
