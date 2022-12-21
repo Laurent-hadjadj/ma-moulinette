@@ -45,11 +45,14 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  */
 class BatchApiController extends AbstractController
 {
+  /** Définition des constantes */
   public static $strContentType = 'application/json';
   public static $sonarUrl = "sonar.url";
   public static $dateFormat = "Y-m-d H:i:s";
   public static $dateFormatMini = "Y-m-d";
+  public static $europeParis = "Europe/Paris";
   public static $apiIssuesSearch = "/api/issues/search?componentKeys=";
+  public static $regex = "/\s+/u";
 
   /**
    * [Description for __construct]
@@ -219,7 +222,7 @@ class BatchApiController extends AbstractController
 
     /** On récupère le manager de BD */
     $date = new DateTime();
-    $date->setTimezone(new DateTimeZone('Europe/Paris'));
+    $date->setTimezone(new DateTimeZone(static::$europeParis));
 
     /** On supprime les informations sur le projet */
     $sql = "DELETE FROM information_projet WHERE maven_key='$mavenKey'";
@@ -274,7 +277,7 @@ class BatchApiController extends AbstractController
     /** on appel le client http */
     $result1 = $this->httpClient($url1);
     $date = new DateTime();
-    $date->setTimezone(new DateTimeZone('Europe/Paris'));
+    $date->setTimezone(new DateTimeZone(static::$europeParis));
 
     /* On ajoute les mesures dans la table mesures. */
     /** Warning: Undefined array key "line" */
@@ -372,10 +375,10 @@ class BatchApiController extends AbstractController
             &metrics=${type}_rating&ps=1000";
 
     /** On appel le client http */
-    $result = $this->httpClient(trim(preg_replace("/\s+/u", " ", $url)));
+    $result = $this->httpClient(trim(preg_replace(static::$regex, " ", $url)));
 
     $date = new DateTime();
-    $date->setTimezone(new DateTimeZone('Europe/Paris'));
+    $date->setTimezone(new DateTimeZone(static::$europeParis));
     $tempoDate = $date->format(static::$dateFormat);
 
     $mesures = $result["measures"][0]["history"];
@@ -438,7 +441,7 @@ class BatchApiController extends AbstractController
 
     /** On créé un objet Date */
     $date = new DateTime();
-    $date->setTimezone(new DateTimeZone('Europe/Paris'));
+    $date->setTimezone(new DateTimeZone(static::$europeParis));
     $niveau = 0;
 
     /** On supprime  les enregistrements correspondant à la clé **/
@@ -508,7 +511,7 @@ class BatchApiController extends AbstractController
 
     /** On crée un objet Date */
     $date = new DateTime();
-    $date->setTimezone(new DateTimeZone('Europe/Paris'));
+    $date->setTimezone(new DateTimeZone(static::$europeParis));
     $niveau = 0;
 
     /** On supprime  les enregistrements correspondant à la clé */
@@ -557,14 +560,14 @@ class BatchApiController extends AbstractController
     }
 
     /** On enregistre les données */
-    $hotspot_details=[
+    $hotspotDetails=[
       "nombre" => $result["paging"]["total"],
       "high"=>$high,
       "medium"=>$medium,
       "low"=>$low,
     ];
 
-    return [ "hotspot_details"=>$hotspot_details ];
+    return [ "hotspot_details"=>$hotspotDetails ];
   }
 
   public function BatchNoteHotspot ($mavenKey): array
@@ -600,8 +603,8 @@ class BatchApiController extends AbstractController
       }
     }
 
-    $note_hotspot=["value"=>$note];
-    return ["note_hotspot"=>$note_hotspot];
+    $noteHotspot=["value"=>$note];
+    return ["note_hotspot"=>$noteHotspot];
   }
 
   /**
@@ -623,9 +626,9 @@ class BatchApiController extends AbstractController
     $url = "${tempoUrl}/api/issues/search?componentKeys=${mavenKey}
             &rules=java:S1309,java:NoSonar&ps=500&p=1";
 
-    $result = $this->httpClient(trim(preg_replace("/\s+/u", " ", $url)));
+    $result = $this->httpClient(trim(preg_replace(static::$regex, " ", $url)));
     $date = new DateTime();
-    $date->setTimezone(new DateTimeZone('Europe/Paris'));
+    $date->setTimezone(new DateTimeZone(static::$europeParis));
 
     /** On supprime les données du projet de la table NoSonar **/
     $sql = "DELETE FROM no_sonar WHERE maven_key='${mavenKey}'";
@@ -691,7 +694,7 @@ class BatchApiController extends AbstractController
 
     /** On créé un objet date */
     $date = new DateTime();
-    $date->setTimezone(new DateTimeZone('Europe/Paris'));
+    $date->setTimezone(new DateTimeZone(static::$europeParis));
 
     $statusesMin = "OPEN,CONFIRMED,REOPENED,RESOLVED";
     $statusesAll = "OPEN,CONFIRMED,REOPENED,RESOLVED,TO_REVIEW,IN_REVIEW";
@@ -708,7 +711,7 @@ class BatchApiController extends AbstractController
     $url4 = "${tempoUrlLong}${mavenKey}&types=CODE_SMELL&p=1&ps=1";
 
     /** On appel le client http pour les requête 1 à 4 (2 à 4 pour la dette) */
-    $result1 = $this->httpClient(trim(preg_replace("/\s+/u", " ", $url1)));
+    $result1 = $this->httpClient(trim(preg_replace(static::$regex, " ", $url1)));
     $result2 = $this->httpClient($url2);
     $result3 = $this->httpClient($url3);
     $result4 = $this->httpClient($url4);
@@ -750,7 +753,7 @@ class BatchApiController extends AbstractController
                     break;
               case "MINOR" : $minor = $severity["count"];
                     break;
-              default:
+            default:
               $this->logger->NOTICE("HoneyPot : Répartition par sévérité !");
             }
           }
@@ -810,7 +813,7 @@ class BatchApiController extends AbstractController
                     break;
               case  $app[1] . $app[1] . "-rdd" : $autre = $autre + $directory["count"];
                     break;
-              default:
+            default:
                 $erreur=$erreur+$directory["count"];
                 $this->logger->INFO("MODULE : Nombre de d'erreur : ", [ "cause" => $erreur]);
               }
@@ -900,7 +903,7 @@ class BatchApiController extends AbstractController
 
           /** On crée un objet DateTime */
           $date = new DateTime();
-          $date->setTimezone(new DateTimeZone('Europe/Paris'));
+          $date->setTimezone(new DateTimeZone(static::$europeParis));
 
           /** On bind les résultats */
           $r1 = $result1["facets"];
@@ -1037,7 +1040,7 @@ class BatchApiController extends AbstractController
   {
     /** On démarre la mesure du traitement */
     $debutTraitement = new DateTime();
-    $debutTraitement->setTimezone(new DateTimeZone('Europe/Paris'));
+    $debutTraitement->setTimezone(new DateTimeZone(static::$europeParis));
 
     /**
      * "information" => array:5
@@ -1079,22 +1082,23 @@ class BatchApiController extends AbstractController
     $batchHotspot=$this->batchHotspot($mavenKey);
 
     /**
+     *  On lance la collecte des Hotspot OWASP.
      * "hotspot_details" => array:4
      *    "nombre" => 4
      *    "high" => 0
      *    "medium" => 0
      *    "low" => 4
      */
-    $batchHotspotDetails=$this->batchHotspotDetails($mavenKey, "a1");
-    $batchHotspotDetails=$this->batchHotspotDetails($mavenKey, "a2");
-    $batchHotspotDetails=$this->batchHotspotDetails($mavenKey, "a3");
-    $batchHotspotDetails=$this->batchHotspotDetails($mavenKey, "a4");
-    $batchHotspotDetails=$this->batchHotspotDetails($mavenKey, "a5");
-    $batchHotspotDetails=$this->batchHotspotDetails($mavenKey, "a6");
-    $batchHotspotDetails=$this->batchHotspotDetails($mavenKey, "a7");
-    $batchHotspotDetails=$this->batchHotspotDetails($mavenKey, "a8");
-    $batchHotspotDetails=$this->batchHotspotDetails($mavenKey, "a9");
-    $batchHotspotDetails=$this->batchHotspotDetails($mavenKey, "a10");
+    $this->batchHotspotDetails($mavenKey, "a1");
+    $this->batchHotspotDetails($mavenKey, "a2");
+    $this->batchHotspotDetails($mavenKey, "a3");
+    $this->batchHotspotDetails($mavenKey, "a4");
+    $this->batchHotspotDetails($mavenKey, "a5");
+    $this->batchHotspotDetails($mavenKey, "a6");
+    $this->batchHotspotDetails($mavenKey, "a7");
+    $this->batchHotspotDetails($mavenKey, "a8");
+    $this->batchHotspotDetails($mavenKey, "a9");
+    $this->batchHotspotDetails($mavenKey, "a10");
 
     /**
      * note_hotspot" => array:1
@@ -1178,10 +1182,10 @@ class BatchApiController extends AbstractController
     $save->setNoteSqale($batchNoteSqale["note_sqale"]["value"]);
 
     /** répartition des hotspots **/
-    $save->setHotspotHigh($batchHotspotDetails["hotspot_details"]["high"]);
-    $save->setHotspotMedium($batchHotspotDetails["hotspot_details"]["medium"]);
-    $save->setHotspotLow($batchHotspotDetails["hotspot_details"]["low"]);
-    $save->setHotspotTotal($batchHotspotDetails["hotspot_details"]["nombre"]);
+    $save->setHotspotHigh($batchHotspot["hotspot"]["high"]);
+    $save->setHotspotMedium($batchHotspot["hotspot"]["medium"]);
+    $save->setHotspotLow($batchHotspot["hotspot"]["low"]);
+    $save->setHotspotTotal($batchHotspot["hotspot"]["nombre"]);
 
     /** Dette technique */
     $save->setDette($batchAnomalie["anomalie"]["dette_minute"]);
@@ -1231,7 +1235,7 @@ class BatchApiController extends AbstractController
 
     /** On ajoute la date et on enregistre */
     $date= new DateTime();
-    $date->setTimezone(new DateTimeZone('Europe/Paris'));
+    $date->setTimezone(new DateTimeZone(static::$europeParis));
     $save->setDateEnregistrement($date);
     $this->em->persist($save);
 
@@ -1252,7 +1256,7 @@ class BatchApiController extends AbstractController
 
     /** Fin du traitement */
     $finTraitement = new DateTime();
-    $finTraitement->setTimezone(new DateTimeZone('Europe/Paris'));
+    $finTraitement->setTimezone(new DateTimeZone(static::$europeParis));
     $interval = $debutTraitement->diff($finTraitement);
     $temps=$interval->format("%H:%I:%S");
 
@@ -1264,7 +1268,7 @@ class BatchApiController extends AbstractController
   {
     /** On démarre la mesure du traitement */
     $debutTraitement = new DateTime();
-    $debutTraitement->setTimezone(new DateTimeZone('Europe/Paris'));
+    $debutTraitement->setTimezone(new DateTimeZone(static::$europeParis));
 
     /**
      * "information" => array:5
@@ -1312,16 +1316,16 @@ class BatchApiController extends AbstractController
      *    "medium" => 0
      *    "low" => 4
      */
-    $batchHotspotDetails=$this->batchHotspotDetails($mavenKey, "a1");
-    $batchHotspotDetails=$this->batchHotspotDetails($mavenKey, "a2");
-    $batchHotspotDetails=$this->batchHotspotDetails($mavenKey, "a3");
-    $batchHotspotDetails=$this->batchHotspotDetails($mavenKey, "a4");
-    $batchHotspotDetails=$this->batchHotspotDetails($mavenKey, "a5");
-    $batchHotspotDetails=$this->batchHotspotDetails($mavenKey, "a6");
-    $batchHotspotDetails=$this->batchHotspotDetails($mavenKey, "a7");
-    $batchHotspotDetails=$this->batchHotspotDetails($mavenKey, "a8");
-    $batchHotspotDetails=$this->batchHotspotDetails($mavenKey, "a9");
-    $batchHotspotDetails=$this->batchHotspotDetails($mavenKey, "a10");
+    $this->batchHotspotDetails($mavenKey, "a1");
+    $this->batchHotspotDetails($mavenKey, "a2");
+    $this->batchHotspotDetails($mavenKey, "a3");
+    $this->batchHotspotDetails($mavenKey, "a4");
+    $this->batchHotspotDetails($mavenKey, "a5");
+    $this->batchHotspotDetails($mavenKey, "a6");
+    $this->batchHotspotDetails($mavenKey, "a7");
+    $this->batchHotspotDetails($mavenKey, "a8");
+    $this->batchHotspotDetails($mavenKey, "a9");
+    $this->batchHotspotDetails($mavenKey, "a10");
 
     /**
      * note_hotspot" => array:1
@@ -1405,10 +1409,10 @@ class BatchApiController extends AbstractController
     $save->setNoteSqale($batchNoteSqale["note_sqale"]["value"]);
 
     /** répartition des hotspots **/
-    $save->setHotspotHigh($batchHotspotDetails["hotspot_details"]["high"]);
-    $save->setHotspotMedium($batchHotspotDetails["hotspot_details"]["medium"]);
-    $save->setHotspotLow($batchHotspotDetails["hotspot_details"]["low"]);
-    $save->setHotspotTotal($batchHotspotDetails["hotspot_details"]["nombre"]);
+    $save->setHotspotHigh($batchHotspot["hotspot"]["high"]);
+    $save->setHotspotMedium($batchHotspot["hotspot"]["medium"]);
+    $save->setHotspotLow($batchHotspot["hotspot"]["low"]);
+    $save->setHotspotTotal($batchHotspot["hotspot"]["nombre"]);
 
     /** Dette technique */
     $save->setDette($batchAnomalie["anomalie"]["dette_minute"]);
@@ -1458,7 +1462,7 @@ class BatchApiController extends AbstractController
 
     /** On ajoute la date et on enregistre */
     $date= new DateTime();
-    $date->setTimezone(new DateTimeZone('Europe/Paris'));
+    $date->setTimezone(new DateTimeZone(static::$europeParis));
     $save->setDateEnregistrement($date);
     $this->em->persist($save);
 
@@ -1479,7 +1483,7 @@ class BatchApiController extends AbstractController
 
     /** Fin du traitement */
     $finTraitement = new DateTime();
-    $finTraitement->setTimezone(new DateTimeZone('Europe/Paris'));
+    $finTraitement->setTimezone(new DateTimeZone(static::$europeParis));
     $interval = $debutTraitement->diff($finTraitement);
     $temps=$interval->format("%H:%I:%S");
 

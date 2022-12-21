@@ -1,0 +1,124 @@
+/**
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2021-2022.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ */
+
+/* Mobile */
+@media only screen and (max-width: 20em) {
+  .i-am-robot-svg,
+  .i-am-human-svg {
+    width: 42px;
+    height: 42px;
+  }
+}
+
+/* Mobile */
+@media only screen and (min-width: 20.025em) and (max-width: 22em) {
+  .i-am-robot-svg,
+  .i-am-human-svg {
+    width: 42px;
+    height: 42px;
+  }
+}
+
+/* Mobile */
+@media only screen and (min-width: 22.025em) and (max-width: 30em) {
+  .i-am-robot-svg,
+  .i-am-human-svg {
+    width: 42px;
+    height: 42px;
+  }
+}
+
+/* Mobile */
+@media only screen and (min-width: 30.025em) and (max-width: 40em) {
+  .i-am-robot-svg,
+  .i-am-human-svg {
+    width: 42px;
+    height: 42px;
+  }
+}
+
+/* tablette */
+@media only screen and (min-width: 40em) and (max-width: 64em) {
+  .i-am-robot-svg,
+  .i-am-human-svg {
+    width: 45px;
+    height: 45px;
+  }
+}
+
+/* desktop */
+@media only screen and (min-width: 64.025em) and (max-width: 90em) {
+  .i-am-robot-svg,
+  .i-am-human-svg {
+    width: 45px;
+    height: 45px;
+  }
+}
+
+/* desktop */
+@media only screen and (min-width: 90.025em) and (max-width: 120em) {
+  .i-am-robot-svg,
+  .i-am-human-svg {
+    width: 45px;
+    height: 45px;
+  }
+}
+
+/* desktop */
+@media only screen and (min-width: 120.063em) and (max-width: 160em) {
+  .i-am-robot-svg,
+  .i-am-human-svg {
+    width: 45px;
+    height: 45px;
+  }
+}
+
+/*************************          Global     *********************************/
+
+/** Supression du style inline */
+.callout-message { padding-right: 1rem; }
+
+tbody tr:nth-child(even) {
+  border-bottom: 0;
+  background-color: #ddd;
+}
+
+.ok { color: #187e3d; }
+.ko { color: #971c09; }
+.error { background-color: #ab493a; }
+
+/* Bouton information SVG */
+.i-am-robot-svg,
+.i-am-human-svg { fill: #00445b; }
+
+/* Bouton information SVG */
+.information-svg {
+  fill: #00445b;
+  cursor: pointer;
+  margin-bottom: -0.2rem;
+  width: 28px;
+  height: 28px;
+}
+
+/* hover sur l'icône information */
+.information-svg:hover { fill: #ed7d20; }
+
+/* disable */
+.disable { cursor: not-allowed; }
+
+/* bouton */
+#fermer-traitement-liste {
+  color: #fff;
+  background-color: #00445b;
+}
+
+#fermer-traitement-liste:hover { background-color: #006182; }
