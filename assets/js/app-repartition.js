@@ -871,8 +871,7 @@ $('.bouton-repartition-traitement-donnees').on('click', ()=>{
   /** On lance la fonction asynchonne */
   async function fnAsync() {
 
-    let tabTitre=`
-    <tr>
+    const tabTitre=`<tr>
     <th scope="col"></th>
     <th scope="col" class="text-center"><strong>Application Présentaton</strong></th>
     <th scope="col" class="text-center"><strong>Application Métier</strong></th>
