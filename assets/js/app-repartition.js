@@ -266,7 +266,7 @@ const analyse=function(mavenKey, type, severity, css) {
         } else {
           alert='texte-vert';
         }
-      let tabBug=`<tr>
+      const tabBug=`<tr>
           <td class="${css}"><strong>${labelSeverity}</strong></td>
           <td id="presenation-01" class="text-center">${t.repartition.frontend}</td>
           <td id="metier-01" class="text-center">${t.repartition.backend}</td>
@@ -314,7 +314,7 @@ const analyse=function(mavenKey, type, severity, css) {
         alert='texte-vert';
       }
 
-      let tabVulnerability=`
+      const tabVulnerability=`
       <tr>
         <td class="${css}"><strong>${severity}</strong></td>
         <td id="presenation-01" class="text-center">${t.repartition.frontend}</td>
@@ -363,21 +363,20 @@ const analyse=function(mavenKey, type, severity, css) {
         alert='texte-vert';
       }
 
-      let tabCcodeSmell=`
-      <tr>
+      const tabCodeSmell=`<tr>
         <td class="${css}"><strong>${severity}</strong></td>
         <td id="presenation-01" class="text-center">${t.repartition.frontend}</td>
         <td id="metier-01" class="text-center">${t.repartition.backend}</td>
         <td id="autre-01" class="text-center">${t.repartition.autre}</td>
         <td id="indice-confience-01" class="text-center ${alert}">${idc}</td></tr>`;
-        $("#mon-bo-tableau3").append(tabCodeSmell);
+        $('#mon-bo-tableau3').append(tabCodeSmell);
     }
     resolve();
     });
   });
 };
 
- /**
+/**
   * [Description for collecte]
   * On lance la collecte et on affiche la répartition
   *
