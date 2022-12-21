@@ -198,8 +198,24 @@
   margin-top: 0.1rem;
 }
 
+/** Supression style inline */
+.ajouter-mon-avatar-container { display: inline-flex; }
+
 #ajouter-mon-avatar {
   margin-left: 0.6rem;
+}
+
+/** Supression style inline */
+.avatar-chiffre,
+.avatar-emoticone,
+.avatar-fille1,
+.avatar-fille2,
+.avatar-garcon1,
+.avatar-garcon2,
+.avatar-lettre {
+  font-size: 1.5rem;
+  padding-right: 3rem;
+  margin-top: -0.2rem;
 }
 
 /* Formulaires                                        */
