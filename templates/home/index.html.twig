@@ -68,19 +68,22 @@
           </div>
         </div>
         <div class="small-4 medium-2 large-2 referentiel-resultat cell">
-            <p class="text-center">
+          <p class="text-center">
             <span id="js-nombre-projet" class="stat color-noir">{{projetBD|format_number}}</span>
             {% set difference = projetBD - projetSonar %}
             {% if difference > 0 %}
-              <span id="js-plus" class="plus"><strong>-{{difference}}</strong><span>
+              <span id="js-plus" class="plus">
+                <strong>-{{difference}}</strong>
+              </span>
             {% endif %}
             {% if difference < 0 %}
-              <span id="js-moins" class="moins"><strong>+{{difference|abs}}</strong><span>
+              <span id="js-moins" class="moins">
+                <strong>+{{difference|abs}}</strong>
+              </span>
             {% endif %}
-            </p>
+          </p>
         </div>
       </div>
-
       {# Profil qualité #}
       <div class="grid-x cell">
         <div class="small-8 medium-10 large-10 referentiel-bouton cell">
@@ -233,18 +236,21 @@
                   <tr scope="row">
                     <td>
                       <span class="nombre-favori open-sans">
-                      {% if app.bug <10 %} 00{{app.bug}}{% endif %}
-                      {% if app.bug >=10 and app.bug <100 %} 0{{app.bug}}{% endif %}
-                      {% if app.bug >=100 and app.bug <1000 %} {{app.bug}}{% endif %}
-                      {% if app.bug >=1000 and app.bug <100000 %}
-                        {% set k=(app.bug/1000)|number_format(1, '.', ',') %}{{k}}K
-                      {% endif %}
+                        {% if app.bug < 10 %} 00{{app.bug}} {% endif %}
+                        {% if app.bug >= 10 and app.bug < 100 %} 0{{app.bug}} {% endif %}
+                        {% if app.bug >= 100 and app.bug < 1000 %} {{app.bug}} {% endif %}
+                        {% if app.bug >= 1000 and app.bug < 100000 %}
+                          {% set k = (app.bug / 1000)|number_format(1, '.', ',') %}
+                          {{k}}K
+                        {% endif %}
+                      </span>
                     </td>
                     <td>
                       <span class="nombre-favori open-sans">
-                        {% if app.vulnerability <10 %} 00{{app.vulnerability}}{% endif %}
-                        {% if app.vulnerability >=10 and app.vulnerability <100%} 0{{app.vulnerability}}{% endif %}
-                        {% if app.vulnerability >=100 and app.vulnerability <1000 %} {{app.vulnerability}}{% endif %}
+                        {% if app.vulnerability < 10 %} 00{{app.vulnerability}} {% endif %}
+                        {% if app.vulnerability >= 10 and app.vulnerability <100%} 0{{app.vulnerability}} {% endif %}
+                        {% if app.vulnerability >=100 and app.vulnerability <1000 %}
+                        {{app.vulnerability}} {% endif %}
                         {% if app.vulnerability >=1000 and app.vulnerability <100000 %}
                             {% set k=(app.vulnerability/1000)|number_format(1, '.', ',') %}
                             {{k}}K
@@ -258,8 +264,9 @@
                         {% if app.hotspots >=100 and app.hotspots <1000 %} {{app.hotspots}} {% endif %}
                         {% if app.hotspots >=1000 and app.hotspots <100000 %}
                           {% set k=(app.hotspots/1000)|number_format(1, '.', ',') %}
-                            {{k}}K</span>
+                            {{k}}K
                         {% endif %}
+                        </span>
                     </td>
                     <td>
                       <span class="nombre-favori open-sans">
