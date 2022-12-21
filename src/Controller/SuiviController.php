@@ -38,6 +38,11 @@ use Psr\Log\LoggerInterface;
  */
 class SuiviController extends AbstractController
 {
+  /** Définition des constantes */
+  public static $strContentType = 'application/json';
+  public static $dateFormat = "Y-m-d H:i:s";
+  public static $sonarUrl = "sonar.url";
+  public static $regex = "/\s+/u";
 
   /**
    * [Description for __construct]
@@ -60,10 +65,6 @@ class SuiviController extends AbstractController
     $this->em = $em;
     $this->logger = $logger;
   }
-
-  public static $strContentType = 'application/json';
-  public static $dateFormat = "Y-m-d H:i:s";
-  public static $sonarUrl = "sonar.url";
 
   /**
    * [Description for httpClient]
@@ -162,7 +163,7 @@ class SuiviController extends AbstractController
     FROM historique
     WHERE maven_key='${mavenKey}' AND initial=FALSE
     ORDER BY date_version DESC LIMIT 9)";
-    $select = $this->em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)))->executeQuery();
+    $select = $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
     $suivi = $select->fetchAllAssociative();
 
     /** On récupère les anomalies par sévérité */
@@ -183,7 +184,7 @@ class SuiviController extends AbstractController
     FROM historique
     WHERE maven_key='${mavenKey}' AND initial=FALSE
     ORDER BY date_version DESC LIMIT 9)";
-    $select = $this->em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)))->executeQuery();
+    $select = $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
     $severite = $select->fetchAllAssociative();
 
     /** On récupère les anomalies par type et sévérité. */
@@ -213,7 +214,7 @@ class SuiviController extends AbstractController
     WHERE maven_key='${mavenKey}' AND initial=FALSE
     ORDER BY date_version DESC LIMIT 9)";
 
-    $select = $this->em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)))->executeQuery();
+    $select = $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
     $details = $select->fetchAllAssociative();
 
     /** Graphique */
@@ -222,7 +223,7 @@ class SuiviController extends AbstractController
     FROM historique WHERE maven_key='${mavenKey}'
     GROUP BY date_version ORDER BY date_version ASC";
 
-    $select = $this->em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)))->executeQuery();
+    $select = $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
     $graph = $select->fetchAllAssociative();
 
     /** On compte le nombre de résultat */
@@ -336,7 +337,7 @@ class SuiviController extends AbstractController
             &from=${urlencodeDate}&to=${urlencodeDate}";
 
     /** On appel le client http */
-    $result = $this->httpClient(trim(preg_replace("/\s+/u", " ", $url)));
+    $result = $this->httpClient(trim(preg_replace(static::$regex, " ", $url)));
     /** On créé un objet json */
     $response = new JsonResponse();
 
@@ -516,7 +517,7 @@ class SuiviController extends AbstractController
         '${tempoDateEnregistrement}')";
 
     // On exécute la requête
-    $con = $this->em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)));
+    $con = $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)));
     try {
       $con->executeQuery();
     } catch (\Doctrine\DBAL\Exception $e) {
@@ -617,7 +618,7 @@ class SuiviController extends AbstractController
     VALUES ('${mavenKey}', ${favori}, '${dateEnregistrement}')";
 
     /** On exécute la requête et on catch l'erreur */
-    $con = $this->em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)));
+    $con = $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)));
     try {
       $con->executeQuery();
     } catch (\Doctrine\DBAL\Exception $e) {
@@ -659,7 +660,7 @@ class SuiviController extends AbstractController
                   AND version='${version}'
                   AND date_version='${date}'";
     // On exécute la requête
-    $con = $this->em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)));
+    $con = $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)));
     try {
       $con->executeQuery();
     } catch (\Doctrine\DBAL\Exception $e) {
