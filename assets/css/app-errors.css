@@ -21,7 +21,10 @@
   font-weight: 400;
   font-style: normal;
 }
-.poppins { font-family: Poppins, sans-serif; }
+
+.poppins {
+  font-family: Poppins, sans-serif;
+}
 
 body {
   margin: 0;
@@ -31,6 +34,7 @@ body {
 /* Définition du logo SVG */
 .logo-svg {
   fill: #fff;
+  opacity: 0.991;
   shape-rendering: geometricprecision;
   text-rendering: geometricprecision;
   image-rendering: optimizequality;
@@ -50,16 +54,17 @@ body {
   text-align: center;
 }
 
-.content h2.header {
+.content h1.header {
   font-size: 26vw;
   color: #fff;
+  background-color: #00445b;
   line-height: 1em;
   position: relative;
   margin-top: 2rem;
   margin-bottom: 2rem;
 }
 
-.content h4 {
+.content h2 {
   margin-bottom: 20px;
   text-transform: uppercase;
   color: #fff;
@@ -119,21 +124,21 @@ body {
 
 @media only screen and (max-width: 20em) {
   .logo-svg { width: 32px; }
-  .content h4 { font-size: 1.4rem; }
+  .content h2 { font-size: 1.4rem; }
   .content p { font-size: 1.1rem; }
   .press-left-button { padding-left: 2rem; }
 }
 
 @media only screen and (min-width: 20.025em) and (max-width: 30em) {
   .logo-svg { width: 32px; }
-  .content h4 { font-size: 1.4rem; }
+  .content h2 { font-size: 1.4rem; }
   .content p { font-size: 1.1rem; }
   .press-left-button { padding-left: 2rem; }
 }
 
 @media only screen and (min-width: 30.025em) and (max-width: 40em) {
   .logo-svg { width: 64px; }
-  .content h4 { font-size: 1.3rem; }
+  .content h2 { font-size: 1.3rem; }
   .content p { font-size: 1rem; }
   .press-left-button { display: none; }
 }
