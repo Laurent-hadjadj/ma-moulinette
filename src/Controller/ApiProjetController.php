@@ -556,6 +556,8 @@ class ApiProjetController extends AbstractController
                       break;
                 case "MINOR" : $minor = $severity["count"];
                       break;
+                default:
+                $this->logger->INFO("Référentiel severité !");
               }
             }
         }
@@ -569,6 +571,8 @@ class ApiProjetController extends AbstractController
                     break;
               case "CODE_SMELL" : $codeSmell = $type["count"];
               break;
+            default:
+              $this->logger->INFO("Référentiel Type !");
             }
           }
         }
@@ -1421,7 +1425,7 @@ class ApiProjetController extends AbstractController
       case "LOW":
         $niveau = 3;
         break;
-      default:
+    default:
         $this->logger->NOTICE("HoneyPot : Liste des sévérités !");
     }
     $frontend=$backend=$autre = 0;
