@@ -808,10 +808,10 @@
     </div>
 
     {# Formulaire - Modifier les versions #}
-    <div id="modal-modifier-analyse" class="reveal large" data-reveal data-close-on-click="true"
-          data-animation-in="fade-in" data-animation-out="fade-out">
+    <div id="modal-modifier-analyse" class="reveal large" data-reveal
+      data-close-on-click="true"data-animation-in="fade-in" data-animation-out="fade-out">
       <h2 class="claire-hand">Modifier la configuration.</h2>
-      <br/>
+      <br>
       <div class="grid-x cell">
         <div class="small-12 medium-12 large-12 cell">
           <h4>Liste des versions disponibles.</h4>
@@ -833,9 +833,11 @@
           <tbody id="tableau-liste-version" class="open-sans"></tbody>
         </table>
         </div>
-      <br/>
-      <a id="fermer-modifier-analyse"
-        class="expanded button open-sans" data-close aria-label="Close reveal" type="button">Fermer</a>
+      <br>
+      {# fermeture de la fenetre modale #}
+      <button id="fermer-modifier-analyse"
+        class="expanded button open-sans" data-close aria-label="Close reveal" type="button">Fermer
+      </button>
       <a class="close-button" data-close aria-label="Close reveal">&#215;</a>
     </div>
 
