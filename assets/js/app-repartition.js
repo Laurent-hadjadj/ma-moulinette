@@ -224,60 +224,58 @@ const analyse=function(mavenKey, type, severity, css) {
 
       /* On affiche le tableau pour la fiabilité si le parser est OK */
       let labelSeverity;
-      if (type==='BUG' && parser==='OK')
-      {
-      if (severity==='BLOCKER') {
-        labelSeverity='Bloquant';
-        if (t2.dataset.nombreBugBloquant==='0')
-          { idc='-'; } else {
-            idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t2.dataset.nombreBugBloquant);
+      if (type==='BUG' && parser==='OK'){
+        if (severity==='BLOCKER') {
+          labelSeverity='Bloquant';
+          if (t2.dataset.nombreBugBloquant==='0')
+            { idc='-'; } else {
+              idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t2.dataset.nombreBugBloquant);
+            }
           }
-        }
-      if (severity==='CRITICAL') {
-        labelSeverity='Critique';
-        if (t3.dataset.nombreBugCritique==='0')
-        { idc='-'; } else {
-          idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t3.dataset.nombreBugCritique);
-        }
-        }
-      if (severity==='INFO') {
-        labelSeverity='Info';
-        if (t4.dataset.nombreBugInfo==='0')
-          { idc='-'; } else {
-            idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t4.dataset.nombreBugInfo);
+        if (severity==='CRITICAL') {
+          labelSeverity='Critique';
+          if (t3.dataset.nombreBugCritique==='0')
+            { idc='-'; } else {
+              idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t3.dataset.nombreBugCritique);
+            }
           }
+        if (severity==='INFO') {
+          labelSeverity='Info';
+          if (t4.dataset.nombreBugInfo==='0')
+            { idc='-'; } else {
+              idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t4.dataset.nombreBugInfo);
+            }
+          }
+        if (severity==='MAJOR') {
+          labelSeverity='Majeur';
+          if (t5.dataset.nombreBugMajeur==='0')
+            { idc='-'; } else {
+              idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t5.dataset.nombreBugMajeur);
+            }
         }
-      if (severity==='MAJOR') {
-        labelSeverity='Majeur';
-        if (t5.dataset.nombreBugMajeur==='0')
-          { idc='-'; } else {
-            idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t5.dataset.nombreBugMajeur);
-          }
-      }
-      if (severity==='MINOR') {
-        labelSeverity='Mineur';
-        if (t6.dataset.nombreBugMineur==='0')
-          { idc='-'; } else {
-            idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t6.dataset.nombreBugMineur);
-          }
-      }
-      if (idc !=='100 %' && idc !=='-') {
+        if (severity==='MINOR') {
+          labelSeverity='Mineur';
+          if (t6.dataset.nombreBugMineur==='0')
+            { idc='-'; } else {
+              idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t6.dataset.nombreBugMineur);
+            }
+        }
+        if (idc !=='100 %' && idc !=='-') {
           alert='texte-rouge';
         } else {
           alert='texte-vert';
         }
-      const tabBug=`<tr>
-          <td class="${css}"><strong>${labelSeverity}</strong></td>
-          <td id="presenation-01" class="text-center">${t.repartition.frontend}</td>
-          <td id="metier-01" class="text-center">${t.repartition.backend}</td>
-          <td id="autre-01" class="text-center">${t.repartition.autre}</td>
-          <td id="indice-confience-01" class="text-center ${alert}">${idc}</td></tr>`;
-          $('#mon-bo-tableau1').append(tabBug);
+        const tabBug=`<tr>
+            <td class="${css}"><strong>${labelSeverity}</strong></td>
+            <td id="presenation-01" class="text-center">${t.repartition.frontend}</td>
+            <td id="metier-01" class="text-center">${t.repartition.backend}</td>
+            <td id="autre-01" class="text-center">${t.repartition.autre}</td>
+            <td id="indice-confience-01" class="text-center ${alert}">${idc}</td></tr>`;
+            $('#mon-bo-tableau1').append(tabBug);
       }
 
       /* On affiche le tableau pour la sécurité si le parser est OK */
-      if (type==='VULNERABILITY' && parser==='OK')
-      {
+      if (type==='VULNERABILITY' && parser==='OK'){
         if (severity==='BLOCKER') {
           if (t8.dataset.nombreVulnerabiliteBloquant==='0')
             { idc='-'; } else {
@@ -325,44 +323,46 @@ const analyse=function(mavenKey, type, severity, css) {
       }
 
       /* On affiche le tableau pour la maintenabilité si le parser est OK */
-      if (type==='CODE_SMELL' && parser==='OK')
-      {
-      if (severity==='BLOCKER')
-        if (t14.dataset.nombreMauvaisePratiqueBloquant==='0'){
-            idc='-'; } else {
-            idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t14.dataset.nombreMauvaisePratiqueBloquant);
+      if (type==='CODE_SMELL' && parser==='OK'){
+        if (severity==='BLOCKER'){
+          if (t14.dataset.nombreMauvaisePratiqueBloquant==='0'){
+              idc='-'; } else {
+              idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t14.dataset.nombreMauvaisePratiqueBloquant);
+              }
           }
-
-      if (severity==='CRITICAL')
-        if (t15.dataset.nombreMauvaisePratiqueCritique==='0')
-          { idc='-'; } else {
-            idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t15.dataset.nombreMauvaisePratiqueCritique);
+        if (severity==='CRITICAL') {
+          if (t15.dataset.nombreMauvaisePratiqueCritique==='0'){
+              idc='-';
+            } else {
+              idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t15.dataset.nombreMauvaisePratiqueCritique);
+            }
           }
-
-      if (severity==='INFO')
-        if (t16.dataset.nombreMauvaisePratiqueInfo==='0')
-          { idc='-'; } else {
-            idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t16.dataset.nombreMauvaisePratiqueInfo);
+        if (severity==='INFO'){
+          if (t16.dataset.nombreMauvaisePratiqueInfo==='0'){
+            idc='-';
+          } else {
+              idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t16.dataset.nombreMauvaisePratiqueInfo);
+            }
           }
-
-      if (severity==='MAJOR')
-        if (t17.dataset.nombreMauvaisePratiqueMajeur==='0')
-        { idc='-'; } else {
-              idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t17.dataset.nombreMauvaisePratiqueMajeur);
+        if (severity==='MAJOR'){
+          if (t17.dataset.nombreMauvaisePratiqueMajeur==='0'){
+            idc='-';
+          } else {
+                  idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t17.dataset.nombreMauvaisePratiqueMajeur);
+              }
           }
-
-    if (severity==='MINOR')
-      if (t18.dataset.nombreMauvaisePratiqueMinor==='0')
-        { idc='-'; } else {
-            idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t18.dataset.nombreMauvaisePratiqueMineur);
+      if (severity==='MINOR'){
+        if (t18.dataset.nombreMauvaisePratiqueMinor==='0'){
+          idc='-';
+        } else {
+              idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t18.dataset.nombreMauvaisePratiqueMineur);
+            }
           }
-
-    if (idc !=='100 %' && idc !=='-') {
-        alert='texte-rouge';
-      } else {
-        alert='texte-vert';
-      }
-
+      if (idc !=='100 %' && idc !=='-') {
+          alert='texte-rouge';
+        } else {
+          alert='texte-vert';
+        }
       const tabCodeSmell=`<tr>
         <td class="${css}"><strong>${severity}</strong></td>
         <td id="presenation-01" class="text-center">${t.repartition.frontend}</td>
@@ -370,7 +370,7 @@ const analyse=function(mavenKey, type, severity, css) {
         <td id="autre-01" class="text-center">${t.repartition.autre}</td>
         <td id="indice-confience-01" class="text-center ${alert}">${idc}</td></tr>`;
         $('#mon-bo-tableau3').append(tabCodeSmell);
-    }
+      }
     resolve();
     });
   });
@@ -407,7 +407,7 @@ const collecte=function(mavenKey, type, severity, start, stop, counter, timer) {
 
   /** Initialisation de la barre de progression et mise à jour dynamique */
   const changeProgress = progress => {
-    $(".progress-meter").css('width', `${progress}%`,);
+    $(".progress-meter").css('width', `${progress}%`);
     $(".progress-meter-text").text(`${progress}%`);
   };
 
@@ -432,7 +432,7 @@ const collecte=function(mavenKey, type, severity, start, stop, counter, timer) {
   const changeTimer = value => {
     const minute = Math.floor(value/60);
     const restSeconds = value%60;
-    const newTimer=minute+'.'+restSeconds;
+    const newTimer=`${minute}.${restSeconds}`;
     $('#js-'+typeTime.toLowerCase()+'-time').html(newTimer);
   };
 
