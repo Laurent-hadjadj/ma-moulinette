@@ -181,6 +181,7 @@ class ApiProjetPeintureController extends AbstractController
     WHERE maven_key='${mavenKey}' AND type='SNAPSHOT'";
     $e=$this->em->getConnection()->prepare($sql)->executeQuery();
     $snapshot=$e->fetchAllAssociative();
+
     /** On calcul la valeur pour les autres types de version */
     $lesAutres=$toutesLesVersions[0]['total']-$release[0]['total']-$snapshot[0]['total'];
 
@@ -208,7 +209,7 @@ class ApiProjetPeintureController extends AbstractController
     $r = $this->em->getConnection()->prepare($sql)->executeQuery();
     $infoRelease = $r->fetchAllAssociative();
 
-    /** Contrôle de la valeur des versions  release, snapshot et release */
+    /** Contrôle de la valeur des versions release, snapshot et release */
     if (empty($release[0]['total']))
       {
         $release=0;
@@ -223,16 +224,9 @@ class ApiProjetPeintureController extends AbstractController
       $snapshot=$snapshot[0]['total'];
     }
 
-    if (empty($autre[0]['total']))
-    {
-      $autre=0;
-    } else {
-      $autre=$autre[0]['total'];
-    }
-
     return $response->setData(
       [
-      "release"=>$release, "snapshot"=>$snapshot,  "autre"=>$autre,
+      "release"=>$release, "snapshot"=>$snapshot,  "autre"=>$lesAutres,
       "label" => $label,
       "dataset" => $dataset, "projet" => $infoRelease[0]["projet"],
       "date" => $infoRelease[0]["date"], Response::HTTP_OK]
