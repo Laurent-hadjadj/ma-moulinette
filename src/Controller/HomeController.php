@@ -37,6 +37,7 @@ class HomeController extends AbstractController
     public static $strContentType = 'application/json';
     public static $sonarUrl = "sonar.url";
     public static $dateFormat = "Y-m-d H:i:s";
+    public static $europeParis = "Europe/Paris";
     public static $regex = "/\s+/u";
 
     /**
@@ -240,7 +241,7 @@ class HomeController extends AbstractController
     {
     /** On met à jour la date de modification */
     $date = new DateTime();
-    $date->setTimezone(new DateTimeZone('Europe/Paris'));
+    $date->setTimezone(new DateTimeZone(static::$europeParis));
 
     $dateModificationProjet = $date->format(static::$dateFormat);
     $dateModificationProfil = $date->format(static::$dateFormat);
@@ -285,7 +286,7 @@ class HomeController extends AbstractController
             $projetBD=$projetSonar=$profilBD=$profilSonar=0;
 
             $date = new DateTime();
-            $date->setTimezone(new DateTimeZone('Europe/Paris'));
+            $date->setTimezone(new DateTimeZone(static::$europeParis));
 
             $dateCreationFormat = $date->format(static::$dateFormat);
             $projetModificationDate = $date->format(static::$dateFormat);
@@ -363,7 +364,7 @@ class HomeController extends AbstractController
          */
 
         $date = new DateTime();
-        $date->setTimezone(new DateTimeZone('Europe/Paris'));
+        $date->setTimezone(new DateTimeZone(static::$europeParis));
 
         /** On récupère les properties des projets et profils */
         $properties=self::getProperties();
