@@ -98,6 +98,9 @@
 .details-svg:hover,
 .details2-svg:hover { fill: #850385; }
 
+/* Suppression du style inline */
+.graphique-autre-version-container { width: 54vw; }
+
 /* Taille est couleur des images SVG dans les boutons */
 .liste-svg,
 .analyse-svg,
