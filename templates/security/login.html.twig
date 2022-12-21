@@ -20,7 +20,9 @@
   <div class="grid-x">
     <div class="small-12 medium-7 large-7 cell">
       <video id="video-hongkong" class="video-hongkong" preload="metadata" loop
-        autoplay muted src="{{ asset('build/video/HongKong.mp4') }}" type="video/mp4">
+        autoplay muted>
+        <source src="{{ asset('build/video/HongKong.mp4') }}" type="video/mp4" />
+        <track label="Français" kind="captions" srclang="fr" default />
       </video>
       </video>
       <span class="open-sans float-center text-center">
