@@ -1,304 +1,312 @@
 {% extends '@!EasyAdmin/layout.html.twig' %}
 {% block page_title %}
-    Informations générales
+	Informations générales
 {% endblock %}
 
 {% block main %}
-<h4>Système.</h4>
-<div class="row">
-  <div class="col-sm-12 col-md-3 col-lg-2">
-    <div class="card border-dark mb-3 card-fontsize">
-      <div class="card-header text-center tool-tip">PHP<span class="tool-tip-text">Version de PHP.</span></div>
-      <div class="card-body">
-        <p class="card-text text-center card-text-fontsize">{{php_version}}</p>
-      </div>
-    </div>
-  </div>
-  <div class="col-sm-12 col-md-3 col-lg-2">
-    <div class="card border-dark mb-3 card-fontsize">
-      <div class="card-header text-center tool-tip">Symfony <span class="tool-tip-text">Version de Symfony.</span></div>
-      <div class="card-body">
-        <p class="card-text text-center card-text-fontsize">{{symfony_version}}</p>
-      </div>
-    </div>
-  </div>
-  <div class="col-sm-12 col-md-3 col-lg-2">
-    <div class="card border-dark mb-3 card-fontsize">
-      <div class="card-header text-center tool-tip">SQLite
-        <span class="tool-tip-text">Version de de la base de données.</span>
-      </div>
-      <div class="card-body">
-        <p class="card-text text-center card-text-fontsize">{{sqlite_version}}</p>
-      </div>
-    </div>
-  </div>
-  <div class="col-sm-12 col-md-3 col-lg-2">
-    <div class="card border-dark mb-3 card-fontsize">
-      <div class="card-header text-center tool-tip">Intégrité
-        <span class="tool-tip-text">Intégrité de la base de données.</span>
-      </div>
-      <div class="card-body">
-        <p class="card-text text-center card-text-fontsize">{{integrity}}</p>
-      </div>
-    </div>
-  </div>
-  <div class="col-sm-12 col-md-3 col-lg-2">
-    <div class="card border-dark mb-3 card-fontsize">
-      <div class="card-header text-center tool-tip">Mémoire
-        <span class="tool-tip-text">Mémoire en MO utilisée par PHP.</span>
-      </div>
-      <div class="card-body">
-        <p class="card-text text-center card-text-fontsize" >{{ram}}</p>
-      </div>
-    </div>
-  </div>
-</div>
+	<h4>Système.</h4>
+	<div class="row">
+		<div class="col-sm-12 col-md-3 col-lg-2">
+			<div class="card border-dark mb-3 card-fontsize">
+				<div class="card-header text-center tool-tip">PHP<span class="tool-tip-text">Version de PHP.</span>
+				</div>
+				<div class="card-body">
+					<p class="card-text text-center card-text-fontsize">{{php_version}}</p>
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-12 col-md-3 col-lg-2">
+			<div class="card border-dark mb-3 card-fontsize">
+				<div class="card-header text-center tool-tip">Symfony
+					<span class="tool-tip-text">Version de Symfony.</span>
+				</div>
+				<div class="card-body">
+					<p class="card-text text-center card-text-fontsize">{{symfony_version}}</p>
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-12 col-md-3 col-lg-2">
+			<div class="card border-dark mb-3 card-fontsize">
+				<div class="card-header text-center tool-tip">SQLite
+					<span class="tool-tip-text">Version de de la base de données.</span>
+				</div>
+				<div class="card-body">
+					<p class="card-text text-center card-text-fontsize">{{sqlite_version}}</p>
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-12 col-md-3 col-lg-2">
+			<div class="card border-dark mb-3 card-fontsize">
+				<div class="card-header text-center tool-tip">Intégrité
+					<span class="tool-tip-text">Intégrité de la base de données.</span>
+				</div>
+				<div class="card-body">
+					<p class="card-text text-center card-text-fontsize">{{integrity}}</p>
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-12 col-md-3 col-lg-2">
+			<div class="card border-dark mb-3 card-fontsize">
+				<div class="card-header text-center tool-tip">Mémoire
+					<span class="tool-tip-text">Mémoire en MO utilisée par PHP.</span>
+				</div>
+				<div class="card-body">
+					<p class="card-text text-center card-text-fontsize">{{ram}}</p>
+				</div>
+			</div>
+		</div>
+	</div>
 
-<h4>Ma Moulinette.</h4>
-<div class="row">
-  <div class="col-sm-12 col-md-3 col-lg-2">
-    <div class="card border-dark mb-3 card-fontsize">
-      <div class="card-header text-center tool-tip">Utilisateur
-        <span class="tool-tip-text">Nombre d'utilisateur inscrit.</span>
-      </div>
-      <div class="card-body">
-        <p class="card-text text-center card-text-fontsize">{{application_utilisateur}}</p>
-      </div>
-    </div>
-  </div>
+	<h4>Ma Moulinette.</h4>
+	<div class="row">
+		<div class="col-sm-12 col-md-3 col-lg-2">
+			<div class="card border-dark mb-3 card-fontsize">
+				<div class="card-header text-center tool-tip">Utilisateur
+					<span class="tool-tip-text">Nombre d'utilisateur inscrit.</span>
+				</div>
+				<div class="card-body">
+					<p class="card-text text-center card-text-fontsize">{{application_utilisateur}}</p>
+				</div>
+			</div>
+		</div>
 
-  <div class="col-sm-12 col-md-3 col-lg-2">
-    <div class="card border-dark mb-3 card-fontsize">
-      <div class="card-header text-center tool-tip">Version
-        <span class="tool-tip-text">Nombre de version Release.</span>
-      </div>
-      <div class="card-body">
-        <p class="card-text text-center card-text-fontsize">{{application_version}}</p>
-      </div>
-    </div>
-  </div>
-  <div class="col-sm-12 col-md-3 col-lg-2">
-    <div class="card border-dark mb-3 card-fontsize">
-      <div class="card-header text-center tool-tip">Release
-        <span class="tool-tip-text">Verison de l'application.</span>
-      </div>
-      <div class="card-body">
-        <p class="card-text text-center card-text-fontsize">{{application_version}}</p>
-      </div>
-    </div>
-  </div>
-  <div class="col-sm-12 col-md-3 col-lg-2">
-    <div class="card border-dark mb-3 card-fontsize">
-      <div class="card-header text-center tool-tip">Table
-        <span class="tool-tip-text">Nombre de table.</span>
-      </div>
-      <div class="card-body">
-        <p class="card-text text-center card-text-fontsize">{{application_table}}</p>
-      </div>
-    </div>
-  </div>
+		<div class="col-sm-12 col-md-3 col-lg-2">
+			<div class="card border-dark mb-3 card-fontsize">
+				<div class="card-header text-center tool-tip">Version
+					<span class="tool-tip-text">Nombre de version Release.</span>
+				</div>
+				<div class="card-body">
+					<p class="card-text text-center card-text-fontsize">{{application_version}}</p>
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-12 col-md-3 col-lg-2">
+			<div class="card border-dark mb-3 card-fontsize">
+				<div class="card-header text-center tool-tip">Release
+					<span class="tool-tip-text">Verison de l'application.</span>
+				</div>
+				<div class="card-body">
+					<p class="card-text text-center card-text-fontsize">{{application_version}}</p>
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-12 col-md-3 col-lg-2">
+			<div class="card border-dark mb-3 card-fontsize">
+				<div class="card-header text-center tool-tip">Table
+					<span class="tool-tip-text">Nombre de table.</span>
+				</div>
+				<div class="card-body">
+					<p class="card-text text-center card-text-fontsize">{{application_table}}</p>
+				</div>
+			</div>
+		</div>
 
-  <div class="table-responsive">
-    <table class="table align-middle table-bordered table-sm">
-      <caption>Données {{version}} du {{date}}.</caption>
-      <thead class="table-light text-center">
-        <tr>
-          <th scope="col">Langage</th>
-          <th scope="col">Fichier</th>
-          <th scope="col">Code</th>
-          <th scope="col">Comment</th>
-          <th scope="col">Ligne Vide</th>
-          <th scope="col">Total</th>
-        </tr>
-      </thead>
-      <tbody class="text-center">
-        <tr>
-          <th scope="row">PHP</th>
-          {% for indicateur in php %}
-          <td>{{indicateur|number_format(0, '.', ' ')}}</td>
-          {% endfor %}
-        </tr>
-        <tr>
-          <th scope="row">HTML</th>
-          {% for indicateur in html %}
-          <td>{{indicateur|number_format(0, '.', ' ')}}</td>
-          {% endfor %}
-        </tr>
-        <tr>
-          <th scope="row">CSS</th>
-          {% for indicateur in css %}
-          <td>{{indicateur|number_format(0, '.', ' ')}}</td>
-          {% endfor %}
-        </tr>
-        <tr>
-          <th scope="row">JS</th>
-          {% for indicateur in js %}
-          <td>{{indicateur|number_format(0, '.', ' ')}}</td>
-          {% endfor %}
-        </tr>
-        <tr>
-          <th scope="row">Markdown</th>
-          {% for indicateur in md %}
-          <td>{{indicateur|number_format(0, '.', ' ')}}</td>
-          {% endfor %}
-        </tr>
-        <tr>
-          <th scope="row">SQL</th>
-          {% for indicateur in sql %}
-          <td>{{indicateur|number_format(0, '.', ' ')}}</td>
-          {% endfor %}
-        </tr>
-        <tr>
-          <th scope="row">Migration</th>
-          {% for indicateur in migration %}
-          <td>{{indicateur|number_format(0, '.', ' ')}}</td>
-          {% endfor %}
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
+		<div class="table-responsive">
+			<table class="table align-middle table-bordered table-sm">
+				<caption>Données
+					{{version}}
+					du
+					{{date}}.</caption>
+				<thead class="table-light text-center">
+					<tr>
+						<th scope="col">Langage</th>
+						<th scope="col">Fichier</th>
+						<th scope="col">Code</th>
+						<th scope="col">Comment</th>
+						<th scope="col">Ligne Vide</th>
+						<th scope="col">Total</th>
+					</tr>
+				</thead>
+				<tbody class="text-center">
+					<tr>
+						<th scope="row">PHP</th>
+						{% for indicateur in php %}
+							<td>{{indicateur|number_format(0, '.', ' ')}}</td>
+						{% endfor %}
+					</tr>
+					<tr>
+						<th scope="row">HTML</th>
+						{% for indicateur in html %}
+							<td>{{indicateur|number_format(0, '.', ' ')}}</td>
+						{% endfor %}
+					</tr>
+					<tr>
+						<th scope="row">CSS</th>
+						{% for indicateur in css %}
+							<td>{{indicateur|number_format(0, '.', ' ')}}</td>
+						{% endfor %}
+					</tr>
+					<tr>
+						<th scope="row">JS</th>
+						{% for indicateur in js %}
+							<td>{{indicateur|number_format(0, '.', ' ')}}</td>
+						{% endfor %}
+					</tr>
+					<tr>
+						<th scope="row">Markdown</th>
+						{% for indicateur in md %}
+							<td>{{indicateur|number_format(0, '.', ' ')}}</td>
+						{% endfor %}
+					</tr>
+					<tr>
+						<th scope="row">SQL</th>
+						{% for indicateur in sql %}
+							<td>{{indicateur|number_format(0, '.', ' ')}}</td>
+						{% endfor %}
+					</tr>
+					<tr>
+						<th scope="row">Migration</th>
+						{% for indicateur in migration %}
+							<td>{{indicateur|number_format(0, '.', ' ')}}</td>
+						{% endfor %}
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
 
-<h4>Mes projets.</h4>
-<div class="row">
-  <div class="col-sm-12 col-md-3 col-lg-2">
-    <div class="card border-dark mb-3 card-fontsize">
-      <div class="card-header text-center tool-tip">Projet
-        <span class="tool-tip-text">Nombre de projet disponible sur sonarqube.</span>
-      </div>
-      <div class="card-body">
-        <p class="card-text text-center card-text-fontsize">{{projet_projet}}</p>
-      </div>
-    </div>
-  </div>
-  <div class="col-sm-2">
-    <div class="card border-dark mb-3 card-fontsize">
-      <div class="card-header text-center tool-tip">Profiles
-        <span class="tool-tip-text">Nombre de profiles qualités disponible sur sonarqube.</span>
-      </div>
-      <div class="card-body">
-        <p class="card-text text-center card-text-fontsize">{{projet_profile}}</p>
-      </div>
-    </div>
-  </div>
-  <div class="col-sm-12 col-md-3 col-lg-2">
-    <div class="card border-dark mb-3 card-fontsize">
-      <div class="card-header text-center tool-tip">Règle
-        <span class="tool-tip-text">Nombre de règle total.</span>
-      </div>
-      <div class="card-body">
-        <p class="card-text text-center card-text-fontsize">
-          {{projet_regle|number_format(0, '.', ' ')}}
-        </p>
-      </div>
-    </div>
-  </div>
-  <div class="col-sm-12 col-md-3 col-lg-2">
-    <div class="card border-dark mb-3 card-fontsize">
-      <div class="card-header text-center tool-tip">Analyse
-        <span class="tool-tip-text">Projets analysés.</span>
-      </div>
-      <div class="card-body">
-        <p class="card-text text-center card-text-fontsize">{{projet_anomalie}}</p>
-      </div>
-    </div>
-  </div>
-  <div class="col-sm-12 col-md-3 col-lg-2">
-    <div class="card border-dark mb-3 card-text-fontsize">
-      <div class="card-header text-center tool-tip">Historique
-        <span class="tool-tip-text">Projets suivis</span>
-      </div>
-      <div class="card-body">
-        <p class="card-text text-center card-text-fontsize">{{projet_historique}}</p>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="row">
-  <div class="col-sm-12 col-md-4 col-lg-4">
-    <div class="card border-dark mb-3 card-fontsize">
-      <div class="card-header text-center tool-tip">Lignes
-        <span class="tool-tip-text">Nombre de lignes de code.</span>
-      </div>
-      <div class="card-body">
-        <p class="card-text text-center card-text-fontsize">{{projet_line|number_format(0, '.', ' ')}}</p>
-      </div>
-    </div>
-  </div>
-  <div class="col-sm-12 col-md-3 col-lg-2">
-    <div class="card border-dark mb-3 card-fontsize">
-      <div class="card-header text-center tool-tip">Tests
-        <span class="tool-tip-text">Nombre de tests unitaires.</span>
-      </div>
-      <div class="card-body">
-        <p class="card-text text-center card-text-fontsize">{{projet_test}}</p>
-      </div>
-    </div>
-  </div>
-</div>
+	<h4>Mes projets.</h4>
+	<div class="row">
+		<div class="col-sm-12 col-md-3 col-lg-2">
+			<div class="card border-dark mb-3 card-fontsize">
+				<div class="card-header text-center tool-tip">Projet
+					<span class="tool-tip-text">Nombre de projet disponible sur sonarqube.</span>
+				</div>
+				<div class="card-body">
+					<p class="card-text text-center card-text-fontsize">{{projet_projet}}</p>
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-2">
+			<div class="card border-dark mb-3 card-fontsize">
+				<div class="card-header text-center tool-tip">Profiles
+					<span class="tool-tip-text">Nombre de profiles qualités disponible sur sonarqube.</span>
+				</div>
+				<div class="card-body">
+					<p class="card-text text-center card-text-fontsize">{{projet_profile}}</p>
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-12 col-md-3 col-lg-2">
+			<div class="card border-dark mb-3 card-fontsize">
+				<div class="card-header text-center tool-tip">Règle
+					<span class="tool-tip-text">Nombre de règle total.</span>
+				</div>
+				<div class="card-body">
+					<p class="card-text text-center card-text-fontsize">
+						{{projet_regle|number_format(0, '.', ' ')}}
+					</p>
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-12 col-md-3 col-lg-2">
+			<div class="card border-dark mb-3 card-fontsize">
+				<div class="card-header text-center tool-tip">Analyse
+					<span class="tool-tip-text">Projets analysés.</span>
+				</div>
+				<div class="card-body">
+					<p class="card-text text-center card-text-fontsize">{{projet_anomalie}}</p>
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-12 col-md-3 col-lg-2">
+			<div class="card border-dark mb-3 card-text-fontsize">
+				<div class="card-header text-center tool-tip">Historique
+					<span class="tool-tip-text">Projets suivis</span>
+				</div>
+				<div class="card-body">
+					<p class="card-text text-center card-text-fontsize">{{projet_historique}}</p>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-sm-12 col-md-4 col-lg-4">
+			<div class="card border-dark mb-3 card-fontsize">
+				<div class="card-header text-center tool-tip">Lignes
+					<span class="tool-tip-text">Nombre de lignes de code.</span>
+				</div>
+				<div class="card-body">
+					<p class="card-text text-center card-text-fontsize">{{projet_line|number_format(0, '.', ' ')}}</p>
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-12 col-md-3 col-lg-2">
+			<div class="card border-dark mb-3 card-fontsize">
+				<div class="card-header text-center tool-tip">Tests
+					<span class="tool-tip-text">Nombre de tests unitaires.</span>
+				</div>
+				<div class="card-body">
+					<p class="card-text text-center card-text-fontsize">{{projet_test}}</p>
+				</div>
+			</div>
+		</div>
+	</div>
 
-<h4>Mesures globles.</h4>
-<div class="row">
-  <div class="col-sm-12 col-md-3 col-lg-3">
-    <div class="card border-dark mb-3 card-fontsize">
-      <div class="card-header text-center tool-tip">Signalement
-        <span class="tool-tip-text">Nombre de signalement des projets analysés.</span>
-      </div>
-      <div class="card-body">
-        <p class="card-text text-center card-text-fontsize">
-          {{mesure_signalement|number_format(0, '.', ' ')}}
-        </p>
-      </div>
-    </div>
-  </div>
-  <div class="col-sm-12 col-md-3 col-lg-2">
-    <div class="card border-dark mb-3 card-fontsize">
-      <div class="card-header text-center tool-tip">Fiabilité
-        <span class="tool-tip-text">Nombre de signalement lié à la fiabilité du code.</span>
-      </div>
-      <div class="card-body">
-        <p class="card-text text-center card-text-fontsize">
-          {{mesure_bug|number_format(0, '.', ' ')}}
-        </p>
-      </div>
-    </div>
-  </div>
-  <div class="col-sm-12 col-md-3 col-lg-3">
-    <div class="card border-dark mb-3 card-fontsize">
-      <div class="card-header text-center tool-tip">Sécurité
-        <span class="tool-tip-text">Nombre de signalement lié aux risques de sécurité.</span>
-      </div>
-      <div class="card-body">
-        <p class="card-text text-center card-text-fontsize">
-          {{mesure_vulnerability|number_format(0, '.', ' ')}}
-        </p>
-      </div>
-    </div>
-  </div>
-  <div class="col-sm-12 col-md-3 col-lg-3">
-    <div class="card border-dark mb-3 card-fontsize">
-      <div class="card-header text-center tool-tip">Maintenabilité
-        <span class="tool-tip-text">Nombre de signalement lié à la maintenabilité du code.</span>
-      </div>
-      <div class="card-body">
-        <p class="card-text text-center card-text-fontsize">
-          {{mesure_codesmell|number_format(0, '.', ' ')}}
-        </p>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="raw"><br /><br /><br /></div>
+	<h4>Mesures globles.</h4>
+	<div class="row">
+		<div class="col-sm-12 col-md-3 col-lg-3">
+			<div class="card border-dark mb-3 card-fontsize">
+				<div class="card-header text-center tool-tip">Signalement
+					<span class="tool-tip-text">Nombre de signalement des projets analysés.</span>
+				</div>
+				<div class="card-body">
+					<p class="card-text text-center card-text-fontsize">
+						{{mesure_signalement|number_format(0, '.', ' ')}}
+					</p>
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-12 col-md-3 col-lg-2">
+			<div class="card border-dark mb-3 card-fontsize">
+				<div class="card-header text-center tool-tip">Fiabilité
+					<span class="tool-tip-text">Nombre de signalement lié à la fiabilité du code.</span>
+				</div>
+				<div class="card-body">
+					<p class="card-text text-center card-text-fontsize">
+						{{mesure_bug|number_format(0, '.', ' ')}}
+					</p>
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-12 col-md-3 col-lg-3">
+			<div class="card border-dark mb-3 card-fontsize">
+				<div class="card-header text-center tool-tip">Sécurité
+					<span class="tool-tip-text">Nombre de signalement lié aux risques de sécurité.</span>
+				</div>
+				<div class="card-body">
+					<p class="card-text text-center card-text-fontsize">
+						{{mesure_vulnerability|number_format(0, '.', ' ')}}
+					</p>
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-12 col-md-3 col-lg-3">
+			<div class="card border-dark mb-3 card-fontsize">
+				<div class="card-header text-center tool-tip">Maintenabilité
+					<span class="tool-tip-text">Nombre de signalement lié à la maintenabilité du code.</span>
+				</div>
+				<div class="card-body">
+					<p class="card-text text-center card-text-fontsize">
+						{{mesure_codesmell|number_format(0, '.', ' ')}}
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="raw"><br><br><br></div>
 {% endblock %}
 
 {% block configured_body_contents %}
-<footer class="raw footer">
-  <div class="footer-padding">
-    <div class="d-flex justify-content-between mb-3">
-      <div class="copyright">© {{dateCopyright}} - CC BY-SA-NC 4.0</div>
-      <div class=""></div>
-      <div class="auteur color-blanc">Laurent HADJADJ</div>
-    </div>
-  </div>
-</footer>
+	<footer class="raw footer">
+		<div class="footer-padding">
+			<div class="d-flex justify-content-between mb-3">
+				<div class="copyright">©
+					{{dateCopyright}}
+					- CC BY-SA-NC 4.0</div>
+				<div class=""></div>
+				<div class="auteur color-blanc">Laurent HADJADJ</div>
+			</div>
+		</div>
+	</footer>
 {% endblock %}

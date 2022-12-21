@@ -1,81 +1,68 @@
 {% set title = 'Authenthification' %}
 {% set description = 'Authenthification' %}
 <!DOCTYPE html>
-<html  lang="fr">
+<html
+	lang="fr">
 
-{# Chargement de la section HEAD #}
-<head>
-  {{ include('head.html.twig') }}
-  {% block stylesheets %}
-    {{ encore_entry_link_tags('login') }}
-  {% endblock %}
-</head>
+	{# Chargement de la section HEAD #}
+	<head>
+		{{ include('head.html.twig') }}
+		{% block stylesheets %}
+			{{ encore_entry_link_tags('login') }}
+		{% endblock %}
+	</head>
 
-<body>
-{# Chargement de la section header #}
-{{ include('header.html.twig') }}
-<br /><br />
+	<body>
+		{# Chargement de la section header #}
+		{{ include('header.html.twig') }}
+		<br><br>
 
-<div class="grid-container">
-  <div class="grid-x">
-    <div class="small-12 medium-7 large-7 cell">
-      <video id="video-hongkong" class="video-hongkong" preload="metadata" loop
-        autoplay muted>
-        <source src="{{ asset('build/video/HongKong.mp4') }}" type="video/mp4" />
-        <track label="Français" kind="captions" srclang="fr" default />
-      </video>
-      </video>
-      <span class="open-sans float-center text-center">
-        <a class="open-sans credit"
-          href="https://pixabay.com/fr/users/magictv-18171246/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=video&amp;utm_content=116732">Timo Volz</a>
-        <span id="sur">sur</span>
-        <a class="open-sans credit"
-          href="https://pixabay.com/fr//?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=video&amp;utm_content=116732">
-          Pixabay</a>
-      </span>
-    </div>
-    <div class="small-12 medium-5 large-5 cell">
-      <form class="callout text-center" method="post">
-        <h2 class="claire-hand">Authentification.</h2>
-          <div class="floated-label-wrapper">
-            <label for="courriel">Courriel</label>
-            <input type="email" id="courriel" name="courriel"
-            placeholder="laurent.hadjadj@ma-petite-entreprise.fr"
-            required autofocus autocomplete="email">
-          </div>
-          <div class="floated-label-wrapper">
-            <label for="pass">Mot de passe</label>
-            <input type="password" id="pass" name="password"
-            placeholder="Mot de passe" required autocomplete="current-password">
-          </div>
-          <label>
-            <input type="checkbox" name="_remember_me" class="float-left text-left"/>
-            <span class="float-left text-left open-sans remember-me">Se souvenir de moi.</span>
-          </label>
-          <input id="valider-formulaire-login" class="button expanded" type="submit" value="Valider">
-          {% if is_granted('IS_AUTHENTICATED_REMEMBERED') == false %}
-            <a href="{{ path('app_register') }}"
-            class="float-left open-sans pas-encore-inscrit">Pas encore inscrit ?</a>
-            <br />
-          {% endif %}
-          <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}" />
-          {% if app.user %}
-          {{ path('app_register') }}
-          {% endif %}
-      </form>
-      {% if error %}
-          <div class="label alert">{{ error.messageKey|trans(error.messageData, 'security') }} </div>
-      {% endif %}
-    </div>
-  </div>
-</div>
-
-<br /><br />
-{# Chargement de la section footer #}
-{{ include('footer.html.twig') }}
-{# Chargement du code javascript #}
-{% block javascripts %}
-  {{ encore_entry_script_tags('login') }}
-{% endblock %}
-</body>
-</html>
+		<div class="grid-container">
+			<div class="grid-x">
+				<div class="small-12 medium-7 large-7 cell">
+					<video id="video-hongkong" class="video-hongkong" preload="metadata" loop autoplay muted>
+						<source src="{{ asset('build/video/HongKong.mp4') }}" type="video/mp4"/>
+						<track label="Français" kind="captions" srclang="fr" default/>
+					</video>
+				</video>
+				<span class="open-sans float-center text-center">
+					<a class="open-sans credit" href="https://pixabay.com/fr/users/magictv-18171246/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=video&amp;utm_content=116732">Timo Volz</a>
+					<span id="sur">sur</span>
+					<a class="open-sans credit" href="https://pixabay.com/fr//?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=video&amp;utm_content=116732">
+						Pixabay</a>
+				</span>
+			</div>
+			<div class="small-12 medium-5 large-5 cell">
+				<form class="callout text-center" method="post">
+					<h2 class="claire-hand">Authentification.</h2>
+					<div class="floated-label-wrapper">
+						<label for="courriel">Courriel</label>
+						<input type="email" id="courriel" name="courriel" placeholder="laurent.hadjadj@ma-petite-entreprise.fr" required autofocus autocomplete="email">
+					</div>
+					<div class="floated-label-wrapper">
+						<label for="pass">Mot de passe</label>
+						<input type="password" id="pass" name="password" placeholder="Mot de passe" required autocomplete="current-password">
+					</div>
+					<label>
+						<input type="checkbox" name="_remember_me" class="float-left text-left"/>
+						<span class="float-left text-left open-sans remember-me">Se souvenir de moi.</span>
+					</label>
+					<input id="valider-formulaire-login" class="button expanded" type="submit" value="Valider">
+					{% if is_granted('IS_AUTHENTICATED_REMEMBERED') == false %}
+						<a href="{{ path('app_register') }}" class="float-left open-sans pas-encore-inscrit">Pas encore inscrit ?</a>
+						<br>
+					{% endif %}
+					<input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}"/>
+					{% if app.user %}
+						{{ path('app_register') }}
+					{% endif %}
+				</form>
+				{% if error %}
+					<div class="label alert">{{ error.messageKey|trans(error.messageData, 'security') }}
+					</div>
+				{% endif %}
+			</div>
+		</div>
+	</body>
+</html></div><br><br>{# Chargement de la section footer #}{{ include('footer.html.twig') }}{# Chargement du code javascript #}{% block javascripts %}
+{{ encore_entry_script_tags('login') }}{% endblock %}</body></html>
