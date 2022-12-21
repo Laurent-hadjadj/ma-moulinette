@@ -44,6 +44,7 @@ class BatchController extends AbstractController
 {
     public static $dateFormat = "Y-m-d H:i:s";
     public static $dateFormatMini = "Y-m-d";
+    public static $europeParis = "Europe/Paris";
     private static $batch001="[BATCH-001] Le traitement a déjà été mis à jour.";
     private static $batch002="[BATCH-002] Aucun batch trouvé.";
     private static $batch003="[BATCH-003] Le traitement a été mis à jour.";
@@ -93,7 +94,7 @@ class BatchController extends AbstractController
 
       /** On crée un objet date pour marquer le job */
       $date = new DateTime();
-      $date->setTimezone(new DateTimeZone('Europe/Paris'));
+      $date->setTimezone(new DateTimeZone(static::$eureopParis));
 
       /** Si on a déjà lancé un traitement aujourd'hui on sort */
       $sql="SELECT date_enregistrement as date FROM batch_traitement ORDER BY date_enregistrement DESC limit 1;";
@@ -226,7 +227,7 @@ class BatchController extends AbstractController
 
           /** On démarre la mesure du batch */
           $debutBatch = new DateTime();
-          $debutBatch->setTimezone(new DateTimeZone('Europe/Paris'));
+          $debutBatch->setTimezone(new DateTimeZone(static::$eureopParis));
           $tempoDebutBatch = $debutBatch->format(static::$dateFormat);
 
           foreach($listeProjet['liste'] as $mavenKey) {
@@ -263,7 +264,7 @@ class BatchController extends AbstractController
             }
             /** Fin du Batch */
             $finBatch = new DateTime();
-            $finBatch->setTimezone(new DateTimeZone('Europe/Paris'));
+            $finBatch->setTimezone(new DateTimeZone(static::$eureopParis));
             $tempoFinBatch = $finBatch->format(static::$dateFormat);
 
             $sql="UPDATE batch_traitement SET debut_traitement='${tempoDebutBatch}' WHERE id=${id};";
@@ -294,7 +295,7 @@ class BatchController extends AbstractController
     {
       /** On crée un objet date */
       $date = new DateTime();
-      $date->setTimezone(new DateTimeZone('Europe/Paris'));
+      $date->setTimezone(new DateTimeZone(static::$eureopParis));
       /** On récupère la date du dernier traitement */
       $sql="SELECT date_enregistrement as date FROM batch_traitement ORDER BY date_enregistrement DESC limit 1;";
       $r = $this->connection->fetchAllAssociative($sql);
