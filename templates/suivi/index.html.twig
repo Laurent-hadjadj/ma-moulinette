@@ -214,8 +214,6 @@
       <tbody id="tableau-module" class="open-sans">
         <tr class="open-sans">
           <td class="text-left text-noir">Date</td>
-        </tr>
-        <tr>
           {% for i in 0..suivi|length-1 %}
             <td class="text-center">
               <span>{{suivi[i]["date"]|date("d/m/Y", "Europe/Paris")}}</span>
@@ -224,8 +222,6 @@
         </tr>
         <tr>
           <td class="text-left text-noir">Présentation</td>
-        </tr>
-        <tr>
           {% for i in 0..suivi|length-1 %}
             <td class="text-center">
             {% if suivi[i]["presentation"]!=-1 %}
@@ -238,17 +234,14 @@
         </tr>
         <tr>
           <td class="text-left text-noir">Métier</td>
-        </tr>
-        <tr>
-          <td>
-            {% for i in 0..suivi|length-1 %}<td class="text-center">
-              {% if suivi[i]["metier"]!=-1 %}
-              <span>{{suivi[i]["metier"]|format_number(locale='fr')}}</span>
-              {% else %}
-              <span>&nbsp;-&nbsp;</span>
-              {% endif %}
-            </td>
-            {% endfor %}
+          {% for i in 0..suivi|length-1 %}<td class="text-center">
+            {% if suivi[i]["metier"]!=-1 %}
+            <span>{{suivi[i]["metier"]|format_number(locale='fr')}}</span>
+            {% else %}
+            <span>&nbsp;-&nbsp;</span>
+            {% endif %}
+          {% endfor %}
+          </td>
         </tr>
         <tr>
           <td class="text-left text-noir">Autres</td>
@@ -517,7 +510,7 @@
             {% endfor %}
         </tr>
         <tr>
-          <td class="text-orange">Critique</th>
+          <td class="text-orange">Critique</td>
           {% for i in 0..details|length-1 %}
             {% if i !=0 and details[i]["bug_critical"] > details[i-1]["bug_critical"] %}
               {% set text1 = "text-down" %}
@@ -851,13 +844,11 @@
         </thead>
         <tbody id="tableau-liste-version" class="open-sans">
           {# On ajoute des lignes vides pour éviter d'avoir une erreur W3C #}
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
+          <tr><td></td></tr>
+          <tr><td></td></tr>
+          <tr><td></td></tr>
+          <tr><td></td></tr>
+          <tr><td></td></tr>
         </tbody>
       </table>
     </div>
