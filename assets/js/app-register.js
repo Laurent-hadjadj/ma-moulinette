@@ -24,7 +24,7 @@ import './foundation.js';
 /**
  * checkOkSvg
  *
- * @var [type]
+ * @member [type]
  */
 const checkOkSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -46 417.813 417" class="info-check-ok-svg">
 <path d="M159.988 318.582c-3.988 4.012-9.43 6.25-15.082 6.25s-11.094-2.238-15.082-6.25L9.375
@@ -34,7 +34,7 @@ const checkOkSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -46 417.8
 /**
  * checkKoSvg
  *
- * @var [type]
+ * @member [type]
  */
 const checkKoSvg = `<svg xmlns="http://www.w3.org/2000/svg" overflow="visible" x="620" y="239.5" viewBox="0 0 64 64" class="info-check-ko-svg">
 <g class="layer" pointer-events="all">
@@ -47,28 +47,28 @@ $('#registration_form_courriel').val('');
 $('#registration_form_plainPassword').val('');
 
 /** Affichage des libellés */
-$('#registration_form_nom').on('keyup', function () {
+$('#registration_form_nom').on('keyup', function(){
   if(this.value !== '') {
     $('label[for="registration_form_nom"]').addClass('show');
   } else {
     $('label[for="registration_form_nom"]').removeClass('show');
   }
 });
-$('#registration_form_prenom').on('keyup', function () {
+$('#registration_form_prenom').on('keyup', function(){
   if(this.value !== '') {
     $('label[for="registration_form_prenom"]').addClass('prenom');
   } else {
     $('label[for="registration_form_prenom"]').removeClass('prenom');
   }
 });
-$('#registration_form_courriel').on('keyup', function () {
+$('#registration_form_courriel').on('keyup', function(){
   if(this.value !== '') {
     $('label[for="registration_form_courriel"]').addClass('show');
   } else {
     $('label[for="registration_form_courriel"]').removeClass('show');
   }
 });
-$('#registration_form_plainPassword').on('keyup', function () {
+$('#registration_form_plainPassword').on('keyup', function(){
   if(this.value !== '') {
     $('label[for="registration_form_plainPassword"]').addClass('show');
   } else {
@@ -76,8 +76,7 @@ $('#registration_form_plainPassword').on('keyup', function () {
   }
 });
 
-$('#registration_form_courriel').on('keyup', function()
-  {
+$('#registration_form_courriel').on('keyup', function(){
     /**
      * La longueur d'un mail est de 64+1+255
      * On verifie la plus part des erreurs de saisie avant d'envoyer au contrôleur
@@ -89,7 +88,7 @@ $('#registration_form_courriel').on('keyup', function()
     const arobase=courriel.indexOf('@');
     const point=courriel.indexOf('.');
 
-    // Si le champ est vide
+    /** Si le champ est vide */
     if ( courriel.length === 0 ) {
       $('#register-info-check-courriel').html('');
       return;
@@ -114,7 +113,7 @@ $('#registration_form_courriel').on('keyup', function()
     }
 
     /** Si on a un @ avant 65eme posistion */
-    if (courriel.length < 64 && arobase > 0 ) {
+    if (courriel.length < 64 && arobase > 0 ){
       domaine=courriel.split('@');
       /* Si le tableau contient plus de 2 éléments on sort */
       if (domaine.length>2) {
@@ -125,12 +124,12 @@ $('#registration_form_courriel').on('keyup', function()
     }
 
     /** Si le domaine n'est pas correcte. */
-    if (domaine[1].length===1 && point>1) {
+    if (domaine[1].length===1 && point>1){
       $('#register-info-check-courriel').html(checkKoSvg);
     }
 
     /** On vérifie que le nom de domaine est correcte */
-    if (domaine[1].length===1 && point>1) {
+    if (domaine[1].length===1 && point>1){
       $('#register-info-check-courriel').html(checkKoSvg);
     }
 
@@ -143,8 +142,7 @@ $('#registration_form_courriel').on('keyup', function()
 });
 
 /** Vérification du mot de passe */
-$('#registration_form_plainPassword').on('keyup', function()
-  {
+$('#registration_form_plainPassword').on('keyup', function(){
     const password=$('#registration_form_plainPassword').val();
 
     if ( password.length === 0 ) { $('#register-info-check').html(''); }
@@ -164,8 +162,7 @@ $('#registration_form_plainPassword').on('keyup', function()
   );
 
 /** Validation du choix de l'avatar */
-$('.thumbnail').on('click', function()
-  {
+$('.thumbnail').on('click', function(){
     const id = $(this).attr('id');
     const theme=$('#'+id).data('theme');
     const image=$('#'+id).data('image');
