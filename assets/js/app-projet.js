@@ -255,7 +255,7 @@ const projetAnalyse=function(mavenKey) {
           dataType: 'json', data, contentType,
   };
 
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     $.ajax(options).then(t => {
       log(` - INFO : (1) Nombre de version disponible : ${t.nombreVersion}`);
       resolve();
@@ -279,7 +279,7 @@ const projetMesure=function(mavenKey) {
   const options = {
     url: `${serveur()}/api/projet/mesures`, type: 'GET',
           dataType: 'json', data, contentType };
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     $.ajax(options).then(
       () => {
         log(' - INFO : (2) Ajout des mesures.');
@@ -307,7 +307,7 @@ const projetAnomalie=function(mavenKey) {
     url: `${serveur()}/api/projet/anomalie`, type: 'GET',
           dataType: 'json', data, contentType };
 
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     $.ajax(options).then(t => {
         log(` - INFO : (6) ${t.info}`);
         resolve();
@@ -398,7 +398,7 @@ const projetOwasp=function(mavenKey) {
     url: `${serveur()}/api/projet/issues/owasp`, type: 'GET',
           dataType: 'json', data, contentType };
 
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     $.ajax(options).then(t=> {
       if (t.owasp===0) {
         log(' - INFO : (4) Bravo aucune faille OWASP détectée.');
@@ -528,7 +528,7 @@ const projetNosonarDetails=function(mavenKey){
     url: `${serveur()}/api/projet/nosonar/details`, type: 'GET',
           dataType: 'json', data, contentType };
 
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     $.ajax(options).then(t=> {
       if (t.hotspots !== 0) {
         log(` - WARM : (11) J'ai trouvé ${t.nosonar} exclusion(s) NoSonar.`);
@@ -704,9 +704,9 @@ const afficheProjetFavori=function() {
       /* On Ajoute une fonction assynchrone pour désactiver le projet de la liste. */
       const supprimeProjet=function supprime() {
         return new Promise(resolve2 => {
-          $.ajax(options2).then(t=> {
+          $.ajax(options2).then(tt=> {
             /** Http 200 */
-            if (t.code !== 200) {
+            if (tt.code !== 200) {
               log(` - ERROR : Je n'ai réussi à supprimer le projet !`);
             } else {
               log(` - INFO : J'ai réussi à supprimer le projet !`);

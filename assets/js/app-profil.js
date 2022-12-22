@@ -78,8 +78,7 @@ const palette=function() {
   return nouvellePalette;
 };
 
-const dateOptions1 = {year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric',
-                      second: 'numeric', hour12: false };
+const dateOptions1 = {year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false };
 const dateOptions2 = {year: 'numeric', month: 'numeric', day: 'numeric' };
 
 /**
@@ -100,7 +99,7 @@ const refreshQuality=function() {
     .then( r => {
       let statut1='', statut2='', str='', total=0;
 
-      // On efface le tableau
+      /** On efface le tableau */
       $('#tableau-liste-profil').html('');
       const profils=r.listeProfil;
 
@@ -157,8 +156,7 @@ const dessineMoiUnMouton=function(label, dataset) {
     labels: label,
     datasets: [{
       data: dataset, backgroundColor: nouvellePalette, borderWidth: 1,
-      datalabels: { align: 'center', anchor: 'center'}}]
-  };
+      datalabels: { align: 'center', anchor: 'center'}}]};
 
   const options = {
     animations: { tension: { duration: 2000, easing: 'linear', loop: false } },
