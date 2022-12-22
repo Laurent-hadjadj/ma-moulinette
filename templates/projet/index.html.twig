@@ -1,8 +1,7 @@
 {% set title = 'mes outils' %}
 {% set description = 'Ma Moulinette - Mon projet' %}
 <!DOCTYPE html>
-<html
-  lang="fr">
+<html lang="fr">
 
   {# Chargement de la section HEAD #}
   <head>
@@ -411,7 +410,20 @@
             <th scope="col" class="open-sans text-center" colspan="7">Actions</th>
           </tr>
         </thead>
-        <tbody id="tableau-liste-projet" class="open-sans"></tbody>
+        <tbody id="tableau-liste-projet" class="open-sans">
+          {# On cré une speudo ligne pour éviter une erreur HTML sur le tbody vide ! #}
+          <tr>
+            <td>--</td>
+            <td>--</td>
+            <td>--</td>
+            <td>--</td>
+            <td>--</td>
+            <td>--</td>
+            <td>--</td>
+            <td>--</td>
+            <td>--</td>
+          </tr>
+        </tbody>
       </table>
       <p class="open-sans-bold information-statut">Statut :
         <span id="information-texte" class="information-texte"></span>
@@ -506,41 +518,31 @@
         </thead>
         <tbody id="tableau-liste-severite" class="open-sans">
           <tr>
-            <td class="rouge">
-              <strong>Bloquant</strong>
-            </td>
+            <td class="rouge"><strong>Bloquant</strong></td>
             <td id="js-bug-blocker" class="text-center stat"></td>
             <td id="js-vulnerability-blocker" class="text-center stat"></td>
             <td id="js-code-smell-blocker" class="text-center stat"></td>
           </tr>
           <tr>
-            <td class="rouge">
-              <strong>Critique</strong>
-            </td>
+            <td class="rouge"><strong>Critique</strong></td>
             <td id="js-bug-critical" class="text-center stat"></td>
             <td id="js-vulnerability-critical" class="text-center stat"></td>
             <td id="js-code-smell-critical" class="text-center stat"></td>
           </tr>
           <tr>
-            <td class="rouge">
-              <strong>Majeur</strong>
-            </td>
+            <td class="rouge"><strong>Majeur</strong></td>
             <td id="js-bug-major" class="text-center stat"></td>
             <td id="js-vulnerability-major" class="text-center stat"></td>
             <td id="js-code-smell-major" class="text-center stat"></td>
           </tr>
           <tr>
-            <td class="vert">
-              <strong>Mineur</strong>
-            </td>
+            <td class="vert"><strong>Mineur</strong></td>
             <td id="js-bug-minor" class="text-center stat"></td>
             <td id="js-vulnerability-minor" class="text-center stat"></td>
             <td id="js-code-smell-minor" class="text-center stat"></td>
           </tr>
           <tr>
-            <td class="bleu">
-              <strong>Info</strong>
-            </td>
+            <td class="bleu"><strong>Info</strong></td>
             <td id="js-bug-info" class="text-center stat"></td>
             <td id="js-vulnerability-info" class="text-center stat"></td>
             <td id="js-code-smell-info" class="text-center stat"></td>
