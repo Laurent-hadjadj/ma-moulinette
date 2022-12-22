@@ -26,23 +26,21 @@ import {serveur} from './properties.js';
 const contentType = 'application/json; charset=utf-8';
 
 const dateOptions = {
-	year: 'numeric', month: 'numeric', day: 'numeric',
-	hour: 'numeric', minute: 'numeric', second: 'numeric',
-	hour12: false };
+  year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false };
 
 /**
-	* [Description for log]
-	* Affiche la log.
-	*
-	* @param mixed txt
-	* @return [type]
-	*
-	*/
+  * [Description for log]
+  * Affiche la log.
+  *
+  * @param mixed txt
+  * @return [type]
+  *
+  */
 const log=function(txt) {
-	const textarea = document.getElementById('log');
-	textarea.scrollTop = textarea.scrollHeight;
-	textarea.value += `${new Intl.DateTimeFormat('default',
-	dateOptions).format(new Date())} ${txt}\n`;
+  const textarea = document.getElementById('log');
+  textarea.scrollTop = textarea.scrollHeight;
+  textarea.value += `${new Intl.DateTimeFormat('default',
+  dateOptions).format(new Date())} ${txt}\n`;
 };
 
 /**
@@ -52,7 +50,7 @@ const log=function(txt) {
   *
   */
 const ditBonjour=function() {
-	log(' - Initialisation de la log...');
+  log(' - Initialisation de la log...');
 };
 
 /**
@@ -60,7 +58,7 @@ const ditBonjour=function() {
  * Active la gomme pour nettoyer la log.
  */
 $('.gomme-svg').on('click', function () {
-	$('.log').val('');
+  $('.log').val('');
 });
 
 /**
@@ -72,19 +70,19 @@ $('.gomme-svg').on('click', function () {
   *
   */
 const sonarIsUp=function() {
-	const options = {
-		url: `${serveur()}/api/status`, type: 'GET',
-		dataType: 'json',  contentType };
-	return $.ajax(options)
-		.then( data => {
-			log(` - INFO : État du serveur sonarqube : ${data.status}`);
-			log(` - INFO : Version ${data.version}`);
-		})
-		.catch( message => {
-			log(` - ERREUR : État du serveur sonarqube : DOWN (${message.statusText})`);
-			return (message.statusText);
-		}
-		);
+  const options = {
+    url: `${serveur()}/api/status`, type: 'GET',
+    dataType: 'json',  contentType };
+  return $.ajax(options)
+    .then( data => {
+      log(` - INFO : État du serveur sonarqube : ${data.status}`);
+      log(` - INFO : Version ${data.version}`);
+    })
+    .catch( message => {
+      log(` - ERREUR : État du serveur sonarqube : DOWN (${message.statusText})`);
+      return (message.statusText);
+    }
+    );
 };
 
 /**
@@ -95,21 +93,21 @@ const sonarIsUp=function() {
   *
   */
 const miseAJourListe=function() {
-	const options = {
-		url: `${serveur()}/api/projet/liste`, type: 'GET',
-		dataType: 'json', contentType };
+  const options = {
+    url: `${serveur()}/api/projet/liste`, type: 'GET',
+    dataType: 'json', contentType };
 
-		return new Promise(resolve => {
-			$.ajax(options).then(t => {
-				log(` - INFO : Nombre de projet disponible : ${t.nombre}`);
-				$('#js-nombre-projet').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.nombre));
-				/** On efface le plus|moins */
-				$('#js-moins, #js-plus').html('');
-				/** On ferme la callout */
-				$('#info-close').trigger('click');
-				resolve();
-			});
-		});
+    return new Promise(resolve => {
+      $.ajax(options).then(t => {
+        log(` - INFO : Nombre de projet disponible : ${t.nombre}`);
+        $('#js-nombre-projet').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.nombre));
+        /** On efface le plus|moins */
+        $('#js-moins, #js-plus').html('');
+        /** On ferme la callout */
+        $('#info-close').trigger('click');
+        resolve();
+      });
+    });
 };
 
 /**
@@ -119,21 +117,21 @@ const miseAJourListe=function() {
   *
   */
 const miseAJourListeProjet=function() {
-	const options = {
-		url: `${serveur()}/api/tags`, type: 'GET',
-		dataType: 'json', contentType };
-		return new Promise(resolve => {
-			$.ajax(options).then(t => {
-				log(` - INFO : ${t.message}`);
-				$('#js-public').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.public));
-				if (isNaN(t.private)) {
-					$('#js-private').html('-');
-			  	} else {
-						$('#js-private').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.private));
-					}
-				resolve();
-			});
-		});
+  const options = {
+    url: `${serveur()}/api/tags`, type: 'GET',
+    dataType: 'json', contentType };
+    return new Promise(resolve => {
+      $.ajax(options).then(t => {
+        log(` - INFO : ${t.message}`);
+        $('#js-public').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.public));
+        if (isNaN(t.private)) {
+          $('#js-private').html('-');
+          } else {
+            $('#js-private').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.private));
+          }
+        resolve();
+      });
+    });
 };
 
 
@@ -144,7 +142,7 @@ const miseAJourListeProjet=function() {
   *
   */
 const miseAJourListeAsync= async function() {
-	await miseAJourListe();
+  await miseAJourListe();
 };
 
 
@@ -155,7 +153,7 @@ const miseAJourListeAsync= async function() {
   *
   */
 const miseAJourListeProjetAsync= async function() {
-	await miseAJourListeProjet();
+  await miseAJourListeProjet();
 };
 
 /********* Evenement *******/
@@ -165,12 +163,12 @@ const miseAJourListeProjetAsync= async function() {
  * Événement : on recharge la liste des projets.
  */
 $('.refresh-bd').on('click', function() {
-	sonarIsUp()
-		.then(function (result) {
-			if (result !== 'error') {
-				miseAJourListeAsync();
-			}
-		});
+  sonarIsUp()
+    .then(function (result) {
+      if (result !== 'error') {
+        miseAJourListeAsync();
+      }
+    });
 });
 
 /**
@@ -178,16 +176,16 @@ $('.refresh-bd').on('click', function() {
  * Événement : On ouvre le tableau de suivi pour le projet.
  */
 $('.suivi-svg').on('click', function(e) {
-	const id = e.target.id;
+  const id = e.target.id;
 
-	/* On récupère la clé maven du projet. */
-	const element = document.getElementById(id);
-	const mavenKey=element.dataset.mavenkey;
-	if (mavenKey!=''){
-		window.location.href='/suivi?mavenKey='+mavenKey;
-		} else {
-		log(' - ERROR - La clé n\'est pas correcte !! !');
-	}
+  /* On récupère la clé maven du projet. */
+  const element = document.getElementById(id);
+  const mavenKey=element.dataset.mavenkey;
+  if (mavenKey!==''){
+    window.location.href='/suivi?mavenKey='+mavenKey;
+    } else {
+    log(' - ERROR - La clé n\'est pas correcte !! !');
+  }
 });
 
 /** ******************** main *************************** */

@@ -1,3 +1,4 @@
+/* eslint-disable jsdoc/require-returns-type */
 /**
  *  Ma-Moulinette
  *  --------------
@@ -21,16 +22,19 @@ import 'motion-ui';
 import './foundation.js';
 
 /** On importe les paramètres serveur */
-import {serveur} from "./properties.js";
+import {serveur} from './properties.js';
 
 const contentType='application/json; charset=utf-8';
+/** valeur 100 ou 100 % */
+const cent = 100;
+const uneSeconde=1000;
 
 /* Construction des callbox pour les messages utilisateurs */
 const callboxInformation='<div class="callout primary text-justify" data-closable="slide-out-right"><p style="color:#00445b;" class="open-sans" cell">Information ! ';
 const callboxError='<div class="callout alert text-justify" data-closable="slide-out-right"><p style="color:#00445b;" class="open-sans" cell">Ooups ! ';
 const callboxFermer='<button class="close-button" aria-label="Fermer la fenêtre" type="button" data-close><span aria-hidden="true">&times;</span></button></div>';
 
-// On récupère la clé maven de la clé de l'application.
+/** On récupère la clé maven de la clé de l'application. */
 const t0 = document.getElementById('app');
 const maven_key=t0.dataset.application;
 
@@ -39,8 +43,8 @@ const maven_key=t0.dataset.application;
  * On lance le service de suppression des données pour le projet
  *
  * @param mixed bypass
- *
- * @return [type]
+ * @param bypass
+ * @returns [type]
  *
  * Created at: 19/12/2022, 22:30:53 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -85,7 +89,7 @@ const timestamp=function(bypass) {
    * Si le setup existe et que son statut est égal à 'actuel'
    * alors on renvoie un nouveau setup et on passe au statut 'nouveau'
    */
-  if  ($('#js-setup').text()!=='NaN' && t99.dataset.statut=='actuel') {
+  if  ($('#js-setup').text()!=='NaN' && t99.dataset.statut==='actuel'){
       t99.dataset.setup=Date.now();
       const archive=$('#js-setup').text();
       const message2=`La version ${archive} est archivée. Un nouveau setup a été créé : ${t99.dataset.setup}.`;
@@ -100,13 +104,13 @@ const timestamp=function(bypass) {
   $('#message').html(callboxError+message3+callboxFermer);
 }
 
- /**
+/**
   * [Description for clear]
   * On lance le service de suppression des données pour le projet
   *
   * @param mixed mavenKey
-  *
-  * @return [type]
+  * @param mavenKey
+  * @returns [type]
   *
   * Created at: 19/12/2022, 22:32:17 (Europe/Paris)
   * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -133,22 +137,29 @@ const clear=function(mavenKey) {
 };
 
 /**
-  * [Description for analyse]
-  * On lance le service d'analyse des données pour le projet
-  *
-  * @param mixed mavenKey
-  * @param mixed type
-  * @param mixed severity
-  * @param mixed css
-  *
-  * @return [type]
-  *
-  * Created at: 19/12/2022, 22:33:18 (Europe/Paris)
-  * @author     Laurent HADJADJ <laurent_h@me.com>
-  */
-const analyse=function(mavenKey, type, severity, css) {
+ * [Description for analyse]
+ * On lance le service d'analyse des données pour le projet
+ *
+ * @param mixed mavenKey
+ * @param mixed type
+ * @param mixed severity
+ * @param mixed css
+ * @param mavenKey
+ * @param type
+ * @param severity
+ * @param css
+ * @returns [type]
+ *
+ * Created at: 19/12/2022, 22:33:18 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ */
+const analyse=function(mavenKey, type, severity, css){
 
-  /** Traitement lancé au moment moment de l'appel. */
+  /**
+   * Traitement lancé au moment moment de l'appel.
+   *
+   * @param a
+   */
   const startAnalyse = a => {
     let dino;
     if (a==='BUG'){
@@ -227,36 +238,41 @@ const analyse=function(mavenKey, type, severity, css) {
       if (type==='BUG' && parser==='OK'){
         if (severity==='BLOCKER') {
           labelSeverity='Bloquant';
-          if (t2.dataset.nombreBugBloquant==='0')
-            { idc='-'; } else {
+          if (t2.dataset.nombreBugBloquant==='0'){
+            idc='-';
+          } else {
               idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t2.dataset.nombreBugBloquant);
             }
           }
         if (severity==='CRITICAL') {
           labelSeverity='Critique';
-          if (t3.dataset.nombreBugCritique==='0')
-            { idc='-'; } else {
+          if (t3.dataset.nombreBugCritique==='0'){
+            idc='-';
+          } else {
               idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t3.dataset.nombreBugCritique);
             }
           }
         if (severity==='INFO') {
           labelSeverity='Info';
-          if (t4.dataset.nombreBugInfo==='0')
-            { idc='-'; } else {
+          if (t4.dataset.nombreBugInfo==='0'){
+            idc='-';
+          } else {
               idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t4.dataset.nombreBugInfo);
             }
           }
         if (severity==='MAJOR') {
           labelSeverity='Majeur';
-          if (t5.dataset.nombreBugMajeur==='0')
-            { idc='-'; } else {
+          if (t5.dataset.nombreBugMajeur==='0'){
+            idc='-';
+          } else {
               idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t5.dataset.nombreBugMajeur);
             }
         }
         if (severity==='MINOR') {
           labelSeverity='Mineur';
-          if (t6.dataset.nombreBugMineur==='0')
-            { idc='-'; } else {
+          if (t6.dataset.nombreBugMineur==='0'){
+            idc='-';
+          } else {
               idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t6.dataset.nombreBugMineur);
             }
         }
@@ -277,32 +293,37 @@ const analyse=function(mavenKey, type, severity, css) {
       /* On affiche le tableau pour la sécurité si le parser est OK */
       if (type==='VULNERABILITY' && parser==='OK'){
         if (severity==='BLOCKER') {
-          if (t8.dataset.nombreVulnerabiliteBloquant==='0')
-            { idc='-'; } else {
+          if (t8.dataset.nombreVulnerabiliteBloquant==='0'){ 
+            idc='-'; 
+          } else {
               idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t8.dataset.nombreVulnerabiliteBloquant);
             }
         }
-        if (severity==='CRITICAL') {
-          if (t9.dataset.nombreVulnerabiliteCritique==='0')
-            { idc='-'; } else {
+        if (severity==='CRITICAL'){
+          if (t9.dataset.nombreVulnerabiliteCritique==='0'){ 
+            idc='-'; 
+          } else {
               idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t9.dataset.nombreVulnerabiliteCritique);
             }
           }
-        if (severity==='INFO') {
-          if (t10.dataset.nombreVulnerabiliteInfo==='0')
-            { idc='-'; } else {
+        if (severity==='INFO'){
+          if (t10.dataset.nombreVulnerabiliteInfo==='0'){ 
+            idc='-'; 
+          } else {
               idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t10.dataset.nombreVulnerabiliteInfo);
             }
           }
-      if (severity==='MAJOR') {
-        if (t11.dataset.nombreVulnerabiliteMajeur==='0')
-          { idc='-'; } else {
+      if (severity==='MAJOR'){
+        if (t11.dataset.nombreVulnerabiliteMajeur==='0'){ 
+          idc='-'; 
+        } else {
             idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t11.dataset.nombreVulnerabiliteMajeur);
           }
         }
     if (severity==='MINOR') {
-      if (t12.dataset.nombreVulnerabiliteMineur==='0')
-        { idc='-'; } else {
+      if (t12.dataset.nombreVulnerabiliteMineur==='0'){ 
+        idc='-'; 
+      } else {
           idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t12.dataset.nombreVulnerabiliteMineur);
         }
       }
@@ -319,14 +340,15 @@ const analyse=function(mavenKey, type, severity, css) {
         <td id="metier-01" class="text-center">${t.repartition.backend}</td>
         <td id="autre-01" class="text-center">${t.repartition.autre}</td>
         <td id="indice-confience-01" class="text-center ${alert}">${idc}</td></tr>`;
-        $("#mon-bo-tableau2").append(tabVulnerability);
+        $('#mon-bo-tableau2').append(tabVulnerability);
       }
 
       /* On affiche le tableau pour la maintenabilité si le parser est OK */
       if (type==='CODE_SMELL' && parser==='OK'){
         if (severity==='BLOCKER'){
           if (t14.dataset.nombreMauvaisePratiqueBloquant==='0'){
-              idc='-'; } else {
+              idc='-'; 
+            } else {
               idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t14.dataset.nombreMauvaisePratiqueBloquant);
               }
           }
@@ -377,22 +399,28 @@ const analyse=function(mavenKey, type, severity, css) {
 };
 
 /**
-  * [Description for collecte]
-  * On lance la collecte et on affiche la répartition
-  *
-  * @param mixed mavenKey
-  * @param mixed type
-  * @param mixed severity
-  * @param mixed start
-  * @param mixed stop
-  * @param mixed counter
-  * @param mixed timer
-  *
-  * @return [type]
-  *
-  * Created at: 19/12/2022, 22:46:29 (Europe/Paris)
-  * @author     Laurent HADJADJ <laurent_h@me.com>
-  */
+ * [Description for collecte]
+ * On lance la collecte et on affiche la répartition
+ *
+ * @param mixed mavenKey
+ * @param mixed type
+ * @param mixed severity
+ * @param mixed start
+ * @param mixed stop
+ * @param mixed counter
+ * @param mixed timer
+ * @param mavenKey
+ * @param type
+ * @param severity
+ * @param start
+ * @param stop
+ * @param counter
+ * @param timer
+ * @returns [type]
+ *
+ * Created at: 19/12/2022, 22:46:29 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ */
 const collecte=function(mavenKey, type, severity, start, stop, counter, timer) {
 
   /** Début de l'animation */
@@ -405,7 +433,11 @@ const collecte=function(mavenKey, type, severity, start, stop, counter, timer) {
     $('#collecte-animation').removeClass('sp-volume');
   };
 
-  /** Initialisation de la barre de progression et mise à jour dynamique */
+  /**
+   * Initialisation de la barre de progression et mise à jour dynamique
+   *
+   * @param progress
+   */
   const changeProgress = progress => {
     $(".progress-meter").css('width', `${progress}%`);
     $(".progress-meter-text").text(`${progress}%`);
@@ -413,7 +445,7 @@ const collecte=function(mavenKey, type, severity, start, stop, counter, timer) {
 
   /** On test si on est arrivé à la fin du traitement */
   if (mavenKey==='NaN') {
-    setTimeout(() => changeProgress(stop), 1000);
+    setTimeout(() => changeProgress(stop), uneSeconde);
     return;
   }
 
@@ -428,7 +460,11 @@ const collecte=function(mavenKey, type, severity, start, stop, counter, timer) {
     typeTime='mauvaise-pratique';
   }
 
-  /** On affiche la durée d'execution */
+  /**
+   * On affiche la durée d'execution
+   *
+   * @param value
+   */
   const changeTimer = value => {
     const minute = Math.floor(value/60);
     const restSeconds = value%60;
@@ -445,12 +481,12 @@ const collecte=function(mavenKey, type, severity, start, stop, counter, timer) {
     url: `${serveur()}/api/projet/repartition/collecte`,
     type: 'PUT',dataType: 'json', data: JSON.stringify(data), contentType,
     beforeSend: function () {
-      setTimeout(() => startCollecte(), 1000);
-      setTimeout(() => changeProgress(start), 1000); },
+      setTimeout(() => startCollecte(), uneSeconde);
+      setTimeout(() => changeProgress(start), uneSeconde); },
     complete: function () {
-      setTimeout(() => stopCollecte(), 1000);
-      setTimeout(() => changeProgress(stop), 1000);
-      setTimeout(() => changeTimer(timer), 1000);
+      setTimeout(() => stopCollecte(), uneSeconde);
+      setTimeout(() => changeProgress(stop), uneSeconde);
+      setTimeout(() => changeTimer(timer), uneSeconde);
     },
   };
 
@@ -474,8 +510,9 @@ const collecte=function(mavenKey, type, severity, start, stop, counter, timer) {
  *
  * @param mixed mavenKey
  * @param mixed type
- *
- * @return [type]
+ * @param mavenKey
+ * @param type
+ * @returns [type]
  *
  * Created at: 19/12/2022, 22:50:37 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -486,8 +523,7 @@ const resultat=function(mavenKey, type) {
   const data = { mavenKey, type };
   const options = {
     url: `${serveur()}/api/projet/repartition/details`, type: 'GET',
-    dataType: 'json', data, contentType,
-    };
+    dataType: 'json', data, contentType };
 
   /** On va chercher les resutats. */
   return $.ajax(options).then(t => {
@@ -608,7 +644,7 @@ $('#collecte-bug').on('click', ()=>{
     let start=0, stop=0, counter, tempo=0;
 
   if (parseInt(blocker,10)!==0) {
-      stop=Math.trunc((parseInt(blocker,10)/parseInt(total,10))*100);
+      stop=Math.trunc((parseInt(blocker,10)/parseInt(total,10))*cent);
       if (stop === 0) {
           stop=stop+1;
         }
@@ -620,7 +656,7 @@ $('#collecte-bug').on('click', ()=>{
 
     if (parseInt(critical,10)!==0) {
       start=stop;
-      stop=stop+Math.trunc((parseInt(critical,10)/parseInt(total,10))*100);
+      stop=stop+Math.trunc((parseInt(critical,10)/parseInt(total,10))*cent);
       if (stop === 0) {
         stop=stop+1;
       }
@@ -632,7 +668,7 @@ $('#collecte-bug').on('click', ()=>{
 
     if (parseInt(info,10)!==0) {
       start=stop;
-      stop=stop+Math.trunc((parseInt(info,10)/parseInt(total,10))*100);
+      stop=stop+Math.trunc((parseInt(info,10)/parseInt(total,10))*cent);
       if (stop === 0) {
         stop=stop+1;
       }
@@ -644,7 +680,7 @@ $('#collecte-bug').on('click', ()=>{
 
     if (parseInt(major,10)!==0) {
       start=stop;
-      stop=stop+Math.trunc((parseInt(major,10)/parseInt(total,10))*100);
+      stop=stop+Math.trunc((parseInt(major,10)/parseInt(total,10))*cent);
       if (stop === 0) {
         stop=stop+1;
       }
@@ -656,7 +692,7 @@ $('#collecte-bug').on('click', ()=>{
 
     if (parseInt(minor,10)!==0) {
       start=stop;
-      stop=100;
+      stop=cent;
       counter=parseInt(blocker,10)+parseInt(critical,10)+parseInt(info,10)+parseInt(major,10)+parseInt(minor,10);
       const timer5 = document.getElementById('js-bug-time');
       tempo= parseInt(tempo,10) + parseInt(timer5.dataset.timer,10);
@@ -705,7 +741,7 @@ $('#collecte-vulnerabilite').on('click', ()=>{
     let start=0, stop=0, counter, tempo=0;
 
     if (parseInt(blocker,10)!==0) {
-      stop=Math.trunc((parseInt(blocker,10)/parseInt(total,10))*100);
+      stop=Math.trunc((parseInt(blocker,10)/parseInt(total,10))*cent);
       if (stop === 0) {
         stop=stop+1;
       }
@@ -715,9 +751,9 @@ $('#collecte-vulnerabilite').on('click', ()=>{
       await collecte(maven_key, 'VULNERABILITY', 'BLOCKER', start, stop, counter, tempo);
     }
 
-    if (parseInt(critical,10)!==0) {
+    if (parseInt(critical,10)!==0){
       start=stop;
-      stop=stop+Math.trunc((parseInt(critical,10)/parseInt(total,10))*100);
+      stop=stop+Math.trunc((parseInt(critical,10)/parseInt(total,10))*cent);
       if (stop === 0) {
         stop=stop+1;
       }
@@ -729,7 +765,7 @@ $('#collecte-vulnerabilite').on('click', ()=>{
 
     if (parseInt(info,10)!==0) {
       start=stop;
-      stop=stop+Math.trunc((parseInt(info,10)/parseInt(total,10))*100);
+      stop=stop+Math.trunc((parseInt(info,10)/parseInt(total,10))*cent);
       if (stop === 0) {
         stop=stop+1;
       }
@@ -741,7 +777,7 @@ $('#collecte-vulnerabilite').on('click', ()=>{
 
     if (parseInt(major,10)!==0) {
       start=stop;
-      stop=stop+Math.trunc((parseInt(major,10)/parseInt(total,10))*100);
+      stop=stop+Math.trunc((parseInt(major,10)/parseInt(total,10))*cent);
       counter=parseInt(blocker,10)+parseInt(critical,10)+parseInt(info,10)+parseInt(major,10);
       const timer4 = document.getElementById('js-vulnerabilite-time');
       tempo = parseInt(tempo,10) + parseInt(timer4.dataset.timer,10);
@@ -750,7 +786,7 @@ $('#collecte-vulnerabilite').on('click', ()=>{
 
     if (parseInt(minor,10)!==0) {
       start=stop;
-      stop=100;
+      stop=cent;
       counter=parseInt(blocker,10)+parseInt(critical,10)+parseInt(info,10)+parseInt(major,10)+parseInt(minor,10);
       const timer5 = document.getElementById('js-vulnerabilite-time');
       tempo= parseInt(tempo,10) + parseInt(timer5.dataset.timer,10);
@@ -800,7 +836,7 @@ $('#collecte-mauvaise-pratique').on('click', ()=>{
     let start=0, stop=0, counter, tempo=0;
 
     if (parseInt(blocker,10)!==0) {
-      stop=Math.trunc((parseInt(blocker,10)/parseInt(total,10))*100);
+      stop=Math.trunc((parseInt(blocker,10)/parseInt(total,10))*cent);
       if (stop === 0) {
         stop=stop+1;
       }
@@ -812,7 +848,7 @@ $('#collecte-mauvaise-pratique').on('click', ()=>{
 
     if (parseInt(critical,10)!==0) {
       start=stop;
-      stop=stop+Math.trunc((parseInt(critical,10)/parseInt(total,10))*100);
+      stop=stop+Math.trunc((parseInt(critical,10)/parseInt(total,10))*cent);
       if (stop === 0) {
         stop=stop+1;
       }
@@ -824,7 +860,7 @@ $('#collecte-mauvaise-pratique').on('click', ()=>{
 
     if (parseInt(info,10)!==0) {
       start=stop;
-      stop=stop+Math.trunc((parseInt(info,10)/parseInt(total,10))*100);
+      stop=stop+Math.trunc((parseInt(info,10)/parseInt(total,10))*cent);
       if (stop === 0) {
         stop=stop+1;
       }
@@ -836,22 +872,22 @@ $('#collecte-mauvaise-pratique').on('click', ()=>{
 
     if (parseInt(major,10)!==0) {
       start=stop;
-      stop=stop+Math.trunc((parseInt(major,10)/parseInt(total,10))*100);
+      stop=stop+Math.trunc((parseInt(major,10)/parseInt(total,10))*cent);
       counter=parseInt(blocker,10)+parseInt(critical,10)+parseInt(info,10)+parseInt(major,10);
       const timer4 = document.getElementById('js-mauvaise-pratique-time');
       tempo = parseInt(tempo,10) + parseInt(timer4.dataset.timer,10);
       await collecte(maven_key, 'CODE_SMELL', 'MAJOR', start, stop, counter, tempo);
     }
 
-    if (parseInt(minor,10)!==0) {
+    if (parseInt(minor,10)!==0){
       start=stop;
-      stop=100;
+      stop=cent;
       counter=parseInt(blocker,10)+parseInt(critical,10)+parseInt(info,10)+parseInt(major,10)+parseInt(minor,10);
       const timer5 = document.getElementById('js-mauvaise-pratique-time');
       tempo= parseInt(tempo,10) + parseInt(timer5.dataset.timer,10);
       await collecte(maven_key, 'CODE_SMELL', 'MINOR', start, stop, counter, tempo);
     } else {
-      await collecte('NaN', 'NaN', 'NaN', 'NaN', 100, 'NaN', 'NaN');
+      await collecte('NaN', 'NaN', 'NaN', 'NaN', cent, 'NaN', 'NaN');
     }
 
     $('#etape-3').css('color', '#c45d4e');

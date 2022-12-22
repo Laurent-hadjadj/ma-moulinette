@@ -26,8 +26,8 @@ import html2pdf from 'html2pdf.js';
 
 import './foundation.js';
 
-// On importe les paramètres serveur
-import {serveur} from "./properties.js";
+/** On importe les paramètres serveur */
+import {serveur} from './properties.js';
 
 import Chart from 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -52,6 +52,7 @@ const chartColors = {
   orangeOpacity: 'rgb(170,102,51,0.5)' };
 
 const contentType='application/json; charset=utf-8';
+const http404=404;
 
 /* Construction des callbox de type success */
 const callboxInformation='<div class="callout primary text-justify" data-closable="slide-out-right"><p style="color:#00445b;" class="open-sans" cell">Information ! ';
@@ -66,11 +67,11 @@ const callboxFermer='<button class="close-button" aria-label="Fermer la fenêtre
  * @param mixed data1
  * @param mixed data2
  * @param mixed data3
- * 
+ *
  * @return [type]
- * 
+ *
  * Created at: 19/12/2022, 22:58:54 (Europe/Paris)
- * @author     Laurent HADJADJ <laurent_h@me.com> 
+ * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const dessineMoiUnMouton= function( labels, data1, data2, data3) {
   const data = {
@@ -179,11 +180,11 @@ dessineMoiUnMouton(
 * Création du sélecteur de projet.
 *
 * @param mixed mavenKey
-* 
+*
 * @return [type]
-* 
+*
 * Created at: 19/12/2022, 23:00:07 (Europe/Paris)
-* @author     Laurent HADJADJ <laurent_h@me.com> 
+* @author     Laurent HADJADJ <laurent_h@me.com>
 */
 const selectVersion=function(mavenKey) {
   const data={ mavenKey };
@@ -263,7 +264,7 @@ $('select[name="version"]').change(function () {
      * Si 200 --> on continue
      * si <> 200 et 404, exception symfony
     */
-    if (t.message==404) {
+    if (t.message===http404) {
       const message='Le projet n\'existe plus sur le serveur sonarqube !';
       $('#message-ajout-projet').html(callboxError+message+callboxFermer);
       return;
@@ -445,12 +446,12 @@ $('.lien-editer').on('click', ()=>{
   const name=n.split(':');
 
   const opt = {
-    margin:       10,
-    filename:     `${name[1]}-suivi-${date2.toLocaleDateString('fr-FR')}.pdf`,
-    image:        { type: 'jpeg', quality: 0.98 },
+    margin:    10,
+    filename:  `${name[1]}-suivi-${date2.toLocaleDateString('fr-FR')}.pdf`,
+    image:      { type: 'jpeg', quality: 0.98 },
     html2canvas:  { scale: 2 },
     putOnlyUsedFonts:true,
-    pagebreak: { mode: 'avoid-all'},
+    pagebreak:    { mode: 'avoid-all'},
     jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }};
 
   const debut=`<h1 class="claire-hand">Rapport de suivi des indicateurs.</h1>
@@ -465,7 +466,11 @@ $('.lien-editer').on('click', ()=>{
  * On affiche la liste des projets et on nettoie le formulaire
  */
 $('.js-modifier-analyse').on('click', function () {
-  const poubelle=`<svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="poubelle-svg"  preserveAspectRatio="xMidYMid meet"><g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)" stroke="none">    <path d="M1871 5109 c-128 -25 -257 -125 -311 -241 -37 -79 -50 -146 -50 -258 l0 -88 -292 -5 c-308 -4 -329 -7 -448 -57 -171 -72 -327 -228 -400 -400 -41 -97 -51 -152 -57 -297 l-6 -143 2253 0 2253 0 -6 143 c-6 145 -16 200 -57 297-73 172 -229 328 -400 400 -119 50 -140 53 -447 57 l-293 5 0 88 c0 48 -5 111 -10 141 -34 180 -179 325 -359 359 -66 12 -1306 12 -1370 -1z m1359 -309 c60 -31 80 -78 80 -190 l0 -90 -750 0 -750 0 0 90 c0 110 20 159 78 189 36 19 60 20 670 21 615 0 634 -1 672 -20z"/> <path d="M626 3283 c3 -21 63 -684 134 -1473 136 -1518 135 -1505 194 -1599 64 -100 180 -179 295 -201 73 -14 2549 -14 2622 0 115 22 231 101 295 201 59 94 58 81 194 1599 71 789 131 1452 134 1473 l4 37 -1938 0 -1938 0 4 -37z m1134 -283 c43 -22 65 -55 74 -110 11 -69 99 -2156 92 -2185 -10 -40 -69 -93 -112 -101 -83 -15 -167 45 -178 128 -6 46 -96 2049 -96 2134 0 118 115 188 220 134z m870 0 c26 -13 47 -34 60 -60 20 -39 20 -57 20 -1130 0 -1073 0 -1091 -20 -1130 -23 -45 -80 -80 -130 -80 -50 0 -107 35 -130 80 -20 39 -20 57 -20 1130 0 1073 0 1091 20 1130 37 73 124 99 200 60z m893 -13 c66 -50 66 20 13 -1166 -26 -592 -52 -1092 -57 -1113 -18 -69 -99 -118 -174 -104 -42 8 -101 62 -111 101 -7 29 81 2116 92 2185 9 54 35 91 79 112 52 25 114 19 158 -15z"/></g></svg>`;
+  const poubelle=`<svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="poubelle-svg" preserveAspectRatio="xMidYMid meet">
+      <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)" stroke="none">
+      <path d="M1871 5109 c-128 -25 -257 -125 -311 -241 -37 -79 -50 -146 -50 -258 l0 -88 -292 -5 c-308 -4 -329 -7 -448 -57 -171 -72 -327 -228 -400 -400 -41 -97 -51 -152 -57 -297 l-6 -143 2253 0 2253 0 -6 143 c-6 145 -16 200 -57 297-73 172 -229 328 -400 400 -119 50 -140 53 -447 57 l-293 5 0 88 c0 48 -5 111 -10 141 -34 180 -179 325 -359 359 -66 12 -1306 12 -1370 -1z m1359 -309 c60 -31 80 -78 80 -190 l0 -90 -750 0 -750 0 0 90 c0 110 20 159 78 189 36 19 60 20 670 21 615 0 634 -1 672 -20z"/> <path d="M626 3283 c3 -21 63 -684 134 -1473 136 -1518 135 -1505 194 -1599 64 -100 180 -179 295 -201 73 -14 2549 -14 2622 0 115 22 231 101 295 201 59 94 58 81 194 1599 71 789 131 1452 134 1473 l4 37 -1938 0 -1938 0 4 -37z m1134 -283 c43 -22 65 -55 74 -110 11 -69 99 -2156 92 -2185 -10 -40 -69 -93 -112 -101 -83 -15 -167 45 -178 128 -6 46 -96 2049 -96 2134 0 118 115 188 220 134z m870 0 c26 -13 47 -34 60 -60 20 -39 20 -57 20 -1130 0 -1073 0 -1091 -20 -1130 -23 -45 -80 -80 -130 -80 -50 0 -107 35 -130 80 -20 39 -20 57 -20 1130 0 1073 0 1091 20 1130 37 73 124 99 200 60z m893 -13 c66 -50 66 20 13 -1166 -26 -592 -52 -1092 -57 -1113 -18 -69 -99 -118 -174 -104 -42 8 -101 62 -111 101 -7 29 81 2116 92 2185 9 54 35 91 79 112 52 25 114 19 158 -15z"/>
+      </g>
+    </svg>`;
 
   /* On récupère la clé maven */
   const data = { mavenKey: $('#js-nom').data('maven') };
