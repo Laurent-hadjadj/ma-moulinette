@@ -1,8 +1,7 @@
 {% set title = 'Analyse Owasp' %}
 {% set description = 'Ma Moulinette - analyse OWASP.' %}
 <!DOCTYPE html>
-<html	lang="fr">
-
+<html lang="fr">
   {# Chargement de la section HEAD #}
   <head>
     {{ include('head.html.twig') }}
@@ -34,7 +33,8 @@
       <h2 class="claire-hand">Vulnérabilités OWASP et points chauds.</h2>
 
       <div id="js-serveur" class="cell" data-serveur="{{serveur}}">
-        <h3 id="js-application" class="claire-hand"></h3>
+        {# On ajoute un caractère pour éviter une erreur W3C #}
+        <h3 id="js-application" class="claire-hand">&nbsp;</h3>
       </div>
 
       <fieldset class="fieldset cell">
