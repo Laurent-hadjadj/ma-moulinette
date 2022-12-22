@@ -126,7 +126,7 @@ const miseAJourListeProjet=function() {
 			$.ajax(options).then(t => {
 				log(` - INFO : ${t.message}`);
 				$('#js-public').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.public));
-				if (t.private.isNaN()) {
+				if (isNaN(t.private)) {
 					$('#js-private').html('-');
 			  	} else {
 						$('#js-private').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.private));
