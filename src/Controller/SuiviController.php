@@ -42,6 +42,7 @@ class SuiviController extends AbstractController
   public static $strContentType = 'application/json';
   public static $dateFormat = "Y-m-d H:i:s";
   public static $sonarUrl = "sonar.url";
+  public static $europeParis = "Europe/Paris";
   public static $regex = "/\s+/u";
 
   /**
@@ -165,7 +166,6 @@ class SuiviController extends AbstractController
     ORDER BY date_version DESC LIMIT 9)";
     $select = $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
     $suivi = $select->fetchAllAssociative();
-
     /** On récupère les anomalies par sévérité */
     $sql = "SELECT * FROM
     (SELECT date_version as date,
@@ -289,7 +289,7 @@ class SuiviController extends AbstractController
     $id = 0;
     /** objet = { id: clé, text: "blablabla" }; */
     foreach ($versions as $version) {
-      $ts = new DateTime($version['date'], new DateTimeZone('Europe/Paris'));
+      $ts = new DateTime($version['date'], new DateTimeZone(static::$europeParis));
       $cc = $ts->format("d-m-Y H:i:sO");
       $objet = [
         'id' => $id,
@@ -450,7 +450,7 @@ class SuiviController extends AbstractController
     /** On décode le body */
     $data = json_decode($request->getContent());
     $dateEnregistrement = new Datetime();
-    $dateEnregistrement->setTimezone(new DateTimeZone('Europe/Paris'));
+    $dateEnregistrement->setTimezone(new DateTimeZone(static::$europeParis));
     $dateVersion = new Datetime($data->date);
 
     /** On créé un nouvel objet Json. */
@@ -589,7 +589,7 @@ class SuiviController extends AbstractController
     $date = $data->date;
     $version = $data->version;
     $dateEnregistrement = new DateTime();
-    $dateEnregistrement->setTimezone(new DateTimeZone('Europe/Paris'));
+    $dateEnregistrement->setTimezone(new DateTimeZone(static::$europeParis));
     $dateEnregistrement->format(static::$dateFormat);
 
     /** On créé un nouvel objet Json */
