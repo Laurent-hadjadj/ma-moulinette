@@ -431,7 +431,7 @@ const remplissageHotspotInfo=function(idMaven) {
 const injectionHotspotListe=function(id, espace, menace, leTaux, badge, laNote) {
   const i = `<span class="stat-note">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(menace)}</span>
   <span class="stat-note">${espace} ${Intl.NumberFormat('fr-FR', { style: 'percent' }).format(leTaux)}
-  </span> <span class="badge ${badge}">${laNote}</span>`;
+  </span> <span class="badge note-${badge}">${laNote}</span>`;
 $(`#h${id}`).html(i);
 };
 
