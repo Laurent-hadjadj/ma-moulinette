@@ -28,7 +28,6 @@
       </nav>
     </header>
 
-
     <div class="grid-container">
       <h2 class="claire-hand">Liste des profils qualités.</h2>
       <div class="grid-x cell">
@@ -104,13 +103,12 @@
       </div>
     </div>
 
-      <br><br>
-      {# Chargement de la section footer #}
-      {{ include('footer.html.twig') }}
-      {# Chargement du code javascript #}
-      {% block javascripts %}
-        {{ encore_entry_script_tags('profil') }}
-      {% endblock %}
-    </body>
+    <br><br>
+    {# Chargement de la section footer #}
+    {{ include('footer.html.twig') }}
+    {# Chargement du code javascript #}
+    {% block javascripts %}
+      {{ encore_entry_script_tags('profil') }}
+    {% endblock %}
   </body>
 </html>
