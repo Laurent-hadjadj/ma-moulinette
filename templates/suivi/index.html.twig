@@ -294,7 +294,7 @@
           </td>
           {% endfor %}
         </tr>
-        <tr scope="row">
+        <tr>
         <td class="text-left text-rouge">Bloquant</td>
         {% for i in 0..severite|length-1 %}
           {% set lookup="" %}
@@ -772,8 +772,10 @@
                   </div>
                 </div>
                 <br>
-                <a id="fermer-choisir-analyse" class="expanded button open-sans"
-                  data-close aria-label="Close reveal" type="button">Fermer</a>
+                {# fermeture de la fenetre modale #}
+                <button id="fermer-choisir-analyse" class="expanded button open-sans"
+                  data-close aria-label="Close reveal" type="button">Fermer
+                </button>
                 <a class="close-button" data-close aria-label="Close reveal">&#215;</a>
               </div>
 
