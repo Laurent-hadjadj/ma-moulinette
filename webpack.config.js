@@ -46,12 +46,12 @@ Encore
     .enableSourceMaps(!Encore.isProduction())
     .enableVersioning(Encore.isProduction())
 
-    .configureBabel((config) => {
+    .configureBabel(config => {
         config.plugins.push('@babel/plugin-proposal-class-properties');
     })
 
     // enables @babel/preset-env polyfills
-    .configureBabelPresetEnv((config) => {
+    .configureBabelPresetEnv(config => {
         config.useBuiltIns = 'usage';
         config.corejs = 3;
     })
@@ -79,7 +79,7 @@ Encore
         from: './assets/video',
         to: '[path][name].[ext]',
         context: './assets'
-    })
+    });
 
 // eslint-disable-next-line no-undef
 module.exports = Encore.getWebpackConfig();
