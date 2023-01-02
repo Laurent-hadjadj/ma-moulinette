@@ -102,7 +102,7 @@ const timestamp=function(bypass) {
   /** si je suis perdu, j'affiche une alerte !!! */
   const message3=`Je suis perdu !!!`;
   $('#message').html(callboxError+message3+callboxFermer);
-}
+};
 
 /**
   * [Description for clear]
@@ -241,7 +241,7 @@ const analyse=function(mavenKey, type, severity, css){
           if (t2.dataset.nombreBugBloquant==='0'){
             idc='-';
           } else {
-              idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t2.dataset.nombreBugBloquant);
+              idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/parseInt(t2.dataset.nombreBugBloquant,10));
             }
           }
         if (severity==='CRITICAL') {
@@ -249,7 +249,7 @@ const analyse=function(mavenKey, type, severity, css){
           if (t3.dataset.nombreBugCritique==='0'){
             idc='-';
           } else {
-              idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t3.dataset.nombreBugCritique);
+              idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/parseInt(t3.dataset.nombreBugCritique,10));
             }
           }
         if (severity==='INFO') {
@@ -257,7 +257,7 @@ const analyse=function(mavenKey, type, severity, css){
           if (t4.dataset.nombreBugInfo==='0'){
             idc='-';
           } else {
-              idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t4.dataset.nombreBugInfo);
+              idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/parseInt(t4.dataset.nombreBugInfo,10));
             }
           }
         if (severity==='MAJOR') {
@@ -265,7 +265,7 @@ const analyse=function(mavenKey, type, severity, css){
           if (t5.dataset.nombreBugMajeur==='0'){
             idc='-';
           } else {
-              idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t5.dataset.nombreBugMajeur);
+              idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/parseInt(t5.dataset.nombreBugMajeur,10));
             }
         }
         if (severity==='MINOR') {
@@ -273,7 +273,7 @@ const analyse=function(mavenKey, type, severity, css){
           if (t6.dataset.nombreBugMineur==='0'){
             idc='-';
           } else {
-              idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t6.dataset.nombreBugMineur);
+              idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/parseInt(t6.dataset.nombreBugMineur,10));
             }
         }
         if (idc !=='100 %' && idc !=='-') {
@@ -296,35 +296,35 @@ const analyse=function(mavenKey, type, severity, css){
           if (t8.dataset.nombreVulnerabiliteBloquant==='0'){
             idc='-';
           } else {
-              idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t8.dataset.nombreVulnerabiliteBloquant);
+              idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/parseInt(t8.dataset.nombreVulnerabiliteBloquant,10));
             }
         }
         if (severity==='CRITICAL'){
           if (t9.dataset.nombreVulnerabiliteCritique==='0'){
             idc='-';
           } else {
-              idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t9.dataset.nombreVulnerabiliteCritique);
+              idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/parseInt(t9.dataset.nombreVulnerabiliteCritique,10));
             }
           }
         if (severity==='INFO'){
           if (t10.dataset.nombreVulnerabiliteInfo==='0'){
             idc='-';
           } else {
-              idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t10.dataset.nombreVulnerabiliteInfo);
+              idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/parseInt(t10.dataset.nombreVulnerabiliteInfo,10));
             }
           }
       if (severity==='MAJOR'){
         if (t11.dataset.nombreVulnerabiliteMajeur==='0'){
           idc='-';
         } else {
-            idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t11.dataset.nombreVulnerabiliteMajeur);
+            idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/parseInt(t11.dataset.nombreVulnerabiliteMajeur,10));
           }
         }
     if (severity==='MINOR') {
       if (t12.dataset.nombreVulnerabiliteMineur==='0'){
         idc='-';
       } else {
-          idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t12.dataset.nombreVulnerabiliteMineur);
+          idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/parseInt(t12.dataset.nombreVulnerabiliteMineur,10));
         }
       }
       if (idc !=='100 %' && idc !=='-') {
@@ -349,35 +349,35 @@ const analyse=function(mavenKey, type, severity, css){
           if (t14.dataset.nombreMauvaisePratiqueBloquant==='0'){
               idc='-';
             } else {
-              idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t14.dataset.nombreMauvaisePratiqueBloquant);
+              idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/parseInt(t14.dataset.nombreMauvaisePratiqueBloquant,10));
               }
           }
         if (severity==='CRITICAL') {
           if (t15.dataset.nombreMauvaisePratiqueCritique==='0'){
               idc='-';
             } else {
-              idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t15.dataset.nombreMauvaisePratiqueCritique);
+              idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/parseInt(t15.dataset.nombreMauvaisePratiqueCritique,10));
             }
           }
         if (severity==='INFO'){
           if (t16.dataset.nombreMauvaisePratiqueInfo==='0'){
             idc='-';
           } else {
-              idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t16.dataset.nombreMauvaisePratiqueInfo);
+              idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/parseInt(t16.dataset.nombreMauvaisePratiqueInfo,10));
             }
           }
         if (severity==='MAJOR'){
           if (t17.dataset.nombreMauvaisePratiqueMajeur==='0'){
             idc='-';
           } else {
-                  idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t17.dataset.nombreMauvaisePratiqueMajeur);
+                  idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/parseInt(t17.dataset.nombreMauvaisePratiqueMajeur,10));
               }
           }
       if (severity==='MINOR'){
         if (t18.dataset.nombreMauvaisePratiqueMinor==='0'){
           idc='-';
         } else {
-              idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t18.dataset.nombreMauvaisePratiqueMineur);
+              idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/parseInt(t18.dataset.nombreMauvaisePratiqueMineur,10));
             }
           }
       if (idc !=='100 %' && idc !=='-') {
