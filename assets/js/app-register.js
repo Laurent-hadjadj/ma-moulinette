@@ -145,21 +145,23 @@ $('#registration_form_courriel').on('keyup', function(){
 $('#registration_form_plainPassword').on('keyup', function(){
     const password=$('#registration_form_plainPassword').val();
 
-    if ( password.length === 0 ) { $('#register-info-check').html(''); }
+    if ( password.length === 0 ) {
+      $('#register-info-check').html('');
+      }
     if ( password.length>0 && password.length<8 ) {
         $('#register-info-check-password').html('');
-        $('#register-info-check').html('<span class="register-info-erreur">Taille Min 8.</span>'); }
+        $('#register-info-check').html('<span class="register-info-erreur">Taille Min 8.</span>');
+      }
     if ( password.length>53 ) {
-        $('#register-info-check').html('<span class="profil-info-erreur">Taille Max 52.</span>'); }
+        $('#register-info-check').html('<span class="profil-info-erreur">Taille Max 52.</span>');
+      }
     if ( password.length>7 && password.length<53 ) {
         $('#register-info-check').html('');
         $('#register-info-check-password').html(checkOkSvg);
-      }
-      else {
+      } else {
         $('#register-info-check-password').html(checkKoSvg);
       }
-    }
-  );
+  });
 
 /** Validation du choix de l'avatar */
 $('.thumbnail').on('click', function(){
