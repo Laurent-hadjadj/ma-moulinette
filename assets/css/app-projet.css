@@ -318,8 +318,8 @@
   background-color: #0a0;
   color: #fff;
   border: solid 2px #00445b;
-  border-radius: 0.1rem;
-  padding-left: 20px;
+  border-radius: 0.2rem;
+  padding-left: 18px;
   padding-right: 20px;
 }
 
@@ -349,8 +349,8 @@
   color: #fff;
   border: solid 1px #00445b;
   border-radius: 0.2rem;
-  padding-left: 18px;
-  padding-right: 18px;
+  padding-left: 19px;
+  padding-right: 20px;
 }
 
 /* Couleur pour la note E */
@@ -359,7 +359,7 @@
   color: #fff;
   border: solid 1px #00445b;
   border-radius: 0.2rem;
-  padding-left: 20px;
+  padding-left: 21px;
   padding-right: 20px;
 }
 
