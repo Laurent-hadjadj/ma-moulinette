@@ -9,9 +9,10 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
+/** Import des dépendances */
 import '../css/login.css';
 
-// Intégration de jquery
+/** Intégration de jquery */
 import $ from 'jquery';
 
 import 'what-input';
@@ -22,7 +23,7 @@ import './foundation.js';
 
 import browserUpdate from 'browser-update';
 
-/* Vérification du navigateur*/
+/* Vérification du navigateur */
 const configurationOptions = {
   required: { i: 11, e: -3, c: -3, f: -3, o: -3, s: -3 },
   insecure: true,
@@ -33,6 +34,7 @@ const configurationOptions = {
 /* Chargement de browser update */
 browserUpdate([configurationOptions]);
 
+/* Execution automatique */
 $(function () {
   const showClass = 'show';
 

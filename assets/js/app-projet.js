@@ -9,6 +9,7 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
+/** Import des dépendances */
 import '../css/projet.css';
 
 /* Intégration de jquery */
@@ -30,17 +31,41 @@ import './foundation.js';
 /* On importe les paramètres serveur. */
 import {serveur} from './properties.js';
 
+/**
+ * On importe les méthodes pour :
+ * Enregistrer les données ;
+ * Afficher les données ;
+ */
 import {remplissage} from './app-projet-peinture.js';
 import {enregistrement} from './app-projet-enregistrement.js';
 
+/**
+ * dateOptions
+ * Définition des options de date
+ * @var [type]
+ */
 const dateOptions = {
   year: 'numeric', month: 'numeric', day: 'numeric',
   hour: 'numeric', minute:'numeric', second: 'numeric',
   hour12: false};
 
+
 const contentType='application/json; charset=utf-8';
+
+/**
+ * matrice
+ * Indice des couleurs pour la palette
+ *
+ * @var [type]
+ */
 const matrice = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
                   18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
+
+/**
+ * paletteCouleur
+ * Palette de couleur pour les graphiques
+ * @var [type]
+ */
 const paletteCouleur = [
   '#065535', '#133337', '#000000', '#ffc0cb', '#008080', '#ff0000', '#ffd700', '#666666',
   '#ff7373', '#fa8072', '#800080', '#800000', '#003366', '#333333', '#20b2aa', '#ffc3a0',

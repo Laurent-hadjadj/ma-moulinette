@@ -9,4 +9,5 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
+/** Import des dépendances */
 import '../css/app-errors.css';
