@@ -689,7 +689,7 @@ const afficheProjetFavori=function() {
     $('#affiche-total-projet').html(`<span id="nombre-projet" class="stat">${i}</span>`);
 
     /* On gére le click sur le bouton V (Valider) */
-    $('.js-liste-valider').on('click', (e) => {
+    $('.js-liste-valider').on('click', e => {
       /* On récupère la valeur de l'ID. */
       const id = e.target.id;
       const a = id.split('-');
