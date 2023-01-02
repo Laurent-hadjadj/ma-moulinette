@@ -15,6 +15,7 @@
 /*************************          Global     *********************************/
 
 /* ***** Gestion des logs ****** */
+.label-log { padding-left: 1rem; }
 
 /* Cotainer de logs */
 .log-container {
