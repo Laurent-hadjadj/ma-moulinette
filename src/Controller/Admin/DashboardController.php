@@ -23,11 +23,23 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\UserMenu;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-//use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 
+/**
+ * [Description DashboardController]
+ */
 class DashboardController extends AbstractDashboardController
 {
+    /**
+     * [Description for __construct]
+     *
+     * @param  private
+     * @param mixed
+     *
+     * Created at: 02/01/2023, 18:33:59 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function __construct(
         private EntityManagerInterface $em,
         )
@@ -36,8 +48,13 @@ class DashboardController extends AbstractDashboardController
     }
 
     /**
-     * index
-     * @return response
+     * [Description for index]
+     *
+     * @return Response
+     *
+     * Created at: 02/01/2023, 18:34:07 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[IsGranted('ROLE_UTILISATEUR')]
     #[Route('/admin', name: 'admin')]
@@ -247,9 +264,13 @@ class DashboardController extends AbstractDashboardController
     }
 
     /**
-     * configureDashboard
+     * [Description for configureDashboard]
      *
      * @return Dashboard
+     *
+     * Created at: 02/01/2023, 18:34:30 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function configureDashboard(): Dashboard
     {
@@ -263,9 +284,13 @@ class DashboardController extends AbstractDashboardController
     }
 
     /**
-     * configureMenuItems
+     * [Description for configureMenuItems]
      *
      * @return iterable
+     *
+     * Created at: 02/01/2023, 18:34:47 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function configureMenuItems(): iterable
     {
@@ -289,10 +314,15 @@ class DashboardController extends AbstractDashboardController
     }
 
     /**
-     * configureUserMenu
+     * [Description for configureUserMenu]
      *
-     * @param  mixed $utilisateur
+     * @param UserInterface $utilisateur
+     *
      * @return UserMenu
+     *
+     * Created at: 02/01/2023, 18:34:53 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function configureUserMenu(UserInterface $utilisateur): UserMenu
     {
@@ -313,8 +343,12 @@ class DashboardController extends AbstractDashboardController
     /**
      * [Description for configureAssets]
      * Charge un css spécifique
+     *
      * @return Assets
      *
+     * Created at: 02/01/2023, 18:35:12 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function configureAssets(): Assets
     {

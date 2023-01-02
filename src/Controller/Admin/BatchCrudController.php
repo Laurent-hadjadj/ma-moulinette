@@ -27,13 +27,20 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
+/**
+ * [Description BatchCrudController]
+ */
 class BatchCrudController extends AbstractCrudController
 {
     /**
      * [Description for __construct]
      *
      * @param  private
+     * @param  private
      *
+     * Created at: 02/01/2023, 18:32:27 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function __construct(
         private EntityManagerInterface $emm,
@@ -49,6 +56,9 @@ class BatchCrudController extends AbstractCrudController
      *
      * @return string
      *
+     * Created at: 02/01/2023, 18:32:36 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public static function getEntityFqcn(): string
     {
@@ -58,10 +68,14 @@ class BatchCrudController extends AbstractCrudController
     /**
      * [Description for configureFilters]
      * On ajoute un filtre de recherche
+     *
      * @param Filters $filters
      *
      * @return Filters
      *
+     * Created at: 02/01/2023, 18:32:42 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function configureFilters(Filters $filters): Filters
     {
@@ -77,6 +91,9 @@ class BatchCrudController extends AbstractCrudController
      *
      * @return Actions
      *
+     * Created at: 02/01/2023, 18:32:55 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function configureActions(Actions $actions): Actions
     {
@@ -86,10 +103,14 @@ class BatchCrudController extends AbstractCrudController
     /**
      * [Description for configureFields]
      * Configuration et propriétés des champs
+     *
      * @param string $pageName
      *
      * @return iterable
      *
+     * Created at: 02/01/2023, 18:33:02 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function configureFields(string $pageName): iterable
     {
@@ -153,6 +174,9 @@ class BatchCrudController extends AbstractCrudController
      *
      * @return void
      *
+     * Created at: 02/01/2023, 18:33:16 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function persistEntity(EntityManagerInterface $em, $entityInstance): void
     {
@@ -189,6 +213,9 @@ class BatchCrudController extends AbstractCrudController
      *
      * @return void
      *
+     * Created at: 02/01/2023, 18:33:27 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function updateEntity(EntityManagerInterface $em, $entityInstance): void
     {
