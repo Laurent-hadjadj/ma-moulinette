@@ -23,7 +23,6 @@ use Symfony\Component\HttpFoundation\Response;
 use DateTime;
 use DateTimeZone;
 
-
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Main\Utilisateur;
 
@@ -56,7 +55,7 @@ class RegistrationController extends AbstractController
         $utilisateur = new Utilisateur();
         /** on prépare le formulaire. */
         $form = $this->createForm(RegistrationFormType::class, $utilisateur);
-        // On récupère la requête.
+        /** On récupère la requête. */
         $form->handleRequest($request);
 
         /** Le formulaire est valide */
@@ -96,7 +95,7 @@ class RegistrationController extends AbstractController
             $em->flush();
 
             /** Connexion automatique ? */
-            //return $userAuthenticator->authenticateUser($utilisateur, $authenticator,$request);
+            /** "return $userAuthenticator->authenticateUser($utilisateur, $authenticator,$request);" */
 
             /** On préfére redirider l'utilisateur sur la page de bienvenu des nouveaux tiliasteur */
             return $this->render('welcome/index.html.twig', [
