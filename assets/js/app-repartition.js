@@ -226,9 +226,7 @@ const analyse=function(mavenKey, type, severity, css){
         const erreur=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(t.repartition.erreur);
         const message2=`Il y a eu ${erreur} erreurs lors de l'analyse.`;
         $('#message-analyse').html(callboxError+message2+callboxFermer);
-      }
-      else
-      {
+      } else {
         const message2=`Tout va bien.`;
         $('#message-analyse').html(callboxInformation+message2+callboxFermer);
       }
@@ -278,9 +276,10 @@ const analyse=function(mavenKey, type, severity, css){
         }
         if (idc !=='100 %' && idc !=='-') {
           alert='texte-rouge';
-        } else {
+          } else {
           alert='texte-vert';
         }
+
         const tabBug=`<tr>
             <td class="${css}"><strong>${labelSeverity}</strong></td>
             <td id="presenation-01" class="text-center">${t.repartition.frontend}</td>
@@ -488,7 +487,7 @@ const collecte=function(mavenKey, type, severity, start, stop, counter, timer) {
       setTimeout(() => stopCollecte(), uneSeconde);
       setTimeout(() => changeProgress(stop), uneSeconde);
       setTimeout(() => changeTimer(timer), uneSeconde);
-    },
+    }
   };
 
   /** La requête utilise une promise et un callback. */
