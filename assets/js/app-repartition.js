@@ -438,8 +438,8 @@ const collecte=function(mavenKey, type, severity, start, stop, counter, timer) {
    * @param progress
    */
   const changeProgress = progress => {
-    $(".progress-meter").css('width', `${progress}%`);
-    $(".progress-meter-text").text(`${progress}%`);
+    $('.progress-meter').css('width', `${progress}%`);
+    $('.progress-meter-text').text(`${progress}%`);
   };
 
   /** On test si on est arrivé à la fin du traitement */
@@ -917,8 +917,8 @@ $('.bouton-repartition-traitement-donnees').on('click', ()=>{
 
     /** BLOCKER */
     /** On affiche le tableau */
-    $("#tableau-1").removeClass('hide');
-    $("#mon-bo-tableau1").html(tabTitre);
+    $('#tableau-1').removeClass('hide');
+    $('#mon-bo-tableau1').html(tabTitre);
     await analyse(maven_key, 'BUG', 'BLOCKER', 'texte-rouge');
     await analyse(maven_key, 'BUG', 'CRITICAL', 'texte-rouge');
     await analyse(maven_key, 'BUG', 'INFO', 'texte-bleu');
@@ -926,8 +926,8 @@ $('.bouton-repartition-traitement-donnees').on('click', ()=>{
     await analyse(maven_key, 'BUG', 'MINOR', 'texte-vert');
 
     /** VULNERABILITY */
-    $("#tableau-2").removeClass('hide');
-    $("#mon-bo-tableau2").html(tabTitre);
+    $('#tableau-2').removeClass('hide');
+    $('#mon-bo-tableau2').html(tabTitre);
     await analyse(maven_key, 'VULNERABILITY', 'BLOCKER', 'texte-rouge');
     await analyse(maven_key, 'VULNERABILITY', 'CRITICAL', 'texte-rouge');
     await analyse(maven_key, 'VULNERABILITY', 'INFO', 'texte-bleu');
@@ -935,8 +935,8 @@ $('.bouton-repartition-traitement-donnees').on('click', ()=>{
     await analyse(maven_key, 'VULNERABILITY', 'MINOR', 'texte-vert');
 
     /** CODE_SMELL */
-    $("#tableau-3").removeClass('hide');
-    $("#mon-bo-tableau3").html(tabTitre);
+    $('#tableau-3').removeClass('hide');
+    $('#mon-bo-tableau3').html(tabTitre);
     await analyse(maven_key, 'CODE_SMELL', 'BLOCKER', 'texte-rouge');
     await analyse(maven_key, 'CODE_SMELL', 'CRITICAL', 'texte-rouge');
     await analyse(maven_key, 'CODE_SMELL', 'INFO', 'texte-bleu');
