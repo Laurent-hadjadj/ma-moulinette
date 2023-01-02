@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-// Accès aux tables SLQLite
+/** Accès aux tables SLQLite */
 use Doctrine\Persistence\ManagerRegistry;
 use App\Entity\Secondary\Repartition;
 
@@ -59,7 +59,7 @@ class RepartitionController extends AbstractController
         /** On enregistre le nom du projet */
         $app=explode(":", $mavenKey);
 
-        // On se connecte à la base pour connaitre la version du dernier setup pour le projet.
+        /** On se connecte à la base pour connaitre la version du dernier setup pour le projet. */
         $reponse = $this->doctrine->getManager('secondary')
                             ->getRepository(Repartition::class)
                             ->findBy(['maven_key' => $mavenKey],['setup' => 'DESC'],1);
@@ -81,5 +81,4 @@ class RepartitionController extends AbstractController
             'version' => $this->getParameter('version'), 'dateCopyright' => \date('Y')
         ]);
     }
-
 }
