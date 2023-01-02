@@ -17,7 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-// On récupère les exceptions de l'authentification
+/** On récupère les exceptions de l'authentification */
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 
@@ -38,14 +38,13 @@ class SecurityController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/', name: 're_login')]
-     public function relogin(AuthenticationUtils $authenticationUtils): Response
+    public function relogin(AuthenticationUtils $authenticationUtils): Response
     {
         /**
          * Si on est déjà connecté
          * On affiche la page /home"
          * Si on la page /login"
          */
-
         if ($this->getUser()->getUserIdentifier()) {
             return $this->redirectToRoute('home');
         } else {
@@ -78,6 +77,16 @@ class SecurityController extends AbstractController
         ]);
     }
 
+
+    /**
+     * [Description for logout]
+     *
+     * @return [type]
+     *
+     * Created at: 02/01/2023, 18:20:23 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     #[Route('/logout', name: 'logout')]
     public function logout()
     {
