@@ -293,36 +293,36 @@ const analyse=function(mavenKey, type, severity, css){
       /* On affiche le tableau pour la sécurité si le parser est OK */
       if (type==='VULNERABILITY' && parser==='OK'){
         if (severity==='BLOCKER') {
-          if (t8.dataset.nombreVulnerabiliteBloquant==='0'){ 
-            idc='-'; 
+          if (t8.dataset.nombreVulnerabiliteBloquant==='0'){
+            idc='-';
           } else {
               idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t8.dataset.nombreVulnerabiliteBloquant);
             }
         }
         if (severity==='CRITICAL'){
-          if (t9.dataset.nombreVulnerabiliteCritique==='0'){ 
-            idc='-'; 
+          if (t9.dataset.nombreVulnerabiliteCritique==='0'){
+            idc='-';
           } else {
               idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t9.dataset.nombreVulnerabiliteCritique);
             }
           }
         if (severity==='INFO'){
-          if (t10.dataset.nombreVulnerabiliteInfo==='0'){ 
-            idc='-'; 
+          if (t10.dataset.nombreVulnerabiliteInfo==='0'){
+            idc='-';
           } else {
               idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t10.dataset.nombreVulnerabiliteInfo);
             }
           }
       if (severity==='MAJOR'){
-        if (t11.dataset.nombreVulnerabiliteMajeur==='0'){ 
-          idc='-'; 
+        if (t11.dataset.nombreVulnerabiliteMajeur==='0'){
+          idc='-';
         } else {
             idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t11.dataset.nombreVulnerabiliteMajeur);
           }
         }
     if (severity==='MINOR') {
-      if (t12.dataset.nombreVulnerabiliteMineur==='0'){ 
-        idc='-'; 
+      if (t12.dataset.nombreVulnerabiliteMineur==='0'){
+        idc='-';
       } else {
           idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t12.dataset.nombreVulnerabiliteMineur);
         }
@@ -347,7 +347,7 @@ const analyse=function(mavenKey, type, severity, css){
       if (type==='CODE_SMELL' && parser==='OK'){
         if (severity==='BLOCKER'){
           if (t14.dataset.nombreMauvaisePratiqueBloquant==='0'){
-              idc='-'; 
+              idc='-';
             } else {
               idc=new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(somme/t14.dataset.nombreMauvaisePratiqueBloquant);
               }
@@ -469,7 +469,8 @@ const collecte=function(mavenKey, type, severity, start, stop, counter, timer) {
     const minute = Math.floor(value/60);
     const restSeconds = value%60;
     const newTimer=`${minute}.${restSeconds}`;
-    $('#js-'+typeTime.toLowerCase()+'-time').html(newTimer);
+    const typeTimeLower=typeTime.toLowerCase();
+    $(`#js-${typeTimeLower}-time`).html(newTimer);
   };
 
   /** On récupère le setup par défaut de l'application */
@@ -497,7 +498,8 @@ const collecte=function(mavenKey, type, severity, start, stop, counter, timer) {
       $('#nombre-anomalie').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(counter));
 
       /** On injecte la temps passé */
-      const t1 = document.getElementById('js-'+typeTime.toLowerCase()+'-time');
+      const typeTimeLower=typeTime.toLowerCase();
+      const t1 = document.getElementById(`js-${typeTimeLower}-time`);
       t1.dataset.timer=t.temps;
     resolve();
     });
