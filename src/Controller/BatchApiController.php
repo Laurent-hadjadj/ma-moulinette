@@ -109,7 +109,8 @@ class BatchApiController extends AbstractController
         'Content-Type' => static::$strContentType]
       ]
     );
-
+    
+    /** HTTP 200 et 401 */
     if (200 !== $response->getStatusCode()) {
       if ($response->getStatusCode() == 401) {
         throw new \UnexpectedValueException('Erreur d\'Authentification. La clé n\'est pas correcte.');
@@ -697,6 +698,7 @@ class BatchApiController extends AbstractController
     $date->setTimezone(new DateTimeZone(static::$europeParis));
 
     $statusesMin = "OPEN,CONFIRMED,REOPENED,RESOLVED";
+    /** Pour le moment on utilise pas cette options */
     $statusesAll = "OPEN,CONFIRMED,REOPENED,RESOLVED,TO_REVIEW,IN_REVIEW";
 
     $url1 = "${tempoUrlLong}${mavenKey}&facets=directories,types,severities&p=1&ps=1&statuses=${statusesMin}";
