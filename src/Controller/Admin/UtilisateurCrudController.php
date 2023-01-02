@@ -3,7 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Main\Utilisateur;
-Use App\Entity\Main\Equipe;
+use App\Entity\Main\Equipe;
 
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -12,7 +12,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 
-//use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\EmailField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AvatarField;
@@ -88,7 +87,7 @@ class UtilisateurCrudController extends AbstractCrudController
     public function configureActions(Actions $actions): Actions
     {
         return parent::configureActions($actions)
-            ->disable(Action::NEW);
+            ->disable(Action::new);
     }
 
     /**
