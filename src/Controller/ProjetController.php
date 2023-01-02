@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-// Accès aux tables SLQLite
+/** Accès aux tables SLQLite */
 use App\Entity\Secondary\Repartition;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\DBAL\Connection;
@@ -368,9 +368,11 @@ class ProjetController extends AbstractController
       $codeSmellBlocker=$codeSmellCritical=$codeSmellMajor=0;
       $hotspot=0;
 
-      $nombrePresentationReliabilityBlocker=$nombrePresentationReliabilityCritical=$nombrePresentationReliabilityMajor=0;
+      $nombrePresentationReliabilityBlocker=$nombrePresentationReliabilityCritical=0;
+      $nombrePresentationReliabilityMajor=0;
 
-      $nombrePresentationVulnerabilityBlocker=$nombrePresentationVulnerabilityCritical=$nombrePresentationVulnerabilityMajor=0;
+      $nombrePresentationVulnerabilityBlocker=$nombrePresentationVulnerabilityCritical=0;
+      $nombrePresentationVulnerabilityMajor=0;
       $nombreMetierVulnerabilityBlocker=$nombreMetierVulnerabilityCritical=$nombreMetierVulnerabilityMajor=0;
 
       $message="[COSUI-001] Il n'y a pas de données dans la babase !";
