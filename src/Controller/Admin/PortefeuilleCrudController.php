@@ -25,6 +25,9 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 
+/**
+ * [Description PortefeuilleCrudController]
+ */
 class PortefeuilleCrudController extends AbstractCrudController
 {
     /**
@@ -32,6 +35,9 @@ class PortefeuilleCrudController extends AbstractCrudController
      *
      * @param  private
      *
+     * Created at: 02/01/2023, 18:35:59 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function __construct(private EntityManagerInterface $emm)
     {
@@ -43,6 +49,9 @@ class PortefeuilleCrudController extends AbstractCrudController
      *
      * @return string
      *
+     * Created at: 02/01/2023, 18:36:05 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public static function getEntityFqcn(): string
     {
@@ -52,10 +61,14 @@ class PortefeuilleCrudController extends AbstractCrudController
     /**
      * [Description for configureFilters]
      * On ajoute un filtre de recherche
+     *
      * @param Filters $filters
      *
      * @return Filters
      *
+     * Created at: 02/01/2023, 18:36:11 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function configureFilters(Filters $filters): Filters
     {
@@ -71,6 +84,9 @@ class PortefeuilleCrudController extends AbstractCrudController
      *
      * @return Actions
      *
+     * Created at: 02/01/2023, 18:36:23 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function configureActions(Actions $actions): Actions
     {
@@ -80,10 +96,14 @@ class PortefeuilleCrudController extends AbstractCrudController
     /**
      * [Description for configureFields]
      * Configuration et propriétés des champs
+     *
      * @param string $pageName
      *
      * @return iterable
      *
+     * Created at: 02/01/2023, 18:36:30 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function configureFields(string $pageName): iterable
     {
@@ -147,11 +167,15 @@ class PortefeuilleCrudController extends AbstractCrudController
     /**
      * [Description for persistEntity]
      * On enregistre les données lors de la création
+     *
      * @param EntityManagerInterface $em
      * @param mixed $entityInstance
      *
      * @return void
      *
+     * Created at: 02/01/2023, 18:36:49 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function persistEntity(EntityManagerInterface $em, $entityInstance): void
     {
@@ -169,12 +193,14 @@ class PortefeuilleCrudController extends AbstractCrudController
     /**
      * [Description for updateEntity]
      * Mise à jour des données du formulaire
-     *
      * @param EntityManagerInterface $em
      * @param mixed $entityInstance
      *
      * @return void
      *
+     * Created at: 02/01/2023, 18:37:02 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function updateEntity(EntityManagerInterface $em, $entityInstance): void
     {

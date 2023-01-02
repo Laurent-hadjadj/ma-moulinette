@@ -23,18 +23,50 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 
 
+/**
+ * [Description UtilisateurCrudController]
+ */
 class UtilisateurCrudController extends AbstractCrudController
 {
+    /**
+     * [Description for __construct]
+     *
+     * @param  private
+     *
+     * Created at: 02/01/2023, 18:37:26 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function __construct(private EntityManagerInterface $emm)
     {
     $this->emm = $emm;
     }
 
+    /**
+     * [Description for getEntityFqcn]
+     *
+     * @return string
+     *
+     * Created at: 02/01/2023, 18:37:28 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public static function getEntityFqcn(): string
     {
         return Utilisateur::class;
     }
 
+    /**
+     * [Description for configureFilters]
+     *
+     * @param Filters $filters
+     *
+     * @return Filters
+     *
+     * Created at: 02/01/2023, 18:37:30 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function configureFilters(Filters $filters): Filters
     {
         return $filters
@@ -42,12 +74,34 @@ class UtilisateurCrudController extends AbstractCrudController
             ->add('equipe');
     }
 
+    /**
+     * [Description for configureActions]
+     *
+     * @param Actions $actions
+     *
+     * @return Actions
+     *
+     * Created at: 02/01/2023, 18:37:32 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function configureActions(Actions $actions): Actions
     {
         return parent::configureActions($actions)
             ->disable(Action::NEW);
     }
 
+    /**
+     * [Description for configureFields]
+     *
+     * @param string $pageName
+     *
+     * @return iterable
+     *
+     * Created at: 02/01/2023, 18:37:34 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function configureFields(string $pageName): iterable
     {
         yield AvatarField::new('avatar')
@@ -69,7 +123,8 @@ class UtilisateurCrudController extends AbstractCrudController
             ->setChoices(array_combine($key1, $value1))
             ->allowMultipleChoices()
             ->renderExpanded()
-            ->renderAsBadges(['ROLE_UTILISATEUR' => 'success', 'ROLE_BATCH' => 'warning', 'ROLE_GESTIONNAIRE' => 'danger'])
+            ->renderAsBadges(['ROLE_UTILISATEUR' => 'success',
+            'ROLE_BATCH' => 'warning', 'ROLE_GESTIONNAIRE' => 'danger'])
             ->setHelp('Sélectionne le ou les rôles.');
 
         /** On récupère la liste des équipes */
@@ -104,6 +159,18 @@ class UtilisateurCrudController extends AbstractCrudController
 
     }
 
+    /**
+     * [Description for updateEntity]
+     *
+     * @param EntityManagerInterface $em
+     * @param mixed $entityInstance
+     *
+     * @return void
+     *
+     * Created at: 02/01/2023, 18:37:59 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function updateEntity(EntityManagerInterface $em, $entityInstance): void
     {
         if (!$entityInstance instanceof Utilisateur) {
