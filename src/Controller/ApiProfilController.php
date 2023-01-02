@@ -17,10 +17,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-// Gestion de accès aux API
+/** Gestion de accès aux API */
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-// Accès aux tables SLQLite
+/** Accès aux tables SLQLite */
 use Doctrine\ORM\EntityManagerInterface;
 
 class ApiProfilController extends AbstractController
@@ -48,7 +48,7 @@ class ApiProfilController extends AbstractController
     $listeLabel = [];
     $listeDataset = [];
 
-    // On créé la liste des libellés et des données
+    /** On créé la liste des libellés et des données */
     $sql = "SELECT language_name AS profile FROM profiles";
     $select = $this->em->getConnection()->prepare($sql)->executeQuery();
     $labels = $select->fetchAllAssociative();
