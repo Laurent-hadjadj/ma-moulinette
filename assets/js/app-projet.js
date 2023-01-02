@@ -526,8 +526,7 @@ const projetHotspotOwaspDetails=function(mavenKey) {
     $.ajax(options).then(t=> {
       if (t.code === 406) {
         log(' - INFO : (10) Aucun détails n\'est disponible pour les hotspots.');
-      }
-      else {
+      } else {
         /* On a trouvé des hotspots OWASP */
         log(` - INFO : (10) On a trouvé ${t.ligne} descriptions.`);
       }
