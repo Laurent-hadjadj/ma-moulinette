@@ -82,6 +82,17 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->roles;
     }
 
+    /**
+     * [Description for setRoles]
+     *
+     * @param array $roles
+     *
+     * @return self
+     *
+     * Created at: 02/01/2023, 18:11:49 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function setRoles(array $roles): self
     {
         $this->roles = $roles;
@@ -89,11 +100,31 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    /**
+     * [Description for getPassword]
+     *
+     * @return string|null
+     *
+     * Created at: 02/01/2023, 18:11:51 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function getPassword(): ?string
     {
         return $this->password;
     }
 
+    /**
+     * [Description for setPassword]
+     *
+     * @param string $password
+     *
+     * @return self
+     *
+     * Created at: 02/01/2023, 18:11:53 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function setPassword(string $password): self
     {
         $this->password = $password;
@@ -101,11 +132,31 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    /**
+     * [Description for getActif]
+     *
+     * @return [type]
+     *
+     * Created at: 02/01/2023, 18:11:54 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function getActif()
     {
         return $this->actif;
     }
 
+    /**
+     * [Description for setActif]
+     *
+     * @param bool $actif
+     *
+     * @return self
+     *
+     * Created at: 02/01/2023, 18:11:56 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function setActif(bool $actif): self
     {
         $this->actif = $actif;
@@ -113,11 +164,31 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    /**
+     * [Description for getDateModification]
+     *
+     * @return \DateTimeInterface|null
+     *
+     * Created at: 02/01/2023, 18:11:57 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function getDateModification(): ?\DateTimeInterface
     {
         return $this->date_modification;
     }
 
+    /**
+     * [Description for setDateModification]
+     *
+     * @param \DateTimeInterface $dateModification
+     *
+     * @return self
+     *
+     * Created at: 02/01/2023, 18:11:59 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function setDateModification(\DateTimeInterface $dateModification): self
     {
         $this->dateModification = $dateModification;
@@ -125,11 +196,31 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    /**
+     * [Description for getDateEnregistrement]
+     *
+     * @return \DateTimeInterface|null
+     *
+     * Created at: 02/01/2023, 18:12:00 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function getDateEnregistrement(): ?\DateTimeInterface
     {
         return $this->dateEnregistrement;
     }
 
+    /**
+     * [Description for setDateEnregistrement]
+     *
+     * @param \DateTimeInterface $dateEnregistrement
+     *
+     * @return self
+     *
+     * Created at: 02/01/2023, 18:12:02 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function setDateEnregistrement(\DateTimeInterface $dateEnregistrement): self
     {
         $this->dateEnregistrement = $dateEnregistrement;
@@ -157,16 +248,45 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         // $this->plainPassword = null;
     }
 
+    /**
+     * [Description for isActif]
+     *
+     * @return bool|null
+     *
+     * Created at: 02/01/2023, 18:12:09 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function isActif(): ?bool
     {
         return $this->actif;
     }
 
+    /**
+     * [Description for getPrenom]
+     *
+     * @return string|null
+     *
+     * Created at: 02/01/2023, 18:12:12 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function getPrenom(): ?string
     {
         return $this->prenom;
     }
 
+    /**
+     * [Description for setPrenom]
+     *
+     * @param string $prenom
+     *
+     * @return self
+     *
+     * Created at: 02/01/2023, 18:12:14 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function setPrenom(string $prenom): self
     {
         $this->prenom = $prenom;
@@ -174,11 +294,31 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    /**
+     * [Description for getNom]
+     *
+     * @return string|null
+     *
+     * Created at: 02/01/2023, 18:12:18 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function getNom(): ?string
     {
         return $this->nom;
     }
 
+    /**
+     * [Description for setNom]
+     *
+     * @param string $nom
+     *
+     * @return self
+     *
+     * Created at: 02/01/2023, 18:12:22 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function setNom(string $nom): self
     {
         $this->nom = $nom;
@@ -186,16 +326,45 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    /**
+     * [Description for getPersonne]
+     *
+     * @return string|null
+     *
+     * Created at: 02/01/2023, 18:12:24 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function getPersonne(): ?string
     {
         return $this->nom.' '.$this->prenom;
     }
 
+    /**
+     * [Description for getAvatar]
+     *
+     * @return string|null
+     *
+     * Created at: 02/01/2023, 18:12:26 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function getAvatar(): ?string
     {
         return $this->avatar;
     }
 
+    /**
+     * [Description for setAvatar]
+     *
+     * @param string|null $avatar
+     *
+     * @return self
+     *
+     * Created at: 02/01/2023, 18:12:27 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function setAvatar(?string $avatar): self
     {
         $this->avatar = $avatar;
@@ -203,6 +372,15 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    /**
+     * [Description for getAvatarUrl]
+     *
+     * @return string|null
+     *
+     * Created at: 02/01/2023, 18:12:29 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function getAvatarUrl(): ?string
     {
         if (!$this->avatar) {
@@ -211,11 +389,31 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return sprintf('build/avatar/%s', $this->avatar);
     }
 
+    /**
+     * [Description for getEquipe]
+     *
+     * @return array
+     *
+     * Created at: 02/01/2023, 18:12:31 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function getEquipe(): array
     {
         return $this->equipe;
     }
 
+    /**
+     * [Description for setEquipe]
+     *
+     * @param array $equipe
+     *
+     * @return self
+     *
+     * Created at: 02/01/2023, 18:12:32 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function setEquipe(array $equipe): self
     {
         $this->equipe = $equipe;
