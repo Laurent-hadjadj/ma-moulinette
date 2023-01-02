@@ -1391,13 +1391,13 @@ class ApiProjetController extends AbstractController
    * @param mixed $mavenKey
    * @param mixed $key
    *
-   * @return Array
+   * @return array
    *
    * Created at: 15/12/2022, 21:40:47 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  protected function hotspotDetails($mavenKey, $key): Array
+  protected function hotspotDetails($mavenKey, $key): array
   {
 
     /** On bind les variables. */
