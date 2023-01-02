@@ -42,4 +42,146 @@ class Equipe
     #[ORM\Column(type: 'datetime')]
     private $dateEnregistrement;
 
+    /**
+     * [Description for getId]
+     *
+     * @return int|null
+     *
+     * Created at: 02/01/2023, 17:52:48 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    /**
+     * [Description for getTitre]
+     *
+     * @return string|null
+     *
+     * Created at: 02/01/2023, 17:52:50 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function getTitre(): ?string
+    {
+        return $this->titre;
+    }
+
+    /**
+     * [Description for setTitre]
+     *
+     * @param string $titre
+     *
+     * @return self
+     *
+     * Created at: 02/01/2023, 17:52:52 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function setTitre(string $titre): self
+    {
+        $this->titre = $titre;
+
+        return $this;
+    }
+
+    /**
+     * [Description for getDescription]
+     *
+     * @return string|null
+     *
+     * Created at: 02/01/2023, 17:52:54 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    /**
+     * [Description for setDescription]
+     *
+     * @param string $description
+     *
+     * @return self
+     *
+     * Created at: 02/01/2023, 17:52:55 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function setDescription(string $description): self
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * [Description for getDateModification]
+     *
+     * @return \DateTimeInterface|null
+     *
+     * Created at: 02/01/2023, 17:52:57 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function getDateModification(): ?\DateTimeInterface
+    {
+        return $this->dateModification;
+    }
+
+    /**
+     * [Description for setDateModification]
+     *
+     * @param \DateTimeInterface|null $dateModification
+     *
+     * @return self
+     *
+     * Created at: 02/01/2023, 17:52:59 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function setDateModification(?\DateTimeInterface $dateModification): self
+    {
+        $this->dateModification = $dateModification;
+
+        return $this;
+    }
+
+    /**
+     * [Description for getDateEnregistrement]
+     *
+     * @return \DateTimeInterface|null
+     *
+     * Created at: 02/01/2023, 17:53:00 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function getDateEnregistrement(): ?\DateTimeInterface
+    {
+        return $this->dateEnregistrement;
+    }
+
+    /**
+     * [Description for setDateEnregistrement]
+     *
+     * @param \DateTimeInterface $dateEnregistrement
+     *
+     * @return self
+     *
+     * Created at: 02/01/2023, 17:53:01 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function setDateEnregistrement(\DateTimeInterface $dateEnregistrement): self
+    {
+        $this->dateEnregistrement = $dateEnregistrement;
+
+        return $this;
+    }
+
 }

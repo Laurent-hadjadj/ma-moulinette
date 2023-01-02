@@ -38,4 +38,92 @@ class Notes
     #[ORM\Column(type: 'datetime')]
     private $dateEnregistrement;
 
+    /**
+     * [Description for getMavenKey]
+     *
+     * @return string|null
+     *
+     * Created at: 02/01/2023, 18:04:45 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function getMavenKey(): ?string
+    {
+        return $this->mavenKey;
+    }
+
+    /**
+     * [Description for getType]
+     *
+     * @return string|null
+     *
+     * Created at: 02/01/2023, 18:04:47 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    /**
+     * [Description for getDate]
+     *
+     * @return \DateTimeInterface|null
+     *
+     * Created at: 02/01/2023, 18:04:48 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function getDate(): ?\DateTimeInterface
+    {
+        return $this->date;
+    }
+
+    /**
+     * [Description for getValue]
+     *
+     * @return int|null
+     *
+     * Created at: 02/01/2023, 18:04:50 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function getValue(): ?int
+    {
+        return $this->value;
+    }
+
+    /**
+     * [Description for setValue]
+     *
+     * @param int $value
+     *
+     * @return self
+     *
+     * Created at: 02/01/2023, 18:04:51 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function setValue(int $value): self
+    {
+        $this->value = $value;
+
+        return $this;
+    }
+
+
+    public function getDateEnregistrement(): ?\DateTimeInterface
+    {
+        return $this->dateEnregistrement;
+    }
+
+
+    public function setDateEnregistrement(\DateTimeInterface $dateEnregistrement): self
+    {
+        $this->dateEnregistrement = $dateEnregistrement;
+
+        return $this;
+    }
+
 }
