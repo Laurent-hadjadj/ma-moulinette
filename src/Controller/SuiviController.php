@@ -23,14 +23,14 @@ use Symfony\Component\Routing\Annotation\Route;
 use DateTime;
 use DateTimeZone;
 
-// Gestion de accès aux API
+/** Gestion de accès aux API */
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-// Accès aux tables SLQLite
+/** Accès aux tables SLQLite */
 use Doctrine\ORM\EntityManagerInterface;
 
-// Logger
+/** Logger */
 use Psr\Log\LoggerInterface;
 
 /**
@@ -698,8 +698,8 @@ class SuiviController extends AbstractController
     /** On surprime de la table historique le projet */
     $sql = "DELETE FROM historique
             WHERE maven_key='${mavenKey}'
-                  AND version='${version}'
-                  AND date_version='${date}'";
+            AND version='${version}'
+            AND date_version='${date}'";
 
     /**  On exécute la requête */
     $con = $this->em->getConnection()->prepare($sql);
