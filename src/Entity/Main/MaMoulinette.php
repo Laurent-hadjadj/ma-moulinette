@@ -29,10 +29,10 @@ class MaMoulinette
     private $version;
 
     #[ORM\Column(type: 'datetime')]
-    private $date_version;
+    private $dateVersion;
 
     #[ORM\Column(type: 'datetime')]
-    private $date_enregistrement;
+    private $dateEnregistrement;
 
     public function getId(): ?int
     {
@@ -56,21 +56,21 @@ class MaMoulinette
         return $this->date_version;
     }
 
-    public function setDateVersion(\DateTimeInterface $date_version): self
+    public function setDateVersion(\DateTimeInterface $dateVersion): self
     {
-        $this->date_version = $date_version;
+        $this->dateVersion = $dateVersion;
 
         return $this;
     }
 
     public function getDateEnregistrement(): ?\DateTimeInterface
     {
-        return $this->date_enregistrement;
+        return $this->dateEnregistrement;
     }
 
-    public function setDateEnregistrement(\DateTimeInterface $date_enregistrement): self
+    public function setDateEnregistrement(\DateTimeInterface $dateEnregistrement): self
     {
-        $this->date_enregistrement = $date_enregistrement;
+        $this->dateEnregistrement = $dateEnregistrement;
 
         return $this;
     }

@@ -27,7 +27,7 @@ class NoSonar
     private $id;
 
     #[ORM\Column(type: 'string', length: 128)]
-    private $maven_key;
+    private $mavenKey;
 
     #[ORM\Column(type: 'string', length: 128)]
     private $rule;
@@ -39,70 +39,6 @@ class NoSonar
     private $line;
 
     #[ORM\Column(type: 'datetime')]
-    private $date_enregistrement;
+    private $dateEnregistrement;
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function getMavenKey(): ?string
-    {
-        return $this->maven_key;
-    }
-
-    public function setMavenKey(string $maven_key): self
-    {
-        $this->maven_key = $maven_key;
-
-        return $this;
-    }
-
-    public function getRule(): ?string
-    {
-        return $this->rule;
-    }
-
-    public function setRule(string $rule): self
-    {
-        $this->rule = $rule;
-
-        return $this;
-    }
-
-    public function getComponent(): ?string
-    {
-        return $this->component;
-    }
-
-    public function setComponent(string $component): self
-    {
-        $this->component = $component;
-
-        return $this;
-    }
-
-    public function getLine(): ?int
-    {
-        return $this->line;
-    }
-
-    public function setLine(int $line): self
-    {
-        $this->line = $line;
-
-        return $this;
-    }
-
-    public function getDateEnregistrement(): ?\DateTimeInterface
-    {
-        return $this->date_enregistrement;
-    }
-
-    public function setDateEnregistrement(\DateTimeInterface $date_enregistrement): self
-    {
-        $this->date_enregistrement = $date_enregistrement;
-
-        return $this;
-    }
 }

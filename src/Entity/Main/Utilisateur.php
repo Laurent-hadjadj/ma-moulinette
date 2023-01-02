@@ -44,10 +44,10 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private $actif;
 
     #[ORM\Column(type: 'datetime', nullable: true)]
-    private $date_modification;
+    private $dateModification;
 
     #[ORM\Column(type: 'datetime')]
-    private $date_enregistrement;
+    private $dateEnregistrement;
 
     public function getId(): ?int
     {
@@ -118,21 +118,21 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->date_modification;
     }
 
-    public function setDateModification(\DateTimeInterface $date_modification): self
+    public function setDateModification(\DateTimeInterface $dateModification): self
     {
-        $this->date_modification = $date_modification;
+        $this->dateModification = $dateModification;
 
         return $this;
     }
 
     public function getDateEnregistrement(): ?\DateTimeInterface
     {
-        return $this->date_enregistrement;
+        return $this->dateEnregistrement;
     }
 
-    public function setDateEnregistrement(\DateTimeInterface $date_enregistrement): self
+    public function setDateEnregistrement(\DateTimeInterface $dateEnregistrement): self
     {
-        $this->date_enregistrement = $date_enregistrement;
+        $this->dateEnregistrement = $dateEnregistrement;
 
         return $this;
     }

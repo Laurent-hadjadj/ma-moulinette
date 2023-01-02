@@ -26,97 +26,21 @@ class InformationProjet
     private $id;
 
     #[ORM\Column(type: 'string', length: 128)]
-    private $maven_key;
+    private $mavenKey;
 
     #[ORM\Column(type: 'string', length: 32)]
-    private $analyse_key;
+    private $analyseKey;
 
     #[ORM\Column(type: 'datetime')]
     private $date;
 
     #[ORM\Column(type: 'string', length: 32)]
-    private $project_version;
+    private $projectVersion;
 
     #[ORM\Column(type: 'string', length: 32)]
     private $type;
 
     #[ORM\Column(type: 'datetime')]
-    private $date_enregistrement;
+    private $dateEnregistrement;
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function getAnalyseKey(): ?string
-    {
-        return $this->analyse_key;
-    }
-
-    public function setAnalyseKey(string $analyse_key): self
-    {
-        $this->analyse_key = $analyse_key;
-
-        return $this;
-    }
-
-    public function getMavenKey(): ?string
-    {
-        return $this->maven_key;
-    }
-
-    public function setMavenKey(string $maven_key): self
-    {
-        $this->maven_key = $maven_key;
-
-        return $this;
-    }
-
-    public function getDate(): ?\DateTimeInterface
-    {
-        return $this->date;
-    }
-
-    public function setDate(\DateTimeInterface $date): self
-    {
-        $this->date = $date;
-
-        return $this;
-    }
-
-    public function getProjectVersion(): ?string
-    {
-        return $this->project_version;
-    }
-
-    public function setProjectVersion(string $project_version): self
-    {
-        $this->project_version = $project_version;
-
-        return $this;
-    }
-
-    public function getType(): ?string
-    {
-        return $this->type;
-    }
-
-    public function setType(string $type): self
-    {
-        $this->type = $type;
-
-        return $this;
-    }
-
-    public function getDateEnregistrement(): ?\DateTimeInterface
-    {
-        return $this->date_enregistrement;
-    }
-
-    public function setDateEnregistrement(\DateTimeInterface $date_enregistrement): self
-    {
-        $this->date_enregistrement = $date_enregistrement;
-
-        return $this;
-    }
 }

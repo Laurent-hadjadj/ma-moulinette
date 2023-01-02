@@ -43,134 +43,21 @@ class BatchTraitement
 
     /** Nombre de projet */
     #[ORM\Column(type: 'integer')]
-    private $nombre_projet=0;
+    private $nombreProjet=0;
 
     #[ORM\Column(type: 'string', length: 128)]
     private $responsable;
 
     /** Debut du traitement */
     #[ORM\Column(type: 'datetime', nullable: true)]
-    private $debut_traitement;
+    private $debutTraitement;
 
     /** Fin du traitement */
     #[ORM\Column(type: 'datetime', nullable: true)]
-    private $fin_traitement;
+    private $finTraitement;
 
     /** Date d'enregistrement */
     #[ORM\Column(type: 'datetime')]
-    private $date_enregistrement;
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function getDemarrage(): ?string
-    {
-        return $this->demarrage;
-    }
-
-    public function setDemarrage(string $demarrage): self
-    {
-        $this->demarrage = $demarrage;
-
-        return $this;
-    }
-
-    public function isResultat(): ?bool
-    {
-        return $this->resultat;
-    }
-
-    public function setResultat(bool $resultat): self
-    {
-        $this->resultat = $resultat;
-
-        return $this;
-    }
-
-    public function getTitre(): ?string
-    {
-        return $this->titre;
-    }
-
-    public function setTitre(string $titre): self
-    {
-        $this->titre = $titre;
-
-        return $this;
-    }
-
-    public function getPortefeuille(): ?string
-    {
-        return $this->portefeuille;
-    }
-
-    public function setPortefeuille(string $portefeuille): self
-    {
-        $this->portefeuille = $portefeuille;
-
-        return $this;
-    }
-
-    public function getNombreProjet(): ?int
-    {
-        return $this->nombre_projet;
-    }
-
-    public function setNombreProjet(int $nombre_projet): self
-    {
-        $this->nombre_projet = $nombre_projet;
-
-        return $this;
-    }
-
-    public function getResponsable(): ?string
-    {
-        return $this->responsable;
-    }
-
-    public function setResponsable(string $responsable): self
-    {
-        $this->responsable = $responsable;
-
-        return $this;
-    }
-
-    public function getDebutTraitement(): ?\DateTimeInterface
-    {
-        return $this->debut_traitement;
-    }
-
-    public function setDebutTraitement(?\DateTimeInterface $debut_traitement): self
-    {
-        $this->debut_traitement = $debut_traitement;
-
-        return $this;
-    }
-
-    public function getFinTraitement(): ?\DateTimeInterface
-    {
-        return $this->fin_traitement;
-    }
-
-    public function setFinTraitement(?\DateTimeInterface $fin_traitement): self
-    {
-        $this->fin_traitement = $fin_traitement;
-
-        return $this;
-    }
-
-    public function getDateEnregistrement(): ?\DateTimeInterface
-    {
-        return $this->date_enregistrement;
-    }
-
-    public function setDateEnregistrement(\DateTimeInterface $date_enregistrement): self
-    {
-        $this->date_enregistrement = $date_enregistrement;
-
-        return $this;
-    }
+    private $dateEnregistrement;
 
     }

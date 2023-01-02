@@ -27,7 +27,7 @@ class Repartition
     private $id;
 
     #[ORM\Column(type: 'string', length: 128)]
-    private $maven_key;
+    private $mavenKey;
 
     #[ORM\Column(type: 'string', length: 128)]
     private $name;
@@ -45,7 +45,7 @@ class Repartition
     private $setup;
 
     #[ORM\Column(type: 'datetime')]
-    private $date_enregistrement;
+    private $dateEnregistrement;
 
     public function getId(): ?int
     {
@@ -54,12 +54,12 @@ class Repartition
 
     public function getMavenKey(): ?string
     {
-        return $this->maven_key;
+        return $this->mavenKey;
     }
 
-    public function setMavenKey(string $maven_key): self
+    public function setMavenKey(string $mavenKey): self
     {
-        $this->maven_key = $maven_key;
+        $this->mavenKey = $mavenKey;
 
         return $this;
     }
@@ -114,12 +114,12 @@ class Repartition
 
     public function getDateEnregistrement(): ?\DateTimeInterface
     {
-        return $this->date_enregistrement;
+        return $this->dateEnregistrement;
     }
 
-    public function setDateEnregistrement(\DateTimeInterface $date_enregistrement): self
+    public function setDateEnregistrement(\DateTimeInterface $dateEnregistrement): self
     {
-        $this->date_enregistrement = $date_enregistrement;
+        $this->dateEnregistrement = $dateEnregistrement;
 
         return $this;
     }

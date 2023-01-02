@@ -54,116 +54,14 @@ class Batch
 
     /** Nombre de projet */
     #[ORM\Column(type: 'integer')]
-    private $nombre_projet=0;
+    private $nombreProjet=0;
 
     /** Date de modification */
     #[ORM\Column(type: 'datetime', nullable: true)]
-    private $date_modification;
+    private $dateModification;
 
     /** Date d'enregistrement */
     #[ORM\Column(type: 'datetime')]
-    private $date_enregistrement;
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function isStatut(): ?bool
-    {
-        return $this->statut;
-    }
-
-    public function setStatut(bool $statut): self
-    {
-        $this->statut = $statut;
-
-        return $this;
-    }
-
-    public function getTitre(): ?string
-    {
-        return $this->titre;
-    }
-
-    public function setTitre(string $titre): self
-    {
-        $this->titre = $titre;
-
-        return $this;
-    }
-
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
-
-    public function setDescription(string $description): self
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
-    public function getResponsable(): ?string
-    {
-        return $this->responsable;
-    }
-
-    public function setResponsable(string $responsable): self
-    {
-        $this->responsable = $responsable;
-
-        return $this;
-    }
-
-    public function getPortefeuille(): ?string
-    {
-        return $this->portefeuille;
-    }
-
-    public function setPortefeuille(string $portefeuille): self
-    {
-        $this->portefeuille = $portefeuille;
-
-        return $this;
-    }
-
-    public function getNombreProjet(): ?int
-    {
-        return $this->nombre_projet;
-    }
-
-    public function setNombreProjet(int $nombre_projet): self
-    {
-        $this->nombre_projet = $nombre_projet;
-
-        return $this;
-    }
-
-    public function getDateModification(): ?\DateTimeInterface
-    {
-        return $this->date_modification;
-    }
-
-    public function setDateModification(?\DateTimeInterface $date_modification): self
-    {
-        $this->date_modification = $date_modification;
-
-        return $this;
-    }
-
-    public function getDateEnregistrement(): ?\DateTimeInterface
-    {
-        return $this->date_enregistrement;
-    }
-
-    public function setDateEnregistrement(\DateTimeInterface $date_enregistrement): self
-    {
-        $this->date_enregistrement = $date_enregistrement;
-
-        return $this;
-    }
-
+    private $dateEnregistrement;
 
 }
