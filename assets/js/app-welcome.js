@@ -9,6 +9,7 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
+/** Import des dépendances */
 import '../css/welcome.css';
 
 import 'what-input';
