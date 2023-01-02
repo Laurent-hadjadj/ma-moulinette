@@ -306,8 +306,7 @@ $('select[name="version"]').change(function () {
     const verifyHotspotsReview=t.hotspotsReview;
     if (verifyHotspotsReview !== -1) {
       $('#hotspots-review').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(verifyHotspotsReview));
-    }
-    else {
+    } else {
       $('#hotspots-review').html('-');
     }
 
