@@ -149,15 +149,15 @@ class ApiOwaspPeintureController extends AbstractController
    * On récupère les résultats des hotspots
 		 *
 	 * @param Request $request
-	 * 
+	 *
 	 * @return response
-	 * 
+	 *
 	 * Created at: 15/12/2022, 22:11:35 (Europe/Paris)
-	 * @author     Laurent HADJADJ <laurent_h@me.com> 
-	 * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0. 
+	 * @author     Laurent HADJADJ <laurent_h@me.com>
+	 * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
 	 */
 	#[Route('/api/peinture/owasp/hotspot/info', name: 'peinture_owasp_hotspot_info', methods: ['GET'])]
- public function peintureOwaspHotspotInfo(Request $request): response
+  public function peintureOwaspHotspotInfo(Request $request): response
 	{
 		$mavenKey = $request->get('mavenKey');
 		$response = new JsonResponse();
