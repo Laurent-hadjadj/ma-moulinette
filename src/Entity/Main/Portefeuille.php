@@ -40,74 +40,9 @@ class Portefeuille
     private $liste= [];
 
     #[ORM\Column(type: 'datetime', nullable: true)]
-    private $date_modification;
+    private $dateModification;
 
     #[ORM\Column(type: 'datetime')]
-    private $date_enregistrement;
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function getTitre(): ?string
-    {
-        return $this->titre;
-    }
-
-    public function setTitre(string $titre): self
-    {
-        $this->titre = $titre;
-
-        return $this;
-    }
-
-    public function getEquipe(): ?string
-    {
-        return $this->equipe;
-    }
-
-    public function setEquipe(string $equipe): self
-    {
-        $this->equipe = $equipe;
-
-        return $this;
-    }
-
-    public function getListe(): array
-    {
-        return $this->liste;
-    }
-
-    public function setListe(array $liste): self
-    {
-        $this->liste = $liste;
-
-        return $this;
-    }
-
-    public function getDateModification(): ?\DateTimeInterface
-    {
-        return $this->date_modification;
-    }
-
-    public function setDateModification(?\DateTimeInterface $date_modification): self
-    {
-        $this->date_modification = $date_modification;
-
-        return $this;
-    }
-
-    public function getDateEnregistrement(): ?\DateTimeInterface
-    {
-        return $this->date_enregistrement;
-    }
-
-    public function setDateEnregistrement(\DateTimeInterface $date_enregistrement): self
-    {
-        $this->date_enregistrement = $date_enregistrement;
-
-        return $this;
-    }
+    private $dateEnregistrement;
 
 }

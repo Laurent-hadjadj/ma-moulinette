@@ -26,7 +26,7 @@ class Tags
     private $id;
 
     #[ORM\Column(type: 'string', length: 128)]
-    private $maven_key;
+    private $mavenKey;
 
     #[ORM\Column(type: 'string', length: 64)]
     private $name;
@@ -38,71 +38,6 @@ class Tags
     private $visibility;
 
     #[ORM\Column(type: 'datetime')]
-    private $date_enregistrement;
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function getMavenKey(): ?string
-    {
-        return $this->maven_key;
-    }
-
-    public function setMavenKey(string $maven_key): self
-    {
-        $this->maven_key = $maven_key;
-
-        return $this;
-    }
-
-    public function getName(): ?string
-    {l;
-        return $this->name;
-    }
-
-    public function setName(string $name): self
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    public function getTags(): array
-    {
-        return $this->tags;
-    }
-
-    public function setTags(array $tags): self
-    {
-        $this->tags = $tags;
-
-        return $this;
-    }
-
-    public function getVisibility(): ?string
-    {
-        return $this->visibility;
-    }
-
-    public function setVisibility(string $visibility): self
-    {
-        $this->visibility = $visibility;
-
-        return $this;
-    }
-
-    public function getDateEnregistrement(): ?\DateTimeInterface
-    {
-        return $this->date_enregistrement;
-    }
-
-    public function setDateEnregistrement(\DateTimeInterface $date_enregistrement): self
-    {
-        $this->date_enregistrement = $date_enregistrement;
-
-        return $this;
-    }
+    private $dateEnregistrement;
 
 }

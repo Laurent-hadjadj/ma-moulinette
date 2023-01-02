@@ -37,64 +37,9 @@ class Equipe
     private $description;
 
     #[ORM\Column(type: 'datetime', nullable: true)]
-    private $date_modification;
+    private $dateModification;
 
     #[ORM\Column(type: 'datetime')]
-    private $date_enregistrement;
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function getTitre(): ?string
-    {
-        return $this->titre;
-    }
-
-    public function setTitre(string $titre): self
-    {
-        $this->titre = $titre;
-
-        return $this;
-    }
-
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
-
-    public function setDescription(string $description): self
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
-    public function getDateModification(): ?\DateTimeInterface
-    {
-        return $this->date_modification;
-    }
-
-    public function setDateModification(?\DateTimeInterface $date_modification): self
-    {
-        $this->date_modification = $date_modification;
-
-        return $this;
-    }
-
-    public function getDateEnregistrement(): ?\DateTimeInterface
-    {
-        return $this->date_enregistrement;
-    }
-
-    public function setDateEnregistrement(\DateTimeInterface $date_enregistrement): self
-    {
-        $this->date_enregistrement = $date_enregistrement;
-
-        return $this;
-    }
-
-
+    private $dateEnregistrement;
 
 }
