@@ -175,7 +175,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getDateModification(): ?\DateTimeInterface
     {
-        return $this->date_modification;
+        return $this->dateModification;
     }
 
     /**
