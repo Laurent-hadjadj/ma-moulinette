@@ -91,7 +91,7 @@ class MaMoulinette
      */
     public function getDateVersion(): ?\DateTimeInterface
     {
-        return $this->date_version;
+        return $this->dateVersion;
     }
 
     /**
