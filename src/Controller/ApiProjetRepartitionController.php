@@ -410,7 +410,7 @@ class ApiProjetRepartitionController extends AbstractController
       ->getManager('secondary')
       ->getRepository(Repartition::class)
       ->findBy(
-        ['maven_key' => $mavenKey,
+        ['mavenKey' => $mavenKey,
           'type' => $type,
           'severity' => $severity,
           'setup' => $setup]);

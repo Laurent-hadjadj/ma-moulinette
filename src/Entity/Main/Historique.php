@@ -190,9 +190,9 @@ class Historique
 
     /*
      * Le généarteur d'entity ne génére pas le setter pour une clé multiple
-        public function setMavenKey(string $maven_key): self
+        public function setMavenKey(string $mavenKey): self
         {
-            $this->maven_key = $maven_key;
+            $this->mavenKey = $mavenKey;
             return $this;
         }
     */
@@ -208,9 +208,9 @@ class Historique
 
     /*
      * Le généarteur d'entity ne génére pas le setter pour une clé multiple
-        public function setDateVersion(string $date_version): self
+        public function setDateVersion(string $dateVersion): self
         {
-            $this->date_version = $date_version;
+            $this->date_version = $dateVersion;
             return $this;
         }
     */

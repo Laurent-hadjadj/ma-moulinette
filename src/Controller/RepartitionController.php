@@ -62,7 +62,7 @@ class RepartitionController extends AbstractController
         /** On se connecte à la base pour connaitre la version du dernier setup pour le projet. */
         $reponse = $this->doctrine->getManager('secondary')
                             ->getRepository(Repartition::class)
-                            ->findBy(['maven_key' => $mavenKey],['setup' => 'DESC'],1);
+                            ->findBy(['mavenKey' => $mavenKey],['setup' => 'DESC'],1);
 
         if (empty($reponse)) {
             $setup="NaN";
