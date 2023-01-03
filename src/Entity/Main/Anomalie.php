@@ -90,7 +90,7 @@ class Anomalie
     private $vulnerability;
 
     #[ORM\Column(type: 'integer')]
-    private $code_smell;
+    private $codeSmell;
 
     #[ORM\Column(type: 'boolean')]
     private $liste;
@@ -795,13 +795,13 @@ class Anomalie
      */
     public function getCodeSmell(): ?int
     {
-        return $this->code_smell;
+        return $this->codeSmell;
     }
 
     /**
      * [Description for setCodeSmell]
      *
-     * @param int $code_smell
+     * @param int $codeSmell
      *
      * @return self
      *
@@ -809,9 +809,9 @@ class Anomalie
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setCodeSmell(int $code_smell): self
+    public function setCodeSmell(int $codeSmell): self
     {
-        $this->code_smell = $code_smell;
+        $this->codeSmell = $codeSmell;
 
         return $this;
     }
