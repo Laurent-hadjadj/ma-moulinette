@@ -82,7 +82,7 @@ class ProjetController extends AbstractController
       /** On se connecte à la base pour connaitre la version du dernier setup pour le projet. */
       $reponse = $this->manager->getManager('secondary')
       ->getRepository(Repartition::class)
-      ->findBy(['maven_key' => $mavenKey],['setup' => 'DESC'],1);
+      ->findBy(['mavenKey' => $mavenKey],['setup' => 'DESC'],1);
 
       if (empty($reponse)) {
           $setup="NaN";
@@ -284,8 +284,8 @@ class ProjetController extends AbstractController
        */
 
       $liste = $this->manager->getManager('secondary')
-                        ->getRepository(Repartition::class)
-                        ->findBy(
+                ->getRepository(Repartition::class)
+                ->findBy(
               [
                 'type' => $type,
                 'severity' => $severity,
