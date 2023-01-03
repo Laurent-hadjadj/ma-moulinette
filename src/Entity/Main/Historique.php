@@ -210,7 +210,7 @@ class Historique
      * Le généarteur d'entity ne génére pas le setter pour une clé multiple
         public function setDateVersion(string $dateVersion): self
         {
-            $this->date_version = $dateVersion;
+            $this->dateVersion = $dateVersion;
             return $this;
         }
     */
