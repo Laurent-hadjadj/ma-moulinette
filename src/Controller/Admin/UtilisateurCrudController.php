@@ -86,8 +86,9 @@ class UtilisateurCrudController extends AbstractCrudController
      */
     public function configureActions(Actions $actions): Actions
     {
+        /**  php:S1781 : faux positif */
         return parent::configureActions($actions)
-            ->disable(Action::new);
+            ->disable(Action::NEW);
     }
 
     /**
