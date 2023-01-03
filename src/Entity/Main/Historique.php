@@ -185,7 +185,7 @@ class Historique
 
     public function getMavenKey(): ?string
     {
-        return $this->maven_key;
+        return $this->mavenKey;
     }
 
     /*
