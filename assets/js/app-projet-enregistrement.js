@@ -16,10 +16,8 @@ import $ from 'jquery';
 /** On importe les paramètres serveur */
 import {serveur} from './properties.js';
 
-const dateOptions = {
-  year: 'numeric', month: 'numeric', day: 'numeric',
-  hour: 'numeric', minute: 'numeric', second: 'numeric',
-  hour12: false };
+/** On importe les constantes */
+import {dateOptions, contentType} from './constante.js';
 
 /**
  * [Description for log]
@@ -51,8 +49,6 @@ const log=function(txt) {
 * @author     Laurent HADJADJ <laurent_h@me.com>
 */
 export const enregistrement=function(mavenKey) {
-  const contentType='application/json; charset=utf-8';
-
   /** On récupère les informations sur les versions */
   const nomProjet=$('#nom-projet').text().trim();
   /*
