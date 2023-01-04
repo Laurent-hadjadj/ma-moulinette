@@ -39,38 +39,10 @@ import {serveur} from './properties.js';
 import {remplissage} from './app-projet-peinture.js';
 import {enregistrement} from './app-projet-enregistrement.js';
 
-/**
- * dateOptions
- * Définition des options de date
- * @var [type]
- */
-const dateOptions = {
-  year: 'numeric', month: 'numeric', day: 'numeric',
-  hour: 'numeric', minute:'numeric', second: 'numeric',
-  hour12: false};
-
-
-const contentType='application/json; charset=utf-8';
-
-/**
- * matrice
- * Indice des couleurs pour la palette
- *
- * @var [type]
- */
-const matrice = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
-                  18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
-
-/**
- * paletteCouleur
- * Palette de couleur pour les graphiques
- * @var [type]
- */
-const paletteCouleur = [
-  '#065535', '#133337', '#000000', '#ffc0cb', '#008080', '#ff0000', '#ffd700', '#666666',
-  '#ff7373', '#fa8072', '#800080', '#800000', '#003366', '#333333', '#20b2aa', '#ffc3a0',
-  '#f08080', '#66cdaa', '#f6546a', '#ff6666', '#468499', '#c39797', '#bada55', '#ff7f50',
-  '#660066', '#008000', '#088da5', '#808080', '#8b0000', '#0e2f44', '#3b5998', '#cc0000'];
+/** On importe les constantes */
+import {contentType, http200, http406, dateOptions,
+        matrice, paletteCouleur,
+        deuxMille, troisMille, cinqMille} from './constante.js';
 
 /**
  * [Description for shuffle]
@@ -134,7 +106,7 @@ const dessineMoiUnMouton=function(label, dataset) {
                 };
 
   const options = {
-    animations: { tension: { duration: 2000, easing: 'linear', loop: false } },
+    animations: { tension: { duration: deuxMille, easing: 'linear', loop: false } },
     maintainAspectRatio: true,
     responsive: true,
     plugins: {
@@ -524,7 +496,7 @@ const projetHotspotOwaspDetails=function(mavenKey) {
 
   return new Promise(resolve => {
     $.ajax(options).then(t=> {
-      if (t.code === 406) {
+      if (t.code === http406) {
         log(' - INFO : (10) Aucun détails n\'est disponible pour les hotspots.');
       } else {
         /* On a trouvé des hotspots OWASP */
@@ -584,7 +556,7 @@ const finCollecte=function(){
   if (info.substring(0, 4)==='[03]') {
     setTimeout(function(){
       $('.information-texte').html('[04] - La collecte des données est terminée.');
-    }, 3000);
+    }, troisMille);
   }
 };
 
@@ -608,7 +580,7 @@ const afficheProjetFavori=function() {
     $.ajax(options).then(t=> {
       let str, favori, i, liste=[], checkFavori;
       /** http 200 */
-      if (t.code !== 200) {
+      if (t.code !== http200) {
         log(' - ERROR : La liste des projets n\'a pas été trouvée.');
         return;
       }
@@ -706,7 +678,7 @@ const afficheProjetFavori=function() {
       $('select[name="projet"]').append($newOption).trigger('change');
       setTimeout(function(){
         $('.information-texte').html('[01] - Le choix du projet a été validé.');
-      }, 2000);
+      }, deuxMille);
     });
 
     /* On gére le click sur le bouton S (Supprimer) */
@@ -730,7 +702,7 @@ const afficheProjetFavori=function() {
         return new Promise(resolve2 => {
           $.ajax(options2).then(tt=> {
             /** Http 200 */
-            if (tt.code !== 200) {
+            if (tt.code !== http200) {
               log(` - ERROR : Je n'ai réussi à supprimer le projet !`);
             } else {
               log(` - INFO : J'ai réussi à supprimer le projet !`);
@@ -753,7 +725,7 @@ const afficheProjetFavori=function() {
       $('#name-'+a[1]).hide();
       setTimeout(function(){
         $('.information-texte').html('[02] - La suppression de la liste est terminée.');
-      }, 2000);
+      }, deuxMille);
     });
 
     /* On gére le click sur le bouton C (Collecte) */
@@ -777,7 +749,7 @@ const afficheProjetFavori=function() {
       $('.js-analyse').trigger('click');
       setTimeout(function(){
         $('.information-texte').html('[03] - La collecte est en cours. ...');
-      }, 2000);
+      }, deuxMille);
     });
 
     /* On gére le click sur le bouton R (afficher les Résulats) */
@@ -799,7 +771,7 @@ const afficheProjetFavori=function() {
       $('.js-affiche-resultat').trigger('click');
       setTimeout(function(){
         $('.information-texte').html('[05] - L\'affichage des résultats est terminé.');
-      }, 5000);
+      }, cinqMille);
     });
 
     /* On gére le click sur le bouton I (afficher le tableau de suivi) */
@@ -872,7 +844,7 @@ const afficheHotspotDetails=function (mavenKey){
     url: `${serveur()}/api/peinture/projet/hotspot/details`,
     type: 'GET', dataType: 'json', data, contentType };
   $.ajax(options).then(t=> {
-    if (t.code !== 200) {
+    if (t.code !== http200) {
       log(' - ERROR : La liste des hotspot n\'a pas été trouvée.');
       return;
     }
@@ -1133,8 +1105,8 @@ $('.js-affiche-resultat').on('click', () => {
       /* On récupère les résultats. */
       remplissage(apiMaven);
       if ($('#enregistrement').hasClass('enregistrement-disabled')){
-          $('#enregistrement').addClass('enregistrement');
-          $('#enregistrement').removeClass('enregistrement-disabled');
+            $('#enregistrement').addClass('enregistrement');
+            $('#enregistrement').removeClass('enregistrement-disabled');
         }
     }
 });
