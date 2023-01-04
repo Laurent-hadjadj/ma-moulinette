@@ -1,4 +1,3 @@
-/* eslint-disable jsdoc/require-returns-type */
 /**
  *  Ma-Moulinette
  *  --------------
@@ -24,10 +23,8 @@ import './foundation.js';
 /** On importe les paramètres serveur */
 import {serveur} from './properties.js';
 
-const contentType='application/json; charset=utf-8';
-/** valeur 100 ou 100 % */
-const cent = 100;
-const uneSeconde=1000;
+/** On importe les constantes */
+import { contentType, cent, mille, soixante } from './constante.js';
 
 /* Construction des callbox pour les messages utilisateurs */
 const callboxInformation='<div class="callout primary text-justify" data-closable="slide-out-right"><p style="color:#00445b;" class="open-sans" cell">Information ! ';
@@ -36,7 +33,7 @@ const callboxFermer='<button class="close-button" aria-label="Fermer la fenêtre
 
 /** On récupère la clé maven de la clé de l'application. */
 const t0 = document.getElementById('app');
-const maven_key=t0.dataset.application;
+const _mavenkey=t0.dataset.application;
 
 /**
  * [Description for timestamp]
@@ -444,7 +441,7 @@ const collecte=function(mavenKey, type, severity, start, stop, counter, timer) {
 
   /** On test si on est arrivé à la fin du traitement */
   if (mavenKey==='NaN') {
-    setTimeout(() => changeProgress(stop), uneSeconde);
+    setTimeout(() => changeProgress(stop), mille);
     return;
   }
 
@@ -465,8 +462,8 @@ const collecte=function(mavenKey, type, severity, start, stop, counter, timer) {
    * @param value
    */
   const changeTimer = value => {
-    const minute = Math.floor(value/60);
-    const restSeconds = value%60;
+    const minute = Math.floor(value/soixante);
+    const restSeconds = value%soixante;
     const newTimer=`${minute}.${restSeconds}`;
     const typeTimeLower=typeTime.toLowerCase();
     $(`#js-${typeTimeLower}-time`).html(newTimer);
@@ -481,12 +478,12 @@ const collecte=function(mavenKey, type, severity, start, stop, counter, timer) {
     url: `${serveur()}/api/projet/repartition/collecte`,
     type: 'PUT',dataType: 'json', data: JSON.stringify(data), contentType,
     beforeSend: function () {
-      setTimeout(() => startCollecte(), uneSeconde);
-      setTimeout(() => changeProgress(start), uneSeconde); },
+      setTimeout(() => startCollecte(), mille);
+      setTimeout(() => changeProgress(start), mille); },
     complete: function () {
-      setTimeout(() => stopCollecte(), uneSeconde);
-      setTimeout(() => changeProgress(stop), uneSeconde);
-      setTimeout(() => changeTimer(timer), uneSeconde);
+      setTimeout(() => stopCollecte(), mille);
+      setTimeout(() => changeProgress(stop), mille);
+      setTimeout(() => changeTimer(timer), mille);
     }
   };
 
@@ -652,7 +649,7 @@ $('#collecte-bug').on('click', ()=>{
       counter=parseInt(blocker,10);
       const timer1 = document.getElementById('js-bug-time');
       tempo =parseInt(timer1.dataset.timer,10);
-      await collecte(maven_key, 'BUG', 'BLOCKER', start, stop, counter, tempo);
+      await collecte(_mavenkey, 'BUG', 'BLOCKER', start, stop, counter, tempo);
     }
 
     if (parseInt(critical,10)!==0) {
@@ -664,7 +661,7 @@ $('#collecte-bug').on('click', ()=>{
       counter=parseInt(blocker,10)+parseInt(critical,10);
       const timer2 = document.getElementById('js-bug-time');
       tempo = parseInt(tempo,10) + parseInt(timer2.dataset.timer,10);
-      await collecte(maven_key, 'BUG', 'CRITICAL', start, stop, counter, tempo);
+      await collecte(_mavenkey, 'BUG', 'CRITICAL', start, stop, counter, tempo);
     }
 
     if (parseInt(info,10)!==0) {
@@ -676,7 +673,7 @@ $('#collecte-bug').on('click', ()=>{
       counter=parseInt(blocker,10)+parseInt(critical,10)+parseInt(info,10);
       const timer3 = document.getElementById('js-bug-time');
       tempo = parseInt(tempo,10) + parseInt(timer3.dataset.timer,10);
-      await collecte(maven_key, 'BUG', 'INFO', start, stop, counter, tempo);
+      await collecte(_mavenkey, 'BUG', 'INFO', start, stop, counter, tempo);
     }
 
     if (parseInt(major,10)!==0) {
@@ -688,7 +685,7 @@ $('#collecte-bug').on('click', ()=>{
       counter=parseInt(blocker,10)+parseInt(critical,10)+parseInt(info,10)+parseInt(major,10);
       const timer4 = document.getElementById('js-bug-time');
       tempo = parseInt(tempo,10) + parseInt(timer4.dataset.timer,10);
-      await collecte(maven_key, 'BUG', 'MAJOR', start, stop, counter, tempo);
+      await collecte(_mavenkey, 'BUG', 'MAJOR', start, stop, counter, tempo);
     }
 
     if (parseInt(minor,10)!==0) {
@@ -697,7 +694,7 @@ $('#collecte-bug').on('click', ()=>{
       counter=parseInt(blocker,10)+parseInt(critical,10)+parseInt(info,10)+parseInt(major,10)+parseInt(minor,10);
       const timer5 = document.getElementById('js-bug-time');
       tempo= parseInt(tempo,10) + parseInt(timer5.dataset.timer,10);
-      await collecte(maven_key, 'BUG', 'MINOR', start, stop, counter, tempo);
+      await collecte(_mavenkey, 'BUG', 'MINOR', start, stop, counter, tempo);
     }
 
     $('#etape-1').css('color', '#c45d4e');
@@ -749,7 +746,7 @@ $('#collecte-vulnerabilite').on('click', ()=>{
       counter=parseInt(blocker,10);
       const timer1 = document.getElementById('js-vulnerabilite-time');
       tempo=parseInt(timer1.dataset.timer,10);
-      await collecte(maven_key, 'VULNERABILITY', 'BLOCKER', start, stop, counter, tempo);
+      await collecte(_mavenkey, 'VULNERABILITY', 'BLOCKER', start, stop, counter, tempo);
     }
 
     if (parseInt(critical,10)!==0){
@@ -761,7 +758,7 @@ $('#collecte-vulnerabilite').on('click', ()=>{
       counter=parseInt(blocker,10)+parseInt(critical,10);
       const timer2 = document.getElementById('js-vulnerabilite-time');
       tempo = parseInt(tempo,10) + parseInt(timer2.dataset.timer,10);
-      await collecte(maven_key, 'VULNERABILITY', 'CRITICAL', start, stop, counter, tempo);
+      await collecte(_mavenkey, 'VULNERABILITY', 'CRITICAL', start, stop, counter, tempo);
     }
 
     if (parseInt(info,10)!==0) {
@@ -773,7 +770,7 @@ $('#collecte-vulnerabilite').on('click', ()=>{
       counter=parseInt(blocker,10)+parseInt(critical,10)+parseInt(info,10);
       const timer3 = document.getElementById('js-vulnerabilite-time');
       tempo = parseInt(tempo,10) + parseInt(timer3.dataset.timer,10);
-      await collecte(maven_key, 'VULNERABILITY', 'INFO', start, stop, counter, tempo);
+      await collecte(_mavenkey, 'VULNERABILITY', 'INFO', start, stop, counter, tempo);
     }
 
     if (parseInt(major,10)!==0) {
@@ -782,7 +779,7 @@ $('#collecte-vulnerabilite').on('click', ()=>{
       counter=parseInt(blocker,10)+parseInt(critical,10)+parseInt(info,10)+parseInt(major,10);
       const timer4 = document.getElementById('js-vulnerabilite-time');
       tempo = parseInt(tempo,10) + parseInt(timer4.dataset.timer,10);
-      await collecte(maven_key, 'VULNERABILITY', 'MAJOR', start, stop, counter, tempo);
+      await collecte(_mavenkey, 'VULNERABILITY', 'MAJOR', start, stop, counter, tempo);
     }
 
     if (parseInt(minor,10)!==0) {
@@ -791,7 +788,7 @@ $('#collecte-vulnerabilite').on('click', ()=>{
       counter=parseInt(blocker,10)+parseInt(critical,10)+parseInt(info,10)+parseInt(major,10)+parseInt(minor,10);
       const timer5 = document.getElementById('js-vulnerabilite-time');
       tempo= parseInt(tempo,10) + parseInt(timer5.dataset.timer,10);
-      await collecte(maven_key, 'VULNERABILITY', 'MINOR', start, stop, counter, tempo);
+      await collecte(_mavenkey, 'VULNERABILITY', 'MINOR', start, stop, counter, tempo);
     }
 
     $('#etape-2').css('color', '#c45d4e');
@@ -844,7 +841,7 @@ $('#collecte-mauvaise-pratique').on('click', ()=>{
       counter=parseInt(blocker,10);
       const timer1 = document.getElementById('js-mauvaise-pratique-time');
       tempo=parseInt(timer1.dataset.timer,10);
-      await collecte(maven_key, 'CODE_SMELL', 'BLOCKER', start, stop, counter, tempo);
+      await collecte(_mavenkey, 'CODE_SMELL', 'BLOCKER', start, stop, counter, tempo);
     }
 
     if (parseInt(critical,10)!==0) {
@@ -856,7 +853,7 @@ $('#collecte-mauvaise-pratique').on('click', ()=>{
       counter=parseInt(blocker,10)+parseInt(critical,10);
       const timer2 = document.getElementById('js-mauvaise-pratique-time');
       tempo = parseInt(tempo,10) + parseInt(timer2.dataset.timer,10);
-      await collecte(maven_key, 'CODE_SMELL', 'CRITICAL', start, stop, counter, tempo);
+      await collecte(_mavenkey, 'CODE_SMELL', 'CRITICAL', start, stop, counter, tempo);
     }
 
     if (parseInt(info,10)!==0) {
@@ -868,7 +865,7 @@ $('#collecte-mauvaise-pratique').on('click', ()=>{
       counter=parseInt(blocker,10)+parseInt(critical,10)+parseInt(info,10);
       const timer3 = document.getElementById('js-mauvaise-pratique-time');
       tempo = parseInt(tempo,10) + parseInt(timer3.dataset.timer,10);
-      await collecte(maven_key, 'CODE_SMELL', 'INFO', start, stop, counter, tempo);
+      await collecte(_mavenkey, 'CODE_SMELL', 'INFO', start, stop, counter, tempo);
     }
 
     if (parseInt(major,10)!==0) {
@@ -877,7 +874,7 @@ $('#collecte-mauvaise-pratique').on('click', ()=>{
       counter=parseInt(blocker,10)+parseInt(critical,10)+parseInt(info,10)+parseInt(major,10);
       const timer4 = document.getElementById('js-mauvaise-pratique-time');
       tempo = parseInt(tempo,10) + parseInt(timer4.dataset.timer,10);
-      await collecte(maven_key, 'CODE_SMELL', 'MAJOR', start, stop, counter, tempo);
+      await collecte(_mavenkey, 'CODE_SMELL', 'MAJOR', start, stop, counter, tempo);
     }
 
     if (parseInt(minor,10)!==0){
@@ -886,7 +883,7 @@ $('#collecte-mauvaise-pratique').on('click', ()=>{
       counter=parseInt(blocker,10)+parseInt(critical,10)+parseInt(info,10)+parseInt(major,10)+parseInt(minor,10);
       const timer5 = document.getElementById('js-mauvaise-pratique-time');
       tempo= parseInt(tempo,10) + parseInt(timer5.dataset.timer,10);
-      await collecte(maven_key, 'CODE_SMELL', 'MINOR', start, stop, counter, tempo);
+      await collecte(_mavenkey, 'CODE_SMELL', 'MINOR', start, stop, counter, tempo);
     } else {
       await collecte('NaN', 'NaN', 'NaN', 'NaN', cent, 'NaN', 'NaN');
     }
@@ -900,7 +897,7 @@ $('#collecte-mauvaise-pratique').on('click', ()=>{
 
 /** On appelle le service de suppression des données du projet. */
 $('.bouton-supprime-donnees').on('click', ()=>{
-  clear(maven_key);
+  clear(_mavenkey);
 });
 
 $('.bouton-repartition-traitement-donnees').on('click', ()=>{
@@ -919,29 +916,29 @@ $('.bouton-repartition-traitement-donnees').on('click', ()=>{
     /** On affiche le tableau */
     $('#tableau-1').removeClass('hide');
     $('#mon-bo-tableau1').html(tabTitre);
-    await analyse(maven_key, 'BUG', 'BLOCKER', 'texte-rouge');
-    await analyse(maven_key, 'BUG', 'CRITICAL', 'texte-rouge');
-    await analyse(maven_key, 'BUG', 'INFO', 'texte-bleu');
-    await analyse(maven_key, 'BUG', 'MAJOR','texte-orange');
-    await analyse(maven_key, 'BUG', 'MINOR', 'texte-vert');
+    await analyse(_mavenkey, 'BUG', 'BLOCKER', 'texte-rouge');
+    await analyse(_mavenkey, 'BUG', 'CRITICAL', 'texte-rouge');
+    await analyse(_mavenkey, 'BUG', 'INFO', 'texte-bleu');
+    await analyse(_mavenkey, 'BUG', 'MAJOR','texte-orange');
+    await analyse(_mavenkey, 'BUG', 'MINOR', 'texte-vert');
 
     /** VULNERABILITY */
     $('#tableau-2').removeClass('hide');
     $('#mon-bo-tableau2').html(tabTitre);
-    await analyse(maven_key, 'VULNERABILITY', 'BLOCKER', 'texte-rouge');
-    await analyse(maven_key, 'VULNERABILITY', 'CRITICAL', 'texte-rouge');
-    await analyse(maven_key, 'VULNERABILITY', 'INFO', 'texte-bleu');
-    await analyse(maven_key, 'VULNERABILITY', 'MAJOR', 'texte-orange');
-    await analyse(maven_key, 'VULNERABILITY', 'MINOR', 'texte-vert');
+    await analyse(_mavenkey, 'VULNERABILITY', 'BLOCKER', 'texte-rouge');
+    await analyse(_mavenkey, 'VULNERABILITY', 'CRITICAL', 'texte-rouge');
+    await analyse(_mavenkey, 'VULNERABILITY', 'INFO', 'texte-bleu');
+    await analyse(_mavenkey, 'VULNERABILITY', 'MAJOR', 'texte-orange');
+    await analyse(_mavenkey, 'VULNERABILITY', 'MINOR', 'texte-vert');
 
     /** CODE_SMELL */
     $('#tableau-3').removeClass('hide');
     $('#mon-bo-tableau3').html(tabTitre);
-    await analyse(maven_key, 'CODE_SMELL', 'BLOCKER', 'texte-rouge');
-    await analyse(maven_key, 'CODE_SMELL', 'CRITICAL', 'texte-rouge');
-    await analyse(maven_key, 'CODE_SMELL', 'INFO', 'texte-bleu');
-    await analyse(maven_key, 'CODE_SMELL', 'MAJOR', 'texte-orange');
-    await analyse(maven_key, 'CODE_SMELL', 'MINOR', 'texte-vert');
+    await analyse(_mavenkey, 'CODE_SMELL', 'BLOCKER', 'texte-rouge');
+    await analyse(_mavenkey, 'CODE_SMELL', 'CRITICAL', 'texte-rouge');
+    await analyse(_mavenkey, 'CODE_SMELL', 'INFO', 'texte-bleu');
+    await analyse(_mavenkey, 'CODE_SMELL', 'MAJOR', 'texte-orange');
+    await analyse(_mavenkey, 'CODE_SMELL', 'MINOR', 'texte-vert');
   }
 
   /** On lance la fonction assynchrone */
@@ -955,6 +952,6 @@ $('.bouton-repartition-traitement-donnees').on('click', ()=>{
  */
 
 /** On va chercher les informations par type et par séverité */
-resultat(maven_key, 'BUG' );
-resultat(maven_key, 'VULNERABILITY' );
-resultat(maven_key, 'CODE_SMELL' );
+resultat(_mavenkey, 'BUG' );
+resultat(_mavenkey, 'VULNERABILITY' );
+resultat(_mavenkey, 'CODE_SMELL' );
