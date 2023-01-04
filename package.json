@@ -10,10 +10,11 @@
     "watch": "encore dev --watch",
     "build": "encore production --progress"
   },
-    "dependencies": {
+  "dependencies": {
     "@babel/core": "^7.20.5",
     "@babel/preset-env": "^7.20.2",
     "browser-update": "^3.3.44",
+    "chance": "^1.1.9",
     "chart.js": "^3.9.1",
     "chartjs-adapter-moment": "^1.0.1",
     "chartjs-plugin-datalabels": "^2.2.0",
