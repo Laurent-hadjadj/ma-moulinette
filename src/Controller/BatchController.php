@@ -94,7 +94,7 @@ class BatchController extends AbstractController
 
       /** On crée un objet date pour marquer le job */
       $date = new DateTime();
-      $date->setTimezone(new DateTimeZone(static::$eureopParis));
+      $date->setTimezone(new DateTimeZone(static::$europeParis));
 
       /** Si on a déjà lancé un traitement aujourd'hui on sort */
       $sql="SELECT date_enregistrement as date FROM batch_traitement ORDER BY date_enregistrement DESC limit 1;";
@@ -227,7 +227,7 @@ class BatchController extends AbstractController
 
           /** On démarre la mesure du batch */
           $debutBatch = new DateTime();
-          $debutBatch->setTimezone(new DateTimeZone(static::$eureopParis));
+          $debutBatch->setTimezone(new DateTimeZone(static::$europeParis));
           $tempoDebutBatch = $debutBatch->format(static::$dateFormat);
 
           foreach($listeProjet['liste'] as $mavenKey) {
@@ -264,7 +264,7 @@ class BatchController extends AbstractController
             }
             /** Fin du Batch */
             $finBatch = new DateTime();
-            $finBatch->setTimezone(new DateTimeZone(static::$eureopParis));
+            $finBatch->setTimezone(new DateTimeZone(static::$europeParis));
             $tempoFinBatch = $finBatch->format(static::$dateFormat);
 
             $sql="UPDATE batch_traitement SET debut_traitement='${tempoDebutBatch}' WHERE id=${id};";
@@ -295,7 +295,7 @@ class BatchController extends AbstractController
     {
       /** On crée un objet date */
       $date = new DateTime();
-      $date->setTimezone(new DateTimeZone(static::$eureopParis));
+      $date->setTimezone(new DateTimeZone(static::$europeParis));
       /** On récupère la date du dernier traitement */
       $sql="SELECT date_enregistrement as date FROM batch_traitement ORDER BY date_enregistrement DESC limit 1;";
       $r = $this->connection->fetchAllAssociative($sql);
