@@ -15,10 +15,9 @@ import $ from 'jquery';
 // On importe les paramètres serveur
 import {serveur} from './properties.js';
 
-const dateOptions = {year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric',hour12: false };
-
-const contentType='application/json; charset=utf-8';
-const http406=406;
+/** On importe les constantes */
+import {contentType, dateOptions, http406,
+        un, deux, trois, quatre, cinq, dix, cent, dixMille} from './constante.js';
 
 /**
  * [Description for log]
@@ -123,8 +122,8 @@ export const remplissage=function(mavenKey) {
     }
     $('#nombre-ligne').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.lines));
     $('#nombre-ligne-de-code').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.ncloc));
-    $('#couverture').html(new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(t.coverage / 100));
-    $('#duplication').html(new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(t.duplication / 100));
+    $('#couverture').html(new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(parseInt(t.coverage,10)/cent));
+    $('#duplication').html(new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(parseInt(t.duplication,10)/cent));
     $('#tests-unitaires').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.tests));
     $('#nombre-defaut').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.issues));
 
@@ -170,7 +169,7 @@ export const remplissage=function(mavenKey) {
     $('#nombre-vulnerabilite').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.vulnerability));
     $('#nombre-mauvaise-pratique').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.codeSmell));
     /** 10000 = le nombre max des retours possibles */
-    if (t.codeSmell===10000) {
+    if (t.codeSmell===dixMille) {
       $('#nombre-mauvaise-pratique').css('color', '#771404');
     }
 
@@ -192,10 +191,10 @@ export const remplissage=function(mavenKey) {
     if (totalModule !==0) {
       if (t.frontend!==0) {
         p1=t.frontend/totalModule;
-        if (p1*100>10 && p1*100<100) {
+        if (p1*cent>dix && p1*cent<cent) {
           e1=html01;
         }
-        if (p1*100<10) {
+        if (p1*cent<dix) {
           e1=html02;
         }
         i1=`<span>${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.frontend)}</span> ${e1}
@@ -207,10 +206,10 @@ export const remplissage=function(mavenKey) {
 
       if (t.backend!==0) {
         p2=t.backend/totalModule;
-        if (p2*100>10 && p2*100<100) {
+        if (p2*cent>dix && p2*cent<cent) {
           e2=html01;
         }
-        if (p2*100<10) {
+        if (p2*cent<dix) {
           e2=html02;
         }
         i2=`<span>${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.backend)}</span> ${e2}
@@ -222,10 +221,10 @@ export const remplissage=function(mavenKey) {
 
       if (t.autre!==0) {
         p3=t.autre/totalModule;
-        if (p3*100>10 && p3*100<100) {
+        if (p3*cent>dix && p3*cent<cent) {
           e3=html01;
         }
-        if (p3*100<10) {
+        if (p3*cent<dix) {
           e3=html02;
         }
         i3=`<span>${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.autre)}</span> ${e3}
@@ -282,53 +281,53 @@ export const remplissage=function(mavenKey) {
     const noteOrange='note-orange';
     const noteRouge='note-rouge';
 
-    if (t.noteReliability === 1 ) {
+    if (t.noteReliability === un ) {
       couleur1 = noteVert1;
     }
-    if (t.noteSecurity === 1) {
+    if (t.noteSecurity === un) {
       couleur2 = noteVert1;
     }
-    if (t.noteSqale === 1) {
+    if (t.noteSqale === un) {
       couleur3 = noteVert1;
     }
 
-    if (t.noteReliability === 2) {
+    if (t.noteReliability === deux) {
       couleur1 = noteVert2;
     }
-    if (t.noteSecurity === 2) {
+    if (t.noteSecurity === deux) {
       couleur2 = noteVert2;
     }
-    if (t.noteSqale === 2) {
+    if (t.noteSqale === deux) {
       couleur3 = noteVert2;
     }
 
-    if (t.noteReliability === 3) {
+    if (t.noteReliability === trois) {
       couleur1 = noteJaune;
     }
-    if (t.noteSecurity === 3) {
+    if (t.noteSecurity === trois) {
       couleur2 = noteJaune;
     }
-    if (t.noteSqale === 3) {
+    if (t.noteSqale === trois) {
       couleur3 = noteJaune;
     }
 
-    if (t.noteReliability === 4) {
+    if (t.noteReliability === quatre) {
       couleur1 = noteOrange;
     }
-    if (t.noteSecurity === 4) {
+    if (t.noteSecurity === quatre) {
       couleur2 = noteOrange;
     }
-    if (t.noteSqale === 4) {
+    if (t.noteSqale === quatre) {
       couleur3 = noteOrange;
     }
 
-    if (t.noteReliability === 5) {
+    if (t.noteReliability === cinq) {
       couleur1 = noteRouge;
     }
-    if (t.noteSecurity === 5) {
+    if (t.noteSecurity === cinq) {
       couleur2 = noteRouge;
     }
-    if (t.noteSqale === 5) {
+    if (t.noteSqale === cinq) {
       couleur3 = noteRouge;
     }
 
