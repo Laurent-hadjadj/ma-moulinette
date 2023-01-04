@@ -10,8 +10,7 @@
     "watch": "encore dev --watch",
     "build": "encore production --progress"
   },
-  "eslintConfig": {},
-  "dependencies": {
+    "dependencies": {
     "@babel/core": "^7.20.5",
     "@babel/preset-env": "^7.20.2",
     "browser-update": "^3.3.44",
