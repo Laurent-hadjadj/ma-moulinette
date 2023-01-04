@@ -24,14 +24,16 @@ import './foundation.js';
  * description
  * On affiche/desactive les indicateurs de variation
  */
-/** javascript:S1192 : Faux positif */
+/** Faux positif : sonarLint(javascript:S1192) */
 $('#js-oui-non').on('click', function () {
   if ($('#js-oui-non').is(':checked')===true) {
     $('.up, .down, .equal').removeClass('hide');
   }
+
   /** On en fait deux pour être certain de capter l'evenenent */
-  if ($('#js-oui-non').is(':checked')===false) {
-    if ($('.up, .down, .equal').hasClass('hide')===false) {
+  /** Faux positif : sonarlint(javascript:S1066) */
+  if ( $('#js-oui-non').is(':checked') === false ) {
+    if ( $('.up, .down, .equal').hasClass('hide') === false ) {
       $('.up, .down, .equal').addClass('hide');
     }
   }
