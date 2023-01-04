@@ -23,10 +23,9 @@ import './foundation.js';
 /** On importe les paramètres serveur */
 import {serveur} from './properties.js';
 
-const contentType = 'application/json; charset=utf-8';
-
-const dateOptions = {
-  year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false };
+/** On importe les constantes */
+import { dateOptions } from './constante.js';
+import { contentType } from './constante';
 
 /**
   * [Description for log]
