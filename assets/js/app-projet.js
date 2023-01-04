@@ -31,6 +31,9 @@ import './foundation.js';
 /* On importe les paramètres serveur. */
 import {serveur} from './properties.js';
 
+/** Librairie de tirage aléatoire */
+import Chance from 'chance';
+
 /**
  * On importe les méthodes pour :
  * Enregistrer les données ;
@@ -57,8 +60,12 @@ import {contentType, http200, http406, dateOptions,
  */
 const shuffle=function(a) {
   let j, x, i;
+  /** On crée un nouvel objet chance */
+  const chance = new Chance();
+
+  /** On mélange la matrice */
   for (i = a.length - 1; i > 0; i--) {
-    j = Math.floor(Math.random() * (i + 1));
+    j = chance.natural({ min: 0, max: i });
     x = a[i];
     a[i] = a[j];
     a[j] = x;

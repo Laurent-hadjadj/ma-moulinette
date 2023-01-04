@@ -29,6 +29,9 @@ import zoomPlugin from 'chartjs-plugin-zoom';
 Chart.register(ChartDataLabels);
 Chart.register(zoomPlugin);
 
+/** Librairie de tirage aléatoire */
+import Chance from 'chance';
+
 /** On importe les constantes */
 import {contentType, paletteCouleur, matrice,
         dateOptions, dateOptionsShort} from './constante.js';
@@ -46,8 +49,12 @@ import {contentType, paletteCouleur, matrice,
  */
 const shuffle=function(a) {
   let j, x, i;
+  /** On crée un nouvel objet chance */
+  const chance = new Chance();
+
+  /** On mélange la matrice */
   for (i = a.length - 1; i > 0; i--) {
-    j = Math.floor(Math.random() * (i + 1));
+    j = chance.natural({ min: 0, max: i });
     x = a[i];
     a[i] = a[j];
     a[j] = x;
@@ -67,7 +74,7 @@ const shuffle=function(a) {
 const palette=function() {
   const nouvellePalette = [];
   shuffle(matrice);
-  matrice.forEach(el=> {
+  matrice.forEach(el => {
     nouvellePalette.push(paletteCouleur[el]);
   });
   return nouvellePalette;
