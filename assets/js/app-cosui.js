@@ -11,7 +11,7 @@
 
 import '../css/cosui.css';
 
-// Intégration de jquery
+/** Intégration de jquery */
 import $ from 'jquery';
 
 import 'what-input';
@@ -24,6 +24,7 @@ import './foundation.js';
  * description
  * On affiche/desactive les indicateurs de variation
  */
+/** javascript:S1192 : Faux positif */
 $('#js-oui-non').on('click', function () {
   if ($('#js-oui-non').is(':checked')===true) {
     $('.up, .down, .equal').removeClass('hide');
