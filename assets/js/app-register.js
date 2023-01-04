@@ -12,7 +12,7 @@
 
 import '../css/register.css';
 
-// Intégration de jquery
+/** Intégration de jquery */
 import $ from 'jquery';
 
 import 'what-input';
@@ -20,6 +20,10 @@ import 'foundation-sites';
 import 'motion-ui';
 
 import './foundation.js';
+
+/** On importe les constantes */
+import { un, deux, sept, huit, cinquanteTrois,soixanteQuatre } from './constante.js';
+
 
 /**
  * checkOkSvg
@@ -101,22 +105,22 @@ $('#registration_form_courriel').on('keyup', function(){
     }
 
     /** Si on à un @ à la 65eme position */
-    if (courriel.length > 64 && arobase > 0 ){
+    if (courriel.length > soixanteQuatre && arobase > 0 ){
       $('#register-info-check-courriel').html(checkKoSvg);
       return;
     }
 
     /** Si on a pas de @ avant la 64eme position */
-    if (courriel.length < 64 && arobase < 0 ){
+    if (courriel.length < soixanteQuatre && arobase < 0 ){
       $('#register-info-check-courriel').html(checkKoSvg);
       return;
     }
 
     /** Si on a un @ avant 65eme posistion */
-    if (courriel.length < 64 && arobase > 0 ){
+    if (courriel.length < soixanteQuatre && arobase > 0 ){
       domaine=courriel.split('@');
       /* Si le tableau contient plus de 2 éléments on sort */
-      if (domaine.length>2) {
+      if (domaine.length>deux) {
         $('#register-info-check-courriel').html(checkKoSvg);
         return;
       }
@@ -124,18 +128,18 @@ $('#registration_form_courriel').on('keyup', function(){
     }
 
     /** Si le domaine n'est pas correcte. */
-    if (domaine[1].length===1 && point>1){
+    if (domaine[1].length===un && point>un){
       $('#register-info-check-courriel').html(checkKoSvg);
     }
 
     /** On vérifie que le nom de domaine est correcte */
-    if (domaine[1].length===1 && point>1){
+    if (domaine[1].length===un && point>un){
       $('#register-info-check-courriel').html(checkKoSvg);
     }
 
     /** On verifie que le domaine est <256 */
     const points=(domaine[1].match(/\./g)||[]).length;
-    if (points >1) {
+    if (points>un) {
       $('#register-info-check-courriel').html(checkKoSvg);
     }
 
@@ -148,14 +152,14 @@ $('#registration_form_plainPassword').on('keyup', function(){
     if ( password.length === 0 ) {
       $('#register-info-check').html('');
       }
-    if ( password.length>0 && password.length<8 ) {
+    if ( password.length>0 && password.length<huit ) {
         $('#register-info-check-password').html('');
         $('#register-info-check').html('<span class="register-info-erreur">Taille Min 8.</span>');
       }
-    if ( password.length>53 ) {
+    if ( password.length>cinquanteTrois ) {
         $('#register-info-check').html('<span class="profil-info-erreur">Taille Max 52.</span>');
       }
-    if ( password.length>7 && password.length<53 ) {
+    if ( password.length>sept && password.length<cinquanteTrois ) {
         $('#register-info-check').html('');
         $('#register-info-check-password').html(checkOkSvg);
       } else {
