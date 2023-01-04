@@ -37,22 +37,14 @@ import 'moment/locale/fr';
 import 'chartjs-adapter-moment';
 Chart.register(ChartDataLabels);
 
+
 /* Initialisation de moments */
 const a= moment().toString();
 /* Pour éviter d'avoir une erreur sonar */
 console.info(a);
 
-/* chartJS */
-const chartColors = {
-  rouge: 'rgb(255,99,132)',
-  rougeOpacity: 'rgb(255,99,132,0.5)',
-  bleu: 'rgb(54,162,235)',
-  bleuOpacity: 'rgb(54,162,235,0.5)',
-  orange: 'rgb(170,102,51)',
-  orangeOpacity: 'rgb(170,102,51,0.5)' };
-
-const contentType='application/json; charset=utf-8';
-const http404=404;
+/** On importe les constantes */
+import { contentType, http404, chartColors, un, deux, soixante, cent } from './constante.js';
 
 /* Construction des callbox de type success */
 const callboxInformation='<div class="callout primary text-justify" data-closable="slide-out-right"><p style="color:#00445b;" class="open-sans" cell">Information ! ';
@@ -272,7 +264,6 @@ $('select[name="version"]').change(function () {
 
     const tNotes1 = ['', 'a', 'b', 'c', 'd', 'e', 'z'];
     const tNotes2 = ['', 'A', 'B', 'C', 'D', 'E', 'Z'];
-
     const couleurReliability = tNotes1[parseInt(t.noteReliability,10)];
     const couleurSecurity = tNotes1[parseInt(t.noteSecurity,10)];
     const couleurSqale = tNotes1[parseInt(t.noteSqale,10)];
@@ -323,10 +314,10 @@ $('select[name="version"]').change(function () {
     /* On affiche les autres métriques */
     $('#ncloc').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.ncloc));
     $('#lines').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.lines));
-    $('#dette').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.dette/60/60));
+    $('#dette').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.dette/soixante/soixante));
 
-    $('#duplication').html(new Intl.NumberFormat('fr-FR', { style: 'percent',maximumFractionDigits: 2 }).format(t.duplication/100));
-    $('#coverage').html(new Intl.NumberFormat('fr-FR', { style: 'percent',maximumFractionDigits: 2 }).format(t.coverage/100));
+    $('#duplication').html(new Intl.NumberFormat('fr-FR', { style: 'percent',maximumFractionDigits: 2 }).format(t.duplication/cent));
+    $('#coverage').html(new Intl.NumberFormat('fr-FR', { style: 'percent',maximumFractionDigits: 2 }).format(t.coverage/cent));
     $('#tests').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.tests));
 
     /* historique */
@@ -530,26 +521,26 @@ $('.js-modifier-analyse').on('click', function () {
         * Favori|reference enable
         * SQLite : 0 (false) and 1 (true).
         */
-      if (version.favori===1) {
+      if (version.favori===un) {
         $(`#switch-favori-${ligne}`).click();
       }
 
-      if (version.initial===1) {
+      if (version.initial===un) {
         $(`#switch-reference-${ligne}`).click();
       }
     });
 
     /* On gére le changement de favori */
     $('[id^=switch-favori-]').on('click', e =>{
-      // on récupère la version et la date
+      /** on récupère la version et la date */
       const id=$(e.target).attr('id');
       const l=id.split('-');
-      const version = $(`#version-${l[2]}`).text().trim();
-      const date = $(`#date-${l[2]}`).text().trim();
+      const version = $(`#version-${l[deux]}`).text().trim();
+      const date = $(`#date-${l[deux]}`).text().trim();
 
-      if ($(`#${id}:checked`).length===1) {
+      if ($(`#${id}:checked`).length===un) {
         /** SQLite : 0 (false) and 1 (true). */
-        favori=1;
+        favori=un;
       } else {
         favori=0;
       }
@@ -576,12 +567,12 @@ $('.js-modifier-analyse').on('click', function () {
       /* on récupère la version et la date */
       const id=$(e.target).attr('id');
       const l=id.split('-');
-      const  version=$(`#version-${l[2]}`).text().trim();
-      const  date=$(`#date-${l[2]}`).text().trim();
+      const  version=$(`#version-${l[deux]}`).text().trim();
+      const  date=$(`#date-${l[deux]}`).text().trim();
 
-      if ($(`#${id}:checked`).length===1){
+      if ($(`#${id}:checked`).length===un){
         /** SQLite : 0 (false) and 1 (true). */
-        reference=1;
+        reference=un;
       } else {
         reference=0;
       }
