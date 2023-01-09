@@ -99,7 +99,7 @@ class BatchController extends AbstractController
       /** Si on a déjà lancé un traitement aujourd'hui on sort */
       $sql="SELECT date_enregistrement as date FROM batch_traitement ORDER BY date_enregistrement DESC limit 1;";
       $r = $this->connection->fetchAllAssociative($sql);
-      if (empty($r)==false){
+      if (!empty($r)){
         $dateDuJour=$date->format(static::$dateFormatMini);
         $dateBatch=new DateTime($r[0]['date']);
         $dateBatch->format(static::$dateFormatMini);
