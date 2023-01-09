@@ -151,7 +151,7 @@ class BatchCrudController extends AbstractCrudController
         ->hideOnForm()
         ->setHelp('Nombre de projet dans le portefeuille.');
 
-        yield TextField::new('responsbale')
+        yield TextField::new('responsable')
         ->hideOnForm()
         ->setHelp('Responsable du traitement.');
 
