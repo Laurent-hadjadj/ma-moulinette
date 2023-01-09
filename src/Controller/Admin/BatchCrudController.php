@@ -128,10 +128,10 @@ class BatchCrudController extends AbstractCrudController
          * Si la liste des portefeuille est vide on renvoi"Aucun"
          */
         $i=0;
-        if (empty($resultat)) {
-            $key=$i;
-            $val="Aucun";
 
+        if (empty($resultat)) {
+            $key=["aucun"];
+            $val=["Aucun"];
         } else {
             foreach($resultat as $value) {
                 $key[$i]=$value['titre'];
