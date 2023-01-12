@@ -122,3 +122,72 @@ tbody tr:nth-child(even) {
 }
 
 #fermer-traitement-liste:hover { background-color: #006182; }
+
+/** Bouton automatique ou Manuel */
+.button-group-option {
+  position: relative;
+  display: flex;
+  flex-wrap: nowrap;
+  width: 100%;
+  margin-bottom: 0.2rem;
+}
+
+.button-group-option::before,
+.button-group-option::after {
+  display: table;
+  content: " ";
+  -ms-flex-preferred-size: 0;
+  flex-basis: 0;
+  -ms-flex-order: 1;
+  order: 1;
+}
+
+.button-group-option::after { clear: both; }
+
+.button-group-option .button {
+  margin: 0;
+  margin-right: 1px;
+  margin-bottom: 1px;
+  flex: 1 1 0px;
+  font-size: 1.125rem;
+  border-radius: 0.2rem;
+}
+
+.button-group-option .button:last-child { margin-right: 0; }
+
+/** Gestion des états des boutons automatique et manuel */
+.bouton-automatique,
+.bouton-manuel {
+  background-color: #00445b;
+  color: #fff;
+}
+
+.bouton-automatique:hover,
+.bouton-manuel:hover {
+  background-color: #006182;
+  color: #eee;
+}
+
+.bouton-automatique-focus:focus,
+.bouton-manuel-focus:focus {
+  background-color: #ed7d20;
+  color: #eee;
+}
+
+/** bouton OU */
+.button-group-option::before {
+  content: attr(data-grouptype);
+  z-index: 1;
+  color: #8a8a8a;
+  display: inline-block;
+  font-size: 1rem;
+  padding: 0.25em;
+  border-radius: 5000px;
+  background: #fefefe;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.button-group-option .button + .button { margin-left: 0.35rem; }
