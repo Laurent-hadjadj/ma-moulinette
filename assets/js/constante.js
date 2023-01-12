@@ -74,6 +74,7 @@ export const onze=11;
 export const vingtNeuf=29;
 export const trente=30;
 export const cinquanteTrois=53;
+export const soixante=60;
 export const soixanteQuatre=64;
 export const soixanteNeuf=69;
 export const soixanteDix=70;
