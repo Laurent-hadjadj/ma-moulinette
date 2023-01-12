@@ -18,14 +18,9 @@
     <header class="grid-container">
       <nav aria-label="Ici : " role="navigation">
         <ul class="claire-hand breadcrumbs">
-          <li>
-            <a href="/">Accueil</a>
-          </li>
-          <li>
-            <a href="/projet">Projet</a>
-          </li>
-          <li>
-            <span class="show-for-sr">Current:</span>Répartition</li>
+          <li><a href="/">Accueil</a></li>
+          <li><a href="/projet">Projet</a></li>
+          <li><span class="show-for-sr">Current:</span>Répartition</li>
         </ul>
       </nav>
     </header>
@@ -33,14 +28,12 @@
     <div class="grid-container">
       <h3 id="app" class="claire-hand grid-x" data-application="{{mavenKey}}">
         <div id="collecte-animation" class="sp"></div>
-        <span class"spinner-titre">{{monApplication}}</span>
+        <span class="spinner-titre">{{monApplication}}</span>
       </h3>
 
       <p class="open-sans">
-        <span class="open-sans">Setup :
-        </span>
-        <span id="js-setup" class="open-sans color-noir" data-statut={{statut}}>{{setup}}
-        </span>
+        <span class="open-sans">Setup :</span>
+        <span id="js-setup" class="open-sans color-noir" data-statut={{statut}}>{{setup}}</span>
       </p>
 
       {# On affiche les messages #}
@@ -225,7 +218,8 @@
         <div class="grid-x cell">
           <div class="small-12 medium-6 large-6 cell">
             <div id="repartition-affiche-resultat" class="button expanded
-                bouton-repartition-affiche-resultat bouton-repartition-affiche-resultat-disabled open-sans">Afficher</div>
+                bouton-repartition-affiche-resultat
+                bouton-repartition-affiche-resultat-disabled open-sans">Afficher</div>
           </div>
           <div class="small-12 medium-6 large-6 bouton-afficher-left cell">
             <div id="repartition-traitement-donnees"
