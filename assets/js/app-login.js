@@ -40,7 +40,7 @@ $(function () {
 
   $('input').on('checkval', function () {
     const label = $(this).prev('label');
-    if(this.value !== '') {
+    if (this.value !== '') {
       label.addClass(showClass);
     } else {
       label.removeClass(showClass);
