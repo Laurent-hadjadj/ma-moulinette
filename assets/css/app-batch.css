@@ -99,6 +99,7 @@ tbody tr:nth-child(even) {
 /* Bouton information SVG */
 .i-am-robot-svg,
 .i-am-human-svg { fill: #00445b; }
+.i-am-human-svg:hover { fill: #ed7d20; }
 
 /* Bouton information SVG */
 .information-svg {
@@ -168,9 +169,13 @@ tbody tr:nth-child(even) {
   color: #eee;
 }
 
-.bouton-automatique-focus:focus,
-.bouton-manuel-focus:focus {
+.active {
   background-color: #ed7d20;
+  color: #eee;
+}
+
+.active:hover {
+  background-color: #c46e27;
   color: #eee;
 }
 
