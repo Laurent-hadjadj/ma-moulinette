@@ -52,28 +52,28 @@ $('#registration_form_plainPassword').val('');
 
 /** Affichage des libellés */
 $('#registration_form_nom').on('keyup', function(){
-  if(this.value !== '') {
+  if (this.value !== '') {
     $('label[for="registration_form_nom"]').addClass('show');
   } else {
     $('label[for="registration_form_nom"]').removeClass('show');
   }
 });
 $('#registration_form_prenom').on('keyup', function(){
-  if(this.value !== '') {
+  if (this.value !== '') {
     $('label[for="registration_form_prenom"]').addClass('prenom');
   } else {
     $('label[for="registration_form_prenom"]').removeClass('prenom');
   }
 });
 $('#registration_form_courriel').on('keyup', function(){
-  if(this.value !== '') {
+  if (this.value !== '') {
     $('label[for="registration_form_courriel"]').addClass('show');
   } else {
     $('label[for="registration_form_courriel"]').removeClass('show');
   }
 });
 $('#registration_form_plainPassword').on('keyup', function(){
-  if(this.value !== '') {
+  if (this.value !== '') {
     $('label[for="registration_form_plainPassword"]').addClass('show');
   } else {
     $('label[for="registration_form_plainPassword"]').removeClass('show');
