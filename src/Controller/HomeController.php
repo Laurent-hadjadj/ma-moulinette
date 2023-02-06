@@ -64,6 +64,7 @@ class HomeController extends AbstractController
             $this->connection = $connection;
             $this->client = $client;
         }
+
     /**
      * [Description for httpClient]
      *
@@ -149,7 +150,7 @@ class HomeController extends AbstractController
      * @return Int
      *
      * Created at: 15/12/2022, 22:07:31 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     private function countProjetSonar(): Int
