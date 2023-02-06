@@ -46,3 +46,15 @@ sonar-project.properties
 ###> docker ###
 composer.bat
 ###< docker ###
+
+###> symfony/phpunit-bridge ###
+.phpunit.result.cache
+/phpunit.xml
+###< symfony/phpunit-bridge ###
+
+###> phpunit/phpunit ###
+/phpunit.xml
+.phpunit.result.cache
+/var/log/test.log
+/.phpunit.cache/
+###< phpunit/phpunit ###
