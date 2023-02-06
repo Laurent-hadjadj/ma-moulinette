@@ -36,7 +36,6 @@ class ProfilController extends AbstractController
       $this->em = $em;
   }
 
-  #[Route('/profil', name: 'profil')]
   /**
    * [Description for index]
    *
@@ -46,6 +45,7 @@ class ProfilController extends AbstractController
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
+  #[Route('/profil', name: 'profil')]
   public function index(): Response
   {
     /** On récupère la liste des profiles; */
