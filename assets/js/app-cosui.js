@@ -20,23 +20,23 @@ import 'motion-ui';
 
 import './foundation.js';
 
+const ouiNon='#js-oui-non';
+const upDownEqual='.up, .down, .equal';
+
 /**
  * description
  * On affiche/desactive les indicateurs de variation
  */
 /** Faux positif : sonarLint(javascript:S1192) */
-$('#js-oui-non').on('click', function () {
-  if ($('#js-oui-non').is(':checked')===true) {
-    $('.up, .down, .equal').removeClass('hide');
+$(ouiNon).on('click', function () {
+  if ($(ouiNon).is(':checked')===true) {
+    $(upDownEqual).removeClass('hide');
   }
 
   /** On en fait deux pour être certain de capter l'evenenent */
-  /** Faux positif : sonarlint(javascript:S1066) */
-  if ( $('#js-oui-non').is(':checked') === false ) {
-    if ( $('.up, .down, .equal').hasClass('hide') === false ) {
-      $('.up, .down, .equal').addClass('hide');
+  if ( $(ouiNon).is(':checked') === false && $(upDownEqual).hasClass('hide') === false ) {
+      $(upDownEqual).addClass('hide');
     }
-  }
 });
 
 
