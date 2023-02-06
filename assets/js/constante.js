@@ -79,6 +79,7 @@ export const soixanteQuatre=64;
 export const soixanteNeuf=69;
 export const soixanteDix=70;
 export const cent=100;
+export const cinqCent=500;
 export const mille=1000;
 export const deuxMille=2000;
 export const troisMille=3000;
