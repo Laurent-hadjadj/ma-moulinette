@@ -116,13 +116,32 @@ tbody tr:nth-child(even) {
 /* disable */
 .disable { cursor: not-allowed; }
 
-/* bouton */
-#fermer-traitement-liste {
+/* bouton ferrmer */
+#fermer-traitement-liste,
+#fermer-traitement-manuel {
   color: #fff;
   background-color: #00445b;
 }
 
-#fermer-traitement-liste:hover { background-color: #006182; }
+#fermer-traitement-liste:hover,
+#fermer-traitement-manuel:hover { background-color: #006182; }
+
+/** Ajout du bouton oui et non */
+.oui,
+.non {
+  color: #fff;
+  font-size: 1.2rem;
+}
+.oui { background-color: #187e3d; }
+.non { background-color: #971c09; }
+.oui:hover { background-color: #105b2c; }
+.non:hover { background-color: #6b1204; }
+
+/** Ajout d'un spinner lors du traietemnt  */
+.spinner-titre {
+  margin-left: 1rem;
+  margin-top: -3px;
+}
 
 /** Bouton automatique ou Manuel */
 .button-group-option {
