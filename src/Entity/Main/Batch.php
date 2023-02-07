@@ -57,8 +57,8 @@ class Batch
     private $nombreProjet=0;
 
     /** Etat d'éxection (start, pending, error, end) */
-    #[ORM\Column(type: 'string', length: 8, unique: true)]
-    private $execution="pending";
+    #[ORM\Column(type: 'string', length: 8, nullable: true)]
+    private $execution;
 
     /** Date de modification */
     #[ORM\Column(type: 'datetime', nullable: true)]
