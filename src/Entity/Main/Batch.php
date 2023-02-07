@@ -56,6 +56,10 @@ class Batch
     #[ORM\Column(type: 'integer')]
     private $nombreProjet=0;
 
+    /** Etat d'éxection (start, pending, error, end) */
+    #[ORM\Column(type: 'string', length: 8, unique: true)]
+    private $execution="pending";
+
     /** Date de modification */
     #[ORM\Column(type: 'datetime', nullable: true)]
     private $dateModification;
@@ -70,7 +74,7 @@ class Batch
      * @return int|null
      *
      * Created at: 02/01/2023, 17:50:59 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getId(): ?int
@@ -84,7 +88,7 @@ class Batch
      * @return bool|null
      *
      * Created at: 02/01/2023, 17:51:01 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function isStatut(): ?bool
@@ -100,7 +104,7 @@ class Batch
      * @return self
      *
      * Created at: 02/01/2023, 17:51:03 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setStatut(bool $statut): self
@@ -116,7 +120,7 @@ class Batch
      * @return string|null
      *
      * Created at: 02/01/2023, 17:51:05 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getTitre(): ?string
@@ -132,7 +136,7 @@ class Batch
      * @return self
      *
      * Created at: 02/01/2023, 17:51:06 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setTitre(string $titre): self
@@ -164,7 +168,7 @@ class Batch
      * @return self
      *
      * Created at: 02/01/2023, 17:51:10 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setDescription(string $description): self
@@ -180,7 +184,7 @@ class Batch
      * @return string|null
      *
      * Created at: 02/01/2023, 17:51:11 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getResponsable(): ?string
@@ -196,7 +200,7 @@ class Batch
      * @return self
      *
      * Created at: 02/01/2023, 17:51:13 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setResponsable(string $responsable): self
@@ -212,7 +216,7 @@ class Batch
      * @return string|null
      *
      * Created at: 02/01/2023, 17:51:15 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getPortefeuille(): ?string
@@ -244,7 +248,7 @@ class Batch
      * @return int|null
      *
      * Created at: 02/01/2023, 17:51:18 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getNombreProjet(): ?int
@@ -260,12 +264,44 @@ class Batch
      * @return self
      *
      * Created at: 02/01/2023, 17:51:20 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setNombreProjet(int $nombreProjet): self
     {
         $this->nombreProjet = $nombreProjet;
+
+        return $this;
+    }
+
+    /**
+     * [Description for getExecution]
+     *
+     * @return string|null
+     *
+     * Created at: 07/02/2023, 07:43:07 (Europe/Paris)
+     * @author    Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function getExecution(): ?string
+    {
+        return $this->execution;
+    }
+
+    /**
+     * [Description for setExecution]
+     *
+     * @param string $execution
+     *
+     * @return self
+     *
+     * Created at: 07/02/2023, 07:42:51 (Europe/Paris)
+     * @author    Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function setExecution(string $execution): self
+    {
+        $this->portefeuille = $execution;
 
         return $this;
     }
