@@ -125,7 +125,7 @@ class BatchCrudController extends AbstractCrudController
         $l = $this->emm->getConnection()->prepare($sql)->executeQuery();
         $resultat = $l->fetchAllAssociative();
         /**
-         * Si la liste des portefeuille est vide on renvoi"Aucun"
+         * Si la liste des portefeuilles est vide on renvoi"Aucun"
          */
         $i=0;
 
