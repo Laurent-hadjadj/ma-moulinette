@@ -26,8 +26,7 @@
       </nav>
     </header>
 
-    <div
-      class="grid-container">
+    <div class="grid-container">
 
       {# On affiche les messages #}
       {% for message in app.flashes('info') %}
@@ -39,8 +38,20 @@
         </div>
       {% endfor %}
 
-      <p class="open-sans">Collecte du
-        {{date|format_datetime('full', 'short', locale='fr')}}.</p>
+      <div class="grid-x">
+        <p class="open-sans small-10 medium-11 cell">Collecte du
+          {{date|format_datetime('full', 'short', locale='fr')}}.
+        </p>
+        <div class="small-2 medium-1 text-center float-center cell">
+          <div class="tool-tip">
+            <span id="info-bulle"
+                  class="float-center bulle-info {{bulle}}">
+                  {{infoNombre}}</span>
+            <span id="info-bulle-tips" class="tool-tip-text-right">{{infoTips}}</span>
+          </div>
+        </div>
+      </div>
+
 
       {# On choisi le type d'affichage #}
       <div class="button-group-option" data-grouptype="OU">
