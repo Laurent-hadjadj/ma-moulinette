@@ -109,7 +109,7 @@ class BatchApiController extends AbstractController
         'Content-Type' => static::$strContentType]
       ]
     );
-    
+
     /** HTTP 200 et 401 */
     if (200 !== $response->getStatusCode()) {
       if ($response->getStatusCode() == 401) {

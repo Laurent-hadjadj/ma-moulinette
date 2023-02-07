@@ -19,6 +19,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 // Gestion de accès aux API
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /** Logger */
@@ -176,12 +177,67 @@ class BatchController extends AbstractController
     }
 
     /**
-     * [Description for traitement]
+     * [Description for pending]
+     *  On retourne le nombre de traitement selon le type
+     *  pending, start, error, end
+     * @return int
+     *
+     * Created at: 07/02/2023, 10:42:26 (Europe/Paris)
+     * @author    Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function pending($exec): int
+    {
+      $sql = "SELECT count(*) as exec FROM batch
+              WHERE execution='$exec'";
+      $r = $this->em->getConnection()
+            ->prepare(trim(preg_replace(static::$regex, " ", $sql)))
+            ->executeQuery()->fetchAllAssociative();
+      return $r[0]['exec'];
+    }
+
+    /**
+     * [Description for traitementPending]
+     * On lock le job pour l'execution
+     * @param Request $request
      *
      * @return Response
      *
+     * Created at: 07/02/2023, 14:06:01 (Europe/Paris)
+     * @author    Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    #[Route('/traitement/pending', name: 'traitement_pending', methods: ['GET'])]
+    public function traitementPending(Request $request): Response
+    {
+      /** On récupère le portefeuille */
+      $job = $request->get('job');
+
+      /** On créé un nouvel objet Json */
+      $response = new JsonResponse();
+      /**
+       * On vérifie qu'il n'y a pas de traitement en cours.
+       *  excecution = start
+       */
+      $r=static::pending("start");
+      $message="pending";
+      /** On met à jour le job en start pour bloquer les autres traitements */
+      if ($r===0) {
+        $sql = "UPDATE batch SET execution='start' WHERE titre='$job'";
+        $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
+        $message="start";
+      }
+
+      return $response->setData(["code" => "OK", "execution" => $message, Response::HTTP_OK]);
+    }
+
+    /**
+     * [Description for traitement]
+     * On lance les traitements automatiques
+     * @return Response
+     *
      * Created at: 04/12/2022, 17:42:22 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/traitement', name: 'traitement')]
@@ -204,7 +260,7 @@ class BatchController extends AbstractController
       /** on récupère la date de mise à jour des jobs */
       $dateBatch=$initialise["date"]->format(static::$dateFormat);
 
-      /** On récupère la liste des taitements planifiés pour la date du jour */
+      /** On récupère la liste des traitements planifiés pour la date du jour */
       $sql="SELECT id, demarrage, titre, portefeuille, nombre_projet as projet
             FROM batch_traitement
             WHERE demarrage = 'Auto' AND date_enregistrement='${dateBatch}'
@@ -322,18 +378,118 @@ class BatchController extends AbstractController
       return $response->setData(["message" => "Tout va bien (${temps})",  Response::HTTP_OK]);
     }
 
+    #[Route('/traitement/manuel', name: 'traitement_manuel')]
+    public function traitementManuel(): Response
+    {
+      $job="MANUEL - ANALYSE MA-MOULINETTE";
+      /** On créé on objet de reponse HTTP */
+      $response = new JsonResponse();
+
+      /** On récupère les infos du traitements planifiés pour la date du jour */
+      $sql="SELECT id, demarrage, titre, portefeuille, nombre_projet as projet
+      FROM batch_traitement
+      WHERE titre = '${job}';";
+      $trim=trim(preg_replace(static::$regex, " ", $sql));
+      $r = $this->connection->fetchAllAssociative($trim);
+
+      /** On traite le job  */
+      foreach ($r as $value) {
+        /** On récupère l'id du job */
+        $id=$value['id'];
+        /**
+         * On récupère la liste des projets pour le job
+         * liste" => array:1 [ 0 => "fr.ma-petite-entreprise:ma-moulinette" ]
+         */
+        $listeProjet=$this->listeProjet($value['portefeuille']);
+
+        /** On continue le traitement si la liste n'est pas vide */
+        $message=explode(" ", $listeProjet["message"]);
+        if ($message[0]==="[BATCH-005]"){
+
+          /** On démarre la mesure du batch */
+          $debutBatch = new DateTime();
+          $debutBatch->setTimezone(new DateTimeZone(static::$europeParis));
+          $tempoDebutBatch = $debutBatch->format(static::$dateFormat);
+
+          /** Pour chaque projet de la liste */
+          foreach($listeProjet['liste'] as $mavenKey) {
+            /** On regarde si le projet est présent dans l'historique ? **/
+            $sql="SELECT maven_key FROM historique WHERE maven_key='$mavenKey'";
+            $r = $this->connection->fetchAllAssociative($sql);
+
+            /* Le projet n'existe pas, je lance la collecte */
+            if (empty($r)){
+                $this->logger->INFO("[BATCH-008] Le projet n'existe pas ; je lance la collecte !");
+                $this->api->batchNouvelleCollecte($mavenKey);
+              }
+
+              /**
+               * On récupère la dernière version du serveur sonarqube
+               * Si la version est plus récente sur le serveur Sonarqube
+               * Alors on lance la collecte sinon on ne fait rien.
+               */
+              $batchInformation=$this->api->batchInformation($mavenKey);
+              $laVersionSonar=$batchInformation["information"]["projet"];
+              $laDateSonar=$batchInformation["information"]["date"];
+
+              /** On récupère la dernière version en base */
+              $sql="SELECT version, date_version as date FROM historique
+                    WHERE maven_key='$mavenKey'
+                    ORDER BY version DESC, date DESC limit 1;";
+              $trim=trim(preg_replace(static::$regex, " ", $sql));
+              $r = $this->connection->fetchAllAssociative($trim);
+              $laVersionMaMoulinette=$r[0]["version"];
+              $laDateMaMoulinette=$r[0]["date"];
+
+              if ($laVersionSonar===$laVersionMaMoulinette && $laDateSonar===$laDateMaMoulinette) {
+                $this->logger->NOTICE("[BATCH-008] Le projet existe, il est à jour.");
+              }
+              else {
+                $this->logger->INFO("[BATCH-008] Le projet existe, il n'est pas à jour !");
+                $this->api->batchAjouteCollecte($mavenKey);
+              }
+            }
+            /** Fin du Batch */
+            $finBatch = new DateTime();
+            $finBatch->setTimezone(new DateTimeZone(static::$europeParis));
+            $tempoFinBatch = $finBatch->format(static::$dateFormat);
+
+            /** On met à jour la table des traitements */
+            $sql="UPDATE batch_traitement
+                  SET debut_traitement='${tempoDebutBatch}',
+                      fin_traitement='${tempoFinBatch}',
+                      resultat = 1
+                  WHERE id=${id};";
+            $trim=trim(preg_replace(static::$regex, " ", $sql));
+            $this->em->getConnection()->prepare($trim)->executeQuery();
+          }
+      }
+
+      /** Fin du traitement */
+      $interval = $debutBatch->diff($finBatch);
+      $temps = $interval->format("%H:%I:%S");
+      $sql = "UPDATE batch SET execution='end' WHERE titre='$job'";
+      $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
+      return $response->setData(["execution"=>"end", "temps" => $temps, Response::HTTP_OK]);
+    }
+
     /**
      * [Description for traitementSuivi]
-     *
+     * On récupère la liste des traitements disponibles.
      * @return Response
      *
      * Created at: 04/12/2022, 08:54:16 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/traitement/suivi', name: 'traitement_suivi')]
     public function traitementSuivi(): Response
     {
+      /** On initialise les information pour la bulle d'information */
+      $bulle="bulle-info-vide";
+      $infoNombre="x";
+      $infoTips="Aucun traitement.";
+
       /** On crée un objet date */
       $date = new DateTime();
       $date->setTimezone(new DateTimeZone(static::$europeParis));
@@ -355,12 +511,13 @@ class BatchController extends AbstractController
         return $this->render('batch/index.html.twig',
         [   'date'=>"01/01/1980",
             'traitements'=>$traitements,
+            'bulle'=>$bulle,
             'version' => $this->getParameter("version"), 'dateCopyright' => \date('Y')
         ]);
       }
 
       /**
-       * On récupère la liste des taitements planifié pour la date du jour.
+       * On récupère la liste des traitements planifié pour la date du jour.
        * "demarrage" => "Auto"
        * "resultat" => 1
        * "titre" => "ANALYSE MA-MOULINETTE"
@@ -368,7 +525,7 @@ class BatchController extends AbstractController
        * "projet" => 1
        *  "responsable" => "admin @ma-moulinette"
        *  "debut" => "2023-01-12 10:37:13"
-       *  "fin" => "2023-01-12 10:37:13"}
+       *  "fin" => "2023-01-12 10:37:13"
        */
       $dateDernierBatch=$r[0]['date'];
       $sql="SELECT demarrage, resultat, titre, portefeuille,
@@ -405,12 +562,23 @@ class BatchController extends AbstractController
                 "execution"=>$execution];
         array_push($traitements, $tempo);
       }
+
+      /** On regarde si on a des traitements manuels en cours */
+      $r = static::pending("start");
+      if ($r!==0) {
+        $bulle="bulle-info-start";
+        $infoNombre=$r;
+        $infoTips="Traitement en cours.";
+      }
+
       return $this->render('batch/index.html.twig',
         [   'date'=>$dateDernierBatch,
             'traitements'=>$traitements,
+            'bulle'=>$bulle,
+            'infoNombre'=>$infoNombre,
+            'infoTips'=>$infoTips,
             'version' => $this->getParameter("version"), 'dateCopyright' => \date('Y')
         ]);
     }
-
 
 }
