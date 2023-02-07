@@ -215,3 +215,86 @@ tbody tr:nth-child(even) {
 }
 
 .button-group-option .button + .button { margin-left: 0.35rem; }
+
+/** Bulle info pour les traitements manuels */
+.bulle-info {
+  color: #eee;
+  border-radius: 0.9rem;
+  font-size: 1.2rem;
+  font-weight: 400;
+  padding-left: 0.7rem;
+  padding-right: 0.7rem;
+}
+
+.bulle-info-start { background-color: #187e3d; }
+.bulle-info-end { background-color: #00445b; }
+.bulle-info-error { background-color: #971c09; }
+.bulle-info-vide { background-color: #8a8a8a; }
+
+/** clignotant */
+.blink {
+  animation: blink 1.5s steps(5, start) infinite;
+  fill: #c46e27;
+}
+
+@keyframes blink {
+  from {
+    visibility: 100%;
+  }
+
+  to {
+    visibility: hidden;
+  }
+}
+
+@keyframes blink {
+  from {
+    visibility: 100%;
+  }
+
+  to {
+    visibility: hidden;
+  }
+}
+
+/** Ajout d'un tooltip CSS */
+.tool-tip {
+  position: relative;
+  display: inline-block;
+}
+
+/* Propriété du texte qui sera affiché dans le tooltype */
+.tool-tip .tool-tip-text-right {
+  visibility: hidden;
+  top: -6px;
+  right: 120%;
+  width: 165px;
+  background-color: #555;
+  color: #fff;
+  text-align: justify;
+  padding: 0.5rem;
+  border-radius: 6px;
+  position: absolute;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.5s;
+  hyphens: auto;
+}
+
+/* Mise en place de l'encoche à droite */
+.tool-tip .tool-tip-text-right::after {
+  content: " ";
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  margin-top: -7px;
+  border-width: 8px;
+  border-style: solid;
+  border-color: transparent transparent transparent #555;
+}
+
+/* Action au moment du survol du tooltype */
+.tool-tip:hover .tool-tip-text-right {
+  visibility: visible;
+  opacity: 1;
+}
