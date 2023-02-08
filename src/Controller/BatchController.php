@@ -508,10 +508,13 @@ class BatchController extends AbstractController
         $this->addFlash('info', $message);
         $traitements=[['processus'=>"vide"]];
         return $this->render('batch/index.html.twig',
-        [   'date'=>"01/01/1980",
-            'traitements'=>$traitements,
-            'bulle'=>$bulle,
-            'version' => $this->getParameter("version"), 'dateCopyright' => \date('Y')
+        [
+          'infoNombre'=>$infoNombre,
+          'infoTips'=>$infoTips,
+          'bulle'=>$bulle,
+          'date'=>"01/01/1980",
+          'traitements'=>$traitements,
+          'version' => $this->getParameter("version"), 'dateCopyright' => \date('Y')
         ]);
       }
 
