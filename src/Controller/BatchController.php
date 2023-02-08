@@ -137,8 +137,6 @@ class BatchController extends AbstractController
         $batch->setPortefeuille($traitement["portefeuille"]);
         $batch->setNombreProjet($traitement["nombre"]);
         $batch->setResponsable($traitement["responsable"]);
-        //$batch->setdebutTraitement(0);
-        //$batch->setfinTraitement(0);
         $batch->setDateEnregistrement($date);
         /** On en enregistre */
         $this->em->persist($batch);
@@ -496,14 +494,13 @@ class BatchController extends AbstractController
       $date->setTimezone(new DateTimeZone(static::$europeParis));
       /**
        * On récupère la date du dernier traitement
-       * date" => "2023-01-12 10:37:13"
+       * Pour le 08/02/2023 : date" => "2023-02-08 08:57:53"
        */
       $sql="SELECT date_enregistrement as date
             FROM batch_traitement
             ORDER BY date_enregistrement DESC limit 1;";
       $trim=trim(preg_replace(static::$regex, " ", $sql));
       $r = $this->connection->fetchAllAssociative($trim);
-
       /** Si on a pas trouvé de traitement  */
       if (empty($r)){
         $message="[BATCH-004] Aucun traitement trouvé.";
@@ -519,22 +516,19 @@ class BatchController extends AbstractController
 
       /**
        * On récupère la liste des traitements planifié pour la date du jour.
-       * "demarrage" => "Auto"
-       * "resultat" => 1
-       * "titre" => "ANALYSE MA-MOULINETTE"
-       * "portefeuille" => "APPLICATIONS DE GESTION SONAR"
-       * "projet" => 1
-       *  "responsable" => "admin @ma-moulinette"
-       *  "debut" => "2023-01-12 10:37:13"
-       *  "fin" => "2023-01-12 10:37:13"
        */
+      /** retourne la date de planification */
       $dateDernierBatch=$r[0]['date'];
+      /** retourne la date au format 2023-02-08 */
+      $dateTab=explode(" ", $dateDernierBatch);
+      $dateDernierBatchShort=$dateTab[0];
       $sql="SELECT demarrage, resultat, titre, portefeuille,
             nombre_projet as projet,
             responsable,
             debut_traitement as debut,
             fin_traitement as fin
             FROM batch_traitement
+            WHERE date_enregistrement like '${dateDernierBatchShort}%'
             GROUP BY titre
             ORDER BY responsable ASC;";
       $trim=trim(preg_replace(static::$regex, " ", $sql));
@@ -544,6 +538,7 @@ class BatchController extends AbstractController
       foreach ($r as $traitement) {
         /** Calcul de l'execution du traitement */
         if (empty($traitement["debut"])) {
+          /** On renvoi un code à la vue pour afficher comme date --:--:-- */
           $resultat=3;
         } else {
           $resultat=$traitement["resultat"];
