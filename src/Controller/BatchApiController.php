@@ -1157,7 +1157,7 @@ class BatchApiController extends AbstractController
 
     /** Information version */
     $save->setMavenKey($mavenKey);
-    $nom=$batchMesure["mesure"]["project_name"];
+    $nom=strtolower($batchMesure["mesure"]["project_name"]);
     $save->setNomProjet($nom);
     $save->setVersionRelease($batchInformation["information"]["release"]);
     $save->setVersionSnapshot($batchInformation["information"]["snapshot"]);
@@ -1384,7 +1384,7 @@ class BatchApiController extends AbstractController
 
     /** Information version */
     $save->setMavenKey($mavenKey);
-    $nom=$batchMesure["mesure"]["project_name"];
+    $nom=strtolower($batchMesure["mesure"]["project_name"]);
     $save->setNomProjet($nom);
     $save->setVersionRelease($batchInformation["information"]["release"]);
     $save->setVersionSnapshot($batchInformation["information"]["snapshot"]);
