@@ -92,8 +92,10 @@ tbody tr:nth-child(even) {
   background-color: #ddd;
 }
 
+/** couleur pour le résultat */
 .ok { color: #187e3d; }
 .ko { color: #971c09; }
+.oko { color: #000; }
 .error { background-color: #ab493a; }
 
 /* Bouton information SVG */
@@ -126,7 +128,9 @@ tbody tr:nth-child(even) {
 #fermer-traitement-liste:hover,
 #fermer-traitement-manuel:hover { background-color: #006182; }
 
-/** Ajout du bouton oui et non */
+/** Ajout du bouton oui et non
+ * pour la fenêtre modal lancer un job manuel
+ */
 .oui,
 .non {
   color: #fff;
@@ -137,7 +141,7 @@ tbody tr:nth-child(even) {
 .oui:hover { background-color: #105b2c; }
 .non:hover { background-color: #6b1204; }
 
-/** Ajout d'un spinner lors du traietemnt  */
+/** Ajout d'un spinner lors du traitement  */
 .spinner-titre {
   margin-left: 1rem;
   margin-top: -3px;
