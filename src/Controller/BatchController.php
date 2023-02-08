@@ -505,7 +505,7 @@ class BatchController extends AbstractController
       if (empty($r)){
         $message="[BATCH-004] Aucun traitement trouvé.";
         $this->addFlash('info', $message);
-        $traitements=[['message'=>"vide"]];
+        $traitements=[['processus'=>"vide"]];
         return $this->render('batch/index.html.twig',
         [   'date'=>"01/01/1980",
             'traitements'=>$traitements,
@@ -536,21 +536,47 @@ class BatchController extends AbstractController
       /** On génére les données pour le tableau de suivi */
       $traitements=[];
       foreach ($r as $traitement) {
-        /** Calcul de l'execution du traitement */
-        if (empty($traitement["debut"])) {
-          /** On renvoi un code à la vue pour afficher comme date --:--:-- */
-          $resultat=3;
-        } else {
-          $resultat=$traitement["resultat"];
-          $debut=new dateTime($traitement["debut"]);
-          $fin=new dateTime($traitement["fin"]);
+        /** Calcul de l'execution pour un traitement qui a démaré. */
+        if (!empty($traitement['debut'])) {
+          $resultat=$traitement['resultat'];
+
+          /** on définit le message et la class css */
+          if ($resultat==0){
+              $message="Erreur";
+              $css="ko";
+            } else {
+              $message="Succès";
+              $css="ok";
+            }
+          $debut=new dateTime($traitement['debut']);
+          $fin=new dateTime($traitement['fin']);
           $interval = $debut->diff($fin);
           $execution = $interval->format("%H:%I:%S");
         }
 
-        $tempo=["message"=>"Tout va bien !",
-                "demarrage"=>$traitement["demarrage"],
-                "resultat"=>$resultat,
+        /** on définit le type */
+        if ($traitement['demarrage']==="Auto") {
+          $type = "automatique";
+        } else {
+          $type = "manuel";
+        }
+
+        /** On formate les données pour les batchs qui n'ont pas été lancé (i.e MANUEL) */
+        if (empty($traitement['debut'])) {
+          $message="---";
+          $css="oko";
+          $execution="--:--:--";
+        }
+
+        $tempo=["processus"=>"Tout va bien !",
+                /** Auto ou Manuel */
+                "demarrage"=>$traitement['demarrage'],
+                /** Succès, Erreur */
+                "message"=>$message,
+                /** ok, ko */
+                "css"=>$css,
+                /** automatique, manuel */
+                "type"=>$type,
                 "job"=>$traitement["titre"],
                 "portefeuille"=>$traitement["portefeuille"],
                 "projet"=>$traitement["projet"],
