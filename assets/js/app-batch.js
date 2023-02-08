@@ -164,6 +164,7 @@ const batchManuel = function(id, job){
   /** On lance le processus */
   const infoBulle='#info-bulle';
   const collecteTexte='#collecte-texte';
+  const collecteAnimation='#collecte-animation';
   const data = { job };
   const options = {
     url: `${serveur()}/traitement/manuel`, type: 'GET',
@@ -184,6 +185,7 @@ const batchManuel = function(id, job){
             $(collecteTexte).html('Collecte terminée...');
           }, mille);
         }
+        $(collecteAnimation).removeClass('sp-volume');
       resolve();
     });
   });
