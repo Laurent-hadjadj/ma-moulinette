@@ -86,7 +86,8 @@ class BatchController extends AbstractController
      * @return array
      *
      * Created at: 04/12/2022, 08:48:52 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function inititalisationBatch(): array
     {
