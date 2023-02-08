@@ -482,9 +482,12 @@ class BatchController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/traitement/suivi', name: 'traitement_suivi')]
-    #[IsGranted('BATCH')]
     public function traitementSuivi(): Response
     {
+      /** On autorise des les utilisateurs ayant le rôle BATCH */
+      $this->denyAccessUnlessGranted("ROLE_BATCH", null,
+      "L'utilisateur essaye d'accèder à la page sans avoir le rôle ROLE_BATCH");
+
       /** On initialise les information pour la bulle d'information */
       $bulle="bulle-info-vide";
       $infoNombre="x";
