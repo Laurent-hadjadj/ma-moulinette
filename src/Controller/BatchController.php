@@ -232,7 +232,7 @@ class BatchController extends AbstractController
     }
 
     /**
-     * [Description for traitement]
+     * [Description for traitementAuto]
      * On lance les traitements automatiques
      * @return Response
      *
@@ -240,8 +240,8 @@ class BatchController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/traitement', name: 'traitement')]
-    public function traitement(): Response
+    #[Route('/traitement/auto', name: 'traitement_auto')]
+    public function traitementAuto(): Response
     {
       /** On créé on objet de reponse HTTP */
       $response = new JsonResponse();
