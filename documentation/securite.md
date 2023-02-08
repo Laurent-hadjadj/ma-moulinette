@@ -4,7 +4,7 @@
 
 ## Compte admin
 
-Le compte **Admin** est ajouté par déafut en version  `1.5.0`. Son identifiant de connexion est  <admin@ma-moulinette.fr>. Son mot de passe est : `-OuvreMoiL@Porte`
+Le compte **Admin** est ajouté par défaut en version  `1.5.0`. Son identifiant de connexion est <admin@ma-moulinette.fr>. Son mot de passe est : `-OuvreMoiL@Porte`
 
 L'utilisateur **Admin** permet d'accèder à la page de gestion des utilisateur. Une fois un gestionnaire applicatif assigné, il est **recommandé** de désactiver le compte en utilisant l'option **Actif** de la page d'édition du compte.
 
@@ -16,11 +16,11 @@ Le filtrage est activé par défaut depuis le fichier de configuration `framewor
 trusted_hosts: ['%env(TRUST_HOST1)%','%env(TRUST_HOST2)%',]
 ```
 
-`Note :` il est possible d'ajouter plusieurs HOST.
+`Note :` il est possible d'ajouter plusieurs HOSTs.
 
 Par défaut, nous avons défini deux points de contrôle **TRUST_HOST1** et **TRUST_HOST2**, qui peuvent être utilisés pour filtrer :
 
-- [ ] Une adresse IP :  `127.0.0.1`, `192.168.0.1`,... ;
+- [x] Une adresse IP :  `127.0.0.1`, `192.168.0.1`,... ;
 - [ ] Une adresse DNS : `localhost`, `www.ma-petite-entreprise.fr` ;
 - [ ] un domaine : `^ma-petite-entreprise\.fr$`
 
@@ -35,37 +35,40 @@ TRUST_HOST2="10.0.0.1"
 
 Le firewall dans Symfony permet de sécuriser par le biais de rôles, l'accès aux pages de l'applications.
 
-Il existe deux rôles par défaut auquel nous avons ajouté deux rôles spécifiques.
+Il existe deux rôles par défaut auquel nous avons ajouté **trois** rôles fonctionnelles.
 
 - [x] **PUBLIC_ACCESS**, permet à l'accès aux pages publiques.
 - [ ] **ROLE_USER**, permet dans Symfony l'accès à des pages privées.
 - [x] **ROLE_UTILISATEUR**, permet l'accès à toutes les pages privées ayant se rôle.
 - [x] **ROLE_GESTIONNAIRE**, permet l'accès aux pages de gestion de l'application.
+- [x] **ROLE_BATCH**, permet l'accès à la page de suivi des traitemenst automatique et manuel.
 
-Toute personne authentifiée peut accéder à l'ensemble des pages de l'application, à l'exception des pages destinées aux personnes ayant le rôle de `GESTIONNAIRE`.
+Toute personne authentifiée peut accéder à l'ensemble des pages de l'application, à l'exception des pages destinées aux personnes ayant le rôle de `GESTIONNAIRE` et `BTACH` (Traitement).
 
 Le tableau ci-dessous liste par rôle la liste des droits et des pages accessibles.
 
-|    Page     | PUBLIC | UTILISATEUR | GESTIONNAIRE | URL                |
-|-------------|:------:|:-----------:|:------------:|--------------------|
-| Accueil     |   NON  |     OUI     |      OUI     | /home              |
-| Inscription |   OUI  |     OUI     |      OUI     | /register          |
-| Connexion   |   OUI  |     OUI     |      OUI     | /login             |
-| Déconnexion |   OUI  |     OUI     |      OUI     | /logout            |
-| Bienvenue   |   OUI  |     NON     |      OUI     | /welcome           |
-| Dashboard   |   NON  |     OUI     |      OUI     | /admin             |
-| Utilisateur |   NON  |     NON     |      OUI     | /admin?crudAction= |
-| Projet      |   NON  |     OUI     |      OUI     | /projet            |
-| Owasp       |   NON  |     OUI     |      OUI     | /owasp             |
-| Suivi       |   NON  |     OUI     |      OUI     | /suivi             |
-| Profil      |   NON  |     OUI     |      OUI     | /profil            |
-| Repartition |   NON  |     OUI     |      OUI     | /repartition       |
+|   **Page**  | **PUBLIC** | **UTILISATEUR** | **GESTIONNAIRE** | **BATCH** | **URL**            |
+|:-----------:|:----------:|:---------------:|:----------------:|-----------|--------------------|
+| Accueil     | NON        | OUI             | OUI              | OUI       | /home              |
+| Inscription | OUI        | OUI             | OUI              | OUI       | /register          |
+| Connexion   | OUI        | OUI             | OUI              | OUI       | /login             |
+| Déconnexion | OUI        | OUI             | OUI              | OUI       | /logout            |
+| Bienvenue   | OUI        | NON             | OUI              | OUI       | /welcome           |
+| Dashboard   | NON        | OUI             | OUI              | OUI       | /admin             |
+| Utilisateur | NON        | NON             | OUI              | NON       | /admin?crudAction= |
+| Projet      | NON        | OUI             | OUI              | OUI       | /projet            |
+| Owasp       | NON        | OUI             | OUI              | OUI       | /owasp             |
+| Suivi       | NON        | OUI             | OUI              | OUI       | /suivi             |
+| Profil      | NON        | OUI             | OUI              | OUI       | /profil            |
+| Repartition | NON        | OUI             | OUI              | OUI       | /repartition       |
+| Traitement  | NON        | NON             | NON              | OUI       | /traitement/suivi  |
 
 Le fichier `security.yaml` contient la configuration suivante pour étendre les droits `UTILISATEUR` au `GESTIONNAIRE`.
 
 ```yaml
-role_hierarchy:
-        ROLE_GESTIONNAIRE: ROLE_UTILISATEUR
+ role_hierarchy:
+        ROLE_GESTIONNAIRE: ['ROLE_UTILISATEUR', 'ROLE_BATCH']
+        ROLE_BATCH: ROLE_UTILISATEUR
 ```
 
 Les entrypoints sont définis de cette façon :
@@ -75,6 +78,7 @@ Les entrypoints sont définis de cette façon :
       - { path: ^/login, roles: PUBLIC_ACCESS }
       - { path: ^/register, roles: PUBLIC_ACCESS }
       - { path: ^/welcome, roles: PUBLIC_ACCESS }
+      - { path: ^/admin, roles: ROLE_UTILISATEUR }
       - { path: ^/, roles: ROLE_UTILISATEUR }
 ```
 
@@ -92,7 +96,7 @@ Dans les pages HTML en TWIG :
 
 Dans les contrôleurs par l'ajout d'un attribut ou par l'utilisation de la méthode denyAccessUnlessGranted :
 
-```T
+```plaintext
 #[IsGranted('ROLE_UTILISATEUR')]
 ```
 
