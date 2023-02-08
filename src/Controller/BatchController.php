@@ -530,7 +530,7 @@ class BatchController extends AbstractController
             FROM batch_traitement
             WHERE date_enregistrement like '${dateDernierBatchShort}%'
             GROUP BY titre
-            ORDER BY responsable ASC;";
+            ORDER BY responsable ASC, demarrage ASC";
       $trim=trim(preg_replace(static::$regex, " ", $sql));
       $r = $this->connection->fetchAllAssociative($trim);
       /** On génére les données pour le tableau de suivi */
