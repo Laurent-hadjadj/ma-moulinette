@@ -19,6 +19,7 @@ parameters:
     nombre.favori: '%env(NOMBRE_FAVORI)%'
     maj.projet: '%env(MAJ_PROJET)%'
     maj.profil: '%env(MAJ_PROFIL)%'
+    csrf.salt: '%env(SALT)%'
 
 services:
     # default configuration for services in *this* file
