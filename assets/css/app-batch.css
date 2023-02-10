@@ -13,7 +13,8 @@
 /* Mobile */
 @media only screen and (max-width: 20em) {
   .i-am-robot-svg,
-  .i-am-human-svg {
+  .i-am-human-svg,
+  .batch-processing-svg {
     width: 42px;
     height: 42px;
   }
@@ -22,7 +23,8 @@
 /* Mobile */
 @media only screen and (min-width: 20.025em) and (max-width: 22em) {
   .i-am-robot-svg,
-  .i-am-human-svg {
+  .i-am-human-svg,
+  .batch-processing-svg {
     width: 42px;
     height: 42px;
   }
@@ -31,7 +33,8 @@
 /* Mobile */
 @media only screen and (min-width: 22.025em) and (max-width: 30em) {
   .i-am-robot-svg,
-  .i-am-human-svg {
+  .i-am-human-svg,
+  .batch-processing-svg {
     width: 42px;
     height: 42px;
   }
@@ -40,7 +43,8 @@
 /* Mobile */
 @media only screen and (min-width: 30.025em) and (max-width: 40em) {
   .i-am-robot-svg,
-  .i-am-human-svg {
+  .i-am-human-svg,
+  .batch-processing-svg {
     width: 42px;
     height: 42px;
   }
@@ -49,7 +53,8 @@
 /* tablette */
 @media only screen and (min-width: 40em) and (max-width: 64em) {
   .i-am-robot-svg,
-  .i-am-human-svg {
+  .i-am-human-svg,
+  .batch-processing-svg {
     width: 45px;
     height: 45px;
   }
@@ -58,7 +63,8 @@
 /* desktop */
 @media only screen and (min-width: 64.025em) and (max-width: 90em) {
   .i-am-robot-svg,
-  .i-am-human-svg {
+  .i-am-human-svg,
+  .batch-processing-svg {
     width: 45px;
     height: 45px;
   }
@@ -67,7 +73,8 @@
 /* desktop */
 @media only screen and (min-width: 90.025em) and (max-width: 120em) {
   .i-am-robot-svg,
-  .i-am-human-svg {
+  .i-am-human-svg,
+  .batch-processing-svg {
     width: 45px;
     height: 45px;
   }
@@ -76,7 +83,8 @@
 /* desktop */
 @media only screen and (min-width: 120.063em) and (max-width: 160em) {
   .i-am-robot-svg,
-  .i-am-human-svg {
+  .i-am-human-svg,
+  .batch-processing-svg {
     width: 45px;
     height: 45px;
   }
@@ -100,8 +108,19 @@ tbody tr:nth-child(even) {
 
 /* Bouton information SVG */
 .i-am-robot-svg,
-.i-am-human-svg { fill: #00445b; }
-.i-am-human-svg:hover { fill: #ed7d20; }
+.i-am-human-svg,
+.batch-processing-svg { fill: #00445b; }
+
+.i-am-human-svg:hover,
+.batch-processing-svg:hover {
+  cursor: progress;
+  fill: #ed7d20;
+}
+
+#batch-processing-label {
+  margin-top: 1rem;
+  margin-left: 0.5rem;
+}
 
 /* Bouton information SVG */
 .information-svg {
