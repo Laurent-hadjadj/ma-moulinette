@@ -45,8 +45,10 @@ class BatchController extends AbstractController
 {
     public static $dateFormat = "Y-m-d H:i:s";
     public static $dateFormatMini = "Y-m-d";
+    public static $timeFormat = "%H:%I:%S";
     public static $europeParis = "Europe/Paris";
     public static $regex = "/\s+/u";
+    
     private static $batch001="[BATCH-001] Le traitement a déjà été mis à jour.";
     private static $batch002="[BATCH-002] Aucun batch trouvé.";
     private static $batch003="[BATCH-003] Le traitement a été mis à jour.";
@@ -231,7 +233,7 @@ class BatchController extends AbstractController
     }
 
     /**
-     * [Description for traitementAuto]
+     * [Description for traitement]
      * On lance les traitements automatiques
      * @return Response
      *
@@ -239,8 +241,8 @@ class BatchController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/traitement/auto', name: 'traitement_auto')]
-    public function traitementAuto(): Response
+    //[Route('/traitement', name: 'traitement')]
+    public function traitement(): Response
     {
       /** On créé on objet de reponse HTTP */
       $response = new JsonResponse();
@@ -373,7 +375,7 @@ class BatchController extends AbstractController
 
       /** Fin du traitement */
       $interval = $debutBatch->diff($finBatch);
-      $temps = $interval->format("%H:%I:%S");
+      $temps = $interval->format(static::$timeFormat);
       return $response->setData(["message" => "Tout va bien (${temps})",  Response::HTTP_OK]);
     }
 
@@ -466,7 +468,7 @@ class BatchController extends AbstractController
 
       /** Fin du traitement */
       $interval = $debutBatch->diff($finBatch);
-      $temps = $interval->format("%H:%I:%S");
+      $temps = $interval->format(static::$timeFormat);
       $sql = "UPDATE batch SET execution='end' WHERE titre='$job'";
       $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
       return $response->setData(["execution"=>"end", "temps" => $temps, Response::HTTP_OK]);
@@ -512,6 +514,7 @@ class BatchController extends AbstractController
         $traitements=[['processus'=>"vide"]];
         return $this->render('batch/index.html.twig',
         [
+          'salt'=>$this->getParameter('csrf.salt'),
           'infoNombre'=>$infoNombre,
           'infoTips'=>$infoTips,
           'bulle'=>$bulle,
@@ -558,7 +561,7 @@ class BatchController extends AbstractController
           $debut=new dateTime($traitement['debut']);
           $fin=new dateTime($traitement['fin']);
           $interval = $debut->diff($fin);
-          $execution = $interval->format("%H:%I:%S");
+          $execution = $interval->format(static::$timeFormat);
         }
 
         /** on définit le type */
@@ -601,13 +604,33 @@ class BatchController extends AbstractController
       }
 
       return $this->render('batch/index.html.twig',
-        [   'date'=>$dateDernierBatch,
-            'traitements'=>$traitements,
-            'bulle'=>$bulle,
-            'infoNombre'=>$infoNombre,
-            'infoTips'=>$infoTips,
-            'version' => $this->getParameter("version"), 'dateCopyright' => \date('Y')
+        [
+          'salt'=>$this->getParameter('csrf.salt'),
+          'date'=>$dateDernierBatch,
+          'traitements'=>$traitements,
+          'bulle'=>$bulle,
+          'infoNombre'=>$infoNombre,
+          'infoTips'=>$infoTips,
+          'version' => $this->getParameter("version"), 'dateCopyright' => \date('Y')
         ]);
     }
 
+    #[Route('/traitement/auto', name: 'traitement_auto', methods: ['POST'])]
+    public function traitementAuto(Request $request){
+      /** On créé on objet de reponse HTTP */
+      $response = new JsonResponse();
+
+      /** On récupère le token csrf généré par le serveur */
+      $data = json_decode($request->getContent());
+      $csrf=$data->token;
+      /** on vérifie le token */
+      if ($this->isCsrfTokenValid($this->getParameter('csrf.salt'), $csrf)) {
+          $message=static::traitement();
+
+      } else {
+        $message="ouuuuups ça sent mauvais !";
+      }
+
+      return $response->setData(["message"=>$message, Response::HTTP_OK]);
+    }
 }
