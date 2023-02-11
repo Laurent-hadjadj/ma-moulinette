@@ -6,6 +6,7 @@
 
 * [Dashboard](/documentation/indicateurs.md)
 * [**Utilisateur**](/documentation/utilisateur.md)
+* [Equipe](/documentation/equipe.md)
 * [Portefeuille](/documentation/portefeuille.md)
 * [Batch](/documentation/batch.md)
 
