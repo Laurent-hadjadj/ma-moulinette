@@ -6,36 +6,36 @@
 
 Il existe deux environnements :
 
-- [ ] L'environement de production ;
+- [ ] L'environnement de production ;
 - [ ] L'environnement de développement ;
 
-La version de **production** contient l'application symfony, deux bases vides, la version compilée des sources **javascript** et CSS (dans le dossier /public/build).
+La version de **production** contient l'application symfony, deux bases vides, la version compilée des sources **JavaScript** et CSS (dans le dossier /public/build).
 
 Le repository git n'est pas présent. Enfin, Le dossier **node_modules** n'étant pas nécessaire, il a été supprimé (car il est utilisé uniquement en développement).
 
 Le dossier racine du projet est `ma-moulinette`. La version de production et la version de développement sont dans deux dossiers différents.
 
-A noter que ces dossiers peuvent être changés depuis la version 1.5.0. En effet les chemins absolus ont été remplacés par des chemins relatifs basée sur les varaibles symfony.
+À noter que ces dossiers peuvent être changés depuis la version 1.5.0. En effet les chemins absolus ont été remplacés par des chemins relatifs basés sur les variables symfony.
 
 - [ PROD ] : **c:\sonar-dash.prod**
 - [ DEV ] : **c:\sonar-dash.dev**
 
-Ce point et important, pour le paramétrage des accès et le lancemment de symfony-cli en développement par exemple.
+Ce point et important, pour le paramétrage des accès et le lancement de symfony-cli en développement par exemple.
 
 En développement les outils suivants sont utilisés pour faciliter les tâches de gestion, comme la mise à jour des paquets NPM ou PHP, et de démarrage du serveur d'application.
 
-La liste ci-dessous indique les programmes utilisées depuis le dossier racine, i.e. `c:\sonar-dash.dev` par exemple.
+La liste ci-dessous indique les programmes utilisés depuis le dossier racine, i.e. `c:\sonar-dash.dev` par exemple.
 
 - [X] vscode-1.69.2.bat : Lance vsCode (portable) ;
 - [X] symfony_start.bat : Démarrage du serveur **symfony-cli**
 - [X] symfony_stop.bat : Arrêt du serveur **symfony-cli**
-- [X] encore.bat : démmarage de **Webpack** en mode **watch**.
-- [X] MigrateSql.bat : Lance la mise à jour des entity Main et Secondary, la création des versions et la mise à jours des BD ;
+- [X] encore.bat : démarrage de **Webpack** en mode **watch**.
+- [X] MigrateSql.bat : Lance la mise à jour des entity Main et Secondary, la création des versions et la mise à jour des BD ;
 - [X] Console-cli.bat : Ouvre un terminal pour lancer les commandes symfony, composer et npm dans le dossier du projet ;
-- [X] Deploy.bat : compile le code PHP/Twig, CSS et Javascript pour l'environnement de production ;
+- [X] Deploy.bat : compile le code PHP/Twig, CSS et JavaScript pour l'environnement de production ;
 - [ ] stan.bat : Lance les outils d'Audit CSS, HTML et PHP et l'analyse du projet dans SonarQube ;
-- [ ] catchTool.bat : Lance des commandes d'optimisationdu cache pour opCache ;
-- [ ] sqlite.exe : Permet de lancer les commandes de vaccum et d'optimisationde la base data.db et temp.db ;
+- [ ] catchTool.bat : Lance des commandes d'optimisation du cache pour opCache ;
+- [ ] sqlite.exe : Permets de lancer les commandes de vaccum et d'optimisation de la base data.db et temp.db ;
 
 ## Les environnements
 
@@ -43,19 +43,19 @@ Chaque environnement dispose de son fichier de `.env`.
 
 Le fichier **.env-prod** est un template de configuration.
 
-Il peut être utilisé pour l'environnement de dev ou de prod. Il suffit pour cela de le renommer en **.env** et de le paramétrer en fonction de vos besoins ;
+Il peut être utilisé pour l'environnement de dev ou de prod. Il suffit pour cela de le renommer en **.env** et de le paramétrer en fonction de vos besoins ;
 
-### Définition de l'enviromment
+### Définition de l'environnent
 
-Pour l'environement de production, il suffit de passer les propriétés **APP_ENV** et **APP_DEBUG** à `prod` et `0`.
+Pour l'environnement de production, il suffit de passer les propriétés **APP_ENV** et **APP_DEBUG** à `prod` et `0`.
 
-- [x] APP_ENV = **prod**
-- [x] APP_DEBUG = **0**
+- [x] APP_ENV = **prod**
+- [x] APP_DEBUG = **0**
 
-Pour l'environement de développement, il suffit de passer les propriétés **APP_ENV** et **APP_DEBUG** à `dev` et `1`.
+Pour l'environnement de développement, il suffit de passer les propriétés **APP_ENV** et **APP_DEBUG** à `dev` et `1`.
 
 - [x] APP_ENV = **dev**
-- [x] APP_DEBUG = **1**
+- [x] APP_DEBUG = **1**
 
 Enfin, il est oblogatoire de changer la clé **APP_SECRET**, utilisée pour le chiffrement du token CSRF par exemple.
 
@@ -67,12 +67,12 @@ Enfin, il est oblogatoire de changer la clé **APP_SECRET**, utilisée pour le c
 
 Pour la connexion à Sonarqube, il est possible d'utiliser un **token** ou ses identifiants de connexion comme par exemple son **login** et son **password**.
 
-La configuration nécessaire est a suivante :
+La configuration nécessaire est la suivante :
 
-- [x] SONAR_URL = <https://monsonar.ma-petite-entreprise.fr>
-- [x] SONAR_TOKEN = bzm8i46k4e56878lm7ilxcw8t7095df5k6i8hb01
-- [ ] SONAR_USER = mon_login
-- [ ] SONAR_PASSWORD = t5lf911a83lt
+- [x] SONAR_URL = <https://monsonar.ma-petite-entreprise.fr>
+- [x] SONAR_TOKEN = bzm8i46k4e56878lm7ilxcw8t7095df5k6i8hb01
+- [ ] SONAR_USER = mon_login
+- [ ] SONAR_PASSWORD = t5lf911a83lt
 
 Le taken est une clé symétrique de 40 bits généré depuis le serveur Sonarqube.
 
@@ -82,9 +82,9 @@ Le taken est une clé symétrique de 40 bits généré depuis le serveur Sonarqu
 
 Ici, nous allons spécifier le nom du profil commun à tous les référentiels qualités (i.e. les règles par langage), le nom de mon organisation, le nombre de favori que je souhate afficher dans le suivi de la page d'acueil, les hosts que je souhaite autoriser et la clé de chiffrement utilisée pour le cokie 'remmber-me'.
 
-- [x] SONAR_PROFILES = "mon profil v1.0.0"
-- [x] SONAR_ORGANIZATION = "ma petite Entreprise"
-- [x] NOMBRE_FAVORI = 10
+- [x] SONAR_PROFILES = "mon profil v1.0.0"
+- [x] SONAR_ORGANIZATION = "ma petite Entreprise"
+- [x] NOMBRE_FAVORI = 10
 - [x] TRUST_HOST1="^ma-petite-entreprise\.fr$"
 - [x] TRUST_HOST2="10.0.0.1"
 - [x] SECRET='>Yw5<3pR]$lFeVg147';

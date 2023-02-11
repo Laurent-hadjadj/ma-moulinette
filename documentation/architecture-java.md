@@ -19,7 +19,7 @@ Pour l'application frontend :
 Note : Cette architecture peut être adaptée
 Le filtrage est utilisé par la méthode **hotspotDetails()** et la méthode **projetAnomalie()** du controller ApiProjet.
 
-Les deux méthodes sont présents dans la class `Controller\ApiProjetController.php`. Ci-dessous un exemple simple tiré de la méthode hotspotDetails().
+Les deux méthodes sont présentes dans la class `Controller\ApiProjetController.php`. Ci-dessous un exemple simple tiré de la méthode hotspotDetails().
 
 ```js
 $frontend = 0;

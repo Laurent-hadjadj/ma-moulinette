@@ -6,7 +6,7 @@
 
 Le compte **Admin** est ajouté par défaut en version  `1.5.0`. Son identifiant de connexion est <admin@ma-moulinette.fr>. Son mot de passe est : `-OuvreMoiL@Porte`
 
-L'utilisateur **Admin** permet d'accèder à la page de gestion des utilisateur. Une fois un gestionnaire applicatif assigné, il est **recommandé** de désactiver le compte en utilisant l'option **Actif** de la page d'édition du compte.
+L'utilisateur **Admin** permet d'accéder à la page de gestion des utilisateurs. Une fois un gestionnaire applicatif assigné, il est **recommandé** de désactiver le compte en utilisant l'option **Actif** de la page d'édition du compte.
 
 ## Filtrage pas IP/Host
 

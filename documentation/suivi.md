@@ -26,34 +26,34 @@ La page permet l'affichage des 10 dernières versions de l'application sélectio
 
 ![suivi](/documentation/ressources/suivi-001.jpg)
 
-Cette page regroupe plusieurs indicateurs construit sur les données locales historisées et  trois boutons  d'action pour :
+Cette page regroupe plusieurs indicateurs construits sur les données locales historisées et  trois boutons  d'action pour :
 
 * [ ] Imprimer un rapport PDF ;
-* [ ] Ajouter les indicateurs consolidés d'une version précédente à la version courrante ;
+* [ ] Ajouter les indicateurs consolidés d'une version précédente à la version courante ;
 * [ ] Modifier les **favoris** et la **version de référence** ;
 
 **Pensez à enregistrer  chaque collecte de données.**
 
 Les tableaux sont les suivants :
 
-* [x] Le tableau de suivi des indicateurs clés ;
+* [x] le tableau de suivi des indicateurs clés ;
 ![suivi](/documentation/ressources/suivi-002.jpg)
 
-* [x] La courbe cumulé des signalements par type ;
+* [x] la courbe cumulée des signalements par type ;
 ![suivi](/documentation/ressources/suivi-003.jpg)
 
-* [x] Le tableau de répartition des signalements par module (Présentation - Frontend, Métier - Backend et les Autres) ;
+* [x] le tableau de répartition des signalements par module (Présentation - Frontend, Métier - Backend et les Autres) ;
 ![suivi](/documentation/ressources/suivi-004.jpg)
 
-* [x] Le tableau de répartition des signalements par niveau de criticité et leurs évolutions entre chaque version ;
+* [x] le tableau de répartition des signalements par niveau de criticité et leurs évolutions entre chaque version ;
 ![suivi](/documentation/ressources/suivi-005.jpg)
 
-* [X] Le tableau de suvivi du niveau de criticité en fonction de la nature du signalement et leur évolution ;
+* [X] le tableau de suivi du niveau de criticité en fonction de la nature du signalement et leur évolution ;
 ![suivi](/documentation/ressources/suivi-006.jpg)
 
 ### Ajouter une analyse
 
-Cette page permet d'ajouter une version présente dans l'historique, i.e. dont avous avez déjà collecter les informations et enregistré dans la table historique.
+Cette page permet d'ajouter une version présente dans l'historique, i.e. dont vous avez déjà collecté les informations et enregistré dans la table historique.
 
 ![suivi](/documentation/ressources/suivi-ajout-001.jpg)
 
@@ -65,11 +65,11 @@ Si le projet n'existe plus dans sonarqube, un message d'erreur est affiché et a
 
 ![suivi](/documentation/ressources/suivi-ajout-003.jpg)
 
-Si le projet n'est pas selectionné ou que le projet n'existe, mais que l'on clique quand même sur le bouton **Ajouter** alors **badaboum**.
+Si le projet n'est pas sélectionné ou que le projet n'existe, mais que l'on clique quand même sur le bouton, **Ajouter** alors **badaboum**.
 
 ![suivi](/documentation/ressources/suivi-ajout-004.jpg)
 
-Si tout vas bien :) Les informations sont affichées.
+Si tout va bien :) Les informations sont affichées.
 
 ![suivi](/documentation/ressources/suivi-ajout-005.jpg)
 
@@ -87,7 +87,7 @@ Il est possible de modifier les paramètres d'affichage d'une version en activan
 
 ![suivi-modification](/documentation/ressources/suivi-modification-002.jpg)
 
-`Note :` la version de référence est la version qui sera utilisé pour comparer les versions lors da présentation de la tendance.
+`Note :` la version de référence est la version qui sera utilisée pour comparer les versions lors da présentation de la tendance.
 
 -**-- FIN --**-
 
