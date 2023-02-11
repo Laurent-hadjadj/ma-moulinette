@@ -61,8 +61,10 @@ class EquipeCrudController extends AbstractCrudController
      */
     public function configureFields(string $pageName): iterable
     {
-        yield TextField::new('titre');
-        yield TextField::new('description');
+        yield TextField::new('titre')
+        ->setHelp('Nom de l\'équipe.');
+        yield TextField::new('description')
+        ->setHelp('Description de l\'équipe.');
         yield DateTimeField::new('dateModification')
             ->setTimezone('Europe/Paris')
             ->hideOnForm();
