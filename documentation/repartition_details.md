@@ -37,7 +37,7 @@ Pour chaque type (fiabilité, sécurité et maintenabilité), il est possible de
 
 ![repartition-module](/documentation/ressources/repartition-module-002.jpg)
 
-Au lancement, on vérifie si, il existe un **set-up**, i.e. une collecte déjà présente pour ce projet. Si un **set-up** existe, on en créé un nouveau pour la nouvelle collecte.
+Au lancement, on vérifie si, il existe un **set-up**, i.e. une collecte déjà présente pour ce projet. Si un **set-up** existe, on en crée un nouveau pour la nouvelle collecte.
 
 ![repartition-module](/documentation/ressources/repartition-module-004.jpg)
 

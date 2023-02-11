@@ -6,14 +6,14 @@ Si le processus d'inscription est validé sans erreur, l'utilisateur est redirig
 
 ![bienvenue](/documentation/ressources/welcome-001.jpg)
 
-Cette page retourne les informations d'dentification de l'utilisateur.
+Cette page retourne les informations d'identification de l'utilisateur.
 
-**Attention**, l'utilisateur est inscrit mais ne peut pas se connecter. Il lui faut :
+**Attention**, l'utilisateur est inscrit, mais ne peut pas se connecter. Il lui faut :
 
 - [x] le rôle `UTILISATEUR` ou `GESTIONNAIRE`.
 - [x] être actif.
 
-Pour cela, il faut que l'utilisateur ayant le rôle `Gestionnaire`, modifie le compte de l'utilisateur.
+Pour cela, il faut que l'utilisateur ayant le rôle`Gestionnaire`, modifie le compte de l'utilisateur.
 
 -**-- FIN --**-
 

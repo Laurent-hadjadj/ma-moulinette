@@ -28,7 +28,7 @@ Quand tout va bien :)
 
 ![projet](/documentation/ressources/owasp-001.jpg)
 
-Quand il y a des hotspots détéctés :(
+Quand il y a des hotspots détectés :(
 ![projet](/documentation/ressources/owasp-001a.jpg)
 
 Les vulnérabilités et hotspots sont affichées en fonction du type de faille.
@@ -37,10 +37,10 @@ Les vulnérabilités et hotspots sont affichées en fonction du type de faille.
 Il est possible d'afficher le nombre et la sévérité d'une faille OWASP.
 ![projet](/documentation/ressources/owasp-003.jpg)
 
-Quand tout va bien le tableau est vide.
+Quand tout va bien, le tableau est vide.
 ![projet](/documentation/ressources/owasp-004.jpg)
 
-Exemple de remonté de hotspots :
+Exemple de remontée de hotspots :
 ![projet](/documentation/ressources/owasp-005.jpg)
 
 La documentation de chaque faille.

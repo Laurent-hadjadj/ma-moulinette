@@ -4,7 +4,7 @@
 
 ## Processus
 
-Le diagramme ci-dessous présnte le processus d'authentification.
+Le diagramme ci-dessous présente le processus d'authentification.
 
 ![authentification](/documentation/ressources/authentification-000.jpg)
 
@@ -21,7 +21,7 @@ Le formulaire de connexion propose deux options:
 
 Note : On ajoutera dans la prochaine version l'option **changer mon mot de passe** pour changer son mot de passe.
 
-L'identifiant est l'adresse mèl de l'utilisateur.
+L'identifiant est l'adresse mél. de l'utilisateur.
 
 ![authentification](/documentation/ressources/authentification-002.jpg)
 
