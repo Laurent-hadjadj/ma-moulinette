@@ -3,14 +3,22 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Main\Equipe;
+
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Form\FormTypeInterface;
+
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
-use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
+
+use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
+
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Translation\TranslatableMessage;
+
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 
 /**
@@ -18,6 +26,25 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
  */
 class EquipeCrudController extends AbstractCrudController
 {
+
+  /**
+   * [Description for __construct]
+   * emm = EntityManagerInterface
+   *
+   * @param  private
+   *
+   * Created at: 12/02/2023, 10:08:05 (Europe/Paris)
+   * @author    Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function __construct(
+    private EntityManagerInterface $emm,
+    private RequestStack $requestStack,)
+    {
+    $this->emm = $emm;
+    $this->rs = $requestStack;
+    }
+
     /**
      * [Description for getEntityFqcn]
      *
@@ -32,6 +59,28 @@ class EquipeCrudController extends AbstractCrudController
         return Equipe::class;
     }
 
+    public function configureCrud(Crud $crud): Crud
+    {
+        return $crud;
+    }
+
+    /**
+     * [Description for configureFilters]
+     * Ajoute un filtre de recherche
+     * @param Filters $filters
+     *
+     * @return Filters
+     *
+     * Created at: 11/02/2023, 20:49:10 (Europe/Paris)
+     * @author    Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function configureFilters(Filters $filters): Filters
+    {
+        return $filters
+            ->add('titre');
+    }
+
     /**
      * [Description for configureActions]
      *
@@ -40,7 +89,7 @@ class EquipeCrudController extends AbstractCrudController
      * @return Actions
      *
      * Created at: 02/01/2023, 18:35:37 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function configureActions(Actions $actions): Actions
@@ -56,7 +105,7 @@ class EquipeCrudController extends AbstractCrudController
      * @return iterable
      *
      * Created at: 02/01/2023, 18:35:41 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function configureFields(string $pageName): iterable
@@ -82,7 +131,7 @@ class EquipeCrudController extends AbstractCrudController
      * @return void
      *
      * Created at: 02/01/2023, 18:35:44 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function persistEntity(EntityManagerInterface $em, $entityInstance): void
@@ -93,7 +142,13 @@ class EquipeCrudController extends AbstractCrudController
         $nom=$entityInstance->getTitre();
         $entityInstance->setTitre(mb_strtoupper($nom));
         $entityInstance->setDateEnregistrement(new \DateTimeImmutable());
-        parent::persistEntity($em, $entityInstance);
+        /** retourne 1 ou null */
+        $record = $this->emm->getRepository(Equipe::class)->findOneBy(['titre' => mb_strtoupper($nom)]);
+
+        /** Si l'attribut 'titre' n'existe pas, on enregistre.*/
+        if (!$record) {
+          parent::persistEntity($em, $entityInstance);
+        }
     }
 
     public function updateEntity(EntityManagerInterface $em, $entityInstance): void
@@ -104,5 +159,4 @@ class EquipeCrudController extends AbstractCrudController
         $entityInstance->setdateModification(new \DateTimeImmutable());
         parent::updateEntity($em, $entityInstance);
     }
-
 }
