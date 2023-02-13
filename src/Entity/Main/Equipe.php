@@ -17,12 +17,16 @@ use App\Repository\Main\EquipeRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-/** gstion des containtes */
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use App\Validator as AcmeAssert;
 use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * Gestion des contraintes au niveau Class
+ * `use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;`
+ */
+
 #[ORM\Entity(repositoryClass: EquipeRepository::class)]
-#[UniqueEntity(fields: ['titre'], message: 'Le {{ label }} : {{ value }} existe déjà.')]
+//#[UniqueEntity(fields: ['titre'], message: 'Le {{ label }} : {{ value }} existe déjà.')]
 class Equipe
 {
     #[ORM\Id]
@@ -30,7 +34,8 @@ class Equipe
     #[ORM\Column(type: 'integer')]
     private $id;
 
-    #[ORM\Column(type: 'string', length: 32, unique: true)]
+    #[ORM\Column(name: 'titre', type: 'string', length: 32, unique: true)]
+    #[AcmeAssert\ContainsEquipeUnique()]
     private $titre;
 
     #[ORM\Column(type: 'string', length: 128)]
@@ -62,7 +67,7 @@ class Equipe
      * @return string|null
      *
      * Created at: 02/01/2023, 17:52:50 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getTitre(): ?string
@@ -78,7 +83,7 @@ class Equipe
      * @return self
      *
      * Created at: 02/01/2023, 17:52:52 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setTitre(string $titre): self
