@@ -10,7 +10,7 @@
 * [Portefeuille](/documentation/portefeuille.md)
 * [Batch](/documentation/batch.md)
 
-La gestion des équipes s'appuie sur un contrôleur CRUD du bundle EasyAdmin. Les options suivantes sont les suivantes :
+La gestion des **équipes** s'appuie sur un contrôleur CRUD du bundle EasyAdmin. Les options disoinbles sont les suivantes :
 
 * [X] Je peux visualiser la liste des équipes projets ;
 * [X] Je peux afficher les détails de l'équipe ;
