@@ -337,7 +337,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getPersonne(): ?string
     {
-        return $this->nom.' '.$this->prenom;
+        return trim("$this->nom $this->prenom");
     }
 
     /**
