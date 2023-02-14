@@ -57,4 +57,6 @@ composer.bat
 .phpunit.result.cache
 /var/log/test.log
 /.phpunit.cache/
+/reports/
+.env.test
 ###< phpunit/phpunit ###
