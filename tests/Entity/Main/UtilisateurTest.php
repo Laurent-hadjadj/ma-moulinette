@@ -21,6 +21,15 @@ use DateTime;
 class UtilisateurTest extends TestCase
 {
 
+  /**
+   * [Description for dataset]
+   * Jeu de données
+   * @return array
+   *
+   * Created at: 14/02/2023, 09:13:24 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
   public function dataset(): array
   {
     return ['id' =>1, 'prenom'=> 'Blue', 'nom'=>'Tooth', 'courriel'=>'a@b.fr',
@@ -28,7 +37,6 @@ class UtilisateurTest extends TestCase
     'password'=>'password1', 'actif'=>0, 'dateModification'=> new DateTime(),
     'dateEnregistrement'=> new DateTime()];
   }
-
 
   /**
    * [Description for testReturnPersonne]
@@ -65,8 +73,6 @@ class UtilisateurTest extends TestCase
     $utilisateur->setAvatar('chiffre/01.png');
     $this->assertSame('build/avatar/chiffre/01.png', $utilisateur->getAvatarUrl());
   }
-
-  use PHPUnit\Framework\TestCase;
 
   /**
    * [Description for testFindAll]
