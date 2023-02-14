@@ -84,6 +84,30 @@ class TagsTest extends TestCase
     $this->assertCount(2, $u);
   }
 
+    /**
+   * [Description for testTagsCountAttribut]
+   * On vérifie le nombre d'attribut
+   * @return void
+   *
+   * Created at: 14/02/2023, 15:19:00 (Europe/Paris)
+   * @author    Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function testTagsCountAttribut(): void
+  {
+    /** On récupère le jeu de données */
+    $d=static::dataset();
+
+    $mockRepo = $this->createMock(Tags::class);
+    /**
+     * On compte le nombre attribut de la classe
+     * On enlève :
+     * __phpunit_originalObject, __phpunit_returnValueGeneration,__phpunit_invocationMocker
+     */
+    $nb=count((array)$mockRepo)-3;
+    $this->assertEquals(count($d[0]), $nb);
+  }
+
   public function testTagsType(): void
   {
     /** On récupère le jeu de données */
