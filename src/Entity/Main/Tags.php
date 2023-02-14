@@ -55,6 +55,24 @@ class Tags
     }
 
     /**
+     * [Description for setId]
+     *
+     * @param string $id
+     *
+     * @return self
+     *
+     * Created at: 14/02/2023, 09:35:56 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function setId(string $id): self
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
      * [Description for getMavenKey]
      *
      * @return string|null
