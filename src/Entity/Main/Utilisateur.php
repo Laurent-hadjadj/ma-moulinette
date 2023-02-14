@@ -54,11 +54,38 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->id;
     }
 
+    public function setId(string $id): self
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
+     * [Description for getCourriel]
+     *
+     * @return string|null
+     *
+     * Created at: 14/02/2023, 00:10:16 (Europe/Paris)
+     * @author    Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function getCourriel(): ?string
     {
         return $this->courriel;
     }
 
+    /**
+     * [Description for setCourriel]
+     *
+     * @param string $courriel
+     *
+     * @return self
+     *
+     * Created at: 14/02/2023, 00:10:20 (Europe/Paris)
+     * @author    Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function setCourriel(string $courriel): self
     {
         $this->courriel = $courriel;
@@ -67,16 +94,21 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
+     * [Description for getUserIdentifier]
      * The public representation of the user (e.g. a username, an email address, etc.)
      *
-     * @see UserInterface
+     * @return string
+     *
+     * Created at: 14/02/2023, 00:10:26 (Europe/Paris)
+     * @author    Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getUserIdentifier(): string
     {
         return (string) $this->courriel;
     }
 
-    // on ne veut pas que l'utilisateur aut un rôle par défaut.
+    // on ne veut pas que l'utilisateur ait un rôle par défaut.
     public function getRoles(): array
     {
         return $this->roles;
@@ -268,7 +300,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @return string|null
      *
      * Created at: 02/01/2023, 18:12:12 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getPrenom(): ?string
@@ -284,7 +316,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @return self
      *
      * Created at: 02/01/2023, 18:12:14 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setPrenom(string $prenom): self
@@ -300,7 +332,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @return string|null
      *
      * Created at: 02/01/2023, 18:12:18 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getNom(): ?string
@@ -316,7 +348,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @return self
      *
      * Created at: 02/01/2023, 18:12:22 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setNom(string $nom): self
@@ -332,7 +364,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @return string|null
      *
      * Created at: 02/01/2023, 18:12:24 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getPersonne(): ?string
@@ -346,7 +378,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @return string|null
      *
      * Created at: 02/01/2023, 18:12:26 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getAvatar(): ?string
@@ -362,7 +394,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @return self
      *
      * Created at: 02/01/2023, 18:12:27 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setAvatar(?string $avatar): self
@@ -378,7 +410,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @return string|null
      *
      * Created at: 02/01/2023, 18:12:29 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getAvatarUrl(): ?string
@@ -395,7 +427,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @return array
      *
      * Created at: 02/01/2023, 18:12:31 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getEquipe(): array
@@ -411,7 +443,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @return self
      *
      * Created at: 02/01/2023, 18:12:32 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setEquipe(array $equipe): self
