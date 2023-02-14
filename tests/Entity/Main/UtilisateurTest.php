@@ -27,7 +27,7 @@ class UtilisateurTest extends TestCase
    * @return array
    *
    * Created at: 14/02/2023, 09:13:24 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   public function dataset(): array
@@ -39,7 +39,7 @@ class UtilisateurTest extends TestCase
   }
 
   /**
-   * [Description for testReturnPersonne]
+   * [Description for testUtilisateurPersonne]
    *  On récupère une personne
    * @return void
    *
@@ -47,7 +47,7 @@ class UtilisateurTest extends TestCase
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function testReturnPersonne(): void
+  public function testUtilisateurPersonne(): void
   {
     $utilisateur = new Utilisateur();
     $utilisateur->setNom("@ma-moulinette");
@@ -55,19 +55,46 @@ class UtilisateurTest extends TestCase
     $this->assertEquals('@ma-moulinette admin', $utilisateur->getPersonne());
   }
 
-  public function testPersonneIsEmptyByDefault(): void
+  /**
+   * [Description for testUtilisateurPersonneIsEmptyByDefault]
+   * On test si la personne est vide par défau.
+   * @return void
+   *
+   * Created at: 14/02/2023, 09:24:11 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function testUtilisateurPersonneIsEmptyByDefault(): void
   {
     $utilisateur = new Utilisateur();
     $this->assertEquals('', $utilisateur->getPersonne());
   }
 
-  public function testAvatarUrlIsNull(): void
+  /**
+   * [Description for testUtilisateurAvatarUrlIsNull]
+   * On test l'url de retour si l'avatar n'est pas défini
+   * @return void
+   *
+   * Created at: 14/02/2023, 09:24:47 (Europe/Paris)
+   * @author    Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function testUtilisateurAvatarUrlIsNull(): void
   {
     $utilisateur = new Utilisateur();
     $this->assertNull($utilisateur->getAvatarUrl());
   }
 
-  public function testAvatarUrlIsNotNull(): void
+  /**
+   * [Description for testUtilisateurAvatarUrlIsNotNull]
+   * On test l'url de l'avatar si l'avatar existe.
+   * @return void
+   *
+   * Created at: 14/02/2023, 09:25:26 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function testUtilisateurAvatarUrlIsNotNull(): void
   {
     $utilisateur = new Utilisateur();
     $utilisateur->setAvatar('chiffre/01.png');
@@ -75,7 +102,7 @@ class UtilisateurTest extends TestCase
   }
 
   /**
-   * [Description for testFindAll]
+   * [Description for testUtilisateurFindAll]
    * On récupère l'ensemble des données, on fait un getPrenom().
    * @return void
    *
@@ -83,7 +110,7 @@ class UtilisateurTest extends TestCase
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function testFindAll(): void
+  public function testUtilisateurFindAll(): void
   {
     /** On récupère le jeu de données */
     $d=static::dataset();
@@ -96,7 +123,7 @@ class UtilisateurTest extends TestCase
 
 
   /**
-   * [Description for testCount]
+   * [Description for testUtilisateurCount]
    * On compte le nombre d'enregsitrement dans la collection.
    *
    * @return void
@@ -105,7 +132,7 @@ class UtilisateurTest extends TestCase
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function testCount(): void
+  public function testUtilisateurCount(): void
   {
     /** On récupère le jeu de données */
     $d=static::dataset();
