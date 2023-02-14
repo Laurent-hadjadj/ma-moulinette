@@ -18,11 +18,11 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 /** gstion des containtes */
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+//use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PortefeuilleRepository::class)]
-#[UniqueEntity(fields: ['titre'], message: 'Le {{ label }} : {{ value }} existe déjà.')]
+//#[UniqueEntity(fields: ['titre'], message: 'Le {{ label }} : {{ value }} existe déjà.')]
 class Portefeuille
 {
     #[ORM\Id]
@@ -31,6 +31,7 @@ class Portefeuille
     private $id;
 
     #[ORM\Column(type: 'string', length: 32, unique: true)]
+    #[AcmeAssert\ContainsPortefeuilleUnique()]
     private $titre;
 
     #[ORM\Column(type: 'string', length: 32)]
@@ -220,4 +221,16 @@ class Portefeuille
         return $this;
     }
 
+
+    /**
+     * Set the value of id
+     *
+     * @return  self
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
 }

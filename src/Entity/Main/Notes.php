@@ -126,4 +126,40 @@ class Notes
         return $this;
     }
 
+
+    /**
+     * Set the value of mavenKey
+     *
+     * @return  self
+     */
+    public function setMavenKey($mavenKey)
+    {
+        $this->mavenKey = $mavenKey;
+
+        return $this;
+    }
+
+    /**
+     * Set the value of type
+     *
+     * @return  self
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * Set the value of date
+     *
+     * @return  self
+     */
+    public function setDate($date)
+    {
+        $this->date = $date;
+
+        return $this;
+    }
 }
