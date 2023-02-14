@@ -27,35 +27,35 @@ Cette page permet le chargement du référentiel des applications pris en charge
 ![home](/documentation/ressources/home-001.jpg)
 
 `Note :` En version **1.5.0**, la gestion des versions a été ajoutée.
-Si la version de l'application et de la base de données est identique, tout va bien. Par contre si une différence est détéctée, alors un message est affiché à l'utilisateur connecté.
+Si la version de l'application et de la base de données est identique, tout va bien. Par contre si une différence est détectée, alors un message est affiché à l'utilisateur connecté.
 Il faudra passer le script de migration 1.5.0, qui contient également les modifications pour la version 1.3.0 et 1.4.0.
 
 ![home](/documentation/ressources/home-001a.jpg)
 
-`Note :` En version **1.5.0**, la gestion des référentiels locaux, à savoir, les projets et les profil, est changée pour prendre en compte le multi-utilisateur et mieux synchroniser les référentiels avec les données du serveur sonarqube.
+`Note :` En version **1.5.0**, la gestion des référentiels locaux, à savoir, les projets et les profils, est changée pour prendre en compte le multi-utilisateur et mieux synchroniser les référentiels avec les données du serveur sonarqube.
 
 Une nouvelle table a été créée pour enregistrer les mises à jour des référentiels et permettre de tenir à jour les référentiels de l'application.
 
 La mise à jour est signalée quand :
 
-* [x] Le nombre de projet et ou de profil est différent de ceux présents sur le serveur sonarqube ;
+* [x] le nombre de projets et/ou de profils est différent de ceux présents sur le serveur sonarqube ;
 
-Le contrôle se fait en fonction de la fréquence choisi, par défaut :
+Le contrôle se fait en fonction de la fréquence choisie, par défaut :
 
 * [x] 1 jour pour les projets ;
 * [x] 30 jours pour les profils ;
 
-Cela veux dire que si la table de référence des projets et profils a été mise à jour dans la journée, il n'y aura pas de signalement en cas de différences avec le serveur sonarqube. En d'autres termes, il faudra lancer la mise à jour de la table locale manuellement, comme on le faisant précédement.
+Cela veut dire que si la table de référence des projets et profils a été mise à jour dans la journée, il n'y aura pas de signalement en cas de différences avec le serveur sonarqube. En d'autres termes, il faudra lancer la mise à jour de la table locale manuellement, comme on le faisant précédemment.
 
-Par exemple, si la table des projets et des profils n'est à jour, un message s'affiche ainsi que le nombre de projet et/ou de profil nouveau.
+Par exemple, si la table des projets et des profils n'est à jour, un message s'affiche ainsi que le nombre de projets et/ou de profils nouveaux.
 
 ![home](/documentation/ressources/home-001b.jpg)
 
-Lorque l'on clique sur le bouton de mise à jour des projets ou des profils, l'indicateur se met à jour et le message disparait.
+Lorsque l'on clique sur le bouton de mise à jour des projets ou des profils, l'indicateur se met à jour et le message disparaît.
 
 ![home](/documentation/ressources/home-001c.jpg)
 
-Notez en haut à droite, l'affichage de trois liens, en fonction des droits de l'utilisateur (cf. chapitre sécurité) :
+Notez, en haut à droite, l'affichage de trois liens, en fonction des droits de l'utilisateur (cf. chapitre sécurité) :
 
 ![home](/documentation/ressources/home-002.jpg)
 
@@ -63,7 +63,7 @@ Notez en haut à droite, l'affichage de trois liens, en fonction des droits de l
 * Dashboard : indicateurs ;
 * Logout : pour se déconnecter de l'application ;
 
-En version **1.6.0** deux (2) nouevaux indicateurs apparaissent pour afficher le nombre de projet dont la visibilité est de type **public** ou **privé**.
+En version **1.6.0** deux (2) nouveaux indicateurs apparaissent pour afficher le nombre de projets dont la visibilité est de type **public** ou **privé**.
 
 Le bouton **mon projet** permet l'accès à la page des projets.
 
