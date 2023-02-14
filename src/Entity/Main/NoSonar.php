@@ -181,4 +181,16 @@ class NoSonar
         return $this;
     }
 
+
+    /**
+     * Set the value of id
+     *
+     * @return  self
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
 }
