@@ -178,6 +178,11 @@ class ApiOwaspPeintureController extends AbstractController
     $mavenKey = $request->get('mavenKey');
     $response = new JsonResponse();
 
+    /** On teste si la clé est valide */
+    if (is_null($mavenKey)) {
+      return $response->setData(["message" => "la clé maven est vide!", Response::HTTP_BAD_REQUEST]);
+    }
+
     /** On compte le nombre de hotspot REVIEWED */
     $sql = "SELECT count(*) as reviewed FROM hotspot_owasp
             WHERE maven_key='${mavenKey}' AND status='REVIEWED'";
@@ -244,6 +249,11 @@ class ApiOwaspPeintureController extends AbstractController
   {
     $mavenKey = $request->get('mavenKey');
     $response = new JsonResponse();
+
+    /** On teste si la clé est valide */
+    if (is_null($mavenKey)) {
+      return $response->setData(["message" => "la clé maven est vide!", Response::HTTP_BAD_REQUEST]);
+    }
 
     /** On compte le nombre de hotspot de type OWASP au statut TO_REVIEWED */
     $sql = "SELECT menace, count(*) as total FROM hotspot_owasp
@@ -318,6 +328,11 @@ class ApiOwaspPeintureController extends AbstractController
     $mavenKey = $request->get('mavenKey');
     $response = new JsonResponse();
 
+    /** On teste si la clé est valide */
+    if (is_null($mavenKey)) {
+      return $response->setData(["message" => "la clé maven est vide!", Response::HTTP_BAD_REQUEST]);
+    }
+
     /** On compte le nombre de hotspot de type OWASP au statut TO_REVIEWED */
     $sql = "SELECT * FROM hotspot_details
             WHERE maven_key='${mavenKey}'
@@ -351,6 +366,11 @@ class ApiOwaspPeintureController extends AbstractController
     $mavenKey = $request->get('mavenKey');
     $menace = $request->get('menace');
     $response = new JsonResponse();
+
+    /** On teste si la clé est valide */
+    if (is_null($mavenKey)) {
+      return $response->setData(["message" => "la clé maven est vide!", Response::HTTP_BAD_REQUEST]);
+    }
 
     $strSelect = "SELECT count(*) as total FROM hotspot_owasp WHERE maven_key='";
     $strMenace = "' AND menace='";
@@ -395,4 +415,5 @@ class ApiOwaspPeintureController extends AbstractController
     return $response->setData(
       ["high" => $high, "medium" => $medium, "low" => $low, Response::HTTP_OK]);
   }
+
 }
