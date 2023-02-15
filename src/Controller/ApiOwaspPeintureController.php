@@ -58,7 +58,12 @@ class ApiOwaspPeintureController extends AbstractController
   public function peintureOwaspListe(Request $request): response
   {
     $mavenKey = $request->get('mavenKey');
+
     $response = new JsonResponse();
+    /** On teste si la clé est valide */
+    if (is_null($mavenKey)) {
+      return $response->setData(["message" => "la clé maven est vide!", Response::HTTP_BAD_REQUEST]);
+    }
 
     /** On récupère les failles owasp */
     $sql = "SELECT * FROM owasp WHERE maven_key='${mavenKey}'
