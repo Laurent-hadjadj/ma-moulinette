@@ -20,7 +20,6 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: HistoriqueRepository::class)]
 class Historique
 {
-
     #[ORM\Id]
     #[ORM\Column(type: 'string', length: 128)]
     private $mavenKey;
