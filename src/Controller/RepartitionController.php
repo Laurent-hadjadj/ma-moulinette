@@ -18,6 +18,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
+use Symfony\Component\HttpFoundation\JsonResponse;
+
 /** Accès aux tables SLQLite */
 use Doctrine\Persistence\ManagerRegistry;
 use App\Entity\Secondary\Repartition;
@@ -54,31 +56,47 @@ class RepartitionController extends AbstractController
     #[Route('/projet/repartition', name: 'projet_repartition')]
     public function projetRepartition(Request $request): Response
     {
-        /** On récupère la clé du projet */
-        $mavenKey = $request->get('mavenKey');
-        /** On enregistre le nom du projet */
-        $app=explode(":", $mavenKey);
+      $mode='';
+     /** On on vérifie si on a activer le mode test */
+      $mode = $request->get('mode');
+      /** On récupère la clé du projet */
+      $mavenKey = $request->get('mavenKey');
+      $response = new JsonResponse();
 
-        /** On se connecte à la base pour connaitre la version du dernier setup pour le projet. */
-        $reponse = $this->doctrine->getManager('secondary')
-                            ->getRepository(Repartition::class)
-                            ->findBy(['mavenKey' => $mavenKey],['setup' => 'DESC'],1);
+      /** On teste si la clé est valide */
+      if (is_null($mavenKey) && $mode==="TEST") {
+        return $response->setData(["message" => "la clé maven est vide!", Response::HTTP_BAD_REQUEST]);
+      }
 
-        if (empty($reponse)) {
-            $setup="NaN";
-            $statut="NaN";
-            } else {
-                $setup=$reponse[0]->getSetup();
-                $statut="actuel";
-            }
+      /** On enregistre le nom du projet */
+      $app=explode(":", $mavenKey);
 
-        return $this->render('projet/details.html.twig',
-        [
-            'monApplication' => $app[1],
-            'mavenKey' => $mavenKey,
-            'setup' =>  $setup,
-            'statut'=> $statut,
-            'version' => $this->getParameter('version'), 'dateCopyright' => \date('Y')
-        ]);
+      /** On se connecte à la base pour connaitre la version du dernier setup pour le projet. */
+      $reponse = $this->doctrine->getManager('secondary')
+                      ->getRepository(Repartition::class)
+                      ->findBy(['mavenKey' => $mavenKey],['setup' => 'DESC'],1);
+
+      if (empty($reponse)) {
+          $setup="NaN";
+          $statut="NaN";
+          } else {
+              $setup=$reponse[0]->getSetup();
+              $statut="actuel";
+          }
+
+      if ($mode==="TEST") {
+        return $response->setData(
+          ['monApplication' => $app[1], 'mavenKey' => $mavenKey,
+          'setup' =>  $setup, 'statut'=> $statut, Response::HTTP_OK]);
+      }
+
+      return $this->render('projet/details.html.twig',
+      [
+          'monApplication' => $app[1],
+          'mavenKey' => $mavenKey,
+          'setup' =>  $setup,
+          'statut'=> $statut,
+          'version' => $this->getParameter('version'), 'dateCopyright' => \date('Y')
+      ]);
     }
 }
