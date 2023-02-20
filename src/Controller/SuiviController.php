@@ -44,6 +44,7 @@ class SuiviController extends AbstractController
   public static $sonarUrl = "sonar.url";
   public static $europeParis = "Europe/Paris";
   public static $regex = "/\s+/u";
+  public static $erreurMavenKey="La clé maven est vide!";
 
   /**
    * [Description for __construct]
@@ -53,7 +54,7 @@ class SuiviController extends AbstractController
    * @param  private
    *
    * Created at: 15/12/2022, 22:34:06 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   public function __construct(
@@ -75,7 +76,7 @@ class SuiviController extends AbstractController
    * @return [type]
    *
    * Created at: 15/12/2022, 22:34:12 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   protected function httpClient($url)
@@ -88,16 +89,15 @@ class SuiviController extends AbstractController
       $password = '';
     }
 
-    $response = $this->client->request('GET', $url,
-      [
-        'ciphers' => `AES128-SHA
-        DH-RSA-AES128-SHA DH-RSA-AES256-SHA DHE-DSS-AES128-SHA DHE-DSS-AES256-SHA
-        DHE-RSA-AES128-SHA DHE-RSA-AES256-SHA ADH-AES128-SHA ADH-AES256-SHA`,
+    $option=
+      ['ciphers' => 'DH-RSA-AES128-SHA DH-RSA-AES256-SHA DHE-DSS-AES128-SHA DHE-DSS-AES256-SHA
+        DHE-RSA-AES128-SHA DHE-RSA-AES256-SHA DH-AES128-SHA ADH-AES256-SHA',
         'auth_basic' => [$user, $password], 'timeout' => 45,
-        'headers' => ['Accept' => static::$strContentType, 'Content-Type' => static::$strContentType]
-      ]);
-      /** on désactive le code retour pour catcher l'erreur nous même. */
-      $response->getHeaders(false);
+        'headers' => ['Accept' => 'Accept: */*', 'Content-Type' => static::$strContentType]
+      ];
+    $response = $this->client->request('GET', $url, $option);
+    /** on désactive le code retour pour catcher l'erreur nous même. */
+    $response->getHeaders(false);
 
     /** si le code erreur est différent de 200 ou 404 on léve une exception */
     if ($response->getStatusCode() !==200 && $response->getStatusCode() !== 404) {
@@ -131,13 +131,26 @@ class SuiviController extends AbstractController
    * @return response
    *
    * Created at: 15/12/2022, 22:34:25 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/suivi', name: 'suivi', methods: ['GET'])]
   public function suivi(Request $request): response
   {
+    /** On crée un objet de reponse JSON */
+    $response = new JsonResponse();
+
+    $mode='';
+    /** On on vérifie si on a activé le mode test */
+    $mode = $request->get('mode');
+     /** On récupère la clé du projet */
     $mavenKey = $request->get('mavenKey');
+
+      /** On teste si la clé est valide */
+      if (is_null($mavenKey) && $mode==="TEST") {
+        return $response->setData(["mode"=>$mode, "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+      }
+
     /** Tableau de suivi principal */
     $sql = "SELECT * FROM
     (SELECT nom_projet as nom, date_version as date, version,
@@ -245,15 +258,20 @@ class SuiviController extends AbstractController
     $ddd = $dd->format('Y-m-d');
     $date[$nl + 1] = $ddd;
 
-    return $this->render('suivi/index.html.twig',
-      [
-        'suivi' => $suivi, 'severite' => $severite, 'details' => $details,
-        'nom' => $suivi[0]["nom"], 'mavenKey' => $mavenKey,
-        'data1' => json_encode($bug), 'data2' => json_encode($secu),
-        'data3' => json_encode($codeSmell), 'labels' => json_encode($date),
-        'version' => $this->getParameter('version'), 'dateCopyright' => \date('Y')
-      ]
-    );
+    $render= [
+      'suivi' => $suivi, 'severite' => $severite, 'details' => $details,
+      'nom' => $suivi[0]["nom"], 'mavenKey' => $mavenKey,
+      'data1' => json_encode($bug), 'data2' => json_encode($secu),
+      'data3' => json_encode($codeSmell), 'labels' => json_encode($date),
+      'version' => $this->getParameter('version'), 'dateCopyright' => \date('Y'),
+      Response::HTTP_OK
+    ];
+
+    if ($mode==="TEST") {
+      return $response->setData($render);
+    }
+
+    return $this->render('suivi/index.html.twig', $render);
   }
 
   /**
@@ -266,22 +284,40 @@ class SuiviController extends AbstractController
    * @return Response
    *
    * Created at: 15/12/2022, 22:35:41 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/liste/version', name: 'liste_version', methods: ['GET'])]
   public function listeVersion(Request $request): Response
   {
-    $mavenKey = $request->get('mavenKey');
+    /** On crée un objet de reponse JSON */
+    $response = new JsonResponse();
 
+    $mode='';
+    /** On on vérifie si on a activé le mode test */
+    $mode = $request->get('mode');
+      /** On récupère la clé du projet */
+    $mavenKey = $request->get('mavenKey');
+    $exception = $request->get('exception');
+
+    /** On teste si la clé est valide */
+    if (is_null($mavenKey) && $mode==="TEST") {
+      return $response->setData(["mode"=>$mode, "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+    }
+
+    $versions=[];
     /** On récupère les versions et la date pour la clé du projet */
     $sql = "SELECT maven_key, project_version as version, date
             FROM information_projet
             WHERE maven_key='${mavenKey}'";
     $select = $this->em->getConnection()->prepare($sql)->executeQuery();
-    $versions = $select->fetchAllAssociative();
+
+    if (is_null($exception)){
+      $versions = $select->fetchAllAssociative();
+    }
 
     if (!$versions) {
+      $response->setData([Response::HTTP_NOT_FOUND]);
       throw $this->createNotFoundException('Oops - Il y a un problème.');
     }
 
@@ -298,8 +334,12 @@ class SuiviController extends AbstractController
       array_push($liste, $objet);
       $id++;
     }
-    $response = new JsonResponse();
-    return $response->setData(["liste" => $liste, Response::HTTP_OK]);
+
+    if ($mode==="TEST") {
+      $httpResponse= $response->setData(['mode'=>'TEST','versions'=>$versions, 'liste' => $liste, Response::HTTP_OK]);
+    } else {  $httpResponse = $response->setData(["liste" => $liste, Response::HTTP_OK]); }
+
+    return $httpResponse;
   }
 
   /**
@@ -312,18 +352,37 @@ class SuiviController extends AbstractController
    * @return Response
    *
    * Created at: 15/12/2022, 22:36:17 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/get/version', name: 'get_version', methods: ['GET','POST'])]
   public function getVersion(Request $request): Response
   {
-    /** on décode le body */
+    /** On décode le body */
     $data = json_decode($request->getContent());
     $mavenKey=$data->mavenKey;
 
+    /** On crée un objet de reponse JSON */
+    $response = new JsonResponse();
+    $mode='';
+    /** On on vérifie si on a activé le mode test */
+    $mode=$data->mode;
+
+    /** Réponse HTTP */
+    $message=200;
+
+    /** On teste si la clé est valide */
+    if ($mavenKey==="TEST" && $mode==="TEST") {
+      return $response->setData(["message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+    }
+
     /**  On modifie la date de 11-02-2022 16:02:06 à 2022-02-11 16:02:06 */
-    $d = new Datetime($data->date);
+    if ($mode==='TEST') {
+      $d = new Datetime("11-02-2022 16:02:06");
+    } else {
+      $d = new Datetime($data->date);
+    }
+
     $dd = $d->format('Y-m-d\TH:i:sO');
     $urlencodeDate=urlencode($dd);
     $urlStatic=$this->getParameter(static::$sonarUrl);
@@ -337,14 +396,34 @@ class SuiviController extends AbstractController
             &from=${urlencodeDate}&to=${urlencodeDate}";
 
     /** On appel le client http */
-    $result = $this->httpClient(trim(preg_replace(static::$regex, " ", $url)));
-    /** On créé un objet json */
-    $response = new JsonResponse();
+    if ($mode!="TEST") {
+      $result = $this->httpClient(trim(preg_replace(static::$regex, " ", $url)));
+    }
+
+    if ($mode==="TEST") {
+      $result=["measures"=>[
+        ["metric"=> "lines", "history"=> [["date"=> "2022-04-10T00:00:01+0200", "value"=> 20984]]],
+        ["metric"=>"duplicated_lines_density", "history"=>[["date"=> "2022-04-10T00:00:01+0200","value"=>2.6]]],
+        ["metric"=>"vulnerabilities", "history"=>[["date"=>"2022-04-10T00:00:02+0200","value"=>0]]],
+        ["metric"=>"sqale_index","history"=>[["date"=> "2022-04-10T00:00:03+0200","value"=>15596]]],
+        ["metric"=>"reliability_rating","history"=>[["date"=>"2022-04-10T00:00:04+0200","value"=> 3.0]]] ,
+        ["metric"=>"code_smells","history"=>[["date"=>"2022-04-10T00:00:05+0200","value"=>3080]]],
+        ["metric"=>"bugs","history"=>[["date"=>"2022-04-10T00:00:06+0200", "value"=>43]]],
+        ["metric"=>"ncloc", "history"=>[[ "date"=>"2022-04-10T00:07:00+0200", "value"=>17312]]],
+        ["metric"=>"security_hotspots", "history"=>[["date"=>"2022-04-10T00:00:08+0200", "value"=>2]]],
+        ["metric"=>"sqale_rating", "history"=>[["date"=>"2022-04-10T00:00:09+0200","value"=>3.0]]],
+        ["metric"=>"security_rating","history"=>[["date"=>"2022-04-10T00:00:10+0200","value"=>1.0]]],
+        ["metric"=>"tests", "history"=> [["date"=>"2022-04-10T00:00:11+0200", "value"=>134]]],
+        ["metric"=>"coverage", "history"=>[["date"=>"2022-04-10T00:00:12+0200","value"=>50]]],
+        ["metric"=>"security_review_rating", "history"=>[["date"=>"2022-04-10T00:00:13+0200","value"=>5.0]]],
+        ]
+      ];
+    }
 
     /** Si on récupère un message alors on a un problème. */
     if (array_key_exists("message", $result)){
       return $response->setData(['message' => 404]);
-    };
+    }
 
     $data = $result["measures"];
     for ($i = 0; $i < 14; $i++) {
@@ -401,16 +480,24 @@ class SuiviController extends AbstractController
       }
 
       /**  Sur certains projets il n'y a pas de la couverture fonctionnelle */
-      if ($data[$i]["metric"] === "coverage" && array_key_exists("value", $data[$i]["history"])) {
+      if ($data[$i]["metric"] === "coverage" &&
+        array_key_exists("value", $data[$i]["history"][0])) {
         $coverage = $data[$i]["history"][0]["value"];
-      } else {
+      }
+
+      if ($data[$i]["metric"] === "coverage" &&
+      array_key_exists("value", $data[$i]["history"][0])===false) {
         $coverage = 0;
       }
 
       /**  Sur certains projets il n'y a pas de tests fonctionnels */
-      if ($data[$i]["metric"] === "tests" && array_key_exists("value", $data[$i]["history"])) {
+      if ($data[$i]["metric"] === "tests" &&
+      array_key_exists("value", $data[$i]["history"][0])) {
         $tests = intval($data[$i]["history"][0]["value"], 10);
-      } else {
+      }
+
+      if ($data[$i]["metric"] === "tests" &&
+      array_key_exists("value", $data[$i]["history"][0])===false) {
         $tests = 0;
       }
 
@@ -419,16 +506,16 @@ class SuiviController extends AbstractController
       }
     }
 
-    return $response->setData([
-      'message'=>200,
-      'noteReliability' => $noteReliability, 'noteSecurity' => $noteSecurity,
-      'noteSqale' => $noteSqale, 'noteHotspotsReview' => $noteHotspotsReview,
-      'bug' => $bug, 'vulnerabilities' => $vulnerabilities,
-      'codeSmell' => $codeSmell, 'hotspotsReview' => $hotspotsReview,
-      'lines' => $lines, 'ncloc' => $ncloc,
-      'duplication' => $duplication, 'coverage' => $coverage, 'tests' => $tests,
-      'dette' => $dette, Response::HTTP_OK
-    ]);
+  return $response->setData([
+        'message'=>$message,
+        'noteReliability' => $noteReliability, 'noteSecurity' => $noteSecurity,
+        'noteSqale' => $noteSqale, 'noteHotspotsReview' => $noteHotspotsReview,
+        'bug' => $bug, 'vulnerabilities' => $vulnerabilities,
+        'codeSmell' => $codeSmell, 'hotspotsReview' => $hotspotsReview,
+        'lines' => $lines, 'ncloc' => $ncloc,
+        'duplication' => $duplication, 'coverage' => $coverage, 'tests' => $tests,
+        'dette' => $dette, Response::HTTP_OK
+      ]);
   }
 
   /**
@@ -441,7 +528,7 @@ class SuiviController extends AbstractController
    * @return Response
    *
    * Created at: 15/12/2022, 22:37:32 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/suivi/mise-a-jour', name: 'suivi_mise_a_jour', methods: ['PUT'])]
@@ -536,7 +623,7 @@ class SuiviController extends AbstractController
    * @return Response
    *
    * Created at: 15/12/2022, 22:38:29 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/suivi/version/liste', name: 'suivi_version_liste', methods: ['PUT'])]
@@ -546,9 +633,20 @@ class SuiviController extends AbstractController
     $data = json_decode($request->getContent());
     $mavenKey = $data->mavenKey;
 
-    /**  On créé un nouvel objet Json. */
+    /** On crée un objet de reponse JSON */
     $response = new JsonResponse();
+    $mode='';
+    /** On on vérifie si on a activé le mode test */
+    $mode=$data->mode;
 
+    /** On teste si la clé est valide */
+    if ($mavenKey==="null" && $mode==="TEST") {
+      return $response->setData([
+        "mode"=>$mode, "mavenKey"=>$mavenKey,
+        "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+    }
+
+    /**  On créé un nouvel objet Json. */
     /**  On récupère les versions et la date pour la clé du projet. */
     $sql = "SELECT maven_key, version, date_version as date, favori, initial
             FROM historique
@@ -673,6 +771,7 @@ class SuiviController extends AbstractController
   /**
    * [Description for suiviVersionPoubelle]
    * On supprime la version de historique
+   * On fait PUT pour un DELETE. (i.e on bloque la methode DELETE)
    * http://{url}}/api/suivi/version/poubelle
    *
    * @param Request $request
@@ -680,7 +779,7 @@ class SuiviController extends AbstractController
    * @return [type]
    *
    * Created at: 15/12/2022, 22:41:09 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/suivi/version/poubelle', name: 'suivi_version_poubelle', methods: ['PUT'])]
@@ -691,9 +790,20 @@ class SuiviController extends AbstractController
     $mavenKey = $data->mavenKey;
     $date = $data->date;
     $version = $data->version;
+    $mode= $data->version;
 
-    /** On créé un nouvel objet Json */
+    /** On crée un objet de reponse JSON */
     $response = new JsonResponse();
+    $mode='';
+    /** On on vérifie si on a activé le mode test */
+    $mode=$data->mode;
+
+    /** On teste si la clé est valide */
+    if ($mavenKey==="null" && $mode==="TEST") {
+      return $response->setData([
+        "mode"=>$mode, "mavenKey"=>$mavenKey,
+        "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+    }
 
     /** On surprime de la table historique le projet */
     $sql = "DELETE FROM historique
@@ -706,9 +816,9 @@ class SuiviController extends AbstractController
     try {
       $con->executeQuery();
     } catch (\Doctrine\DBAL\Exception $e) {
-      return $response->setData(["code" => $e->getCode(), Response::HTTP_OK]);
+      return $response->setData(["mode"=>$mode, "code" => $e->getCode(), Response::HTTP_OK]);
     }
 
-    return $response->setData(["code" => "OK", Response::HTTP_OK]);
+    return $response->setData(["code" => "OK", "mode"=>$mode, Response::HTTP_OK]);
   }
 }
