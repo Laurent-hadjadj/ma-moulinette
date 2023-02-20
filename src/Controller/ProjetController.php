@@ -13,15 +13,16 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
-
-/** Accès aux tables SLQLite */
+use Doctrine\DBAL\Connection;
 use App\Entity\Secondary\Repartition;
 use Doctrine\Persistence\ManagerRegistry;
-use Doctrine\DBAL\Connection;
+use Symfony\Component\HttpFoundation\Request;
+
+/** Accès aux tables SLQLite */
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class ProjetController extends AbstractController
 {
@@ -57,13 +58,27 @@ class ProjetController extends AbstractController
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  #[Route('/projet', name: 'projet')]
-  public function index(): Response
+  #[Route('/projet', name: 'projet', methods: 'GET')]
+  public function index(Request $request): Response
   {
-    return $this->render('projet/index.html.twig',
-    [
-      'version' => $this->getParameter('version'), 'dateCopyright' => \date('Y')
-    ]);
+    /** On crée un objet de reponse JSON */
+    $response = new JsonResponse();
+
+    $mode='';
+    /** On on vérifie si on a activé le mode test */
+    $mode = $request->get('mode');
+
+    $render=[
+      'mode'=>$mode,
+      'version' => $this->getParameter('version'),
+      'dateCopyright' => \date('Y'),
+      Response::HTTP_OK
+    ];
+
+    if ($mode==='TEST') {
+      return $response->setData($render);
+    } else { return $this->render('projet/index.html.twig', $render); }
+
   }
 
     /**
@@ -74,7 +89,7 @@ class ProjetController extends AbstractController
      * @return string
      *
      * Created at: 15/12/2022, 22:16:17 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     private function setup($mavenKey): string
@@ -99,7 +114,7 @@ class ProjetController extends AbstractController
      * @return array
      *
      * Created at: 15/12/2022, 22:16:32 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     private function notes($mavenKey): array
@@ -215,9 +230,12 @@ class ProjetController extends AbstractController
       $erreur=$frontend=$backend=$autre=0;
 
       /**
-       * fr.ma-petite-entreprise:monapplication
-       * fr.ma-petite-entreprise et monapplication
+       * fr.ma-petite-entreprise:ma-moulinette : valeur par défaut pour les Tests
        */
+      if (is_null($mavenKey)) {
+        $mavenKey="fr.ma-petite-entreprise:ma-moulinette";
+      }
+
       $app = explode(":", $mavenKey);
       foreach ($contents as $el) {
       /**
@@ -347,9 +365,19 @@ class ProjetController extends AbstractController
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  #[Route('/projet/cosui', name: 'projet_cosui')]
+  #[Route('/projet/cosui', name: 'projet_cosui', methods: 'GET')]
   public function projetCosui(Request $request): Response
   {
+    /** On crée un objet de reponse JSON */
+    $response = new JsonResponse();
+
+    /** On on vérifie si on a activé le mode test */
+    if (is_null($request->get('mode'))) {
+      $mode="null";
+    } else {
+      $mode = $request->get('mode');
+    }
+
     /** On bind les variables */
     $mavenKey = $request->get('mavenKey');
 
@@ -504,82 +532,68 @@ class ProjetController extends AbstractController
     $evolutionBugCritical=self::variation($initialBugCritical, $bugCritical);
     $evolutionBugMajor=self::variation($initialBugMajor, $bugMajor);
 
-    return $this->render('projet/cosui.html.twig',
-    [
-      'setup'=>$setup,
-      'monApplication'=>$nameApplication,
-      'version_application'=>$versionApplication,
-      'type_application'=>$typeApplication,
-      'date_application'=>$dateApplication,
-      'note_code_smell'=>$noteCodeSmell,
-      'note_reliability'=>$noteReliability,
-      'note_security'=>$noteSecurity,
-      'note_hotspot'=>$noteHotspot,
-      'bug_blocker'=>$bugBlocker,
-      'bug_critical'=>$bugCritical,
-      'bug_major'=>$bugMajor,
-      'vulnerability_blocker'=>$vulnerabilityBlocker,
-      'vulnerability_critical'=>$vulnerabilityCritical,
-      'vulnerability_major'=>$vulnerabilityMajor,
-      'code_smell_blocker'=>$codeSmellBlocker,
-      'code_smell_critical'=>$codeSmellCritical,
-      'code_smell_major'=>$codeSmellMajor,
-      'hotspot'=>$hotspot,
-      'initial_version_application'=>$initialVersionApplication,
-      'initial_date_application'=>$initialDateApplication,
-      'initial_note_code_smell'=>$initialNoteCodeSmell,
-      'initial_note_reliability'=>$initialNoteReliability,
-      'initial_note_security'=>$initialNoteSecurity,
-      'initial_note_hotspot'=>$initialNoteHotspot,
-      'initial_bug_blocker'=>$initialBugBlocker,
-      'initial_bug_critical'=>$initialBugCritical,
-      'initial_bug_major'=>$initialBugMajor,
-      'initial_vulnerability_blocker'=>$initialVulnerabilityBlocker,
-      'initial_vulnerability_critical'=>$initialVulnerabilityCritical,
-      'initial_vulnerability_major'=>$initialVulnerabilityMajor,
-      'initial_code_smell_blocker'=>$initialCodeSmellBlocker,
-      'initial_code_smell_critical'=>$initialCodeSmellCritical,
-      'initial_code_smell_major'=>$initialCodeSmellMajor,
-      'evolution_bug_blocker'=>$evolutionBugBlocker,
-      'evolution_bug_critical'=>$evolutionBugCritical,
-      'evolution_bug_major'=>$evolutionBugMajor,
-      'evolution_vulnerability_blocker'=>$evolutionVulnerabilityBlocker,
-      'evolution_vulnerability_critical'=>$evolutionVulnerabilityCritical,
-      'evolution_vulnerability_major'=>$evolutionVulnerabilityMajor,
-      'evolution_code_smell_blocker'=>$evolutionCodeSmellBlocker,
-      'evolution_code_smell_critical'=>$evolutionCodeSmellCritical,
-      'evolution_code_smell_major'=>$evolutionCodeSmellMajor,
-      'evolution_hotspot'=>$evolutionHotspot,
-      'modal_initial_bug_blocker'=>$initialBugBlocker,
-      'modal_initial_bug_critical'=>$initialBugCritical,
-      'modal_initial_bug_major'=>$initialBugMajor,
-      'modal_initial_vulnerability_blocker'=>$initialVulnerabilityBlocker,
-      'modal_initial_vulnerability_critical'=>$initialVulnerabilityCritical,
-      'modal_initial_vulnerability_major'=>$initialVulnerabilityMajor,
-      'modal_initial_code_smell_blocker'=>$initialCodeSmellBlocker,
-      'modal_initial_code_smell_critical'=>$initialCodeSmellCritical,
-      'modal_initial_code_smell_major'=>$initialCodeSmellMajor,
-      'modal_initial_hotspot'=>$initialHotspot,
-      'nombre_metier_code_smell_blocker'=>$nombreMetierCodeSmellBlocker,
-      'nombre_metier_code_smell_critical'=>$nombreMetierCodeSmellCritical,
-      'nombre_metier_code_smell_major'=>$nombreMetierCodeSmellMajor,
-      'nombre_presentation_code_smell_blocker'=>$nombrePresentationCodeSmellBlocker,
-      'nombre_presentation_code_smell_critical'=>$nombrePresentationCodeSmellCritical,
-      'nombre_presentation_code_smell_major'=>$nombrePresentationCodeSmellMajor,
-      'nombre_metier_reliability_blocker'=>$nombreMetierReliabilityBlocker,
-      'nombre_metier_reliability_critical'=>$nombreMetierReliabilityCritical,
-      'nombre_metier_reliability_major'=>$nombreMetierReliabilityMajor,
-      'nombre_presentation_reliability_blocker'=>$nombrePresentationReliabilityBlocker,
-      'nombre_presentation_reliability_critical'=>$nombrePresentationReliabilityCritical,
-      'nombre_presentation_reliability_major'=>$nombrePresentationReliabilityMajor,
-      'nombre_metier_vulnerability_blocker'=>$nombreMetierVulnerabilityBlocker,
-      'nombre_metier_vulnerability_critical'=>$nombreMetierVulnerabilityCritical,
-      'nombre_metier_vulnerability_major'=>$nombreMetierVulnerabilityMajor,
-      'nombre_presentation_vulnerability_blocker'=>$nombrePresentationVulnerabilityBlocker,
-      'nombre_presentation_vulnerability_critical'=>$nombrePresentationVulnerabilityCritical,
-      'nombre_presentation_vulnerability_major'=>$nombrePresentationVulnerabilityMajor,
-      'version' => $this->getParameter('version'), 'dateCopyright' => \date('Y')
-    ]);
+
+    $render=[
+    'setup'=>$setup, 'monApplication'=>$nameApplication, 'version_application'=>$versionApplication,
+    'type_application'=>$typeApplication, 'date_application'=>$dateApplication,
+    'note_code_smell'=>$noteCodeSmell, 'note_reliability'=>$noteReliability,
+    'note_security'=>$noteSecurity, 'note_hotspot'=>$noteHotspot, 'bug_blocker'=>$bugBlocker,
+    'bug_critical'=>$bugCritical, 'bug_major'=>$bugMajor, 'vulnerability_blocker'=>$vulnerabilityBlocker,
+    'vulnerability_critical'=>$vulnerabilityCritical, 'vulnerability_major'=>$vulnerabilityMajor,
+    'code_smell_blocker'=>$codeSmellBlocker, 'code_smell_critical'=>$codeSmellCritical,
+    'code_smell_major'=>$codeSmellMajor, 'hotspot'=>$hotspot,
+    'initial_version_application'=>$initialVersionApplication, 'initial_date_application'=>$initialDateApplication,
+    'initial_note_code_smell'=>$initialNoteCodeSmell, 'initial_note_reliability'=>$initialNoteReliability,
+    'initial_note_security'=>$initialNoteSecurity, 'initial_note_hotspot'=>$initialNoteHotspot,
+    'initial_bug_blocker'=>$initialBugBlocker, 'initial_bug_critical'=>$initialBugCritical,
+    'initial_bug_major'=>$initialBugMajor, 'initial_vulnerability_blocker'=>$initialVulnerabilityBlocker,
+    'initial_vulnerability_critical'=>$initialVulnerabilityCritical,
+    'initial_vulnerability_major'=>$initialVulnerabilityMajor,
+    'initial_code_smell_blocker'=>$initialCodeSmellBlocker,
+    'initial_code_smell_critical'=>$initialCodeSmellCritical, 'initial_code_smell_major'=>$initialCodeSmellMajor,
+    'evolution_bug_blocker'=>$evolutionBugBlocker, 'evolution_bug_critical'=>$evolutionBugCritical,
+    'evolution_bug_major'=>$evolutionBugMajor, 'evolution_vulnerability_blocker'=>$evolutionVulnerabilityBlocker,
+    'evolution_vulnerability_critical'=>$evolutionVulnerabilityCritical,
+    'evolution_vulnerability_major'=>$evolutionVulnerabilityMajor,
+    'evolution_code_smell_blocker'=>$evolutionCodeSmellBlocker,
+    'evolution_code_smell_critical'=>$evolutionCodeSmellCritical,
+    'evolution_code_smell_major'=>$evolutionCodeSmellMajor, 'evolution_hotspot'=>$evolutionHotspot,
+    'modal_initial_bug_blocker'=>$initialBugBlocker, 'modal_initial_bug_critical'=>$initialBugCritical,
+    'modal_initial_bug_major'=>$initialBugMajor,'modal_initial_vulnerability_blocker'=>$initialVulnerabilityBlocker,
+    'modal_initial_vulnerability_critical'=>$initialVulnerabilityCritical,
+    'modal_initial_vulnerability_major'=>$initialVulnerabilityMajor,
+    'modal_initial_code_smell_blocker'=>$initialCodeSmellBlocker,
+    'modal_initial_code_smell_critical'=>$initialCodeSmellCritical,
+    'modal_initial_code_smell_major'=>$initialCodeSmellMajor, 'modal_initial_hotspot'=>$initialHotspot,
+    'nombre_metier_code_smell_blocker'=>$nombreMetierCodeSmellBlocker,
+    'nombre_metier_code_smell_critical'=>$nombreMetierCodeSmellCritical,
+    'nombre_metier_code_smell_major'=>$nombreMetierCodeSmellMajor,
+    'nombre_presentation_code_smell_blocker'=>$nombrePresentationCodeSmellBlocker,
+    'nombre_presentation_code_smell_critical'=>$nombrePresentationCodeSmellCritical,
+    'nombre_presentation_code_smell_major'=>$nombrePresentationCodeSmellMajor,
+    'nombre_metier_reliability_blocker'=>$nombreMetierReliabilityBlocker,
+    'nombre_metier_reliability_critical'=>$nombreMetierReliabilityCritical,
+    'nombre_metier_reliability_major'=>$nombreMetierReliabilityMajor,
+    'nombre_presentation_reliability_blocker'=>$nombrePresentationReliabilityBlocker,
+    'nombre_presentation_reliability_critical'=>$nombrePresentationReliabilityCritical,
+    'nombre_presentation_reliability_major'=>$nombrePresentationReliabilityMajor,
+    'nombre_metier_vulnerability_blocker'=>$nombreMetierVulnerabilityBlocker,
+    'nombre_metier_vulnerability_critical'=>$nombreMetierVulnerabilityCritical,
+    'nombre_metier_vulnerability_major'=>$nombreMetierVulnerabilityMajor,
+    'nombre_presentation_vulnerability_blocker'=>$nombrePresentationVulnerabilityBlocker,
+    'nombre_presentation_vulnerability_critical'=>$nombrePresentationVulnerabilityCritical,
+    'nombre_presentation_vulnerability_major'=>$nombrePresentationVulnerabilityMajor,
+    'version' => $this->getParameter('version'), 'dateCopyright' => \date('Y'),
+    'mode'=>$mode,
+    Response::HTTP_OK
+    ];
+
+    if ($mode==='TEST') {
+      array_push($render,['notes'=>$n]);
+      return $response->setData($render);
+    } else {
+      return $this->render('projet/cosui.html.twig',[$render]);
+    }
   }
 
 }
