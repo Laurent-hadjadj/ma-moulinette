@@ -140,16 +140,20 @@ class SuiviController extends AbstractController
     /** On crée un objet de reponse JSON */
     $response = new JsonResponse();
 
-    $mode='';
     /** On on vérifie si on a activé le mode test */
-    $mode = $request->get('mode');
-     /** On récupère la clé du projet */
+    if (is_null($request->get('mode'))) {
+      $mode="null";
+    } else {
+      $mode = $request->get('mode');
+    }
+
+    /** On récupère la clé du projet */
     $mavenKey = $request->get('mavenKey');
 
-      /** On teste si la clé est valide */
-      if (is_null($mavenKey) && $mode==="TEST") {
-        return $response->setData(["mode"=>$mode, "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
-      }
+    /** On teste si la clé est valide */
+    if (is_null($mavenKey) && $mode==="TEST") {
+      return $response->setData(["mode"=>$mode, "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+    }
 
     /** Tableau de suivi principal */
     $sql = "SELECT * FROM
@@ -293,10 +297,14 @@ class SuiviController extends AbstractController
     /** On crée un objet de reponse JSON */
     $response = new JsonResponse();
 
-    $mode='';
     /** On on vérifie si on a activé le mode test */
-    $mode = $request->get('mode');
-      /** On récupère la clé du projet */
+    if (is_null($request->get('mode'))) {
+      $mode="null";
+    } else {
+      $mode = $request->get('mode');
+    }
+
+    /** On récupère la clé du projet */
     $mavenKey = $request->get('mavenKey');
     $exception = $request->get('exception');
 
@@ -364,9 +372,14 @@ class SuiviController extends AbstractController
 
     /** On crée un objet de reponse JSON */
     $response = new JsonResponse();
-    $mode='';
+
     /** On on vérifie si on a activé le mode test */
-    $mode=$data->mode;
+    if (is_null($request->get('mode'))) {
+      $mode="null";
+    } else {
+      $mode=$data->mode;
+    }
+
 
     /** Réponse HTTP */
     $message=200;
@@ -635,7 +648,7 @@ class SuiviController extends AbstractController
 
     /** On crée un objet de reponse JSON */
     $response = new JsonResponse();
-    $mode='';
+
     /** On on vérifie si on a activé le mode test */
     $mode=$data->mode;
 
@@ -794,9 +807,13 @@ class SuiviController extends AbstractController
 
     /** On crée un objet de reponse JSON */
     $response = new JsonResponse();
-    $mode='';
+
     /** On on vérifie si on a activé le mode test */
-    $mode=$data->mode;
+    if (is_null($request->get('mode'))) {
+      $mode="null";
+    } else {
+      $mode=$data->mode;
+    }
 
     /** On teste si la clé est valide */
     if ($mavenKey==="null" && $mode==="TEST") {

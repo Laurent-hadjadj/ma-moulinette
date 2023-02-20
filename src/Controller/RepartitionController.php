@@ -56,9 +56,13 @@ class RepartitionController extends AbstractController
     #[Route('/projet/repartition', name: 'projet_repartition')]
     public function projetRepartition(Request $request): Response
     {
-      $mode='';
-     /** On on vérifie si on a activer le mode test */
-      $mode = $request->get('mode');
+      /** On on vérifie si on a activé le mode test */
+      if (is_null($request->get('mode'))) {
+        $mode="null";
+      } else {
+        $mode = $request->get('mode');
+      }
+
       /** On récupère la clé du projet */
       $mavenKey = $request->get('mavenKey');
       $response = new JsonResponse();
