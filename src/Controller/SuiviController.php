@@ -626,7 +626,7 @@ class SuiviController extends AbstractController
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  #[Route('/api/suivi/version/liste', name: 'suivi_version_liste', methods: ['PUT'])]
+  #[Route('/api/suivi/version/liste', name: 'suivi_version_liste', methods: ['POST'])]
   public function suiviVersionListe(Request $request): Response
   {
     /** On décode le body */
@@ -650,7 +650,7 @@ class SuiviController extends AbstractController
     /**  On récupère les versions et la date pour la clé du projet. */
     $sql = "SELECT maven_key, version, date_version as date, favori, initial
             FROM historique
-            WHERE maven_key='${mavenKey}'
+            WHERE maven_key='$mavenKey'
             ORDER BY date_version DESC";
 
     /** On exécute la requête. */
