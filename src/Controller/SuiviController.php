@@ -374,7 +374,7 @@ class SuiviController extends AbstractController
     $response = new JsonResponse();
 
     /** On on vérifie si on a activé le mode test */
-    if (is_null($request->get('mode'))) {
+    if (is_null($data->mode)) {
       $mode="null";
     } else {
       $mode=$data->mode;
@@ -650,7 +650,11 @@ class SuiviController extends AbstractController
     $response = new JsonResponse();
 
     /** On on vérifie si on a activé le mode test */
-    $mode=$data->mode;
+    if (is_null($data->mode)) {
+      $mode="null";
+    } else {
+      $mode=$data->mode;
+    }
 
     /** On teste si la clé est valide */
     if ($mavenKey==="null" && $mode==="TEST") {
@@ -809,7 +813,7 @@ class SuiviController extends AbstractController
     $response = new JsonResponse();
 
     /** On on vérifie si on a activé le mode test */
-    if (is_null($request->get('mode'))) {
+    if (is_null($data->mode)) {
       $mode="null";
     } else {
       $mode=$data->mode;
