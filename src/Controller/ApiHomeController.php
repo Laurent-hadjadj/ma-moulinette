@@ -13,28 +13,29 @@
 
 namespace App\Controller;
 
-use Symfony\Component\Routing\Annotation\Route;
+use DateTime;
 
 /** Core */
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
+use DateTimeZone;
+use App\Entity\Main\Tags;
 
 /** Gestion du temps */
-use DateTime;
-use DateTimeZone;
+use Psr\Log\LoggerInterface;
+use App\Entity\Main\Profiles;
 
 /** Accès aux tables SLQLite */
-use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Main\Tags;
-use App\Entity\Main\Profiles;
 use App\Entity\Main\ListeProjet;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /** Gestion de accès aux API */
-use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 /** Logger */
-use Psr\Log\LoggerInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class ApiHomeController extends AbstractController
 {
@@ -93,9 +94,7 @@ class ApiHomeController extends AbstractController
 
     $response = $this->client->request('GET', $url,
       [
-        'ciphers' => `AES128-SHA AES256-SHA  DH-RSA-AES128-SHA
-          DH-RSA-AES256-SHA DHE-DSS-AES128-SHA DHE-DSS-AES256-SHA DHE-RSA-AES128-SHA
-          DHE-RSA-AES256-SHA ADH-AES128-SHA ADH-AES256-SHA`,
+        'ciphers' => 'DH-RSA-AES256-SHA DHE-DSS-AES128-SHA DHE-DSS-AES256-SHA     DHE-RSA-AES128-SHA DHE-RSA-AES256-SHA ADH-AES128-SHA ADH-AES256-SHA',
         'auth_basic' => [$user, $password], 'timeout' => 45,
         'headers' => ['Accept' => static::$strContentType,
         'Content-Type' => static::$strContentType]
@@ -109,7 +108,7 @@ class ApiHomeController extends AbstractController
         throw new \UnexpectedValueException('Erreur d\'Authentification. La clé n\'est pas correcte.');
       } else {
         throw new \UnexpectedValueException('Retour de la réponse différent de ce qui est prévu. Erreur ' .
-          $response->getStatusCode());
+        $response->getStatusCode());
       }
     }
 
@@ -150,7 +149,7 @@ class ApiHomeController extends AbstractController
    * @return response
    *
    * Created at: 15/12/2022, 21:14:20 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/health', name: 'sonar_health', methods: ['GET'])]
@@ -174,7 +173,7 @@ class ApiHomeController extends AbstractController
    * @return response
    *
    * Created at: 15/12/2022, 21:14:39 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/system/info', name: 'information_systeme', methods: ['GET'])]
@@ -195,12 +194,22 @@ class ApiHomeController extends AbstractController
    * @return response
    *
    * Created at: 15/12/2022, 21:15:04 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/projet/liste', name: 'projet_liste', methods: ['GET'])]
-  public function projetListe(): response
+  public function projetListe(Request $request): response
   {
+    /** On crée un objet de reponse JSON */
+    $response = new JsonResponse();
+
+    /** On vérifie si on a activé le mode test */
+    if (is_null($request->get('mode'))) {
+      $mode="null";
+    } else {
+      $mode = $request->get('mode');
+    }
+
     $url = $this->getParameter(static::$sonarUrl) . "/api/components/search?qualifiers=TRK&ps=500&p=1";
 
     /** On appel le client http */
@@ -212,7 +221,9 @@ class ApiHomeController extends AbstractController
     /** On supprime les données de la table avant d'importer les données. */
     $sql = "DELETE FROM liste_projet";
     $delete = $this->em->getConnection()->prepare($sql);
-    $delete->executeQuery();
+    if ($mode!='TEST') {
+      $delete->executeQuery();
+    }
 
     /**  On compte le nombre de projet et on insert les projets dans la table liste_projet. */
     foreach ($result["components"] as $component) {
@@ -229,7 +240,9 @@ class ApiHomeController extends AbstractController
         $listeProjet->setMavenKey($component["project"]);
         $listeProjet->setDateEnregistrement($date);
         $this->em->persist($listeProjet);
-        $this->em->flush();
+        if ($mode!='TEST') {
+          $this->em->flush();
+        }
       }
     }
 
@@ -241,10 +254,13 @@ class ApiHomeController extends AbstractController
         projet_sonar = ${nombre},
         date_modification_projet = '${dateModificationProjet}'
     WHERE type = 'properties'";
-    $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
+    if ($mode!='TEST') {
+      $this->em->getConnection()
+                ->prepare(trim(preg_replace(static::$regex, " ", $sql)))
+                ->executeQuery();
+    }
 
-    $response = new JsonResponse();
-    $response->setData(["nombre" => $nombre, Response::HTTP_OK]);
+    $response->setData(["nombre" => $nombre, 'mode'=>$mode, Response::HTTP_OK]);
     return $response;
   }
 
@@ -252,18 +268,24 @@ class ApiHomeController extends AbstractController
   /**
    * [Description for listeQualityProfiles]
    * liste_quality_profiles
-   * Renvoie la liste des profils qualité
+   * Renvoie la liste des profils qualités
    * http://{url}/api/qualityprofiles/search?qualityProfile={name}
    *
    * @return response
    *
    * Created at: 15/12/2022, 21:15:43 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/quality/profiles', name: 'liste_quality_profiles', methods: ['GET'])]
-  public function listeQualityProfiles(): response
+  public function listeQualityProfiles(Request $request): response
   {
+    /** On crée un objet de reponse JSON */
+    $response = new JsonResponse();
+
+    /** On on vérifie si on a activé le mode test */
+    $mode = $request->get('mode');
+
     $url = $this->getParameter(static::$sonarUrl)
           . "/api/qualityprofiles/search?qualityProfile="
           . $this->getParameter('sonar.profiles');
@@ -278,7 +300,9 @@ class ApiHomeController extends AbstractController
     /** On supprime les données de la table avant d'importer les données;*/
     $sql = "DELETE FROM profiles";
     $delete = $this->em->getConnection()->prepare($sql);
-    $delete->executeQuery();
+    if ($mode!="TEST") {
+      $delete->executeQuery();
+    }
 
     /** On insert les profiles dans la table profiles. */
     foreach ($result["profiles"] as $profil) {
@@ -294,7 +318,9 @@ class ApiHomeController extends AbstractController
       $profils->setRulesUpdateAt($rulesDate);
       $profils->setDateEnregistrement($date);
       $this->em->persist($profils);
-      $this->em->flush();
+      if ($mode!="TEST") {
+        $this->em->flush();
+      }
     }
 
     /** On récupère la liste des profils; */
@@ -312,10 +338,13 @@ class ApiHomeController extends AbstractController
         profil_sonar = ${nombre},
         date_modification_profil = '${dateModificationProfil}'
     WHERE type = 'properties'";
-    $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
 
-    $response = new JsonResponse();
-    return $response->setData(["listeProfil" => $liste, Response::HTTP_OK]);
+    if ($mode!="TEST") {
+        $this->em->getConnection()
+              ->prepare(trim(preg_replace(static::$regex, " ", $sql)))
+              ->executeQuery();
+    }
+    return $response->setData(["mode"=>$mode, "listeProfil" => $liste, Response::HTTP_OK]);
   }
 
   /**
@@ -325,14 +354,21 @@ class ApiHomeController extends AbstractController
    * @return response
    *
    * Created at: 15/12/2022, 21:16:25 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/tags', name: 'tags', methods: ['GET'])]
-  public function tags(): response
+  public function tags(Request $request): response
   {
     /** oN créé un objet réponse */
     $response = new JsonResponse();
+
+    /** On on vérifie si on a activé le mode test */
+    if (is_null($request->get('mode'))) {
+      $mode="null";
+    } else {
+      $mode = $request->get('mode');
+    }
 
     $url = $this->getParameter(static::$sonarUrl)."/api/components/search_projects?ps=500";
 
@@ -374,7 +410,9 @@ class ApiHomeController extends AbstractController
         $tags->setVisibility($projet["visibility"]);
         $tags->setDateEnregistrement($date);
         $this->em->persist($tags);
-        $this->em->flush();
+        if ($mode!='TEST') {
+          $this->em->flush();
+        }
 
         /** On calcul le nombre de projet public et privé */
         if ($projet["visibility"]=='public') {
@@ -388,10 +426,12 @@ class ApiHomeController extends AbstractController
           $emptyTags++;
         }
       }
+
       /** on renvoie les résultats */
       $message="Initialisation de la liste des Tags...";
       return $response->setData(
         [
+          "mode"=>$mode,
           "message" => $message,
           "public"=> $public,
           "private"=>$private,
@@ -467,7 +507,7 @@ class ApiHomeController extends AbstractController
     //select json_extract(tags, '$.lot.name') as father_name from tags
 
     return $response->setData(
-      [
+      [ "mode"=>$mode,
         "message" => $message,
         "public"=>$public, "private"=>$private,
         "empty_tags"=>$emptyTags,
@@ -484,7 +524,7 @@ class ApiHomeController extends AbstractController
    * @return response
    *
    * Created at: 15/12/2022, 21:17:03 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/visibility', name: 'visibility', methods: ['GET'])]
