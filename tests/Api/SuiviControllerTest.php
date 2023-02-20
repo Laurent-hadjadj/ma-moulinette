@@ -327,13 +327,13 @@ class SuiviControllerTest extends ApiTestCase
     $password='password';
     $requestData=['mavenKey'=>static::$mavenkey, 'mode'=>"TEST"];
     $requestJson = json_encode($requestData, JSON_THROW_ON_ERROR);
-    $response=$httpClient->request('PUT', $uriBase,
+    $response=$httpClient->request('POST', $uriBase,
       [ 'headers' => [ 'Accept' => '*/*',
         'Content-Type' => static::$strContentType,
         'auth_basic' => [$user, $password]],'body'=> $requestJson
       ]);
 
-    $this->assertEquals('PUT', $mockResponse->getRequestMethod());
+    $this->assertEquals('POST', $mockResponse->getRequestMethod());
     $this->assertEquals($uriBase, $mockResponse->getRequestUrl());
     $header=$mockResponse->getRequestOptions()['headers'];
     $this->assertEquals('Accept: */*', $header[0]);
@@ -365,7 +365,7 @@ class SuiviControllerTest extends ApiTestCase
     $client->loginUser($testUser);
 
     $data=['mavenKey'=>'null', 'mode'=>'TEST'];
-    $client->request('PUT', '/api/suivi/version/liste', ['json'=>$data] );
+    $client->request('POST', '/api/suivi/version/liste', ['json'=>$data] );
     $response = $client->getResponse()->getContent();
     $decode=json_decode($response, true, 512, JSON_THROW_ON_ERROR);
     $this->assertResponseIsSuccessful();
@@ -374,7 +374,7 @@ class SuiviControllerTest extends ApiTestCase
     $this->assertEquals('400', $decode[0]);
     $info=$client->getResponse()->getInfo();
     $this->assertNull($info['error']);
-    $this->assertEquals('PUT', $info['http_method']);
+    $this->assertEquals('POST', $info['http_method']);
     $this->assertEquals('TEST', $decode['mode']);
     $this->assertEquals('null', $decode['mavenKey']);
   }
@@ -396,7 +396,7 @@ class SuiviControllerTest extends ApiTestCase
     $client->loginUser($testUser);
 
     $data=['mavenKey'=>static::$mavenkey, 'mode'=>'TEST'];
-    $client->request('PUT', '/api/suivi/version/liste', ['json'=>$data] );
+    $client->request('POST', '/api/suivi/version/liste', ['json'=>$data] );
     $response = $client->getResponse()->getContent();
     $decode=json_decode($response, true, 512, JSON_THROW_ON_ERROR);
     $this->assertResponseIsSuccessful();
@@ -405,7 +405,7 @@ class SuiviControllerTest extends ApiTestCase
     $this->assertEquals('200', $decode[0]);
     $info=$client->getResponse()->getInfo();
     $this->assertNull($info['error']);
-    $this->assertEquals('PUT', $info['http_method']);
+    $this->assertEquals('POST', $info['http_method']);
     $this->assertIsArray($decode);
     $this->assertEquals(3,count($decode));
     $this->assertEquals('OK', $decode['code']);
