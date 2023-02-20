@@ -47,7 +47,7 @@ class ApiProjetRepartitionController extends AbstractController
    * @param  private
    *
    * Created at: 04/12/2022, 09:00:38 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   public function __construct(
@@ -154,9 +154,7 @@ class ApiProjetRepartitionController extends AbstractController
 
     $response = $this->client->request('GET', $url,
       [
-        'ciphers' => `
-        DH-RSA-AES128-SHA DH-RSA-AES256-SHA DHE-DSS-AES128-SHA DHE-DSS-AES256-SHA
-        DHE-RSA-AES128-SHA DHE-RSA-AES256-SHA ADH-AES128-SHA ADH-AES256-SHA`,
+        'ciphers' => 'DH-RSA-AES256-SHA DHE-DSS-AES128-SHA DHE-DSS-AES256-SHA DHE-RSA-AES128-SHA DHE-RSA-AES256-SHA ADH-AES128-SHA ADH-AES256-SHA',
         'auth_basic' => [$user, $password], 'timeout' => 45,
         'headers' => ['Accept' => static::$strContentType,
         'Content-Type' => static::$strContentType]
@@ -237,7 +235,7 @@ class ApiProjetRepartitionController extends AbstractController
    * INFO,MINOR,MAJOR,CRITICAL,BLOCKER
    *
    * Created at: 04/12/2022, 09:03:46 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/projet/repartition/details', name: 'projet_repartition_details', methods: ['GET'])]
@@ -245,6 +243,12 @@ class ApiProjetRepartitionController extends AbstractController
   {
     $mavenKey=$request->get('mavenKey');
     $type=$request->get('type');
+
+    $response = new JsonResponse();
+    /** On teste si la clé est valide */
+    if (is_null($mavenKey)) {
+      return $response->setData(["message" => "la clé maven est vide!", Response::HTTP_BAD_REQUEST]);
+    }
 
     /** On récupère le nombre d'anomalie pour le type */
     $severity=['INFO','MINOR','MAJOR','CRITICAL','BLOCKER'];
@@ -269,7 +273,6 @@ class ApiProjetRepartitionController extends AbstractController
       $total=$total+$result['total'];
     }
 
-    $response = new JsonResponse();
     return $response->setData(
       ["total" => $total,
         "type" => $type,
