@@ -89,9 +89,11 @@ class SuiviController extends AbstractController
       $password = '';
     }
 
+    $ciphers= "DH-RSA-AES128-SHA DH-RSA-AES256-SHA DHE-DSS-AES128-SHA DHE-DSS-AES256-SHA
+                DHE-RSA-AES128-SHA DHE-RSA-AES256-SHA DH-AES128-SHA ADH-AES256-SHA";
     $option=
-      ['ciphers' => 'DH-RSA-AES128-SHA DH-RSA-AES256-SHA DHE-DSS-AES128-SHA DHE-DSS-AES256-SHA
-        DHE-RSA-AES128-SHA DHE-RSA-AES256-SHA DH-AES128-SHA ADH-AES256-SHA',
+      [
+        'ciphers' => trim(preg_replace(static::$regex, " ", $ciphers)),
         'auth_basic' => [$user, $password], 'timeout' => 45,
         'headers' => ['Accept' => 'Accept: */*', 'Content-Type' => static::$strContentType]
       ];
