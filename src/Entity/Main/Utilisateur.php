@@ -165,20 +165,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * [Description for getActif]
-     *
-     * @return [type]
-     *
-     * Created at: 02/01/2023, 18:11:54 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getActif()
-    {
-        return $this->actif;
-    }
-
-    /**
      * [Description for setActif]
      *
      * @param bool $actif
