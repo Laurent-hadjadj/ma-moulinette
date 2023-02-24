@@ -203,9 +203,8 @@ class UtilisateurTest extends TestCase
     $this->assertSame($d['roles'], $p->getRoles());
     $this->assertSame($d['equipe'], $p->getEquipe());
     $this->assertSame($d['password'], $p->getPassword());
-    $this->assertFalse(false, $p->getActif());
+    $this->assertFalse(false, $p->isActif());
     $this->assertNull($p->getSalt());
-    $this->assertFalse($p->isActif(), $p->getActif());
     $this->assertSame($d['dateModification'], $p->getDateModification());
     $this->assertSame($d['dateEnregistrement'], $p->getDateEnregistrement());
   }
