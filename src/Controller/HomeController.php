@@ -90,14 +90,15 @@ class HomeController extends AbstractController
         $password = '';
         }
 
+        $ciphers= "DH-RSA-AES128-SHA DH-RSA-AES256-SHA DHE-DSS-AES128-SHA DHE-DSS-AES256-SHA
+        DHE-RSA-AES128-SHA DHE-RSA-AES256-SHA DH-AES128-SHA ADH-AES256-SHA";
         $response = $this->client->request('GET', $url,
-        [
-          'ciphers' => `DH-RSA-AES256-SHA DHE-DSS-AES128-SHA DHE-DSS-AES256-SHA
-          DHE-RSA-AES128-SHADHE-RSA-AES256-SHA ADH-AES128-SHA ADH-AES256-SHA`,
-          'auth_basic' => [$user, $password], 'timeout' => 45,
-          'headers' => ['Accept' => static::$strContentType,
-          'Content-Type' => static::$strContentType]
-        ]
+          [
+            'ciphers' => trim(preg_replace(static::$regex, " ", $ciphers)),
+            'auth_basic' => [$user, $password], 'timeout' => 45,
+            'headers' => ['Accept' => static::$strContentType,
+            'Content-Type' => static::$strContentType]
+          ]
         );
 
         /** Si la réponse est différente de HTTP: 200 alors... */
