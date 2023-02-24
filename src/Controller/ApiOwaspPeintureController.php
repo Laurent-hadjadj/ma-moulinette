@@ -26,6 +26,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class ApiOwaspPeintureController extends AbstractController
 {
+  public static $erreurMavenKey="La clé maven est vide!";
 
   /**
    * [Description for __construct]
@@ -62,7 +63,7 @@ class ApiOwaspPeintureController extends AbstractController
     $response = new JsonResponse();
     /** On teste si la clé est valide */
     if (is_null($mavenKey)) {
-      return $response->setData(["message" => "la clé maven est vide!", Response::HTTP_BAD_REQUEST]);
+      return $response->setData(["message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
     }
 
     /** On récupère les failles owasp */
@@ -180,7 +181,7 @@ class ApiOwaspPeintureController extends AbstractController
 
     /** On teste si la clé est valide */
     if (is_null($mavenKey)) {
-      return $response->setData(["message" => "la clé maven est vide!", Response::HTTP_BAD_REQUEST]);
+      return $response->setData(["message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
     }
 
     /** On compte le nombre de hotspot REVIEWED */
@@ -252,7 +253,7 @@ class ApiOwaspPeintureController extends AbstractController
 
     /** On teste si la clé est valide */
     if (is_null($mavenKey)) {
-      return $response->setData(["message" => "la clé maven est vide!", Response::HTTP_BAD_REQUEST]);
+      return $response->setData(["message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
     }
 
     /** On compte le nombre de hotspot de type OWASP au statut TO_REVIEWED */
@@ -330,7 +331,7 @@ class ApiOwaspPeintureController extends AbstractController
 
     /** On teste si la clé est valide */
     if (is_null($mavenKey)) {
-      return $response->setData(["message" => "la clé maven est vide!", Response::HTTP_BAD_REQUEST]);
+      return $response->setData(["message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
     }
 
     /** On compte le nombre de hotspot de type OWASP au statut TO_REVIEWED */
@@ -369,7 +370,7 @@ class ApiOwaspPeintureController extends AbstractController
 
     /** On teste si la clé est valide */
     if (is_null($mavenKey)) {
-      return $response->setData(["message" => "la clé maven est vide!", Response::HTTP_BAD_REQUEST]);
+      return $response->setData(["message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
     }
 
     $strSelect = "SELECT count(*) as total FROM hotspot_owasp WHERE maven_key='";
