@@ -26,7 +26,7 @@ class ProfilControllerTest extends ApiTestCase
   public static $strContentType = 'application/json';
 
   /**
-   * [Description for testProjet200()]
+   * [Description for testProfil()]
    * On appel le controller qui génére la vue en mode TEST
    * Retour HTTP 200
    * @return void
