@@ -50,8 +50,8 @@ class ApiOwaspPeintureControllerTest extends ApiTestCase
   }
 
   /**
-   * [Description for testApiPeintureProjetAnomalieDetails200]
-   * On test l'API api/peinture/projet/anomalie/details avec une clé maven
+   * [Description for testApiPeintureOwaspListe200]
+   * On test l'API api/peinture/owasp/liste avec une clé maven
    * Retour : 200 | 406
    *
    * @return void
@@ -167,7 +167,7 @@ class ApiOwaspPeintureControllerTest extends ApiTestCase
   }
 
   /**
-   * [Description for testApiPeintureProjetAnomalieDetails200]
+   * [Description for testApiPeintureOwaspHotspotInfo200]
    * On test l'API api/peinture/projet/anomalie/details avec une clé maven
    * Retour : 200 | 406
    *
