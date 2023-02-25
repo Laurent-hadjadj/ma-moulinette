@@ -25,7 +25,7 @@ class EquipeUniqueTest extends KernelTestCase
    */
   private $entityManager;
 
-  private static $titre="MA PETITE ENTREPRISE";
+  private static $titre="MA MOULINETTE";
 
   /**
    * [Description for setUp]
@@ -59,7 +59,7 @@ class EquipeUniqueTest extends KernelTestCase
   {
       $getTitre = $this->entityManager
           ->getRepository(Equipe::class)
-          ->findOneBy(['titre' => 'MA PETITE ENTREPRISE']);
+          ->findOneBy(['titre' => 'MA MOULINETTE']);
 
       if ($getTitre){
         $this->assertSame(static::$titre, $getTitre->getTitre(), "[Equipe] Le titre exsite déjà !");
