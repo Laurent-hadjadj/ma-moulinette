@@ -24,7 +24,7 @@ use Symfony\Component\HttpClient\Response\MockResponse;
 class ProjetControllerTest extends ApiTestCase
 {
   private static $userTest='admin@ma-moulinette.fr';
-  private static $mavenKey='mavenKey=fr.franceagrimer:ma-moulinette';
+  private static $mavenKey='mavenKey=fr.ma-moulinette:ma-moulinette';
   private static $applicationJson='application/json';
   public static $strContentType = 'application/json';
 
@@ -190,7 +190,7 @@ class ProjetControllerTest extends ApiTestCase
     $this->assertArrayHasKey('version', $decode);
     $this->assertArrayHasKey('dateCopyright', $decode);
 
-    $this->assertEquals('NaN', $decode['setup']);
+    $this->assertEquals('1677324427466', $decode['setup']);
     $this->assertEquals('ma-moulinette', $decode['monApplication']);
     $this->assertEquals('1.6.0', $decode['version_application']);
     $this->assertEquals('RELEASE', $decode['type_application']);
@@ -246,16 +246,16 @@ class ProjetControllerTest extends ApiTestCase
     $this->assertEquals(2, $decode['modal_initial_hotspot']);
     $this->assertEquals(0, $decode['nombre_metier_code_smell_blocker']);
     $this->assertEquals(0, $decode['nombre_metier_code_smell_critical']);
-    $this->assertEquals(0, $decode['nombre_metier_code_smell_major']);
-    $this->assertEquals(0, $decode['nombre_presentation_code_smell_blocker']);
-    $this->assertEquals(0, $decode['nombre_presentation_code_smell_critical']);
-    $this->assertEquals(0, $decode['nombre_presentation_code_smell_major']);
+    $this->assertEquals(1087, $decode['nombre_metier_code_smell_major']);
+    $this->assertEquals(17, $decode['nombre_presentation_code_smell_blocker']);
+    $this->assertEquals(133, $decode['nombre_presentation_code_smell_critical']);
+    $this->assertEquals(1087, $decode['nombre_presentation_code_smell_major']);
     $this->assertEquals(0, $decode['nombre_metier_reliability_blocker']);
     $this->assertEquals(0, $decode['nombre_metier_reliability_critical']);
     $this->assertEquals(0, $decode['nombre_metier_reliability_major']);
     $this->assertEquals(0, $decode['nombre_presentation_reliability_blocker']);
     $this->assertEquals(0, $decode['nombre_presentation_reliability_critical']);
-    $this->assertEquals(0, $decode['nombre_presentation_reliability_major']);
+    $this->assertEquals(31, $decode['nombre_presentation_reliability_major']);
     $this->assertEquals(0, $decode['nombre_metier_vulnerability_blocker']);
     $this->assertEquals(0, $decode['nombre_metier_vulnerability_critical']);
     $this->assertEquals(0, $decode['nombre_metier_vulnerability_major']);
