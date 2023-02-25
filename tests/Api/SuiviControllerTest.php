@@ -26,8 +26,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class SuiviControllerTest extends ApiTestCase
 {
   private static $userTest='admin@ma-moulinette.fr';
-  private static $mavenKey='mavenKey=fr.franceagrimer:ma-moulinette';
-  private static $mavenkey='fr.franceagrimer:ma-moulinette';
+  private static $mavenKey='mavenKey=fr.ma-moulinette:ma-moulinette';
+  private static $mavenkey='fr.ma-moulinette:ma-moulinette';
   private static $applicationJson='application/json';
   public static $strContentType = 'application/json';
 

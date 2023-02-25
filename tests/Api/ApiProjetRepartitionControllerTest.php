@@ -20,7 +20,7 @@ use App\Controller\ApiProfilController;
 class ApiProjetRepartitionControllerTest extends ApiTestCase
 {
   private static $userTest='admin@ma-moulinette.fr';
-  private static $mavenKey='mavenKey=fr.franceagrimer:ma-moulinette';
+  private static $mavenKey='mavenKey=fr.ma-moulinette:ma-moulinette';
 
   /**
    * [Description for testApiProjetrepartition400()]
