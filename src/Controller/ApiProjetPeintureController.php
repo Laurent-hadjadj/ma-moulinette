@@ -387,7 +387,7 @@ class ApiProjetPeintureController extends AbstractController
   }
 
   /**
-   * [Description for peintureProjetAnomalie_details]
+   * [Description for peintureProjetAnomalieDetails]
    * Récupère le détails des anomalies pour chaque type
    *
    * @param Request $request
@@ -395,11 +395,11 @@ class ApiProjetPeintureController extends AbstractController
    * @return response
    *
    * Created at: 15/12/2022, 21:56:17 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/peinture/projet/anomalie/details', name: 'peinture_projet_anomalie_details', methods: ['GET'])]
-  public function peintureProjetAnomalie_details(Request $request): response
+  public function peintureProjetAnomalieDetails(Request $request): response
   {
     $mavenKey = $request->get('mavenKey');
     $response = new JsonResponse();
