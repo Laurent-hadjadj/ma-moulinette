@@ -54,6 +54,7 @@ class ApiProjetController extends AbstractController
   public static $europeParis = "Europe/Paris";
   public static $apiIssuesSearch = "/api/issues/search?componentKeys=";
   public static $regex = "/\s+/u";
+  public static $erreurMavenKey="La clé maven est vide!";
 
   /**
    * [Description for __construct]
@@ -77,12 +78,6 @@ class ApiProjetController extends AbstractController
   }
 
   /**
-   * date_to_minute
-   *
-   * @param  mixed $str
-   * @return ($jour * 24 * 60) + ($heure * 60) + intval($minute)
-   */
-  /**
    * [Description for date_to_minute]
    * Fonction privée pour convertir une date au format xxd aah xxmin en minutes
    *
@@ -91,7 +86,7 @@ class ApiProjetController extends AbstractController
    * return ($jour * 24 * 60) + ($heure * 60) + intval($minute)
    *
    * Created at: 15/12/2022, 21:25:32 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   protected function date_to_minute($str)
@@ -137,7 +132,7 @@ class ApiProjetController extends AbstractController
    * @return string
    *
    * Created at: 15/12/2022, 21:26:17 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   protected function minutesTo($minutes): string
@@ -163,7 +158,7 @@ class ApiProjetController extends AbstractController
    * @return array
    *
    * Created at: 15/12/2022, 21:26:42 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   protected function httpClient($url):array
@@ -176,17 +171,16 @@ class ApiProjetController extends AbstractController
       $password = '';
     }
 
+    $ciphers="AES128-SHA AES256-SHA DH-RSA-AES128-SHA DH-RSA-AES256-SHA
+              DHE-DSS-AES128-SHA DHE-DSS-AES256-SHA DHE-RSA-AES128-SHA DHE-RSA-AES256-SHA DH-AES128-SHA ADH-AES256-SHA";
     $response = $this->client->request(
-      'GET',
-      $url,
+      'GET', $url,
       [
-        'ciphers' => `
-        DH-RSA-AES128-SHA DH-RSA-AES256-SHA DHE-DSS-AES128-SHA DHE-DSS-AES256-SHA
-        DHE-RSA-AES128-SHA DHE-RSA-AES256-SHA ADH-AES128-SHA ADH-AES256-SHA`,
+        'ciphers' => trim(preg_replace(static::$regex, " ", $ciphers)),
         'auth_basic' => [$user, $password], 'timeout' => 45,
         'headers' => [
-          'Accept' => static::$strContentType,
-          'Content-Type' => static::$strContentType
+        'Accept' => static::$strContentType,
+        'Content-Type' => static::$strContentType
         ]
       ]
     );
@@ -218,21 +212,39 @@ class ApiProjetController extends AbstractController
    * @return response
    *
    * Created at: 15/12/2022, 21:27:08 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/favori', name: 'favori', methods: ['GET'])]
   public function favori(Request $request): response
   {
+    /** oN créé un objet réponse */
+    $response = new JsonResponse();
+
+    /** On on vérifie si on a activé le mode test */
+    if (is_null($request->get('mode'))) {
+      $mode="null";
+    } else {
+      $mode = $request->get('mode');
+    }
+
     /** On bind les variables */
     $mavenKey = $request->get('mavenKey');
     $statut = $request->get('statut');
+
+    /** On teste si la clé est valide */
+    if ($mavenKey==="null" && $mode==="TEST") {
+      return $response->setData([
+        "mode"=>$mode, "mavenKey"=>$mavenKey, "statut"=>$statut,
+        "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+    }
+
     $date = new DateTime();
     $date->setTimezone(new DateTimeZone(static::$europeParis));
     $tempoDate = $date->format(static::$dateFormat);
 
     /** On vérifie si le projet est déjà en favori */
-    $sql = "SELECT * FROM favori WHERE maven_key='${mavenKey}'";
+    $sql = "SELECT * FROM favori WHERE maven_key='$mavenKey'";
     $select = $this->em->getConnection()->prepare($sql)->executeQuery();
 
     /** Si on a pas trouvé l'application dans la liste des favoris, alors on la rajoute. */
@@ -241,17 +253,22 @@ class ApiProjetController extends AbstractController
     if (empty($select->fetchAllAssociative())) {
       $sql = "INSERT INTO favori ('maven_key', 'favori', 'date_enregistrement')
         VALUES ('${mavenKey}', 1, '${tempoDate}')";
-      $this->em->getConnection()->prepare($sql)->executeQuery();
+      if ($mode!="TEST"){
+          $this->em->getConnection()->prepare($sql)->executeQuery();
+      }
     } else {
       $sql = "UPDATE favori SET favori='${statut}',
               date_enregistrement='${tempoDate}'
               WHERE maven_key='${mavenKey}'";
-      $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
+      if ($mode!="TEST"){
+        $this->em->getConnection()
+                  ->prepare(trim(preg_replace(static::$regex, " ", $sql)))
+                  ->executeQuery();
+      }
     }
 
     /** On met à jour la table historique. */
-    $response = new JsonResponse();
-    return $response->setData(["statut" => $statut, Response::HTTP_OK]);
+    return $response->setData(["mode"=>$mode, "statut"=>$statut, Response::HTTP_OK]);
   }
 
   /**
@@ -265,14 +282,15 @@ class ApiProjetController extends AbstractController
    * @return response
    *
    * Created at: 15/12/2022, 21:28:07 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/favori/check', name: 'favori_check', methods: ['GET'])]
   public function favoriCheck(Request $request): response
   {
-    $mavenKey = $request->get('mavenKey');
+    /** oN créé un objet réponse */
     $response = new JsonResponse();
+    $mavenKey = $request->get('mavenKey');
 
     /** On vérifie si le projet est déjà en favori*/
     $sql = "SELECT favori FROM favori WHERE maven_key='${mavenKey}'";
@@ -280,7 +298,7 @@ class ApiProjetController extends AbstractController
     $r = $select->fetchAllAssociative();
 
     if (empty($r)) {
-      return $response->setData(["statut" => "null", Response::HTTP_OK]);
+      return $response->setData(["favori"=>'null', "statut" => "null", Response::HTTP_OK]);
     }
     /* La requete a remonté un résultat donc statut =1 */
     return $response->setData(["favori" => $r[0]['favori'], "statut" => 1, Response::HTTP_OK]);
@@ -296,13 +314,12 @@ class ApiProjetController extends AbstractController
    * @return response
    *
    * Created at: 15/12/2022, 21:28:51 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/liste/projet', name: 'liste_projet', methods: ['GET'])]
   public function liste_projet(Connection $connection): response
   {
-
     $sql = "SELECT maven_key, name from 'liste_projet'";
     $rqt = $connection->fetchAllNumeric($sql);
 
@@ -331,12 +348,22 @@ class ApiProjetController extends AbstractController
    * @return response
    *
    * Created at: 15/12/2022, 21:29:13 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/projet/analyses', name: 'projet_analyses', methods: ['GET'])]
   public function projetAnalyses(Request $request): response
   {
+    /** oN créé un objet réponse */
+    $response = new JsonResponse();
+
+    /** On on vérifie si on a activé le mode test */
+    if (is_null($request->get('mode'))) {
+      $mode="null";
+    } else {
+      $mode = $request->get('mode');
+    }
+
     $url = $this->getParameter(static::$sonarUrl) .
       "/api/project_analyses/search?project=" . $request->get('mavenKey');
 
@@ -349,7 +376,9 @@ class ApiProjetController extends AbstractController
 
     /** On supprime les informations sur le projet */
     $sql = "DELETE FROM information_projet WHERE maven_key='$mavenKey'";
-    $this->em->getConnection()->prepare($sql)->executeQuery();
+    if ($mode!="TEST") {
+      $this->em->getConnection()->prepare($sql)->executeQuery();
+    }
 
     /** On ajoute les informations du projets dans la table information_projet. */
     $nombreVersion = 0;
@@ -374,11 +403,12 @@ class ApiProjetController extends AbstractController
       $informationProjet->setType(strtoupper($explode[1]));
       $informationProjet->setDateEnregistrement($date);
       $this->em->persist($informationProjet);
-      $this->em->flush();
+      if ($mode!="TEST"){
+        $this->em->flush();
+      }
     }
 
-    $response = new JsonResponse();
-    return $response->setData(["nombreVersion" => $nombreVersion, Response::HTTP_OK]);
+    return $response->setData(["mode"=>$mode ,"nombreVersion" => $nombreVersion, Response::HTTP_OK]);
   }
 
   /**
@@ -392,12 +422,22 @@ class ApiProjetController extends AbstractController
    * @return response
    *
    * Created at: 15/12/2022, 21:29:58 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/projet/mesures', name: 'projet_mesures', methods: ['GET'])]
   public function projetMesures(Request $request): response
   {
+    /** oN créé un objet réponse */
+    $response = new JsonResponse();
+
+    /** On on vérifie si on a activé le mode test */
+    if (is_null($request->get('mode'))) {
+      $mode="null";
+    } else {
+      $mode = $request->get('mode');
+    }
+
     /** On bind les variables */
     $tempoUrl = $this->getParameter(static::$sonarUrl);
     $mavenKey = $request->get('mavenKey');
@@ -466,11 +506,18 @@ class ApiProjetController extends AbstractController
     $mesure->setTests(intval($tests));
     $mesure->setIssues(intval($issues));
     $mesure->setDateEnregistrement($date);
-
     $this->em->persist($mesure);
-    $this->em->flush();
+    if ($mode!="TEST") {
+      $this->em->flush();
+    }
 
-    $response = new JsonResponse();
+    if ($mode="TEST"){
+        $mesures=['coverage'=>$coverage,
+                  'duplicationDensity'=>$duplicationDensity,
+                  'tests'=>$tests, 'issues'=>$issues, 'ncloc'=>$ncloc];
+      return $response->setData(["mode"=>$mode, 'mesures'=>$mesures, Response::HTTP_OK]);
+    }
+
     return $response->setData([Response::HTTP_OK]);
   }
 
@@ -491,9 +538,20 @@ class ApiProjetController extends AbstractController
   #[Route('/api/projet/anomalie', name: 'projet_anomalie', methods: ['GET'])]
   public function projetAnomalie(Request $request): response
   {
+    /** On créé un objet response */
+    $response = new JsonResponse();
+
     /** On bind les variables. */
     $tempoUrlLong = $this->getParameter(static::$sonarUrl) . static::$apiIssuesSearch;
     $mavenKey = $request->get('mavenKey');
+    $mode = $request->get('mode');
+
+    /** On teste si la clé est valide */
+    if ($mavenKey==="null" && $mode==="TEST") {
+      return $response->setData([
+        "mode"=>$mode, "mavenKey"=>$mavenKey,
+        "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+    }
 
     /** On créé un objet date. */
     $date = new DateTime();
@@ -650,13 +708,14 @@ class ApiProjetController extends AbstractController
       $issue->setDateEnregistrement($date);
 
       $this->em->persist($issue);
-      $this->em->flush();
+      if ($mode!=="TEST") {
+        $this->em->flush();
+      }
     }
 
     $info = "Enregistrement des défauts (" . $nombreAnomalie . ") correctement effectué.";
 
-    $response = new JsonResponse();
-    return $response->setData(["info" => $info, Response::HTTP_OK]);
+    return $response->setData(["mode"=>$mode, "info" => $info, Response::HTTP_OK]);
   }
 
 
@@ -672,18 +731,27 @@ class ApiProjetController extends AbstractController
    * @return response
    *
    * Created at: 15/12/2022, 21:35:00 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/projet/anomalie/details', name: 'projet_anomalie_details', methods: ['GET'])]
   public function projetAnomalieDetails(Request $request): response
   {
+
+    /** On créé un objet response */
+    $response = new JsonResponse();
+
     /** On bind les variables. */
     $mavenKey = $request->get('mavenKey');
     $tempoUrlLong = $this->getParameter(static::$sonarUrl) . static::$apiIssuesSearch;
+    $mode = $request->get('mode');
 
-    /** On créé un objet JSON. */
-    $response = new JsonResponse();
+    /** On teste si la clé est valide */
+    if ($mavenKey==="null" && $mode==="TEST") {
+      return $response->setData([
+        "mode"=>$mode, "mavenKey"=>$mavenKey,
+        "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+    }
 
     /** Pour les Bug. */
     $url1 = "${tempoUrlLong}${mavenKey}&facets=severities&types=BUG&ps=1&p=1&statuses=OPEN";
@@ -800,12 +868,14 @@ class ApiProjetController extends AbstractController
 
       /** On catch l'erreur sur la clé composite : maven_key, version, date_version. */
       try {
-        $this->em->flush();
+        if ($mode!=="TEST") {
+          $this->em->flush();
+        }
       } catch (\Doctrine\DBAL\Exception $e) {
         return $response->setData(["code" => $e->getCode(), Response::HTTP_OK]);
       }
     }
-    return $response->setData(["code" => "OK", Response::HTTP_OK]);
+    return $response->setData(["mode"=>$mode, "code" => "OK", Response::HTTP_OK]);
   }
 
   /**
@@ -820,17 +890,28 @@ class ApiProjetController extends AbstractController
    * @return response
    *
    * Created at: 15/12/2022, 21:36:58 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/projet/historique/note', name: 'projet_historique_note', methods: ['GET'])]
   public function historiqueNoteAjout(Request $request): response
   {
 
+    /** On créé un objet response */
+    $response = new JsonResponse();
+
     /** On bind les variables. */
     $tempoUrl = $this->getParameter(static::$sonarUrl);
     $mavenKey = $request->get('mavenKey');
     $type = $request->get('type');
+    $mode = $request->get('mode');
+
+    /** On teste si la clé est valide */
+    if ($mavenKey==="null" && $mode==="TEST") {
+      return $response->setData([
+        "mode"=>$mode, "mavenKey"=>$mavenKey,
+        "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+    }
 
     $url = "${tempoUrl}/api/measures/search_history?component=${mavenKey}
             &metrics=${type}_rating&ps=1000";
@@ -863,8 +944,7 @@ class ApiProjetController extends AbstractController
       $type = "Mauvaises Pratiques";
     }
 
-    $response = new JsonResponse();
-    return $response->setData(["nombre" => $nombre, "type" => $type, Response::HTTP_OK]);
+    return $response->setData(["mode"=>$mode, "nombre" => $nombre, "type" => $type, Response::HTTP_OK]);
   }
 
   /**
@@ -879,15 +959,27 @@ class ApiProjetController extends AbstractController
    * @return response
    *
    * Created at: 15/12/2022, 21:37:54 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/projet/issues/owasp', name: 'projet_issues_owasp', methods: ['GET'])]
   public function issuesOwaspAjout(Request $request): response
   {
+
+    /** On créé un objet response */
+    $response = new JsonResponse();
+
     /** On bind les variables. */
     $mavenKey = $request->get('mavenKey');
-    $tempoUrlLong = $this->getParameter(static::$sonarUrl) . static::$apiIssuesSearch;
+    $mode = $request->get('mode');
+    $tempoUrlLong = $this->getParameter(static::$sonarUrl).static::$apiIssuesSearch;
+
+    /** On teste si la clé est valide */
+    if ($mavenKey==="null" && $mode==="TEST") {
+      return $response->setData([
+        "mode"=>$mode, "mavenKey"=>$mavenKey,
+        "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+    }
 
     /** URL de l'appel. */
     $url = "${tempoUrlLong}${mavenKey}&facets=owaspTop10
@@ -1142,8 +1234,9 @@ class ApiProjetController extends AbstractController
 
     /** On supprime les informations sur le projet. */
     $sql = "DELETE FROM owasp WHERE maven_key='${mavenKey}'";
-    $this->em->getConnection()->prepare($sql)->executeQuery();
-
+    if ($mode!=="TEST") {
+      $this->em->getConnection()->prepare($sql)->executeQuery();
+    }
     /** Enregistre en base. */
     $owaspTop10 = new Owasp();
     $owaspTop10->setMavenKey($request->get("mavenKey"));
@@ -1221,10 +1314,12 @@ class ApiProjetController extends AbstractController
 
     $owaspTop10->setDateEnregistrement($date);
     $this->em->persist($owaspTop10);
-    $this->em->flush();
+    if ($mode!=="TEST")
+    {
+      $this->em->flush();
+    }
 
-    $response = new JsonResponse();
-    return $response->setData(["owasp" => $result["total"], Response::HTTP_OK]);
+    return $response->setData(["mode"=>$mode,"owasp" => $result["total"], Response::HTTP_OK]);
   }
 
   /**
@@ -1239,30 +1334,43 @@ class ApiProjetController extends AbstractController
    * @return response
    *
    * Created at: 15/12/2022, 21:39:21 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/projet/hotspot', name: 'projet_hotspot', methods: ['GET'])]
   public function hotspotAjout(Request $request): response
   {
-    // On bind les variables
+    /** On créé un objet response */
+    $response = new JsonResponse();
+
+    /** On bind les variables. */
+    $mode = $request->get('mode');
     $tempoUrl = $this->getParameter(static::$sonarUrl);
     $mavenKey = $request->get('mavenKey');
 
-    // On construit l'URL
+    /** On teste si la clé est valide */
+    if ($mavenKey==="null" && $mode==="TEST") {
+      return $response->setData([
+        "mode"=>$mode, "mavenKey"=>$mavenKey,
+        "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+    }
+
+    /** On construit l'URL */
     $url = "${tempoUrl}/api/hotspots/search?projectKey=${mavenKey}&ps=500&p=1";
 
-    // On appel l'Api
+    /** On appel l'Api */
     $result = $this->httpClient($url);
 
-    // On créé un objet Date
+    /** On créé un objet Date */
     $date = new DateTime();
     $date->setTimezone(new DateTimeZone(static::$europeParis));
     $niveau = 0;
 
-    // On supprime  les enregistrements correspondant à la clé
+    /** On supprime  les enregistrements correspondant à la clé */
     $sql = "DELETE FROM hotspots WHERE maven_key='${mavenKey}'";
-    $this->em->getConnection()->prepare($sql)->executeQuery();
+    if ($mode!="TEST") {
+      $this->em->getConnection()->prepare($sql)->executeQuery();
+    }
 
     if ($result["paging"]["total"] != 0) {
       foreach ($result["hotspots"] as $value) {
@@ -1284,14 +1392,15 @@ class ApiProjetController extends AbstractController
         $hotspot->setNiveau($niveau);
         $hotspot->setDateEnregistrement($date);
 
-        $this->em->persist($hotspot);
-        $this->em->flush();
+        if ($mode!=="TEST"){
+          $this->em->persist($hotspot);
+          $this->em->flush();
+        }
       }
     }
 
-    $response = new JsonResponse();
     return $response->setData(
-      ["hotspots" => $result["paging"]["total"], Response::HTTP_OK]
+      ["mode"=>$mode,"hotspots" => $result["paging"]["total"], Response::HTTP_OK]
     );
   }
 
@@ -1308,18 +1417,29 @@ class ApiProjetController extends AbstractController
    * @return response
    *
    * Created at: 15/12/2022, 21:39:44 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/projet/hotspot/owasp', name: 'projet_hotspot_owasp', methods: ['GET'])]
   public function hotspotOwaspAjout(Request $request): response
   {
+    /** On créé un objet response */
+    $response = new JsonResponse();
+
     /** On bind les variables. */
-    $tempoUrl = $this->getParameter(static::$sonarUrl);
+    $mode = $request->get('mode');
     $mavenKey = $request->get('mavenKey');
+    $tempoUrl = $this->getParameter(static::$sonarUrl);
     $owasp = $request->get('owasp');
 
-    $response = new JsonResponse();
+    /** On teste si la clé est valide */
+    if ($mavenKey==="null" && $mode==="TEST") {
+      return $response->setData([
+        "owasp"=>$owasp,
+        "mode"=>$mode, "mavenKey"=>$mavenKey,
+        "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+    }
+
     if ($request->get('owasp') == 'a0') {
       /** On supprime  les enregistrements correspondant à la clé. */
       $sql = "DELETE FROM hotspot_owasp
@@ -1362,7 +1482,9 @@ class ApiProjetController extends AbstractController
         $hotspot->setDateEnregistrement($date);
 
         $this->em->persist($hotspot);
-        $this->em->flush();
+        if ($mode!=="TEST"){
+          $this->em->flush();
+        }
       }
     } else {
       $hotspot = new  HotspotOwasp();
@@ -1373,11 +1495,13 @@ class ApiProjetController extends AbstractController
       $hotspot->setNiveau("0");
       $hotspot->setDateEnregistrement($date);
       $this->em->persist($hotspot);
-      $this->em->flush();
+      if ($mode!=="TEST"){
+        $this->em->flush();
+      }
     }
 
     return $response->setData(
-      [
+      [ "mode"=>$mode,
         "info" => "enregistrement",
         "hotspots" => $result["paging"]["total"], Response::HTTP_OK
       ]
@@ -1394,7 +1518,7 @@ class ApiProjetController extends AbstractController
    * @return array
    *
    * Created at: 15/12/2022, 21:40:47 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   protected function hotspotDetails($mavenKey, $key): array
@@ -1571,10 +1695,19 @@ class ApiProjetController extends AbstractController
   #[Route('/api/projet/hotspot/details', name: 'projet_hotspot_details', methods: ['GET'])]
   public function hotspotDetailsAjout(Request $request): response
   {
+    /** On créé un objet response */
     $response = new JsonResponse();
 
-    /** On bind les variables */
+    /** On bind les variables. */
+    $mode = $request->get('mode');
     $mavenKey = $request->get('mavenKey');
+
+    /** On teste si la clé est valide */
+    if ($mavenKey==="null" && $mode==="TEST") {
+      return $response->setData([
+        "mode"=>$mode, "mavenKey"=>$mavenKey,
+        "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+    }
 
     /** On récupère la liste des hotspots */
     $sql = "SELECT * FROM hotspots
@@ -1587,12 +1720,13 @@ class ApiProjetController extends AbstractController
     // On supprime les données de la table hotspots_details pour le projet
     $sql = "DELETE FROM hotspot_details
             WHERE maven_key='${mavenKey}'";
-    $this->em->getConnection()->prepare($sql)->executeQuery();
-
+    if ($mode!="TEST") {
+      $this->em->getConnection()->prepare($sql)->executeQuery();
+    }
 
     /** Si la liste des vide on envoi un code 406 */
     if (empty($liste)) {
-      return $response->setData(["code" => 406, Response::HTTP_OK]);
+      return $response->setData(["mode"=>$mode, "code" => 406, Response::HTTP_OK]);
     }
 
     /**
@@ -1620,9 +1754,11 @@ class ApiProjetController extends AbstractController
       $details->setDateEnregistrement($key["date_enregistrement"]);
 
       $this->em->persist($details);
-      $this->em->flush();
+      if ($mode!="TEST") {
+        $this->em->flush();
+      }
     }
-    return $response->setData(["ligne" => $ligne, Response::HTTP_OK]);
+    return $response->setData(["mode"=>$mode,"ligne" => $ligne, Response::HTTP_OK]);
   }
 
   /**
@@ -1638,15 +1774,26 @@ class ApiProjetController extends AbstractController
    * @return response
    *
    * Created at: 15/12/2022, 21:42:59 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/projet/nosonar/details', name: 'projet_nosonar', methods: ['GET'])]
   public function projetNosonarAjout(Request $request): response
   {
-    /** Bind les données. */
-    $tempoUrl = $this->getParameter(static::$sonarUrl);
+    /** On créé un objet response */
+    $response = new JsonResponse();
+
+    /** On bind les variables. */
+    $mode = $request->get('mode');
     $mavenKey = $request->get('mavenKey');
+    $tempoUrl = $this->getParameter(static::$sonarUrl);
+
+    /** On teste si la clé est valide */
+    if ($mavenKey==="null" && $mode==="TEST") {
+      return $response->setData([
+        "mode"=>$mode, "mavenKey"=>$mavenKey,
+        "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+    }
 
     /** On construit l'URL et on appel le WS. */
     $url = "${tempoUrl}/api/issues/search?componentKeys=${mavenKey}
@@ -1658,7 +1805,9 @@ class ApiProjetController extends AbstractController
 
     /** On supprime les données du projet de la table NoSonar. */
     $sql = "DELETE FROM no_sonar WHERE maven_key='${mavenKey}'";
-    $this->em->getConnection()->prepare($sql)->executeQuery();
+    if($mode!=="TEST"){
+      $this->em->getConnection()->prepare($sql)->executeQuery();
+    }
 
     /**
      * Si on a trouvé des @notations de type nosSonar ou SuprressWarning.
@@ -1680,14 +1829,15 @@ class ApiProjetController extends AbstractController
         $nosonar->setDateEnregistrement($date);
 
         $this->em->persist($nosonar);
-        $this->em->flush();
+        if ($mode!="TEST") {
+          $this->em->flush();
+        }
       }
     } else {
       /** Il n'y a pas de noSOnar ou de suppressWarning */
     }
 
-    $response = new JsonResponse();
-    return $response->setData(["nosonar" => $result["paging"]["total"], Response::HTTP_OK]);
+    return $response->setData(["mode"=>$mode,"nosonar" => $result["paging"]["total"], Response::HTTP_OK]);
   }
 
   /**
@@ -1699,7 +1849,7 @@ class ApiProjetController extends AbstractController
    * @return response
    *
    * Created at: 15/12/2022, 21:44:09 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/enregistrement', name: 'enregistrement', methods: ['PUT'])]
@@ -1707,7 +1857,6 @@ class ApiProjetController extends AbstractController
   {
     /** On décode le body. */
     $data = json_decode($request->getContent());
-
     /** On créé un objet response pour le retour JSON. */
     $response = new JsonResponse();
 
@@ -1803,18 +1952,18 @@ class ApiProjetController extends AbstractController
     $this->em->persist($save);
 
     // On catch l'erreur sur la clé composite : maven_key, version, date_version
-    try {
-      $this->em->flush();
-    } catch (\Doctrine\DBAL\Exception\UniqueConstraintViolationException $e) {
-      /** General error: 5 database is locked" */
-      /** General error: 19 violation de clé */
-      if ($e->getCode() === 19) {
-        $code = 19;
-      } else {
-        $code = $e;
+      try {
+          $this->em->flush();
+      } catch (\Doctrine\DBAL\Exception\UniqueConstraintViolationException $e) {
+        /** General error: 5 database is locked" */
+        /** General error: 19 violation de clé */
+        if ($e->getCode() === 19) {
+          $code = 19;
+        } else {
+          $code = $e;
+        }
+        return $response->setData(["code" => $code, Response::HTTP_OK]);
       }
-      return $response->setData(["code" => $code, Response::HTTP_OK]);
-    }
     /** Tout va bien ! */
     return $response->setData(["code" => "OK", Response::HTTP_OK]);
   }
