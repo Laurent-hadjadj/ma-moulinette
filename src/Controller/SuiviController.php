@@ -707,16 +707,16 @@ class SuiviController extends AbstractController
     $version = $data->version;
     $dateEnregistrement = new DateTime();
     $dateEnregistrement->setTimezone(new DateTimeZone(static::$europeParis));
-    $dateEnregistrement->format(static::$dateFormat);
+    $strDateEnregistrement=$dateEnregistrement->format(static::$dateFormat);
 
     /** On créé un nouvel objet Json */
     $response = new JsonResponse();
 
     /** On met à jour l'attribut favori de la table historique */
-    $sql = "UPDATE historique SET favori=${favori}
-            WHERE maven_key='${mavenKey}'
-            AND version='${version}'
-            AND date_version='${date}'";
+    $sql = "UPDATE historique SET favori=$favori
+            WHERE maven_key='$mavenKey'
+            AND version='$version'
+            AND date_version='$date'";
 
     /** On exécute la requête */
     $con = $this->em->getConnection()->prepare($sql);
@@ -732,7 +732,7 @@ class SuiviController extends AbstractController
     $this->em->getConnection()->prepare($sql)->executeQuery();
     /** On ajoute l'enregistrement */
     $sql = "INSERT INTO favori ('maven_key', 'favori', 'date_enregistrement')
-    VALUES ('${mavenKey}', ${favori}, '${dateEnregistrement}')";
+    VALUES ('$mavenKey', $favori, '$strDateEnregistrement')";
 
     /** On exécute la requête et on catch l'erreur */
     $con = $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)));
