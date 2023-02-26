@@ -36,6 +36,7 @@ class ApiProjetPeintureController extends AbstractController
     $this->em = $em;
   }
 
+  public static $erreurMavenKey="La clé maven est vide!";
   const HTTP_ERROR_406 = "                   Vous devez lancer une analyse pour ce projet !!!";
 
   /**
@@ -123,18 +124,29 @@ class ApiProjetPeintureController extends AbstractController
   #[Route('/api/projet/mes-applications/delete', name: 'projet_mesapplications_delete', methods: ['GET'])]
   public function projetMesApplicationsDelete(Request $request): response
   {
-    /** On bind la variables */
-    $mavenKey = $request->get('mavenKey');
-
+    /** On créé un objet response */
     $response = new JsonResponse();
+
+    /** On bind les variables. */
+    $mavenKey = $request->get('mavenKey');
+    $mode = $request->get('mode');
+
+    /** On teste si la clé est valide */
+    if ($mavenKey==="null" && $mode==="TEST") {
+      return $response->setData([
+        "mode"=>$mode, "mavenKey"=>$mavenKey,
+        "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+    }
+
     /** On récupère la liste des projets ayant déjà fait l'objet d'une analyse. */
     $sql = "UPDATE anomalie
             SET liste = FALSE
-            WHERE maven_key='${mavenKey}';";
+            WHERE maven_key='$mavenKey';";
+    if ($mode!=="TEST") {
+      $this->em->getConnection()->prepare($sql)->executeQuery();
+    }
 
-    $this->em->getConnection()->prepare($sql)->executeQuery();
-
-    return $response->setData(["code" => 200, Response::HTTP_OK]);
+    return $response->setData(['mode'=>$mode,"code" => 200, Response::HTTP_OK]);
   }
 
   /**
@@ -277,7 +289,6 @@ class ApiProjetPeintureController extends AbstractController
     ]);
   }
 
-
   /**
    * [Description for peintureProjetAnomalie]
    * Récupère les informations sur la dette technique et les anamalies
@@ -412,7 +423,7 @@ class ApiProjetPeintureController extends AbstractController
     }
 
     /** On récupère les données pour le projet */
-    $sql = "SELECT * FROM anomalie_details WHERE maven_key='${mavenKey}'";
+    $sql = "SELECT * FROM anomalie_details WHERE maven_key='$mavenKey'";
     $r = $this->em->getConnection()->prepare($sql)->executeQuery();
     $details = $r->fetchAllAssociative();
 
@@ -588,10 +599,22 @@ class ApiProjetPeintureController extends AbstractController
   #[Route('/api/peinture/projet/nosonar/details', name: 'peinture_projet_nosonar_details', methods: ['GET'])]
   public function peintureProjetNosonarDetails(Request $request): response
   {
-    $mavenKey = $request->get('mavenKey');
+
+    /** On créé un objet response */
     $response = new JsonResponse();
 
-    $sql = "select rule, count(*) as total FROM no_sonar WHERE maven_key='"
+    /** On bind les variables. */
+    $mavenKey = $request->get('mavenKey');
+    $mode = $request->get('mode');
+
+    /** On teste si la clé est valide */
+    if ($mavenKey==="null" && $mode==="TEST") {
+      return $response->setData([
+        "mode"=>$mode, "mavenKey"=>$mavenKey,
+        "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+    }
+
+    $sql = "SELECT rule, count(*) as total FROM no_sonar WHERE maven_key='"
       . $mavenKey . "' GROUP BY rule";
     $r = $this->em->getConnection()->prepare($sql)->executeQuery();
     $rules = $r->fetchAllAssociative();
@@ -612,7 +635,6 @@ class ApiProjetPeintureController extends AbstractController
     }
 
     return $response->setData(
-      ["total" => $total, "s1309" => $S1309,
-        "nosonar" => $nosonar, Response::HTTP_OK]);
+      ["total" => $total, "s1309" => $S1309, "nosonar" => $nosonar, Response::HTTP_OK]);
   }
 }
