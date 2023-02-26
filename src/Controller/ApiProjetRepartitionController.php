@@ -250,7 +250,7 @@ class ApiProjetRepartitionController extends AbstractController
     $response = new JsonResponse();
     /** On teste si la clé est valide */
     if (is_null($mavenKey)) {
-      return $response->setData(["message" => "la clé maven est vide!", Response::HTTP_BAD_REQUEST]);
+      return $response->setData(["message" => "La clé maven est vide!", Response::HTTP_BAD_REQUEST]);
     }
 
     /** On récupère le nombre d'anomalie pour le type */
