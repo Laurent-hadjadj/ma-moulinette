@@ -49,7 +49,7 @@ class ApiProfilController extends AbstractController
    * @return response
    *
    * Created at: 15/12/2022, 21:24:33 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/quality/langage', name: 'liste_quality_langage', methods: ['GET'])]
