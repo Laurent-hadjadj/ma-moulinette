@@ -64,6 +64,7 @@ class ApiProjetRepartitionController extends AbstractController
   public static $sonarUrl = "sonar.url";
   public static $strContentType = 'application/json';
   public static $apiIssuesSearch = "/api/issues/search?componentKeys=";
+  public static $regex = "/\s+/u";
 
 
   /**
