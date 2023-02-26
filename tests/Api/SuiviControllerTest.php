@@ -264,6 +264,9 @@ class SuiviControllerTest extends ApiTestCase
     $this->assertResponseHeaderSame('content-type', static::$applicationJson);
     $this->assertIsArray($decode);
     $this->assertEquals('400', $decode[0]);
+    $this->assertArrayHasKey('message', $decode);
+    $this->assertEquals('La clé maven est vide!', $decode['message']);
+
   }
 
   /**
@@ -388,6 +391,9 @@ class SuiviControllerTest extends ApiTestCase
     $this->assertEquals('POST', $info['http_method']);
     $this->assertEquals('TEST', $decode['mode']);
     $this->assertEquals('null', $decode['mavenKey']);
+    $this->assertArrayHasKey('message', $decode);
+    $this->assertEquals('La clé maven est vide!', $decode['message']);
+
   }
 
   /**
@@ -458,6 +464,8 @@ class SuiviControllerTest extends ApiTestCase
     $this->assertNotEquals('DELETE', $info['http_method']);
     $this->assertEquals('TEST', $decode['mode']);
     $this->assertEquals('null', $decode['mavenKey']);
+    $this->assertArrayHasKey('message', $decode);
+    $this->assertEquals('La clé maven est vide!', $decode['message']);
   }
 
   public function testApiSuiviVersionPoubelle200(): void
