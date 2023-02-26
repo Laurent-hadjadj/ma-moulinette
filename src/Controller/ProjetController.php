@@ -438,7 +438,6 @@ class ProjetController extends AbstractController
       $initialVulnerabilityBlocker=$initialVulnerabilityCritical=$initialVulnerabilityMajor=0;
       $initialCodeSmellBlocker=$initialCodeSmellCritical=$initialCodeSmellMajor=0;
       $initialHotspot=0;
-
       $message="[COSUI-002] Vous devez choisir un projet comme référence !";
       $this->addFlash('alert', $message);
     }
@@ -460,7 +459,6 @@ class ProjetController extends AbstractController
         $initialCodeSmellMajor=$nn["initial_code_smell_major"];
         $initialHotspot=$nn["initial_hotspot_total"];
       }
-
     /** on récupère le dernier setup pour le projet */
     $setup=self::setup($mavenKey);
 
@@ -587,12 +585,11 @@ class ProjetController extends AbstractController
     'mode'=>$mode,
     Response::HTTP_OK
     ];
-
     if ($mode==='TEST') {
       array_push($render,['notes'=>$n]);
       return $response->setData($render);
     } else {
-      return $this->render('projet/cosui.html.twig',[$render]);
+      return $this->render('projet/cosui.html.twig',$render);
     }
   }
 
