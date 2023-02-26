@@ -262,8 +262,7 @@ class ApiHomeController extends AbstractController
                 ->executeQuery();
     }
 
-    $response->setData(["nombre" => $nombre, 'mode'=>$mode, Response::HTTP_OK]);
-    return $response;
+    return $response->setData(["nombre" => $nombre, 'mode'=>$mode, Response::HTTP_OK]);
   }
 
 
