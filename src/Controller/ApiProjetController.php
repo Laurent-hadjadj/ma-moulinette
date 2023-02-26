@@ -776,7 +776,9 @@ class ApiProjetController extends AbstractController
     if ($total1 !== 0 || $total2 !== 0 || $total3 !== 0) {
       /** On supprime  l'enregistrement correspondant à la clé. */
       $sql = "DELETE FROM anomalie_details WHERE maven_key='${mavenKey}'";
-      $this->em->getConnection()->prepare($sql)->executeQuery();
+      if ($mode!=="TEST"){
+        $this->em->getConnection()->prepare($sql)->executeQuery();
+      }
 
       $date = new DateTime();
       $date->setTimezone(new DateTimeZone(static::$europeParis));
