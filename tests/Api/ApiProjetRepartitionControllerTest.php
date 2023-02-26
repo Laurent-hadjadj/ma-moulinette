@@ -48,10 +48,11 @@ class ApiProjetRepartitionControllerTest extends ApiTestCase
     $this->assertEquals(2,count($decode));
     $this->assertEquals('400', $decode[0]);
     $this->assertArrayHasKey('message', $decode);
+    $this->assertEquals('La clé maven est vide!', $decode['message']);
   }
 
   /**
-   * [Description for testApiProjetrepartition400()]
+   * [Description for testApiProjetrepartition200()]
    * On test l'API api/peinture/projet/anomalie/details avec une clé maven
    * Type : BUG
    * Retour : 200
