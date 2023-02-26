@@ -47,7 +47,7 @@ class ApiProjetPeintureController extends AbstractController
    * @return array
    *
    * Created at: 15/12/2022, 21:51:16 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   protected function isValide($mavenKey): array
@@ -69,7 +69,7 @@ class ApiProjetPeintureController extends AbstractController
    * @return response
    *
    * Created at: 15/12/2022, 21:51:40 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/projet/mes-applications/liste', name: 'projet_mesapplications_liste', methods: ['GET'])]
@@ -117,7 +117,7 @@ class ApiProjetPeintureController extends AbstractController
    * @return response
    *
    * Created at: 15/12/2022, 21:52:55 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/projet/mes-applications/delete', name: 'projet_mesapplications_delete', methods: ['GET'])]
@@ -147,7 +147,7 @@ class ApiProjetPeintureController extends AbstractController
    * @return response
    *
    * Created at: 15/12/2022, 21:53:31 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/peinture/projet/version', name: 'peinture_projet_version', methods: ['GET'])]
@@ -243,7 +243,7 @@ class ApiProjetPeintureController extends AbstractController
    * @return response
    *
    * Created at: 15/12/2022, 21:53:58 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/peinture/projet/information', name: 'peinture_projet_information', methods: ['GET'])]
@@ -287,7 +287,7 @@ class ApiProjetPeintureController extends AbstractController
    * @return response
    *
    * Created at: 15/12/2022, 21:54:30 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/peinture/projet/anomalie', name: 'peinture_projet_anomalie', methods: ['GET'])]
@@ -464,7 +464,7 @@ class ApiProjetPeintureController extends AbstractController
    * @return response
    *
    * Created at: 15/12/2022, 21:56:43 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/peinture/projet/hotspots', name: 'peinture_projet_hotspots', methods: ['GET'])]
@@ -529,7 +529,7 @@ class ApiProjetPeintureController extends AbstractController
    * @return response
    *
    * Created at: 15/12/2022, 21:57:40 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/peinture/projet/hotspot/details', name: 'peinture_projet_hotspot_details', methods: ['GET'])]
@@ -582,7 +582,7 @@ class ApiProjetPeintureController extends AbstractController
    * @return response
    *
    * Created at: 15/12/2022, 21:58:42 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/peinture/projet/nosonar/details', name: 'peinture_projet_nosonar_details', methods: ['GET'])]
