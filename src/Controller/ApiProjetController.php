@@ -580,7 +580,9 @@ class ApiProjetController extends AbstractController
     if ($result1["paging"]["total"] != 0) {
       //** On supprime  les enregistrement correspondant à la clé. */
       $sql = "DELETE FROM anomalie WHERE maven_key='${mavenKey}'";
-      $this->em->getConnection()->prepare($sql)->executeQuery();
+      if ($mode!=="TEST"){
+        $this->em->getConnection()->prepare($sql)->executeQuery();
+      }
 
       /** nom du projet. */
       $app = explode(":", $mavenKey);
