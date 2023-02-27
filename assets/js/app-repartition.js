@@ -104,6 +104,7 @@ const timestamp=function(bypass) {
 /**
   * [Description for clear]
   * On lance le service de suppression des données pour le projet
+  * On fait un PUT et non un DELETE
   *
   * @param mixed mavenKey
   * @param mavenKey
@@ -118,7 +119,7 @@ const clear=function(mavenKey) {
   const data = { mavenKey };
   const options = {
       url: `${serveur()}/api/projet/repartition/clear`,
-      type: 'GET', dataType: 'json', data, contentType,
+      type: 'PUT', dataType: 'json', data: JSON.stringify(data), contentType,
     };
 
   /** On appel le web service. */
