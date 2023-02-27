@@ -390,7 +390,7 @@ class ApiProjetRepartitionController extends AbstractController
     $response = new JsonResponse();
 
     /** On surprime de la table historique le projet */
-    $sql = "DELETE FROM repartition WHERE maven_key='${mavenKey}'";
+    $sql = "DELETE FROM repartition WHERE maven_key='$mavenKey'";
     $conn = \Doctrine\DBAL\DriverManager::getConnection(['url' => $this->getParameter('sqlite.secondary.path')]);
     if ($mode!="TEST") {
       try {
@@ -434,7 +434,8 @@ class ApiProjetRepartitionController extends AbstractController
       ->getManager('secondary')
       ->getRepository(Repartition::class)
       ->findBy(
-        ['mavenKey' => $mavenKey,
+        [
+          'mavenKey' => $mavenKey,
           'type' => $type,
           'severity' => $severity,
           'setup' => $setup]);
