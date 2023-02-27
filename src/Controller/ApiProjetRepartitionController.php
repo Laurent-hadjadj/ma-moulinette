@@ -204,7 +204,7 @@ class ApiProjetRepartitionController extends AbstractController
    * @return [type]
    *
    * Created at: 04/12/2022, 09:02:29 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   protected function batch_anomalie($mavenKey, $index, $pageSize, $type, $severity)
@@ -296,7 +296,7 @@ class ApiProjetRepartitionController extends AbstractController
    * @return response
    *
    * Created at: 04/12/2022, 09:04:35 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/projet/repartition/collecte', name: 'projet_repartition_collecte', methods: ['PUT'])]
@@ -310,6 +310,11 @@ class ApiProjetRepartitionController extends AbstractController
     $type = $data->type;
     $severity = $data->severity;
     $setup = $data->setup;
+    if (is_null($data->mode)){
+      $mode='null';
+    } else {
+      $mode = $data->mode;
+    }
 
     /** nom du projet */
     $name = explode(":", $mavenKey);
@@ -327,7 +332,6 @@ class ApiProjetRepartitionController extends AbstractController
           $severity=$issue["severity"];
           $component=$issue["component"];
 
-
           $issue = new Repartition();
           $issue->setMavenKey($mavenKey);
           $issue->setName($name[1]);
@@ -339,36 +343,48 @@ class ApiProjetRepartitionController extends AbstractController
 
           $manager = $this->doctrine->getManager('secondary');
           $manager->persist($issue);
-          $manager->flush();
+          if ($mode!=="TEST"){
+            $manager->flush();
+          }
         }
         $i++;
     }
     $date2=time();
     $response = new JsonResponse();
     return $response->setData(
-      ["total" => $result["total"],
+      [ "mode"=>$mode,
+        "total" => $result["total"],
         "type" => $type,
         "severity"=> $severity,
         "setup"=> $setup,
         "temps" => abs($date1 - $date2)+2,
-      Response::HTTP_OK]);
+        Response::HTTP_OK]);
   }
 
   /**
    * [Description for projetRepartitionClear]
-   *
+   * On fait un PUT pour un Delete
    * @param Request $request
    *
    * @return Response
    *
    * Created at: 04/12/2022, 09:05:01 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  #[Route('/api/projet/repartition/clear', name: 'projet_repartition_clear', methods: ['GET'])]
+  #[Route('/api/projet/repartition/clear', name: 'projet_repartition_clear', methods: ['PUT'])]
   public function projetRepartitionClear(Request $request): Response
   {
-    $mavenKey = $request->get('mavenKey');
+    /** On décode le body */
+    $data = json_decode($request->getContent());
+
+    /** On bind les variables */
+    $mavenKey = $data->mavenKey;
+    if (is_null($data->mode)){
+      $mode='null';
+    } else {
+      $mode = $data->mode;
+    }
 
     /** On créé un nouvel objet Json */
     $response = new JsonResponse();
@@ -376,12 +392,14 @@ class ApiProjetRepartitionController extends AbstractController
     /** On surprime de la table historique le projet */
     $sql = "DELETE FROM repartition WHERE maven_key='${mavenKey}'";
     $conn = \Doctrine\DBAL\DriverManager::getConnection(['url' => $this->getParameter('sqlite.secondary.path')]);
-    try {
-      $conn->prepare($sql)->executeQuery();
-    } catch (\Doctrine\DBAL\Exception $e) {
-      return $response->setData(["code" => $e->getCode(), Response::HTTP_OK]);
+    if ($mode!="TEST") {
+      try {
+        $conn->prepare($sql)->executeQuery();
+      } catch (\Doctrine\DBAL\Exception $e) {
+        return $response->setData(["code" => $e->getCode(), Response::HTTP_OK]);
+      }
     }
-    return $response->setData(["code" => "OK", Response::HTTP_OK]);
+    return $response->setData(["mode"=>$mode, "code" => "OK", Response::HTTP_OK]);
   }
 
   /**
@@ -393,7 +411,7 @@ class ApiProjetRepartitionController extends AbstractController
    * ["code" => "OK", "repartition"=>$result, Response::HTTP_OK]
    *
    * Created at: 04/12/2022, 09:05:20 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/projet/repartition/analyse', name: 'projet_repartition_analyse', methods: ['PUT'])]
