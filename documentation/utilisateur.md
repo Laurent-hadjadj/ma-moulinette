@@ -10,10 +10,10 @@
 * [Portefeuille](/documentation/portefeuille.md)
 * [Batch](/documentation/batch.md)
 
-La gestion des utilisateurs s'appuie sur un contrôleur CRUD du bundle EasyAdmin. Les options suivantes sont les suivantes :
+La gestion des utilisateurs s'appuie sur un contrôleur CRUD du bundle EasyAdmin. Les options disponibles  sont les suivantes :
 
 * [X] Je peux visualiser la liste des utilisateurs ;
-* [X] Je peux afficher les détails de l'utilisateur ;
+* [X] Je peux afficher le détail de l'utilisateur ;
 * [X] Je peux modifier le rôle, l'équipe et le statut de l'utilisateur ;
 * [X] Je peux supprimer un utilisateur ;
 
