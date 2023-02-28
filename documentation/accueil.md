@@ -55,13 +55,16 @@ Lorsque l'on clique sur le bouton de mise à jour des projets ou des profils, l'
 
 ![home](/documentation/ressources/home-001c.jpg)
 
-Notez, en haut à droite, l'affichage de trois liens, en fonction des droits de l'utilisateur (cf. chapitre sécurité) :
+Notez, en haut à droite, l'affichage de quatre liens, en fonction des droits de l'utilisateur (cf. chapitre sécurité) :
 
 ![home](/documentation/ressources/home-002.jpg)
 
-* Gestion des utilisateurs ;
+* Utilisateur : gestion des utilisateurs ;
+* Traitements : gestion des traitements de masse ;
 * Dashboard : indicateurs ;
 * Logout : pour se déconnecter de l'application ;
+
+`Note :` en version **2.0.0** l'icône **traitement** apparaît dès lors que vous avez le rôle [BATCH].
 
 En version **1.6.0** deux (2) nouveaux indicateurs apparaissent pour afficher le nombre de projets dont la visibilité est de type **public** ou **privé**.
 
