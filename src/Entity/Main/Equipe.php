@@ -20,13 +20,7 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Validator as AcmeAssert;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * Gestion des contraintes au niveau Class
- * `use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;`
- */
-
 #[ORM\Entity(repositoryClass: EquipeRepository::class)]
-//#[UniqueEntity(fields: ['titre'], message: 'Le {{ label }} : {{ value }} existe déjà.')]
 class Equipe
 {
     #[ORM\Id]
