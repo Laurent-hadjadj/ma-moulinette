@@ -393,14 +393,10 @@ $('.js-enregistrer-analyse').on('click', ()=>{
 
   const initial=0;
   const data={
-    date:dateVersion,
-    mavenKey, nom, version,
-    noteReliability, noteSecurity,
-    noteSqale, noteHotspotsReview,
-    defauts, bug, vulnerabilities,codeSmell,
-    hotspotsReview,
-    lines, ncloc, coverage, duplication,tests, dette,
-    initial };
+    date:dateVersion, mavenKey, nom, version, noteReliability, noteSecurity,
+    noteSqale, noteHotspotsReview, defauts, bug, vulnerabilities,codeSmell,
+    hotspotsReview, lines, ncloc, coverage, duplication,tests, dette,
+    initial, mode: 'null' };
     /**
      * On lance l'API de mise à jour
      */
