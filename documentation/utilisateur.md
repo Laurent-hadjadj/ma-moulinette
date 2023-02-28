@@ -29,18 +29,20 @@ Il faut avoir le rôle `GESTIONNAIRE` et cliquer sur l'icône utilisateurs en ha
 
 Par défaut quatre (4) utilisateurs sont créés.
 
-* [x] admin, avec le rôle `Gestionnaire` et le statut `Actif`.
-* [ ] Aurélie, sans rôles et avec le statut `désactivé`.
-* [ ] Adam, sans rôles et avec le statut `désactivé`.
-* [ ] Tal, sans rôles et avec le statut.`désactivé`
+* [x] admin, avec le rôle `Gestionnaire` et le statut `Actif`. Il est l'utilisateur par défaut.
+* [ ] Aurélie, une utilisatrice de tests.
+* [ ] Josh, un utilisateur de tests.
+* [ ] Emma, une utilisateur de tests.
+
+Les utilisateurs Aurélie, Josh et Emma ont pour rôle **GESTIONNAIRE**, **UTILISATEUR** et **BATCH**. Les compte de tests sont rattaché à une équipe et  `désactivé` par défaut.
 
 Pour chaque utilisateur, le tableau de suivi affiche les éléments suivants  :
 
 * L'avatar ;
 * La personne (Nom + Prénom) ;
 * L'adresse de courriel ;
-* L'équipe ;
 * Son ou ses rôles ;
+* L'équipe ;
 * Son statut, Actif ou Pas ;
 * La date de modification ;
 * La date de création ;
@@ -70,17 +72,30 @@ Par défaut, l'utilisateur n'a pas de rôles, n'est pas rattaché à une équipe
 
 Pour activer le profil d'**Aurélie**, il faudra : choisir un profil, une équipe et cocher la case **Actif**.
 
-`Aurélie` est notre `Gestionnaire`, c'est elle qui gère l'équipe (Adam et Tal).
+`Aurélie` est notre `Gestionnaire`. C'est elle qui gère son équipe (Josh et Emmal).
 
 ![utilisateur](/documentation/ressources/utilisateur-005a.jpg)
 
 Puis il faudra cliquer sur le bouton `Sauvegarder les modifications`.
 
-`Adam` est `Utilisateur`, c'est lui qui travaillera sur les données collectées par l'application `Ma Moulinette`.
+Et Voilà !
+
+![utilisateur](/documentation/ressources/utilisateur-005aa.jpg)
+
+`Josh` est `Utilisateur`. C'est lui qui travaillera sur les données collectées par l'application `Ma Moulinette`.
 
 ![utilisateur](/documentation/ressources/utilisateur-005b.jpg)
 
-`Tal` est notre gestionnaire de `Traitement`, c'est elle qui gérera le portefeuille des applications à mettre à jour automatiquement par `Ma Moulinette`.
+Et voilà !
+![utilisateur](/documentation/ressources/utilisateur-005bb.jpg)
+
+`Emma` est notre gestionnaire de `Traitement`, c'est elle qui pilote le portefeuille des applications à mettre à jour automatiquement par `Ma Moulinette`. C'est elle qui pourra également lancer un traitement manuellement.
+
+Et voilà !
+![utilisateur](/documentation/ressources/utilisateur-005c.jpg)
+
+Et voilà !
+![utilisateur](/documentation/ressources/utilisateur-005cc.jpg)
 
 Waouh !!! C'est fait. On a notre équipe de championnes :)
 
