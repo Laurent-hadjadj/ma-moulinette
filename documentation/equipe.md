@@ -13,7 +13,7 @@
 La gestion des **équipes** s'appuie sur un contrôleur CRUD du bundle EasyAdmin. Les options disponibles sont les suivantes :
 
 * [X] Je peux visualiser la liste des équipes projets ;
-* [X] Je peux afficher ls détails de l'équipe ;
+* [X] Je peux afficher le détail de l'équipe ;
 * [X] Je peux modifier le titre et la description de l'équipe ;
 * [X] Je peux supprimer une équipe ;
 
