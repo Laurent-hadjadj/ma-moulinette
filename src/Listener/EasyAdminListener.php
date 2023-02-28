@@ -26,6 +26,7 @@ use Symfony\Component\Translation\TranslatableMessage;
 
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Main\Equipe;
+use App\Entity\Main\Portefeuille;
 use App\Entity\Main\Utilisateur;
 
 final class EasyAdminListener implements EventSubscriberInterface
@@ -121,24 +122,21 @@ final class EasyAdminListener implements EventSubscriberInterface
   {
     /** On exclu  la class Utilisateur */
     $entity = $event->getEntityInstance();
-    if ($entity instanceof Utlisateur) {
+    if ($entity instanceof Utilisateur) {
       return;
     }
 
-    /** On regarde si la valeur est unique, i.e elle a été rejetée */
-    $record = $this->em->getRepository(Equipe::class)
-                        ->findOneBy(['titre' => $entity->getTitre()]);
     /** On affiche un message à l'utilisateur */
-    if ($record) {
+    if (is_null($entity->getId())) {
       $this->rs->getSession()->getFlashBag()
-                ->add('success',
-                new TranslatableMessage('content_admin.flash_message.create',
-                [static::$name => $entity->getTitre()], 'admin'));
-      } else {
+        ->add('warning',
+              new TranslatableMessage('content_admin.flash_message.unique',
+              [static::$name => $entity->getTitre()], 'admin'));
+    } else {
         $this->rs->getSession()->getFlashBag()
-        ->add('info',
-        new TranslatableMessage('content_admin.flash_message.unique',
-        [static::$name => $entity->getTitre()], 'admin'));
+        ->add('success',
+              new TranslatableMessage('content_admin.flash_message.create',
+              [static::$name => $entity->getTitre()], 'admin'));
       }
     }
 
@@ -157,16 +155,22 @@ final class EasyAdminListener implements EventSubscriberInterface
   {
     /** On exclu  la class Utilisateur */
     $entity = $event->getEntityInstance();
-    //dd($entity);
     if ($entity instanceof Utilisateur) {
       return;
     }
 
     /** On affiche un message à l'utilisateur */
-    $this->rs->getSession()->getFlashBag()
-        ->add('success',
-        new TranslatableMessage('content_admin.flash_message.update',
-        [static::$name => $entity->getTitre()], 'admin'));
+    if ($entity->getId()===0) {
+      $this->rs->getSession()->getFlashBag()
+        ->add('warning',
+              new TranslatableMessage('content_admin.flash_message.unique',
+              [static::$name => $entity->getTitre()], 'admin'));
+    } else {
+      $this->rs->getSession()->getFlashBag()
+          ->add('success',
+          new TranslatableMessage('content_admin.flash_message.update',
+          [static::$name => $entity->getTitre()], 'admin'));
+    }
   }
 
   /**
