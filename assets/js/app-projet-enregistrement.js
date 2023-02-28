@@ -212,8 +212,7 @@ export const enregistrement=function(mavenKey) {
 const options = {
     url: `${serveur()}/api/enregistrement`, type: 'PUT',
     dataType: 'json', data: JSON.stringify(data), contentType };
-
-  $.ajax(options).then(t=> {
+    $.ajax(options).then(t=> {
       if (t.code === 'OK') {
         const message='Enregistrement des informations effectué.';
         log(` - INFO : ${message}`);
