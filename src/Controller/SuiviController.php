@@ -547,6 +547,7 @@ class SuiviController extends AbstractController
     $dateEnregistrement = new Datetime();
     $dateEnregistrement->setTimezone(new DateTimeZone(static::$europeParis));
     $dateVersion = new Datetime($data->date);
+    $mode=$data->mode;
 
     /** On créé un nouvel objet Json. */
     $response = new JsonResponse();
@@ -618,7 +619,7 @@ class SuiviController extends AbstractController
     } catch (\Doctrine\DBAL\Exception $e) {
       return $response->setData(["code" => $e->getCode(), Response::HTTP_OK]);
     }
-    return $response->setData(["code" => "OK", Response::HTTP_OK]);
+    return $response->setData(["mode"=>$mode, "code" => "OK", Response::HTTP_OK]);
   }
 
   /**
@@ -692,6 +693,8 @@ class SuiviController extends AbstractController
     $favori = $data->favori;
     $date = $data->date;
     $version = $data->version;
+    $mode = $data->mode;
+
     $dateEnregistrement = new DateTime();
     $dateEnregistrement->setTimezone(new DateTimeZone(static::$europeParis));
     $strDateEnregistrement=$dateEnregistrement->format(static::$dateFormat);
@@ -710,7 +713,7 @@ class SuiviController extends AbstractController
     try {
       $con->executeQuery();
     } catch (\Doctrine\DBAL\Exception $e) {
-      return $response->setData(["code" => $e->getCode(), Response::HTTP_OK]);
+      return $response->setData(["code"=>$e->getCode(), Response::HTTP_OK]);
     }
 
     /** On modifie (delete/insert) l'attribut favori de la table favori */
@@ -729,7 +732,7 @@ class SuiviController extends AbstractController
       return $response->setData(["code" => $e->getCode(), Response::HTTP_OK]);
     }
 
-    return $response->setData(["code" => "OK", Response::HTTP_OK]);
+    return $response->setData(["mode"=>$mode, "code" => "OK", Response::HTTP_OK]);
   }
 
   /**
@@ -742,7 +745,7 @@ class SuiviController extends AbstractController
    * @return [type]
    *
    * Created at: 15/12/2022, 22:40:34 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/suivi/version/reference', name: 'suivi_version_reference', methods: ['PUT'])]
@@ -754,6 +757,7 @@ class SuiviController extends AbstractController
     $reference = $data->reference;
     $date = $data->date;
     $version = $data->version;
+    $mode=$data->mode;
 
     // On créé un nouvel objet Json
     $response = new JsonResponse();
@@ -771,7 +775,7 @@ class SuiviController extends AbstractController
       return $response->setData(["code" => $e->getCode(), Response::HTTP_OK]);
     }
 
-    return $response->setData(["code" => "OK", Response::HTTP_OK]);
+    return $response->setData(["mode"=>$mode, "code" => "OK", Response::HTTP_OK]);
   }
 
   /**
@@ -796,7 +800,7 @@ class SuiviController extends AbstractController
     $mavenKey = $data->mavenKey;
     $date = $data->date;
     $version = $data->version;
-    $mode= $data->version;
+    $mode= $data->mode;
 
     /** On crée un objet de reponse JSON */
     $response = new JsonResponse();
