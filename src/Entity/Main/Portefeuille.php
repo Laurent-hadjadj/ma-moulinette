@@ -17,12 +17,9 @@ use App\Repository\Main\PortefeuilleRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-/** gstion des containtes */
-//use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PortefeuilleRepository::class)]
-//#[UniqueEntity(fields: ['titre'], message: 'Le {{ label }} : {{ value }} existe déjà.')]
 class Portefeuille
 {
     #[ORM\Id]
