@@ -640,6 +640,7 @@ class ApiProjetPeintureControllerTest extends ApiTestCase
     $this->assertEquals('La clé maven est vide!', $decode['message']);
     $this->assertArrayHasKey('mode', $decode);
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
   }
 
   public function testApiPeintureProjetNosonarDetails(): void

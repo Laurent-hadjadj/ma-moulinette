@@ -57,6 +57,7 @@ class SuiviControllerTest extends ApiTestCase
     $this->assertEquals('400', $decode[0]);
     $this->assertEquals('La clé maven est vide!', $decode['message']);
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
   }
 
   /**
@@ -200,7 +201,8 @@ class SuiviControllerTest extends ApiTestCase
     $this->assertIsArray($decode);
     $this->assertEquals('400', $decode[0]);
     $this->assertEquals('TEST', $decode['mode']);
-        $this->assertEquals('La clé maven est vide!', $decode['message']);
+    $this->assertNotEquals('null', $decode['mode']);
+    $this->assertEquals('La clé maven est vide!', $decode['message']);
   }
 
 
@@ -230,6 +232,7 @@ class SuiviControllerTest extends ApiTestCase
     $this->assertEquals(4,count($decode));
     $this->assertEquals('200', $decode[0]);
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
 
     $this->assertArrayHasKey('liste', $decode);
     $this->assertArrayHasKey('versions', $decode);
@@ -357,6 +360,7 @@ class SuiviControllerTest extends ApiTestCase
     $info=$mockResponse->getInfo();
     $this->assertEquals('OK', $info['code']);
     $this->assertEquals('TEST', $info['mode']);
+    $this->assertNotEquals('null', $info['mode']);
     $this->assertEquals(static::$mavenKey, $info['mavenKey']);
     $this->assertEquals('200', $info['http_code']);
     $this->assertNull( $info['error']);
@@ -497,6 +501,7 @@ class SuiviControllerTest extends ApiTestCase
     $this->assertEquals('PUT', $info['http_method']);
     $this->assertNotEquals('DELETE', $info['http_method']);
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals('OK', $decode['code']);
   }
 
@@ -530,6 +535,7 @@ class SuiviControllerTest extends ApiTestCase
     $this->assertEquals('PUT', $info['http_method']);
     $this->assertNotEquals('DELETE', $info['http_method']);
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals('OK', $decode['code']);
   }
 
@@ -563,6 +569,7 @@ class SuiviControllerTest extends ApiTestCase
     $this->assertEquals('PUT', $info['http_method']);
     $this->assertNotEquals('DELETE', $info['http_method']);
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals('OK', $decode['code']);
   }
 
@@ -596,6 +603,7 @@ class SuiviControllerTest extends ApiTestCase
     $this->assertEquals('PUT', $info['http_method']);
     $this->assertNotEquals('DELETE', $info['http_method']);
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals('OK', $decode['code']);
   }
 

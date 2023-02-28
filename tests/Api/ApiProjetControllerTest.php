@@ -52,6 +52,7 @@ class ApiProjetControllerTest extends ApiTestCase
     $this->assertEquals('400', $decode[0]);
     $this->assertEquals(5,count($decode));
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals('null', $decode['mavenKey']);
     $this->assertEquals(0, $decode['statut']);
     $this->assertEquals("La clé maven est vide!", $decode['message']);
@@ -86,6 +87,7 @@ class ApiProjetControllerTest extends ApiTestCase
     $this->assertEquals('200', $decode[0]);
     $this->assertEquals(3,count($decode));
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals(0, $decode['statut']);
     $this->assertArrayHasKey('mode', $decode);
     $this->assertArrayHasKey('statut', $decode);
@@ -236,6 +238,7 @@ class ApiProjetControllerTest extends ApiTestCase
     $this->assertEquals('400', $decode[0]);
     $this->assertEquals(4,count($decode));
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals('null', $decode['mavenKey']);
     $this->assertEquals("La clé maven est vide!", $decode['message']);
     $this->assertArrayHasKey('message', $decode);
@@ -270,6 +273,7 @@ class ApiProjetControllerTest extends ApiTestCase
     $this->assertArrayHasKey('mode', $decode);
     $this->assertArrayHasKey('info', $decode);
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertStringStartsWith("Enregistrement des défauts", $decode['info']);
   }
 
@@ -298,6 +302,7 @@ class ApiProjetControllerTest extends ApiTestCase
     $this->assertEquals('400', $decode[0]);
     $this->assertEquals(4,count($decode));
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals('null', $decode['mavenKey']);
     $this->assertEquals("La clé maven est vide!", $decode['message']);
     $this->assertArrayHasKey('message', $decode);
@@ -332,6 +337,7 @@ class ApiProjetControllerTest extends ApiTestCase
     $this->assertArrayHasKey('mode', $decode);
     $this->assertArrayHasKey('code', $decode);
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals('OK', $decode['code']);
   }
 
@@ -360,6 +366,7 @@ class ApiProjetControllerTest extends ApiTestCase
     $this->assertEquals('400', $decode[0]);
     $this->assertEquals(4,count($decode));
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals('null', $decode['mavenKey']);
     $this->assertEquals("La clé maven est vide!", $decode['message']);
     $this->assertArrayHasKey('message', $decode);
@@ -395,6 +402,7 @@ class ApiProjetControllerTest extends ApiTestCase
     $this->assertArrayHasKey('nombre', $decode);
     $this->assertArrayHasKey('type', $decode);
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals('Fiabilité', $decode['type']);
     $this->assertEquals(8, $decode['nombre']);
   }
@@ -427,6 +435,7 @@ class ApiProjetControllerTest extends ApiTestCase
     $this->assertArrayHasKey('nombre', $decode);
     $this->assertArrayHasKey('type', $decode);
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals('Sécurité', $decode['type']);
     $this->assertEquals(8, $decode['nombre']);
   }
@@ -459,6 +468,7 @@ class ApiProjetControllerTest extends ApiTestCase
     $this->assertArrayHasKey('nombre', $decode);
     $this->assertArrayHasKey('type', $decode);
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals('Mauvaises Pratiques', $decode['type']);
     $this->assertEquals(8, $decode['nombre']);
   }
@@ -489,6 +499,7 @@ class ApiProjetControllerTest extends ApiTestCase
     $this->assertEquals(4,count($decode));
     $this->assertEquals('TEST', $decode['mode']);
     $this->assertEquals('null', $decode['mavenKey']);
+        $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals("La clé maven est vide!", $decode['message']);
     $this->assertArrayHasKey('message', $decode);
     $this->assertArrayHasKey('mode', $decode);
@@ -522,6 +533,7 @@ class ApiProjetControllerTest extends ApiTestCase
     $this->assertArrayHasKey('mode', $decode);
     $this->assertArrayHasKey('owasp', $decode);
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals(0, $decode['owasp']);
   }
 
@@ -550,6 +562,7 @@ class ApiProjetControllerTest extends ApiTestCase
     $this->assertEquals('400', $decode[0]);
     $this->assertEquals(4,count($decode));
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals('null', $decode['mavenKey']);
     $this->assertEquals("La clé maven est vide!", $decode['message']);
     $this->assertArrayHasKey('message', $decode);
@@ -584,6 +597,7 @@ class ApiProjetControllerTest extends ApiTestCase
     $this->assertArrayHasKey('mode', $decode);
     $this->assertArrayHasKey('hotspots', $decode);
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals(2, $decode['hotspots']);
   }
 
@@ -612,6 +626,7 @@ class ApiProjetControllerTest extends ApiTestCase
     $this->assertEquals('400', $decode[0]);
     $this->assertEquals(5,count($decode));
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals('null', $decode['mavenKey']);
     $this->assertEquals('null', $decode['owasp']);
     $this->assertEquals("La clé maven est vide!", $decode['message']);
@@ -649,6 +664,7 @@ class ApiProjetControllerTest extends ApiTestCase
     $this->assertArrayHasKey('info', $decode);
     $this->assertArrayHasKey('hotspots', $decode);
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals(0, $decode['hotspots']);
     $this->assertEquals("enregistrement", $decode['info']);
   }
@@ -681,6 +697,7 @@ class ApiProjetControllerTest extends ApiTestCase
     $this->assertArrayHasKey('info', $decode);
     $this->assertArrayHasKey('hotspots', $decode);
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals(0, $decode['hotspots']);
     $this->assertEquals("enregistrement", $decode['info']);
   }
@@ -713,6 +730,7 @@ class ApiProjetControllerTest extends ApiTestCase
     $this->assertArrayHasKey('info', $decode);
     $this->assertArrayHasKey('hotspots', $decode);
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals(2, $decode['hotspots']);
     $this->assertEquals("enregistrement", $decode['info']);
   }
@@ -745,6 +763,7 @@ class ApiProjetControllerTest extends ApiTestCase
     $this->assertArrayHasKey('info', $decode);
     $this->assertArrayHasKey('hotspots', $decode);
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals(0, $decode['hotspots']);
     $this->assertEquals("enregistrement", $decode['info']);
   }
@@ -777,6 +796,7 @@ class ApiProjetControllerTest extends ApiTestCase
     $this->assertArrayHasKey('info', $decode);
     $this->assertArrayHasKey('hotspots', $decode);
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals(0, $decode['hotspots']);
     $this->assertEquals("enregistrement", $decode['info']);
   }
@@ -809,6 +829,7 @@ class ApiProjetControllerTest extends ApiTestCase
     $this->assertArrayHasKey('info', $decode);
     $this->assertArrayHasKey('hotspots', $decode);
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals(0, $decode['hotspots']);
     $this->assertEquals("enregistrement", $decode['info']);
   }
@@ -841,6 +862,7 @@ class ApiProjetControllerTest extends ApiTestCase
     $this->assertArrayHasKey('info', $decode);
     $this->assertArrayHasKey('hotspots', $decode);
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals(0, $decode['hotspots']);
     $this->assertEquals("enregistrement", $decode['info']);
   }
@@ -873,6 +895,7 @@ class ApiProjetControllerTest extends ApiTestCase
     $this->assertArrayHasKey('info', $decode);
     $this->assertArrayHasKey('hotspots', $decode);
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals(0, $decode['hotspots']);
     $this->assertEquals("enregistrement", $decode['info']);
   }
@@ -905,6 +928,7 @@ class ApiProjetControllerTest extends ApiTestCase
     $this->assertArrayHasKey('info', $decode);
     $this->assertArrayHasKey('hotspots', $decode);
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals(0, $decode['hotspots']);
     $this->assertEquals("enregistrement", $decode['info']);
   }
@@ -937,6 +961,7 @@ class ApiProjetControllerTest extends ApiTestCase
     $this->assertArrayHasKey('info', $decode);
     $this->assertArrayHasKey('hotspots', $decode);
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals(0, $decode['hotspots']);
     $this->assertEquals("enregistrement", $decode['info']);
   }
@@ -945,10 +970,10 @@ class ApiProjetControllerTest extends ApiTestCase
    * [Description for testApiProjetHotspotDetails400]
    *
    * @return void
-   * 
+   *
    * Created at: 26/02/2023, 00:41:49 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com> 
-   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0. 
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   public function testApiProjetHotspotDetails400(): void
   {
@@ -966,6 +991,7 @@ class ApiProjetControllerTest extends ApiTestCase
     $this->assertEquals('400', $decode[0]);
     $this->assertEquals(4,count($decode));
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals('null', $decode['mavenKey']);
     $this->assertEquals("La clé maven est vide!", $decode['message']);
     $this->assertArrayHasKey('message', $decode);
@@ -1001,6 +1027,7 @@ class ApiProjetControllerTest extends ApiTestCase
     $this->assertArrayHasKey('ligne', $decode);
     $this->assertArrayNotHasKey('code', $decode);
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals(2, $decode['ligne']);
   }
 
@@ -1020,6 +1047,7 @@ class ApiProjetControllerTest extends ApiTestCase
     $this->assertEquals('400', $decode[0]);
     $this->assertEquals(4,count($decode));
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals('null', $decode['mavenKey']);
     $this->assertEquals("La clé maven est vide!", $decode['message']);
     $this->assertArrayHasKey('message', $decode);
@@ -1031,10 +1059,10 @@ class ApiProjetControllerTest extends ApiTestCase
    * [Description for testApiProjetNosonarDetails]
    *
    * @return void
-   * 
+   *
    * Created at: 26/02/2023, 00:49:51 (Europe/Paris)
-   * @author    Laurent HADJADJ <laurent_h@me.com> 
-   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0. 
+   * @author    Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   public function testApiProjetNosonarDetails(): void
   {
@@ -1054,6 +1082,7 @@ class ApiProjetControllerTest extends ApiTestCase
     $this->assertArrayHasKey('mode', $decode);
     $this->assertArrayHasKey('nosonar', $decode);
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals(0, $decode['nosonar']);
   }
 
