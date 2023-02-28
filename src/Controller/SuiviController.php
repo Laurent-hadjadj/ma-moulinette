@@ -371,17 +371,10 @@ class SuiviController extends AbstractController
     /** On décode le body */
     $data = json_decode($request->getContent());
     $mavenKey=$data->mavenKey;
+    $mode=$data->mode;
 
     /** On crée un objet de reponse JSON */
     $response = new JsonResponse();
-
-    /** On on vérifie si on a activé le mode test */
-    if (is_null($data->mode)) {
-      $mode="null";
-    } else {
-      $mode=$data->mode;
-    }
-
 
     /** Réponse HTTP */
     $message=200;
@@ -647,16 +640,10 @@ class SuiviController extends AbstractController
     /** On décode le body */
     $data = json_decode($request->getContent());
     $mavenKey = $data->mavenKey;
+    $mode=$data->mode;
 
     /** On crée un objet de reponse JSON */
     $response = new JsonResponse();
-
-    /** On on vérifie si on a activé le mode test */
-    if (is_null($data->mode)) {
-      $mode="null";
-    } else {
-      $mode=$data->mode;
-    }
 
     /** On teste si la clé est valide */
     if ($mavenKey==="null" && $mode==="TEST") {
@@ -813,13 +800,6 @@ class SuiviController extends AbstractController
 
     /** On crée un objet de reponse JSON */
     $response = new JsonResponse();
-
-    /** On on vérifie si on a activé le mode test */
-    if (is_null($data->mode)) {
-      $mode="null";
-    } else {
-      $mode=$data->mode;
-    }
 
     /** On teste si la clé est valide */
     if ($mavenKey==="null" && $mode==="TEST") {
