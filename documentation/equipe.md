@@ -10,10 +10,10 @@
 * [Portefeuille](/documentation/portefeuille.md)
 * [Batch](/documentation/batch.md)
 
-La gestion des **équipes** s'appuie sur un contrôleur CRUD du bundle EasyAdmin. Les options disoinbles sont les suivantes :
+La gestion des **équipes** s'appuie sur un contrôleur CRUD du bundle EasyAdmin. Les options disponibles sont les suivantes :
 
 * [X] Je peux visualiser la liste des équipes projets ;
-* [X] Je peux afficher les détails de l'équipe ;
+* [X] Je peux afficher ls détails de l'équipe ;
 * [X] Je peux modifier le titre et la description de l'équipe ;
 * [X] Je peux supprimer une équipe ;
 
@@ -21,7 +21,7 @@ L'entité `Èquipe` permet de regrouper des personnes travaillant sur les mêmes
 
 ## Accéder à l'interface d'administration
 
-Il faut avoir le rôle `GESTIONNAIRE` et cliquer sur l'icône utilisateurs en haut à gauche.
+Il faut avoir le rôle `GESTIONNAIRE` et cliquer sur l'icône utilisateurs en haut à droite.
 
 ![utilisateur-icône](/documentation/ressources/utilisateur-001.jpg)
 
@@ -41,17 +41,28 @@ Pour chaque équipe, le tableau affiche les éléments suivants  :
 * [ ] La date de modification ;
 * [ ] La date de création ;
 
+Par défaut il existe deux équipes :
+
+1. `AUCUNE` - Personne de m'aime !
+2. `MA MOULINETTE`- Développement de l'application Ma-Moulinette
+
+![equipe-liste](/documentation/ressources/equipe-001a.jpg)
+
+Si, je ne veux pas être rattaché à aucune équipe, je dois choisir **AUCUNE**.
+
+L'équipe **MA MOULINETTE** est l'équipe des testeurs de l'application `Ma Moulinette`.
+
 Le menu en fin de ligne permet de (consulter, éditer et supprimer l'équipe).
 
 ![equipe-menu](/documentation/ressources/utilisateur-003.jpg)
 
 ## Ajouter une nouvelle équipe
 
-Il suffit de cliquez sur le bouton **Créer Equipe** en haut à droite de l'écran. En suite, il suffit de saisir le `titre` de l'équipe et donner une `description`.
+Il suffit de cliquer sur le bouton **Créer Equipe** en haut à droite de l'écran. En suite, il vous suffira de saisir le `titre` de l'équipe et donner une `description`.
 
 ![equipe-ajouter](/documentation/ressources/equipe-002.jpg)
 
-Il faudra cliquer sur le bouton `Créer` pour valider le formulaire.
+Puis cliquez sur le bouton `Créer` pour valider le formulaire.
 
 ![equipe-erreur](/documentation/ressources/equipe-003.jpg)
 
@@ -61,7 +72,7 @@ Il faudra cliquer sur le bouton `Créer` pour valider le formulaire.
 
 `Note :` Initialement, l'attribut `#[UniqueEntity...]` était utilisé au niveau de la class pour contrôler l'unicité de l'attribut `Titre` mais son utilisation n'étant assez fiable (i.e. son fonctionnement n'est pas garanti), une contrainte de validité `#[AcmeAssert\ContainsEquipeUnique()]` a été ajouté au niveau de l'attribut lui même. Un contrôle a été ajouté également au niveau du controller CRUD.
 
-La code avant :
+Le code avant :
 
 ```php
 #[ORM\Entity(repositoryClass: EquipeRepository::class)]
@@ -84,8 +95,6 @@ class Equipe
   private $titre;
 }
 ```
-
-`Note :` Une équipe a été ajoutée par défaut. Celle de l'équipe de développement de l'application `Ma Moulinette`.
 
 ## Consulter l'équipe
 
@@ -111,7 +120,7 @@ Pour valider la modification, il suffit de cliquer sur le bouton `Sauvegarder le
 ## Messages utilisateurs
 
 * Ajout d'une nouvelle équipe.
-![equipe-editer](/documentation/ressources/equipe-007.jpg)
+![equipe-message](/documentation/ressources/equipe-007.jpg)
 
 * L'équipe existe déjà.
 ![equipe-editer](/documentation/ressources/equipe-008.jpg)
