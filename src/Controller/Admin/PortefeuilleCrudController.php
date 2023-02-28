@@ -22,7 +22,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 
-
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 
 /**
@@ -67,7 +66,7 @@ class PortefeuilleCrudController extends AbstractCrudController
      * @return Filters
      *
      * Created at: 02/01/2023, 18:36:11 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function configureFilters(Filters $filters): Filters
@@ -85,7 +84,7 @@ class PortefeuilleCrudController extends AbstractCrudController
      * @return Actions
      *
      * Created at: 02/01/2023, 18:36:23 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function configureActions(Actions $actions): Actions
@@ -102,7 +101,7 @@ class PortefeuilleCrudController extends AbstractCrudController
      * @return iterable
      *
      * Created at: 02/01/2023, 18:36:30 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function configureFields(string $pageName): iterable
@@ -174,7 +173,7 @@ class PortefeuilleCrudController extends AbstractCrudController
      * @return void
      *
      * Created at: 02/01/2023, 18:36:49 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function persistEntity(EntityManagerInterface $em, $entityInstance): void
@@ -184,10 +183,18 @@ class PortefeuilleCrudController extends AbstractCrudController
         }
         /** On récèpere le titre du portefeuille */
         $titre=$entityInstance->getTitre();
+
         /** On enregistre le données que l'on veut modifier */
         $entityInstance->setTitre(mb_strtoupper($titre));
         $entityInstance->setDateEnregistrement(new \DateTimeImmutable());
-        parent::persistEntity($em, $entityInstance);
+
+        /** retourne 1 ou null */
+        $record = $this->emm->getRepository(Portefeuille::class)->findOneBy(['titre' => mb_strtoupper($titre)]);
+
+        /** Si la valeur de l'attribut 'titre' n'existe pas, on enregistre.*/
+        if (is_null($record)) {
+          parent::persistEntity($em, $entityInstance);
+        }
     }
 
     /**
@@ -199,7 +206,7 @@ class PortefeuilleCrudController extends AbstractCrudController
      * @return void
      *
      * Created at: 02/01/2023, 18:37:02 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function updateEntity(EntityManagerInterface $em, $entityInstance): void
@@ -207,9 +214,19 @@ class PortefeuilleCrudController extends AbstractCrudController
         if (!$entityInstance instanceof Portefeuille) {
             return;
         }
+        /** On récèpere le titre du portefeuille */
+        $titre=$entityInstance->getTitre();
+
         /** On ajoute la date de modification  */
         $entityInstance->setdateModification(new \DateTimeImmutable);
-        parent::updateEntity($em, $entityInstance);
+
+        /** retourne 1 ou null */
+        $record = $this->emm->getRepository(Portefeuille::class)->findOneBy(['titre' => mb_strtoupper($titre)]);
+
+        /** Si la valeur de l'attribut 'titre' n'existe pas, on enregistre.*/
+        if (is_null($record)) {
+          parent::persistEntity($em, $entityInstance);
+        } else { $entityInstance->setId(0); }
     }
 
 }
