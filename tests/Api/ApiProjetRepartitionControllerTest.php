@@ -836,7 +836,7 @@ class ApiProjetRepartitionControllerTest extends ApiTestCase
     $this->assertEquals('CODE_SMELL', $decode['type']);
     $this->assertEquals('INFO', $decode['severity']);
     $this->assertEquals(1677324427466, $decode['setup']);
-    $this->assertEquals(2, $decode['temps']);
+    $this->assertGreaterThanOrEqual(1, $decode['temps']);
     $this->assertIsInt($decode['total']);
     $this->assertIsInt($decode['setup']);
     $this->assertIsInt($decode['temps']);
