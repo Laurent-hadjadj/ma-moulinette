@@ -26,6 +26,7 @@ use Symfony\Component\Translation\TranslatableMessage;
 
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Main\Equipe;
+use App\Entity\Main\Utilisateur;
 
 final class EasyAdminListener implements EventSubscriberInterface
 {
@@ -156,6 +157,7 @@ final class EasyAdminListener implements EventSubscriberInterface
   {
     /** On exclu  la class Utilisateur */
     $entity = $event->getEntityInstance();
+    //dd($entity);
     if ($entity instanceof Utilisateur) {
       return;
     }
