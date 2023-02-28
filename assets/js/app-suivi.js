@@ -245,7 +245,7 @@ $('select[name="version"]').change(function () {
   /**
    *  On appel l'API de récupération des versions
   */
-  const data = { mavenKey: $('#key-maven').text().trim(), date:d2[0] };
+  const data = { mavenKey: $('#key-maven').text().trim(), date:d2[0], mode: 'null' };
   const options = {
     url: `${serveur()}/api/get/version`, type: 'POST',
     dataType: 'json', data: JSON.stringify(data), contentType };
@@ -401,7 +401,6 @@ $('.js-enregistrer-analyse').on('click', ()=>{
     hotspotsReview,
     lines, ncloc, coverage, duplication,tests, dette,
     initial };
-
     /**
      * On lance l'API de mise à jour
      */
@@ -608,7 +607,7 @@ $('.js-modifier-analyse').on('click', function () {
     /**
      * On l'API de suppresion de la version dans l'historique
      */
-    const dataPoubelle = { mavenKey: $('#js-nom').data('maven'), version, date };
+    const dataPoubelle = { mavenKey: $('#js-nom').data('maven'), version, date, mode: 'null' };
     const optionsPoubelle = {
       url: `${serveur()}/api/suivi/version/poubelle`, type: 'PUT',
       dataType: 'json', data: JSON.stringify(dataPoubelle), contentType };
