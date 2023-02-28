@@ -468,7 +468,16 @@ class SuiviControllerTest extends ApiTestCase
     $this->assertEquals('La clé maven est vide!', $decode['message']);
   }
 
-  public function testApiSuiviVersionPoubelle200(): void
+  /**
+   * [Description for testApiSuiviVersionPoubelle200]
+   *
+   * @return void
+   *
+   * Created at: 27/02/2023, 21:49:02 (Europe/Paris)
+   * @author    Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function testApiSuiviVersionPoubelle(): void
   {
     $client = static::createClient();
     $userRepository = static::getContainer()->get(UtilisateurRepository::class);
@@ -490,4 +499,104 @@ class SuiviControllerTest extends ApiTestCase
     $this->assertEquals('TEST', $decode['mode']);
     $this->assertEquals('OK', $decode['code']);
   }
+
+  /**
+   * [Description for testApiSuiviMiseAJour]
+   *
+   * @return void
+   *
+   * Created at: 27/02/2023, 21:50:29 (Europe/Paris)
+   * @author    Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function testApiSuiviMiseAJour(): void
+  {
+    $client = static::createClient();
+    $userRepository = static::getContainer()->get(UtilisateurRepository::class);
+    $testUser = $userRepository->findOneByCourriel(static::$userTest);
+    $client->loginUser($testUser);
+
+    $data=['mavenKey'=>'TEST', 'mode'=>'TEST', 'version'=>'1.6.0-RELEASE', 'date'=>'2022-11-30 00:00:00', 'bug'=> 61, 'date'=> "30-11-2022 00:00:00", 'mavenKey'=> "fr.ma-moulinette:ma-moulinette", 'nom'=> "ma-moulinette", 'version'=> "1.6.0-RELEASE", 'noteReliability'=> "C", 'codeSmell'=>1895, 'coverage'=> 0.0, 'defauts'=> 1956, 'dette'=> 19501, 'duplication'=> 5.1, 'hotspotsReview'=> 2, 'initial'=> 0, 'lines'=> 24471, 'ncloc'=> 17301, 'noteHotspotsReview'=> "E", 'noteReliability'=> "C", 'noteSecurity'=> "A", 'noteSqale'=> "C", 'tests'=> 0, 'vulnerabilities'=> 0];
+
+    $client->request('PUT', '/api/suivi/mise-a-jour', ['json'=>$data] );
+    $response = $client->getResponse()->getContent();
+    $decode=json_decode($response, true, 512, JSON_THROW_ON_ERROR);
+    $this->assertResponseIsSuccessful();
+    $this->assertResponseHeaderSame('content-type', static::$applicationJson);
+    $this->assertIsArray($decode);
+    $this->assertEquals('200', $decode[0]);
+    $info=$client->getResponse()->getInfo();
+    $this->assertNull($info['error']);
+    $this->assertEquals('PUT', $info['http_method']);
+    $this->assertNotEquals('DELETE', $info['http_method']);
+    $this->assertEquals('TEST', $decode['mode']);
+    $this->assertEquals('OK', $decode['code']);
+  }
+
+  /**
+   * [Description for testApiSuiviVersionFavori]
+   *
+   * @return void
+   *
+   * Created at: 28/02/2023, 11:14:50 (Europe/Paris)
+   * @author    Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function testApiSuiviVersionFavori(): void
+  {
+    $client = static::createClient();
+    $userRepository = static::getContainer()->get(UtilisateurRepository::class);
+    $testUser = $userRepository->findOneByCourriel(static::$userTest);
+    $client->loginUser($testUser);
+
+    $data=['mavenKey'=>'TEST', 'mode'=>'TEST', 'favori'=>1,'version'=>'1.6.0-RELEASE', 'date'=>'2022-11-30 00:00:00', ];
+
+    $client->request('PUT', '/api/suivi/version/favori', ['json'=>$data] );
+    $response = $client->getResponse()->getContent();
+    $decode=json_decode($response, true, 512, JSON_THROW_ON_ERROR);
+    $this->assertResponseIsSuccessful();
+    $this->assertResponseHeaderSame('content-type', static::$applicationJson);
+    $this->assertIsArray($decode);
+    $this->assertEquals('200', $decode[0]);
+    $info=$client->getResponse()->getInfo();
+    $this->assertNull($info['error']);
+    $this->assertEquals('PUT', $info['http_method']);
+    $this->assertNotEquals('DELETE', $info['http_method']);
+    $this->assertEquals('TEST', $decode['mode']);
+    $this->assertEquals('OK', $decode['code']);
+  }
+
+  /**
+   * [Description for testApiSuiviVersionReference]
+   *
+   * @return void
+   *
+   * Created at: 28/02/2023, 11:15:49 (Europe/Paris)
+   * @author    Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function testApiSuiviVersionReference(): void
+  {
+    $client = static::createClient();
+    $userRepository = static::getContainer()->get(UtilisateurRepository::class);
+    $testUser = $userRepository->findOneByCourriel(static::$userTest);
+    $client->loginUser($testUser);
+
+    $data=['mavenKey'=>'TEST', 'mode'=>'TEST', 'reference'=>1,'version'=>'1.6.0-RELEASE', 'date'=>'2022-11-30 00:00:00', ];
+
+    $client->request('PUT', '/api/suivi/version/reference', ['json'=>$data] );
+    $response = $client->getResponse()->getContent();
+    $decode=json_decode($response, true, 512, JSON_THROW_ON_ERROR);
+    $this->assertResponseIsSuccessful();
+    $this->assertResponseHeaderSame('content-type', static::$applicationJson);
+    $this->assertIsArray($decode);
+    $this->assertEquals('200', $decode[0]);
+    $info=$client->getResponse()->getInfo();
+    $this->assertNull($info['error']);
+    $this->assertEquals('PUT', $info['http_method']);
+    $this->assertNotEquals('DELETE', $info['http_method']);
+    $this->assertEquals('TEST', $decode['mode']);
+    $this->assertEquals('OK', $decode['code']);
+  }
+
 }
