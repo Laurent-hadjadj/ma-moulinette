@@ -541,7 +541,7 @@ $('.js-modifier-analyse').on('click', function () {
       } else {
         favori=0;
       }
-        const dataFavori = { mavenKey: $('#js-nom').data('maven'), favori, version, date };
+        const dataFavori = { mavenKey: $('#js-nom').data('maven'), favori, version, date, mode:'null' };
         const optionsFavori = {
           url: `${serveur()}/api/suivi/version/favori`, type: 'PUT',
           dataType: 'json', data: JSON.stringify(dataFavori), contentType };
@@ -577,7 +577,7 @@ $('.js-modifier-analyse').on('click', function () {
       /**
        * On appel l'API de mise àjour de la version de référence
        */
-      const dataReference = { mavenKey: $('#js-nom').data('maven'), reference, version, date };
+      const dataReference = { mavenKey: $('#js-nom').data('maven'), reference, version, date, mode:'null' };
       const optionsReference = {
         url: `${serveur()}/api/suivi/version/reference`, type: 'PUT',
         dataType: 'json', data: JSON.stringify(dataReference), contentType };

@@ -116,7 +116,7 @@ const timestamp=function(bypass) {
 const clear=function(mavenKey) {
 
   /** On bind les variables */
-  const data = { mavenKey };
+  const data = { mavenKey, mode:'null' };
   const options = {
       url: `${serveur()}/api/projet/repartition/clear`,
       type: 'PUT', dataType: 'json', data: JSON.stringify(data), contentType,
@@ -183,7 +183,7 @@ const analyse=function(mavenKey, type, severity, css){
   const setup=timestamp('by-pass');
 
   /** On déclare les options du web services. */
-  const data = { mavenKey, type, severity, setup };
+  const data = { mavenKey, type, severity, setup, mode:'null' };
   const options = {
     url: `${serveur()}/api/projet/repartition/analyse`, type: 'PUT',
     dataType: 'json', data: JSON.stringify(data), contentType,
@@ -474,7 +474,7 @@ const collecte=function(mavenKey, type, severity, start, stop, counter, timer) {
   const setup=timestamp('collecte');
 
   /** Déclaration des parametres de l'appel du service */
-  const data = { mavenKey, type, severity, setup };
+  const data = { mavenKey, type, severity, setup, mode:'null' };
   const options = {
     url: `${serveur()}/api/projet/repartition/collecte`,
     type: 'PUT',dataType: 'json', data: JSON.stringify(data), contentType,
