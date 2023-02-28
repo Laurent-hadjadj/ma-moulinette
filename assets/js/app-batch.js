@@ -33,7 +33,6 @@ const automatique = '.automatique';
 const jsManuel = '.js-manuel';
 const manuel= '.manuel';
 
-
 $(jsAutomatique).on('click', ()=> {
   if ($(jsAutomatique).hasClass('active')) {
     $(jsAutomatique).removeClass('active').addClass('bouton-automatique');
@@ -117,7 +116,7 @@ $('.i-am-human-svg').on('click', function() {
     $(collecteAnimation).addClass('sp-volume');
     $(collecteTexte).html(`Démarrage du traitement...`);
 
-    const data = { job };
+    const data = { job, mode:'null' };
     const options = {
       url: `${serveur()}/traitement/pending`, type: 'GET',
       dataType: 'json', data, contentType};
@@ -165,6 +164,7 @@ const batchManuel = function(id, job){
   const infoBulle='#info-bulle';
   const collecteTexte='#collecte-texte';
   const collecteAnimation='#collecte-animation';
+
   const data = { job };
   const options = {
     url: `${serveur()}/traitement/manuel`, type: 'GET',
@@ -190,3 +190,32 @@ const batchManuel = function(id, job){
     });
   });
 };
+
+/**
+ * [Description for traitementAuto]
+ *
+ * @return [type]
+ *
+ * Created at: 08/02/2023, 17:09:11 (Europe/Paris)
+ * @author    Laurent HADJADJ <laurent_h@me.com>
+ * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ */
+const traitementAuto=function(){
+  /** On récupère le token */
+  const e = document.querySelector('.batch-processing-svg');
+  const token=e.dataset.session;
+  const data = { token };
+  const options = {
+  url: `${serveur()}/traitement/auto`, type: 'POST',
+  dataType: 'json', data: JSON.stringify(data), contentType};
+  return new Promise(resolve => {
+    $.ajax(options).then( t => {
+      console.log(t)
+      resolve();
+    });
+  });
+};
+
+$('.batch-processing-svg').on('click', ()=>{
+  traitementAuto();
+});
