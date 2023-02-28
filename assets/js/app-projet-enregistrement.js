@@ -207,7 +207,7 @@ export const enregistrement=function(mavenKey) {
     vulnerabilityMajor, vulnerabilityMinor, vulnerabilityInfo,
     codeSmellBlocker, codeSmellCritical, codeSmellMajor,
     codeSmellMinor, codeSmellInfo,
-    favori, initial:0 };
+    favori, initial:0, mode:'null' };
 
 const options = {
     url: `${serveur()}/api/enregistrement`, type: 'PUT',
