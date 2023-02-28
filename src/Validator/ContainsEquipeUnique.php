@@ -18,6 +18,6 @@ use Symfony\Component\Validator\Constraint;
 #[\Attribute]
 class ContainsEquipeUnique extends Constraint
 {
-    public string $message ='La valeur "{{ string }}" existe déjà.';
+    public string $message ='[Equipe] La valeur "{{ string }}" existe déjà.';
     public string $mode = 'strict'; //mode='loose'
 }
