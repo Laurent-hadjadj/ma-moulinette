@@ -51,6 +51,7 @@ class ProfilControllerTest extends ApiTestCase
     $this->assertEquals('200', $decode[0]);
     $this->assertEquals(5,count($decode));
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertArrayHasKey('version', $decode);
     $this->assertArrayHasKey('dateCopyright', $decode);
     // On a 12 profils (A mettre à jour en fonction des profils utilisés sur sonarqube).

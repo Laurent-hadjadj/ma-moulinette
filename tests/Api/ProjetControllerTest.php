@@ -54,6 +54,7 @@ class ProjetControllerTest extends ApiTestCase
     $this->assertEquals('200', $decode[0]);
     $this->assertEquals(4,count($decode));
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertArrayHasKey('version', $decode);
     $this->assertArrayHasKey('dateCopyright', $decode);
     $this->assertIsString($decode['dateCopyright']);
@@ -86,6 +87,7 @@ class ProjetControllerTest extends ApiTestCase
     $this->assertEquals('200', $decode[0]);
     $this->assertEquals(77,count($decode));
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertArrayHasKey('version', $decode);
     $this->assertArrayHasKey('dateCopyright', $decode);
     $this->assertEquals('NaN', $decode['setup']);
@@ -187,6 +189,7 @@ class ProjetControllerTest extends ApiTestCase
     $this->assertEquals('200', $decode[0]);
     $this->assertEquals(77,count($decode));
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertArrayHasKey('version', $decode);
     $this->assertArrayHasKey('dateCopyright', $decode);
 

@@ -234,6 +234,7 @@ class ApiProjetRepartitionControllerTest extends ApiTestCase
     $this->assertArrayHasKey('setup', $decode);
     $this->assertArrayHasKey('temps', $decode);
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals(0, $decode['total']);
     $this->assertEquals('BUG', $decode['type']);
     $this->assertEquals('BLOCKER', $decode['severity']);
@@ -280,6 +281,7 @@ class ApiProjetRepartitionControllerTest extends ApiTestCase
     $this->assertArrayHasKey('setup', $decode);
     $this->assertArrayHasKey('temps', $decode);
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals(0, $decode['total']);
     $this->assertEquals('BUG', $decode['type']);
     $this->assertEquals('CRITICAL', $decode['severity']);
@@ -326,6 +328,7 @@ class ApiProjetRepartitionControllerTest extends ApiTestCase
     $this->assertArrayHasKey('setup', $decode);
     $this->assertArrayHasKey('temps', $decode);
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals(31, $decode['total']);
     $this->assertEquals('BUG', $decode['type']);
     $this->assertEquals('MAJOR', $decode['severity']);
@@ -372,6 +375,7 @@ class ApiProjetRepartitionControllerTest extends ApiTestCase
     $this->assertArrayHasKey('setup', $decode);
     $this->assertArrayHasKey('temps', $decode);
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals(0, $decode['total']);
     $this->assertEquals('BUG', $decode['type']);
     $this->assertEquals('INFO', $decode['severity']);
@@ -418,6 +422,7 @@ class ApiProjetRepartitionControllerTest extends ApiTestCase
     $this->assertArrayHasKey('setup', $decode);
     $this->assertArrayHasKey('temps', $decode);
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals(30, $decode['total']);
     $this->assertEquals('BUG', $decode['type']);
     $this->assertEquals('MINOR', $decode['severity']);
@@ -464,6 +469,7 @@ class ApiProjetRepartitionControllerTest extends ApiTestCase
     $this->assertArrayHasKey('setup', $decode);
     $this->assertArrayHasKey('temps', $decode);
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals(0, $decode['total']);
     $this->assertEquals('VULNERABILITY', $decode['type']);
     $this->assertEquals('BLOCKER', $decode['severity']);
@@ -510,6 +516,7 @@ class ApiProjetRepartitionControllerTest extends ApiTestCase
     $this->assertArrayHasKey('setup', $decode);
     $this->assertArrayHasKey('temps', $decode);
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals(0, $decode['total']);
     $this->assertEquals('VULNERABILITY', $decode['type']);
     $this->assertEquals('CRITICAL', $decode['severity']);
@@ -556,6 +563,7 @@ class ApiProjetRepartitionControllerTest extends ApiTestCase
     $this->assertArrayHasKey('setup', $decode);
     $this->assertArrayHasKey('temps', $decode);
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals(0, $decode['total']);
     $this->assertEquals('VULNERABILITY', $decode['type']);
     $this->assertEquals('MAJOR', $decode['severity']);
@@ -602,6 +610,7 @@ class ApiProjetRepartitionControllerTest extends ApiTestCase
     $this->assertArrayHasKey('setup', $decode);
     $this->assertArrayHasKey('temps', $decode);
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals(0, $decode['total']);
     $this->assertEquals('VULNERABILITY', $decode['type']);
     $this->assertEquals('INFO', $decode['severity']);
@@ -648,6 +657,7 @@ class ApiProjetRepartitionControllerTest extends ApiTestCase
     $this->assertArrayHasKey('setup', $decode);
     $this->assertArrayHasKey('temps', $decode);
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals(0, $decode['total']);
     $this->assertEquals('VULNERABILITY', $decode['type']);
     $this->assertEquals('MINOR', $decode['severity']);
@@ -694,6 +704,7 @@ class ApiProjetRepartitionControllerTest extends ApiTestCase
     $this->assertArrayHasKey('setup', $decode);
     $this->assertArrayHasKey('temps', $decode);
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals(17, $decode['total']);
     $this->assertEquals('CODE_SMELL', $decode['type']);
     $this->assertEquals('BLOCKER', $decode['severity']);
@@ -740,6 +751,7 @@ class ApiProjetRepartitionControllerTest extends ApiTestCase
     $this->assertArrayHasKey('setup', $decode);
     $this->assertArrayHasKey('temps', $decode);
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals(133, $decode['total']);
     $this->assertEquals('CODE_SMELL', $decode['type']);
     $this->assertEquals('CRITICAL', $decode['severity']);
@@ -786,6 +798,7 @@ class ApiProjetRepartitionControllerTest extends ApiTestCase
     $this->assertArrayHasKey('setup', $decode);
     $this->assertArrayHasKey('temps', $decode);
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals(1087, $decode['total']);
     $this->assertEquals('CODE_SMELL', $decode['type']);
     $this->assertEquals('MAJOR', $decode['severity']);
@@ -832,6 +845,7 @@ class ApiProjetRepartitionControllerTest extends ApiTestCase
     $this->assertArrayHasKey('setup', $decode);
     $this->assertArrayHasKey('temps', $decode);
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals(2, $decode['total']);
     $this->assertEquals('CODE_SMELL', $decode['type']);
     $this->assertEquals('INFO', $decode['severity']);
@@ -878,6 +892,7 @@ class ApiProjetRepartitionControllerTest extends ApiTestCase
     $this->assertArrayHasKey('setup', $decode);
     $this->assertArrayHasKey('temps', $decode);
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals(656, $decode['total']);
     $this->assertEquals('CODE_SMELL', $decode['type']);
     $this->assertEquals('MINOR', $decode['severity']);
@@ -920,6 +935,7 @@ class ApiProjetRepartitionControllerTest extends ApiTestCase
     $this->assertArrayHasKey('mode', $decode);
     $this->assertArrayHasKey('code', $decode);
     $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
     $this->assertEquals('OK', $decode['code']);
     $this->assertIsString($decode['mode']);
     $this->assertIsString($decode['code']);
@@ -949,8 +965,11 @@ class ApiProjetRepartitionControllerTest extends ApiTestCase
     $this->assertResponseIsSuccessful();
     $this->assertResponseHeaderSame('content-type', 'application/json');
     $this->assertIsArray($decode);
-    $this->assertEquals(3,count($decode));
+    $this->assertEquals(4,count($decode));
     $this->assertEquals('200', $decode[0]);
+    $this->assertEquals('TEST', $decode['mode']);
+    $this->assertNotEquals('null', $decode['mode']);
+    $this->assertArrayHasKey('mode', $decode);
     $this->assertArrayHasKey('code', $decode);
     $this->assertArrayHasKey('repartition', $decode);
     $this->assertEquals('OK', $decode['code']);
@@ -958,6 +977,7 @@ class ApiProjetRepartitionControllerTest extends ApiTestCase
     $this->assertEquals(0, $decode['repartition']['frontend']);
     $this->assertEquals(0, $decode['repartition']['backend']);
     $this->assertEquals(0, $decode['repartition']['autre']);
+    $this->assertIsString($decode['mode']);
     $this->assertIsString($decode['code']);
     $this->assertIsArray($decode['repartition']);
   }
@@ -986,7 +1006,7 @@ class ApiProjetRepartitionControllerTest extends ApiTestCase
     $this->assertResponseIsSuccessful();
     $this->assertResponseHeaderSame('content-type', 'application/json');
     $this->assertIsArray($decode);
-    $this->assertEquals(3,count($decode));
+    $this->assertEquals(4,count($decode));
     $this->assertEquals('200', $decode[0]);
     $this->assertArrayHasKey('code', $decode);
     $this->assertArrayHasKey('repartition', $decode);
@@ -1023,7 +1043,7 @@ class ApiProjetRepartitionControllerTest extends ApiTestCase
     $this->assertResponseIsSuccessful();
     $this->assertResponseHeaderSame('content-type', 'application/json');
     $this->assertIsArray($decode);
-    $this->assertEquals(3,count($decode));
+    $this->assertEquals(4,count($decode));
     $this->assertEquals('200', $decode[0]);
     $this->assertArrayHasKey('code', $decode);
     $this->assertArrayHasKey('repartition', $decode);
@@ -1060,7 +1080,7 @@ class ApiProjetRepartitionControllerTest extends ApiTestCase
     $this->assertResponseIsSuccessful();
     $this->assertResponseHeaderSame('content-type', 'application/json');
     $this->assertIsArray($decode);
-    $this->assertEquals(3,count($decode));
+    $this->assertEquals(4,count($decode));
     $this->assertEquals('200', $decode[0]);
     $this->assertArrayHasKey('code', $decode);
     $this->assertArrayHasKey('repartition', $decode);
@@ -1097,7 +1117,7 @@ class ApiProjetRepartitionControllerTest extends ApiTestCase
     $this->assertResponseIsSuccessful();
     $this->assertResponseHeaderSame('content-type', 'application/json');
     $this->assertIsArray($decode);
-    $this->assertEquals(3,count($decode));
+    $this->assertEquals(4,count($decode));
     $this->assertEquals('200', $decode[0]);
     $this->assertArrayHasKey('code', $decode);
     $this->assertArrayHasKey('repartition', $decode);
@@ -1134,7 +1154,7 @@ class ApiProjetRepartitionControllerTest extends ApiTestCase
     $this->assertResponseIsSuccessful();
     $this->assertResponseHeaderSame('content-type', 'application/json');
     $this->assertIsArray($decode);
-    $this->assertEquals(3,count($decode));
+    $this->assertEquals(4,count($decode));
     $this->assertEquals('200', $decode[0]);
     $this->assertArrayHasKey('code', $decode);
     $this->assertArrayHasKey('repartition', $decode);
@@ -1171,7 +1191,7 @@ class ApiProjetRepartitionControllerTest extends ApiTestCase
     $this->assertResponseIsSuccessful();
     $this->assertResponseHeaderSame('content-type', 'application/json');
     $this->assertIsArray($decode);
-    $this->assertEquals(3,count($decode));
+    $this->assertEquals(4,count($decode));
     $this->assertEquals('200', $decode[0]);
     $this->assertArrayHasKey('code', $decode);
     $this->assertArrayHasKey('repartition', $decode);
@@ -1208,7 +1228,7 @@ class ApiProjetRepartitionControllerTest extends ApiTestCase
     $this->assertResponseIsSuccessful();
     $this->assertResponseHeaderSame('content-type', 'application/json');
     $this->assertIsArray($decode);
-    $this->assertEquals(3,count($decode));
+    $this->assertEquals(4,count($decode));
     $this->assertEquals('200', $decode[0]);
     $this->assertArrayHasKey('code', $decode);
     $this->assertArrayHasKey('repartition', $decode);
@@ -1245,7 +1265,7 @@ class ApiProjetRepartitionControllerTest extends ApiTestCase
     $this->assertResponseIsSuccessful();
     $this->assertResponseHeaderSame('content-type', 'application/json');
     $this->assertIsArray($decode);
-    $this->assertEquals(3,count($decode));
+    $this->assertEquals(4,count($decode));
     $this->assertEquals('200', $decode[0]);
     $this->assertArrayHasKey('code', $decode);
     $this->assertArrayHasKey('repartition', $decode);
@@ -1282,7 +1302,7 @@ class ApiProjetRepartitionControllerTest extends ApiTestCase
     $this->assertResponseIsSuccessful();
     $this->assertResponseHeaderSame('content-type', 'application/json');
     $this->assertIsArray($decode);
-    $this->assertEquals(3,count($decode));
+    $this->assertEquals(4,count($decode));
     $this->assertEquals('200', $decode[0]);
     $this->assertArrayHasKey('code', $decode);
     $this->assertArrayHasKey('repartition', $decode);
@@ -1319,7 +1339,7 @@ class ApiProjetRepartitionControllerTest extends ApiTestCase
     $this->assertResponseIsSuccessful();
     $this->assertResponseHeaderSame('content-type', 'application/json');
     $this->assertIsArray($decode);
-    $this->assertEquals(3,count($decode));
+    $this->assertEquals(4,count($decode));
     $this->assertEquals('200', $decode[0]);
     $this->assertArrayHasKey('code', $decode);
     $this->assertArrayHasKey('repartition', $decode);
@@ -1356,7 +1376,7 @@ class ApiProjetRepartitionControllerTest extends ApiTestCase
     $this->assertResponseIsSuccessful();
     $this->assertResponseHeaderSame('content-type', 'application/json');
     $this->assertIsArray($decode);
-    $this->assertEquals(3,count($decode));
+    $this->assertEquals(4,count($decode));
     $this->assertEquals('200', $decode[0]);
     $this->assertArrayHasKey('code', $decode);
     $this->assertArrayHasKey('repartition', $decode);
@@ -1393,7 +1413,7 @@ class ApiProjetRepartitionControllerTest extends ApiTestCase
     $this->assertResponseIsSuccessful();
     $this->assertResponseHeaderSame('content-type', 'application/json');
     $this->assertIsArray($decode);
-    $this->assertEquals(3,count($decode));
+    $this->assertEquals(4,count($decode));
     $this->assertEquals('200', $decode[0]);
     $this->assertArrayHasKey('code', $decode);
     $this->assertArrayHasKey('repartition', $decode);
@@ -1430,7 +1450,7 @@ class ApiProjetRepartitionControllerTest extends ApiTestCase
     $this->assertResponseIsSuccessful();
     $this->assertResponseHeaderSame('content-type', 'application/json');
     $this->assertIsArray($decode);
-    $this->assertEquals(3,count($decode));
+    $this->assertEquals(4,count($decode));
     $this->assertEquals('200', $decode[0]);
     $this->assertArrayHasKey('code', $decode);
     $this->assertArrayHasKey('repartition', $decode);
@@ -1467,7 +1487,7 @@ class ApiProjetRepartitionControllerTest extends ApiTestCase
     $this->assertResponseIsSuccessful();
     $this->assertResponseHeaderSame('content-type', 'application/json');
     $this->assertIsArray($decode);
-    $this->assertEquals(3,count($decode));
+    $this->assertEquals(4,count($decode));
     $this->assertEquals('200', $decode[0]);
     $this->assertArrayHasKey('code', $decode);
     $this->assertArrayHasKey('repartition', $decode);
