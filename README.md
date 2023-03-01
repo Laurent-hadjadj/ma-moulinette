@@ -45,6 +45,7 @@ La réécriture totale de l'application a débuté le **28 janvier 2022**, aprè
 * [OWASP](/documentation/owasp.md)
 * [Suivi](/documentation/suivi.md)
 * [COSUI](/documentation/cosui.md)
+* [Collecteuse](/documentation/collecteuse.md)
 
 ### Backoffice de gestion
 
