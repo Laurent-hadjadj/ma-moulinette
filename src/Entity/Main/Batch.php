@@ -17,13 +17,10 @@ use App\Repository\Main\BatchRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-/** gstion des containtes */
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use App\Validator as AcmeAssert;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: BatchRepository::class)]
-#[UniqueEntity(fields: ['titre'], message: 'Le {{ label }} : {{ value }} existe déjà.')]
-#[UniqueEntity(fields: ['portefeuille'], message: 'Le {{ label }} : {{ value }} existe déjà.')]
 class Batch
 {
     #[ORM\Id]
@@ -37,6 +34,7 @@ class Batch
 
     /** Nom du traitement */
     #[ORM\Column(type: 'string', length: 32, unique: true)]
+    #[AcmeAssert\ContainsBatchUnique()]
     private $titre;
 
     /** Description du traitement */
@@ -50,6 +48,7 @@ class Batch
 
     /** Nom du portefeuille de projet */
     #[ORM\Column(type: 'string', length: 32, unique: true)]
+    #[AcmeAssert\ContainsBatchUnique()]
     private $portefeuille="Aucun";
 
     /** Nombre de projet */
