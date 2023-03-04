@@ -167,8 +167,8 @@ const batchManuel = function(id, job){
 
   const data = { job };
   const options = {
-    url: `${serveur()}/traitement/manuel`, type: 'GET',
-    dataType: 'json', data, contentType};
+    url: `${serveur()}/traitement/manuel`, type: 'POST',
+    dataType: 'json', data: JSON.stringify(data), contentType};
   return new Promise(resolve => {
     $.ajax(options).then( t => {
       /** On met à jour la bulle info */
