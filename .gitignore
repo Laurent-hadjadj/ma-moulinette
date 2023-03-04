@@ -60,3 +60,7 @@ composer.bat
 /reports/
 .env.test
 ###< phpunit/phpunit ###
+
+###> Traces batch ###
+/var/audit/*
+###< Traces batch ###
