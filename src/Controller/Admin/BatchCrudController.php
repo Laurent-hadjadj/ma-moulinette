@@ -92,7 +92,7 @@ class BatchCrudController extends AbstractCrudController
      * @return Actions
      *
      * Created at: 02/01/2023, 18:32:55 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function configureActions(Actions $actions): Actions
