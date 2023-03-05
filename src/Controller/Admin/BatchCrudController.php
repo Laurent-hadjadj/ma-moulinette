@@ -125,7 +125,7 @@ class BatchCrudController extends AbstractCrudController
         $l = $this->emm->getConnection()->prepare($sql)->executeQuery();
         $resultat = $l->fetchAllAssociative();
         /**
-         * Si la liste des portefeuilles est vide on renvoi"Aucun"
+         * Si la liste des portefeuilles est vide on renvoi "Aucun"
          */
         $i=0;
 
@@ -194,6 +194,7 @@ class BatchCrudController extends AbstractCrudController
         $l = $this->emm->getConnection()->prepare($sql)->executeQuery();
         $r = $l->fetchAssociative();
         $nombreProjet=count(json_decode($r['liste']));
+        dd($nombreProjet);
 
         /** On enregistre le données que l'on veut modifier */
         $entityInstance->setTitre(mb_strtoupper($titre));
@@ -224,6 +225,12 @@ class BatchCrudController extends AbstractCrudController
         }
         /** On ajoute la date de modification  */
         $entityInstance->setdateModification(new \DateTimeImmutable);
+
+        //** On récupère le nombre de projet du portefeuille */
+        $sql="SELECT liste FROM portefeuille ORDER BY titre ASC";
+        $l = $this->emm->getConnection()->prepare($sql)->executeQuery();
+        $r = $l->fetchAssociative();
+        $nombreProjet=count(json_decode($r['liste']));
         parent::updateEntity($em, $entityInstance);
     }
 
