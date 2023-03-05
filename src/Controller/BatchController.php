@@ -41,6 +41,10 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Main\BatchTraitement;
 use App\Entity\Main\Historique;
 
+/** Rotation des logs */
+use Cesargb\Log\Rotation;
+use Cesargb\Log\Exceptions\RotationFailed;
+
 /** Class API Batch */
 use App\Controller\BatchApiController;
 
@@ -87,6 +91,41 @@ class BatchController extends AbstractController
           $this->api = $api;
       }
 
+      /**
+       * [Description for logrotate]
+       *
+       * @return int
+       *
+       * Created at: 05/03/2023, 18:01:55 (Europe/Paris)
+       * @author     Laurent HADJADJ <laurent_h@me.com>
+       * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+       */
+      public function logrotate(): void
+      {
+        /* On initialise le journal des traces */
+        $filesystem = new Filesystem();
+        $path= $this->getParameter('kernel.project_dir').'\var\audit';
+        /* Le dossier d'audit est présent */
+        if ($filesystem->exists($path)){
+          /** Rotation des logs */
+          $rotation = new Rotation([
+            'files' => 5,
+            'compress' => true,
+            'min-size' => 102400,
+            'truncate' => true,
+            'then' => function ($filenameTarget, $filenameRotated) {},
+            'catch' => function (RotationFailed $exception) {},
+            'finally' => function ($message, $filenameTarget) {},
+          ]);
+        }
+        /** on récupère les logs */
+        $finder = new Finder();
+        $finder->files()->in($path)->depth(0)->sortByName();
+
+        foreach ($finder as $file) {
+            $rotation->rotate($file->getPathname());
+          }
+      }
 
       /**
        * [Description for information]
@@ -607,7 +646,7 @@ class BatchController extends AbstractController
             $tempoFinBatch = $finBatch->format(static::$dateFormat);
 
             $log1="INFO : Fin de la collecte pour le projet.\n";
-            $log2="       Fin du traitement le ".$tempoFinBatch."\n";
+            $log2="          Fin du traitement le ".$tempoFinBatch."\n";
             $this->information($job, $log1);
             $this->information($job, $log2);
 
@@ -674,6 +713,9 @@ class BatchController extends AbstractController
       /** On autorise des les utilisateurs ayant le rôle BATCH */
       $this->denyAccessUnlessGranted("ROLE_BATCH", null,
       "L'utilisateur essaye d'accèder à la page sans avoir le rôle ROLE_BATCH");
+
+      /** On  archive les logs */
+      $this->logrotate();
 
       /** On initialise les information pour la bulle d'information */
       $bulle="bulle-info-vide";
