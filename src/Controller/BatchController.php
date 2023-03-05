@@ -29,6 +29,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
+use Symfony\Component\Finder\Finder;
 
 /** Gestion du temps */
 use DateTime;
@@ -118,6 +119,58 @@ class BatchController extends AbstractController
         }
         return 200;
       }
+
+      /**
+       * [Description for lireInformation]
+       *
+       * @param mixed $job
+       * @param mixed $type
+       *
+       * @return response
+       *
+       * Created at: 05/03/2023, 01:50:53 (Europe/Paris)
+       * @author    Laurent HADJADJ <laurent_h@me.com>
+       * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+       */
+      #[Route('/traitement/information', name: 'traitement_information', methods: ['POST'])]
+      public function lireInformation(): response
+      {
+        $type="manuel";
+        $job="MA MOULINETTE";
+
+        /** On créé un nouvel objet Json */
+        $response = new JsonResponse();
+
+        /* On initialise le journal des traces */
+        $filesystem = new Filesystem();
+        $path= $this->getParameter('kernel.project_dir').'\var\audit';
+
+        $recherche="KO";
+        /* Le dossier d'audit est présent */
+        if ($filesystem->exists($path)){
+          $name=preg_replace('/\s+/', '_', $job);
+          $date = new DateTime();
+          $date->setTimezone(new DateTimeZone(static::$europeParis));
+          $miniDate=$date->format(static::$dateFormatMini);
+          $fichier="${type}_${name}_$miniDate.txt";
+
+          /** on récupère la log */
+          $finder = new Finder();
+          $finder->files()->in($path);
+          $finder->name($fichier);
+
+          foreach ($finder as $file) {
+              $c = $file->getContents();
+            }
+          if (empty($c)){
+            $c="Pas de journal disponible.";
+          } else {
+            $recherche="OK";
+          }
+        }
+
+        return $response->setData(["recherche" => $recherche, "journal" => $c, Response::HTTP_OK]);
+        }
 
     /**
      * [Description for initialisationBatch]
@@ -580,12 +633,29 @@ class BatchController extends AbstractController
       $sql = "UPDATE batch SET execution='end' WHERE titre='$job'";
       $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
 
-      $log="INFO : Durée d'execution : ".$temps."\n";
+      $log="INFO : Durée d'exécution : ".$temps."\n";
       $this->information($job, $log);
       $log="=== Fin des traitements ===\n";
       $this->information($job, $log);
 
       return $response->setData(["execution"=>"end", "temps" => $temps, Response::HTTP_OK]);
+    }
+
+    #[Route('/traitement/auto', name: 'traitement_auto', methods: ['POST'])]
+    public function traitementAuto(Request $request){
+      /** On créé on objet de reponse HTTP */
+      $response = new JsonResponse();
+
+      /** On récupère le token csrf généré par le serveur */
+      $data = json_decode($request->getContent());
+      $csrf=$data->token;
+      /** on vérifie le token */
+      if ($this->isCsrfTokenValid($this->getParameter('csrf.salt'), $csrf)) {
+          $message=static::traitement();
+      } else {
+        $message="ouuuuups ça sent mauvais !";
+      }
+      return $response->setData(["message"=>$message, Response::HTTP_OK]);
     }
 
     /**
@@ -621,6 +691,7 @@ class BatchController extends AbstractController
             ORDER BY date_enregistrement DESC limit 1;";
       $trim=trim(preg_replace(static::$regex, " ", $sql));
       $r = $this->connection->fetchAllAssociative($trim);
+
       /** Si on a pas trouvé de traitement  */
       if (empty($r)){
         $message="[BATCH-004] Aucun traitement trouvé.";
@@ -729,20 +800,4 @@ class BatchController extends AbstractController
         ]);
     }
 
-    #[Route('/traitement/auto', name: 'traitement_auto', methods: ['POST'])]
-    public function traitementAuto(Request $request){
-      /** On créé on objet de reponse HTTP */
-      $response = new JsonResponse();
-
-      /** On récupère le token csrf généré par le serveur */
-      $data = json_decode($request->getContent());
-      $csrf=$data->token;
-      /** on vérifie le token */
-      if ($this->isCsrfTokenValid($this->getParameter('csrf.salt'), $csrf)) {
-          $message=static::traitement();
-      } else {
-        $message="ouuuuups ça sent mauvais !";
-      }
-      return $response->setData(["message"=>$message, Response::HTTP_OK]);
-    }
-}
+  }

@@ -239,6 +239,17 @@ tbody tr:nth-child(even) {
 
 .button-group-option .button + .button { margin-left: 0.35rem; }
 
+/** bouton permettant d'aller à la fin du textarea de lamodal-information */
+.go-end {
+  background-color: #00445b;
+  color: #fff;
+}
+
+.go-end:hover {
+  background-color: #006182;
+  color: #eee;
+}
+
 /** Bulle info pour les traitements manuels */
 .bulle-info {
   color: #eee;
