@@ -197,12 +197,18 @@ $('.js-affiche-information').on('click', function() {
   /** On récupère l'ID */
   const id=$(this).attr('id');
   const idTab = id.split('-');
+
   /** On récupère le job */
   const job=$(`#job-${idTab[1]}`).text();
   /** On on récupère la log */
   lireInformationManuel(job);
+
+  /** On affiche le nom du projet */
+  $('#js-nom-projet').html(job);
+
   /** On ouvre la fenêtre modal */
   $('#modal-information').foundation('open');
+  
   /** On va à la fin du fichier */
   $('#js-go-end').on('click', ()=>{
     const textarea = document.getElementById('js-journal');
@@ -245,8 +251,7 @@ const traitementAuto=function(){
   url: `${serveur()}/traitement/auto`, type: 'POST',
   dataType: 'json', data: JSON.stringify(data), contentType};
   return new Promise(resolve => {
-    $.ajax(options).then( t => {
-      console.log(t)
+    $.ajax(options).then( () => {
       resolve();
     });
   });
