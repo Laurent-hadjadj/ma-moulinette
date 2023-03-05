@@ -8,6 +8,7 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "api-platform/core": "^3.1",
+        "cesargb/php-log-rotation": "^2.7",
         "doctrine/annotations": "^1.0",
         "doctrine/dbal": "^3.3",
         "doctrine/doctrine-bundle": "^2.5",
