@@ -192,23 +192,25 @@ const batchManuel = function(id, job){
   });
 };
 
-//information-svg
+/** On affiche la log pour le job sélectonné */
 $('.js-affiche-information').on('click', function() {
   /** On récupère l'ID */
   const id=$(this).attr('id');
   const idTab = id.split('-');
 
-  /** On récupère le job */
+  /** On récupère le job et le type */
   const job=$(`#job-${idTab[1]}`).text();
+  const type=$(`#${idTab[1]}`).data('type');
+
   /** On on récupère la log */
-  lireInformationManuel(job);
+  lireInformationManuel(job, type);
 
   /** On affiche le nom du projet */
   $('#js-nom-projet').html(job);
 
   /** On ouvre la fenêtre modal */
   $('#modal-information').foundation('open');
-  
+
   /** On va à la fin du fichier */
   $('#js-go-end').on('click', ()=>{
     const textarea = document.getElementById('js-journal');
@@ -218,8 +220,17 @@ $('.js-affiche-information').on('click', function() {
   });
 });
 
-const lireInformationManuel = function(job){
-  const data = { job };
+/**
+ * [Description for lireInformationManuel]
+ *
+ * @return [type]
+ *
+ * Created at: 05/03/2023, 15:29:19 (Europe/Paris)
+ * @author    Laurent HADJADJ <laurent_h@me.com>
+ * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ */
+const lireInformationManuel = function(job, type){
+  const data = { job, type };
   const options = {
     url: `${serveur()}/traitement/information`, type: 'POST',
     dataType: 'json', data: JSON.stringify(data), contentType};

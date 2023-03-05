@@ -83,7 +83,7 @@
             {% for traitement in traitements %}
               {% set i = i + 1 %}
               {% if traitement.processus != "vide" %}
-                <tr class="open-sans {{traitement.type}}">
+                <tr id="{{i}}" class="open-sans {{traitement.type}}" data-type="{{traitement.type}}">
                   <td id="execution-{{i}}" class="text-center">
                     {# I am a Robot Happy #}
                     {% if traitement.css == "ok" and traitement.demarrage == "Auto" %}
