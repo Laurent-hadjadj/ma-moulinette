@@ -204,24 +204,12 @@ $('.js-affiche-information').on('click', function() {
   /** On ouvre la fenêtre modal */
   $('#modal-information').foundation('open');
   /** On va à la fin du fichier */
-  //const textarea = document.getElementById('js-journal');
-  //const end = textarea.value.length;
-  //textarea.setSelectionRange(end, end);
-  //textarea.focus();
   $('#js-go-end').on('click', ()=>{
     const textarea = document.getElementById('js-journal');
     const end = textarea.value.length;
     textarea.setSelectionRange(end, end);
     textarea.focus();
   });
-  //const btn = document.getElementById('go-end');
-
-  //btn.addEventListener('click', function handleClick() {
-    //const end = textarea.value.length;
-    //textarea.setSelectionRange(end, end);
-    //textarea.focus();
-  //});
-
 });
 
 const lireInformationManuel = function(job){
