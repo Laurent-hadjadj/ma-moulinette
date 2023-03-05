@@ -108,11 +108,7 @@ class BatchController extends AbstractController
         /* Le dossier d'audit est présent */
         if ($filesystem->exists($path)){
           $name=preg_replace('/\s+/', '_', $job);
-          $date = new DateTime();
-          $date->setTimezone(new DateTimeZone(static::$europeParis));
-          $miniDate=$date->format(static::$dateFormatMini);
-          $maxiDate=$date->format(static::$dateFormat);
-          $fichier="${path}\manuel_${name}_$miniDate.txt";
+          $fichier="${path}\manuel_${name}.log";
           $filesystem->appendToFile($fichier, $log, true);
         } else {
           return 404;
@@ -133,13 +129,15 @@ class BatchController extends AbstractController
        * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
        */
       #[Route('/traitement/information', name: 'traitement_information', methods: ['POST'])]
-      public function lireInformation(): response
+      public function lireInformation(Request $request): response
       {
-        $type="manuel";
-        $job="MA MOULINETTE";
-
-        /** On créé un nouvel objet Json */
+        /** On créé on objet de reponse HTTP */
         $response = new JsonResponse();
+
+        /** On récupère le job et le type (manuel ou automatique) */
+        $data = json_decode($request->getContent());
+        $job=$data->job;
+        $type=$data->type;
 
         /* On initialise le journal des traces */
         $filesystem = new Filesystem();
@@ -149,10 +147,7 @@ class BatchController extends AbstractController
         /* Le dossier d'audit est présent */
         if ($filesystem->exists($path)){
           $name=preg_replace('/\s+/', '_', $job);
-          $date = new DateTime();
-          $date->setTimezone(new DateTimeZone(static::$europeParis));
-          $miniDate=$date->format(static::$dateFormatMini);
-          $fichier="${type}_${name}_$miniDate.txt";
+          $fichier="${type}_${name}.log";
 
           /** on récupère la log */
           $finder = new Finder();
@@ -351,7 +346,6 @@ class BatchController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    //[Route('/traitement', name: 'traitement')]
     public function traitement(): Response
     {
       /** On créé on objet de reponse HTTP */
@@ -519,7 +513,7 @@ class BatchController extends AbstractController
       $date->setTimezone(new DateTimeZone(static::$europeParis));
       $maxiDate=$date->format(static::$dateFormat);
 
-      $log="\n=== Initialisation du traitement le ".$maxiDate." ===\n";
+      $log="=== Initialisation du traitement le ".$maxiDate." ===\n\n";
       $this->information($job, $log);
 
       /** On récupère les infos du traitement planifié pour la date du jour */
@@ -557,10 +551,11 @@ class BatchController extends AbstractController
 
           $log="INFO : Début de la collecte pour \n"."       ".$value['portefeuille']."\n";
           $this->information($job, $log);
-
+          $i=0;
           /** Pour chaque projet de la liste */
           foreach($listeProjet['liste'] as $mavenKey) {
-            $log="INFO : Collecte des indicateurs pour $mavenKey\n";
+            $i = $i+1;
+            $log="INFO : Collecte des indicateurs pour *** $mavenKey *** \n\n";
             $this->information($job, $log);
 
             /** On regarde si le projet est présent dans l'historique ? **/
@@ -611,8 +606,10 @@ class BatchController extends AbstractController
             $finBatch->setTimezone(new DateTimeZone(static::$europeParis));
             $tempoFinBatch = $finBatch->format(static::$dateFormat);
 
-            $log="INFO : Fin de la collecte pour le projet.\n";
-            $this->information($job, $log);
+            $log1="INFO : Fin de la collecte pour le projet.\n";
+            $log2="       Fin du traitement le ".$tempoFinBatch."\n";
+            $this->information($job, $log1);
+            $this->information($job, $log2);
 
             /** On met à jour la table des traitements */
             $sql="UPDATE batch_traitement
@@ -622,7 +619,7 @@ class BatchController extends AbstractController
                   WHERE id=${id};";
             $trim=trim(preg_replace(static::$regex, " ", $sql));
             $this->em->getConnection()->prepare($trim)->executeQuery();
-            $log="INFO : Mise à jour de la table batch_traitement.\n";
+            $log="INFO : Mise à jour de la table batch traitement.\n";
             $this->information($job, $log);
           }
       }
@@ -633,9 +630,13 @@ class BatchController extends AbstractController
       $sql = "UPDATE batch SET execution='end' WHERE titre='$job'";
       $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
 
-      $log="INFO : Durée d'exécution : ".$temps."\n";
-      $this->information($job, $log);
-      $log="=== Fin des traitements ===\n";
+      $log1="INFO : Durée d'exécution total -> ".$temps."\n";
+      $log2="INFO : Nombre de projet -> ".$i."\n";
+      $log3="INFO : statut -> 'end'.\n\n";
+      $this->information($job, $log1);
+      $this->information($job, $log2);
+      $this->information($job, $log3);
+      $log="=== Fin des traitements ===\n\n";
       $this->information($job, $log);
 
       return $response->setData(["execution"=>"end", "temps" => $temps, Response::HTTP_OK]);
