@@ -239,7 +239,7 @@ tbody tr:nth-child(even) {
 
 .button-group-option .button + .button { margin-left: 0.35rem; }
 
-/** bouton permettant d'aller à la fin du textarea de lamodal-information */
+/** bouton permettant d'aller à la fin du textarea de lamodal-informatio */
 .go-end {
   background-color: #00445b;
   color: #fff;
