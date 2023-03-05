@@ -185,11 +185,11 @@
     {# Affichage de la liste des traitements pour un job. #}
     <div
       id="modal-information" class="reveal"
-      data-reveal data-close-on-click="true" data-animation-in="fade-in" data-animation-out="fade-out">
+      data-reveal data-close-on-click="true">
       <h1 class="claire-hand">Journal d'Audit</h1>
-      <textarea id="js-journal" name="textarea"
-        realdonly rows="10" cols="30"></textarea>
+      <h2 id="js-nom-projet" class="claire-hand"></h2>
 
+      <textarea id="js-journal" name="textarea" realdonly rows="10" cols="30"></textarea>
       <button id="js-go-end" class="go-end float-right button open-sans" >Aller à la fin</button>
 
       {# fermeture de la fenetre modale #}
