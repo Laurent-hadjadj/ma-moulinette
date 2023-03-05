@@ -147,6 +147,7 @@ $('.i-am-human-svg').on('click', function() {
   });
 });
 
+
 /**
  * [Description for batchManuel]
  *  Lance le batch manuel
@@ -190,6 +191,53 @@ const batchManuel = function(id, job){
     });
   });
 };
+
+//information-svg
+$('.js-affiche-information').on('click', function() {
+  /** On récupère l'ID */
+  const id=$(this).attr('id');
+  const idTab = id.split('-');
+  /** On récupère le job */
+  const job=$(`#job-${idTab[1]}`).text();
+  /** On on récupère la log */
+  lireInformationManuel(job);
+  /** On ouvre la fenêtre modal */
+  $('#modal-information').foundation('open');
+  /** On va à la fin du fichier */
+  //const textarea = document.getElementById('js-journal');
+  //const end = textarea.value.length;
+  //textarea.setSelectionRange(end, end);
+  //textarea.focus();
+  $('#js-go-end').on('click', ()=>{
+    const textarea = document.getElementById('js-journal');
+    const end = textarea.value.length;
+    textarea.setSelectionRange(end, end);
+    textarea.focus();
+  });
+  //const btn = document.getElementById('go-end');
+
+  //btn.addEventListener('click', function handleClick() {
+    //const end = textarea.value.length;
+    //textarea.setSelectionRange(end, end);
+    //textarea.focus();
+  //});
+
+});
+
+const lireInformationManuel = function(job){
+  const data = { job };
+  const options = {
+    url: `${serveur()}/traitement/information`, type: 'POST',
+    dataType: 'json', data: JSON.stringify(data), contentType};
+  return new Promise(resolve => {
+    $.ajax(options).then( t => {
+      if (t.recherche==='OK') {
+          $('#js-journal').text(t.journal);
+      }
+      resolve();
+    })
+  })
+}
 
 /**
  * [Description for traitementAuto]
