@@ -25,6 +25,11 @@ use Symfony\Component\HttpFoundation\Response;
 /** Logger */
 use Psr\Log\LoggerInterface;
 
+/** gestion du journal d'activité */
+use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\Path;
+
 /** Gestion du temps */
 use DateTime;
 use DateTimeZone;
@@ -48,10 +53,10 @@ class BatchController extends AbstractController
     public static $timeFormat = "%H:%I:%S";
     public static $europeParis = "Europe/Paris";
     public static $regex = "/\s+/u";
-    
+
     private static $batch001="[BATCH-001] Le traitement a déjà été mis à jour.";
     private static $batch002="[BATCH-002] Aucun batch trouvé.";
-    private static $batch003="[BATCH-003] Le traitement a été mis à jour.";
+    private static $batch003="[BATCH-003] La liste des traitements a été mis à jour.";
     private static $batch004="[BATCH-004] Le portefeuille de projets est vide !";
     private static $batch005="[BATCH-005] Récupération de la liste de projets.";
 
@@ -81,6 +86,39 @@ class BatchController extends AbstractController
           $this->api = $api;
       }
 
+
+      /**
+       * [Description for information]
+       *
+       * @param mixed $job
+       * @param mixed $log
+       *
+       * @return void
+       *
+       * Created at: 05/03/2023, 00:01:12 (Europe/Paris)
+       * @author    Laurent HADJADJ <laurent_h@me.com>
+       * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+       */
+      public function information($job, $log): int
+      {
+        /* On initialise le journal des traces */
+        $filesystem = new Filesystem();
+        $path= $this->getParameter('kernel.project_dir').'\var\audit';
+        /* Le dossier d'audit est présent */
+        if ($filesystem->exists($path)){
+          $name=preg_replace('/\s+/', '_', $job);
+          $date = new DateTime();
+          $date->setTimezone(new DateTimeZone(static::$europeParis));
+          $miniDate=$date->format(static::$dateFormatMini);
+          $maxiDate=$date->format(static::$dateFormat);
+          $fichier="${path}\manuel_${name}_$miniDate.txt";
+          $filesystem->appendToFile($fichier, $log, true);
+        } else {
+          return 404;
+        }
+        return 200;
+      }
+
     /**
      * [Description for initialisationBatch]
      * Permet de créer la liste des job a éxécuter
@@ -91,7 +129,7 @@ class BatchController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function inititalisationBatch(): array
+    public function initialisationBatch(): array
     {
       /** On démarre la session de traitement de collecte des informations sonarqube :
         * 1) On récupère la liste de batch dont le statut est true (1) ;
@@ -102,9 +140,10 @@ class BatchController extends AbstractController
       $date = new DateTime();
       $date->setTimezone(new DateTimeZone(static::$europeParis));
 
-      /** Si on a déjà lancé un traitement aujourd'hui on sort */
+      /** 0 - Si on a déjà lancé un traitement Automatique aujourd'hui on sort */
       $sql="SELECT date_enregistrement as date FROM batch_traitement ORDER BY date_enregistrement DESC limit 1;";
       $r = $this->connection->fetchAllAssociative($sql);
+
       if (!empty($r)){
         $dateDuJour=$date->format(static::$dateFormatMini);
         $dateBatch=new DateTime($r[0]['date']);
@@ -115,15 +154,16 @@ class BatchController extends AbstractController
         }
       }
 
-      /** 1 */
-      $sql="SELECT statut, titre, responsable, portefeuille, nombre_projet as nombre FROM batch ORDER BY statut ASC ;";
+      /** 1 - on regarde si on a des batchs */
+      $sql="SELECT statut, titre, responsable, portefeuille, nombre_projet as nombre
+      FROM batch ORDER BY statut ASC ;";
       $r = $this->connection->fetchAllAssociative($sql);
       if (empty($r)){
         $this->logger->INFO("[BATCH-002] Aucun batch trouvé.");
         return ["message"=>static::$batch002];
       }
 
-      /** 2 */
+      /** 2 - si on a des batch et que le traitement n'a pas été lancé on créé la liste */
       foreach ($r as $traitement) {
         /** on crée un objet BatchTraitement */
         $batch = new BatchTraitement();
@@ -140,11 +180,12 @@ class BatchController extends AbstractController
         $batch->setNombreProjet($traitement["nombre"]);
         $batch->setResponsable($traitement["responsable"]);
         $batch->setDateEnregistrement($date);
+
         /** On en enregistre */
         $this->em->persist($batch);
         $this->em->flush();
       }
-      $this->logger->INFO("[BATCH-003] Le traitement a été mis à jour.");
+      $this->logger->INFO("[BATCH-003] La liste des traitements a été mis à jour.");
       return ["message"=>static::$batch003, "date"=>$date];
     }
 
@@ -156,14 +197,16 @@ class BatchController extends AbstractController
      * @return array
      *
      * Created at: 09/12/2022, 12:05:30 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function listeProjet($job): array
     {
       /** Si on a déjà lancé un traitement aujourd'hui on sort */
-      $sql="SELECT liste FROM portefeuille WHERE titre='${job}';";
+      $jobEncode=preg_replace("/'/", "''", $job);
+      $sql="SELECT liste FROM portefeuille WHERE titre='$jobEncode';";
       $r = $this->connection->fetchAllAssociative($sql);
+
       if (empty($r)){
           $this->logger->INFO("[BATCH-004] Le portefeuille est vide !");
           return ["message"=>static::$batch004];
@@ -173,6 +216,7 @@ class BatchController extends AbstractController
       foreach (json_decode($r[0]['liste']) as $value){
         array_push($liste, $value);
       }
+
       $this->logger->INFO("[BATCH-005] Récupération de la liste de projets.");
       return ["message"=>static::$batch005, "liste"=>$liste];
     }
@@ -213,23 +257,36 @@ class BatchController extends AbstractController
     {
       /** On récupère le portefeuille */
       $job = $request->get('job');
+      $mode = $request->get('mode');
 
       /** On créé un nouvel objet Json */
       $response = new JsonResponse();
+
+      /** On vérifie que le job existe */
+      $sql = "SELECT * FROM batch WHERE titre='$job' limit 1";
+      $request = $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery()->fetchAllAssociative();
+
+      if (empty($request)) {
+        return $response->setData(["mode"=>$mode, "job"=>$job, "code" => "KO", "execution" => "error", Response::HTTP_OK]);
+      }
+
       /**
        * On vérifie qu'il n'y a pas de traitement en cours.
        *  excecution = start
        */
-      $r=static::pending("start");
+      $r=$this->pending("start");
       $message="pending";
       /** On met à jour le job en start pour bloquer les autres traitements */
       if ($r===0) {
         $sql = "UPDATE batch SET execution='start' WHERE titre='$job'";
         $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
         $message="start";
+      } else {
+        /** Il y a déjà un job en cours */
+        $message="pending";
       }
 
-      return $response->setData(["code" => "OK", "execution" => $message, Response::HTTP_OK]);
+      return $response->setData(["mode"=>$mode, "code" => "OK", "execution" => $message, Response::HTTP_OK]);
     }
 
     /**
@@ -248,7 +305,7 @@ class BatchController extends AbstractController
       $response = new JsonResponse();
 
       /** On met à jour la liste des job */
-      $initialise = $this->inititalisationBatch();
+      $initialise = $this->initialisationBatch();
       $this->logger->INFO($initialise["message"]);
       $message=explode(" ", $initialise["message"]);
       if ($message[0]==="[BATCH-002]"){
@@ -294,8 +351,8 @@ class BatchController extends AbstractController
         $listeProjet=$this->listeProjet($value['portefeuille']);
 
         /** On continue le traitement si la liste n'est pas vide */
-        $message=explode(" ", $listeProjet["message"]);
-        if ($message[0]==="[BATCH-005]"){
+        $message=explode(" ", $listeProjet['message']);
+        if ($message[0]==="[BATCH-005]") {
 
           /** On démarre la mesure du batch */
           $debutBatch = new DateTime();
@@ -326,7 +383,6 @@ class BatchController extends AbstractController
               $batchInformation=$this->api->batchInformation($mavenKey);
               $laVersionSonar=$batchInformation["information"]["projet"];
               $laDateSonar=$batchInformation["information"]["date"];
-
 
               /**
                * On récupère la dernière version en base
@@ -379,19 +435,54 @@ class BatchController extends AbstractController
       return $response->setData(["message" => "Tout va bien (${temps})",  Response::HTTP_OK]);
     }
 
-    #[Route('/traitement/manuel', name: 'traitement_manuel')]
-    public function traitementManuel(): Response
+    /**
+     * [Description for traitementManuel]
+     *
+     * @param Request $request
+     *
+     * @return Response
+     *
+     * Created at: 01/03/2023, 09:21:45 (Europe/Paris)
+     * @author    Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    #[Route('/traitement/manuel', name: 'traitement_manuel', methods: ['POST'])]
+    public function traitementManuel(Request $request): Response
     {
-      $job="MANUEL - ANALYSE MA-MOULINETTE";
+      /** On vérifie que l'utilisateur a bien un rôle */
+      //$this->denyAccessUnlessGranted("ROLE_BATCH", null,
+      //"L'utilisateur essaye d'accèder à la page sans avoir le rôle ROLE_BATCH");
+
       /** On créé on objet de reponse HTTP */
       $response = new JsonResponse();
 
-      /** On récupère les infos du traitements planifiés pour la date du jour */
+      /** On récupère le body */
+      $data = json_decode($request->getContent());
+
+      /** On récupère le job */
+      $job= $data->job;
+
+      $date = new DateTime();
+      $date->setTimezone(new DateTimeZone(static::$europeParis));
+      $maxiDate=$date->format(static::$dateFormat);
+
+      $log="\n=== Initialisation du traitement le ".$maxiDate." ===\n";
+      $this->information($job, $log);
+
+      /** On récupère les infos du traitement planifié pour la date du jour */
       $sql="SELECT id, demarrage, titre, portefeuille, nombre_projet as projet
       FROM batch_traitement
-      WHERE titre = '${job}';";
+      WHERE titre = '$job';";
       $trim=trim(preg_replace(static::$regex, " ", $sql));
       $r = $this->connection->fetchAllAssociative($trim);
+
+      /** On test la reponse */
+      if (empty($r)){
+        /** Pas de job dans la table batch_traitement */
+        $log="ERREUR : La liste des traitements est vide !!!\n";
+        $this->information($job, $log);
+        return $response->setData(['job'=>$job, Response::HTTP_NOT_ACCEPTABLE]);
+      }
 
       /** On traite le job  */
       foreach ($r as $value) {
@@ -403,17 +494,22 @@ class BatchController extends AbstractController
          */
         $listeProjet=$this->listeProjet($value['portefeuille']);
 
-        /** On continue le traitement si la liste n'est pas vide */
+        /** On continue le traitement si la liste des projets n'est pas vide */
         $message=explode(" ", $listeProjet["message"]);
         if ($message[0]==="[BATCH-005]"){
-
           /** On démarre la mesure du batch */
           $debutBatch = new DateTime();
           $debutBatch->setTimezone(new DateTimeZone(static::$europeParis));
           $tempoDebutBatch = $debutBatch->format(static::$dateFormat);
 
+          $log="INFO : Début de la collecte pour \n"."       ".$value['portefeuille']."\n";
+          $this->information($job, $log);
+
           /** Pour chaque projet de la liste */
           foreach($listeProjet['liste'] as $mavenKey) {
+            $log="INFO : Collecte des indicateurs pour $mavenKey\n";
+            $this->information($job, $log);
+
             /** On regarde si le projet est présent dans l'historique ? **/
             $sql="SELECT maven_key FROM historique WHERE maven_key='$mavenKey'";
             $r = $this->connection->fetchAllAssociative($sql);
@@ -421,6 +517,8 @@ class BatchController extends AbstractController
             /* Le projet n'existe pas, je lance la collecte */
             if (empty($r)){
                 $this->logger->INFO("[BATCH-008] Le projet n'existe pas ; je lance la collecte !");
+                $log="INFO : Le projet n'existe pas dans la table historique ; je lance la collecte !\n";
+                $this->information($job, $log);
                 $this->api->batchNouvelleCollecte($mavenKey);
               }
 
@@ -443,17 +541,25 @@ class BatchController extends AbstractController
               $laDateMaMoulinette=$r[0]["date"];
 
               if ($laVersionSonar===$laVersionMaMoulinette && $laDateSonar===$laDateMaMoulinette) {
-                $this->logger->NOTICE("[BATCH-008] Le projet existe, il est à jour.");
+              $log="INFO : Le projet existe dans la table historique ; il est à jour !\n";
+              $this->information($job, $log);
+              $this->logger->NOTICE("[BATCH-008] Le projet existe, il est à jour.");
               }
               else {
+                $log="INFO : Le projet existe dans la table historique ; il n'est pas à jour !\n";
+                $this->information($job, $log);
                 $this->logger->INFO("[BATCH-008] Le projet existe, il n'est pas à jour !");
                 $this->api->batchAjouteCollecte($mavenKey);
               }
             }
+
             /** Fin du Batch */
             $finBatch = new DateTime();
             $finBatch->setTimezone(new DateTimeZone(static::$europeParis));
             $tempoFinBatch = $finBatch->format(static::$dateFormat);
+
+            $log="INFO : Fin de la collecte pour le projet.\n";
+            $this->information($job, $log);
 
             /** On met à jour la table des traitements */
             $sql="UPDATE batch_traitement
@@ -463,6 +569,8 @@ class BatchController extends AbstractController
                   WHERE id=${id};";
             $trim=trim(preg_replace(static::$regex, " ", $sql));
             $this->em->getConnection()->prepare($trim)->executeQuery();
+            $log="INFO : Mise à jour de la table batch_traitement.\n";
+            $this->information($job, $log);
           }
       }
 
@@ -471,6 +579,12 @@ class BatchController extends AbstractController
       $temps = $interval->format(static::$timeFormat);
       $sql = "UPDATE batch SET execution='end' WHERE titre='$job'";
       $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
+
+      $log="INFO : Durée d'execution : ".$temps."\n";
+      $this->information($job, $log);
+      $log="=== Fin des traitements ===\n";
+      $this->information($job, $log);
+
       return $response->setData(["execution"=>"end", "temps" => $temps, Response::HTTP_OK]);
     }
 
@@ -626,11 +740,9 @@ class BatchController extends AbstractController
       /** on vérifie le token */
       if ($this->isCsrfTokenValid($this->getParameter('csrf.salt'), $csrf)) {
           $message=static::traitement();
-
       } else {
         $message="ouuuuups ça sent mauvais !";
       }
-
       return $response->setData(["message"=>$message, Response::HTTP_OK]);
     }
 }
