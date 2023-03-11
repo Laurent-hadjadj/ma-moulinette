@@ -54,7 +54,7 @@ class ProfilController extends AbstractController
     /** oN créé un objet réponse */
     $response = new JsonResponse();
 
-    /** On on vérifie si on a activé le mode test */
+    /** On vérifie si on a activé le mode test */
     if (is_null($request->get('mode'))) {
       $mode="null";
     } else {
