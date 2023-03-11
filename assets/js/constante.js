@@ -40,7 +40,7 @@ export const chartColors = {
 export const dateOptions = {
   year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false };
 export const dateOptionsShort = {year: 'numeric', month: 'numeric', day: 'numeric' };
-
+export const dateOptionsVeryShort = {year: '2-digit', month: 'numeric', day: 'numeric' };
 
 /** Tableau des notes sonarqube */
 export const note = ['', 'A', 'B', 'C', 'D', 'E'];
