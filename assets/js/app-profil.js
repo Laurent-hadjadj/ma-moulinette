@@ -114,7 +114,7 @@ const refreshQuality=function() {
         str +=`<tr class="open-sans">
                 <td>${profil.profil}</td>
                 <td class="text-center">${profil.langage}</td>
-                <td class="text-center">${profil.langage}
+                <td class="text-center">${profil.regle}
                     ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(profil.regle)}</td>
                 <td class="text-center">
                     <span class="show-for-small-only">
