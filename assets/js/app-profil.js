@@ -33,8 +33,7 @@ Chart.register(zoomPlugin);
 import Chance from 'chance';
 
 /** On importe les constantes */
-import {contentType, paletteCouleur, matrice,
-        dateOptions, dateOptionsVeryShort} from './constante.js';
+import {contentType, paletteCouleur, matrice} from './constante.js';
 
 /**
  * [Description for shuffle]
@@ -81,60 +80,30 @@ const palette=function() {
 };
 
 /**
- * [Description for refreshQuality]
- * Met à jour la liste des référentiels
+ * [Description for chargeModification]
+ *
+ * @param mixed profil
+ * @param mixed language
  *
  * @return [type]
  *
- * Created at: 19/12/2022, 21:52:39 (Europe/Paris)
- * @author     Laurent HADJADJ <laurent_h@me.com>
+ * Created at: 11/03/2023, 22:59:17 (Europe/Paris)
+ * @author    Laurent HADJADJ <laurent_h@me.com>
+ * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
-const refreshQuality=function() {
+const chargeModification=function(profil, language) {
+  const data = {mode: 'null', profil, language };
   const options = {
-    url: `${serveur()}/api/quality/profiles`, type: 'GET',
-    dataType: 'json',  contentType };
+    url: `${serveur()}/api/quality/changement`, type: 'POST',
+    dataType: 'json',  data: JSON.stringify(data), contentType };
 
-  return $.ajax(options)
-    .then( r => {
-      let statut1='', statut2='', str='', total=0;
-
-      /** On efface le tableau */
-      $('#tableau-liste-profil').html('');
-      const profils=r.listeProfil;
-
-      profils.forEach( profil => {
-        if (profil.actif === 1) {
-          statut1='Oui';
-          statut2='O';
-        } else {
-            statut1='Non';
-            statut2='N';
-        }
-
-        str +=`<tr class="open-sans">
-                <td>${profil.profil}</td>
-                <td class="text-center">${profil.langage}</td>
-                <td class="text-center">${profil.regle}
-                    ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(profil.regle)}</td>
-                <td class="text-center">
-                    <span class="show-for-small-only">
-                      ${new Intl.DateTimeFormat('fr-FR', dateOptionsVeryShort).format(new Date(profil.date))}
-                    </span>
-                    <span class="show-for-medium">${new Intl.DateTimeFormat('fr-FR', dateOptions).format(new Date(profil.date))}
-                    </span>
-                </td>
-                <td class="text-center">
-                    <span class="show-for-small-only">${statut2}</span>
-                    <span class="show-for-medium">${statut1}</span>
-                </td>
-              </tr>`;
-        total = total + profil.regle;
-      });
-
-      $('#tableau-liste-profil').html(str);
-      $('.js-total').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(total));
+    return new Promise(resolve => {
+      $.ajax(options).then( t => {
+          console.log(t);
+      })
+      resolve();
     });
-};
+  }
 
 /**
  * [Description for dessineMoiUnMouton]
@@ -209,8 +178,16 @@ $('.graphique-langage').on('click', () => {
 
 /**
  * Evenement
- * Appel la fonction de mise à jour de la liste des référentiels
+ * Appel la fonction d'affichage de la liste des modifications du profil.
  */
-$('.refresh').on('click', ()=>{
-  refreshQuality();
+$('.js-profil-info').on('click', (e) => {
+  /* On récupère l'id */
+  const target = e.currentTarget.id;
+  const elm = document.getElementById(target);
+
+  /* On récupère le nom du profil. */
+  const profil=elm.dataset.profil;
+  /* On récupère le nom du profil. */
+  const language=elm.dataset.language;
+  chargeModification(profil,language)
 });
