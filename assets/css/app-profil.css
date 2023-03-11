@@ -37,6 +37,16 @@
   height: 32px;
 }
 
+/** Ajour */
+.profil-info-svg {
+  fill: #00445b;
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+}
+
+.profil-info-svg:hover { fill: #c46e27; }
+
 /** Suppression style inline */
 .graphique-langage-container { width: 54vw; }
 
