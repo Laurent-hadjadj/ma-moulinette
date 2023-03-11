@@ -13,29 +13,29 @@
 
 namespace App\Controller;
 
-use DateTime;
-
 /** Core */
-use DateTimeZone;
-use App\Entity\Main\Tags;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Routing\Annotation\Route;
 
 /** Gestion du temps */
-use Psr\Log\LoggerInterface;
-use App\Entity\Main\Profiles;
+use DateTime;
+use DateTimeZone;
 
 /** Accès aux tables SLQLite */
-use App\Entity\Main\ListeProjet;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+
+use App\Entity\Main\Tags;
+use App\Entity\Main\Profiles;
+use App\Entity\Main\ListeProjet;
 
 /** Gestion de accès aux API */
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 /** Logger */
-use Symfony\Contracts\HttpClient\HttpClientInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Psr\Log\LoggerInterface;
 
 class ApiHomeController extends AbstractController
 {
