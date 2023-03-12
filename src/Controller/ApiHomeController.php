@@ -233,10 +233,10 @@ class ApiHomeController extends AbstractController
     /** On crée un objet de reponse JSON */
     $response = new JsonResponse();
 
-    /** On on vérifie si on a activé le mode test */
+    /** On vérifie si on a activé le mode test */
     $mode = $request->get('mode');
 
-    $url = $this->getParameter(static::$sonarUrl)
+    $url1 = $this->getParameter(static::$sonarUrl)
           . "/api/qualityprofiles/search?qualityProfile="
           . $this->getParameter('sonar.profiles');
 
@@ -280,7 +280,7 @@ class ApiHomeController extends AbstractController
     $select = $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
     $liste = $select->fetchAllAssociative();
 
-    /** On met à jour la table propietes */
+    /** On met à jour la table proprietes */
     $dateModificationProfil = $date->format(static::$dateFormatShort);
 
     $sql="UPDATE properties
