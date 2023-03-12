@@ -29,7 +29,7 @@ use App\Entity\Main\Profiles;
 use App\Entity\Main\ListeProjet;
 
 /** Gestion de accès aux API */
-use Symfony\Contracts\HttpClient\HttpClientInterface;
+//use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -37,10 +37,12 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 /** Logger */
 use Psr\Log\LoggerInterface;
 
+/** Client HTTP */
+use App\Service\Client;
+
 class ApiHomeController extends AbstractController
 {
   /** Définition des constantes */
-  public static $strContentType = 'application/json';
   public static $sonarUrl = "sonar.url";
   public static $dateFormatShort = "Y-m-d";
   public static $dateFormat = "Y-m-d H:i:s";
@@ -52,72 +54,19 @@ class ApiHomeController extends AbstractController
    *
    * @param  private
    * @param  private
-   * @param  private
    * @param mixed
    *
    * Created at: 15/12/2022, 21:12:55 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   public function __construct(
     private LoggerInterface $logger,
-    private HttpClientInterface $client,
     private EntityManagerInterface $em,
     )
   {
     $this->logger = $logger;
-    $this->client = $client;
     $this->em = $em;
-  }
-
-  /**
-   * [Description for httpClient]
-   *
-   * @param mixed $url
-   *
-   * @return array
-   *
-   * Created at: 15/12/2022, 21:13:06 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
-  protected function httpClient($url): array
-  {
-    /** On peut se connecter avec un user/password ou un token. Nous on préfère le token. */
-    if (empty($this->getParameter('sonar.token'))) {
-      $user = $this->getParameter('sonar.user');
-      $password = $this->getParameter('sonar.password');
-    } else {
-      $user = $this->getParameter('sonar.token');
-      $password = '';
-    }
-
-    $ciphers= "DH-RSA-AES128-SHA DH-RSA-AES256-SHA DHE-DSS-AES128-SHA DHE-DSS-AES256-SHA
-                DHE-RSA-AES128-SHA DHE-RSA-AES256-SHA DH-AES128-SHA ADH-AES256-SHA";
-    $response = $this->client->request('GET', $url,
-      [
-        'ciphers' => trim(preg_replace(static::$regex, " ", $ciphers)),
-        'auth_basic' => [$user, $password], 'timeout' => 45,
-        'headers' => ['Accept' => static::$strContentType,
-        'Content-Type' => static::$strContentType]
-      ]
-    );
-
-    /** Si la réponse est différente de HTTP: 200 alors... */
-    if (200 !== $response->getStatusCode()) {
-      // Le token ou le password n'est pas correct.
-      if ($response->getStatusCode() == 401) {
-        throw new \UnexpectedValueException('Erreur d\'Authentification. La clé n\'est pas correcte.');
-      } else {
-        throw new \UnexpectedValueException('Retour de la réponse différent de ce qui est prévu. Erreur ' .
-        $response->getStatusCode());
-      }
-    }
-
-    $contentType = $response->getHeaders()['content-type'][0];
-    $this->logger->INFO('** ContentType *** '.isset($contentType));
-    $responseJson = $response->getContent();
-    return json_decode($responseJson, true, 512, JSON_THROW_ON_ERROR);
   }
 
   /**
@@ -132,12 +81,12 @@ class ApiHomeController extends AbstractController
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/status', name: 'sonar_status', methods: ['GET'])]
-  public function sonarStatus():response
+  public function sonarStatus(Client $client):response
   {
     $url = $this->getParameter(static::$sonarUrl) . "/api/system/status";
 
     /** On appel le client http */
-    $result = $this->httpClient($url);
+    $result = $client->http($url);
 
     return new JsonResponse($result, Response::HTTP_OK);
   }
@@ -179,12 +128,12 @@ class ApiHomeController extends AbstractController
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/system/info', name: 'information_systeme', methods: ['GET'])]
-  public function informationSysteme():response
+  public function informationSysteme(Client $client):response
   {
     $url = $this->getParameter(static::$sonarUrl) . "/api/system/info";
 
     /** On appel le client http */
-    $result = $this->httpClient($url);
+    $result = $client->http($url);
     return new JsonResponse($result, Response::HTTP_OK);
   }
 
@@ -200,7 +149,7 @@ class ApiHomeController extends AbstractController
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/projet/liste', name: 'projet_liste', methods: ['GET'])]
-  public function projetListe(Request $request): response
+  public function projetListe(Request $request,Client $client): response
   {
     /** On crée un objet de reponse JSON */
     $response = new JsonResponse();
@@ -215,7 +164,7 @@ class ApiHomeController extends AbstractController
     $url = $this->getParameter(static::$sonarUrl) . "/api/components/search?qualifiers=TRK&ps=500&p=1";
 
     /** On appel le client http */
-    $result = $this->httpClient($url);
+    $result = $client->http($url);
     $date = new DateTime();
     $date->setTimezone(new DateTimeZone(static::$europeParis));
     $nombre = 0;
@@ -279,7 +228,7 @@ class ApiHomeController extends AbstractController
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/quality/profiles', name: 'liste_quality_profiles', methods: ['GET'])]
-  public function listeQualityProfiles(Request $request): response
+  public function listeQualityProfiles(Request $request, Client $client): response
   {
     /** On crée un objet de reponse JSON */
     $response = new JsonResponse();
@@ -292,7 +241,7 @@ class ApiHomeController extends AbstractController
           . $this->getParameter('sonar.profiles');
 
     /** On appel le client http */
-    $result = $this->httpClient($url);
+    $result = $client->http($url);
 
     $date = new DateTime();
     $date->setTimezone(new DateTimeZone(static::$europeParis));
@@ -359,7 +308,7 @@ class ApiHomeController extends AbstractController
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/tags', name: 'tags', methods: ['GET'])]
-  public function tags(Request $request): response
+  public function tags(Request $request, Client $client): response
   {
     /** oN créé un objet réponse */
     $response = new JsonResponse();
@@ -374,7 +323,7 @@ class ApiHomeController extends AbstractController
     $url = $this->getParameter(static::$sonarUrl)."/api/components/search_projects?ps=500";
 
     /** On appel le client http */
-    $result = $this->httpClient($url);
+    $result = $client->http($url);
 
     /** On, initialiser les variables  */
     $public=$private=$emptyTags=0;
@@ -529,13 +478,13 @@ class ApiHomeController extends AbstractController
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/visibility', name: 'visibility', methods: ['GET'])]
-  public function visibility(): response
+  public function visibility(Client $client): response
   {
     $url = $this->getParameter(static::$sonarUrl) .
           "/api/projects/search?qualifiers=TRK&ps=500";
 
     /** On appel le client http */
-    $components = $this->httpClient($url);
+    $components = $client->http($url);
 
     $private = 0;
     $public = 0;
