@@ -11,8 +11,8 @@
  */
 
 /* Chargement des fichiers CSS */
-@import "~foundation-sites/dist/css/foundation.css";
-@import "~motion-ui/dist/motion-ui.css";
-@import "../css/app-common.css";
-@import "../css/app-police.css";
-@import "../css/app-profil.css";
+@import url("~foundation-sites/dist/css/foundation.css");
+@import url("~motion-ui/dist/motion-ui.css");
+@import url("../css/app-common.css");
+@import url("../css/app-police.css");
+@import url("../css/app-profil.css");
