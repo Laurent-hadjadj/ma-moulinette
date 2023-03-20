@@ -1,0 +1,139 @@
+{% set title = 'Profils qualités' %}
+{% set description = 'Ma Moulinette - détails des changements.' %}
+<!DOCTYPE html>
+<html lang="fr">
+
+  {# Chargement de la section HEAD #}
+  <head>
+    {{ include('head.html.twig') }}
+    {% block stylesheets %}
+      {{ encore_entry_link_tags('profil-details') }}
+    {% endblock %}
+  </head>
+
+  <body>
+    {# Chargement de la section header #}
+    {{ include('header.html.twig') }}
+    <br>
+
+    <header class="grid-container">
+      <nav aria-label="Ici : " role="navigation">
+        <ul class="claire-hand breadcrumbs">
+          <li><a href="/">Accueil</a></li>
+          <li><a href="/profil">Profil</a></li>
+          <li><span class="show-for-sr">Current:</span>Détails</li>
+        </ul>
+      </nav>
+    </header>
+
+    <div class="grid-container">
+      <h2 class="claire-hand">Détails des changements pour le profil.</h2>
+      {% if total|length > 1 %}
+        {% set s = "s" %} {% else %} {% set s = "" %}
+      {% endif %}
+      <h2 class="profil-titre">
+        <span id="affiche-ttitre">Langage  {{langage}}</span>
+        <span id="affiche-total-profil" class="stat">{{total|length}}</span>
+        changement{{s}} trouvé{{s}}.
+      </h2>
+
+      <br>
+      <h3 class="profil-titre">Informations générales</h3>
+      {# Message d'alerte sur le nombre de changements récupéré #}
+      <div data-closable class="callout alert-callout-border warning">
+        <strong>Attention</strong> - Seul les 500 premiers changements sont affichés.
+        <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <ul class="no-bullet">
+        <li class="open-sans lead">
+          <span class="show-for-small-only"><strong>Init. :</strong></span>
+          <span class="show-for-medium"><strong>Initialisation :</strong></span>
+          <span class="show-for-small-only"><br></span>
+          <span class="first-date">{{first["date"]|date("d/m/y H:m:s", "Europe/Paris")}}</span>
+        </li>
+        <li class="open-sans lead">
+          <span class="show-for-small-only"><strong>Dernière modif. :</strong></span>
+          <span class="show-for-medium"><strong>Dernière modification :</strong></span>
+          <span class="show-for-small-only"><br></span>
+          <span class="last-date">{{last["date"]|date("d/m/y H:m:s", "Europe/Paris")}}</span>
+        </li>
+        <li class="open-sans lead">
+          <span class="show-for-small-only"><strong>Règles :</strong></span>
+          <span class="show-for-medium"><strong>Nombre de règles :</strong></span>
+          <span class="total">{{total}}</span>
+        </li>
+        <li class="open-sans lead">
+          <span class="show-for-small-only"><strong>Règles activées :</strong></span>
+          <span class="show-for-medium"><strong>Nombre de règles activé :</strong></span>
+          <span class="opened">{{opened}}</span>
+        </li>
+        <li class="open-sans lead">
+          <span class="show-for-small-only"><strong>Règles désactivées :</strong></span>
+          <span class="show-for-medium"><strong>Nombre de règles désactivé :</strong></span>
+          <span class="closed">{{closed}}</span>
+        </li>
+      </ul>
+      {% set i = 0 %}
+      {% for groupe in liste %}
+      <ul class="vertical menu accordion-menu" data-accordion-menu>
+        <li class="liste-changement-menu">
+            <a class="claire-hand liste-changement-titre">
+              <span>{{liste[i][i].dateGroupe}}</span>
+              <span class="nombre-regle float-right text-right">{{liste[i]|length}}</span>
+            </a>
+            <ul class="menu vertical liste-padding-left-right">
+            {% set x = 1 %}
+            {% for item in liste[i] %}
+            <ul class="fieldset changement">
+              {% if item.action == "ACTIVATED" %}
+                {% set css,statut  =  "activated", "A" %}
+              {% else %}
+                {% set css,statut  =  "desactivated", "D" %}
+              {% endif %}
+              <li class="stat text-right"><strong>{{x}}</strong></li>
+              <li class="open-sans">
+                <span class="text-justify"><strong>Statut : </strong></span>
+                <span class="float-right bulle {{css}}">{{statut}}</span>
+              </li>
+              <li class="open-sans">
+                <span class="text-justify"><strong>Règle : </strong></span>
+                <span class="show-for-small-only"><br></span>
+                <span class="text-justify profil-regle">{{item.regle}}</span>
+              </li>
+              <li class="open-sans">
+                <span class="text-justify"><strong>Description : </strong></span>
+                <span class="show-for-small-only"><br></span>
+                <span class="text-justify profil-description">{{item.description}}.</span>
+              </li>
+              <li class="show-for-medium open-sans">
+                <span class="text-justify"><strong>Details : </strong></span>
+                <span class="show-for-small-only"><br></span>
+                <span class="text-justify profil-details">{{item.detail}}.</span>
+              </li>
+              <li class="open-sans">
+                <span class="text-justify"><strong>Auteur : </strong></span>
+                <span class="show-for-small-only"><br></span>
+                <span class="text-justify profil-auteur">{{item.auteur}}.</span>
+              </li>
+            </ul>
+            {% set x = x + 1 %}
+          {% endfor %}
+          </ul>
+        </li>
+      </ul>
+      {% set i = i + 1 %}
+      {% endfor %}
+    </div>
+
+    <br><br>
+    {# Chargement de la section footer #}
+    {{ include('footer.html.twig') }}
+    {# Chargement du code javascript #}
+    {% block javascripts %}
+      {{ encore_entry_script_tags('profil-details') }}
+    {% endblock %}
+  </body>
+</html>
