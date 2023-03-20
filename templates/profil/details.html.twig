@@ -48,32 +48,43 @@
       </div>
 
       <ul class="no-bullet">
+        {# Version initiale #}
         <li class="open-sans lead">
           <span class="show-for-small-only"><strong>Init. :</strong></span>
           <span class="show-for-medium"><strong>Initialisation :</strong></span>
           <span class="show-for-small-only"><br></span>
-          <span class="first-date">{{first["date"]|date("d/m/y H:m:s", "Europe/Paris")}}</span>
+          <span class="profil-first-date">{{first["date"]|date("d/m/y H:m:s", "Europe/Paris")}}</span>
         </li>
+        {# Dernière Version #}
         <li class="open-sans lead">
           <span class="show-for-small-only"><strong>Dernière modif. :</strong></span>
           <span class="show-for-medium"><strong>Dernière modification :</strong></span>
           <span class="show-for-small-only"><br></span>
-          <span class="last-date">{{last["date"]|date("d/m/y H:m:s", "Europe/Paris")}}</span>
+          <span class="profil-last-date">{{last["date"]|date("d/m/y H:m:s", "Europe/Paris")}}</span>
         </li>
+        {# Nombre de règles #}
         <li class="open-sans lead">
           <span class="show-for-small-only"><strong>Règles :</strong></span>
           <span class="show-for-medium"><strong>Nombre de règles :</strong></span>
-          <span class="total">{{totalRegle}}</span>
+          <span class="profil-total">{{totalRegle}}</span>
         </li>
+        {# Nombre de règles Activated #}
         <li class="open-sans lead">
           <span class="show-for-small-only"><strong>Règles activées :</strong></span>
           <span class="show-for-medium"><strong>Nombre de règles activé :</strong></span>
-          <span class="opened">{{opened}}</span>
+          <span class="profil-opened">{{opened}}</span>
         </li>
+        {# Nombre de règles Updated #}
+        <li class="open-sans lead">
+          <span class="show-for-small-only"><strong>Règles modifiées :</strong></span>
+          <span class="show-for-medium"><strong>Nombre de règles modifié :</strong></span>
+          <span class="profil-updated">{{updated}}</span>
+        </li>
+        {# Nombre de règles desactivated #}
         <li class="open-sans lead">
           <span class="show-for-small-only"><strong>Règles désactivées :</strong></span>
           <span class="show-for-medium"><strong>Nombre de règles désactivé :</strong></span>
-          <span class="closed">{{closed}}</span>
+          <span class="profil-closed">{{closed}}</span>
         </li>
       </ul>
       {% set i = 0 %}
@@ -90,8 +101,15 @@
             <ul class="fieldset changement">
               {% if item.action == "ACTIVATED" %}
                 {% set css,statut  =  "activated", "A" %}
-              {% else %}
+              {% endif %}
+              {% if item.action == "DEACTIVATED" %}
                 {% set css,statut  =  "desactivated", "D" %}
+              {% endif %}
+              {% if item.action == "UPDATED" %}
+                {% set css,statut  =  "updated", "U" %}
+              {% endif %}
+              {% if item.action not in ["UPDATED", "DEACTIVATED", "ACTIVATED"] %}
+                {% set css,statut  =  "xoxo", "X" %}
               {% endif %}
               <li class="stat text-right"><strong>{{x}}</strong></li>
               <li class="open-sans">
