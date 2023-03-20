@@ -11,35 +11,40 @@
  */
 
 @media only screen and (max-width: 20em) {
-  .total { margin-left: 5.9rem; }
-  .opened { margin-left: 2rem; }
-  .closed { margin-left: 1.1rem; }
+  .profil-total { margin-left: 5.9rem; }
+  .profil-opened { margin-left: 2rem; }
+  .profil-closed { margin-left: 1.1rem; }
+  .profil-updated { margin-left: 1.1rem; }
 }
 
 @media only screen and (min-width: 20.025em) and (max-width: 22em) {
-  .total { margin-left: 5.9rem; }
-  .opened { margin-left: 2rem; }
-  .closed { margin-left: 1.1rem; }
+  .profil-total { margin-left: 5.9rem; }
+  .profil-opened { margin-left: 2rem; }
+  .profil-closed { margin-left: 1.1rem; }
+  .profil-updated { margin-left: 1.1rem; }
 }
 
 @media only screen and (min-width: 22.025em) and (max-width: 30em) {
-  .total { margin-left: 5.9rem; }
-  .opened { margin-left: 2rem; }
-  .closed { margin-left: 1.1rem; }
+  .profil-total { margin-left: 5.9rem; }
+  .profil-opened { margin-left: 2rem; }
+  .profil-closed { margin-left: 1.1rem; }
+  .profil-updated { margin-left: 1.1rem; }
 }
 
 @media only screen and (min-width: 30.025em) and (max-width: 40em) {
-  .total { margin-left: 5.9rem; }
-  .opened { margin-left: 2rem; }
-  .closed { margin-left: 1.1rem; }
+  .profil-total { margin-left: 5.9rem; }
+  .profil-opened { margin-left: 2rem; }
+  .profil-closed { margin-left: 1.1rem; }
+  .profil-updated { margin-left: 1.1rem; }
 }
 
 @media only screen and (min-width: 40em) and (max-width: 64em) {
-  .first-date { margin-left: 5.1rem; }
-  .last-date { margin-left: 0.5rem; }
-  .total { margin-left: 5.9rem; }
-  .opened { margin-left: 2.6rem; }
-  .closed { margin-left: 1.5rem; }
+  .profil-first-date { margin-left: 5.1rem; }
+  .profil-last-date { margin-left: 0.5rem; }
+  .profil-total { margin-left: 5.9rem; }
+  .profil-opened { margin-left: 2.6rem; }
+  .profil-closed { margin-left: 1.5rem; }
+  .profil-updated { margin-left: 1.5rem; }
 
   .profil-regle { margin-left: 3.5rem; }
   .profil-description { margin-left: 0.5rem; }
@@ -48,11 +53,12 @@
 }
 
 @media only screen and (min-width: 64.025em) and (max-width: 90em) {
-  .first-date { margin-left: 5.1rem; }
-  .last-date { margin-left: 0.5rem; }
+  .profil-first-date { margin-left: 5.1rem; }
+  .profil-last-date { margin-left: 0.5rem; }
   .total { margin-left: 5.9rem; }
-  .opened { margin-left: 2.6rem; }
-  .closed { margin-left: 1.5rem; }
+  .profil-opened { margin-left: 2.6rem; }
+  .profil-closed { margin-left: 1.5rem; }
+  .profil-updated { margin-left: 1.5rem; }
 
   .profil-regle { margin-left: 3.5rem; }
   .profil-description { margin-left: 0.5rem; }
@@ -61,11 +67,12 @@
 }
 
 @media only screen and (min-width: 90.025em) and (max-width: 120em) {
-  .first-date { margin-left: 3.2rem; }
-  .last-date { margin-left: 0.5rem; }
-  .total { margin-left: 5.9rem; }
-  .opened { margin: 2.6rem; }
-  .closed { margin-left: 1.5rem; }
+  .profil-first-date { margin-left: 3.2rem; }
+  .profil-last-date { margin-left: 0.5rem; }
+  .profil-total { margin-left: 5.9rem; }
+  .profil-opened { margin: 2.6rem; }
+  .profil-closed { margin-left: 1.5rem; }
+  .profil-updated { margin-left: 1.5rem; }
 
   .profil-regle { margin-left: 3.5rem; }
   .profil-description { margin-left: 0.5rem; }
@@ -74,11 +81,12 @@
 }
 
 @media only screen and (min-width: 120.63em) and (max-width: 160em) {
-  .first-date { margin: 3.2rem; }
-  .last-date { margin: 3.2rem; }
-  .total { margin: 5.9rem; }
-  .opened { margin: 2.6rem; }
-  .closed { margin: 2rem; }
+  .profil-first-date { margin: 3.2rem; }
+  .profil-last-date { margin: 3.2rem; }
+  .profil-total { margin: 5.9rem; }
+  .profil-opened { margin: 2.6rem; }
+  .profil-closed { margin: 2rem; }
+  .profil-updated { margin-left: 2rem; }
 
   .profil-regle { margin: 3.5rem; }
   .profil-description { margin: 0.5rem; }
@@ -103,9 +111,10 @@
 }
 
 /* Ajuste de la taille des dates */
-.total,
-.opened,
-.closed {
+.profil-total,
+.profil-opened,
+.profil-closed,
+.profil-updated {
   font-size: 1.2rem;
   color: #444;
 }
@@ -137,6 +146,17 @@
 
 .desactivated {
   background-color: #d4333f;
+  color: #fff;
+}
+
+.updated {
+  background-color: #ed7d20;
+  color: #fff;
+}
+
+/** Ni updated, ni activated, ni desasctivated */
+.xoxo {
+  background-color: #000;
   color: #fff;
 }
 
