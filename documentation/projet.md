@@ -14,6 +14,7 @@
 ### Ma-Moulinette
 
 * [Accueil](/documentation/accueil.md)
+* [Profil](/documentation/profil.md)
 * [**Projet**](/documentation/projet.md)
 * [OWASP](/documentation/owasp.md)
 * [Suivi](/documentation/suivi.md)
