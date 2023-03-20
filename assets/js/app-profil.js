@@ -80,32 +80,6 @@ const palette=function() {
 };
 
 /**
- * [Description for chargeModification]
- *
- * @param mixed profil
- * @param mixed language
- *
- * @return [type]
- *
- * Created at: 11/03/2023, 22:59:17 (Europe/Paris)
- * @author    Laurent HADJADJ <laurent_h@me.com>
- * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
- */
-const chargeModification=function(profil, language) {
-  const data = {mode: 'null', profil, language };
-  const options = {
-    url: `${serveur()}/api/quality/changement`, type: 'POST',
-    dataType: 'json',  data: JSON.stringify(data), contentType };
-
-    return new Promise(resolve => {
-      $.ajax(options).then( t => {
-          console.log(t);
-      })
-      resolve();
-    });
-  }
-
-/**
  * [Description for dessineMoiUnMouton]
  * Affiche le graphique des sources
  *
@@ -189,5 +163,10 @@ $('.js-profil-info').on('click', (e) => {
   const profil=elm.dataset.profil;
   /* On récupère le nom du profil. */
   const language=elm.dataset.language;
-  chargeModification(profil,language)
+
+  /** on ouvre la page de détails */
+  const uri=`?language=${language}&profil=${profil}&mode=null`
+  const url=`${serveur()}/profil/details${uri}`;
+
+  $(location).prop('href', url);
 });
