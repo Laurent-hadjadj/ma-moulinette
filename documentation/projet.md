@@ -14,6 +14,7 @@
 ### Ma-Moulinette
 
 * [Accueil](/documentation/accueil.md)
+* [Profil-details](/documentation/profil-details.md)
 * [Profil](/documentation/profil.md)
 * [**Projet**](/documentation/projet.md)
 * [OWASP](/documentation/owasp.md)
@@ -109,7 +110,7 @@ Par exemple, à la fin du traitement de l'action `R` :
 
 ![projet](/documentation/ressources/projet-007aa.jpg)
 
-### Petits mémos
+## Petits mémos
 
 * [] Si l'on souhaite ne pas utiliser le sélecteur de recherche, il suffit de cliquer sur le bouton **V** pour sélectionner le projet directement depuis la liste.
 ![projet](/documentation/ressources/projet-007c.jpg)

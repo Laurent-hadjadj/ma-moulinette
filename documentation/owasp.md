@@ -15,13 +15,14 @@
 
 * [Accueil](/documentation/accueil.md)
 * [Profil](/documentation/profil.md)
+* [Profil-details](/documentation/profil-details.md)
 * [Projet](/documentation/projet.md)
 * [**OWASP**](/documentation/owasp.md)
 * [Suivi](/documentation/suivi.md)
 * [COSUI](/documentation/cosui.md)
 * [Répartition détaillée](/documentation/repartition_details.md)
 
-### Page OWASP
+## Page OWASP
 
 Cette page permet l'affichage des vulnérabilités et des hotspots selon le référentiel OWASP 2017.
 
