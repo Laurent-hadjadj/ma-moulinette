@@ -28,12 +28,12 @@
 
     <div class="grid-container">
       <h2 class="claire-hand">Détails des changements pour le profil.</h2>
-      {% if total|length > 1 %}
+      {% if totalRegle|length > 1 %}
         {% set s = "s" %} {% else %} {% set s = "" %}
       {% endif %}
       <h2 class="profil-titre">
         <span id="affiche-ttitre">Langage  {{langage}}</span>
-        <span id="affiche-total-profil" class="stat">{{total|length}}</span>
+        <span id="affiche-total-profil" class="stat">{{totalRegle|length}}</span>
         changement{{s}} trouvé{{s}}.
       </h2>
 
