@@ -22,6 +22,7 @@ Encore
     .addEntry('home', './assets/js/app-home.js')
     .addEntry('projet', './assets/js/app-projet.js')
     .addEntry('profil', './assets/js/app-profil.js')
+    .addEntry('profil-details', './assets/js/app-profil-details.js')
     .addEntry('owasp', './assets/js/app-owasp.js')
     .addEntry('suivi', './assets/js/app-suivi.js')
     .addEntry('repartition', './assets/js/app-repartition.js')
