@@ -14,6 +14,7 @@
 ### Ma-Moulinette
 
 * [Accueil](/documentation/accueil.md)
+* [Profil-details](/documentation/profil-details.md)
 * [Profil](/documentation/profil.md)
 * [Projet](/documentation/projet.md)
 * [OWASP](/documentation/owasp.md)
@@ -21,7 +22,7 @@
 * [**COSUI**](/documentation/cosui.md)
 * [Répartition détaillée](/documentation/repartition_details.md)
 
-### Page COmité de SUIvi
+## Page COmité de SUIvi
 
 Cette page affiche le tableau de suivi du Comité de Suivi des signalements Sonarqube.
 
