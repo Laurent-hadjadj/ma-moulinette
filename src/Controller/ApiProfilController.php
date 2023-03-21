@@ -127,6 +127,9 @@ class ApiProfilController extends AbstractController
     if ($language==="typescript") {
       $language="ts";
     }
+    if ($language==="python") {
+      $language="py";
+    }
 
     /** On créé un objet response pour le retour JSON. */
     $response = new JsonResponse();
@@ -236,7 +239,6 @@ class ApiProfilController extends AbstractController
       "version" => $this->getParameter("version"),
       "dateCopyright" => \date("Y"),
       Response::HTTP_OK];
-
     if ($mode=="TEST") {
       return $response->setData($render);
     } else {
