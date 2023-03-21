@@ -47,52 +47,90 @@
         </button>
       </div>
 
-      <ul class="no-bullet">
-        {# Version initiale #}
-        <li class="open-sans lead">
+      {# Version initiale #}
+      <div class="grid-x">
+        <div class="open-sans small-6 cell">
           <span class="show-for-small-only"><strong>Init. :</strong></span>
           <span class="show-for-medium"><strong>Initialisation :</strong></span>
-          <span class="show-for-small-only"><br></span>
-          <span class="profil-first-date">{{first["date"]|date("d/m/y H:m:s", "Europe/Paris")}}</span>
-        </li>
-        {# Dernière Version #}
-        <li class="open-sans lead">
+        </div>
+        <div class="open-sans small-6 cell">
+          <span class="show-for-small-only profil-first-date float-right">{{first["date"]|date("d/m/y H:m", "Europe/Paris")}}</span>
+          <span class="show-for-medium profil-first-date float-right">{{first["date"]|date("d/m/y H:m:s", "Europe/Paris")}}</span>
+        </div>
+      </div>
+
+      {# Dernière Version #}
+      <div class="grid-x">
+        <div class="open-sans small-6 cell">
           <span class="show-for-small-only"><strong>Dernière modif. :</strong></span>
           <span class="show-for-medium"><strong>Dernière modification :</strong></span>
-          <span class="show-for-small-only"><br></span>
-          <span class="profil-last-date">{{last["date"]|date("d/m/y H:m:s", "Europe/Paris")}}</span>
-        </li>
-        {# Nombre de règles #}
-        <li class="open-sans lead">
+        </div>
+        <div class="open-sans small-6 cell">
+          <span class="show-for-small-only profil-last-date float-right">{{last["date"]|date("d/m/y H:m", "Europe/Paris")}}</span>
+          <span class="show-for-medium profil-last-date float-right">{{last["date"]|date("d/m/y H:m:s", "Europe/Paris")}}</span>
+
+        </div>
+      </div>
+
+      {# Nombre de règles #}
+      <div class="grid-x cell flex-container">
+        <div class="open-sans small-4 cell">
           <span class="show-for-small-only"><strong>Règles :</strong></span>
           <span class="show-for-medium"><strong>Nombre de règles :</strong></span>
-          <span class="profil-total">{{totalRegle}}</span>
-        </li>
-        {# Nombre de règles Activated #}
-        <li class="open-sans lead">
+        </div>
+        <div class="open-sans small-8 cell">
+          <span class="profil-total float-right">{{totalRegle}}</span>
+        </div>
+      </div>
+
+      {# Nombre de règles Activated #}
+      <div class="grid-x cell flex-container">
+        <div class="open-sans small-4 cell">
           <span class="show-for-small-only"><strong>Règles activées :</strong></span>
           <span class="show-for-medium"><strong>Nombre de règles activé :</strong></span>
-          <span class="profil-opened">{{opened}}</span>
-        </li>
-        {# Nombre de règles Updated #}
-        <li class="open-sans lead">
+        </div>
+        <div class="open-sans small-8 cell">
+          <span class="profil-opened float-right">{{opened}}</span>
+        </div>
+      </div>
+
+      {# Nombre de règles Updated #}
+      <div class="grid-x cell flex-container">
+        <div class="open-sans small-4 cell">
           <span class="show-for-small-only"><strong>Règles modifiées :</strong></span>
           <span class="show-for-medium"><strong>Nombre de règles modifié :</strong></span>
-          <span class="profil-updated">{{updated}}</span>
-        </li>
-        {# Nombre de règles desactivated #}
-        <li class="open-sans lead">
+        </div>
+        <div class="open-sans small-8 cell">
+          <span class="profil-updated float-right">{{updated}}</span>
+        </div>
+      </div>
+
+      {# Nombre de règles desactivated #}
+      <div class="grid-x cell flex-container">
+        <div class="open-sans small-4 cell">
           <span class="show-for-small-only"><strong>Règles désactivées :</strong></span>
           <span class="show-for-medium"><strong>Nombre de règles désactivé :</strong></span>
-          <span class="profil-closed">{{closed}}</span>
-        </li>
-      </ul>
+        </div>
+        <div class="open-sans small-8 cell">
+          <span class="profil-closed float-right">{{closed}}</span>
+        </div>
+      </div>
+
       {% set i = 0 %}
       {% for groupe in liste %}
+      {% if badge[i].badgeA<10 %} {% set a,aa ="&nbsp;","&nbsp;" %}{% endif %}
+      {% if badge[i].badgeA>10 and badge[i].badgeA<100 %} {% set a,aa ="&nbsp;","" %}{% endif %}
+      {% if badge[i].badgeU<10 %} {% set b,bb ="&nbsp;","&nbsp;" %}{% endif %}
+      {% if badge[i].badgeU>10 and badge[i].badgeU<100 %} {% set b,bb ="&nbsp;","" %}{% endif %}
+      {% if badge[i].badgeD<10 %} {% set c,cc ="&nbsp;","&nbsp;" %}{% endif %}
+      {% if badge[i].badgeD>10 and badge[i].badgeD<100 %} {% set c,cc ="&nbsp;","" %}{% endif %}
       <ul class="vertical menu accordion-menu" data-accordion-menu>
         <li class="liste-changement-menu">
             <a class="claire-hand liste-changement-titre">
               <span>{{dateGroupe[i]}}</span>
+              <span class="bulle activated bulle-marge">{{a|raw}}{{badge[i].badgeA}}{{aa|raw}}</span>
+              <span class="bulle updated">{{b|raw}}{{badge[i].badgeU}}{{bb|raw}}</span>
+              <span class="bulle desactivated">{{c|raw}}{{badge[i].badgeD}}{{cc|raw}}</span>
               <span class="nombre-regle float-right text-right">{{liste[i]|length}}</span>
             </a>
             <ul class="menu vertical liste-padding-left-right">
