@@ -44,6 +44,7 @@ Cette section présente les informations suivantes :
 * [x] la date de la dernière modification ;
 * [x] le nombre total de règle ;
 * [x] le nombre de règles activé ;
+* [x] Le nombre de règles modifié ;
 * [x] le nombre de règles désactivé ;
 
 ## Changements par date
@@ -58,8 +59,8 @@ Les éléments suivants sont affichés :
 * [x] le statut : **activé** (A), **désactivé** (D);
 * [x] le nom de la règle ;
 * [x] la desciption ;
-* [x] La liste des paramètres de la règle ;
-* [ ] l'auteur ;
+* [ ] La liste des paramètres de la règle ;
+* [x] l'auteur ;
 
 En mode mobile, les paramètres ne sont pas affichés.
 
