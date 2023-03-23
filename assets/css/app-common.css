@@ -355,6 +355,20 @@ body { background: #eee; }
 .alert-callout-border.warning { border-left-color: #ffae00; }
 .alert-callout-border.warning strong { color: #ffae00; }
 
+/** HoneyPot */
+input.email {
+  height: 0;
+  margin: 0;
+  text-decoration: none;
+  border: none;
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  z-index: -1;
+}
+
 /* Titre */
 .ma-moulinette {
   color: #00445b;
