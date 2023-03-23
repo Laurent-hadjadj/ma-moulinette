@@ -89,6 +89,10 @@
                 <span id="register-info-check-password"></span>
               </div>
             </div>
+            {# HoneyPot #}
+            <div class="small-11 medium-11 large-11 cell">
+                {{ form_widget(registrationForm.email, {'attr': {'class':'email', tabindex: '-1', autocomplete: 'off', ref: 'initHoneyPot'}}) }}
+            </div>
 
             <input id="valider-formulaire-enregistrement" class="button expanded" type="submit" value="M'inscrire">
             {{ form_end(registrationForm) }}
