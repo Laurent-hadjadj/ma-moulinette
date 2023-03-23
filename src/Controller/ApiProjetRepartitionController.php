@@ -310,11 +310,7 @@ class ApiProjetRepartitionController extends AbstractController
     $type = $data->type;
     $severity = $data->severity;
     $setup = $data->setup;
-    if (is_null($data->mode)){
-      $mode='null';
-    } else {
-      $mode = $data->mode;
-    }
+    $mode = $data->mode;
 
     /** nom du projet */
     $name = explode(":", $mavenKey);
@@ -380,11 +376,7 @@ class ApiProjetRepartitionController extends AbstractController
 
     /** On bind les variables */
     $mavenKey = $data->mavenKey;
-    if (is_null($data->mode)){
-      $mode='null';
-    } else {
-      $mode = $data->mode;
-    }
+    $mode = $data->mode;
 
     /** On créé un nouvel objet Json */
     $response = new JsonResponse();
@@ -425,6 +417,7 @@ class ApiProjetRepartitionController extends AbstractController
     $type = $data->type;
     $severity = $data->severity;
     $setup = $data->setup;
+    $mode= $data->mode;
 
     /** On créé un nouvel objet Json */
     $response = new JsonResponse();
@@ -441,7 +434,7 @@ class ApiProjetRepartitionController extends AbstractController
           'setup' => $setup]);
     /** on appelle le service d'analyse */
     $result=$this->batch_analyse($liste, $mavenKey);
-    return $response->setData(["code" => "OK", "repartition"=>$result, Response::HTTP_OK]);
+    return $response->setData(["mode"=>$mode,"code" => "OK", "repartition"=>$result, Response::HTTP_OK]);
   }
 
 }
