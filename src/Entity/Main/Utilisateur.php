@@ -14,6 +14,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[UniqueEntity(fields: ['courriel'], message: 'There is already an account with this courriel')]
 class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 {
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
@@ -27,6 +28,9 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: 'string', length: 128, nullable: true)]
     private $avatar;
+
+    /** Honeypot */
+    private $email;
 
     #[ORM\Column(type: 'string', length: 320, unique: true)]
     private $courriel;
