@@ -32,6 +32,9 @@ use App\Security\LoginFormAuthenticator;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
 
+/** Logger */
+use Psr\Log\LoggerInterface;
+
 class RegistrationController extends AbstractController
 {
     /**
@@ -49,7 +52,7 @@ class RegistrationController extends AbstractController
      */
     #[Route('/register', name: 'app_register')]
     public function register(Request $request,
-    UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $em): Response
+    UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $em, LoggerInterface $logger): Response
     {
         /** On créé un objet utilisateur. */
         $utilisateur = new Utilisateur();
@@ -63,6 +66,8 @@ class RegistrationController extends AbstractController
             $date = new DateTime();
             $date->setTimezone(new DateTimeZone('Europe/Paris'));
 
+            /** je récupére les données du HoneyPot  */
+            $honeyPot=$form->get('email')->getData();
             /** J'enregistre l'url de l'image */
             $avatar=$form->get('avatar')->getData();
             $utilisateur->setAvatar($avatar);
@@ -91,20 +96,27 @@ class RegistrationController extends AbstractController
 
             /** En enregistre la date de création */
             $utilisateur->setDateEnregistrement($date);
-            $em->persist($utilisateur);
-            $em->flush();
+
+            if (!empty(trim($honeyPot))) {
+              // Spam detected!
+              $warning = sprintf('🐛 SPAM detected. honeypot content: %s IP: %s', $honeyPot, $request->getClientIp());
+              $logger->warning($warning);
+              $this->addFlash('warning', $warning);
+            } else {
+              $em->persist($utilisateur);
+              $em->flush();
+            }
 
             /** Connexion automatique ? */
             /** "return $userAuthenticator->authenticateUser($utilisateur, $authenticator,$request);" */
 
             /** On préfére redirider l'utilisateur sur la page de bienvenu des nouveaux tiliasteur */
             return $this->render('welcome/index.html.twig', [
-
-                'nom'=>$utilisateur->getNom(),
-                'prenom'=>$utilisateur->getPrenom(),
-                'courriel'=>$utilisateur->getCourriel(),
-                'version' => $this->getParameter('version'),
-                'dateCopyright' => \date('Y')
+              'nom'=>$utilisateur->getNom(),
+              'prenom'=>$utilisateur->getPrenom(),
+              'courriel'=>$utilisateur->getCourriel(),
+              'version' => $this->getParameter('version'),
+              'dateCopyright' => \date('Y')
             ]);
         }
 
