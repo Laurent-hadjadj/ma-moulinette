@@ -101,7 +101,6 @@ class RegistrationController extends AbstractController
               // Spam detected!
               $warning = sprintf('🐛 SPAM detected. honeypot content: %s IP: %s', $honeyPot, $request->getClientIp());
               $logger->warning($warning);
-              $this->addFlash('warning', $warning);
             } else {
               $em->persist($utilisateur);
               $em->flush();
