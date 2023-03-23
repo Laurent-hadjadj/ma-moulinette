@@ -28,6 +28,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class RegistrationFormType extends AbstractType
 {
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -51,16 +52,16 @@ class RegistrationFormType extends AbstractType
                 'label' => 'label.prenom',
                 'trim' => true
             ])
+            ->add('email', TextType::class, ['required' => false, 'mapped' => false, 'attr' => ['class' => 'email']])
             //RFC 3696 (64+1+255).
             ->add('courriel',EmailType::class, [
                 'attr' => ['maxlength' => 320],
                 'attr' => ['placeholder' => 'placeholder.courriel',
                 'style'=>'color:#00445b;',
                 'autocomplete'=> 'email'
-            ],
-                'label' => 'label.courriel',
-                'trim' => true
-                //There is already an account with this courriel
+              ],
+              'label' => 'label.courriel',
+                'trim' => true,
             ])
             ->add('plainPassword', PasswordType::class, [
                 'mapped' => false,
