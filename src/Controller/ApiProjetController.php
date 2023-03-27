@@ -19,7 +19,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 /** Gestion de accès aux API */
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 /** Gestion du temps */
@@ -41,8 +40,12 @@ use App\Entity\Main\Historique;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\DBAL\Connection;
 
-// Logger
+/** Logger */
 use Psr\Log\LoggerInterface;
+
+/** Client HTTP */
+use App\Service\Client;
+
 
 class ApiProjetController extends AbstractController
 {
@@ -61,18 +64,16 @@ class ApiProjetController extends AbstractController
    *
    * @param  private
    * @param  private
-   * @param  private
    *
    * Created at: 15/12/2022, 21:25:23 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   public function __construct(
-    private HttpClientInterface $client,
     private LoggerInterface $logger,
     private EntityManagerInterface $em)
   {
-    $this->client = $client;
+    //$this->client = $client;
     $this->logger = $logger;
     $this->em = $em;
   }
@@ -148,58 +149,6 @@ class ApiProjetController extends AbstractController
     } else {
       return ($h . "h:" . $m . "min");
     }
-  }
-
-  /**
-   * [Description for httpClient]
-   *
-   * @param mixed $url
-   *
-   * @return array
-   *
-   * Created at: 15/12/2022, 21:26:42 (Europe/Paris)
-   * @author    Laurent HADJADJ <laurent_h@me.com>
-   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
-  protected function httpClient($url):array
-  {
-    if (empty($this->getParameter('sonar.token'))) {
-      $user = $this->getParameter('sonar.user');
-      $password = $this->getParameter('sonar.password');
-    } else {
-      $user = $this->getParameter('sonar.token');
-      $password = '';
-    }
-
-    $ciphers="AES128-SHA AES256-SHA DH-RSA-AES128-SHA DH-RSA-AES256-SHA
-              DHE-DSS-AES128-SHA DHE-DSS-AES256-SHA DHE-RSA-AES128-SHA DHE-RSA-AES256-SHA DH-AES128-SHA ADH-AES256-SHA";
-    $response = $this->client->request(
-      'GET', $url,
-      [
-        'ciphers' => trim(preg_replace(static::$regex, " ", $ciphers)),
-        'auth_basic' => [$user, $password], 'timeout' => 45,
-        'headers' => [
-        'Accept' => static::$strContentType,
-        'Content-Type' => static::$strContentType
-        ]
-      ]
-    );
-
-    if (200 !== $response->getStatusCode()) {
-      if ($response->getStatusCode() == 401) {
-        throw new \UnexpectedValueException('Erreur d\'Authentification. La clé n\'est pas correcte.');
-      } else {
-        throw new \UnexpectedValueException('Retour de la réponse différent de ce qui est prévu. Erreur '
-          . $response->getStatusCode());
-      }
-    }
-
-    /** La variable n'est pas utilisé, elle permet de collecter les données et de rendre la main. */
-    $contentType = $response->getHeaders()['content-type'][0];
-    $this->logger->INFO('** ContentType *** ' . isset($contentType));
-
-    $responseJson = $response->getContent();
-    return json_decode($responseJson, true, 512, JSON_THROW_ON_ERROR);
   }
 
   /**
@@ -352,7 +301,7 @@ class ApiProjetController extends AbstractController
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/projet/analyses', name: 'projet_analyses', methods: ['GET'])]
-  public function projetAnalyses(Request $request): response
+  public function projetAnalyses(Request $request, Client $client): response
   {
     /** oN créé un objet réponse */
     $response = new JsonResponse();
@@ -368,7 +317,7 @@ class ApiProjetController extends AbstractController
       "/api/project_analyses/search?project=" . $request->get('mavenKey');
 
     /** On appel le client http */
-    $result = $this->httpClient($url);
+    $result = $client->http($url);
     /** On récupère le manager de BD */
     $date = new DateTime();
     $date->setTimezone(new DateTimeZone(static::$europeParis));
@@ -426,7 +375,7 @@ class ApiProjetController extends AbstractController
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/projet/mesures', name: 'projet_mesures', methods: ['GET'])]
-  public function projetMesures(Request $request): response
+  public function projetMesures(Request $request, Client $client): response
   {
     /** oN créé un objet réponse */
     $response = new JsonResponse();
@@ -446,7 +395,7 @@ class ApiProjetController extends AbstractController
     $url1 = "${tempoUrl}/api/components/app?component=${mavenKey}";
 
     /** on appel le client http */
-    $result1 = $this->httpClient($url1);
+    $result1 = $clinnt->http($url1);
     $date = new DateTime();
     $date->setTimezone(new DateTimeZone(static::$europeParis));
 
@@ -487,7 +436,7 @@ class ApiProjetController extends AbstractController
 
     /** On récupère le nombre de ligne de code */
     $url2 = "${tempoUrl}/api/measures/component?component=${mavenKey}&metricKeys=ncloc";
-    $result2 = $this->httpClient($url2);
+    $result2 = $client->http($url2);
 
     if (array_key_exists("measures", $result2["component"])) {
       $ncloc = intval($result2["component"]["measures"][0]["value"]);
@@ -536,7 +485,7 @@ class ApiProjetController extends AbstractController
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/projet/anomalie', name: 'projet_anomalie', methods: ['GET'])]
-  public function projetAnomalie(Request $request): response
+  public function projetAnomalie(Request $request, Client $client): response
   {
     /** On créé un objet response */
     $response = new JsonResponse();
@@ -572,10 +521,10 @@ class ApiProjetController extends AbstractController
     $url4 = "${tempoUrlLong}${mavenKey}&types=CODE_SMELL&p=1&ps=1";
 
     /** On appel le client http pour les requête 1 à 4 (2 à 4 pour la dette). */
-    $result1 = $this->httpClient(trim(preg_replace(static::$regex, " ", $url1)));
-    $result2 = $this->httpClient($url2);
-    $result3 = $this->httpClient($url3);
-    $result4 = $this->httpClient($url4);
+    $result1 = $client->http(trim(preg_replace(static::$regex, " ", $url1)));
+    $result2 = $client->http($url2);
+    $result3 = $client->http($url3);
+    $result4 = $client->http($url4);
 
     if ($result1["paging"]["total"] != 0) {
       //** On supprime  les enregistrement correspondant à la clé. */
@@ -737,7 +686,7 @@ class ApiProjetController extends AbstractController
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/projet/anomalie/details', name: 'projet_anomalie_details', methods: ['GET'])]
-  public function projetAnomalieDetails(Request $request): response
+  public function projetAnomalieDetails(Request $request, Client $client): response
   {
 
     /** On créé un objet response */
@@ -765,9 +714,9 @@ class ApiProjetController extends AbstractController
     $url3 = "${tempoUrlLong}${mavenKey}&facets=severities&types=CODE_SMELL&ps=1&p=1&statuses=OPEN";
 
     /** On appel le client http pour les requête 1 à 3. */
-    $result1 = $this->httpClient($url1);
-    $result2 = $this->httpClient($url2);
-    $result3 = $this->httpClient($url3);
+    $result1 = $client->http($url1);
+    $result2 = $client->http($url2);
+    $result3 = $client->http($url3);
 
     $total1 = $result1["paging"]["total"];
     $total2 = $result2["paging"]["total"];
@@ -921,7 +870,7 @@ class ApiProjetController extends AbstractController
             &metrics=${type}_rating&ps=1000";
 
     /** On appel le client http. */
-    $result = $this->httpClient(trim(preg_replace(static::$regex, " ", $url)));
+    $result = $client->http(trim(preg_replace(static::$regex, " ", $url)));
 
     $date = new DateTime();
     $date->setTimezone(new DateTimeZone(static::$europeParis));
@@ -967,7 +916,7 @@ class ApiProjetController extends AbstractController
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/projet/issues/owasp', name: 'projet_issues_owasp', methods: ['GET'])]
-  public function issuesOwaspAjout(Request $request): response
+  public function issuesOwaspAjout(Request $request, Client $client): response
   {
 
     /** On créé un objet response */
@@ -990,7 +939,7 @@ class ApiProjetController extends AbstractController
             &owaspTop10=a1,a2,a3,a4,a5,a6,a7,a8,a9,a10";
 
     /** On appel l'API. */
-    $result = $this->httpClient(trim(preg_replace(static::$regex, " ", $url)));
+    $result = $client->http(trim(preg_replace(static::$regex, " ", $url)));
 
     $date = new DateTime();
     $date->setTimezone(new DateTimeZone(static::$europeParis));
@@ -1342,7 +1291,7 @@ class ApiProjetController extends AbstractController
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/projet/hotspot', name: 'projet_hotspot', methods: ['GET'])]
-  public function hotspotAjout(Request $request): response
+  public function hotspotAjout(Request $request, Client $client): response
   {
     /** On créé un objet response */
     $response = new JsonResponse();
@@ -1363,7 +1312,7 @@ class ApiProjetController extends AbstractController
     $url = "${tempoUrl}/api/hotspots/search?projectKey=${mavenKey}&ps=500&p=1";
 
     /** On appel l'Api */
-    $result = $this->httpClient($url);
+    $result = $client->http($url);
 
     /** On créé un objet Date */
     $date = new DateTime();
@@ -1425,7 +1374,7 @@ class ApiProjetController extends AbstractController
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/projet/hotspot/owasp', name: 'projet_hotspot_owasp', methods: ['GET'])]
-  public function hotspotOwaspAjout(Request $request): response
+  public function hotspotOwaspAjout(Request $request, Client $client): response
   {
     /** On créé un objet response */
     $response = new JsonResponse();
@@ -1457,7 +1406,7 @@ class ApiProjetController extends AbstractController
             &owaspTop10=${owasp}&ps=500&p=1";
 
     /** On appel l'URL. */
-    $result = $this->httpClient(trim(preg_replace(static::$regex, " ", $url)));
+    $result = $client->http(trim(preg_replace(static::$regex, " ", $url)));
 
     /** On créé un objet Date. */
     $date = new DateTime();
@@ -1525,13 +1474,13 @@ class ApiProjetController extends AbstractController
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  protected function hotspotDetails($mavenKey, $key): array
+  protected function hotspotDetails($mavenKey, $key, Client $client): array
   {
 
     /** On bind les variables. */
     $tempoUrl = $this->getParameter(static::$sonarUrl);
     $url = "${tempoUrl}/api/hotspots/show?hotspot=${key}";
-    $hotspot = $this->httpClient($url);
+    $hotspot = $client->http($url);
     $date = new DateTime();
     $date->setTimezone(new DateTimeZone(static::$europeParis));
 
@@ -1803,7 +1752,7 @@ class ApiProjetController extends AbstractController
     $url = "${tempoUrl}/api/issues/search?componentKeys=${mavenKey}
             &rules=java:S1309,java:NoSonar&ps=500&p=1";
 
-    $result = $this->httpClient(trim(preg_replace(static::$regex, " ", $url)));
+    $result = $client->http(trim(preg_replace(static::$regex, " ", $url)));
     $date = new DateTime();
     $date->setTimezone(new DateTimeZone(static::$europeParis));
 
