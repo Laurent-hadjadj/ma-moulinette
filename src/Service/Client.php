@@ -49,8 +49,8 @@ class Client
       $password = '';
     }
 
-    $ciphers="AES128-SHA AES256-SHA DH-RSA-AES128-SHA DH-RSA-AES256-SHA
-              DHE-DSS-AES128-SHA DHE-DSS-AES256-SHA DHE-RSA-AES128-SHA DHE-RSA-AES256-SHA DH-AES128-SHA ADH-AES256-SHA";
+    /** Fix problème Error:141A318A:SSL routines:tls_process_ske_dhe:dh key too small */
+    $ciphers="DEFAULT:!DH";
     $response = $this->client->request(
       'GET', $url,
       [
