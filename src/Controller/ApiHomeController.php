@@ -29,7 +29,6 @@ use App\Entity\Main\Profiles;
 use App\Entity\Main\ListeProjet;
 
 /** Gestion de accès aux API */
-//use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
