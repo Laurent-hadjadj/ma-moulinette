@@ -24,7 +24,6 @@ use DateTime;
 use DateTimeZone;
 
 /** Gestion de accès aux API */
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 /** Accès aux tables SLQLite */
@@ -32,6 +31,9 @@ use Doctrine\ORM\EntityManagerInterface;
 
 /** Logger */
 use Psr\Log\LoggerInterface;
+
+/** Client HTTP */
+use App\Service\Client;
 
 /**
  * [Description SuiviController]
@@ -58,70 +60,12 @@ class SuiviController extends AbstractController
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   public function __construct(
-    private HttpClientInterface $client,
     private EntityManagerInterface $em,
     private LoggerInterface $logger
     )
   {
-    $this->client = $client;
     $this->em = $em;
     $this->logger = $logger;
-  }
-
-  /**
-   * [Description for httpClient]
-   *
-   * @param mixed $url
-   *
-   * @return [type]
-   *
-   * Created at: 15/12/2022, 22:34:12 (Europe/Paris)
-   * @author    Laurent HADJADJ <laurent_h@me.com>
-   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
-  protected function httpClient($url)
-  {
-    if (empty($this->getParameter('sonar.token'))) {
-      $user = $this->getParameter('sonar.user');
-      $password = $this->getParameter('sonar.password');
-    } else {
-      $user = $this->getParameter('sonar.token');
-      $password = '';
-    }
-
-    $ciphers= "DH-RSA-AES128-SHA DH-RSA-AES256-SHA DHE-DSS-AES128-SHA DHE-DSS-AES256-SHA
-                DHE-RSA-AES128-SHA DHE-RSA-AES256-SHA DH-AES128-SHA ADH-AES256-SHA";
-    $option=
-      [
-        'ciphers' => trim(preg_replace(static::$regex, " ", $ciphers)),
-        'auth_basic' => [$user, $password], 'timeout' => 45,
-        'headers' => ['Accept' => 'Accept: */*', 'Content-Type' => static::$strContentType]
-      ];
-    $response = $this->client->request('GET', $url, $option);
-    /** on désactive le code retour pour catcher l'erreur nous même. */
-    $response->getHeaders(false);
-
-    /** si le code erreur est différent de 200 ou 404 on léve une exception */
-    if ($response->getStatusCode() !==200 && $response->getStatusCode() !== 404) {
-      if ($response->getStatusCode() == 401) {
-        throw new \UnexpectedValueException('Erreur d\'Authentification. La clé n\'est pas correcte.');
-      } else {
-        throw new \UnexpectedValueException('Retour de la réponse différent de ce qui est prévu. Erreur '
-          . $response->getStatusCode());
-      }
-    }
-
-    /** Erreur 404 = je n'ai pas trouvé le projet */
-    if ($response->getStatusCode()==404) {
-        $responseJson=json_encode(["message"=>404]);
-        return json_decode($responseJson, true, 512, JSON_THROW_ON_ERROR);
-    }
-
-    $contentType = $response->getHeaders()['content-type'][0];
-    $this->logger->INFO('** ContentType *** '.isset($contentType));
-    $responseJson = $response->getContent();
-
-    return json_decode($responseJson, true, 512, JSON_THROW_ON_ERROR);
   }
 
   /**
@@ -183,8 +127,10 @@ class SuiviController extends AbstractController
     FROM historique
     WHERE maven_key='${mavenKey}' AND initial=FALSE
     ORDER BY date_version DESC LIMIT 9)";
+
     $select = $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
     $suivi = $select->fetchAllAssociative();
+
     /** On récupère les anomalies par sévérité */
     $sql = "SELECT * FROM
     (SELECT date_version as date,
@@ -203,6 +149,7 @@ class SuiviController extends AbstractController
     FROM historique
     WHERE maven_key='${mavenKey}' AND initial=FALSE
     ORDER BY date_version DESC LIMIT 9)";
+
     $select = $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
     $severite = $select->fetchAllAssociative();
 
@@ -299,7 +246,7 @@ class SuiviController extends AbstractController
     /** On crée un objet de reponse JSON */
     $response = new JsonResponse();
 
-    /** On on vérifie si on a activé le mode test */
+    /** On vérifie si on a activé le mode test */
     if (is_null($request->get('mode'))) {
       $mode="null";
     } else {
@@ -366,7 +313,7 @@ class SuiviController extends AbstractController
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/get/version', name: 'get_version', methods: ['GET','POST'])]
-  public function getVersion(Request $request): Response
+  public function getVersion(Client $client, Request $request): Response
   {
     /** On décode le body */
     $data = json_decode($request->getContent());
@@ -405,7 +352,7 @@ class SuiviController extends AbstractController
 
     /** On appel le client http */
     if ($mode!="TEST") {
-      $result = $this->httpClient(trim(preg_replace(static::$regex, " ", $url)));
+      $result = $client->http(trim(preg_replace(static::$regex, " ", $url)));
     }
 
     if ($mode==="TEST") {
