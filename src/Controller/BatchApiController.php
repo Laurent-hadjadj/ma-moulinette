@@ -37,8 +37,8 @@ use App\Entity\Main\Hotspots;
 use App\Entity\Main\HotspotOwasp;
 use App\Entity\Main\Historique;
 
-/** Gestion des accès aux API */
-use Symfony\Contracts\HttpClient\HttpClientInterface;
+/** Client HTTP */
+use App\Service\Client;
 
 /**
  * [Description BatchController]
@@ -61,73 +61,20 @@ class BatchApiController extends AbstractController
    * @param  private
    * @param  private
    * @param  private
-   * @param  private
    *
    * Created at: 04/12/2022, 08:53:04 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    */
   public function __construct (
       private LoggerInterface $logger,
-      private HttpClientInterface $client,
       private EntityManagerInterface $em,
       private Connection $connection,
       )
       {
           $this->logger = $logger;
-          $this->client = $client;
           $this->em = $em;
           $this->connection = $connection;
       }
-
-  /**
-   * [Description for httpClient]
-   *
-   * @param mixed $url
-   *
-   * @return array
-   *
-   * Created at: 04/12/2022, 08:53:35 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
-   */
-  protected function httpClient($url): array
-  {
-    if (empty($this->getParameter('sonar.token'))) {
-      $user = $this->getParameter('sonar.user');
-      $password = $this->getParameter('sonar.password');
-    } else {
-      $user = $this->getParameter('sonar.token');
-      $password = '';
-    }
-
-    $ciphers="DH-RSA-AES128-SHA DH-RSA-AES256-SHA DHE-DSS-AES128-SHA DHE-DSS-AES256-SHA
-              DHE-RSA-AES128-SHA DHE-RSA-AES256-SHA ADH-AES128-SHA ADH-AES256-SHA";
-    $response = $this->client->request('GET', $url,
-      [
-        'ciphers' => trim(preg_replace(static::$regex, " ", $ciphers)),
-        'auth_basic' => [$user, $password], 'timeout' => 45,
-        'headers' => ['Accept' => static::$strContentType,
-        'Content-Type' => static::$strContentType]
-      ]
-    );
-
-    /** HTTP 200 et 401 */
-    if (200 !== $response->getStatusCode()) {
-      if ($response->getStatusCode() == 401) {
-        throw new \UnexpectedValueException('Erreur d\'Authentification. La clé n\'est pas correcte.');
-      } else {
-        throw new \UnexpectedValueException('Retour de la réponse différent de ce qui est prévu. Erreur '
-          . $response->getStatusCode());
-      }
-    }
-
-    /** La variable n'est pas utilisé, elle permet de collecter
-     *  les données et de rendre la main. */
-    $contentType = $response->getHeaders()['content-type'][0];
-    $this->logger->INFO('** ContentType *** '.isset($contentType));
-
-    $responseJson = $response->getContent();
-    return json_decode($responseJson, true, 512, JSON_THROW_ON_ERROR);
-  }
 
   /**
    * [Description for minutesTo]
@@ -213,13 +160,13 @@ class BatchApiController extends AbstractController
    * Created at: 09/12/2022, 16:42:12 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    */
-  public function batchInformation($mavenKey): array
+  public function batchInformation(Client $client, $mavenKey): array
   {
     $sonar=$this->getParameter(static::$sonarUrl);
     $url ="${sonar}/api/project_analyses/search?project=${mavenKey}";
 
     /** On appel le client http */
-    $result = $this->httpClient($url);
+    $result = $client->http($url);
 
     /** On récupère le manager de BD */
     $date = new DateTime();
@@ -267,7 +214,7 @@ class BatchApiController extends AbstractController
    * Created at: 09/12/2022, 16:59:44 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    */
-  public function batchMesure($mavenKey): array
+  public function batchMesure(Client $client, $mavenKey): array
   {
     /** On bind les variables */
     $tempoUrl = $this->getParameter(static::$sonarUrl);
@@ -276,7 +223,7 @@ class BatchApiController extends AbstractController
     $url1 = "${tempoUrl}/api/components/app?component=${mavenKey}";
 
     /** on appel le client http */
-    $result1 = $this->httpClient($url1);
+    $result1 = $client->http($url1);
     $date = new DateTime();
     $date->setTimezone(new DateTimeZone(static::$europeParis));
 
@@ -318,7 +265,7 @@ class BatchApiController extends AbstractController
 
     /** On récupère le nombre de ligne de code */
     $url2 = "${tempoUrl}/api/measures/component?component=${mavenKey}&metricKeys=ncloc";
-    $result2 = $this->httpClient($url2);
+    $result2 = $client->http($url2);
 
     /** Warning: Undefined array key "measures" */
     if (array_key_exists("measures", $result2["component"])) {
@@ -367,7 +314,7 @@ class BatchApiController extends AbstractController
    * Created at: 10/12/2022, 19:05:23 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    */
-  public function batchNote($mavenKey, $type): array
+  public function batchNote(Client $client, $mavenKey, $type): array
   {
     /** On bind les variables */
     $tempoUrl = $this->getParameter(static::$sonarUrl);
@@ -376,7 +323,7 @@ class BatchApiController extends AbstractController
             &metrics=${type}_rating&ps=1000";
 
     /** On appel le client http */
-    $result = $this->httpClient(trim(preg_replace(static::$regex, " ", $url)));
+    $result = $client->http(trim(preg_replace(static::$regex, " ", $url)));
 
     $date = new DateTime();
     $date->setTimezone(new DateTimeZone(static::$europeParis));
@@ -429,7 +376,7 @@ class BatchApiController extends AbstractController
    * Created at: 10/12/2022, 21:08:47 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    */
-  public function batchHotspot($mavenKey): array
+  public function batchHotspot(Client $client, $mavenKey): array
   {
     /** On bind les variables */
     $tempoUrl = $this->getParameter(static::$sonarUrl);
@@ -438,7 +385,7 @@ class BatchApiController extends AbstractController
     $url = "${tempoUrl}/api/hotspots/search?projectKey=${mavenKey}&ps=500&p=1";
 
     /** On appel l'Api */
-    $result = $this->httpClient($url);
+    $result = $client->http($url);
 
     /** On créé un objet Date */
     $date = new DateTime();
@@ -499,7 +446,7 @@ class BatchApiController extends AbstractController
    * Created at: 12/12/2022, 10:31:48 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    */
-  public function batchHotspotDetails($mavenKey, $owasp): array
+  public function batchHotspotDetails(Client $client, $mavenKey, $owasp): array
   {
     /** On bind les variables */
     $tempoUrl = $this->getParameter(static::$sonarUrl);
@@ -508,7 +455,7 @@ class BatchApiController extends AbstractController
     $url = "${tempoUrl}/api/hotspots/search?projectKey=${mavenKey}&ps=500&p=1";
 
     /**  On appel l'Api */
-    $result = $this->httpClient($url);
+    $result = $client->http($url);
 
     /** On crée un objet Date */
     $date = new DateTime();
@@ -618,7 +565,7 @@ class BatchApiController extends AbstractController
    * Created at: 10/12/2022, 22:29:09 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    */
-  public function BatchNoSonar($mavenKey): array
+  public function BatchNoSonar(Client $client,$mavenKey): array
   {
     /** Bind les données */
     $tempoUrl = $this->getParameter(static::$sonarUrl);
@@ -627,7 +574,7 @@ class BatchApiController extends AbstractController
     $url = "${tempoUrl}/api/issues/search?componentKeys=${mavenKey}
             &rules=java:S1309,java:NoSonar&ps=500&p=1";
 
-    $result = $this->httpClient(trim(preg_replace(static::$regex, " ", $url)));
+    $result = $client->http(trim(preg_replace(static::$regex, " ", $url)));
     $date = new DateTime();
     $date->setTimezone(new DateTimeZone(static::$europeParis));
 
@@ -713,10 +660,10 @@ class BatchApiController extends AbstractController
     $url4 = "${tempoUrlLong}${mavenKey}&types=CODE_SMELL&p=1&ps=1";
 
     /** On appel le client http pour les requête 1 à 4 (2 à 4 pour la dette) */
-    $result1 = $this->httpClient(trim(preg_replace(static::$regex, " ", $url1)));
-    $result2 = $this->httpClient($url2);
-    $result3 = $this->httpClient($url3);
-    $result4 = $this->httpClient($url4);
+    $result1 = $client->http(trim(preg_replace(static::$regex, " ", $url1)));
+    $result2 = $client->http($url2);
+    $result3 = $client->http($url3);
+    $result4 = $client->http($url4);
 
     if ($result1["paging"]["total"] != 0) {
       /** On supprime  les enregistrement correspondant à la clé */
@@ -890,9 +837,9 @@ class BatchApiController extends AbstractController
         $url3 = "${tempoUrlLong}${mavenKey}&facets=severities&types=CODE_SMELL&ps=1&p=1&statuses=OPEN";
 
         /** On appel le client http pour les requête 1 à 3 */
-        $result1 = $this->httpClient($url1);
-        $result2 = $this->httpClient($url2);
-        $result3 = $this->httpClient($url3);
+        $result1 = $client->http($url1);
+        $result2 = $client->http($url2);
+        $result3 = $client->http($url3);
 
         $total1 = $result1["paging"]["total"];
         $total2 = $result2["paging"]["total"];
