@@ -160,14 +160,14 @@ class HomeController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function countProfilSonar(): Int
+    private function countProfilSonar(Client $client): Int
     {
         $url = $this->getParameter(static::$sonarUrl)
         . "/api/qualityprofiles/search?qualityProfile="
         . $this->getParameter('sonar.profiles');
 
         /** On appel le client http */
-        $result = $this->httpClient($url);
+        $result = $client->http($url);
 
         /** Si les profils custom n'existent pas on envoi un message */
         return count($result['profiles']);
@@ -299,7 +299,7 @@ class HomeController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/home', name: 'home', methods:'GET')]
-    public function index(Request $request): Response
+    public function index(Client $client, Request $request): Response
     {
       $mode=$request->get('mode');
       /**
@@ -339,7 +339,7 @@ class HomeController extends AbstractController
       if (date_diff($dateModificationProjet,$date)->format('%a') >=
       $this->getParameter('maj.projet')) {
           /** On récupère le nombre de projet depuis le serveur sonar */
-          $projetSonar=self::countProjetSonar();
+          $projetSonar=self::countProjetSonar($client);
           /** On récupère le nombre de projet en base */
           $projetBD=self::countProjetBD();
           $dateVerificationProjet="true";
@@ -358,7 +358,7 @@ class HomeController extends AbstractController
           /** On récupère le nombre de profil en base. */
           $profilBD=self::countProfilBD();
           /** On récupère le nombre de projet depuis le serveur sonar */
-          $profilSonar=self::countProfilSonar();
+          $profilSonar=self::countProfilSonar($client);
           $dateVerificationProfil="true";
       } else {
           /** Sinon, on récupère les valeurs de la table de properties */
