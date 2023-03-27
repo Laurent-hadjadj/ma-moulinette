@@ -19,7 +19,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 /** Gestion de accès aux API */
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 /** Accès aux tables SLQLite */
@@ -33,6 +32,9 @@ use DateTimeZone;
 /** Logger */
 use Psr\Log\LoggerInterface;
 
+/** Client HTTP */
+use App\Service\Client;
+
 /**
  * [Description ApiProjetRepartitionController]
  */
@@ -44,7 +46,6 @@ class ApiProjetRepartitionController extends AbstractController
    *
    * @param  private
    * @param  private
-   * @param  private
    *
    * Created at: 04/12/2022, 09:00:38 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
@@ -52,11 +53,9 @@ class ApiProjetRepartitionController extends AbstractController
    */
   public function __construct(
     private ManagerRegistry $doctrine,
-    private HttpClientInterface $client,
     private LoggerInterface $logger
     )
   {
-    $this->client = $client;
     $this->doctrine = $doctrine;
     $this->logger = $logger;
   }
@@ -133,58 +132,6 @@ class ApiProjetRepartitionController extends AbstractController
   }
 
   /**
-   * [Description for httpClient]
-   * httpClient
-   * @param mixed $url
-   *
-   * @return array
-   *
-   * Created at: 04/12/2022, 09:01:28 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
-  protected function httpClient($url): array
-  {
-    if (empty($this->getParameter('sonar.token'))) {
-      $user = $this->getParameter('sonar.user');
-      $password = $this->getParameter('sonar.password');
-    } else {
-      $user = $this->getParameter('sonar.token');
-      $password = '';
-    }
-
-    $ciphers= "DH-RSA-AES128-SHA DH-RSA-AES256-SHA DHE-DSS-AES128-SHA DHE-DSS-AES256-SHA
-                DHE-RSA-AES128-SHA DHE-RSA-AES256-SHA DH-AES128-SHA ADH-AES256-SHA";
-    $response = $this->client->request('GET', $url,
-      [
-        'ciphers' => trim(preg_replace(static::$regex, " ", $ciphers)),
-        'auth_basic' => [$user, $password], 'timeout' => 45,
-        'headers' => ['Accept' => static::$strContentType,
-        'Content-Type' => static::$strContentType]
-      ]
-    );
-
-    if (200 !== $response->getStatusCode()) {
-      if ($response->getStatusCode() == 401) {
-        throw new \UnexpectedValueException('Erreur d\'Authentification. La clé n\'est pas correcte.');
-      } else {
-        throw new \UnexpectedValueException('Retour de la réponse différent de ce qui est prévu. Erreur '
-          . $response->getStatusCode());
-      }
-    }
-
-    /**
-     * La variable n'est pas utilisé, elle permet de collecter
-     *  les données et de rendre la main.
-     */
-    $contentType = $response->getHeaders()['content-type'][0];
-    $this->logger->INFO('** ContentType *** '.isset($contentType));
-
-    $responseJson = $response->getContent();
-    return json_decode($responseJson, true, 512, JSON_THROW_ON_ERROR);
-  }
-
-  /**
    * [Description for batch_anomalie]
    * Fonction qui permet de parser les anomalies par type selon le nombre
    * de page disponible.
@@ -225,7 +172,7 @@ class ApiProjetRepartitionController extends AbstractController
     $url1 = "${tempoUrl}${tempoApi}${mavenKey}${tempoStates}${tempoType}";
     $url2 = "${tempoSeverity}${tempoPageSize}${tempoPageindex}";
     /** On appel l'Api et on renvoie le résultat */
-    return $this->httpClient($url1.$url2);
+    return $client->http($url1.$url2);
   }
 
   /**
