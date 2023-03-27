@@ -30,9 +30,11 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\DBAL\Connection;
 
 /** API */
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+
+/** Client HTTP */
+use App\Service\Client;
 
 class HomeController extends AbstractController
 {
@@ -48,7 +50,6 @@ class HomeController extends AbstractController
      * @param  private
      * @param  private
      * @param  private
-     * @param  private
      *
      * Created at: 15/12/2022, 22:06:26 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -58,67 +59,12 @@ class HomeController extends AbstractController
         private LoggerInterface $logger,
         private EntityManagerInterface $em,
         private Connection $connection,
-        private HttpClientInterface $client
         )
         {
             $this->logger = $logger;
             $this->em = $em;
             $this->connection = $connection;
-            $this->client = $client;
         }
-
-    /**
-     * [Description for httpClient]
-     *
-     * @param mixed $url
-     *
-     * @return array
-     *
-     * Created at: 15/12/2022, 22:06:38 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    protected function httpClient($url): array
-    {
-        /**
-         * On peut se connecter avec un user/password ou un token.
-         * Nous on préfère le token.
-         */
-        if (empty($this->getParameter('sonar.token'))) {
-        $user = $this->getParameter('sonar.user');
-        $password = $this->getParameter('sonar.password');
-        } else {
-        $user = $this->getParameter('sonar.token');
-        $password = '';
-        }
-
-        $ciphers= "DH-RSA-AES128-SHA DH-RSA-AES256-SHA DHE-DSS-AES128-SHA DHE-DSS-AES256-SHA
-        DHE-RSA-AES128-SHA DHE-RSA-AES256-SHA DH-AES128-SHA ADH-AES256-SHA";
-        $response = $this->client->request('GET', $url,
-          [
-            'ciphers' => trim(preg_replace(static::$regex, " ", $ciphers)),
-            'auth_basic' => [$user, $password], 'timeout' => 45,
-            'headers' => ['Accept' => static::$strContentType,
-            'Content-Type' => static::$strContentType]
-          ]
-        );
-
-        /** Si la réponse est différente de HTTP: 200 alors... */
-        if (200 !== $response->getStatusCode()) {
-        /** Le token ou le password n'est pas correct. */
-        if ($response->getStatusCode() == 401) {
-            throw new \UnexpectedValueException('Erreur d\'Authentification. La clé n\'est pas correcte.');
-        } else {
-            throw new \UnexpectedValueException('Retour de la réponse différent de ce qui est prévu. Erreur ' .
-            $response->getStatusCode());
-        }
-        }
-
-        $contentType = $response->getHeaders()['content-type'][0];
-        $this->logger->INFO('** ContentType *** '.isset($contentType));
-        $responseJson = $response->getContent();
-        return json_decode($responseJson, true, 512, JSON_THROW_ON_ERROR);
-    }
 
     /**
      * [Description for countProjetBD]
@@ -155,13 +101,14 @@ class HomeController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function countProjetSonar(): Int
+    private function countProjetSonar(Client $client): Int
     {
         /** On récupère le nombre de projet et on filtre */
         $url = $this->getParameter(static::$sonarUrl) . "/api/components/search?qualifiers=TRK&ps=500&p=1";
 
         /** On appel le client http */
-        $result = $this->httpClient($url);
+        $result = $client->http($url);
+
         /**
          * On compte le nombre de projet.
          */
