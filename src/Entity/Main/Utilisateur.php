@@ -47,6 +47,10 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'boolean', nullable: false,  options: ['default' => 0]) ]
     private $actif;
 
+    # Préférences de l'utilisateur
+    #[ORM\Column(type: 'json', nullable: true)]
+    private $preference=[];
+
     #[ORM\Column(type: 'datetime', nullable: true)]
     private $dateModification;
 
@@ -442,5 +446,40 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+
+    /**
+     * [Description for getPreference]
+     *
+     * @return array
+     *
+     * Created at: 28/03/2023, 08:18:42 (Europe/Paris)
+     * @author    Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function getPreference(): array
+    {
+        return $this->preference;
+    }
+
+    /**
+     * [Description for setPreference]
+     *
+     * @param array $preference
+     *
+     * @return self
+     *
+     * Created at: 28/03/2023, 08:18:51 (Europe/Paris)
+     * @author    Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function setPreference(array $preference): self
+    {
+        $this->preference = $preference;
+
+        return $this;
+    }
+
+
 
 }
