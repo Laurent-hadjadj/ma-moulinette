@@ -118,12 +118,16 @@
 
       {% set i = 0 %}
       {% for groupe in liste %}
-      {% if badge[i].badgeA<10 %} {% set a,aa ="&nbsp;","&nbsp;" %}{% endif %}
-      {% if badge[i].badgeA>10 and badge[i].badgeA<100 %} {% set a,aa ="&nbsp;","" %}{% endif %}
-      {% if badge[i].badgeU<10 %} {% set b,bb ="&nbsp;","&nbsp;" %}{% endif %}
-      {% if badge[i].badgeU>10 and badge[i].badgeU<100 %} {% set b,bb ="&nbsp;","" %}{% endif %}
-      {% if badge[i].badgeD<10 %} {% set c,cc ="&nbsp;","&nbsp;" %}{% endif %}
-      {% if badge[i].badgeD>10 and badge[i].badgeD<100 %} {% set c,cc ="&nbsp;","" %}{% endif %}
+        {% if badge[i].badgeA<10 %}{% set a,aa ="&nbsp;&nbsp;","&nbsp;&nbsp;" %}{% endif %}
+        {% if badge[i].badgeA>10 and badge[i].badgeA<100 %}{% set a,aa ="&nbsp;","&nbsp;" %}{% endif %}
+        {% if badge[i].badgeA>100 %}{% set a,aa ="","" %}{% endif %}
+        {% if badge[i].badgeU<10 %}{% set b,bb ="&nbsp;&nbsp;","&nbsp;&nbsp;" %}{% endif %}
+        {% if badge[i].badgeU>10 and badge[i].badgeU<100 %}{% set b,bb ="&nbsp;","&nbsp;" %}{% endif %}
+        {% if badge[i].badgeU>100 %}{% set b,bb ="","" %}{% endif %}
+        {% if badge[i].badgeD<10 %}{% set c,cc ="&nbsp;&nbsp;","&nbsp;&nbsp;" %}{% endif %}
+        {% if badge[i].badgeD>10 and badge[i].badgeD<100 %}{% set c,cc ="&nbsp;","&nbsp;" %}{% endif %}
+        {% if badge[i].badgeD>100 %}{% set c,cc ="",";" %}{% endif %}
+
       <ul class="vertical menu accordion-menu" data-accordion-menu>
         <li class="liste-changement-menu">
             <a class="claire-hand liste-changement-titre">
