@@ -80,16 +80,28 @@ Le taken est une clé symétrique de 40 bits généré depuis le serveur Sonarqu
 
 ### Propriétés spécifiques au projet
 
-Ici, nous allons spécifier le nom du profil commun à tous les référentiels qualités (i.e. les règles par langage), le nom de mon organisation, le nombre de favori que je souhate afficher dans le suivi de la page d'acueil, les hosts que je souhaite autoriser et la clé de chiffrement utilisée pour le cokie 'remmber-me'.
+Ici, nous allons spécifier :
+
+- le nom du profil commun à tous les référentiels qualités (i.e. les règles par langage),
+- le nom de mon organisation,
+- le nombre de favori que je souhaite afficher dans le suivi de la page d'acueil,
+- les hosts que je souhaite autoriser,
+- la clé de chiffrement utilisée pour le cokie 'remmber-me',
+- la fréquence de mise à jour de la liste des projets,
+- la fréquence de mise à jour de la liste des profils de règles par langage,
+- une clé (SALT) permettant de renforcer la sécurité lors du déclenchement d'un traitement depuis un client externes (i.e. sans passer par l'application),
+- le chemin relatif vers le dossier audit depuis le dossier racine de l'application.
 
 - [x] SONAR_PROFILES = "mon profil v1.0.0"
 - [x] SONAR_ORGANIZATION = "ma petite Entreprise"
 - [x] NOMBRE_FAVORI = 10
 - [x] TRUST_HOST1="^ma-petite-entreprise\.fr$"
 - [x] TRUST_HOST2="10.0.0.1"
-- [x] SECRET='>Yw5<3pR]$lFeVg147';
-- [x] MAJ_PROJET = 0 ;
-- [x] MAJ_PROFIL = 30;
+- [x] SECRET='>Yw5<3pR]$lFeVg147'
+- [x] MAJ_PROJET = 0
+- [x] MAJ_PROFIL = 30
+- [x] SALT = "YE4T-9AU62-36HG7A-58ABS39-76JC"
+- [x] AUDIT = "/var/audit"
 
 `Note :` Pour les **TRUST_HOST**, on peut utiliser une URL, un domaine ou une adresse IP.
 
