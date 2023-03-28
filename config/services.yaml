@@ -15,11 +15,12 @@ parameters:
     sonar.user: '%env(SONAR_USER)%'
     sonar.password: '%env(SONAR_PASSWORD)%'
     sonar.profiles: '%env(SONAR_PROFILES)%'
-    sonar.organization: '%env(SONAR_ORGANOZATION)%'
+    sonar.organization: '%env(SONAR_ORGANIZATION)%'
     nombre.favori: '%env(NOMBRE_FAVORI)%'
     maj.projet: '%env(MAJ_PROJET)%'
     maj.profil: '%env(MAJ_PROFIL)%'
     csrf.salt: '%env(SALT)%'
+    path.audit: '%env(AUDIT)%'
 
 services:
     # default configuration for services in *this* file
