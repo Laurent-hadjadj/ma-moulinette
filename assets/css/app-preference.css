@@ -1,0 +1,58 @@
+/**
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2021-2022.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ */
+
+/**
+  * Propriétés pour les class en fonction des medias type
+  *
+  */
+
+/* Media Small */
+@media only screen and (max-width: 20em) {
+  /** vide */
+}
+
+/* Media Small */
+@media only screen and (min-width: 20.025em) and (max-width: 22em) {
+  /** vide */
+}
+
+/* Media Small */
+@media only screen and (min-width: 22.025em) and (max-width: 30em) {
+  /** vide */
+}
+
+/* Media Small */
+@media only screen and (min-width: 30.025em) and (max-width: 40em) {
+  /** vide */
+}
+
+/* Media Medium */
+@media only screen and (min-width: 40em) and (max-width: 64em) {
+  /** vide */
+}
+
+/* Media Large */
+@media only screen and (min-width: 64.025em) and (max-width: 90em) {
+  /** vide */
+}
+
+/* Media Large */
+@media only screen and (min-width: 90.025em) and (max-width: 120em) {
+  /** vide */
+}
+
+/* Media Extra-Large */
+@media only screen and (min-width: 120em) and (max-width: 160em) {
+  /** vide */
+}
+
+/*************************          Global     *********************************/
