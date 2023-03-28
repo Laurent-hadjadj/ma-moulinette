@@ -20,6 +20,7 @@ Encore
     .addEntry('register', './assets/js/app-register.js')
     .addEntry('welcome', './assets/js/app-welcome.js')
     .addEntry('home', './assets/js/app-home.js')
+    .addEntry('preference', './assets/js/app-preference.js')
     .addEntry('projet', './assets/js/app-projet.js')
     .addEntry('profil', './assets/js/app-profil.js')
     .addEntry('profil-details', './assets/js/app-profil-details.js')
