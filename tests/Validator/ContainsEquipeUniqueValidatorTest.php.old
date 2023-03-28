@@ -1,0 +1,57 @@
+<?php
+
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2021-2022.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
+namespace App\Tests\Validator;
+
+use App\Validator\ContainsEquipeUnique;
+use App\Validator\ContainsEquipeUniqueValidator;
+use Symfony\Component\Validator\Test\ConstraintValidatorTestCase;
+
+use Doctrine\ORM\EntityManagerInterface;
+
+class ContainsEquipeUniqueValidatorTest extends ConstraintValidatorTestCase
+{
+  public function __construct(private EntityManagerInterface $em)
+  {
+    $this->em = $em;
+  }
+
+  protected function createValidator()
+  {
+    return new ContainsEquipeUniqueValidator();
+  }
+
+  public function testNullIsValid()
+  {
+    $this->validator->validate(null, new ContainsEquipeUnique());
+
+    $this->assertNoViolation();
+  }
+
+  /**
+   * @dataProvider provideInvalidConstraints
+   */
+  /*public function testTrueIsInvalid(ContainsEquipeUnique $constraint)
+  {
+    $this->validator->validate('MA PETITE ENTREPRISE', $constraint);
+
+    $this->buildViolation('myMessage')
+        ->setParameter('{{ string }}', '...')
+        ->assertRaised();
+  }
+
+  public function provideInvalidConstraints(): iterable
+  {
+    yield [new ContainsEquipeUnique(message: 'myMessage')];
+  }*/
+}
