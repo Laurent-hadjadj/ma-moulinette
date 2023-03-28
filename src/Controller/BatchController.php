@@ -104,7 +104,7 @@ class BatchController extends AbstractController
       {
         /* On initialise le journal des traces */
         $filesystem = new Filesystem();
-        $path= $this->getParameter('kernel.project_dir').'\var\audit';
+        $path= $this->getParameter('kernel.project_dir').$this->params->get('path.audit');
         /* Le dossier d'audit est présent */
         if ($filesystem->exists($path)){
           /** Rotation des logs */
