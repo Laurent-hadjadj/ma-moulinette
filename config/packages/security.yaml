@@ -6,7 +6,8 @@ security:
     hide_user_not_found: false
 
     role_hierarchy:
-        ROLE_GESTIONNAIRE: ['ROLE_UTILISATEUR', 'ROLE_BATCH']
+        ROLE_GESTIONNAIRE: ['ROLE_UTILISATEUR', 'ROLE_COLLECTE', 'ROLE_BATCH']
+        ROLE_COLLECTE: ROLE_UTILISATEUR
         ROLE_BATCH: ROLE_UTILISATEUR
 
     password_hashers:
