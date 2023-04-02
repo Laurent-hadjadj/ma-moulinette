@@ -338,6 +338,13 @@ class ApiHomeController extends AbstractController
       return $response->setData(["message" => $message, Response::HTTP_OK]);
     }
 
+    /** On supprime la liste des tags */
+    $sql = "DELETE FROM tags";
+    $delete = $this->em->getConnection()->prepare($sql);
+    if ($mode!='TEST') {
+      $delete->executeQuery();
+    }
+
     /** On récupère le dernier enregistrement */
     $s0 = "SELECT *
             FROM tags
@@ -390,8 +397,8 @@ class ApiHomeController extends AbstractController
     }
 
     /**
-     * La liste des projet existe,
-     * On regarde si on doit mettre à jour ou afficher la liste des projets
+     * La liste des tags existe,
+     * On regarde si on doit mettre à jour ou afficher la liste des tags
      */
     if (empty($liste)===false) {
       /** On récupère la date du jour */
@@ -399,7 +406,14 @@ class ApiHomeController extends AbstractController
       $dateEnregistrement= new DateTime($liste[0]['date_enregistrement']);
       /** Si la date d'enregistrement est > 1 jour à alors on met à jour */
       if ($dateDuJour > $dateEnregistrement->format(static::$dateFormatShort)) {
-        /** On insert les données dans la tables des projet et tags. */
+        /** On supprime la liste des tags */
+        $sql = "DELETE FROM tags";
+        $delete = $this->em->getConnection()->prepare($sql);
+        if ($mode!='TEST') {
+          $delete->executeQuery();
+        }
+
+        /** On insert les données dans la tables des projets et tags. */
         foreach ($result["components"] as $projet) {
           $tags = new Tags();
           $tags->setMavenKey($projet["key"]);
@@ -408,7 +422,9 @@ class ApiHomeController extends AbstractController
           $tags->setVisibility($projet["visibility"]);
           $tags->setDateEnregistrement($date);
           $this->em->persist($tags);
-          $this->em->flush();
+          if ($mode!='TEST') {
+            $this->em->flush();
+          }
 
           /** On calcul le nombre de projet public et privé */
           if ($projet["visibility"]=='public') {
@@ -450,7 +466,7 @@ class ApiHomeController extends AbstractController
         $t = $r3->fetchAllAssociative();
         $emptyTags=$t[0]['tags'];
 
-        $message="[003] On collecte les données conernant les projets.";
+        $message="[003] On collecte les données concernant les projets.";
       }
     }
     //select json_extract(tags, '$.lot.name') as father_name from tags
