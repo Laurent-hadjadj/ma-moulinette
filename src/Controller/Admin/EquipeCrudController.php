@@ -111,7 +111,7 @@ class EquipeCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         yield TextField::new('titre')
-        ->setHelp('Nom de l\'équipe. Attention, si vous voulez utiliser les tags de sonarqube, les caractères autorisés sont [a-zA-Z-].');
+        ->setHelp('Nom de l\'équipe. Attention, si vous voulez utiliser les tags de sonarqube, les caractères autorisés sont [a-z0-9-].');
         yield TextField::new('description')
         ->setHelp('Description de l\'équipe.');
         yield DateTimeField::new('dateModification')
