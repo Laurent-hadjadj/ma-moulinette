@@ -111,7 +111,7 @@ class EquipeCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         yield TextField::new('titre')
-        ->setHelp('Nom de l\'équipe.');
+        ->setHelp('Nom de l\'équipe. Attention, si vous voulez utiliser les tags de sonarqube, les caractères autorisés sont [a-zA-Z-].');
         yield TextField::new('description')
         ->setHelp('Description de l\'équipe.');
         yield DateTimeField::new('dateModification')
@@ -139,8 +139,10 @@ class EquipeCrudController extends AbstractCrudController
         if (!$entityInstance instanceof Equipe) {
             return;
         }
+
         $nom=$entityInstance->getTitre();
-        $entityInstance->setTitre(mb_strtoupper($nom));
+        //$cleanNom=preg_replace("/[^a-zA-Z0-9\- ]+/", "", mb_strtoupper($nom));
+        $entityInstance->setTitre($nom);
         $entityInstance->setDateEnregistrement(new \DateTimeImmutable());
         /** retourne 1 ou null */
         $record = $this->emm->getRepository(Equipe::class)->findOneBy(['titre' => mb_strtoupper($nom)]);
