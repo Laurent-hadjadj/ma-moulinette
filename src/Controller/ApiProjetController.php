@@ -395,7 +395,7 @@ class ApiProjetController extends AbstractController
     $url1 = "${tempoUrl}/api/components/app?component=${mavenKey}";
 
     /** on appel le client http */
-    $result1 = $clinnt->http($url1);
+    $result1 = $client->http($url1);
     $date = new DateTime();
     $date->setTimezone(new DateTimeZone(static::$europeParis));
 
