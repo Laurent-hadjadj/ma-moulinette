@@ -12,8 +12,8 @@ COMMIT;
 BEGIN TRANSACTION;
 
 -- ## On corrige les valeurs pour le prénom et le nom
-UPDATE utilisateur SET prenom='admin' WHERE couriel='admin@ma-moulinette.fr';
-UPDATE utilisateur SET nom='@ma-moulinette.fr' WHERE couriel='admin@ma-moulinette.fr';
+UPDATE utilisateur SET prenom='admin' WHERE courriel='admin@ma-moulinette.fr';
+UPDATE utilisateur SET nom='@ma-moulinette.fr' WHERE courriel='admin@ma-moulinette.fr';
 
 COMMIT;
 
@@ -22,7 +22,7 @@ BEGIN TRANSACTION;
 -- ## On supprime ma table equipe
 DROP TABLE IF EXISTS equipe;
 
--- ## Ajoute la table euipe
+-- ## Ajoute la table equipe
 CREATE TABLE IF NOT EXISTS "equipe" (
 	"id"	INTEGER NOT NULL,
 	"titre"	VARCHAR(32) NOT NULL UNIQUE,
@@ -171,7 +171,6 @@ CREATE TABLE IF NOT EXISTS "profiles_historique" (
 
 COMMIT;
 
-
 BEGIN TRANSACTION;
 
 -- ## On ajoute la colonne preference à la table utilisateur
@@ -179,3 +178,4 @@ BEGIN TRANSACTION;
 ALTER TABLE utilisateur ADD COLUMN preference CLOB DEFAULT NULL;
 
 COMMIT;
+
