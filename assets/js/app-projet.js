@@ -533,7 +533,7 @@ const projetNosonarDetails=function(mavenKey){
 
   return new Promise(resolve => {
     $.ajax(options).then(t=> {
-      if (t.hotspots !== 0) {
+      if (t.nosonar !== 0) {
         log(` - WARM : (11) J'ai trouvé ${t.nosonar} exclusion(s) NoSonar.`);
       } else {
         log(` - INFO : (11) Bravo !!! ${t.nosonar} exclusion NoSonar trouvée.`);
