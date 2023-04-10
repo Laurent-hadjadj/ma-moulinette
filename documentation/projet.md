@@ -37,7 +37,7 @@ Je choisis mon projet à partie du référentiel local.
 * [x] je lance la collecte.
 * [X] j'affiche les résultats.
 
-`Note :` Dans le journal d'activité, je vérifie que l'étape 11 est terminée.
+`Note :` Dans le journal d'activités, je vérifie que l'étape `13` est terminée.
 
 ![projet](/documentation/ressources/projet-002.jpg)
 
@@ -45,9 +45,11 @@ Lorsque je clique sur le bouton, **Afficher les résultats** l'ensemble des indi
 
 ![projet](/documentation/ressources/projet-003.jpg)
 
-**Note** : Dans la version `2.0.0`, le bloc **type de version** a été modifié pour afficher les versions **autres** que Release ou Snashop.
+**Note** : Dans la version `2.0.0`, le bloc **type de version** a été modifié pour afficher les versions **autres** que Release ou Snapshop.
 
 ![projet](/documentation/ressources/projet-003a.jpg)
+
+**Note** : Dans la version `2.0.0`, le nombre de commentaire **Todo** a été ajouté dans le pannel Informations.
 
 Je peux ensuite enregistrer les indicateurs dans la base locale. Cette base sera utilisée pour le suivi des versions du projet.
 
