@@ -37,7 +37,7 @@ class DashboardController extends AbstractDashboardController
      * @param mixed
      *
      * Created at: 02/01/2023, 18:33:59 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function __construct(
@@ -53,7 +53,7 @@ class DashboardController extends AbstractDashboardController
      * @return Response
      *
      * Created at: 02/01/2023, 18:34:07 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[IsGranted('ROLE_UTILISATEUR')]
@@ -269,7 +269,7 @@ class DashboardController extends AbstractDashboardController
      * @return Dashboard
      *
      * Created at: 02/01/2023, 18:34:30 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function configureDashboard(): Dashboard
@@ -289,7 +289,7 @@ class DashboardController extends AbstractDashboardController
      * @return iterable
      *
      * Created at: 02/01/2023, 18:34:47 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function configureMenuItems(): iterable
@@ -310,7 +310,7 @@ class DashboardController extends AbstractDashboardController
         ->setPermission('ROLE_GESTIONNAIRE');
 
         yield MenuItem::linkToCrud('Batch', 'fas fa-gears', Batch::class)
-        ->setPermission('ROLE_GESTIONNAIRE');
+        ->setPermission('ROLE_BATCH');
     }
 
     /**
@@ -321,7 +321,7 @@ class DashboardController extends AbstractDashboardController
      * @return UserMenu
      *
      * Created at: 02/01/2023, 18:34:53 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function configureUserMenu(UserInterface $utilisateur): UserMenu
@@ -347,7 +347,7 @@ class DashboardController extends AbstractDashboardController
      * @return Assets
      *
      * Created at: 02/01/2023, 18:35:12 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function configureAssets(): Assets
