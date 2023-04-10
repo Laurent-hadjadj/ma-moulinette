@@ -154,7 +154,7 @@ class ApiProjetRepartitionController extends AbstractController
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  protected function batch_anomalie($mavenKey, $index, $pageSize, $type, $severity)
+  protected function batch_anomalie(Client $client, $mavenKey, $index, $pageSize, $type, $severity)
   {
 
     /** On bind les variables */
@@ -189,7 +189,7 @@ class ApiProjetRepartitionController extends AbstractController
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/projet/repartition/details', name: 'projet_repartition_details', methods: ['GET'])]
-  public function projetRepartitionDetails(Request $request): response
+  public function projetRepartitionDetails(Client $client, Request $request): response
   {
     $mavenKey=$request->get('mavenKey');
     $type=$request->get('type');
@@ -204,7 +204,7 @@ class ApiProjetRepartitionController extends AbstractController
     $severity=['INFO','MINOR','MAJOR','CRITICAL','BLOCKER'];
     $total=0;
     foreach ($severity as $value) {
-      $result=$this->batch_anomalie($mavenKey, 1, 1, $type, $value);
+      $result=$this->batch_anomalie($client, $mavenKey, 1, 1, $type, $value);
       if ( $value==='INFO' ) {
         $info=$result['total'];
       }
@@ -247,7 +247,7 @@ class ApiProjetRepartitionController extends AbstractController
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/projet/repartition/collecte', name: 'projet_repartition_collecte', methods: ['PUT'])]
-  public function projetRepartitionCollecte(Request $request): response
+  public function projetRepartitionCollecte(Client $client, Request $request): response
   {
     /** On décode le body */
     $data = json_decode($request->getContent());
@@ -265,11 +265,11 @@ class ApiProjetRepartitionController extends AbstractController
     $date->setTimezone(new DateTimeZone('Europe/Paris'));
 
     /** On récupère le nombre d'anomalie pour le type */
-    $result=$this->batch_anomalie($mavenKey, 1, 1, $type, $severity);
+    $result=$this->batch_anomalie($client, $mavenKey, 1, 1, $type, $severity);
     $i = 1;
     $date1=time();
     while (!empty($result["issues"]) && $i<21) {
-        $result=$this->batch_anomalie($mavenKey, $i, 500, $type, $severity);
+        $result=$this->batch_anomalie($client, $mavenKey, $i, 500, $type, $severity);
         foreach ($result["issues"] as $issue) {
           $type=$issue["type"];
           $severity=$issue["severity"];
