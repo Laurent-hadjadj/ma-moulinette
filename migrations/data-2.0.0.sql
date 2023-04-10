@@ -192,3 +192,17 @@ SET preference = '[]'
 WHERE preference IS NULL;
 
 COMMIT;
+
+BEGIN TRANSACTION;
+
+-- ## On met à jour la colonne equipe et preference à []
+
+CREATE TABLE todo (
+  id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  maven_key VARCHAR(128) NOT NULL,
+  rule VARCHAR(128) NOT NULL,
+  component CLOB NOT NULL,
+  line INTEGER NOT NULL,
+  date_enregistrement DATETIME NOT NULL);
+
+COMMIT;
