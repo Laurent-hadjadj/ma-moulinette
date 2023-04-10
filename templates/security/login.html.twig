@@ -47,16 +47,16 @@
             <input type="checkbox" name="_remember_me" class="float-left text-left"/>
             <span class="float-left text-left open-sans remember-me">Se souvenir de moi.</span>
           </label>
-          <input id="valider-formulaire-login" class="button expanded" type="submit" value="Valider">
+          <input id="valider-formulaire-login" class="button expanded" type="submit" value="Valider"/>
           {% if is_granted('IS_AUTHENTICATED_REMEMBERED') == false %}
             <a href="{{ path('app_register') }}"
             class="float-left open-sans pas-encore-inscrit">Pas encore inscrit ?</a>
             <br>
           {% endif %}
           <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}"/>
-          {% if app.user %}
+          {# {% if app.user %}
             {{ path('app_register') }}
-          {% endif %}
+          {% endif %}#}
         </form>
         {% if error %}
           <div class="label alert">{{ error.messageKey|trans(error.messageData, 'security') }}
