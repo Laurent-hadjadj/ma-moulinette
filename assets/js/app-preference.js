@@ -12,9 +12,6 @@
 /** Import des dépendances */
 import '../css/preference.css';
 
-/** Intégration de jquery */
-//import $ from 'jquery';
-
 import 'what-input';
 import 'foundation-sites';
 import 'motion-ui';
