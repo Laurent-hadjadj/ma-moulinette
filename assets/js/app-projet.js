@@ -934,8 +934,9 @@ $('.js-analyse').on('click', function () {
     /* On enregistre le détails de chaque hotspot owasp. */
     await projetHotspotOwaspDetails(idProject);   /*(10)*/
 
-    /* Analyse des anomalies. */
+    /* Récupération des signalement noSonar et SuppressWarning. */
     await projetNosonarDetails(idProject);        /*(11)*/
+
     /* Renvoie le statut de fin */
     finCollecte();
   }
