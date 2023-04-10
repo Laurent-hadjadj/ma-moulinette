@@ -106,6 +106,33 @@ export const remplissage=function(mavenKey) {
     t6.dataset.nosonar=(t.nosonar);
   });
 
+    /** On récupère les todo tags */
+    const optionsTodo = {
+      url: `${serveur()}/api/peinture/projet/todo/details`, type: 'GET',
+      dataType: 'json', data, contentType };
+
+    $.ajax(optionsTodo).then(t=> {
+      $('#todo-liste').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.todo));
+      $('#todo-java').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.todoJava));
+      $('#todo-js').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.todoJs));
+      $('#todo-ts').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.todoTs));
+      $('#todo-html').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.todoHtml));
+      $('#todo-xml').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.todoXml));
+
+      const t50 = document.getElementById('todo-liste');
+      const t51 = document.getElementById('todo-java');
+      const t52 = document.getElementById('todo-js');
+      const t53 = document.getElementById('todo-ts');
+      const t54 = document.getElementById('todo-html');
+      const t55 = document.getElementById('todo-xml');
+      t50.dataset.todoListe=(t.todoListe);
+      t51.dataset.todoJava=(t.todoJava);
+      t52.dataset.todoListe=(t.todJs);
+      t53.dataset.todoListe=(t.todoTs);
+      t54.dataset.todoListe=(t.todoHtml);
+      t55.dataset.todoListe=(t.todoXml);
+    });
+
   /**
    * On récupère les informations du projet :
    * lignes, couverture fonctionnelle, duplication, tests unitaires et le nombre de défaut.
