@@ -544,6 +544,35 @@ const projetNosonarDetails=function(mavenKey){
 };
 
 /**
+ * [Description for projetNosonarDetails]
+ * On récupére la liste des exclusions de code
+ *
+ * @param mixed mavenKey
+ *
+ * @return [type]
+ *
+ * Created at: 10/04/2023, 15:11:30 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ */
+const projetTodoDetails=function(mavenKey){
+  const data = { mavenKey };
+  const options = {
+    url: `${serveur()}/api/projet/todo/details`, type: 'GET',
+          dataType: 'json', data, contentType };
+
+  return new Promise(resolve => {
+    $.ajax(options).then(t=> {
+      if (t.todo !== 0) {
+        log(` - WARM : (12) J'ai trouvé ${t.todo} ToDo(s) à vérifier.`);
+      } else {
+        log(` - INFO : (12) Bravo !!! ${t.todo} ToDo trouvé.`);
+      }
+      resolve();
+    });
+  });
+};
+
+/**
  * [Description for finCollecte]
  * Affiche un messag de fin de collecte
  *
@@ -934,8 +963,11 @@ $('.js-analyse').on('click', function () {
     /* On enregistre le détails de chaque hotspot owasp. */
     await projetHotspotOwaspDetails(idProject);   /*(10)*/
 
-    /* Récupération des signalement noSonar et SuppressWarning. */
+    /* Récupération des signalements noSonar et SuppressWarning. */
     await projetNosonarDetails(idProject);        /*(11)*/
+
+    /* Récupération des signalements Todo (TS, JAVA, XML). */
+    await projetTodoDetails(idProject);           /*(12)*/
 
     /* Renvoie le statut de fin */
     finCollecte();
