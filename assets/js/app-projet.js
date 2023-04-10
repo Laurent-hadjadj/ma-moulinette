@@ -593,6 +593,8 @@ const finCollecte=function(){
     setTimeout(function(){
       $('.information-texte').html('[04] - La collecte des données est terminée.');
     }, troisMille);
+  } else {
+    log(` - INFO : (13) La collecte des données est terminée.`);
   }
 };
 
