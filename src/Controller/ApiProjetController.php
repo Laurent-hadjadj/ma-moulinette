@@ -36,6 +36,7 @@ use App\Entity\Main\Hotspots;
 use App\Entity\Main\HotspotOwasp;
 use App\Entity\Main\HotspotDetails;
 use App\Entity\Main\Historique;
+use App\Entity\Main\Todo;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\DBAL\Connection;
@@ -45,7 +46,6 @@ use Psr\Log\LoggerInterface;
 
 /** Client HTTP */
 use App\Service\Client;
-
 
 class ApiProjetController extends AbstractController
 {
@@ -847,7 +847,7 @@ class ApiProjetController extends AbstractController
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/projet/historique/note', name: 'projet_historique_note', methods: ['GET'])]
-  public function historiqueNoteAjout(Request $request): response
+  public function historiqueNoteAjout(Client $client, Request $request): response
   {
 
     /** On créé un objet response */
@@ -1731,7 +1731,7 @@ class ApiProjetController extends AbstractController
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/projet/nosonar/details', name: 'projet_nosonar', methods: ['GET'])]
-  public function projetNosonarAjout(Request $request): response
+  public function projetNosonarAjout(Client $client, Request $request): response
   {
     /** On créé un objet response */
     $response = new JsonResponse();
@@ -1791,6 +1791,83 @@ class ApiProjetController extends AbstractController
     }
 
     return $response->setData(["mode"=>$mode,"nosonar" => $result["paging"]["total"], Response::HTTP_OK]);
+  }
+
+/**
+   * [Description for projetNosonarAjout]
+   * On récupère la liste des fichiers ayant fait l'objet d'un Todo
+   * http://{url}api/issues/search?componentKeys={key}&rules={rules}&ps=500&p=1
+   * {key} = la clé du projet
+   * {rules} = javascript:S1135, xml:S1135, typescript:S1135, Web:S1135, java:S1135
+   *
+   * @param Request $request
+   *
+   * @return response
+   *
+   * Created at: 10/04/2023, 15:18:45 (Europe/Paris)
+   * @author    Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  #[Route('/api/projet/todo/details', name: 'projet_todo', methods: ['GET'])]
+  public function projetTodoAjout(Client $client, Request $request): response
+  {
+    /** On créé un objet response */
+    $response = new JsonResponse();
+
+    /** On bind les variables. */
+    $mode = $request->get('mode');
+    $mavenKey = $request->get('mavenKey');
+    $tempoUrl = $this->getParameter(static::$sonarUrl);
+
+    /** On teste si la clé est valide */
+    if ($mavenKey==="null" && $mode==="TEST") {
+      return $response->setData([
+        "mode"=>$mode, "mavenKey"=>$mavenKey,
+        "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+    }
+
+    /** On construit l'URL et on appel le WS. */
+    $url = "${tempoUrl}/api/issues/search?componentKeys=${mavenKey}
+            &rules=javascript:S1135,xml:S1135,typescript:S1135,Web:S1135,java:S1135&ps=500&p=1";
+
+    $result = $client->http(trim(preg_replace(static::$regex, " ", $url)));
+    $date = new DateTime();
+    $date->setTimezone(new DateTimeZone(static::$europeParis));
+
+    /** On supprime les données du projet de la table todo. */
+    $sql = "DELETE FROM todo WHERE maven_key='${mavenKey}'";
+    if($mode!=="TEST"){
+      $this->em->getConnection()->prepare($sql)->executeQuery();
+    }
+
+    /**
+     * Si on a trouvé des todo dans le code alors on les dénombre
+     */
+    if ($result["paging"]["total"] !== 0) {
+      foreach ($result["issues"] as $issue) {
+        $nosonar = new Todo();
+        $nosonar->setMavenKey($request->get('mavenKey'));
+        $nosonar->setRule($issue["rule"]);
+        $component = str_replace("${mavenKey} :", "", $issue["component"]);
+        $nosonar->setComponent($component);
+        if (empty($issue["line"])) {
+          $line = 0;
+        } else {
+          $line = $issue["line"];
+        }
+        $nosonar->setLine($line);
+        $nosonar->setDateEnregistrement($date);
+
+        $this->em->persist($nosonar);
+        if ($mode!="TEST") {
+          $this->em->flush();
+        }
+      }
+    } else {
+      /** Il n'y a pas de todo */
+    }
+
+    return $response->setData(["mode"=>$mode,"todo" => $result["paging"]["total"], Response::HTTP_OK]);
   }
 
   /**
