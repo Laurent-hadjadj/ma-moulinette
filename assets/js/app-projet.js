@@ -1082,6 +1082,16 @@ $('.js-affiche-details').on('click', () => {
 
 /**
  * description
+ * On affiche la liste des tags todo par langage.
+ */
+$('.js-affiche-todo').on('click', function () {
+  if ($('select[name="projet"]').val() !=='' && $('select[name="projet"]').val() !=='TheID') {
+    $('#modal-affiche-todo').foundation('open');
+  }
+});
+
+/**
+ * description
  * Événement : on marque le projet comme favori.
  */
 $('.favori-svg').on('click', () => {
