@@ -79,6 +79,12 @@ En effet, le bouton **Répartition par module** permet l'accès à la page de co
 
 ![projet](/documentation/ressources/projet-006.jpg)
 
+En version `2.0.0`, la liste des tags TODO a été ajouté :
+
+* [x] je peux afficher la liste des tags TODO par langages et par fichiers.
+
+![projet](/documentation/ressources/projet-009.jpg)
+
 Et enfin, je peux afficher la liste des projets que j'ai déjà analysés et ceux qui sont favoris :
 
 ![projet](/documentation/ressources/projet-007.jpg)
