@@ -72,7 +72,8 @@
 .danger-svg,
 .gestion-de-projet-svg,
 .checklist-svg,
-.information-svg {
+.information-svg,
+.todo-svg {
   fill: #00445b;
   cursor: none;
   margin-bottom: -0.2rem;
