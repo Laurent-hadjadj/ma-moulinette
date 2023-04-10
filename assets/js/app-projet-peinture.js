@@ -112,25 +112,38 @@ export const remplissage=function(mavenKey) {
       dataType: 'json', data, contentType };
 
     $.ajax(optionsTodo).then(t=> {
+
+      /** On injecte dans la fenêtre modale les résultats */
       $('#todo-liste').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.todo));
-      $('#todo-java').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.todoJava));
-      $('#todo-js').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.todoJs));
-      $('#todo-ts').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.todoTs));
-      $('#todo-html').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.todoHtml));
-      $('#todo-xml').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.todoXml));
+      $('#js-java').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.java));
+      $('#js-javascript').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.javascript));
+      $('#js-typescript').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.typescript));
+      $('#js-html').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.html));
+      $('#js-xml').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.xml));
+
+      /* On ajoute la liste détaillée des fichiers */
+      let l, cutRule, cutComponent;
+      t.details.forEach(element => {
+        cutRule=element.rule.split(':');
+        cutComponent=element.component.split(':');
+        l=`<tr><td><strong>${cutRule[0]}</strong></td><td>${cutComponent[2]}</td><td>${element.line}</td></tr>`;
+        $('#tableau-liste-detaillee').append(l);
+      });
 
       const t50 = document.getElementById('todo-liste');
-      const t51 = document.getElementById('todo-java');
-      const t52 = document.getElementById('todo-js');
-      const t53 = document.getElementById('todo-ts');
-      const t54 = document.getElementById('todo-html');
-      const t55 = document.getElementById('todo-xml');
-      t50.dataset.todoListe=(t.todoListe);
-      t51.dataset.todoJava=(t.todoJava);
-      t52.dataset.todoListe=(t.todJs);
-      t53.dataset.todoListe=(t.todoTs);
-      t54.dataset.todoListe=(t.todoHtml);
-      t55.dataset.todoListe=(t.todoXml);
+      const t51 = document.getElementById('js-java');
+      const t52 = document.getElementById('js-javascript');
+      const t53 = document.getElementById('js-typescript');
+      const t54 = document.getElementById('js-html');
+      const t55 = document.getElementById('js-xml');
+      const t56 = document.getElementById('tableau-liste-detaillee');
+      t50.dataset.todo=(t.todo);
+      t51.dataset.java=(t.java);
+      t52.dataset.javascript=(t.javascript);
+      t53.dataset.typescrypt=(t.typescript);
+      t54.dataset.html=(t.html);
+      t55.dataset.xml=(t.xml);
+      t56.dataset.listeFichier=(t.details);
     });
 
   /**
