@@ -618,9 +618,8 @@ class ApiProjetPeintureController extends AbstractController
       . $mavenKey . "' GROUP BY rule";
     $r = $this->em->getConnection()->prepare($sql)->executeQuery();
     $rules = $r->fetchAllAssociative();
-    $S1309 = 0;
-    $nosonar = 0;
-    $total = 0;
+
+    $S1309=$nosonar=$total=0;
 
     if (empty($rules) === false) {
       foreach ($rules as $rule) {
@@ -631,10 +630,76 @@ class ApiProjetPeintureController extends AbstractController
           $nosonar = $rule["total"];
         }
       }
-      $total = intval($S1309) + intval($nosonar);
+      $total = intval($S1309,10) + intval($nosonar,10);
     }
 
     return $response->setData(
       ["total" => $total, "s1309" => $S1309, "nosonar" => $nosonar, Response::HTTP_OK]);
   }
+
+/**
+   * [Description for peintureProjetTodoDetails]
+   * Récupère les tags todo pour : java, js, ts, html et xml
+   *
+   * @param Request $request
+   *
+   * @return response
+   *
+   * Created at: 10/04/2023, 17:54:08 (Europe/Paris)
+   * @author    Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  #[Route('/api/peinture/projet/todo/details', name: 'peinture_projet_todo_details', methods: ['GET'])]
+  public function peintureProjetTodoDetails(Request $request): response
+  {
+    /** On créé un objet response */
+    $response = new JsonResponse();
+
+    /** On bind les variables. */
+    $mavenKey = $request->get('mavenKey');
+    $mode = $request->get('mode');
+
+    /** On teste si la clé est valide */
+    if ($mavenKey==="null" && $mode==="TEST") {
+      return $response->setData([
+        "mode"=>$mode, "mavenKey"=>$mavenKey,
+        "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+    }
+
+    $sql = "SELECT rule, count(*) as total FROM todo WHERE maven_key='$mavenKey' GROUP BY rule";
+    $r = $this->em->getConnection()->prepare($sql)->executeQuery();
+    $rules = $r->fetchAllAssociative();
+    $todo=$java=$javascript=$typescript=$html=$xml=0;
+
+    if (empty($rules) === false) {
+      /** On récupère le niombre total de Todo par langage */
+      foreach ($rules as $rule) {
+        if ($rule["rule"] == "java:S1135") {
+          $java = $rule["total"];
+        }
+        if ($rule["rule"] == "javascript:S1135") {
+          $javascript = $rule["total"];
+        }
+        if ($rule["rule"] == "typescript:S1135") {
+          $typescript = $rule["total"];
+        }
+        if ($rule["rule"] == "Web:S1135") {
+          $html = $rule["total"];
+        }
+        if ($rule["rule"] == "xml:S1135") {
+          $xml = $rule["total"];
+        }
+      }
+      $todo = intval($java,10) + intval($javascript,10) + intval($typescript,10)+ intval($html,10) + intval($xml,10);
+    }
+
+    /** On récupère la liste détaillée. */
+    $sql = "SELECT rule, component, line FROM todo WHERE maven_key='$mavenKey' ORDER BY rule";
+    $r = $this->em->getConnection()->prepare($sql)->executeQuery();
+    $details = $r->fetchAllAssociative();
+
+    return $response->setData(
+      ["todo" => $todo, "java" => $java, "javascript" => $javascript, "typescript" => $typescript, "html" => $html, "xml" => $xml, "details"=>$details, Response::HTTP_OK]);
+  }
+
 }
