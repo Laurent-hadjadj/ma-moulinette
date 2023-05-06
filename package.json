@@ -11,8 +11,8 @@
     "build": "encore production --progress"
   },
   "dependencies": {
-    "@babel/core": "^7.21.3",
-    "@babel/preset-env": "^7.20.2",
+    "@babel/core": "^7.21.8",
+    "@babel/preset-env": "^7.21.5",
     "assert": "^2.0.0",
     "browser-update": "^3.3.44",
     "chance": "^1.1.11",
@@ -32,11 +32,11 @@
   "devDependencies": {
     "@hotwired/stimulus": "^3.2.1",
     "@symfony/stimulus-bridge": "^3.2.2",
-    "@symfony/webpack-encore": "^4.2.0",
+    "@symfony/webpack-encore": "^4.3.0",
     "babel-core": "^6.26.3",
     "babel-eslint": "^10.1.0",
     "core-js": "3.29.0",
-    "eslint": "^8.36.0",
+    "eslint": "^8.39.0",
     "eslint-config-jquery": "^3.0.0",
     "eslint-plugin-dollar-sign": "^1.0.2",
     "eslint-plugin-html": "^7.1.0",
@@ -44,15 +44,15 @@
     "file-loader": "^6.2.0",
     "jshint": "^2.13.6",
     "postcss-html": "^1.5.0",
-    "postcss-selector-parser": "^6.0.11",
+    "postcss-selector-parser": "^6.0.12",
     "regenerator-runtime": "^0.13.11",
     "stylelint": "^14.14.0",
     "stylelint-config-html": "^1.1.0",
     "stylelint-config-recommended": "^9.0.0",
     "stylelint-config-standard": "^29.0.0",
     "svg-url-loader": "^8.0.0",
-    "webpack": "^5.76.3",
-    "webpack-cli": "^5.0.1",
+    "webpack": "^5.81.0",
+    "webpack-cli": "^5.0.2",
     "webpack-notifier": "^1.6.0"
   },
   "optionalDependencies": {
