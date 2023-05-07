@@ -32,7 +32,7 @@ class ProfilController extends AbstractController
    * @param  private
    *
    * Created at: 15/12/2022, 22:14:50 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   public function __construct(private EntityManagerInterface $em) {
@@ -68,6 +68,11 @@ class ProfilController extends AbstractController
 
     $select = $this->em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)))->executeQuery();
     $liste = $select->fetchAllAssociative();
+
+    /** On vérifie que la table n'est pas vide */
+    if (empty($liste)){
+      /** on met a jour */
+    }
 
     $render =
       [ "mode"=>$mode, "liste" => $liste,
