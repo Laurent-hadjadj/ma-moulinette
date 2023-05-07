@@ -18,18 +18,47 @@
 
 @media only screen and (min-width: 30.025em) and (max-width: 40em) { /* vide */ }
 
-@media only screen and (min-width: 40em) and (max-width: 64em) { /* vide */ }
+@media only screen and (min-width: 40em) and (max-width: 64em) {
+  /** padding bouton */
+  .bouton-profil-refresh-left { padding-right: 0.5rem; }
+  .bouton-profil-graphique-right { padding-left: 0.5rem; }
+}
 
-@media only screen and (min-width: 64.025em) and (max-width: 90em) { /* vide */ }
+@media only screen and (min-width: 64.025em) and (max-width: 90em) {
+  /** padding bouton */
+  .bouton-profil-refresh-left { padding-right: 0.5rem; }
+  .bouton-profil-graphique-right { padding-left: 0.5rem; }
+}
 
-@media only screen and (min-width: 90.025em) and (max-width: 120em) { /* vide */ }
+@media only screen and (min-width: 90.025em) and (max-width: 120em) {
+  /** padding bouton */
+  .bouton-profil-refresh-left { padding-right: 0.5rem; }
+  .bouton-profil-graphique-right { padding-left: 0.5rem; }
+}
 
-@media only screen and (min-width: 120.63em) and (max-width: 160em) { /* vide */ }
+@media only screen and (min-width: 120.63em) and (max-width: 160em) {
+  /** padding bouton */
+  .bouton-profil-refresh-left { padding-right: 0.5rem; }
+  .bouton-profil-graphique-right { padding-left: 0.5rem; }
+}
 
 /*************************          Global     *********************************/
 
-.graphique-svg,
-.refresh-svg {
+/** bouton mise-a-jour et graphique */
+.bouton-profil-refresh,
+.bouton-profil-graphique {
+  color: #fff;
+  background-color: #00445b;
+}
+
+/* hover des boutons */
+.bouton-profil-refresh:hover,
+.bouton-profil-graphique:hover {
+  background-color: #006182;
+}
+
+.profil-graphique-svg,
+.profil-refresh-svg {
   fill: #fff;
   cursor: pointer;
   margin-bottom: -0.6rem;
@@ -49,12 +78,3 @@
 
 /** Suppression style inline */
 .graphique-langage-container { width: 54vw; }
-
-.graphique-langage,
-.refresh {
-  color: #fff;
-  background-color: #00445b;
-}
-
-.graphique-langage:hover,
-.refresh:hover { background-color: #006182; }
