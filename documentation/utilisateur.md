@@ -27,14 +27,15 @@ Il faut avoir le rôle `GESTIONNAIRE` et cliquer sur l'icône utilisateurs en ha
 
 ![utilisateur](/documentation/ressources/utilisateur-002.jpg)
 
-Par défaut quatre (4) utilisateurs sont créés.
+Par défaut cinq (5) utilisateurs sont créés.
 
 * [x] admin, avec le rôle `Gestionnaire` et le statut `Actif`. Il est l'utilisateur par défaut.
-* [ ] Aurélie, une utilisatrice de tests.
-* [ ] Josh, un utilisateur de tests.
-* [ ] Emma, une utilisateur de tests.
+* [ ] Aurélie, une utilisatrice de test.
+* [ ] Josh, un utilisateur de test.
+* [ ] Emma, une utilisateur de test.
+* [ ] Nathan, un utilisateur de test.
 
-Les utilisateurs Aurélie, Josh et Emma ont pour rôle **GESTIONNAIRE**, **UTILISATEUR** et **BATCH**. Les compte de tests sont rattaché à une équipe et  `désactivé` par défaut.
+Les utilisateurs Aurélie, Josh, Emma et Nathan ont pour rôle **GESTIONNAIRE**, **UTILISATEUR**, **BATCH** et **COLLECTE**. Les compte de tests sont rattachés à une équipe et  sont `désactivés` par défaut.
 
 Pour chaque utilisateur, le tableau de suivi affiche les éléments suivants  :
 
@@ -82,13 +83,6 @@ Et Voilà !
 
 ![utilisateur](/documentation/ressources/utilisateur-005aa.jpg)
 
-`Josh` est `Utilisateur`. C'est lui qui travaillera sur les données collectées par l'application `Ma Moulinette`.
-
-![utilisateur](/documentation/ressources/utilisateur-005b.jpg)
-
-Et voilà !
-![utilisateur](/documentation/ressources/utilisateur-005bb.jpg)
-
 `Emma` est notre gestionnaire de `Traitement`, c'est elle qui pilote le portefeuille des applications à mettre à jour automatiquement par `Ma Moulinette`. C'est elle qui pourra également lancer un traitement manuellement.
 
 Et voilà !
@@ -96,6 +90,23 @@ Et voilà !
 
 Et voilà !
 ![utilisateur](/documentation/ressources/utilisateur-005cc.jpg)
+
+`Nathan` est notre gestionnaire de `Collecte`, c'est lui qui aura la responsabilité de lancer toutes les taches de collectes de données ou de mise à jour de référentiels.
+
+Et voilà !
+![utilisateur](/documentation/ressources/utilisateur-005d.jpg)
+
+Et voilà !
+![utilisateur](/documentation/ressources/utilisateur-005dd.jpg)
+
+
+`Josh` est `Utilisateur`. C'est lui qui travaillera sur les données collectées par l'application `Ma Moulinette`.
+
+![utilisateur](/documentation/ressources/utilisateur-005b.jpg)
+
+Et voilà !
+![utilisateur](/documentation/ressources/utilisateur-005bb.jpg)
+
 
 Waouh !!! C'est fait. On a notre équipe de championnes :)
 
