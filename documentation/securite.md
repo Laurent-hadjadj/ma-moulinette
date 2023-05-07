@@ -45,30 +45,35 @@ Il existe deux rôles par défaut auquel nous avons ajouté **trois** rôles fon
 
 Toute personne authentifiée peut accéder à l'ensemble des pages de l'application, à l'exception des pages destinées aux personnes ayant le rôle de `GESTIONNAIRE` et `BTACH` (Traitement).
 
-Le tableau ci-dessous liste par rôle la liste des droits et des pages accessibles.
+Le tableau ci-dessous liste par rôle les droits des pages accessibles.
 
-|   **Page**  | **PUBLIC** | **UTILISATEUR** | **GESTIONNAIRE** | **BATCH** | **URL**            |
-|:-----------:|:----------:|:---------------:|:----------------:|-----------|--------------------|
-| Accueil     | NON        | OUI             | OUI              | OUI       | /home              |
-| Inscription | OUI        | OUI             | OUI              | OUI       | /register          |
-| Connexion   | OUI        | OUI             | OUI              | OUI       | /login             |
-| Déconnexion | OUI        | OUI             | OUI              | OUI       | /logout            |
-| Bienvenue   | OUI        | NON             | OUI              | OUI       | /welcome           |
-| Dashboard   | NON        | OUI             | OUI              | OUI       | /admin             |
-| Utilisateur | NON        | NON             | OUI              | NON       | /admin?crudAction= |
-| Projet      | NON        | OUI             | OUI              | OUI       | /projet            |
-| Owasp       | NON        | OUI             | OUI              | OUI       | /owasp             |
-| Suivi       | NON        | OUI             | OUI              | OUI       | /suivi             |
-| Profil      | NON        | OUI             | OUI              | OUI       | /profil            |
-| Repartition | NON        | OUI             | OUI              | OUI       | /repartition       |
-| Traitement  | NON        | NON             | NON              | OUI       | /traitement/suivi  |
+|   Page      | PUBLIC | UTILISATEUR | COLLECTE | BATCH | GESTIONNAIRE | URL               |
+|:-----------:|:------:|:-----------:|:--------:|:-----:|:------------:|:------------------|
+| Accueil     | NON    | OUI         | -        | -     | -            | /home             |
+| Inscription | OUI    | OUI         | -        | -     | -            | /register         |
+| Connexion   | OUI    | OUI         | -        | -     | -            | /login            |
+| Déconnexion | OUI    | OUI         | -        | -     | -            | /logout           |
+| Bienvenue   | OUI    | NON         | -        | -     | -            | /welcome          |
+| Dashboard   | NON    | OUI         | -        | -     | -            | /admin            |
+| Utilisateur | NON    | NON         | -        | -     | OUI          | /admin?crudAction |
+| Projet      | NON    | PARTIEL     | OUI      | OUI   | OUI          | /projet           |
+| Owasp       | NON    | OUI         | -        | -     | -            | /owasp            |
+| Suivi       | NON    | OUI         | -        | -     | -            | /suivi            |
+| Profil      | NON    | PARTIEL     | OUI      | OUI   | OUI          | /profil           |
+| Repartition | NON    | PARTIEL     | OUI      | OUI   | OUI          | /repartition      |
+| Traitement  | NON    | NON         | -        | OUI   | OUI          | /traitement/suivi |
 
-Le fichier `security.yaml` contient la configuration suivante pour étendre les droits `UTILISATEUR` au `GESTIONNAIRE`.
+Le fichier `security.yaml` contient la configuration suivante pour étendre les droits du rôle :
+
+- `UTILISATEUR` avec les droits de `COLLECTE`
+- `UTILISATEUR` avec les droits de `BATCH`.
+- `UTILISATEUR` avec les droits de `GESTIONNAIRE`.
 
 ```yaml
- role_hierarchy:
-        ROLE_GESTIONNAIRE: ['ROLE_UTILISATEUR', 'ROLE_BATCH']
-        ROLE_BATCH: ROLE_UTILISATEUR
+    role_hierarchy:
+        ROLE_GESTIONNAIRE: ['ROLE_COLLECTE', 'ROLE_BATCH', ROLE_UTILISATEUR]
+        ROLE_BATCH: ['ROLE_COLLECTE', ROLE_UTILISATEUR]
+        ROLE_COLLECTE: ROLE_UTILISATEUR
 ```
 
 Les entrypoints sont définis de cette façon :
