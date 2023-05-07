@@ -19,7 +19,7 @@ Le formulaire de connexion propose deux options:
 1 - Saisir son identifiant, son mot de passe et choisir si l'on souhaite ajouter un cookie de connexion automatique.
 2 - Basculer sur le formulaire d'inscription.
 
-Note : On ajoutera dans la prochaine version l'option **changer mon mot de passe** pour changer son mot de passe.
+`Note :` On ajoutera dans la prochaine version l'option **changer mon mot de passe** pour changer son mot de passe.
 
 L'identifiant est l'adresse mél. de l'utilisateur.
 
