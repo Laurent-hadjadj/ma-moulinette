@@ -117,7 +117,7 @@ class UtilisateurCrudController extends AbstractCrudController
             ->hideOnForm();
         yield EmailField::new('courriel');
 
-        $key1=['Utilisateur', 'Batch', 'Gestionnaire'];
+        $key1=['Utilisateur', 'Batch', 'Collecte', 'Gestionnaire'];
         $value1 = ['ROLE_UTILISATEUR', 'ROLE_BATCH', 'ROLE_COLLECTE', 'ROLE_GESTIONNAIRE'];
         yield ChoiceField::new('roles')
             ->setChoices(array_combine($key1, $value1))
