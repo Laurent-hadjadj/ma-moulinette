@@ -33,7 +33,7 @@ class UtilisateurCrudController extends AbstractCrudController
      * @param  private
      *
      * Created at: 02/01/2023, 18:37:26 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function __construct(private EntityManagerInterface $emm)
@@ -47,7 +47,7 @@ class UtilisateurCrudController extends AbstractCrudController
      * @return string
      *
      * Created at: 02/01/2023, 18:37:28 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public static function getEntityFqcn(): string
@@ -63,7 +63,7 @@ class UtilisateurCrudController extends AbstractCrudController
      * @return Filters
      *
      * Created at: 02/01/2023, 18:37:30 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function configureFilters(Filters $filters): Filters
@@ -81,7 +81,7 @@ class UtilisateurCrudController extends AbstractCrudController
      * @return Actions
      *
      * Created at: 02/01/2023, 18:37:32 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function configureActions(Actions $actions): Actions
@@ -99,7 +99,7 @@ class UtilisateurCrudController extends AbstractCrudController
      * @return iterable
      *
      * Created at: 02/01/2023, 18:37:34 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function configureFields(string $pageName): iterable
@@ -118,7 +118,7 @@ class UtilisateurCrudController extends AbstractCrudController
         yield EmailField::new('courriel');
 
         $key1=['Utilisateur', 'Batch', 'Gestionnaire'];
-        $value1 = ['ROLE_UTILISATEUR', 'ROLE_BATCH', 'ROLE_GESTIONNAIRE'];
+        $value1 = ['ROLE_UTILISATEUR', 'ROLE_BATCH', 'ROLE_COLLECTE', 'ROLE_GESTIONNAIRE'];
         yield ChoiceField::new('roles')
             ->setChoices(array_combine($key1, $value1))
             ->allowMultipleChoices()
