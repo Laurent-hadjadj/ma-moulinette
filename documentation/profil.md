@@ -26,17 +26,33 @@
 
 Cette page affiche la liste des référentiel disponible sur le serveur sonarqube.
 
-![profil](/documentation/ressources/profil-000.jpg)
-
 `Evolutions 2.0.0`
 
-* [x] Suppression du bouton de mise à jour du référentiel des profils. Maintenant la liste des référéentiels est à jour à chaque fois que l'on ouvre la page profil.
+* [x] Il faut avoir le Rôle `Gestionnaire` mettre à jour la liste des référentiels.
 * [x] Ajout de la colonne `Outil` et de l'icône pour afficher le détail des changements pour le profil.
 * [x] Suppression de la date dans la légende du tableau.
 
+![profil](/documentation/ressources/profil-000a.jpg)
+
+Si la liste des référentiels de règles est vide, il faudra cliquer sur le bouton `Mise à jour de la table`.
+
+![profil](/documentation/ressources/profil-000b.jpg)
+
+Seul les utiliateurs ayant le rôle `Gestionnaire` peuvent réaliser cette action.
+
+![profil](/documentation/ressources/profil-000c.jpg)
+
+Vous devez avoir au moins un profil déclaré sur le serveur sonarqube correspondant à la clé définie dans le fichier de propriétés.
+
+![profil](/documentation/ressources/profil-000d.jpg)
+
+Une fois la liste mise à jour, le tableau des profils est affiché. Toutefois, il n'est pas possible de consulter le détails d'un profil sans rafraichir la page (F5).
+
+![profil](/documentation/ressources/profil-000e.jpg)
+
 `Rappel :` Le nom du profil est unique, i.e `Ma petite Entreprise v1.0.0`. Il est défini dans le fichier `.env` par la propriété `SONAR_PROFILES`.
 
-```plaintext
+```properties
 SONAR_PROFILES="Ma petite Entreprise V1.0.0"
 ```
 
