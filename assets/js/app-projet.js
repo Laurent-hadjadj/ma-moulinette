@@ -261,7 +261,14 @@ const projetAnalyse=function(mavenKey) {
 
   return new Promise(resolve => {
     $.ajax(options).then(t => {
-      log(` - INFO : (1) Nombre de version disponible : ${t.nombreVersion}`);
+      if (t.type==='alert'){
+        $('#callout-projet-message').removeClass('hide success warning primary secondary');
+        $('#callout-projet-message').addClass(t.type);
+        $('#js-reference-information').html(t.reference);
+        $('#js-message-information').html(t.message);
+      } else {
+        log(` - INFO : (1) Nombre de version disponible : ${t.nombreVersion}`);
+      }
       resolve();
     });
   });
@@ -285,8 +292,15 @@ const projetMesure=function(mavenKey) {
           dataType: 'json', data, contentType };
   return new Promise(resolve => {
     $.ajax(options).then(
-      () => {
-        log(' - INFO : (2) Ajout des mesures.');
+      t => {
+        if (t.type==='alert'){
+          $('#callout-projet-message').removeClass('hide success warning primary secondary');
+          $('#callout-projet-message').addClass(t.type);
+          $('#js-reference-information').html(t.reference);
+          $('#js-message-information').html(t.message);
+        } else {
+          log(' - INFO : (2) Ajout des mesures.');
+        }
         resolve();
     });
   });
@@ -313,8 +327,15 @@ const projetAnomalie=function(mavenKey) {
 
   return new Promise(resolve => {
     $.ajax(options).then(t => {
+      if (t.type==='alert'){
+        $('#callout-projet-message').removeClass('hide success warning primary secondary');
+        $('#callout-projet-message').addClass(t.type);
+        $('#js-reference-information').html(t.reference);
+        $('#js-message-information').html(t.message);
+      } else {
         log(` - INFO : (6) ${t.info}`);
-        resolve();
+      }
+    resolve();
     });
   });
 };
@@ -341,10 +362,17 @@ const projetAnomalieDetails=function(mavenKey) {
   return new Promise(resolve => {
     $.ajax(options).then(
       t => {
-        if (t.code==='OK'){
-            log(' - INFO : (7) Le frequence des sévérités par type a été collectée.');
+        if (t.type==='alert'){
+          $('#callout-projet-message').removeClass('hide success warning primary secondary');
+          $('#callout-projet-message').addClass(t.type);
+          $('#js-reference-information').html(t.reference);
+          $('#js-message-information').html(t.message);
         } else {
-            log(` - ERROR : (7) Je n'ai pas réussi à collecter les données (${t.code}).`);
+          if (t.code==='OK'){
+              log(' - INFO : (7) Le frequence des sévérités par type a été collectée.');
+          } else {
+              log(` - ERROR : (7) Je n'ai pas réussi à collecter les données (${t.code}).`);
+          }
         }
       resolve();
       });
@@ -374,8 +402,15 @@ const projetRating=function(mavenKey, type) {
 
   return new Promise(resolve => {
     $.ajax(options).then(t => {
+      if (t.type==='alert'){
+        $('#callout-projet-message').removeClass('hide success warning primary secondary');
+        $('#callout-projet-message').addClass(t.type);
+        $('#js-reference-information').html(t.reference);
+        $('#js-message-information').html(t.message);
+      } else {
         log(` - INFO : (3) Reprise des notes pour le type : ${t.type}`);
         log(`              : ${t.nombre} résultats.`);
+      }
         resolve();
       });
   });
@@ -404,10 +439,17 @@ const projetOwasp=function(mavenKey) {
 
   return new Promise(resolve => {
     $.ajax(options).then(t=> {
-      if (t.owasp===0) {
-        log(' - INFO : (4) Bravo aucune faille OWASP détectée.');
+      if (t.type==='alert'){
+        $('#callout-projet-message').removeClass('hide success warning primary secondary');
+        $('#callout-projet-message').addClass(t.type);
+        $('#js-reference-information').html(t.reference);
+        $('#js-message-information').html(t.message);
       } else {
-        log(` - WARN : (4) J'ai trouvé ${t.owasp} faille(s).`);
+        if (t.owasp===0) {
+          log(' - INFO : (4) Bravo aucune faille OWASP détectée.');
+        } else {
+          log(` - WARN : (4) J'ai trouvé ${t.owasp} faille(s).`);
+        }
       }
       resolve();
     });
@@ -436,10 +478,17 @@ const projetHotspot=function(mavenKey) {
 
   return new Promise(resolve => {
     $.ajax(options).then(t=> {
-      if (t.hotspots === 0) {
-        log(' - INFO : (5) Bravo aucune faille potentielle détectée.');
+      if (t.type==='alert'){
+        $('#callout-projet-message').removeClass('hide success warning primary secondary');
+        $('#callout-projet-message').addClass(t.type);
+        $('#js-reference-information').html(t.reference);
+        $('#js-message-information').html(t.message);
       } else {
-        log(` - WARN : (5) J'ai trouvé ${t.hotspots} faille(s) potentielle(s).`);
+        if (t.hotspots === 0) {
+          log(' - INFO : (5) Bravo aucune faille potentielle détectée.');
+        } else {
+          log(` - WARN : (5) J'ai trouvé ${t.hotspots} faille(s) potentielle(s).`);
+        }
       }
     resolve();
     });
@@ -469,6 +518,12 @@ const projetHotspotOwasp=function(mavenKey, owasp) {
 
   return new Promise(resolve => {
     $.ajax(options).then(t=> {
+      if (t.type==='alert'){
+        $('#callout-projet-message').removeClass('hide success warning primary secondary');
+        $('#callout-projet-message').addClass(t.type);
+        $('#js-reference-information').html(t.reference);
+        $('#js-message-information').html(t.message);
+      } else {
         if (t.info==='effacement') {
           log(' - INFO : (8) Les enregistrements ont été supprimé de la table hostspot_owasp.');
         }
@@ -478,6 +533,7 @@ const projetHotspotOwasp=function(mavenKey, owasp) {
         if (t.hotspots !== 0 && t.info==='enregistrement') {
           log(` - WARN : (9) J'ai trouvé ${t.hotspots} faille(s) OWASP ${owasp} potentielle(s).`);
         }
+      }
       resolve();
     });
   });
@@ -503,11 +559,18 @@ const projetHotspotOwaspDetails=function(mavenKey) {
 
   return new Promise(resolve => {
     $.ajax(options).then(t=> {
-      if (t.code === http406) {
-        log(' - INFO : (10) Aucun détails n\'est disponible pour les hotspots.');
+      if (t.type==='alert'){
+        $('#callout-projet-message').removeClass('hide success warning primary secondary');
+        $('#callout-projet-message').addClass(t.type);
+        $('#js-reference-information').html(t.reference);
+        $('#js-message-information').html(t.message);
       } else {
-        /* On a trouvé des hotspots OWASP */
-        log(` - INFO : (10) On a trouvé ${t.ligne} descriptions.`);
+        if (t.code === http406) {
+          log(' - INFO : (10) Aucun détails n\'est disponible pour les hotspots.');
+        } else {
+          /* On a trouvé des hotspots OWASP */
+          log(` - INFO : (10) On a trouvé ${t.ligne} descriptions.`);
+        }
       }
       resolve();
     });
@@ -533,10 +596,17 @@ const projetNosonarDetails=function(mavenKey){
 
   return new Promise(resolve => {
     $.ajax(options).then(t=> {
-      if (t.nosonar !== 0) {
-        log(` - WARM : (11) J'ai trouvé ${t.nosonar} exclusion(s) NoSonar.`);
+      if (t.type==='alert'){
+        $('#callout-projet-message').removeClass('hide success warning primary secondary');
+        $('#callout-projet-message').addClass(t.type);
+        $('#js-reference-information').html(t.reference);
+        $('#js-message-information').html(t.message);
       } else {
-        log(` - INFO : (11) Bravo !!! ${t.nosonar} exclusion NoSonar trouvée.`);
+        if (t.nosonar !== 0) {
+          log(` - WARM : (11) J'ai trouvé ${t.nosonar} exclusion(s) NoSonar.`);
+        } else {
+          log(` - INFO : (11) Bravo !!! ${t.nosonar} exclusion NoSonar trouvée.`);
+        }
       }
       resolve();
     });
@@ -562,10 +632,17 @@ const projetTodoDetails=function(mavenKey){
 
   return new Promise(resolve => {
     $.ajax(options).then(t=> {
-      if (t.todo !== 0) {
-        log(` - WARM : (12) J'ai trouvé ${t.todo} ToDo(s) à vérifier.`);
+      if (t.type==='alert'){
+        $('#callout-projet-message').removeClass('hide success warning primary secondary');
+        $('#callout-projet-message').addClass(t.type);
+        $('#js-reference-information').html(t.reference);
+        $('#js-message-information').html(t.message);
       } else {
-        log(` - INFO : (12) Bravo !!! ${t.todo} ToDo trouvé.`);
+        if (t.todo !== 0) {
+          log(` - WARM : (12) J'ai trouvé ${t.todo} ToDo(s) à vérifier.`);
+        } else {
+          log(` - INFO : (12) Bravo !!! ${t.todo} ToDo trouvé.`);
+        }
       }
       resolve();
     });
@@ -582,12 +659,12 @@ const projetTodoDetails=function(mavenKey){
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const finCollecte=function(){
-/**
-   * Si le message d'information de la "liste box" commence pas  [03]
-   * alors le traitement a été lancé depuis le menu rapide, bouton C.
-   * On affiche un message de fin pour indiquer la fin des traitements asynchronnes.
-   *
- */
+  /**
+    * Si le message d'information de la "liste box" commence pas  [03]
+    * alors le traitement a été lancé depuis le menu rapide, bouton C.
+    * On affiche un message de fin pour indiquer la fin des traitements asynchronnes.
+  *
+  */
   const info=$('.information-texte').text();
   if (info.substring(0, 4)==='[03]') {
     setTimeout(function(){
@@ -917,6 +994,21 @@ selectProjet();
  * rework de la méthode : utilisation des promises
  */
 $('.js-analyse').on('click', function () {
+
+  /** On vérifie le rôle */
+  const userRating = document.querySelector('.js-user-rating');
+  const roles = JSON.parse(userRating.dataset.user);
+  if (!roles.includes('ROLE_COLLECTE') && !roles.includes('ROLE_BATCH') && !roles.includes('ROLE_GESTIONNAIRE')) {
+    const type='alert';
+    const reference='<strong>[PROJET-001]</strong>';
+    const message=' Vous devez avoir au moins le rôle COLLECTE pour lancer la collecte des données.';
+    $('#callout-projet-message').removeClass('hide success warning primary secondary');
+    $('#callout-projet-message').addClass(type);
+    $('#js-reference-information').html(reference);
+    $('#js-message-information').html(message);
+    return;
+  }
+
   log(' - INFO : On lance la collecte...');
   /* on bloque le bouton afficher les resultats. */
   $('.js-affiche-resultat').removeClass('affiche-resultat-enabled');
