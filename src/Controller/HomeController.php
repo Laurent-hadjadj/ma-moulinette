@@ -162,15 +162,15 @@ class HomeController extends AbstractController
    */
   private function countProfilSonar(Client $client): Int
   {
-      $url = $this->getParameter(static::$sonarUrl)
-      . "/api/qualityprofiles/search?qualityProfile="
-      . $this->getParameter('sonar.profiles');
+    $url = $this->getParameter(static::$sonarUrl)
+    . "/api/qualityprofiles/search?qualityProfile="
+    . $this->getParameter('sonar.profiles');
 
-      /** On appel le client http */
-      $result = $client->http($url);
+    /** On appel le client http */
+    $result = $client->http($url);
 
-      /** Si les profils custom n'existent pas on envoi un message */
-      return count($result['profiles']);
+    /** Si les profils custom n'existent pas on envoi un message */
+    return count($result['profiles']);
   }
 
   /**
