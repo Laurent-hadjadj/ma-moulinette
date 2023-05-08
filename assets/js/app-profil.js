@@ -33,7 +33,7 @@ Chart.register(zoomPlugin);
 import Chance from 'chance';
 
 /** On importe les constantes */
-import {contentType, paletteCouleur, matrice, dateOptions1, dateOptions2} from './constante.js';
+import {contentType, paletteCouleur, matrice, dateOptions, dateOptionsShort} from './constante.js';
 
 
 /**
@@ -96,9 +96,9 @@ const refreshQuality=function() {
                 </td>
                 <td class="text-center">
                     <span class="show-for-small-only">
-                      ${new Intl.DateTimeFormat('default', dateOptions2).format(new Date(profil.date))}
+                      ${new Intl.DateTimeFormat('default', dateOptionsShort).format(new Date(profil.date))}
                     </span>
-                    <span class="show-for-medium">${new Intl.DateTimeFormat('default', dateOptions1).format(new Date(profil.date))}
+                    <span class="show-for-medium">${new Intl.DateTimeFormat('default', dateOptions).format(new Date(profil.date))}
                     </span>
                 </td>
                 <td class="text-center">
