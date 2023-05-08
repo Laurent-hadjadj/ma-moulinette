@@ -91,12 +91,10 @@ class ApiProfilController extends AbstractController
       $reference="<strong>[PROFIL-001]</strong>";
       $message="Vous devez avoir le rôle GESTIONNAIRE pour réaliser cette action.";
       $type="alert";
-      $display=true;
       return $response->setData([
         "reference" => $reference,
         "message"=>$message,
         "type"=>$type,
-        "display"=>$display,
         Response::HTTP_OK]);
     }
 
