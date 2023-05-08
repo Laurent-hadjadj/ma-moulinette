@@ -66,6 +66,10 @@ Lorsque je clique sur le bouton, **Afficher les résultats** l'ensemble des indi
 
 Je peux ensuite enregistrer les indicateurs dans la base locale. Cette base sera utilisée pour le suivi des versions du projet.
 
+Il faut disposer du droit `COLLECTE` pour lancer la commande d'enregistrement.
+
+![projet](/documentation/ressources/projet-003d.jpg)
+
 **Note** : Dans la version `1.3.0`, un nouveau bouton est disponible.
 En effet, le bouton **Répartition par module** permet l'accès à la page de collecte et l'analyse des signalements par type de sévérité. Il permet l'affichage des signalements par module applicatif.
 
