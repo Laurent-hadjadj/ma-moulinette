@@ -22,6 +22,11 @@
 * [COSUI](/documentation/cosui.md)
 * [Répartition détaillée](/documentation/repartition_details.md)
 
+## Evolution 2.0.0
+
+* [x] Ajout d'une boîte d'information pour les messages d'information et d'alerte.
+* [x] Il faut avoir au minimum le rôle `COLLECTE` pour lancer la collecte du indicateur du projet.
+
 ## Page Projet
 
 La page projet permet, une fois sélectionné un projet, la collecte des données et/ou l'affichage des résultats de la dernière collecte.
@@ -29,13 +34,21 @@ La page projet permet, une fois sélectionné un projet, la collecte des donnée
 ![projet](/documentation/ressources/projet-000.jpg)
 
 Dans le sélecteur des projets, je saisis les trois premières lettres de mon projet.
+
 ![projet](/documentation/ressources/projet-001.jpg)
 
-Je choisis mon projet à partie du référentiel local.
+Je choisis mon projet à partir du référentiel local.
+
 ![projet](/documentation/ressources/projet-001b.jpg)
 
 * [x] je lance la collecte.
 * [X] j'affiche les résultats.
+
+Si l'utilisateur n'a pas le rôle `Collecte` ou `Gestionnaire`, il ne pourra pas lancer la collecte des indicateurs qualités du projet.
+
+![projet](/documentation/ressources/projet-001c.jpg)
+
+![projet](/documentation/ressources/projet-001d.jpg)
 
 `Note :` Dans le journal d'activités, je vérifie que l'étape `13` est terminée.
 
