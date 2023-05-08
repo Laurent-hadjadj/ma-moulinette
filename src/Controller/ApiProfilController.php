@@ -16,6 +16,9 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 
+/** Securité */
+use Symfony\Component\Security\Core\Security;
+
 /** Gestion du temps */
 use DateTime;
 use DateTimeZone;
@@ -30,6 +33,9 @@ use Doctrine\ORM\EntityManagerInterface;
 
 /** Client HTTP */
 use App\Service\Client;
+
+/** Entity */
+use App\Entity\Main\Profiles;
 
 class ApiProfilController extends AbstractController
 {
@@ -56,6 +62,117 @@ class ApiProfilController extends AbstractController
     private EntityManagerInterface $em)
   {
     $this->em = $em;
+  }
+
+  /**
+   * [Description for listeQualityProfiles]
+   * Renvoie la liste des profils qualité
+   * http://{url}/api/qualityprofiles/search?qualityProfile={name}
+   * RÔLE-GESTIONNAIRE
+   * @return response
+   *
+   * Created at: 07/05/2023, 21:12:09 (Europe/Paris)
+   * @author    Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  #[Route('/api/quality/profiles', name: 'liste_quality_profiles', methods: ['GET'])]
+  public function listeQualityProfiles(Security $security, Client $client): response
+  {
+
+    /** On crée un objet response */
+    $response = new JsonResponse();
+
+    /** On vérfie les droits de l'utilisateur */
+    $userSecurity=$security->getUser();
+    /* On bind les informations utilisateur */
+    $roles=$security->getUser()->getRoles();
+    if (in_array("ROLE_GESTIONNAIRE", $roles) !== true){
+      /** On envoi un message à l'utilisateur */
+      $reference="<strong>[PROFIL-001]</strong>";
+      $message="Vous devez avoir le rôle GESTIONNAIRE pour réaliser cette action.";
+      $type="alert";
+      $display=true;
+      return $response->setData([
+        "reference" => $reference,
+        "message"=>$message,
+        "type"=>$type,
+        "display"=>$display,
+        Response::HTTP_OK]);
+    }
+
+    /** On définit l'URL */
+    $url = $this->getParameter(static::$sonarUrl)
+          . "/api/qualityprofiles/search?qualityProfile="
+          . $this->getParameter('sonar.profiles');
+
+    /** On appel le client http */
+    $r = $client->http($url);
+
+    /** Vérifie qu'il existe au moins  un profil */
+    if (empty($r['profiles'])){
+      /** On envoi un message à l'utilisateur */
+      $reference="<strong>[PROFIL-002]</strong>";
+      $message="Vous devez avoir au moins un profil déclaré sur le serveur sonarqube correspondant à la clé définie dans le fichier de propriétés.";
+      $type="warning";
+      return $response->setData([
+        "reference" => $reference,
+        "message"=>$message,
+        "type"=>$type,
+        Response::HTTP_OK]);
+    }
+
+    $date = new DateTime();
+    $date->setTimezone(new DateTimeZone('Europe/Paris'));
+    $nombre = 0;
+
+    /** On supprime les données de la table avant d'importer les données;*/
+    $sql = "DELETE FROM profiles";
+    $delete = $this->em->getConnection()->prepare($sql);
+    $delete->executeQuery();
+
+    /** On insert les profiles dans la table profiles. */
+    foreach ($r["profiles"] as $profil) {
+      $nombre = $nombre + 1;
+
+      $profils = new Profiles();
+      $profils->setKey($profil["key"]);
+      $profils->setName($profil["name"]);
+      $profils->setLanguageName($profil["languageName"]);
+      $profils->setIsDefault($profil["isDefault"]);
+      $profils->setActiveRuleCount($profil["activeRuleCount"]);
+      $rulesDate = new DateTime($profil["rulesUpdatedAt"]);
+      $profils->setRulesUpdateAt($rulesDate);
+      $profils->setDateEnregistrement($date);
+      $this->em->persist($profils);
+      $this->em->flush();
+    }
+
+    /** On récupère la liste des profils; */
+    $sql = "SELECT name as profil, language_name as langage,
+            active_rule_count as regle, rules_update_at as date,
+            is_default as actif FROM profiles";
+    $select = $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
+    $liste = $select->fetchAllAssociative();
+
+    /** On met à jour la table proprietes */
+    $dateModificationProfil = $date->format("Y-m-d H:i:s");
+
+    $sql="UPDATE properties
+    SET profil_bd = ${nombre},
+        profil_sonar = ${nombre},
+        date_modification_profil = '${dateModificationProfil}'
+    WHERE type = 'properties'";
+    $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
+
+    $reference="<strong>[PROFIL-002]</strong>";
+    $message="Bravo, la liste des référentiels a été mise à jour.";
+    $type="success";
+    return $response->setData([
+      "reference" => $reference,
+      "message"=>$message,
+      "type"=>$type,
+      "listeProfil" => $liste,
+      Response::HTTP_OK]);
   }
 
   /**
@@ -145,7 +262,6 @@ class ApiProfilController extends AbstractController
     $date = new DateTime();
     $date->setTimezone(new DateTimeZone(static::$europeParis));
     $dateEnregistrement = $date->format(static::$dateFormat);
-
 
     foreach($events as $event)
     {
@@ -244,6 +360,5 @@ class ApiProfilController extends AbstractController
     } else {
       return $this->render('profil/details.html.twig', $render);
     }
-
   }
 }
