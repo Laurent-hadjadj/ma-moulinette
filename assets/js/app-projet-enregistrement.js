@@ -73,6 +73,10 @@ export const enregistrement=function(mavenKey) {
   const suppressWarning=t4.dataset.s1309;
   const noSonar=t5.dataset.nosonar;
 
+  /** On récupère le nombre des todo */
+  const t4a = document.getElementById('todo-liste');
+  const todo=t4a.dataset.todo;
+
   /**
    * On récupère les informations du projet :
    * lignes, couverture fonctionnelle, duplication, tests unitaires et
@@ -190,7 +194,7 @@ export const enregistrement=function(mavenKey) {
   {
     mavenKey, nomProjet,
     versionRelease, versionSnapshot, versionAutre, version,
-    dateVersion, suppressWarning, noSonar,
+    dateVersion, suppressWarning, noSonar, todo,
     nombreLigneDeCode, nombreLigne, couverture, duplication,
     testsUnitaires, nombreDefaut,
     dette,
