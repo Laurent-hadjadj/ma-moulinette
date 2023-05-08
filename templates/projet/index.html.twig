@@ -36,8 +36,20 @@
       </nav>
     </header>
 
-
     <div class="grid-container">
+      {# On récupère les droits de l'utilisateur #}
+      <div class="js-user-rating"
+        data-user="{{ app.user.roles|serialize(format = 'json') }}">
+      </div>
+
+      {# Message d'information #}
+      <div id="callout-projet-message" class="callout alert-callout-border hide">
+        <p class="open-sans text-justify js-message">
+          <span id="js-reference-information"></span>
+          <span id="js-message-information"></span>
+        </p>
+      </div>
+
       <h4 class="grid-x cell claire-hand">Je choisis mon projet.
         <span id="j-aime">
           <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="favori-svg">
@@ -66,8 +78,7 @@
         </span>.
       </p>
       <div id="message"></div>
-      <div
-        class="grid-x cell">
+      <div class="grid-x cell">
         {# Analyse #}
         <div class="small-12 medium-6 large-6 bouton-analyse-right cell">
           <p class="button expanded float-center js-analyse lance-analyse-disabled">
@@ -100,8 +111,7 @@
         </div>
       </div>
 
-      <div
-        class="grid-x cell">
+      <div class="grid-x cell">
         {# Information sur les versions #}
         <div class="callout callout-information">
           <div class="callout-body">
@@ -298,8 +308,7 @@
         {# Fin du container #}
       </div>
 
-      <div
-        class="grid-x cell">
+      <div class="grid-x cell">
         {# Enregistrement #}
         <div class="small-12 medium-6 large-6 bouton-analyse-right cell">
           <p id="enregistrement" class="button expanded float-center js-enregistrement enregistrement-disabled">
@@ -328,8 +337,7 @@
         </div>
       </div>
 
-      <div
-        class="grid-x cell">
+      <div class="grid-x cell">
         {# Page OWASP #}
         <div class="button expanded float-center js-analyse-owasp analyse-owasp-disabled">
           <div class="cell">
