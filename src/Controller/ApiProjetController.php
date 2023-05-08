@@ -21,6 +21,9 @@ use Symfony\Component\Routing\Annotation\Route;
 /** Gestion de accès aux API */
 use Symfony\Component\HttpFoundation\JsonResponse;
 
+/** Securité */
+use Symfony\Component\Security\Core\Security;
+
 /** Gestion du temps */
 use DateTime;
 use DateTimeZone;
@@ -58,6 +61,8 @@ class ApiProjetController extends AbstractController
   public static $apiIssuesSearch = "/api/issues/search?componentKeys=";
   public static $regex = "/\s+/u";
   public static $erreurMavenKey="La clé maven est vide!";
+  public static $reference="<strong>[PROJET-002]</strong>";
+  public static $message="Vous devez avoir le rôle COLLECTE pour réaliser cette action.";
 
   /**
    * [Description for __construct]
@@ -78,7 +83,7 @@ class ApiProjetController extends AbstractController
     $this->em = $em;
   }
 
-  /**
+ /**
    * [Description for date_to_minute]
    * Fonction privée pour convertir une date au format xxd aah xxmin en minutes
    *
@@ -313,6 +318,16 @@ class ApiProjetController extends AbstractController
       $mode = $request->get('mode');
     }
 
+    /** On vérifie si l'utilisateur à un rôle Collecte ? */
+    if (!$this->isGranted('ROLE_COLLECTE')){
+      return $response->setData([
+        "mode"=>$mode ,
+        "type"=>'alert',
+        "reference" => static::$reference,
+        "message"=> static::$message,
+        Response::HTTP_OK]);
+    }
+
     $url = $this->getParameter(static::$sonarUrl) .
       "/api/project_analyses/search?project=" . $request->get('mavenKey');
 
@@ -385,6 +400,16 @@ class ApiProjetController extends AbstractController
       $mode="null";
     } else {
       $mode = $request->get('mode');
+    }
+
+    /** On vérifie si l'utilisateur à un rôle Collecte ? */
+    if (!$this->isGranted('ROLE_COLLECTE')){
+      return $response->setData([
+        "mode"=>$mode ,
+        "type"=>'alert',
+        "reference" => static::$reference,
+        "message"=> static::$message,
+        Response::HTTP_OK]);
     }
 
     /** On bind les variables */
@@ -500,6 +525,16 @@ class ApiProjetController extends AbstractController
       return $response->setData([
         "mode"=>$mode, "mavenKey"=>$mavenKey,
         "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+    }
+
+    /** On vérifie si l'utilisateur à un rôle Collecte ? */
+    if (!$this->isGranted('ROLE_COLLECTE')){
+      return $response->setData([
+        "mode"=>$mode ,
+        "type"=>'alert',
+        "reference" => static::$reference,
+        "message"=> static::$message,
+        Response::HTTP_OK]);
     }
 
     /** On créé un objet date. */
@@ -704,6 +739,16 @@ class ApiProjetController extends AbstractController
         "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
     }
 
+    /** On vérifie si l'utilisateur à un rôle Collecte ? */
+    if (!$this->isGranted('ROLE_COLLECTE')){
+      return $response->setData([
+        "mode"=>$mode ,
+        "type"=>'alert',
+        "reference" => static::$reference,
+        "message"=> static::$message,
+        Response::HTTP_OK]);
+    }
+
     /** Pour les Bug. */
     $url1 = "${tempoUrlLong}${mavenKey}&facets=severities&types=BUG&ps=1&p=1&statuses=OPEN";
 
@@ -866,6 +911,16 @@ class ApiProjetController extends AbstractController
         "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
     }
 
+    /** On vérifie si l'utilisateur à un rôle Collecte ? */
+    if (!$this->isGranted('ROLE_COLLECTE')){
+      return $response->setData([
+        "mode"=>$mode ,
+        "type"=>'alert',
+        "reference" => static::$reference,
+        "message"=> static::$message,
+        Response::HTTP_OK]);
+    }
+
     $url = "${tempoUrl}/api/measures/search_history?component=${mavenKey}
             &metrics=${type}_rating&ps=1000";
 
@@ -932,6 +987,16 @@ class ApiProjetController extends AbstractController
       return $response->setData([
         "mode"=>$mode, "mavenKey"=>$mavenKey,
         "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+    }
+
+    /** On vérifie si l'utilisateur à un rôle Collecte ? */
+    if (!$this->isGranted('ROLE_COLLECTE')){
+      return $response->setData([
+        "mode"=>$mode ,
+        "type"=>'alert',
+        "reference" => static::$reference,
+        "message"=> static::$message,
+        Response::HTTP_OK]);
     }
 
     /** URL de l'appel. */
@@ -1308,6 +1373,16 @@ class ApiProjetController extends AbstractController
         "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
     }
 
+    /** On vérifie si l'utilisateur à un rôle Collecte ? */
+    if (!$this->isGranted('ROLE_COLLECTE')){
+      return $response->setData([
+        "mode"=>$mode ,
+        "type"=>'alert',
+        "reference" => static::$reference,
+        "message"=> static::$message,
+        Response::HTTP_OK]);
+    }
+
     /** On construit l'URL */
     $url = "${tempoUrl}/api/hotspots/search?projectKey=${mavenKey}&ps=500&p=1";
 
@@ -1391,6 +1466,16 @@ class ApiProjetController extends AbstractController
         "owasp"=>$owasp,
         "mode"=>$mode, "mavenKey"=>$mavenKey,
         "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+    }
+
+    /** On vérifie si l'utilisateur à un rôle Collecte ? */
+    if (!$this->isGranted('ROLE_COLLECTE')){
+      return $response->setData([
+        "mode"=>$mode ,
+        "type"=>'alert',
+        "reference" => static::$reference,
+        "message"=> static::$message,
+        Response::HTTP_OK]);
     }
 
     if ($request->get('owasp') == 'a0') {
@@ -1646,7 +1731,7 @@ class ApiProjetController extends AbstractController
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/projet/hotspot/details', name: 'projet_hotspot_details', methods: ['GET'])]
-  public function hotspotDetailsAjout(Request $request): response
+  public function hotspotDetailsAjout(Request $request, Client $client): response
   {
     /** On créé un objet response */
     $response = new JsonResponse();
@@ -1660,6 +1745,16 @@ class ApiProjetController extends AbstractController
       return $response->setData([
         "mode"=>$mode, "mavenKey"=>$mavenKey,
         "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+    }
+
+    /** On vérifie si l'utilisateur à un rôle Collecte ? */
+    if (!$this->isGranted('ROLE_COLLECTE')){
+      return $response->setData([
+        "mode"=>$mode ,
+        "type"=>'alert',
+        "reference" => static::$reference,
+        "message"=> static::$message,
+        Response::HTTP_OK]);
     }
 
     /** On récupère la liste des hotspots */
@@ -1690,7 +1785,7 @@ class ApiProjetController extends AbstractController
     foreach ($liste as $elt) {
 
       $ligne++;
-      $key = $this->hotspotDetails($mavenKey, $elt["key"]);
+      $key = $this->hotspotDetails($mavenKey, $elt["key"], $client);
       $details = new  HotspotDetails();
       $details->setMavenKey($mavenKey);
       $details->setSeverity($key["severity"]);
@@ -1746,6 +1841,16 @@ class ApiProjetController extends AbstractController
       return $response->setData([
         "mode"=>$mode, "mavenKey"=>$mavenKey,
         "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+    }
+
+    /** On vérifie si l'utilisateur à un rôle Collecte ? */
+    if (!$this->isGranted('ROLE_COLLECTE')){
+      return $response->setData([
+        "mode"=>$mode ,
+        "type"=>'alert',
+        "reference" => static::$reference,
+        "message"=> static::$message,
+        Response::HTTP_OK]);
     }
 
     /** On construit l'URL et on appel le WS. */
@@ -1824,6 +1929,16 @@ class ApiProjetController extends AbstractController
       return $response->setData([
         "mode"=>$mode, "mavenKey"=>$mavenKey,
         "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+    }
+
+    /** On vérifie si l'utilisateur à un rôle Collecte ? */
+    if (!$this->isGranted('ROLE_COLLECTE')){
+      return $response->setData([
+        "mode"=>$mode ,
+        "type"=>'alert',
+        "reference" => static::$reference,
+        "message"=> static::$message,
+        Response::HTTP_OK]);
     }
 
     /** On construit l'URL et on appel le WS. */
