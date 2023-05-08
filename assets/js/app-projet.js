@@ -1260,6 +1260,23 @@ $('.js-affiche-resultat').on('click', () => {
  * On lance l'enregistrement des données
  */
 $('.js-enregistrement').on('click', () => {
+  console.log('#### Enregistrement ####');
+  /** On vérifie le rôle */
+  const userRating = document.querySelector('.js-user-rating');
+  const roles = JSON.parse(userRating.dataset.user);
+  console.log(roles);
+
+  if (!roles.includes('ROLE_COLLECTE') && !roles.includes('ROLE_BATCH') && !roles.includes('ROLE_GESTIONNAIRE')) {
+    const type='alert';
+    const reference='<strong>[PROJET-003]</strong>';
+    const message=' Vous devez avoir au moins le rôle COLLECTE pour lancer la commande d\'enregistrement.';
+    $('#callout-projet-message').removeClass('hide success warning primary secondary');
+    $('#callout-projet-message').addClass(type);
+    $('#js-reference-information').html(reference);
+    $('#js-message-information').html(message);
+    return;
+  }
+
   /* On récupère la clé du projet. */
   const apiMaven = $('#select-result').text().trim();
   enregistrement(apiMaven);
