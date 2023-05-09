@@ -43,24 +43,6 @@ const log=function(txt) {
 };
 
 /**
-  * [Description for ditBonjour]
-  * Initialisation de la log.
-  * @return [type]
-  *
-  */
-const ditBonjour=function() {
-  log(' - Initialisation de la log...');
-};
-
-/**
- * description
- * Active la gomme pour nettoyer la log.
- */
-$('.gomme-svg').on('click', function () {
-  $('.log').val('');
-});
-
-/**
   * [Description for sonarIsUp]
   * Vérifie si le serveur sonarqube est UP
   * Affiche la version du seveur
@@ -73,14 +55,14 @@ const sonarIsUp=function() {
     url: `${serveur()}/api/status`, type: 'GET',
     dataType: 'json',  contentType };
   return $.ajax(options)
-    .then( data => {
-      log(` - INFO : État du serveur sonarqube : ${data.status}`);
-      log(` - INFO : Version ${data.version}`);
-    })
+    .then()
     .catch( message => {
-      log(` - ERREUR : État du serveur sonarqube : DOWN (${message.statusText})`);
+      $('#callout-accueil-message').removeClass('hide success alert primary secondary');
+      $('#callout-accueil-message').addClass('alert');
+      $('#js-reference-information').html('<strong>[Accueil-001]</strong>');
+      $('#js-message-information').html(`État du serveur sonarqube : DOWN (${message.statusText})`);
       return (message.statusText);
-    }
+      }
     );
 };
 
@@ -98,41 +80,39 @@ const miseAJourListe=function() {
 
     return new Promise(resolve => {
       $.ajax(options).then(t => {
-        log(` - INFO : Nombre de projet disponible : ${t.nombre}`);
-        $('#js-nombre-projet').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.nombre));
-        /** On efface le plus|moins */
-        $('#js-moins, #js-plus').html('');
-        /** On ferme la callout */
-        $('#info-close').trigger('click');
+        if (t.type==='alert'){
+          $('#callout-accueil-message').removeClass('hide success alert primary secondary');
+          $('#callout-accueil-message').addClass(t.type);
+          $('#js-reference-information').html(t.reference);
+          $('#js-message-information').html(t.message);
+          return;
+        } else {
+          /** On affiche le nombre de projet */
+          $('#js-nombre-projet').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.nombre));
+          /** On efface le plus|moins */
+          $('#js-moins, #js-plus').html('');
+          /** On ferme la callout */
+          $('#info-close').trigger('click');
+
+          /** On met à jour le nombre de projet public */
+          $('#js-public').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.public));
+          /** On met à jour le nombre de projet privée */
+          if (isNaN(t.private)) {
+            $('#js-private').html('-');
+            } else {
+              $('#js-private').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.private));
+            }
+
+          /** On affiche un message à l'utilisateur */
+          $('#callout-accueil-message').removeClass('hide success alert primary secondary');
+          $('#callout-accueil-message').addClass(t.type);
+          $('#js-reference-information').html(t.reference);
+          $('#js-message-information').html(t.message);
+        }
         resolve();
       });
     });
 };
-
-/**
-  * [Description for miseAJourListeProjet]
-  *
-  * @return [type]
-  *
-  */
-const miseAJourListeProjet=function() {
-  const options = {
-    url: `${serveur()}/api/tags`, type: 'GET',
-    dataType: 'json', contentType };
-    return new Promise(resolve => {
-      $.ajax(options).then(t => {
-        log(` - INFO : ${t.message}`);
-        $('#js-public').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.public));
-        if (isNaN(t.private)) {
-          $('#js-private').html('-');
-          } else {
-            $('#js-private').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.private));
-          }
-        resolve();
-      });
-    });
-};
-
 
 /**
   * [Description for miseAJourListeAsync]
@@ -144,16 +124,6 @@ const miseAJourListeAsync= async function() {
   await miseAJourListe();
 };
 
-
-/**
-  * [Description for miseAJourListeProjetAsync]
-  * Fonctions asynchronnes (Mise à jour de la liste de prjet et des tags)
-  * @return [type]
-  *
-  */
-const miseAJourListeProjetAsync= async function() {
-  await miseAJourListeProjet();
-};
 
 /********* Evenement *******/
 
@@ -186,9 +156,3 @@ $('.suivi-svg').on('click', function(e) {
     log(' - ERROR - La clé n\'est pas correcte !! !');
   }
 });
-
-/** ******************** main *************************** */
-
-// On dit bonjour.
-ditBonjour();
-miseAJourListeProjetAsync();
