@@ -83,7 +83,7 @@ class ApiProjetController extends AbstractController
     $this->em = $em;
   }
 
- /**
+  /**
    * [Description for date_to_minute]
    * Fonction privée pour convertir une date au format xxd aah xxmin en minutes
    *
@@ -260,7 +260,7 @@ class ApiProjetController extends AbstractController
 
   /**
    * [Description for liste_projet]
-   * Récupère la liste des projets nom + clé
+   * Récupère la liste des projets nom + clé pour une équipe
    * http://{url}}/api/liste/projet
    *
    * @param Connection $connection
@@ -272,24 +272,58 @@ class ApiProjetController extends AbstractController
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/liste/projet', name: 'liste_projet', methods: ['GET'])]
-  public function liste_projet(Connection $connection): response
+  public function liste_projet(Security $security, Connection $connection): response
   {
-    $sql = "SELECT maven_key, name from 'liste_projet'";
-    $rqt = $connection->fetchAllNumeric($sql);
-
-    if (!$rqt) {
-      throw $this->createNotFoundException('Oops - Il y a un problème.');
-    }
-
-    $liste = [];
-    /** objet = { id: clé, text: "blablabla" }; */
-    foreach ($rqt as $value) {
-      $objet = ['id' => $value[0], 'text' => $value[1]];
-      array_push($liste, $objet);
-    }
-
+    /** On créé un objet response */
     $response = new JsonResponse();
-    return $response->setData(["liste" => $liste, Response::HTTP_OK]);
+
+    /** On vérfie les droits de l'utilisateur */
+    $userSecurity=$security->getUser();
+    /* On bind les informations utilisateur */
+    $equipes=$security->getUser()->getEquipe();
+
+    /** Si l'utilisateur n'est pas rattaché à une équipe on ne charge rien */
+    if (empty($equipes)){
+      /** On envoi un message à l'utilisateur */
+      $reference="<strong>[PROJET-003]</strong>";
+      $message="Vous devez être rattaché à une équipe.";
+      $type="alert";
+      return $response->setData(["reference" => $reference, "message"=>$message,
+        "type"=>$type, Response::HTTP_OK]);
+    }
+
+    /** On recherche les projets pour les équipes rattaché à l'utilisateur */
+    $in='';
+    foreach ($equipes as $equipe)
+    {
+      if ($equipe!=='@TEST' || $equipe!=='null') {
+        /** On met en minuscule */
+        $minus=trim(strtolower($equipe));
+        /** On construit la clause in et on remplace les espaces par des tirets  */
+        $in=$in."json_each.value LIKE '".preg_replace('/\s+/', '-', $minus)."%' OR ";
+      }
+    }
+    /** On supprime le dernier caractère si c'est une virugule */
+    $inTrim= rtrim($in," OR ");
+
+    /** On construit la requête de selection des projets en fonction de(s) (l')équipes */
+    $sql="SELECT DISTINCT liste_projet.maven_key as id, liste_projet.name as text
+          FROM liste_projet, json_each(liste_projet.tags)
+          WHERE $inTrim";
+    $trim=trim(preg_replace(static::$regex, " ", $sql));
+    $exec=$this->em->getConnection()->prepare($trim)->executeQuery();
+    $listes=$exec->fetchAll();
+
+    /** j'ai pas trouvé de projet pour cette équipe. */
+    if (empty($listes)) {
+      $reference="<strong>[PROJET-004]</strong>";
+      $message="Je n'ai pas trouvé de projets pour ton équipe.";
+      $type="warning";
+      return $response->setData(["reference" => $reference, "message"=>$message,
+        "type"=>$type, Response::HTTP_OK]);
+    }
+
+    return $response->setData(["liste" => $listes, Response::HTTP_OK]);
   }
 
   /**
