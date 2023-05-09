@@ -159,6 +159,16 @@ class ApiHomeController extends AbstractController
       $mode = $request->get('mode');
     }
 
+    /** On vérifie si l'utilisateur à un rôle Gestionnaire ? */
+    if (!$this->isGranted('ROLE_GESTIONNAIR')){
+      return $response->setData([
+        "mode"=>$mode ,
+        "type"=>'alert',
+        "reference" => "<strong>[Accueil-004]</strong>",
+        "message"=> "Vous devez disposer du rôle GESTIONNAIRE pour effectuée cette action",
+        Response::HTTP_OK]);
+    }
+
     $url = $this->getParameter(static::$sonarUrl)."/api/components/search_projects?ps=500";
 
     /** On appel le client http */
