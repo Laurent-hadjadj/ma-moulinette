@@ -26,18 +26,23 @@
     </header>
 
     <div class="grid-container">
+    {% for message in app.flashes('alert') %}
+        <div class="callout alert" data-closable>
+          <p class="open-sans text-justify callout-message">{{ message }}</p>
+          <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      {% endfor %}
+      <h4 class="claire-hand">Informations et outils.</h4>
       {# Message d'information #}
-      <div id="callout-accueil-message" class="callout alert-callout-border hide" data-closable>
+      <div id="callout-accueil-message" class="callout alert-callout-border hide">
         <p class="open-sans text-justify js-message">
           <span id="js-reference-information"></span>
           <span id="js-message-information"></span>
         </p>
-          <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
-            <span aria-hidden="true">&times;</span>
-          </button>
       </div>
 
-      <h4 class="claire-hand">Informations et outils.</h4>
       <fieldset class="fieldset cell fieldset-container">
         <legend class="open-sans">Référentiel local.</legend>
         <div class="grid-x cell">
@@ -128,13 +133,13 @@
           <div class="grid-x cell">
             <div class="small-12 medium-6 large-6 cell">
               <h4 class="claire-hand visibility-box visibility-box-public">Public&nbsp;
-                <span id="js-public" class="stat stat-visibility float-right"></span>
+                <span id="js-public" class="stat stat-visibility float-right">{{public}}</span>
               </h4>
             </div>
 
             <div class="small-12 medium-6 large-6 cell">
               <h4 class="claire-hand visibility-box">Privé
-                <span id="js-private" class="stat stat-visibility float-right"></span>
+                <span id="js-private" class="stat stat-visibility float-right">{{private}}</span>
               </h4>
             </div>
           </div>
