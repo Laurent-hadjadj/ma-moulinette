@@ -240,22 +240,22 @@ class ApiProjetController extends AbstractController
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/favori/check', name: 'favori_check', methods: ['GET'])]
-  public function favoriCheck(Request $request): response
+  public function favoriCheck(Security $security, Request $request): response
   {
     /** oN créé un objet réponse */
     $response = new JsonResponse();
     $mavenKey = $request->get('mavenKey');
 
-    /** On vérifie si le projet est déjà en favori*/
-    $sql = "SELECT favori FROM favori WHERE maven_key='${mavenKey}'";
-    $select = $this->em->getConnection()->prepare($sql)->executeQuery();
-    $r = $select->fetchAllAssociative();
+    /** On vérfie les droits de l'utilisateur */
+    $userSecurity=$security->getUser();
+    /* On bind les informations utilisateur */
+    $preference=$security->getUser()->getPreference();
 
-    if (empty($r)) {
+    $favori=in_array($mavenKey, $preference['favori']);
+    if (!$favori){
       return $response->setData(["favori"=>'null', "statut" => "null", Response::HTTP_OK]);
     }
-    /* La requete a remonté un résultat donc statut =1 */
-    return $response->setData(["favori" => $r[0]['favori'], "statut" => 1, Response::HTTP_OK]);
+    return $response->setData(["favori" => $favori, "statut" => 1, Response::HTTP_OK]);
   }
 
   /**
