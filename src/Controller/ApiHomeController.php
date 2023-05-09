@@ -24,7 +24,6 @@ use DateTimeZone;
 /** Accès aux tables SLQLite */
 use Doctrine\ORM\EntityManagerInterface;
 
-use App\Entity\Main\Tags;
 use App\Entity\Main\Profiles;
 use App\Entity\Main\ListeProjet;
 
@@ -76,7 +75,7 @@ class ApiHomeController extends AbstractController
    * @return response
    *
    * Created at: 15/12/2022, 21:13:23 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/status', name: 'sonar_status', methods: ['GET'])]
@@ -160,13 +159,26 @@ class ApiHomeController extends AbstractController
       $mode = $request->get('mode');
     }
 
-    $url = $this->getParameter(static::$sonarUrl) . "/api/components/search?qualifiers=TRK&ps=500&p=1";
+    $url = $this->getParameter(static::$sonarUrl)."/api/components/search_projects?ps=500";
 
     /** On appel le client http */
     $result = $client->http($url);
+
+    /** On, initialiser les variables  */
+    $public=$private=$emptyTags=$nombre=0;
+
+    /** On créé un objet DateTime */
     $date = new DateTime();
-    $date->setTimezone(new DateTimeZone(static::$europeParis));
-    $nombre = 0;
+    $timezone = new DateTimeZone(static::$europeParis);
+    $date->setTimezone($timezone);
+
+    /** On vérifie que sonarqube a au moins 1 projet */
+    if (!$result){
+      $reference="<strong>[Accueil-003]</strong>";
+      $type="alert";
+      $message="Je n'ai pas trouvé de projet sur le serveur sonarqube.";
+      return $response->setData(["reference"=>$reference, "type"=>$type, "message" => $message, Response::HTTP_OK]);
+    }
 
     /** On supprime les données de la table avant d'importer les données. */
     $sql = "DELETE FROM liste_projet";
@@ -174,29 +186,43 @@ class ApiHomeController extends AbstractController
     if ($mode!='TEST') {
       $delete->executeQuery();
     }
-
-    /**  On compte le nombre de projet et on insert les projets dans la table liste_projet. */
-    foreach ($result["components"] as $component) {
+    /**
+     * Si la table est vide on insert les résultats et
+     * on revoie les résultats.
+     */
+    foreach ($result["components"] as $projet) {
       /**
        *  On exclue les projets archivés avec la particule "-SVN".
        *  "project": "fr.domaine:mon-application-SVN"
        */
-      $mystring = $component["project"];
-      $findme   = '-SVN';
+      $mystring=$projet["key"];
+      $findme='-SVN';
       if (!strpos($mystring, $findme)) {
-        $nombre = $nombre + 1;
         $listeProjet = new ListeProjet();
-        $listeProjet->setName($component["name"]);
-        $listeProjet->setMavenKey($component["project"]);
+        $listeProjet->setMavenKey($projet["key"]);
+        $listeProjet->setName($projet["name"]);
+        $listeProjet->setTags($projet["tags"]);
+        $listeProjet->setVisibility($projet["visibility"]);
         $listeProjet->setDateEnregistrement($date);
         $this->em->persist($listeProjet);
         if ($mode!='TEST') {
           $this->em->flush();
         }
+        $nombre++;
+        /** On calcul le nombre de projet public et privé */
+        if ($projet["visibility"]=='public') {
+          $public++;
+          } else {
+          $private++;
+        }
+        /** On calcul le nombre de projet sans tags */
+        if (empty($projet["tags"])) {
+          $emptyTags++;
+        }
       }
     }
 
-    /** On met à jour la table propietes */
+    /** On met à jour la table proprietes */
     $dateModificationProjet = $date->format(static::$dateFormatShort);
 
     $sql="UPDATE properties
@@ -210,9 +236,24 @@ class ApiHomeController extends AbstractController
                 ->executeQuery();
     }
 
-    return $response->setData(["nombre" => $nombre, 'mode'=>$mode, Response::HTTP_OK]);
-  }
+    /** on renvoie les résultats */
+    $reference="<strong>[Accueil-002]</strong>";
+    $type="success";
+    $message="Mise à jour de la liste des projets effectuée.";
 
+    return $response->setData(
+      [
+        "mode"=>$mode,
+        "reference"=>$reference,
+        "type"=>$type,
+        "message"=>$message,
+        "nombre"=>$nombre,
+        "public"=>$public,
+        "private"=>$private,
+        "empty_tags"=>$emptyTags,
+        Response::HTTP_OK
+      ]);
+  }
 
   /**
    * [Description for listeQualityProfiles]
@@ -294,190 +335,6 @@ class ApiHomeController extends AbstractController
               ->executeQuery();
     }
     return $response->setData(["mode"=>$mode, "listeProfil" => $liste, Response::HTTP_OK]);
-  }
-
-  /**
-   * [Description for tags]
-   * http://{url}/api/components/search_projects
-   *
-   * @return response
-   *
-   * Created at: 15/12/2022, 21:16:25 (Europe/Paris)
-   * @author    Laurent HADJADJ <laurent_h@me.com>
-   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
-  #[Route('/api/tags', name: 'tags', methods: ['GET'])]
-  public function tags(Request $request, Client $client): response
-  {
-    /** oN créé un objet réponse */
-    $response = new JsonResponse();
-
-    /** On on vérifie si on a activé le mode test */
-    if (is_null($request->get('mode'))) {
-      $mode="null";
-    } else {
-      $mode = $request->get('mode');
-    }
-
-    $url = $this->getParameter(static::$sonarUrl)."/api/components/search_projects?ps=500";
-
-    /** On appel le client http */
-    $result = $client->http($url);
-
-    /** On, initialiser les variables  */
-    $public=$private=$emptyTags=0;
-
-    /** On créé un objet DateTime */
-    $date = new DateTime();
-    $timezone = new DateTimeZone(static::$europeParis);
-    $date->setTimezone($timezone);
-
-    /** On vérifie que sonarqube a au moins 1 projet */
-    if (!$result){
-      $message="[001] Je n'ai pas trouvé de projet sur le serveur sonarqube.";
-      return $response->setData(["message" => $message, Response::HTTP_OK]);
-    }
-
-    /** On supprime la liste des tags */
-    $sql = "DELETE FROM tags";
-    $delete = $this->em->getConnection()->prepare($sql);
-    if ($mode!='TEST') {
-      $delete->executeQuery();
-    }
-
-    /** On récupère le dernier enregistrement */
-    $s0 = "SELECT *
-            FROM tags
-            ORDER BY date_enregistrement
-            DESC LIMIT 1";
-    $select=$this->em->getConnection()->prepare($s0)->executeQuery();
-    $liste = $select->fetchAllAssociative();
-
-    /**
-     * Si la table est vide on insert les résultats et
-     * on revoie les résultats.
-     */
-    if (empty($liste)) {
-      foreach ($result["components"] as $projet) {
-        $tags = new Tags();
-        $tags->setMavenKey($projet["key"]);
-        $tags->setName($projet["name"]);
-        $tags->setTags($projet["tags"]);
-        $tags->setVisibility($projet["visibility"]);
-        $tags->setDateEnregistrement($date);
-        $this->em->persist($tags);
-        if ($mode!='TEST') {
-          $this->em->flush();
-        }
-
-        /** On calcul le nombre de projet public et privé */
-        if ($projet["visibility"]=='public') {
-          $public++;
-          } else {
-          $private++;
-        }
-
-        /** On calcul le nombre de projet sans tags */
-        if (empty($projet["tags"])) {
-          $emptyTags++;
-        }
-      }
-
-      /** on renvoie les résultats */
-      $message="Initialisation de la liste des Tags...";
-      return $response->setData(
-        [
-          "mode"=>$mode,
-          "message" => $message,
-          "public"=> $public,
-          "private"=>$private,
-          "empty_tags"=>$emptyTags,
-          Response::HTTP_OK
-        ]);
-    }
-
-    /**
-     * La liste des tags existe,
-     * On regarde si on doit mettre à jour ou afficher la liste des tags
-     */
-    if (empty($liste)===false) {
-      /** On récupère la date du jour */
-      $dateDuJour=$date->format(static::$dateFormatShort);
-      $dateEnregistrement= new DateTime($liste[0]['date_enregistrement']);
-      /** Si la date d'enregistrement est > 1 jour à alors on met à jour */
-      if ($dateDuJour > $dateEnregistrement->format(static::$dateFormatShort)) {
-        /** On supprime la liste des tags */
-        $sql = "DELETE FROM tags";
-        $delete = $this->em->getConnection()->prepare($sql);
-        if ($mode!='TEST') {
-          $delete->executeQuery();
-        }
-
-        /** On insert les données dans la tables des projets et tags. */
-        foreach ($result["components"] as $projet) {
-          $tags = new Tags();
-          $tags->setMavenKey($projet["key"]);
-          $tags->setName($projet["name"]);
-          $tags->setTags($projet["tags"]);
-          $tags->setVisibility($projet["visibility"]);
-          $tags->setDateEnregistrement($date);
-          $this->em->persist($tags);
-          if ($mode!='TEST') {
-            $this->em->flush();
-          }
-
-          /** On calcul le nombre de projet public et privé */
-          if ($projet["visibility"]=='public') {
-            $public++;
-            } else {
-            $private++;
-          }
-
-          /** On calcul le nombre de projet sans tags */
-          if (empty($projet["tags"])) {
-            $emptyTags++;
-          }
-        }
-        $message="[002] On met à jour la liste des projets.";
-      } else {
-        /** On a déjà mis à jour la table, on récupère les données nécessaires. */
-        $tempo=$dateEnregistrement->format(static::$dateFormat);
-        $s1="SELECT count(*) as visibility
-                FROM tags
-                WHERE date_enregistrement='${tempo}'
-                AND visibility='public'";
-        $r1 = $this->em->getConnection()->prepare($s1)->executeQuery();
-        $t = $r1->fetchAllAssociative();
-        $public=$t[0]['visibility'];
-
-        $s2="SELECT count(*) as visibility
-                FROM tags
-                WHERE date_enregistrement='${tempo}'
-                AND visibility='private'";
-        $r2 = $this->em->getConnection()->prepare($s2)->executeQuery();
-        $t = $r2->fetchAllAssociative();
-        $private=$t[0]['visibility'];
-
-        $s3="SELECT count(*) as tags
-                FROM tags
-                WHERE date_enregistrement='${tempo}'
-                AND tags='[]'";
-        $r3 = $this->em->getConnection()->prepare($s3)->executeQuery();
-        $t = $r3->fetchAllAssociative();
-        $emptyTags=$t[0]['tags'];
-
-        $message="[003] On collecte les données concernant les projets.";
-      }
-    }
-    //select json_extract(tags, '$.lot.name') as father_name from tags
-
-    return $response->setData(
-      [ "mode"=>$mode,
-        "message" => $message,
-        "public"=>$public, "private"=>$private,
-        "empty_tags"=>$emptyTags,
-        Response::HTTP_OK
-    ]);
   }
 
   /**
