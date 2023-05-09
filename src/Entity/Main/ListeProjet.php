@@ -31,6 +31,12 @@ class ListeProjet
     #[ORM\Column(type: 'string', length: 128)]
     private $name;
 
+    #[ORM\Column(type: 'json')]
+    private $tags=[];
+
+    #[ORM\Column(type: 'string', length: 8)]
+    private $visibility;
+
     #[ORM\Column(type: 'datetime')]
     private $dateEnregistrement;
 
@@ -40,7 +46,7 @@ class ListeProjet
      * @return int|null
      *
      * Created at: 02/01/2023, 18:02:59 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getId(): ?int
@@ -70,7 +76,7 @@ class ListeProjet
      * @return self
      *
      * Created at: 02/01/2023, 18:03:02 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setMavenKey(string $mavenKey): self
@@ -86,7 +92,7 @@ class ListeProjet
      * @return string|null
      *
      * Created at: 02/01/2023, 18:03:03 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getName(): ?string
@@ -102,7 +108,7 @@ class ListeProjet
      * @return self
      *
      * Created at: 02/01/2023, 18:03:05 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setName(string $name): self
@@ -112,13 +118,76 @@ class ListeProjet
         return $this;
     }
 
+     /**
+     * [Description for getTags]
+     *
+     * @return array
+     *
+     * Created at: 02/01/2023, 18:11:23 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function getTags(): array
+    {
+        return $this->tags;
+    }
+
+    /**
+     * [Description for setTags]
+     *
+     * @param array $tags
+     *
+     * @return self
+     *
+     * Created at: 02/01/2023, 18:11:24 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function setTags(array $tags): self
+    {
+        $this->tags = $tags;
+
+        return $this;
+    }
+
+    /**
+     * [Description for getVisibility]
+     *
+     * @return string|null
+     *
+     * Created at: 02/01/2023, 18:11:26 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function getVisibility(): ?string
+    {
+        return $this->visibility;
+    }
+
+    /**
+     * [Description for setVisibility]
+     *
+     * @param string $visibility
+     *
+     * @return self
+     *
+     * Created at: 02/01/2023, 18:11:28 (Europe/Paris)
+     * @author    Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function setVisibility(string $visibility): self
+    {
+        $this->visibility = $visibility;
+
+        return $this;
+    }
     /**
      * [Description for getDateEnregistrement]
      *
      * @return \DateTimeInterface|null
      *
      * Created at: 02/01/2023, 18:03:07 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getDateEnregistrement(): ?\DateTimeInterface
@@ -134,7 +203,7 @@ class ListeProjet
      * @return self
      *
      * Created at: 02/01/2023, 18:03:08 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setDateEnregistrement(\DateTimeInterface $dateEnregistrement): self
