@@ -226,17 +226,25 @@ const selectProjet=function() {
 
   return $.ajax(options)
     .then(function (data) {
-      log(' - INFO : construction de la liste.');
-      $('.js-projet').select2({
-        matcher: match,
-        placeholder: 'Cliquez pour ouvrir la liste',
-        allowClear: true,
-        width: '100%',
-        minimumInputLength: 2,
-        minimumResultsForSearch: 20,
-        language: 'fr',
-        data: data.liste});
-      $('.analyse').removeClass('hide');
+      if (data.type==='alert' || data.type==='warning'){
+        $('#callout-projet-message').removeClass('hide success warning primary secondary');
+        $('#callout-projet-message').addClass(data.type);
+        $('#js-reference-information').html(data.reference);
+        $('#js-message-information').html(data.message);
+      } else {
+        log(' - INFO : construction de la liste.');
+        $('.js-projet').select2({
+          matcher: match,
+          placeholder: 'Cliquez pour ouvrir la liste',
+          allowClear: true,
+          width: '100%',
+          minimumInputLength: 2,
+          minimumResultsForSearch: 20,
+          language: 'fr',
+          data: data.liste
+        });
+        $('.analyse').removeClass('hide');
+      }
     });
 };
 
@@ -1088,11 +1096,12 @@ $('select[name="projet"]').change(function () {
     url: `${serveur()}/api/favori/check`, type: 'GET',
           dataType: 'json', data, contentType };
   $.ajax(options).then(t=> {
+    console.log(t);
     /*SQLite : 0 (false) and 1 (true). */
-    if ( t.favori===0 && t.statut===1 ) {
+    if ( t.favori===0 || t.favori===false && t.statut===1 ) {
           $('.favori-svg').removeClass('favori-svg-select');
         }
-    if (t.favori===1 && t.statut===1) {
+    if (t.favori===1 || t.favori===true && t.statut===1) {
           $('.favori-svg').addClass('favori-svg-select');
     } else {
       $('.favori-svg').removeClass('favori-svg-select');
@@ -1260,12 +1269,10 @@ $('.js-affiche-resultat').on('click', () => {
  * On lance l'enregistrement des données
  */
 $('.js-enregistrement').on('click', () => {
-  console.log('#### Enregistrement ####');
   /** On vérifie le rôle */
   const userRating = document.querySelector('.js-user-rating');
   const roles = JSON.parse(userRating.dataset.user);
-  console.log(roles);
-
+  
   if (!roles.includes('ROLE_COLLECTE') && !roles.includes('ROLE_BATCH') && !roles.includes('ROLE_GESTIONNAIRE')) {
     const type='alert';
     const reference='<strong>[PROJET-003]</strong>';
@@ -1333,3 +1340,14 @@ $('.js-repartition-module').on('click', () => {
     log(' - ERROR - [Répartition] Vous devez chosir un projet dans la liste !! !');
     }
 });
+
+/***********    Main */
+
+/** On affiche le dernier projet visualisé */
+// vide = null
+//const bookmark=localStorage.getItem('projet');
+//const preference = document.getElementById('preference');
+//const pBookmark=preference.dataset.bookmark;
+//if  (bookmark!=null && pBookmark===true){
+//  console.log(bookmark);
+//}
