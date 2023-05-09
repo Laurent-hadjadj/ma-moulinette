@@ -22,19 +22,30 @@
 * [COSUI](/documentation/cosui.md)
 * [Répartition détaillée](/documentation/repartition_details.md)
 
+## Evolutions
+
+`Note :` En version **2.0.0**, Le logger est supprimer et laisse sa place à une boîte d'information.
+
+`Note :` en version **2.0.0** l'icône **traitement** apparaît dès lors que vous avez le rôle **[BATCH]**.
+
+En version **1.6.0** deux (2) nouveaux indicateurs apparaissent pour afficher le nombre de projets dont la visibilité est de type **public** ou **privé**.
+
+`Note :` En version **1.5.0**, la gestion des versions a été ajoutée.
+
+`Note :` En version **1.5.0**, la gestion des référentiels locaux, à savoir, les projets et les profils, est changée pour prendre en compte le multi-utilisateur et mieux synchroniser les référentiels avec les données du serveur sonarqube.
+
 ## Page d'accueil
 
 Cette page permet le chargement du référentiel des applications pris en charge par le serveur sonarqube et la consultation et la mise à jour des référentiels de règles.
 
 ![home](/documentation/ressources/home-001.jpg)
 
-`Note :` En version **1.5.0**, la gestion des versions a été ajoutée.
 Si la version de l'application et de la base de données est identique, tout va bien. Par contre si une différence est détectée, alors un message est affiché à l'utilisateur connecté.
+
 Il faudra passer le script de migration 1.5.0, qui contient également les modifications pour la version 1.3.0 et 1.4.0.
 
 ![home](/documentation/ressources/home-001a.jpg)
 
-`Note :` En version **1.5.0**, la gestion des référentiels locaux, à savoir, les projets et les profils, est changée pour prendre en compte le multi-utilisateur et mieux synchroniser les référentiels avec les données du serveur sonarqube.
 
 Une nouvelle table a été créée pour enregistrer les mises à jour des référentiels et permettre de tenir à jour les référentiels de l'application.
 
@@ -57,18 +68,20 @@ Lorsque l'on clique sur le bouton de mise à jour des projets ou des profils, l'
 
 ![home](/documentation/ressources/home-001c.jpg)
 
+Pour effectuer la mise à jour, il faut avoir le rôle [GESTIONNAIRE].
+
+![home](/documentation/ressources/home-001e.jpg)
+
+![home](/documentation/ressources/home-001d.jpg)
+
 Notez, en haut à droite, l'affichage de quatre liens, en fonction des droits de l'utilisateur (cf. chapitre sécurité) :
 
 ![home](/documentation/ressources/home-002.jpg)
 
-* Utilisateur : gestion des utilisateurs ;
-* Traitements : gestion des traitements de masse ;
-* Dashboard : indicateurs ;
-* Logout : pour se déconnecter de l'application ;
-
-`Note :` en version **2.0.0** l'icône **traitement** apparaît dès lors que vous avez le rôle [BATCH].
-
-En version **1.6.0** deux (2) nouveaux indicateurs apparaissent pour afficher le nombre de projets dont la visibilité est de type **public** ou **privé**.
+* `Utilisateur` : gestion des utilisateurs ;
+* `Traitements` : gestion des traitements de masse ;
+* `Dashboard` : indicateurs ;
+* `Logout` : pour se déconnecter de l'application ;
 
 Le bouton **mon projet** permet l'accès à la page des projets.
 
