@@ -1932,7 +1932,7 @@ class ApiProjetController extends AbstractController
     return $response->setData(["mode"=>$mode,"nosonar" => $result["paging"]["total"], Response::HTTP_OK]);
   }
 
-/**
+  /**
    * [Description for projetNosonarAjout]
    * On récupère la liste des fichiers ayant fait l'objet d'un Todo
    * http://{url}api/issues/search?componentKeys={key}&rules={rules}&ps=500&p=1
