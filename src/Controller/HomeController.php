@@ -406,6 +406,21 @@ class HomeController extends AbstractController
             }
     }
 
+    /** ***************** 4 - Visibility *****************************  */
+    $s1="SELECT count(*) as visibility
+        FROM liste_projet
+        WHERE visibility='public'";
+    $r1 = $this->em->getConnection()->prepare($s1)->executeQuery();
+    $t = $r1->fetchAllAssociative();
+    $public=$t[0]['visibility'];
+
+    $s2="SELECT count(*) as visibility
+        FROM liste_projet
+        WHERE visibility='private'";
+    $r2 = $this->em->getConnection()->prepare($s2)->executeQuery();
+    $t = $r2->fetchAllAssociative();
+    $private=$t[0]['visibility'];
+
     /** ***************** VERSION *** ************************* */
     /** On récupère le numero de version en base */
     $versionBD=self::getVersion();
@@ -457,6 +472,7 @@ class HomeController extends AbstractController
       'projetBD' => $projetBD, 'projetSonar' => $projetSonar,
       'profilBD' => $profilBD, 'profilSonar' => $profilSonar,
       'nombreFavori' => $nombre, 'favori' => $favori,
+      "public"=>$public, "private"=>$private,
       'version' => $versionAPP, 'dateCopyright' => \date('Y'),
       'mode'=>$mode, Response::HTTP_OK];
 
