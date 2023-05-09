@@ -37,7 +37,7 @@ class ProjetController extends AbstractController
    * @param mixed
    *
    * Created at: 15/12/2022, 22:15:51 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   public function __construct (
@@ -45,8 +45,8 @@ class ProjetController extends AbstractController
     private ManagerRegistry $manager,
     )
     {
-        $this->manager = $manager;
-        $this->connection = $connection;
+      $this->manager = $manager;
+      $this->connection = $connection;
     }
 
   /**
@@ -55,7 +55,7 @@ class ProjetController extends AbstractController
    * @return Response
    *
    * Created at: 15/12/2022, 22:16:04 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/projet', name: 'projet', methods: 'GET')]
@@ -173,7 +173,7 @@ class ProjetController extends AbstractController
      * @return array
      *
      * Created at: 15/12/2022, 22:16:56 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     private function reference($mavenKey): array
@@ -222,7 +222,7 @@ class ProjetController extends AbstractController
      * @return array
      *
      * Created at: 15/12/2022, 22:17:19 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     private function repartition($mavenKey, $contents): array
@@ -290,7 +290,7 @@ class ProjetController extends AbstractController
      * @return array
      *
      * Created at: 15/12/2022, 22:17:46 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     private function traitement($mavenKey, $setup, $type, $severity): array
@@ -323,7 +323,7 @@ class ProjetController extends AbstractController
    * @return string
    *
    * Created at: 15/12/2022, 22:17:57 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   private function variation ($a, $b): string
