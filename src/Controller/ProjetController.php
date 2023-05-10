@@ -51,7 +51,7 @@ class ProjetController extends AbstractController
 
   /**
    * [Description for index]
-   *
+   * Affcihe la page projet
    * @return Response
    *
    * Created at: 15/12/2022, 22:16:04 (Europe/Paris)
@@ -77,13 +77,14 @@ class ProjetController extends AbstractController
 
     if ($mode==='TEST') {
       return $response->setData($render);
-    } else { return $this->render('projet/index.html.twig', $render); }
-
+    } else {
+      return $this->render('projet/index.html.twig', $render);
+    }
   }
 
     /**
      * [Description for setup]
-     *
+     * On récupère le dernier setup du projet
      * @param mixed $mavenKey
      *
      * @return string
@@ -108,7 +109,7 @@ class ProjetController extends AbstractController
 
     /**
      * [Description for notes]
-     *
+     * On récupère les indicateur du bloques infomation pour le projet
      * @param mixed $mavenKey
      *
      * @return array
@@ -120,12 +121,12 @@ class ProjetController extends AbstractController
     private function notes($mavenKey): array
     {
         /** On récupère les informations du projet de la table historique */
-        $sql = "SELECT  version, nom_projet AS name, date_version,
-                        note_reliability, note_security, note_hotspot,note_sqale,
-                        bug_blocker, bug_critical, bug_major,
-                        vulnerability_blocker, vulnerability_critical, vulnerability_major,
-                        code_smell_blocker, code_smell_critical, code_smell_major,
-                        hotspot_total
+        $sql = "SELECT version, nom_projet AS name, date_version,
+                  note_reliability, note_security, note_hotspot,note_sqale,
+                  bug_blocker, bug_critical, bug_major,
+                  vulnerability_blocker, vulnerability_critical, vulnerability_major,
+                  code_smell_blocker, code_smell_critical, code_smell_major,
+                  hotspot_total
                 FROM historique
                 WHERE maven_key='${mavenKey}'
                 ORDER BY date_version DESC LIMIT 1";
@@ -167,7 +168,7 @@ class ProjetController extends AbstractController
 
     /**
      * [Description for reference]
-     *
+     * On récupère les informations du projet de référence.
      * @param mixed $mavenKey
      *
      * @return array
@@ -180,10 +181,10 @@ class ProjetController extends AbstractController
     {
         /** On récupère les informations du projet de référence */
         $sql = "SELECT  version, date_version,
-                        note_reliability, note_security, note_hotspot, note_sqale,
-                        bug_blocker, bug_critical, bug_major,
-                        vulnerability_blocker, vulnerability_critical, vulnerability_major,
-                        code_smell_blocker, code_smell_critical, code_smell_major, hotspot_total
+                  note_reliability, note_security, note_hotspot, note_sqale,
+                  bug_blocker, bug_critical, bug_major,
+                  vulnerability_blocker, vulnerability_critical, vulnerability_major,
+                  code_smell_blocker, code_smell_critical, code_smell_major, hotspot_total
                 FROM historique
                 WHERE maven_key='${mavenKey}' AND initial=1";
         $r = $this->connection->fetchAllAssociative($sql);
@@ -215,6 +216,7 @@ class ProjetController extends AbstractController
 
     /**
      * [Description for repartition]
+     * On calcule le nombre de défaut par module
      *
      * @param mixed $mavenKey
      * @param mixed $contents
@@ -316,6 +318,7 @@ class ProjetController extends AbstractController
 
   /**
    * [Description for variation]
+   * Calcul de la variation entre deux notes
    *
    * @param mixed $a
    * @param mixed $b
@@ -356,13 +359,13 @@ class ProjetController extends AbstractController
 
   /**
    * [Description for projetCosui]
-   *
+   * On ouvre la page COSUI
    * @param Request $request
    *
    * @return Response
    *
    * Created at: 15/12/2022, 22:18:08 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/projet/cosui', name: 'projet_cosui', methods: 'GET')]
