@@ -242,12 +242,13 @@ class ApiProjetController extends AbstractController
   #[Route('/api/favori/check', name: 'favori_check', methods: ['GET'])]
   public function favoriCheck(Security $security, Request $request): response
   {
+    /** On récupère l'objet User du contexte de sécurité */
+    $userSecurity=$security->getUser();
+
     /** oN créé un objet réponse */
     $response = new JsonResponse();
     $mavenKey = $request->get('mavenKey');
 
-    /** On vérfie les droits de l'utilisateur */
-    $userSecurity=$security->getUser();
     /* On bind les informations utilisateur */
     $preference=$security->getUser()->getPreference();
 
