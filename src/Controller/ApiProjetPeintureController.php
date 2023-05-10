@@ -162,7 +162,7 @@ class ApiProjetPeintureController extends AbstractController
 
     /** On supprime de la liste le projet. */
     $delete = array_diff($preference['liste'], [$mavenKey]);
-    $jarray=json_encode(['liste'=>$delete, 'favori'=>$preference['favori']]);
+    $jarray=json_encode(['liste'=>$delete, 'favori'=>$preference['favori'],'dernier-projet'=>$preference['dernier-projet']]);
     $sql = "UPDATE utilisateur
             SET preference = '$jarray'
             WHERE courriel='$courriel';";
