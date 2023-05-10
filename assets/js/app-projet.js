@@ -1231,7 +1231,7 @@ $('.js-enregistrement').on('click', () => {
   /** On vérifie le rôle */
   const userRating = document.querySelector('.js-user-rating');
   const roles = JSON.parse(userRating.dataset.user);
-  
+
   if (!roles.includes('ROLE_COLLECTE') && !roles.includes('ROLE_BATCH') && !roles.includes('ROLE_GESTIONNAIRE')) {
     const type='alert';
     const reference='<strong>[PROJET-003]</strong>';
@@ -1301,3 +1301,14 @@ $('.js-repartition-module').on('click', () => {
 });
 
 /***********    Main */
+const e = document.getElementById('feedback');
+let dernierBidule=e.dataset.dernierprojet;
+
+if (dernierBidule !== undefined){
+  /* On récupère le nom du projet */
+  const b = dernierBidule.split(':');
+  const nom = b[1];
+  const $newOption = $("<option selected='selected'></option>").val(dernierBidule).text(nom);
+  /* On  active le projet */
+  $('select[name="projet"]').append($newOption).trigger('change');
+}
