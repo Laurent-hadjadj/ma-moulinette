@@ -1056,18 +1056,17 @@ $('.js-analyse').on('click', function () {
  */
 $('select[name="projet"]').change(function () {
   $('#select-result').html(`<strong>${$('select[name="projet"]').val().trim()}</strong>`);
-  /* On regarde si le projet est en favori, on récupère son statut. */
+  /* On regarde si le projet est en favori */
   const data = { mavenKey: $('#select-result').text().trim() };
   const options = {
     url: `${serveur()}/api/favori/check`, type: 'GET',
           dataType: 'json', data, contentType };
   $.ajax(options).then(t=> {
-    console.log(t);
     /*SQLite : 0 (false) and 1 (true). */
-    if ( t.favori===0 || t.favori===false && t.statut===1 ) {
+    if ( t.favori===0 || t.favori===false) {
           $('.favori-svg').removeClass('favori-svg-select');
         }
-    if (t.favori===1 || t.favori===true && t.statut===1) {
+    if (t.favori===1 || t.favori===true) {
           $('.favori-svg').addClass('favori-svg-select');
     } else {
       $('.favori-svg').removeClass('favori-svg-select');
@@ -1162,27 +1161,24 @@ $('.js-affiche-todo').on('click', function () {
  * Événement : on marque le projet comme favori.
  */
 $('.favori-svg').on('click', () => {
-  let statut;
 
   /* On regarde si le projet est déjà en favori. */
   if ($('select[name="projet"]').val() !=='' && $('select[name="projet"]').val() !=='TheID') {
     if ($('.favori-svg').hasClass('favori-svg-select')){
           $('.favori-svg').removeClass('favori-svg-select');
-          statut=0;
       } else {
         $('.favori-svg').addClass('favori-svg-select');
-        statut=1;
       }
 
-    const data = { mavenKey: $('#select-result').text().trim(), statut };
+    const data = { mavenKey: $('#select-result').text().trim() };
     const options = {
       url: `${serveur()}/api/favori`, type: 'GET',
       dataType: 'json',  data, contentType };
       $.ajax(options).then( t => {
-        if (statut === t.statut){
+        if (t.statut===1){
           log(' - INFO : Ajout du projet à la liste des favoris.');
         }
-        if (statut === t.statut) {
+        if (t.statut===0) {
           log(' - INFO : Suppression du projet à la liste des favoris.');
         }
       });
