@@ -26,12 +26,21 @@
 
 * [x] Ajout d'une boîte d'information pour les messages d'information et d'alerte.
 * [x] Il faut avoir au minimum le rôle `COLLECTE` pour lancer la collecte du indicateur du projet.
+* [x]  La liste affiche uniquement les projets de l'équipe.
 
 ## Page Projet
 
 La page projet permet, une fois sélectionné un projet, la collecte des données et/ou l'affichage des résultats de la dernière collecte.
 
 ![projet](/documentation/ressources/projet-000.jpg)
+
+Si l'utilisateur n'est pas rattaché à une équipe, il ne pourra pas choisir de projet.
+
+![projet](/documentation/ressources/projet-000b.jpg)
+
+L'utilisateur est bien rattaché à une équipe mais qui ne correspond à aucun tag présent sur le serveur sonarqube.
+
+![projet](/documentation/ressources/projet-000c.jpg)
 
 Dans le sélecteur des projets, je saisis les trois premières lettres de mon projet.
 
