@@ -38,6 +38,7 @@ class ApiProjetPeintureController extends AbstractController
 
   public static $erreurMavenKey="La clé maven est vide!";
   const HTTP_ERROR_406 = "                   Vous devez lancer une analyse pour ce projet !!!";
+  public static $regex = "/\s+/u";
 
   /**
    * [Description for isValide]
@@ -83,11 +84,13 @@ class ApiProjetPeintureController extends AbstractController
     /** On crée un objet response */
     $response = new JsonResponse();
 
-    /** On récupère la liste des projets ayant déjà fait l'objet d'une analyse. */
-    //$sql = "SELECT project_name as name, maven_key AS key
+    /**
+     * On récupère la liste des projets ayant déjà fait l'objet d'une analyse.
+     * On n'utilise plus le critère liste=TRUE/FALSE car on utilise les préferences
+     * de l'utilisateur
+     * */
     $sql = "SELECT maven_key as key
             FROM anomalie
-            WHERE liste = TRUE
             GROUP BY maven_key
             ORDER BY project_name ASC";
 
@@ -107,10 +110,10 @@ class ApiProjetPeintureController extends AbstractController
      * on regarde si le projet a déjà fait l'objet d'une analyse
      * et si le projet est en favori.
      */
-    $mesProjets=$preference['projet'];
+    $maListe=$preference['liste'];
     $mesFavoris=$preference['favori'];
     $listeProjet=[];
-    foreach ($mesProjets as $projet) {
+    foreach ($maListe as $projet) {
       if (in_array(["key"=>$projet],$analyses)){
         $t=explode(":", $projet);
         array_push($listeProjet,["key"=>$projet, "name"=>$t[1], "favori"=>in_array($projet,$mesFavoris)]);
@@ -135,9 +138,14 @@ class ApiProjetPeintureController extends AbstractController
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  #[Route('/api/projet/mes-applications/delete', name: 'projet_mesapplications_delete', methods: ['GET'])]
-  public function projetMesApplicationsDelete(Request $request): response
+  #[Route('/api/projet/mes-applications/delete', name: 'projet_mes_applications_delete', methods: ['GET'])]
+  public function projetMesApplicationsDelete(Security $security, Request $request): response
   {
+    /** On récupère l'objet User du contexte de sécurité */
+    $userSecurity=$security->getUser();
+    $preference=$security->getUser()->getPreference();
+    $courriel=$security->getUser()->getCourriel();
+
     /** On créé un objet response */
     $response = new JsonResponse();
 
@@ -152,12 +160,16 @@ class ApiProjetPeintureController extends AbstractController
         "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
     }
 
-    /** On récupère la liste des projets ayant déjà fait l'objet d'une analyse. */
-    $sql = "UPDATE anomalie
-            SET liste = FALSE
-            WHERE maven_key='$mavenKey';";
+    /** On supprime de la liste le projet. */
+
+    $delete = array_diff($preference['liste'], [$mavenKey]);
+    $jarray=json_encode(['liste'=>$delete, 'favori'=>$preference['favori']]);
+    $sql = "UPDATE utilisateur
+            SET preference = '$jarray'
+            WHERE courriel='$courriel';";
+    $trim=trim(preg_replace(static::$regex, " ", $sql));
     if ($mode!=="TEST") {
-      $this->em->getConnection()->prepare($sql)->executeQuery();
+      $this->em->getConnection()->prepare($trim)->executeQuery();
     }
 
     return $response->setData(['mode'=>$mode,"code" => 200, Response::HTTP_OK]);
