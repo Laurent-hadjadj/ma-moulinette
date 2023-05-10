@@ -746,11 +746,6 @@ const afficheProjetFavori=function() {
                 </span>
               </td>
               <td class="text-center capsule">
-                <span id="C-${i}" class="capsule-bulle C js-liste-collecter">
-                  <span id="tooltips-${i}" data-tooltip tabindex="3" title="Je lance la collecte des données.">C</span>
-                </span>
-              </td>
-              <td class="text-center capsule">
                 <span id="R-${i}" class="capsule-bulle R js-liste-afficher-resultat">
                   <span id="tooltips-${i}" data-tooltip tabindex="4" title="J'affiche les résultats.">R</span>
                 </span>
@@ -843,30 +838,6 @@ const afficheProjetFavori=function() {
       $('#name-'+a[1]).hide();
       setTimeout(function(){
         $('.information-texte').html('[02] - La suppression de la liste est terminée.');
-      }, deuxMille);
-    });
-
-    /* On gére le click sur le bouton C (Collecte) */
-    $('.js-liste-collecter').on('click', e => {
-      /* On récupère la valeur de l'ID */
-      const id = e.target.id;
-      const a = id.split('-');
-      const key='key-'+a[1];
-
-      /* On récupère la clé maven du projet */
-      const element = document.getElementById(key);
-      const mavenKey=element.dataset.mavenkey;
-
-      /* On récupère le nom du projet */
-      const b = mavenKey.split(':');
-      const nom = b[1];
-      const $newOption = $("<option selected='selected'></option>").val(mavenKey).text(nom);
-      $('select[name="projet"]').append($newOption).trigger('change');
-
-      /* On clique sur le bouton afficher les résultats */
-      $('.js-analyse').trigger('click');
-      setTimeout(function(){
-        $('.information-texte').html('[03] - La collecte est en cours. ...');
       }, deuxMille);
     });
 
