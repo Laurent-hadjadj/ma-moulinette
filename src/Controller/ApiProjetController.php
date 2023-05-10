@@ -206,7 +206,7 @@ class ApiProjetController extends AbstractController
      */
     if ($isFavori){
       $delete = array_diff($preference['favori'], [$mavenKey]);
-      $jarray=json_encode(['liste'=>$preference['liste'], 'favori'=>$delete]);
+      $jarray=json_encode(['liste'=>$preference['liste'], 'favori'=>$delete, 'dernier-projet'=>$preference['dernier-projet']]);
       $sql = "UPDATE utilisateur
               SET preference = '$jarray'
               WHERE courriel='$courriel';";
