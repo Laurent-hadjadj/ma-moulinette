@@ -21,16 +21,16 @@ use Symfony\Component\Routing\Annotation\Route;
 // Gestion de accès aux API
 use Symfony\Component\HttpFoundation\JsonResponse;
 
+/** Securité */
+use Symfony\Component\Security\Core\Security;
+
 // Accès aux tables SLQLite
 use Doctrine\ORM\EntityManagerInterface;
 
 class ApiProjetPeintureController extends AbstractController
 {
-
-  private $em;
-
   public function __construct(
-    EntityManagerInterface $em,
+    private EntityManagerInterface $em,
     )
   {
     $this->em = $em;
@@ -65,7 +65,7 @@ class ApiProjetPeintureController extends AbstractController
 
   /**
    * [Description for projetMesApplicationsListe]
-   * Récupupère la liste de mes projets et ceux en favoris
+   * Récupupère la liste des projets que j'ai visité et ceux en favori
    *
    * @return response
    *
@@ -73,40 +73,54 @@ class ApiProjetPeintureController extends AbstractController
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  #[Route('/api/projet/mes-applications/liste', name: 'projet_mesapplications_liste', methods: ['GET'])]
-  public function projetMesApplicationsListe(): response
+  #[Route('/api/projet/mes-applications/liste', name: 'projet_mes_applications_liste', methods: ['GET'])]
+  public function projetMesApplicationsListe(Security $security): response
   {
+   /** On récupère l'objet User du contexte de sécurité */
+    $userSecurity=$security->getUser();
+    $preference=$security->getUser()->getPreference();
+
+    /** On crée un objet response */
     $response = new JsonResponse();
+
     /** On récupère la liste des projets ayant déjà fait l'objet d'une analyse. */
-    $sql = "SELECT project_name as name, maven_key AS key
+    //$sql = "SELECT project_name as name, maven_key AS key
+    $sql = "SELECT maven_key as key
             FROM anomalie
             WHERE liste = TRUE
             GROUP BY maven_key
             ORDER BY project_name ASC";
 
     $select = $this->em->getConnection()->prepare($sql)->executeQuery();
-    $listeProjet = $select->fetchAllAssociative();
+    $analyses = $select->fetchAllAssociative();
 
     /** Si on a pas trouvé d'application. */
-    if (empty($listeProjet)) {
-      return $response->setData(["code" => 406, Response::HTTP_OK]);
+    if (empty($analyses)) {
+      $type="primary";
+      $reference="<strong>[Mes projets]</strong>";
+      $message="je n'ai pas trouvé d'analyse. Vous devez lancer une collecte.";
+      return $response->setData(["type"=>$type, "reference"=>$reference, "message"=>$message, Response::HTTP_OK]);
     }
 
-    /** On récupère la liste des projets favori. */
-    /** SQLite : 0 (false) and 1 (true). */
-    $sql = "SELECT maven_key AS key FROM favori WHERE favori=1";
-    $select = $this->em->getConnection()->prepare($sql)->executeQuery();
-    $favori = $select->fetchAllAssociative();
-
-    /** Si on a pas trouvé de favori. */
-    if (empty($favori)) {
-      $listeFavori = ["vide"];
-    } else {
-      $listeFavori = $favori;
+    /**
+     * Pour chaque projet de la liste de préference,
+     * on regarde si le projet a déjà fait l'objet d'une analyse
+     * et si le projet est en favori.
+     */
+    $mesProjets=$preference['projet'];
+    $mesFavoris=$preference['favori'];
+    $listeProjet=[];
+    foreach ($mesProjets as $projet) {
+      if (in_array(["key"=>$projet],$analyses)){
+        $t=explode(":", $projet);
+        array_push($listeProjet,["key"=>$projet, "name"=>$t[1], "favori"=>in_array($projet,$mesFavoris)]);
+      }
     }
 
-    return $response->setData(["code" => 200, "liste" => $listeProjet,
-    "favori" => $listeFavori, Response::HTTP_OK]);
+    return $response->setData([
+      "code" => 200,
+      "liste" => $listeProjet,
+      Response::HTTP_OK]);
   }
 
   /**
