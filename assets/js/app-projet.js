@@ -1102,9 +1102,6 @@ $('select[name="projet"]').change(function () {
   /* Bouton : active le bouton enregistrement. */
   $('.js-enregistrement').removeClass('enregistrement-disabled');
   $('.js-enregistrement' ).addClass('enregistrement-enabled');
-
-  /* on ajoute la clé slectionnée dans le local storage pour les pages security et graphques. */
-  localStorage.setItem('projet', $('select[name="projet"]').val().trim());
 });
 
 /**
@@ -1304,12 +1301,3 @@ $('.js-repartition-module').on('click', () => {
 });
 
 /***********    Main */
-
-/** On affiche le dernier projet visualisé */
-// vide = null
-//const bookmark=localStorage.getItem('projet');
-//const preference = document.getElementById('preference');
-//const pBookmark=preference.dataset.bookmark;
-//if  (bookmark!=null && pBookmark===true){
-//  console.log(bookmark);
-//}
