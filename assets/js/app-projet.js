@@ -685,7 +685,7 @@ const finCollecte=function(){
 
 /**
  * [Description for afficheProjetFavori]
- * On récupére la liste des projets et des favoris
+ * On récupére la liste des projets et des favoris de l'utilisateur
  * http://{url}/api/projet/mes-applications/liste
  *
  * @return [type]
@@ -701,10 +701,12 @@ const afficheProjetFavori=function() {
 
   return new Promise(resolve => {
     $.ajax(options).then(t=> {
-      let str, favori, i, liste=[], checkFavori;
-      /** http 200 */
-      if (t.code !== http200) {
-        log(' - ERROR : La liste des projets n\'a pas été trouvée.');
+      let str, favori, i;
+      if (t.type !== undefined) {
+        $('#callout-profil-message').removeClass('hide success alert primary secondary');
+        $('#callout-profil-message').addClass(t.type);
+        $('#js-reference-information').html(t.reference);
+        $('#js-message-information').html(t.message);
         return;
       }
 
@@ -718,20 +720,13 @@ const afficheProjetFavori=function() {
     <path d="m1215 4984c-531-89-963-456-1139-966-52-151-69-268-70-463 0-144 4-203 22-297 99-527 412-1085 962-1713 365-418 941-950 1436-1326l134-102 134 102c495 376 1071 908 1436 1326 550 628 863 1186 962 1713 31 167 31 432-1 582-109 513-470 924-951 1084-162 54-239 67-420 73-139 4-183 2-280-16-310-55-567-188-782-403l-98-98-98 98c-213 213-472 347-777 402-128 24-346 25-470 4zm438-341c274-52 521-211 691-444 23-30 79-123 125-207 47-84 88-152 91-152s44 68 91 152c128 231 214 337 362 449 218 164 482 241 755 218 276-23 512-137 708-340 127-133 222-302 271-486 24-88 27-116 27-278 0-163-3-191-28-300-105-447-394-942-865-1480-326-373-749-775-1196-1135l-125-101-125 101c-325 262-717 620-952 868-633 668-987 1227-1109 1747-25 109-28 137-28 300 0 162 3 190 27 278 92 343 335 620 657 750 201 81 411 101 623 60z" />
     </g></svg>`;
 
-    /*
-     * Si on a pas trouvé de favori on marque l'absence par un tiret sinon on créé une liste. */
-    if (t.favori[0] !== 'vide') {
-      liste=t.favori;
-    }
-
     /**
      * Pour chaque élément de la liste des projets analysés, on affiche le projet
-     * et si le projet est en favori on ajoute un petit-coeur
+     * et si le projet est en favori on ajoute un petit-coeur.
      */
     t.liste.forEach(element => {
       i++;
-      checkFavori=liste.find(maven => maven.key === element.key);
-      if (checkFavori !== undefined) {
+      if (element.favori){
         favori = favoriSvg;
       } else {
         favori=' - ';
