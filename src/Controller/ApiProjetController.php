@@ -159,7 +159,7 @@ class ApiProjetController extends AbstractController
   /**
    * [Description for favori]
    * Change le statut du favori pour un projet
-   * http://{url}/api/favori{key}
+   * http://{url}/api/favori?{key}
    *
    * @param Request $request
    *
@@ -170,8 +170,13 @@ class ApiProjetController extends AbstractController
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/favori', name: 'favori', methods: ['GET'])]
-  public function favori(Request $request): response
+  public function favori(Security $security, Request $request): response
   {
+    /** On récupère l'objet User du contexte de sécurité */
+    $userSecurity=$security->getUser();
+    $preference=$security->getUser()->getPreference();
+    $courriel=$security->getUser()->getCourriel();
+
     /** oN créé un objet réponse */
     $response = new JsonResponse();
 
@@ -184,44 +189,44 @@ class ApiProjetController extends AbstractController
 
     /** On bind les variables */
     $mavenKey = $request->get('mavenKey');
-    $statut = $request->get('statut');
 
     /** On teste si la clé est valide */
     if ($mavenKey==="null" && $mode==="TEST") {
       return $response->setData([
-        "mode"=>$mode, "mavenKey"=>$mavenKey, "statut"=>$statut,
+        "mode"=>$mode, "mavenKey"=>$mavenKey,
         "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
     }
 
-    $date = new DateTime();
-    $date->setTimezone(new DateTimeZone(static::$europeParis));
-    $tempoDate = $date->format(static::$dateFormat);
+    /** On regarde si la projet est dans les favoris */
+    $isFavori=in_array($mavenKey, $preference['favori']);
 
-    /** On vérifie si le projet est déjà en favori */
-    $sql = "SELECT * FROM favori WHERE maven_key='$mavenKey'";
-    $select = $this->em->getConnection()->prepare($sql)->executeQuery();
-
-    /** Si on a pas trouvé l'application dans la liste des favoris, alors on la rajoute. */
-    /** SQLite : 0 (false) and 1 (true). */
-
-    if (empty($select->fetchAllAssociative())) {
-      $sql = "INSERT INTO favori ('maven_key', 'favori', 'date_enregistrement')
-        VALUES ('${mavenKey}', 1, '${tempoDate}')";
-      if ($mode!="TEST"){
-          $this->em->getConnection()->prepare($sql)->executeQuery();
-      }
+    /**
+     * On supprime de la liste des favoris s'il exsite dans les préferences
+     * Sinon on l'ajoute
+     */
+    if ($isFavori){
+      $delete = array_diff($preference['favori'], [$mavenKey]);
+      $jarray=json_encode(['liste'=>$preference['liste'], 'favori'=>$delete]);
+      $sql = "UPDATE utilisateur
+              SET preference = '$jarray'
+              WHERE courriel='$courriel';";
+      $trim=trim(preg_replace(static::$regex, " ", $sql));
+      $statut=0;
     } else {
-      $sql = "UPDATE favori SET favori='${statut}',
-              date_enregistrement='${tempoDate}'
-              WHERE maven_key='${mavenKey}'";
-      if ($mode!="TEST"){
-        $this->em->getConnection()
-                  ->prepare(trim(preg_replace(static::$regex, " ", $sql)))
-                  ->executeQuery();
-      }
+      array_push($preference['favori'], $mavenKey);
+      $jarray=json_encode($preference);
+      $sql = "UPDATE utilisateur
+              SET preference = '$jarray'
+              WHERE courriel='$courriel';";
+      $trim=trim(preg_replace(static::$regex, " ", $sql));
+      $statut=1;
     }
 
-    /** On met à jour la table historique. */
+    /** On met à jour les préférence de l'utilisateur */
+    if ($mode!=="TEST") {
+      $this->em->getConnection()->prepare($trim)->executeQuery();
+    }
+
     return $response->setData(["mode"=>$mode, "statut"=>$statut, Response::HTTP_OK]);
   }
 
@@ -244,19 +249,14 @@ class ApiProjetController extends AbstractController
   {
     /** On récupère l'objet User du contexte de sécurité */
     $userSecurity=$security->getUser();
+    $preference=$security->getUser()->getPreference();
 
     /** oN créé un objet réponse */
     $response = new JsonResponse();
     $mavenKey = $request->get('mavenKey');
 
-    /* On bind les informations utilisateur */
-    $preference=$security->getUser()->getPreference();
-
     $favori=in_array($mavenKey, $preference['favori']);
-    if (!$favori){
-      return $response->setData(["favori"=>'null', "statut" => "null", Response::HTTP_OK]);
-    }
-    return $response->setData(["favori" => $favori, "statut" => 1, Response::HTTP_OK]);
+    return $response->setData(["favori" => $favori, Response::HTTP_OK]);
   }
 
   /**
