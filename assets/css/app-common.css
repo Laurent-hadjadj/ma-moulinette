@@ -17,132 +17,127 @@
 
 /* Mobile */
 @media only screen and (max-width: 20em) {
-  .ma-moulinette {
-    margin-left: 1rem;
-    font-size: 1.2rem;
-  }
-
-  .logout-svg {
-    width: 23px;
-    height: 24px;
-  }
-
-  .e-dashboard-svg,
-  .utilisateurs-svg,
-  .batch-svg {
-    margin-top: 0.8rem;
-    width: 27px;
-    height: 28px;
-    margin-right: 0.1rem;
-  }
-
-  .version {
-    margin-left: 1rem;
-    margin-top: -1.5rem;
-    font-size: 0.9rem;
-  }
-
-  /* Défini la taille de la police par défaut */
-  .open-sans { font-size: 0.9rem; }
-
   /* Taille du logo */
   .logo-svg {
     width: 50px;
     height: 36px;
   }
-}
 
-/* Mobile */
-@media only screen and (min-width: 20.025em) and (max-width: 22em) {
-  .ma-moulinette {
-    margin-left: 1rem;
-    font-size: 1.2rem;
-  }
+  .ma-moulinette-container { display: none; }
+  .version { display: none; }
 
   .logout-svg {
-    width: 23px;
-    height: 28px;
-  }
-
-  .e-dashboard-svg,
-  .utilisateurs-svg,
-  .batch-svg {
-    margin-top: 0.8rem;
-    margin-right: 0.1rem;
-    width: 27px;
-    height: 28px;
-  }
-
-  .version {
-    margin-left: 1rem;
-    margin-top: -1.5rem;
-    font-size: 1rem;
-  }
-
-  .open-sans { font-size: 0.9rem; }
-
-  .logo-svg {
-    width: 90px;
-    height: 74px;
-  }
-}
-
-/* Mobile */
-@media only screen and (min-width: 22.025em) and (max-width: 30em) {
-  .ma-moulinette {
-    margin-left: 1rem;
-    font-size: 1.6rem;
-  }
-
-  .logout-svg {
-    margin-right: 0.2rem;
     width: 23px;
     height: 24px;
   }
 
   .e-dashboard-svg,
+  .preferences-svg,
   .utilisateurs-svg,
   .batch-svg {
     margin-top: 0.8rem;
-    margin-right: 0.2rem;
-    width: 27px;
+    width: 28px;
     height: 28px;
+    margin-right: 0.1rem;
   }
 
-  .version {
-    margin-left: 1rem;
-    margin-top: -1.5rem;
-    font-size: 1rem;
+  /* Défini la taille de la police par défaut */
+  .open-sans { font-size: 0.9rem; }
+}
+
+/* Mobile */
+@media only screen and (min-width: 20.025em) and (max-width: 22em) {
+  .logo-svg {
+    width: 46px;
+    height: 49px;
+  }
+
+  .ma-moulinette-container { display: none; }
+  .version { display: none; }
+
+  .logout-svg {
+    width: 28px;
+    height: 28px;
+    margin-right: 0.1rem;
+  }
+
+  .utilisateurs-svg,
+  .batch-svg {
+    margin-top: 1.4rem;
+    margin-right: 0.3rem;
+    width: 35px;
+    height: 35px;
+  }
+
+  .e-dashboard-svg,
+  .preferences-svg {
+    margin-top: 1.4rem;
+    width: 35px;
+    height: 35px;
   }
 
   .open-sans { font-size: 0.9rem; }
+}
 
+/* Mobile */
+@media only screen and (min-width: 22.025em) and (max-width: 30em) {
   .logo-svg {
     width: 90px;
     height: 54px;
   }
+
+  .ma-moulinette-container { display: none; }
+
+  .version {
+    margin-left: 0.5rem;
+    padding-top: 2.8rem;
+    margin-bottom: 0.1px;
+    font-size: 1rem;
+  }
+
+  .logout-svg {
+    margin-right: 0.2rem;
+    width: 28px;
+    height: 29px;
+  }
+
+  .e-dashboard-svg,
+  .preferences-svg,
+  .utilisateurs-svg,
+  .batch-svg {
+    margin-top: 2rem;
+    margin-right: 0.1rem;
+    width: 37px;
+    height: 31px;
+  }
+
+  .open-sans { font-size: 0.9rem; }
 }
 
 /* Mobile */
 @media only screen and (min-width: 30.025em) and (max-width: 40em) {
-  .ma-moulinette {
+  .ma-moulinette-container {
     margin-left: 1rem;
-    font-size: 1.8rem;
+    margin-top: 0.8rem;
+    margin-bottom: 1.1rem;
   }
+
+  .ma-moulinette { font-size: 1.7rem; }
 
   .logout-svg {
     margin-left: 0.1rem;
     margin-right: 0.2rem;
-    width: 28px;
-    height: 34px;
+    width: 32px;
+    height: 36px;
   }
 
   .e-dashboard-svg,
+  .preferences-svg,
   .utilisateurs-svg,
   .batch-svg {
     margin-top: 0.8rem;
-    margin-right: 0.2rem;
-    width: 33px;
+    margin-right: 0.5rem;
+    width: 38px;
     height: 38px;
   }
 
@@ -168,18 +163,25 @@
   }
 
   .logout-svg {
-    margin-left: 0.5rem;
-    margin-right: 0.5rem;
-    width: 40px;
+    margin-right: 0.2rem;
+    width: 36px;
     height: 45px;
   }
 
-  .e-dashboard-svg,
-  .utilisateurs-svg,
   .batch-svg {
-    margin-top: 1.1rem;
+    margin-top: 0.8rem;
     margin-right: 0.2rem;
-    margin-left: 0.4rem;
+    margin-left: 0.2rem;
+    width: 46px;
+    height: 44px;
+  }
+
+  .e-dashboard-svg,
+  .preferences-svg,
+  .utilisateurs-svg {
+    margin-top: 0.8rem;
+    margin-right: 0.2rem;
+    margin-left: 0.3rem;
     width: 46px;
     height: 46px;
   }
@@ -213,6 +215,7 @@
   }
 
   .e-dashboard-svg,
+  .preferences-svg,
   .utilisateurs-svg,
   .batch-svg {
     margin-top: 1.1rem;
@@ -252,6 +255,7 @@
   }
 
   .e-dashboard-svg,
+  .preferences-svg,
   .utilisateurs-svg,
   .batch-svg {
     margin-top: 1.1rem;
@@ -289,6 +293,7 @@
   }
 
   .e-dashboard-svg,
+  .preferences-svg,
   .utilisateurs-svg,
   .batch-svg {
     margin-top: 1.1rem;
@@ -397,21 +402,30 @@ input.email {
 
 /* Définition du logout SVG */
 .logout-svg,
-.e-dashboard-svg,
 .utilisateurs-svg,
 .batch-svg {
   fill: #00445b;
   cursor: pointer;
-  shape-rendering: geometricprecision;
-  text-rendering: geometricprecision;
-  fill-rule: evenodd;
-  clip-rule: evenodd;
 }
 
 .logout-svg:hover,
-.e-dashboard-svg:hover,
 .utilisateurs-svg:hover,
 .batch-svg:hover { fill: #e7552c; }
+
+.preferences-svg,
+.e-dashboard-svg {
+  fill: #00445b;
+  cursor: pointer;
+  stroke: #00445b;
+  stroke-width: 4px;
+}
+
+.preferences-svg:hover,
+.e-dashboard-svg:hover {
+  fill: #e7552c;
+  stroke: #e7552c;
+  stroke-width: 4px;
+}
 
 /* breadcrumbs */
 .breadcrumbs li { font-size: 1rem; }
