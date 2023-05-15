@@ -21,4 +21,9 @@ when@test:
         test: true
         session:
             storage_factory_id: session.storage.factory.mock_file
+
+# Controller de page d'erreur custom
+when@prod:
+    framework:
+        error_controller: App\Controller\ErrorController::show
 ...
