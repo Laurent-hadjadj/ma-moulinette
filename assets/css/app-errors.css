@@ -46,7 +46,7 @@ body {
 #error-page {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-around;
 }
 
 #error-page .content {
@@ -55,7 +55,7 @@ body {
 }
 
 .content h1.header {
-  font-size: 26vw;
+  font-size: 20vw;
   color: #fff;
   background-color: #00445b;
   line-height: 1em;
