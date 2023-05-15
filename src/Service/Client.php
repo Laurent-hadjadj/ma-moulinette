@@ -67,8 +67,7 @@ class Client
       if ($response->getStatusCode() == 401) {
         throw new \UnexpectedValueException('Erreur d\'Authentification. La clé n\'est pas correcte.');
       } else {
-        throw new \UnexpectedValueException('Retour de la réponse différent de ce qui est prévu. Erreur ' .
-        $response->getStatusCode());
+        throw new \UnexpectedValueException('Retour de la réponse différent de ce qui est prévu. Erreur ' . $response->getStatusCode());
       }
     }
 
