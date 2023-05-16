@@ -145,7 +145,7 @@ $('.refresh-bd').on('click', function() {
  * Événement : On ouvre le tableau de suivi pour le projet.
  */
 $('.suivi-svg').on('click', function(e) {
-  const id = e.target.id;
+  const id = e.currentTarget.id;
 
   /* On récupère la clé maven du projet. */
   const element = document.getElementById(id);
