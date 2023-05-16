@@ -775,7 +775,7 @@ const afficheProjetFavori=function() {
     /* On gére le click sur le bouton V (Valider) */
     $('.js-liste-valider').on('click', e => {
       /* On récupère la valeur de l'ID. */
-      const id = e.target.id;
+      const id = e.currentTarget;
       const a = id.split('-');
       const key='key-'+a[1];
 
@@ -797,7 +797,7 @@ const afficheProjetFavori=function() {
     /* On gére le click sur le bouton S (Supprimer) */
     $('.js-liste-supprimer').on('click', e => {
       /* On récupère la valeur de l'ID */
-      const id = e.target.id;
+      const id = e.currentTarget;
       const a = id.split('-');
       const key='key-'+a[1];
 
@@ -845,7 +845,7 @@ const afficheProjetFavori=function() {
     $('.js-liste-afficher-resultat').on('click', e => {
 
       /* On récupère la valeur de l'ID */
-      const id = e.target.id;
+      const id = e.currentTarget;
       const a = id.split('-');
       const key='key-'+a[1];
 
@@ -867,7 +867,7 @@ const afficheProjetFavori=function() {
     $('.js-liste-afficher-indicateur').on('click', e => {
 
       /* On récupère la valeur de l'ID. */
-      const id = e.target.id;
+      const id = e.currentTarget;
       const a = id.split('-');
       const key='key-'+a[1];
 
@@ -883,7 +883,7 @@ const afficheProjetFavori=function() {
     $('.js-liste-owasp').on('click', e => {
 
       /* On récupère la valeur de l'ID */
-      const id = e.target.id;
+      const id = e.currentTarget;
       const a = id.split('-');
       const key='key-'+a[1];
 
@@ -899,7 +899,7 @@ const afficheProjetFavori=function() {
     $('.js-liste-repartition-module').on('click', e => {
 
       /* On récupère la valeur de l'ID */
-      const id = e.target.id;
+      const id = e.currentTarget;
       const a = id.split('-');
       const key='key-'+a[1];
 
