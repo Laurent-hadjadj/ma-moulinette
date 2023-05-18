@@ -18,6 +18,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
+/** Securité */
+use Symfony\Component\Security\Core\Security;
+
 /** Gestion du temps */
 use DateTime;
 use DateTimeZone;
@@ -25,7 +28,7 @@ use DateTimeZone;
 /** Logger */
 use Psr\Log\LoggerInterface;
 
-/** Accès aux tables SLQLitec*/
+/** Accès aux tables SLQLite*/
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\DBAL\Connection;
 
@@ -291,14 +294,15 @@ class HomeController extends AbstractController
   /**
    * [Description for index]
    *
-   * @return Response
+   * @param Client $client
+   * @param Security $security
    *
    * Created at: 15/12/2022, 22:09:19 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/home', name: 'home', methods:'GET')]
-  public function index(Client $client, Request $request): Response
+  public function index(Client $client, Security $security, Request $request): Response
   {
     $mode=$request->get('mode');
     /**
@@ -434,44 +438,56 @@ class HomeController extends AbstractController
         $this->addFlash('alert', $message);
     }
 
+    /** On récupère le nombre de favori que l'on souhaite afficher au max (10) */
     $nombreFavori=$this->getParameter('nombre.favori');
 
+    /** On récupère l'objet User du contexte de sécurité */
+    $userSecurity=$security->getUser();
+    $preference=$security->getUser()->getPreference();
+    $statut=$preference['statut']['favori'];
+    $favoris=$preference['favori'];
+
     /**
-     * On récupère les projets en favori. Pour le moment on limite le nombre de projet à 10.
+     * On récupère les projets favoris de l'utilisateur.
+     * Pour le moment on limite le nombre de projet à 10.
      * SQLite : 0 (false) and 1 (true).
      */
-    $sql = "SELECT DISTINCT
-                    maven_key as mavenkey,
-                    nom_projet as nom,
-                    version, date_version as date,
-                    note_reliability as fiabilite,
-                    note_security as securite,
-                    note_hotspot as hotspot,
-                    note_sqale as sqale,
-                    nombre_bug as bug,
-                    nombre_vulnerability as vulnerability,
-                    nombre_code_smell as code_smell,
-                    hotspot_total as hotspots
-            FROM historique
-            WHERE favori=1
-            ORDER BY date_version LIMIT $nombreFavori";
-
-    $select = $this->em->getConnection()
-                    ->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
-    $favoris = $select->fetchAllAssociative();
-    if (empty($favoris)) {
-        $nombre = 0;
-        $favori = 'FALSE';
+    if ($statut===false || count($favoris)===0) {
+        $favori = false;
     } else {
-        $nombre = 1;
-        $favori = $favoris;
+      $condition='';
+      foreach ($favoris as $value) {
+        $condition=$condition.' maven_key="'.$value.'" OR ';
+      }
+
+      /** On supprime le dernier OR */
+      $andTRIM= rtrim($condition," OR ");
+
+      $sql = "SELECT DISTINCT
+                maven_key as mavenkey,
+                nom_projet as nom,
+                version, date_version as date,
+                note_reliability as fiabilite,
+                note_security as securite,
+                note_hotspot as hotspot,
+                note_sqale as sqale,
+                nombre_bug as bug,
+                nombre_vulnerability as vulnerability,
+                nombre_code_smell as code_smell,
+                hotspot_total as hotspots
+            FROM historique
+            WHERE $andTRIM
+            ORDER BY date_version LIMIT $nombreFavori";
+      $trim=trim(preg_replace(static::$regex, " ", $sql));
+      $select = $this->em->getConnection()->prepare($trim)->executeQuery();
+      $favori = $select->fetchAllAssociative();
     }
 
     $response = new JsonResponse();
     $render=[
       'projetBD' => $projetBD, 'projetSonar' => $projetSonar,
       'profilBD' => $profilBD, 'profilSonar' => $profilSonar,
-      'nombreFavori' => $nombre, 'favori' => $favori,
+      'nombreFavori' => count($favoris), 'favori' => $favori,
       "public"=>$public, "private"=>$private,
       'version' => $versionAPP, 'dateCopyright' => \date('Y'),
       'mode'=>$mode, Response::HTTP_OK];
