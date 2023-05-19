@@ -82,7 +82,7 @@ class ProjetController extends AbstractController
       'mode'=>$mode,
       'version' => $this->getParameter('version'),
       'dateCopyright' => \date('Y'),
-      'dernierProjet'=>$preference['bookmark'],
+      'bookmark'=>$preference['bookmark'],
       Response::HTTP_OK
     ];
 
