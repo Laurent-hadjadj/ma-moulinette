@@ -206,7 +206,7 @@ class ApiProjetController extends AbstractController
      */
     if ($isFavori){
       $delete = array_diff($preference['favori'], [$mavenKey]);
-      $jarray=json_encode(['liste'=>$preference['liste'], 'favori'=>$delete, 'dernier-projet'=>$preference['dernier-projet']]);
+      $jarray=json_encode(['projet'=>$preference['projet'], 'favori'=>$delete, 'bookmark'=>$preference['bookmark']]);
       $sql = "UPDATE utilisateur
               SET preference = '$jarray'
               WHERE courriel='$courriel';";
@@ -313,7 +313,7 @@ class ApiProjetController extends AbstractController
           WHERE $inTrim";
     $trim=trim(preg_replace(static::$regex, " ", $sql));
     $exec=$this->em->getConnection()->prepare($trim)->executeQuery();
-    $listes=$exec->fetchAll();
+    $projets=$exec->fetchAll();
 
     /** j'ai pas trouvé de projet pour cette équipe. */
     if (empty($listes)) {
@@ -324,7 +324,7 @@ class ApiProjetController extends AbstractController
         "type"=>$type, Response::HTTP_OK]);
     }
 
-    return $response->setData(["liste" => $listes, Response::HTTP_OK]);
+    return $response->setData(["projet" => $projets, Response::HTTP_OK]);
   }
 
   /**
@@ -725,7 +725,6 @@ class ApiProjetController extends AbstractController
       $issue->setBug($bug);
       $issue->setVulnerability($vulnerability);
       $issue->setCodeSmell($codeSmell);
-      $issue->setListe('TRUE');
       $issue->setDateEnregistrement($date);
 
       $this->em->persist($issue);
