@@ -395,21 +395,17 @@
 /* Validation */
 .V { color: #187e3d; }
 
-/* Supprimer */
-.S { color: #771404; }
-
-/* Collecte, Restitution, Indicateurs, Owasp, Répartition-Module */
-.C,
+/* Restitution, Indicateurs, COSUI, Owasp, Répartition-Module */
 .R,
 .I,
+.C,
 .O,
 .RM { color: #00445b; }
 
 .V,
-.S,
-.C,
 .R,
 .I,
+.C,
 .O,
 .RM {
   position: relative;
@@ -419,15 +415,13 @@
 }
 
 .V:hover,
-.S:hover,
-.C:hover,
 .R:hover,
 .I:hover,
+.C:hover,
 .O:hover,
 .RM:hover {
   color: #fff;
   background-color: #b33926;
-  transform: rotateY(360deg);
 }
 
 /**
