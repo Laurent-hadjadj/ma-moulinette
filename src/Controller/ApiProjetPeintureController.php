@@ -126,53 +126,6 @@ class ApiProjetPeintureController extends AbstractController
       Response::HTTP_OK]);
   }
 
-  /**
-   * [Description for projetMesApplicationsDelete]
-   * Désactive l'affichage du projet dans la liste des projets déjà analysés.
-   *
-   * @param Request $request
-   *
-   * @return response
-   *
-   * Created at: 15/12/2022, 21:52:55 (Europe/Paris)
-   * @author    Laurent HADJADJ <laurent_h@me.com>
-   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
-  #[Route('/api/projet/mes-applications/delete', name: 'projet_mes_applications_delete', methods: ['GET'])]
-  public function projetMesApplicationsDelete(Security $security, Request $request): response
-  {
-    /** On récupère l'objet User du contexte de sécurité */
-    $userSecurity=$security->getUser();
-    $preference=$security->getUser()->getPreference();
-    $courriel=$security->getUser()->getCourriel();
-
-    /** On créé un objet response */
-    $response = new JsonResponse();
-
-    /** On bind les variables. */
-    $mavenKey = $request->get('mavenKey');
-    $mode = $request->get('mode');
-
-    /** On teste si la clé est valide */
-    if ($mavenKey==="null" && $mode==="TEST") {
-      return $response->setData([
-        "mode"=>$mode, "mavenKey"=>$mavenKey,
-        "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
-    }
-
-    /** On supprime de la liste le projet. */
-    $delete = array_diff($preference['projet'], [$mavenKey]);
-    $jarray=json_encode(['liste'=>$delete, 'favori'=>$preference['favori'],'bookmark'=>$preference['bookmark']]);
-    $sql = "UPDATE utilisateur
-            SET preference = '$jarray'
-            WHERE courriel='$courriel';";
-    $trim=trim(preg_replace(static::$regex, " ", $sql));
-    if ($mode!=="TEST") {
-      $this->em->getConnection()->prepare($trim)->executeQuery();
-    }
-
-    return $response->setData(['mode'=>$mode,"code" => 200, Response::HTTP_OK]);
-  }
 
   /**
    * [Description for peintureProjetVersion]
