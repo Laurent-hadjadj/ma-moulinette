@@ -12,6 +12,7 @@
 
 /* Chargement des fichiers CSS */
 @import url("~foundation-sites/dist/css/foundation.css");
+@import url("~select2/dist/css/select2.min.css");
 @import url("~motion-ui/dist/motion-ui.css");
 @import url("../css/app-common.css");
 @import url("../css/app-police.css");
