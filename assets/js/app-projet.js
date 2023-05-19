@@ -724,7 +724,7 @@ const afficheProjetFavori=function() {
      * Pour chaque élément de la liste des projets analysés, on affiche le projet
      * et si le projet est en favori on ajoute un petit-coeur.
      */
-    t.liste.forEach(element => {
+    t.projets.forEach(element => {
       i++;
       if (element.favori){
         favori = favoriSvg;
@@ -1302,7 +1302,7 @@ $('.js-repartition-module').on('click', () => {
 
 /***********    Main */
 const e = document.getElementById('feedback');
-let dernierBidule=e.dataset.dernierprojet;
+let dernierBidule=e.dataset.bookmark;
 
 if (dernierBidule !== undefined){
   /* On récupère le nom du projet */
