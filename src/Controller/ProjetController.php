@@ -13,16 +13,22 @@
 
 namespace App\Controller;
 
-use Doctrine\DBAL\Connection;
-use App\Entity\Secondary\Repartition;
-use Doctrine\Persistence\ManagerRegistry;
+/** Core */
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Routing\Annotation\Route;
+
+/** Securité */
+use Symfony\Component\Security\Core\Security;
+
+/** API */
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 /** Accès aux tables SLQLite */
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\DBAL\Connection;
+use App\Entity\Secondary\Repartition;
 
 class ProjetController extends AbstractController
 {
@@ -59,8 +65,12 @@ class ProjetController extends AbstractController
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/projet', name: 'projet', methods: 'GET')]
-  public function index(Request $request): Response
+  public function index(Security $security, Request $request): Response
   {
+    /** On récupère l'objet User du contexte de sécurité */
+    $userSecurity=$security->getUser();
+    $preference=$security->getUser()->getPreference();
+
     /** On crée un objet de reponse JSON */
     $response = new JsonResponse();
 
@@ -72,6 +82,7 @@ class ProjetController extends AbstractController
       'mode'=>$mode,
       'version' => $this->getParameter('version'),
       'dateCopyright' => \date('Y'),
+      'dernierProjet'=>$preference['bookmark'],
       Response::HTTP_OK
     ];
 
