@@ -201,30 +201,63 @@ class ApiProjetController extends AbstractController
     $isFavori=in_array($mavenKey, $preference['favori']);
 
     /**
-     * On supprime de la liste des favoris s'il exsite dans les préferences
+     * On le supprime de la liste des favoris s'il exsite dans les préferences
      * Sinon on l'ajoute
      */
+
+     /** On récupéres les préférences */
+    $statut=$preference['statut'];
+    $projet=$preference['projet'];
+    $favori=$preference['favori'];
+    $bookmark=$preference['bookmark'];
+
     if ($isFavori){
-      $delete = array_diff($preference['favori'], [$mavenKey]);
-      $jarray=json_encode(['projet'=>$preference['projet'], 'favori'=>$delete, 'bookmark'=>$preference['bookmark']]);
+      /** on suuprime le projet de la liste */
+      $nouvelleListeFavori = array_diff($preference['favori'], [$mavenKey]);
+
+      $statut['favori']=false;
+
+      /** On met à jour l'objet. */
+      $jarray=json_encode([
+        'statut'=>$statut,
+        'projet'=>$projet,
+        'favori'=>$nouvelleListeFavori,
+        'bookmark'=>$bookmark
+      ]);
+
+      /** On met à jour les préférences. */
       $sql = "UPDATE utilisateur
-              SET preference = '$jarray'
-              WHERE courriel='$courriel';";
-      $trim=trim(preg_replace(static::$regex, " ", $sql));
+        SET preference = '$jarray'
+        WHERE courriel='$courriel';";
+        $trim=trim(preg_replace(static::$regex, " ", $sql));
+        $exec=$this->em->getConnection()->prepare($trim)->executeQuery();
+      if ($mode!=='TEST'){
+        $e=$exec->fetchAll();
+      }
       $statut=0;
     } else {
+      /** On ajoute le projet à la liste */
       array_push($preference['favori'], $mavenKey);
-      $jarray=json_encode($preference);
-      $sql = "UPDATE utilisateur
-              SET preference = '$jarray'
-              WHERE courriel='$courriel';";
-      $trim=trim(preg_replace(static::$regex, " ", $sql));
-      $statut=1;
-    }
+      $statut['favori']=true;
 
-    /** On met à jour les préférence de l'utilisateur */
-    if ($mode!=="TEST") {
-      $this->em->getConnection()->prepare($trim)->executeQuery();
+      /** On met à jour l'objet. */
+      $jarray=json_encode([
+        'statut'=>$statut,
+        'projet'=>$projet,
+        'favori'=>$preference['favori'],
+        'bookmark'=>$bookmark
+      ]);
+
+      /** On met à jour les préférences. */
+      $sql = "UPDATE utilisateur
+        SET preference = '$jarray'
+        WHERE courriel='$courriel';";
+        $trim=trim(preg_replace(static::$regex, " ", $sql));
+        $exec=$this->em->getConnection()->prepare($trim)->executeQuery();
+      if ($mode!=='TEST'){
+        $e=$exec->fetchAll();
+      }
+      $statut=1;
     }
 
     return $response->setData(["mode"=>$mode, "statut"=>$statut, Response::HTTP_OK]);
@@ -304,7 +337,7 @@ class ApiProjetController extends AbstractController
         $in=$in."json_each.value LIKE '".preg_replace('/\s+/', '-', $minus)."%' OR ";
       }
     }
-    /** On supprime le dernier caractère si c'est une virugule */
+    /** On supprime le dernier OR */
     $inTrim= rtrim($in," OR ");
 
     /** On construit la requête de selection des projets en fonction de(s) (l')équipes */
