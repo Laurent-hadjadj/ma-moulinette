@@ -110,19 +110,19 @@ class ApiProjetPeintureController extends AbstractController
      * on regarde si le projet a déjà fait l'objet d'une analyse
      * et si le projet est en favori.
      */
-    $maListe=$preference['liste'];
+    $mesProjets=$preference['projet'];
     $mesFavoris=$preference['favori'];
-    $listeProjet=[];
-    foreach ($maListe as $projet) {
+    $projets=[];
+    foreach ($mesProjets as $projet) {
       if (in_array(["key"=>$projet],$analyses)){
         $t=explode(":", $projet);
-        array_push($listeProjet,["key"=>$projet, "name"=>$t[1], "favori"=>in_array($projet,$mesFavoris)]);
+        array_push($projets,["key"=>$projet, "name"=>$t[1], "favori"=>in_array($projet,$mesFavoris)]);
       }
     }
 
     return $response->setData([
       "code" => 200,
-      "liste" => $listeProjet,
+      "projets" => $projets,
       Response::HTTP_OK]);
   }
 
@@ -161,8 +161,8 @@ class ApiProjetPeintureController extends AbstractController
     }
 
     /** On supprime de la liste le projet. */
-    $delete = array_diff($preference['liste'], [$mavenKey]);
-    $jarray=json_encode(['liste'=>$delete, 'favori'=>$preference['favori'],'dernier-projet'=>$preference['dernier-projet']]);
+    $delete = array_diff($preference['projet'], [$mavenKey]);
+    $jarray=json_encode(['liste'=>$delete, 'favori'=>$preference['favori'],'bookmark'=>$preference['bookmark']]);
     $sql = "UPDATE utilisateur
             SET preference = '$jarray'
             WHERE courriel='$courriel';";
