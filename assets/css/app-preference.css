@@ -10,6 +10,8 @@
  *
  */
 
+/* stylelint-disable selector-class-pattern */
+
 /**
   * Propriétés pour les class en fonction des medias type
   *
@@ -17,42 +19,160 @@
 
 /* Media Small */
 @media only screen and (max-width: 20em) {
-  /** vide */
+  .prenom-nom { margin-left: 0.7rem; }
+  .adresse-mel { margin-left: 0.7rem; }
+  .privilege-titre { margin-left: 0.7rem; }
+  .mon-equipe { margin-left: 0.7rem; }
+  .privilege-liste { margin-left: 1rem; }
 }
 
 /* Media Small */
 @media only screen and (min-width: 20.025em) and (max-width: 22em) {
-  /** vide */
+  .prenom-nom { margin-left: 0.7rem; }
+  .adresse-mel { margin-left: 0.7rem; }
+  .privilege-titre { margin-left: 0.7rem; }
+  .mon-equipe { margin-left: 0.7rem; }
+  .privilege-liste { margin-left: 1rem; }
 }
 
 /* Media Small */
 @media only screen and (min-width: 22.025em) and (max-width: 30em) {
-  /** vide */
+  .prenom-nom { margin-left: 0.7rem; }
+  .adresse-mel { margin-left: 0.7rem; }
+  .privilege-titre { margin-left: 0.7rem; }
+  .mon-equipe { margin-left: 0.7rem; }
+  .privilege-liste { margin-left: 1rem; }
 }
 
 /* Media Small */
 @media only screen and (min-width: 30.025em) and (max-width: 40em) {
-  /** vide */
+  .prenom-nom { margin-left: 0.7rem; }
+  .privilege-titre { margin-left: 0.7rem; }
+  .mon-equipe { margin-left: 0.7rem; }
+  .privilege-liste { margin-left: 1rem; }
 }
 
 /* Media Medium */
 @media only screen and (min-width: 40em) and (max-width: 64em) {
-  /** vide */
+  .prenom-nom { margin-top: 1.5rem; }
+  .adresse-mel { margin-top: 0.3rem; }
+  .privilege-titre { margin-top: 0.3rem; }
+  .mon-equipe { margin-top: 0.3rem; }
+  .privilege-liste { margin-left: 4rem; }
 }
 
 /* Media Large */
 @media only screen and (min-width: 64.025em) and (max-width: 90em) {
-  /** vide */
+  .prenom-nom { margin-top: 1.5rem; }
+  .adresse-mel { margin-top: 0.3rem; }
+  .privilege-titre { margin-top: 0.3rem; }
+  .mon-equipe { margin-top: 0.3rem; }
+  .privilege-liste { margin-left: 7rem; }
 }
 
 /* Media Large */
 @media only screen and (min-width: 90.025em) and (max-width: 120em) {
-  /** vide */
+  .prenom-nom { margin-top: 1.5rem; }
+  .adresse-mel { margin-top: 0.3rem; }
+  .privilege-titre { margin-top: 0.3rem; }
+  .mon-equipe { margin-top: 0.3rem; }
+  .privilege-liste { margin-left: 7rem; }
 }
 
 /* Media Extra-Large */
 @media only screen and (min-width: 120em) and (max-width: 160em) {
-  /** vide */
+  .prenom-nom { margin-top: 1.5rem; }
+  .adresse-mel { margin-top: 0.3rem; }
+  .privilege-titre { margin-top: 0.3rem; }
+  .mon-equipe { margin-top: 0.3rem; }
+  .privilege-liste { margin-left: 7rem; }
 }
 
 /*************************          Global     *********************************/
+
+.fieldset-information { background-color: #fff; }
+
+/* affiche prenom + nom */
+.prenom-nom { font-size: 1rem; }
+
+/* affiche adress-mel */
+.adresse-mel { font-size: 1rem; }
+
+/* affiche privilege */
+.privilege-titre { font-size: 1.1rem; }
+.privilege-liste { font-size: 1.1rem; }
+
+/* affiche equipe */
+.mon-equipe { font-size: 1rem; }
+
+/* SVG */
+.courriel-svg,
+.role-svg,
+.mon-equipe-svg,
+.preference-svg {
+  fill: #00445b;
+  width: 36px;
+  height: 36px;
+  margin-left: 0.7rem;
+}
+
+.preference-svg:hover { fill: #ed7d20; }
+
+/* Changement de la couleur par défaut par 00445b */
+input:checked ~ .switch-paddle { background: #00445b; }
+
+/** Switch oui ou non  */
+.preference-switch {
+  display: flex;
+  justify-content: space-around;
+}
+
+/* Réduction de la marge */
+.switch-non {
+  top: 10%;
+  right: -5%;
+  position: relative;
+  color: #00445b;
+}
+
+.switch-oui {
+  top: 13%;
+  left: 8%;
+  position: relative;
+  color: #cacacaca;
+}
+
+/* décalage vers la droite */
+.switch {
+  padding-left: 1rem;
+  margin-bottom: 0.1rem;
+}
+
+/******* fenetre modal bookmark, favori *****/
+#fermer-preference-bookmark,
+#fermer-preference-favori,
+#fermer-preference-projet {
+  background-color: #00445b;
+  color: #fff;
+}
+
+#fermer-preference-bookmark:hover,
+#fermer-preference-favori:hover,
+#fermer-preference-projet:hover {
+  background-color: #006182;
+  color: #fff;
+}
+
+/** Couleurs et tailles pour les labels */
+.option-true { color: #0a0; }
+.option-false { color: #d4333f; }
+
+#modal-bookmark-label,
+#modal-favori-label,
+.option-true,
+.option-false,
+.preference-ligne-tableau { font-size: 1.1rem; }
+
+.preference-compteur-tableau { font-size: 1.4rem; }
+
+/*************** FIN *****************************/
