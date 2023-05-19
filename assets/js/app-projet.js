@@ -667,24 +667,12 @@ const projetTodoDetails=function(mavenKey){
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const finCollecte=function(){
-  /**
-    * Si le message d'information de la "liste box" commence pas  [03]
-    * alors le traitement a été lancé depuis le menu rapide, bouton C.
-    * On affiche un message de fin pour indiquer la fin des traitements asynchronnes.
-  *
-  */
-  const info=$('.information-texte').text();
-  if (info.substring(0, 4)==='[03]') {
-    setTimeout(function(){
-      $('.information-texte').html('[04] - La collecte des données est terminée.');
-    }, troisMille);
-  } else {
-    log(` - INFO : (13) La collecte des données est terminée.`);
-  }
-};
+  setTimeout(function(){
+    log(` - INFO : (13) La collecte des données est terminée.`), troisMille});
+}
 
 /**
- * [Description for afficheProjetFavori]
+ * [Description for afficheMesProjets]
  * On récupére la liste des projets et des favoris de l'utilisateur
  * http://{url}/api/projet/mes-applications/liste
  *
@@ -693,7 +681,7 @@ const finCollecte=function(){
  * Created at: 19/12/2022, 22:21:16 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
-const afficheProjetFavori=function() {
+const afficheMesProjets=function() {
   const options = {
     url: `${serveur()}/api/projet/mes-applications/liste`,
           type: 'GET', dataType: 'json', contentType
@@ -721,8 +709,9 @@ const afficheProjetFavori=function() {
     </g></svg>`;
 
     /**
-     * Pour chaque élément de la liste des projets analysés, on affiche le projet
-     * et si le projet est en favori on ajoute un petit-coeur.
+     * Pour chaque élément de la liste des projets analysés,
+     * on affiche le projet et si le projet est en favori
+     * on ajoute un petit-coeur.
      */
     t.projets.forEach(element => {
       i++;
@@ -741,28 +730,28 @@ const afficheProjetFavori=function() {
                 <span>
               </td>
               <td class="text-center capsule">
-                <span id="S-${i}" class="capsule-bulle S js-liste-supprimer">
-                  <span id="tooltips-${i}" data-tooltip tabindex="2" title="Je supprime ce projet de la liste.">S</span>
-                </span>
-              </td>
-              <td class="text-center capsule">
                 <span id="R-${i}" class="capsule-bulle R js-liste-afficher-resultat">
-                  <span id="tooltips-${i}" data-tooltip tabindex="4" title="J'affiche les résultats.">R</span>
+                  <span id="tooltips-${i}" data-tooltip tabindex="2" title="J'affiche les résultats.">R</span>
                 </span>
               </td>
               <td class="text-center capsule">
                 <span id="I-${i}" class="capsule-bulle I js-liste-afficher-indicateur">
-                  <span id="tooltips-${i}" data-tooltip tabindex="5" title="J'affiche le tableau de suivi.">I</span>
+                  <span id="tooltips-${i}" data-tooltip tabindex="3" title="J'affiche le tableau de suivi.">I</span>
+                </span>
+              </td>
+              <td class="text-center capsule">
+                <span id="C-${i}" class="capsule-bulle C js-liste-cosui">
+                  <span id="tooltips-${i}" data-tooltip tabindex="4" title="J'affiche le tableau d'analyse COSUI.">C</span>
                 </span>
               </td>
               <td class="text-center capsule">
                 <span id="O-${i}" class="capsule-bulle O js-liste-owasp">
-                  <span id="tooltips-${i}" data-tooltip tabindex="6" title="J'affiche le rapport OWASP.">O</span>
+                  <span id="tooltips-${i}" data-tooltip tabindex="5" title="J'affiche le rapport OWASP.">O</span>
                 </span>
               </td>
               <td class="text-center capsule">
                 <span id="RM-${i}" class="capsule-bulle RM js-liste-repartition-module">
-                  <span id="tooltips-${i}" data-tooltip tabindex="7" title="J'affiche le tableau de répartition par module.">RM</span>
+                  <span id="tooltips-${i}" data-tooltip tabindex="6" title="J'affiche le tableau de répartition par module.">RM</span>
                 </span>
               </td>
               </tr>`;
@@ -775,7 +764,7 @@ const afficheProjetFavori=function() {
     /* On gére le click sur le bouton V (Valider) */
     $('.js-liste-valider').on('click', e => {
       /* On récupère la valeur de l'ID. */
-      const id = e.currentTarget;
+      const id = e.currentTarget.id;
       const a = id.split('-');
       const key='key-'+a[1];
 
@@ -794,58 +783,11 @@ const afficheProjetFavori=function() {
       }, deuxMille);
     });
 
-    /* On gére le click sur le bouton S (Supprimer) */
-    $('.js-liste-supprimer').on('click', e => {
-      /* On récupère la valeur de l'ID */
-      const id = e.currentTarget;
-      const a = id.split('-');
-      const key='key-'+a[1];
-
-      /* On récupère la clé maven du projet */
-      const element = document.getElementById(key);
-      const mavenKey = element.dataset.mavenkey;
-      const data = { mavenKey };
-      const options2 = {
-        url: `${serveur()}/api/projet/mes-applications/delete`,
-              type: 'GET',  dataType: 'json', data, contentType
-      };
-
-      /* On Ajoute une fonction assynchrone pour désactiver le projet de la liste. */
-      const supprimeProjet=function supprime() {
-        return new Promise(resolve2 => {
-          $.ajax(options2).then(tt=> {
-            /** Http 200 */
-            if (tt.code !== http200) {
-              log(` - ERROR : Je n'ai réussi à supprimer le projet !`);
-            } else {
-              log(` - INFO : J'ai réussi à supprimer le projet !`);
-            }
-            resolve2();
-          });
-        });
-      };
-
-      /* On appelle la fonction asynchrone et on attend la fin. */
-      async function fnAsync() {
-        await supprimeProjet();
-      }
-      fnAsync();
-
-      /* On met à jour le nombre des projets collectés. */
-      const nbr=parseInt($('#affiche-total-projet').text(),10)-1;
-      $('#affiche-total-projet').html(`<span id="nombre-projet" class="stat">${nbr}</span>`);
-      /* Supprime la ligne */
-      $('#name-'+a[1]).hide();
-      setTimeout(function(){
-        $('.information-texte').html('[02] - La suppression de la liste est terminée.');
-      }, deuxMille);
-    });
-
     /* On gére le click sur le bouton R (afficher les Résulats) */
     $('.js-liste-afficher-resultat').on('click', e => {
 
       /* On récupère la valeur de l'ID */
-      const id = e.currentTarget;
+      const id = e.currentTarget.id;
       const a = id.split('-');
       const key='key-'+a[1];
 
@@ -859,7 +801,7 @@ const afficheProjetFavori=function() {
       /* On clique sur le bouton afficher les résultats */
       $('.js-affiche-resultat').trigger('click');
       setTimeout(function(){
-        $('.information-texte').html('[05] - L\'affichage des résultats est terminé.');
+        $('.information-texte').html('[02] - L\'affichage des résultats est terminé.');
       }, cinqMille);
     });
 
@@ -867,7 +809,7 @@ const afficheProjetFavori=function() {
     $('.js-liste-afficher-indicateur').on('click', e => {
 
       /* On récupère la valeur de l'ID. */
-      const id = e.currentTarget;
+      const id = e.currentTarget.id;
       const a = id.split('-');
       const key='key-'+a[1];
 
@@ -879,11 +821,28 @@ const afficheProjetFavori=function() {
       $('.js-tableau-suivi').trigger('click');
     });
 
+    /* On gére le click sur le bouton C (Cosui) */
+    $('.js-liste-cosui').on('click', e => {
+      /* On récupère la valeur de l'ID */
+      const id = e.currentTarget.id;
+      const a = id.split('-');
+      const key='key-'+a[1];
+
+      /* On récupère la clé maven du projet */
+      const element = document.getElementById(key);
+      const mavenKey=element.dataset.mavenkey;
+      $('#select-result').html(`<strong>${mavenKey}</strong>`);
+
+      /* On clique sur le bouton COSUI */
+      $('.js-cosui').removeClass('cosui-disabled');
+      $('.js-cosui').trigger('click');
+    });
+
     /* On gére le click sur le bouton O (afficher le rapport OWASP) */
     $('.js-liste-owasp').on('click', e => {
 
       /* On récupère la valeur de l'ID */
-      const id = e.currentTarget;
+      const id = e.currentTarget.id;
       const a = id.split('-');
       const key='key-'+a[1];
 
@@ -899,7 +858,7 @@ const afficheProjetFavori=function() {
     $('.js-liste-repartition-module').on('click', e => {
 
       /* On récupère la valeur de l'ID */
-      const id = e.currentTarget;
+      const id = e.currentTarget.id;
       const a = id.split('-');
       const key='key-'+a[1];
 
@@ -1109,7 +1068,7 @@ $('select[name="projet"]').change(function () {
  * On affiche la liste des projets déjà analysés et des favoris
  */
 $('.js-affiche-liste').on('click', function () {
-  afficheProjetFavori();
+  afficheMesProjets();
   $('#modal-liste-projet').foundation('open');
 });
 
