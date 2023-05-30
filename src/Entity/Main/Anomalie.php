@@ -92,9 +92,6 @@ class Anomalie
     #[ORM\Column(type: 'integer')]
     private $codeSmell;
 
-    #[ORM\Column(type: 'boolean')]
-    private $liste;
-
     #[ORM\Column(type: 'datetime')]
     private $dateEnregistrement;
 
@@ -817,44 +814,12 @@ class Anomalie
     }
 
     /**
-     * [Description for isListe]
-     *
-     * @return bool|null
-     *
-     * Created at: 02/01/2023, 17:48:47 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function isListe(): ?bool
-    {
-        return $this->liste;
-    }
-
-    /**
-     * [Description for setListe]
-     *
-     * @param bool $liste
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:48:49 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setListe(bool $liste): self
-    {
-        $this->liste = $liste;
-
-        return $this;
-    }
-
-    /**
      * [Description for getDateEnregistrement]
      *
      * @return \DateTimeInterface|null
      *
      * Created at: 02/01/2023, 17:48:51 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getDateEnregistrement(): ?\DateTimeInterface
