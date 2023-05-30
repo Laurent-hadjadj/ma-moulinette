@@ -160,7 +160,7 @@ class ApiHomeController extends AbstractController
     }
 
     /** On vérifie si l'utilisateur à un rôle Gestionnaire ? */
-    if (!$this->isGranted('ROLE_GESTIONNAIR')){
+    if (!$this->isGranted('ROLE_GESTIONNAIRE')){
       return $response->setData([
         "mode"=>$mode ,
         "type"=>'alert',
