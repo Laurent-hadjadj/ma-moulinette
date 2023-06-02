@@ -50,7 +50,7 @@ class RepartitionController extends AbstractController
      * @return Response
      *
      * Created at: 15/12/2022, 22:32:12 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/projet/repartition', name: 'projet_repartition')]

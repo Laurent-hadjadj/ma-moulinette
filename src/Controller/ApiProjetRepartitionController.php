@@ -75,7 +75,7 @@ class ApiProjetRepartitionController extends AbstractController
    * @return ['frontend'=>$frontend, 'backend'=>$backend, 'autre'=>$autre];
    *
    * Created at: 04/12/2022, 09:00:59 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    *
    */
