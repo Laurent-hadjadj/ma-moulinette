@@ -262,34 +262,47 @@ class ProjetController extends AbstractController
        */
         $module = explode("/", $file);
         /** On prend la première entrée */
-        switch ($module[0]) {
-          case "du-presentation" || "rs-presentation" : $frontend = $frontend + 1;
-                break;
-          case  $app[1] . "-presentation" || $app[1] . "-presentation-commun" ||
-                $app[1] . "-presentation-ear" || $app[1] . "-webapp": $frontend = $frontend + 1;
-                break;
-          case "rs-metier" : $backend = $backend + 1;
-                break;
-          case  $app[1] . "-metier" || $app[1] . "-common" ||
-                $app[1] . "-api" || $app[1] . "-dao": $backend = $backend + 1;
-                break;
-          case  $app[1] . "-metier-ear" || $app[1] . "-service" ||
-                $app[1] . "-serviceweb" || $app[1] . "-middleoffice": $backend = $backend + 1;
-                break;
-          case  $app[1] . "-metier-rest" || $app[1] . "-entite" ||
-                $app[1] . "-serviceweb-client": $backend = $backend + 1;
-                break;
-          case  $app[1] . "-batch" || $app[1] . "-batchs" ||
-                $app[1] . $app[1] . "-batch-envoi-dem-aval" ||
-                $app[1] . "-batch-import-billets": $autre = $autre + 1;
-                break;
-          case  $app[1] . $app[1] . "-rdd" : $autre = $autre + 1;
-                break;
-          default:
-              $erreur=$erreur+1;
+        if ($module[0]==="du-presentation" ||
+            $module[0]==="rs-presentation"){
+            $frontend = $frontend + $directory["count"];
+        }
+        if ($module[0]===$app[1] . "-presentation" ||
+            $module[0]===$app[1] . "-presentation-commun" ||
+            $module[0]===$app[1] . "-presentation-ear" ||
+            $module[0]===$app[1] . "-webapp"){
+              $frontend = $frontend + 1;
+        }
+        if ($module[0]==="rs-metier"){
+          $backend = $backend + $directory["count"];
+        }
+        if ($module[0]===$app[1] . "-metier" ||
+            $module[0]===$app[1] . "-common" ||
+            $module[0]===$app[1] . "-api" ||
+            $module[0]===$app[1] . "-dao"){
+              $backend = $backend + $directory["count"];
+        }
+        if ($module[0]===$app[1] . "-metier-ear" ||
+            $module[0]===$app[1] . "-service" ||
+            $module[0]===$app[1] . "-serviceweb" ||
+            $module[0]===$app[1] . "-middleoffice"){
+              $backend = $backend + $directory["count"];
+        }
+        if ($module[0]===$app[1] . "-metier-rest" ||
+            $module[0]===$app[1] . "-entite" ||
+            $module[0]===$app[1] . "-serviceweb-client"){
+              $backend = $backend + $directory["count"];
+        }
+        if ($module[0]===$app[1] . "-batch" ||
+            $module[0]===$app[1] . "-batchs" ||
+            $module[0]===$app[1] . "-batch-envoi-dem-aval" ||
+            $module[0]===$app[1] . "-batch-import-billets"){
+            $autre = $autre +1;
+            }
+        if ($module[0]===$app[1] . "-rdd") {
+          $autre = $autre + 1;
         }
       }
-      return ['erreur'=>$erreur, 'frontend'=>$frontend, 'backend'=>$backend];
+      return ['frontend'=>$frontend, 'backend'=>$backend, 'autre'=>$autre];
     }
 
     /**
