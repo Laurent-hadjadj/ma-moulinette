@@ -735,8 +735,8 @@ const afficheMesProjets=function() {
                 </span>
               </td>
               <td class="text-center capsule">
-                <span id="I-${i}" class="capsule-bulle I js-liste-afficher-indicateur">
-                  <span id="tooltips-${i}" data-tooltip tabindex="3" title="J'affiche le tableau de suivi.">I</span>
+                <span id="S-${i}" class="capsule-bulle S js-liste-afficher-indicateur">
+                  <span id="tooltips-${i}" data-tooltip tabindex="3" title="J'affiche le tableau de suivi.">S</span>
                 </span>
               </td>
               <td class="text-center capsule">
@@ -805,7 +805,7 @@ const afficheMesProjets=function() {
       }, cinqMille);
     });
 
-    /* On gére le click sur le bouton I (afficher le tableau de suivi) */
+    /* On gére le click sur le bouton S (afficher le tableau de suivi) */
     $('.js-liste-afficher-indicateur').on('click', e => {
 
       /* On récupère la valeur de l'ID. */
