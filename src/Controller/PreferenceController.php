@@ -50,6 +50,20 @@ class PreferenceController extends AbstractController
         $this->em = $em;
       }
 
+  /**
+   * [Description for apiPreferenceStatut]
+   * On met à jur le statut pour la categorie
+   *
+   * @param Security $security
+   * @param Client $client
+   * @param Request $request
+   *
+   * @return Response
+   *
+   * Created at: 09/06/2023, 15:43:33 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
   #[Route('/api/preference/statut', name: 'api_preference_statut', methods:'POST')]
   public function apiPreferenceStatut(Security $security, Client $client, Request $request): Response
   {
@@ -71,16 +85,18 @@ class PreferenceController extends AbstractController
     $statut=$preference['statut'];
     $projet=$preference['projet'];
     $favori=$preference['favori'];
+    $versions=$preference['vesions'];
     $bookmark=$preference['bookmark'];
 
     /** On change me statut pour la catégorie. */
     $statut[$categorie]=$etat;
 
-    /** on met à jour l'objet. */
+    /** On met à jour l'objet. */
     $jarray=json_encode([
       'statut'=>$statut,
       'projet'=>$projet,
       'favori'=>$favori,
+      'versions'=>$versions,
       'bookmark'=>$bookmark
       ]);
 
@@ -100,7 +116,7 @@ class PreferenceController extends AbstractController
 
   /**
    * [Description for apiPreferenceCategorie]
-   * Renvoi le statut et le préferences d'une catégorie
+   * Renvoi le statut et les préferences d'une catégorie
    *
    * @param Security $security
    * @param Client $client
@@ -133,6 +149,7 @@ class PreferenceController extends AbstractController
 
   /**
    * [Description for index]
+   *  Affiche la page des préférences
    *
    * @param Security $security
    * @param Client $client
@@ -168,11 +185,15 @@ class PreferenceController extends AbstractController
     /** Valeur par défaut */
     $descriptionProjet="Liste des projets à suivre.";
     $descriptionFavori="Liste des projets favoris.";
+    $descriptionVersions="Liste des versions favorites.";
     $descriptionBookmark="Afficher le dernier projet.";
 
     $mesPreferences=[
       "projet"=>["option"=>"Projet", "description"=>$descriptionProjet, "statut"=>$preferences['statut']['projet']],
-      "favori"=>["option"=>"Favori", "description"=>$descriptionFavori, "statut"=>$preferences['statut']['favori']],
+      "favori"=>["option"=>"Favori", "description"=>$descriptionFavori,
+      "statut"=>$preferences['statut']['favori']],
+      "versions"=>["option"=>"Versions","description"=>$descriptionFavori,
+      "statut"=>$preferences['statut']['versions']],
       "bookmark"=>["option"=>"Bookmark", "description"=>$descriptionBookmark, "statut"=>$preferences['statut']['bookmark']]
     ];
 
@@ -184,7 +205,6 @@ class PreferenceController extends AbstractController
       'version' => $versionAPP, 'dateCopyright' => \date('Y'),
       'mode'=>$mode, Response::HTTP_OK];
 
-      //dd($mesPreferences);
     if ($mode==="TEST"){
       return $response->setData($render);
     } else {
