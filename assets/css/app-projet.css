@@ -395,16 +395,16 @@
 /* Validation */
 .V { color: #187e3d; }
 
-/* Restitution, Indicateurs, COSUI, Owasp, Répartition-Module */
+/* Restitution, Suivi, COSUI, Owasp, Répartition-Module */
 .R,
-.I,
+.S,
 .C,
 .O,
 .RM { color: #00445b; }
 
 .V,
 .R,
-.I,
+.S,
 .C,
 .O,
 .RM {
@@ -416,13 +416,28 @@
 
 .V:hover,
 .R:hover,
-.I:hover,
+.S:hover,
 .C:hover,
 .O:hover,
 .RM:hover {
   color: #fff;
   background-color: #b33926;
 }
+
+.modifier-liste-projet {
+  display: flex;
+  align-items: center;
+}
+.modifier-liste-label { font-size: 1.2rem; }
+
+.modifier-liste-projet-svg {
+  fill: #00445b;
+  width: 42px;
+  height: 36px;
+  padding-right: 0.5rem;
+}
+
+.modifier-liste-projet-svg:hover { fill: #e7552c; }
 
 /**
   * Propriétés pour les class en fonction des medias type
