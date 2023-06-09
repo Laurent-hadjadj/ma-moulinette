@@ -178,18 +178,6 @@ export const enregistrement=function(mavenKey) {
   const codeSmellMinor=t41.dataset.vulnerabilityMinor;
   const codeSmellInfo=t42.dataset.vulnerabilityInfo;
 
-  let favori=0;
-
-  /** On récupère le statut du favori */
-
-  /** POur SQLITE 0 (false) and 1 (true).
-   * Lors de l'insert avec doctrine l'utilisation de TRUE et FALSE n'est
-   * pas correcte
-   */
-  if ($('.favori-svg').hasClass('favori-svg-select')) {
-      favori=1;
-  }
-
   const data =
   {
     mavenKey, nomProjet,
@@ -211,7 +199,7 @@ export const enregistrement=function(mavenKey) {
     vulnerabilityMajor, vulnerabilityMinor, vulnerabilityInfo,
     codeSmellBlocker, codeSmellCritical, codeSmellMajor,
     codeSmellMinor, codeSmellInfo,
-    favori, initial:0, mode:'null' };
+    initial:0, mode:'null' };
 
 const options = {
     url: `${serveur()}/api/enregistrement`, type: 'PUT',
