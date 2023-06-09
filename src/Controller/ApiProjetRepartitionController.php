@@ -81,54 +81,53 @@ class ApiProjetRepartitionController extends AbstractController
    */
   protected function batch_Analyse($elements, $mavenKey)
   {
-    $frontend = 0;
-    $backend = 0;
-    $autre = 0;
-    $erreur=0;
-
+    $frontend=$backend=$autre= 0;
     /** nom du projet */
     $app = explode(":", $mavenKey);
     foreach ($elements as $element) {
       $file = str_replace($mavenKey . ":", "", $element->getComponent());
       $module = explode("/", $file);
-
-      switch ($module[0]) {
-        case "du-presentation" || "rs-presentation" : $frontend = $frontend + 1;
-              break;
-        case  $app[1] . "-presentation" ||
-              $app[1] . "-presentation-commun" ||
-              $app[1] . "-presentation-ear" ||
-              $app[1] . "-webapp": $frontend = $frontend + 1;
-              break;
-        case "rs-metier" : $backend = $backend + 1;
-              break;
-        case  $app[1] . "-metier" ||
-              $app[1] . "-common" ||
-              $app[1] . "-api" ||
-              $app[1] . "-dao": $backend = $backend + 1;
-              break;
-        case  $app[1] . "-metier-ear" ||
-              $app[1] . "-service" ||
-              $app[1] . "-serviceweb" ||
-              $app[1] . "-middleoffice": $backend = $backend + 1;
-              break;
-        case  $app[1] . "-metier-rest" ||
-              $app[1] . "-entite" ||
-              $app[1] . "-serviceweb-client": $backend = $backend + 1;
-              break;
-        case  $app[1] . "-batch" ||
-              $app[1] . "-batchs" ||
-              $app[1] . $app[1] . "-batch-envoi-dem-aval" ||
-              $app[1] . "-batch-import-billets": $autre = $autre + 1;
-              break;
-        case  $app[1] . $app[1] . "-rdd" : $autre = $autre + 1;
-              break;
-        default:
-            $erreur=$erreur+1;
+      if ($module[0]==="du-presentation" ||
+          $module[0]==="rs-presentation"){
+        $frontend = $frontend + 1;
+      }
+      if ($module[0]===$app[1] . "-presentation" ||
+          $module[0]===$app[1] . "-presentation-commun" ||
+          $module[0]===$app[1] . "-presentation-ear" ||
+          $module[0]===$app[1] . "-webapp"){
+            $frontend = $frontend + 1;
+          }
+      if ($module[0]==="rs-metier"){
+        $backend = $backend + 1;
+      }
+      if ($module[0]===$app[1] . "-metier" ||
+          $module[0]===$app[1] . "-common" ||
+          $module[0]===$app[1] . "-api" ||
+          $module[0]===$app[1] . "-dao"){
+            $backend = $backend + 1;
+          }
+      if ($module[0]===$app[1] . "-metier-ear" ||
+          $module[0]===$app[1] . "-service" ||
+          $module[0]===$app[1] . "-serviceweb" ||
+          $module[0]===$app[1] . "-middleoffice"){
+            $backend = $backend + 1;
+          }
+      if ($module[0]===$app[1] . "-metier-rest" ||
+          $module[0]===$app[1] . "-entite" ||
+          $module[0]===$app[1] . "-serviceweb-client"){
+            $backend = $backend + 1;
+          }
+      if ($module[0]===$app[1] . "-batch" ||
+          $module[0]===$app[1] . "-batchs" ||
+          $module[0]===$app[1] . "-batch-envoi-dem-aval" ||
+          $module[0]===$app[1] . "-batch-import-billets"){
+          $autre = $autre + 1;
+          }
+      if ($module[0]===$app[1] . "-rdd") {
+        $autre = $autre + 1;
       }
     }
-
-    return ['erreur'=>$erreur, 'frontend'=>$frontend, 'backend'=>$backend, 'autre'=>$autre];
+    return ['frontend'=>$frontend, 'backend'=>$backend, 'autre'=>$autre];
   }
 
   /**
@@ -353,7 +352,7 @@ class ApiProjetRepartitionController extends AbstractController
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  #[Route('/api/projet/repartition/analyse', name: 'projet_repartition_analyse', methods: ['PUT'])]
+  #[Route('/api/projet/repartition/analyse', name: 'projet_repartition_analyse', methods: ['PUT', 'GET'])]
   public function projetRepartitionAnalyse(Request $request): Response
   {
     /** On décode le body */
@@ -365,6 +364,12 @@ class ApiProjetRepartitionController extends AbstractController
     $severity = $data->severity;
     $setup = $data->setup;
     $mode= $data->mode;
+
+    /**$mode='null';
+    $mavenKey = "fr.franceagrimer:rnm";
+    $type = "CODE_SMELL";
+    $severity = "MAJOR";
+    $setup = 1685694576592;**/
 
     /** On créé un nouvel objet Json */
     $response = new JsonResponse();
