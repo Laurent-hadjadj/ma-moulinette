@@ -212,7 +212,7 @@ class ApiProjetController extends AbstractController
     $bookmark=$preference['bookmark'];
 
     if ($isFavori){
-      /** on suuprime le projet de la liste */
+      /** on supprime le projet de la liste */
       $nouvelleListeFavori = array_diff($preference['favori'], [$mavenKey]);
 
       $statut['favori']=false;
@@ -2133,9 +2133,8 @@ class ApiProjetController extends AbstractController
     $save->setHotspotLow($data->hotspotLow);
     $save->setHotspotTotal($data->hotspotTotal);
 
-    /** Je suis un favori, une verion initiale ?  0 (false) and 1 (true). */
+    /** Je suis une verion initiale ?  0 (false) and 1 (true). */
     /** On récupère 0 ou 1 et non FALSE et TRUE */
-    $save->setFavori($data->favori);
     $save->setInitial($data->initial);
 
     /** Nombre de défaut par sévérité. */
