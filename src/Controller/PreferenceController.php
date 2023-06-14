@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 /** Securité */
-use Symfony\Component\Security\Core\Security;
+use Symfony\Bundle\SecurityBundle\Security;
 
 /** Accès aux tables SLQLite*/
 use Doctrine\ORM\EntityManagerInterface;
