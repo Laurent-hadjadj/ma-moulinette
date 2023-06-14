@@ -541,7 +541,7 @@ class SuiviController extends AbstractController
         note_reliability,note_security,
         note_sqale,note_hotspot,hotspot_total,
         hotspot_high,hotspot_medium,hotspot_low,
-        favori,initial,date_enregistrement)
+        initial,date_enregistrement)
       VALUES
       ('${tempoMavenKey}','${tempoVersion}',
         '${tempoDateVersion}','${tempoNom}',-1,-1,-1,-1,
@@ -556,7 +556,7 @@ class SuiviController extends AbstractController
         -1,-1,-1,-1,-1,
         '${tempoNoteReliability}','${tempoNoteSecurity}','${tempoNoteSqale}',
         '${tempoNoteHotspotsReview}',${tempoHotspotsReview},
-        -1,-1,-1,FALSE, ${tempoInitial},
+        -1,-1,-1, ${tempoInitial},
         '${tempoDateEnregistrement}')";
 
     // On exécute la requête
@@ -602,7 +602,7 @@ class SuiviController extends AbstractController
 
     /**  On créé un nouvel objet Json. */
     /**  On récupère les versions et la date pour la clé du projet. */
-    $sql = "SELECT maven_key, version, date_version as date, favori, initial
+    $sql = "SELECT maven_key, version, date_version as date, initial
             FROM historique
             WHERE maven_key='$mavenKey'
             ORDER BY date_version DESC";
@@ -628,7 +628,7 @@ class SuiviController extends AbstractController
    * @return response
    *
    * Created at: 15/12/2022, 22:39:11 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/suivi/version/favori', name: 'suivi_version_favori', methods: ['PUT'])]
