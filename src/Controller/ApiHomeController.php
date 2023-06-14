@@ -140,6 +140,8 @@ class ApiHomeController extends AbstractController
    * Récupération de la liste des projets.
    * http://{url}}/api/components/search?qualifiers=TRK&ps=500
    *
+   * @param Request $request
+   * @param Client $client
    * @return response
    *
    * Created at: 15/12/2022, 21:15:04 (Europe/Paris)
