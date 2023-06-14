@@ -148,17 +148,23 @@ input:checked ~ .switch-paddle { background: #00445b; }
   margin-bottom: 0.1rem;
 }
 
+/** Taille de l'avatar */
+
+#ma-tete { width: 50px; }
+
 /******* fenetre modal bookmark, favori *****/
 #fermer-preference-bookmark,
 #fermer-preference-favori,
-#fermer-preference-projet {
+#fermer-preference-projet,
+#fermer-preference-version {
   background-color: #00445b;
   color: #fff;
 }
 
 #fermer-preference-bookmark:hover,
 #fermer-preference-favori:hover,
-#fermer-preference-projet:hover {
+#fermer-preference-projet:hover,
+#fermer-preference-version:hover {
   background-color: #006182;
   color: #fff;
 }
@@ -174,5 +180,32 @@ input:checked ~ .switch-paddle { background: #00445b; }
 .preference-ligne-tableau { font-size: 1.1rem; }
 
 .preference-compteur-tableau { font-size: 1.4rem; }
+
+/** Suppression d'un favori ou d'une version */
+.poubelle-svg {
+  fill: #00445b;
+  cursor: pointer;
+  margin-bottom: -0.4rem;
+  width: 28px;
+  height: 28px;
+}
+
+.poubelle-svg:hover { fill: #c45d4e; }
+
+/** accordeon version */
+.accordion-custom {
+  background-color: #00445b;
+  color: #fff;
+}
+
+.accordion-custom:hover {
+  background-color: #ed7d20;
+  color: #fff;
+}
+
+.accordion-custom:focus {
+  background-color: #006182;
+  color: #fff;
+}
 
 /*************** FIN *****************************/
