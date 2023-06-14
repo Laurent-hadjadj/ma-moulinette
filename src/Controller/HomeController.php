@@ -290,11 +290,148 @@ class HomeController extends AbstractController
     return $getVersion[0]['version'];
   }
 
+  /**
+   * [Description for getListefavoris]
+   * Récupère la liste des projets favoris.
+   *
+   * @param Request $request
+   * @param Client $client
+   *
+   * @return response
+   *
+   * Created at: 14/06/2023, 06:35:37 (Europe/Paris)
+   * @author    Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  #[Route('/home/liste/favori', name: 'home_liste_favori', methods:'GET')]
+  public function getListeFavori(Security $security,Request $request): response
+  {
+    /** On crée un objet de reponse JSON */
+    $response = new JsonResponse();
+
+    $mode=$request->get('mode');
+
+    /** On récupère le nombre de favori que l'on souhaite afficher au max (10) */
+    $envFavori=$this->getParameter('nombre.favori');
+
+    /** On récupère l'objet User du contexte de sécurité */
+    $userSecurity=$security->getUser();
+    $preference=$security->getUser()->getPreference();
+    $statutFavori=$preference['statut']['favori'];
+    $statutVersion=$preference['statut']['version'];
+    $listeFavori=$preference['favori'];
+
+    /** On regarde si l'utilisateur a activé l'affichage des favoris. */
+    if ($statutFavori===false || count($listeFavori)===0 || $statutVersion===true) {
+      $favori = false;
+      } else {
+        $condition='';
+        foreach ($listeFavori as $value) {
+          $condition=$condition.' maven_key="'.$value.'" OR ';
+        }
+
+        /** On supprime le dernier OR */
+        $andTRIM= rtrim($condition," OR ");
+
+        $sql = "SELECT DISTINCT
+                  maven_key as mavenkey,
+                  nom_projet as nom,
+                  version, date_version as date,
+                  note_reliability as fiabilite,
+                  note_security as securite,
+                  note_hotspot as hotspot,
+                  note_sqale as sqale,
+                  nombre_bug as bug,
+                  nombre_vulnerability as vulnerability,
+                  nombre_code_smell as code_smell,
+                  hotspot_total as hotspots
+              FROM historique
+              WHERE $andTRIM
+              GROUP BY maven_key LIMIT $envFavori";
+        $trim=trim(preg_replace(static::$regex, " ", $sql));
+        $select = $this->em->getConnection()->prepare($trim)->executeQuery();
+        $favori = $select->fetchAllAssociative();
+      }
+
+    $data=[
+      "mode"=>$mode,
+      "statut"=>$statutFavori, "listeFavori"=>$favori,
+      'nombreProjet' => count($listeFavori), Response::HTTP_OK];
+    return $response->setData($data);
+  }
+
+  /**
+   * [Description for getListeVersion]
+   * Récupération de la liste des projets par version (limité à 4).
+   *
+   * @param Security $security
+   * @param Request $request
+   *
+   * @return response
+   *
+   * Created at: 14/06/2023, 07:09:32 (Europe/Paris)
+   * @author    Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  #[Route('/home/liste/version', name: 'home_liste_version', methods:'GET')]
+  public function getListeVersion(Security $security,Request $request): response
+  {
+    /** On crée un objet de reponse JSON */
+    $response = new JsonResponse();
+
+    $mode=$request->get('mode');
+
+    /** On récupère l'objet User du contexte de sécurité */
+    $userSecurity=$security->getUser();
+    $preference=$security->getUser()->getPreference();
+    $statutVersion=$preference['statut']['version'];
+    $listeVersion=$preference['version'];
+
+    /** On regarde si l'utilisateur a activé l'affichage des favoris. */
+    if ($statutVersion===false || count($listeVersion)===0) {
+      $favori = false;
+      } else {
+        $condition='';
+        foreach ($listeVersion as $value) {
+          $condition=$condition.' maven_key="'.$value.'" OR ';
+        }
+
+        /** On supprime le dernier OR */
+        $andTRIM= rtrim($condition," OR ");
+
+        $sql = "SELECT DISTINCT
+                  maven_key as mavenkey,
+                  nom_projet as nom,
+                  version, date_version as date,
+                  note_reliability as fiabilite,
+                  note_security as securite,
+                  note_hotspot as hotspot,
+                  note_sqale as sqale,
+                  nombre_bug as bug,
+                  nombre_vulnerability as vulnerability,
+                  nombre_code_smell as code_smell,
+                  hotspot_total as hotspots
+              FROM historique
+              WHERE $andTRIM
+              GROUP BY maven_key LIMIT $envFavori";
+        $trim=trim(preg_replace(static::$regex, " ", $sql));
+        $select = $this->em->getConnection()->prepare($trim)->executeQuery();
+        $favori = $select->fetchAllAssociative();
+      }
+
+    $data=[
+      "mode"=>$mode,
+      "statut"=>$statutVersion, "listeProjet"=>$favori,
+      'nombreProjet' => count($listeVersion), Response::HTTP_OK];
+    return $response->setData($data);
+  }
 
   /**
    * [Description for index]
+   * Affiche ma page d'accueil
    *
    * @param Client $client
+   * @param Request $request
    * @param Security $security
    *
    * Created at: 15/12/2022, 22:09:19 (Europe/Paris)
@@ -438,56 +575,32 @@ class HomeController extends AbstractController
         $this->addFlash('alert', $message);
     }
 
-    /** On récupère le nombre de favori que l'on souhaite afficher au max (10) */
-    $nombreFavori=$this->getParameter('nombre.favori');
+    /** On va chercher les projets favoris ou les versions des projets */
+    $t=self::getListeFavori($security, $request);
+    $data1=json_decode($t->getContent());
+    $t=self::getListeVersion($security, $request);
+    $data2=json_decode($t->getContent());
 
-    /** On récupère l'objet User du contexte de sécurité */
-    $userSecurity=$security->getUser();
-    $preference=$security->getUser()->getPreference();
-    $statut=$preference['statut']['favori'];
-    $favoris=$preference['favori'];
-
-    /**
-     * On récupère les projets favoris de l'utilisateur.
-     * Pour le moment on limite le nombre de projet à 10.
-     * SQLite : 0 (false) and 1 (true).
-     */
-    if ($statut===false || count($favoris)===0) {
-        $favori = false;
+    /** On a choisi la liste des projets favori
+     *  sinon la liste des versions
+     *  sinon rien
+    */
+    if ($data1->statut){
+      $favori=$data1->listeFavori;
+      $nombreProjet=$data1->nombreProjet;
+    } elseif ($data2->statut) {
+      $favori=$data2->listeVersion;
+      $nombreProjet=$data2->nombreProjet;
     } else {
-      $condition='';
-      foreach ($favoris as $value) {
-        $condition=$condition.' maven_key="'.$value.'" OR ';
-      }
-
-      /** On supprime le dernier OR */
-      $andTRIM= rtrim($condition," OR ");
-
-      $sql = "SELECT DISTINCT
-                maven_key as mavenkey,
-                nom_projet as nom,
-                version, date_version as date,
-                note_reliability as fiabilite,
-                note_security as securite,
-                note_hotspot as hotspot,
-                note_sqale as sqale,
-                nombre_bug as bug,
-                nombre_vulnerability as vulnerability,
-                nombre_code_smell as code_smell,
-                hotspot_total as hotspots
-            FROM historique
-            WHERE $andTRIM
-            ORDER BY date_version LIMIT $nombreFavori";
-      $trim=trim(preg_replace(static::$regex, " ", $sql));
-      $select = $this->em->getConnection()->prepare($trim)->executeQuery();
-      $favori = $select->fetchAllAssociative();
+      $nombreProjet=0;
+      $favori=false;
     }
 
     $response = new JsonResponse();
     $render=[
       'projetBD' => $projetBD, 'projetSonar' => $projetSonar,
       'profilBD' => $profilBD, 'profilSonar' => $profilSonar,
-      'nombreFavori' => count($favoris), 'favori' => $favori,
+      'nombreProjet' => $nombreProjet, 'favori' => $favori,
       "public"=>$public, "private"=>$private,
       'version' => $versionAPP, 'dateCopyright' => \date('Y'),
       'mode'=>$mode, Response::HTTP_OK];
