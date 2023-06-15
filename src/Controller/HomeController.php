@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 /** Securité */
-use Symfony\Component\Security\Core\Security;
+use Symfony\Bundle\SecurityBundle\Security;
 
 /** Gestion du temps */
 use DateTime;
@@ -73,13 +73,13 @@ class HomeController extends AbstractController
    * [Description for countProjetBD]
    * Récupère le nombre de projet enregistré en base
    *
-   * @return Int
+   * @return int
    *
    * Created at: 15/12/2022, 22:06:59 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  private function countProjetBD(): Int
+  private function countProjetBD(): int
   {
     /**
      * On récupère le nombre de projet depuis la table liste_projet
@@ -98,13 +98,13 @@ class HomeController extends AbstractController
    * [Description for countProjetSonar]
    * Récupère le nombre de projet disponible sur le serveur sonarqube
    *
-   * @return Int
+   * @return int
    *
    * Created at: 15/12/2022, 22:07:31 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  private function countProjetSonar(Client $client): Int
+  private function countProjetSonar(Client $client): int
   {
     /** On récupère le nombre de projet et on filtre */
     $url = $this->getParameter(static::$sonarUrl) . "/api/components/search?qualifiers=TRK&ps=500&p=1";
@@ -134,13 +134,13 @@ class HomeController extends AbstractController
    * [Description for countProfilBD]
    * Récupère le nombre de profil enregistré en base
    *
-   * @return Int
+   * @return int
    *
    * Created at: 15/12/2022, 22:07:46 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  private function countProfilBD(): Int
+  private function countProfilBD(): int
   {
     /** On récupère le nombre de profil depuis la table profils */
     $sql = "SELECT COUNT(*) as total from profiles";
@@ -157,13 +157,13 @@ class HomeController extends AbstractController
    * [Description for countProfilSonar]
    * Récupère le nombre de profil disponible sur sonarqube
    *
-   * @return Int
+   * @return int
    *
    * Created at: 15/12/2022, 22:07:58 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  private function countProfilSonar(Client $client): Int
+  private function countProfilSonar(Client $client): int
   {
     $url = $this->getParameter(static::$sonarUrl)
     . "/api/qualityprofiles/search?qualityProfile="
@@ -315,7 +315,6 @@ class HomeController extends AbstractController
     $envFavori=$this->getParameter('nombre.favori');
 
     /** On récupère l'objet User du contexte de sécurité */
-    $userSecurity=$security->getUser();
     $preference=$security->getUser()->getPreference();
     $statutFavori=$preference['statut']['favori'];
     $statutVersion=$preference['statut']['version'];
@@ -323,7 +322,7 @@ class HomeController extends AbstractController
 
     /** On regarde si l'utilisateur a activé l'affichage des favoris. */
     if ($statutFavori===false || count($listeFavori)===0 || $statutVersion===true) {
-      $favori = false;
+      $liste = false;
       } else {
         $condition='';
         foreach ($listeFavori as $value) {
@@ -350,15 +349,50 @@ class HomeController extends AbstractController
               GROUP BY maven_key LIMIT $envFavori";
         $trim=trim(preg_replace(static::$regex, " ", $sql));
         $select = $this->em->getConnection()->prepare($trim)->executeQuery();
-        $favori = $select->fetchAllAssociative();
+        $liste = $select->fetchAllAssociative();
       }
 
     $data=[
       "mode"=>$mode,
-      "statut"=>$statutFavori, "listeFavori"=>$favori,
+      "statut"=>$statutFavori, "listeFavori"=>$liste,
       'nombreProjet' => count($listeFavori), Response::HTTP_OK];
     return $response->setData($data);
   }
+
+  /**
+   * [Description for contruitMaRequete]
+   *
+   * @param mixed $liste
+   * @param mixed $mavenkey
+   * @param mixed $index
+   *
+   * @return [type]
+   *
+   * Created at: 14/06/2023, 16:06:05 (Europe/Paris)
+   * @author    Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function contruitMaRequete($liste, $mavenkey, $index)
+  {
+    $l=$liste;
+    $m=$mavenkey[0];
+    $l="";
+    $mavenKey="maven_key='".$m."'";
+    $version="";
+
+    $versions=array_values($liste[$index]);
+    for ($v=0; $v<count($versions[0]); $v++)
+    {
+      $version=$version." version='".$versions[0][$v]."' OR ";
+    }
+    $l=$l.' '.$mavenKey.' AND ('.$version;
+
+    /** On supprime le dernier OR */
+    $rtrimOr= rtrim($l," OR ");
+    $where= $rtrimOr.')';
+    return $where;
+  }
+
 
   /**
    * [Description for getListeVersion]
@@ -382,46 +416,38 @@ class HomeController extends AbstractController
     $mode=$request->get('mode');
 
     /** On récupère l'objet User du contexte de sécurité */
-    $userSecurity=$security->getUser();
     $preference=$security->getUser()->getPreference();
     $statutVersion=$preference['statut']['version'];
     $listeVersion=$preference['version'];
 
     /** On regarde si l'utilisateur a activé l'affichage des favoris. */
     if ($statutVersion===false || count($listeVersion)===0) {
-      $favori = false;
+      $liste = false;
       } else {
-        $condition='';
-        foreach ($listeVersion as $value) {
-          $condition=$condition.' maven_key="'.$value.'" OR ';
+        $keys=array_values($listeVersion);
+        $liste=[];
+        for ($i=0; $i<count($keys); $i++) {
+          $r=self::contruitMaRequete($keys, array_keys($keys[$i]), $i);
+
+          $sql = "SELECT DISTINCT
+            maven_key as mavenkey, nom_projet as nom,
+            version, date_version as date, note_reliability as fiabilite,
+            note_security as securite, note_hotspot as hotspot,
+            note_sqale as sqale, nombre_bug as bug, nombre_vulnerability as vulnerability,
+            nombre_code_smell as code_smell, hotspot_total as hotspots
+            FROM historique
+            WHERE $r
+            ORDER BY date_version DESC limit 4";
+            $trim=trim(preg_replace(static::$regex, " ", $sql));
+            $select = $this->em->getConnection()->prepare($trim)->executeQuery();
+            $favori = $select->fetchAllAssociative();
+            array_push($liste, $favori);
         }
-
-        /** On supprime le dernier OR */
-        $andTRIM= rtrim($condition," OR ");
-
-        $sql = "SELECT DISTINCT
-                  maven_key as mavenkey,
-                  nom_projet as nom,
-                  version, date_version as date,
-                  note_reliability as fiabilite,
-                  note_security as securite,
-                  note_hotspot as hotspot,
-                  note_sqale as sqale,
-                  nombre_bug as bug,
-                  nombre_vulnerability as vulnerability,
-                  nombre_code_smell as code_smell,
-                  hotspot_total as hotspots
-              FROM historique
-              WHERE $andTRIM
-              GROUP BY maven_key LIMIT $envFavori";
-        $trim=trim(preg_replace(static::$regex, " ", $sql));
-        $select = $this->em->getConnection()->prepare($trim)->executeQuery();
-        $favori = $select->fetchAllAssociative();
       }
 
     $data=[
       "mode"=>$mode,
-      "statut"=>$statutVersion, "listeProjet"=>$favori,
+      "statut"=>$statutVersion, "listeVersion"=>$liste,
       'nombreProjet' => count($listeVersion), Response::HTTP_OK];
     return $response->setData($data);
   }
@@ -468,10 +494,10 @@ class HomeController extends AbstractController
     $majProjet="-".$this->getParameter('maj.projet')." day";
     $majProfil="-".$this->getParameter('maj.profil')." day";
 
-    $dateModificationProjet=new \DateTime($properties['projetDateModification']);
+    $dateModificationProjet=new DateTime($properties['projetDateModification']);
     $dateModificationProjet->modify($majProjet);
 
-    $dateModificationProfil=new \DateTime($properties['profilDateModification']);
+    $dateModificationProfil=new DateTime($properties['profilDateModification']);
     $dateModificationProfil->modify($majProfil);
 
     /** ***** Date - Projet ***** */
@@ -588,19 +614,22 @@ class HomeController extends AbstractController
     if ($data1->statut){
       $favori=$data1->listeFavori;
       $nombreProjet=$data1->nombreProjet;
+      $composant="projet";
     } elseif ($data2->statut) {
       $favori=$data2->listeVersion;
       $nombreProjet=$data2->nombreProjet;
+      $composant="version";
     } else {
       $nombreProjet=0;
       $favori=false;
+      $composant="vide";
     }
 
     $response = new JsonResponse();
     $render=[
       'projetBD' => $projetBD, 'projetSonar' => $projetSonar,
       'profilBD' => $profilBD, 'profilSonar' => $profilSonar,
-      'nombreProjet' => $nombreProjet, 'favori' => $favori,
+      'composant'=> $composant, 'nombreProjet' => $nombreProjet, 'favori' => $favori,
       "public"=>$public, "private"=>$private,
       'version' => $versionAPP, 'dateCopyright' => \date('Y'),
       'mode'=>$mode, Response::HTTP_OK];
