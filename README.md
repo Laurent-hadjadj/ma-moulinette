@@ -41,12 +41,14 @@ Aujourd'hui, l'application est régulièrement utilisé et a fait l'objet de nom
 ### Ma-Moulinette
 
 * [Accueil](/documentation/accueil.md)
-* [Projet](/documentation/projet.md)
+* [Profil-details](/documentation/profil-details.md)
+* [Profil](/documentation/profil.md)
+* [**Projet**](/documentation/projet.md)
 * [OWASP](/documentation/owasp.md)
 * [Suivi](/documentation/suivi.md)
 * [COSUI](/documentation/cosui.md)
-* [Collecteuse](/documentation/collecteuse.md)
-* [Préferences](/documentation/preferences.md)
+* [Répartition détaillée](/documentation/repartition_details.md)
+* [Préférences](/documentation/preferences.md)
 
 ### Backoffice de gestion
 
