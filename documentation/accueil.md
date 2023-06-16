@@ -22,6 +22,7 @@
 - [Suivi](/documentation/suivi.md)
 - [COSUI](/documentation/cosui.md)
 - [Répartition détaillée](/documentation/repartition_details.md)
+- [Préférences](/documentation/preferences.md)
 
 ## Evolutions
 
