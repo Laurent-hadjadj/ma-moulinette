@@ -4,38 +4,40 @@
 
 ## Les dossiers
 
+> Pour la version locale.
+
 Il existe deux environnements :
 
 - [ ] L'environnement de production ;
 - [ ] L'environnement de développement ;
 
-La version de **production** contient l'application symfony, deux bases vides, la version compilée des sources **JavaScript** et CSS (dans le dossier /public/build).
+La version de **production** contient l'application symfony, deux (2) bases vides, la version compilée des sources **JavaScript** et CSS (dans le dossier /public/build).
 
 Le repository git n'est pas présent. Enfin, Le dossier **node_modules** n'étant pas nécessaire, il a été supprimé (car il est utilisé uniquement en développement).
 
-Le dossier racine du projet est `ma-moulinette`. La version de production et la version de développement sont dans deux dossiers différents.
+Le dossier racine du projet est `ma-moulinette`. La version de production et la version de développement sont dans deux (2) dossiers différents.
 
-À noter que ces dossiers peuvent être changés depuis la version 1.5.0. En effet les chemins absolus ont été remplacés par des chemins relatifs basés sur les variables symfony.
+À noter que ces dossiers peuvent être changés depuis la version **1.5.0**. En effet les chemins absolus ont été remplacés par des chemins relatifs basés sur les variables symfony.
 
 - [ PROD ] : **c:\sonar-dash.prod**
 - [ DEV ] : **c:\sonar-dash.dev**
 
 Ce point et important, pour le paramétrage des accès et le lancement de symfony-cli en développement par exemple.
 
-En développement les outils suivants sont utilisés pour faciliter les tâches de gestion, comme la mise à jour des paquets NPM ou PHP, et de démarrage du serveur d'application.
+En développement, les outils suivants sont utilisés pour faciliter les tâches de gestion, comme la mise à jour des paquets NPM ou PHP, et de démarrage du serveur d'application.
 
 La liste ci-dessous indique les programmes utilisés depuis le dossier racine, i.e. `c:\sonar-dash.dev` par exemple.
 
-- [X] vscode-1.69.2.bat : Lance vsCode (portable) ;
-- [X] symfony_start.bat : Démarrage du serveur **symfony-cli**
-- [X] symfony_stop.bat : Arrêt du serveur **symfony-cli**
-- [X] encore.bat : démarrage de **Webpack** en mode **watch**.
-- [X] MigrateSql.bat : Lance la mise à jour des entity Main et Secondary, la création des versions et la mise à jour des BD ;
-- [X] Console-cli.bat : Ouvre un terminal pour lancer les commandes symfony, composer et npm dans le dossier du projet ;
-- [X] Deploy.bat : compile le code PHP/Twig, CSS et JavaScript pour l'environnement de production ;
-- [ ] stan.bat : Lance les outils d'Audit CSS, HTML et PHP et l'analyse du projet dans SonarQube ;
-- [ ] catchTool.bat : Lance des commandes d'optimisation du cache pour opCache ;
-- [ ] sqlite.exe : Permets de lancer les commandes de vaccum et d'optimisation de la base data.db et temp.db ;
+- [X] `vscode-1.77.1.bat` : lance vsCode (portable) ;
+- [X] `symfony_start.bat` : démarre le serveur **symfony-cli**
+- [X] `symfony_stop.bat` : arrête le serveur **symfony-cli**
+- [X] `encore.bat` : démarre **Webpack** en mode **watch**.
+- [X] `MigrateSql.bat` : Lance la mise à jour des entities **Main** et **Secondary**, la création des versions et la mise à jour des BD pour la version **sqlite** ;
+- [X] `Console-cli.bat` : ouvre un terminal pour lancer les commandes symfony, composer et npm dans le dossier du projet ;
+- [X] `Deploy.bat` : compile le code PHP/Twig, CSS et JavaScript pour l'environnement de production ;
+- [ ] `stan.bat` : lance les outils d'Audit CSS, HTML et PHP et l'analyse du projet dans SonarQube ;
+- [ ] `catchTool.bat` : lance des commandes d'optimisation du cache pour opCache ;
+- [ ] `sqlite.exe` : permets de lancer les commandes de vaccum et d'optimisation de la base **data.db** et **temp.db** ;
 
 ## Les environnements
 
@@ -43,7 +45,7 @@ Chaque environnement dispose de son fichier de `.env`.
 
 Le fichier **.env-prod** est un template de configuration.
 
-Il peut être utilisé pour l'environnement de dev ou de prod. Il suffit pour cela de le renommer en **.env** et de le paramétrer en fonction de vos besoins ;
+Il peut être utilisé pour l'environnement de **dev** ou de **prod**. Il suffit pour cela de le renommer en **.env** et de le paramétrer en fonction de vos besoins ;
 
 ### Définition de l'environnent
 
@@ -69,12 +71,12 @@ Pour la connexion à Sonarqube, il est possible d'utiliser un **token** ou ses i
 
 La configuration nécessaire est la suivante :
 
-- [x] SONAR_URL = <https://monsonar.ma-petite-entreprise.fr>
-- [x] SONAR_TOKEN = bzm8i46k4e56878lm7ilxcw8t7095df5k6i8hb01
-- [ ] SONAR_USER = mon_login
-- [ ] SONAR_PASSWORD = t5lf911a83lt
+- [x] **SONAR_URL** = <https://monsonar.ma-petite-entreprise.fr>
+- [x] **SONAR_TOKEN** = bzm8i46k4e56878lm7ilxcw8t7095df5k6i8hb01
+- [ ] **SONAR_USER** = mon_login
+- [ ] **SONAR_PASSWORD** = t5lf911a83lt
 
-Le taken est une clé symétrique de 40 bits généré depuis le serveur Sonarqube.
+Le token est une clé symétrique de 40 bits généré depuis le serveur Sonarqube.
 
 `Note :` Il faudra utiliser l'une ou l'autre des méthodes d'authentification.
 
@@ -92,26 +94,64 @@ Ici, nous allons spécifier :
 - une clé (SALT) permettant de renforcer la sécurité lors du déclenchement d'un traitement depuis un client externes (i.e. sans passer par l'application),
 - le chemin relatif vers le dossier audit depuis le dossier racine de l'application.
 
-- [x] SONAR_PROFILES = "mon profil v1.0.0"
-- [x] SONAR_ORGANIZATION = "ma petite Entreprise"
-- [x] NOMBRE_FAVORI = 10
-- [x] TRUST_HOST1="^ma-petite-entreprise\.fr$"
-- [x] TRUST_HOST2="10.0.0.1"
-- [x] SECRET='>Yw5<3pR]$lFeVg147'
-- [x] MAJ_PROJET = 0
-- [x] MAJ_PROFIL = 30
-- [x] SALT = "YE4T-9AU62-36HG7A-58ABS39-76JC"
-- [x] AUDIT = "/var/audit"
+- [x] **SONAR_PROFILES** = "mon profil v1.0.0"
+- [x] **SONAR_ORGANIZATION** = "ma petite Entreprise"
+- [x] **NOMBRE_FAVORI** = 10
+- [x] **TRUST_HOST1** = "^ma-petite-entreprise\.fr$"
+- [x] **TRUST_HOST2** = "10.0.0.1"
+- [x] **SECRET** = '>Yw5<3pR]$lFeVg147'
+- [x] **MAJ_PROJET** = 0
+- [x] **MAJ_PROFIL** = 30
+- [x] **SALT** = "YE4T-9AU62-36HG7A-58ABS39-76JC"
+- [x] **AUDIT** = "/var/audit"
 
-`Note :` Pour les **TRUST_HOST**, on peut utiliser une URL, un domaine ou une adresse IP.
+`Note :` Pour les **TRUST_HOST**, il est possible d'utiliser une URL, un domaine ou une adresse IP.
 
-`Note :` Pour **MAJ_PROJET**, la valeur 0 indique la date d'aujourd'hui. 1 indiquera la date d'hier, etc... De la même façon, pour le variable **MAJ_PROFIL**, la valeur 30 correspond à 30 jours à partir d'aujourd'hui.
+`Note :` Pour **MAJ_PROJET**, la valeur **0** indique la date d'aujourd'hui. **1** indiquera la date d'hier, etc...
+De la même façon, pour le variable **MAJ_PROFIL**, la valeur **30** correspond à 30 jours à partir d'aujourd'hui.
+
+### Environnement de production
+
+Le fichier des propriétés de développement s'obtient en utilisant la commande : `composer dump-env prod`
+
+Le ficher obetnu se nomme `.env.local.php`.
+
+```php
+<?php
+
+// This file was generated by running "composer dump-env prod"
+
+return array (
+  'APP_ENV' => 'prod',
+  'APP_DEBUG' => '1',
+  'APP_SECRET' => '14vy9s67nm7oyis6fv347s923u',
+  'MESSENGER_TRANSPORT_DSN' => 'doctrine://default?auto_setup=0',
+  'DATABASE_DEFAULT_URL' => 'sqlite:///%kernel.project_dir%/var/data.db',
+  'DATABASE_SECONDARY_URL' => 'sqlite:///%kernel.project_dir%/var/temp.db',
+  'SQLITE_PATH' => '/%kernel.project_dir%/var/',
+  'SONAR_URL' => 'https://monsonar.ma-petite-entreprise.fr',
+  'SONAR_TOKEN' => 'bzm8i46k4e56878lm7ilxcw8t7095df5k6i8hb01',
+  'SONAR_USER' => '',
+  'SONAR_PASSWORD' => '',
+  'SONAR_PROFILES' => 'mon profil v1.0.0',
+  'SONAR_ORGANIZATION' => 'ma petite Entreprise',
+  'NOMBRE_FAVORI' => '10',
+  'TRUST_HOST1' => '^ma-petite-entreprise\.fr$',
+  'TRUST_HOST2' => '10.0.0.1',
+  'SECRET' => '>Yw5<3pR]$lFeVg147',
+  'MAJ_PROJET' => '0',
+  'MAJ_PROFIL' => '30',
+  'SALT' => 'YE4T-9AU62-36HG7A-58ABS39-76JC',
+  'AUDIT' => '/var/audit',
+  'LOCK_DSN' => 'semaphore',
+);
+```
 
 ## Installation des dépendances
 
-Pour l'environnement de développement, il est nécessaire d'installer les dépendances PHP et NPM. Pour cela il suffit les commandes suivantes à la racine du projet **ma-moulinette**.
+Pour l'environnement de développement, il est nécessaire d'installer les dépendances **PHP** et **NPM**. Pour cela il suffit de passer les commandes suivantes à la racine du projet **ma-moulinette**.
 
-Pour composer, il est possible de lancer la commande directement ou depuis symfony-cli.
+Pour **composer**, il est possible de lancer la commande directement ou depuis **symfony-cli**.
 
 ### Mise à jour de composer
 
