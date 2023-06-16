@@ -10,17 +10,17 @@ L'application fonctionne avec la version sonarqube 8.9.9 LTS et supérieure. Ell
 
 ## Histoire
 
-L'application a été développée pour pallier la suppression et/ou l'abandon de certaines fonctionnalités présentes dans la version 5.4.3 LTS de sonarqube.
+C'est lors d'un échange avec mes étudiants en stage PHP/Symfony, que j'ai présenté Sonarqube et l'application de gestion et de suivi des indicateurs qualité. L'objectif étant de leur montrer la réalisation d'une petite application web en HTML5/JS et les bonnes pratiques de conception et de réalisation.
 
-L'objectif étant de recréer ses fonctionnalités dans une application locale et indépendante. En d'autres termes, il fallait que l'application puisse être utilisée simplement depuis un poste de travail sans installer un serveur dédié pour la collecte et la présentation des indicateurs.
+Par la suite, l'application a été amélioré et utilisé dans le cadre de mes travaux.
 
-Cette première version développée en 10 jours a été réalisée en HTML5, CSS et Javascript. Le stockage en base de données s'appuyait sur indexedDB (dexieJs).
+Cette première version développée en 10 jours a été réalisée en HTML5, CSS et Javascript. Le stockage en base de données utilisait indexedDB (dexieJs). Cette application se voulait autonome, légere et simple d'utilisation. Elle permetait à un utilisateur de gèrer localement son suivi des projets sonarqube.
 
-Cette solution a été abandonnée à cause des problèmes **CORS** rencontrés lors du déploiement sur l'environnement de production.
+Cependant, il n'a pas été possible de l'utiliser en condition de production. Pour autant, elle fonctionnait parfaitement dans notre environnement de développement.
 
-Pour contourner le problème des accès **CORS** en environnement sécurisé, il a été décidé d'utiliser un client en PHP (i.e. à la place des solutions javascript utilisées) pour réaliser les appels de web-services.
+Après de nombreux tests et réécritures de codes, la version a été abandonnée pour une application reposant sur le langage PHP et Symfony. Les premiers tests étant concluants, la migration de la version HTML5/JS a pu commencer.
 
-La réécriture totale de l'application a débuté le **28 janvier 2022**, après plusieurs jours de tests infructueux.
+Aujourd'hui, l'application est régulièrement utilisé et a fait l'objet de nombreuses évolutions.
 
 ## Architecture
 
@@ -54,6 +54,7 @@ La réécriture totale de l'application a débuté le **28 janvier 2022**, aprè
 * [Equipe](/documentation/equipe.md)
 * [Portefeuille](/documentation/portefeuille.md)
 * [Batch](/documentation/batch.md)
+* [Préfernces](/documentation/preferences.md)
 
 ### Pour bien démarrer
 
