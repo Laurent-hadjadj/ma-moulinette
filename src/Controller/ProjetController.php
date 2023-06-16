@@ -68,8 +68,13 @@ class ProjetController extends AbstractController
   public function index(Security $security, Request $request): Response
   {
     /** On récupère l'objet User du contexte de sécurité */
-    $userSecurity=$security->getUser();
     $preference=$security->getUser()->getPreference();
+
+    /** On regarde si le bookmark est actif */
+    $bookmark=['null'];
+    if ($preference['statut']['bookmark']){
+        $bookmark=$preference['bookmark'];
+    }
 
     /** On crée un objet de reponse JSON */
     $response = new JsonResponse();
@@ -82,7 +87,7 @@ class ProjetController extends AbstractController
       'mode'=>$mode,
       'version' => $this->getParameter('version'),
       'dateCopyright' => \date('Y'),
-      'bookmark'=>$preference['bookmark'],
+      'bookmark'=>$bookmark,
       Response::HTTP_OK
     ];
 
@@ -264,33 +269,33 @@ class ProjetController extends AbstractController
         /** On prend la première entrée */
         if ($module[0]==="du-presentation" ||
             $module[0]==="rs-presentation"){
-            $frontend = $frontend + $directory["count"];
+            $frontend = $frontend + 1;
         }
         if ($module[0]===$app[1] . "-presentation" ||
             $module[0]===$app[1] . "-presentation-commun" ||
             $module[0]===$app[1] . "-presentation-ear" ||
             $module[0]===$app[1] . "-webapp"){
-              $frontend = $frontend + 1;
+            $frontend = $frontend + 1;
         }
         if ($module[0]==="rs-metier"){
-          $backend = $backend + $directory["count"];
+          $backend = $backend + 1;
         }
         if ($module[0]===$app[1] . "-metier" ||
             $module[0]===$app[1] . "-common" ||
             $module[0]===$app[1] . "-api" ||
             $module[0]===$app[1] . "-dao"){
-              $backend = $backend + $directory["count"];
+            $backend = $backend + 1;
         }
         if ($module[0]===$app[1] . "-metier-ear" ||
             $module[0]===$app[1] . "-service" ||
             $module[0]===$app[1] . "-serviceweb" ||
             $module[0]===$app[1] . "-middleoffice"){
-              $backend = $backend + $directory["count"];
+            $backend = $backend + 1;
         }
         if ($module[0]===$app[1] . "-metier-rest" ||
             $module[0]===$app[1] . "-entite" ||
             $module[0]===$app[1] . "-serviceweb-client"){
-              $backend = $backend + $directory["count"];
+            $backend = $backend + 1;
         }
         if ($module[0]===$app[1] . "-batch" ||
             $module[0]===$app[1] . "-batchs" ||
@@ -299,7 +304,7 @@ class ProjetController extends AbstractController
             $autre = $autre +1;
             }
         if ($module[0]===$app[1] . "-rdd") {
-          $autre = $autre + 1;
+            $autre = $autre + 1;
         }
       }
       return ['frontend'=>$frontend, 'backend'=>$backend, 'autre'=>$autre];
