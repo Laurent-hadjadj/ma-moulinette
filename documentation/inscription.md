@@ -12,20 +12,20 @@ Le formulaire d'inscription propose cinq (5) options :
 
 1 - Saisir son nom.
 2 - Saisir son prénom.
-3 - Saisir son avatar.
+3 - Choisir son avatar.
 4 - Saisir son adresse mél. (cf. spécification).
 5 - Valider son inscription.
 
 ## Spécifications
 
-L'adresse de courriel respecte la RFC 3696 pour laquelle :
+L'adresse de courriel respecte la **RFC 3696** pour laquelle :
 
 * [x] la partie gauche de l'adresse doit avoir une longueur de 64 caractères ;
 * [x] la partie gauche ne peut pas commencer par le symbole arobase `@` ;
 * [X] l'adresse de courriel doit avoir au plus un symbole arobase `@` ;
 * [x] le nom de domaine doit être qualifiée et avoir une longueur de 255 caractères maximum.
 
-Le mot de passe doit avoir une longueur minimale de 8 caractères et au maximum de 52 caractères ;
+Le mot de passe doit avoir une longueur minimale de **8** caractères et au maximum de **52** caractères ;
 
 ## Contrôle de l'adresse
 
@@ -48,11 +48,12 @@ Le mot de passe est trop long ! Il doit avoir une longueur de moins de cinquante
 
 ## Choisir son avatar
 
-En cliquant sur le bouton `Changer`, une fenêtre modale apparaît. Il est dès lors possible de choisir parmi 171 icônes présentes.
+En cliquant sur le bouton `Changer`, une fenêtre modale apparaît. Il est dès lors possible de choisir parmi **171** icônes présentes.
 
 ![inscription](/documentation/ressources/registration-008.jpg)
 
 Cool, non !
+
 ![inscription](/documentation/ressources/registration-009.jpg)
 
 -**-- FIN --**-
