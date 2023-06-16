@@ -1261,9 +1261,9 @@ $('.js-repartition-module').on('click', () => {
 
 /***********    Main */
 const e = document.getElementById('feedback');
-let dernierBidule=e.dataset.bookmark;
-
-if (dernierBidule !== undefined){
+const dernierBidule=e.dataset.bookmark;
+console.log(dernierBidule);
+if (dernierBidule !== 'null'){
   /* On récupère le nom du projet */
   const b = dernierBidule.split(':');
   const nom = b[1];
