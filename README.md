@@ -36,7 +36,7 @@ Aujourd'hui, l'application est régulièrement utilisé et a fait l'objet de nom
 * [Authentification](/documentation/authentification.md)
 * [Inscription](/documentation/inscription.md)
 * [Bienvenue](/documentation/bienvenue.md)
-* [Gestion des utilisateurs](utilisateur.md)
+* [Gestion des utilisateurs](/documentation/utilisateur.md)
 
 ### Ma-Moulinette
 
@@ -46,6 +46,7 @@ Aujourd'hui, l'application est régulièrement utilisé et a fait l'objet de nom
 * [Suivi](/documentation/suivi.md)
 * [COSUI](/documentation/cosui.md)
 * [Collecteuse](/documentation/collecteuse.md)
+* [Préferences](/documentation/preferences.md)
 
 ### Backoffice de gestion
 
@@ -54,7 +55,6 @@ Aujourd'hui, l'application est régulièrement utilisé et a fait l'objet de nom
 * [Equipe](/documentation/equipe.md)
 * [Portefeuille](/documentation/portefeuille.md)
 * [Batch](/documentation/batch.md)
-* [Préfernces](/documentation/preferences.md)
 
 ### Pour bien démarrer
 

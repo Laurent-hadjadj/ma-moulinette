@@ -35,7 +35,7 @@ Par défaut cinq (5) utilisateurs sont créés.
 * [ ] Emma, une utilisateur de test.
 * [ ] Nathan, un utilisateur de test.
 
-Les utilisateurs Aurélie, Josh, Emma et Nathan ont pour rôle **GESTIONNAIRE**, **UTILISATEUR**, **BATCH** et **COLLECTE**. Les compte de tests sont rattachés à une équipe et  sont `désactivés` par défaut.
+Les utilisateurs **Aurélie**, **Josh**, **Emma** et **Nathan** ont pour rôle **GESTIONNAIRE**, **UTILISATEUR**, **BATCH** et **COLLECTE**. Les comptes de tests sont rattachés à une équipe et sont `désactivés` par défaut.
 
 Pour chaque utilisateur, le tableau de suivi affiche les éléments suivants  :
 
@@ -44,7 +44,7 @@ Pour chaque utilisateur, le tableau de suivi affiche les éléments suivants  :
 * L'adresse de courriel ;
 * Son ou ses rôles ;
 * L'équipe ;
-* Son statut, Actif ou Pas ;
+* Son statut, Actif : Oui ou Non ;
 * La date de modification ;
 * La date de création ;
 
@@ -73,7 +73,7 @@ Par défaut, l'utilisateur n'a pas de rôles, n'est pas rattaché à une équipe
 
 Pour activer le profil d'**Aurélie**, il faudra : choisir un profil, une équipe et cocher la case **Actif**.
 
-`Aurélie` est notre `Gestionnaire`. C'est elle qui gère son équipe (Josh et Emmal).
+> **Aurélie** est notre `Gestionnaire`. C'est elle qui gère son équipe (Josh, Emma et Nathan).
 
 ![utilisateur](/documentation/ressources/utilisateur-005a.jpg)
 
@@ -83,7 +83,7 @@ Et Voilà !
 
 ![utilisateur](/documentation/ressources/utilisateur-005aa.jpg)
 
-`Emma` est notre gestionnaire de `Traitement`, c'est elle qui pilote le portefeuille des applications à mettre à jour automatiquement par `Ma Moulinette`. C'est elle qui pourra également lancer un traitement manuellement.
+> **Emma** est notre gestionnaire de `Traitement`, c'est elle qui pilote le portefeuille des applications à mettre à jour automatiquement par `Ma Moulinette`. C'est elle qui pourra également lancer un traitement manuellement.
 
 Et voilà !
 ![utilisateur](/documentation/ressources/utilisateur-005c.jpg)
@@ -91,14 +91,14 @@ Et voilà !
 Et voilà !
 ![utilisateur](/documentation/ressources/utilisateur-005cc.jpg)
 
-`Nathan` est notre gestionnaire de `Collecte`, c'est lui qui aura la responsabilité de lancer toutes les taches de collectes de données ou de mise à jour de référentiels.
+> **Nathan** est notre gestionnaire de `Collecte`, c'est lui qui aura la responsabilité de lancer toutes les taches de collectes de données ou de mise à jour de référentiels.
 
 Et voilà !
+
 ![utilisateur](/documentation/ressources/utilisateur-005d.jpg)
 
 Et voilà !
 ![utilisateur](/documentation/ressources/utilisateur-005dd.jpg)
-
 
 `Josh` est `Utilisateur`. C'est lui qui travaillera sur les données collectées par l'application `Ma Moulinette`.
 
@@ -106,7 +106,6 @@ Et voilà !
 
 Et voilà !
 ![utilisateur](/documentation/ressources/utilisateur-005bb.jpg)
-
 
 Waouh !!! C'est fait. On a notre équipe de championnes :)
 
