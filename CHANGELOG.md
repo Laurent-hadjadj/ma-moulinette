@@ -277,7 +277,7 @@ General error: 1 near "4.1": syntax error"
   * Affichage du nombre de projet et de profil en plus/moins ;
   * Correction Sonarqube ;
 * [Profil] Correction de l'affichage du statut Actif lors du rechargement de la liste ;
-* [Paramétrage] Choix de la fréquence de mise ) jour. Par défaut 1 jour ;
+* [Paramétrage] Choix de la fréquence de mise à jour. Par défaut 1 jour ;
 
 ## v1.6.0 - 30/11/2022 - Release
 
@@ -297,5 +297,43 @@ General error: 1 near "4.1": syntax error"
 
 ## v2.0.0 - 01/01/2023 - RC1
 
-[EasyAdmin] Ajout d'un controller CRUD pour gérer les équipes ;
-[EasyAdmin] Ajout d'un controller CRUD pour gérer les portefeulles de projets ;
+* Mise à jour webpack-5.75.0 et webpack-encore 4.1.2 ;
+* Migration symfony 6.2.10 ;
+* Fix : Définition de la timezone [Europe/Paris] pour la gestion des dates;
+* Fix : Correction type attribut hotspot_high varchar(4)-->integer ;
+* Fix : Ajustement de la taille des bulles utilisées pour les notes.
+* Fix : Correction des deux hotspots -> remplacement de Math.random() par chance() ;
+* Fix : Affichage du nombre de règles à la place du language dans le tableau profil ;
+* Refactor: mises à jour des commentaires ;
+* CC : Externalisation des constantes JS ;
+* Code Clean W3C & sonarqube ;
+* [Docker] Ajout du fichier docker-compose.yml ;
+* [BD] Ajout aux scripts SQLite, des scripts PostgreSQL ;
+* [BD] Suppression de la tables `tags` ;
+* [BD] Ajout des "tags" et de la "visibilité" dans la table `liste_projet` ;
+* [Page_Home] Correction de l'affichage NaN pour les projets de type privé quand la table est vide ;
+* [Page_Home] Ajout de la vue **Projet** pour l'affichage des projets favoris, de la vue **Version** pour l'affichage des versions favorites et de vue **Vide** utiliée quand l'utilisateur a désactivé l'affichage des favoris ;
+* [Page_Portefeuille] Initialise la liste des projets à "Aucun projet" quand la table des projets est vide ;
+* [EasyAdmin] Ajout d'un **listner** pour afficher les messages utilisateur pour les évenements des class **equipe**, **portefeuille** et **batch** ;
+* [EasyAdmin] Ajout d'un **Validator** pour la contrainte d'unicité sur l'attribut `titre` ;
+* [EasyAdmin] Ajout d'un controller CRUD pour gérer les **équipes** ;
+* [EasyAdmin] Ajout d'un controller CRUD pour gérer les **portefeuilles** de projets ;
+* [EasyAdmin] Ajout d'un controller CRUD pour gérer les **batch** ;
+* [Header] Ajout d'un lien pour l'accès à la page de suivi des batch ;
+* [Security] Ajout du ROLE_BATCH avec héritage du ROLE_COLLECTE et ROLE_UTILISATEUR ;
+* [Security] Ajout du ROLE_COLLECTE avec héritage du ROLE_UTILISATEUR ;
+* [Page_Projet] Ajout du nombre de version de type "autre" ;
+* [Page_Projet] Suppression de l'icône animée lors de la collecte ;
+* [Page_Projet] Correction alignement de la colone type du tableau de présentation de la dette technique ;
+* [Page_Projet] Ajout du projet par défaut dans localStorage en marque page ;
+* [Page_Projet] Collecte des TODO ;
+* [Page_Projet] Limiter la liste des projets aux projets d'une équipe ;
+* [Page_Traitement] Ajout de la page de suivi des traitements automatique ;
+* [Traitement] Ajout d'un processus automatique et manuel pour la collecte des indicateurs sonarqube ;
+* [Page_Traitement] Ajout d'un bouton d'affichage du journal d'execution du batch ;
+* [Tests_Unitaires] OK (251 tests, 2865 assertions) ;
+* [Page_Profil] Amélioration de la page profil pour mobile ;
+* [Page_Profil] Consultation des changements par profil ;
+* [Page_Profil] Suppression du bouton de rafraichissement de la liste des profils ;
+* [Page_Profil_details] Affichage des changements sur les règles des profils qualités ;
+* [Page_Profil] Pris en compte du rôle `Gestionnaire` pour mettre à jour la liste des référentiels.
