@@ -25,17 +25,17 @@
 
 ## Page profil détails
 
-Cette page affiche la liste des changement groupée par date. Le nombre de changement est limité dans cette version à 500.
+Cette page affiche la liste des changements groupés par date. Le nombre de changement est limité dans cette version à **500**.
 
-Pour afficher la page, il suffit de choisir un langage dans la pahe `Profil` et cliquer sur l'icône de suivi des changements (première colonne du tableau).
+![profil-details](/documentation/ressources/profil-details-000a.jpg) Pour afficher la page, il suffit de choisir un langage dans la page `Profil` et cliquer sur l'icône de suivi des changements.
 
 ![profil-details](/documentation/ressources/profil-details-000.jpg)
 
-Une nouvelle page s'ouvre sur la liste des changements.
+Une nouvelle page s'ouvre avec la liste des changements.
 
 ![profil-details](/documentation/ressources/profil-details-001.jpg)
 
-Cette page est composé d'une zone d'information et d'un menu de type accordéon permettant de regrouper par date les changements.
+Cette page est composée d'une zone d'information et d'un menu de type accordéon permettant de regrouper par date les changements.
 
 ## Informations générales
 
@@ -59,7 +59,7 @@ Les éléments suivants sont affichés :
 * [x] le numéro de changement ;
 * [x] le statut : **activé** (A), **désactivé** (D);
 * [x] le nom de la règle ;
-* [x] la desciption ;
+* [x] la description ;
 * [ ] La liste des paramètres de la règle ;
 * [x] l'auteur ;
 
