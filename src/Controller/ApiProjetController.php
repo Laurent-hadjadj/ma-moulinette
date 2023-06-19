@@ -67,9 +67,6 @@ class ApiProjetController extends AbstractController
   /**
    * [Description for __construct]
    *
-   * @param  private
-   * @param  private
-   *
    * Created at: 15/12/2022, 21:25:23 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
@@ -78,7 +75,6 @@ class ApiProjetController extends AbstractController
     private LoggerInterface $logger,
     private EntityManagerInterface $em)
   {
-    //$this->client = $client;
     $this->logger = $logger;
     $this->em = $em;
   }
@@ -173,7 +169,6 @@ class ApiProjetController extends AbstractController
   public function favori(Security $security, Request $request): response
   {
     /** On récupère l'objet User du contexte de sécurité */
-    $userSecurity=$security->getUser();
     $preference=$security->getUser()->getPreference();
     $courriel=$security->getUser()->getCourriel();
 
@@ -281,7 +276,6 @@ class ApiProjetController extends AbstractController
   public function favoriCheck(Security $security, Request $request): response
   {
     /** On récupère l'objet User du contexte de sécurité */
-    $userSecurity=$security->getUser();
     $preference=$security->getUser()->getPreference();
 
     /** oN créé un objet réponse */
@@ -311,8 +305,6 @@ class ApiProjetController extends AbstractController
     /** On créé un objet response */
     $response = new JsonResponse();
 
-    /** On vérfie les droits de l'utilisateur */
-    $userSecurity=$security->getUser();
     /* On bind les informations utilisateur */
     $equipes=$security->getUser()->getEquipe();
 
@@ -346,10 +338,10 @@ class ApiProjetController extends AbstractController
           WHERE $inTrim";
     $trim=trim(preg_replace(static::$regex, " ", $sql));
     $exec=$this->em->getConnection()->prepare($trim)->executeQuery();
-    $projets=$exec->fetchAll();
+    $projets=$exec->fetchAllAssociative();
 
     /** j'ai pas trouvé de projet pour cette équipe. */
-    if (empty($listes)) {
+    if (empty($projets)) {
       $reference="<strong>[PROJET-004]</strong>";
       $message="Je n'ai pas trouvé de projets pour ton équipe.";
       $type="warning";
