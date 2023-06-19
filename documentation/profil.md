@@ -33,9 +33,13 @@ Cette page affiche la liste des référentiels disponibles sur le serveur sonarq
 * [x] Ajout de la colonne `Outil` et de l'icône pour afficher le détail des changements pour le profil.
 * [x] Suppression de la date dans la légende du tableau.
 
+![profil](/documentation/ressources/profil-000g.jpg) est disponnible sur la page **Acueil**.
+
 ![profil](/documentation/ressources/profil-000a.jpg)
 
 Si la liste des référentiels de règles est vide, il faudra cliquer sur le bouton `Mise à jour de la table`.
+
+![profil](/documentation/ressources/profil-000h.jpg)
 
 ![profil](/documentation/ressources/profil-000b.jpg)
 
@@ -77,7 +81,9 @@ Ci-dessous notre référentiel pour les applications `JAVA`, `WEB`, `PHP`, `PYTH
 
 ## Répartition des règles par langage
 
-Ci-desssous un exemple de réprésentation.
+La distribution par langage est affiché dès lors que l'on appuie sur le bouton :
+
+![profil](/documentation/ressources/profil-004.jpg)
 
 ![profil](/documentation/ressources/profil-003.jpg)
 
