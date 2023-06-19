@@ -225,7 +225,8 @@ const selectProjet=function() {
           dataType: 'json', contentType };
 
   return $.ajax(options)
-    .then(function (data) {
+    .then( data => {
+      console.log(data);
       if (data.type==='alert' || data.type==='warning'){
         $('#callout-projet-message').removeClass('hide success warning primary secondary');
         $('#callout-projet-message').addClass(data.type);
@@ -241,7 +242,7 @@ const selectProjet=function() {
           minimumInputLength: 2,
           minimumResultsForSearch: 20,
           language: 'fr',
-          data: data.liste
+          data: data.projet
         });
         $('.analyse').removeClass('hide');
       }
@@ -1262,7 +1263,7 @@ $('.js-repartition-module').on('click', () => {
 /***********    Main */
 const e = document.getElementById('feedback');
 const dernierBidule=e.dataset.bookmark;
-console.log(dernierBidule);
+
 if (dernierBidule !== 'null'){
   /* On récupère le nom du projet */
   const b = dernierBidule.split(':');
