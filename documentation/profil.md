@@ -25,11 +25,11 @@
 
 ## Page profil
 
-Cette page affiche la liste des référentiel disponible sur le serveur sonarqube.
+Cette page affiche la liste des référentiels disponibles sur le serveur sonarqube.
 
-`Evolutions 2.0.0`
+> Evolutions 2.0.0
 
-* [x] Il faut avoir le Rôle `Gestionnaire` mettre à jour la liste des référentiels.
+* [x] Il faut avoir le Rôle `Gestionnaire` pour mettre à jour la liste des référentiels.
 * [x] Ajout de la colonne `Outil` et de l'icône pour afficher le détail des changements pour le profil.
 * [x] Suppression de la date dans la légende du tableau.
 
@@ -39,7 +39,7 @@ Si la liste des référentiels de règles est vide, il faudra cliquer sur le bou
 
 ![profil](/documentation/ressources/profil-000b.jpg)
 
-Seul les utiliateurs ayant le rôle `Gestionnaire` peuvent réaliser cette action.
+> Seul les utiliateurs ayant le rôle **Gestionnaire** peuvent réaliser cette action.
 
 ![profil](/documentation/ressources/profil-000c.jpg)
 
@@ -57,7 +57,7 @@ Une fois la liste mise à jour, le tableau des profils est affiché. Toutefois, 
 SONAR_PROFILES="Ma petite Entreprise V1.0.0"
 ```
 
-La page affiche la liste des profils disponible et pour chacun :
+La page affiche la liste des profils disponibles et pour chacun :
 
 * Sa version ;
 * Le langage ;
