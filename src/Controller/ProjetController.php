@@ -38,26 +38,23 @@ class ProjetController extends AbstractController
   /**
    * [Description for __construct]
    *
-   * @param  private
-   * @param  private
    * @param mixed
    *
    * Created at: 15/12/2022, 22:15:51 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
+
   public function __construct (
     private Connection $connection,
     private ManagerRegistry $manager,
     )
     {
-      $this->manager = $manager;
-      $this->connection = $connection;
     }
 
   /**
    * [Description for index]
-   * Affcihe la page projet
+   * Affiche la page projet
    * @return Response
    *
    * Created at: 15/12/2022, 22:16:04 (Europe/Paris)
@@ -125,7 +122,7 @@ class ProjetController extends AbstractController
 
     /**
      * [Description for notes]
-     * On récupère les indicateur du bloques infomation pour le projet
+     * On récupère les indicateurs du bloc infomation pour le projet
      * @param mixed $mavenKey
      *
      * @return array
