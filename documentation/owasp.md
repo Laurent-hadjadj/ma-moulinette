@@ -25,7 +25,7 @@
 
 ## Page OWASP
 
-Cette page permet l'affichage des vulnérabilités et des hotspots selon le référentiel OWASP 2017.
+Cette page permet l'affichage des vulnérabilités et des hotspots selon le référentiel **OWASP 2017** (sonarqube 8).
 
 Quand tout va bien :)
 
@@ -38,15 +38,19 @@ Les vulnérabilités et hotspots sont affichées en fonction du type de faille.
 ![projet](/documentation/ressources/owasp-002.jpg)
 
 Il est possible d'afficher le nombre et la sévérité d'une faille OWASP.
+
 ![projet](/documentation/ressources/owasp-003.jpg)
 
 Quand tout va bien, le tableau est vide.
+
 ![projet](/documentation/ressources/owasp-004.jpg)
 
 Exemple de remontée de hotspots :
+
 ![projet](/documentation/ressources/owasp-005.jpg)
 
-La documentation de chaque faille.
+La documentation de chaque faille du référentiel.
+
 ![projet](/documentation/ressources/owasp-006.jpg)
 
 -**-- FIN --**-
