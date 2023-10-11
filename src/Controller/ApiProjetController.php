@@ -227,7 +227,7 @@ class ApiProjetController extends AbstractController
         $trim=trim(preg_replace(static::$regex, " ", $sql));
         $exec=$this->em->getConnection()->prepare($trim)->executeQuery();
       if ($mode!=='TEST'){
-        $e=$exec->fetchAll();
+        $e=$exec->fetchAllAssociative();
       }
       $statut=0;
     } else {
@@ -250,7 +250,7 @@ class ApiProjetController extends AbstractController
         $trim=trim(preg_replace(static::$regex, " ", $sql));
         $exec=$this->em->getConnection()->prepare($trim)->executeQuery();
       if ($mode!=='TEST'){
-        $e=$exec->fetchAll();
+        $e=$exec->fetchAllAssociative();
       }
       $statut=1;
     }
@@ -477,7 +477,7 @@ class ApiProjetController extends AbstractController
     $mavenKey = $request->get('mavenKey');
 
     /** mesures globales */
-    $url1 = "${tempoUrl}/api/components/app?component=${mavenKey}";
+    $url1 = "${tempoUrl}/api/components/app?component=$mavenKey";
 
     /** on appel le client http */
     $result1 = $client->http($url1);
@@ -520,7 +520,7 @@ class ApiProjetController extends AbstractController
     }
 
     /** On récupère le nombre de ligne de code */
-    $url2 = "${tempoUrl}/api/measures/component?component=${mavenKey}&metricKeys=ncloc";
+    $url2 = "$tempoUrl/api/measures/component?component=$mavenKey&metricKeys=ncloc";
     $result2 = $client->http($url2);
 
     if (array_key_exists("measures", $result2["component"])) {
@@ -604,16 +604,16 @@ class ApiProjetController extends AbstractController
     $statusesMin = "OPEN,CONFIRMED,REOPENED,RESOLVED";
     $statusesAll = "OPEN,CONFIRMED,REOPENED,RESOLVED,TO_REVIEW,IN_REVIEW";
 
-    $url1 = "${tempoUrlLong}${mavenKey}&facets=directories,types,severities&p=1&ps=1&statuses=${statusesMin}";
+    $url1 = "$tempoUrlLong$mavenKey&facets=directories,types,severities&p=1&ps=1&statuses=$statusesMin";
 
     /** On récupère le total de la Dette technique pour les BUG. */
-    $url2 = "${tempoUrlLong}${mavenKey}&types=BUG&p=1&ps=1";
+    $url2 = "$tempoUrlLong$mavenKey&types=BUG&p=1&ps=1";
 
     /** On récupère le total de la Dette technique pour les VULNERABILITY. */
-    $url3 = "${tempoUrlLong}${mavenKey}&types=VULNERABILITY&p=1&ps=1";
+    $url3 = "$tempoUrlLong$mavenKey&types=VULNERABILITY&p=1&ps=1";
 
     /** On récupère le total de la Dette technique pour les CODE_SMELL. */
-    $url4 = "${tempoUrlLong}${mavenKey}&types=CODE_SMELL&p=1&ps=1";
+    $url4 = "$tempoUrlLong$mavenKey&types=CODE_SMELL&p=1&ps=1";
 
     /** On appel le client http pour les requête 1 à 4 (2 à 4 pour la dette). */
     $result1 = $client->http(trim(preg_replace(static::$regex, " ", $url1)));
@@ -623,7 +623,7 @@ class ApiProjetController extends AbstractController
 
     if ($result1["paging"]["total"] != 0) {
       //** On supprime  les enregistrement correspondant à la clé. */
-      $sql = "DELETE FROM anomalie WHERE maven_key='${mavenKey}'";
+      $sql = "DELETE FROM anomalie WHERE maven_key='$mavenKey'";
       if ($mode!=="TEST"){
         $this->em->getConnection()->prepare($sql)->executeQuery();
       }
@@ -810,13 +810,13 @@ class ApiProjetController extends AbstractController
     }
 
     /** Pour les Bug. */
-    $url1 = "${tempoUrlLong}${mavenKey}&facets=severities&types=BUG&ps=1&p=1&statuses=OPEN";
+    $url1 = "$tempoUrlLong$mavenKey&facets=severities&types=BUG&ps=1&p=1&statuses=OPEN";
 
     /** Pour les Vulnérabilités. */
-    $url2 = "${tempoUrlLong}${mavenKey}&facets=severities&types=VULNERABILITY&ps=1&p=1&statuses=OPEN";
+    $url2 = "$tempoUrlLong$mavenKey&facets=severities&types=VULNERABILITY&ps=1&p=1&statuses=OPEN";
 
     /** Pour les mauvaises pratiques. */
-    $url3 = "${tempoUrlLong}${mavenKey}&facets=severities&types=CODE_SMELL&ps=1&p=1&statuses=OPEN";
+    $url3 = "$tempoUrlLong$mavenKey&facets=severities&types=CODE_SMELL&ps=1&p=1&statuses=OPEN";
 
     /** On appel le client http pour les requête 1 à 3. */
     $result1 = $client->http($url1);
@@ -829,7 +829,7 @@ class ApiProjetController extends AbstractController
 
     if ($total1 !== 0 || $total2 !== 0 || $total3 !== 0) {
       /** On supprime  l'enregistrement correspondant à la clé. */
-      $sql = "DELETE FROM anomalie_details WHERE maven_key='${mavenKey}'";
+      $sql = "DELETE FROM anomalie_details WHERE maven_key='$mavenKey'";
       if ($mode!=="TEST"){
         $this->em->getConnection()->prepare($sql)->executeQuery();
       }
@@ -981,8 +981,8 @@ class ApiProjetController extends AbstractController
         Response::HTTP_OK]);
     }
 
-    $url = "${tempoUrl}/api/measures/search_history?component=${mavenKey}
-            &metrics=${type}_rating&ps=1000";
+    $url = "$tempoUrl/api/measures/search_history?component=$mavenKey
+            &metrics=$type\_rating&ps=1000";
 
     /** On appel le client http. */
     $result = $client->http(trim(preg_replace(static::$regex, " ", $url)));
@@ -998,7 +998,7 @@ class ApiProjetController extends AbstractController
       $tempoMesureDate = $mesure["date"];
       $tempoMesureValue = $mesure["value"];
       $sql = "INSERT OR IGNORE INTO notes (maven_key, type, date, value, date_enregistrement)
-              VALUES ('${mavenKey}', '${type}', '${tempoMesureDate}', '${tempoMesureValue}', '${tempoDate}')";
+              VALUES ('$mavenKey', '$type', '$tempoMesureDate', '$tempoMesureValue', '$tempoDate')";
       $this->em->getConnection()->prepare($sql)->executeQuery();
     }
 
@@ -1060,7 +1060,7 @@ class ApiProjetController extends AbstractController
     }
 
     /** URL de l'appel. */
-    $url = "${tempoUrlLong}${mavenKey}&facets=owaspTop10
+    $url = "$tempoUrlLong$mavenKey&facets=owaspTop10
             &owaspTop10=a1,a2,a3,a4,a5,a6,a7,a8,a9,a10";
 
     /** On appel l'API. */
@@ -1311,7 +1311,7 @@ class ApiProjetController extends AbstractController
     }
 
     /** On supprime les informations sur le projet. */
-    $sql = "DELETE FROM owasp WHERE maven_key='${mavenKey}'";
+    $sql = "DELETE FROM owasp WHERE maven_key='$mavenKey'";
     if ($mode!=="TEST") {
       $this->em->getConnection()->prepare($sql)->executeQuery();
     }
@@ -1444,7 +1444,7 @@ class ApiProjetController extends AbstractController
     }
 
     /** On construit l'URL */
-    $url = "${tempoUrl}/api/hotspots/search?projectKey=${mavenKey}&ps=500&p=1";
+    $url = "$tempoUrl/api/hotspots/search?projectKey=$mavenKey&ps=500&p=1";
 
     /** On appel l'Api */
     $result = $client->http($url);
@@ -1455,7 +1455,7 @@ class ApiProjetController extends AbstractController
     $niveau = 0;
 
     /** On supprime  les enregistrements correspondant à la clé */
-    $sql = "DELETE FROM hotspots WHERE maven_key='${mavenKey}'";
+    $sql = "DELETE FROM hotspots WHERE maven_key='$mavenKey'";
     if ($mode!="TEST") {
       $this->em->getConnection()->prepare($sql)->executeQuery();
     }
@@ -1541,14 +1541,14 @@ class ApiProjetController extends AbstractController
     if ($request->get('owasp') == 'a0') {
       /** On supprime  les enregistrements correspondant à la clé. */
       $sql = "DELETE FROM hotspot_owasp
-              WHERE maven_key='${mavenKey}'";
+              WHERE maven_key='$mavenKey'";
       $this->em->getConnection()->prepare($sql)->executeQuery();
       return $response->setData(["info" => "effacement", Response::HTTP_OK]);
     }
 
     /** On construit l'Url. */
-    $url = "${tempoUrl}/api/hotspots/search?projectKey=${mavenKey}
-            &owaspTop10=${owasp}&ps=500&p=1";
+    $url = "$tempoUrl/api/hotspots/search?projectKey=$mavenKey
+            &owaspTop10=$owasp&ps=500&p=1";
 
     /** On appel l'URL. */
     $result = $client->http(trim(preg_replace(static::$regex, " ", $url)));
@@ -1624,7 +1624,7 @@ class ApiProjetController extends AbstractController
 
     /** On bind les variables. */
     $tempoUrl = $this->getParameter(static::$sonarUrl);
-    $url = "${tempoUrl}/api/hotspots/show?hotspot=${key}";
+    $url = "$tempoUrl/api/hotspots/show?hotspot=$key";
     $hotspot = $client->http($url);
     $date = new DateTime();
     $date->setTimezone(new DateTimeZone(static::$europeParis));
@@ -1787,7 +1787,7 @@ class ApiProjetController extends AbstractController
    * @return response
    *
    * Created at: 15/12/2022, 21:41:45 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/projet/hotspot/details', name: 'projet_hotspot_details', methods: ['GET'])]
@@ -1819,7 +1819,7 @@ class ApiProjetController extends AbstractController
 
     /** On récupère la liste des hotspots */
     $sql = "SELECT * FROM hotspots
-            WHERE maven_key='${mavenKey}'
+            WHERE maven_key='$mavenKey'
             AND status='TO_REVIEW' ORDER BY niveau";
 
     $r = $this->em->getConnection()->prepare($sql)->executeQuery();
@@ -1827,7 +1827,7 @@ class ApiProjetController extends AbstractController
 
     // On supprime les données de la table hotspots_details pour le projet
     $sql = "DELETE FROM hotspot_details
-            WHERE maven_key='${mavenKey}'";
+            WHERE maven_key='$mavenKey'";
     if ($mode!="TEST") {
       $this->em->getConnection()->prepare($sql)->executeQuery();
     }
@@ -1914,7 +1914,7 @@ class ApiProjetController extends AbstractController
     }
 
     /** On construit l'URL et on appel le WS. */
-    $url = "${tempoUrl}/api/issues/search?componentKeys=${mavenKey}
+    $url = "$tempoUrl/api/issues/search?componentKeys=$mavenKey
             &rules=java:S1309,java:NoSonar&ps=500&p=1";
 
     $result = $client->http(trim(preg_replace(static::$regex, " ", $url)));
@@ -1922,7 +1922,7 @@ class ApiProjetController extends AbstractController
     $date->setTimezone(new DateTimeZone(static::$europeParis));
 
     /** On supprime les données du projet de la table NoSonar. */
-    $sql = "DELETE FROM no_sonar WHERE maven_key='${mavenKey}'";
+    $sql = "DELETE FROM no_sonar WHERE maven_key='$mavenKey'";
     if($mode!=="TEST"){
       $this->em->getConnection()->prepare($sql)->executeQuery();
     }
@@ -1936,7 +1936,7 @@ class ApiProjetController extends AbstractController
         $nosonar = new NoSonar();
         $nosonar->setMavenKey($request->get('mavenKey'));
         $nosonar->setRule($issue["rule"]);
-        $component = str_replace("${mavenKey} :", "", $issue["component"]);
+        $component = str_replace("$mavenKey :", "", $issue["component"]);
         $nosonar->setComponent($component);
         if (empty($issue["line"])) {
           $line = 0;
@@ -2002,7 +2002,7 @@ class ApiProjetController extends AbstractController
     }
 
     /** On construit l'URL et on appel le WS. */
-    $url = "${tempoUrl}/api/issues/search?componentKeys=${mavenKey}
+    $url = "$tempoUrl/api/issues/search?componentKeys=$mavenKey
             &rules=javascript:S1135,xml:S1135,typescript:S1135,Web:S1135,java:S1135&ps=500&p=1";
 
     $result = $client->http(trim(preg_replace(static::$regex, " ", $url)));
@@ -2010,7 +2010,7 @@ class ApiProjetController extends AbstractController
     $date->setTimezone(new DateTimeZone(static::$europeParis));
 
     /** On supprime les données du projet de la table todo. */
-    $sql = "DELETE FROM todo WHERE maven_key='${mavenKey}'";
+    $sql = "DELETE FROM todo WHERE maven_key='$mavenKey'";
     if($mode!=="TEST"){
       $this->em->getConnection()->prepare($sql)->executeQuery();
     }
@@ -2023,7 +2023,7 @@ class ApiProjetController extends AbstractController
         $nosonar = new Todo();
         $nosonar->setMavenKey($request->get('mavenKey'));
         $nosonar->setRule($issue["rule"]);
-        $component = str_replace("${mavenKey} :", "", $issue["component"]);
+        $component = str_replace("$mavenKey :", "", $issue["component"]);
         $nosonar->setComponent($component);
         if (empty($issue["line"])) {
           $line = 0;
