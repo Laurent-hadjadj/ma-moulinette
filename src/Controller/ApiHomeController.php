@@ -100,13 +100,12 @@ class ApiHomeController extends AbstractController
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/health', name: 'sonar_health', methods: ['GET'])]
-  public function sonarHealth():response
+  public function sonarHealth(Client $client):response
   {
     $url = $this->getParameter(static::$sonarUrl) . "/api/system/health";
 
     /** On appel le client http */
-    $result = $this->httpClient($url);
-
+    $result = $client->http($url);
     return new JsonResponse($result, Response::HTTP_OK);
   }
 
