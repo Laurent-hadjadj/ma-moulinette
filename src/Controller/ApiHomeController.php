@@ -50,8 +50,6 @@ class ApiHomeController extends AbstractController
   /**
    * [Description for __construct]
    *
-   * @param  private
-   * @param  private
    * @param mixed
    *
    * Created at: 15/12/2022, 21:12:55 (Europe/Paris)
