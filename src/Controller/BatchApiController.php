@@ -58,10 +58,6 @@ class BatchApiController extends AbstractController
    * [Description for __construct]
    * On ajoute un constructeur pour éviter à chaque fois d'injecter la même class
    *
-   * @param  private
-   * @param  private
-   * @param  private
-   *
    * Created at: 04/12/2022, 08:53:04 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    */
