@@ -109,7 +109,7 @@ class SuiviController extends AbstractController
     note_security as securite, note_hotspot,
     note_sqale as maintenabilite, initial
     FROM historique
-    WHERE maven_key='${mavenKey}' AND initial=TRUE)
+    WHERE maven_key='$mavenKey' AND initial=TRUE)
     UNION SELECT * FROM
     (SELECT nom_projet as nom, date_version as date,
     version, suppress_warning, no_sonar, nombre_bug as bug,
@@ -121,7 +121,7 @@ class SuiviController extends AbstractController
     note_security as securite, note_hotspot,
     note_sqale as maintenabilite, initial
     FROM historique
-    WHERE maven_key='${mavenKey}' AND initial=FALSE
+    WHERE maven_key='$mavenKey' AND initial=FALSE
     ORDER BY date_version DESC LIMIT 9)";
 
     $select = $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
@@ -135,7 +135,7 @@ class SuiviController extends AbstractController
     nombre_anomalie_majeur as majeur,
     nombre_anomalie_mineur as mineur
     FROM historique
-    WHERE maven_key='${mavenKey}' AND initial=TRUE)
+    WHERE maven_key='$mavenKey' AND initial=TRUE)
     UNION SELECT * FROM
     (SELECT date_version as date,
     nombre_anomalie_bloquant as bloquant,
@@ -143,7 +143,7 @@ class SuiviController extends AbstractController
     nombre_anomalie_majeur as majeur,
     nombre_anomalie_mineur as mineur
     FROM historique
-    WHERE maven_key='${mavenKey}' AND initial=FALSE
+    WHERE maven_key='$mavenKey' AND initial=FALSE
     ORDER BY date_version DESC LIMIT 9)";
 
     $select = $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
@@ -161,7 +161,7 @@ class SuiviController extends AbstractController
     code_smell_major, code_smell_minor,
     code_smell_info, initial
     FROM historique
-    WHERE maven_key='${mavenKey}' AND initial=TRUE)
+    WHERE maven_key='$mavenKey' AND initial=TRUE)
     UNION SELECT * FROM
     (SELECT date_version as date, version,
     bug_blocker, bug_critical, bug_major,
@@ -173,7 +173,7 @@ class SuiviController extends AbstractController
     code_smell_major, code_smell_minor,
     code_smell_info, initial
     FROM historique
-    WHERE maven_key='${mavenKey}' AND initial=FALSE
+    WHERE maven_key='$mavenKey' AND initial=FALSE
     ORDER BY date_version DESC LIMIT 9)";
 
     $select = $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
@@ -182,7 +182,7 @@ class SuiviController extends AbstractController
     /** Graphique */
     $sql = "SELECT nombre_bug as bug, nombre_vulnerability as secu,
     nombre_code_smell as code_smell, date_version as date
-    FROM historique WHERE maven_key='${mavenKey}'
+    FROM historique WHERE maven_key='$mavenKey'
     GROUP BY date_version ORDER BY date_version ASC";
 
     $select = $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
@@ -262,7 +262,7 @@ class SuiviController extends AbstractController
     /** On récupère les versions et la date pour la clé du projet */
     $sql = "SELECT maven_key, project_version as version, date
             FROM information_projet
-            WHERE maven_key='${mavenKey}'";
+            WHERE maven_key='$mavenKey'";
     $select = $this->em->getConnection()->prepare($sql)->executeQuery();
 
     if (is_null($exception)){
@@ -338,13 +338,13 @@ class SuiviController extends AbstractController
     $urlencodeDate=urlencode($dd);
     $urlStatic=$this->getParameter(static::$sonarUrl);
 
-    $url = "${urlStatic}/api/measures/search_history?component=
-            ${mavenKey}&metrics=reliability_rating,
+    $url = "$urlStatic/api/measures/search_history?component=
+            $mavenKey&metrics=reliability_rating,
             security_rating,sqale_rating,bugs,
             vulnerabilities,code_smells,security_hotspots,
             security_review_rating,lines,ncloc,coverage,
             tests,sqale_index,duplicated_lines_density
-            &from=${urlencodeDate}&to=${urlencodeDate}";
+            &from=$urlencodeDate&to=$urlencodeDate";
 
     /** On appel le client http */
     if ($mode!="TEST") {
@@ -539,21 +539,21 @@ class SuiviController extends AbstractController
         hotspot_high,hotspot_medium,hotspot_low,
         initial,date_enregistrement)
       VALUES
-      ('${tempoMavenKey}','${tempoVersion}',
-        '${tempoDateVersion}','${tempoNom}',-1,-1,-1,-1,
-        ${tempoLines},${tempoNcloc},
-        ${tempoCoverage},${tempoDuplication},${tempoTests},
-        ${tempoDefauts},${tempoDette},${tempoBug},
-        ${tempoVulnerabilities},${tempoCodeSmell},
+      ('$tempoMavenKey','$tempoVersion',
+        '$tempoDateVersion','$tempoNom',-1,-1,-1,-1,
+        $tempoLines,$tempoNcloc,
+        $tempoCoverage,$tempoDuplication,$tempoTests,
+        $tempoDefauts,$tempoDette,$tempoBug,
+        $tempoVulnerabilities,$tempoCodeSmell,
         -1,-1,-1,-1,-1,
         -1,-1,-1,-1,-1,
         -1,-1,-1,-1,-1,
         -1,-1,-1,
         -1,-1,-1,-1,-1,
-        '${tempoNoteReliability}','${tempoNoteSecurity}','${tempoNoteSqale}',
-        '${tempoNoteHotspotsReview}',${tempoHotspotsReview},
-        -1,-1,-1, ${tempoInitial},
-        '${tempoDateEnregistrement}')";
+        '$tempoNoteReliability','$tempoNoteSecurity','$tempoNoteSqale',
+        '$tempoNoteHotspotsReview',$tempoHotspotsReview,
+        -1,-1,-1, $tempoInitial,
+        '$tempoDateEnregistrement')";
 
     // On exécute la requête
     $con = $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)));
@@ -661,7 +661,7 @@ class SuiviController extends AbstractController
 
     /** On modifie (delete/insert) l'attribut favori de la table favori */
     /** On supprime l'enregistrement */
-    $sql = "DELETE FROM favori WHERE maven_key='${mavenKey}'";
+    $sql = "DELETE FROM favori WHERE maven_key='$mavenKey'";
     $this->em->getConnection()->prepare($sql)->executeQuery();
     /** On ajoute l'enregistrement */
     $sql = "INSERT INTO favori ('maven_key', 'favori', 'date_enregistrement')
@@ -706,10 +706,10 @@ class SuiviController extends AbstractController
     $response = new JsonResponse();
 
     // On récupère les versions et la date pour la clé du projet
-    $sql = "UPDATE historique SET initial=${reference}
-            WHERE maven_key='${mavenKey}'
-                  AND version='${version}'
-                  AND date_version='${date}'";
+    $sql = "UPDATE historique SET initial=$reference
+            WHERE maven_key='$mavenKey'
+                  AND version='$version'
+                  AND date_version='$date'";
     // On exécute la requête
     $con = $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)));
     try {
@@ -757,9 +757,9 @@ class SuiviController extends AbstractController
 
     /** On surprime de la table historique le projet */
     $sql = "DELETE FROM historique
-            WHERE maven_key='${mavenKey}'
-            AND version='${version}'
-            AND date_version='${date}'";
+            WHERE maven_key='$mavenKey'
+            AND version='$version'
+            AND date_version='$date'";
 
     /**  On exécute la requête */
     $con = $this->em->getConnection()->prepare($sql);
