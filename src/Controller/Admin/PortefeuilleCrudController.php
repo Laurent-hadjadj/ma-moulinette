@@ -32,8 +32,6 @@ class PortefeuilleCrudController extends AbstractCrudController
     /**
      * [Description for __construct]
      *
-     * @param  private
-     *
      * Created at: 02/01/2023, 18:35:59 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
