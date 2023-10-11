@@ -154,9 +154,9 @@ class ApiProfilController extends AbstractController
     $dateModificationProfil = $date->format("Y-m-d H:i:s");
 
     $sql="UPDATE properties
-    SET profil_bd = ${nombre},
-        profil_sonar = ${nombre},
-        date_modification_profil = '${dateModificationProfil}'
+    SET profil_bd = $nombre,
+        profil_sonar = $nombre,
+        date_modification_profil = '$dateModificationProfil'
     WHERE type = 'properties'";
     $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
 
