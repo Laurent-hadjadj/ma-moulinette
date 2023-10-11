@@ -235,9 +235,9 @@ class ApiHomeController extends AbstractController
     $dateModificationProjet = $date->format(static::$dateFormatShort);
 
     $sql="UPDATE properties
-    SET projet_bd = ${nombre},
-        projet_sonar = ${nombre},
-        date_modification_projet = '${dateModificationProjet}'
+    SET projet_bd = $nombre,
+        projet_sonar = $nombre,
+        date_modification_projet = '$dateModificationProjet'
     WHERE type = 'properties'";
     if ($mode!='TEST') {
       $this->em->getConnection()
@@ -333,9 +333,9 @@ class ApiHomeController extends AbstractController
     $dateModificationProfil = $date->format(static::$dateFormatShort);
 
     $sql="UPDATE properties
-    SET profil_bd = ${nombre},
-        profil_sonar = ${nombre},
-        date_modification_profil = '${dateModificationProfil}'
+    SET profil_bd = $nombre,
+        profil_sonar = $nombre,
+        date_modification_profil = '$dateModificationProfil'
     WHERE type = 'properties'";
 
     if ($mode!="TEST") {
