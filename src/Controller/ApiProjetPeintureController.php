@@ -29,6 +29,15 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class ApiProjetPeintureController extends AbstractController
 {
+  /**
+   * [Description for __construct]
+   *
+   * @param mixed
+   *
+   * Created at: 11/10/2023 13:38:04 (Europe/Paris)
+   * @author    Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
   public function __construct(
     private EntityManagerInterface $em,
     )
