@@ -129,9 +129,6 @@ class Historique
     private $hotspotTotal;
 
     #[ORM\Column(type: 'boolean')]
-    private $favori;
-
-    #[ORM\Column(type: 'boolean')]
     private $initial;
 
     #[ORM\Column(type: 'integer')]
@@ -1303,38 +1300,6 @@ class Historique
     public function setHotspotTotal(int $hotspotTotal): self
     {
         $this->hotspotTotal = $hotspotTotal;
-
-        return $this;
-    }
-
-    /**
-     * [Description for isFavori]
-     *
-     * @return bool|null
-     *
-     * Created at: 02/01/2023, 17:55:58 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function isFavori(): ?bool
-    {
-        return $this->favori;
-    }
-
-    /**
-     * [Description for setFavori]
-     *
-     * @param bool $favori
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:56:00 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setFavori(bool $favori): self
-    {
-        $this->favori = $favori;
 
         return $this;
     }
