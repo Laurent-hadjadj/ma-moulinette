@@ -55,7 +55,7 @@ class ApiProjetPeintureController extends AbstractController
   protected function isValide($mavenKey): array
   {
     /** On regarde si une analyse a été réalisée. */
-    $sql = "SELECT * FROM information_projet WHERE maven_key='${mavenKey}' LIMIT 1";
+    $sql = "SELECT * FROM information_projet WHERE maven_key='$mavenKey' LIMIT 1";
     $r = $this->em->getConnection()->prepare($sql)->executeQuery();
     $response = $r->fetchAllAssociative();
     if (empty($response)) {
@@ -154,21 +154,21 @@ class ApiProjetPeintureController extends AbstractController
     /** Toutes les versions */
     $sql = "SELECT COUNT(type) AS 'total'
     FROM information_projet
-    WHERE maven_key='${mavenKey}'";
+    WHERE maven_key='$mavenKey'";
     $e=$this->em->getConnection()->prepare($sql)->executeQuery();
     $toutesLesVersions=$e->fetchAllAssociative();
 
     /** Les releases */
     $sql = "SELECT type, COUNT(type) AS 'total'
     FROM information_projet
-    WHERE maven_key='${mavenKey}' AND type='RELEASE'";
+    WHERE maven_key='$mavenKey' AND type='RELEASE'";
     $e=$this->em->getConnection()->prepare($sql)->executeQuery();
     $release=$e->fetchAllAssociative();
 
     /** Les snapshots */
     $sql = "SELECT type, COUNT(type) AS 'total'
     FROM information_projet
-    WHERE maven_key='${mavenKey}' AND type='SNAPSHOT'";
+    WHERE maven_key='$mavenKey' AND type='SNAPSHOT'";
     $e=$this->em->getConnection()->prepare($sql)->executeQuery();
     $snapshot=$e->fetchAllAssociative();
 
@@ -178,7 +178,7 @@ class ApiProjetPeintureController extends AbstractController
     /** On récupére le nombre de version par type pour le graphique */
     $sql = "SELECT type, COUNT(type) AS 'total'
             FROM information_projet
-            WHERE maven_key='${mavenKey}'
+            WHERE maven_key='$mavenKey'
             GROUP BY type";
     $e = $this->em->getConnection()->prepare($sql)->executeQuery();
     $infoVersion = $e->fetchAllAssociativeIndexed();
@@ -193,7 +193,7 @@ class ApiProjetPeintureController extends AbstractController
     /** On récupère la dernière version et sa date de publication */
     $sql = "SELECT project_version as projet, date
             FROM information_projet
-            WHERE maven_key='${mavenKey}'
+            WHERE maven_key='$mavenKey'
             ORDER BY date DESC LIMIT 1 ";
 
     $r = $this->em->getConnection()->prepare($sql)->executeQuery();
@@ -251,7 +251,7 @@ class ApiProjetPeintureController extends AbstractController
     $sql = "SELECT project_name as name, ncloc, lines, coverage,
             duplication_density as duplication, tests, issues
             FROM mesures
-            WHERE maven_key='${mavenKey}'
+            WHERE maven_key='$mavenKey'
             ORDER BY date_enregistrement DESC LIMIT 1";
 
     $r = $this->em->getConnection()->prepare($sql)->executeQuery();
@@ -296,7 +296,7 @@ class ApiProjetPeintureController extends AbstractController
     }
 
     /** On récupère la dernière version et sa date de publication. */
-    $sql = "SELECT * FROM anomalie WHERE maven_key='${mavenKey}'";
+    $sql = "SELECT * FROM anomalie WHERE maven_key='$mavenKey'";
     $r = $this->em->getConnection()->prepare($sql)->executeQuery();
     $anomalies = $r->fetchAllAssociative();
 
@@ -335,7 +335,7 @@ class ApiProjetPeintureController extends AbstractController
     $types = ["reliability", "security", "sqale"];
     foreach ($types as $type) {
       $sql = "SELECT type, value FROM notes
-              WHERE maven_key='${mavenKey}' AND type='${type}'
+              WHERE maven_key='$mavenKey' AND type='$type'
               ORDER BY date DESC LIMIT 1";
 
       $r = $this->em->getConnection()->prepare($sql)->executeQuery();
@@ -474,12 +474,12 @@ class ApiProjetPeintureController extends AbstractController
     }
 
     /** On le nombre de hotspot au statut TO_REVIEW */
-    $sql="SELECT COUNT(*) as to_review FROM hotspots WHERE maven_key='${mavenKey}' AND status='TO_REVIEW'";
+    $sql="SELECT COUNT(*) as to_review FROM hotspots WHERE maven_key='$mavenKey' AND status='TO_REVIEW'";
     $r = $this->em->getConnection()->prepare($sql)->executeQuery();
     $toReview = $r->fetchAllAssociative();
 
     /** On le nombre de hotspot au statut REVIEWED */
-    $sql = "SELECT COUNT(*) as reviewed FROM hotspots WHERE maven_key='${mavenKey}' AND status='REVIEWED'";
+    $sql = "SELECT COUNT(*) as reviewed FROM hotspots WHERE maven_key='$mavenKey' AND status='REVIEWED'";
     $r = $this->em->getConnection()->prepare($sql)->executeQuery();
     $reviewed = $r->fetchAllAssociative();
 
@@ -539,7 +539,7 @@ class ApiProjetPeintureController extends AbstractController
     /** On récupère la dernière version et sa date de publication. */
     $sql="SELECT niveau, count(*) as hotspot
           FROM hotspots
-          WHERE maven_key='${mavenKey}'
+          WHERE maven_key='$mavenKey'
           AND status='TO_REVIEW'
           GROUP BY niveau";
     $r = $this->em->getConnection()->prepare($sql)->executeQuery();
