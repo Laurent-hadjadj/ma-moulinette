@@ -1180,9 +1180,8 @@ class BatchApiController extends AbstractController
     $save->setCodeSmellMinor($batchAnomalieDetails["anomalie_details"]["code_smell_minor"]);
     $save->setCodeSmellInfo($batchAnomalieDetails["anomalie_details"]["code_smell_info"]);
 
-    /** Je suis un favori, une verion initiale ?  0 (false) and 1 (true). */
-    $save->setFavori(0);
-    $save->setInitial(0);
+    /** Je une verion initiale ?  0 (false) and 1 (true). */
+        $save->setInitial(0);
 
     /** On ajoute la date et on enregistre */
     $date= new DateTime();
@@ -1407,8 +1406,7 @@ class BatchApiController extends AbstractController
     $save->setCodeSmellMinor($batchAnomalieDetails["anomalie_details"]["code_smell_minor"]);
     $save->setCodeSmellInfo($batchAnomalieDetails["anomalie_details"]["code_smell_info"]);
 
-    /** Je suis un favori, une verion initiale ?  0 (false) and 1 (true). */
-    $save->setFavori(0);
+    /** Je suis une verion initiale ?  0 (false) and 1 (true). */
     $save->setInitial(0);
 
     /** On ajoute la date et on enregistre */
