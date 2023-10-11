@@ -982,7 +982,7 @@ class ApiProjetController extends AbstractController
     }
 
     $url = "$tempoUrl/api/measures/search_history?component=$mavenKey
-            &metrics=$type\_rating&ps=1000";
+            &metrics=$type"."_rating&ps=1000";
 
     /** On appel le client http. */
     $result = $client->http(trim(preg_replace(static::$regex, " ", $url)));
