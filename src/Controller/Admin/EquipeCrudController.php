@@ -31,8 +31,6 @@ class EquipeCrudController extends AbstractCrudController
    * [Description for __construct]
    * emm = EntityManagerInterface
    *
-   * @param  private
-   *
    * Created at: 12/02/2023, 10:08:05 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
