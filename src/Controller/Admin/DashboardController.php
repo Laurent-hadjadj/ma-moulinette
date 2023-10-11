@@ -33,7 +33,6 @@ class DashboardController extends AbstractDashboardController
     /**
      * [Description for __construct]
      *
-     * @param  private
      * @param mixed
      *
      * Created at: 02/01/2023, 18:33:59 (Europe/Paris)
