@@ -32,7 +32,6 @@ class ApiOwaspPeintureController extends AbstractController
    * [Description for __construct]
    * EntityManagerInterface = em
    *
-   * @param  private
    *
    * Created at: 13/02/2023, 08:54:50 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
