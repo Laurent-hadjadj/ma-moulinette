@@ -291,7 +291,7 @@ class ApiHomeController extends AbstractController
           . $this->getParameter('sonar.profiles');
 
     /** On appel le client http */
-    $result = $client->http($url);
+    $result = $client->http($url1);
 
     $date = new DateTime();
     $date->setTimezone(new DateTimeZone(static::$europeParis));
