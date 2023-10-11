@@ -197,17 +197,17 @@ class HomeController extends AbstractController
 
     if ($type==="projet") {
         $sql="UPDATE properties
-        SET projet_bd= ${bd},
-            projet_sonar=${sonar},
-            date_modification_projet = '${dateModificationProjet}'
+        SET projet_bd= $bd,
+            projet_sonar=$sonar,
+            date_modification_projet = '$dateModificationProjet'
         WHERE type = 'properties'";
         $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
 
     } else {
         $sql="UPDATE properties
-        SET profil_bd= ${bd},
-            profil_sonar=${sonar},
-            date_modification_profil = '${dateModificationProfil}'
+        SET profil_bd= $bd,
+            profil_sonar=$sonar,
+            date_modification_profil = '$dateModificationProfil'
         WHERE type = 'properties'";
         $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
     }
@@ -244,8 +244,8 @@ class HomeController extends AbstractController
                 (type, projet_bd, projet_sonar, profil_bd, profil_sonar,
                 date_modification_projet, date_modification_profil, date_creation)
                 VALUES
-                ('properties', ${projetBD}, ${projetSonar}, ${profilBD}, ${profilSonar},
-                '${projetModificationDate}', '${profilModificationDate}', '${dateCreationFormat}')";
+                ('properties', $projetBD, $projetSonar, $profilBD, $profilSonar,
+                '$projetModificationDate', '$profilModificationDate', '$dateCreationFormat')";
         $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql2)))->executeQuery();
     } else {
         $projetBD=$r[0]["projet_bd"];
