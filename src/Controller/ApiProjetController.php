@@ -42,7 +42,6 @@ use App\Entity\Main\Historique;
 use App\Entity\Main\Todo;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\DBAL\Connection;
 
 /** Logger */
 use Psr\Log\LoggerInterface;
@@ -291,7 +290,7 @@ class ApiProjetController extends AbstractController
    * Récupère la liste des projets nom + clé pour une équipe
    * http://{url}}/api/liste/projet
    *
-   * @param Connection $connection
+   * @param Security $security
    *
    * @return response
    *
@@ -300,7 +299,7 @@ class ApiProjetController extends AbstractController
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   #[Route('/api/liste/projet', name: 'liste_projet', methods: ['GET'])]
-  public function liste_projet(Security $security, Connection $connection): response
+  public function liste_projet(Security $security): response
   {
     /** On créé un objet response */
     $response = new JsonResponse();
@@ -329,6 +328,7 @@ class ApiProjetController extends AbstractController
         $in=$in."json_each.value LIKE '".preg_replace('/\s+/', '-', $minus)."%' OR ";
       }
     }
+
     /** On supprime le dernier OR */
     $inTrim= rtrim($in," OR ");
 
