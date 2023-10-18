@@ -141,7 +141,7 @@ class ProjetController extends AbstractController
                   code_smell_blocker, code_smell_critical, code_smell_major,
                   hotspot_total
                 FROM historique
-                WHERE maven_key='${mavenKey}'
+                WHERE maven_key='$mavenKey'
                 ORDER BY date_version DESC LIMIT 1";
         $r = $this->connection->fetchAllAssociative($sql);
 
@@ -199,7 +199,7 @@ class ProjetController extends AbstractController
                   vulnerability_blocker, vulnerability_critical, vulnerability_major,
                   code_smell_blocker, code_smell_critical, code_smell_major, hotspot_total
                 FROM historique
-                WHERE maven_key='${mavenKey}' AND initial=1";
+                WHERE maven_key='$mavenKey' AND initial=1";
         $r = $this->connection->fetchAllAssociative($sql);
         $resultat=true;
         if (!$r) {
