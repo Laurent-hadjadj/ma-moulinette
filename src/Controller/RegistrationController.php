@@ -30,7 +30,6 @@ use App\Form\RegistrationFormType;
 use App\Security\LoginFormAuthenticator;
 
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
 
 /** Logger */
 use Psr\Log\LoggerInterface;
