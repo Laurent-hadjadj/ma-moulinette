@@ -56,11 +56,11 @@ class Client
         'auth_basic' => [$user, $password], 'timeout' => 45,
         'headers' => [
         'Accept' => static::$strContentType,
-        'Content-Type' => static::$strContentType
+        'Content-Type' => static::$strContentType,
+        "verify_peer"=>0, "verify_host"=>0
         ]
       ]
     );
-
     if (200 !== $response->getStatusCode()) {
       if ($response->getStatusCode() == 401) {
         throw new \UnexpectedValueException('Erreur d\'Authentification. La clé n\'est pas correcte.');
@@ -69,9 +69,8 @@ class Client
       }
     }
 
-    $contentType = $response->getHeaders()['content-type'][0];
-    $this->logger->INFO('** ContentType *** '.isset($contentType));
     $responseJson = $response->getContent();
     return json_decode($responseJson, true, 512, JSON_THROW_ON_ERROR);
   }
+
 }
