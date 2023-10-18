@@ -3,24 +3,15 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Main\Portefeuille;
-use App\Entity\Main\ListeProjet;
-use App\Entity\Main\Equipe;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Form\FormTypeInterface;
 
-use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 
-use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
-
-use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 
@@ -47,7 +38,7 @@ class PortefeuilleCrudController extends AbstractCrudController
      * @return string
      *
      * Created at: 02/01/2023, 18:36:05 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public static function getEntityFqcn(): string
