@@ -104,7 +104,7 @@ class PreferenceController extends AbstractController
     $trim=trim(preg_replace(static::$regex, " ", $sql));
     $exec=$this->em->getConnection()->prepare($trim)->executeQuery();
     if ($mode!=='TEST'){
-      $e=$exec->fetchAll();
+      $e=$exec->fetchAllAssociative();
     }
 
     $data=['mode'=>$mode,'statut'=>$statut, 'categorie'=>$categorie,Response::HTTP_OK];
