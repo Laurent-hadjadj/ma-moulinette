@@ -17,15 +17,29 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
 /** On récupère les exceptions de l'authentification */
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
-
 
 /**
  * [Description SecurityController]
  */
 class SecurityController extends AbstractController
 {
+
+  /**
+   * [Description for __construct]
+   *
+   * @param mixed
+   *
+   * Created at: 18/10/2023 16:43:54 (Europe/Paris)
+   * @author    Laurent HADJADJ <laurent_h@me.com>
+   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function __construct( private UrlGeneratorInterface $router,
+    ) { }
+
     /**
      * [Description for relogin]
      *
@@ -90,8 +104,6 @@ class SecurityController extends AbstractController
     #[Route('/logout', name: 'logout')]
     public function logout()
     {
-        return new RedirectResponse(
-            $this->router->generate('login')
-        );
+        return new RedirectResponse($this->router->generate('login'));
     }
 }
