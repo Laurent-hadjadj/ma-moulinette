@@ -24,6 +24,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
  * [Description DashboardController]
@@ -90,9 +91,9 @@ class DashboardController extends AbstractDashboardController
         $select=$this->em->getConnection()->prepare($sql)->executeQuery();
         $resultat = $select->fetchAllAssociative();
         if (empty($resultat)) {
-            $applicationVersion=0;
+            $applicationNombreVersion=0;
         } else {
-            $applicationVersion=$resultat[0]['total'];
+            $applicationNombreVersion=$resultat[0]['total'];
         }
 
         /** Statistiques sur le code. */
@@ -179,7 +180,7 @@ class DashboardController extends AbstractDashboardController
                     FROM mesures
                     GROUP BY project_name, date_enregistrement
                     ORDER BY date_enregistrement
-                    DESC LIMIT ${limit};";
+                    DESC LIMIT $limit;";
             $select=$this->em->getConnection()->prepare ($sql)->executeQuery();
             $projets = $select->fetchAllAssociative();
             /** On calcul la somme des nloc et des tests unitaires. */
@@ -245,8 +246,8 @@ class DashboardController extends AbstractDashboardController
             'ram' => $ram,
             'integrity' => $integrity,
             'html'=>$html,'php'=>$php,'css'=>$css, 'js'=>$js, 'md'=>$md, 'sql'=>$updateSql, 'migration'=>$migration,
-            'application_version' => $applicationVersion,
-            'application_version' => $this->getParameter('version'),
+            'application_nombre_version' => $applicationNombreVersion,
+            'application_local_version' => $this->getParameter('version'),
             'application_table' => $applicationTable,
             'projet_projet' => $projetNombre,
             'projet_profile' => $projetProfile,
