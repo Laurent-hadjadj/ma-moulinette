@@ -140,7 +140,7 @@ class BatchController extends AbstractController
         /* Le dossier d'audit est présent */
         if ($filesystem->exists($path)){
           $name=preg_replace('/\s+/', '_', $job);
-          $fichier="${path}\manuel_${name}.log";
+          $fichier="$path\manuel_{$name}.log";
           $filesystem->appendToFile($fichier, $log, true);
         } else {
           return 404;
@@ -179,7 +179,7 @@ class BatchController extends AbstractController
         /* Le dossier d'audit est présent */
         if ($filesystem->exists($path)){
           $name=preg_replace('/\s+/', '_', $job);
-          $fichier="${type}_${name}.log";
+          $fichier="{$type}_$name.log";
 
           /** on récupère la log */
           $finder = new Finder();
@@ -400,7 +400,7 @@ class BatchController extends AbstractController
       /** On récupère la liste des traitements planifiés pour la date du jour */
       $sql="SELECT id, demarrage, titre, portefeuille, nombre_projet as projet
             FROM batch_traitement
-            WHERE demarrage = 'Auto' AND date_enregistrement='${dateBatch}'
+            WHERE demarrage = 'Auto' AND date_enregistrement='$dateBatch'
             ORDER BY nombre_projet ASC;";
       $trim=trim(preg_replace(static::$regex, " ", $sql));
       $r = $this->connection->fetchAllAssociative($trim);
@@ -498,10 +498,10 @@ class BatchController extends AbstractController
              *   "2023-01-12 10:37:13" "2023-01-12 10:37:13" "2023-01-12 10:37:13" }
              */
             $sql="UPDATE batch_traitement
-                  SET debut_traitement='${tempoDebutBatch}',
-                      fin_traitement='${tempoFinBatch}',
+                  SET debut_traitement='$tempoDebutBatch',
+                      fin_traitement='$tempoFinBatch',
                       resultat = 1
-                  WHERE id=${id};";
+                  WHERE id=$id;";
             $trim=trim(preg_replace(static::$regex, " ", $sql));
             $this->em->getConnection()->prepare($trim)->executeQuery();
           }
@@ -511,7 +511,7 @@ class BatchController extends AbstractController
       /** Fin du traitement */
       $interval = $debutBatch->diff($finBatch);
       $temps = $interval->format(static::$timeFormat);
-      return $response->setData(["message" => "Tout va bien (${temps})",  Response::HTTP_OK]);
+      return $response->setData(["message" => "Tout va bien ($temps)",  Response::HTTP_OK]);
     }
 
     /**
@@ -645,10 +645,10 @@ class BatchController extends AbstractController
 
             /** On met à jour la table des traitements */
             $sql="UPDATE batch_traitement
-                  SET debut_traitement='${tempoDebutBatch}',
-                      fin_traitement='${tempoFinBatch}',
+                  SET debut_traitement='$tempoDebutBatch',
+                      fin_traitement='$tempoFinBatch',
                       resultat = 1
-                  WHERE id=${id};";
+                  WHERE id=$id;";
             $trim=trim(preg_replace(static::$regex, " ", $sql));
             $this->em->getConnection()->prepare($trim)->executeQuery();
             $log="INFO : Mise à jour de la table batch traitement.\n";
@@ -759,7 +759,7 @@ class BatchController extends AbstractController
             debut_traitement as debut,
             fin_traitement as fin
             FROM batch_traitement
-            WHERE date_enregistrement like '${dateDernierBatchShort}%'
+            WHERE date_enregistrement like '$dateDernierBatchShort%'
             GROUP BY titre
             ORDER BY responsable ASC, demarrage ASC";
       $trim=trim(preg_replace(static::$regex, " ", $sql));
