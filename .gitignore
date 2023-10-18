@@ -11,6 +11,8 @@
 composer.lock
 /var/sessions/*
 /var/cache/*
+package-lock.json
+symfony.lock
 ###< symfony/framework-bundle ###
 
 ###> symfony/webpack-encore-bundle ###
