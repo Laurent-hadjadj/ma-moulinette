@@ -477,7 +477,7 @@ class ApiProjetController extends AbstractController
     $mavenKey = $request->get('mavenKey');
 
     /** mesures globales */
-    $url1 = "${tempoUrl}/api/components/app?component=$mavenKey";
+    $url1 = "$tempoUrl/api/components/app?component=$mavenKey";
 
     /** on appel le client http */
     $result1 = $client->http($url1);
