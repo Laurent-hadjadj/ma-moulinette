@@ -44,9 +44,6 @@ class ApiProjetRepartitionController extends AbstractController
   /**
    * [Description for __construct]
    *
-   * @param  private
-   * @param  private
-   *
    * Created at: 04/12/2022, 09:00:38 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
@@ -157,19 +154,19 @@ class ApiProjetRepartitionController extends AbstractController
   {
 
     /** On bind les variables */
-    $tempoPageSize = "&ps=${pageSize}";
-    $tempoPageindex = "&p=${index}";
+    $tempoPageSize = "&ps=$pageSize";
+    $tempoPageindex = "&p=$index";
     $tempoStates = "&statuses=OPEN,CONFIRMED,REOPENED&resolutions=&s=STATUS&asc=no";
-    $tempoType = "&types=${type}";
-    $tempoSeverity= "&severities=${severity}";
+    $tempoType = "&types=$type";
+    $tempoSeverity= "&severities=$severity";
 
     /** On bind les variables */
     $tempoUrl=$this->getParameter(static::$sonarUrl);
     $tempoApi=static::$apiIssuesSearch;
 
     /** On construit l'URL */
-    $url1 = "${tempoUrl}${tempoApi}${mavenKey}${tempoStates}${tempoType}";
-    $url2 = "${tempoSeverity}${tempoPageSize}${tempoPageindex}";
+    $url1 = "$tempoUrl$tempoApi$mavenKey$tempoStates$tempoType";
+    $url2 = "$tempoSeverity$tempoPageSize$tempoPageindex";
     /** On appel l'Api et on renvoie le résultat */
     return $client->http($url1.$url2);
   }
