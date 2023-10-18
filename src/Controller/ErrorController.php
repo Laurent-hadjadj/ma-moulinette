@@ -18,12 +18,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-
 /** Exception */
 use Symfony\Component\ErrorHandler\Exception\FlattenException;
-
-/** Logger */
-use Psr\Log\LoggerInterface;
 
 /** TWIG */
 use Twig\Environment;
