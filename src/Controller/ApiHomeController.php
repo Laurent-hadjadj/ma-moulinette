@@ -135,7 +135,7 @@ class ApiHomeController extends AbstractController
   /**
    * [Description for projetListe]
    * Récupération de la liste des projets.
-   * http://{url}}/api/components/search?qualifiers=TRK&ps=500
+   * http://{url}}/api/components/search_projects?ps=500
    *
    * @param Request $request
    * @param Client $client
@@ -172,7 +172,6 @@ class ApiHomeController extends AbstractController
 
     /** On appel le client http */
     $result = $client->http($url);
-
     /** On, initialiser les variables  */
     $public=$private=$emptyTags=$nombre=0;
 
@@ -188,8 +187,7 @@ class ApiHomeController extends AbstractController
       $message="Je n'ai pas trouvé de projet sur le serveur sonarqube.";
       return $response->setData(["reference"=>$reference, "type"=>$type, "message" => $message, Response::HTTP_OK]);
     }
-
-    /** On supprime les données de la table avant d'importer les données. */
+   /** On supprime les données de la table avant d'importer les données. */
     $sql = "DELETE FROM liste_projet";
     $delete = $this->em->getConnection()->prepare($sql);
     if ($mode!='TEST') {
@@ -383,4 +381,5 @@ class ApiHomeController extends AbstractController
     return $response->setData(
       ["private" => $private, "public" => $public, Response::HTTP_OK]);
   }
+
 }
