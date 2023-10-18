@@ -3,26 +3,17 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Main\Batch;
-use App\Entity\Main\ListeProjet;
-use App\Entity\Main\Portefeuille;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Form\FormTypeInterface;
 
-use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
-use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
-use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
-
-use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -36,7 +27,7 @@ class BatchCrudController extends AbstractCrudController
      * [Description for __construct]
      *
      * Created at: 02/01/2023, 18:32:27 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function __construct(
@@ -54,7 +45,7 @@ class BatchCrudController extends AbstractCrudController
      * @return string
      *
      * Created at: 02/01/2023, 18:32:36 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public static function getEntityFqcn(): string
@@ -71,7 +62,7 @@ class BatchCrudController extends AbstractCrudController
      * @return Filters
      *
      * Created at: 02/01/2023, 18:32:42 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function configureFilters(Filters $filters): Filters
@@ -106,7 +97,7 @@ class BatchCrudController extends AbstractCrudController
      * @return iterable
      *
      * Created at: 02/01/2023, 18:33:02 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function configureFields(string $pageName): iterable
@@ -191,7 +182,6 @@ class BatchCrudController extends AbstractCrudController
         $l = $this->emm->getConnection()->prepare($sql)->executeQuery();
         $r = $l->fetchAssociative();
         $nombreProjet=count(json_decode($r['liste']));
-        dd($nombreProjet);
 
         /** On enregistre le données que l'on veut modifier */
         $entityInstance->setTitre(mb_strtoupper($titre));
