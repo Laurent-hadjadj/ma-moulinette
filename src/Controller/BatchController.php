@@ -26,9 +26,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Psr\Log\LoggerInterface;
 
 /** gestion du journal d'activité */
-use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Filesystem\Path;
 use Symfony\Component\Finder\Finder;
 
 /** Gestion du temps */
@@ -39,7 +37,7 @@ use DateTimeZone;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Main\BatchTraitement;
-use App\Entity\Main\Historique;
+//use App\Entity\Main\Historique;
 
 /** Rotation des logs */
 use Cesargb\Log\Rotation;
@@ -70,7 +68,7 @@ class BatchController extends AbstractController
      * On ajoute un constructeur pour éviter à chaque fois d'injecter la même class
      *
      * Created at: 04/12/2022, 08:53:04 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function __construct (
@@ -92,14 +90,14 @@ class BatchController extends AbstractController
        * @return int
        *
        * Created at: 05/03/2023, 18:01:55 (Europe/Paris)
-       * @author     Laurent HADJADJ <laurent_h@me.com>
+       * @author    Laurent HADJADJ <laurent_h@me.com>
        * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
        */
       public function logrotate(): void
       {
         /* On initialise le journal des traces */
         $filesystem = new Filesystem();
-        $path= $this->getParameter('kernel.project_dir').$this->params->get('path.audit');
+        $path= $this->getParameter('kernel.project_dir').$this->getParameter('path.audit');
         /* Le dossier d'audit est présent */
         if ($filesystem->exists($path)){
           /** Rotation des logs */
