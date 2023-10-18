@@ -112,7 +112,7 @@ class BatchApiController extends AbstractController
     /** On récupère le nombre de version par type */
     $sql = "SELECT type, COUNT(type) AS 'total'
             FROM information_projet
-            WHERE maven_key='${mavenKey}'
+            WHERE maven_key='$mavenKey'
             GROUP BY type";
     $list = $this->em->getConnection()->prepare($sql)->executeQuery()->fetchAllAssociativeIndexed();
     $release=0;
@@ -134,7 +134,7 @@ class BatchApiController extends AbstractController
     /** On récupère la dernière version et sa date de publication */
     $sql = "SELECT project_version as projet, date
             FROM information_projet
-            WHERE maven_key='${mavenKey}'
+            WHERE maven_key='$mavenKey'
             ORDER BY date DESC LIMIT 1 ";
     $projet = $this->em->getConnection()->prepare($sql)->executeQuery()->fetchAllAssociative();
 
@@ -159,7 +159,7 @@ class BatchApiController extends AbstractController
   public function batchInformation(Client $client, $mavenKey): array
   {
     $sonar=$this->getParameter(static::$sonarUrl);
-    $url ="${sonar}/api/project_analyses/search?project=${mavenKey}";
+    $url ="$sonar/api/project_analyses/search?project=$mavenKey";
 
     /** On appel le client http */
     $result = $client->http($url);
@@ -216,7 +216,7 @@ class BatchApiController extends AbstractController
     $tempoUrl = $this->getParameter(static::$sonarUrl);
 
     /** mesures globales */
-    $url1 = "${tempoUrl}/api/components/app?component=${mavenKey}";
+    $url1 = "$tempoUrl/api/components/app?component=$mavenKey";
 
     /** on appel le client http */
     $result1 = $client->http($url1);
@@ -260,7 +260,7 @@ class BatchApiController extends AbstractController
     }
 
     /** On récupère le nombre de ligne de code */
-    $url2 = "${tempoUrl}/api/measures/component?component=${mavenKey}&metricKeys=ncloc";
+    $url2 = "$tempoUrl/api/measures/component?component=$mavenKey&metricKeys=ncloc";
     $result2 = $client->http($url2);
 
     /** Warning: Undefined array key "measures" */
@@ -315,8 +315,8 @@ class BatchApiController extends AbstractController
     /** On bind les variables */
     $tempoUrl = $this->getParameter(static::$sonarUrl);
 
-    $url = "${tempoUrl}/api/measures/search_history?component=${mavenKey}
-            &metrics=${type}_rating&ps=1000";
+    $url = "$tempoUrl/api/measures/search_history?component=$mavenKey
+            &metrics=".$type."_rating&ps=1000";
 
     /** On appel le client http */
     $result = $client->http(trim(preg_replace(static::$regex, " ", $url)));
@@ -332,12 +332,12 @@ class BatchApiController extends AbstractController
       $tempoMesureValue = $mesure["value"];
 
       $sql = "INSERT OR IGNORE INTO notes (maven_key, type, date, value, date_enregistrement)
-              VALUES ('${mavenKey}', '${type}', '${tempoMesureDate}', '${tempoMesureValue}', '${tempoDate}')";
+              VALUES ('$mavenKey', '$type', '$tempoMesureDate', '$tempoMesureValue', '$tempoDate')";
       $this->em->getConnection()->prepare($sql)->executeQuery();
     }
     /** On récupère la dernière note */
     $sql = "SELECT value FROM notes
-            WHERE maven_key='${mavenKey}' AND type='${type}'
+            WHERE maven_key='$mavenKey' AND type='$type'
             ORDER BY date DESC
             LIMIT 1;";
     $r=$this->em->getConnection()->prepare($sql)->executeQuery()->fetchAllAssociative();
@@ -359,7 +359,7 @@ class BatchApiController extends AbstractController
         $note = "E";
       }
 
-    return ["note_${type}" => ["value"=>$note]];
+    return ["note_$type" => ["value"=>$note]];
   }
 
   /**
@@ -378,7 +378,7 @@ class BatchApiController extends AbstractController
     $tempoUrl = $this->getParameter(static::$sonarUrl);
 
     /** On construit l'URL */
-    $url = "${tempoUrl}/api/hotspots/search?projectKey=${mavenKey}&ps=500&p=1";
+    $url = "$tempoUrl/api/hotspots/search?projectKey=$mavenKey&ps=500&p=1";
 
     /** On appel l'Api */
     $result = $client->http($url);
@@ -389,7 +389,7 @@ class BatchApiController extends AbstractController
     $niveau = 0;
 
     /** On supprime  les enregistrements correspondant à la clé **/
-    $sql = "DELETE FROM hotspots WHERE maven_key='${mavenKey}'";
+    $sql = "DELETE FROM hotspots WHERE maven_key='$mavenKey'";
     $this->em->getConnection()->prepare($sql)->executeQuery();
 
     /** On initialise le nombre de hotspot */
@@ -448,7 +448,7 @@ class BatchApiController extends AbstractController
     $tempoUrl = $this->getParameter(static::$sonarUrl);
 
     /**On construit l'URL */
-    $url = "${tempoUrl}/api/hotspots/search?projectKey=${mavenKey}&ps=500&p=1";
+    $url = "$tempoUrl/api/hotspots/search?projectKey=$mavenKey&ps=500&p=1";
 
     /**  On appel l'Api */
     $result = $client->http($url);
@@ -459,7 +459,7 @@ class BatchApiController extends AbstractController
     $niveau = 0;
 
     /** On supprime  les enregistrements correspondant à la clé */
-    $sql = "DELETE FROM hotspots WHERE maven_key='${mavenKey}'";
+    $sql = "DELETE FROM hotspots WHERE maven_key='$mavenKey'";
     $this->em->getConnection()->prepare($sql)->executeQuery();
 
     $high=$medium=$low=0;
@@ -517,11 +517,11 @@ class BatchApiController extends AbstractController
   public function BatchNoteHotspot ($mavenKey): array
   {
     /** On récupère la dernière version et sa date de publication **/
-    $sql="SELECT COUNT(*) as to_review FROM hotspots WHERE maven_key='${mavenKey}' AND status='TO_REVIEW'";
+    $sql="SELECT COUNT(*) as to_review FROM hotspots WHERE maven_key='$mavenKey' AND status='TO_REVIEW'";
     $r = $this->em->getConnection()->prepare($sql)->executeQuery();
     $toReview = $r->fetchAllAssociative();
 
-    $sql = "SELECT COUNT(*) as reviewed FROM hotspots WHERE maven_key='${mavenKey}' AND status='REVIEWED'";
+    $sql = "SELECT COUNT(*) as reviewed FROM hotspots WHERE maven_key='$mavenKey' AND status='REVIEWED'";
     $r = $this->em->getConnection()->prepare($sql)->executeQuery();
     $reviewed = $r->fetchAllAssociative();
 
@@ -567,7 +567,7 @@ class BatchApiController extends AbstractController
     $tempoUrl = $this->getParameter(static::$sonarUrl);
 
     /** On construit l'URL et on appel le WS */
-    $url = "${tempoUrl}/api/issues/search?componentKeys=${mavenKey}
+    $url = "$tempoUrl/api/issues/search?componentKeys=$mavenKey
             &rules=java:S1309,java:NoSonar&ps=500&p=1";
 
     $result = $client->http(trim(preg_replace(static::$regex, " ", $url)));
@@ -575,7 +575,7 @@ class BatchApiController extends AbstractController
     $date->setTimezone(new DateTimeZone(static::$europeParis));
 
     /** On supprime les données du projet de la table NoSonar **/
-    $sql = "DELETE FROM no_sonar WHERE maven_key='${mavenKey}'";
+    $sql = "DELETE FROM no_sonar WHERE maven_key='$mavenKey'";
     $this->em->getConnection()->prepare($sql)->executeQuery();
 
     /**
@@ -596,7 +596,7 @@ class BatchApiController extends AbstractController
           $noSonar++;
         }
 
-        $component = str_replace("${mavenKey} :", "", $issue["component"]);
+        $component = str_replace("$mavenKey :", "", $issue["component"]);
         $nosonar->setComponent($component);
 
         /** On récupère la ligne */
@@ -644,16 +644,16 @@ class BatchApiController extends AbstractController
     /** Pour le moment on utilise pas cette options */
     $statusesAll = "OPEN,CONFIRMED,REOPENED,RESOLVED,TO_REVIEW,IN_REVIEW";
 
-    $url1 = "${tempoUrlLong}${mavenKey}&facets=directories,types,severities&p=1&ps=1&statuses=${statusesMin}";
+    $url1 = "$tempoUrlLong$mavenKey&facets=directories,types,severities&p=1&ps=1&statuses=$statusesMin";
 
     /** On récupère le total de la Dette technique pour les BUG */
-    $url2 = "${tempoUrlLong}${mavenKey}&types=BUG&p=1&ps=1";
+    $url2 = "$tempoUrlLong$mavenKey&types=BUG&p=1&ps=1";
 
     /** On récupère le total de la Dette technique pour les VULNERABILITY */
-    $url3 = "${tempoUrlLong}${mavenKey}&types=VULNERABILITY&p=1&ps=1";
+    $url3 = "$tempoUrlLong$mavenKey&types=VULNERABILITY&p=1&ps=1";
 
     /** On récupère le total de la Dette technique pour les CODE_SMELL */
-    $url4 = "${tempoUrlLong}${mavenKey}&types=CODE_SMELL&p=1&ps=1";
+    $url4 = "$tempoUrlLong$mavenKey&types=CODE_SMELL&p=1&ps=1";
 
     /** On appel le client http pour les requête 1 à 4 (2 à 4 pour la dette) */
     $result1 = $client->http(trim(preg_replace(static::$regex, " ", $url1)));
@@ -663,7 +663,7 @@ class BatchApiController extends AbstractController
 
     if ($result1["paging"]["total"] != 0) {
       /** On supprime  les enregistrement correspondant à la clé */
-      $sql = "DELETE FROM anomalie WHERE maven_key='${mavenKey}'";
+      $sql = "DELETE FROM anomalie WHERE maven_key='$mavenKey'";
       $this->em->getConnection()->prepare($sql)->executeQuery();
 
       /** nom du projet */
@@ -826,13 +826,13 @@ class BatchApiController extends AbstractController
         $tempoUrlLong = $this->getParameter(static::$sonarUrl) . static::$apiIssuesSearch;
 
         /** Pour les Bug */
-        $url1 = "${tempoUrlLong}${mavenKey}&facets=severities&types=BUG&ps=1&p=1&statuses=OPEN";
+        $url1 = "$tempoUrlLong$mavenKey&facets=severities&types=BUG&ps=1&p=1&statuses=OPEN";
 
         /** Pour les Vulnérabilités */
-        $url2 = "${tempoUrlLong}${mavenKey}&facets=severities&types=VULNERABILITY&ps=1&p=1&statuses=OPEN";
+        $url2 = "$tempoUrlLong$mavenKey&facets=severities&types=VULNERABILITY&ps=1&p=1&statuses=OPEN";
 
         /** Pour les mauvaises pratiques */
-        $url3 = "${tempoUrlLong}${mavenKey}&facets=severities&types=CODE_SMELL&ps=1&p=1&statuses=OPEN";
+        $url3 = "$tempoUrlLong$mavenKey&facets=severities&types=CODE_SMELL&ps=1&p=1&statuses=OPEN";
 
         /** On appel le client http pour les requête 1 à 3 */
         $result1 = $client->http($url1);
@@ -845,7 +845,7 @@ class BatchApiController extends AbstractController
 
         if ($total1 !== 0 || $total2 !== 0 || $total3 !== 0) {
           /** On supprime  l'enregistrement correspondant à la clé */
-          $sql = "DELETE FROM anomalie_details WHERE maven_key='${mavenKey}'";
+          $sql = "DELETE FROM anomalie_details WHERE maven_key='$mavenKey'";
           $this->em->getConnection()->prepare($sql)->executeQuery();
 
           /** On crée un objet DateTime */
@@ -1192,10 +1192,10 @@ class BatchApiController extends AbstractController
       /** General error: 5 database is locked" */
       /** General error: 19 violation de clé */
       if ($e->getCode() === 19) {
-        $this->logger->ERROR("[BATCH-009] [${nom}] Violation de clé : ${e}");
+        $this->logger->ERROR("[BATCH-009] [$nom] Violation de clé : $e");
         $this->em->close();
       } else {
-        $this->logger->ERROR("[BATCH-009] [${nom}] Erreur lors de l'enregistrement.", "Cause ${e}");
+        $this->logger->ERROR("[BATCH-009] [$nom] Erreur lors de l'enregistrement.", "Cause $e");
         $this->em->close();
       }
     }
@@ -1206,8 +1206,8 @@ class BatchApiController extends AbstractController
     $interval = $debutTraitement->diff($finTraitement);
     $temps=$interval->format("%H:%I:%S");
 
-    $this->logger->INFO("[BATCH-010] [${nom}] Enregistrement des données en ${temps}");
-    return ["message"=>"[BATCH-010] [${nom}] Enregistrement des données en ${temps}"];
+    $this->logger->INFO("[BATCH-010] [$nom] Enregistrement des données en $temps");
+    return ["message"=>"[BATCH-010] [$nom] Enregistrement des données en $temps"];
   }
 
   public function batchAjouteCollecte($mavenKey): array
@@ -1418,10 +1418,10 @@ class BatchApiController extends AbstractController
       /** General error: 5 database is locked" */
       /** General error: 19 violation de clé */
       if ($e->getCode() === 19) {
-        $this->logger->ERROR("[BATCH-009] [${nom}] Violation de clé : ${e}");
+        $this->logger->ERROR("[BATCH-009] [$nom] Violation de clé : $e");
         $this->em->close();
       } else {
-        $this->logger->ERROR("[BATCH-009] [${nom}] Erreur lors de l'enregistrement.", "Cause ${e}");
+        $this->logger->ERROR("[BATCH-009] [$nom] Erreur lors de l'enregistrement.", "Cause $e");
         $this->em->close();
       }
     }
@@ -1432,7 +1432,7 @@ class BatchApiController extends AbstractController
     $interval = $debutTraitement->diff($finTraitement);
     $temps=$interval->format("%H:%I:%S");
 
-    $this->logger->INFO("[BATCH-010] [${nom}] Enregistrement des données en ${temps}");
-    return ["message"=>"[BATCH-010] [${nom}] Enregistrement des données en ${temps}"];
+    $this->logger->INFO("[BATCH-010] [$nom] Enregistrement des données en $temps");
+    return ["message"=>"[BATCH-010] [$nom] Enregistrement des données en $temps"];
   }
 }
