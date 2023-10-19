@@ -145,9 +145,9 @@ class ApiProjetController extends AbstractController
       $h = 0;
     }
     if ($j > 0) {
-      return ($j . "d, " . $h . "h:" . $m . "min");
+      return $j . "d, " . $h . "h:" . $m . "min";
     } else {
-      return ($h . "h:" . $m . "min");
+      return $h . "h:" . $m . "min";
     }
   }
 
