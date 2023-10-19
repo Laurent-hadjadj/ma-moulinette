@@ -766,7 +766,7 @@ class ApiProjetController extends AbstractController
 
     $info = "Enregistrement des défauts (" . $nombreAnomalie . ") correctement effectué.";
 
-    return $response->setData(["mode"=>$mode, info" => $info, Response::HTTP_OK]);
+    return $response->setData(["mode"=>$mode, "info" => $info, Response::HTTP_OK]);
   }
 
 
