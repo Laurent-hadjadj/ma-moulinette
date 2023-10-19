@@ -62,9 +62,9 @@ class ApiProjetController extends AbstractController
   public static $erreurMavenKey="La clé maven est vide!";
   public static $reference="<strong>[PROJET-002]</strong>";
   public static $message="Vous devez avoir le rôle COLLECTE pour réaliser cette action.";
-  public static $statuses="OPEN,REOPENED,TO_REVIEW,IN_REVIEW";
+  public static $statuses="OPEN,REOPENED";
   public static $statusesMin = "OPEN,CONFIRMED,REOPENED,RESOLVED";
-  public static $statusesAll = "OPEN,CONFIRMED,REOPENED,RESOLVED,TO_REVIEW,IN_REVIEW";
+  public static $statusesAll = "OPEN, CONFIRMED, REOPENED, RESOLVED, CLOSED";
 
   /**
    * [Description for __construct]
@@ -605,10 +605,10 @@ class ApiProjetController extends AbstractController
     $date->setTimezone(new DateTimeZone(static::$europeParis));
 
     /** 
-     * On choisi le type de status des anomalies : ouvert, reouvert, fermé, corrigé,... 
+     * On choisi le type de status des anomalies : [OPEN, CONFIRMED, REOPENED, RESOLVED, CLOSED]
      * Type : statuses, statusesMin et statusesAll
      */
-    $typeStatuses=static::statuses;
+    $typeStatuses=static::$statuses;
     $url1 = "$tempoUrlLong$mavenKey&facets=directories,types,severities&p=1&ps=1&statuses=$typeStatuses";
 
     /** On récupère le total de la Dette technique pour les BUG. */
