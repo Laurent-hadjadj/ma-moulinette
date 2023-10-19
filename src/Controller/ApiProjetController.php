@@ -62,6 +62,9 @@ class ApiProjetController extends AbstractController
   public static $erreurMavenKey="La clé maven est vide!";
   public static $reference="<strong>[PROJET-002]</strong>";
   public static $message="Vous devez avoir le rôle COLLECTE pour réaliser cette action.";
+  public static $statuses="OPEN,REOPENED,TO_REVIEW,IN_REVIEW";
+  public static $statusesMin = "OPEN,CONFIRMED,REOPENED,RESOLVED";
+  public static $statusesAll = "OPEN,CONFIRMED,REOPENED,RESOLVED,TO_REVIEW,IN_REVIEW";
 
   /**
    * [Description for __construct]
@@ -601,11 +604,12 @@ class ApiProjetController extends AbstractController
     $date = new DateTime();
     $date->setTimezone(new DateTimeZone(static::$europeParis));
 
-    $statusesMin = "OPEN,CONFIRMED,REOPENED,RESOLVED";
-    
-    $statusesAll = "OPEN,CONFIRMED,REOPENED,RESOLVED,TO_REVIEW,IN_REVIEW";
-
-    $url1 = "$tempoUrlLong$mavenKey&facets=directories,types,severities&p=1&ps=1&statuses=$statusesMin";
+    /** 
+     * On choisi le type de status des anomalies : ouvert, reouvert, fermé, corrigé,... 
+     * Type : statuses, statusesMin et statusesAll
+     */
+    $typeStatuses=static::statuses;
+    $url1 = "$tempoUrlLong$mavenKey&facets=directories,types,severities&p=1&ps=1&statuses=$typeStatuses";
 
     /** On récupère le total de la Dette technique pour les BUG. */
     $url2 = "$tempoUrlLong$mavenKey&types=BUG&p=1&ps=1";
@@ -762,7 +766,7 @@ class ApiProjetController extends AbstractController
 
     $info = "Enregistrement des défauts (" . $nombreAnomalie . ") correctement effectué.";
 
-    return $response->setData(["mode"=>$mode, "info" => $info, Response::HTTP_OK]);
+    return $response->setData(["mode"=>$mode, info" => $info, Response::HTTP_OK]);
   }
 
 
