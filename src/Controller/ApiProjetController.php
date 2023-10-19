@@ -207,7 +207,7 @@ class ApiProjetController extends AbstractController
 
     if ($isFavori){
       /** on supprime le projet de la liste */
-      $nouvelleListeFavori = array_diff($preference['favori'], [$mavenKey]);
+      $nouvelleListeFavori = array_diff($favori, [$mavenKey]);
 
       $statut['favori']=false;
 
@@ -226,7 +226,7 @@ class ApiProjetController extends AbstractController
         $trim=trim(preg_replace(static::$regex, " ", $sql));
         $exec=$this->em->getConnection()->prepare($trim)->executeQuery();
       if ($mode!=='TEST'){
-        $e=$exec->fetchAllAssociative();
+          $exec->fetchAllAssociative();
       }
       $statut=0;
     } else {
@@ -249,7 +249,7 @@ class ApiProjetController extends AbstractController
         $trim=trim(preg_replace(static::$regex, " ", $sql));
         $exec=$this->em->getConnection()->prepare($trim)->executeQuery();
       if ($mode!=='TEST'){
-        $e=$exec->fetchAllAssociative();
+          $exec->fetchAllAssociative();
       }
       $statut=1;
     }
@@ -602,6 +602,7 @@ class ApiProjetController extends AbstractController
     $date->setTimezone(new DateTimeZone(static::$europeParis));
 
     $statusesMin = "OPEN,CONFIRMED,REOPENED,RESOLVED";
+    
     $statusesAll = "OPEN,CONFIRMED,REOPENED,RESOLVED,TO_REVIEW,IN_REVIEW";
 
     $url1 = "$tempoUrlLong$mavenKey&facets=directories,types,severities&p=1&ps=1&statuses=$statusesMin";
