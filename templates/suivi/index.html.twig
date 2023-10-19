@@ -298,7 +298,8 @@
                   {% set lookup = "up" %}
                   {% set text = "text-up" %}
                 {% endif %}
-                {% if severite[i]["bloquant"] == 0 %}
+                {% if severite[i]["bloquant"] == 0 
+                or severite[i]["bloquant"] == severite[i-1]["bloquant"] %}
                   {% set lookup = "equal" %}
                   {% set text = "" %}
                 {% endif %}
@@ -331,11 +332,12 @@
                   {% set lookup = "up" %}
                   {% set text = "text-up" %}
                 {% endif %}
-                {% if severite[i]["critique"] ==0 %}
+                {% if severite[i]["critique"] ==0 
+                  or severite[i]["critique"] == severite[i-1]["critique"] %}
                   {% set lookup = "equal" %}
                   {% set text = "" %}
                 {% endif %}
-                {% if severite[i]["bloquant"] == -1 %}
+                {% if severite[i]["critique"] == -1 %}
                   {% set lookup = "" %}
                   {% set text = "" %}
                 {% endif %}
@@ -364,11 +366,12 @@
                     {% set lookup = "up" %}
                     {% set text = "text-up" %}
                 {% endif %}
-                {% if severite[i]["majeur"] ==0 %}
+                {% if severite[i]["majeur"] ==0 
+                  or severite[i]["majeur"] == severite[i-1]["majeur"] %}
                     {% set lookup = "equal" %}
                     {% set text = "" %}
                 {% endif %}
-                {% if severite[i]["bloquant"] == -1 %}
+                {% if severite[i]["majeur"] == -1 %}
                     {% set lookup = "" %}
                     {% set text = "" %}
                 {% endif %}
@@ -397,11 +400,12 @@
                     {% set lookup = "up" %}
                     {% set text = "text-up" %}
                 {% endif %}
-                {% if severite[i]["mineur"] ==0 %}
+                {% if severite[i]["mineur"] ==0 
+                  or severite[i]["mineur"] == severite[i-1]["mineur"] %}
                   {% set lookup = "equal" %}
                   {% set text = "" %}
                 {% endif %}
-                {% if severite[i]["bloquant"] == -1 %}
+                {% if severite[i]["mineur"] == -1 %}
                   {% set lookup = "" %}
                   {% set text = "" %}
                 {% endif %}
