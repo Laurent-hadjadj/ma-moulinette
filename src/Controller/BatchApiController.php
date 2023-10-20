@@ -15,7 +15,6 @@ namespace App\Controller;
 
 /** Core */
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
 
 /** Logger */
 use Psr\Log\LoggerInterface;
@@ -53,6 +52,10 @@ class BatchApiController extends AbstractController
   public static $europeParis = "Europe/Paris";
   public static $apiIssuesSearch = "/api/issues/search?componentKeys=";
   public static $regex = "/\s+/u";
+  public static $statuses="OPEN,REOPENED";
+  public static $statusesMin = "OPEN,CONFIRMED,REOPENED,RESOLVED";
+  public static $statusesAll = "OPEN, CONFIRMED, REOPENED, RESOLVED, CLOSED";
+
 
   /**
    * [Description for __construct]
@@ -343,23 +346,40 @@ class BatchApiController extends AbstractController
     $r=$this->em->getConnection()->prepare($sql)->executeQuery()->fetchAllAssociative();
 
     /** On converti la valeur en note A, B , C, D, ou E */
-    if ( $r[0]['value'] === 1) {
-        $note = "A";
-      }
-      if ($r[0]['value'] === 2) {
-        $note = "B";
-      }
-      if ($r[0]['value'] === 3) {
-        $note = "C";
-      }
-      if ($r[0]['value'] === 4) {
-        $note = "D";
-      }
-      if ($r[0]['value'] === 5) {
-        $note = "E";
-      }
+    switch ($r[0]['value']) {
+      case 1: $note = "A";
+          break;
+      case 2: $note = "B";
+          break;
+      case 3: $note = "C";
+          break;
+      case 4: $note = "D";
+          break;
+      case 5: $note = "E";
+          break;
+      default:
+        echo "Je n'ai pas trouvé la note !!!";
+  }
+  /**
+   *
+   *( $r[0]['value'] === 1) {
+   *       $note = "A";
+   *     }
+   *     if ($r[0]['value'] === 2) {
+   *      $note = "B";
+   *     }
+   *     if ($r[0]['value'] === 3) {
+   *       $note = "C";
+   *     }
+   *     if ($r[0]['value'] === 4) {
+   *       $note = "D";
+   *     }
+   *     if ($r[0]['value'] === 5) {
+   *       $note = "E";
+   *     }
+   */
 
-    return ["note_$type" => ["value"=>$note]];
+  return ["note_$type" => ["value"=>$note]];
   }
 
   /**
@@ -631,7 +651,7 @@ class BatchApiController extends AbstractController
    * Created at: 11/12/2022, 09:03:38 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    */
-  public function BatchAnomalie($mavenKey): array
+  public function BatchAnomalie(Client $client, $mavenKey): array
   {
     /** On bind les variables */
     $tempoUrlLong = $this->getParameter(static::$sonarUrl) . static::$apiIssuesSearch;
@@ -640,11 +660,12 @@ class BatchApiController extends AbstractController
     $date = new DateTime();
     $date->setTimezone(new DateTimeZone(static::$europeParis));
 
-    $statusesMin = "OPEN,CONFIRMED,REOPENED,RESOLVED";
-    /** Pour le moment on utilise pas cette options */
-    $statusesAll = "OPEN,CONFIRMED,REOPENED,RESOLVED,TO_REVIEW,IN_REVIEW";
-
-    $url1 = "$tempoUrlLong$mavenKey&facets=directories,types,severities&p=1&ps=1&statuses=$statusesMin";
+    /**
+     * On choisi le type de status des anomalies : [OPEN, CONFIRMED, REOPENED, RESOLVED, CLOSED]
+     * Type : statuses, statusesMin et statusesAll
+     */
+    $typeStatuses=static::$statuses;
+    $url1 = "$tempoUrlLong$mavenKey&facets=directories,types,severities&p=1&ps=1&statuses=$typeStatuses";
 
     /** On récupère le total de la Dette technique pour les BUG */
     $url2 = "$tempoUrlLong$mavenKey&types=BUG&p=1&ps=1";
@@ -820,7 +841,7 @@ class BatchApiController extends AbstractController
    * Created at: 12/12/2022, 10:25:23 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    */
-  public function BatchAnomalieDetails($mavenKey): array
+  public function BatchAnomalieDetails(Client $client, $mavenKey): array
   {
         /** On bind les variables */
         $tempoUrlLong = $this->getParameter(static::$sonarUrl) . static::$apiIssuesSearch;
@@ -834,7 +855,7 @@ class BatchApiController extends AbstractController
         /** Pour les mauvaises pratiques */
         $url3 = "$tempoUrlLong$mavenKey&facets=severities&types=CODE_SMELL&ps=1&p=1&statuses=OPEN";
 
-        /** On appel le client http pour les requête 1 à 3 */
+        /** On appel le client http pour les requêteq 1 à 3 */
         $result1 = $client->http($url1);
         $result2 = $client->http($url2);
         $result3 = $client->http($url3);
