@@ -586,13 +586,13 @@ class ApiProjetController extends AbstractController
     /** On teste si la clé est valide */
     if ($mavenKey==="null" && $mode==="TEST") {
       return $response->setData(["mode"=>$mode, "mavenKey"=>$mavenKey,
-                                 "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+                                "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
     }
 
     /** On vérifie si l'utilisateur à un rôle Collecte ? */
     if (!$this->isGranted('ROLE_COLLECTE')){
       return $response->setData(["mode"=>$mode , "type"=>'alert',
-                                 "reference" => static::$reference, "message"=> static::$message, Response::HTTP_OK]);
+                                "reference" => static::$reference, "message"=> static::$message, Response::HTTP_OK]);
     }
 
     /** On créé un objet date. */
@@ -674,9 +674,8 @@ class ApiProjetController extends AbstractController
               case "VULNERABILITY" : $vulnerability = $type["count"];
                     break;
               case "CODE_SMELL" : $codeSmell = $type["count"];
-              break;
-            default:
-              $this->logger->INFO("Référentiel Type !");
+                    break;
+            default: $this->logger->INFO("Référentiel Type !");
             }
           }
         }
@@ -981,8 +980,7 @@ class ApiProjetController extends AbstractController
         Response::HTTP_OK]);
     }
 
-    $url = "$tempoUrl/api/measures/search_history?component=$mavenKey
-            &metrics=$type"."_rating&ps=1000";
+    $url = "$tempoUrl/api/measures/search_history?component=$mavenKey&metrics=${type}_rating&ps=1000";
 
     /** On appel le client http. */
     $result = $client->http(trim(preg_replace(static::$regex, " ", $url)));
