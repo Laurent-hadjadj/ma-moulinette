@@ -29,7 +29,7 @@
     <div id="element1-to-print" class="pleine-page">
       <h2 id="js-nom" class="claire-hand" data-maven="{{mavenKey}}">{{nom}}</h2>
       <div class="cell">
-        <h4 class="claire-hand">
+        <h1 class="h4 claire-hand">
           <span id="affiche-total-profil" class="stat">
             {% set nombre=suivi|length %}
             {% if nombre>1 %}
@@ -40,7 +40,7 @@
             {{nombre}}</span>
           version{{s}}
           trouvé{{s}}.
-        </h4>
+        </h1>
       </div>
     </div>
 
@@ -68,8 +68,7 @@
               <td class="text-left text-noir">Date</td>
               {% for i in 0..suivi|length-1 %}
                 <td class="text-right">
-                  <span>{{suivi[i]["date"]|date("d/m/Y", "Europe/Paris")}}
-                  </span>
+                  <span>{{suivi[i]["date"]|date("d/m/Y", "Europe/Paris")}}</span>
                 </td>
               {% endfor %}
             </tr>
@@ -298,7 +297,7 @@
                   {% set lookup = "up" %}
                   {% set text = "text-up" %}
                 {% endif %}
-                {% if severite[i]["bloquant"] == 0 
+                {% if severite[i]["bloquant"] == 0
                 or severite[i]["bloquant"] == severite[i-1]["bloquant"] %}
                   {% set lookup = "equal" %}
                   {% set text = "" %}
@@ -332,7 +331,7 @@
                   {% set lookup = "up" %}
                   {% set text = "text-up" %}
                 {% endif %}
-                {% if severite[i]["critique"] ==0 
+                {% if severite[i]["critique"] ==0
                   or severite[i]["critique"] == severite[i-1]["critique"] %}
                   {% set lookup = "equal" %}
                   {% set text = "" %}
@@ -366,7 +365,7 @@
                     {% set lookup = "up" %}
                     {% set text = "text-up" %}
                 {% endif %}
-                {% if severite[i]["majeur"] ==0 
+                {% if severite[i]["majeur"] ==0
                   or severite[i]["majeur"] == severite[i-1]["majeur"] %}
                     {% set lookup = "equal" %}
                     {% set text = "" %}
@@ -400,7 +399,7 @@
                     {% set lookup = "up" %}
                     {% set text = "text-up" %}
                 {% endif %}
-                {% if severite[i]["mineur"] ==0 
+                {% if severite[i]["mineur"] ==0
                   or severite[i]["mineur"] == severite[i-1]["mineur"] %}
                   {% set lookup = "equal" %}
                   {% set text = "" %}
@@ -722,13 +721,13 @@
 
 {# Formulaire Ajout d'une version de l'historique #}
   <div id="modal-ajouter-analyse" class="reveal large"
-    data-reveal data-close-on-click="true" data-animation-in="fade-in" data-animation-out="fade-out">
-    <h2 class="claire-hand">Ajouter une version.</h2>
+      data-reveal data-close-on-click="true" data-animation-in="fade-in" data-animation-out="fade-out">
+    <h1 class="h2 claire-hand">Ajouter une version.</h1>
     <br>
     {# Versions disponibles #}
     <div class="grid-x cell">
       <div class="small-12 medium-12 large-12 cell">
-        <h4>Liste des versions disponibles.</h4>
+        <h2 class="h4 open-sans">Liste des versions disponibles.</h2>
         <label for="liste-version"></label>
         <select id="liste-version" class="js-version open-class" name="version">
           {# On ajoute un caractère pour éviter un erreur w3c #}
@@ -818,19 +817,18 @@
     <br>
     {# fermeture de la fenetre modale #}
     <button id="fermer-choisir-analyse" class="expanded button open-sans"
-      data-close aria-label="Close reveal" type="button">Fermer
-    </button>
+            data-close aria-label="Close reveal" type="button">Fermer</button>
     <a class="close-button" data-close aria-label="Close reveal">&#215;</a>
   </div>
 
   {# Formulaire - Modifier les versions #}
   <div id="modal-modifier-analyse" class="reveal large" data-reveal
     data-close-on-click="true" data-animation-in="fade-in" data-animation-out="fade-out">
-    <h2 class="claire-hand">Modifier la configuration.</h2>
+    <h1 class="h2 claire-hand">Modifier la configuration.</h1>
     <br>
     <div class="grid-x cell">
       <div class="small-12 medium-12 large-12 cell">
-        <h4>Liste des versions disponibles.</h4>
+        <h2 class="h4 open-sans">Liste des versions disponibles.</h2>
         <div id="message"></div>
       </div>
     </div>
@@ -859,8 +857,7 @@
     <br>
     {# fermeture de la fenetre modale #}
     <button id="fermer-modifier-analyse" class="expanded button open-sans"
-    data-close aria-label="Close reveal" type="button">Fermer
-    </button>
+            data-close aria-label="Close reveal" type="button">Fermer</button>
     <a class="close-button" data-close aria-label="Close reveal">&#215;</a>
   </div>
 
