@@ -80,10 +80,9 @@ class ApiProfilController extends AbstractController
     /** On crée un objet response */
     $response = new JsonResponse();
 
-    /** On vérfie les droits de l'utilisateur */
-    $userSecurity=$security->getUser();
     /* On bind les informations utilisateur */
     $roles=$security->getUser()->getRoles();
+
     if (in_array("ROLE_GESTIONNAIRE", $roles) !== true){
       /** On envoi un message à l'utilisateur */
       $reference="<strong>[PROFIL-001]</strong>";
@@ -108,7 +107,8 @@ class ApiProfilController extends AbstractController
     if (empty($r['profiles'])){
       /** On envoi un message à l'utilisateur */
       $reference="<strong>[PROFIL-002]</strong>";
-      $message="Vous devez avoir au moins un profil déclaré sur le serveur sonarqube correspondant à la clé définie dans le fichier de propriétés.";
+      $message="Vous devez avoir au moins un profil déclaré sur le serveur sonarqube
+                correspondant à la clé définie dans le fichier de propriétés.";
       $type="warning";
       return $response->setData([
         "reference" => $reference,
@@ -219,36 +219,32 @@ class ApiProfilController extends AbstractController
   #[Route('/profil/details', name: 'profil_details', methods: ['GET'])]
   public function profilDetails(Request $request, Client $client): response
   {
-    /** On décode le body. */
-    $data = json_decode($request->getContent());
-
     /** On récupère les données */
     $profil=$request->get('profil');
     $language=strtolower($request->get('language'));
     $mode=$request->get('mode');
 
     /** On renome les langages pour sonarqube */
-    if ($language==="java properties") {
-      $language="jproperties";
-    }
-    if ($language==="javascript") {
-      $language="js";
-    }
-    if ($language==="html") {
-      $language="web";
-    }
-    if ($language==="typescript") {
-      $language="ts";
-    }
-    if ($language==="python") {
-      $language="py";
+  switch ($language) {
+      case "java properties": $language="jproperties";
+        break;
+      case "javascript": $language= "js";
+        break;
+      case "html": $language= "web";
+        break;
+      case "typescript": $language= "ts";
+        break;
+      case "python": $language= "py";
+        break;
+      default: $language="null";
     }
 
     /** On créé un objet response pour le retour JSON. */
     $response = new JsonResponse();
 
     /* On récupère que les 500 premiers */
-    $url = $this->getParameter(static::$sonarUrl) . '/api/qualityprofiles/changelog?language='.$language.'&qualityProfile='.$profil.'&ps=500&p=1';
+    $baseURL=$this->getParameter(static::$sonarUrl);
+    $url = "$baseURL/api/qualityprofiles/changelog?language=$language&qualityProfile=$profil&ps=500&p=1";
     /** On appel le client http */
     $r = $client->http($url);
     $events=$r['events'];
@@ -274,10 +270,12 @@ class ApiProfilController extends AbstractController
       $detail=json_encode($event["params"]);
 
       /** On escape les ' */
-      $reEncode=preg_replace("/'/", "''", $description);
+      $reEncode=str_replace("'", "''", $description);
 
-      $sql = "INSERT OR IGNORE INTO profiles_historique (date_courte, langage, date, action, auteur, regle, description, detail, date_enregistrement)
-      VALUES ('$dateCourte', '$language', '$dateModification', '$action', '$auteur', '$regle', '$reEncode', '$detail', '$dateEnregistrement');";
+      $sql = "INSERT OR IGNORE INTO profiles_historique
+              (date_courte, langage, date, action, auteur, regle, description, detail, date_enregistrement)
+              VALUES ('$dateCourte', '$language', '$dateModification', '$action', '$auteur',
+                      '$regle', '$reEncode', '$detail', '$dateEnregistrement');";
       $trim=trim(preg_replace(static::$regex, " ", $sql));
       $this->em->getConnection()->prepare($trim)->executeQuery();
     }
@@ -307,7 +305,8 @@ class ApiProfilController extends AbstractController
     $sql5="SELECT date FROM profiles_historique WHERE langage='$language' ORDER BY date DESC limit 1";
     $last=$this->em->getConnection()->prepare($sql5)->executeQuery()->fetchAllAssociative();
     /** Calcul le  nombre de groupe de modification **/
-    $sql6="SELECT date_courte FROM profiles_historique WHERE langage='$language' GROUP BY date_courte ORDER BY date_courte DESC";
+    $sql6="SELECT date_courte FROM profiles_historique
+          WHERE langage='$language' GROUP BY date_courte ORDER BY date_courte DESC";
     $groupes=$this->em->getConnection()->prepare($sql6)->executeQuery()->fetchAllAssociative();
 
     /** Pour chaque groupe on récupère dans un tableau les modifications */
@@ -328,11 +327,19 @@ class ApiProfilController extends AbstractController
       array_push($tempoDateGroupe, $dateGroupe);
 
       foreach ($modif as $m) {
-        $g=["groupe"=>$i, "date"=>$m["date"], "action"=>$m["action"], "auteur"=>$m["auteur"], "regle"=>$m["regle"], "description"=>$m["description"], "detail"=>$m["detail"]];
+        $g=["groupe"=>$i, "date"=>$m["date"], "action"=>$m["action"],
+            "auteur"=>$m["auteur"], "regle"=>$m["regle"],
+            "description"=>$m["description"], "detail"=>$m["detail"]];
         array_push($tempo, $g);
-        if ($m["action"]==="UPDATED"){ $badgeU += 1; }
-        if ($m["action"]==="DEACTIVATED"){ $badgeD += 1; }
-        if ($m["action"]==="ACTIVATED"){ $badgeA += 1; }
+        if ($m["action"]==="UPDATED"){
+            $badgeU += 1;
+          }
+        if ($m["action"]==="DEACTIVATED"){
+            $badgeD += 1;
+          }
+        if ($m["action"]==="ACTIVATED"){
+          $badgeA += 1;
+        }
       }
 
       $tempoBadge=['badgeU'=>$badgeU, 'badgeD'=>$badgeD, 'badgeA'=>$badgeA];
