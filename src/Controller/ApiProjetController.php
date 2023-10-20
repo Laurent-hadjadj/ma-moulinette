@@ -585,26 +585,21 @@ class ApiProjetController extends AbstractController
 
     /** On teste si la clé est valide */
     if ($mavenKey==="null" && $mode==="TEST") {
-      return $response->setData([
-        "mode"=>$mode, "mavenKey"=>$mavenKey,
-        "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+      return $response->setData(["mode"=>$mode, "mavenKey"=>$mavenKey,
+                                 "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
     }
 
     /** On vérifie si l'utilisateur à un rôle Collecte ? */
     if (!$this->isGranted('ROLE_COLLECTE')){
-      return $response->setData([
-        "mode"=>$mode ,
-        "type"=>'alert',
-        "reference" => static::$reference,
-        "message"=> static::$message,
-        Response::HTTP_OK]);
+      return $response->setData(["mode"=>$mode , "type"=>'alert',
+                                 "reference" => static::$reference, "message"=> static::$message, Response::HTTP_OK]);
     }
 
     /** On créé un objet date. */
     $date = new DateTime();
     $date->setTimezone(new DateTimeZone(static::$europeParis));
 
-    /** 
+    /**
      * On choisi le type de status des anomalies : [OPEN, CONFIRMED, REOPENED, RESOLVED, CLOSED]
      * Type : statuses, statusesMin et statusesAll
      */
@@ -648,7 +643,7 @@ class ApiProjetController extends AbstractController
 
       $facets = $result1["facets"];
       /** Modules. */
-      $frontend=$backend=$autre=$erreur=$nombreAnomalie= 0;
+      $frontend=$backend=$autre=$nombreAnomalie= 0;
       foreach ($facets as $facet) {
         $nombreAnomalie++;
         /** On récupère le nombre de signalement par sévérité. */
