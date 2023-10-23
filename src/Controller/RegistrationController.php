@@ -50,9 +50,12 @@ class RegistrationController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/register', name: 'app_register')]
-    public function register(Request $request,
-    UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $em, LoggerInterface $logger): Response
-    {
+    public function register(
+        Request $request,
+        UserPasswordHasherInterface $userPasswordHasher,
+        EntityManagerInterface $em,
+        LoggerInterface $logger
+    ): Response {
         /** On créé un objet utilisateur. */
         $utilisateur = new Utilisateur();
         /** on prépare le formulaire. */
@@ -66,9 +69,9 @@ class RegistrationController extends AbstractController
             $date->setTimezone(new DateTimeZone('Europe/Paris'));
 
             /** je récupére les données du HoneyPot  */
-            $honeyPot=$form->get('email')->getData();
+            $honeyPot = $form->get('email')->getData();
             /** J'enregistre l'url de l'image */
-            $avatar=$form->get('avatar')->getData();
+            $avatar = $form->get('avatar')->getData();
             $utilisateur->setAvatar($avatar);
 
             /** J'enregistre le nom en majuscule */
@@ -78,7 +81,7 @@ class RegistrationController extends AbstractController
             $utilisateur->setPrenom(ucfirst($form->get('prenom')->getData()));
 
             /** J'enregistre en base de données */
-            $courriel=$form->get('courriel')->getData();
+            $courriel = $form->get('courriel')->getData();
             /** On canonise l'adresse. */
             $utilisateur->setCourriel(strtolower($courriel));
 
@@ -97,12 +100,12 @@ class RegistrationController extends AbstractController
             $utilisateur->setDateEnregistrement($date);
 
             if (!empty(trim($honeyPot))) {
-              // Spam detected!
-              $warning = sprintf('🐛 SPAM detected. honeypot content: %s IP: %s', $honeyPot, $request->getClientIp());
-              $logger->warning($warning);
+                // Spam detected!
+                $warning = sprintf('🐛 SPAM detected. honeypot content: %s IP: %s', $honeyPot, $request->getClientIp());
+                $logger->warning($warning);
             } else {
-              $em->persist($utilisateur);
-              $em->flush();
+                $em->persist($utilisateur);
+                $em->flush();
             }
 
             /** Connexion automatique ? */
@@ -110,9 +113,9 @@ class RegistrationController extends AbstractController
 
             /** On préfére redirider l'utilisateur sur la page de bienvenu des nouveaux tiliasteur */
             return $this->render('welcome/index.html.twig', [
-              'nom'=>$utilisateur->getNom(),
-              'prenom'=>$utilisateur->getPrenom(),
-              'courriel'=>$utilisateur->getCourriel(),
+              'nom' => $utilisateur->getNom(),
+              'prenom' => $utilisateur->getPrenom(),
+              'courriel' => $utilisateur->getCourriel(),
               'version' => $this->getParameter('version'),
               'dateCopyright' => \date('Y')
             ]);
@@ -138,9 +141,9 @@ class RegistrationController extends AbstractController
     public function welcome()
     {
         return $this->render('welcome/index.html.twig', [
-            'nom' =>'HADJADJ',
-            'prenom' =>'Laurent',
-            'courriel' =>'laurent.hadjadj@ma-petite-entreprise.fr',
+            'nom' => 'HADJADJ',
+            'prenom' => 'Laurent',
+            'courriel' => 'laurent.hadjadj@ma-petite-entreprise.fr',
             'version' => $this->getParameter('version'),
             'dateCopyright' => \date('Y')
         ]);

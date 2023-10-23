@@ -36,7 +36,8 @@ class RepartitionController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function __construct( private ManagerRegistry $doctrine) {
+    public function __construct(private ManagerRegistry $doctrine)
+    {
         $this->doctrine = $doctrine;
     }
 
@@ -54,51 +55,54 @@ class RepartitionController extends AbstractController
     #[Route('/projet/repartition', name: 'projet_repartition')]
     public function projetRepartition(Request $request): Response
     {
-      /** On on vérifie si on a activé le mode test */
-      if (is_null($request->get('mode'))) {
-        $mode="null";
-      } else {
-        $mode = $request->get('mode');
-      }
+        /** On on vérifie si on a activé le mode test */
+        if (is_null($request->get('mode'))) {
+            $mode = "null";
+        } else {
+            $mode = $request->get('mode');
+        }
 
-      /** On récupère la clé du projet */
-      $mavenKey = $request->get('mavenKey');
-      $response = new JsonResponse();
+        /** On récupère la clé du projet */
+        $mavenKey = $request->get('mavenKey');
+        $response = new JsonResponse();
 
-      /** On teste si la clé est valide */
-      if (is_null($mavenKey) && $mode==="TEST") {
-        return $response->setData(["message" => "la clé maven est vide!", Response::HTTP_BAD_REQUEST]);
-      }
+        /** On teste si la clé est valide */
+        if (is_null($mavenKey) && $mode === "TEST") {
+            return $response->setData(["message" => "la clé maven est vide!", Response::HTTP_BAD_REQUEST]);
+        }
 
-      /** On enregistre le nom du projet */
-      $app=explode(":", $mavenKey);
+        /** On enregistre le nom du projet */
+        $app = explode(":", $mavenKey);
 
-      /** On se connecte à la base pour connaitre la version du dernier setup pour le projet. */
-      $reponse = $this->doctrine->getManager('secondary')
-                      ->getRepository(Repartition::class)
-                      ->findBy(['mavenKey' => $mavenKey],['setup' => 'DESC'],1);
+        /** On se connecte à la base pour connaitre la version du dernier setup pour le projet. */
+        $reponse = $this->doctrine->getManager('secondary')
+                        ->getRepository(Repartition::class)
+                        ->findBy(['mavenKey' => $mavenKey], ['setup' => 'DESC'], 1);
 
-      if (empty($reponse)) {
-          $setup="NaN";
-          $statut="NaN";
-          } else {
-              $setup=$reponse[0]->getSetup();
-              $statut="actuel";
-          }
+        if (empty($reponse)) {
+            $setup = "NaN";
+            $statut = "NaN";
+        } else {
+            $setup = $reponse[0]->getSetup();
+            $statut = "actuel";
+        }
 
-      if ($mode==="TEST") {
-        return $response->setData(
-          ['monApplication' => $app[1], 'mavenKey' => $mavenKey,
-          'setup' =>  $setup, 'statut'=> $statut, Response::HTTP_OK]);
-      }
+        if ($mode === "TEST") {
+            return $response->setData(
+                ['monApplication' => $app[1], 'mavenKey' => $mavenKey,
+          'setup' =>  $setup, 'statut' => $statut, Response::HTTP_OK]
+            );
+        }
 
-      return $this->render('projet/details.html.twig',
-      [
-          'monApplication' => $app[1],
-          'mavenKey' => $mavenKey,
-          'setup' =>  $setup,
-          'statut'=> $statut,
-          'version' => $this->getParameter('version'), 'dateCopyright' => \date('Y')
-      ]);
+        return $this->render(
+            'projet/details.html.twig',
+            [
+            'monApplication' => $app[1],
+            'mavenKey' => $mavenKey,
+            'setup' =>  $setup,
+            'statut' => $statut,
+            'version' => $this->getParameter('version'), 'dateCopyright' => \date('Y')
+      ]
+        );
     }
 }

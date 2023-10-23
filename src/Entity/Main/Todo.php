@@ -19,7 +19,6 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TodoRepository::class)]
 class Todo
-
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]

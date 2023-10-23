@@ -32,7 +32,7 @@ class ListeProjet
     private $name;
 
     #[ORM\Column(type: 'json')]
-    private $tags=[];
+    private $tags = [];
 
     #[ORM\Column(type: 'string', length: 8)]
     private $visibility;
@@ -118,15 +118,15 @@ class ListeProjet
         return $this;
     }
 
-     /**
-     * [Description for getTags]
-     *
-     * @return array
-     *
-     * Created at: 02/01/2023, 18:11:23 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
+    /**
+    * [Description for getTags]
+    *
+    * @return array
+    *
+    * Created at: 02/01/2023, 18:11:23 (Europe/Paris)
+    * @author     Laurent HADJADJ <laurent_h@me.com>
+    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+    */
     public function getTags(): array
     {
         return $this->tags;

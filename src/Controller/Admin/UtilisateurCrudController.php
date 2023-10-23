@@ -21,7 +21,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 
-
 /**
  * [Description UtilisateurCrudController]
  */
@@ -36,7 +35,7 @@ class UtilisateurCrudController extends AbstractCrudController
      */
     public function __construct(private EntityManagerInterface $emm)
     {
-    $this->emm = $emm;
+        $this->emm = $emm;
     }
 
     /**
@@ -115,7 +114,7 @@ class UtilisateurCrudController extends AbstractCrudController
             ->hideOnForm();
         yield EmailField::new('courriel');
 
-        $key1=['Gestionnaire', 'Batch', 'Collecte','Utilisateur' ];
+        $key1 = ['Gestionnaire', 'Batch', 'Collecte','Utilisateur' ];
         $value1 = ['ROLE_GESTIONNAIRE','ROLE_BATCH', 'ROLE_COLLECTE','ROLE_UTILISATEUR'];
         yield ChoiceField::new('roles')
             ->setChoices(array_combine($key1, $value1))
@@ -126,18 +125,18 @@ class UtilisateurCrudController extends AbstractCrudController
             ->setHelp('Sélectionne le ou les rôles.');
 
         /** On récupère la liste des équipes */
-        $sql="SELECT titre, description FROM equipe ORDER BY titre ASC";
+        $sql = "SELECT titre, description FROM equipe ORDER BY titre ASC";
         $l = $this->emm->getConnection()->prepare($sql)->executeQuery();
         $resultat = $l->fetchAllAssociative();
         /** si la table est vide */
         if (empty($resultat)) {
-            $resultat=[["titre" => "Aucune", "description" => "Aucune équipe."]];
+            $resultat = [["titre" => "Aucune", "description" => "Aucune équipe."]];
         }
-        $key=[];
-        $val=[];
+        $key = [];
+        $val = [];
         foreach($resultat as $value) {
-            array_push($key,$value['titre']." - ".$value['description']);
-            array_push($val,$value['titre']);
+            array_push($key, $value['titre']." - ".$value['description']);
+            array_push($val, $value['titre']);
         }
 
         yield ChoiceField::new('equipe')
@@ -174,7 +173,7 @@ class UtilisateurCrudController extends AbstractCrudController
         if (!$entityInstance instanceof Utilisateur) {
             return;
         }
-        $entityInstance->setdateModification(new \DateTimeImmutable);
+        $entityInstance->setdateModification(new \DateTimeImmutable());
         parent::updateEntity($em, $entityInstance);
     }
 

@@ -22,21 +22,20 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
  */
 class EquipeCrudController extends AbstractCrudController
 {
-
-  /**
-   * [Description for __construct]
-   * emm = EntityManagerInterface
-   *
-   * Created at: 12/02/2023, 10:08:05 (Europe/Paris)
-   * @author    Laurent HADJADJ <laurent_h@me.com>
-   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
-  public function __construct(
-    private EntityManagerInterface $emm,
-    private RequestStack $requestStack,)
-    {
-    $this->emm = $emm;
-    $this->requestStack = $requestStack;
+    /**
+     * [Description for __construct]
+     * emm = EntityManagerInterface
+     *
+     * Created at: 12/02/2023, 10:08:05 (Europe/Paris)
+     * @author    Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function __construct(
+        private EntityManagerInterface $emm,
+        private RequestStack $requestStack,
+    ) {
+        $this->emm = $emm;
+        $this->requestStack = $requestStack;
     }
 
     /**
@@ -134,7 +133,7 @@ class EquipeCrudController extends AbstractCrudController
             return;
         }
 
-        $nom=$entityInstance->getTitre();
+        $nom = $entityInstance->getTitre();
         //$cleanNom=preg_replace("/[^a-zA-Z0-9\- ]+/", "", mb_strtoupper($nom));
         $entityInstance->setTitre($nom);
         $entityInstance->setDateEnregistrement(new \DateTimeImmutable());
@@ -143,7 +142,7 @@ class EquipeCrudController extends AbstractCrudController
 
         /** Si l'attribut 'titre' n'existe pas, on enregistre.*/
         if (!$record) {
-          parent::persistEntity($em, $entityInstance);
+            parent::persistEntity($em, $entityInstance);
         }
     }
 

@@ -18,6 +18,6 @@ use Symfony\Component\Validator\Constraint;
 #[\Attribute]
 class ContainsPortefeuilleUnique extends Constraint
 {
-    public string $message ='[Portefeuille] La valeur "{{ string }}" existe déjà.';
+    public string $message = '[Portefeuille] La valeur "{{ string }}" existe déjà.';
     public string $mode = 'strict';
 }

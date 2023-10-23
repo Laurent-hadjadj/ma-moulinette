@@ -14,7 +14,6 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[UniqueEntity(fields: ['courriel'], message: 'There is already an account with this courriel')]
 class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 {
-
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
@@ -36,20 +35,20 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private $courriel;
 
     #[ORM\Column(type: 'json')]
-    private $roles= [];
+    private $roles = [];
 
     #[ORM\Column(type: 'json')]
-    private $equipe= [];
+    private $equipe = [];
 
     #[ORM\Column(type: 'string', length: 64)]
     private $password;
 
-    #[ORM\Column(type: 'boolean', nullable: false,  options: ['default' => 0]) ]
+    #[ORM\Column(type: 'boolean', nullable: false, options: ['default' => 0]) ]
     private $actif;
 
     # Préférences de l'utilisateur
     #[ORM\Column(type: 'json', nullable: true)]
-    private $preference=[];
+    private $preference = [];
 
     #[ORM\Column(type: 'datetime', nullable: true)]
     private $dateModification;

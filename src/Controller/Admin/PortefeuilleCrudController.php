@@ -29,7 +29,7 @@ class PortefeuilleCrudController extends AbstractCrudController
      */
     public function __construct(private EntityManagerInterface $emm)
     {
-    $this->emm = $emm;
+        $this->emm = $emm;
     }
 
     /**
@@ -99,17 +99,17 @@ class PortefeuilleCrudController extends AbstractCrudController
         ->setHelp('Nom de la liste des projets.');
 
         // On récupère la liste des équipes
-        $sql="SELECT titre, description FROM equipe ORDER BY titre ASC";
+        $sql = "SELECT titre, description FROM equipe ORDER BY titre ASC";
         $l = $this->emm->getConnection()->prepare($sql)->executeQuery();
         $resultat = $l->fetchAllAssociative();
-        $i=0;
+        $i = 0;
         /** si la table est vide */
         if (empty($resultat)) {
-            $resultat=[["titre" => "Aucune", "description" => "Aucune équipe."]];
+            $resultat = [["titre" => "Aucune", "description" => "Aucune équipe."]];
         }
         foreach($resultat as $value) {
-            $key1[$i]=$value['titre']." - ".$value['description'];
-            $val1[$i]=$value['titre'];
+            $key1[$i] = $value['titre']." - ".$value['description'];
+            $val1[$i] = $value['titre'];
             $i++;
         }
 
@@ -119,20 +119,20 @@ class PortefeuilleCrudController extends AbstractCrudController
             ->setHelp('Nom de l\'équipe en charge des projets.');
 
         /** On récupère la liste des projets */
-        $sql="SELECT name, maven_key FROM liste_projet ORDER BY name ASC";
+        $sql = "SELECT name, maven_key FROM liste_projet ORDER BY name ASC";
         $l = $this->emm->getConnection()->prepare($sql)->executeQuery();
         $resultat = $l->fetchAllAssociative();
         /**
          * Si la liste des projets vide on renvoi un tableau vide
          */
-        $i=0;
+        $i = 0;
         if (empty($resultat)) {
-            $key2=['Aucun Projet'];
-            $val2=[''];
+            $key2 = ['Aucun Projet'];
+            $val2 = [''];
         } else {
             foreach($resultat as $value) {
-                $key2[$i]=$value['name'];
-                $val2[$i]=$value['maven_key'];
+                $key2[$i] = $value['name'];
+                $val2[$i] = $value['maven_key'];
                 $i++;
             }
         }
@@ -171,7 +171,7 @@ class PortefeuilleCrudController extends AbstractCrudController
             return;
         }
         /** On récèpere le titre du portefeuille */
-        $titre=$entityInstance->getTitre();
+        $titre = $entityInstance->getTitre();
 
         /** On enregistre le données que l'on veut modifier */
         $entityInstance->setTitre(mb_strtoupper($titre));
@@ -182,7 +182,7 @@ class PortefeuilleCrudController extends AbstractCrudController
 
         /** Si la valeur de l'attribut 'titre' n'existe pas, on enregistre.*/
         if (is_null($record)) {
-          parent::persistEntity($em, $entityInstance);
+            parent::persistEntity($em, $entityInstance);
         }
     }
 
@@ -204,18 +204,20 @@ class PortefeuilleCrudController extends AbstractCrudController
             return;
         }
         /** On récèpere le titre du portefeuille */
-        $titre=$entityInstance->getTitre();
+        $titre = $entityInstance->getTitre();
 
         /** On ajoute la date de modification  */
-        $entityInstance->setdateModification(new \DateTimeImmutable);
+        $entityInstance->setdateModification(new \DateTimeImmutable());
 
         /** retourne 1 ou null */
         $record = $this->emm->getRepository(Portefeuille::class)->findOneBy(['titre' => mb_strtoupper($titre)]);
 
         /** Si la valeur de l'attribut 'titre' n'existe pas, on enregistre.*/
         if (is_null($record)) {
-          parent::persistEntity($em, $entityInstance);
-        } else { $entityInstance->setId(0); }
+            parent::persistEntity($em, $entityInstance);
+        } else {
+            $entityInstance->setId(0);
+        }
     }
 
 }

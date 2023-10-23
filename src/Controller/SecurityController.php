@@ -27,18 +27,19 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
  */
 class SecurityController extends AbstractController
 {
-
-  /**
-   * [Description for __construct]
-   *
-   * @param mixed
-   *
-   * Created at: 18/10/2023 16:43:54 (Europe/Paris)
-   * @author    Laurent HADJADJ <laurent_h@me.com>
-   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
-  public function __construct( private UrlGeneratorInterface $router,
-    ) { }
+    /**
+     * [Description for __construct]
+     *
+     * @param mixed
+     *
+     * Created at: 18/10/2023 16:43:54 (Europe/Paris)
+     * @author    Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function __construct(
+        private UrlGeneratorInterface $router,
+    ) {
+    }
 
     /**
      * [Description for relogin]
