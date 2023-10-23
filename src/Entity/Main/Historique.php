@@ -211,22 +211,22 @@ class Historique
         }
     */
 
-  /**
-   * [Description for setMavenKey]
-   *
-   * @param string $mavenKey
-   *
-   * @return self
-   *
-   * Created at: 02/01/2023, 17:58:55 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
-  public function setMavenKey(string $mavenKey): self
-      {
-          $this->mavenKey = $mavenKey;
-          return $this;
-      }
+    /**
+     * [Description for setMavenKey]
+     *
+     * @param string $mavenKey
+     *
+     * @return self
+     *
+     * Created at: 02/01/2023, 17:58:55 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function setMavenKey(string $mavenKey): self
+    {
+        $this->mavenKey = $mavenKey;
+        return $this;
+    }
 
     /**
      * [Description for setVersion]

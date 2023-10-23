@@ -27,11 +27,11 @@ class BatchTraitement
 
     /** Démarage ? Manuel ou automatique */
     #[ORM\Column(type: 'string', length: 16, )]
-    private $demarrage="Manuel";
+    private $demarrage = "Manuel";
 
     /** Résultat  */
-    #[ORM\Column(type: 'boolean' )]
-    private $resultat=0;
+    #[ORM\Column(type: 'boolean')]
+    private $resultat = 0;
 
     /** Nom du traitement */
     #[ORM\Column(type: 'string', length: 32)]
@@ -39,11 +39,11 @@ class BatchTraitement
 
     /** Nom du portefeuille de projet */
     #[ORM\Column(type: 'string', length: 32)]
-    private $portefeuille="Aucun";
+    private $portefeuille = "Aucun";
 
     /** Nombre de projet */
     #[ORM\Column(type: 'integer')]
-    private $nombreProjet=0;
+    private $nombreProjet = 0;
 
     #[ORM\Column(type: 'string', length: 128)]
     private $responsable;
@@ -374,4 +374,4 @@ class BatchTraitement
 
         return $this;
     }
-    }
+}

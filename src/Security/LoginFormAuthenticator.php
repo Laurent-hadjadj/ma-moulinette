@@ -44,8 +44,8 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
 
     public function __construct(
         UtilisateurRepository $utilisateurRepository,
-        UrlGeneratorInterface $urlGenerator)
-    {
+        UrlGeneratorInterface $urlGenerator
+    ) {
         $this->utilisateurRepository = $utilisateurRepository;
         $this->urlGenerator = $urlGenerator;
     }
@@ -69,17 +69,16 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
              * 2 - On ajoute le support de "Remember-me" ;
              */
 
-            new UserBadge($courriel, function($utilisateurIdentifier)
-            {
-               //'actif => TRUE
+            new UserBadge($courriel, function ($utilisateurIdentifier) {
+                //'actif => TRUE
                 $utilisateur = $this->utilisateurRepository
-                    ->findOneBy(['courriel' => $utilisateurIdentifier, 'actif'=>true]);
-                    if (!$utilisateur) {
+                    ->findOneBy(['courriel' => $utilisateurIdentifier, 'actif' => true]);
+                if (!$utilisateur) {
                     throw new UserNotFoundException();
                 }
                 return $utilisateur;
             }),
-                new PasswordCredentials($motDePasse),
+            new PasswordCredentials($motDePasse),
             [
                 new CsrfTokenBadge('authenticate', $request->request->get('_csrf_token')),
                 (new RememberMeBadge())->enable(),

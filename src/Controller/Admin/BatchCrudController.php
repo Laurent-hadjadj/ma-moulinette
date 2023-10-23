@@ -33,10 +33,9 @@ class BatchCrudController extends AbstractCrudController
     public function __construct(
         private EntityManagerInterface $emm,
         private TokenStorageInterface $token
-        )
-    {
+    ) {
         $this->emm = $emm;
-        $this->token= $token;
+        $this->token = $token;
     }
 
     /**
@@ -109,21 +108,21 @@ class BatchCrudController extends AbstractCrudController
         ->setHelp('Nom du traitement de données.');
 
         /** On récupère la liste des projets */
-        $sql="SELECT titre FROM portefeuille ORDER BY titre ASC";
+        $sql = "SELECT titre FROM portefeuille ORDER BY titre ASC";
         $l = $this->emm->getConnection()->prepare($sql)->executeQuery();
         $resultat = $l->fetchAllAssociative();
         /**
          * Si la liste des portefeuilles est vide on renvoi "Aucun"
          */
-        $i=0;
+        $i = 0;
 
         if (empty($resultat)) {
-            $key=["aucun"];
-            $val=["Aucun"];
+            $key = ["aucun"];
+            $val = ["Aucun"];
         } else {
             foreach($resultat as $value) {
-                $key[$i]=$value['titre'];
-                $val[$i]=$value['titre'];
+                $key[$i] = $value['titre'];
+                $val[$i] = $value['titre'];
                 $i++;
             }
         }
@@ -172,16 +171,16 @@ class BatchCrudController extends AbstractCrudController
             return;
         }
         /** On récèpere le nom du batch */
-        $titre=$entityInstance->getTitre();
+        $titre = $entityInstance->getTitre();
 
         /** On récupère l'objet user */
         $user = $this->token->getToken()->getUser();
 
         //** On récupère le nombre de projet du portefeuille */
-        $sql="SELECT liste FROM portefeuille ORDER BY titre ASC";
+        $sql = "SELECT liste FROM portefeuille ORDER BY titre ASC";
         $l = $this->emm->getConnection()->prepare($sql)->executeQuery();
         $r = $l->fetchAssociative();
-        $nombreProjet=count(json_decode($r['liste']));
+        $nombreProjet = count(json_decode($r['liste']));
 
         /** On enregistre le données que l'on veut modifier */
         $entityInstance->setTitre(mb_strtoupper($titre));
@@ -211,13 +210,13 @@ class BatchCrudController extends AbstractCrudController
             return;
         }
         /** On ajoute la date de modification  */
-        $entityInstance->setdateModification(new \DateTimeImmutable);
+        $entityInstance->setdateModification(new \DateTimeImmutable());
 
         //** On récupère le nombre de projet du portefeuille */
-        $sql="SELECT liste FROM portefeuille ORDER BY titre ASC";
+        $sql = "SELECT liste FROM portefeuille ORDER BY titre ASC";
         $l = $this->emm->getConnection()->prepare($sql)->executeQuery();
         $r = $l->fetchAssociative();
-        $nombreProjet=count(json_decode($r['liste']));
+        $nombreProjet = count(json_decode($r['liste']));
         parent::updateEntity($em, $entityInstance);
     }
 

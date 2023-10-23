@@ -23,59 +23,59 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class ContainsEquipeUniqueValidator extends ConstraintValidator
 {
-  /**
-   * [Description for __construct]
-   * EntityManagerInterface $em
-   *
-   * @param  private
-   *
-   * Created at: 13/02/2023, 09:22:44 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
-  public function __construct(private EntityManagerInterface $em)
-  {
-    $this->em = $em;
-  }
-
-  /**
-   * [Description for validate]
-   * Création d'une violation sur les valeurs Uniques
-   *
-   * @param mixed $value
-   * @param Constraint $constraint
-   *
-   * @return void
-   *
-   * Created at: 13/02/2023, 09:23:06 (Europe/Paris)
-   * @author    Laurent HADJADJ <laurent_h@me.com>
-   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
-  public function validate($value, Constraint $constraint): void
-  {
-    /** La contrainte s'applique uniquement à la class équipe */
-    if (!$constraint instanceof ContainsEquipeUnique) {
-        throw new UnexpectedTypeException($constraint, ContainsEquipeUnique::class);
+    /**
+     * [Description for __construct]
+     * EntityManagerInterface $em
+     *
+     * @param  private
+     *
+     * Created at: 13/02/2023, 09:22:44 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function __construct(private EntityManagerInterface $em)
+    {
+        $this->em = $em;
     }
 
-    /** La valeur ne doit pas $etre null ou vide. */
-    if (null === $value || '' === $value) {
-      return;
-    }
+    /**
+     * [Description for validate]
+     * Création d'une violation sur les valeurs Uniques
+     *
+     * @param mixed $value
+     * @param Constraint $constraint
+     *
+     * @return void
+     *
+     * Created at: 13/02/2023, 09:23:06 (Europe/Paris)
+     * @author    Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function validate($value, Constraint $constraint): void
+    {
+        /** La contrainte s'applique uniquement à la class équipe */
+        if (!$constraint instanceof ContainsEquipeUnique) {
+            throw new UnexpectedTypeException($constraint, ContainsEquipeUnique::class);
+        }
 
-    /** La valeur doit être de type string. */
-    if (!is_string($value)) {
-      throw new UnexpectedValueException($value, 'string');
-    }
+        /** La valeur ne doit pas $etre null ou vide. */
+        if (null === $value || '' === $value) {
+            return;
+        }
 
-    /** On cherche si la valeur exsite déjà.  */
-    $record = $this->em->getRepository(Equipe::class)->findOneBy(['titre' => mb_strtoupper($value)]);
+        /** La valeur doit être de type string. */
+        if (!is_string($value)) {
+            throw new UnexpectedValueException($value, 'string');
+        }
 
-    /** Si la valeur existe, on affiche une erreur. */
-    if ($record) {
-      $this->context->buildViolation($constraint->message)
-          ->setParameter('{{ string }}', $value)
-          ->addViolation();
+        /** On cherche si la valeur exsite déjà.  */
+        $record = $this->em->getRepository(Equipe::class)->findOneBy(['titre' => mb_strtoupper($value)]);
+
+        /** Si la valeur existe, on affiche une erreur. */
+        if ($record) {
+            $this->context->buildViolation($constraint->message)
+                ->setParameter('{{ string }}', $value)
+                ->addViolation();
+        }
     }
-  }
 }

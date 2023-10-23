@@ -29,8 +29,8 @@ class Batch
     private $id;
 
     /** Statut d'activité du traitement */
-    #[ORM\Column(type: 'boolean' )]
-    private $statut=false;
+    #[ORM\Column(type: 'boolean')]
+    private $statut = false;
 
     /** Nom du traitement */
     #[ORM\Column(type: 'string', length: 32, unique: true)]
@@ -49,11 +49,11 @@ class Batch
     /** Nom du portefeuille de projet */
     #[ORM\Column(type: 'string', length: 32, unique: true)]
     #[AcmeAssert\ContainsBatchUnique()]
-    private $portefeuille="Aucun";
+    private $portefeuille = "Aucun";
 
     /** Nombre de projet */
     #[ORM\Column(type: 'integer')]
-    private $nombreProjet=0;
+    private $nombreProjet = 0;
 
     /** Etat d'éxection (start, pending, error, end) */
     #[ORM\Column(type: 'string', length: 8, nullable: true)]

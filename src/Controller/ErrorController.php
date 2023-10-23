@@ -26,17 +26,16 @@ use Twig\Environment;
 
 class ErrorController extends AbstractController
 {
+    #[Route('/error', name: 'error', methods: ['GET'])]
+    public function show(FlattenException $exception, Environment $env): Response
+    {
+        /** On affiche la page correspondant au code HTTP */
+        $view = "bundles/TwigBundle/Exception/error{$exception->getStatusCode()}.html.twig";
+        if (!$env->getLoader()->exists($view)) {
+            $view = "bundles/TwigBundle/Exception/error.html.twig";
+        }
 
-  #[Route('/error', name: 'error', methods: ['GET'])]
-  public function show(FlattenException $exception, Environment $env): Response
-  {
-    /** On affiche la page correspondant au code HTTP */
-    $view = "bundles/TwigBundle/Exception/error{$exception->getStatusCode()}.html.twig";
-    if (!$env->getLoader()->exists($view)) {
-      $view = "bundles/TwigBundle/Exception/error.html.twig";
+        /** On affiche la page d'erreur */
+        return $this->render($view);
     }
-
-    /** On affiche la page d'erreur */
-    return $this->render($view);
-  }
 }

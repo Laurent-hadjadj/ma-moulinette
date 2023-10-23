@@ -19,7 +19,6 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: NoSonarRepository::class)]
 class NoSonar
-
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]

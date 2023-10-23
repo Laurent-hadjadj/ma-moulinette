@@ -35,7 +35,7 @@ class Portefeuille
     private $equipe;
 
     #[ORM\Column(type: 'json')]
-    private $liste= [];
+    private $liste = [];
 
     #[ORM\Column(type: 'datetime', nullable: true)]
     private $dateModification;

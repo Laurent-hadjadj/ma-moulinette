@@ -18,6 +18,6 @@ use Symfony\Component\Validator\Constraint;
 #[\Attribute]
 class ContainsBatchUnique extends Constraint
 {
-    public string $message ='[Traitement] La valeur "{{ string }}" existe déjà.';
+    public string $message = '[Traitement] La valeur "{{ string }}" existe déjà.';
     public string $mode = 'strict';
 }
