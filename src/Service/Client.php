@@ -30,7 +30,7 @@ class Client
     private HttpClientInterface $client,
     private ParameterBagInterface $params,
     private LoggerInterface $logger,
-	) {
+  ) {
       $this->client = $client;
       $this->params = $params;
       $this->logger = $logger;
@@ -65,7 +65,8 @@ class Client
       if ($response->getStatusCode() == 401) {
         throw new \UnexpectedValueException('Erreur d\'Authentification. La clé n\'est pas correcte.');
       } else {
-        throw new \UnexpectedValueException('Retour de la réponse différent de ce qui est prévu. Erreur ' . $response->getStatusCode());
+        throw new \UnexpectedValueException('Retour de la réponse différent de ce qui est prévu. Erreur '
+          . $response->getStatusCode());
       }
     }
 
