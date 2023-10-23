@@ -56,6 +56,7 @@
         "twig/twig": "3.7.1"
     },
     "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.35",
         "justinrainbow/json-schema": "5.2.13",
         "phpunit/phpunit": "10.4.1",
         "symfony/browser-kit": "6.3.2",
