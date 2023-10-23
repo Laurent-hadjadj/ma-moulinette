@@ -39,6 +39,8 @@ settings.json
 sonar-project.properties
 ###< audit ###
 /tools/
+.php-cs-fixer.cache
+.php-cs-fixer.dist.php
 ###< php-cs-fixe ###
 
 ###> php-cs-fixe ###
