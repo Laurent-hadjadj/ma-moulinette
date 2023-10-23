@@ -38,6 +38,10 @@ settings.json
 .VSCodeCounter/
 sonar-project.properties
 ###< audit ###
+/tools/
+###< php-cs-fixe ###
+
+###> php-cs-fixe ###
 
 ###> sqlite ###
 /var/data-rec.db
