@@ -369,7 +369,6 @@ class HomeController extends AbstractController
      */
     public function contruitMaRequete($liste, $mavenkey, $index)
     {
-        $l = $liste;
         $m = $mavenkey[0];
         $l = "";
         $mavenKey = "maven_key='".$m."'";
@@ -383,8 +382,7 @@ class HomeController extends AbstractController
 
         /** On supprime le dernier OR */
         $rtrimOr = rtrim($l, " OR ");
-        $where = $rtrimOr.')';
-        return $where;
+        return $rtrimOr.')';
     }
 
 
@@ -421,7 +419,7 @@ class HomeController extends AbstractController
             $keys = array_values($listeVersion);
             $liste = [];
             for ($i = 0; $i < count($keys); $i++) {
-                $r = self::contruitMaRequete($keys, array_keys($keys[$i]), $i);
+                $r = static::contruitMaRequete($keys, array_keys($keys[$i]), $i);
 
                 $sql = "SELECT DISTINCT
             maven_key as mavenkey, nom_projet as nom,
@@ -478,7 +476,7 @@ class HomeController extends AbstractController
         $date->setTimezone(new DateTimeZone(static::$europeParis));
 
         /** On récupère les properties des projets et profils */
-        $properties = self::getProperties();
+        $properties = static::getProperties();
         $dateVerificationProjet = "false";
         $dateVerificationProfil = "false";
 
@@ -499,9 +497,9 @@ class HomeController extends AbstractController
         if (date_diff($dateModificationProjet, $date)->format('%a') >=
         $this->getParameter('maj.projet')) {
             /** On récupère le nombre de projet depuis le serveur sonar */
-            $projetSonar = self::countProjetSonar($client);
+            $projetSonar = static::countProjetSonar($client);
             /** On récupère le nombre de projet en base */
-            $projetBD = self::countProjetBD();
+            $projetBD = static::countProjetBD();
             $dateVerificationProjet = "true";
         } else {
             /** Sinon, on récupère les valeurs de la table de properties */
@@ -516,9 +514,9 @@ class HomeController extends AbstractController
         if (date_diff($dateModificationProfil, $date)->format('%a') >=
         $this->getParameter('maj.profil')) {
             /** On récupère le nombre de profil en base. */
-            $profilBD = self::countProfilBD();
+            $profilBD = static::countProfilBD();
             /** On récupère le nombre de projet depuis le serveur sonar */
-            $profilSonar = self::countProfilSonar($client);
+            $profilSonar = static::countProfilSonar($client);
             $dateVerificationProfil = "true";
         } else {
             /** Sinon, on récupère les valeurs de la table de properties */
@@ -584,7 +582,7 @@ class HomeController extends AbstractController
 
         /** ***************** VERSION *** ************************* */
         /** On récupère le numero de version en base */
-        $versionBD = self::getVersion();
+        $versionBD = static::getVersion();
         /** On récupère la version de l'application */
         $versionAPP = $this->getParameter('version');
         /** si la dernière version en base est inférieure, on renvoie une alerte ; */
@@ -596,9 +594,9 @@ class HomeController extends AbstractController
         }
 
         /** On va chercher les projets favoris ou les versions des projets */
-        $t = self::getListeFavori($security, $request);
+        $t = static::getListeFavori($security, $request);
         $data1 = json_decode($t->getContent());
-        $t = self::getListeVersion($security, $request);
+        $t = static::getListeVersion($security, $request);
         $data2 = json_decode($t->getContent());
 
         /** On a choisi la liste des projets favori
