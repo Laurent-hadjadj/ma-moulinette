@@ -7,12 +7,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<MaMoulinette>
- *
- * @method MaMoulinette|null find($id, $lockMode = null, $lockVersion = null)
- * @method MaMoulinette|null findOneBy(array $criteria, array $orderBy = null)
- * @method MaMoulinette[]    findAll()
- * @method MaMoulinette[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * [Description MaMoulinetteRepository]
  */
 class MaMoulinetteRepository extends ServiceEntityRepository
 {
@@ -38,5 +33,23 @@ class MaMoulinetteRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
+
+    /**
+     * [Description for getVersion]
+     * Récupère la version de Ma Moulinette
+     * @return array
+     *
+     * Created at: 27/10/2023 15:45:02 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function getVersion(): array
+    {
+      $sql = "SELECT version
+      FROM ma_moulinette
+      ORDER BY date_version DESC LIMIT 1";
+      $select=$this->getEntityManager()->getConnection()->prepare($sql);
+      return  $select->executeQuery()->fetchAllAssociative();
+  }
 
 }

@@ -30,7 +30,11 @@ use Psr\Log\LoggerInterface;
 
 /** Accès aux tables SLQLite*/
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\DBAL\Connection;
+use App\Entity\Main\ListeProjet;
+use App\Entity\Main\Profiles;
+use App\Entity\Main\Properties;
+use App\Entity\Main\historique;
+use App\Entity\Main\MaMoulinette;
 
 /** API */
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -45,7 +49,6 @@ class HomeController extends AbstractController
     public static $sonarUrl = "sonar.url";
     public static $dateFormat = "Y-m-d H:i:s";
     public static $europeParis = "Europe/Paris";
-    public static $regex = "/\s+/u";
 
     /**
      * [Description for __construct]
@@ -57,11 +60,9 @@ class HomeController extends AbstractController
     public function __construct(
         private LoggerInterface $logger,
         private EntityManagerInterface $em,
-        private Connection $connection,
     ) {
         $this->logger = $logger;
         $this->em = $em;
-        $this->connection = $connection;
     }
 
     /**
@@ -79,8 +80,9 @@ class HomeController extends AbstractController
         /**
          * On récupère le nombre de projet depuis la table liste_projet
          */
-        $sql = "SELECT COUNT(*) as total from liste_projet";
-        $r = $this->connection->fetchAllAssociative($sql);
+        $repository = $this->em->getRepository(ListeProjet::class);
+        $r = $repository->countProjet();
+
         if (!$r) {
             $projet = 0;
         } else {
@@ -138,8 +140,9 @@ class HomeController extends AbstractController
     private function countProfilBD(): int
     {
         /** On récupère le nombre de profil depuis la table profils */
-        $sql = "SELECT COUNT(*) as total from profiles";
-        $r = $this->connection->fetchAllAssociative($sql);
+        $repository = $this->em->getRepository(Profiles::class);
+        $r = $repository->countProfiles();
+
         if (!$r) {
             $profil = 0;
         } else {
@@ -191,24 +194,16 @@ class HomeController extends AbstractController
         $date = new DateTime();
         $date->setTimezone(new DateTimeZone(static::$europeParis));
 
-        $dateModificationProjet = $date->format(static::$dateFormat);
-        $dateModificationProfil = $date->format(static::$dateFormat);
+        $map=['bd'=>$bd, 'sonar'=>$sonar,
+              'dateModificationProjet'=> $date->format(static::$dateFormat),
+              'dateModificationProfil'=> $date->format(static::$dateFormat)];
+
+        $repository = $this->em->getRepository(Properties::class);
 
         if ($type === "projet") {
-            $sql = "UPDATE properties
-        SET projet_bd= $bd,
-            projet_sonar=$sonar,
-            date_modification_projet = '$dateModificationProjet'
-        WHERE type = 'properties'";
-            $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
-
+          $repository->updateProjetProperties($map);
         } else {
-            $sql = "UPDATE properties
-        SET profil_bd= $bd,
-            profil_sonar=$sonar,
-            date_modification_profil = '$dateModificationProfil'
-        WHERE type = 'properties'";
-            $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
+          $repository->updateProfilProperties($map);
         }
     }
 
@@ -225,8 +220,8 @@ class HomeController extends AbstractController
     private function getProperties(): array
     {
         /** On récupère le nombre de projet et de profil */
-        $sql = "SELECT * FROM properties WHERE type='properties'";
-        $r = $this->connection->fetchAllAssociative($sql);
+        $repository = $this->em->getRepository(Properties::class);
+        $r = $repository->getProperties('properties');
 
         /** La table est vide. On initialise les valeurs */
         if (!$r) {
@@ -238,14 +233,15 @@ class HomeController extends AbstractController
             $dateCreationFormat = $date->format(static::$dateFormat);
             $projetModificationDate = $date->format(static::$dateFormat);
             $profilModificationDate = $date->format(static::$dateFormat);
+            $map=[
+              'projetBD'=>$projetBD, 'projetSonar'=>$projetSonar,
+              'profilBD'=>$profilBD, 'profilSonar'=>$profilSonar,
+              'dateCreationFormat'=>$dateCreationFormat,
+              'projetModificationDate'=>$projetModificationDate,
+              'profilModificationDate'=>$profilModificationDate];
 
-            $sql2 = "INSERT INTO properties
-                (type, projet_bd, projet_sonar, profil_bd, profil_sonar,
-                date_modification_projet, date_modification_profil, date_creation)
-                VALUES
-                ('properties', $projetBD, $projetSonar, $profilBD, $profilSonar,
-                '$projetModificationDate', '$profilModificationDate', '$dateCreationFormat')";
-            $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql2)))->executeQuery();
+            $repository = $this->em->getRepository(Properties::class);
+            $repository->insertProperties($map);
         } else {
             $projetBD = $r[0]["projet_bd"];
             $projetSonar = $r[0]["projet_sonar"];
@@ -254,7 +250,6 @@ class HomeController extends AbstractController
             $profilSonar = $r[0]["profil_sonar"];
             $profilModificationDate = $r[0]["date_modification_profil"];
         }
-
         return ['projetBD' => $projetBD,
                 'projetSonar' => $projetSonar,
                 'projetDateModification' => $projetModificationDate,
@@ -276,13 +271,10 @@ class HomeController extends AbstractController
      */
     private function getVersion(): string
     {
-        /** On récupère le numéro de la dernère version en base */
-        $sql = "SELECT version
-            FROM ma_moulinette
-            ORDER BY date_version DESC LIMIT 1";
-        $select = $this->em->getConnection()->prepare($sql)->executeQuery();
-        $getVersion = $select->fetchAllAssociative();
-        return $getVersion[0]['version'];
+      /** On récupère le numéro de la dernère version en base */
+      $repository = $this->em->getRepository(MaMoulinette::class);
+      $getVersion = $repository->getVersion();
+      return $getVersion[0]['version'];
     }
 
     /**
@@ -342,7 +334,7 @@ class HomeController extends AbstractController
               FROM historique
               WHERE $andTRIM
               GROUP BY maven_key LIMIT $envFavori";
-            $trim = trim(preg_replace(static::$regex, " ", $sql));
+            $trim = trim(preg_replace("/\s+/u", " ", $sql));
             $select = $this->em->getConnection()->prepare($trim)->executeQuery();
             $liste = $select->fetchAllAssociative();
         }
@@ -418,21 +410,10 @@ class HomeController extends AbstractController
         } else {
             $keys = array_values($listeVersion);
             $liste = [];
+            $repository = $this->em->getRepository(Historique::class);
             for ($i = 0; $i < count($keys); $i++) {
-                $r = static::contruitMaRequete($keys, array_keys($keys[$i]), $i);
-
-                $sql = "SELECT DISTINCT
-            maven_key as mavenkey, nom_projet as nom,
-            version, date_version as date, note_reliability as fiabilite,
-            note_security as securite, note_hotspot as hotspot,
-            note_sqale as sqale, nombre_bug as bug, nombre_vulnerability as vulnerability,
-            nombre_code_smell as code_smell, hotspot_total as hotspots
-            FROM historique
-            WHERE $r
-            ORDER BY date_version DESC limit 4";
-                $trim = trim(preg_replace(static::$regex, " ", $sql));
-                $select = $this->em->getConnection()->prepare($trim)->executeQuery();
-                $favori = $select->fetchAllAssociative();
+                $where = static::contruitMaRequete($keys, array_keys($keys[$i]), $i);
+                $favori = $repository->getProjetFavori($where);
                 array_push($liste, $favori);
             }
         }
@@ -566,19 +547,12 @@ class HomeController extends AbstractController
         }
 
         /** ***************** 4 - Visibility *****************************  */
-        $s1 = "SELECT count(*) as visibility
-        FROM liste_projet
-        WHERE visibility='public'";
-        $r1 = $this->em->getConnection()->prepare($s1)->executeQuery();
-        $t = $r1->fetchAllAssociative();
-        $public = $t[0]['visibility'];
+        $repository = $this->em->getRepository(ListeProjet::class);
+        $t1 = $repository->countVisibility('public');
+        $t2 = $repository->countVisibility('private');
 
-        $s2 = "SELECT count(*) as visibility
-        FROM liste_projet
-        WHERE visibility='private'";
-        $r2 = $this->em->getConnection()->prepare($s2)->executeQuery();
-        $t = $r2->fetchAllAssociative();
-        $private = $t[0]['visibility'];
+        $public = $t1[0]['visibility'];
+        $private = $t2[0]['visibility'];
 
         /** ***************** VERSION *** ************************* */
         /** On récupère le numero de version en base */

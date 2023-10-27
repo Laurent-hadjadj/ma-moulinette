@@ -7,12 +7,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Profiles>
- *
- * @method Profiles|null find($id, $lockMode = null, $lockVersion = null)
- * @method Profiles|null findOneBy(array $criteria, array $orderBy = null)
- * @method Profiles[]    findAll()
- * @method Profiles[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * [Description ProfilesRepository]
  */
 class ProfilesRepository extends ServiceEntityRepository
 {
@@ -37,6 +32,21 @@ class ProfilesRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    /**
+     * [Description for countProfiles]
+     * Compte le nombre total de profiles
+     * @return array
+     *
+     * Created at: 27/10/2023 13:56:31 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function countProfiles(): array
+    {
+      $sql = $sql = "SELECT COUNT(*) as total from profiles";
+      return  $this->getEntityManager()->getConnection()->prepare($sql)->executeQuery()->fetchAllAssociative();
     }
 
 }
