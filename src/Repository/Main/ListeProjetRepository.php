@@ -7,12 +7,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<ListeProjet>
- *
- * @method ListeProjet|null find($id, $lockMode = null, $lockVersion = null)
- * @method ListeProjet|null findOneBy(array $criteria, array $orderBy = null)
- * @method ListeProjet[]    findAll()
- * @method ListeProjet[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * [Description ListeProjetRepository]
  */
 class ListeProjetRepository extends ServiceEntityRepository
 {
@@ -37,6 +32,40 @@ class ListeProjetRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    /**
+     * [Description for countVisibility]
+     * Execute une requête paramétrique count avec type= PRIVATE || PUBLIC
+     * @param mixed $type
+     *
+     * @return array
+     *
+     * Created at: 27/10/2023 12:59:43 (Europe/Paris)
+     * @author    Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function countVisibility($type): array
+    {
+      $sql = "SELECT count(*) as visibility FROM liste_projet WHERE visibility=:visibility";
+      $r=$this->getEntityManager()->getConnection()->prepare($sql);
+      $r->bindValue(":visibility", $type);
+      return  $r->executeQuery()->fetchAllAssociative();
+    }
+
+    /**
+     * [Description for countProjet]
+     * Compte le nombre total de projet.
+     * @return array
+     *
+     * Created at: 27/10/2023 13:54:53 (Europe/Paris)
+     * @author    Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function countProjet(): array
+    {
+      $sql = $sql = "SELECT COUNT(*) as total from liste_projet";
+      return  $this->getEntityManager()->getConnection()->prepare($sql)->executeQuery()->fetchAllAssociative();
     }
 
 }
