@@ -74,7 +74,6 @@ class PreferenceController extends AbstractController
         $categorie = $data->categorie;
 
         /** On récupère l'objet User du contexte de sécurité */
-        $userSecurity = $security->getUser();
         $preference = $security->getUser()->getPreference();
         $courriel = $security->getUser()->getCourriel();
 
@@ -104,7 +103,7 @@ class PreferenceController extends AbstractController
         $trim = trim(preg_replace(static::$regex, " ", $sql));
         $exec = $this->em->getConnection()->prepare($trim)->executeQuery();
         if ($mode !== 'TEST') {
-            $e = $exec->fetchAllAssociative();
+            $exec->fetchAllAssociative();
         }
 
         $data = ['mode' => $mode,'statut' => $statut, 'categorie' => $categorie,Response::HTTP_OK];
@@ -134,7 +133,6 @@ class PreferenceController extends AbstractController
         $mavenKey = $data->mavenKey;
 
         /** On récupère l'objet User du contexte de sécurité */
-        $userSecurity = $security->getUser();
         $preference = $security->getUser()->getPreference();
         $courriel = $security->getUser()->getCourriel();
 
@@ -163,7 +161,7 @@ class PreferenceController extends AbstractController
         $trim = trim(preg_replace(static::$regex, " ", $sql));
         $exec = $this->em->getConnection()->prepare($trim)->executeQuery();
         if ($mode !== 'TEST') {
-            $e = $exec->fetchAllAssociative();
+            $exec->fetchAllAssociative();
         }
 
         /** On crée un objet de reponse JSON */
@@ -198,7 +196,6 @@ class PreferenceController extends AbstractController
         $version = $data->version;
 
         /** On récupère l'objet User du contexte de sécurité */
-        $userSecurity = $security->getUser();
         $preference = $security->getUser()->getPreference();
         $courriel = $security->getUser()->getCourriel();
 
@@ -237,9 +234,8 @@ class PreferenceController extends AbstractController
     SET preference = '$jarray'
     WHERE courriel='$courriel';";
         $trim = trim(preg_replace(static::$regex, " ", $sql));
-        $exec = $this->em->getConnection()->prepare($trim)->executeQuery();
         if ($mode !== 'TEST') {
-            $exec = $this->em->getConnection()->prepare($trim)->executeQuery();
+            $this->em->getConnection()->prepare($trim)->executeQuery();
         }
 
         /** On crée un objet de reponse JSON 'o'=>$object,'n'=>$nouvelleListeVersion,'t'=>$trim */
@@ -270,7 +266,6 @@ class PreferenceController extends AbstractController
         $categorie = $request->get('categorie');
 
         /** On récupère l'objet User du contexte de sécurité */
-        $userSecurity = $security->getUser();
         $preference = $security->getUser()->getPreference();
 
         /** On crée un objet de reponse JSON */
@@ -302,8 +297,6 @@ class PreferenceController extends AbstractController
 
         $response = new JsonResponse();
 
-        /** On récupère les infos utilisateurs */
-        $userSecurity = $security->getUser();
         /** On bind les informations utilisateur */
         $prenom = $security->getUser()->getPrenom();
         $nom = $security->getUser()->getNom();
