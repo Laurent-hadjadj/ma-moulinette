@@ -243,7 +243,7 @@ class ProjetController extends AbstractController
      */
     private function repartition($mavenKey, $contents): array
     {
-        $erreur = $frontend = $backend = $autre = 0;
+        $frontend = $backend = $autre = 0;
 
         /**
          * fr.ma-petite-entreprise:ma-moulinette : valeur par défaut pour les Tests
