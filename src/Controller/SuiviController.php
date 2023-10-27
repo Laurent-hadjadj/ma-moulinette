@@ -93,7 +93,8 @@ class SuiviController extends AbstractController
 
         /** On teste si la clé est valide */
         if (is_null($mavenKey) && $mode === "TEST") {
-            return $response->setData(["mode" => $mode, "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+            return $response->setData(
+              ["mode" => $mode, "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
         }
 
         /** Tableau de suivi principal */
@@ -254,7 +255,8 @@ class SuiviController extends AbstractController
 
         /** On teste si la clé est valide */
         if (is_null($mavenKey) && $mode === "TEST") {
-            return $response->setData(["mode" => $mode, "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+            return $response->setData(
+              ["mode" => $mode, "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
         }
 
         $versions = [];
@@ -288,7 +290,8 @@ class SuiviController extends AbstractController
         }
 
         if ($mode === "TEST") {
-            $httpResponse = $response->setData(['mode' => 'TEST','versions' => $versions, 'liste' => $liste, Response::HTTP_OK]);
+            $httpResponse = $response->setData(
+              ['mode' => 'TEST','versions' => $versions, 'liste' => $liste, Response::HTTP_OK]);
         } else {
             $httpResponse = $response->setData(["liste" => $liste, Response::HTTP_OK]);
         }
@@ -355,7 +358,8 @@ class SuiviController extends AbstractController
         if ($mode === "TEST") {
             $result = ["measures" => [
               ["metric" => "lines", "history" => [["date" => "2022-04-10T00:00:01+0200", "value" => 20984]]],
-              ["metric" => "duplicated_lines_density", "history" => [["date" => "2022-04-10T00:00:01+0200","value" => 2.6]]],
+              ["metric" => "duplicated_lines_density", "history" => [
+                ["date" => "2022-04-10T00:00:01+0200","value" => 2.6]]],
               ["metric" => "vulnerabilities", "history" => [["date" => "2022-04-10T00:00:02+0200","value" => 0]]],
               ["metric" => "sqale_index","history" => [["date" => "2022-04-10T00:00:03+0200","value" => 15596]]],
               ["metric" => "reliability_rating","history" => [["date" => "2022-04-10T00:00:04+0200","value" => 3.0]]] ,
@@ -367,7 +371,8 @@ class SuiviController extends AbstractController
               ["metric" => "security_rating","history" => [["date" => "2022-04-10T00:00:10+0200","value" => 1.0]]],
               ["metric" => "tests", "history" => [["date" => "2022-04-10T00:00:11+0200", "value" => 134]]],
               ["metric" => "coverage", "history" => [["date" => "2022-04-10T00:00:12+0200","value" => 50]]],
-              ["metric" => "security_review_rating", "history" => [["date" => "2022-04-10T00:00:13+0200","value" => 5.0]]],
+              ["metric" => "security_review_rating", "history" => [
+                ["date" => "2022-04-10T00:00:13+0200","value" => 5.0]]],
               ]
             ];
         }
