@@ -261,9 +261,9 @@ COMMIT;
 
 BEGIN TRANSACTION;
 
--- 2023-11-03 : Création de la table des analyses
+-- 2023-11-03 : Création de la table Activité
 
-CREATE TABLE IF NOT EXISTS "analyse" (
+CREATE TABLE IF NOT EXISTS "activite" (
 	"id"	INTEGER NOT NULL,
 	"maven_key"	varchar(128),
 	"project_name"	varchar(64),
