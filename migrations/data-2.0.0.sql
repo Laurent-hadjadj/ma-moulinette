@@ -5,7 +5,7 @@
 BEGIN TRANSACTION;
 
 -- ## Ajout de la version 2.0.0 dans la table ma_moulinette
-INSERT INTO ma_moulinette (version, date_version, date_enregistrement) VALUES ('2.0.0-RC1', '2022-12-13', date('now'));
+INSERT INTO ma_moulinette (version, date_version, date_enregistrement) VALUES ('2.0.0', '2023-05-30', date('now'));
 
 COMMIT;
 
@@ -104,7 +104,7 @@ COMMIT;
 
 BEGIN TRANSACTION;
 
--- ## Ajout de l'attribut version_autre
+-- ## Ajout de l'attribut version_autre dans la table historique
 CREATE TEMPORARY TABLE "__temp__historique" AS SELECT
 	"maven_key","version","date_version","nom_projet","version_release","version_snapshot",
 	"suppress_warning","no_sonar","nombre_ligne","nombre_ligne_code","couverture","duplication","tests_unitaires","nombre_defaut",
@@ -156,9 +156,11 @@ COMMIT;
 
 BEGIN TRANSACTION;
 
--- ## Création de la table profiles_historique
+-- 2023-10-19 : Création de la table profiles_historique + ajout date_courte et langage
 
 CREATE TABLE IF NOT EXISTS "profiles_historique" (
+	"date_courte" DATETIME NOT NULL,
+	"langage" VARCHAR(16) NOT NULL,
 	"date"	DATETIME NOT NULL,
 	"action"	VARCHAR(16) NOT NULL,
 	"auteur"	VARCHAR(64) NOT NULL,
@@ -177,11 +179,6 @@ BEGIN TRANSACTION;
 
 ALTER TABLE utilisateur ADD COLUMN preference CLOB DEFAULT NULL;
 
-COMMIT;
-
-
-BEGIN TRANSACTION;
-
 -- ## On met à jour la colonne equipe et preference à []
 UPDATE utilisateur
 SET equipe = '[]'
@@ -195,7 +192,7 @@ COMMIT;
 
 BEGIN TRANSACTION;
 
--- ## On met à jour la colonne equipe et preference à []
+-- ## On ajoute la table des todo
 
 CREATE TABLE todo (
   id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -204,5 +201,80 @@ CREATE TABLE todo (
   component CLOB NOT NULL,
   line INTEGER NOT NULL,
   date_enregistrement DATETIME NOT NULL);
+
+COMMIT;
+
+BEGIN TRANSACTION;
+
+-- ## On ajoute la colonne todo à la table historique
+
+ALTER TABLE historique ADD COLUMN todo INT DEFAULT 0;
+UPDATE historique SET todo=0 WHERE todo IS NULL;
+
+COMMIT;
+
+BEGIN TRANSACTION;
+
+-- ## On ajoute l'équipe AUCUNE
+
+INSERT INTO utilisateur (titre, description, date_enregistrement)
+VALUES ('AUCUNE', 'Personne ne m''aime !', '1980-01-01 00:00:00');
+
+-- ## On ajoute à l'utilisateur admin l'équipe AUCUNE
+UPDATE utilisateur SET equipe='["AUCUNE"]' WHERE courriel='admin@ma-moulinette.fr';
+
+COMMIT;
+
+BEGIN TRANSACTION;
+
+-- ## On supprime la table liste_projet
+DROP TABLE IF EXISTS liste_projet;
+
+-- # On supprime la table tags
+DROP TABLE IF EXISTS tags;
+
+-- ## Ajout de la table liste_projet
+CREATE TABLE IF NOT EXISTS liste_projet (
+	"id"	INTEGER NOT NULL,
+	"maven_key"	VARCHAR(128) NOT NULL,
+	"name"	VARCHAR(64) NOT NULL,
+	"tags"	CLOB NOT NULL,
+	"visibility"	VARCHAR(8) NOT NULL,
+	"date_enregistrement"	DATETIME NOT NULL,
+	PRIMARY KEY("id" AUTOINCREMENT)
+);
+
+-- On supprime la colone anomalie.liste
+ALTER TABLE anomalie DROP COLUMN liste;
+
+-- On supprime la colone historique.favori
+ALTER TABLE historique DROP COLUMN favori;
+
+COMMIT;
+
+BEGIN TRANSACTION;
+
+-- 2023-10-11 : On supprime la table tags
+DROP TABLE IF EXISTS favori;
+
+COMMIT;
+
+BEGIN TRANSACTION;
+
+-- 2023-11-03 : Création de la table des analyses
+
+CREATE TABLE IF NOT EXISTS "analyse" (
+	"id"	INTEGER NOT NULL,
+	"maven_key"	varchar(128),
+	"project_name"	varchar(64),
+	"analyse_id"	varchar(26),
+	"status"	varchar(16),
+	"submitted_at"	DATETIME,
+	"submitter_login"	varchar(32),
+	"started_at"	DATETIME,
+	"executed_at"	DATETIME,
+	"execution_time_ms"	INTEGER,
+	PRIMARY KEY("id")
+);
 
 COMMIT;
