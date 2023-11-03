@@ -273,7 +273,8 @@ CREATE TABLE IF NOT EXISTS "activite" (
 	"submitter_login"	varchar(32),
 	"started_at"	DATETIME,
 	"executed_at"	DATETIME,
-	"execution_time_ms"	INTEGER,
+	"execution_time"	TIME,
+	"date_enregistrement"	DATETIME,
 	PRIMARY KEY("id")
 );
 
