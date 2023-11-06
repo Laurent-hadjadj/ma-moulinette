@@ -226,7 +226,6 @@ const selectProjet=function() {
 
   return $.ajax(options)
     .then( data => {
-      console.log(data);
       if (data.type==='alert' || data.type==='warning'){
         $('#callout-projet-message').removeClass('hide success warning primary secondary');
         $('#callout-projet-message').addClass(data.type);
