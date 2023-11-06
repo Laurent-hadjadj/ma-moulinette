@@ -131,9 +131,9 @@ class ApiPeintureController extends AbstractController
         }
 
         return $response->setData([
-          "code" => 200,
-          "projets" => $projets,
-          Response::HTTP_OK]);
+            "code" => 200,
+            "projets" => $projets,
+            Response::HTTP_OK]);
     }
 
 
@@ -224,10 +224,10 @@ class ApiPeintureController extends AbstractController
 
         return $response->setData(
             [
-      "release" => $release, "snapshot" => $snapshot,  "autre" => $lesAutres,
-      "label" => $label,
-      "dataset" => $dataset, "projet" => $infoRelease[0]["projet"],
-      "date" => $infoRelease[0]["date"], Response::HTTP_OK]
+        "release" => $release, "snapshot" => $snapshot,  "autre" => $lesAutres,
+        "label" => $label,
+        "dataset" => $dataset, "projet" => $infoRelease[0]["projet"],
+        "date" => $infoRelease[0]["date"], Response::HTTP_OK]
         );
     }
 
@@ -266,12 +266,12 @@ class ApiPeintureController extends AbstractController
         $infoProjet = $r->fetchAllAssociative();
 
         return $response->setData([
-          "name" => $infoProjet[0]["name"], "ncloc" => $infoProjet[0]["ncloc"],
-          "lines" => $infoProjet[0]["lines"],
-          "coverage" => $infoProjet[0]["coverage"],
-          "duplication" => $infoProjet[0]["duplication"],
-          "tests" => $infoProjet[0]["tests"], "issues" => $infoProjet[0]["issues"],
-          Response::HTTP_OK
+            "name" => $infoProjet[0]["name"], "ncloc" => $infoProjet[0]["ncloc"],
+            "lines" => $infoProjet[0]["lines"],
+            "coverage" => $infoProjet[0]["coverage"],
+            "duplication" => $infoProjet[0]["duplication"],
+            "tests" => $infoProjet[0]["tests"], "issues" => $infoProjet[0]["issues"],
+            Response::HTTP_OK
         ]);
     }
 
@@ -343,8 +343,8 @@ class ApiPeintureController extends AbstractController
         $types = ["reliability", "security", "sqale"];
         foreach ($types as $type) {
             $sql = "SELECT type, value FROM notes
-              WHERE maven_key='$mavenKey' AND type='$type'
-              ORDER BY date DESC LIMIT 1";
+                WHERE maven_key='$mavenKey' AND type='$type'
+                ORDER BY date DESC LIMIT 1";
 
             $r = $this->em->getConnection()->prepare($sql)->executeQuery();
             $note = $r->fetchAllAssociative();
@@ -360,26 +360,26 @@ class ApiPeintureController extends AbstractController
         }
 
         return $response->setData([
-          "dette" => $dette,
-          "detteReliability" => $detteReliability,
-          "detteVulnerability" => $detteVulnerability,
-          "detteCodeSmell" => $detteCodeSmell,
-          "detteMinute" => $detteMinute,
-          "detteReliabilityMinute" => $detteReliabilityMinute,
-          "detteVulnerabilityMinute" => $detteVulnerabilityMinute,
-          "detteCodeSmellMinute" => $detteCodeSmellMinute,
-          "bug" => $typeBug,
-          "vulnerability" => $typeVulnerability,
-          "codeSmell" => $typeCodeSmell,
-          "blocker" => $severityBlocker,
-          "critical" => $severityCritical,
-          "info" => $severityInfo,
-          "major" => $severityMajor,
-          "minor" => $severityMinor,
-          "frontend" => $frontend, "backend" => $backend, "autre" => $autre,
-          "noteReliability" => $noteReliability,
-          "noteSecurity" => $noteSecurity,
-          "noteSqale" => $noteSqale, Response::HTTP_OK
+            "dette" => $dette,
+            "detteReliability" => $detteReliability,
+            "detteVulnerability" => $detteVulnerability,
+            "detteCodeSmell" => $detteCodeSmell,
+            "detteMinute" => $detteMinute,
+            "detteReliabilityMinute" => $detteReliabilityMinute,
+            "detteVulnerabilityMinute" => $detteVulnerabilityMinute,
+            "detteCodeSmellMinute" => $detteCodeSmellMinute,
+            "bug" => $typeBug,
+            "vulnerability" => $typeVulnerability,
+            "codeSmell" => $typeCodeSmell,
+            "blocker" => $severityBlocker,
+            "critical" => $severityCritical,
+            "info" => $severityInfo,
+            "major" => $severityMajor,
+            "minor" => $severityMinor,
+            "frontend" => $frontend, "backend" => $backend, "autre" => $autre,
+            "noteReliability" => $noteReliability,
+            "noteSecurity" => $noteSecurity,
+            "noteSqale" => $noteSqale, Response::HTTP_OK
         ]);
     }
 
@@ -432,23 +432,23 @@ class ApiPeintureController extends AbstractController
         $codeSmellInfo = $details[0]["code_smell_info"];
 
         return $response->setData([
-          "message" => 200,
-          "bugBlocker" => $bugBlocker,
-          "bugCritical" => $bugCritical,
-          "bugMajor" => $bugMajor,
-          "bugMinor" => $bugMinor,
-          "bugInfo" => $bugInfo,
-          "vulnerabilityBlocker" => $vulnerabilityBlocker,
-          "vulnerabilityCritical" => $vulnerabilityCritical,
-          "vulnerabilityMajor" => $vulnerabilityMajor,
-          "vulnerabilityMinor" => $vulnerabilityMinor,
-          "vulnerabilityInfo" => $vulnerabilityInfo,
-          "codeSmellBlocker" => $codeSmellBlocker,
-          "codeSmellCritical" => $codeSmellCritical,
-          "codeSmellMajor" => $codeSmellMajor,
-          "codeSmellMinor" => $codeSmellMinor,
-          "codeSmellInfo" => $codeSmellInfo,
-          Response::HTTP_OK
+            "message" => 200,
+            "bugBlocker" => $bugBlocker,
+            "bugCritical" => $bugCritical,
+            "bugMajor" => $bugMajor,
+            "bugMinor" => $bugMinor,
+            "bugInfo" => $bugInfo,
+            "vulnerabilityBlocker" => $vulnerabilityBlocker,
+            "vulnerabilityCritical" => $vulnerabilityCritical,
+            "vulnerabilityMajor" => $vulnerabilityMajor,
+            "vulnerabilityMinor" => $vulnerabilityMinor,
+            "vulnerabilityInfo" => $vulnerabilityInfo,
+            "codeSmellBlocker" => $codeSmellBlocker,
+            "codeSmellCritical" => $codeSmellCritical,
+            "codeSmellMajor" => $codeSmellMajor,
+            "codeSmellMinor" => $codeSmellMinor,
+            "codeSmellInfo" => $codeSmellInfo,
+            Response::HTTP_OK
         ]);
     }
 
@@ -655,7 +655,6 @@ class ApiPeintureController extends AbstractController
         }
 
         $sql = "SELECT rule, count(*) as total FROM todo WHERE maven_key='$mavenKey' GROUP BY rule";
-        dd($sql);
         $r = $this->em->getConnection()->prepare($sql)->executeQuery();
         $rules = $r->fetchAllAssociative();
         $todo = $java = $javascript = $typescript = $html = $xml = 0;
