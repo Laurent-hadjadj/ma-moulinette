@@ -176,7 +176,7 @@ const palette=function() {
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const dessineMoiUnMouton=function(label, dataset) {
-  const nouvellePalette = palette();
+  const nouvellePalette = palette(); 
   const data =
   {
     labels: label,
@@ -186,7 +186,7 @@ const dessineMoiUnMouton=function(label, dataset) {
 
   const options = {
     animations: { tension: { duration: 2000, easing: 'linear', loop: false } },
-    maintainAspectRatio: true,
+    maintainAspectRatio: false,
     responsive: true,
     plugins: {
       title: { display: false },
@@ -216,22 +216,19 @@ const dessineMoiUnMouton=function(label, dataset) {
 };
 
 /** Création du graphique par language */
-$('.js-profil-graphique').on('click', () => {
+$('.js-profil-graphique').on('click', async () => {
     const options = {
           url: `${serveur()}/api/quality/langage`, type: 'GET',
           dataType: 'json', contentType };
 
-  return $.ajax(options)
-    .then(t => {
-      /*
-       * const label = t.label;
-       * const dataset = t.dataset;
-       */
-
-      const {label, dataset} = t;
-      /** On appel la fonction de dessin */
-    dessineMoiUnMouton(label, dataset);
-    });
+  const t = await $.ajax(options);
+  /*
+   * const label = t.label;
+   * const dataset = t.dataset;
+   */
+  const { label, dataset } = t;
+  /** On appel la fonction de dessin */
+  dessineMoiUnMouton(label, dataset);
 });
 
 /**
