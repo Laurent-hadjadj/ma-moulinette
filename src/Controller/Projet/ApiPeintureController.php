@@ -89,7 +89,6 @@ class ApiPeintureController extends AbstractController
     public function projetMesApplicationsListe(Security $security): response
     {
         /** On récupère l'objet User du contexte de sécurité */
-        $userSecurity = $security->getUser();
         $preference = $security->getUser()->getPreference();
 
         /** On crée un objet response */
@@ -497,7 +496,7 @@ class ApiPeintureController extends AbstractController
             $note = "A";
         } else {
             $ratio = intval($reviewed[0]["reviewed"]) * 100 / intval($toReview[0]["to_review"]) +
-              intval($reviewed[0]["reviewed"]);
+                intval($reviewed[0]["reviewed"]);
             if ($ratio >= 80) {
                 $note = "A";
             }
@@ -547,10 +546,10 @@ class ApiPeintureController extends AbstractController
         $high = $medium = $low = 0;
         /** On récupère la dernière version et sa date de publication. */
         $sql = "SELECT niveau, count(*) as hotspot
-          FROM hotspots
-          WHERE maven_key='$mavenKey'
-          AND status='TO_REVIEW'
-          GROUP BY niveau";
+            FROM hotspots
+            WHERE maven_key='$mavenKey'
+            AND status='TO_REVIEW'
+            GROUP BY niveau";
         $r = $this->em->getConnection()->prepare($sql)->executeQuery();
         $niveaux = $r->fetchAllAssociative();
 
@@ -598,12 +597,12 @@ class ApiPeintureController extends AbstractController
         /** On teste si la clé est valide */
         if ($mavenKey === "null" && $mode === "TEST") {
             return $response->setData([
-              "mode" => $mode, "mavenKey" => $mavenKey,
-              "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+                "mode" => $mode, "mavenKey" => $mavenKey,
+                "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
         }
 
         $sql = "SELECT rule, count(*) as total FROM no_sonar WHERE maven_key='"
-          . $mavenKey . "' GROUP BY rule";
+            . $mavenKey . "' GROUP BY rule";
         $r = $this->em->getConnection()->prepare($sql)->executeQuery();
         $rules = $r->fetchAllAssociative();
 
@@ -651,11 +650,12 @@ class ApiPeintureController extends AbstractController
         /** On teste si la clé est valide */
         if ($mavenKey === "null" && $mode === "TEST") {
             return $response->setData([
-              "mode" => $mode, "mavenKey" => $mavenKey,
-              "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+                "mode" => $mode, "mavenKey" => $mavenKey,
+                "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
         }
 
         $sql = "SELECT rule, count(*) as total FROM todo WHERE maven_key='$mavenKey' GROUP BY rule";
+        dd($sql);
         $r = $this->em->getConnection()->prepare($sql)->executeQuery();
         $rules = $r->fetchAllAssociative();
         $todo = $java = $javascript = $typescript = $html = $xml = 0;
@@ -689,8 +689,8 @@ class ApiPeintureController extends AbstractController
 
         return $response->setData(
             ["todo" => $todo, "java" => $java, "javascript" => $javascript,
-      "typescript" => $typescript, "html" => $html,
-      "xml" => $xml, "details" => $details, Response::HTTP_OK]
+        "typescript" => $typescript, "html" => $html,
+        "xml" => $xml, "details" => $details, Response::HTTP_OK]
         );
     }
 
