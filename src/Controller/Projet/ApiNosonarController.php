@@ -180,18 +180,18 @@ class ApiNosonarController extends AbstractController
         /** On teste si la clé est valide */
         if ($mavenKey === "null" && $mode === "TEST") {
             return $response->setData([
-              "mode" => $mode, "mavenKey" => $mavenKey,
-              "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+            "mode" => $mode, "mavenKey" => $mavenKey,
+            "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
         }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return $response->setData([
-              "mode" => $mode ,
-              "type" => 'alert',
-              "reference" => static::$reference,
-              "message" => static::$message,
-              Response::HTTP_OK]);
+                "mode" => $mode ,
+                "type" => 'alert',
+                "reference" => static::$reference,
+                "message" => static::$message,
+                Response::HTTP_OK]);
         }
 
         /** On construit l'URL et on appel le WS. */
@@ -213,20 +213,20 @@ class ApiNosonarController extends AbstractController
          */
         if ($result["paging"]["total"] !== 0) {
             foreach ($result["issues"] as $issue) {
-                $nosonar = new Todo();
-                $nosonar->setMavenKey($request->get('mavenKey'));
-                $nosonar->setRule($issue["rule"]);
+                $todo = new Todo();
+                $todo->setMavenKey($request->get('mavenKey'));
+                $todo->setRule($issue["rule"]);
                 $component = str_replace("$mavenKey :", "", $issue["component"]);
-                $nosonar->setComponent($component);
+                $todo->setComponent($component);
                 if (empty($issue["line"])) {
                     $line = 0;
                 } else {
                     $line = $issue["line"];
                 }
-                $nosonar->setLine($line);
-                $nosonar->setDateEnregistrement($date);
+                $todo->setLine($line);
+                $todo->setDateEnregistrement($date);
 
-                $this->em->persist($nosonar);
+                $this->em->persist($todo);
                 if ($mode != "TEST") {
                     $this->em->flush();
                 }
