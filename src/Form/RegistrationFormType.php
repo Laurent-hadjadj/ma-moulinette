@@ -19,6 +19,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 
 use Symfony\Component\Form\FormBuilderInterface;
@@ -28,45 +29,88 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class RegistrationFormType extends AbstractType
 {
+    public static $color = "color: #00445b;";
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('nom', TextType::class, [
                 'required' => true,
-                'attr' => ['maxlength' => 64],
-                'attr' => [ 'placeholder' => 'placeholder.nom',
-                            'style' => 'color:#00445b;',
+                'attr' => [ 'minlength' => 2,
+                            'maxlength' => 64,
+                            'placeholder' => 'placeholder.nom',
+                            'style' => static::$color,
                             'autocomplete' => 'family-name'
                         ],
                 'label' => 'label.nom',
-                'trim' => true
+                'trim' => true,
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Merci de saisir votre nom.',
+                    ]),
+                    new Length([
+                        'min' => 3,
+                        'minMessage' => 'Le nom ne doit pas comporter moins de {{ limit }} caratères.',
+                        'max' => 64,
+                        'maxMessage' => 'Le nom ne doit pas comporter plus de {{ limit }} caratères.',
+                    ]), ]
             ])
             ->add('prenom', TextType::class, [
                 'required' => true,
-                'attr' => ['maxlength' => 32],
-                'attr' => ['placeholder' => 'placeholder.prenom',
-                'style' => 'color:#00445b;',
-                'autocomplete' => 'given-name'
-            ],
                 'label' => 'label.prenom',
-                'trim' => true
+                'trim' => true,
+                'attr' => [ 'maxlength' => 32,
+                            'placeholder' => 'placeholder.prenom',
+                            'style' => static::$color,
+                            'autocomplete' => 'given-name'
+                        ],
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Merci de saisir votre prénom.',
+                    ]),
+                    new Length([
+                        'min' => 3,
+                        'minMessage' => 'Le nom ne doit pas comporter moins de {{ limit }} caratères.',
+                        'max' => 5,
+                        'maxMessage' => 'Le prénom ne doit pas comporter plus de {{ limit }} caratères.',
+                    ]), ]
             ])
-            ->add('email', TextType::class, ['required' => false, 'mapped' => false, 'attr' => ['class' => 'email']])
+            ->add('email', TextType::class, [
+                'required' => false,
+                'mapped' => false,
+                'attr' => ['class' => 'email']])
+
             //RFC 3696 (64+1+255).
             ->add('courriel', EmailType::class, [
-                'attr' => ['maxlength' => 320],
-                'attr' => ['placeholder' => 'placeholder.courriel',
-                'style' => 'color:#00445b;',
-                'autocomplete' => 'email'
-              ],
-              'label' => 'label.courriel',
+                'label' => 'label.courriel',
                 'trim' => true,
+                'attr' => [
+                    'maxlength' => 320,
+                    'placeholder' => 'placeholder.courriel',
+                    'style' => static::$color,
+                    'autocomplete' => 'off'
+                ],
             ])
-            ->add('plainPassword', PasswordType::class, [
+
+            ->add('plainPassword', RepeatedType::class, [
+                'type' => PasswordType::class,
                 'mapped' => false,
-                'attr' => [ 'style' => 'color:#00445b;',
-                            'autocomplete' => 'new-password'],
-                'label' => 'label.motdepasse',
+                'first_options'  => [
+                    'always_empty' => true,
+                    'hash_property_path' => 'password',
+                    'label' => 'label.motdepasse',
+                    'attr' => [
+                        'placeholder' => 'placeholder.motdepasse',
+                        'style' => static::$color,
+                        'autocomplete' => 'off'],
+                ],
+                'second_options' => [
+                    'label' => 'label.remotdepasse',
+                    'attr' => [
+                        'placeholder' => 'placeholder.remotdepasse',
+                        'style' => 'color:#00445b;',
+                        'autocomplete' => 'off' ],
+                ],
                 'constraints' => [
                     new NotBlank([
                         'message' => 'Merci de saisir votre mot de passe.',
@@ -75,6 +119,7 @@ class RegistrationFormType extends AbstractType
                         'min' => 8,
                         'minMessage' => 'Votre mot de passe doit avoir au moins {{ limit }} caratères.',
                         'max' => 52,
+                        'maxMessage' => 'Votre mot de passe ne doit pas voir plus de {{ limit }} caratères.',
                     ]),
                 ],
             ])
