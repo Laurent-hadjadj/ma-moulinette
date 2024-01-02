@@ -224,7 +224,8 @@
 
 /* stylelint-disable-next-line selector-class-pattern */
 .form_erreur ul {
-  margin-left: -0.5rem;
+  margin-left: 0;
+  margin-bottom: 0;
   font-size: 0.8rem;
   list-style-type: none;
 }
