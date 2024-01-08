@@ -9,7 +9,7 @@ label.nom: Nom
 label.prenom: Prénom
 label.courriel: Courriel
 label.motdepasse: Mot de passe
-label.remotdepasse: Contrôle
+label.remotdepasse: Vérification
 
 # Menu EasyAdmin
 Home: Home
