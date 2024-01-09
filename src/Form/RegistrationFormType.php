@@ -35,8 +35,8 @@ class RegistrationFormType extends AbstractType
         $builder
             ->add('nom', TextType::class, [
                 'required' => true,
-                'attr' => [ 'minlength' => 2,
-                            'maxlength' => 64,
+                'attr' => [
+                            'maxlength' => 32,
                             'placeholder' => 'placeholder.nom',
                             'class' => 'color-bleu',
                             'autocomplete' => 'family-name'
@@ -48,9 +48,9 @@ class RegistrationFormType extends AbstractType
                         'message' => 'Merci de saisir votre nom.',
                     ]),
                     new Length([
-                        'min' => 3,
-                        'minMessage' => 'Le nom ne doit pas comporter moins de {{ limit }} caractères.',
-                        'max' => 64,
+                        'min' => 2,
+                        'minMessage' => 'Le nom doit comporter au moins de {{ limit }} caractères.',
+                        'max' => 32,
                         'maxMessage' => 'Le nom ne doit pas comporter plus de {{ limit }} caractères.',
                     ]), ]
             ])
@@ -61,16 +61,15 @@ class RegistrationFormType extends AbstractType
                 'attr' => [ 'maxlength' => 32,
                             'placeholder' => 'placeholder.prenom',
                             'class' => 'color-bleu',
-                            'autocomplete' => 'given-name'
-                        ],
+                            'autocomplete' => 'given-name' ],
                 'constraints' => [
                     new NotBlank([
                         'message' => 'Merci de saisir votre prénom.',
                     ]),
                     new Length([
-                        'min' => 3,
-                        'minMessage' => 'Le nom ne doit pas comporter moins de {{ limit }} caractères.',
-                        'max' => 5,
+                        'min' => 2,
+                        'minMessage' => 'Le nom doit comporter au moins {{ limit }} caractères.',
+                        'max' => 32,
                         'maxMessage' => 'Le prénom ne doit pas comporter plus de {{ limit }} caractères.',
                     ]), ]
             ])
@@ -121,9 +120,9 @@ class RegistrationFormType extends AbstractType
                     ]),
                     new Length([
                         'min' => 8,
-                        'minMessage' => 'Votre mot de passe doit avoir au moins {{ limit }} caractères.',
+                        'minMessage' => 'Votre mot de passe doit comporter au moins {{ limit }} caractères.',
                         'max' => 52,
-                        'maxMessage' => 'Votre mot de passe ne doit pas voir plus de {{ limit }} caractères.',
+                        'maxMessage' => 'Votre mot de passe ne doit pas comporter plus de {{ limit }} caractères.',
                     ]),
                 ],
             ])
