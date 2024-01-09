@@ -29,7 +29,6 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class RegistrationFormType extends AbstractType
 {
-    public static $color = "color: #00445b;";
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -39,7 +38,7 @@ class RegistrationFormType extends AbstractType
                 'attr' => [ 'minlength' => 2,
                             'maxlength' => 64,
                             'placeholder' => 'placeholder.nom',
-                            'style' => static::$color,
+                            'class' => 'color-bleu',
                             'autocomplete' => 'family-name'
                         ],
                 'label' => 'label.nom',
@@ -50,9 +49,9 @@ class RegistrationFormType extends AbstractType
                     ]),
                     new Length([
                         'min' => 3,
-                        'minMessage' => 'Le nom ne doit pas comporter moins de {{ limit }} caratères.',
+                        'minMessage' => 'Le nom ne doit pas comporter moins de {{ limit }} caractères.',
                         'max' => 64,
-                        'maxMessage' => 'Le nom ne doit pas comporter plus de {{ limit }} caratères.',
+                        'maxMessage' => 'Le nom ne doit pas comporter plus de {{ limit }} caractères.',
                     ]), ]
             ])
             ->add('prenom', TextType::class, [
@@ -61,7 +60,7 @@ class RegistrationFormType extends AbstractType
                 'trim' => true,
                 'attr' => [ 'maxlength' => 32,
                             'placeholder' => 'placeholder.prenom',
-                            'style' => static::$color,
+                            'class' => 'color-bleu',
                             'autocomplete' => 'given-name'
                         ],
                 'constraints' => [
@@ -70,15 +69,20 @@ class RegistrationFormType extends AbstractType
                     ]),
                     new Length([
                         'min' => 3,
-                        'minMessage' => 'Le nom ne doit pas comporter moins de {{ limit }} caratères.',
+                        'minMessage' => 'Le nom ne doit pas comporter moins de {{ limit }} caractères.',
                         'max' => 5,
-                        'maxMessage' => 'Le prénom ne doit pas comporter plus de {{ limit }} caratères.',
+                        'maxMessage' => 'Le prénom ne doit pas comporter plus de {{ limit }} caractères.',
                     ]), ]
             ])
             ->add('email', TextType::class, [
                 'required' => false,
                 'mapped' => false,
-                'attr' => ['class' => 'email']])
+                'attr' => [
+                    'placeholder' => 'steeve@gmail.com',
+                    'tabindex' => '-1',
+                    'ref' => 'initHoneyPot',
+                    'autocomplete' => 'off',
+                    'class' => 'email']])
 
             //RFC 3696 (64+1+255).
             ->add('courriel', EmailType::class, [
@@ -87,7 +91,7 @@ class RegistrationFormType extends AbstractType
                 'attr' => [
                     'maxlength' => 320,
                     'placeholder' => 'placeholder.courriel',
-                    'style' => static::$color,
+                    'class' => 'color-bleu',
                     'autocomplete' => 'off'
                 ],
             ])
@@ -101,14 +105,14 @@ class RegistrationFormType extends AbstractType
                     'label' => 'label.motdepasse',
                     'attr' => [
                         'placeholder' => 'placeholder.motdepasse',
-                        'style' => static::$color,
+                        'class' => 'color-bleu',
                         'autocomplete' => 'off'],
                 ],
                 'second_options' => [
                     'label' => 'label.remotdepasse',
                     'attr' => [
                         'placeholder' => 'placeholder.remotdepasse',
-                        'style' => 'color:#00445b;',
+                        'class' => 'color-bleu',
                         'autocomplete' => 'off' ],
                 ],
                 'constraints' => [
@@ -117,9 +121,9 @@ class RegistrationFormType extends AbstractType
                     ]),
                     new Length([
                         'min' => 8,
-                        'minMessage' => 'Votre mot de passe doit avoir au moins {{ limit }} caratères.',
+                        'minMessage' => 'Votre mot de passe doit avoir au moins {{ limit }} caractères.',
                         'max' => 52,
-                        'maxMessage' => 'Votre mot de passe ne doit pas voir plus de {{ limit }} caratères.',
+                        'maxMessage' => 'Votre mot de passe ne doit pas voir plus de {{ limit }} caractères.',
                     ]),
                 ],
             ])
