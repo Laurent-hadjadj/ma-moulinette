@@ -326,6 +326,13 @@ body { background: #eee; }
 .open-sans-bold,
 .claire-hand { color: #00445b; }
 
+/** désactive la selection de texte sur un élément */
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    user-select: none; /* Non-prefixed version, currently
+                          supported by Chrome, Edge, Opera and Firefox */
+}
+
 /** Suppression du style inline */
 .color-blanc { color: #fff; }
 .color-noir { color: #000; }
