@@ -11,7 +11,7 @@
  */
 
 /* Mobile */
-@media (width >= 20em) {
+@media (width <= 20em) {
   .i-am-robot-svg,
   .i-am-human-svg,
   .batch-processing-svg {

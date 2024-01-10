@@ -11,7 +11,7 @@
  */
 
 /* Mobile */
-@media (width >= 20em) { .pleine-page { margin: 0.5rem; } }
+@media (width <= 20em) { .pleine-page { margin: 0.5rem; } }
 
 /* Mobile */
 @media (20.025em <= width <= 22em) { .pleine-page { margin: 0.5rem; } }

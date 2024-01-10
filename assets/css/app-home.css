@@ -22,7 +22,7 @@
   */
 
 /* Media SMALL  */
-@media (width >= 20em) {
+@media (width <= 20em) {
   .stat-visibility { line-height: 0.7; }
 
   .refresh-bd-svg,

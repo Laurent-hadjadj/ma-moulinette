@@ -10,7 +10,7 @@
  *
  */
 
-@media (width >= 20em) {
+@media (width <= 20em) {
   /* no comment */
 }
 
