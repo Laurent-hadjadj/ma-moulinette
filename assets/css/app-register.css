@@ -18,10 +18,22 @@
   */
 
 /* Media Small */
-@media (width >= 20em) {
+@media (width <= 20em) {
   .video-arbres {
     height: auto;
     width: 100%;
+  }
+
+  #registration_form_plainPassword_first + .unmask1
+  {
+    top: 65%;
+    right: 2.3rem;
+  }
+
+  #registration_form_plainPassword_second + .unmask2
+  {
+    top: 77%;
+    right: 2.3rem;
   }
 }
 
@@ -31,6 +43,19 @@
     height: auto;
     width: 100%;
   }
+
+  #registration_form_plainPassword_first + .unmask1
+  {
+    top: 65%;
+    right: 2.6rem;
+  }
+
+
+  #registration_form_plainPassword_second + .unmask2
+  {
+    top: 77%;
+    right: 2.6rem;
+  }
 }
 
 /* Media Small */
@@ -38,6 +63,18 @@
   .video-arbres {
     height: auto;
     width: 100%;
+  }
+
+  #registration_form_plainPassword_first + .unmask1
+  {
+    top: 65%;
+    right: 3.3rem;
+  }
+
+  #registration_form_plainPassword_second + .unmask2
+  {
+    top: 77%;
+    right: 3.3rem;
   }
 }
 
@@ -47,6 +84,18 @@
     height: auto;
     width: 100%;
   }
+
+  #registration_form_plainPassword_first + .unmask1
+  {
+    top: 65%;
+    right: 4.2rem;
+  }
+
+  #registration_form_plainPassword_second + .unmask2
+  {
+    top: 77%;
+    right: 4.2rem;
+  }
 }
 
 /* Media Medium */
@@ -54,6 +103,18 @@
   .video-arbres {
     height: auto;
     width: 95%;
+  }
+
+  #registration_form_plainPassword_first + .unmask1
+  {
+    top: 62%;
+    right: 3.6rem;
+  }
+
+  #registration_form_plainPassword_second + .unmask2
+  {
+    top: 75%;
+    right: 3.6rem;
   }
 }
 
@@ -63,6 +124,16 @@
     height: auto;
     width: 95%;
   }
+
+  #registration_form_plainPassword_first + .unmask1
+  { top: 62%;
+    right: 4.2rem;
+  }
+
+  #registration_form_plainPassword_second + .unmask2
+  { top: 75%;
+    right: 4.2rem;
+  }
 }
 
 /* Media Large */
@@ -71,6 +142,18 @@
     height: auto;
     width: 95%;
   }
+
+  #registration_form_plainPassword_first + .unmask1
+  {
+    top: 66%;
+    right: 4.2rem;
+  }
+
+  #registration_form_plainPassword_second + .unmask2
+  {
+    top: 75%;
+    right: 4.2rem;
+  }
 }
 
 /* Media Extra-Large */
@@ -78,6 +161,18 @@
   .video-arbres {
     height: auto;
     width: 95%;
+  }
+
+  #registration_form_plainPassword_first + .unmask1
+  {
+    top: 66%;
+    right: 4.2rem;
+  }
+
+#registration_form_plainPassword_second + .unmask2
+  {
+    top: 75%;
+    right: 4.2rem;
   }
 }
 
@@ -210,9 +305,17 @@
   margin-top: -0.2rem;
 }
 
-/* Formulaires                                        */
+/* Formulaires */
+
+/** desactivaton du bouton inscription */
+.disable {
+  cursor: not-allowed;
+  background-color: #006182;
+}
+
 /* stylelint-disable-next-line selector-class-pattern */
-.form_erreur { color: #761f11; }
+.form_erreur,
+#message-erreur-valider { color: #761f11; }
 
 /* stylelint-disable-next-line selector-class-pattern */
 .form_erreur ul {
@@ -223,8 +326,50 @@
   list-style-type: none;
 }
 
-/** desactivaton du bouto&&&n inscription */
-.disable {
-  cursor: not-allowed;
-  background-color: #006182;
+#message-erreur-valider ul {
+  margin-left: 0;
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  font-size: 0.8rem;
+  list-style-type: none;
+}
+
+#registration_form_plainPassword_first + .unmask1,
+#registration_form_plainPassword_second + .unmask2
+{
+  position: absolute;
+  transform: translateY(-50%);
+  text-indent: -9999px;
+  width: 25px;
+  height: 25px;
+  background: #006182;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
+
+#registration_form_plainPassword_first + .unmask1::before,
+#registration_form_plainPassword_second + .unmask2::before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 17px;
+  height: 17px;
+  background: #e3e3e3;
+  z-index: 1;
+  border-radius: 50%;
+}
+
+#registration_form_plainPassword_first[type="text"] + .unmask1::after,
+#registration_form_plainPassword_second[type="text"] + .unmask2::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: 13px;
+  height: 13px;
+  background: #006182;
+  z-index: 2;
+  border-radius: 50%;
 }
