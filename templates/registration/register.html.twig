@@ -37,6 +37,7 @@
           <div class="callout">
             <h1 class="h2 claire-hand text-center">Inscription.</h1>
             <div class="grid-x cell">
+              {# Ajout de l'avatar #}
               <div class="small-12 medium-4 large-4 cell">
                 <div class="ajouter-mon-avatar-container">
                   <img id="ajouter-mon-avatar" src="{{ asset('build/avatar/personne.png') }}" alt="Mon avatar" height="52" width="52" data-theme="racine" data-image="personne"/>
@@ -44,7 +45,9 @@
                 <span id="bouton-changer-avatar" class="open-sans profil-bouton" data-open="mes-avatars">&nbsp;Changer&nbsp;
                 </span>
               </div>
-              <div class="small-12 medium-8 large-8 cell">
+
+              {# Ajout du nom #}
+              <div class="small-11 medium-7 large-7 cell">
                 <div class="floated-label-wrapper">
                   {{ form_label(registrationForm.nom) }}
                 </div>
@@ -53,9 +56,17 @@
                   {{ form_errors(registrationForm.nom) }}
                 </div>
               </div>
-              <div class="small-12 medium-4 large-4 cell"></div>
-              <div class="small-12 medium-8 large-8 cell">
-                <div class="floated-label-wrapper prenom">
+
+              <div class="small-1 medium-1 large-1 cell">
+                <span id="register-info-check-nom"></span>
+              </div>
+
+              <div class="small-12 medium-4 large-4 cell">&nbsp;</div>
+
+              {# Ajout du prénom #}
+              <div class="small-11 medium-7 large-7 cell">
+                <div class="show-for-medium"><p></p></div>
+                <div class="floated-label-wrapper">
                   {{ form_label(registrationForm.prenom) }}
                 </div>
                 {{ form_widget(registrationForm.prenom,) }}
@@ -63,12 +74,17 @@
                   {{ form_errors(registrationForm.prenom) }}
                 </div>
               </div>
+              <div class="small-1 medium-1 large-1 cell">
+                <span id="register-info-check-prenom"></span>
+              </div>
+
+              {# Ajout du courriel #}
               <div class="small-11 medium-11 large-11 cell">
                 <div class="floated-label-wrapper">
                   {{ form_label(registrationForm.courriel) }}
                 </div>
-                {{ form_widget(registrationForm.courriel, {'attr': {'class':'color-bleu'}}) }}
-                <div class="form_erreur">
+                {{ form_widget(registrationForm.courriel) }}
+                <div id="message-erreur-courriel" class="form_erreur">
                   {{ form_errors(registrationForm.courriel) }}
                 </div>
               </div>
@@ -76,25 +92,44 @@
                 <span id="register-info-check-courriel"></span>
               </div>
 
+              {# Mot de passe #}
               <div class="small-11 medium-11 large-11 cell">
                 <div class="floated-label-wrapper">
-                  {{ form_label(registrationForm.plainPassword) }}
+                  {{ form_label(registrationForm.plainPassword.first) }}
                 </div>
-                {{ form_widget(registrationForm.plainPassword, {'attr': {'class':'color-bleu'}}) }}
+                {{ form_widget(registrationForm.plainPassword.first) }}
+                <button class="unmask1" type="button" title="Affiche/masque le mot de passe">Unmask</button>
                 <div class="form_erreur">
-                  {{ form_errors(registrationForm.plainPassword) }}
+                  {{ form_errors(registrationForm.plainPassword.first) }}
                 </div>
               </div>
               <div class="small-1 medium-1 large-1 cell">
                 <span id="register-info-check-password"></span>
               </div>
-            </div>
-            {# HoneyPot #}
-            <div class="small-11 medium-11 large-11 cell">
-                {{ form_widget(registrationForm.email, {'attr': {'class':'email', tabindex: '-1', autocomplete: 'off', ref: 'initHoneyPot'}}) }}
-            </div>
 
-            <input id="valider-formulaire-enregistrement" class="button expanded" type="submit" value="M'inscrire">
+              {# reMot de passe #}
+              <div class="small-11 medium-11 large-11 cell">
+                <div class="floated-label-wrapper">
+                  {{ form_label(registrationForm.plainPassword.second) }}
+                </div>
+                {{ form_widget(registrationForm.plainPassword.second) }}
+                <button class="unmask2" type="button" title="Affiche/masque le mot de passe">Unmask</button>
+                <div class="form_erreur">
+                  {{ form_errors(registrationForm.plainPassword.second) }}
+                </div>
+              </div>
+              <div class="small-1 medium-1 large-1 cell">
+                <span id="register-info-check-repassword"></span>
+              </div>
+
+              {# HoneyPot #}
+              <div class="cell">
+                  <label for="registration_form_email"></label>
+                  {{ form_widget(registrationForm.email) }}
+              </div>
+
+            <input id="valider-formulaire-enregistrement" class="button expanded disabled noselect" type="button" value ="Inscription" placeholder="Valider"></input>
+            <div id="message-erreur-valider"></div>
             {{ form_end(registrationForm) }}
           </div>
         </div>
@@ -170,7 +205,7 @@
             </div>
           </li>
           <li class="accordion-item menu-accordeon" data-accordion-item>
-            <a class="accordion-titl color-bleu">
+            <a class="accordion-title color-bleu">
               <span class="open-sans">
                 <strong>Garçon (1)</strong>
               </span>
