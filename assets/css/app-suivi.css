@@ -11,28 +11,28 @@
  */
 
 /* Mobile */
-@media only screen and (max-width: 20em) { .pleine-page { margin: 0.5rem; } }
+@media (width >= 20em) { .pleine-page { margin: 0.5rem; } }
 
 /* Mobile */
-@media only screen and (min-width: 20.025em) and (max-width: 22em) { .pleine-page { margin: 0.5rem; } }
+@media (20.025em <= width <= 22em) { .pleine-page { margin: 0.5rem; } }
 
 /* Mobile */
-@media only screen and (min-width: 22.025em) and (max-width: 30em) { .pleine-page { margin: 1rem; } }
+@media (22.025em <= width <= 30em) { .pleine-page { margin: 1rem; } }
 
 /* Mobile */
-@media only screen and (min-width: 30.025em) and (max-width: 40em) { .pleine-page { margin: 1rem; } }
+@media (30.025em <= width <= 40em) { .pleine-page { margin: 1rem; } }
 
 /* tablette */
-@media only screen and (min-width: 40em) and (max-width: 64em) { .pleine-page { margin: 1rem; } }
+@media (40.025em <= width <= 64em) { .pleine-page { margin: 1rem; } }
 
 /* desktop */
-@media only screen and (min-width: 64.025em) and (max-width: 90em) { .pleine-page { margin: 1rem; } }
+@media (64.025em <= width <= 90em) { .pleine-page { margin: 1rem; } }
 
 /* desktop */
-@media only screen and (min-width: 90.025em) and (max-width: 120em) { .pleine-page { margin: 1rem; } }
+@media (90.025em <= width <= 120em) { .pleine-page { margin: 1rem; } }
 
 /* desktop */
-@media only screen and (min-width: 120.063em) and (max-width: 160em) { .pleine-page { margin: 1rem; } }
+@media (120.025em <= width <= 160em) { .pleine-page { margin: 1rem; } }
 
 /*************************          Global     *********************************/
 

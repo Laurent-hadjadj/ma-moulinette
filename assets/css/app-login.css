@@ -16,7 +16,7 @@
   */
 
 /* Media Small */
-@media only screen and (max-width: 20em) {
+@media (width >= 20em) {
   .video-hongkong {
     height: auto;
     width: 100%;
@@ -24,7 +24,7 @@
 }
 
 /* Media Small */
-@media only screen and (min-width: 20.025em) and (max-width: 22em) {
+@media (20.025em <= width <= 22em) {
   .video-hongkong {
     height: auto;
     width: 100%;
@@ -32,7 +32,7 @@
 }
 
 /* Media Small */
-@media only screen and (min-width: 22.025em) and (max-width: 30em) {
+@media (22.025em <= width <= 30em) {
   .video-hongkong {
     height: auto;
     width: 100%;
@@ -40,7 +40,7 @@
 }
 
 /* Media Small */
-@media only screen and (min-width: 30.025em) and (max-width: 40em) {
+@media (30.025em <= width <= 40em) {
   .video-hongkong {
     height: auto;
     width: 100%;
@@ -48,7 +48,7 @@
 }
 
 /* Media Medium */
-@media only screen and (min-width: 40em) and (max-width: 64em) {
+@media (40.025em <= width <= 64em) {
   .video-hongkong {
     height: auto;
     width: 95%;
@@ -56,7 +56,7 @@
 }
 
 /* Media Large */
-@media only screen and (min-width: 64.025em) and (max-width: 90em) {
+@media (64.025em <= width <= 90em) {
   .video-hongkong {
     height: auto;
     width: 95%;
@@ -64,7 +64,7 @@
 }
 
 /* Media Large */
-@media only screen and (min-width: 90.025em) and (max-width: 120em) {
+@media (90.025em <= width <= 120em) {
   .video-hongkong {
     height: auto;
     width: 95%;
@@ -72,7 +72,7 @@
 }
 
 /* Media Extra-Large */
-@media only screen and (min-width: 120em) and (max-width: 160em) {
+@media (120.025em <= width <= 160em) {
   .video-hongkong {
     height: auto;
     width: 95%;

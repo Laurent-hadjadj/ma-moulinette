@@ -16,7 +16,7 @@
 */
 
 /* Mobile */
-@media only screen and (max-width: 20em) {
+@media (width >= 20em) {
   /* Taille du logo */
   .logo-svg {
     width: 50px;
@@ -46,7 +46,7 @@
 }
 
 /* Mobile */
-@media only screen and (min-width: 20.025em) and (max-width: 22em) {
+@media (20.025em <= width <= 22em) {
   .logo-svg {
     width: 46px;
     height: 49px;
@@ -80,7 +80,7 @@
 }
 
 /* Mobile */
-@media only screen and (min-width: 22.025em) and (max-width: 30em) {
+@media (22.025em <= width <= 30em) {
   .logo-svg {
     width: 90px;
     height: 54px;
@@ -115,7 +115,7 @@
 }
 
 /* Mobile */
-@media only screen and (min-width: 30.025em) and (max-width: 40em) {
+@media (30.025em <= width <= 40em) {
   .ma-moulinette-container {
     margin-left: 1rem;
     margin-top: 0.8rem;
@@ -156,7 +156,7 @@
 }
 
 /* Tablette */
-@media only screen and (min-width: 40em) and (max-width: 64em) {
+@media (40.025em <= width <= 64em) {
   .ma-moulinette {
     margin-left: 1rem;
     font-size: 1.8rem;
@@ -201,7 +201,7 @@
 }
 
 /* Desktop */
-@media only screen and (min-width: 64.063em) and (max-width: 90em) {
+@media (64.025em <= width <= 90em) {
   .ma-moulinette {
     margin-left: 1rem;
     font-size: 2.5rem;
@@ -241,7 +241,7 @@
 }
 
 /* Desktop 1920 */
-@media only screen and (min-width: 90.063em) and (max-width: 120em) {
+@media (90.025em <= width <= 120em) {
   .ma-moulinette {
     margin-left: 1rem;
     font-size: 2.5rem;
@@ -279,7 +279,7 @@
 }
 
 /* Desktop 4K */
-@media only screen and (min-width: 120.063em) and (max-width: 160em) {
+@media (120.025em <= width <= 160em) {
   .ma-moulinette {
     margin-left: 1rem;
     font-size: 2.5rem;
@@ -329,7 +329,7 @@ body { background: #eee; }
 /** désactive la selection de texte sur un élément */
 .noselect {
   -webkit-touch-callout: none; /* iOS Safari */
-    user-select: none; /* Non-prefixed version, currently
+  user-select: none; /* Non-prefixed version, currently
                           supported by Chrome, Edge, Opera and Firefox */
 }
 

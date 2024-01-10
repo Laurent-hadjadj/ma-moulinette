@@ -10,35 +10,35 @@
  *
  */
 
-@media only screen and (max-width: 20em) {
+@media (width >= 20em) {
   /* no comment */
 }
 
-@media only screen and (min-width: 20.025em) and (max-width: 22em) {
+@media (20.025em <= width <= 22em) {
   /* no comment */
 }
 
-@media only screen and (min-width: 22.025em) and (max-width: 30em) {
+@media (22.025em <= width <= 30em) {
   /* no comment */
 }
 
-@media only screen and (min-width: 30.025em) and (max-width: 40em) {
+@media (30.025em <= width <= 40em) {
   /* no comment */
 }
 
-@media only screen and (min-width: 40em) and (max-width: 64em) {
+@media (40.025em <= width <= 64em) {
   /* no comment */
 }
 
-@media only screen and (min-width: 64.025em) and (max-width: 90em) {
+@media (64.025em <= width <= 90em) {
   /* no comment */
 }
 
-@media only screen and (min-width: 90.025em) and (max-width: 120em) {
+@media (90.025em <= width <= 120em) {
   /* no comment */
 }
 
-@media only screen and (min-width: 120.63em) and (max-width: 160em) {
+@media (120.025em <= width <= 160em) {
   /* no comment */
 }
 

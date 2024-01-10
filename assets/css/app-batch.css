@@ -11,7 +11,7 @@
  */
 
 /* Mobile */
-@media only screen and (max-width: 20em) {
+@media (width >= 20em) {
   .i-am-robot-svg,
   .i-am-human-svg,
   .batch-processing-svg {
@@ -21,7 +21,7 @@
 }
 
 /* Mobile */
-@media only screen and (min-width: 20.025em) and (max-width: 22em) {
+@media (20.025em <= width <= 22em) {
   .i-am-robot-svg,
   .i-am-human-svg,
   .batch-processing-svg {
@@ -31,7 +31,7 @@
 }
 
 /* Mobile */
-@media only screen and (min-width: 22.025em) and (max-width: 30em) {
+@media (22.025em <= width <= 30em) {
   .i-am-robot-svg,
   .i-am-human-svg,
   .batch-processing-svg {
@@ -41,7 +41,7 @@
 }
 
 /* Mobile */
-@media only screen and (min-width: 30.025em) and (max-width: 40em) {
+@media (30.025em <= width <= 40em) {
   .i-am-robot-svg,
   .i-am-human-svg,
   .batch-processing-svg {
@@ -51,7 +51,7 @@
 }
 
 /* tablette */
-@media only screen and (min-width: 40em) and (max-width: 64em) {
+@media (40.025em <= width <= 64em) {
   .i-am-robot-svg,
   .i-am-human-svg,
   .batch-processing-svg {
@@ -61,7 +61,7 @@
 }
 
 /* desktop */
-@media only screen and (min-width: 64.025em) and (max-width: 90em) {
+@media (64.025em <= width <= 90em) {
   .i-am-robot-svg,
   .i-am-human-svg,
   .batch-processing-svg {
@@ -71,7 +71,7 @@
 }
 
 /* desktop */
-@media only screen and (min-width: 90.025em) and (max-width: 120em) {
+@media (90.025em <= width <= 120em) {
   .i-am-robot-svg,
   .i-am-human-svg,
   .batch-processing-svg {
@@ -81,7 +81,7 @@
 }
 
 /* desktop */
-@media only screen and (min-width: 120.063em) and (max-width: 160em) {
+@media (120.025em <= width <= 160em) {
   .i-am-robot-svg,
   .i-am-human-svg,
   .batch-processing-svg {

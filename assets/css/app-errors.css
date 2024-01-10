@@ -122,7 +122,7 @@ body {
   }
 }
 
-@media only screen and (max-width: 20em) {
+@media (width >= 20em) {
   .logo-svg { width: 32px; }
   .content h2 { font-size: 1.4rem; }
   .content p { font-size: 1.1rem; }
@@ -136,7 +136,7 @@ body {
   .press-left-button { padding-left: 2rem; }
 }
 
-@media only screen and (min-width: 30.025em) and (max-width: 40em) {
+@media (30.025em <= width <= 40em) {
   .logo-svg { width: 64px; }
   .content h2 { font-size: 1.3rem; }
   .content p { font-size: 1rem; }
