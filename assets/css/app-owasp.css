@@ -10,21 +10,21 @@
  *
  */
 
-@media only screen and (max-width: 20em) { /* vide */ }
+@media (width >= 20em) { /* vide */ }
 
-@media only screen and (min-width: 20.025em) and (max-width: 22em) { /* vide */ }
+@media (20.025em <= width <= 22em) { /* vide */ }
 
-@media only screen and (min-width: 22.025em) and (max-width: 30em) { /* vide */ }
+@media (22.025em <= width <= 30em) { /* vide */ }
 
-@media only screen and (min-width: 30.025em) and (max-width: 40em) { /* vide */ }
+@media (30.025em <= width <= 40em) { /* vide */ }
 
-@media only screen and (min-width: 40em) and (max-width: 64em) { /* vide */ }
+@media (40.025em <= width <= 64em) { /* vide */ }
 
-@media only screen and (min-width: 64.025em) and (max-width: 90em) { /* vide */ }
+@media (64.025em <= width <= 90em) { /* vide */ }
 
-@media only screen and (min-width: 90.025em) and (max-width: 120em) { /* vide */ }
+@media (90.025em <= width <= 120em) { /* vide */ }
 
-@media only screen and (min-width: 120.63em) and (max-width: 160em) {
+@media (120.025em <= width <= 160em) {
   .voir-analyse-svg {
     margin-bottom: -0.6rem;
     width: 48px;

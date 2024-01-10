@@ -445,50 +445,50 @@
   */
 
 /* Media Small */
-@media only screen and (max-width: 20em) {
+@media (width >= 20em) {
   .log { font-size: 0.75rem; }
   .callout-information { width: 21rem; }
 }
 
 /* Media Small */
-@media only screen and (min-width: 20.025em) and (max-width: 22em) {
+@media (20.025em <= width <= 22em) {
   .log { font-size: 0.8rem; }
   .callout-information { width: 21rem; }
 }
 
 /* Media Small */
-@media only screen and (min-width: 22.025em) and (max-width: 30em) {
+@media (22.025em <= width <= 30em) {
   .callout-information { width: 22rem; }
 }
 
 /* Media Small */
-@media only screen and (min-width: 30.025em) and (max-width: 40em) {
+@media (30.025em <= width <= 40em) {
   .callout-information { width: 22rem; }
 }
 
 /* Media Medium */
-@media only screen and (min-width: 40em) and (max-width: 64em) {
+@media (40.025em <= width <= 64em) {
   .bouton-analyse-right { padding-right: 1rem; }
   .bouton-afficher-left { padding-left: 1rem; }
   .callout-information { width: 22rem; }
 }
 
 /* Media Large */
-@media only screen and (min-width: 64.025em) and (max-width: 90em) {
+@media (64.025em <= width <= 90em) {
   .bouton-analyse-right { padding-right: 1rem; }
   .bouton-afficher-left { padding-left: 1rem; }
   .callout-information { width: 24.1rem; }
 }
 
 /* Media Large */
-@media only screen and (min-width: 90.025em) and (max-width: 120em) {
+@media (90.025em <= width <= 120em) {
   .bouton-analyse-right { padding-right: 1rem; }
   .bouton-afficher-left { padding-left: 1rem; }
   .callout-information { width: 24.1rem; }
 }
 
 /* Media Extra-Large */
-@media only screen and (min-width: 120.63em) and (max-width: 160em) {
+@media (120.025em <= width <= 160em) {
   .voir-analyse-svg {
     margin-bottom: -0.6rem;
     width: 48px;

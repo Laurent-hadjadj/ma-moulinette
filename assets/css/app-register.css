@@ -58,7 +58,7 @@
 }
 
 /* Media Large */
-@media (64.025em <= width <= 902em) {
+@media (64.025em <= width <= 90em) {
   .video-arbres {
     height: auto;
     width: 95%;
@@ -177,13 +177,8 @@
 
 :focus { outline: none; }
 
-#registration_form_nom {
-  margin-top: 0.2rem;
-}
-
-#registration_form_prenom {
-  margin-top: -1.8rem;
-}
+#registration_form_nom { margin-top: 0.2rem; }
+#registration_form_prenom { margin-top: -1.8rem; }
 
 /***************  Avatar                        *******************************/
 .sepia { filter: sepia(0); }
@@ -200,10 +195,7 @@
 
 /** Supression style inline */
 .ajouter-mon-avatar-container { display: inline-flex; }
-
-#ajouter-mon-avatar {
-  margin-left: 0.6rem;
-}
+#ajouter-mon-avatar { margin-left: 0.6rem; }
 
 /** Supression style inline */
 .avatar-chiffre,
@@ -225,7 +217,14 @@
 /* stylelint-disable-next-line selector-class-pattern */
 .form_erreur ul {
   margin-left: 0;
-  margin-bottom: 0;
+  margin-top: -1rem;
+  margin-bottom: 1.5rem;
   font-size: 0.8rem;
   list-style-type: none;
+}
+
+/** desactivaton du bouto&&&n inscription */
+.disable {
+  cursor: not-allowed;
+  background-color: #006182;
 }
