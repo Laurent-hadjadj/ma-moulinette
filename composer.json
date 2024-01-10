@@ -30,7 +30,7 @@
         "symfony/form": "6.3.5",
         "symfony/framework-bundle": "6.3.5",
         "symfony/http-client": "6.3.5",
-        "symfony/intl": "6.3.2",
+        "symfony/intl": "6.3.*",
         "symfony/mailer": "6.3.5",
         "symfony/mime": "6.3.5",
         "symfony/monolog-bundle": "3.8.0",
