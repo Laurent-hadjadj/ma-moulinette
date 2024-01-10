@@ -445,7 +445,7 @@
   */
 
 /* Media Small */
-@media (width >= 20em) {
+@media (width <= 20em) {
   .log { font-size: 0.75rem; }
   .callout-information { width: 21rem; }
 }

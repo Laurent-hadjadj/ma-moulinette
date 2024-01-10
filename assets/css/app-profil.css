@@ -10,7 +10,7 @@
  *
  */
 
-@media (width >= 20em) { /* vide */ }
+@media (width <= 20em) { /* vide */ }
 
 @media (20.025em <= width <= 22em) { 
   #graphique-langage { height: 400px; } 

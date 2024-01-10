@@ -16,7 +16,7 @@
 */
 
 /* Mobile */
-@media (width >= 20em) {
+@media (width <= 20em) {
   /* Taille du logo */
   .logo-svg {
     width: 50px;

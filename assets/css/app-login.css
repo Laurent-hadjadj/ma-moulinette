@@ -16,7 +16,7 @@
   */
 
 /* Media Small */
-@media (width >= 20em) {
+@media (width <= 20em) {
   .video-hongkong {
     height: auto;
     width: 100%;

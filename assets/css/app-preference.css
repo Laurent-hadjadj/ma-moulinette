@@ -18,7 +18,7 @@
   */
 
 /* Media Small */
-@media (width >= 20em) {
+@media (width <= 20em) {
   .prenom-nom { margin-left: 0.7rem; }
   .adresse-mel { margin-left: 0.7rem; }
   .privilege-titre { margin-left: 0.7rem; }

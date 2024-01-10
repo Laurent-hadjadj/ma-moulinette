@@ -178,7 +178,7 @@
   */
 
 /* Media Small */
-@media (width >= 20em) {
+@media (width <= 20em) {
   .stats-list > li { width: 3rem; }
   .stats-list > li .stats-list-label { width: 3rem; }
 
