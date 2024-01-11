@@ -2,8 +2,8 @@
 #Formulaire de d'inscription et de connexion
 placeholder.nom: HADJADJ
 placeholder.prenom: Laurent
-placeholder.courriel: laurent.hadjadj@ma-petite-entreprise.fr
-placeholder.motdepasse: Saisi ton mot de passe, de 8 à 52 signes.
+placeholder.courriel: laurent.hadjadj@ma-moulinette.fr
+placeholder.motdepasse: Saisi ton mot de passe.
 placeholder.remotdepasse: Re-saisie ton mot de passe.
 label.nom: Nom
 label.prenom: Prénom
