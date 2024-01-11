@@ -79,7 +79,6 @@ class RegistrationFormType extends AbstractType
                 'attr' => [
                     'placeholder' => 'steeve@gmail.com',
                     'tabindex' => '-1',
-                    'ref' => 'initHoneyPot',
                     'autocomplete' => 'off',
                     'class' => 'email']])
 
@@ -105,14 +104,18 @@ class RegistrationFormType extends AbstractType
                     'attr' => [
                         'placeholder' => 'placeholder.motdepasse',
                         'class' => 'color-bleu',
-                        'autocomplete' => 'off'],
+                        'autocomplete' => 'off',
+                        'aria-label'=>'Mot de passe',
+                        'aria-describedby'=>'registration_form_plainPassword_first'],
                 ],
                 'second_options' => [
                     'label' => 'label.remotdepasse',
                     'attr' => [
                         'placeholder' => 'placeholder.remotdepasse',
                         'class' => 'color-bleu',
-                        'autocomplete' => 'off' ],
+                        'autocomplete' => 'off',
+                        'aria-label'=>'Vérification mot de passe',
+                        'aria-describedby'=>'registration_form_plainPassword_second' ],
                 ],
                 'constraints' => [
                     new NotBlank([
