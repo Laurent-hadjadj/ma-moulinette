@@ -26,13 +26,13 @@
 
   #registration_form_plainPassword_first + .unmask1
   {
-    top: 65%;
+    top: 66%;
     right: 2.3rem;
   }
 
   #registration_form_plainPassword_second + .unmask2
   {
-    top: 77%;
+    top: 78%;
     right: 2.3rem;
   }
 }
@@ -46,14 +46,14 @@
 
   #registration_form_plainPassword_first + .unmask1
   {
-    top: 65%;
+    top: 66%;
     right: 2.6rem;
   }
 
 
   #registration_form_plainPassword_second + .unmask2
   {
-    top: 77%;
+    top: 78%;
     right: 2.6rem;
   }
 }
@@ -67,13 +67,13 @@
 
   #registration_form_plainPassword_first + .unmask1
   {
-    top: 65%;
+    top: 66%;
     right: 3.3rem;
   }
 
   #registration_form_plainPassword_second + .unmask2
   {
-    top: 77%;
+    top: 78%;
     right: 3.3rem;
   }
 }
@@ -87,13 +87,13 @@
 
   #registration_form_plainPassword_first + .unmask1
   {
-    top: 65%;
+    top: 66%;
     right: 4.2rem;
   }
 
   #registration_form_plainPassword_second + .unmask2
   {
-    top: 77%;
+    top: 78%;
     right: 4.2rem;
   }
 }
@@ -107,13 +107,13 @@
 
   #registration_form_plainPassword_first + .unmask1
   {
-    top: 62%;
+    top: 63%;
     right: 3.6rem;
   }
 
   #registration_form_plainPassword_second + .unmask2
   {
-    top: 75%;
+    top: 75.5%;
     right: 3.6rem;
   }
 }
@@ -126,12 +126,12 @@
   }
 
   #registration_form_plainPassword_first + .unmask1
-  { top: 62%;
+  { top: 63%;
     right: 4.2rem;
   }
 
   #registration_form_plainPassword_second + .unmask2
-  { top: 75%;
+  { top: 75.5%;
     right: 4.2rem;
   }
 }
@@ -145,13 +145,13 @@
 
   #registration_form_plainPassword_first + .unmask1
   {
-    top: 66%;
+    top: 63.5%;
     right: 4.2rem;
   }
 
   #registration_form_plainPassword_second + .unmask2
   {
-    top: 75%;
+    top: 75.5%;
     right: 4.2rem;
   }
 }
@@ -165,13 +165,13 @@
 
   #registration_form_plainPassword_first + .unmask1
   {
-    top: 66%;
+    top: 63.5%;
     right: 4.2rem;
   }
 
 #registration_form_plainPassword_second + .unmask2
   {
-    top: 75%;
+    top: 75.5%;
     right: 4.2rem;
   }
 }
