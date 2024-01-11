@@ -24,15 +24,10 @@
     width: 100%;
   }
 
-  #registration_form_plainPassword_first + .unmask1
-  {
-    top: 66%;
-    right: 2.3rem;
-  }
-
+  #registration_form_plainPassword_first + .unmask1,
   #registration_form_plainPassword_second + .unmask2
   {
-    top: 78%;
+    top: 1.25rem;
     right: 2.3rem;
   }
 }
@@ -44,16 +39,10 @@
     width: 100%;
   }
 
-  #registration_form_plainPassword_first + .unmask1
-  {
-    top: 66%;
-    right: 2.6rem;
-  }
-
-
+  #registration_form_plainPassword_first + .unmask1,
   #registration_form_plainPassword_second + .unmask2
   {
-    top: 78%;
+    top: 1.25rem;
     right: 2.6rem;
   }
 }
@@ -65,17 +54,14 @@
     width: 100%;
   }
 
-  #registration_form_plainPassword_first + .unmask1
+  #registration_form_plainPassword_first + .unmask1,
+  #registration_form_plainPassword_second + .unmask2
   {
-    top: 66%;
+    top: 1.25rem;
     right: 3.3rem;
   }
 
-  #registration_form_plainPassword_second + .unmask2
-  {
-    top: 78%;
-    right: 3.3rem;
-  }
+
 }
 
 /* Media Small */
@@ -85,36 +71,42 @@
     width: 100%;
   }
 
-  #registration_form_plainPassword_first + .unmask1
-  {
-    top: 66%;
-    right: 4.2rem;
-  }
-
+  #registration_form_plainPassword_first + .unmask1,
   #registration_form_plainPassword_second + .unmask2
   {
-    top: 78%;
-    right: 4.2rem;
+    top: 1.25rem;
+    right: 3.2rem;
   }
 }
 
+
 /* Media Medium */
-@media (40.025em <= width <= 64em) {
+@media (40.025em <= width <= 46em) {
   .video-arbres {
     height: auto;
     width: 95%;
   }
 
-  #registration_form_plainPassword_first + .unmask1
-  {
-    top: 63%;
-    right: 3.6rem;
-  }
-
+  #registration_form_plainPassword_first + .unmask1,
   #registration_form_plainPassword_second + .unmask2
   {
-    top: 75.5%;
-    right: 3.6rem;
+    top: 1.25rem;
+    right: 1.8rem;
+  }
+}
+
+/* Media Medium */
+@media (46.025em <= width <= 64em) {
+  .video-arbres {
+    height: auto;
+    width: 95%;
+  }
+
+  #registration_form_plainPassword_first + .unmask1,
+  #registration_form_plainPassword_second + .unmask2
+  {
+    top: 1.25rem;
+    right: 2.6rem;
   }
 }
 
@@ -125,14 +117,10 @@
     width: 95%;
   }
 
-  #registration_form_plainPassword_first + .unmask1
-  { top: 63%;
-    right: 4.2rem;
-  }
-
+  #registration_form_plainPassword_first + .unmask1,
   #registration_form_plainPassword_second + .unmask2
-  { top: 75.5%;
-    right: 4.2rem;
+  { top: 1.25rem;
+    right: 3.2rem;
   }
 }
 
@@ -143,16 +131,12 @@
     width: 95%;
   }
 
-  #registration_form_plainPassword_first + .unmask1
-  {
-    top: 63.5%;
-    right: 4.2rem;
-  }
-
+  #registration_form_plainPassword_first + .unmask1,
   #registration_form_plainPassword_second + .unmask2
+
   {
-    top: 75.5%;
-    right: 4.2rem;
+    top: 1.25rem;
+    right: 3.2rem;
   }
 }
 
@@ -163,16 +147,11 @@
     width: 95%;
   }
 
-  #registration_form_plainPassword_first + .unmask1
+  #registration_form_plainPassword_first + .unmask1,
+  #registration_form_plainPassword_second + .unmask2
   {
-    top: 63.5%;
-    right: 4.2rem;
-  }
-
-#registration_form_plainPassword_second + .unmask2
-  {
-    top: 75.5%;
-    right: 4.2rem;
+    top: 1.25rem;
+    right: 3.2rem;
   }
 }
 
@@ -200,6 +179,8 @@
 #sur { font-size: 0.8rem; }
 
 /* gestion du formulaire de connexion */
+
+/** Gestion des labels */
 .floated-label-wrapper {
   position: relative;
 }
@@ -288,7 +269,7 @@
   margin-top: 0.1rem;
 }
 
-/** Supression style inline */
+/* Supression style inline */
 .ajouter-mon-avatar-container { display: inline-flex; }
 #ajouter-mon-avatar { margin-left: 0.6rem; }
 
@@ -307,7 +288,7 @@
 
 /* Formulaires */
 
-/** desactivaton du bouton inscription */
+/* desactivaton du bouton inscription */
 .disable {
   cursor: not-allowed;
   background-color: #006182;
@@ -334,6 +315,16 @@
   list-style-type: none;
 }
 
+/** Gestion de l'affichage et du masquage du mot de passe */
+
+/** Création d'un bloc pour le champs password et repassword */
+.isolation { position: relative }
+
+/* On désactive l'icone qui affiche le mot de passe et celui qui supprime les données */
+input[type='password']::-ms-reveal,
+input[type='password']::-ms-clear { display: none; }
+
+/* Affichage et masquage du mot de passe */
 #registration_form_plainPassword_first + .unmask1,
 #registration_form_plainPassword_second + .unmask2
 {
@@ -348,6 +339,7 @@
   border: none;
 }
 
+/** Affichage et masquage du mot de passe - avant */
 #registration_form_plainPassword_first + .unmask1::before,
 #registration_form_plainPassword_second + .unmask2::before {
   content: "";
@@ -361,6 +353,7 @@
   border-radius: 50%;
 }
 
+/** Affichage et masquage du mot de passe - après */
 #registration_form_plainPassword_first[type="text"] + .unmask1::after,
 #registration_form_plainPassword_second[type="text"] + .unmask2::after {
   content: "";
