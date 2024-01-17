@@ -1,289 +1,308 @@
 {% set title = "Mes preferences" %}
 {% set description = "Ma Moulinette, mes preferences" %}
 <!DOCTYPE html>
-<html lang="fr">
+<!--
+.. __  __             __  __             _ _            _   _
+  |  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
+  | |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
+  | |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
+  |_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
 
-  {# Chargement de la section HEAD #}
-  <head>
-    {{ include('head.html.twig') }}
-    {% block stylesheets %}
-      {{ encore_entry_link_tags('preference') }}
-    {% endblock %}
-  </head>
+  Laurent HADJADJ
+  https://bitbucket.org/laurent_h/ma-moulinette
+  © 2024 - CC BY-SA-NC 4.0
+-->
 
-  <body>
-    {# Chargement de la section header #}
-    {{ include('header.html.twig') }}
-    <br>
+<html
+	lang="fr">
 
-    <header class="grid-container">
-      <nav aria-label="Ici : " role="navigation">
-        <ul class="claire-hand breadcrumbs">
-          <li><a href="/">Accueil</a></li>
-          <li><span class="show-for-sr">Current:</span>Mes préférences</li>
-        </ul>
-      </nav>
-    </header>
+	{# Chargement de la section HEAD #}
+	<head>
+		{{ include('head.html.twig') }}
+		{% block stylesheets %}
+			{{ encore_entry_link_tags('preference') }}
+		{% endblock %}
+	</head>
 
-    <div class="grid-container">
-      <h1 class="h4 claire-hand">Mes Informations personnelles.</h1>
-      <div class="fieldset fieldset-information">
-        <div class="grid-x">
-          {# Prenom + Nom #}
-          <div class="small-12 medium-1 large-1 cell">
-            <img id="ma-tete" src="/build/avatar/{{avatar}}" alt="mOi"/>
-          </div>
-          <div class="small-12 medium-11 large-11 cell">
-            <p class="open-sans prenom-nom">{{prenom}}
-              {{nom}}</p>
-          </div>
-        </div>
-        {# Adresse Mel #}
-        <div class="grid-x">
-          <div class="small-12 medium-1 large-1 cell">
-            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="courriel-svg">
-              <path d="M36.6 65.6C11.1 71.8-4.9 97.8 1.5 122.5c2 7.5 5.7 14.3 10.7 19.5 4.5 4.6 217.5 147.1 225.3 150.6 11.9 5.4 26 5.2 38.2-.5 9.5-4.5 218.2-144.2 223.5-149.6 24.9-25.4 11.3-68.6-24.3-77-9.4-2.2-429.1-2.1-438.3.1z"/>
-              <path d="M0 288.4c0 81 .3 118.1 1.1 121.8 3.7 17.6 17.9 32 36 36.3 9.4 2.2 426.7 2.2 437.2 0 18.2-3.8 32.9-18.4 36.6-36.3 1.3-6.1 1.6-238.6.3-238-.4.1-48.7 32.3-107.4 71.5s-109.9 72.9-113.9 74.8c-11 5.6-20.4 7.7-33.9 7.7s-22.9-2.1-33.9-7.7c-4-1.9-55.2-35.6-113.9-74.8C49.5 204.5 1.2 172.3.8 172.2.3 172 0 224.3 0 288.4z"/>
-            </svg>
-          </div>
-          <div class="small-12 medium-11 large-11 cell">
-            <p class="open-sans adresse-mel">{{courriel}}</p>
-          </div>
-        </div>
+	<body>
+		{# Chargement de la section header #}
+		{{ include('header.html.twig') }}
+		<br>
 
-        {# Mes privileges #}
-        <div class="grid-x">
-          <div class="small-12 medium-1 large-1 cell">
-            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="role-svg">
-              <path d="M220.4 1.4c-4.9 2.2-6.6 4.6-14.9 21.6l-7.9 15.9-7 2.1c-14.5 4.3-31.8 11.7-44.6 18.9l-7.1 4-14-6.9c-14.2-7-17.4-7.9-22.6-5.9-3.6 1.3-48.8 46.3-50.8 50.5-2.5 5.4-1.8 8.6 5.5 23.3l6.9 14-4 7.1c-7.2 12.8-14.6 30.1-18.9 44.6l-2.1 7-15.9 7.9c-17.2 8.4-19.5 10-21.6 15.1-2 4.8-2 66 0 70.8 2.1 5.1 4.4 6.7 21.4 15.1l15.9 7.7 4.7 14.2c2.6 7.7 7.7 20 11.3 27.2l6.5 13.1-5.7 17.5c-4.8 14.5-5.6 18.2-5.1 21.4.7 3.4 3.9 7 25.4 28.6 21.5 21.5 25.2 24.7 28.6 25.4 3.1.5 7-.4 21.6-5.1l17.7-5.8 6.9 3.7c13.7 7.3 37.5 16.8 48.1 19 1.7.4 3.6 1.3 4.1 1.9.6.7 2.8 7.1 5.1 14.4 4.5 14.2 7.2 18.6 12.8 20.9 4.7 2 65.9 2 70.6 0 5.6-2.3 8.3-6.7 12.8-20.9 2.3-7.3 4.5-13.7 5.1-14.4.5-.6 2.4-1.5 4.1-1.9 10.6-2.2 34.4-11.7 48.1-19l6.9-3.7 17.7 5.8c14.6 4.7 18.5 5.6 21.6 5.1 3.4-.7 7.1-3.9 28.6-25.4s24.7-25.2 25.4-28.6c.5-3.1-.4-7-5.1-21.6l-5.8-17.7 3.7-6.9c7.3-13.7 16.8-37.5 19-48.1.4-1.7 1.3-3.6 1.9-4.1.7-.6 7.1-2.8 14.4-5.1 14.2-4.5 18.6-7.2 20.9-12.8 2-4.7 2-65.9 0-70.6-2.3-5.7-6.7-8.3-20.9-12.8-7.3-2.2-13.7-4.6-14.4-5.2-.6-.7-2.1-4.8-3.3-9.1-4-14.6-12-33.6-19.8-47.4l-4.1-7.3 6.9-14c7.3-14.7 8-17.9 5.5-23.3-2-4.2-47.2-49.2-50.8-50.5-5.2-2-8.4-1.1-22.6 5.9l-14 6.9-7.1-4c-12.8-7.2-30.1-14.6-44.6-18.9l-7-2.1-7.9-15.9c-8.4-17.2-10-19.5-15.1-21.6-4.8-2-66.4-2-71 0zm51.7 90.7c52.2 5.3 97.4 33.8 125.1 78.9 8.6 14.1 16.8 34.9 20.3 51.5 5.6 27.1 3.9 57.8-4.6 83.8-16.7 51-55.6 89.9-106.6 106.6-32 10.5-68.6 10.5-100.6 0-51-16.7-89.9-55.6-106.6-106.6-10.5-32-10.5-68.6 0-100.6 8.4-25.7 21.5-47.1 40.5-66.1 35.3-35.3 83.4-52.5 132.5-47.5z"/>
-              <path d="M246.5 151.6c-1.1.2-4.5.9-7.5 1.5-21.7 4.4-42.9 22.4-52.2 44.4-4.1 9.7-5.3 16.2-5.3 28.5s1.2 18.8 5.3 28.5c9.3 21.9 29 38.7 52.2 44.6 7.1 1.8 26.9 1.8 34 0 23.2-5.9 42.9-22.7 52.2-44.6 4.1-9.7 5.3-16.2 5.3-28.5 0-6.5-.6-13.9-1.4-17-6.8-26.9-27.7-48.2-54.6-55.7-5.1-1.4-24.3-2.6-28-1.7zM177.1 308c-8.9 10.7-14.3 19.8-19.1 32.2l-2.1 5.3 9.2 8.9c18.2 17.5 40.9 29.2 66.7 34.3 11.8 2.3 36.6 2.3 48.4 0 25.8-5.1 48.5-16.8 66.7-34.3l9.2-8.9-2.1-5.3c-4.9-12.8-15.9-30.3-22.9-36.6-2.1-1.9-2.2-1.9-4.9.2-15.3 12.3-29.3 19.8-44.7 23.9-8.8 2.3-11.9 2.6-25.5 2.6s-16.7-.3-25.5-2.6c-15.5-4.2-32.1-12.9-42.8-22.3-2-1.9-4.1-3.4-4.7-3.4-.5 0-3.2 2.7-5.9 6z"/>
-            </svg>
-          </div>
-          <div class="small-12 medium-11 large-11 cell">
-            <p class="open-sans privilege-titre">Mes privilèges :</p>
-          </div>
-        </div>
-        <div class="grid-x">
-          <ul class="open-sans">
-            {% for role in roles %}
-              <li class="privilege-liste">{{role}}</li>
-            {% endfor %}
-          </ul>
-        </div>
+		<header class="grid-container">
+			<nav aria-label="Ici : " role="navigation">
+				<ul class="claire-hand breadcrumbs">
+					<li>
+						<a href="/">Accueil</a>
+					</li>
+					<li>
+						<span class="show-for-sr">Current:</span>Mes préférences</li>
+				</ul>
+			</nav>
+		</header>
 
-        {# Mon équipe #}
-        <div class="grid-x">
-          <div class="small-12 medium-1 large-1 cell">
-            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="mon-equipe-svg">
-              <path d="M243.3 1.5c-3.5.8-9.3 2.8-13 4.6-9.3 4.5-21.7 16.9-26.1 26.1-15.5 32 .8 70.6 34.3 81.1 9.8 3.1 25.2 3.1 35 0 33.5-10.5 49.8-49.1 34.3-81.1-4.4-9.2-16.8-21.6-26-26-12-5.9-25.6-7.5-38.5-4.7zM120.5 28.4C98.2 33.9 81 55.9 81 78.5c.1 26 19.7 48.2 45.8 51.9 4.2.6 4.5.5 11-5.4 9.2-8.5 19.8-14.8 31.1-18.6 9-3 9.7-3.4 11.5-7 1-2.2 2.6-7.4 3.4-11.8 7.1-35.7-27.6-68.1-63.3-59.2zM366.3 28.5c-20.1 5.4-35.5 22.8-38.5 43.2-1 6.7-.9 9.4.4 15.9.8 4.4 2.4 9.6 3.4 11.8 1.8 3.6 2.5 4 11.5 7 11.3 3.8 21.9 10.1 31.1 18.6 6.5 5.9 6.8 6 11 5.4 26.1-3.7 45.7-25.9 45.8-51.9 0-23.1-18.1-45.6-40.8-50.4-7.1-1.5-17.5-1.3-23.9.4zM184.1 133.1c-7.1 1.4-18.6 7.4-24.2 12.6-6.8 6.2-12.4 15-14.9 23.1-1.9 6-2 9.3-2 47.3V257h226v-40.9c0-38-.1-41.3-2-47.3-5.4-17.5-22-32.4-39.9-35.8-6.6-1.2-136.6-1.2-143 .1zM72 145.7c-18.4 2.8-31.9 14-38.5 31.9-1.6 4.3-1.9 9.4-2.3 42.1l-.4 37.3H113v-41.4c0-48.5.2-50.1 8.7-69.4.4-.9-4.6-1.2-23.3-1.1-13.2.1-25 .3-26.4.6zM390.3 146.2c8.6 19.6 8.7 20.7 8.7 69.4V257h82.2l-.4-37.3c-.4-32.7-.7-37.8-2.3-42.1-5.5-14.8-16.2-25.6-30.3-30.3-6.6-2.2-58.8-3.2-57.9-1.1zM31.7 287.7c-1 .9-.9 31.1.1 31.6.4.3 15 2 32.4 3.8l31.8 3.3 1.5 5.6c2.7 9.5 6.6 19.1 12.1 30.3L115 373l-20 24.7c-11 13.6-20 25.2-20 25.8 0 .5 10.1 11.1 22.4 23.4l22.4 22.4 25.2-20.5 25.3-20.5 11.4 5.8c6.3 3.2 16.7 7.4 23.1 9.5 6.5 2 11.8 3.8 11.9 3.8.1.1 1.5 13.6 3.3 30.1 1.7 16.5 3.3 31 3.6 32.3l.4 2.2h64l.4-2.3c.3-1.2 1.9-15.7 3.6-32.2 1.8-16.5 3.2-30 3.3-30.1.1 0 5.4-1.8 11.9-3.8 6.4-2.1 16.8-6.3 23.1-9.5l11.4-5.8 25.3 20.5 25.2 20.5 22.4-22.4c12.3-12.3 22.4-22.9 22.4-23.4 0-.6-9-12.2-20-25.8L397 373l5.4-10.7c5.5-11.2 9.4-20.8 12.1-30.3l1.5-5.6 31.8-3.3c17.4-1.8 32-3.6 32.5-4 .4-.4.6-7.7.5-16.2l-.3-15.4-74.2-.3-74.2-.2-.6 4.7c-2.9 24.2-12.8 42.9-29.3 55.4-14.5 11-27.6 15.3-46.2 15.3-14.1 0-21.2-1.5-32.5-6.9-24.6-11.7-39.4-33.7-43-63.8l-.6-4.7h-73.8c-40.6 0-74.1.3-74.4.7z"/>
-            </svg>
-          </div>
-          <div class="small-12 medium-11 large-11 cell">
-            <p class="open-sans mon-equipe">
-              {% if equipes[0]=="null" %}
-                <span class="color-rouge">Aucune</span>
-              {% else %}
-                {% set i,nombreEquipe = 1, equipes|length %}
-                {% for equipe in equipes %}
-                  <span>{{equipe}}</span>
-                  {% if i < nombreEquipe %}
-                    <span>
-                      -
-                    </span>
-                  {% endif %}
-                  {% set i = i + 1 %}
-                {% endfor %}
-              {% endif %}
-            </p>
-          </div>
-        </div>
-      </div>
-      <br>
-      {# Mes préférences #}
-      <h4 class="claire-hand">Mes préférences.</h4>
-      <table class="hover">
-        <caption class="claire-hand">Liste des préférences de l'utilisateur.</caption>
-        <thead>
-          <tr>
-            <th scope="col" class="open-sans text-center"></th>
-            <th scope="col" class="open-sans text-center">Option</th>
-            <th scope="col" class="open-sans text-center">Description</th>
-            <th scope="col" class="open-sans text-center">Etat</th>
-          </tr>
-        </thead>
-        <tbody id="tableau-liste-preferences" class="open-sans">
-          {% for preference in preferences %}
-            {% set option = preference['option']|lower %}
-            <tr class="open-sans">
-              <td id="js-{{option}}" class="js-preference-information">
-                <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="preference-svg">
-                  <path d="M114.3 33.4C95.2 38.2 79.2 54.2 75 72.5c-1.5 6.4-1.5 18.6 0 25 4.2 18.2 20.2 34.3 39.1 39.1 21.5 5.5 48.1-6.6 58.9-26.8 4.4-8.1 6-14.7 6-24.3 0-23.5-13.7-42.9-35.6-50.6-7.5-2.6-21.9-3.4-29.1-1.5zM296.8 33.4c-8.3 3-13.9 9.3-15.7 17.7-1.5 7-1.5 150.9 0 157.9 1.4 6.4 6.1 12.7 11.9 16l4.5 2.5h162.2l4.9-3c3-1.9 6-4.9 7.9-7.9l3-4.9V48.3l-3-4.9c-1.9-3-4.9-6-7.9-7.9l-4.9-3-79.6-.2c-64.7-.2-80.3 0-83.3 1.1zm70.7 74.6c5.5 5.5 10.5 10 11 10s5.5-4.5 11-10c11.1-10.8 13-11.7 17.9-7.9 2 1.5 2.6 2.9 2.6 5.7 0 3.3-1 4.7-10.2 13.9L389.5 130l10.3 10.3c8.8 8.8 10.2 10.7 10.2 13.5 0 4.1-3.8 8.2-7.6 8.2-2.1 0-5.1-2.3-12.9-10-5.5-5.5-10.5-10-11-10s-5.5 4.5-11 10c-11.2 11-13.3 11.8-18.1 7.7-1.9-1.7-2.7-3.3-2.7-5.6 0-2.8 1.5-4.7 10.4-13.7l10.4-10.4-10.4-10.4c-8.9-9-10.4-10.9-10.4-13.7 0-2.3.8-3.9 2.7-5.6 4.8-4.1 6.9-3.3 18.1 7.7z"/>
-                  <path d="M68.9 140.7c-12.3 9-24.1 22.9-29.6 34.9-9.2 20.1 1.4 43.8 22.6 50.4 6 1.9 9.3 2 64.6 2 53.9 0 58.8-.1 64.3-1.8 11.9-3.8 20.5-12.2 24.2-24.1 3.8-12 1.9-22.2-6.5-35.2-8.3-12.9-27.6-30.9-33.1-30.9-1.3 0-4.7 1.8-7.5 3.9-6.6 5-16.2 9.7-24.2 11.9-9.6 2.6-27.1 2.3-36.7-.7-8.4-2.5-18.4-7.8-23.4-12.2-1.9-1.6-4.5-2.9-5.9-2.9-1.4 0-5.3 2-8.8 4.7zM114.3 285.4C95.5 290 79.2 306.1 75 324.5c-1.5 6.3-1.5 18.6-.1 24.8 4.5 19.2 22.3 36.3 41.6 39.8 26.1 4.8 54.3-12.9 61.1-38.5 1.8-6.8 1.8-19.8-.1-27.1-7.2-27.3-35.9-44.7-63.2-38.1zM296.8 285.4c-8.3 3-13.9 9.3-15.7 17.7-1.5 7-1.5 150.9 0 157.9 1.4 6.4 6.1 12.7 11.9 16l4.5 2.5h162.2l4.9-3c3-1.9 6-4.9 7.9-7.9l3-4.9V300.3l-3-4.9c-1.9-3-4.9-6-7.9-7.9l-4.9-3-79.6-.2c-64.7-.2-80.3 0-83.3 1.1zm122.7 67.1c1.7 1.6 2.5 3.5 2.5 5.7 0 3-2.4 5.8-26.3 29.6C373.5 410 369 414 366.5 414c-2.4 0-5.4-2.5-17.3-14.4-12.8-12.7-14.5-14.8-14.5-17.6 0-2.4.8-4 2.7-5.7 4.8-4.1 6.9-3.3 18.1 7.7 5.5 5.5 10.5 10 11 10s10.9-9.9 23-22c24-23.9 25-24.6 30-19.5z"/>
-                  <path d="M68.9 392.7c-12.3 9-24.1 22.9-29.6 34.9-9.2 20.1 1.4 43.8 22.6 50.4 6 1.9 9.3 2 64.6 2 53.9 0 58.8-.1 64.3-1.8 11.9-3.8 20.5-12.2 24.2-24.1 3.8-12 1.9-22.2-6.5-35.2-8.3-12.9-27.6-30.9-33.1-30.9-1.3 0-4.7 1.8-7.5 3.9-6.6 5-16.2 9.7-24.2 11.8-8.4 2.3-26 2.3-34.7 0-8.1-2.1-19.7-7.9-24.9-12.3-2.2-1.9-5-3.4-6.4-3.4-1.4 0-5.3 2.1-8.8 4.7z"/>
-                </svg>
-              </td>
-              <td id="preference-option-{{option}}">{{preference['option']}}</td>
-              <td id="preference-description-{{option}}">{{preference['description']}}</td>
-              <td id="preference-etat-{{option}}">
-                {% if preference['statut']== true  %}
-                  {% set click='checked' %}
-                {% else %}
-                  {% set click='indeterminate' %}
-                {% endif %}
-                <div class="switch small preference-switch">
-                  <input class="switch-input" id="js-switch-{{option}}" type="checkbox" name="switch-{{option}}" {{click}}>
-                  <label class="switch-paddle" for="js-switch-{{option}}">
-                    <span class="show-for-sr">Oui | Non ?</span>
-                    <span class="switch-oui" aria-hidden="true">Oui</span>
-                    <span class="switch-non" aria-hidden="true">Non</span>
-                  </label>
-                </div>
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+		<div class="grid-container">
+			<h1 class="h4 claire-hand">Mes Informations personnelles.</h1>
+			<div class="fieldset fieldset-information">
+				<div
+					class="grid-x">
+					{# Prenom + Nom #}
+					<div class="small-12 medium-1 large-1 cell">
+						<img id="ma-tete" src="/build/avatar/{{avatar}}" alt="mOi"/>
+					</div>
+					<div class="small-12 medium-11 large-11 cell">
+						<p class="open-sans prenom-nom">{{prenom}}
+							{{nom}}</p>
+					</div>
+				</div>
+				{# Adresse Mel #}
+				<div class="grid-x">
+					<div class="small-12 medium-1 large-1 cell">
+						<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="courriel-svg">
+							<path d="M36.6 65.6C11.1 71.8-4.9 97.8 1.5 122.5c2 7.5 5.7 14.3 10.7 19.5 4.5 4.6 217.5 147.1 225.3 150.6 11.9 5.4 26 5.2 38.2-.5 9.5-4.5 218.2-144.2 223.5-149.6 24.9-25.4 11.3-68.6-24.3-77-9.4-2.2-429.1-2.1-438.3.1z"/>
+							<path d="M0 288.4c0 81 .3 118.1 1.1 121.8 3.7 17.6 17.9 32 36 36.3 9.4 2.2 426.7 2.2 437.2 0 18.2-3.8 32.9-18.4 36.6-36.3 1.3-6.1 1.6-238.6.3-238-.4.1-48.7 32.3-107.4 71.5s-109.9 72.9-113.9 74.8c-11 5.6-20.4 7.7-33.9 7.7s-22.9-2.1-33.9-7.7c-4-1.9-55.2-35.6-113.9-74.8C49.5 204.5 1.2 172.3.8 172.2.3 172 0 224.3 0 288.4z"/>
+						</svg>
+					</div>
+					<div class="small-12 medium-11 large-11 cell">
+						<p class="open-sans adresse-mel">{{courriel}}</p>
+					</div>
+				</div>
 
-      {# Fenêtre modale pour les bookmarks. #}
-      <div id="modal-bookmark" class="reveal" data-reveal data-close-on-click="true">
-        <h1 class="h2 claire-hand">Mes préférences.</h1>
-        <h2 class="h3 claire-hand">Bookmark</h2>
-        <br>
+				{# Mes privileges #}
+				<div class="grid-x">
+					<div class="small-12 medium-1 large-1 cell">
+						<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="role-svg">
+							<path d="M220.4 1.4c-4.9 2.2-6.6 4.6-14.9 21.6l-7.9 15.9-7 2.1c-14.5 4.3-31.8 11.7-44.6 18.9l-7.1 4-14-6.9c-14.2-7-17.4-7.9-22.6-5.9-3.6 1.3-48.8 46.3-50.8 50.5-2.5 5.4-1.8 8.6 5.5 23.3l6.9 14-4 7.1c-7.2 12.8-14.6 30.1-18.9 44.6l-2.1 7-15.9 7.9c-17.2 8.4-19.5 10-21.6 15.1-2 4.8-2 66 0 70.8 2.1 5.1 4.4 6.7 21.4 15.1l15.9 7.7 4.7 14.2c2.6 7.7 7.7 20 11.3 27.2l6.5 13.1-5.7 17.5c-4.8 14.5-5.6 18.2-5.1 21.4.7 3.4 3.9 7 25.4 28.6 21.5 21.5 25.2 24.7 28.6 25.4 3.1.5 7-.4 21.6-5.1l17.7-5.8 6.9 3.7c13.7 7.3 37.5 16.8 48.1 19 1.7.4 3.6 1.3 4.1 1.9.6.7 2.8 7.1 5.1 14.4 4.5 14.2 7.2 18.6 12.8 20.9 4.7 2 65.9 2 70.6 0 5.6-2.3 8.3-6.7 12.8-20.9 2.3-7.3 4.5-13.7 5.1-14.4.5-.6 2.4-1.5 4.1-1.9 10.6-2.2 34.4-11.7 48.1-19l6.9-3.7 17.7 5.8c14.6 4.7 18.5 5.6 21.6 5.1 3.4-.7 7.1-3.9 28.6-25.4s24.7-25.2 25.4-28.6c.5-3.1-.4-7-5.1-21.6l-5.8-17.7 3.7-6.9c7.3-13.7 16.8-37.5 19-48.1.4-1.7 1.3-3.6 1.9-4.1.7-.6 7.1-2.8 14.4-5.1 14.2-4.5 18.6-7.2 20.9-12.8 2-4.7 2-65.9 0-70.6-2.3-5.7-6.7-8.3-20.9-12.8-7.3-2.2-13.7-4.6-14.4-5.2-.6-.7-2.1-4.8-3.3-9.1-4-14.6-12-33.6-19.8-47.4l-4.1-7.3 6.9-14c7.3-14.7 8-17.9 5.5-23.3-2-4.2-47.2-49.2-50.8-50.5-5.2-2-8.4-1.1-22.6 5.9l-14 6.9-7.1-4c-12.8-7.2-30.1-14.6-44.6-18.9l-7-2.1-7.9-15.9c-8.4-17.2-10-19.5-15.1-21.6-4.8-2-66.4-2-71 0zm51.7 90.7c52.2 5.3 97.4 33.8 125.1 78.9 8.6 14.1 16.8 34.9 20.3 51.5 5.6 27.1 3.9 57.8-4.6 83.8-16.7 51-55.6 89.9-106.6 106.6-32 10.5-68.6 10.5-100.6 0-51-16.7-89.9-55.6-106.6-106.6-10.5-32-10.5-68.6 0-100.6 8.4-25.7 21.5-47.1 40.5-66.1 35.3-35.3 83.4-52.5 132.5-47.5z"/>
+							<path d="M246.5 151.6c-1.1.2-4.5.9-7.5 1.5-21.7 4.4-42.9 22.4-52.2 44.4-4.1 9.7-5.3 16.2-5.3 28.5s1.2 18.8 5.3 28.5c9.3 21.9 29 38.7 52.2 44.6 7.1 1.8 26.9 1.8 34 0 23.2-5.9 42.9-22.7 52.2-44.6 4.1-9.7 5.3-16.2 5.3-28.5 0-6.5-.6-13.9-1.4-17-6.8-26.9-27.7-48.2-54.6-55.7-5.1-1.4-24.3-2.6-28-1.7zM177.1 308c-8.9 10.7-14.3 19.8-19.1 32.2l-2.1 5.3 9.2 8.9c18.2 17.5 40.9 29.2 66.7 34.3 11.8 2.3 36.6 2.3 48.4 0 25.8-5.1 48.5-16.8 66.7-34.3l9.2-8.9-2.1-5.3c-4.9-12.8-15.9-30.3-22.9-36.6-2.1-1.9-2.2-1.9-4.9.2-15.3 12.3-29.3 19.8-44.7 23.9-8.8 2.3-11.9 2.6-25.5 2.6s-16.7-.3-25.5-2.6c-15.5-4.2-32.1-12.9-42.8-22.3-2-1.9-4.1-3.4-4.7-3.4-.5 0-3.2 2.7-5.9 6z"/>
+						</svg>
+					</div>
+					<div class="small-12 medium-11 large-11 cell">
+						<p class="open-sans privilege-titre">Mes privilèges :</p>
+					</div>
+				</div>
+				<div class="grid-x">
+					<ul class="open-sans">
+						{% for role in roles %}
+							<li class="privilege-liste">{{role}}</li>
+						{% endfor %}
+					</ul>
+				</div>
 
-        <blockquote class="text-justify">
-          Le service de
-          <em>bookmark</em>
-          permet de revenir sur le dernier projet visité. Cette fonction est très utile car elle évite de selectionner à chaque fois le projet dans le selecteur de projets.
-        </blockquote>
+				{# Mon équipe #}
+				<div class="grid-x">
+					<div class="small-12 medium-1 large-1 cell">
+						<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="mon-equipe-svg">
+							<path d="M243.3 1.5c-3.5.8-9.3 2.8-13 4.6-9.3 4.5-21.7 16.9-26.1 26.1-15.5 32 .8 70.6 34.3 81.1 9.8 3.1 25.2 3.1 35 0 33.5-10.5 49.8-49.1 34.3-81.1-4.4-9.2-16.8-21.6-26-26-12-5.9-25.6-7.5-38.5-4.7zM120.5 28.4C98.2 33.9 81 55.9 81 78.5c.1 26 19.7 48.2 45.8 51.9 4.2.6 4.5.5 11-5.4 9.2-8.5 19.8-14.8 31.1-18.6 9-3 9.7-3.4 11.5-7 1-2.2 2.6-7.4 3.4-11.8 7.1-35.7-27.6-68.1-63.3-59.2zM366.3 28.5c-20.1 5.4-35.5 22.8-38.5 43.2-1 6.7-.9 9.4.4 15.9.8 4.4 2.4 9.6 3.4 11.8 1.8 3.6 2.5 4 11.5 7 11.3 3.8 21.9 10.1 31.1 18.6 6.5 5.9 6.8 6 11 5.4 26.1-3.7 45.7-25.9 45.8-51.9 0-23.1-18.1-45.6-40.8-50.4-7.1-1.5-17.5-1.3-23.9.4zM184.1 133.1c-7.1 1.4-18.6 7.4-24.2 12.6-6.8 6.2-12.4 15-14.9 23.1-1.9 6-2 9.3-2 47.3V257h226v-40.9c0-38-.1-41.3-2-47.3-5.4-17.5-22-32.4-39.9-35.8-6.6-1.2-136.6-1.2-143 .1zM72 145.7c-18.4 2.8-31.9 14-38.5 31.9-1.6 4.3-1.9 9.4-2.3 42.1l-.4 37.3H113v-41.4c0-48.5.2-50.1 8.7-69.4.4-.9-4.6-1.2-23.3-1.1-13.2.1-25 .3-26.4.6zM390.3 146.2c8.6 19.6 8.7 20.7 8.7 69.4V257h82.2l-.4-37.3c-.4-32.7-.7-37.8-2.3-42.1-5.5-14.8-16.2-25.6-30.3-30.3-6.6-2.2-58.8-3.2-57.9-1.1zM31.7 287.7c-1 .9-.9 31.1.1 31.6.4.3 15 2 32.4 3.8l31.8 3.3 1.5 5.6c2.7 9.5 6.6 19.1 12.1 30.3L115 373l-20 24.7c-11 13.6-20 25.2-20 25.8 0 .5 10.1 11.1 22.4 23.4l22.4 22.4 25.2-20.5 25.3-20.5 11.4 5.8c6.3 3.2 16.7 7.4 23.1 9.5 6.5 2 11.8 3.8 11.9 3.8.1.1 1.5 13.6 3.3 30.1 1.7 16.5 3.3 31 3.6 32.3l.4 2.2h64l.4-2.3c.3-1.2 1.9-15.7 3.6-32.2 1.8-16.5 3.2-30 3.3-30.1.1 0 5.4-1.8 11.9-3.8 6.4-2.1 16.8-6.3 23.1-9.5l11.4-5.8 25.3 20.5 25.2 20.5 22.4-22.4c12.3-12.3 22.4-22.9 22.4-23.4 0-.6-9-12.2-20-25.8L397 373l5.4-10.7c5.5-11.2 9.4-20.8 12.1-30.3l1.5-5.6 31.8-3.3c17.4-1.8 32-3.6 32.5-4 .4-.4.6-7.7.5-16.2l-.3-15.4-74.2-.3-74.2-.2-.6 4.7c-2.9 24.2-12.8 42.9-29.3 55.4-14.5 11-27.6 15.3-46.2 15.3-14.1 0-21.2-1.5-32.5-6.9-24.6-11.7-39.4-33.7-43-63.8l-.6-4.7h-73.8c-40.6 0-74.1.3-74.4.7z"/>
+						</svg>
+					</div>
+					<div class="small-12 medium-11 large-11 cell">
+						<p class="open-sans mon-equipe">
+							{% if equipes[0]=="null" %}
+								<span class="color-rouge">Aucune</span>
+							{% else %}
+								{% set i,nombreEquipe = 1, equipes|length %}
+								{% for equipe in equipes %}
+									<span>{{equipe}}</span>
+									{% if i < nombreEquipe %}
+										<span>
+											-
+										</span>
+									{% endif %}
+									{% set i = i + 1 %}
+								{% endfor %}
+							{% endif %}
+						</p>
+					</div>
+				</div>
+			</div>
+			<br>
+			{# Mes préférences #}
+			<h4 class="claire-hand">Mes préférences.</h4>
+			<table class="hover">
+				<caption class="claire-hand">Liste des préférences de l'utilisateur.</caption>
+				<thead>
+					<tr>
+						<th scope="col" class="open-sans text-center"></th>
+						<th scope="col" class="open-sans text-center">Option</th>
+						<th scope="col" class="open-sans text-center">Description</th>
+						<th scope="col" class="open-sans text-center">Etat</th>
+					</tr>
+				</thead>
+				<tbody id="tableau-liste-preferences" class="open-sans">
+					{% for preference in preferences %}
+						{% set option = preference['option']|lower %}
+						<tr class="open-sans">
+							<td id="js-{{option}}" class="js-preference-information">
+								<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="preference-svg">
+									<path d="M114.3 33.4C95.2 38.2 79.2 54.2 75 72.5c-1.5 6.4-1.5 18.6 0 25 4.2 18.2 20.2 34.3 39.1 39.1 21.5 5.5 48.1-6.6 58.9-26.8 4.4-8.1 6-14.7 6-24.3 0-23.5-13.7-42.9-35.6-50.6-7.5-2.6-21.9-3.4-29.1-1.5zM296.8 33.4c-8.3 3-13.9 9.3-15.7 17.7-1.5 7-1.5 150.9 0 157.9 1.4 6.4 6.1 12.7 11.9 16l4.5 2.5h162.2l4.9-3c3-1.9 6-4.9 7.9-7.9l3-4.9V48.3l-3-4.9c-1.9-3-4.9-6-7.9-7.9l-4.9-3-79.6-.2c-64.7-.2-80.3 0-83.3 1.1zm70.7 74.6c5.5 5.5 10.5 10 11 10s5.5-4.5 11-10c11.1-10.8 13-11.7 17.9-7.9 2 1.5 2.6 2.9 2.6 5.7 0 3.3-1 4.7-10.2 13.9L389.5 130l10.3 10.3c8.8 8.8 10.2 10.7 10.2 13.5 0 4.1-3.8 8.2-7.6 8.2-2.1 0-5.1-2.3-12.9-10-5.5-5.5-10.5-10-11-10s-5.5 4.5-11 10c-11.2 11-13.3 11.8-18.1 7.7-1.9-1.7-2.7-3.3-2.7-5.6 0-2.8 1.5-4.7 10.4-13.7l10.4-10.4-10.4-10.4c-8.9-9-10.4-10.9-10.4-13.7 0-2.3.8-3.9 2.7-5.6 4.8-4.1 6.9-3.3 18.1 7.7z"/>
+									<path d="M68.9 140.7c-12.3 9-24.1 22.9-29.6 34.9-9.2 20.1 1.4 43.8 22.6 50.4 6 1.9 9.3 2 64.6 2 53.9 0 58.8-.1 64.3-1.8 11.9-3.8 20.5-12.2 24.2-24.1 3.8-12 1.9-22.2-6.5-35.2-8.3-12.9-27.6-30.9-33.1-30.9-1.3 0-4.7 1.8-7.5 3.9-6.6 5-16.2 9.7-24.2 11.9-9.6 2.6-27.1 2.3-36.7-.7-8.4-2.5-18.4-7.8-23.4-12.2-1.9-1.6-4.5-2.9-5.9-2.9-1.4 0-5.3 2-8.8 4.7zM114.3 285.4C95.5 290 79.2 306.1 75 324.5c-1.5 6.3-1.5 18.6-.1 24.8 4.5 19.2 22.3 36.3 41.6 39.8 26.1 4.8 54.3-12.9 61.1-38.5 1.8-6.8 1.8-19.8-.1-27.1-7.2-27.3-35.9-44.7-63.2-38.1zM296.8 285.4c-8.3 3-13.9 9.3-15.7 17.7-1.5 7-1.5 150.9 0 157.9 1.4 6.4 6.1 12.7 11.9 16l4.5 2.5h162.2l4.9-3c3-1.9 6-4.9 7.9-7.9l3-4.9V300.3l-3-4.9c-1.9-3-4.9-6-7.9-7.9l-4.9-3-79.6-.2c-64.7-.2-80.3 0-83.3 1.1zm122.7 67.1c1.7 1.6 2.5 3.5 2.5 5.7 0 3-2.4 5.8-26.3 29.6C373.5 410 369 414 366.5 414c-2.4 0-5.4-2.5-17.3-14.4-12.8-12.7-14.5-14.8-14.5-17.6 0-2.4.8-4 2.7-5.7 4.8-4.1 6.9-3.3 18.1 7.7 5.5 5.5 10.5 10 11 10s10.9-9.9 23-22c24-23.9 25-24.6 30-19.5z"/>
+									<path d="M68.9 392.7c-12.3 9-24.1 22.9-29.6 34.9-9.2 20.1 1.4 43.8 22.6 50.4 6 1.9 9.3 2 64.6 2 53.9 0 58.8-.1 64.3-1.8 11.9-3.8 20.5-12.2 24.2-24.1 3.8-12 1.9-22.2-6.5-35.2-8.3-12.9-27.6-30.9-33.1-30.9-1.3 0-4.7 1.8-7.5 3.9-6.6 5-16.2 9.7-24.2 11.8-8.4 2.3-26 2.3-34.7 0-8.1-2.1-19.7-7.9-24.9-12.3-2.2-1.9-5-3.4-6.4-3.4-1.4 0-5.3 2.1-8.8 4.7z"/>
+								</svg>
+							</td>
+							<td id="preference-option-{{option}}">{{preference['option']}}</td>
+							<td id="preference-description-{{option}}">{{preference['description']}}</td>
+							<td id="preference-etat-{{option}}">
+								{% if preference['statut']== true  %}
+									{% set click='checked' %}
+								{% else %}
+									{% set click='indeterminate' %}
+								{% endif %}
+								<div class="switch small preference-switch">
+									<input class="switch-input" id="js-switch-{{option}}" type="checkbox" name="switch-{{option}}" {{click}}>
+									<label class="switch-paddle" for="js-switch-{{option}}">
+										<span class="show-for-sr">Oui | Non ?</span>
+										<span class="switch-oui" aria-hidden="true">Oui</span>
+										<span class="switch-non" aria-hidden="true">Non</span>
+									</label>
+								</div>
+							</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
 
-        <p class="open-sans">
-          Le dernier projet visité est :
-          <span id="js-modal-bookmark-statut"></span>
-        </p>
-        <p class="open-sans">Bookmark :
-          <span id="js-modal-bookmark-nom"></span>
-        </p>
-        <br>
-        {# fermeture de la fenetre modale #}
-        <button id="fermer-preference-bookmark" class="expanded button open-sans"
-                data-close aria-label="Close reveal" type="button">Fermer</button>
-        <a class="close-button" data-close aria-label="Close reveal">&#215;</a>
-      </div>
+			{# Fenêtre modale pour les bookmarks. #}
+			<div id="modal-bookmark" class="reveal" data-reveal data-close-on-click="true">
+				<h1 class="h2 claire-hand">Mes préférences.</h1>
+				<h2 class="h3 claire-hand">Bookmark</h2>
+				<br>
 
-      {# Fenêtre modale pour la liste des favoris. #}
-      <div id="modal-favori" class="reveal" data-reveal data-close-on-click="true">
-        <h1 class="h2 claire-hand">Mes préférences.</h1>
-        <h2 class="h3 claire-hand">Favoris</h2>
-        <br>
+				<blockquote class="text-justify">
+					Le service de
+					<em>bookmark</em>
+					permet de revenir sur le dernier projet visité. Cette fonction est très utile car elle évite de selectionner à chaque fois le projet dans le selecteur de projets.
+				</blockquote>
 
-        <blockquote class="text-justify">
-          Mettre en <em>favori</em>
-          (petit-coeur) un projet permet son ajout à la liste des projets qui seront affichés
-          sur la page d'accueil. Il est possible d'afficher dix (10) projets.
-        </blockquote>
+				<p class="open-sans">
+					Le dernier projet visité est :
+					<span id="js-modal-bookmark-statut"></span>
+				</p>
+				<p class="open-sans">Bookmark :
+					<span id="js-modal-bookmark-nom"></span>
+				</p>
+				<br>
+				{# fermeture de la fenetre modale #}
+				<button id="fermer-preference-bookmark" class="expanded button open-sans" data-close aria-label="Close reveal" type="button">Fermer</button>
+				<a class="close-button" data-close aria-label="Close reveal">&#215;</a>
+			</div>
 
-        <p class="open-sans">
-          La liste des favoris est :
-          <span id="js-modal-favori-statut"></span>
-        </p>
+			{# Fenêtre modale pour la liste des favoris. #}
+			<div id="modal-favori" class="reveal" data-reveal data-close-on-click="true">
+				<h1 class="h2 claire-hand">Mes préférences.</h1>
+				<h2 class="h3 claire-hand">Favoris</h2>
+				<br>
 
-        <table>
-          <caption class="claire-hand">Liste des favoris.</caption>
-          <thead>
-            <tr>
-              <th width="50" scope="col" class="open-sans text-left">N°</th>
-              <th scope="col" class="open-sans text-center">Clé</th>
-              <th scope="col" class="open-sans text-center">Action</th>
-            </tr>
-          </thead>
-          <tbody
-            id="tableau-liste-favori" class="open-sans">
-            {# On créé des pseudos lignes pour éviter une erreur HTML sur le tbody vide ! #}
-            <tr>
-              <td class="preference-compteur-tableau">--</td>
-              <td class="preference-compteur-tableau text-center">--</td>
-              <td class="preference-compteur-tableau text-center">--</td>
-            </tr>
-          </tbody>
-        </table>
+				<blockquote class="text-justify">
+					Mettre en
+					<em>favori</em>
+					(petit-coeur) un projet permet son ajout à la liste des projets qui seront affichés
+										          sur la page d'accueil. Il est possible d'afficher dix (10) projets.
+				</blockquote>
 
-        <br>
-        {# fermeture de la fenetre modale #}
-        <button id="fermer-preference-favori" class="expanded button open-sans" data-close aria-label="Close reveal" type="button">Fermer
-        </button>
-        <a class="close-button" data-close aria-label="Close reveal">&#215;</a>
-      </div>
+				<p class="open-sans">
+					La liste des favoris est :
+					<span id="js-modal-favori-statut"></span>
+				</p>
 
-      {# Fenêtre modale pour la liste des projets. #}
-      <div id="modal-projet" class="reveal" data-reveal data-close-on-click="true">
-        <h1 class="h2 claire-hand">Mes préférences.</h1>
-        <h2 class="h3 claire-hand">Projets</h2>
-        <br>
+				<table>
+					<caption class="claire-hand">Liste des favoris.</caption>
+					<thead>
+						<tr>
+							<th width="50" scope="col" class="open-sans text-left">N°</th>
+							<th scope="col" class="open-sans text-center">Clé</th>
+							<th scope="col" class="open-sans text-center">Action</th>
+						</tr>
+					</thead>
+					<tbody
+						id="tableau-liste-favori" class="open-sans">
+						{# On créé des pseudos lignes pour éviter une erreur HTML sur le tbody vide ! #}
+						<tr>
+							<td class="preference-compteur-tableau">--</td>
+							<td class="preference-compteur-tableau text-center">--</td>
+							<td class="preference-compteur-tableau text-center">--</td>
+						</tr>
+					</tbody>
+				</table>
 
-        <blockquote class="text-justify">
-          La liste des
-          <em>projets</em>
-          contient tous mes projets dont une collecte a été effectuée. Les projets sont ainsi disponibles depuis le bouton
-          <em>Liste des projets</em>
-          de la page Projet.
-        </blockquote>
+				<br>
+				{# fermeture de la fenetre modale #}
+				<button id="fermer-preference-favori" class="expanded button open-sans" data-close aria-label="Close reveal" type="button">Fermer
+				</button>
+				<a class="close-button" data-close aria-label="Close reveal">&#215;</a>
+			</div>
 
-        <p class="open-sans">La liste des projets est : <span id="js-modal-projet-statut"></span></p>
+			{# Fenêtre modale pour la liste des projets. #}
+			<div id="modal-projet" class="reveal" data-reveal data-close-on-click="true">
+				<h1 class="h2 claire-hand">Mes préférences.</h1>
+				<h2 class="h3 claire-hand">Projets</h2>
+				<br>
 
-        <table>
-          <caption class="claire-hand">Liste des projets.</caption>
-          <thead>
-            <tr>
-              <th width="50" scope="col" class="open-sans text-left">N°</th>
-              <th scope="col" class="open-sans text-center">Clé</th>
-            </tr>
-          </thead>
-          <tbody
-            id="tableau-liste-projet" class="open-sans">
-            {# On créé des pseudos lignes pour éviter une erreur HTML sur le tbody vide ! #}
-            <tr>
-              <td class="preference-compteur-tableau">--</td>
-              <td class="preference-compteur-tableau">--</td>
-            </tr>
-          </tbody>
-        </table>
+				<blockquote class="text-justify">
+					La liste des
+					<em>projets</em>
+					contient tous mes projets dont une collecte a été effectuée. Les projets sont ainsi disponibles depuis le bouton
+					<em>Liste des projets</em>
+					de la page Projet.
+				</blockquote>
 
-        <br>
-        {# fermeture de la fenetre modale #}
-        <button id="fermer-preference-projet" class="expanded button open-sans"
-                data-close aria-label="Close reveal" type="button">Fermer</button>
-        <a class="close-button" data-close aria-label="Close reveal">&#215;</a>
-      </div>
+				<p class="open-sans">La liste des projets est :
+					<span id="js-modal-projet-statut"></span>
+				</p>
 
-      {# Fenêtre modale pour la liste des versions. #}
-      <div id="modal-version" class="reveal" data-reveal data-close-on-click="true">
-        <h1 class="h2 claire-hand">Mes préférences.</h1>
-        <h2 class="h3 claire-hand">Versions</h2>
-        <br>
+				<table>
+					<caption class="claire-hand">Liste des projets.</caption>
+					<thead>
+						<tr>
+							<th width="50" scope="col" class="open-sans text-left">N°</th>
+							<th scope="col" class="open-sans text-center">Clé</th>
+						</tr>
+					</thead>
+					<tbody
+						id="tableau-liste-projet" class="open-sans">
+						{# On créé des pseudos lignes pour éviter une erreur HTML sur le tbody vide ! #}
+						<tr>
+							<td class="preference-compteur-tableau">--</td>
+							<td class="preference-compteur-tableau">--</td>
+						</tr>
+					</tbody>
+				</table>
 
-        <blockquote class="text-justify">
-          Pour chaque	<em>favori</em>, une ou plusieurs versions peuvent être ajoutées à la liste de suivi
-          des projets favori. Cela permet donc d'avoir une liste des projets favoris et pour chacun une liste des versions.
-        </blockquote>
+				<br>
+				{# fermeture de la fenetre modale #}
+				<button id="fermer-preference-projet" class="expanded button open-sans" data-close aria-label="Close reveal" type="button">Fermer</button>
+				<a class="close-button" data-close aria-label="Close reveal">&#215;</a>
+			</div>
 
-        <p class="open-sans">La liste des versions est :	<span id="js-modal-version-statut"></span></p>
-        <ul class="accordion js-accordion" data-accordion>
-        </ul>
-        <br>
-        {# fermeture de la fenetre modale #}
-        <button id="fermer-preference-version" class="expanded button open-sans"
-                data-close aria-label="Close reveal" type="button">Fermer</button>
-        <a class="close-button" data-close aria-label="Close reveal">&#215;</a>
-      </div>
+			{# Fenêtre modale pour la liste des versions. #}
+			<div id="modal-version" class="reveal" data-reveal data-close-on-click="true">
+				<h1 class="h2 claire-hand">Mes préférences.</h1>
+				<h2 class="h3 claire-hand">Versions</h2>
+				<br>
+
+				<blockquote class="text-justify">
+					Pour chaque
+					<em>favori</em>, une ou plusieurs versions peuvent être ajoutées à la liste de suivi
+												          des projets favori. Cela permet donc d'avoir une liste des projets favoris et pour chacun une liste des versions.
+				</blockquote>
+
+				<p class="open-sans">La liste des versions est :
+					<span id="js-modal-version-statut"></span>
+				</p>
+				<ul class="accordion js-accordion" data-accordion></ul>
+				<br>
+				{# fermeture de la fenetre modale #}
+				<button id="fermer-preference-version" class="expanded button open-sans" data-close aria-label="Close reveal" type="button">Fermer</button>
+				<a class="close-button" data-close aria-label="Close reveal">&#215;</a>
+			</div>
 
 
-      <br><br>
-      {# Chargement de la section footer #}
-      {{ include('footer.html.twig') }}
-      {# Chargement du code javascript #}
-      {% block javascripts %}
-        {{ encore_entry_script_tags('preference') }}
-      {% endblock %}
-    </body>
-  </body>
+			<br><br>
+			{# Chargement de la section footer #}
+			{{ include('footer.html.twig') }}
+			{# Chargement du code javascript #}
+			{% block javascripts %}
+				{{ encore_entry_script_tags('preference') }}
+			{% endblock %}
+		</body>
+	</body>
 </html>

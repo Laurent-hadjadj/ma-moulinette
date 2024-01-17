@@ -1,199 +1,281 @@
 {% set title = 'Profils qualités' %}
 {% set description = 'Ma Moulinette - détails des changements.' %}
 <!DOCTYPE html>
-<html lang="fr">
+<!--
+.. __  __             __  __             _ _            _   _
+  |  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
+  | |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
+  | |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
+  |_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
 
-  {# Chargement de la section HEAD #}
-  <head>
-    {{ include('head.html.twig') }}
-    {% block stylesheets %}
-      {{ encore_entry_link_tags('profil-details') }}
-    {% endblock %}
-  </head>
+  Laurent HADJADJ
+  https://bitbucket.org/laurent_h/ma-moulinette
+  © 2024 - CC BY-SA-NC 4.0
+-->
 
-  <body>
-    {# Chargement de la section header #}
-    {{ include('header.html.twig') }}
-    <br>
+<html
+	lang="fr">
 
-    <header class="grid-container">
-      <nav aria-label="Ici : " role="navigation">
-        <ul class="claire-hand breadcrumbs">
-          <li><a href="/">Accueil</a></li>
-          <li><a href="/profil">Profil</a></li>
-          <li><span class="show-for-sr">Current:</span>Détails</li>
-        </ul>
-      </nav>
-    </header>
+	{# Chargement de la section HEAD #}
+	<head>
+		{{ include('head.html.twig') }}
+		{% block stylesheets %}
+			{{ encore_entry_link_tags('profil-details') }}
+		{% endblock %}
+	</head>
 
-    <div class="grid-container">
-      <h1 class="h2 claire-hand">Détails des changements pour le profil.</h1>
-      {% if totalRegle|length > 1 %}
-        {% set s = "s" %} {% else %} {% set s = "" %}
-      {% endif %}
-      <h2 class="h3 profil-titre">
-        <span id="affiche-ttitre">Langage  {{langage}}</span>
-        <span id="affiche-total-profil" class="stat">{{totalRegle|length}}</span>
-        changement{{s}} trouvé{{s}}.
-      </h2>
+	<body>
+		{# Chargement de la section header #}
+		{{ include('header.html.twig') }}
+		<br>
 
-      <br>
-      <h3 class="profil-titre">Informations générales</h3>
-      {# Message d'alerte sur le nombre de changements récupéré #}
-      <div data-closable class="callout alert-callout-border warning">
-        <strong>Attention</strong> - Seul les 500 premiers changements sont affichés.
-        <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
+		<header class="grid-container">
+			<nav aria-label="Ici : " role="navigation">
+				<ul class="claire-hand breadcrumbs">
+					<li>
+						<a href="/">Accueil</a>
+					</li>
+					<li>
+						<a href="/profil">Profil</a>
+					</li>
+					<li>
+						<span class="show-for-sr">Current:</span>Détails</li>
+				</ul>
+			</nav>
+		</header>
 
-      {# Version initiale #}
-      <div class="grid-x">
-        <div class="open-sans small-6 cell">
-          <span class="show-for-small-only"><strong>Init. :</strong></span>
-          <span class="show-for-medium"><strong>Initialisation :</strong></span>
-        </div>
-        <div class="open-sans small-6 cell">
-          <span class="show-for-small-only profil-first-date float-right">{{first["date"]|date("d/m/y H:m", "Europe/Paris")}}</span>
-          <span class="show-for-medium profil-first-date float-right">{{first["date"]|date("d/m/y H:m:s", "Europe/Paris")}}</span>
-        </div>
-      </div>
+		<div class="grid-container">
+			<h1 class="h2 claire-hand">Détails des changements pour le profil.</h1>
+			{% if totalRegle|length > 1 %}
+				{% set s = "s" %}
+			{% else %}
+				{% set s = "" %}
+			{% endif %}
+			<h2 class="h3 profil-titre">
+				<span id="affiche-ttitre">Langage
+					{{langage}}</span>
+				<span id="affiche-total-profil" class="stat">{{totalRegle|length}}</span>
+				changement{{s}}
+				trouvé{{s}}.
+			</h2>
 
-      {# Dernière Version #}
-      <div class="grid-x">
-        <div class="open-sans small-6 cell">
-          <span class="show-for-small-only"><strong>Dernière modif. :</strong></span>
-          <span class="show-for-medium"><strong>Dernière modification :</strong></span>
-        </div>
-        <div class="open-sans small-6 cell">
-          <span class="show-for-small-only profil-last-date float-right">{{last["date"]|date("d/m/y H:m", "Europe/Paris")}}</span>
-          <span class="show-for-medium profil-last-date float-right">{{last["date"]|date("d/m/y H:m:s", "Europe/Paris")}}</span>
+			<br>
+			<h3 class="profil-titre">Informations générales</h3>
+			{# Message d'alerte sur le nombre de changements récupéré #}
+			<div data-closable class="callout alert-callout-border warning">
+				<strong>Attention</strong>
+				- Seul les 500 premiers changements sont affichés.
+				<button class="close-button" aria-label="Dismiss alert" type="button" data-close>
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
 
-        </div>
-      </div>
+			{# Version initiale #}
+			<div class="grid-x">
+				<div class="open-sans small-6 cell">
+					<span class="show-for-small-only">
+						<strong>Init. :</strong>
+					</span>
+					<span class="show-for-medium">
+						<strong>Initialisation :</strong>
+					</span>
+				</div>
+				<div class="open-sans small-6 cell">
+					<span class="show-for-small-only profil-first-date float-right">{{first["date"]|date("d/m/y H:m", "Europe/Paris")}}</span>
+					<span class="show-for-medium profil-first-date float-right">{{first["date"]|date("d/m/y H:m:s", "Europe/Paris")}}</span>
+				</div>
+			</div>
 
-      {# Nombre de règles #}
-      <div class="grid-x cell flex-container">
-        <div class="open-sans small-4 cell">
-          <span class="show-for-small-only"><strong>Règles :</strong></span>
-          <span class="show-for-medium"><strong>Nombre de règles :</strong></span>
-        </div>
-        <div class="open-sans small-8 cell">
-          <span class="profil-total float-right">{{totalRegle}}</span>
-        </div>
-      </div>
+			{# Dernière Version #}
+			<div class="grid-x">
+				<div class="open-sans small-6 cell">
+					<span class="show-for-small-only">
+						<strong>Dernière modif. :</strong>
+					</span>
+					<span class="show-for-medium">
+						<strong>Dernière modification :</strong>
+					</span>
+				</div>
+				<div class="open-sans small-6 cell">
+					<span class="show-for-small-only profil-last-date float-right">{{last["date"]|date("d/m/y H:m", "Europe/Paris")}}</span>
+					<span class="show-for-medium profil-last-date float-right">{{last["date"]|date("d/m/y H:m:s", "Europe/Paris")}}</span>
 
-      {# Nombre de règles Activated #}
-      <div class="grid-x cell flex-container">
-        <div class="open-sans small-4 cell">
-          <span class="show-for-small-only"><strong>Règles activées :</strong></span>
-          <span class="show-for-medium"><strong>Nombre de règles activé :</strong></span>
-        </div>
-        <div class="open-sans small-8 cell">
-          <span class="profil-opened float-right">{{opened}}</span>
-        </div>
-      </div>
+				</div>
+			</div>
 
-      {# Nombre de règles Updated #}
-      <div class="grid-x cell flex-container">
-        <div class="open-sans small-4 cell">
-          <span class="show-for-small-only"><strong>Règles modifiées :</strong></span>
-          <span class="show-for-medium"><strong>Nombre de règles modifié :</strong></span>
-        </div>
-        <div class="open-sans small-8 cell">
-          <span class="profil-updated float-right">{{updated}}</span>
-        </div>
-      </div>
+			{# Nombre de règles #}
+			<div class="grid-x cell flex-container">
+				<div class="open-sans small-4 cell">
+					<span class="show-for-small-only">
+						<strong>Règles :</strong>
+					</span>
+					<span class="show-for-medium">
+						<strong>Nombre de règles :</strong>
+					</span>
+				</div>
+				<div class="open-sans small-8 cell">
+					<span class="profil-total float-right">{{totalRegle}}</span>
+				</div>
+			</div>
 
-      {# Nombre de règles desactivated #}
-      <div class="grid-x cell flex-container">
-        <div class="open-sans small-4 cell">
-          <span class="show-for-small-only"><strong>Règles désactivées :</strong></span>
-          <span class="show-for-medium"><strong>Nombre de règles désactivé :</strong></span>
-        </div>
-        <div class="open-sans small-8 cell">
-          <span class="profil-closed float-right">{{closed}}</span>
-        </div>
-      </div>
+			{# Nombre de règles Activated #}
+			<div class="grid-x cell flex-container">
+				<div class="open-sans small-4 cell">
+					<span class="show-for-small-only">
+						<strong>Règles activées :</strong>
+					</span>
+					<span class="show-for-medium">
+						<strong>Nombre de règles activé :</strong>
+					</span>
+				</div>
+				<div class="open-sans small-8 cell">
+					<span class="profil-opened float-right">{{opened}}</span>
+				</div>
+			</div>
 
-      {% set i = 0 %}
-      {% for groupe in liste %}
-        {% if badge[i].badgeA<10 %}{% set a,aa ="&nbsp;&nbsp;","&nbsp;&nbsp;" %}{% endif %}
-        {% if badge[i].badgeA>10 and badge[i].badgeA<100 %}{% set a,aa ="&nbsp;","&nbsp;" %}{% endif %}
-        {% if badge[i].badgeA>100 %}{% set a,aa ="","" %}{% endif %}
-        {% if badge[i].badgeU<10 %}{% set b,bb ="&nbsp;&nbsp;","&nbsp;&nbsp;" %}{% endif %}
-        {% if badge[i].badgeU>10 and badge[i].badgeU<100 %}{% set b,bb ="&nbsp;","&nbsp;" %}{% endif %}
-        {% if badge[i].badgeU>100 %}{% set b,bb ="","" %}{% endif %}
-        {% if badge[i].badgeD<10 %}{% set c,cc ="&nbsp;&nbsp;","&nbsp;&nbsp;" %}{% endif %}
-        {% if badge[i].badgeD>10 and badge[i].badgeD<100 %}{% set c,cc ="&nbsp;","&nbsp;" %}{% endif %}
-        {% if badge[i].badgeD>100 %}{% set c,cc ="",";" %}{% endif %}
+			{# Nombre de règles Updated #}
+			<div class="grid-x cell flex-container">
+				<div class="open-sans small-4 cell">
+					<span class="show-for-small-only">
+						<strong>Règles modifiées :</strong>
+					</span>
+					<span class="show-for-medium">
+						<strong>Nombre de règles modifié :</strong>
+					</span>
+				</div>
+				<div class="open-sans small-8 cell">
+					<span class="profil-updated float-right">{{updated}}</span>
+				</div>
+			</div>
 
-      <ul class="vertical menu accordion-menu" data-accordion-menu>
-        <li class="liste-changement-menu">
-            <a class="claire-hand liste-changement-titre">
-              <span>{{dateGroupe[i]}}</span>
-              <span class="bulle activated bulle-marge">{{a|raw}}{{badge[i].badgeA}}{{aa|raw}}</span>
-              <span class="bulle updated">{{b|raw}}{{badge[i].badgeU}}{{bb|raw}}</span>
-              <span class="bulle desactivated">{{c|raw}}{{badge[i].badgeD}}{{cc|raw}}</span>
-              <span class="nombre-regle float-right text-right">{{liste[i]|length}}</span>
-            </a>
-            <ul class="menu vertical liste-padding-left-right">
-            {% set x = 1 %}
-            {% for item in liste[i] %}
-            <ul class="fieldset changement">
-              {% if item.action == "ACTIVATED" %}
-                {% set css,statut  =  "activated", "A" %}
-              {% endif %}
-              {% if item.action == "DEACTIVATED" %}
-                {% set css,statut  =  "desactivated", "D" %}
-              {% endif %}
-              {% if item.action == "UPDATED" %}
-                {% set css,statut  =  "updated", "U" %}
-              {% endif %}
-              {% if item.action not in ["UPDATED", "DEACTIVATED", "ACTIVATED"] %}
-                {% set css,statut  =  "xoxo", "X" %}
-              {% endif %}
-              <li class="stat text-right"><strong>{{x}}</strong></li>
-              <li class="open-sans">
-                <span class="text-justify"><strong>Statut : </strong></span>
-                <span class="float-right bulle {{css}}">{{statut}}</span>
-              </li>
-              <li class="open-sans">
-                <span class="text-justify"><strong>Règle : </strong></span>
-                <span class="show-for-small-only"><br></span>
-                <span class="text-justify profil-regle">{{item.regle}}</span>
-              </li>
-              <li class="open-sans">
-                <span class="text-justify"><strong>Description : </strong></span>
-                <span class="show-for-small-only"><br></span>
-                <span class="text-justify profil-description">{{item.description}}.</span>
-              </li>
-              <li class="show-for-medium open-sans">
-                <span class="text-justify"><strong>Details : </strong></span>
-                <span class="show-for-small-only"><br></span>
-                <span class="text-justify profil-details">{{item.detail}}.</span>
-              </li>
-              <li class="open-sans">
-                <span class="text-justify"><strong>Auteur : </strong></span>
-                <span class="show-for-small-only"><br></span>
-                <span class="text-justify profil-auteur">{{item.auteur}}.</span>
-              </li>
-            </ul>
-            {% set x = x + 1 %}
-          {% endfor %}
-          </ul>
-        </li>
-      </ul>
-      {% set i = i + 1 %}
-      {% endfor %}
-    </div>
+			{# Nombre de règles desactivated #}
+			<div class="grid-x cell flex-container">
+				<div class="open-sans small-4 cell">
+					<span class="show-for-small-only">
+						<strong>Règles désactivées :</strong>
+					</span>
+					<span class="show-for-medium">
+						<strong>Nombre de règles désactivé :</strong>
+					</span>
+				</div>
+				<div class="open-sans small-8 cell">
+					<span class="profil-closed float-right">{{closed}}</span>
+				</div>
+			</div>
 
-    <br><br>
-    {# Chargement de la section footer #}
-    {{ include('footer.html.twig') }}
-    {# Chargement du code javascript #}
-    {% block javascripts %}
-      {{ encore_entry_script_tags('profil-details') }}
-    {% endblock %}
-  </body>
+			{% set i = 0 %}
+			{% for groupe in liste %}
+				{% if badge[i].badgeA<10 %}
+					{% set a,aa ="&nbsp;&nbsp;","&nbsp;&nbsp;" %}
+				{% endif %}
+				{% if badge[i].badgeA>10 and badge[i].badgeA<100 %}
+					{% set a,aa ="&nbsp;","&nbsp;" %}
+				{% endif %}
+				{% if badge[i].badgeA>100 %}
+					{% set a,aa ="","" %}
+				{% endif %}
+				{% if badge[i].badgeU<10 %}
+					{% set b,bb ="&nbsp;&nbsp;","&nbsp;&nbsp;" %}
+				{% endif %}
+				{% if badge[i].badgeU>10 and badge[i].badgeU<100 %}
+					{% set b,bb ="&nbsp;","&nbsp;" %}
+				{% endif %}
+				{% if badge[i].badgeU>100 %}
+					{% set b,bb ="","" %}
+				{% endif %}
+				{% if badge[i].badgeD<10 %}
+					{% set c,cc ="&nbsp;&nbsp;","&nbsp;&nbsp;" %}
+				{% endif %}
+				{% if badge[i].badgeD>10 and badge[i].badgeD<100 %}
+					{% set c,cc ="&nbsp;","&nbsp;" %}
+				{% endif %}
+				{% if badge[i].badgeD>100 %}
+					{% set c,cc ="",";" %}
+				{% endif %}
+
+				<ul class="vertical menu accordion-menu" data-accordion-menu>
+					<li class="liste-changement-menu">
+						<a class="claire-hand liste-changement-titre">
+							<span>{{dateGroupe[i]}}</span>
+							<span class="bulle activated bulle-marge">{{a|raw}}{{badge[i].badgeA}}{{aa|raw}}</span>
+							<span class="bulle updated">{{b|raw}}{{badge[i].badgeU}}{{bb|raw}}</span>
+							<span class="bulle desactivated">{{c|raw}}{{badge[i].badgeD}}{{cc|raw}}</span>
+							<span class="nombre-regle float-right text-right">{{liste[i]|length}}</span>
+						</a>
+						<ul class="menu vertical liste-padding-left-right">
+							{% set x = 1 %}
+							{% for item in liste[i] %}
+								<ul class="fieldset changement">
+									{% if item.action == "ACTIVATED" %}
+										{% set css,statut  =  "activated", "A" %}
+									{% endif %}
+									{% if item.action == "DEACTIVATED" %}
+										{% set css,statut  =  "desactivated", "D" %}
+									{% endif %}
+									{% if item.action == "UPDATED" %}
+										{% set css,statut  =  "updated", "U" %}
+									{% endif %}
+									{% if item.action not in ["UPDATED", "DEACTIVATED", "ACTIVATED"] %}
+										{% set css,statut  =  "xoxo", "X" %}
+									{% endif %}
+									<li class="stat text-right">
+										<strong>{{x}}</strong>
+									</li>
+									<li class="open-sans">
+										<span class="text-justify">
+											<strong>Statut :
+											</strong>
+										</span>
+										<span class="float-right bulle {{css}}">{{statut}}</span>
+									</li>
+									<li class="open-sans">
+										<span class="text-justify">
+											<strong>Règle :
+											</strong>
+										</span>
+										<span class="show-for-small-only"><br></span>
+										<span class="text-justify profil-regle">{{item.regle}}</span>
+									</li>
+									<li class="open-sans">
+										<span class="text-justify">
+											<strong>Description :
+											</strong>
+										</span>
+										<span class="show-for-small-only"><br></span>
+										<span class="text-justify profil-description">{{item.description}}.</span>
+									</li>
+									<li class="show-for-medium open-sans">
+										<span class="text-justify">
+											<strong>Details :
+											</strong>
+										</span>
+										<span class="show-for-small-only"><br></span>
+										<span class="text-justify profil-details">{{item.detail}}.</span>
+									</li>
+									<li class="open-sans">
+										<span class="text-justify">
+											<strong>Auteur :
+											</strong>
+										</span>
+										<span class="show-for-small-only"><br></span>
+										<span class="text-justify profil-auteur">{{item.auteur}}.</span>
+									</li>
+								</ul>
+								{% set x = x + 1 %}
+							{% endfor %}
+						</ul>
+					</li>
+				</ul>
+				{% set i = i + 1 %}
+			{% endfor %}
+		</div>
+
+		<br><br>
+		{# Chargement de la section footer #}
+		{{ include('footer.html.twig') }}
+		{# Chargement du code javascript #}
+		{% block javascripts %}
+			{{ encore_entry_script_tags('profil-details') }}
+		{% endblock %}
+	</body>
 </html>
