@@ -329,8 +329,8 @@ body { background: #eee; }
 /** désactive la selection de texte sur un élément */
 .noselect {
   -webkit-touch-callout: none; /* iOS Safari */
-  user-select: none; /* Non-prefixed version, currently
-                          supported by Chrome, Edge, Opera and Firefox */
+  user-select: none;           /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
 }
 
 /** Suppression du style inline */
@@ -339,6 +339,8 @@ body { background: #eee; }
 .color-bleu { color: #00445b; }
 .color-rouge { color: #d4333f; }
 .background-color-blanc { background-color: #eee; }
+
+.margin-bottom-05 { margin-bottom: 0.5rem; }
 
 /** Message d'alerte */
 .alert-callout-border {
@@ -388,7 +390,8 @@ input.email {
   cursor: pointer;
 }
 
-.ma-moulinette:hover { color: #e7552c; }
+/** Gestion du focus et de tabulation */
+.ma-moulinette:hover, .ma-moulinette:focus-within { color: #e7552c; }
 .version { color: #00445b; }
 
 /* Chargement du logo */
