@@ -1,6 +1,5 @@
 {% set title = 'Inscription' %}
 {% set description = 'Inscription à MaMoulinette' %}
-
 <!DOCTYPE html>
 <!--
 .. __  __             __  __             _ _            _   _
@@ -13,10 +12,7 @@
   https://bitbucket.org/laurent_h/ma-moulinette
   © 2024 - CC BY-SA-NC 4.0
 -->
-
-
-<html
-	lang="fr">
+<html	lang="fr">
 
 	{# Chargement de la section HEAD #}
 	<head>
@@ -35,8 +31,8 @@
 			<div class="grid-x">
 				<div class="small-12 medium-6 large-6 cell">
 					<video id="video-arbres" class="video-arbres" preload="metadata" loop autoplay muted>
-						<source src="{{ asset('build/video/ArbresEnneiges.mp4') }}"/>
-						<track label="Français" kind="captions" srclang="fr" default/>
+						<source src="{{ asset('build/video/ArbresEnneiges.mp4') }}">
+						<track label="Français" kind="captions" srclang="fr" default src="#">
 					</video>
 					<span class="open-sans float-center text-center">
 						<a class="open-sans credit" href="https://pixabay.com/fr/users/invisiblepower-3810957/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=video&amp;utm_content=7328">invisiblepower</a>
@@ -48,13 +44,12 @@
 					{% form_theme registrationForm 'foundation_6_layout.html.twig' %}
 					{{ form_start(registrationForm) }}
 					<div class="callout">
-						<h1 class="h2 claire-hand text-center">Inscription.</h1>
-						<div
-							class="grid-x cell">
+						<h1 class="h3 claire-hand text-center">Inscription.</h1>
+						<div class="grid-x cell">
 							{# Ajout de l'avatar #}
 							<div class="small-12 medium-4 large-4 cell">
 								<div class="ajouter-mon-avatar-container">
-									<img id="ajouter-mon-avatar" src="{{ asset('build/avatar/personne.png') }}" alt="Mon avatar" height="52" width="52" data-theme="racine" data-image="personne"/>
+									<img id="ajouter-mon-avatar" src="{{ asset('build/avatar/personne.png') }}" alt="Mon avatar" height="52" width="52" data-theme="racine" data-image="personne">
 								</div><br>
 								<span id="bouton-changer-avatar" class="open-sans profil-bouton" data-open="mes-avatars">&nbsp;Changer&nbsp;
 								</span>
@@ -73,12 +68,12 @@
 							<div class="small-1 medium-1 large-1 cell">
 								<span id="register-info-check-nom"></span>
 							</div>
-							<div class="small-12 medium-4 large-4 cell">&nbsp;</div>
+							<div role="presentation" class="small-12 medium-4 large-4 cell">&nbsp;</div>
 
 							{# Ajout du prénom #}
 							<div class="small-11 medium-7 large-7 cell">
 								<div class="show-for-medium">
-									<p></p>
+									<p role="presentation">&nbsp;</p>
 								</div>
 								<div class="floated-label-wrapper">
 									{{ form_label(registrationForm.prenom) }}
@@ -113,7 +108,9 @@
 										{{ form_label(registrationForm.plainPassword.first) }}
 									</div>
 									{{ form_widget(registrationForm.plainPassword.first) }}
-									<button class="unmask1" type="button" title="Affiche/masque le mot de passe">Unmask</button>
+									<button class="unmask1" type="button"
+									        title="Affiche/masque le mot de passe">Unmask
+									</button>
 								</div>
 								<div class="check-svg small-1 medium-1 large-1 cell">
 									<span id="register-info-check-password"></span>
@@ -127,7 +124,8 @@
 										{{ form_label(registrationForm.plainPassword.second) }}
 									</div>
 									{{ form_widget(registrationForm.plainPassword.second) }}
-									<button class="unmask2" type="button" title="Affiche/masque le mot de passe">Unmask</button>
+									<button class="unmask2" type="button"
+													title="Affiche/masque le mot de passe">Unmask</button>
 								</div>
 								<div class="check-svg small-1 medium-1 large-1 cell">
 									<span id="register-info-check-repassword"></span>
@@ -153,10 +151,11 @@
 							</div>
 
 							{# Bouton de validation #}
-							<input id="valider-formulaire-enregistrement" class="button expanded disabled noselect" type="button" value="Inscription"></input>
-						<div id="message-erreur-valider"></div>
-						{{ form_end(registrationForm) }}
+							<input id="valider-formulaire-enregistrement" class="button expanded disabled noselect" type="button" value="Inscription">
+							<div role="alert" id="message-erreur-valider"></div>
+						</div>
 					</div>
+					{{ form_end(registrationForm) }}
 				</div>
 			</div>
 
@@ -173,9 +172,9 @@
 						<div class="accordion-content background-color-blanc" data-tab-content>
 							{% for i in 1..10 %}
 								{% if i<10 %}
-									<img id="ajouter-chiffre-0{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/chiffre/0{{i}}.png" data-theme="chiffre" data-image="0{{i}}"/>
+									<img id="ajouter-chiffre-0{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/chiffre/0{{i}}.png" data-theme="chiffre" data-image="0{{i}}">
 								{% else %}
-									<img id="ajouter-chiffre-{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/chiffre/{{i}}.png" data-theme="chiffre" data-image="{{i}}"/>
+									<img id="ajouter-chiffre-{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/chiffre/{{i}}.png" data-theme="chiffre" data-image="{{i}}">
 								{% endif %}
 							{% endfor %}
 						</div>
@@ -190,9 +189,9 @@
 						<div class="accordion-content background-color-blanc" data-tab-content>
 							{% for i in 1..35 %}
 								{% if i<10 %}
-									<img id="ajouter-emoticon-0{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/emoticon/0{{i}}.png" data-theme="emoticon" data-image="0{{i}}"/>
+									<img id="ajouter-emoticon-0{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/emoticon/0{{i}}.png" data-theme="emoticon" data-image="0{{i}}">
 								{% else %}
-									<img id="ajouter-emoticon-{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/emoticon/{{i}}.png" data-theme="emoticon" data-image="{{i}}"/>
+									<img id="ajouter-emoticon-{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/emoticon/{{i}}.png" data-theme="emoticon" data-image="{{i}}">
 								{% endif %}
 							{% endfor %}
 						</div>
@@ -207,9 +206,9 @@
 						<div class="accordion-content background-color-blanc" data-tab-content>
 							{% for i in 1..27 %}
 								{% if i<10 %}
-									<img id="ajouter-fille-1-0{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/fille-1/0{{i}}.png" data-theme="fille-1" data-image="0{{i}}"/>
+									<img id="ajouter-fille-1-0{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/fille-1/0{{i}}.png" data-theme="fille-1" data-image="0{{i}}">
 								{% else %}
-									<img id="ajouter-fille-1-{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/fille-1/{{i}}.png" data-theme="fille-1" data-image="{{i}}"/>
+									<img id="ajouter-fille-1-{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/fille-1/{{i}}.png" data-theme="fille-1" data-image="{{i}}">
 								{% endif %}
 							{% endfor %}
 						</div>
@@ -224,9 +223,9 @@
 						<div class="accordion-content background-color-blanc" data-tab-content>
 							{% for i in 1..26 %}
 								{% if i<10 %}
-									<img id="ajouter-fille-2-0{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/fille-2/0{{i}}.png" data-theme="fille-2" data-image="0{{i}}"/>
+									<img id="ajouter-fille-2-0{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/fille-2/0{{i}}.png" data-theme="fille-2" data-image="0{{i}}">
 								{% else %}
-									<img id="ajouter-fille-2-{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/fille-2/{{i}}.png" data-theme="fille-2" data-image="{{i}}"/>
+									<img id="ajouter-fille-2-{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/fille-2/{{i}}.png" data-theme="fille-2" data-image="{{i}}">
 								{% endif %}
 							{% endfor %}
 						</div>
@@ -241,9 +240,9 @@
 						<div class="accordion-content background-color-blanc" data-tab-content>
 							{% for i in 1..23 %}
 								{% if i<10 %}
-									<img id="ajouter-garcon-1-0{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/garcon-1/0{{i}}.png" data-theme="garcon-1" data-image="0{{i}}"/>
+									<img id="ajouter-garcon-1-0{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/garcon-1/0{{i}}.png" data-theme="garcon-1" data-image="0{{i}}">
 								{% else %}
-									<img id="ajouter-garcon-1-{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/garcon-1/{{i}}.png" data-theme="garcon-1" data-image="{{i}}"/>
+									<img id="ajouter-garcon-1-{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/garcon-1/{{i}}.png" data-theme="garcon-1" data-image="{{i}}">
 								{% endif %}
 							{% endfor %}
 						</div>
@@ -258,9 +257,9 @@
 						<div class="accordion-content background-color-blanc" data-tab-content>
 							{% for i in 1..24 %}
 								{% if i<10 %}
-									<img id="ajouter-garcon-2-0{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/garcon-2/0{{i}}.png" data-theme="garcon-2" data-image="0{{i}}"/>
+									<img id="ajouter-garcon-2-0{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/garcon-2/0{{i}}.png" data-theme="garcon-2" data-image="0{{i}}">
 								{% else %}
-									<img id="ajouter-garcon-2-{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/garcon-2/{{i}}.png" data-theme="garcon-2" data-image="{{i}}"/>
+									<img id="ajouter-garcon-2-{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/garcon-2/{{i}}.png" data-theme="garcon-2" data-image="{{i}}">
 								{% endif %}
 							{% endfor %}
 						</div>
@@ -275,9 +274,9 @@
 						<div class="accordion-content background-color-blanc" data-tab-content>
 							{% for i in 1..26 %}
 								{% if i<10 %}
-									<img id="ajouter-lettre-0{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/lettre/0{{i}}.png" data-theme="lettre" data-image="0{{i}}"/>
+									<img id="ajouter-lettre-0{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/lettre/0{{i}}.png" data-theme="lettre" data-image="0{{i}}">
 								{% else %}
-									<img id="ajouter-lettre-{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/lettre/{{i}}.png" data-theme="lettre" data-image="{{i}}"/>
+									<img id="ajouter-lettre-{{i}}" class="thumbnail grayscale" alt="m0i" height="42" width="42" src="/build/avatar/lettre/{{i}}.png" data-theme="lettre" data-image="{{i}}">
 								{% endif %}
 							{% endfor %}
 						</div>
