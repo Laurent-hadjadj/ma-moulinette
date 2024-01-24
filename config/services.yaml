@@ -21,6 +21,7 @@ parameters:
     maj.profil: '%env(MAJ_PROFIL)%'
     csrf.salt: '%env(SALT)%'
     path.audit: '%env(AUDIT)%'
+    rgaa: '%env(RGAA)%'
 
 services:
     # default configuration for services in *this* file

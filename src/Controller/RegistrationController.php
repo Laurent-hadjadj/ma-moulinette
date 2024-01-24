@@ -35,6 +35,7 @@ use Psr\Log\LoggerInterface;
 
 class RegistrationController extends AbstractController
 {
+
     /**
      * [Description for register]
      *
@@ -45,7 +46,7 @@ class RegistrationController extends AbstractController
      * @return Response
      *
      * Created at: 15/12/2022, 21:07:50 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/register', name: 'app_register')]
@@ -110,20 +111,22 @@ class RegistrationController extends AbstractController
             /** Connexion automatique ? */
             /** "return $userAuthenticator->authenticateUser($utilisateur, $authenticator,$request);" */
 
-            /** On préfére redirider l'utilisateur sur la page de bienvenu des nouveaux tiliasteur */
+            /** On préfére redirider l'utilisateur sur la page de bienvenu des nouveaux utiliasteurs */
             return $this->render('welcome/index.html.twig', [
                 'nom' => $utilisateur->getNom(),
                 'prenom' => $utilisateur->getPrenom(),
                 'courriel' => $utilisateur->getCourriel(),
                 'version' => $this->getParameter('version'),
-                'dateCopyright' => \date('Y')
+                'dateCopyright' => \date('Y'),
+                'rgaa' => $this->getParameter('rgaa')
             ]);
         }
 
         return $this->render('registration/register.html.twig', [
             'registrationForm' => $form->createView(),
             'version' => $this->getParameter('version'),
-            'dateCopyright' => \date('Y')
+            'dateCopyright' => \date('Y'),
+            'rgaa' => $this->getParameter('rgaa')
         ]);
     }
 
@@ -144,7 +147,8 @@ class RegistrationController extends AbstractController
             'prenom' => 'Laurent',
             'courriel' => 'laurent.hadjadj@ma-petite-entreprise.fr',
             'version' => $this->getParameter('version'),
-            'dateCopyright' => \date('Y')
+            'dateCopyright' => \date('Y'),
+            'rgaa' => $this->getParameter('rgaa')
         ]);
     }
 
