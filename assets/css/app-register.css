@@ -291,10 +291,7 @@
 /* desactivaton du bouton inscription */
 .disabled-custom {
   cursor: not-allowed;
-  background-color: #006182;
-
-  /* "background-color: #687275; */
-
+  opacity: 0.70;
 }
 
 /* stylelint-disable-next-line selector-class-pattern */
