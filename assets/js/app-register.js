@@ -12,6 +12,10 @@
 
 import '../css/register.css';
 
+/** Import de la classe de gestion de la qualité du mot de passe */
+import './app-password.js';
+// app-password.min.css --> voir le fichier register.css
+
 /** Intégration de jquery */
 import $ from 'jquery';
 
@@ -114,6 +118,12 @@ $('#registration_form_plainPassword_first').on('keyup', function(){
   }
 });
 
+  /** On contrôle la qualité du mot de passe  */
+  $('#registration_form_plainPassword_first').password({
+    showPercent: true, showText: true, animate: true, animateSpeed: 'fast',
+    field: false, fieldPartialMatch: true, minimumLength: 1, useColorBarImage: true,
+  });
+
 /** Ajout du label pour le re-motdepasse */
 $('#registration_form_plainPassword_second').on('keyup', function(){
   if (this.value !== '') {
@@ -163,7 +173,7 @@ $('.thumbnail').on('click', function(){
 
 /** Activation du bouton d'enregistrement */
 $('#registration_form_plainPassword_second').on('focus', function(){
-  $('#valider-formulaire-enregistrement').removeClass('disabled');
+  $('#valider-formulaire-enregistrement').removeClass('disabled-custom');
 });
 
   /** Vérification des informations du formulaire */
