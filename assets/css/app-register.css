@@ -289,9 +289,12 @@
 /* Formulaires */
 
 /* desactivaton du bouton inscription */
-.disable {
+.disabled-custom {
   cursor: not-allowed;
   background-color: #006182;
+
+  /* "background-color: #687275; */
+
 }
 
 /* stylelint-disable-next-line selector-class-pattern */
