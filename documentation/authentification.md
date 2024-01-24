@@ -19,6 +19,7 @@ L'authentification est obligatoire. L'utilisation de `ma-moulinette` doit avoir 
 Le formulaire de connexion propose deux options:
 
 1 - Saisir son identifiant, son mot de passe et choisir si l'on souhaite ajouter un cookie de connexion automatique.
+
 2 - Basculer sur le formulaire d'inscription.
 
 `Note :` l'option de **changer son mot de passe** est dans le backlog.
