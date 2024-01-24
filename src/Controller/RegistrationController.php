@@ -27,7 +27,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Main\Utilisateur;
 
 use App\Form\RegistrationFormType;
-use App\Security\LoginFormAuthenticator;
 
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -113,11 +112,11 @@ class RegistrationController extends AbstractController
 
             /** On préfére redirider l'utilisateur sur la page de bienvenu des nouveaux tiliasteur */
             return $this->render('welcome/index.html.twig', [
-              'nom' => $utilisateur->getNom(),
-              'prenom' => $utilisateur->getPrenom(),
-              'courriel' => $utilisateur->getCourriel(),
-              'version' => $this->getParameter('version'),
-              'dateCopyright' => \date('Y')
+                'nom' => $utilisateur->getNom(),
+                'prenom' => $utilisateur->getPrenom(),
+                'courriel' => $utilisateur->getCourriel(),
+                'version' => $this->getParameter('version'),
+                'dateCopyright' => \date('Y')
             ]);
         }
 
