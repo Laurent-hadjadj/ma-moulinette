@@ -1,0 +1,162 @@
+/**
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2021-2022.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ */
+
+/* Mobile */
+@media (width <= 20em) {
+  .timeline { width: 100%; }
+}
+
+/* Mobile */
+@media (20.025em <= width <= 22em) {
+  .timeline {
+    margin: 20px auto;
+    width: 100%;
+  }
+}
+
+/* Mobile */
+@media (22.025em <= width <= 30em) {
+  .timeline {
+    margin: 20px auto;
+    width: 100%;
+  }
+}
+
+/* Mobile */
+@media (30.025em <= width <= 40em) {
+  .timeline {
+    margin: 20px auto;
+    width: 100%;
+  }
+}
+
+/* tablette */
+@media (40.025em <= width <= 64em) {
+  .timeline {
+    margin: 30px auto;
+    width: 90%;
+  }
+}
+
+/* desktop */
+@media (64.025em <= width <= 90em) {
+  .timeline {
+    margin: 30px auto;
+    width: 90%;
+  }
+}
+
+/* desktop */
+@media (90.025em <= width <= 120em) {
+  .timeline {
+    margin: 30px auto;
+    width: 90%;
+  }
+}
+
+/* desktop */
+@media (120.025em <= width <= 160em) {
+  .timeline {
+    margin: 30px auto;
+    width: 90%;
+  }
+}
+
+/* container */
+.timeline {
+  padding: 0 10px;
+  position: relative;
+  background-color: #32697B;
+}
+
+/* Définition de la barre verticale */
+.timeline .timeline-item::after, .timeline .timeline-item::before {
+  clear: both;
+  content: '';
+  display: block;
+  width: 100%;
+}
+
+.timeline::before {
+  background: #fefefe;
+  content: '';
+  height: 100%;
+  left: 1.72rem;
+  position: absolute;
+  top: 0;
+  width: 3px;
+}
+
+.timeline::after {
+  clear: both;
+  content: '';
+  display: table;
+  width: 100%;
+}
+
+/* Gestion du lien */
+.timeline-content-liste {  color: #fefefe; }
+.marqueur-circle { list-style: circle; }
+.marqueur-square { list-style: square; }
+
+.timeline a { color: #fefefe; }
+
+.timeline a:hover {
+  transition: all 0.25s ease-in;
+  background-color: #ffc !important;
+  color: #BF1722;
+  border-radius: 4px;
+  padding: 0 3px;
+}
+
+.timeline .timeline-item { position: relative; }
+
+.timeline .timeline-item .timeline-icon {
+  background: #fefefe;
+  border-radius: 50%;
+  height: 50px;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  width: 50px;
+}
+
+.timeline .timeline-item .timeline-icon svg {
+  position: relative;
+  left: 10px;
+  top: 10px;
+  width: 32px;
+  fill: #00445b;
+}
+
+/* container par type de page */
+.timeline .timeline-item .timeline-content {
+  padding: 0.6rem 0.4rem 0.4rem 2.8rem;
+  float: left;
+  text-align: left;
+  transition: all 0.25s ease-in;
+  width: 95%;
+  background: transparent;
+}
+
+
+.timeline .timeline-item .timeline-content .timeline-content-titre {
+  color: #fefefe;
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-bottom: 0;
+}
+
+.timeline .timeline-item .timeline-content .timeline-content-link {
+  font-size: 0.875rem;
+}
