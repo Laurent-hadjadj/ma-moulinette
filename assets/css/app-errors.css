@@ -122,6 +122,7 @@ body {
   }
 }
 
+/* Mobile */
 @media (width <= 20em) {
   .logo-svg { width: 32px; }
   .content h2 { font-size: 1.4rem; }
@@ -129,13 +130,23 @@ body {
   .press-left-button { padding-left: 2rem; }
 }
 
-@media only screen and (min-width: 20.025em) and (max-width: 30em) {
+/* Mobile */
+@media (20.025em <= width <= 22em) {
   .logo-svg { width: 32px; }
   .content h2 { font-size: 1.4rem; }
   .content p { font-size: 1.1rem; }
   .press-left-button { padding-left: 2rem; }
 }
 
+/* Mobile */
+@media (22.025em <= width <= 30em) {
+  .logo-svg { width: 32px; }
+  .content h2 { font-size: 1.4rem; }
+  .content p { font-size: 1.1rem; }
+  .press-left-button { padding-left: 2rem; }
+}
+
+/* Mobile */
 @media (30.025em <= width <= 40em) {
   .logo-svg { width: 64px; }
   .content h2 { font-size: 1.3rem; }
@@ -143,6 +154,6 @@ body {
   .press-left-button { display: none; }
 }
 
-@media only screen and (min-width: 40em) {
+@media (width > 40em) {
   .press-left-button { padding-left: 4rem; }
 }
