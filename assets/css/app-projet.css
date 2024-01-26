@@ -142,7 +142,8 @@
 #fermer-liste-hotspot,
 #fermer-autre-version,
 #fermer-dette-technique,
-#fermer-liste-severite {
+#fermer-liste-severite,
+#fermer-liste-todo {
   color: #fff;
   background-color: #00445b;
 }
