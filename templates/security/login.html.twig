@@ -57,12 +57,12 @@
             </label>
             <input id="valider-formulaire-login" class="button expanded" type="submit" value="Valider" aria-label="Valider">
             {% if is_granted('IS_AUTHENTICATED_REMEMBERED') == false %}
-              <a href="{{ path('app_register') }}" class="float-left open-sans pas-encore-inscrit">Pas encore inscrit ?</a>
+              <a href="{{ path('register') }}" class="float-left open-sans pas-encore-inscrit">Pas encore inscrit ?</a>
               <br>
             {% endif %}
             <input aria-hidden="true" role="none" type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}"/>
           {# {% if app.user %}
-            {{ path('app_register') }}
+            {{ path('register') }}
           {% endif %}#}
           </form>
           {% if error %}
