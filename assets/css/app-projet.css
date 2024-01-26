@@ -25,8 +25,14 @@
 
 /* Ligne de log */
 .log {
-  background-color: #444;
-  font-size: 0.9rem;
+  font-size: 1rem;
+  color: #000;
+}
+
+/* Chagnement de la couleur WCAG */
+textarea[readonly] {
+  background-color: #fff;
+  cursor: not-allowed;
 }
 
 /* ****  Boutons **** */
