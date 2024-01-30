@@ -592,8 +592,12 @@ class HomeController extends AbstractController
             $composant = "vide";
         }
 
+        /** On récupère le rôle de l'utilisateur  */
+        $refreshBD=false;
+        if ($this->isGranted('ROLE_GESTIONNAIRE')) { $refreshBD=true; }
         $response = new JsonResponse();
         $render = [
+            'refreshBD'=>$refreshBD,
             'projetBD' => $projetBD, 'projetSonar' => $projetSonar,
             'profilBD' => $profilBD, 'profilSonar' => $profilSonar,
             'composant' => $composant, 'nombreProjet' => $nombreProjet, 'favori' => $favori,
