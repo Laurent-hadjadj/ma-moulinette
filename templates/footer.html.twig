@@ -1,6 +1,22 @@
 {% block footer %}
   <!-- Footer -->
   <footer class="footer">
+  <div class="grid-x">
+    <div class="small-6 medium-6 large-7 cell">
+      <ul class="menu footer-bottom-links">
+        <li><a href="{{ path('plan_du_site', {}) }}">Plan du site</a></li>
+        <li><a href="#">Accessibilité | {{rgaa|default('non')}}</a></li>
+        <li><a href="#">Mentions légales</a></li>
+      </ul>
+    </div>
+    <div class="small-6 medium-6 large-5 cell">
+      <ul class="menu footer-bottom-links">
+        <li><a href="#">Données personnelles</a></li>
+        <li><a href="#">Gestion des couleurs</a></li>
+      </ul>
+    </div>
+    </div>
+
     <div class="open-sans-light footer-padding">
       <span class="copyright">©
         {{dateCopyright}}
