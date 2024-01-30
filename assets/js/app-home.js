@@ -24,8 +24,7 @@ import './foundation.js';
 import {serveur} from './properties.js';
 
 /** On importe les constantes */
-import { dateOptions } from './constante.js';
-import { contentType } from './constante';
+import { dateOptions, contentType } from './constante.js';
 
 /**
   * [Description for log]
@@ -50,20 +49,21 @@ const log=function(txt) {
   * @return [type]
   *
   */
-const sonarIsUp=function() {
+const sonarIsUp=async function() {
   const options = {
     url: `${serveur()}/api/status`, type: 'GET',
     dataType: 'json',  contentType };
-  return $.ajax(options)
-    .then()
-    .catch( message => {
-      $('#callout-accueil-message').removeClass('hide success alert primary secondary');
-      $('#callout-accueil-message').addClass('alert');
-      $('#js-reference-information').html('<strong>[Accueil-001]</strong>');
-      $('#js-message-information').html(`État du serveur sonarqube : DOWN (${message.statusText})`);
-      return (message.statusText);
-      }
-    );
+  try
+  {
+    return await $.ajax(options);
+  } catch (message)
+  {
+    $('#callout-accueil-message').removeClass('hide success alert primary secondary');
+    $('#callout-accueil-message').addClass('alert');
+    $('#js-reference-information').html('<strong>[Accueil-001]</strong>');
+    $('#js-message-information').html(`État du serveur sonarqube : DOWN (${ message.statusText })`);
+    return (message.statusText);
+  }
 };
 
 /**
