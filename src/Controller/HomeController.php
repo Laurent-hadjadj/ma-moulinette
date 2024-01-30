@@ -195,15 +195,15 @@ class HomeController extends AbstractController
         $date->setTimezone(new DateTimeZone(static::$europeParis));
 
         $map=['bd'=>$bd, 'sonar'=>$sonar,
-              'dateModificationProjet'=> $date->format(static::$dateFormat),
-              'dateModificationProfil'=> $date->format(static::$dateFormat)];
+                'dateModificationProjet'=> $date->format(static::$dateFormat),
+                'dateModificationProfil'=> $date->format(static::$dateFormat)];
 
         $repository = $this->em->getRepository(Properties::class);
 
         if ($type === "projet") {
-          $repository->updateProjetProperties($map);
+            $repository->updateProjetProperties($map);
         } else {
-          $repository->updateProfilProperties($map);
+            $repository->updateProfilProperties($map);
         }
     }
 
@@ -234,11 +234,11 @@ class HomeController extends AbstractController
             $projetModificationDate = $date->format(static::$dateFormat);
             $profilModificationDate = $date->format(static::$dateFormat);
             $map=[
-              'projetBD'=>$projetBD, 'projetSonar'=>$projetSonar,
-              'profilBD'=>$profilBD, 'profilSonar'=>$profilSonar,
-              'dateCreationFormat'=>$dateCreationFormat,
-              'projetModificationDate'=>$projetModificationDate,
-              'profilModificationDate'=>$profilModificationDate];
+                'projetBD'=>$projetBD, 'projetSonar'=>$projetSonar,
+                'profilBD'=>$profilBD, 'profilSonar'=>$profilSonar,
+                'dateCreationFormat'=>$dateCreationFormat,
+                'projetModificationDate'=>$projetModificationDate,
+                'profilModificationDate'=>$profilModificationDate];
 
             $repository = $this->em->getRepository(Properties::class);
             $repository->insertProperties($map);
@@ -272,9 +272,9 @@ class HomeController extends AbstractController
     private function getVersion(): string
     {
       /** On récupère le numéro de la dernère version en base */
-      $repository = $this->em->getRepository(MaMoulinette::class);
-      $getVersion = $repository->getVersion();
-      return $getVersion[0]['version'];
+        $repository = $this->em->getRepository(MaMoulinette::class);
+        $getVersion = $repository->getVersion();
+        return $getVersion[0]['version'];
     }
 
     /**
@@ -320,29 +320,30 @@ class HomeController extends AbstractController
             $andTRIM = rtrim($condition, " OR ");
 
             $sql = "SELECT DISTINCT
-                  maven_key as mavenkey,
-                  nom_projet as nom,
-                  version, date_version as date,
-                  note_reliability as fiabilite,
-                  note_security as securite,
-                  note_hotspot as hotspot,
-                  note_sqale as sqale,
-                  nombre_bug as bug,
-                  nombre_vulnerability as vulnerability,
-                  nombre_code_smell as code_smell,
-                  hotspot_total as hotspots
-              FROM historique
-              WHERE $andTRIM
-              GROUP BY maven_key LIMIT $envFavori";
-            $trim = trim(preg_replace("/\s+/u", " ", $sql));
-            $select = $this->em->getConnection()->prepare($trim)->executeQuery();
-            $liste = $select->fetchAllAssociative();
+                        maven_key as mavenkey,
+                        nom_projet as nom,
+                        version, date_version as date,
+                        note_reliability as fiabilite,
+                        note_security as securite,
+                        note_hotspot as hotspot,
+                        note_sqale as sqale,
+                        nombre_bug as bug,
+                        nombre_vulnerability as vulnerability,
+                        nombre_code_smell as code_smell,
+                        hotspot_total as hotspots
+                    FROM historique
+                    WHERE $andTRIM
+                    GROUP BY maven_key LIMIT $envFavori";
+
+                    $trim = trim(preg_replace("/\s+/u", " ", $sql));
+                    $select = $this->em->getConnection()->prepare($trim)->executeQuery();
+                    $liste = $select->fetchAllAssociative();
         }
 
         $data = [
-          "mode" => $mode,
-          "statut" => $statutFavori, "listeFavori" => $liste,
-          'nombreProjet' => count($listeFavori), Response::HTTP_OK];
+            'mode' => $mode,
+            'statut' => $statutFavori, 'listeFavori' => $liste,
+            'nombreProjet' => count($listeFavori), Response::HTTP_OK];
         return $response->setData($data);
     }
 
@@ -419,9 +420,9 @@ class HomeController extends AbstractController
         }
 
         $data = [
-          "mode" => $mode,
-          "statut" => $statutVersion, "listeVersion" => $liste,
-          'nombreProjet' => count($listeVersion), Response::HTTP_OK];
+            'mode' => $mode,
+            'statut' => $statutVersion, 'listeVersion' => $liste,
+            'nombreProjet' => count($listeVersion), Response::HTTP_OK];
         return $response->setData($data);
     }
 
@@ -593,12 +594,12 @@ class HomeController extends AbstractController
 
         $response = new JsonResponse();
         $render = [
-          'projetBD' => $projetBD, 'projetSonar' => $projetSonar,
-          'profilBD' => $profilBD, 'profilSonar' => $profilSonar,
-          'composant' => $composant, 'nombreProjet' => $nombreProjet, 'favori' => $favori,
-          "public" => $public, "private" => $private,
-          'version' => $versionAPP, 'dateCopyright' => \date('Y'),
-          'mode' => $mode, Response::HTTP_OK];
+            'projetBD' => $projetBD, 'projetSonar' => $projetSonar,
+            'profilBD' => $profilBD, 'profilSonar' => $profilSonar,
+            'composant' => $composant, 'nombreProjet' => $nombreProjet, 'favori' => $favori,
+            'public' => $public, 'private' => $private,
+            'version' => $versionAPP, 'dateCopyright' => \date('Y'),
+            'mode' => $mode, Response::HTTP_OK];
 
         if ($mode === "TEST") {
             return $response->setData($render);
