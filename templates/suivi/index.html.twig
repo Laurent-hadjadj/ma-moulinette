@@ -95,7 +95,7 @@
 							{% for i in 0..suivi|length-1 %}
 								<td class="text-right">
 									<span>{{suivi[i]["bug"]|format_number(locale='fr')}}</span>
-									<span class="note note-{{suivi[i][" fiabilite"]|lower}}">{{suivi[i]["fiabilite"]}}</span>
+									<span class="note note-{{suivi[i]["fiabilite"]|lower}}">{{suivi[i]["fiabilite"]}}</span>
 								</td>
 							{% endfor %}
 						</tr>
@@ -104,7 +104,7 @@
 							{% for i in 0..suivi|length-1 %}
 								<td class="text-right">
 									<span>{{suivi[i]["faille"]|format_number(locale='fr')}}</span>
-									<span class="note note-{{suivi[i][" securite"]|lower}}">{{suivi[i]["securite"]}}</span>
+									<span class="note note-{{suivi[i]["securite"]|lower}}">{{suivi[i]["securite"]}}</span>
 								</td>
 							{% endfor %}
 						</tr>
@@ -117,7 +117,7 @@
 									{% else %}
 										<span>&nbsp;-&nbsp;</span>
 									{% endif %}
-									<span class="note note-{{suivi[i][" note_hotspot"]|lower}}">{{suivi[i]["note_hotspot"]}}</span>
+									<span class="note note-{{suivi[i]["note_hotspot"]|lower}}">{{suivi[i]["note_hotspot"]}}</span>
 								</td>
 							{% endfor %}
 						</tr>
@@ -126,7 +126,7 @@
 							{% for i in 0..suivi|length-1 %}
 								<td class="text-right">
 									<span>{{suivi[i]["mauvaise_pratique"]|format_number(locale='fr')}}</span>
-									<span class="note note-{{suivi[i][" maintenabilite"]|lower}}">{{suivi[i]["maintenabilite"]}}</span>
+									<span class="note note-{{suivi[i]["maintenabilite"]|lower}}">{{suivi[i]["maintenabilite"]}}</span>
 								</td>
 							{% endfor %}
 						</tr>
