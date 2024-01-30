@@ -160,11 +160,11 @@ class ApiHomeController extends AbstractController
         /** On vérifie si l'utilisateur à un rôle Gestionnaire ? */
         if (!$this->isGranted('ROLE_GESTIONNAIRE')) {
             return $response->setData([
-              "mode" => $mode ,
-              "type" => 'alert',
-              "reference" => "<strong>[Accueil-004]</strong>",
-              "message" => "Vous devez disposer du rôle GESTIONNAIRE pour effectuée cette action",
-              Response::HTTP_OK]);
+                "mode" => $mode ,
+                "type" => 'alert',
+                "reference" => "<strong>[Accueil-004]</strong>",
+                "message" => "Vous devez disposer du rôle GESTIONNAIRE pour effectuée cette action",
+                Response::HTTP_OK]);
         }
 
         $url = $this->getParameter(static::$sonarUrl)."/api/components/search_projects?ps=500";
@@ -184,7 +184,9 @@ class ApiHomeController extends AbstractController
             $reference = "<strong>[Accueil-003]</strong>";
             $type = "alert";
             $message = "Je n'ai pas trouvé de projet sur le serveur sonarqube.";
-            return $response->setData(["reference" => $reference, "type" => $type, "message" => $message, Response::HTTP_OK]);
+            return $response->setData(
+                ["reference" => $reference, "type" => $type,
+                    "message" => $message, Response::HTTP_OK]);
         }
         /** On supprime les données de la table avant d'importer les données. */
         $sql = "DELETE FROM liste_projet";
