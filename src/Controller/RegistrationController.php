@@ -99,6 +99,12 @@ class RegistrationController extends AbstractController
             /** En enregistre la date de création */
             $utilisateur->setDateEnregistrement($date);
 
+            /** On initialise les préférences par défaut */
+            $preferences=
+            ["statut"=>["projet"=>false, "favori"=>false, "version"=>false,"bookmark"=>false]];
+            $utilisateur->setPreference($preferences);
+
+            /** On enregistre le petit malin dans le pot de miel */
             if (!empty(trim($honeyPot))) {
                 // Spam detected!
                 $warning = sprintf('🐛 SPAM detected. honeypot content: %s IP: %s', $honeyPot, $request->getClientIp());
