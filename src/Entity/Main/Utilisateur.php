@@ -52,15 +52,15 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', length: 64)]
     private $password;
 
-    #[ORM\Column(type: 'boolean', nullable: false, options: ['default' => 0]) ]
+    #[ORM\Column(type: 'boolean', nullable: false, options: ['default' => 0])]
     private $actif;
 
     # Préférences de l'utilisateur
-    #[ORM\Column(type: 'json', nullable: true)]
+    #[ORM\Column(type: 'json', nullable: false)]
     private $preference = [];
 
-    #[ORM\Column(type: 'integer', nullable: false, options: ['default' => 0])]
-    private $init;
+    #[ORM\Column(type: 'integer', nullable: false)]
+    private $init=0;
 
     #[ORM\Column(type: 'datetime', nullable: true)]
     private $dateModification;
@@ -141,7 +141,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @return self
      *
      * Created at: 02/01/2023, 18:11:49 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setRoles(array $roles): self
@@ -157,7 +157,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @return string|null
      *
      * Created at: 02/01/2023, 18:11:51 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getPassword(): ?string
@@ -173,7 +173,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @return self
      *
      * Created at: 02/01/2023, 18:11:53 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setPassword(string $password): self
@@ -239,7 +239,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @return \DateTimeInterface|null
      *
      * Created at: 02/01/2023, 18:12:00 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getDateEnregistrement(): ?\DateTimeInterface
@@ -255,7 +255,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @return self
      *
      * Created at: 02/01/2023, 18:12:02 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setDateEnregistrement(\DateTimeInterface $dateEnregistrement): self
