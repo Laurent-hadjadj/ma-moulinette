@@ -45,8 +45,8 @@ class ProfilesRepository extends ServiceEntityRepository
      */
     public function countProfiles(): array
     {
-      $sql = $sql = "SELECT COUNT(*) as total from profiles";
-      return  $this->getEntityManager()->getConnection()->prepare($sql)->executeQuery()->fetchAllAssociative();
+        $sql = $sql = "SELECT COUNT(*) as total from profiles";
+        return  $this->getEntityManager()->getConnection()->prepare($sql)->executeQuery()->fetchAllAssociative();
     }
 
 }
