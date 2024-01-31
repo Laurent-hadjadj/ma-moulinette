@@ -60,7 +60,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private $preference = [];
 
     #[ORM\Column(type: 'integer', nullable: false, options: ['default' => 0])]
-    private $int;
+    private $init;
 
     #[ORM\Column(type: 'datetime', nullable: true)]
     private $dateModification;
@@ -492,7 +492,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * [Description for getInt]
+     * [Description for getInit]
      *
      * @return int|null
      *
@@ -500,15 +500,15 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function getInt(): ?int
+    public function getInit(): ?int
     {
-        return $this->int;
+        return $this->init;
     }
 
     /**
      * [Description for setInt]
      *
-     * @param int $int
+     * @param int $init
      *
      * @return self
      *
@@ -516,9 +516,9 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setInt(int $int): self
+    public function setInit(int $init): self
     {
-        $this->int = $int;
+        $this->init = $init;
 
         return $this;
     }
