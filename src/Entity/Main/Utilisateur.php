@@ -59,6 +59,9 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'json', nullable: true)]
     private $preference = [];
 
+    #[ORM\Column(type: 'integer', nullable: false, options: ['default' => 0])]
+    private $int;
+
     #[ORM\Column(type: 'datetime', nullable: true)]
     private $dateModification;
 
@@ -488,6 +491,36 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    /**
+     * [Description for getInt]
+     *
+     * @return int|null
+     *
+     * Created at: 31/01/2024 09:15:07 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function getInt(): ?int
+    {
+        return $this->int;
+    }
 
+    /**
+     * [Description for setInt]
+     *
+     * @param int $int
+     *
+     * @return self
+     *
+     * Created at: 31/01/2024 09:15:19 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function setInt(int $int): self
+    {
+        $this->int = $int;
+
+        return $this;
+    }
 
 }
