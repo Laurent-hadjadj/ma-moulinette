@@ -279,3 +279,11 @@ CREATE TABLE IF NOT EXISTS "activite" (
 );
 
 COMMIT;
+
+BEGIN TRANSACTION;
+
+-- 2024-01-31 : Ajout de l'attribut init à la table utilisateur
+
+ALTER TABLE utilisateur ADD COLUMN init INT DEFAULT 0;
+
+COMMIT;
