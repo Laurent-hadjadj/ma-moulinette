@@ -77,6 +77,7 @@
     height: auto;
     width: 95%;
   }
+
 }
 
 /*************************          Global     *********************************/
@@ -143,4 +144,49 @@
   top: -0.85rem;
   z-index: 1;
   transition: all 0.15s ease-in;
+}
+
+/* On désactive l'icone qui affiche le mot de passe et celui qui supprime les données */
+input[type='password']::-ms-reveal,
+input[type='password']::-ms-clear { display: none; }
+
+/* Affichage et masquage du mot de passe */
+#mot-de-passe + .afficher-masquer {
+  position: absolute;
+  top: 1.25rem;
+  right: 0.5rem;
+  transform: translateY(-50%);
+  text-indent: -9999px;
+  width: 25px;
+  height: 25px;
+  background: #006182;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
+
+/** Affichage et masquage du mot de passe - avant */
+#mot-de-passe + .afficher-masquer::before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 17px;
+  height: 17px;
+  background: #e3e3e3;
+  z-index: 1;
+  border-radius: 50%;
+}
+
+/** Affichage et masquage du mot de passe - après */
+#mot-de-passe[type="text"] + .afficher-masquer::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: 13px;
+  height: 13px;
+  background: #006182;
+  z-index: 2;
+  border-radius: 50%;
 }

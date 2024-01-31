@@ -49,3 +49,25 @@ $(function () {
     $(this).trigger('checkval');
   });
 });
+
+/*
+  Switch actions
+*/
+$('.afficher-masquer').on('click', function(){
+
+  if($(this).prev('input').attr('type') == 'password')
+    changeType($(this).prev('input'), 'text');
+  else
+    changeType($(this).prev('input'), 'password');
+  return false;
+});
+
+function changeType(x, type) {
+  if(x.prop('type') == type)
+  return x; //That was easy.
+  try {
+    return x.prop('type', type); //Stupid IE security will not allow this
+  } catch(e) {
+    console.log('Stupid IE security will not allow this')
+  }
+}
