@@ -40,7 +40,7 @@ class ProfilesRepository extends ServiceEntityRepository
      * @return array
      *
      * Created at: 27/10/2023 13:56:31 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function countProfiles(): array
