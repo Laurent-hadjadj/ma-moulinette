@@ -29,6 +29,7 @@ import './foundation.js';
 /** On importe les paramètres serveur */
 import {serveur} from './properties.js';
 
+/* Gestion des graphiques */
 import Chart from 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
@@ -530,7 +531,7 @@ $('.js-modifier-analyse').on('click', function () {
     /* On gére le changement de favori */
     $('[id^=switch-favori-]').on('click', e =>{
       /** on récupère la version et la date */
-      const id=$(e.target).attr('id');
+      const id=$(e.currentTarget).attr('id');
       const l=id.split('-');
       const version = $(`#version-${l[deux]}`).text().trim();
       const date = $(`#date-${l[deux]}`).text().trim();
@@ -562,7 +563,7 @@ $('.js-modifier-analyse').on('click', function () {
     /* On gére le changement de reference */
     $('[id^=switch-reference-]').on('click', e=>{
       /* on récupère la version et la date */
-      const id=$(e.target).attr('id');
+      const id=$(e.currentTarget).attr('id');
       const l=id.split('-');
       const  version=$(`#version-${l[deux]}`).text().trim();
       const  date=$(`#date-${l[deux]}`).text().trim();
