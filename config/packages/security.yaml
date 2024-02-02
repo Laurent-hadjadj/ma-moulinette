@@ -11,10 +11,13 @@ security:
         ROLE_GESTIONNAIRE: ['ROLE_COLLECTE', 'ROLE_BATCH', ROLE_UTILISATEUR]
 
     password_hashers:
-        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
-        App\Entity\Main\utilisateur:
-            algorithm: auto
-
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
+            algorithm: 'bcrypt'
+            cost:      13
+        harsh:
+            algorithm: sodium
+            time_cost: 2
+            memory_cost: 1024
     providers:
         app_utilisateur_provider:
             entity:
