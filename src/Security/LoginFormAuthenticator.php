@@ -47,6 +47,18 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
         $this->urlGenerator = $urlGenerator;
     }
 
+    /**
+     * [Description for authenticate]
+     * Processus d'authentification
+     *
+     * @param Request $request
+     *
+     * @return Passport
+     *
+     * Created at: 31/01/2024 14:57:21 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function authenticate(Request $request): Passport
     {
         $courriel = $request->request->get('courriel', '');
@@ -82,14 +94,38 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
         );
     }
 
-    // si le courriel existe et le credential est bon on redirige vers home
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
-    {
-        if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
+    /* si le courriel existe et le credential est bon on redirige vers home */
+    /**
+     * [Description for onAuthenticationSuccess]
+     * Si le courriel existe et le credential est bon on redirige vers home
+     * Si l'attribut est égale à 1 on redirige sur la page
+     * de changement du mot de passe
+     *
+     * @param Request $request
+     * @param TokenInterface $token
+     * @param string $firewallName
+     *
+     * @return Response|null
+     *
+     * Created at: 31/01/2024 14:56:02 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response {
+        /** */
+        $init=$token->getUser()->getInit();
+        $targetPath = $this->getTargetPath($request->getSession(), $firewallName);
+        /** si target n'est pas null,
+         * on est déjà connecté, on ne peut pas se reconnecter */
+        if ($targetPath) {
             return new RedirectResponse($targetPath);
         }
-
-        return new RedirectResponse($this->urlGenerator->generate('home'));
+        /** Ce n'est pas la première connexion ! */
+        if ($init==0){
+            return new RedirectResponse($this->urlGenerator->generate('home'));
+        } else {
+            return new RedirectResponse($this->urlGenerator->generate('renew'));
+        }
     }
 
     // retourne l'URL de connexion
