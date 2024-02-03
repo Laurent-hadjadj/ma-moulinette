@@ -251,6 +251,7 @@
   color: #e7552c;
 }
 
+/* on desactive le focus quand on change de champ */
 :focus { outline: none; }
 
 #registration_form_nom { margin-top: 0.2rem; }
