@@ -18,6 +18,7 @@ Encore
     .addEntry('errors', './assets/js/errors.js')
     .addEntry('login', './assets/js/app-login.js')
     .addEntry('register', './assets/js/app-register.js')
+    .addEntry('reset', './assets/js/app-reset.js')
     .addEntry('welcome', './assets/js/app-welcome.js')
     .addEntry('home', './assets/js/app-home.js')
     .addEntry('plan-du-site', './assets/js/app-footer-plan.js')
