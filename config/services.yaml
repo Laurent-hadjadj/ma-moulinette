@@ -22,6 +22,16 @@ parameters:
     csrf.salt: '%env(SALT)%'
     path.audit: '%env(AUDIT)%'
     rgaa: '%env(RGAA)%'
+    cgu.editeur: '%env(CGU_EDITEUR)%'
+    cgu.adresse: '%env(CGU_ADRESSE)%'
+    cgu.siret: '%env(CGU_SIRET)%'
+    cgu.siren: '%env(CGU_SIREN)%'
+    cgu.numero.siret: '%env(CGU_NUMERO_SIRET)%'
+    cgu.numero.siren: '%env(CGU_NUMERO_SIREN)%'
+    cgu.directeur.publication: '%env(CGU_DIRECTEUR_PUBLICATION)%'
+    cgu.source.url: '%env(CGU_SOURCE_URL)%'
+    cgu.source.scm: '%env(CGU_SOURCE_SCM)%'
+    cgu.hebergement: '%env(CGU_HEBERGEMENT)%'
 
 services:
     # default configuration for services in *this* file
