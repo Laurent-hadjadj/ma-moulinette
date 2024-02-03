@@ -22,6 +22,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 /** On récupère les exceptions de l'authentification */
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
+
 /**
  * [Description SecurityController]
  */
@@ -63,7 +64,7 @@ class SecurityController extends AbstractController
         if ($this->getUser()->getUserIdentifier()) {
             return $this->redirectToRoute('home');
         } else {
-            return $this->render('homesecurity/login.html.twig', [
+            return $this->render('auth/login.html.twig', [
                 'error' => $authenticationUtils->getLastAuthenticationError(),
                 'version' => $this->getParameter('version'),
                 'dateCopyright' => \date('Y')
@@ -85,7 +86,7 @@ class SecurityController extends AbstractController
     #[Route('/login', name: 'login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
-        return $this->render('security/login.html.twig', [
+        return $this->render('auth/login.html.twig', [
             'error' => $authenticationUtils->getLastAuthenticationError(),
             'version' => $this->getParameter('version'),
             'dateCopyright' => \date('Y')
