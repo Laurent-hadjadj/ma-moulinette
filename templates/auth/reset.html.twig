@@ -1,0 +1,134 @@
+{% set title = 'Réinitialisation' %}
+{% set description = 'Ma Moulinette - Changer son mot de passe.' %}
+<!DOCTYPE html>
+<!--
+.. __  __             __  __             _ _            _   _
+  |  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
+  | |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
+  | |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
+  |_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
+
+  Laurent HADJADJ
+  https://bitbucket.org/laurent_h/ma-moulinette
+  © 2024 - CC BY-SA-NC 4.0
+-->
+<html	lang="fr">
+
+  {# Chargement de la section HEAD #}
+  <head>
+    {{ include('head.html.twig') }}
+    {% block stylesheets %}
+      {{ encore_entry_link_tags('reset') }}
+    {% endblock %}
+  </head>
+
+  <body>
+    {# Chargement de la section header #}
+    {{ include('header.html.twig') }}
+    <br><br>
+
+    <div class="grid-container" role="main">
+    {% for message in app.flashes('warning') %}
+      <div class="open-sans callout alert-callout-border warning" role="alert">{{ message }}</div>
+    {% endfor %}
+    {% for message in app.flashes('success') %}
+      <div class="open-sans callout alert-callout-border success" role="alert">{{ message }}</div>
+    {% endfor %}
+      <div class="grid-x">
+        <div class="small-12 medium-6 large-6 cell">
+          <video id="video-dessin-anime" class="video-dessin-anime" preload="metadata" loop autoplay muted>
+            <source src="{{ asset('build/video/DessinAnime.mp4') }}">
+            <track label="Français" kind="captions" srclang="fr" default src="{{ asset('build/video/dessin_anime_subtitles_fr.vtt') }}">
+            <track label="English" kind="captions" srclang="en" src="{{ asset('build/video/dessin_anime_subtitles_en.vtt') }}">
+          </video>
+          <span class="open-sans float-center text-center">
+            {% set a="https://pixabay.com/fr/" %}
+            {% set b="users/u_cakf541pns-41051938/" %}
+            {% set c="?utm_source=link-attribution&amp;utm_medium=referral"%}
+            {% set d="&amp;utm_campaign=video&amp;utm_content=191860" %}
+            <a class="open-sans credit" href="{{a}}{{b}}{{c}}{{d}}">u_cakf541pns</a>
+            <span id="sur">sur</span>
+            <a class="open-sans credit" href="{{a}}{{c}}{{d}}">Pixabay</a>
+          </span>
+        </div>
+
+        <div class="small-12 medium-6 large-6 cell">
+          {% form_theme changePasswordForm 'foundation_6_layout.html.twig' %}
+          {{ form_start(changePasswordForm) }}
+          <div class="callout">
+            <h1 class="h3 claire-hand text-center">Réinitialisation.</h1>
+              {# Ancien mot de passe #}
+              <div class="isolation grid-x cell">
+                <div class="small-11 medium-11 large-11 cell">
+                  <div class="floated-label-wrapper">
+                    {{ form_label(changePasswordForm.ancienMotDePasse) }}
+                  </div>
+                  {{ form_widget(changePasswordForm.ancienMotDePasse) }}
+                  <button class="unmask0" type="button"
+                          title="Affiche/masque le mot de passe">Afficher|Masquer
+                  </button>
+                </div>
+                <div class="small-1 medium-1 large-1 cell">
+                  <span role="presentation">&nbsp;</span>
+                </div>
+              </div>
+
+              {# nouveau Mot de passe #}
+              <div class="isolation grid-x cell">
+                <div class="small-11 medium-11 large-11 cell">
+                  <div class="floated-label-wrapper">
+                    {{ form_label(changePasswordForm.plainPassword.first) }}
+                  </div>
+                  {{ form_widget(changePasswordForm.plainPassword.first) }}
+                  <button class="unmask1" type="button"
+                          title="Affiche/masque le mot de passe">Afficher|Masquer
+                  </button>
+                </div>
+                <div class="check-svg small-1 medium-1 large-1 cell">
+                  <span id="change-info-check-password"></span>
+                </div>
+              </div>
+
+              {# reMot de passe #}
+              <div class="isolation grid-x cell">
+                <div class="small-11 medium-11 large-11 cell check-svg">
+                  <div class="floated-label-wrapper">
+                    {{ form_label(changePasswordForm.plainPassword.second) }}
+                  </div>
+                  {{ form_widget(changePasswordForm.plainPassword.second) }}
+                  <button class="unmask2" type="button"
+                          title="Affiche/masque le mot de passe">Afficher|Masquer</button>
+                </div>
+                <div class="check-svg small-1 medium-1 large-1 cell">
+                  <span id="change-info-check-repassword"></span>
+                </div>
+              </div>
+
+              {# Affiche la qualité du mot de passe. #}
+              <div class="affiche-info-mot-de-passe cell">
+              </div>
+
+              {# Affiche des messages d'erreur pour le champ mot-de-passe et re-mot-de-passe #}
+              <div class="form_erreur">
+                {{ form_errors(changePasswordForm.plainPassword.first) }}
+                {{ form_errors(changePasswordForm.plainPassword.second) }}
+              </div>
+
+              {# Bouton de validation #}
+              <input id="valider-formulaire-enregistrement" class="button expanded disabled-custom noselect" type="button" value="Valider">
+              <div role="alert" id="message-erreur-valider"></div>
+            </div>
+          </div>
+          {{ form_end(changePasswordForm) }}
+        </div>
+      </div>
+    </div>
+    <br><br>
+    {# Chargement de la section footer #}
+    {{ include('footer.html.twig') }}
+    {# Chargement du code javascript #}
+    {% block javascripts %}
+      {{ encore_entry_script_tags('reset') }}
+    {% endblock %}
+  </body>
+</html>
