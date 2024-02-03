@@ -299,6 +299,8 @@ General error: 1 near "4.1": syntax error"
 
 * Mise à jour webpack-5.75.0 et webpack-encore 4.1.2 ;
 * Migration symfony 6.2.10 ;
+* Migration symfony 7.0 ;
+* Migration webpack to AssetMapper ;
 * Fix : Définition de la timezone [Europe/Paris] pour la gestion des dates;
 * Fix : Correction type attribut hotspot_high varchar(4)-->integer ;
 * Fix : Ajustement de la taille des bulles utilisées pour les notes.
@@ -309,7 +311,7 @@ General error: 1 near "4.1": syntax error"
 * Code Clean W3C & sonarqube ;
 * [Docker] Ajout du fichier docker-compose.yml ;
 * [BD] Ajout aux scripts SQLite, des scripts PostgreSQL ;
-* [BD] Suppression de la tables `tags` ;
+* [BD] Suppression de la table `tags` ;
 * [BD] Ajout des "tags" et de la "visibilité" dans la table `liste_projet` ;
 * [Page_Home] Correction de l'affichage NaN pour les projets de type privé quand la table est vide ;
 * [Page_Home] Ajout de la vue **Projet** pour l'affichage des projets favoris, de la vue **Version** pour l'affichage des versions favorites et de vue **Vide** utiliée quand l'utilisateur a désactivé l'affichage des favoris ;
@@ -335,5 +337,14 @@ General error: 1 near "4.1": syntax error"
 * [Page_Profil] Amélioration de la page profil pour mobile ;
 * [Page_Profil] Consultation des changements par profil ;
 * [Page_Profil] Suppression du bouton de rafraichissement de la liste des profils ;
-* [Page_Profil_details] Affichage des changements sur les règles des profils qualités ;
-* [Page_Profil] Pris en compte du rôle `Gestionnaire` pour mettre à jour la liste des référentiels.
+* [Page_Profil_Details] Affichage des changements sur les règles des profils qualités ;
+* [Page_Profil] Prise en compte du rôle `Gestionnaire` pour mettre à jour la liste des référentiels ;
+* [Page_Suivi_Activité] Ajout de la page de suivi de l'activité Sonarqube ;
+* [Page_Inscription] Renforcement de la sécurité. Ajout de la propriété hash_property_path.
+* [Page_Inscription] Ajout du controle de la saisie du mot de passe.
+* [Page_Inscription] Ajout de l'indicateur de qualité du mot de passe.
+* [Page_Footer] Refonte du footer pour prendre en compte les liens |Plan du site | accéssibilité | Mentions légales | Données personnelles.
+* [Page_Home] Vérification des droits pour mettre à jour la table des projets et celles des profils qualités.
+* [Page_Login] Ajout de l'option voir mon mot de passe ;
+* [Page_Login] Ajout, je veux changer mon mot de passe.
+* [Page_Login] Ajout, j'ai oublié mon mot de passe, aider-moi :)
