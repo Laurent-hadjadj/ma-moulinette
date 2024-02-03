@@ -103,7 +103,7 @@ class RegistrationFormType extends AbstractType
                     'label' => 'label.motdepasse',
                     'attr' => [
                         'placeholder' => 'placeholder.motdepasse',
-                        'class' => 'color-bleu, margin-bottom-05',
+                        'class' => 'color-bleu margin-bottom-05',
                         'autocomplete' => 'off',
                         'aria-label'=>'Mot de passe',
                         'aria-describedby'=>'registration_form_plainPassword_first'],
