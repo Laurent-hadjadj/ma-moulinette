@@ -1,0 +1,347 @@
+/**
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2021-2022.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ */
+
+/* stylelint-disable selector-id-pattern */
+
+/**
+  * Propriétés pour les class en fonction des medias type
+  *
+  */
+
+/* Media Small */
+@media (width <= 20em) {
+  .video-dessin-anime {
+    height: auto;
+    width: 100%;
+  }
+
+  #change_password_form_ancienMotDePasse + .unmask0,
+  #change_password_form_plainPassword_first + .unmask1,
+  #change_password_form_plainPassword_second + .unmask2
+  {
+    top: 1.25rem;
+    right: 2.3rem;
+  }
+}
+
+/* Media Small */
+@media (20.025em <= width <= 22em) {
+  .video-dessin-anime {
+    height: auto;
+    width: 100%;
+  }
+
+  #change_password_form_ancienMotDePasse + .unmask0,
+  #change_password_form_plainPassword_first + .unmask1,
+  #change_password_form_plainPassword_second + .unmask2
+  {
+    top: 1.25rem;
+    right: 2.6rem;
+  }
+}
+
+/* Media Small */
+@media (22.025em <= width <= 30em) {
+  .video-dessin-anime {
+    height: auto;
+    width: 100%;
+  }
+
+  #change_password_form_ancienMotDePasse + .unmask0,
+  #change_password_form_plainPassword_first + .unmask1,
+  #change_password_form_plainPassword_second + .unmask2
+  {
+    top: 1.25rem;
+    right: 3.3rem;
+  }
+
+
+}
+
+/* Media Small */
+@media (30.025em <= width <= 40em) {
+  .video-dessin-anime {
+    height: auto;
+    width: 100%;
+  }
+
+  #change_password_form_ancienMotDePasse + .unmask0,
+  #change_password_form_plainPassword_first + .unmask1,
+  #change_password_form_plainPassword_second + .unmask2
+  {
+    top: 1.25rem;
+    right: 3.2rem;
+  }
+}
+
+
+/* Media Medium */
+@media (40.025em <= width <= 46em) {
+  .video-dessin-anime {
+    height: auto;
+    width: 95%;
+  }
+
+  #change_password_form_ancienMotDePasse + .unmask0,
+  #change_password_form_plainPassword_first + .unmask1,
+  #change_password_form_plainPassword_second + .unmask2
+  {
+    top: 1.25rem;
+    right: 1.8rem;
+  }
+}
+
+/* Media Medium */
+@media (46.025em <= width <= 64em) {
+  .video-dessin-anime {
+    height: auto;
+    width: 95%;
+  }
+
+  #change_password_form_ancienMotDePasse + .unmask0,
+  #change_password_form_plainPassword_first + .unmask1,
+  #change_password_form_plainPassword_second + .unmask2
+  {
+    top: 1.25rem;
+    right: 2.6rem;
+  }
+}
+
+/* Media Large */
+@media (64.025em <= width <= 90em) {
+  .video-dessin-anime {
+    height: auto;
+    width: 95%;
+  }
+
+  #change_password_form_ancienMotDePasse + .unmask0,
+  #change_password_form_plainPassword_first + .unmask1,
+  #change_password_form_plainPassword_second + .unmask2
+  { top: 1.25rem;
+    right: 3.2rem;
+  }
+}
+
+/* Media Large */
+@media (90.025em <= width <= 120em) {
+  .video-dessin-anime {
+    height: auto;
+    width: 95%;
+  }
+
+  #change_password_form_ancienMotDePasse + .unmask0,
+  #change_password_form_plainPassword_first + .unmask1,
+  #change_password_form_plainPassword_second + .unmask2
+
+  {
+    top: 1.25rem;
+    right: 3.2rem;
+  }
+}
+
+/* Media Extra-Large */
+@media (120.025 <= width <= 160em) {
+  .video-dessin-anime {
+    height: auto;
+    width: 95%;
+  }
+
+  #change_password_form_ancienMotDePasse + .unmask0,
+  #change_password_form_plainPassword_first + .unmask1,
+  #change_password_form_plainPassword_second + .unmask2
+  {
+    top: 1.25rem;
+    right: 3.2rem;
+  }
+}
+
+/*************************          Global     *********************************/
+
+/* Bouton de validation */
+#valider-formulaire-enregistrement {
+  color: #fff;
+  background-color: #00445b;
+}
+
+/* hover des boutons */
+#valider-formulaire-enregistrement:hover {
+  background-color: #006182;
+}
+
+/* affichage du crédit */
+.credit {
+  font-size: 0.8rem;
+  color: #021e28;
+}
+
+.credit:hover { color: #ba401b; }
+
+#sur { font-size: 0.8rem; }
+
+/* gestion du formulaire de connexion */
+
+/** Gestion des labels */
+.floated-label-wrapper { position: relative; }
+
+.floated-label-wrapper label {
+  background: #fefefe;
+  color: #00445b;
+  font-size: 0.75rem;
+  font-weight: 600;
+  left: 0.75rem;
+  opacity: 0;
+  padding: 0 0.25rem;
+  position: absolute;
+  top: 2rem;
+  transition: all 0.15s ease-in;
+  z-index: -1;
+}
+
+.floated-label-wrapper label input[type="email"],
+.floated-label-wrapper label input[type="password"] {
+  border-radius: 4px;
+  font-size: 1.75em;
+  padding: 0.5em;
+}
+
+.floated-label-wrapper label.show {
+  opacity: 1;
+  top: -0.65rem;
+  z-index: 1;
+  transition: all 0.15s ease-in;
+}
+
+.floated-label-wrapper label.prenom {
+  opacity: 1;
+  top: -2.45rem;
+  z-index: 1;
+  transition: all 0.15s ease-in;
+}
+
+.info-check-ko-svg {
+  padding-left: 0.3rem;
+  padding-top: 0.4rem;
+  fill: #761f11;
+  width: 32px;
+}
+
+.info-check-ok-svg {
+  padding-left: 0.3rem;
+  padding-top: 0.4rem;
+  fill: #188a4f;
+  width: 32px;
+}
+
+/*************** Ajouter un utilisateur *****************/
+.profil-bouton {
+  border: 1px solid #00445b;
+  border-radius: 4px;
+  background-color: #00445b;
+  cursor: pointer;
+  color: white;
+  padding: 0.1rem;
+  margin-left: -0.2rem;
+}
+
+.profil-bouton:hover {
+  border: 1px solid #00445b;
+  background-color: #eee;
+  color: #e7552c;
+}
+
+/* on desactive le focus quand on change de champ */
+:focus { outline: none; }
+
+
+/* Formulaires */
+
+/* desactivaton du bouton inscription */
+.disabled-custom {
+  cursor: not-allowed;
+  opacity: 0.70;
+}
+
+/* stylelint-disable-next-line selector-class-pattern */
+.form_erreur,
+#message-erreur-valider { color: #761f11; }
+
+/* stylelint-disable-next-line selector-class-pattern */
+.form_erreur ul {
+  margin-left: 0;
+  margin-top: -1rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.8rem;
+  list-style-type: none;
+}
+
+#message-erreur-valider ul {
+  margin-left: 0;
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  font-size: 0.8rem;
+  list-style-type: none;
+}
+
+/** Gestion de l'affichage et du masquage du mot de passe */
+
+/** Création d'un bloc pour le champs password et repassword */
+.isolation { position: relative }
+
+/* On désactive l'icone qui affiche le mot de passe et celui qui supprime les données */
+input[type='password']::-ms-reveal,
+input[type='password']::-ms-clear { display: none; }
+
+/* Affichage et masquage du mot de passe */
+#change_password_form_ancienMotDePasse + .unmask0,
+#change_password_form_plainPassword_first + .unmask1,
+#change_password_form_plainPassword_second + .unmask2
+{
+  position: absolute;
+  transform: translateY(-50%);
+  text-indent: -9999px;
+  width: 25px;
+  height: 25px;
+  background: #006182;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
+
+/** Affichage et masquage du mot de passe - avant */
+#change_password_form_ancienMotDePasse + .unmask0::before,
+#change_password_form_plainPassword_first + .unmask1::before,
+#change_password_form_plainPassword_second + .unmask2::before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 17px;
+  height: 17px;
+  background: #e3e3e3;
+  z-index: 1;
+  border-radius: 50%;
+}
+
+/** Affichage et masquage du mot de passe - après */
+#change_password_form_ancienMotDePasse[type="text"] + .unmask0::after,
+#change_password_form_plainPassword_first[type="text"] + .unmask1::after,
+#change_password_form_plainPassword_second[type="text"] + .unmask2::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: 13px;
+  height: 13px;
+  background: #006182;
+  z-index: 2;
+  border-radius: 50%;
+}
