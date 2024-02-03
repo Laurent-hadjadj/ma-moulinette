@@ -36,6 +36,47 @@ Il est nécessaire de définir dans le fichier **.env** la valeur de ces deux pa
 TRUST_HOST1="^ma-petite-entrprise\.fr$"
 TRUST_HOST2="10.0.0.1"
 ```
+## La gestion de la sécurité
+
+Le fichier `security.yml` contient le paramètrage de la sécurité et de l'authentification.
+
+```yaml
+  # On active le mécanisme d'authentification
+    enable_authenticator_manager: true
+    # On léve une exception si l'utilisateur n'existe pas
+    hide_user_not_found: false
+```
+
+La hiéarchie des rôles permet l'héritage de droits.
+
+```yaml
+    role_hierarchy:
+        ROLE_COLLECTE: ['ROLE_UTILISATEUR']
+        ROLE_BATCH: ['ROLE_COLLECTE', ROLE_UTILISATEUR]
+        ROLE_GESTIONNAIRE: ['ROLE_COLLECTE', 'ROLE_BATCH', ROLE_UTILISATEUR]
+```
+
+Les points d'accès sont définis de cette façon :
+
+```yaml
+  access_control:
+   - { path: ^/login, roles: PUBLIC_ACCESS }
+    - { path: ^/register, roles: PUBLIC_ACCESS }
+    - { path: ^/welcome, roles: PUBLIC_ACCESS }
+    - { path: ^/plan-du-site, roles: PUBLIC_ACCESS }
+    - { path: ^/mentions-legales, roles: PUBLIC_ACCESS }
+    - { path: ^/admin, roles: ROLE_UTILISATEUR }
+    - { path: ^/, roles: ROLE_UTILISATEUR }
+```
+
+Le chiffrement utilise l'algorithme **brcrypt** par défaut avec un niveau de hasshage de 13.
+
+```yaml
+password_hashers:
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
+            algorithm: 'bcrypt'
+            cost:      13
+```
 
 ## Firewall
 
@@ -56,9 +97,12 @@ Le tableau ci-dessous liste par rôle les droits des pages accessibles.
 |   Page      | PUBLIC | UTILISATEUR | COLLECTE | BATCH | GESTIONNAIRE | URL               |
 |:-----------:|:------:|:-----------:|:--------:|:-----:|:------------:|:------------------|
 | Accueil     | NON    | OUI         | -        | -     | -            | /home             |
+| plan du site| OUI    | OUI         | -        | -     | -            | /plan-du-site     |
+| Mentions    | OUI    | OUI         | -        | -     | -            | /mentions-legales |
 | Inscription | OUI    | OUI         | -        | -     | -            | /register         |
 | Connexion   | OUI    | OUI         | -        | -     | -            | /login            |
 | Déconnexion | OUI    | OUI         | -        | -     | -            | /logout           |
+| Reset passwd| NON    | OUI         | -        | -     | -            | reset/mot-de-passe|
 | Bienvenue   | OUI    | NON         | -        | -     | -            | /welcome          |
 | Dashboard   | NON    | OUI         | -        | -     | -            | /admin            |
 | Utilisateur | NON    | NON         | -        | -     | OUI          | /admin?crudAction |
@@ -74,24 +118,6 @@ Le fichier `security.yaml` contient la configuration suivante pour étendre les 
 - `UTILISATEUR` avec les droits de `COLLECTE`
 - `UTILISATEUR` avec les droits de `BATCH`.
 - `UTILISATEUR` avec les droits de `GESTIONNAIRE`.
-
-```yaml
-    role_hierarchy:
-        ROLE_GESTIONNAIRE: ['ROLE_COLLECTE', 'ROLE_BATCH', ROLE_UTILISATEUR]
-        ROLE_BATCH: ['ROLE_COLLECTE', ROLE_UTILISATEUR]
-        ROLE_COLLECTE: ROLE_UTILISATEUR
-```
-
-Les entrypoints sont définis de cette façon :
-
-```yaml
-  access_control:
-      - { path: ^/login, roles: PUBLIC_ACCESS }
-      - { path: ^/register, roles: PUBLIC_ACCESS }
-      - { path: ^/welcome, roles: PUBLIC_ACCESS }
-      - { path: ^/admin, roles: ROLE_UTILISATEUR }
-      - { path: ^/, roles: ROLE_UTILISATEUR }
-```
 
 ## Filtrage twig et dans les controlleurs
 
