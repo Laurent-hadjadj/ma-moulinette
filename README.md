@@ -43,7 +43,7 @@ Aujourd'hui, l'application est régulièrement utilisé et a fait l'objet de nom
 * [Accueil](/documentation/accueil.md)
 * [Profil-details](/documentation/profil-details.md)
 * [Profil](/documentation/profil.md)
-* [**Projet**](/documentation/projet.md)
+* [Projet](/documentation/projet.md)
 * [OWASP](/documentation/owasp.md)
 * [Suivi](/documentation/suivi.md)
 * [COSUI](/documentation/cosui.md)
