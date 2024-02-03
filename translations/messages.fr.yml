@@ -1,15 +1,20 @@
 ---
-#Formulaire de d'inscription et de connexion
+#Formulaire de d'inscription, de connexion, de changement de mot de passe
 placeholder.nom: HADJADJ
 placeholder.prenom: Laurent
 placeholder.courriel: laurent.hadjadj@ma-moulinette.fr
 placeholder.motdepasse: Saisi ton mot de passe.
 placeholder.remotdepasse: Re-saisie ton mot de passe.
+placeholder.nouveau.motdepasse: Nouveau mot de passe.
+placeholder.ancien.motdepasse: Ancien mot de passe.
 label.nom: Nom
 label.prenom: Prénom
 label.courriel: Courriel
 label.motdepasse: Mot de passe
 label.remotdepasse: Vérification
+label.nouveau.motdepasse:  Nouveau
+label.ancien.motdepasse: Actuel
+invalid.message.motdepasse: Les mots de passe ne correspondent pas.
 
 # Menu EasyAdmin
 Home: Home
