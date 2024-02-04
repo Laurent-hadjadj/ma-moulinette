@@ -53,17 +53,17 @@
         </div>
 
         <div class="small-12 medium-6 large-6 cell">
-          {% form_theme changePasswordForm 'foundation_6_layout.html.twig' %}
-          {{ form_start(changePasswordForm) }}
+          {% form_theme resetPasswordForm 'foundation_6_layout.html.twig' %}
+          {{ form_start(resetPasswordForm) }}
           <div class="callout">
             <h1 class="h3 claire-hand text-center">Réinitialisation.</h1>
               {# Ancien mot de passe #}
               <div class="isolation grid-x cell">
                 <div class="small-11 medium-11 large-11 cell">
                   <div class="floated-label-wrapper">
-                    {{ form_label(changePasswordForm.ancienMotDePasse) }}
+                    {{ form_label(resetPasswordForm.ancienMotDePasse) }}
                   </div>
-                  {{ form_widget(changePasswordForm.ancienMotDePasse) }}
+                  {{ form_widget(resetPasswordForm.ancienMotDePasse) }}
                   <button class="unmask0" type="button"
                           title="Affiche/masque le mot de passe">Afficher|Masquer
                   </button>
@@ -77,15 +77,15 @@
               <div class="isolation grid-x cell">
                 <div class="small-11 medium-11 large-11 cell">
                   <div class="floated-label-wrapper">
-                    {{ form_label(changePasswordForm.plainPassword.first) }}
+                    {{ form_label(resetPasswordForm.plainPassword.first) }}
                   </div>
-                  {{ form_widget(changePasswordForm.plainPassword.first) }}
+                  {{ form_widget(resetPasswordForm.plainPassword.first) }}
                   <button class="unmask1" type="button"
                           title="Affiche/masque le mot de passe">Afficher|Masquer
                   </button>
                 </div>
                 <div class="check-svg small-1 medium-1 large-1 cell">
-                  <span id="change-info-check-password"></span>
+                  <span id="reset-info-check-password"></span>
                 </div>
               </div>
 
@@ -93,14 +93,14 @@
               <div class="isolation grid-x cell">
                 <div class="small-11 medium-11 large-11 cell check-svg">
                   <div class="floated-label-wrapper">
-                    {{ form_label(changePasswordForm.plainPassword.second) }}
+                    {{ form_label(resetPasswordForm.plainPassword.second) }}
                   </div>
-                  {{ form_widget(changePasswordForm.plainPassword.second) }}
+                  {{ form_widget(resetPasswordForm.plainPassword.second) }}
                   <button class="unmask2" type="button"
                           title="Affiche/masque le mot de passe">Afficher|Masquer</button>
                 </div>
                 <div class="check-svg small-1 medium-1 large-1 cell">
-                  <span id="change-info-check-repassword"></span>
+                  <span id="reset-info-check-repassword"></span>
                 </div>
               </div>
 
@@ -110,8 +110,8 @@
 
               {# Affiche des messages d'erreur pour le champ mot-de-passe et re-mot-de-passe #}
               <div class="form_erreur">
-                {{ form_errors(changePasswordForm.plainPassword.first) }}
-                {{ form_errors(changePasswordForm.plainPassword.second) }}
+                {{ form_errors(resetPasswordForm.plainPassword.first) }}
+                {{ form_errors(resetPasswordForm.plainPassword.second) }}
               </div>
 
               {# Bouton de validation #}
@@ -119,7 +119,7 @@
               <div role="alert" id="message-erreur-valider"></div>
             </div>
           </div>
-          {{ form_end(changePasswordForm) }}
+          {{ form_end(resetPasswordForm) }}
         </div>
       </div>
     </div>

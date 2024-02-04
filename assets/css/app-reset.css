@@ -24,9 +24,9 @@
     width: 100%;
   }
 
-  #change_password_form_ancienMotDePasse + .unmask0,
-  #change_password_form_plainPassword_first + .unmask1,
-  #change_password_form_plainPassword_second + .unmask2
+  #reset_password_form_ancienMotDePasse + .unmask0,
+  #reset_password_form_plainPassword_first + .unmask1,
+  #reset_password_form_plainPassword_second + .unmask2
   {
     top: 1.25rem;
     right: 2.3rem;
@@ -40,9 +40,9 @@
     width: 100%;
   }
 
-  #change_password_form_ancienMotDePasse + .unmask0,
-  #change_password_form_plainPassword_first + .unmask1,
-  #change_password_form_plainPassword_second + .unmask2
+  #reset_password_form_ancienMotDePasse + .unmask0,
+  #reset_password_form_plainPassword_first + .unmask1,
+  #reset_password_form_plainPassword_second + .unmask2
   {
     top: 1.25rem;
     right: 2.6rem;
@@ -56,9 +56,9 @@
     width: 100%;
   }
 
-  #change_password_form_ancienMotDePasse + .unmask0,
-  #change_password_form_plainPassword_first + .unmask1,
-  #change_password_form_plainPassword_second + .unmask2
+  #reset_password_form_ancienMotDePasse + .unmask0,
+  #reset_password_form_plainPassword_first + .unmask1,
+  #reset_password_form_plainPassword_second + .unmask2
   {
     top: 1.25rem;
     right: 3.3rem;
@@ -74,9 +74,9 @@
     width: 100%;
   }
 
-  #change_password_form_ancienMotDePasse + .unmask0,
-  #change_password_form_plainPassword_first + .unmask1,
-  #change_password_form_plainPassword_second + .unmask2
+  #reset_password_form_ancienMotDePasse + .unmask0,
+  #reset_password_form_plainPassword_first + .unmask1,
+  #reset_password_form_plainPassword_second + .unmask2
   {
     top: 1.25rem;
     right: 3.2rem;
@@ -91,9 +91,9 @@
     width: 95%;
   }
 
-  #change_password_form_ancienMotDePasse + .unmask0,
-  #change_password_form_plainPassword_first + .unmask1,
-  #change_password_form_plainPassword_second + .unmask2
+  #reset_password_form_ancienMotDePasse + .unmask0,
+  #reset_password_form_plainPassword_first + .unmask1,
+  #reset_password_form_plainPassword_second + .unmask2
   {
     top: 1.25rem;
     right: 1.8rem;
@@ -107,9 +107,9 @@
     width: 95%;
   }
 
-  #change_password_form_ancienMotDePasse + .unmask0,
-  #change_password_form_plainPassword_first + .unmask1,
-  #change_password_form_plainPassword_second + .unmask2
+  #reset_password_form_ancienMotDePasse + .unmask0,
+  #reset_password_form_plainPassword_first + .unmask1,
+  #reset_password_form_plainPassword_second + .unmask2
   {
     top: 1.25rem;
     right: 2.6rem;
@@ -123,9 +123,9 @@
     width: 95%;
   }
 
-  #change_password_form_ancienMotDePasse + .unmask0,
-  #change_password_form_plainPassword_first + .unmask1,
-  #change_password_form_plainPassword_second + .unmask2
+  #reset_password_form_ancienMotDePasse + .unmask0,
+  #reset_password_form_plainPassword_first + .unmask1,
+  #reset_password_form_plainPassword_second + .unmask2
   { top: 1.25rem;
     right: 3.2rem;
   }
@@ -138,9 +138,9 @@
     width: 95%;
   }
 
-  #change_password_form_ancienMotDePasse + .unmask0,
-  #change_password_form_plainPassword_first + .unmask1,
-  #change_password_form_plainPassword_second + .unmask2
+  #reset_password_form_ancienMotDePasse + .unmask0,
+  #reset_password_form_plainPassword_first + .unmask1,
+  #reset_password_form_plainPassword_second + .unmask2
 
   {
     top: 1.25rem;
@@ -155,9 +155,9 @@
     width: 95%;
   }
 
-  #change_password_form_ancienMotDePasse + .unmask0,
-  #change_password_form_plainPassword_first + .unmask1,
-  #change_password_form_plainPassword_second + .unmask2
+  #reset_password_form_ancienMotDePasse + .unmask0,
+  #reset_password_form_plainPassword_first + .unmask1,
+  #reset_password_form_plainPassword_second + .unmask2
   {
     top: 1.25rem;
     right: 3.2rem;
@@ -301,9 +301,9 @@ input[type='password']::-ms-reveal,
 input[type='password']::-ms-clear { display: none; }
 
 /* Affichage et masquage du mot de passe */
-#change_password_form_ancienMotDePasse + .unmask0,
-#change_password_form_plainPassword_first + .unmask1,
-#change_password_form_plainPassword_second + .unmask2
+#reset_password_form_ancienMotDePasse + .unmask0,
+#reset_password_form_plainPassword_first + .unmask1,
+#reset_password_form_plainPassword_second + .unmask2
 {
   position: absolute;
   transform: translateY(-50%);
@@ -317,9 +317,9 @@ input[type='password']::-ms-clear { display: none; }
 }
 
 /** Affichage et masquage du mot de passe - avant */
-#change_password_form_ancienMotDePasse + .unmask0::before,
-#change_password_form_plainPassword_first + .unmask1::before,
-#change_password_form_plainPassword_second + .unmask2::before {
+#reset_password_form_ancienMotDePasse + .unmask0::before,
+#reset_password_form_plainPassword_first + .unmask1::before,
+#reset_password_form_plainPassword_second + .unmask2::before {
   content: "";
   position: absolute;
   top: 4px;
@@ -332,9 +332,9 @@ input[type='password']::-ms-clear { display: none; }
 }
 
 /** Affichage et masquage du mot de passe - après */
-#change_password_form_ancienMotDePasse[type="text"] + .unmask0::after,
-#change_password_form_plainPassword_first[type="text"] + .unmask1::after,
-#change_password_form_plainPassword_second[type="text"] + .unmask2::after {
+#reset_password_form_ancienMotDePasse[type="text"] + .unmask0::after,
+#reset_password_form_plainPassword_first[type="text"] + .unmask1::after,
+#reset_password_form_plainPassword_second[type="text"] + .unmask2::after {
   content: "";
   position: absolute;
   top: 6px;

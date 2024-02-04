@@ -50,12 +50,12 @@ const checkKoSvg = `<svg xmlns="http://www.w3.org/2000/svg" overflow="visible" x
 3.753 12.914 0L32.5 45.593l12.913 13.593c3.566 3.753 9.348 3.753 12.914 0 3.565-3.753 3.565-9.84 0-13.593L45.413 32z"/></g></svg>`;
 
 /** Nettoyage de formulaire */
-$('#change_password_form_plainPassword_first').val('');
-$('#change_passowrd_form_plainPassword_second').val('');
+$('#reset_password_form_plainPassword_first').val('');
+$('#reset_passowrd_form_plainPassword_second').val('');
 $('#message-erreur-valider').val('');
 
 /** Ajout du label pour le mot de passe. On ne fait pas de contrôle. */
-$('#change_password_form_ancienMotDePasse').on('keyup', function(){
+$('#reset_password_form_ancienMotDePasse').on('keyup', function(){
   if (this.value !== '') {
     $('label[for="change_password_form_ancienMotDePasse"]').addClass('motdepasse');
   } else {
@@ -64,7 +64,7 @@ $('#change_password_form_ancienMotDePasse').on('keyup', function(){
 });
 
 /** Ajout du label pour le mot de passe */
-$('#change_password_form_plainPassword_first').on('keyup', function(){
+$('#reset_password_form_plainPassword_first').on('keyup', function(){
   if (this.value !== '') {
     $('label[for="change_password_form_plainPassword_first"]').addClass('show');
   } else {
@@ -73,13 +73,13 @@ $('#change_password_form_plainPassword_first').on('keyup', function(){
 });
 
   /** On contrôle la qualité du mot de passe  */
-  $('#change_password_form_plainPassword_first').password({
+  $('#reset_password_form_plainPassword_first').password({
     showPercent: true, showText: true, animate: true, animateSpeed: 'fast',
     field: false, fieldPartialMatch: true, minimumLength: 1, useColorBarImage: true,
   });
 
 /** Ajout du label pour le re-motdepasse */
-$('#change_password_form_plainPassword_second').on('keyup', function(){
+$('#reset_password_form_plainPassword_second').on('keyup', function(){
   if (this.value !== '') {
     $('label[for="change_password_form_plainPassword_second"]').addClass('show');
   } else {
@@ -88,40 +88,40 @@ $('#change_password_form_plainPassword_second').on('keyup', function(){
 });
 
 /** Vérification du mot de passe */
-$('#change_password_form_plainPassword_first, #change_password_form_plainPassword_second').on(
+$('#reset_password_form_plainPassword_first, #reset_password_form_plainPassword_second').on(
   'keyup', ()=>{
-    const password=$('#change_password_form_plainPassword_first').val();
-    const repassword=$('#change_password_form_plainPassword_second').val();
+    const password=$('#reset_password_form_plainPassword_first').val();
+    const repassword=$('#reset_password_form_plainPassword_second').val();
 
     if (password.length>=huit && password.length<=cinquanteDeux) {
-        $('#change-info-check-password').html(checkOkSvg);
+        $('#reset-info-check-password').html(checkOkSvg);
       } else if (password.length===zero) {
-          $('#change-info-check-password').html('');
+          $('#reset-info-check-password').html('');
         } else {
-          $('#change-info-check-password').html(checkKoSvg);
+          $('#reset-info-check-password').html(checkKoSvg);
         }
 
       if ( repassword.length>=huit && repassword.length<=cinquanteDeux ) {
-        $('#change-info-check-repassword').html(checkOkSvg);
+        $('#reset-info-check-repassword').html(checkOkSvg);
         } else if (repassword.length===zero) {
-        $('#change-info-check-repassword').html('');
+        $('#reset-info-check-repassword').html('');
         } else {
-        $('#change-info-check-repassword').html(checkKoSvg);
+        $('#reset-info-check-repassword').html(checkKoSvg);
       }
   });
 
 /** Activation du bouton d'enregistrement */
-$('#change_password_form_plainPassword_second').on('focus', function(){
+$('#reset_password_form_plainPassword_second').on('focus', function(){
   $('#valider-formulaire-enregistrement').removeClass('disabled-custom');
 });
 
   /** Vérification des informations du formulaire */
 $('#valider-formulaire-enregistrement').on('click', async ()=>{
-  const initialPasswordLength=$('#change_password_form_ancienMotDePasse').val().length;
-  const passwordLength=$('#change_password_form_plainPassword_first').val().length;
-  const repasswordLength=$('#change_password_form_plainPassword_second').val().length;
-  const passwordValue=$('#change_password_form_plainPassword_first').val();
-  const repassordValue=$('#change_password_form_plainPassword_second').val();
+  const initialPasswordLength=$('#reset_password_form_ancienMotDePasse').val().length;
+  const passwordLength=$('#reset_password_form_plainPassword_first').val().length;
+  const repasswordLength=$('#reset_password_form_plainPassword_second').val().length;
+  const passwordValue=$('#reset_password_form_plainPassword_first').val();
+  const repassordValue=$('#reset_password_form_plainPassword_second').val();
 
 if ( initialPasswordLength>0 && passwordLength>=8 && repasswordLength>=8 &&
     passwordValue===repassordValue) {
