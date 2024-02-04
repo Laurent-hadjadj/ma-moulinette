@@ -407,6 +407,23 @@ body { background: #eee; }
 
 .margin-bottom-05 { margin-bottom: 0.5rem; }
 
+/** link */
+.source-link {
+  color: #00445b;
+  padding: 1px 2px;
+  border-bottom: 1px solid;
+}
+
+.source-link:hover, .source-link:active {
+  transition: all 0.25s ease-in;
+  color: #bf1722;
+  border-radius: 4px;
+  background-color: #ffc !important;
+  border-color: #ffc;
+  padding: 1px 2px;
+}
+
+
 /** Message d'alerte */
 .alert-callout-border {
   width: 100%;
