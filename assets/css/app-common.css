@@ -44,6 +44,9 @@
   /* Défini la taille de la police par défaut */
   .open-sans { font-size: 0.9rem; }
 
+  .body-for-sticky { padding-bottom: 2rem; }
+  .footer { position: absolute; }
+
   .footer-bottom-links {
     flex-direction: column;
     align-content: space-around;
@@ -82,6 +85,9 @@
   }
 
   .open-sans { font-size: 0.9rem; }
+
+  .body-for-sticky { padding-bottom: 2rem; }
+  .footer { position: absolute; }
 
   .footer-bottom-links {
     flex-direction: column;
@@ -123,6 +129,9 @@
 
   .open-sans { font-size: 0.9rem; }
 
+  .body-for-sticky { padding-bottom: 2rem; }
+  .footer { position: absolute; }
+
   .footer-bottom-links {
     flex-direction: column;
     align-content: space-around;
@@ -163,6 +172,10 @@
   }
 
   .open-sans { font-size: 0.9rem; }
+
+  .body-for-sticky { padding-bottom: 2rem; }
+
+  /** .footer { position: absolute; } */
 
   .logo-svg {
     width: 90px;
@@ -219,6 +232,13 @@
     height: 46px;
   }
 
+  .body-for-sticky { padding-bottom: 2rem; }
+
+  .footer {
+    position: absolute;
+    bottom: 0;
+  }
+
   .footer-bottom-links {
     flex-direction: column;
     align-content: space-around;
@@ -264,6 +284,13 @@
     height: 84px;
   }
 
+  .body-for-sticky { padding-bottom: 4rem; }
+
+  .footer {
+    position: absolute;
+    bottom: 0;
+  }
+
   .footer-bottom-links {
     -ms-flex-pack: center;
     justify-content: space-around;
@@ -305,6 +332,13 @@
   .logo-svg {
     width: 128px;
     height: 116px;
+  }
+
+  .body-for-sticky { padding-bottom: 4rem; }
+
+  .footer {
+    position: absolute;
+    bottom: 0;
   }
 
   .footer-bottom-links {
@@ -349,6 +383,13 @@
   .logo-svg {
     width: 128px;
     height: 128px;
+  }
+
+  .body-for-sticky { padding-bottom: 4rem; }
+
+  .footer {
+    position: absolute;
+    bottom: 0;
   }
 
   .footer-bottom-links {
@@ -482,11 +523,15 @@ input.email {
 .breadcrumbs a { color: #850385; }
 
 /* bas de page */
+.body-for-sticky {
+  position: relative;
+  min-height: 100%;
+}
+
 .footer {
   background-color: #00445b;
   color: #fff;
   width: 100%;
-  bottom: 0;
 }
 
 .footer-padding {
