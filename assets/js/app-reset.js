@@ -57,18 +57,18 @@ $('#message-erreur-valider').val('');
 /** Ajout du label pour le mot de passe. On ne fait pas de contrôle. */
 $('#reset_password_form_ancienMotDePasse').on('keyup', function(){
   if (this.value !== '') {
-    $('label[for="change_password_form_ancienMotDePasse"]').addClass('motdepasse');
+    $('label[for="reset_password_form_ancienMotDePasse"]').addClass('affiche');
   } else {
-    $('label[for="change_password_form_ancienMotDePasse"]').removeClass('motdepasse');
+    $('label[for="reset_password_form_ancienMotDePasse"]').removeClass('affiche');
   }
 });
 
 /** Ajout du label pour le mot de passe */
 $('#reset_password_form_plainPassword_first').on('keyup', function(){
   if (this.value !== '') {
-    $('label[for="change_password_form_plainPassword_first"]').addClass('show');
+    $('label[for="reset_password_form_plainPassword_first"]').addClass('affiche');
   } else {
-    $('label[for="change_password_form_plainPassword_first"]').removeClass('show');
+    $('label[for="reset_password_form_plainPassword_first"]').removeClass('affiche');
   }
 });
 
@@ -81,9 +81,9 @@ $('#reset_password_form_plainPassword_first').on('keyup', function(){
 /** Ajout du label pour le re-motdepasse */
 $('#reset_password_form_plainPassword_second').on('keyup', function(){
   if (this.value !== '') {
-    $('label[for="change_password_form_plainPassword_second"]').addClass('show');
+    $('label[for="reset_password_form_plainPassword_second"]').addClass('affiche');
   } else {
-    $('label[for="change_password_form_plainPassword_second"]').removeClass('show');
+    $('label[for="reset_password_form_plainPassword_second"]').removeClass('affiche');
   }
 });
 
