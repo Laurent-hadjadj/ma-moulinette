@@ -108,14 +108,19 @@
 .marqueur-circle { list-style: circle; }
 .marqueur-square { list-style: square; }
 
-.timeline a { color: #fefefe; }
+.timeline a {
+  color: #fefefe;
+  padding: 1px 2px;
+  border-bottom: 1px solid;
+}
 
 .timeline a:hover {
   transition: all 0.25s ease-in;
   background-color: #ffc !important;
-  color: #BF1722;
+  border-color: #ffc;
+  color: #bf1722;
   border-radius: 4px;
-  padding: 0 3px;
+  padding: 1px 2px;
 }
 
 .timeline .timeline-item { position: relative; }
