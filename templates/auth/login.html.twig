@@ -33,10 +33,13 @@
             <track label="Français" kind="captions" srclang="fr" default src="#">
           </video>
           <span class="open-sans float-center text-center">
-            <a class="open-sans credit" href="https://pixabay.com/fr/users/magictv-18171246/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=video&amp;utm_content=116732">Timo Volz</a>
+            {% set a="https://pixabay.com/fr/" %}
+            {% set b="users/magictv-18171246/" %}
+            {% set c="?utm_source=link-attribution&amp;utm_medium=referral"%}
+            {% set d="&amp;utm_campaign=video&amp;utm_content=116732" %}
+            <a class="open-sans credit" href="{{a}}{{b}}{{c}}{{d}}">Timo Volz</a>
             <span id="sur">sur</span>
-            <a class="open-sans credit" href="https://pixabay.com/fr//?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=video&amp;utm_content=116732">
-              Pixabay</a>
+            <a class="open-sans credit" href="{{a}}{{c}}{{d}}">Pixabay</a>
           </span>
         </div>
         <div class="small-12 medium-5 large-5 cell">
