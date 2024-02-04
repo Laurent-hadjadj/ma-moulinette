@@ -46,9 +46,9 @@
             {% set b="users/u_cakf541pns-41051938/" %}
             {% set c="?utm_source=link-attribution&amp;utm_medium=referral"%}
             {% set d="&amp;utm_campaign=video&amp;utm_content=191860" %}
-            <a class="open-sans credit" href="{{a}}{{b}}{{c}}{{d}}">u_cakf541pns</a>
+            <a class="open-sans credit source-link" href="{{a}}{{b}}{{c}}{{d}}">u_cakf541pns</a>
             <span id="sur">sur</span>
-            <a class="open-sans credit" href="{{a}}{{c}}{{d}}">Pixabay</a>
+            <a class="open-sans credit source-link" href="{{a}}{{c}}{{d}}">Pixabay</a>
           </span>
         </div>
 
@@ -57,6 +57,19 @@
           {{ form_start(resetPasswordForm) }}
           <div class="callout">
             <h1 class="h3 claire-hand text-center">Réinitialisation.</h1>
+              {# Ajout du courriel #}
+              <div class="isolation grid-x cell">
+                <div class="small-11 medium-11 large-11 cell">
+                  <div class="floated-label-wrapper">
+                    <label for="mel" class="affiche">Courriel</label>
+                  </div>
+                  <input type="text" id="mel" readonly="readonly" class="color-noir" value="{{courriel}}">
+                </div>
+                <div class="small-1 medium-1 large-1 cell">
+                  <span id="reset-info-check-courriel" role="presentation"></span>
+                </div>
+              </div>
+
               {# Ancien mot de passe #}
               <div class="isolation grid-x cell">
                 <div class="small-11 medium-11 large-11 cell">
