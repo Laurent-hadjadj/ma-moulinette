@@ -18,27 +18,15 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\Main\UtilisateurRepository;
-use App\Entity\main\Utilisateur;
 
-use App\Form\ChangePasswordFormType;
-use Symfony\Component\PasswordHasher\Hasher\PlaintextPasswordHasher;
+use App\Form\ResetPasswordFormType;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use SymfonyCasts\Bundle\ResetPassword\Exception\ResetPasswordExceptionInterface;
-
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
-use Symfony\Component\Security\Http\Authenticator\Passport\Badge\CsrfTokenBadge;
-use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
-use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge;
-use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordCredentials;
-use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
-use Symfony\Component\Security\Http\Util\TargetPathTrait;
 
 /**
  * [Description ResetPasswordController]
@@ -51,11 +39,9 @@ class ResetPasswordController extends AbstractController
     public function __construct(
         private UtilisateurRepository $utilisateurRepository,
         private EntityManagerInterface $em,
-        private UrlGeneratorInterface $urlGenerator,
     ) {
         $this->utilisateurRepository = $utilisateurRepository;
         $this->em = $em;
-        $this->urlGenerator = $urlGenerator;
     }
 
 
@@ -66,7 +52,7 @@ class ResetPasswordController extends AbstractController
      *
      * @param Request $request
      * @param UserPasswordHasherInterface $passwordHasher
-     * @param string|null $token
+     * @param TokenInterface $token
      *
      * @return Response
      *
@@ -78,7 +64,6 @@ class ResetPasswordController extends AbstractController
     public function resetMotDePasse(Request $request, UserPasswordHasherInterface $passwordHasher, TokenInterface $token): Response
     {
         /** on récupère le login de l'utilisateur connecté */
-        // intelephense(P1006) faux positif.
         $courriel=$token->getUser()->getCourriel();
          /**  On récupère la valeur de init */
         $init=$token->getUser()->getInit();
@@ -98,7 +83,7 @@ class ResetPasswordController extends AbstractController
          * Le mot de passe actuel de l'utilisateur est valide,
          * on l'autorise à changer son mot de passe.
          */
-        $form = $this->createForm(ChangePasswordFormType::class);
+        $form = $this->createForm(ResetPasswordFormType::class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -143,7 +128,8 @@ class ResetPasswordController extends AbstractController
         }
 
         return $this->render('auth/reset.html.twig', [
-            'changePasswordForm' => $form->createView(),
+            'resetPasswordForm' => $form->createView(),
+            'courriel'=>$courriel,
             'version' => $this->getParameter('version'),
             'dateCopyright' => \date('Y')
         ]);
