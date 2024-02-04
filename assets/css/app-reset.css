@@ -199,14 +199,7 @@
   z-index: -1;
 }
 
-.floated-label-wrapper label input[type="email"],
-.floated-label-wrapper label input[type="password"] {
-  border-radius: 4px;
-  font-size: 1.75em;
-  padding: 0.5em;
-}
-
-.floated-label-wrapper label.show {
+.floated-label-wrapper label.affiche {
   opacity: 1;
   top: -0.65rem;
   z-index: 1;
