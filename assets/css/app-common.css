@@ -233,11 +233,7 @@
   }
 
   .body-for-sticky { padding-bottom: 2rem; }
-
-  .footer {
-    position: absolute;
-    bottom: 0;
-  }
+  .footer { position: absolute; }
 
   .footer-bottom-links {
     flex-direction: column;
@@ -285,11 +281,7 @@
   }
 
   .body-for-sticky { padding-bottom: 4rem; }
-
-  .footer {
-    position: absolute;
-    bottom: 0;
-  }
+  .footer { position: absolute; }
 
   .footer-bottom-links {
     -ms-flex-pack: center;
@@ -335,11 +327,7 @@
   }
 
   .body-for-sticky { padding-bottom: 4rem; }
-
-  .footer {
-    position: absolute;
-    bottom: 0;
-  }
+  .footer { position: absolute; }
 
   .footer-bottom-links {
     -ms-flex-pack: center;
@@ -386,11 +374,7 @@
   }
 
   .body-for-sticky { padding-bottom: 4rem; }
-
-  .footer {
-    position: absolute;
-    bottom: 0;
-  }
+  .footer { position: absolute; }
 
   .footer-bottom-links {
     flex-direction: column;
