@@ -22,7 +22,7 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use App\Entity\Main\Utilisateur;
 
-class ChangePasswordFormType extends AbstractType
+class ResetPasswordFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -37,7 +37,7 @@ class ChangePasswordFormType extends AbstractType
                 'class' => 'color-bleu',
                 'autocomplete' => 'off',
                 'aria-label'=>'Ancien mot de passe',
-                'aria-describedby'=>'change_password_form_ancienMotDePasse',
+                'aria-describedby'=>'reset_password_form_ancienMotDePasse',
             ],
             'constraints' => [
                 new NotBlank([
@@ -58,17 +58,16 @@ class ChangePasswordFormType extends AbstractType
                     'class' => 'color-bleu margin-bottom-05',
                     'autocomplete' => 'off',
                     'aria-label'=>'Nouveau mot de passe',
-                    'aria-describedby'=>'change_password_form_plainPassword_first'],
+                    'aria-describedby'=>'reset_password_form_plainPassword_first'],
             ],
             'second_options' => [
-                'label' => 'Repeat Password',
                 'label' => 'label.remotdepasse',
                 'attr' => [
                     'placeholder' => 'placeholder.remotdepasse',
                     'class' => 'color-bleu',
                     'autocomplete' => 'off',
                     'aria-label'=>'Vérification mot de passe',
-                    'aria-describedby'=>'change_password_form_plainPassword_second' ],
+                    'aria-describedby'=>'reset_password_form_plainPassword_second' ],
             ],
             'constraints' => [
                 new NotBlank([
