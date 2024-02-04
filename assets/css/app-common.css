@@ -409,12 +409,12 @@ body { background: #eee; }
 
 /** link */
 .source-link {
-  color: #00445b;
+  color: #021e28;
   padding: 1px 2px;
   border-bottom: 1px solid;
 }
 
-.source-link:hover, .source-link:active {
+.source-link:hover, .source-link:active, .source-link:focus-within {
   transition: all 0.25s ease-in;
   color: #bf1722;
   border-radius: 4px;
