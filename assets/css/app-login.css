@@ -99,23 +99,13 @@
 }
 
 /* affichage du crédit xxx sur xxxx */
-.credit {
-  font-size: 0.8rem;
-  color: #021e28;
-}
-
-.credit:hover, .credit:focus-within { color: #ba401b; }
-
-#sur { font-size: 0.8rem; }
+.credit, #sur { font-size: 0.8rem; }
 
 .pas-encore-inscrit:hover, .pas-encore-inscrit:focus-within { color: #ba401b; }
-
 .remember-me { margin-top: -0.5rem; }
 
 /* gestion du formulaire de connexion */
-.floated-label-wrapper {
-  position: relative;
-}
+.floated-label-wrapper { position: relative; }
 
 .floated-label-wrapper label {
   background: #fefefe;

@@ -178,14 +178,7 @@
 }
 
 /* affichage du crédit */
-.credit {
-  font-size: 0.8rem;
-  color: #021e28;
-}
-
-.credit:hover { color: #ba401b; }
-
-#sur { font-size: 0.8rem; }
+.credit, #sur { font-size: 0.8rem; }
 
 /* gestion du formulaire de connexion */
 
@@ -260,7 +253,6 @@
 
 /* on desactive le focus quand on change de champ */
 :focus { outline: none; }
-
 
 /* Formulaires */
 
