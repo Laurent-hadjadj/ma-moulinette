@@ -108,6 +108,11 @@
 .marqueur-circle { list-style: circle; }
 .marqueur-square { list-style: square; }
 
+.marqueur-nobullet {
+  list-style: none;
+  margin-left: -1.72rem;
+}
+
 .timeline a {
   color: #fefefe;
   padding: 1px 2px;
@@ -128,18 +133,18 @@
 .timeline .timeline-item .timeline-icon {
   background: #fefefe;
   border-radius: 50%;
-  height: 50px;
+  height: 40px;
   overflow: hidden;
   position: absolute;
   top: 0;
-  width: 50px;
+  width: 40px;
 }
 
 .timeline .timeline-item .timeline-icon svg {
   position: relative;
   left: 10px;
   top: 10px;
-  width: 32px;
+  width: 22px;
   fill: #00445b;
 }
 
@@ -162,6 +167,10 @@
   margin-bottom: 0;
 }
 
-.timeline .timeline-item .timeline-content .timeline-content-link {
-  font-size: 0.875rem;
+.timeline .timeline-item .timeline-content .timeline-content-link { font-size: 0.875rem; }
+
+.cadenas {
+  height:22px!important;
+  margin-left:3px;
+  vertical-align:text-bottom;
 }
