@@ -16,7 +16,7 @@ L'authentification est obligatoire. L'utilisation de `ma-moulinette` doit avoir 
 
 ![authentification](/documentation/ressources/authentification-001.jpg)
 
-Le formulaire de connexion propose deux options:
+Le formulaire de connexion propose deux (2) options:
 
 1 - Saisir son identifiant, son mot de passe et choisir si l'on souhaite ajouter un cookie de connexion automatique.
 
@@ -24,11 +24,15 @@ Le formulaire de connexion propose deux options:
 
 `Note :` l'option de **changer son mot de passe** est dans le backlog.
 
-L'identifiant est l'adresse mél. de l'utilisateur.
+L'identifiant est l'adresse mél. de l'utilisateur. L'identifiant doit être unique.
 
 ![authentification](/documentation/ressources/authentification-002.jpg)
 
-Les messages d'erreurs sont affichés sous le formulaire de connexion. C'est un choix.
+> Dans la version 2.0.0, un bouton pour afficher le mot de passe a été ajouté.
+
+![authentification](/documentation/ressources/authentification-003.jpg)
+
+Les messages d'erreurs sont affichés sous le formulaire de connexion. C'est mon choix.
 
 ![authentification](/documentation/ressources/authentification-003.jpg)
 
