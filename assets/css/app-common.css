@@ -45,7 +45,6 @@
   .open-sans { font-size: 0.9rem; }
 
   .body-for-sticky { padding-bottom: 2rem; }
-  .footer { position: absolute; }
 
   .footer-bottom-links {
     flex-direction: column;
@@ -87,7 +86,6 @@
   .open-sans { font-size: 0.9rem; }
 
   .body-for-sticky { padding-bottom: 2rem; }
-  .footer { position: absolute; }
 
   .footer-bottom-links {
     flex-direction: column;
@@ -130,7 +128,6 @@
   .open-sans { font-size: 0.9rem; }
 
   .body-for-sticky { padding-bottom: 2rem; }
-  .footer { position: absolute; }
 
   .footer-bottom-links {
     flex-direction: column;
@@ -174,8 +171,6 @@
   .open-sans { font-size: 0.9rem; }
 
   .body-for-sticky { padding-bottom: 2rem; }
-
-  /** .footer { position: absolute; } */
 
   .logo-svg {
     width: 90px;
@@ -233,7 +228,12 @@
   }
 
   .body-for-sticky { padding-bottom: 2rem; }
-  .footer { position: absolute; }
+
+  /* bas de page - on un bottom 0 sur certaines pages */
+  .footer-fixed {
+    position: absolute;
+    bottom: 0;
+  }
 
   .footer-bottom-links {
     flex-direction: column;
@@ -281,7 +281,12 @@
   }
 
   .body-for-sticky { padding-bottom: 4rem; }
-  .footer { position: absolute; }
+
+  /* bas de page - on un bottom 0 sur certaines pages */
+  .footer-fixed {
+    position: absolute;
+    bottom: 0;
+  }
 
   .footer-bottom-links {
     -ms-flex-pack: center;
@@ -327,7 +332,12 @@
   }
 
   .body-for-sticky { padding-bottom: 4rem; }
-  .footer { position: absolute; }
+
+  /* bas de page - on un bottom 0 sur certaines pages */
+  .footer-fixed {
+    position: absolute;
+    bottom: 0;
+  }
 
   .footer-bottom-links {
     -ms-flex-pack: center;
@@ -374,7 +384,12 @@
   }
 
   .body-for-sticky { padding-bottom: 4rem; }
-  .footer { position: absolute; }
+
+  /* bas de page - on un bottom 0 sur certaines pages */
+  .footer-fixed {
+    position: absolute;
+    bottom: 0;
+  }
 
   .footer-bottom-links {
     flex-direction: column;
@@ -390,6 +405,10 @@ body { background: #eee; }
 .open-sans,
 .open-sans-bold,
 .claire-hand { color: #00445b; }
+
+.identifiant {
+  margin-bottom: 0;
+}
 
 /** désactive la selection de texte sur un élément */
 .noselect {
@@ -523,11 +542,13 @@ input.email {
 .breadcrumbs li { font-size: 1rem; }
 .breadcrumbs a { color: #850385; }
 
-/* bas de page */
+/* bas de page - on ajoute un peu d'espace */
 .body-for-sticky {
   position: relative;
   min-height: 100%;
 }
+
+/* bas de page - conainter */
 
 .footer {
   background-color: #00445b;
