@@ -1,5 +1,6 @@
 {% set title = "mes outils" %}
 {% set description = "Ma Moulinette, mes outils" %}
+{% set bottom="footer-fixed" %}
 <!DOCTYPE html>
 <!--
 .. __  __             __  __             _ _            _   _
@@ -189,6 +190,11 @@
     {% else %}
       {{ include('/home/_vide.html.twig') }}
     {% endif %}
+    <div class="grid-x">
+      <div class="grid-container">
+        <div class="grid-x grid-padding-x"></div>
+      </div>
+    </div>
     {# Chargement de la section footer #}
     {{ include('footer.html.twig') }}
     {# Chargement du code javascript #}
