@@ -57,14 +57,15 @@
           {% form_theme resetPasswordForm 'foundation_6_layout.html.twig' %}
           {{ form_start(resetPasswordForm) }}
           <div class="callout">
-            <h1 class="h3 claire-hand text-center">Réinitialisation.</h1>
+            <h1 class="h3 claire-hand text-center">Mise-à-jour.</h1>
               {# Ajout du courriel #}
               <div class="isolation grid-x cell">
                 <div class="small-11 medium-11 large-11 cell">
-                  <div class="floated-label-wrapper">
-                    <label for="mel" class="affiche">Courriel</label>
+                  <div>
+                    <label for="mel" class="affiche color-bleu">Compte utilisateur</label>
                   </div>
-                  <input type="text" id="mel" readonly="readonly" class="color-noir" value="{{courriel}}">
+                  <input type="text" id="mel" readonly="readonly" class="color-noir" value="{{courriel}}"
+                          aria-description="compte utilisateur de {{courriel}}">
                 </div>
                 <div class="small-1 medium-1 large-1 cell">
                   <span id="reset-info-check-courriel" role="presentation"></span>
