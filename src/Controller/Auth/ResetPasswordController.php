@@ -100,7 +100,7 @@ class ResetPasswordController extends AbstractController
 
             /** On prepare un message flash */
             $this->addFlash('warning', sprintf(
-                '%s - %s', "[Erreur 001] : ","Votre mot de passe est incorrect."
+                '%s : %s', "[Erreur 001]","Votre mot de passe est incorrect."
             ));
 
             /** On incremente le nombre de tentative */
@@ -122,7 +122,7 @@ class ResetPasswordController extends AbstractController
             $this->em->flush();
             /** On prepare un message flash */
             $this->addFlash('success', sprintf(
-                '%s - %s', "[Info 001] : ","Votre mot de passe a été changé."
+                '%s : %s', "[Info 001]","Votre mot de passe a été changé."
             ));
             return $this->redirectToRoute('reset_mot_de_passe');
         }
