@@ -1,7 +1,7 @@
 {% block footer %}
   <div class="body-for-sticky" role="presentation"><span>&nbsp;</span></div>
   <!-- Footer -->
-  <footer class="footer">
+  <footer class="footer {{ bottom | default('')}}">
   <div class="grid-x">
     <div class="small-6 medium-6 large-7 cell">
       <ul class="menu footer-bottom-links">
@@ -13,6 +13,7 @@
     <div class="small-6 medium-6 large-5 cell">
       <ul class="menu footer-bottom-links">
         <li><a href="#">Données personnelles</a></li>
+      </ul>
     </div>
     </div>
 
