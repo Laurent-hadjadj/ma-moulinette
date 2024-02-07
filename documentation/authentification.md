@@ -30,11 +30,39 @@ L'identifiant est l'adresse mél. de l'utilisateur. L'identifiant doit être uni
 
 > Dans la version 2.0.0, un bouton pour afficher le mot de passe a été ajouté.
 
-![authentification](/documentation/ressources/authentification-003.jpg)
+![authentification](/documentation/ressources/authentification-002b.jpg)
 
 Les messages d'erreurs sont affichés sous le formulaire de connexion. C'est mon choix.
 
 ![authentification](/documentation/ressources/authentification-003.jpg)
+
+> Si le nombre de tentatives est supérieur à trois (**3**), le compte sera bloqué pour une durée allant jusqu'à qinze (**15**) minutes
+
+![authentification](/documentation/ressources/authentification-004.jpg)
+
+## Mise à jour du mot de passe
+
+Le mot de passe est obligatoire mis à jour pour le compte admin, à la première connexion.
+
+Pour les autres utilisateurs, il est possible depuis le menu d'identification de changer son mot de passe.
+
+Une fois authentifié, l'utilisateur est redirigé vers la page d'acceuil de l'application.
+
+![authentification](/documentation/ressources/authentification-005.jpg)
+
+L'identifiant de connexion afficher sous le menu en haut à droite de la page permet l'accès au menu **Détails**.
+
+![authentification](/documentation/ressources/authentification-006.jpg)
+
+En cliquant sur son identifiant le menu laisse apparaitre un menu.
+
+![authentification](/documentation/ressources/authentification-007.jpg)
+
+Le bouton mettre à jour son mot de passe, activera la procédure de changement de son mot de passe à la prochaine connexion.
+
+![authentification](/documentation/ressources/authentification-008.jpg)
+
+![authentification](/documentation/ressources/authentification-009.jpg)
 
 -**-- FIN --**-
 
