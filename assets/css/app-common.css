@@ -284,7 +284,7 @@
 
   /* bas de page - on un bottom 0 sur certaines pages */
   .footer-fixed {
-    position: absolute;
+    position: fixed;
     bottom: 0;
   }
 
@@ -335,7 +335,7 @@
 
   /* bas de page - on un bottom 0 sur certaines pages */
   .footer-fixed {
-    position: absolute;
+    position: fixed;
     bottom: 0;
   }
 
@@ -387,7 +387,7 @@
 
   /* bas de page - on un bottom 0 sur certaines pages */
   .footer-fixed {
-    position: absolute;
+    position: fixed;
     bottom: 0;
   }
 
