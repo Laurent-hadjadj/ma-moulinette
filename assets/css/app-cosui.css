@@ -56,16 +56,19 @@
 
 #fermer-projet-reference:hover { background-color: #006182; }
 
-/** Gestion du switch variation */
+/* Gestion du switch variation */
+input:checked ~ .switch-paddle-cosui { background-color: #00445b; }
 
-/* Changement de la couleur par défaut par 00445b */
-input:checked ~ .switch-paddle { background: #00445b; }
+.switch-identifiant-active {
+  right: 13%;
+  color: #fff;
+}
 
 /* Réduction de la marge gauche */
-.switch-inactive {
+.switch-inactive-cosui {
   right: 10%;
   color: #00445b;
 }
 
 /* décalage vers la droite */
-.switch { padding-left: 1rem; }
+.switch-cosui { padding-left: 1rem; }
