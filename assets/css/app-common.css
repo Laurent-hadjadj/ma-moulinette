@@ -104,7 +104,7 @@
 
   .version {
     margin-left: 0.5rem;
-    padding-top: 2.8rem;
+    padding-top: 1.8rem;
     margin-bottom: 0.1px;
     font-size: 1rem;
   }
@@ -231,7 +231,7 @@
 
   /* bas de page - on un bottom 0 sur certaines pages */
   .footer-fixed {
-    position: absolute;
+    position: fixed;
     bottom: 0;
   }
 
@@ -406,9 +406,6 @@ body { background: #eee; }
 .open-sans-bold,
 .claire-hand { color: #00445b; }
 
-.identifiant {
-  margin-bottom: 0;
-}
 
 /** désactive la selection de texte sur un élément */
 .noselect {
@@ -441,7 +438,6 @@ body { background: #eee; }
   border-color: #ffc;
   padding: 1px 2px;
 }
-
 
 /** Message d'alerte */
 .alert-callout-border {
@@ -491,9 +487,14 @@ input.email {
   cursor: pointer;
 }
 
-/** Gestion du focus et de tabulation */
+/** Gestion du focus et de la tabulation */
 .ma-moulinette:hover, .ma-moulinette:focus-within { color: #e7552c; }
-.version { color: #00445b; }
+
+/** Version de l'application */
+.version {
+  margin-bottom: 0;
+  color: #00445b;
+}
 
 /* Chargement du logo */
 .logo {
@@ -542,6 +543,44 @@ input.email {
 .breadcrumbs li { font-size: 1rem; }
 .breadcrumbs a { color: #850385; }
 
+/* menu utilisateur */
+.menu-identifiant {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+.menu-identifiant-titre:hover,
+.menu-indentifiant-item:hover { color: #e7552c; }
+
+/** Ajoute un bouton fermer à la fenêtre modale */
+#fermer-identifiant-details {
+  color: #fff;
+  background-color: #00445b;
+}
+#fermer-identifiant-details:hover { background-color: #006182; }
+
+/**
+  * gestion du switch pour la mise à jour du mot de passe
+  */
+
+/* décalage vers la droite */
+.switch-identifiant { padding-left: 1rem; }
+
+/* Changement de la couleur par défaut par 00445b */
+input:checked ~ .switch-paddle-identifiant { background-color: #00445b; }
+
+/* Réduction de la marge gauche */
+.switch-identifiant-inactive {
+  right: 10%;
+  color: #00445b;
+}
+
+.switch-identifiant-active {
+  right: 13%;
+  color: #fff;
+}
+
 /* bas de page - on ajoute un peu d'espace */
 .body-for-sticky {
   position: relative;
@@ -549,7 +588,6 @@ input.email {
 }
 
 /* bas de page - conainter */
-
 .footer {
   background-color: #00445b;
   color: #fff;
@@ -579,6 +617,15 @@ input.email {
   margin-top: 5px;
   font-size: 0.9rem;
 }
+
+/** custom menu */
+.dropdown.menu > li.is-dropdown-submenu-parent > a {
+  padding-right: 1rem;
+  margin-right: 1em;
+  color: #00445b;
+}
+
+.is-dropdown-submenu { background-color: #f2f2f2; }
 
 /* Les notes */
 .note-a,
