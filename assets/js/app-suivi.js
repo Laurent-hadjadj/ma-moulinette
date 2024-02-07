@@ -25,6 +25,7 @@ import 'motion-ui';
 import html2pdf from 'html2pdf.js';
 
 import './foundation.js';
+import './app-authentification-details.js';
 
 /** On importe les paramètres serveur */
 import {serveur} from './properties.js';

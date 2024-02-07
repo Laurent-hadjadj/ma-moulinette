@@ -19,6 +19,7 @@ import 'foundation-sites';
 import 'motion-ui';
 
 import './foundation.js';
+import './app-authentification-details.js';
 
 /** On importe les constantes */
 import { zero, vingt, trente, quarante, cinquante, soixante, soixanteDix, cent, quatreVingt } from './constante.js';
