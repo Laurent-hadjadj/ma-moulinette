@@ -20,6 +20,7 @@ import 'foundation-sites';
 import 'motion-ui';
 
 import './foundation.js';
+import './app-authentification-details.js';
 
 /** On importe les constantes */
 import {contentType} from './constante.js';
