@@ -46,9 +46,9 @@ class ResetPasswordController extends AbstractController
 
 
     /**
-     * [Description for reset]
+     * [Description for resetMotDePasse]
      * Validation et lancement du formulaire de réinitialisation du mot de passe
-     * Avec un token ou à la première connexion
+     * si init>0
      *
      * @param Request $request
      * @param UserPasswordHasherInterface $passwordHasher
@@ -60,7 +60,7 @@ class ResetPasswordController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/reset/mot-de-passe', name: 'reset_mot_de_passe')]
+    #[Route('/mot-de-passe/mise-a-jour', name: 'reset_mot_de_passe')]
     public function resetMotDePasse(Request $request, UserPasswordHasherInterface $passwordHasher, TokenInterface $token): Response
     {
         /** on récupère le login de l'utilisateur connecté */
