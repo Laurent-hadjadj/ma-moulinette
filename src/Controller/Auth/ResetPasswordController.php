@@ -13,14 +13,22 @@
 
 namespace App\Controller\Auth;
 
+/** Symfony Core */
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
+/** Accès aux tables SLQLite*/
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\Main\UtilisateurRepository;
+
+/** API */
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
+
+/** Gestion du temps */
+use DateTime;
+use DateTimeZone;
 
 use App\Form\ResetPasswordFormType;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -35,6 +43,8 @@ class ResetPasswordController extends AbstractController
 {
     /** Définition des constantes */
     public static $europeParis = "Europe/Paris";
+    public static $regex = "/\s+/u";
+    public static $dateFormat = "Y-m-d H:i:s";
 
     public function __construct(
         private UtilisateurRepository $utilisateurRepository,
@@ -135,4 +145,49 @@ class ResetPasswordController extends AbstractController
         ]);
     }
 
+    /**
+     * [Description for apiResetMotDePasse]
+     *
+     * @param Request $request
+     *
+     * @return Response
+     *
+     * Created at: 07/02/2024 12:11:20 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    #[Route('/api/mot-de-passe/mise-a-jour', name: 'api_reset_mot_de_passe', methods:'POST')]
+    public function apiResetMotDePasse(Request $request): Response
+    {
+        /** On créé on objet de reponse HTTP */
+        $response = new JsonResponse();
+
+        /** On récupère le filtre de recherche */
+        $data = json_decode($request->getContent());
+        $mode = $data->mode;
+        $init = $data->init;
+
+        /** On créé un objet DateTime */
+        $date = new DateTime();
+        $timezone = new DateTimeZone(static::$europeParis);
+        $date->setTimezone($timezone);
+        $formatDate = $date->format(static::$dateFormat);
+
+        /** on récupère l'adresse mél de l'utilisateur qui fait la demande */
+        $courriel = $this->getUser()->getCourriel();
+
+        /** On met à jour les préférences. */
+        $sql = "UPDATE utilisateur
+        SET init = '$init', date_modification='$formatDate'
+        WHERE courriel='$courriel';";
+        $trim = trim(preg_replace(static::$regex, " ", $sql));
+        $exec = $this->em->getConnection()->prepare($trim)->executeQuery();
+
+        if ($mode !== 'TEST') {
+            $exec->fetchAllAssociative();
+        }
+
+        $data = ['mode' => $mode,Response::HTTP_OK];
+        return $response->setData($data);
+    }
 }
