@@ -17,14 +17,29 @@
 
 /* Mobile */
 @media (width <= 20em) {
+  /* marge du logo en small */
+  .logo {
+    margin-left: 10px;
+    margin-top: 10px;
+  }
+
   /* Taille du logo */
   .logo-svg {
     width: 50px;
-    height: 36px;
+    height: 50px;
   }
 
-  .ma-moulinette-container { display: none; }
-  .version { display: none; }
+  .ma-moulinette-container {
+    margin-top: 7px;
+    margin-left: 0.5rem;
+    margin-bottom: 0;
+    font-size: 0.8rem;
+  }
+
+  .version {
+    margin-left: 0.5rem;
+    font-size: 0.7rem;
+  }
 
   .logout-svg {
     width: 23px;
@@ -54,13 +69,29 @@
 
 /* Mobile */
 @media (20.025em <= width <= 22em) {
-  .logo-svg {
-    width: 46px;
-    height: 49px;
+  /* marge du logo en small */
+  .logo {
+    margin-left: 10px;
+    margin-top: 10px;
   }
 
-  .ma-moulinette-container { display: none; }
-  .version { display: none; }
+  .logo-svg {
+    width: 54px;
+    height: 54px;
+  }
+
+  .ma-moulinette-container {
+    margin-top: 7px;
+    margin-left: 0.5rem;
+    margin-bottom: 0;
+    font-size: 0.9rem;
+  }
+
+  .version {
+    margin-left: 0.5rem;
+    font-size: 0.9rem;
+  }
+
 
   .logout-svg {
     width: 28px;
@@ -95,17 +126,25 @@
 
 /* Mobile */
 @media (22.025em <= width <= 30em) {
-  .logo-svg {
-    width: 90px;
-    height: 54px;
+  .logo {
+    margin-left: 5px;
+    margin-top: 5px;
   }
 
-  .ma-moulinette-container { display: none; }
+  .logo-svg {
+    width: 80px;
+    height: 80px;
+  }
+
+  .ma-moulinette-container {
+    margin-top: 7px;
+    margin-left: 0.5rem;
+    margin-bottom: 0;
+    font-size: 1rem;
+  }
 
   .version {
     margin-left: 0.5rem;
-    padding-top: 1.8rem;
-    margin-bottom: 0.1px;
     font-size: 1rem;
   }
 
@@ -137,10 +176,17 @@
 
 /* Mobile */
 @media (30.025em <= width <= 40em) {
+  .logo {
+    margin-left: 10px;
+    margin-top: 10px;
+    justify-content: space-around;
+  }
+
   .ma-moulinette-container {
-    margin-left: 1rem;
+    margin-left: 0.4rem;
     margin-top: 0.8rem;
-    margin-bottom: 1.1rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.4rem;
   }
 
   .ma-moulinette { font-size: 1.7rem; }
@@ -163,7 +209,7 @@
   }
 
   .version {
-    margin-left: 1rem;
+    margin-left: 0.4rem;
     margin-top: -1.5rem;
     font-size: 1rem;
   }
@@ -174,7 +220,7 @@
 
   .logo-svg {
     width: 90px;
-    height: 74px;
+    height: 90px;
   }
 
   .footer-bottom-links {
@@ -185,9 +231,32 @@
 
 /* Tablette */
 @media (40.025em <= width <= 64em) {
+  .logo {
+    margin-left: 10px;
+    margin-top: 10px;
+    justify-content: space-around;
+  }
+
+  .logo-svg {
+    width: 60px;
+    height: 60px;
+  }
+
+  .ma-moulinette-container {
+    margin-top: 0.4rem;
+    margin-left: 0.5rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.4rem;
+  }
+
   .ma-moulinette {
-    margin-left: 1rem;
     font-size: 1.8rem;
+  }
+
+  .version {
+    margin-left: 0.5rem;
+    margin-top: -1.5rem;
+    font-size: 1rem;
   }
 
   .logout-svg {
@@ -214,18 +283,7 @@
     height: 46px;
   }
 
-  .version {
-    margin-left: 1rem;
-    margin-top: -1.5rem;
-    font-size: 1rem;
-  }
-
   .open-sans { font-size: 1rem; }
-
-  .logo-svg .e-dashboard-svg {
-    width: 64px;
-    height: 46px;
-  }
 
   .body-for-sticky { padding-bottom: 2rem; }
 
@@ -243,9 +301,32 @@
 
 /* Desktop */
 @media (64.025em <= width <= 90em) {
-  .ma-moulinette {
-    margin-left: 1rem;
-    font-size: 2.5rem;
+  .logo {
+    margin-left: 10px;
+    margin-top: 10px;
+    justify-content: space-around;
+  }
+
+  .logo-svg {
+    width: 90px;
+    height: 90px;
+  }
+
+
+  .ma-moulinette-container {
+    margin-top: 0.4rem;
+    margin-left: 0.5rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.8rem;
+  }
+
+  .ma-moulinette { font-size: 1.9rem; }
+
+  /* Desktop */
+  .version {
+    margin-left: 0.5rem;
+    margin-top: -1.5rem;
+    font-size: 1.1rem;
   }
 
   .logout-svg {
@@ -266,19 +347,7 @@
     height: 46px;
   }
 
-  /* Desktop */
-  .version {
-    margin-left: 1rem;
-    margin-top: -1.5rem;
-    font-size: 1.1rem;
-  }
-
   .open-sans { font-size: 1rem; }
-
-  .logo-svg {
-    width: 80px;
-    height: 84px;
-  }
 
   .body-for-sticky { padding-bottom: 4rem; }
 
@@ -296,9 +365,31 @@
 
 /* Desktop 1920 */
 @media (90.025em <= width <= 120em) {
-  .ma-moulinette {
-    margin-left: 1rem;
-    font-size: 2.5rem;
+  .logo {
+    margin-left: 10px;
+    margin-top: 10px;
+    justify-content: space-around;
+  }
+
+  .logo-svg {
+    width: 120px;
+    height: 120px;
+  }
+
+
+  .ma-moulinette-container {
+    margin-top: 0.4rem;
+    margin-left: 0.5rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.8rem;
+  }
+
+  .ma-moulinette { font-size: 2rem; }
+
+  .version {
+    margin-left: 0.5rem;
+    margin-top: -1.5rem;
+    font-size: 1.2rem;
   }
 
   .logout-svg {
@@ -319,17 +410,8 @@
     height: 46px;
   }
 
-  .version {
-    margin-left: 1rem;
-    margin-top: -1.5rem;
-    font-size: 1.1rem;
-  }
   .open-sans { font-size: 1rem; }
 
-  .logo-svg {
-    width: 128px;
-    height: 116px;
-  }
 
   .body-for-sticky { padding-bottom: 4rem; }
 
@@ -347,9 +429,31 @@
 
 /* Desktop 4K */
 @media (120.025em <= width <= 160em) {
-  .ma-moulinette {
-    margin-left: 1rem;
-    font-size: 2.5rem;
+  .logo {
+    margin-left: 10px;
+    margin-top: 10px;
+    justify-content: space-around;
+  }
+
+  .logo-svg {
+    width: 120px;
+    height: 120px;
+  }
+
+
+  .ma-moulinette-container {
+    margin-top: 0.4rem;
+    margin-left: 0.5rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.8rem;
+  }
+
+  .ma-moulinette { font-size: 2rem; }
+
+  .version {
+    margin-left: 0.5rem;
+    margin-top: -1.5rem;
+    font-size: 1.2rem;
   }
 
   .logout-svg {
@@ -370,18 +474,7 @@
     height: 46px;
   }
 
-  .version {
-    margin-left: 1rem;
-    margin-top: -1.5rem;
-    font-size: 1.1rem;
-  }
-
   .open-sans { font-size: 1.2rem; }
-
-  .logo-svg {
-    width: 128px;
-    height: 128px;
-  }
 
   .body-for-sticky { padding-bottom: 4rem; }
 
@@ -491,15 +584,12 @@ input.email {
 .ma-moulinette:hover, .ma-moulinette:focus-within { color: #e7552c; }
 
 /** Version de l'application */
-.version {
-  margin-bottom: 0;
-  color: #00445b;
-}
+.version { color: #00445b; }
 
 /* Chargement du logo */
 .logo {
-  margin-top: 10px;
-  margin-left: 10px;
+  display: flex;
+  justify-content: space-around;
 }
 
 /* Définition du logo SVG */
