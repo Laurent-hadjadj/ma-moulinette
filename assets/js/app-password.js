@@ -37,8 +37,6 @@
       showText: true,
       animate: true,
       animateSpeed: 'fast',
-      field: false,
-      fieldPartialMatch: true,
       minimumLength: 10,
       closestSelector: 'div',
       useColorBarImage: false,
@@ -59,21 +57,21 @@
       * OK : Lettres minuscules                               +((len-n)*2)
       * OK : Chiffres                                         +(n*4)
       * OK : Symboles                                         +(n*6)
-      * KO : Nombres ou symboles entre [a-aA-Z]               +(n*2)
-      * OK : Exigences (3 maj, 3 minus, 1 chiffre, 1 symbole) +(n*2)
+      * ok : Nombres ou symboles entre [a-aA-Z]               +(n*2)
+      * OK : Exigences (11 car, 2 maj, 2 min, 2 num 2 symb)   +(n*2)
       * OK : Lettres uniquement                               -n
       * OK : Chiffres seulement                               -n
       * OK : Caractères répétés                               -
       * OK : Lettres majuscules consécutive                   -(n*2)
       * OK : Lettres minuscules consécutives                  -(n*2)
       * OK : Chiffres consécutifs                             -(n*2)
-      * Lettres séquentielles (3+)                            -(n*3)
-      * Chiffres séquentiels (3+)                             -(n*3)
-      * recherche d'une date (YYYY)
+      * OK : Lettres séquentielles (3+)                       -(n*3)
+      * OK : Chiffres séquentiels (3+)                        -(n*3)
+      * OK : recherche d'une date (YYYY)
     */
 
     const passwordHas3Numbers=/(.*[0-9].*[0-9].*[0-9])/;
-    // ~!€¤£§'"@#$&*?|%+-<>_.,\/:;=()[]{}^ =>36
+    // ~!€¤£§'"@#$&*?|%+-<>_.,\/:;=()[]{}^ =>35
     const symbole = /([~!€¤£§'"@#$&*?|%\+\-<>_.,\\/:;=()\[\]{}^\s])/g;
     const minusMajuscule=/([a-z].*[A-Z])|([A-Z].*[a-z])/g;
     const lettreMajuscule=/([A-Z])/g;
@@ -148,7 +146,7 @@
 
       /**
        * [Description for reverse]
-       *  Fonction d'inversation d'une sequence de caractères
+       *  Fonction d'invertion d'une sequence de caractères
        *
        * @param {string} str
        *
@@ -161,6 +159,7 @@
       function reverse(str) {
         return str.split('').reverse().join('');
       }
+
       /**
        * [Description for calculSuiteLettre]
        * Calcul le score de n répétition de n caractère consécutive.
@@ -193,12 +192,6 @@
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     const scoreText=function(score) {
-      if (score === -1) {
-        return options.shortPass;
-      }
-      if (score === -2) {
-        return options.containsField;
-      }
 
       /** si score <O alors score=0 sinon score */
       score = score < 0 ? 0 : score;
@@ -211,17 +204,14 @@
           text = options.steps[stepVal];
         }
       }
-
       return text;
     }
 
     /**
      * [Description for calculateScore]
      * Calcul de la solidité du mot de passe en fonctions des règles :
-     * https://passwordmeter.com/
      *
-     * @param  {string} password Le mot de passe a anlyser
-     * @param  {string} field La valeur de l'option field (options.field)
+     * @param  {string} password Le mot de passe à analyser
      *
      *
      * @return {number} score = -2 à 100
@@ -230,32 +220,19 @@
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    const calculateScore=function(password, field) {
+    const calculateScore=function(password) {
       let score = 0, resultat={};
+
+      /** on split chaque caractère du mot de passe dans un tableau */
+      const tabPassword= password.match(/./g);
 
       /** Le mot de passe est plus petit que la taille recommandée
        * (password < options.minimumLength
        */
       if (password.length < options.minimumLength) {
-        return -1;
+        return -10;
       }
 
-      /** options.field = true */
-      if (options.field) {
-        // password === field
-        if (password.toLowerCase() === field.toLowerCase()) {
-          return -2;
-        }
-
-        // password contains field (and fieldPartialMatch is set to true)
-        if (options.fieldPartialMatch && field.length) {
-          const user = new RegExp(field.toLowerCase());
-          if (password.toLowerCase().match(user)) {
-            return -2;
-          }
-        }
-      }
-      //L@urent23%
       /** Nombre de caractères +(n*4) */
       const NombreCaractere = parseInt(password.length,10);
       score += NombreCaractere*4;
@@ -263,13 +240,13 @@
 
       /** Nombre de Lettres en majuscules +((len-n)*2) */
       const NombreLettreMajuscule = NombreCaractere-parseInt(password.replace(lettreMajuscule, '').length,10);
-      score += NombreLettreMajuscule*2;
-      resultat['NombreLettreMajuscule'] = NombreLettreMajuscule*2;
+      score += (NombreCaractere-NombreLettreMajuscule)*2;
+      resultat['NombreLettreMajuscule'] = (NombreCaractere-NombreLettreMajuscule)*2;
 
       /** Nombre de lettres en minuscules +((len-n)*2) */
       const NombreLettreMinuscule = NombreCaractere-parseInt(password.replace(lettreMinuscule, '').length,10);
-      score += NombreLettreMinuscule*2;
-      resultat['NombreLettreMinuscule'] = NombreLettreMinuscule*2;
+      score += (NombreCaractere-NombreLettreMinuscule)*2;
+      resultat['NombreLettreMinuscule'] = (NombreCaractere-NombreLettreMinuscule)*2;
 
       /** Nombre de chiffres +(n*4) */
       const NombreChiffre = NombreCaractere-parseInt(password.replace(chiffre, '').length,10);
@@ -281,203 +258,227 @@
       score += NombreSymbole*6;
       resultat['NombreSymbole']=NombreSymbole*6;
 
-      /** Exigences (3 maj, 3 minus, 1 chiffre, 1 symbole) +(n*2)
-       * On regarde combien on a de triplette de Majuscule et de minuscule
-       * On regarsz combien on a de chiffre
-       * Par exemple si on a : 3*[A-Z] et 2*[a-z] et 5*[0-9] et 6*[%~#] alors
-       * on comptera uniquement 2*[A-Z] 2*[a-z], 2*[0-9], 2*[%~#] soit n=2
-      */
-      const Nombre3Majuscule=Math.trunc(NombreLettreMajuscule/3);
-      const Nombre3Minuscule=Math.trunc(NombreLettreMinuscule/3);
-      /** si Le nombre de triplette de lettre en majuscule est plus grand de celui des minuscules
-       *  alors en garde comme valeur de base le nombre de triplette en minuscule.
-       */
+      /** Nombre de midChar +(n*2) */
+      // le premier caractere ne peut pas être un chiffre : a1xxxxx =0
+      // un ou des chiffres doivent être encadré par des lettres : a1n1a =2
+      // si on a un groupe de chiffre encadré on compte le nombre de chiffre : a11n1a = 3
+      let nombreAuMilieu=0;
+      if (NombreCaractere>=options.minimumLength){
+        for (let c=0; c<password.length; c++) {
+          if (tabPassword[c].match(chiffre)){
+            if (c > 0 && c < (password.length - 1)) {
+              nombreAuMilieu++;
+            }
+          }
+        }
+      }
+
+      resultat['NombreAuMilieu']=0;
+      if (nombreAuMilieu > 0) {
+          score += (nombreAuMilieu-1)*2;
+          resultat['NombreAuMilieu']=(nombreAuMilieu-1)*2;
+      }
+
+      /** Nombre de midChar +(n*2) */
+      // le premier caractere ne peut pas être un chiffre : a1xxxxx =0
+      // un ou des chiffres doivent être encadré par des lettres : a1n1a =2
+      // si on a un groupe de chiffre encadré on compte le nombre de chiffre : a11n1a = 3
+      let symboleAuMilieu=0;
+      if (NombreCaractere>=options.minimumLength){
+        for (let c=0; c<password.length; c++) {
+          if (tabPassword[c].match(symbole)){
+            if (c > 0 && c < (password.length - 1)) {
+              symboleAuMilieu++;
+            }
+          }
+        }
+      }
+
+      resultat['SymboleAuMilieu']=0;
+      if (symboleAuMilieu > 0) {
+          score += (symboleAuMilieu-1)*2;
+          resultat['SymboleAuMilieu']=(symboleAuMilieu-1)*2;
+      }
+
+      /** L'exigence est :
+       * - longueur 11 caractères
+       * - des majuscules, au moins 2
+       * - des minuscules, au moins 2
+       * - des chiffres, au moins 2
+       * - des symboles, au moins 2
+       * */
+
       let n=0;
-      if (Nombre3Majuscule>0 && Nombre3Minuscule>0 && NombreChiffre>0 && NombreSymbole>0){
-        //AAABBBCCCDDDaaabbbccc12% -> n=1
-        n= Nombre3Majuscule;
-        if (Nombre3Majuscule>Nombre3Minuscule) {
-          n=Nombre3Minuscule;
-        }
+      resultat['Exigence']=0;
+      if (NombreCaractere>=11 && NombreLettreMajuscule>0 && NombreLettreMinuscule>0 && NombreChiffre>0 && NombreSymbole>0){
+        const Nombre2Majuscule=Math.trunc(NombreLettreMajuscule/2);
+        const Nombre2Minuscule=Math.trunc(NombreLettreMinuscule/2);
+        const Nombre2Chiffre=Math.trunc(NombreChiffre/2);
+        const Nombre2Symbole=Math.trunc(NombreSymbole/2);
 
-        /** On test n avec le nombre de chiffre et de symbole */
-        if (n>NombreChiffre){
-          n=NombreChiffre;
-        }
+        n= Nombre2Majuscule + Nombre2Minuscule + Nombre2Chiffre + Nombre2Symbole;
 
-        if (n>NombreSymbole){
-          n=NombreSymbole;
-        }
         score += n*2;
         resultat['Exigence']=n*2;
       }
 
-    /** Lettres uniquement -n */
-    if (queDesLettres.test(password)) {
-      score += -NombreCaractere;
-      resultat['QueDesLettres']=-NombreCaractere;
-    }
-
-    /** Chiffres uniquement -n */
-    if (queDesChiffres.test(password)) {
-      score += -NombreCaractere;
-      resultat['QueDesChiffres']=-NombreCaractere;
-    }
-
-    /** Caractères répétés -nRepInc */
-    if (NombreCaractere>=options.minimumLength){
-      const n=calculRepetition(password);
-      score += -n;
-      resultat['SuiteLettreMajuscule']=-n;
-    }
-
-    /** Lettres majuscules consécutives -(n*2) */
-    if (NombreLettreMajuscule>=options.minimumLength && NombreCaractere>=options.minimumLength){
-      const groupe = password.match(lettreConsecutiveMajuscule);
-      if (groupe!=null) {
-        const total=calculSuiteCaractere(groupe);
-        score += -total*2;
-        resultat['SuiteLettreMajuscule']=-total*2;
+      /** Lettres uniquement -n */
+      resultat['QueDesLettres']=0
+      if (NombreCaractere>=options.minimumLength && queDesLettres.test(password)) {
+        score += -NombreCaractere;
+        resultat['QueDesLettres']=-NombreCaractere;
       }
-    }
 
-    /** Lettres minuscules consécutives -(n*2) */
-    if (NombreLettreMinuscule>=options.minimumLength && NombreCaractere>=options.minimumLength){
-      const groupe = password.match(lettreConsecutiveMinuscule);
-      if (groupe!=null) {
-        const total=calculSuiteCaractere(groupe);
-        score += -total*2;
-        resultat['SuiteLettreMinuscule']=-total*2;
+      /** Chiffres uniquement -n */
+      resultat['QueDesChiffres']=0
+      if (NombreCaractere>=options.minimumLength && queDesChiffres.test(password)) {
+        score += -NombreCaractere;
+        resultat['QueDesChiffres']=-NombreCaractere;
       }
-    }
 
-    /** Chiffres consécutifs -(n*2) */
-    if (NombreChiffre>=options.minimumLength && NombreCaractere>=options.minimumLength){
-      const groupe = password.match(chiffreConsecutif);
-      if (groupe!=null) {
-        const total=calculSuiteCaractere(groupe);
-        score += -total*2;
-        resultat['SuiteChiffre']=-total*2;
+      /** Caractères identiques répétés -nRepInc */
+      resultat['RepetitionIndentique']=0;
+      if (NombreCaractere>=options.minimumLength){
+        const n=calculRepetition(password);
+        score += -n;
+        resultat['RepetitionIndentique']=-n;
       }
-    }
 
-    /** Recherche d'une date comprise entre 1900 et 2039 -(4n) */
-    if (dateAnnee.test(password)) {
-      const resultatDateAnnee=password.match(dateAnnee);
-      score += -resultatDateAnnee.length;
-      resultat['DateAnnee']=-resultatDateAnnee.length;
-    }
-
-  /** Rechecher une potentielle date sans séparateur
-   * La date à une longueur de 4 (1124) à 8 (10122024)
-  */
-  if (dateCompleteSansSeparateur.test(password)) {
-    const resultatDateCompleteSansSeparateur=RegExp(dateCompleteSansSeparateur).exec(password);
-    score += -resultatDateCompleteSansSeparateur.length;
-    resultat['DateSansSepareteur']=-resultatDateCompleteSansSeparateur.length;
-  }
-
-  /** Recherche une potentielle date avec séparateur (/\-_.)
-   * La date à une longueur de 6 (1/1/24) à 10 (10/12/2024)
-  */
-  if (dateCompleteAvecSeparateur.test(password)) {
-    const resultatDateCompleteAvecSeparateur=RegExp(dateCompleteAvecSeparateur).exec(password);
-    if (parseInt(resultatDateCompleteAvecSeparateur[0],10)!=0 &&
-        parseInt(resultatDateCompleteAvecSeparateur[0],10)<=31 &&
-        parseInt(resultatDateCompleteAvecSeparateur[1],10)!=0 &&
-        parseInt(resultatDateCompleteAvecSeparateur[1],10)<=12 &&
-        parseInt(resultatDateCompleteAvecSeparateur[3],10)!=0){
-          score += -resultatDateCompleteAvecSeparateur.length;
-          resultat['DateAvecSeparateur']=-resultatDateCompleteAvecSeparateur.length;
+      /** Lettres majuscules consécutives -(n*2) */
+      resultat['RepetitionLettreMajuscule']=0;
+      if (NombreCaractere>=options.minimumLength){
+        const groupe = password.match(lettreConsecutiveMajuscule);
+        if (groupe!=null) {
+          const n=calculSuiteCaractere(groupe);
+          score += -n*2;
+          resultat['RepetitionLettreMajuscule']=-n*2;
+          console.log('Repetition Majuscule : ', n);
         }
-  }
-
-  /*  Lettres séquentielles (3+)++ -(n*3)*/
-  if (lettre.test(password)) {
-    let croissant, decroissant, nSeqAlpha=0, nSeqChar=0;
-
-    for (let s=0; s < 23; s++) {
-      croissant = alefbet.substring(s,parseInt(s+3));
-      decroissant = reverse(croissant);
-      if (password.toLowerCase().indexOf(croissant) != -1 || password.toLowerCase().indexOf(decroissant) != -1) {
-        nSeqAlpha++;
-        nSeqChar++;
       }
-      score += -nSeqAlpha*3;
-      resultat['LettreSequentielle']=-nSeqAlpha*3;
-    }
-  }
 
-  /*  chiffres séquentielles (3+)++ -(n*3) */
-  if (chiffre.test(password)) {
-    let croissant, decroissant, nSeqChiffre=0, nSeqChar=0;
-    for (let s=0; s < 8; s++) {
-      croissant = undeuxtrois.substring(s,parseInt(s+3));
-      decroissant = reverse(croissant);
-      if (password.toLowerCase().indexOf(croissant) != -1 || password.toLowerCase().indexOf(decroissant) != -1) {
-        nSeqChiffre++;
-        nSeqChar++;
+      /** Lettres minuscules consécutives -(n*2) */
+      resultat['RepetitionLettreMinuscule']=0;
+      if (NombreCaractere>=options.minimumLength){
+        const groupe = password.match(lettreConsecutiveMinuscule);
+        if (groupe!=null) {
+          const n=calculSuiteCaractere(groupe);
+          score += -n*2;
+          resultat['RepetitionLettreMinuscule']=-n*2;
+        }
+      }
+
+      /** Chiffres consécutifs -(n*2) */
+      resultat['repetitionChiffre']=0;
+      if (NombreCaractere>=options.minimumLength){
+        const groupe = password.match(chiffreConsecutif);
+        if (groupe!=null) {
+          const n=calculSuiteCaractere(groupe);
+          score += -n*2;
+          resultat['repetitionChiffre']=-n*2;
+        }
+      }
+
+      /** Recherche d'une date comprise entre 1900 et 2039 -(4n) */
+      resultat['DateAnnee']=0
+      if (NombreCaractere>=options.minimumLength && dateAnnee.test(password)) {
+        const resultatDateAnnee=password.match(dateAnnee);
+        score += -resultatDateAnnee.length;
+        resultat['DateAnnee']=-resultatDateAnnee.length;
+      }
+
+    /** Rechecher une potentielle date sans séparateur
+     * La date à une longueur de 4 (1124) à 8 (10122024)
+    */
+    resultat['DateSansSepareteur']=0
+    if (NombreCaractere>=options.minimumLength && dateCompleteSansSeparateur.test(password)) {
+      const resultatDateCompleteSansSeparateur=RegExp(dateCompleteSansSeparateur).exec(password);
+      score += -resultatDateCompleteSansSeparateur.length;
+      resultat['DateSansSepareteur']=-resultatDateCompleteSansSeparateur.length;
+    }
+
+    /** Recherche une potentielle date avec séparateur (/\-_.)
+     * La date à une longueur de 6 (1/1/24) à 10 (10/12/2024)
+    */
+    resultat['DateAvecSeparateur']=0;
+    if (NombreCaractere>=options.minimumLength && dateCompleteAvecSeparateur.test(password)) {
+      const resultatDateCompleteAvecSeparateur=RegExp(dateCompleteAvecSeparateur).exec(password);
+      if (parseInt(resultatDateCompleteAvecSeparateur[0],10)!=0 &&
+          parseInt(resultatDateCompleteAvecSeparateur[0],10)<=31 &&
+          parseInt(resultatDateCompleteAvecSeparateur[1],10)!=0 &&
+          parseInt(resultatDateCompleteAvecSeparateur[1],10)<=12 &&
+          parseInt(resultatDateCompleteAvecSeparateur[3],10)!=0){
+            score += -resultatDateCompleteAvecSeparateur.length;
+            resultat['DateAvecSeparateur']=-resultatDateCompleteAvecSeparateur.length;
+          }
+    }
+
+    /*  Sequence differentes de lettres (3+)++ -(n*3)*/
+    resultat['SuiteLettreSequentielle']=0;
+    if (NombreCaractere>=options.minimumLength && lettre.test(password)) {
+      let croissant, decroissant, sequence=0;
+
+      for (let s=0; s < 23; s++) {
+        croissant = alefbet.substring(s,parseInt(s+3));
+        decroissant = reverse(croissant);
+        if (password.toLowerCase().indexOf(croissant) != -1 || password.toLowerCase().indexOf(decroissant) != -1) {
+          sequence++;
+        }
+        score += -sequence*3;
+        resultat['SuiteLettreSequentielle']=-sequence*3;
       }
     }
-    score += -nSeqChiffre*3;
-    resultat['ChiffreSequentielle']=-nSeqChiffre*3;
-  }
 
+    /*  Sequence differentes de chiffres (3+)++ -(n*3) */
+    resultat['SuiteChiffreSequentielle']=0;
+    if (NombreCaractere>=options.minimumLength && chiffre.test(password)) {
+      let croissant, decroissant, sequence=0, groupe=0;
+      for (let s=0; s < 8; s++) {
+        croissant = undeuxtrois.substring(s,parseInt(s+3));
+        decroissant = reverse(croissant);
+        if (password.indexOf(croissant) != -1 || password.indexOf(decroissant) != -1) {
+          sequence++;
+        }
+      }
+      score += -sequence*3;
+      resultat['SuiteChiffreSequentielle']=-sequence*3;
+    }
 
-//https://wortschatz.uni-leipzig.de/en/download/French
+    let malus=0, bonus=0;
+    /** 8 caractères = -50 Malus */
+    if (NombreCaractere === 8) {
+      score= score-50
+      malus=-50
+    }
+    /** 9 caractères = -30 Malus */
+    if (NombreCaractere === 9) {
+      score= score-20
+      malus=-50
+    }
+    /** 10 caractères = -10 Malus */
+    if (NombreCaractere === 10) {
+      score= score-10
+      malus=-50
+    }
+    /** 11 caractères = +10 Bonus */
+    if (NombreCaractere === 11) {
+      score= score+5
+      bonus=5
+    }
 
+    resultat['bonus']=bonus;
+    resultat['malus']=malus;
 
-      /** Le mot de passe contient 3 chiffres */
-      //if(passwordHas3Numbers.test(password)){
-      //  score += 5;
-      //}
+    /** si on est très bon on aura 100 points */
+    if (score > 100) {
+      score = 100;
+    }
 
-      /** Le mot de passe contient au moins un symbole */
-      //if (symbole.test(password)) {
-      //  score += 1;
-      //}
-
-      /** Le mot de passe contient au moins deux symboles */
-      //if (symbole.test(password)) {
-      //  score += 4;
-      //}
-
-     /** Le mot de passe est composé de minuscules et de majuscules */
-     // if (minusMajuscule.test(password)) {
-     //   score += 10;
-     // }
-
-      /** Le mot de passe est composé de lettres et de chiffres. */
-      //if (lettre.test(password) && chiffre.test(password)) {
-      //  score += 15;
-      //}
-
-      /** Le mot de passe à au moins un symbole et un chiffre. */
-      //if (symbole.test(password) && chiffre.test(password)) {
-      //  score += 15;
-      //}
-
-      /** Le mot de passe à au moins un symbole et des lettres*. */
-      //if (symbole.test(password) && lettre.test(password)) {
-      //  score += 15;
-      //}
-
-      /** le mot de passe ne contient que des chiffres ou que des lettres. */
-      //if (queDesLettres.test(password) || queDesChiffres.test(password)) {
-      //  score -= 10;
-      //}
-
-      /** si on est très bon on aura 100 points */
-      //if (score > 100) {
-      //  score = 100;
-     // }
-
-     // /** si on est très mauvais on aura 0 point */
-     // if (score < 0) {
-     //   score = 0;
-      //}
-      console.log(resultat);
-      return score;
+    /** si on est très mauvais on aura 0 point */
+    if (score < 0) {
+      score = 0;
+    }
+    //console.info(resultat);
+    return score;
     }
 
     /**
