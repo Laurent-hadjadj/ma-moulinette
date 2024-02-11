@@ -1,0 +1,59 @@
+/**
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2021-2022.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ */
+
+ @media (width <= 20em) { /* vide */ }
+
+ @media (20.025em <= width <= 22em) { /* vide */ }
+
+ @media (22.025em <= width <= 30em) { /* vide */ }
+
+ @media (30.025em <= width <= 40em) { /* vide */ }
+
+ @media (40.025em <= width <= 64em) { /* vide */ }
+
+ @media (64.025em <= width <= 90em) { /* vide */ }
+
+ @media (90.025em <= width <= 120em) { /* vide */ }
+
+ @media (120.025em <= width <= 160em) { /* vide */ }
+
+
+ /*************************          Global     *********************************/
+
+/* On retire le padding sur l'element P */
+#siret { margin-bottom: 0; }
+
+.source-link {
+  color: #00445b;
+  padding: 1px 2px;
+  border-bottom: 1px solid;
+}
+
+.source-link:hover, .source-link:active {
+  transition: all 0.25s ease-in;
+  color: #bf1722;
+  border-radius: 4px;
+  background-color: #ffc !important;
+  border-color: #ffc;
+  padding: 1px 2px;
+}
+
+
+/* Affichage de la callbox Licence CC */
+
+.inline-block { display:inline-block; }
+
+.cc, .by, .nc, .sa {
+  height:22px!important;
+  margin-left:3px;
+  vertical-align:text-bottom;
+}
