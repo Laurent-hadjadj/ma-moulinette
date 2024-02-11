@@ -69,7 +69,7 @@
               <a href="{{ path('register') }}" class="float-left open-sans pas-encore-inscrit">Pas encore inscrit ?</a>
               <br>
             {% endif %}
-            <input aria-hidden="true" type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}"/>
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}"/>
           {# {% if app.user %}
             {{ path('register') }}
           {% endif %}#}
