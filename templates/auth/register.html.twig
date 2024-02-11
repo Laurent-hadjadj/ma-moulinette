@@ -59,7 +59,7 @@
                 <span id="bouton-changer-avatar" class="open-sans profil-bouton" data-open="mes-avatars">&nbsp;Changer&nbsp;
                 </span>
               </div>
-              <div class="show-for-small-only cell" aria-role="hiden">&nbsp;</div>
+              <div class="show-for-small-only cell" aria-hidden="true">&nbsp;</div>
 
               {# Ajout du nom #}
               <div class="small-11 medium-7 large-7 cell">
@@ -67,9 +67,6 @@
                   {{ form_label(registrationForm.nom) }}
                 </div>
                 {{ form_widget(registrationForm.nom) }}
-                <div class="form_erreur">
-                  {{ form_errors(registrationForm.nom) }}
-                </div>
               </div>
               <div class="small-1 medium-1 large-1 cell">
                 <span id="register-info-check-nom"></span>
@@ -78,18 +75,12 @@
 
               {# Ajout du prénom #}
               <div class="small-11 medium-7 large-7 cell">
-                <div class="show-for-medium">
-                  <p role="presentation">&nbsp;</p>
-                </div>
                 <div class="floated-label-wrapper">
                   {{ form_label(registrationForm.prenom) }}
                 </div>
-                {{ form_widget(registrationForm.prenom,) }}
-                <div class="form_erreur">
-                  {{ form_errors(registrationForm.prenom) }}
-                </div>
+                {{ form_widget(registrationForm.prenom) }}
               </div>
-              <div class="small-1 medium-1 large-1 cell">
+              <div id="register-check-prenom" class="small-1 medium-1 large-1 cell1">
                 <span id="register-info-check-prenom"></span>
               </div>
 
@@ -99,9 +90,6 @@
                   {{ form_label(registrationForm.courriel) }}
                 </div>
                 {{ form_widget(registrationForm.courriel) }}
-                <div id="message-erreur-courriel" class="form_erreur">
-                  {{ form_errors(registrationForm.courriel) }}
-                </div>
               </div>
               <div class="small-1 medium-1 large-1 cell">
                 <span id="register-info-check-courriel"></span>
@@ -144,6 +132,9 @@
 
               {# Affiche des messages d'erreur pour le champ mot-de-passe et re-mot-de-passe #}
               <div class="form_erreur">
+                {{ form_errors(registrationForm.nom) }}
+                {{ form_errors(registrationForm.prenom) }}
+                {{ form_errors(registrationForm.courriel) }}
                 {{ form_errors(registrationForm.plainPassword.first) }}
                 {{ form_errors(registrationForm.plainPassword.second) }}
               </div>
