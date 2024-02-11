@@ -31,18 +31,19 @@
     <div class="grid-container" role="main">
       <div class="grid-x">
         <div class="small-12 medium-6 large-6 cell">
-          <video id="video-arbres" class="video-arbres" preload="metadata" loop autoplay muted>
-            <source src="{{ asset('build/video/ArbresEnneiges.mp4') }}">
-            <track label="Français" kind="captions" srclang="fr" default src="#">
+          <video id="video-dessin-anime2" class="video-dessin-anime2" preload="metadata" loop autoplay muted>
+            <source src="{{ asset('build/video/DessinAnime2.mp4') }}">
+              <track label="Français" kind="captions" srclang="fr" default src="{{ asset('build/video/dessin_anime2_subtitles_fr.vtt') }}">
+              <track label="English" kind="captions" srclang="en" src="{{ asset('build/video/dessin_anime2_subtitles_en.vtt') }}">
           </video>
           <span class="open-sans float-center text-center">
             {% set a="https://pixabay.com/fr/" %}
-            {% set b="users/invisiblepower-3810957/" %}
+            {% set b="users/u_cakf541pns-41051938/" %}
             {% set c="?utm_source=link-attribution&amp;utm_medium=referral"%}
-            {% set d="&amp;utm_campaign=video&amp;utm_content=7328" %}
-            <a class="open-sans credit" href="{{a}}{{b}}{{c}}{{d}}">invisiblepower</a>
+            {% set d="&amp;utm_campaign=video&amp;utm_content=192283" %}
+            <a class="open-sans credit source-link" href="{{a}}{{b}}{{c}}{{d}}">u_cakf541pns</a>
             <span id="sur">sur</span>
-            <a class="open-sans credit" href="{{a}}{{c}}{{d}}">Pixabay</a>
+            <a class="open-sans credit source-link" href="{{a}}{{c}}{{d}}">Pixabay</a>
           </span>
         </div>
         <div class="small-12 medium-6 large-6 cell">
