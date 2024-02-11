@@ -3,23 +3,29 @@
 @echo *****************************************
 @echo         Environnement Symfony
 @echo  Laurent HADJADJ - 2023-02-13 v1.0.0
+@echo  Laurent HADJADJ - 2024-02-11 v1.1.0
 @echo *****************************************
 
 @echo:
 @echo Env       : dev
-@echo Script    : v1.0.0
-@echo Symfony   : v6.1.6
-@echo Php       : v8.1.10
+@echo Script    : v1.1.0
+@echo Symfony   : v6.4.3
+@echo Php       : v8.3.0-NTS
+@echo nodejs    : 18.17.1
+@echo:
 
-@set app=c:\sonar-dash.dev
-@set php=%app%\php-8.1.10
-@set nodejs=%app%\node-12.22.12
+@echo Génére le rapport de couverture des tests unitaires.
+@echo Le rapport se trouve dans le dossier ma-moulinette/reports
 
-@set nodejs=c:\%app%\node-12.22.12
+@set lecteur=c:
+@set app=%lecteur%\environnement\projet\ma-moulinette
+@set php=%app%\php-8.3.0-NTS\
+@set nodejs=%app%\node-18.17.1\
+
 @set HTTP_PROXY=
 @set HTTPS_PROXY=
 
-@set PATH=%app%\symfony-cli\current;%app%\composer;%php%;%nodejs%;
+@set PATH=%app%\symfony-cli\current;%app%\composer\;%php%;%nodejs%;%PATH%
 
 @cd %app%\ma-moulinette
 

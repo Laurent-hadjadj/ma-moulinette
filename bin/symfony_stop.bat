@@ -6,17 +6,22 @@
 @echo  Laurent HADJADJ - 2022-03-28 v1.1.0
 @echo  Laurent HADJADJ - 2022-03-29 v1.2.0
 @echo  Laurent HADJADJ - 2022-09-07 v1.3.0
+@echo  Laurent HADJADJ - 2022-12-01 v1.4.0
+@echo  Laurent HADJADJ - 2023-09-18 v1.5.0
 @echo *****************************************
 
 @echo:
 @echo Env       : dev
-@echo Script    : v1.3.0
-@echo Symfony   : v6.1.3
-@echo Php       : v8.1.10
+@echo Script    : v1.5.0
+@echo Symfony   : v6.4.3
+@echo Php       : vphp-8.3.0-NTS
+@echo nodejs    : 18.17.1
+@echo:
 
-@set app=c:\sonar-dash.dev
-@set php=%app%\php-8.1.10
-@set nodejs=%app%\node-12.22.12
+@set lecteur=c:
+@set app=%lecteur%\environnement\projet\ma-moulinette
+@set php=%app%\php-8.3.0-NTS\
+@set nodejs=%app%\node-18.17.1\
 
 @set PATH=%app%\symfony-cli\current;%php%;%PATH%
 @cd %app%\ma-moulinette
