@@ -206,9 +206,9 @@
   transition: all 0.15s ease-in;
 }
 
-.floated-label-wrapper label.renom {
+.floated-label-wrapper label.show-prenom {
   opacity: 1;
-  top: -2.45rem;
+  top: -1.6rem;
   z-index: 1;
   transition: all 0.15s ease-in;
 }
