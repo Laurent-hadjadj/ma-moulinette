@@ -80,9 +80,9 @@ $('#registration_form_prenom').on('keyup', function(){
   const prenomLength=$('#registration_form_prenom').val().length;
 
   if (this.value !== '') {
-    $('label[for="registration_form_prenom"]').addClass('prenom');
+    $('label[for="registration_form_prenom"]').addClass('show-prenom');
   } else {
-    $('label[for="registration_form_prenom"]').removeClass('prenom');
+    $('label[for="registration_form_prenom"]').removeClass('show-prenom');
   }
   if (prenomLength>=deux && prenomLength<=trenteDeux) {
     $('#register-info-check-prenom').html(checkOkSvg);
