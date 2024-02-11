@@ -346,5 +346,7 @@ General error: 1 near "4.1": syntax error"
 * [Page_Footer] Refonte du footer pour prendre en compte les liens |Plan du site | accéssibilité | Mentions légales | Données personnelles.
 * [Page_Home] Vérification des droits pour mettre à jour la table des projets et celles des profils qualités.
 * [Page_Login] Ajout de l'option voir mon mot de passe ;
-* [Page_Login] Ajout, je veux changer mon mot de passe.
-* [Page_Login] Ajout, j'ai oublié mon mot de passe, aider-moi :)
+* [Page_Login] Ajout, je veux changer mon mot de passe ;
+* [Page_Login] TODO : Ajout, j'ai oublié mon mot de passe, aider-moi :)
+* [Composant_Menu] Ajout du nom de l'utilisateur ;
+* [Composant_Menu] Ajout des informations utilisateurs utiles ;
