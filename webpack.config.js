@@ -23,6 +23,7 @@ Encore
     .addEntry('home', './assets/js/app-home.js')
     .addEntry('plan-du-site', './assets/js/app-footer-plan.js')
     .addEntry('mention-legale', './assets/js/app-footer-mention-legale.js')
+    .addEntry('donnees-personnelles', './assets/js/app-footer-donnees-personnelles.js')
     .addEntry('preference', './assets/js/app-preference.js')
     .addEntry('preference-ajouter', './assets/js/app-preference-ajouter.js')
     .addEntry('projet', './assets/js/app-projet.js')
