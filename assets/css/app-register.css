@@ -195,7 +195,7 @@
 .floated-label-wrapper label input[type="email"],
 .floated-label-wrapper label input[type="password"] {
   border-radius: 4px;
-  font-size: 1.75em;
+  font-size: 1.3em;
   padding: 0.5em;
 }
 
@@ -206,7 +206,7 @@
   transition: all 0.15s ease-in;
 }
 
-.floated-label-wrapper label.prenom {
+.floated-label-wrapper label.renom {
   opacity: 1;
   top: -2.45rem;
   z-index: 1;
@@ -248,7 +248,8 @@
 :focus { outline: none; }
 
 #registration_form_nom { margin-top: 0.2rem; }
-#registration_form_prenom { margin-top: -1.8rem; }
+#registration_form_prenom { margin-top: -1rem; }
+#register-check-prenom { margin-top: -0.9rem; }
 
 /***************  Avatar                        *******************************/
 .sepia { filter: sepia(0); }
