@@ -120,8 +120,7 @@ $('#registration_form_plainPassword_first').on('keyup', function(){
 
   /** On contrôle la qualité du mot de passe  */
   $('#registration_form_plainPassword_first').password({
-    showPercent: true, showText: true, animate: true, animateSpeed: 'fast',
-    field: false, fieldPartialMatch: true, minimumLength: 1, useColorBarImage: true,
+    showPercent: true, showText: true, animate: true, animateSpeed: 'fast', minimumLength: 8, useColorBarImage: true,
   });
 
 /** Ajout du label pour le re-motdepasse */
