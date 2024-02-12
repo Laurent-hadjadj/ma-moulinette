@@ -461,13 +461,13 @@ $('.js-modifier-analyse').on('click', function () {
 
   /* On récupère la clé maven */
   const data = { mavenKey: $('#js-nom').data('maven'), mode: 'null' };
-  console.log(data);
+
   const options = {
     url: `${serveur()}/api/suivi/version/liste`, type: 'POST',
     dataType: 'json', data: JSON.stringify(data), contentType };
 
   $.ajax(options).then(t => {
-    console.log(t);
+
     /* On gére le résultat de la requête */
     if (t.code!=='OK') {
       const message=`Je n'ai pas réussi à charger la liste des versions (${t.code}).`;
