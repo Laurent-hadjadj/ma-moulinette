@@ -644,10 +644,6 @@ class SuiviController extends AbstractController
         $version = $data->version;
         $mode = $data->mode;
 
-        $dateEnregistrement = new DateTime();
-        $dateEnregistrement->setTimezone(new DateTimeZone(static::$europeParis));
-        $strDateEnregistrement = $dateEnregistrement->format(static::$dateFormat);
-
         /** On créé un nouvel objet Json */
         $response = new JsonResponse();
 
@@ -659,22 +655,6 @@ class SuiviController extends AbstractController
 
         /** On exécute la requête */
         $con = $this->em->getConnection()->prepare($sql);
-        try {
-            $con->executeQuery();
-        } catch (\Doctrine\DBAL\Exception $e) {
-            return $response->setData(["code" => $e->getCode(), Response::HTTP_OK]);
-        }
-
-        /** On modifie (delete/insert) l'attribut favori de la table favori */
-        /** On supprime l'enregistrement */
-        $sql = "DELETE FROM favori WHERE maven_key='$mavenKey'";
-        $this->em->getConnection()->prepare($sql)->executeQuery();
-        /** On ajoute l'enregistrement */
-        $sql = "INSERT INTO favori ('maven_key', 'favori', 'date_enregistrement')
-    VALUES ('$mavenKey', $favori, '$strDateEnregistrement')";
-
-        /** On exécute la requête et on catch l'erreur */
-        $con = $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)));
         try {
             $con->executeQuery();
         } catch (\Doctrine\DBAL\Exception $e) {
