@@ -37,7 +37,8 @@ const poubelleSVG=`
 /**
  * [Description for modifierStatut]
  *
- * @param mixed etat
+ * @param mixed statut
+ * @param mixed categorie
  *
  * @return [type]
  *
@@ -45,13 +46,13 @@ const poubelleSVG=`
  * @author    Laurent HADJADJ <laurent_h@me.com>
  * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
-const modifierStatut = function(statut, categorie) {
+const modifierStatut = async function(statut, categorie) {
   /** on récupère les préférences */
   const data={ statut, categorie, mode: 'null' }
   const options = {
     url: `${serveur()}/api/preference/statut`, type: 'POST',
           dataType: 'json', data:  JSON.stringify(data), contentType };
-  return $.ajax(options).then();
+  return $.ajax(options);
 }
 
 /**
@@ -63,31 +64,32 @@ const modifierStatut = function(statut, categorie) {
  * @author    Laurent HADJADJ <laurent_h@me.com>
  * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
-const bookmark=function(){
+const bookmark=async function(){
   /** on récupère les préférences */
   const data={ categorie: 'bookmark' }
   const options = {
     url: `${serveur()}/api/preference/categorie`, type: 'GET',
           dataType: 'json', data, contentType };
 
-  return $.ajax(options).then(r=> {
-    $('#js-modal-bookmark-statut').html(`<span class="option-false"><strong>Désactivée.</strong></span>`);
-    /** On a un bookmark */
-    if (r.statut.bookmark && r['bookmark'].length>0){
-      $('#js-modal-bookmark-statut').html(`<span class="option-true"><strong>Activée.</strong></span>`);
-      $('#js-modal-bookmark-nom').html(`<span>${r.bookmark}</span>`);
-    } else {
-      if (r['bookmark'].length>0) {
-        $('#js-modal-bookmark-nom').html(`<span>${r.bookmark}</span>`);
-      } else {
-        $('#js-modal-bookmark-nom').html(`<span>AUNCUN</span>`);
-      }
+  const r = await $.ajax(options);
+  $('#js-modal-bookmark-statut').html(`<span class="option-false"><strong>Désactivée.</strong></span>`);
+  /** On a un bookmark */
+  if (r.statut.bookmark && r['bookmark'].length > 0)
+  {
+    $('#js-modal-bookmark-statut').html(`<span class="option-true"><strong>Activée.</strong></span>`);
+    $('#js-modal-bookmark-nom').html(`<span>${ r.bookmark }</span>`);
+  } else
+  {
+    if (r['bookmark'].length > 0)
+    {
+      $('#js-modal-bookmark-nom').html(`<span>${ r.bookmark }</span>`);
+    } else
+    {
+      $('#js-modal-bookmark-nom').html(`<span>AUNCUN</span>`);
     }
-
-    /** On ouvre la fenêtre modal */
-    $('#modal-bookmark').foundation('open');
-
-  });
+  }
+  /** On ouvre la fenêtre modal */
+  $('#modal-bookmark').foundation('open');
 }
 
 /**
@@ -100,55 +102,56 @@ const bookmark=function(){
  * @author    Laurent HADJADJ <laurent_h@me.com>
  * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
-const favori=function(){
+const favori=async function(){
   /** on récupère les préférences */
   const data={ categorie: 'favori' }
   const options = {
     url: `${serveur()}/api/preference/categorie`, type: 'GET',
           dataType: 'json', data, contentType };
 
-  return $.ajax(options).then(r=> {
-    /** Par défaut on affiche pas de favoris */
-    $('#js-modal-favori-statut').html(`<span class="option-false"><strong>Désactivée.</strong></span>`);
+  const r = await $.ajax(options);
+  /** Par défaut on affiche pas de favoris */
+  $('#js-modal-favori-statut').html(`<span class="option-false"><strong>Désactivée.</strong></span>`);
+  /** On a un favori */
+  if (r.statut.favori && r['favori'].length > 0)
+  {
+    $('#js-modal-favori-statut').html(`<span class="option-true"><strong>Activée.</strong></span>`);
+    /** On construit la liste des favoris */
+    $('#tableau-liste-favori').html('');
+    let n = 1, zero = '';
 
-    /** On a un favori */
-    if (r.statut.favori && r['favori'].length>0){
-      $('#js-modal-favori-statut').html(`<span class="option-true"><strong>Activée.</strong></span>`);
-      /** On construit la liste des favoris */
-      $('#tableau-liste-favori').html('');
-      let n=1, zero='';
-
-      r.favori.forEach(l => {
-        if (n<10) {
-          zero='0';
-        }
-        let ligne="";
-        ligne=`<tr id="ligne-favori-${n}">
-                <td class="preference-compteur-tableau">${zero}${n}</td>
-                <td id="mavenkey-favori-${n}" class="preference-ligne-tableau">${l}</td>
-                <td id="poubelle-favori-${n}" class="js-poubelle text-center">${poubelleSVG}</td>
+    r.favori.forEach(l =>
+    {
+      if (n < 10)
+      {
+        zero = '0';
+      }
+      let ligne = "";
+      ligne = `<tr id="ligne-favori-${ n }">
+                <td class="preference-compteur-tableau">${ zero }${ n }</td>
+                <td id="mavenkey-favori-${ n }" class="preference-ligne-tableau">${ l }</td>
+                <td id="poubelle-favori-${ n }" class="js-poubelle text-center">${ poubelleSVG }</td>
               </tr>`;
-        $('#tableau-liste-favori').append(ligne);
-        n=n+1;
-      });
-    }
-
-    /** On ouvre la fenêtre modal */
-    $('#modal-favori').foundation('open');
-
-    /** On récupère l'ID de la ligne que l'on veut supprimer */
-    $('.js-poubelle').on('click', e=>{
-      const tempoId=$(e.currentTarget).attr('id')
-      const id=tempoId.split("-");
-      $(`#ligne-favori-${id[2]}`).hide()
-      /** On appel le service de suppresion du favori */
-      const mavenKey=$(`#mavenkey-favori-${id[2]}`).text();
-      const data={ mode: 'null', mavenKey }
-      const options = {
-        url: `${serveur()}/api/preference/favori/delete`, type: 'POST',
-              dataType: 'json', data: JSON.stringify(data), contentType };
-        $.ajax(options).then(r=>{console.log(r)});
+      $('#tableau-liste-favori').append(ligne);
+      n = n + 1;
     });
+  }
+  /** On ouvre la fenêtre modal */
+  $('#modal-favori').foundation('open');
+  /** On récupère l'ID de la ligne que l'on veut supprimer */
+  $('.js-poubelle').on('click', e =>
+  {
+    const tempoId = $(e.currentTarget).attr('id');
+    const id = tempoId.split("-");
+    $(`#ligne-favori-${ id[2] }`).hide();
+    /** On appel le service de suppresion du favori */
+    const mavenKey = $(`#mavenkey-favori-${ id[2] }`).text();
+    const data_1 = { mode: 'null', mavenKey };
+    const options_1 = {
+      url: `${ serveur() }/api/preference/favori/delete`, type: 'POST',
+      dataType: 'json', data: JSON.stringify(data_1), contentType
+    };
+    $.ajax(options_1).then(r_1 => { console.log(r_1); });
   });
 }
 
@@ -162,80 +165,82 @@ const favori=function(){
  * @author    Laurent HADJADJ <laurent_h@me.com>
  * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
-const version=function(){
+const version=async function(){
   /** on récupère les préférences */
   const data={ categorie: 'version' }
   const options = {
     url: `${serveur()}/api/preference/categorie`, type: 'GET',
           dataType: 'json', data, contentType };
 
-  return $.ajax(options).then(r=> {
-    /** Par défaut on affiche pas de version */
-    $('#js-modal-version-statut').html(`<span class="option-false"><strong>Désactivée.</strong></span>`);
+  const r = await $.ajax(options);
+  /** Par défaut on affiche pas de version */
+  $('#js-modal-version-statut').html(`<span class="option-false"><strong>Désactivée.</strong></span>`);
+  /** On a une version ? */
+  let n = 1, m, lignes, ligne, debut, fin;
+  if (r.statut.version && r.version.length > 0)
+  {
+    $('#js-modal-version-statut').html(`<span class="option-true"><strong>Activée.</strong></span>`);
 
-    /** On a une version ? */
-    let n=1, m, lignes, ligne, debut, fin;
-    if (r.statut.version && r.version.length>0){
-      $('#js-modal-version-statut').html(`<span class="option-true"><strong>Activée.</strong></span>`);
-
-      $('.js-accordion').html('');
-      r.version.forEach(o => {
-        for (const [key, value] of Object.entries(o)) {
-          debut=`
+    $('.js-accordion').html('');
+    r.version.forEach(o =>
+    {
+      for (const [key, value] of Object.entries(o))
+      {
+        debut = `
               <li class="accordion-item" data-accordion-item>
-                <a href="#" class="accordion-title open-sans accordion-custom">${key}</a>
+                <a href="#" class="accordion-title open-sans accordion-custom">${ key }</a>
                 <div class="accordion-content" data-tab-content>
                 <table><thead><tr>
                   <th width="50" scope="col" class="open-sans text-left">N°</th>
                   <th scope="col" class="open-sans text-center">version</th>
                   <th scope="col" class="open-sans text-center">Action</th>
                 </tr></thead><tbody class="open-sans">`;
-          lignes='';
-          m=1;
-          value.forEach(e => {
-            ligne=`
-            <tr id="ligne-version-${n}${m}">
-              <td class="preference-compteur-tableau">${m}</td>
-              <td id="version-${n}${m}" class="preference-ligne-tableau" data-index="${parseInt(n,10)-1}" data-key="${key}">${e}</td>
-              <td id="poubelle-version-${n}${m}" class="js-poubelle text-center">${poubelleSVG}</td>
+        lignes = '';
+        m = 1;
+        value.forEach(e =>
+        {
+          ligne = `
+            <tr id="ligne-version-${ n }${ m }">
+              <td class="preference-compteur-tableau">${ m }</td>
+              <td id="version-${ n }${ m }" class="preference-ligne-tableau" data-index="${ parseInt(n, 10) - 1 }" data-key="${ key }">${ e }</td>
+              <td id="poubelle-version-${ n }${ m }" class="js-poubelle text-center">${ poubelleSVG }</td>
             </tr>`;
-            lignes=lignes+ligne;
-            m=m+1;
-          });
+          lignes = lignes + ligne;
+          m = m + 1;
+        });
 
-          fin=`</tbody></table></div></li>`;
-          n=n+1;
-          $('.js-accordion').append(debut+lignes+fin);
-          }
-      });
-    }
-
-    /** On ouvre la fenêtre modal */
-    $('#modal-version').foundation('open');
-    /** On initialise l'accordéon */
-    $('.js-accordion').foundation('_init')
-
-      /** On récupère l'ID de la ligne que l'on veut supprimer */
-      $('.js-poubelle').on('click', e=>{
-        const tempoId=$(e.currentTarget).attr('id')
-        const id=tempoId.split("-");
-        $(`#ligne-version-${id[2]}`).hide()
-
-        /** On prépare les données avant l'appel Ajax */
-        const mode='null'
-        const t = document.getElementById(`version-${id[2]}`);
-        const mavenKey=t.dataset.key;
-        const index=t.dataset.index;
-        const version=$(`#version-${id[2]}`).text();
-
-        const data={ mode, index, mavenKey, version }
-        const options = {
-        /** On appel le service de suppresion du favori */
-        url: `${serveur()}/api/preference/version/delete`, type: 'POST',
-              dataType: 'json', data: JSON.stringify(data), contentType };
-        console.log(options);
-        $.ajax(options).then(r=>{console.log(r)});
+        fin = `</tbody></table></div></li>`;
+        n = n + 1;
+        $('.js-accordion').append(debut + lignes + fin);
+      }
     });
+  }
+  /** On ouvre la fenêtre modal */
+  $('#modal-version').foundation('open');
+  /** On initialise l'accordéon */
+  $('.js-accordion').foundation('_init');
+  /** On récupère l'ID de la ligne que l'on veut supprimer */
+  $('.js-poubelle').on('click', e_1 =>
+  {
+    const tempoId = $(e_1.currentTarget).attr('id');
+    const id = tempoId.split("-");
+    $(`#ligne-version-${ id[2] }`).hide();
+
+    /** On prépare les données avant l'appel Ajax */
+    const mode = 'null';
+    const t = document.getElementById(`version-${ id[2] }`);
+    const mavenKey = t.dataset.key;
+    const index = t.dataset.index;
+    const version = $(`#version-${ id[2] }`).text();
+
+    const data_1 = { mode, index, mavenKey, version };
+    const options_1 = {
+      /** On appel le service de suppresion du favori */
+      url: `${ serveur() }/api/preference/version/delete`, type: 'POST',
+      dataType: 'json', data: JSON.stringify(data_1), contentType
+    };
+    console.log(options_1);
+    $.ajax(options_1).then(r_1 => { console.log(r_1); });
   });
 }
 
@@ -250,55 +255,59 @@ const version=function(){
  * @author    Laurent HADJADJ <laurent_h@me.com>
  * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
-const projet=function(){
+const projet=async function(){
   /** on récupère les préférences */
   const data={ categorie: 'projet' }
   const options = {
     url: `${serveur()}/api/preference/categorie`, type: 'GET',
           dataType: 'json', data, contentType };
 
-  return $.ajax(options).then(r=> {
-    $('#js-modal-projet-statut').html(`<span class="option-false"><strong>Désactivée.</strong></span>`);
+  const r = await $.ajax(options);
+  $('#js-modal-projet-statut').html(`<span class="option-false"><strong>Désactivée.</strong></span>`);
+  /** On a un favori */
+  if (r.statut.projet && r['projet'].length > 0)
+  {
+    $('#js-modal-projet-statut').html(`<span class="option-true"><strong>Activée.</strong></span>`);
+    /** On construit la liste des projets */
+    $('#tableau-liste-projet').html('');
+    let n = 1, zero = '';
 
-    /** On a un favori */
-    if (r.statut.projet && r['projet'].length>0){
-      $('#js-modal-projet-statut').html(`<span class="option-true"><strong>Activée.</strong></span>`);
+    r.projet.forEach(l =>
+    {
+      if (n < 10)
+      {
+        zero = '0';
+      }
+
+      $('#tableau-liste-projet').append('<tr>');
+      $('#tableau-liste-projet').append('<td class="preference-compteur-tableau">' + zero + n + '</td>');
+      $('#tableau-liste-projet').append('<td class="preference-ligne-tableau">' + l + '</td>');
+      $('#tableau-liste-projet').append('</tr>');
+      n = n + 1;
+    });
+  } else
+  {
+    if (r['projet'].length > 0)
+    {
       /** On construit la liste des projets */
       $('#tableau-liste-projet').html('');
-      let n=1, zero='';
-
-      r.projet.forEach(l => {
-        if (n<10) {
-          zero='0';
-        }
-
-        $('#tableau-liste-projet').append('<tr>');
-        $('#tableau-liste-projet').append('<td class="preference-compteur-tableau">'+zero+n+'</td>');
-        $('#tableau-liste-projet').append('<td class="preference-ligne-tableau">'+l+'</td>');
-        $('#tableau-liste-projet').append('</tr>');
-        n=n+1;
-      });
-    } else {
-      if (r['projet'].length>0) {
-        /** On construit la liste des projets */
-      $('#tableau-liste-projet').html('');
-      let n=1, zero='';
-      r.projet.forEach(l => {
-        if (n<10) {
-          zero='0';
+      let n_1 = 1, zero_1 = '';
+      r.projet.forEach(l_1 =>
+      {
+        if (n_1 < 10)
+        {
+          zero_1 = '0';
         }
         $('#tableau-liste-projet').append('<tr>');
-        $('#tableau-liste-projet').append('<td class="preference-compteur-tableau">'+zero+n+'</td>');
-        $('#tableau-liste-projet').append('<td class="preference-ligne-tableau">'+l+'</td>');
+        $('#tableau-liste-projet').append('<td class="preference-compteur-tableau">' + zero_1 + n_1 + '</td>');
+        $('#tableau-liste-projet').append('<td class="preference-ligne-tableau">' + l_1 + '</td>');
         $('#tableau-liste-projet').append('</tr>');
-        n=n+1;
+        n_1 = n_1 + 1;
       });
-      }
     }
-    /** On ouvre la fenêtre modal */
-    $('#modal-projet').foundation('open');
-
-  });
+  }
+  /** On ouvre la fenêtre modal */
+  $('#modal-projet').foundation('open');
 }
 
 /*************** EVENEMENT *************/
