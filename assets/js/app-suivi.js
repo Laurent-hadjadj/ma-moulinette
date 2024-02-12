@@ -46,12 +46,13 @@ const a= moment().toString();
 console.info(a);
 
 /** On importe les constantes */
-import { contentType, http404, chartColors, un, deux, soixante, cent } from './constante.js';
+import { contentType, http404, chartColors, zero, un, deux, soixante, cent } from './constante.js';
 
 /* Construction des callbox de type success */
-const callboxInformation='<div class="callout primary text-justify" data-closable="slide-out-right"><p style="color:#00445b;" class="open-sans" cell">Information ! ';
-const callboxSuccess='<div id="js-message" class="callout success text-justify" data-closable="slide-out-right"><p style="color:#00445b;" class="open-sans" cell">Bravo ! ';
-const callboxError='<div id="js-message" class="callout error text-justify" data-closable="slide-out-right"><p style="color:#fff;" class="open-sans" cell">Ooups ! ';
+const callboxInformation='<div class="callout alert-callout-border primary text-justify color" data-closable="slide-out-right" role="alert"><p class="open-sans color-bleu" cell">Information ! ';
+const callboxSuccess='<div id="js-message" class="callout alert-callout-border success text-justify" data-closable="slide-out-right" role="alert"><p class="open-sans color-bleu" cell">Bravo ! ';
+const callboxWarning='<div id="js-message" class="callout alert-callout-border warning text-justify" data-closable="slide-out-right" role="alert"><p class="open-sans color-bleu" cell">Attention ! ';
+const callboxError='<div id="js-message" class="callout alert-callout-border alert text-justify" data-closable="slide-out-right"><p class="open-sans color-bleu" cell">Ooups ! ';
 const callboxFermer='<button class="close-button" aria-label="Fermer la fenêtre" type="button" data-close><span aria-hidden="true">&times;</span></button></div>';
 
 /**
@@ -494,23 +495,23 @@ $('.js-modifier-analyse').on('click', function () {
       switchFavori='<div class="siwtch js-switch-favori">';
       switchFavori+=`<input class="switch-input" id="switch-favori-${ligne}" type="checkbox" name="switch-favori-${ligne}">`;
       switchFavori+=`<label class="switch-paddle" for="switch-favori-${ligne}">`;
-      switchFavori+='<span class="show-for-sr">favori</span>';
+      switchFavori+='<span class="show-for-sr">Projet favori</span>';
       switchFavori+='</label></div>';
 
       /* On défini le switch pour la référence */
       switchReference='<div class="siwtch js-switch-reference">';
-      switchReference+=`<input class="switch-input" id="switch-reference-${ligne}" type="checkbox" name="switch-reference-${ligne}">`;
+      switchReference+=`<input class="switch-input" id="switch-reference-${ligne}" type="radio" name="switch-reference">`;
       switchReference+=`<label class="switch-paddle" for="switch-reference-${ligne}">`;
-      switchReference+='<span class="show-for-sr">reference</span>';
+      switchReference+='<span class="show-for-sr">Projet de référence</span>';
       switchReference+='</label></div>';
 
       /*  On construit le tableau */
       html  =`<tr id="ligne-${ligne}">`;
-      html +=`<td id="poubelle-${ligne}" class="text-left">${poubelle}</td>`;
-      html +=`<td id="date-${ligne}" class="text-left">${version.date}</td>`;
-      html +=`<td id="version-${ligne}" class="text-left">${version.version}</td>`;
-      html +=`<td id="favori-${ligne}" class="text-left">${switchFavori}</td>`;
-      html +=`<td id="reference-${ligne}" class="text-left">${switchReference}</td>`;
+      html +=`<td id="poubelle-${ligne}" headers="modifier-preference action" class="text-left">${poubelle}</td>`;
+      html +=`<td id="date-${ligne}" headers="modifier-preference date" class="text-left">${version.date}</td>`;
+      html +=`<td id="version-${ligne}" headers="modifier-preference version" class="text-left">${version.version}</td>`;
+      html +=`<td id="favori-${ligne}" headers="modifier-preference favori" class="text-left">${switchFavori}</td>`;
+      html +=`<td id="reference-${ligne}" headers="modifier-preference reference" class="text-left">${switchReference}</td>`;
       html +='</tr>';
 
       /* On ajoute la ligne */
@@ -521,11 +522,11 @@ $('.js-modifier-analyse').on('click', function () {
         * SQLite : 0 (false) and 1 (true).
         */
       if (version.favori===un) {
-        $(`#switch-favori-${ligne}`).click();
+        $(`#switch-favori-${ligne}`).trigger('click');
       }
 
       if (version.initial===un) {
-        $(`#switch-reference-${ligne}`).click();
+        $(`#switch-reference-${ligne}`).trigger('click');
       }
     });
 
@@ -541,7 +542,7 @@ $('.js-modifier-analyse').on('click', function () {
         /** SQLite : 0 (false) and 1 (true). */
         favori=un;
       } else {
-        favori=0;
+        favori=zero;
       }
         const dataFavori = { mavenKey: $('#js-nom').data('maven'), favori, version, date, mode:'null' };
         const optionsFavori = {
@@ -550,8 +551,8 @@ $('.js-modifier-analyse').on('click', function () {
         /**
          * On appel l'API de mise à jour du favori
          */
-        $.ajax(optionsFavori).then(() => {
-          if (t.code==='OK') {
+        $.ajax(optionsFavori).then((t) => {
+          if (t.code===200) {
             const message='Mise à jour du favori.';
             $('#message').html(callboxSuccess+message+callboxFermer);
           } else {
@@ -573,7 +574,7 @@ $('.js-modifier-analyse').on('click', function () {
         /** SQLite : 0 (false) and 1 (true). */
         reference=un;
       } else {
-        reference=0;
+        reference=zero;
       }
 
       /**
@@ -584,10 +585,13 @@ $('.js-modifier-analyse').on('click', function () {
         url: `${serveur()}/api/suivi/version/reference`, type: 'PUT',
         dataType: 'json', data: JSON.stringify(dataReference), contentType };
 
-        $.ajax(optionsReference).then(() => {
-        if (t.code==='OK') {
+      $.ajax(optionsReference).then((t) => {
+      if (t.code===200) {
           const message='Mise à jour de la version de référence.';
           $('#message').html(callboxSuccess+message+callboxFermer);
+        } else if (t.code===403) {
+          const message=`Vous n'êtes pas autorisé à effectuer cette opération.`;
+          $('#message').html(callboxWarning+message+callboxFermer);
         } else {
           const message=`Erreur lors de la mise à jour (${t.code}).`;
           $('#message').html(callboxError+message+callboxFermer);
@@ -610,9 +614,9 @@ $('.js-modifier-analyse').on('click', function () {
       url: `${serveur()}/api/suivi/version/poubelle`, type: 'PUT',
       dataType: 'json', data: JSON.stringify(dataPoubelle), contentType };
 
-    $.ajax(optionsPoubelle).then(() => {
+    $.ajax(optionsPoubelle).then((t) => {
       if (t.code==='OK') {
-      const message='Suppresion de cette version dans l\'historique.';
+      const message=`Suppresion de cette version dans l\'historique.`;
       $('#message').html(callboxSuccess+message+callboxFermer);
       // On masque la ligne
       $('#ligne-'+l[1]).hide();
