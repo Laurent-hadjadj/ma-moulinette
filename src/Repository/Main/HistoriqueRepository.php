@@ -11,44 +11,44 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class HistoriqueRepository extends ServiceEntityRepository
 {
-  public static $removeReturnline = "/\s+/u";
+    public static $removeReturnline = "/\s+/u";
 
-  public function __construct(ManagerRegistry $registry)
-  {
-      parent::__construct($registry, Historique::class);
-  }
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Historique::class);
+    }
 
-  public function add(Historique $entity, bool $flush = false): void
-  {
-      $this->getEntityManager()->persist($entity);
+    public function add(Historique $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()->persist($entity);
 
-      if ($flush) {
-          $this->getEntityManager()->flush();
-      }
-  }
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
 
-  public function remove(Historique $entity, bool $flush = false): void
-  {
-      $this->getEntityManager()->remove($entity);
+    public function remove(Historique $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()->remove($entity);
 
-      if ($flush) {
-          $this->getEntityManager()->flush();
-      }
-  }
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
 
-  /**
-   * [Description for getProjetFavori]
-   * Récupère les indicateurs du projet favori
-   * @param mixed $where
-   *
-   * @return array
-   *
-   * Created at: 27/10/2023 15:37:32 (Europe/Paris)
-   * @author    Laurent HADJADJ <laurent_h@me.com>
-   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
-  public function getProjetFavori($where): array
-  {
+    /**
+     * [Description for getProjetFavori]
+     * Récupère les indicateurs du projet favori
+     * @param mixed $where
+     *
+     * @return array
+     *
+     * Created at: 27/10/2023 15:37:32 (Europe/Paris)
+     * @author    Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function getProjetFavori($where): array
+    {
     $sql = "SELECT DISTINCT
             maven_key as mavenkey, nom_projet as nom,
             version, date_version as date, note_reliability as fiabilite,
@@ -61,5 +61,5 @@ class HistoriqueRepository extends ServiceEntityRepository
     $select=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
     $select->bindValue(":where", $where);
     return $select->fetchAllAssociative();
-  }
+    }
 }
