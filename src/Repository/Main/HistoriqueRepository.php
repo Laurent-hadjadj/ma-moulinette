@@ -62,4 +62,43 @@ class HistoriqueRepository extends ServiceEntityRepository
     $select->bindValue(":where", $where);
     return $select->fetchAllAssociative();
     }
+
+    /**
+     * [Description for deleteHistoriqueProjet]
+     * Suppression de la table historique du projet
+     *
+     * @param string $mode
+     * @param mixed $data
+     *
+     * @return array
+     *
+     * Created at: 14/02/2024 10:29:11 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function deleteHistoriqueProjet($mode, $map):array {
+
+        /** on prépare la réponse */
+        $response=['mode'=>$mode, 'code'=>200, 'erreur'=>''];
+
+        /** On prépare la requête */
+        $sql = "DELETE FROM historique
+                WHERE maven_key=:maven_key
+                AND version=:version
+                AND date_version=:date_version";
+        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+        $conn->bindValue(':maven_key', $map['maven_key']);
+        $conn->bindValue(':version', $map['version']);
+        $conn->bindValue(':date_version', $map['date_version']);
+        try {
+            if ($mode !== 'TEST') {
+                $conn->executeQuery();
+            } else {
+                $response=['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+            }
+        } catch (\Doctrine\DBAL\Exception $e) {
+            $response=['mode'=>$mode, 'code'=> 500, 'erreur'=>$e->getCode()];
+        }
+        return $response;
+}
 }
