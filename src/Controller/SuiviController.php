@@ -717,62 +717,48 @@ class SuiviController extends AbstractController
      * http://{url}}/api/suivi/version/reference
      *
      * @param Request $request
+     * @param Security $security
      *
-     * @return [type]
+     * @return response
      *
      * Created at: 15/12/2022, 22:40:34 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/suivi/version/reference', name: 'suivi_version_reference', methods: ['PUT'])]
-    public function suiviVersionReference(Request $request, Security $security)
+    public function suiviVersionReference(Request $request, Security $security): response
     {
-
         /** On décode le body */
         $data = json_decode($request->getContent());
-        $mavenKey = $data->mavenKey;
-        $reference = $data->reference;
-        $date = $data->date;
-        $version = $data->version;
-        $mode = $data->mode;
 
         /** On créé un nouvel objet Json */
         $response = new JsonResponse();
 
-
         /** si on est pas GESTIONNAIRE on ne fait rien. */
         if (!$security->isGranted('ROLE_GESTIONNAIRE')){
-            return $response->setData(["mode" => $mode, "code" => 403, Response::HTTP_OK]);
+            return $response->setData(["mode" => $data->mode, "code" => 403, Response::HTTP_OK]);
         }
 
         /** On teste si la clé est valide */
-        if ($mavenKey === "null" && $mode === "TEST") {
+        if ($data->maven_key === 'null' || $data->mode === 'TEST') {
             return $response->setData([
-                "mode" => $mode, "mavenKey" => $mavenKey,
-                "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+                'mode' => $data->mode, 'mavenKey' => $data->maven_key,
+                'code'=>400, Response::HTTP_BAD_REQUEST]);
         }
 
-        /** On supprime la version de référence pour le projet*/
-        $sql = "UPDATE historique SET initial=0
-                WHERE maven_key='$mavenKey'";
-        // On exécute la requête
-        $con = $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)));
-        $con->executeQuery();
-
-        /** On met à jour la version de référence pour le projet */
-        $sql = "UPDATE historique SET initial=$reference
-                WHERE maven_key='$mavenKey'
-                AND version='$version'
-                AND date_version='$date'";
-        // On exécute la requête
-        $con = $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)));
-        try {
-            $con->executeQuery();
-        } catch (\Doctrine\DBAL\Exception $e) {
-            return $response->setData(["code" => $e->getCode(), Response::HTTP_OK]);
+        /** On créé la map pour la requête de mise à jour */
+        $map=[ 'initital'=>$data->reference, 'maven_key'=>$data->maven_key, 'version'=>$data->version, 'date_version'=>$data->date_version];
+        $historique = $this->em->getRepository(Historique::class);
+        $request=$historique->updateHistoriqueReference($data->mode, $map);
+        if ($request['code']!=200) {
+            return $response->setData([
+                'mode' => $data->mode, 'mavenKey' => $data->maven_key,
+                'code'=>$request['code'], 'erreur' => $request['erreur'],
+                Response::HTTP_OK]);
         }
 
-        return $response->setData(["mode" => $mode, "code" => 200, Response::HTTP_OK]);
+        /** Tout c'est bien passé */
+        return $response->setData(['code' => 200, 'mode' => $data->mode, Response::HTTP_OK]);
     }
 
     /**
