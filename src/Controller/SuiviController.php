@@ -14,10 +14,14 @@
 namespace App\Controller;
 
 /** Core */
+
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+
+/** Securité */
+use Symfony\Bundle\SecurityBundle\Security;
 
 /** Gestion du temps */
 use DateTime;
@@ -28,6 +32,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 /** Accès aux tables SLQLite */
 use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Main\Utilisateur;
+use App\Entity\Main\Historique;
 
 /** Logger */
 use Psr\Log\LoggerInterface;
@@ -46,7 +52,7 @@ class SuiviController extends AbstractController
     public static $sonarUrl = "sonar.url";
     public static $europeParis = "Europe/Paris";
     public static $regex = "/\s+/u";
-    public static $erreurMavenKey = "La clé maven est vide!";
+    public static $erreurMavenKey = "La clé maven est vide !";
 
     /**
      * [Description for __construct]
@@ -94,96 +100,96 @@ class SuiviController extends AbstractController
         /** On teste si la clé est valide */
         if (is_null($mavenKey) && $mode === "TEST") {
             return $response->setData(
-              ["mode" => $mode, "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+                ["mode" => $mode, "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
         }
 
         /** Tableau de suivi principal */
         $sql = "SELECT * FROM
-    (SELECT nom_projet as nom, date_version as date, version,
-    suppress_warning, no_sonar, nombre_bug as bug,
-    nombre_vulnerability as faille,
-    nombre_code_smell as mauvaise_pratique,
-    hotspot_total as nombre_hotspot,
-    frontend as presentation, backend as metier, autre,
-    note_reliability as fiabilite,
-    note_security as securite, note_hotspot,
-    note_sqale as maintenabilite, initial
-    FROM historique
-    WHERE maven_key='$mavenKey' AND initial=TRUE)
-    UNION SELECT * FROM
-    (SELECT nom_projet as nom, date_version as date,
-    version, suppress_warning, no_sonar, nombre_bug as bug,
-    nombre_vulnerability as faille,
-    nombre_code_smell as mauvaise_pratique,
-    hotspot_total as nombre_hotspot,
-    frontend as presentation, backend as metier,
-    autre, note_reliability as fiabilite,
-    note_security as securite, note_hotspot,
-    note_sqale as maintenabilite, initial
-    FROM historique
-    WHERE maven_key='$mavenKey' AND initial=FALSE
-    ORDER BY date_version DESC LIMIT 9)";
+                (SELECT nom_projet as nom, date_version as date, version,
+                    suppress_warning, no_sonar, nombre_bug as bug,
+                    nombre_vulnerability as faille,
+                    nombre_code_smell as mauvaise_pratique,
+                    hotspot_total as nombre_hotspot,
+                    frontend as presentation, backend as metier, autre,
+                    note_reliability as fiabilite,
+                    note_security as securite, note_hotspot,
+                    note_sqale as maintenabilite, initial
+                FROM historique
+                WHERE maven_key='$mavenKey' AND initial=TRUE)
+                UNION SELECT * FROM
+                (SELECT nom_projet as nom, date_version as date,
+                    version, suppress_warning, no_sonar, nombre_bug as bug,
+                    nombre_vulnerability as faille,
+                    nombre_code_smell as mauvaise_pratique,
+                    hotspot_total as nombre_hotspot,
+                    frontend as presentation, backend as metier,
+                    autre, note_reliability as fiabilite,
+                    note_security as securite, note_hotspot,
+                    note_sqale as maintenabilite, initial
+                FROM historique
+                WHERE maven_key='$mavenKey' AND initial=FALSE
+                ORDER BY date_version DESC LIMIT 9)";
 
         $select = $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
         $suivi = $select->fetchAllAssociative();
 
         /** On récupère les anomalies par sévérité */
         $sql = "SELECT * FROM
-    (SELECT date_version as date,
-    nombre_anomalie_bloquant as bloquant,
-    nombre_anomalie_critique as critique,
-    nombre_anomalie_majeur as majeur,
-    nombre_anomalie_mineur as mineur
-    FROM historique
-    WHERE maven_key='$mavenKey' AND initial=TRUE)
-    UNION SELECT * FROM
-    (SELECT date_version as date,
-    nombre_anomalie_bloquant as bloquant,
-    nombre_anomalie_critique as critique,
-    nombre_anomalie_majeur as majeur,
-    nombre_anomalie_mineur as mineur
-    FROM historique
-    WHERE maven_key='$mavenKey' AND initial=FALSE
-    ORDER BY date_version DESC LIMIT 9)";
+                (SELECT date_version as date,
+                    nombre_anomalie_bloquant as bloquant,
+                    nombre_anomalie_critique as critique,
+                    nombre_anomalie_majeur as majeur,
+                    nombre_anomalie_mineur as mineur
+                FROM historique
+                WHERE maven_key='$mavenKey' AND initial=TRUE)
+                UNION SELECT * FROM
+                (SELECT date_version as date,
+                    nombre_anomalie_bloquant as bloquant,
+                    nombre_anomalie_critique as critique,
+                    nombre_anomalie_majeur as majeur,
+                    nombre_anomalie_mineur as mineur
+                FROM historique
+                WHERE maven_key='$mavenKey' AND initial=FALSE
+                ORDER BY date_version DESC LIMIT 9)";
 
         $select = $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
         $severite = $select->fetchAllAssociative();
 
         /** On récupère les anomalies par type et sévérité. */
         $sql = "SELECT * FROM
-    (SELECT date_version as date, version,
-    bug_blocker, bug_critical, bug_major,
-    bug_minor, bug_info,
-    vulnerability_blocker, vulnerability_critical,
-    vulnerability_major, vulnerability_minor,
-    vulnerability_info,
-    code_smell_blocker, code_smell_critical,
-    code_smell_major, code_smell_minor,
-    code_smell_info, initial
-    FROM historique
-    WHERE maven_key='$mavenKey' AND initial=TRUE)
-    UNION SELECT * FROM
-    (SELECT date_version as date, version,
-    bug_blocker, bug_critical, bug_major,
-    bug_minor, bug_info,
-    vulnerability_blocker, vulnerability_critical,
-    vulnerability_major, vulnerability_minor,
-    vulnerability_info,
-    code_smell_blocker, code_smell_critical,
-    code_smell_major, code_smell_minor,
-    code_smell_info, initial
-    FROM historique
-    WHERE maven_key='$mavenKey' AND initial=FALSE
-    ORDER BY date_version DESC LIMIT 9)";
+                (SELECT date_version as date, version,
+                        bug_blocker, bug_critical, bug_major,
+                        bug_minor, bug_info,
+                        vulnerability_blocker, vulnerability_critical,
+                        vulnerability_major, vulnerability_minor,
+                        vulnerability_info,
+                        code_smell_blocker, code_smell_critical,
+                        code_smell_major, code_smell_minor,
+                        code_smell_info, initial
+                FROM historique
+                WHERE maven_key='$mavenKey' AND initial=TRUE)
+                UNION SELECT * FROM
+                (SELECT date_version as date, version,
+                        bug_blocker, bug_critical, bug_major,
+                        bug_minor, bug_info,
+                        vulnerability_blocker, vulnerability_critical,
+                        vulnerability_major, vulnerability_minor,
+                        vulnerability_info,
+                        code_smell_blocker, code_smell_critical,
+                        code_smell_major, code_smell_minor,
+                        code_smell_info, initial
+                FROM historique
+                WHERE maven_key='$mavenKey' AND initial=FALSE
+                ORDER BY date_version DESC LIMIT 9)";
 
         $select = $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
         $details = $select->fetchAllAssociative();
 
         /** Graphique */
         $sql = "SELECT nombre_bug as bug, nombre_vulnerability as secu,
-    nombre_code_smell as code_smell, date_version as date
-    FROM historique WHERE maven_key='$mavenKey'
-    GROUP BY date_version ORDER BY date_version ASC";
+                nombre_code_smell as code_smell, date_version as date
+                FROM historique WHERE maven_key='$mavenKey'
+                GROUP BY date_version ORDER BY date_version ASC";
 
         $select = $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
         $graph = $select->fetchAllAssociative();
@@ -208,12 +214,12 @@ class SuiviController extends AbstractController
         $date[$nl + 1] = $ddd;
 
         $render = [
-          'suivi' => $suivi, 'severite' => $severite, 'details' => $details,
-          'nom' => $suivi[0]["nom"], 'mavenKey' => $mavenKey,
-          'data1' => json_encode($bug), 'data2' => json_encode($secu),
-          'data3' => json_encode($codeSmell), 'labels' => json_encode($date),
-          'version' => $this->getParameter('version'), 'dateCopyright' => \date('Y'),
-          Response::HTTP_OK
+            'suivi' => $suivi, 'severite' => $severite, 'details' => $details,
+            'nom' => $suivi[0]["nom"], 'mavenKey' => $mavenKey,
+            'data1' => json_encode($bug), 'data2' => json_encode($secu),
+            'data3' => json_encode($codeSmell), 'labels' => json_encode($date),
+            'version' => $this->getParameter('version'), 'dateCopyright' => \date('Y'),
+            Response::HTTP_OK
         ];
 
         if ($mode === "TEST") {
@@ -256,7 +262,7 @@ class SuiviController extends AbstractController
         /** On teste si la clé est valide */
         if (is_null($mavenKey) && $mode === "TEST") {
             return $response->setData(
-              ["mode" => $mode, "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+                ["mode" => $mode, "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
         }
 
         $versions = [];
@@ -282,16 +288,15 @@ class SuiviController extends AbstractController
             $ts = new DateTime($version['date'], new DateTimeZone(static::$europeParis));
             $cc = $ts->format("d-m-Y H:i:sO");
             $objet = [
-              'id' => $id,
-              'text' => $version['version'] . " (" . $cc . ")"
-            ];
+                'id' => $id,
+                'text' => $version['version'] . " (" . $cc . ")"];
             array_push($liste, $objet);
             $id++;
         }
 
         if ($mode === "TEST") {
             $httpResponse = $response->setData(
-              ['mode' => 'TEST','versions' => $versions, 'liste' => $liste, Response::HTTP_OK]);
+                ['mode' => 'TEST','versions' => $versions, 'liste' => $liste, Response::HTTP_OK]);
         } else {
             $httpResponse = $response->setData(["liste" => $liste, Response::HTTP_OK]);
         }
@@ -357,23 +362,23 @@ class SuiviController extends AbstractController
 
         if ($mode === "TEST") {
             $result = ["measures" => [
-              ["metric" => "lines", "history" => [["date" => "2022-04-10T00:00:01+0200", "value" => 20984]]],
-              ["metric" => "duplicated_lines_density", "history" => [
-                ["date" => "2022-04-10T00:00:01+0200","value" => 2.6]]],
-              ["metric" => "vulnerabilities", "history" => [["date" => "2022-04-10T00:00:02+0200","value" => 0]]],
-              ["metric" => "sqale_index","history" => [["date" => "2022-04-10T00:00:03+0200","value" => 15596]]],
-              ["metric" => "reliability_rating","history" => [["date" => "2022-04-10T00:00:04+0200","value" => 3.0]]] ,
-              ["metric" => "code_smells","history" => [["date" => "2022-04-10T00:00:05+0200","value" => 3080]]],
-              ["metric" => "bugs","history" => [["date" => "2022-04-10T00:00:06+0200", "value" => 43]]],
-              ["metric" => "ncloc", "history" => [[ "date" => "2022-04-10T00:07:00+0200", "value" => 17312]]],
-              ["metric" => "security_hotspots", "history" => [["date" => "2022-04-10T00:00:08+0200", "value" => 2]]],
-              ["metric" => "sqale_rating", "history" => [["date" => "2022-04-10T00:00:09+0200","value" => 3.0]]],
-              ["metric" => "security_rating","history" => [["date" => "2022-04-10T00:00:10+0200","value" => 1.0]]],
-              ["metric" => "tests", "history" => [["date" => "2022-04-10T00:00:11+0200", "value" => 134]]],
-              ["metric" => "coverage", "history" => [["date" => "2022-04-10T00:00:12+0200","value" => 50]]],
-              ["metric" => "security_review_rating", "history" => [
+                ["metric" => "lines", "history" => [["date" => "2022-04-10T00:00:01+0200", "value" => 20984]]],
+                ["metric" => "duplicated_lines_density", "history" => [
+                    ["date" => "2022-04-10T00:00:01+0200","value" => 2.6]]],
+                ["metric" => "vulnerabilities", "history" => [["date" => "2022-04-10T00:00:02+0200","value" => 0]]],
+                ["metric" => "sqale_index","history" => [["date" => "2022-04-10T00:00:03+0200","value" => 15596]]],
+                ["metric" => "reliability_rating","history" => [["date" => "2022-04-10T00:00:04+0200","value" => 3.0]]] ,
+                ["metric" => "code_smells","history" => [["date" => "2022-04-10T00:00:05+0200","value" => 3080]]],
+                ["metric" => "bugs","history" => [["date" => "2022-04-10T00:00:06+0200", "value" => 43]]],
+                ["metric" => "ncloc", "history" => [[ "date" => "2022-04-10T00:07:00+0200", "value" => 17312]]],
+                ["metric" => "security_hotspots", "history" => [["date" => "2022-04-10T00:00:08+0200", "value" => 2]]],
+                ["metric" => "sqale_rating", "history" => [["date" => "2022-04-10T00:00:09+0200","value" => 3.0]]],
+                ["metric" => "security_rating","history" => [["date" => "2022-04-10T00:00:10+0200","value" => 1.0]]],
+                ["metric" => "tests", "history" => [["date" => "2022-04-10T00:00:11+0200", "value" => 134]]],
+                ["metric" => "coverage", "history" => [["date" => "2022-04-10T00:00:12+0200","value" => 50]]],
+                ["metric" => "security_review_rating", "history" => [
                 ["date" => "2022-04-10T00:00:13+0200","value" => 5.0]]],
-              ]
+            ]
             ];
         }
 
@@ -418,11 +423,11 @@ class SuiviController extends AbstractController
 
             /**  Sur les versions plus anciennes de sonarqube, il n'y avait pas de hostpots */
             if ($data[$i]["metric"] === "security_hotspots" &&
-              array_key_exists("value", $data[$i]["history"][0])) {
+                array_key_exists("value", $data[$i]["history"][0])) {
                 $hotspotsReview = intval($data[$i]["history"][0]["value"], 10);
             }
             if ($data[$i]["metric"] === "security_hotspots" &&
-              array_key_exists("value", $data[$i]["history"][0]) === false) {
+                array_key_exists("value", $data[$i]["history"][0]) === false) {
                 $hotspotsReview = -1;
             }
 
@@ -438,12 +443,12 @@ class SuiviController extends AbstractController
 
             /**  Sur certains projets il n'y a pas de la couverture fonctionnelle */
             if ($data[$i]["metric"] === "coverage" &&
-              array_key_exists("value", $data[$i]["history"][0])) {
+                array_key_exists("value", $data[$i]["history"][0])) {
                 $coverage = $data[$i]["history"][0]["value"];
             }
 
             if ($data[$i]["metric"] === "coverage" &&
-            array_key_exists("value", $data[$i]["history"][0]) === false) {
+                array_key_exists("value", $data[$i]["history"][0]) === false) {
                 $coverage = 0;
             }
 
@@ -464,14 +469,14 @@ class SuiviController extends AbstractController
         }
 
         return $response->setData([
-              'message' => $message,
-              'noteReliability' => $noteReliability, 'noteSecurity' => $noteSecurity,
-              'noteSqale' => $noteSqale, 'noteHotspotsReview' => $noteHotspotsReview,
-              'bug' => $bug, 'vulnerabilities' => $vulnerabilities,
-              'codeSmell' => $codeSmell, 'hotspotsReview' => $hotspotsReview,
-              'lines' => $lines, 'ncloc' => $ncloc,
-              'duplication' => $duplication, 'coverage' => $coverage, 'tests' => $tests,
-              'dette' => $dette, Response::HTTP_OK
+            'message' => $message,
+            'noteReliability' => $noteReliability, 'noteSecurity' => $noteSecurity,
+            'noteSqale' => $noteSqale, 'noteHotspotsReview' => $noteHotspotsReview,
+            'bug' => $bug, 'vulnerabilities' => $vulnerabilities,
+            'codeSmell' => $codeSmell, 'hotspotsReview' => $hotspotsReview,
+            'lines' => $lines, 'ncloc' => $ncloc,
+            'duplication' => $duplication, 'coverage' => $coverage, 'tests' => $tests,
+            'dette' => $dette, Response::HTTP_OK
             ]);
     }
 
@@ -525,7 +530,7 @@ class SuiviController extends AbstractController
         $tempoInitial = $data->initial;
 
         $sql = "INSERT OR IGNORE INTO historique
-      (maven_key,version,date_version,
+        (maven_key,version,date_version,
         nom_projet,version_release,version_snapshot,
         suppress_warning,no_sonar,nombre_ligne,
         nombre_ligne_code,couverture,
@@ -544,8 +549,8 @@ class SuiviController extends AbstractController
         note_sqale,note_hotspot,hotspot_total,
         hotspot_high,hotspot_medium,hotspot_low,
         initial,date_enregistrement)
-      VALUES
-      ('$tempoMavenKey','$tempoVersion',
+        VALUES
+        ('$tempoMavenKey','$tempoVersion',
         '$tempoDateVersion','$tempoNom',-1,-1,-1,-1,
         $tempoLines,$tempoNcloc,
         $tempoCoverage,$tempoDuplication,$tempoTests,
@@ -598,8 +603,8 @@ class SuiviController extends AbstractController
         /** On teste si la clé est valide */
         if ($mavenKey === "null" && $mode === "TEST") {
             return $response->setData([
-              "mode" => $mode, "mavenKey" => $mavenKey,
-              "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+                "mode" => $mode, "mavenKey" => $mavenKey,
+                "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
         }
 
         /**  On créé un nouvel objet Json. */
@@ -646,6 +651,7 @@ class SuiviController extends AbstractController
 
         /** On créé un nouvel objet Json */
         $response = new JsonResponse();
+        return $response->setData(["code" => "OK", Response::HTTP_OK]);
 
         /** On met à jour l'attribut favori de la table historique */
         $sql = "UPDATE historique SET favori=$favori
@@ -656,11 +662,52 @@ class SuiviController extends AbstractController
         /** On exécute la requête */
         $con = $this->em->getConnection()->prepare($sql);
         try {
+            /** Execution de la requête */
             $con->executeQuery();
+
         } catch (\Doctrine\DBAL\Exception $e) {
             return $response->setData(["code" => $e->getCode(), Response::HTTP_OK]);
         }
 
+        /** On met à jour les preferences de l'utilisateur */
+        $preference = $this->getUser()->getPreference();
+        $courriel = $this->getUser()->getCourriel();
+
+        /** On récupéres les préférences */
+        $statut = $preference['statut'];
+        $projet = $preference['projet'];
+        $version = $preference['version'];
+        $bookmark = $preference['bookmark'];
+
+        /** On supprime le projet favori de la liste */
+        $nouvelleListeFavori = array_diff($preference['favori'], [$mavenKey]);
+
+        //WHERE maven_key='$mavenKey'
+        //AND version='$version'
+        //AND date_version='$date'";
+        //{"statut":{"projet":false,"favori":true,"version":false,"bookmark":false},
+        // "projet":["fr.franceagrimer:monapplication-mat"],
+        // "favori":["fr.franceagrimer:monapplication-mat","fr.franceagrimer:monapplication-sde"],
+        // "bookmark":["fr.franceagrimer:monapplication-sde"]}
+
+        /** On met à jour l'objet. */
+        $jarray = json_encode([
+            'statut' => $statut,
+            'projet' => $projet,
+            'favori' => $nouvelleListeFavori,
+            'version' => $version,
+            'bookmark' => $bookmark
+        ]);
+
+        /** On met à jour les préférences. */
+        $sql = "UPDATE utilisateur
+                SET preference = '$jarray'
+                WHERE courriel='$courriel';";
+        $trim = trim(preg_replace(static::$regex, " ", $sql));
+        $exec = $this->em->getConnection()->prepare($trim)->executeQuery();
+        if ($mode !== 'TEST') {
+            $exec->fetchAllAssociative();
+        }
         return $response->setData(["mode" => $mode, "code" => "OK", Response::HTTP_OK]);
     }
 
@@ -678,9 +725,10 @@ class SuiviController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/suivi/version/reference', name: 'suivi_version_reference', methods: ['PUT'])]
-    public function suiviVersionReference(Request $request)
+    public function suiviVersionReference(Request $request, Security $security)
     {
-        // on décode le body
+
+        /** On décode le body */
         $data = json_decode($request->getContent());
         $mavenKey = $data->mavenKey;
         $reference = $data->reference;
@@ -688,14 +736,34 @@ class SuiviController extends AbstractController
         $version = $data->version;
         $mode = $data->mode;
 
-        // On créé un nouvel objet Json
+        /** On créé un nouvel objet Json */
         $response = new JsonResponse();
 
-        // On récupère les versions et la date pour la clé du projet
+
+        /** si on est pas GESTIONNAIRE on ne fait rien. */
+        if (!$security->isGranted('ROLE_GESTIONNAIRE')){
+            return $response->setData(["mode" => $mode, "code" => 403, Response::HTTP_OK]);
+        }
+
+        /** On teste si la clé est valide */
+        if ($mavenKey === "null" && $mode === "TEST") {
+            return $response->setData([
+                "mode" => $mode, "mavenKey" => $mavenKey,
+                "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+        }
+
+        /** On supprime la version de référence pour le projet*/
+        $sql = "UPDATE historique SET initial=0
+                WHERE maven_key='$mavenKey'";
+        // On exécute la requête
+        $con = $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)));
+        $con->executeQuery();
+
+        /** On met à jour la version de référence pour le projet */
         $sql = "UPDATE historique SET initial=$reference
-            WHERE maven_key='$mavenKey'
-                  AND version='$version'
-                  AND date_version='$date'";
+                WHERE maven_key='$mavenKey'
+                AND version='$version'
+                AND date_version='$date'";
         // On exécute la requête
         $con = $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)));
         try {
@@ -704,7 +772,7 @@ class SuiviController extends AbstractController
             return $response->setData(["code" => $e->getCode(), Response::HTTP_OK]);
         }
 
-        return $response->setData(["mode" => $mode, "code" => "OK", Response::HTTP_OK]);
+        return $response->setData(["mode" => $mode, "code" => 200, Response::HTTP_OK]);
     }
 
     /**
@@ -714,6 +782,7 @@ class SuiviController extends AbstractController
      * http://{url}}/api/suivi/version/poubelle
      *
      * @param Request $request
+     * @param Security $security
      *
      * @return [type]
      *
@@ -722,39 +791,55 @@ class SuiviController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/suivi/version/poubelle', name: 'suivi_version_poubelle', methods: ['PUT'])]
-    public function suiviVersionPoubelle(Request $request)
+    public function suiviVersionPoubelle(Request $request, Security $security)
     {
         /** on décode le body */
         $data = json_decode($request->getContent());
-        $mavenKey = $data->mavenKey;
-        $date = $data->date;
-        $version = $data->version;
-        $mode = $data->mode;
 
         /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
 
+        /** si on est pas GESTIONNAIRE on ne fait rien. */
+        if (!$security->isGranted('ROLE_GESTIONNAIRE')){
+            return $response->setData(['mode' => $data->mode, 'code' => 403, Response::HTTP_OK]);
+        }
+
         /** On teste si la clé est valide */
-        if ($mavenKey === "null" && $mode === "TEST") {
+        if ($data->maven_key === 'null' || $data->mode === 'TEST') {
             return $response->setData([
-              "mode" => $mode, "mavenKey" => $mavenKey,
-              "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+                'mode' => $data->mode, 'mavenKey' => $data->maven_key,
+                'code'=>400, Response::HTTP_BAD_REQUEST]);
         }
 
-        /** On surprime de la table historique le projet */
-        $sql = "DELETE FROM historique
-            WHERE maven_key='$mavenKey'
-            AND version='$version'
-            AND date_version='$date'";
-
-        /**  On exécute la requête */
-        $con = $this->em->getConnection()->prepare($sql);
-        try {
-            $con->executeQuery();
-        } catch (\Doctrine\DBAL\Exception $e) {
-            return $response->setData(["mode" => $mode, "code" => $e->getCode(), Response::HTTP_OK]);
+        /** On supprime la version du projet */
+        $map=['maven_key'=>$data->maven_key, 'version'=>$data->version, 'date_version'=>$data->date_version];
+        $historique = $this->em->getRepository(Historique::class);
+        $request=$historique->deleteHistoriqueProjet($data->mode, $map);
+        if ($request['code']!=200) {
+            return $response->setData([
+                'mode' => $data->mode, 'mavenKey' => $data->maven_key,
+                'code'=>$request['code'], 'erreur' => $request['erreur'],
+                Response::HTTP_OK]);
         }
 
-        return $response->setData(["code" => "OK", "mode" => $mode, Response::HTTP_OK]);
+        /** On récupère l'objet User du contexte de sécurité */
+        $preference = $security->getUser()->getPreference();
+
+        /**
+         * On regarde si le le projet est un favori ?
+         * Si le projet a une version en favori alors il est un projet favori.
+         * */
+        $message='';
+        if  (str_contains(\serialize($preference['version']), $data->maven_key)){
+            $courriel = $security->getUser()->getCourriel();
+            $map=['courriel'=>$courriel, 'maven_key'=>$data->maven_key, 'version'=>$data->version, 'date_version'=>$data->date_version];
+
+            $utilisateur = $this->em->getRepository(Utilisateur::class);
+            $request=$utilisateur->deleteUtilisateurPreferenceFavori($data->mode, $preference, $map);
+            $message='Le projet a été également supprimé de vos préférences.';
+        }
+
+        /** Tout c'est bien passé */
+        return $response->setData(['code' => 200, 'message'=>$message, 'mode' => $data->mode, Response::HTTP_OK]);
     }
 }
