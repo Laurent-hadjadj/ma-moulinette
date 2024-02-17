@@ -33,7 +33,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Main\ListeProjet;
 use App\Entity\Main\Profiles;
 use App\Entity\Main\Properties;
-use App\Entity\Main\historique;
+use App\Entity\Main\Historique;
 use App\Entity\Main\MaMoulinette;
 
 /** API */
