@@ -13,7 +13,6 @@
   © 2024 - CC BY-SA-NC 4.0
 -->
 <html lang="fr">
-
   {# Chargement de la section HEAD #}
   <head>
     {{ include('head.html.twig') }}
@@ -27,14 +26,27 @@
     {{ include('header.html.twig') }}
     <br>
     <header class="grid-container">
-      <nav aria-label="Ici : ">
+      <nav aria-label="vous êtes Ici : ">
         <ul class="claire-hand breadcrumbs">
           <li><a href="/">Accueil</a></li>
           <li><a href="/projet">Projet</a></li>
-          <li><span class="show-for-sr">Ici :</span>Suivi</li>
+          <li><span class="show-for-sr">Vous êtes Ici :</span>Suivi</li>
         </ul>
       </nav>
     </header>
+
+    <div class="grid-container grid-x" aria-label="messages d'information">
+      {% for message in app.flashes('alert') %}
+        <div class="callout alert-callout-border alert" role="alert">
+          <span class="open-sans color-bleu">{{ message }}</span>
+        </div>
+      {% endfor %}
+      {% for message in app.flashes('success') %}
+        <div class="callout alert-callout-border success" role="alert">
+          <span class="open-sans color-bleu">{{ message }}</span>
+        </div>
+      {% endfor %}
+    </div>
 
     {# En-tête #}
     <div id="element1-to-print" class="pleine-page">
@@ -48,7 +60,7 @@
             {% else %}
               {% set s="" %}
             {% endif %}
-            {{nombre}}</span>
+            {{nombre | default('0') }}</span>
           version{{s}}
           trouvé{{s}}.
         </h1>
@@ -63,89 +75,105 @@
           <thead>
             <tr>
               <th scope="col"></th>
-              {% for i in 0..suivi|length-1 %}
-                {# 0 = FALSE, 1 = TRUE  #}
-                {% if suivi[i]["initial"]==1 %}
-                  {% set reference="reference" %}
-                {% else %}
-                  {% set reference="null" %}
-                {% endif %}
+              {% if suivi is not empty %}
+                {% for i in 0..suivi|length-1 %}
+                  {# 0 = FALSE, 1 = TRUE  #}
+                  {% if suivi[i]["initial"]==1 %}
+                    {% set reference="reference" %}
+                  {% else %}
+                    {% set reference="null" %}
+                  {% endif %}
                 <th scope="col" class="open-sans text-right {{reference}}">{{suivi[i]["version"]}}</th>
-              {% endfor %}
+                {% endfor %}
+              {% endif %}
             </tr>
           </thead>
           <tbody id="tableau-liste-profil" class="open-sans">
             <tr class="open-sans">
               <td class="text-left text-noir">Date</td>
-              {% for i in 0..suivi|length-1 %}
-                <td class="text-right">
-                  <span>{{suivi[i]["date"]|date("d/m/Y", "Europe/Paris")}}</span>
-                </td>
-              {% endfor %}
+              {% if suivi is not empty %}
+                {% for i in 0..suivi|length-1 %}
+                  <td class="text-right">
+                    <span>{{suivi[i]["date"]|date("d/m/Y", "Europe/Paris")}}</span>
+                  </td>
+                {% endfor %}
+              {% endif %}
             </tr>
             <tr class="open-sans">
               <td class="text-left text-noir">Fiabilité</td>
-              {% for i in 0..suivi|length-1 %}
-                <td class="text-right">
-                  <span>{{suivi[i]["bug"]|format_number(locale='fr')}}</span>
-                  <span class="note note-{{suivi[i]["fiabilite"]|lower}}">{{suivi[i]["fiabilite"]}}</span>
-                </td>
-              {% endfor %}
+              {% if suivi is not empty %}
+                {% for i in 0..suivi|length-1 %}
+                  <td class="text-right">
+                    <span>{{suivi[i]["bug"]|format_number(locale='fr')}}</span>
+                    <span class="note note-{{suivi[i]["fiabilite"]|lower}}">{{suivi[i]["fiabilite"]}}</span>
+                  </td>
+                {% endfor %}
+              {% endif %}
             </tr>
             <tr class="open-sans">
               <td class="text-left text-noir">Sécurité</td>
-              {% for i in 0..suivi|length-1 %}
-                <td class="text-right">
-                  <span>{{suivi[i]["faille"]|format_number(locale='fr')}}</span>
-                  <span class="note note-{{suivi[i]["securite"]|lower}}">{{suivi[i]["securite"]}}</span>
-                </td>
-              {% endfor %}
+              {% if suivi is not empty %}
+                {% for i in 0..suivi|length-1 %}
+                  <td class="text-right">
+                    <span>{{suivi[i]["faille"]|format_number(locale='fr')}}</span>
+                    <span class="note note-{{suivi[i]["securite"]|lower}}">{{suivi[i]["securite"]}}</span>
+                  </td>
+                {% endfor %}
+              {% endif %}
             </tr>
             <tr class="open-sans">
               <td class="text-left text-noir">Hotspot</td>
-              {% for i in 0..suivi|length-1 %}
-                <td class="text-right">
-                  {% if suivi[i]["nombre_hotspot"]!=-1 %}
-                    <span>{{suivi[i]["nombre_hotspot"]|format_number(locale='fr')}}</span>
-                  {% else %}
-                    <span>&nbsp;-&nbsp;</span>
-                  {% endif %}
-                  <span class="note note-{{suivi[i]["note_hotspot"]|lower}}">{{suivi[i]["note_hotspot"]}}</span>
-                </td>
-              {% endfor %}
+              {% if suivi is not empty %}
+                {% for i in 0..suivi|length-1 %}
+                  <td class="text-right">
+                    {% if suivi[i]["nombre_hotspot"]!=-1 %}
+                      <span>{{suivi[i]["nombre_hotspot"]|format_number(locale='fr')}}</span>
+                    {% else %}
+                      <span>&nbsp;-&nbsp;</span>
+                    {% endif %}
+                    <span class="note note-{{suivi[i]["note_hotspot"]|lower}}">{{suivi[i]["note_hotspot"]}}</span>
+                  </td>
+                {% endfor %}
+              {% endif %}
             </tr>
             <tr class="open-sans">
               <td class="text-left text-noir">Maintenabilité</td>
-              {% for i in 0..suivi|length-1 %}
-                <td class="text-right">
-                  <span>{{suivi[i]["mauvaise_pratique"]|format_number(locale='fr')}}</span>
-                  <span class="note note-{{suivi[i]["maintenabilite"]|lower}}">{{suivi[i]["maintenabilite"]}}</span>
-                </td>
-              {% endfor %}
+              {% if suivi is not empty %}
+                {% for i in 0..suivi|length-1 %}
+                  <td class="text-right">
+                    <span>{{suivi[i]["mauvaise_pratique"]|format_number(locale='fr')}}</span>
+                    <span class="note note-{{suivi[i]["maintenabilite"]|lower}}">{{suivi[i]["maintenabilite"]}}</span>
+                  </td>
+                {% endfor %}
+              {% endif %}
             </tr>
             <tr class="open-sans">
               <td class="text-left text-noir">SupressWarning</td>
-              {% for i in 0..suivi|length-1 %}
-                <td class="text-right">
-                  {% if suivi[i]["suppress_warning"]!=-1 %}
-                    {{suivi[i]["suppress_warning"]|format_number(locale='fr')}}
-                  {% else %}
-                    <span>&nbsp;-&nbsp;</span>
-                  {% endif %}
-                </td>
-              {% endfor %}
+              {% if suivi is not empty %}
+                {% for i in 0..suivi|length-1 %}
+                  <td class="text-right">
+                    {% if suivi[i]["suppress_warning"]!=-1 %}
+                      {{suivi[i]["suppress_warning"]|format_number(locale='fr')}}
+                    {% else %}
+                      <span>&nbsp;-&nbsp;</span>
+                    {% endif %}
+                  </td>
+                {% endfor %}
+              {% endif %}
             </tr>
             <tr class="open-sans">
               <td class="text-left text-noir">No Sonar</td>
-              {% for i in 0..suivi|length-1 %}
-                <td class="text-right">
-                  {% if suivi[i]["no_sonar"]!=-1 %}
-                    {{suivi[i]["no_sonar"]|format_number(locale='fr')}}
-                  {% else %}
-                    <span>&nbsp;-&nbsp;</span>
-                  {% endif %}
-                </td>
-              {% endfor %}
+              {% if suivi is not empty %}
+                {% for i in 0..suivi|length-1 %}
+                  <td class="text-right">
+                    {% if suivi[i]["no_sonar"]!=-1 %}
+                      {{suivi[i]["no_sonar"]|format_number(locale='fr')}}
+                    {% else %}
+                      <span>&nbsp;-&nbsp;</span>
+                    {% endif %}
+                  </td>
+                {% endfor %}
+              {% endif %}
             </tr>
           </tbody>
         </table>
@@ -210,63 +238,73 @@
           <thead>
             <tr>
               <th scope="col"></th>
-              {% for i in 0..suivi|length-1 %}
-                {# 0 = FALSE, 1 = TRUE  #}
-                {% if suivi[i]["initial"]==1 %}
-                  {% set reference="reference" %}
-                {% else %}
-                  {% set reference="null" %}
-                {% endif %}
-                <th scope="col" class="open-sans text-center {{reference}}">
-                  {{suivi[i]["version"]}}
-                </th>
-              {% endfor %}
+              {% if suivi is not empty %}
+                {% for i in 0..suivi|length-1 %}
+                  {# 0 = FALSE, 1 = TRUE  #}
+                  {% if suivi[i]["initial"]==1 %}
+                    {% set reference="reference" %}
+                  {% else %}
+                    {% set reference="null" %}
+                  {% endif %}
+                  <th scope="col" class="open-sans text-center {{reference}}">
+                    {{suivi[i]["version"]}}
+                  </th>
+                {% endfor %}
+              {% endif %}
             </tr>
           </thead>
           <tbody id="tableau-module" class="open-sans">
             <tr class="open-sans">
               <td class="text-left text-noir">Date</td>
-              {% for i in 0..suivi|length-1 %}
-                <td class="text-center">
-                  <span>{{suivi[i]["date"]|date("d/m/Y", "Europe/Paris")}}</span>
-                </td>
-              {% endfor %}
+              {% if suivi is not empty %}
+                {% for i in 0..suivi|length-1 %}
+                  <td class="text-center">
+                    <span>{{suivi[i]["date"]|date("d/m/Y", "Europe/Paris")}}</span>
+                  </td>
+                {% endfor %}
+              {% endif %}
             </tr>
             <tr>
               <td class="text-left text-noir">Présentation</td>
-              {% for i in 0..suivi|length-1 %}
-                <td class="text-center">
-                  {% if suivi[i]["presentation"]!=-1 %}
-                    <span>{{suivi[i]["presentation"]|format_number(locale='fr')}}</span>
-                  {% else %}
-                    <span>&nbsp;-&nbsp;</span>
-                  {% endif %}
-                </td>
-              {% endfor %}
+              {% if suivi is not empty %}
+                {% for i in 0..suivi|length-1 %}
+                  <td class="text-center">
+                    {% if suivi[i]["presentation"]!=-1 %}
+                      <span>{{suivi[i]["presentation"]|format_number(locale='fr')}}</span>
+                    {% else %}
+                      <span>&nbsp;-&nbsp;</span>
+                    {% endif %}
+                  </td>
+                {% endfor %}
+              {% endif %}
             </tr>
             <tr>
               <td class="text-left text-noir">Métier</td>
-              {% for i in 0..suivi|length-1 %}
-                <td class="text-center">
-                  {% if suivi[i]["metier"]!=-1 %}
-                    <span>{{suivi[i]["metier"]|format_number(locale='fr')}}</span>
-                  {% else %}
-                    <span>&nbsp;-&nbsp;</span>
-                  {% endif %}
-                {% endfor %}
+              {% if suivi is not empty %}
+                {% for i in 0..suivi|length-1 %}
+                  <td class="text-center">
+                    {% if suivi[i]["metier"]!=-1 %}
+                      <span>{{suivi[i]["metier"]|format_number(locale='fr')}}</span>
+                    {% else %}
+                      <span>&nbsp;-&nbsp;</span>
+                    {% endif %}
+                  {% endfor %}
+              {% endif %}
               </td>
             </tr>
             <tr>
               <td class="text-left text-noir">Autres</td>
-              {% for i in 0..suivi|length-1 %}
-                <td class="text-center">
-                  {% if suivi[i]["autre"] != -1 %}
-                    <span>{{suivi[i]["autre"]|format_number(locale='fr')}}</span>
-                  {% else %}
-                    <span>&nbsp;-&nbsp;</span>
-                  {% endif %}
-                </td>
-              {% endfor %}
+              {% if suivi is not empty %}
+                {% for i in 0..suivi|length-1 %}
+                  <td class="text-center">
+                    {% if suivi[i]["autre"] != -1 %}
+                      <span>{{suivi[i]["autre"]|format_number(locale='fr')}}</span>
+                    {% else %}
+                      <span>&nbsp;-&nbsp;</span>
+                    {% endif %}
+                  </td>
+                {% endfor %}
+              {% endif %}
             </tr>
           </tbody>
         </table>
@@ -279,161 +317,175 @@
           <thead>
             <tr>
               <th scope="col"></th>
-              {% for i in 0..suivi|length-1 %}
-                {# 0 = FALSE, 1 = TRUE  #}
-                {% if suivi[i]["initial"]==1 %}
-                  {% set reference="reference" %}
-                {% else %}
-                  {% set reference="null" %}
-                {% endif %}
-                <th scope="col" class="open-sans text-right {{reference}}">{{suivi[i]["version"]}}</th>
-              {% endfor %}
+              {% if suivi is not empty %}
+                {% for i in 0..suivi|length-1 %}
+                  {# 0 = FALSE, 1 = TRUE  #}
+                  {% if suivi[i]["initial"]==1 %}
+                    {% set reference="reference" %}
+                  {% else %}
+                    {% set reference="null" %}
+                  {% endif %}
+                  <th scope="col" class="open-sans text-right {{reference}}">{{suivi[i]["version"]}}</th>
+                {% endfor %}
+              {% endif %}
             </tr>
           </thead>
           <tbody id="tableau-anomalie-severite" class="open-sans">
             <tr class="open-sans">
               <td class="text-left text-noir">Date</td>
-              {% for i in 0..severite|length-1 %}
-                <td class="text-right">
-                  <span>{{severite[i]["date"]|date("d/m/Y", "Europe/Paris")}}</span>
-                </td>
-              {% endfor %}
+              {% if severite is not empty %}
+                {% for i in 0..severite|length-1 %}
+                  <td class="text-right">
+                    <span>{{severite[i]["date"]|date("d/m/Y", "Europe/Paris")}}</span>
+                  </td>
+                {% endfor %}
+              {% endif %}
             </tr>
             <tr>
               <td class="text-left text-rouge">Bloquant</td>
-              {% for i in 0..severite|length-1 %}
-                {% set lookup="" %}
-                {% set text = "" %}
-                {% if i >0 %}
-                  {% if severite[i]["bloquant"]>severite[i-1]["bloquant"]
-                  and severite[i]["bloquant"]!=severite[i-1]["bloquant"] %}
-                    {% set lookup = "down" %}
-                    {% set text = "text-down" %}
-                  {% else %}
-                    {% set lookup = "up" %}
-                    {% set text = "text-up" %}
+              {% if severite is not empty %}
+                {% for i in 0..severite|length-1 %}
+                  {% set lookup="" %}
+                  {% set text = "" %}
+                  {% if i >0 %}
+                    {% if severite[i]["bloquant"]>severite[i-1]["bloquant"]
+                    and severite[i]["bloquant"]!=severite[i-1]["bloquant"] %}
+                      {% set lookup = "down" %}
+                      {% set text = "text-down" %}
+                    {% else %}
+                      {% set lookup = "up" %}
+                      {% set text = "text-up" %}
+                    {% endif %}
+                    {% if severite[i]["bloquant"] == 0
+                  or severite[i]["bloquant"] == severite[i-1]["bloquant"] %}
+                      {% set lookup = "equal" %}
+                      {% set text = "" %}
+                    {% endif %}
+                    {% if severite[i]["bloquant"] == -1 %}
+                      {% set lookup = "" %}
+                      {% set text = "" %}
+                    {% endif %}
                   {% endif %}
-                  {% if severite[i]["bloquant"] == 0
-                or severite[i]["bloquant"] == severite[i-1]["bloquant"] %}
-                    {% set lookup = "equal" %}
-                    {% set text = "" %}
-                  {% endif %}
-                  {% if severite[i]["bloquant"] == -1 %}
-                    {% set lookup = "" %}
-                    {% set text = "" %}
-                  {% endif %}
-                {% endif %}
-                <td class="text-right {{text}}">
-                  {% if severite[i]["bloquant"]!=-1 %}
-                    <span>{{severite[i]["bloquant"]|format_number(locale='fr')}}</span>
-                  {% else %}
-                    <span>&nbsp;-&nbsp;</span>
-                  {% endif %}
-                  <span class="{{lookup}}"></span>
-                </td>
-              {% endfor %}
+                  <td class="text-right {{text}}">
+                    {% if severite is not empty %}
+                      {% if severite[i]["bloquant"]!=-1 %}
+                        <span>{{severite[i]["bloquant"]|format_number(locale='fr')}}</span>
+                      {% else %}
+                        <span>&nbsp;-&nbsp;</span>
+                      {% endif %}
+                      <span class="{{lookup}}"></span>
+                    {% endif %}
+                  </td>
+                {% endfor %}
+              {% endif %}
             </tr>
             <tr>
               <td class="text-left text-orange">Critique</td>
-              {% for i in 0..severite|length-1 %}
-                {% set lookup = "" %}
-                {% set text = "" %}
-                {% if i >0 %}
-                  {% if severite[i]["critique"] > severite[i-1]["critique"]
-                  and severite[i]["critique"] != severite[i-1]["critique"] %}
-                    {% set lookup = "down" %}
-                    {% set text = "text-down" %}
-                  {% else %}
-                    {% set lookup = "up" %}
-                    {% set text = "text-up" %}
+              {% if severite is not empty %}
+                {% for i in 0..severite|length-1 %}
+                  {% set lookup = "" %}
+                  {% set text = "" %}
+                  {% if i >0 %}
+                    {% if severite[i]["critique"] > severite[i-1]["critique"]
+                    and severite[i]["critique"] != severite[i-1]["critique"] %}
+                      {% set lookup = "down" %}
+                      {% set text = "text-down" %}
+                    {% else %}
+                      {% set lookup = "up" %}
+                      {% set text = "text-up" %}
+                    {% endif %}
+                    {% if severite[i]["critique"] ==0
+                    or severite[i]["critique"] == severite[i-1]["critique"] %}
+                      {% set lookup = "equal" %}
+                      {% set text = "" %}
+                    {% endif %}
+                    {% if severite[i]["critique"] == -1 %}
+                      {% set lookup = "" %}
+                      {% set text = "" %}
+                    {% endif %}
                   {% endif %}
-                  {% if severite[i]["critique"] ==0
-                  or severite[i]["critique"] == severite[i-1]["critique"] %}
-                    {% set lookup = "equal" %}
-                    {% set text = "" %}
-                  {% endif %}
-                  {% if severite[i]["critique"] == -1 %}
-                    {% set lookup = "" %}
-                    {% set text = "" %}
-                  {% endif %}
-                {% endif %}
-                <td class="text-right {{text}}">
-                  {% if severite[i]["critique"]!=-1 %}
-                    <span>{{severite[i]["critique"]|format_number(locale='fr')}}</span>
-                  {% else %}
-                    <span>&nbsp;-&nbsp;</span>
-                  {% endif %}
-                  <span class="{{lookup}}"></span>
-                </td>
-              {% endfor %}
+                  <td class="text-right {{text}}">
+                    {% if severite[i]["critique"]!=-1 %}
+                      <span>{{severite[i]["critique"]|format_number(locale='fr')}}</span>
+                    {% else %}
+                      <span>&nbsp;-&nbsp;</span>
+                    {% endif %}
+                    <span class="{{lookup}}"></span>
+                  </td>
+                {% endfor %}
+              {% endif %}
             </tr>
             <tr>
               <td class="text-left text-jaune">Majeur</td>
-              {% for i in 0..severite|length-1 %}
-                {% set lookup="" %}
-                {% set text = "" %}
-                {% if i >0 %}
-                  {% if severite[i]["majeur"] > severite[i-1]["majeur"]
-                  and severite[i]["majeur"] != severite[i-1]["majeur"] %}
-                    {% set lookup = "down" %}
-                    {% set text = "text-down" %}
-                  {% else %}
-                    {% set lookup = "up" %}
-                    {% set text = "text-up" %}
+              {% if severite is not empty %}
+                {% for i in 0..severite|length-1 %}
+                  {% set lookup="" %}
+                  {% set text = "" %}
+                  {% if i >0 %}
+                    {% if severite[i]["majeur"] > severite[i-1]["majeur"]
+                    and severite[i]["majeur"] != severite[i-1]["majeur"] %}
+                      {% set lookup = "down" %}
+                      {% set text = "text-down" %}
+                    {% else %}
+                      {% set lookup = "up" %}
+                      {% set text = "text-up" %}
+                    {% endif %}
+                    {% if severite[i]["majeur"] ==0
+                    or severite[i]["majeur"] == severite[i-1]["majeur"] %}
+                      {% set lookup = "equal" %}
+                      {% set text = "" %}
+                    {% endif %}
+                    {% if severite[i]["majeur"] == -1 %}
+                      {% set lookup = "" %}
+                      {% set text = "" %}
+                    {% endif %}
                   {% endif %}
-                  {% if severite[i]["majeur"] ==0
-                  or severite[i]["majeur"] == severite[i-1]["majeur"] %}
-                    {% set lookup = "equal" %}
-                    {% set text = "" %}
-                  {% endif %}
-                  {% if severite[i]["majeur"] == -1 %}
-                    {% set lookup = "" %}
-                    {% set text = "" %}
-                  {% endif %}
-                {% endif %}
-                <td class="text-right {{text}}">
-                  {% if severite[i]["majeur"]!=-1 %}
-                    <span>{{severite[i]["majeur"]|format_number(locale='fr')}}</span>
-                  {% else %}
-                    <span>&nbsp;-&nbsp;</span>
-                  {% endif %}
-                  <span class="{{lookup}}"></span>
-                </td>
-              {% endfor %}
+                  <td class="text-right {{text}}">
+                    {% if severite[i]["majeur"]!=-1 %}
+                      <span>{{severite[i]["majeur"]|format_number(locale='fr')}}</span>
+                    {% else %}
+                      <span>&nbsp;-&nbsp;</span>
+                    {% endif %}
+                    <span class="{{lookup}}"></span>
+                  </td>
+                {% endfor %}
+              {% endif %}
             </tr>
             <tr>
               <td class="text-left text-vert">Mineur</td>
-              {% for i in 0..severite|length-1 %}
-                {% set lookup="" %}
-                {% set text = "" %}
-                {% if i >0 %}
-                  {% if severite[i]["mineur"] > severite[i-1]["mineur"]
-                  and severite[i]["mineur"] != severite[i-1]["mineur"] %}
-                    {% set lookup = "down" %}
-                    {% set text = "text-down" %}
-                  {% else %}
-                    {% set lookup = "up" %}
-                    {% set text = "text-up" %}
+              {% if severite is not empty %}
+                {% for i in 0..severite|length-1 %}
+                  {% set lookup="" %}
+                  {% set text = "" %}
+                  {% if i >0 %}
+                    {% if severite[i]["mineur"] > severite[i-1]["mineur"]
+                    and severite[i]["mineur"] != severite[i-1]["mineur"] %}
+                      {% set lookup = "down" %}
+                      {% set text = "text-down" %}
+                    {% else %}
+                      {% set lookup = "up" %}
+                      {% set text = "text-up" %}
+                    {% endif %}
+                    {% if severite[i]["mineur"] ==0
+                    or severite[i]["mineur"] == severite[i-1]["mineur"] %}
+                      {% set lookup = "equal" %}
+                      {% set text = "" %}
+                    {% endif %}
+                    {% if severite[i]["mineur"] == -1 %}
+                      {% set lookup = "" %}
+                      {% set text = "" %}
+                    {% endif %}
                   {% endif %}
-                  {% if severite[i]["mineur"] ==0
-                  or severite[i]["mineur"] == severite[i-1]["mineur"] %}
-                    {% set lookup = "equal" %}
-                    {% set text = "" %}
-                  {% endif %}
-                  {% if severite[i]["mineur"] == -1 %}
-                    {% set lookup = "" %}
-                    {% set text = "" %}
-                  {% endif %}
-                {% endif %}
-                <td class="text-right {{text}}">
-                  {% if severite[i]["mineur"]!=-1 %}
-                    <span>{{severite[i]["mineur"]|format_number(locale='fr')}}</span>
-                  {% else %}
-                    <span>&nbsp;-&nbsp;</span>
-                  {% endif %}
-                  <span class="{{lookup}}"></span>
-                </td>
-              {% endfor %}
+                  <td class="text-right {{text}}">
+                    {% if severite[i]["mineur"]!=-1 %}
+                      <span>{{severite[i]["mineur"]|format_number(locale='fr')}}</span>
+                    {% else %}
+                      <span>&nbsp;-&nbsp;</span>
+                    {% endif %}
+                    <span class="{{lookup}}"></span>
+                  </td>
+                {% endfor %}
+              {% endif %}
             </tr>
           </tbody>
         </table>
@@ -450,320 +502,336 @@
           <thead>
             <tr>
               <th scope="col"></th>
-              {% for i in 0..details|length-1 %}
-                {# 0 = FALSE, 1 = TRUE  #}
-                {% if details[i]["initial"]==1 %}
-                  {% set reference="reference" %}
-                {% else %}
-                  {% set reference="null" %}
-                {% endif %}
-                <th colspan="3" scope="col" class="open-sans text-center {{reference}}">
-                  {{details[i]["version"]}}
-                </th>
-              {% endfor %}
+              {% if details is not empty %}
+                {% for i in 0..details|length-1 %}
+                  {# 0 = FALSE, 1 = TRUE  #}
+                  {% if details[i]["initial"]==1 %}
+                    {% set reference="reference" %}
+                  {% else %}
+                    {% set reference="null" %}
+                  {% endif %}
+                  <th colspan="3" scope="col" class="open-sans text-center {{reference}}">
+                    {{details[i]["version"]}}
+                  </th>
+                {% endfor %}
+              {% endif %}
             </tr>
             <tr>
               <th scope="col"></th>
-              {% for i in 0..details|length-1 %}
-                <th colspan="3" scope="col" class="text-center">
-                  <span>{{details[i]["date"]|date("d/m/Y", "Europe/Paris")}}</span>
-                </th>
-              {% endfor %}
+              {% if details is not empty %}
+                {% for i in 0..details|length-1 %}
+                  <th colspan="3" scope="col" class="text-center">
+                    <span>{{details[i]["date"]|date("d/m/Y", "Europe/Paris")}}</span>
+                  </th>
+                {% endfor %}
+              {% endif %}
             </tr>
           </thead>
           <tbody id="tableau-anomalie-type-severite" class="open-sans">
             <tr>
               <td></td>
-              {% for i in 0..details|length-1 %}
-                <td class="c-rouge text-right">
-                  <strong>Bug</strong>
-                </td>
-                <td class="c-rouge text-right">
-                  <strong>Faille</strong>
-                </td>
-                <td class="c-rouge text-right">
-                  <strong>MP</strong>
-                </td>
-              {% endfor %}
+              {% if details is not empty %}
+                {% for i in 0..details|length-1 %}
+                  <td class="c-rouge text-right">
+                    <strong>Bug</strong>
+                  </td>
+                  <td class="c-rouge text-right">
+                    <strong>Faille</strong>
+                  </td>
+                  <td class="c-rouge text-right">
+                    <strong>MP</strong>
+                  </td>
+                {% endfor %}
+            {% endif %}
             </tr>
             <tr>
               <td class="text-rouge">Bloquant</td>
-              {% for i in 0..details|length-1 %}
-                {% if i !=0 and details[i]["bug_blocker"]> details[i-1]["bug_blocker"] %}
-                  {% set text1 = "text-down" %}
-                {% else %}
-                  {% set text1 = "text-up" %}
-                {% endif %}
+              {% if details is not empty %}
+                {% for i in 0..details|length-1 %}
+                  {% if i !=0 and details[i]["bug_blocker"]> details[i-1]["bug_blocker"] %}
+                    {% set text1 = "text-down" %}
+                  {% else %}
+                    {% set text1 = "text-up" %}
+                  {% endif %}
 
-                {% if i !=0 and details[i]["vulnerability_blocker"] > details[i-1]["vulnerability_blocker"] %}
-                  {% set text2 = "text-down" %}
-                {% else %}
-                  {% set text2 = "text-up" %}
-                {% endif %}
+                  {% if i !=0 and details[i]["vulnerability_blocker"] > details[i-1]["vulnerability_blocker"] %}
+                    {% set text2 = "text-down" %}
+                  {% else %}
+                    {% set text2 = "text-up" %}
+                  {% endif %}
 
-                {% if i !=0 and details[i]["code_smell_blocker"] > details[i-1]["code_smell_blocker"] %}
-                  {% set text3 = "text-down" %}
-                {% else %}
-                  {% set text3 = "text-up" %}
-                {% endif %}
+                  {% if i !=0 and details[i]["code_smell_blocker"] > details[i-1]["code_smell_blocker"] %}
+                    {% set text3 = "text-down" %}
+                  {% else %}
+                    {% set text3 = "text-up" %}
+                  {% endif %}
 
-                {% if i==0 %}
-                  {% set text1, text2, text3 = "text-noir", "text-noir", "text-noir" %}
-                {% endif %}
-                {% if details[i]["bug_blocker"]==-1  %}
-                  <td class="text-center text-noir separation-gauche">
-                    <span>-</span>
+                  {% if i==0 %}
+                    {% set text1, text2, text3 = "text-noir", "text-noir", "text-noir" %}
+                  {% endif %}
+                  {% if details[i]["bug_blocker"]==-1  %}
+                    <td class="text-center text-noir separation-gauche">
+                      <span>-</span>
+                    {% else %}
+                      <td class="text-right {{text1}}">
+                        {{details[i]["bug_blocker"]|format_number(locale='fr')}}
+                      </td>
+                    {% endif %}
+
+                    {% if details[i]["vulnerability_blocker"]==-1 %}
+                      <td class="text-center text-noir separation-gauche">
+                        <span>-</span>
+                      </td>
+                    {% else %}
+                      <td class="text-right {{text2}}">
+                        {{details[i]["vulnerability_blocker"]|format_number(locale='fr')}}
+                      </td>
+                    {% endif %}
+
+                    {% if details[i]["code_smell_blocker"]==-1  %}
+                      <td class="text-center text-noir separation-gauche">
+                        <span>-</span>
+                      </td>
+                    {% else %}
+                      <td class="text-right {{text3}} separation-gauche">
+                        {{details[i]["code_smell_blocker"]|format_number(locale='fr')}}
+                      </td>
+                    {% endif %}
+                  {% endfor %}
+              {% endif %}
+              </tr>
+            </tr>
+            <tr>
+              <td class="text-orange">Critique</td>
+              {% if details is not empty %}
+                {% for i in 0..details|length-1 %}
+                  {% if i !=0 and details[i]["bug_critical"] > details[i-1]["bug_critical"] %}
+                    {% set text1 = "text-down" %}
+                  {% else %}
+                    {% set text1 = "text-up" %}
+                  {% endif %}
+
+                  {% if i !=0 and details[i]["vulnerability_critical"] > details[i-1]["vulnerability_critical"] %}
+                    {% set text2 = "text-down" %}
+                  {% else %}
+                    {% set text2 = "text-up" %}
+                  {% endif %}
+
+                  {% if i !=0 and details[i]["code_smell_critical"] > details[i-1]["code_smell_critical"] %}
+                    {% set text3 = "text-down" %}
+                  {% else %}
+                    {% set text3 = "text-up" %}
+                  {% endif %}
+
+                  {% if i==0  %}
+                    {% set text1, text2, text3 = "text-noir", "text-noir", "text-noir" %}
+                  {% endif %}
+
+                  {% if details[i]["bug_critical"]==-1 %}
+                    <td class="text-center text-noir separation-gauche">
+                      <span>-</span>
+                    </td>
                   {% else %}
                     <td class="text-right {{text1}}">
-                      {{details[i]["bug_blocker"]|format_number(locale='fr')}}
+                      {{details[i]["bug_critical"]|format_number(locale='fr')}}
                     </td>
                   {% endif %}
 
-                  {% if details[i]["vulnerability_blocker"]==-1 %}
+                  {% if details[i]["vulnerability_critical"]==-1 %}
                     <td class="text-center text-noir separation-gauche">
                       <span>-</span>
                     </td>
                   {% else %}
                     <td class="text-right {{text2}}">
-                      {{details[i]["vulnerability_blocker"]|format_number(locale='fr')}}
+                      {{details[i]["vulnerability_critical"]|format_number(locale='fr')}}
                     </td>
                   {% endif %}
 
-                  {% if details[i]["code_smell_blocker"]==-1  %}
+                  {% if details[i]["code_smell_critical"]==-1  %}
                     <td class="text-center text-noir separation-gauche">
                       <span>-</span>
                     </td>
                   {% else %}
                     <td class="text-right {{text3}} separation-gauche">
-                      {{details[i]["code_smell_blocker"]|format_number(locale='fr')}}
+                      {{details[i]["code_smell_critical"]|format_number(locale='fr')}}
                     </td>
                   {% endif %}
                 {% endfor %}
-              </tr>
-            </tr>
-            <tr>
-              <td class="text-orange">Critique</td>
-              {% for i in 0..details|length-1 %}
-                {% if i !=0 and details[i]["bug_critical"] > details[i-1]["bug_critical"] %}
-                  {% set text1 = "text-down" %}
-                {% else %}
-                  {% set text1 = "text-up" %}
-                {% endif %}
-
-                {% if i !=0 and details[i]["vulnerability_critical"] > details[i-1]["vulnerability_critical"] %}
-                  {% set text2 = "text-down" %}
-                {% else %}
-                  {% set text2 = "text-up" %}
-                {% endif %}
-
-                {% if i !=0 and details[i]["code_smell_critical"] > details[i-1]["code_smell_critical"] %}
-                  {% set text3 = "text-down" %}
-                {% else %}
-                  {% set text3 = "text-up" %}
-                {% endif %}
-
-                {% if i==0  %}
-                  {% set text1, text2, text3 = "text-noir", "text-noir", "text-noir" %}
-                {% endif %}
-
-                {% if details[i]["bug_critical"]==-1 %}
-                  <td class="text-center text-noir separation-gauche">
-                    <span>-</span>
-                  </td>
-                {% else %}
-                  <td class="text-right {{text1}}">
-                    {{details[i]["bug_critical"]|format_number(locale='fr')}}
-                  </td>
-                {% endif %}
-
-                {% if details[i]["vulnerability_critical"]==-1 %}
-                  <td class="text-center text-noir separation-gauche">
-                    <span>-</span>
-                  </td>
-                {% else %}
-                  <td class="text-right {{text2}}">
-                    {{details[i]["vulnerability_critical"]|format_number(locale='fr')}}
-                  </td>
-                {% endif %}
-
-                {% if details[i]["code_smell_critical"]==-1  %}
-                  <td class="text-center text-noir separation-gauche">
-                    <span>-</span>
-                  </td>
-                {% else %}
-                  <td class="text-right {{text3}} separation-gauche">
-                    {{details[i]["code_smell_critical"]|format_number(locale='fr')}}
-                  </td>
-                {% endif %}
-              {% endfor %}
+              {% endif %}
             </tr>
             <tr>
               <td class="text-jaune">Majeur</td>
-              {% for i in 0..details|length-1 %}
-                {% if i !=0 and details[i]["bug_major"] > details[i-1]["bug_major"] %}
-                  {% set text1 = "text-down" %}
-                {% else %}
-                  {% set text1 = "text-up" %}
-                {% endif %}
+              {% if details is not empty %}
+                {% for i in 0..details|length-1 %}
+                  {% if i !=0 and details[i]["bug_major"] > details[i-1]["bug_major"] %}
+                    {% set text1 = "text-down" %}
+                  {% else %}
+                    {% set text1 = "text-up" %}
+                  {% endif %}
 
-                {% if i !=0 and details[i]["vulnerability_major"] > details[i-1]["vulnerability_major"] %}
-                  {% set text2 = "text-down" %}
-                {% else %}
-                  {% set text2 = "text-up" %}
-                {% endif %}
+                  {% if i !=0 and details[i]["vulnerability_major"] > details[i-1]["vulnerability_major"] %}
+                    {% set text2 = "text-down" %}
+                  {% else %}
+                    {% set text2 = "text-up" %}
+                  {% endif %}
 
-                {% if i !=0 and details[i]["code_smell_major"] > details[i-1]["code_smell_major"] %}
-                  {% set text3 = "text-down" %}
-                {% else %}
-                  {% set text3 = "text-up" %}
-                {% endif %}
+                  {% if i !=0 and details[i]["code_smell_major"] > details[i-1]["code_smell_major"] %}
+                    {% set text3 = "text-down" %}
+                  {% else %}
+                    {% set text3 = "text-up" %}
+                  {% endif %}
 
-                {% if i==0  %}
-                  {% set text1, text2, text3 = "text-noir", "text-noir", "text-noir" %}
-                {% endif %}
+                  {% if i==0  %}
+                    {% set text1, text2, text3 = "text-noir", "text-noir", "text-noir" %}
+                  {% endif %}
 
-                {% if details[i]["bug_major"]==-1  %}
-                  <td class="text-center text-noir separation-gauche">
-                    <span>-</span>
-                  </td>
-                {% else %}
-                  <td class="text-right {{text1}}">
-                    {{details[i]["bug_major"]|format_number(locale='fr')}}
-                  </td>
-                {% endif %}
+                  {% if details[i]["bug_major"]==-1  %}
+                    <td class="text-center text-noir separation-gauche">
+                      <span>-</span>
+                    </td>
+                  {% else %}
+                    <td class="text-right {{text1}}">
+                      {{details[i]["bug_major"]|format_number(locale='fr')}}
+                    </td>
+                  {% endif %}
 
-                {% if details[i]["vulnerability_major"]==-1  %}
-                  <td class="text-center text-noir separation-gauche">
-                    <span>-</span>
-                  </td>
-                {% else %}
-                  <td class="text-right {{text2}}">
-                    {{details[i]["vulnerability_major"]|format_number(locale='fr')}}
-                  </td>
-                {% endif %}
+                  {% if details[i]["vulnerability_major"]==-1  %}
+                    <td class="text-center text-noir separation-gauche">
+                      <span>-</span>
+                    </td>
+                  {% else %}
+                    <td class="text-right {{text2}}">
+                      {{details[i]["vulnerability_major"]|format_number(locale='fr')}}
+                    </td>
+                  {% endif %}
 
-                {% if details[i]["code_smell_major"]==-1  %}
-                  <td class="text-center text-noir separation-gauche">
-                    <span>-</span>
-                  </td>
-                {% else %}
-                  <td class="text-right {{text3}} separation-gauche">
-                    {{details[i]["code_smell_major"]|format_number(locale='fr')}}
-                  </td>
-                {% endif %}
-              {% endfor %}
+                  {% if details[i]["code_smell_major"]==-1  %}
+                    <td class="text-center text-noir separation-gauche">
+                      <span>-</span>
+                    </td>
+                  {% else %}
+                    <td class="text-right {{text3}} separation-gauche">
+                      {{details[i]["code_smell_major"]|format_number(locale='fr')}}
+                    </td>
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
             </tr>
             <tr>
               <td class="text-vert">Mineur</td>
-              {% for i in 0..details|length-1 %}
-                {% if i !=0 and details[i]["bug_minor"] > details[i-1]["bug_minor"] %}
-                  {% set text1 = "text-down" %}
-                {% else %}
-                  {% set text1 = "text-up" %}
-                {% endif %}
+              {% if details is not empty %}
+                {% for i in 0..details|length-1 %}
+                  {% if i !=0 and details[i]["bug_minor"] > details[i-1]["bug_minor"] %}
+                    {% set text1 = "text-down" %}
+                  {% else %}
+                    {% set text1 = "text-up" %}
+                  {% endif %}
 
-                {% if i !=0 and details[i]["vulnerability_minor"] > details[i-1]["vulnerability_minor"] %}
-                  {% set text2 = "text-down" %}
-                {% else %}
-                  {% set text2 = "text-up" %}
-                {% endif %}
+                  {% if i !=0 and details[i]["vulnerability_minor"] > details[i-1]["vulnerability_minor"] %}
+                    {% set text2 = "text-down" %}
+                  {% else %}
+                    {% set text2 = "text-up" %}
+                  {% endif %}
 
-                {% if i !=0 and details[i]["code_smell_minor"] > details[i-1]["code_smell_minor"] %}
-                  {% set text3 = "text-down" %}
-                {% else %}
-                  {% set text3 = "text-up" %}
-                {% endif %}
+                  {% if i !=0 and details[i]["code_smell_minor"] > details[i-1]["code_smell_minor"] %}
+                    {% set text3 = "text-down" %}
+                  {% else %}
+                    {% set text3 = "text-up" %}
+                  {% endif %}
 
-                {% if i==0  %}
-                  {% set text1, text2, text3 = "text-noir", "text-noir", "text-noir" %}
-                {% endif %}
+                  {% if i==0  %}
+                    {% set text1, text2, text3 = "text-noir", "text-noir", "text-noir" %}
+                  {% endif %}
 
-                {% if details[i]["bug_minor"]==-1  %}
-                  <td class="text-center text-noir separation-gauche">
-                    <span>-</span>
-                  </td>
-                {% else %}
-                  <td class="text-right {{text1}}">
-                    {{details[i]["bug_minor"]|format_number(locale='fr')}}
-                  </td>
-                {% endif %}
+                  {% if details[i]["bug_minor"]==-1  %}
+                    <td class="text-center text-noir separation-gauche">
+                      <span>-</span>
+                    </td>
+                  {% else %}
+                    <td class="text-right {{text1}}">
+                      {{details[i]["bug_minor"]|format_number(locale='fr')}}
+                    </td>
+                  {% endif %}
 
-                {% if details[i]["vulnerability_minor"]==-1  %}
-                  <td class="text-center text-noir separation-gauche">
-                    <span>-</span>
-                  </td>
-                {% else %}
-                  <td class="text-right {{text2}}">
-                    {{details[i]["vulnerability_minor"]|format_number(locale='fr')}}
-                  </td>
-                {% endif %}
+                  {% if details[i]["vulnerability_minor"]==-1  %}
+                    <td class="text-center text-noir separation-gauche">
+                      <span>-</span>
+                    </td>
+                  {% else %}
+                    <td class="text-right {{text2}}">
+                      {{details[i]["vulnerability_minor"]|format_number(locale='fr')}}
+                    </td>
+                  {% endif %}
 
-                {% if details[i]["code_smell_minor"]==-1  %}
-                  <td class="text-center text-noir separation-gauche">
-                    <span>-</span>
-                  </td>
-                {% else %}
-                  <td class="text-right {{text3}} separation-gauche">
-                    {{details[i]["code_smell_minor"]|format_number(locale='fr')}}
-                  </td>
-                {% endif %}
-              {% endfor %}
+                  {% if details[i]["code_smell_minor"]==-1  %}
+                    <td class="text-center text-noir separation-gauche">
+                      <span>-</span>
+                    </td>
+                  {% else %}
+                    <td class="text-right {{text3}} separation-gauche">
+                      {{details[i]["code_smell_minor"]|format_number(locale='fr')}}
+                    </td>
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
             </tr>
             <tr>
               <td class="text-bleu">Info</td>
-              {% for i in 0..details|length-1 %}
-                {% if i !=0 and details[i]["bug_info"] > details[i-1]["bug_info"] %}
-                  {% set text1 = "text-down" %}
-                {% else %}
-                  {% set text1 = "text-up" %}
-                {% endif %}
+              {% if details is not empty %}
+                {% for i in 0..details|length-1 %}
+                  {% if i !=0 and details[i]["bug_info"] > details[i-1]["bug_info"] %}
+                    {% set text1 = "text-down" %}
+                  {% else %}
+                    {% set text1 = "text-up" %}
+                  {% endif %}
 
-                {% if i !=0 and details[i]["vulnerability_info"] > details[i-1]["vulnerability_info"] %}
-                  {% set text2 = "text-down" %}
-                {% else %}
-                  {% set text2 = "text-up" %}
-                {% endif %}
+                  {% if i !=0 and details[i]["vulnerability_info"] > details[i-1]["vulnerability_info"] %}
+                    {% set text2 = "text-down" %}
+                  {% else %}
+                    {% set text2 = "text-up" %}
+                  {% endif %}
 
-                {% if i !=0 and details[i]["code_smell_info"] > details[i-1]["code_smell_info"] %}
-                  {% set text3 = "text-down" %}
-                {% else %}
-                  {% set text3 = "text-up" %}
-                {% endif %}
+                  {% if i !=0 and details[i]["code_smell_info"] > details[i-1]["code_smell_info"] %}
+                    {% set text3 = "text-down" %}
+                  {% else %}
+                    {% set text3 = "text-up" %}
+                  {% endif %}
 
-                {% if i==0  %}
-                  {% set text1, text2, text3 = "text-noir", "text-noir", "text-noir" %}
-                {% endif %}
+                  {% if i==0  %}
+                    {% set text1, text2, text3 = "text-noir", "text-noir", "text-noir" %}
+                  {% endif %}
 
-                {% if details[i]["bug_info"]==-1 %}
-                  <td class="text-center text-noir separation-gauche">
-                    <span>-</span>
-                  </td>
-                {% else %}
-                  <td class="text-right {{text1}}">
-                    {{details[i]["bug_info"]|format_number(locale='fr')}}
-                  </td>
-                {% endif %}
+                  {% if details[i]["bug_info"]==-1 %}
+                    <td class="text-center text-noir separation-gauche">
+                      <span>-</span>
+                    </td>
+                  {% else %}
+                    <td class="text-right {{text1}}">
+                      {{details[i]["bug_info"]|format_number(locale='fr')}}
+                    </td>
+                  {% endif %}
 
-                {% if details[i]["vulnerability_info"]==-1 %}
-                  <td class="text-center text-noir separation-gauche">
-                    <span>-</span>
-                  </td>
-                {% else %}
-                  <td class="text-right {{text2}}">
-                    {{details[i]["vulnerability_info"]|format_number(locale='fr')}}
-                  </td>
-                {% endif %}
+                  {% if details[i]["vulnerability_info"]==-1 %}
+                    <td class="text-center text-noir separation-gauche">
+                      <span>-</span>
+                    </td>
+                  {% else %}
+                    <td class="text-right {{text2}}">
+                      {{details[i]["vulnerability_info"]|format_number(locale='fr')}}
+                    </td>
+                  {% endif %}
 
-                {% if details[i]["code_smell_info"]==-1 %}
-                  <td class="text-center text-noir separation-gauche">
-                    <span>-</span>
-                  </td>
-                {% else %}
-                  <td class="text-right {{text3}} separation-gauche">
-                    {{details[i]["code_smell_info"]|format_number(locale='fr')}}
-                  </td>
-                {% endif %}
-              {% endfor %}
+                  {% if details[i]["code_smell_info"]==-1 %}
+                    <td class="text-center text-noir separation-gauche">
+                      <span>-</span>
+                    </td>
+                  {% else %}
+                    <td class="text-right {{text3}} separation-gauche">
+                      {{details[i]["code_smell_info"]|format_number(locale='fr')}}
+                    </td>
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
             </tr>
           </tbody>
         </table>
@@ -887,9 +955,8 @@
         <table class="hover ">
           <caption class="claire-hand">Modifier les propriétés d'une version.</caption>
           <thead>
-          th scope="col" id="data1" headers="cookies-techniques">Cookie lié au service&nbsp;:</th>
             <tr class="open-sans text-center">
-              <th id="action" scope="col" headers="modifier-preference">Action</th>
+              <th id="action" scopeerence">Action</th>
               <th id="date" scope="col"  headers="modifier-preference">Date</th>
               <th id="version" scope="col"  headers="modifier-preference">Version</th>
               <th id="favori" scope="col"  headers="modifier-preference">Favori</th>
