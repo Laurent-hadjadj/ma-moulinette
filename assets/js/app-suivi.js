@@ -348,9 +348,9 @@ $('select[name="version"]').on('change', function () {
  * Ajouter/Enregistrement les données
 */
 $('.js-enregistrer-analyse').on('click', ()=>{
+  const selectionVersion=$('select[name="version"]').val();
   /** Si le projet n'a pas été selectionné */
-  console.log('valeur liste', $('select[name="version"]').val());
-  if ($('select[name="version"]').val()==='') {
+  if (selectionVersion==='TheID') {
     const message='Vous devez choisir un projet !';
     $('#message-ajout-projet').html(callboxError+message+callboxFermer);
     return;
