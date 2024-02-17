@@ -34,7 +34,11 @@ Cette page regroupe plusieurs indicateurs construits sur les données locales hi
 * [ ] Ajouter les indicateurs consolidés d'une version précédente à la version courante ;
 * [ ] Modifier les **favoris** et la **version de référence** ;
 
-**Pensez à enregistrer  chaque collecte de données.**
+> Pensez à enregistrer  chaque collecte de données.
+
+Si aucune données n'est enregsitré dans la table historique alors la page s'ouvre sans aucune information.
+
+![suivi](/documentation/ressources/suivi-007.jpg)
 
 Les tableaux sont les suivants :
 
