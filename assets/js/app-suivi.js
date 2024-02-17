@@ -228,8 +228,13 @@ $('#fermer-choisir-analyse').on('click', ()=>{
  * On charge les données de la version selectionnée
  */
 $('select[name="version"]').on('change', function () {
+  /** si la valeur selectionné est TheId alors on sort */
+  if ($('select[name="version"]')==='TheId'){
+    return;
+  }
   /* On affiche la clé */
   $('#key-maven').html($('#js-nom').data('maven').trim());
+
 
   /* On affiche le nom */
   const n=$('#js-nom').data('maven').trim();
