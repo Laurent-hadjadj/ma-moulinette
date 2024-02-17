@@ -87,13 +87,33 @@ Il suffit de cliquer sur le bouton **Ajouter** pour ajouter cette version dans l
 
 ### Modifier la configuration
 
+Si un projet n'a pas été sélctionné, alors un message d'erreur est affiché à l'utiliosateur.
+
+![suivi-modification](/documentation/ressources/suivi-modification-004.jpg)
+
 Il est possible de modifier les paramètres d'affichage d'une version en activant ou non l'option **favori** et/ou l'option **version de référence**.
 
 ![suivi-modification](/documentation/ressources/suivi-modification-001.jpg)
 
+`Note :` la version de référence est la version qui sera utilisée pour comparer les versions lors da présentation de la tendance.
+
 ![suivi-modification](/documentation/ressources/suivi-modification-002.jpg)
 
-`Note :` la version de référence est la version qui sera utilisée pour comparer les versions lors da présentation de la tendance.
+En cliquant sur le bouton représentant une poubelle, le projet est supprimé de la table historique. Cette action nécessite d'avoir le rôle [GESTIONNAIRE].
+
+![suivi-modification](/documentation/ressources/suivi-modification-003.jpg)
+
+Ici, la suppression a été simulé en mode TEST (TU).
+
+![suivi-modification](/documentation/ressources/suivi-modification-005.jpg)
+
+Le projet a été correctement supprimé.
+
+![suivi-modification](/documentation/ressources/suivi-modification-006.jpg)
+
+Le projet a été correctement supprimé ainsi que dans la liste des projet/version de favoris.
+
+![suivi-modification](/documentation/ressources/suivi-modification-007.jpg)
 
 -**-- FIN --**-
 
