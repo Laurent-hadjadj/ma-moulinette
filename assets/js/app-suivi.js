@@ -181,23 +181,22 @@ dessineMoiUnMouton(
 * Created at: 19/12/2022, 23:00:07 (Europe/Paris)
 * @author     Laurent HADJADJ <laurent_h@me.com>
 */
-const selectVersion=function(mavenKey) {
+const selectVersion=async function(mavenKey) {
   const data={ mavenKey };
   const options = {
     url: `${serveur()}/api/liste/version`, type: 'GET',
     dataType: 'json', data, contentType };
 
-  return $.ajax(options)
-    .then(function (r) {
-      $('.js-version').select2({
-        placeholder: 'Cliquez pour ouvrir la liste',
-        selectOnClose: true,
-        width: '100%',
-        minimumResultsForSearch: 5,
-        language: 'fr',
-        data: r.liste});
-      $('.analyse').removeClass('hide');
-    });
+  const r = await $.ajax(options);
+  $('.js-version').select2({
+    placeholder: 'Cliquez pour ouvrir la liste',
+    selectOnClose: true,
+    width: '100%',
+    minimumResultsForSearch: 5,
+    language: 'fr',
+    data: r.liste
+  });
+  $('.analyse').removeClass('hide');
   };
 
 /**
@@ -206,6 +205,11 @@ const selectVersion=function(mavenKey) {
  */
 $('.js-ajouter-analyse').on('click', function () {
   const mavenKey=$('#js-nom').data('maven');
+
+  /** Si la clé mavenkey n'est pas défini on pouvre pas la fene^tre modale */
+  if (mavenKey===null || mavenKey==='') {
+    return;
+  }
 
   /* On charge la liste du formulaire d'ajout */
   selectVersion(mavenKey);
@@ -223,7 +227,7 @@ $('#fermer-choisir-analyse').on('click', ()=>{
  * description
  * On charge les données de la version selectionnée
  */
-$('select[name="version"]').change(function () {
+$('select[name="version"]').on('change', function () {
   /* On affiche la clé */
   $('#key-maven').html($('#js-nom').data('maven').trim());
 
@@ -345,6 +349,7 @@ $('select[name="version"]').change(function () {
 */
 $('.js-enregistrer-analyse').on('click', ()=>{
   /** Si le projet n'a pas été selectionné */
+  console.log('valeur liste', $('select[name="version"]').val());
   if ($('select[name="version"]').val()==='') {
     const message='Vous devez choisir un projet !';
     $('#message-ajout-projet').html(callboxError+message+callboxFermer);
@@ -408,11 +413,11 @@ $('.js-enregistrer-analyse').on('click', ()=>{
     dataType: 'json', data: JSON.stringify(data), contentType };
 
   $.ajax(options).then(t => {
-      if (t.code==='OK') {
+      if (t.code===200) {
         const message='Enregistrement des informations effectué.';
         $('#message-ajout-projet').html(callboxSuccess+message+callboxFermer);
         } else {
-          const message='L\'enregistrement n\'a pas été effectué !! !.';
+          const message=`L'enregistrement n'a pas été effectué !! !.`;
           $('#message-ajout-projet').html(callboxError+message+callboxFermer);
         }
     });
@@ -454,7 +459,7 @@ $('.lien-editer').on('click', ()=>{
  * On affiche la liste des projets et on nettoie le formulaire
  */
 $('.js-modifier-analyse').on('click', function () {
-  const poubelle=`<svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="poubelle-svg" preserveAspectRatio="xMidYMid meet">
+  const poubelle=`<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="poubelle-svg" preserveAspectRatio="xMidYMid meet">
       <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)" stroke="none">
       <path d="M1871 5109 c-128 -25 -257 -125 -311 -241 -37 -79 -50 -146 -50 -258 l0 -88 -292 -5 c-308 -4 -329 -7 -448 -57 -171 -72 -327 -228 -400 -400 -41 -97 -51 -152 -57 -297 l-6 -143 2253 0 2253 0 -6 143 c-6 145 -16 200 -57 297-73 172 -229 328 -400 400 -119 50 -140 53 -447 57 l-293 5 0 88 c0 48 -5 111 -10 141 -34 180 -179 325 -359 359 -66 12 -1306 12 -1370 -1z m1359 -309 c60 -31 80 -78 80 -190 l0 -90 -750 0 -750 0 0 90 c0 110 20 159 78 189 36 19 60 20 670 21 615 0 634 -1 672 -20z"/> <path d="M626 3283 c3 -21 63 -684 134 -1473 136 -1518 135 -1505 194 -1599 64 -100 180 -179 295 -201 73 -14 2549 -14 2622 0 115 22 231 101 295 201 59 94 58 81 194 1599 71 789 131 1452 134 1473 l4 37 -1938 0 -1938 0 4 -37z m1134 -283 c43 -22 65 -55 74 -110 11 -69 99 -2156 92 -2185 -10 -40 -69 -93 -112 -101 -83 -15 -167 45 -178 128 -6 46 -96 2049 -96 2134 0 118 115 188 220 134z m870 0 c26 -13 47 -34 60 -60 20 -39 20 -57 20 -1130 0 -1073 0 -1091 -20 -1130 -23 -45 -80 -80 -130 -80 -50 0 -107 35 -130 80 -20 39 -20 57 -20 1130 0 1073 0 1091 20 1130 37 73 124 99 200 60z m893 -13 c66 -50 66 20 13 -1166 -26 -592 -52 -1092 -57 -1113 -18 -69 -99 -118 -174 -104 -42 8 -101 62 -111 101 -7 29 81 2116 92 2185 9 54 35 91 79 112 52 25 114 19 158 -15z"/>
       </g>
