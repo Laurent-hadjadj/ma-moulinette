@@ -773,7 +773,7 @@ class SuiviController extends AbstractController
         }
 
         /** On créé la map pour la requête de mise à jour */
-        $map=[ 'initital'=>$data->reference, 'maven_key'=>$data->maven_key, 'version'=>$data->version, 'date_version'=>$data->date_version];
+        $map=[ 'initial'=>$data->initial, 'maven_key'=>$data->maven_key, 'version'=>$data->version, 'date_version'=>$data->date_version];
         $historique = $this->em->getRepository(Historique::class);
         $request=$historique->updateHistoriqueReference($data->mode, $map);
         if ($request['code']!=200) {
