@@ -49,11 +49,11 @@ console.info(a);
 import { contentType, http404, chartColors, zero, un, deux, soixante, cent } from './constante.js';
 
 /* Construction des callbox de type success */
-const callboxInformation='<div class="callout alert-callout-border primary text-justify color" data-closable="slide-out-right" role="alert"><p class="open-sans color-bleu" cell">Information ! ';
-const callboxSuccess='<div id="js-message" class="callout alert-callout-border success text-justify" data-closable="slide-out-right" role="alert"><p class="open-sans color-bleu" cell">Bravo ! ';
-const callboxWarning='<div id="js-message" class="callout alert-callout-border warning text-justify" data-closable="slide-out-right" role="alert"><p class="open-sans color-bleu" cell">Attention ! ';
-const callboxError='<div id="js-message" class="callout alert-callout-border alert text-justify" data-closable="slide-out-right"><p class="open-sans color-bleu" cell">Ooups ! ';
-const callboxFermer='<button class="close-button" aria-label="Fermer la fenêtre" type="button" data-close><span aria-hidden="true">&times;</span></button></div>';
+const callboxInformation='<div class="callout alert-callout-border primary" data-closable="slide-out-right" role="alert"><p class="open-sans color-bleu padding-right-1">Information ! ';
+const callboxSuccess='<div id="js-message" class="callout alert-callout-border success" data-closable="slide-out-right" role="alert"><span class="open-sans color-bleu padding-right-1">Bravo ! ';
+const callboxWarning='<div id="js-message" class="callout alert-callout-border warning" data-closable="slide-out-right" role="alert"><span class="open-sans padding-right-1 color-bleu">Attention ! ';
+const callboxError='<div id="js-message" class="callout alert-callout-border alert" data-closable="slide-out-right"><span class="open-sans padding-right-1 color-bleu">Ooups ! ';
+const callboxFermer='</span><button class="close-button" aria-label="Fermer la fenêtre" type="button" data-close><span aria-hidden="true">&times;</span></button></div>';
 
 /**
  * [Description for dessineMoiUnMouton]
@@ -480,12 +480,7 @@ $('.js-modifier-analyse').on('click', function () {
     }
 
     /* On boucle pour construire le tableau */
-    let ligne=0;
-    let html='';
-    let switchFavori='';
-    let switchReference='';
-    let favori='FALSE';
-    let reference='FALSE';
+    let ligne=0, html='', switchFavori='', switchReference='', favori='FALSE', reference='FALSE';
 
     $('#tableau-liste-version').html(html);
 
@@ -599,34 +594,58 @@ $('.js-modifier-analyse').on('click', function () {
       });
     });
 
-  $('[id^=poubelle-]').on('click', e=>{
-    /* On récupère la version et la date */
-    const id=$(e.currentTarget).attr('id');
-    const l=id.split('-');
-    const  version = $(`#version-${l[1]}`).text().trim();
-    const  date = $(`#date-${l[1]}`).text().trim();
+    /** On supprime la version du projet en table et on masque la ligne */
+    $('[id^=poubelle-]').on('click', e=>{
+      /* On récupère la version et la date */
+      const id=$(e.currentTarget).attr('id');
+      const l=id.split('-');
+      const  version = $(`#version-${l[1]}`).text().trim();
+      const  date = $(`#date-${l[1]}`).text().trim();
 
-    /**
-     * On l'API de suppresion de la version dans l'historique
-     */
-    const dataPoubelle = { mavenKey: $('#js-nom').data('maven'), version, date, mode: 'null' };
-    const optionsPoubelle = {
-      url: `${serveur()}/api/suivi/version/poubelle`, type: 'PUT',
-      dataType: 'json', data: JSON.stringify(dataPoubelle), contentType };
+      /** On vérifie que la clé maven n'est pas null */
+      let mavenKey=$('#js-nom').data('maven');
+      if (mavenKey===undefined || mavenKey=== null ) {
+        mavenKey='null';
+      }
 
-    $.ajax(optionsPoubelle).then((t) => {
-      if (t.code==='OK') {
-      const message=`Suppresion de cette version dans l\'historique.`;
-      $('#message').html(callboxSuccess+message+callboxFermer);
-      // On masque la ligne
-      $('#ligne-'+l[1]).hide();
-    } else {
-      const message=`Erreur lors de la suppresion (${t.code}).`;
-      $('#message').html(callboxError+message+callboxFermer);
-    }
+      /**
+       * On l'API de suppresion de la version dans l'historique
+       */
+      const dataPoubelle = { 'maven_key': mavenKey, version, 'date_version':date, 'mode': 'null' };
+      const optionsPoubelle = {
+        url: `${serveur()}/api/suivi/version/poubelle`, type: 'PUT',
+        dataType: 'json', data: JSON.stringify(dataPoubelle), contentType };
+
+      let message;
+      $.ajax(optionsPoubelle).then((t) => {
+        switch (t.code) {
+          case 200 :
+            console.log(t);
+            message=`Le projet a été correctement supprimé. ${t.message}`;
+            $('#message').html(callboxSuccess+message+callboxFermer);
+            // On masque la ligne
+            $('#ligne-'+l[1]).hide();
+            break;
+          case 202:
+            message=`Le projet n'a pas été supprimé ! `;
+            $('#message').html(callboxSuccess+message+`(${t.erreur}).`+callboxFermer);
+          break;
+          case 400:
+            message='La clé maven est vide !';
+            $('#message').html(callboxError+message+callboxFermer);
+            break;
+          case 403:
+            message=`Vous n'êtes pas autorisé à effectuer cette opération.`;
+            $('#message').html(callboxWarning+message+callboxFermer);
+            break;
+          default:
+            message=`Le projet n'a pas été supprimé ! `;
+            $('#message').html(callboxError+message+`(${t.erreur}).`+callboxFermer);
+        }
+      });
+    });
   });
 
-  });
+  /** fin de la méthode on ouvre la fenêtre */
   $('#modal-modifier-analyse').foundation('open');
-  });
 });
