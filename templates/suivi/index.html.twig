@@ -35,7 +35,7 @@
       </nav>
     </header>
 
-    <div class="grid-container grid-x" aria-label="messages d'information">
+    <div class="grid-container grid-x" role="alert" aria-label="messages d'information">
       {% for message in app.flashes('alert') %}
         <div class="callout alert-callout-border alert" role="alert">
           <span class="open-sans color-bleu">{{ message }}</span>
@@ -851,8 +851,7 @@
           <label for="liste-version"></label>
           <select
             id="liste-version" class="js-version open-class" name="version">
-            {# On ajoute un caractère pour éviter un erreur w3c #}
-            <option>&nbsp;</option>
+            <option value="TheID" selected="selected">--- Version ---</option>
           </select>
         </div>
       </div>
