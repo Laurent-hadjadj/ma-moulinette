@@ -37,6 +37,42 @@ class HistoriqueRepository extends ServiceEntityRepository
     }
 
     /**
+     * [Description for countHistoriqueprojet]
+     * On veut savoir si le projet a été historisé ?
+     *
+     * @param string $mode
+     * @param array $map
+     *
+     * @return array
+     *
+     * Created at: 16/02/2024 12:08:12 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function countHistoriqueprojet($mode, $map):array {
+
+        /** On retire le statut à toute les versions du projet, radical mais efficace */
+        $sql = "SELECT count(*) AS nombre
+                FROM historique
+                WHERE maven_key=:maven_key";
+        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+        $conn->bindValue(':maven_key', $map['maven_key']);
+        try {
+            if ($mode !== 'TEST') {
+                $request=$conn->executeQuery()->fetchAllAssociative();
+            } else {
+                $response=['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+            }
+        } catch (\Doctrine\DBAL\Exception $e) {
+            $response=['mode'=>$mode, 'code'=> 500, 'erreur'=>$e->getCode()];
+        }
+
+        /** on prépare la réponse */
+        $response=['mode'=>$mode, 'code'=>200, 'erreur'=>'', 'nombre'=>$request[0]['nombre']];
+        return $response;
+    }
+
+    /**
      * [Description for getProjetFavori]
      * Récupère les indicateurs du projet favori
      * @param mixed $where
@@ -64,11 +100,68 @@ class HistoriqueRepository extends ServiceEntityRepository
     }
 
     /**
+     * [Description for updateHistoriqueReference]
+     *  Met à jour la version de référence pour un projet
+     *
+     * @param string $mode
+     * @param array $map
+     *
+     * @return array
+     *
+     * Created at: 16/02/2024 10:57:32 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function updateHistoriqueReference($mode, $map):array {
+
+        /** on prépare la réponse */
+        $response=['mode'=>$mode, 'code'=>200, 'erreur'=>''];
+
+        /** On retire le statut à toute les versions du projet, radical mais efficace */
+        $sql = "UPDATE historique
+                SET initial=0
+                WHERE maven_key=:maven_key";
+        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+        $conn->bindValue(':maven_key', $map['maven_key']);
+        try {
+            if ($mode !== 'TEST') {
+                $conn->executeQuery();
+            } else {
+                $response=['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+            }
+        } catch (\Doctrine\DBAL\Exception $e) {
+            $response=['mode'=>$mode, 'code'=> 500, 'erreur'=>$e->getCode()];
+        }
+
+        /** On met ajour la version de réference pour le projet */
+        $sql = "UPDATE historique
+                SET initial=:initial
+                WHERE maven_key=:maven_key
+                AND version=:version
+                AND date_version=:date_version";
+        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+        $conn->bindValue(':initial', $map['initial']);
+        $conn->bindValue(':maven_key', $map['maven_key']);
+        $conn->bindValue(':version', $map['version']);
+        $conn->bindValue(':date_version', $map['date_version']);
+        try {
+            if ($mode !== 'TEST') {
+                $conn->executeQuery();
+            } else {
+                $response=['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+            }
+        } catch (\Doctrine\DBAL\Exception $e) {
+            $response=['mode'=>$mode, 'code'=> 500, 'erreur'=>$e->getCode()];
+        }
+        return $response;
+    }
+
+    /**
      * [Description for deleteHistoriqueProjet]
      * Suppression de la table historique du projet
      *
      * @param string $mode
-     * @param mixed $data
+     * @param array $map
      *
      * @return array
      *
