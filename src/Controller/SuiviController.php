@@ -716,14 +716,6 @@ class SuiviController extends AbstractController
         /** On supprime le projet favori de la liste */
         $nouvelleListeFavori = array_diff($preference['favori'], [$mavenKey]);
 
-        //WHERE maven_key='$mavenKey'
-        //AND version='$version'
-        //AND date_version='$date'";
-        //{"statut":{"projet":false,"favori":true,"version":false,"bookmark":false},
-        // "projet":["fr.franceagrimer:monapplication-mat"],
-        // "favori":["fr.franceagrimer:monapplication-mat","fr.franceagrimer:monapplication-sde"],
-        // "bookmark":["fr.franceagrimer:monapplication-sde"]}
-
         /** On met à jour l'objet. */
         $jarray = json_encode([
             'statut' => $statut,
