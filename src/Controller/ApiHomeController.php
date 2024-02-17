@@ -234,14 +234,14 @@ class ApiHomeController extends AbstractController
         $dateModificationProjet = $date->format(static::$dateFormatShort);
 
         $sql = "UPDATE properties
-    SET projet_bd = $nombre,
-        projet_sonar = $nombre,
-        date_modification_projet = '$dateModificationProjet'
-    WHERE type = 'properties'";
+                SET projet_bd = $nombre,
+                    projet_sonar = $nombre,
+                    date_modification_projet = '$dateModificationProjet'
+                WHERE type = 'properties'";
         if ($mode != 'TEST') {
             $this->em->getConnection()
-                      ->prepare(trim(preg_replace(static::$regex, " ", $sql)))
-                      ->executeQuery();
+                    ->prepare(trim(preg_replace(static::$regex, " ", $sql)))
+                    ->executeQuery();
         }
 
         /** on renvoie les résultats */
