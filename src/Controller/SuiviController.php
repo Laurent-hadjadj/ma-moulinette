@@ -803,7 +803,7 @@ class SuiviController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/suivi/version/poubelle', name: 'suivi_version_poubelle', methods: ['PUT'])]
-    public function suiviVersionPoubelle(Request $request, Security $security)
+    public function suiviVersionPoubelle(Request $request, Security $security): response
     {
         /** on décode le body */
         $data = json_decode($request->getContent());
