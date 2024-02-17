@@ -572,20 +572,19 @@ $('.js-modifier-analyse').on('click', function () {
       /* on récupère la version et la date */
       const id=$(e.currentTarget).attr('id');
       const l=id.split('-');
-      const  version=$(`#version-${l[deux]}`).text().trim();
-      const  date=$(`#date-${l[deux]}`).text().trim();
+      const version=$(`#version-${l[deux]}`).text().trim();
+      const date=$(`#date-${l[deux]}`).text().trim();
 
+      let initial=zero;
       if ($(`#${id}:checked`).length===un){
         /** SQLite : 0 (false) and 1 (true). */
-        reference=un;
-      } else {
-        reference=zero;
+        initial=un;
       }
 
       /**
        * On appel l'API de mise àjour de la version de référence
        */
-      const dataReference = { mavenKey: $('#js-nom').data('maven'), reference, version, date, mode:'null' };
+      const dataReference = { maven_key: $('#js-nom').data('maven'), initial, version, date_version: date, mode:'null' };
       const optionsReference = {
         url: `${serveur()}/api/suivi/version/reference`, type: 'PUT',
         dataType: 'json', data: JSON.stringify(dataReference), contentType };
