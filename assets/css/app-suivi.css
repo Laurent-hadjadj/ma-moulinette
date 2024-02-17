@@ -36,6 +36,9 @@
 
 /*************************          Global     *********************************/
 
+/** Ajustement close-button sur alert-callout */
+.padding-right-1 { padding-right: 1rem; }
+
 /** Suppression du style online */
 #graphique-anomalie {
   position: relative;
@@ -152,6 +155,7 @@
 
 /* Choisir la version de départ */
 .switch-paddle { width: 4.3rem; }
+
 input:checked ~ .switch-paddle { background-color: #00445b; }
 
 /* Affiche la version de référence */
