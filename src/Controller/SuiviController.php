@@ -687,22 +687,6 @@ class SuiviController extends AbstractController
         $response = new JsonResponse();
         return $response->setData(["code" => "OK", Response::HTTP_OK]);
 
-        /** On met à jour l'attribut favori de la table historique */
-        $sql = "UPDATE historique SET favori=$favori
-            WHERE maven_key='$mavenKey'
-            AND version='$version'
-            AND date_version='$date'";
-
-        /** On exécute la requête */
-        $con = $this->em->getConnection()->prepare($sql);
-        try {
-            /** Execution de la requête */
-            $con->executeQuery();
-
-        } catch (\Doctrine\DBAL\Exception $e) {
-            return $response->setData(["code" => $e->getCode(), Response::HTTP_OK]);
-        }
-
         /** On met à jour les preferences de l'utilisateur */
         $preference = $this->getUser()->getPreference();
         $courriel = $this->getUser()->getCourriel();
