@@ -413,14 +413,15 @@ class ProjetController extends AbstractController
         $mavenKey = $request->get('mavenKey');
 
         /** On récupère les notes */
-        $n = self::notes($mavenKey);
+        $n = static::notes($mavenKey);
 
         if ($n["resultat"] === false) {
             $nameApplication = $versionApplication = $typeApplication = "NaN";
             $dateApplication = "01/01/1980";
             $noteCodeSmell = $noteReliability = $noteSecurity = $noteHotspot = "F";
             $nombreMetierCodeSmellBlocker = $nombreMetierCodeSmellCritical = $nombreMetierCodeSmellMajor = 0;
-            $nombrePresentationCodeSmellBlocker = $nombrePresentationCodeSmellCritical = $nombrePresentationCodeSmellMajor = 0;
+            $nombrePresentationCodeSmellBlocker = $nombrePresentationCodeSmellCritical = 0;
+            $nombrePresentationCodeSmellMajor = 0;
             $nombreMetierReliabilityBlocker = $nombreMetierReliabilityCritical = $nombreMetierReliabilityMajor = 0;
             $bugBlocker = $bugCritical = $bugMajor = 0;
             $vulnerabilityBlocker = $vulnerabilityCritical = $vulnerabilityMajor = 0;
@@ -574,23 +575,20 @@ class ProjetController extends AbstractController
         'initial_note_security' => $initialNoteSecurity, 'initial_note_hotspot' => $initialNoteHotspot,
         'initial_bug_blocker' => $initialBugBlocker, 'initial_bug_critical' => $initialBugCritical,
         'initial_bug_major' => $initialBugMajor, 'initial_vulnerability_blocker' => $initialVulnerabilityBlocker,
-        'initial_vulnerability_critical' => $initialVulnerabilityCritical,
-        'initial_vulnerability_major' => $initialVulnerabilityMajor,
-        'initial_code_smell_blocker' => $initialCodeSmellBlocker,
-        'initial_code_smell_critical' => $initialCodeSmellCritical, 'initial_code_smell_major' => $initialCodeSmellMajor,
-        'evolution_bug_blocker' => $evolutionBugBlocker, 'evolution_bug_critical' => $evolutionBugCritical,
-        'evolution_bug_major' => $evolutionBugMajor, 'evolution_vulnerability_blocker' => $evolutionVulnerabilityBlocker,
+        'initial_vulnerability_critical' => $initialVulnerabilityCritical, 'initial_vulnerability_major' => $initialVulnerabilityMajor,
+        'initial_code_smell_blocker' => $initialCodeSmellBlocker, 'initial_code_smell_critical' => $initialCodeSmellCritical,
+        'initial_code_smell_major' => $initialCodeSmellMajor, 'evolution_bug_blocker' => $evolutionBugBlocker,
+        'evolution_bug_critical' => $evolutionBugCritical, 'evolution_bug_major' => $evolutionBugMajor,
+        'evolution_vulnerability_blocker' => $evolutionVulnerabilityBlocker,
         'evolution_vulnerability_critical' => $evolutionVulnerabilityCritical,
         'evolution_vulnerability_major' => $evolutionVulnerabilityMajor,
-        'evolution_code_smell_blocker' => $evolutionCodeSmellBlocker,
-        'evolution_code_smell_critical' => $evolutionCodeSmellCritical,
+        'evolution_code_smell_blocker' => $evolutionCodeSmellBlocker, 'evolution_code_smell_critical' => $evolutionCodeSmellCritical,
         'evolution_code_smell_major' => $evolutionCodeSmellMajor, 'evolution_hotspot' => $evolutionHotspot,
         'modal_initial_bug_blocker' => $initialBugBlocker, 'modal_initial_bug_critical' => $initialBugCritical,
         'modal_initial_bug_major' => $initialBugMajor,'modal_initial_vulnerability_blocker' => $initialVulnerabilityBlocker,
         'modal_initial_vulnerability_critical' => $initialVulnerabilityCritical,
         'modal_initial_vulnerability_major' => $initialVulnerabilityMajor,
-        'modal_initial_code_smell_blocker' => $initialCodeSmellBlocker,
-        'modal_initial_code_smell_critical' => $initialCodeSmellCritical,
+        'modal_initial_code_smell_blocker' => $initialCodeSmellBlocker, 'modal_initial_code_smell_critical' => $initialCodeSmellCritical,
         'modal_initial_code_smell_major' => $initialCodeSmellMajor, 'modal_initial_hotspot' => $initialHotspot,
         'nombre_metier_code_smell_blocker' => $nombreMetierCodeSmellBlocker,
         'nombre_metier_code_smell_critical' => $nombreMetierCodeSmellCritical,
@@ -611,9 +609,9 @@ class ProjetController extends AbstractController
         'nombre_presentation_vulnerability_critical' => $nombrePresentationVulnerabilityCritical,
         'nombre_presentation_vulnerability_major' => $nombrePresentationVulnerabilityMajor,
         'version' => $this->getParameter('version'), 'dateCopyright' => \date('Y'),
-        'mode' => $mode,
-        Response::HTTP_OK
+        'mode' => $mode,  Response::HTTP_OK
         ];
+
         if ($mode === 'TEST') {
             array_push($render, ['notes' => $n]);
             return $response->setData($render);
