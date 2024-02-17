@@ -607,7 +607,7 @@ class SuiviController extends AbstractController
         } catch (\Doctrine\DBAL\Exception $e) {
             return $response->setData(["code" => $e->getCode(), Response::HTTP_OK]);
         }
-        return $response->setData(["mode" => $mode, "code" => "OK", Response::HTTP_OK]);
+        return $response->setData(["mode" => $mode, "code" => 200, Response::HTTP_OK]);
     }
 
     /**
