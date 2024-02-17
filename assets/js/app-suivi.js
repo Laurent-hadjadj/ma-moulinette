@@ -543,12 +543,12 @@ $('.js-modifier-analyse').on('click', function () {
       const version = $(`#version-${l[deux]}`).text().trim();
       const date = $(`#date-${l[deux]}`).text().trim();
 
+      let favori=zero;
       if ($(`#${id}:checked`).length===un) {
         /** SQLite : 0 (false) and 1 (true). */
         favori=un;
-      } else {
-        favori=zero;
       }
+
         const dataFavori = { mavenKey: $('#js-nom').data('maven'), favori, version, date, mode:'null' };
         const optionsFavori = {
           url: `${serveur()}/api/suivi/version/favori`, type: 'PUT',
