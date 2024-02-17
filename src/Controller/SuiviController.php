@@ -87,20 +87,50 @@ class SuiviController extends AbstractController
         /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
 
-        /** On on vérifie si on a activé le mode test */
-        if (is_null($request->get('mode'))) {
-            $mode = "null";
-        } else {
-            $mode = $request->get('mode');
-        }
-
         /** On récupère la clé du projet */
         $mavenKey = $request->get('mavenKey');
+        $mode = $request->get('mode');
 
         /** On teste si la clé est valide */
         if (is_null($mavenKey) && $mode === "TEST") {
             return $response->setData(
                 ["mode" => $mode, "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+        }
+
+        /** On teste si la clé est valide */
+        if ($mavenKey === 'null' || is_null($mavenKey)  || is_null($mode) || $mode === 'TEST') {
+            return $response->setData([
+                'mode' => $mode, 'mavenKey' => $mavenKey,
+                'code'=>400, Response::HTTP_BAD_REQUEST]);
+        }
+
+        /**On vérifie que le projet est bien dans l'historique */
+        $map=['maven_key'=>$mavenKey];
+        $historique = $this->em->getRepository(Historique::class);
+        $request=$historique->countHistoriqueProjet($mode, $map);
+        if ($request['code']!=200) {
+            return $response->setData([
+                'mode' => $mode, 'mavenKey' => $mavenKey,
+                'code'=>$request['code'], 'erreur' => $request['erreur'],
+                Response::HTTP_OK]);
+        }
+        /** Si on a pas de projet dans la table historique on sort avec un message */
+        if ($request['nombre']===0){
+            /** On prepare un message flash */
+            $this->addFlash('alert', sprintf(
+                '%s : %s', "[Erreur 001]","Vous n'avez pas enregistré d'analyse."
+            ));
+
+            $render = [
+                'suivi' => [], 'severite' => [], 'details' => [],
+                'nom' => 'N.C', 'mavenKey' => '',
+                'data1' =>0, 'data2' => 0,
+                'data3' => 0, 'labels' => 0,
+                'version' => $this->getParameter('version'), 'dateCopyright' => \date('Y'),
+                Response::HTTP_OK
+            ];
+
+            return $this->render('suivi/index.html.twig', $render);
         }
 
         /** Tableau de suivi principal */
@@ -225,6 +255,10 @@ class SuiviController extends AbstractController
         if ($mode === "TEST") {
             return $response->setData($render);
         }
+
+        $this->addFlash('sucsess', sprintf(
+            '%s : %s', "[Info 001]","Les données ont été récupérées correctement."
+        ));
 
         return $this->render('suivi/index.html.twig', $render);
     }
