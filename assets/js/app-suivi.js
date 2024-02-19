@@ -591,10 +591,17 @@ $('.js-modifier-analyse').on('click', function () {
         initial=un;
       }
 
+      /** On vérifie la clé maven */
+      if (mavenKey===undefined) {
+        const message=`La clé maven n'est pas valide !`;
+        $('#message').html(callboxError+message+callboxFermer);
+        return;
+      }
+
       /**
        * On appel l'API de mise àjour de la version de référence
        */
-      const dataReference = { maven_key: $('#js-nom').data('maven'), initial, version, date_version: date, mode:'null' };
+      const dataReference = { maven_key: mavenKey, initial, version, date_version: date, mode:'null' };
       const optionsReference = {
         url: `${serveur()}/api/suivi/version/reference`, type: 'PUT',
         dataType: 'json', data: JSON.stringify(dataReference), contentType };
