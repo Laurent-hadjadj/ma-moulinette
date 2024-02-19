@@ -12,17 +12,17 @@ Le formulaire d'inscription propose cinq (6) options :
 
 1. Saisir son nom.
 2. Saisir son prénom.
-1. Choisir son avatar.
+3. Choisir son avatar.
 4. Saisir son adresse mél. (cf. spécification).
 5. Saisir son mot de passe et le vérifier.
 6. Valider son inscription.
 
 > Nouveauté en version 2.0.0
 
-* [x] Gestion et contrôle de l'adresse electronique réécrit ;
+* [x] Gestion et contrôle de l'adresse électronique réécrit ;
 * [x] Ajout du bouton "voir mon mot de passe" ;
 * [ ] Ajout d'un champ de vérification du mot de passe ;
-* [x] Ajout d'une gauge pour mesurer la qualité du mot de passe ;
+* [x] Ajout d'une jauge pour mesurer la qualité du mot de passe ;
 * [x] Désactivation du bouton "inscription" et amélioration des contrôles de surface.
 
 ## Spécifications
@@ -45,6 +45,7 @@ En cliquant sur le bouton `Changer`, une fenêtre modale apparaît. Il est dès 
 Cool, non !
 
 ![inscription](/documentation/ressources/registration-009.jpg)
+
 ## Contrôle de l'adresse
 
 Commencer par un **@** est interdit ;
