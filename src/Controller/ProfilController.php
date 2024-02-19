@@ -22,6 +22,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 // Accès aux tables SLQLite
 use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Main\Profiles;
 
 class ProfilController extends AbstractController
 {
@@ -53,31 +54,39 @@ class ProfilController extends AbstractController
         $response = new JsonResponse();
 
         /** On vérifie si on a activé le mode test */
-        if (is_null($request->get('mode'))) {
-            $mode = "null";
-        } else {
+        $mode = "null";
+        if (!is_null($request->get('mode'))) {
             $mode = $request->get('mode');
         }
 
         /** On récupère la liste des profiles; */
-        $sql = "SELECT name as profil, language_name as langage,
-      active_rule_count as regle, rules_update_at as date, is_default as actif
-      FROM profiles";
-
-        $select = $this->em->getConnection()->prepare(trim(preg_replace("/\s+/u", " ", $sql)))->executeQuery();
-        $liste = $select->fetchAllAssociative();
-
-        /** On vérifie que la table n'est pas vide */
-        if (empty($liste)) {
-            /** on met a jour */
+        $profiles = $this->em->getRepository(Profiles::class);
+        $request=$profiles->selectProfiles($mode);
+        switch ($request['code']) {
+            case 202:
+                $this->addFlash('warning', sprintf('%s : %s', "[PROFIL-099]","Le mode TEST a été activé."));
+                break;
+            case 500:
+                $this->addFlash('alert',
+                    sprintf('%s : %s', "[PROFIL-002]","La liste des profils n'a pas été récupurée."));
+                break;
+            default:
+                if (!$request['liste']){
+                    $this->addFlash('warning',
+                    sprintf('%s : %s', "[PROFIL-003]","La liste des profils est vide. Vous devez la mettre à jour !"));
+                } else {
+                $this->addFlash('info',
+                        sprintf('%s : %s', "[PROFIL-001]","La liste des profils a pas été récupurée."));
+                }
+            break;
         }
 
         $render =
-          [ "mode" => $mode, "liste" => $liste,
+        [ "mode" => $mode, "liste" => $request['liste'],
             "version" => $this->getParameter("version"),
             "dateCopyright" => \date("Y"),
             Response::HTTP_OK
-          ];
+        ];
 
         if ($mode == "TEST") {
             return $response->setData($render);
