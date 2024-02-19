@@ -40,15 +40,15 @@ found 0 vulnerabilities
 | 1.5.0   | 12/09/2022 |  926    | PASS  |
 | 1.6.0   | 30/11/2022 |  734    | PASS  |
 
-## Analyse de codes W3C et Sonarqube
+## Analyse de codes W3C et SonarQube
 
-Cette section présente les résultats de l'analyse sonarqube des versions **Release** de l'application ma-moulinette.
+Cette section présente les résultats de l'analyse SonarQube des versions **Release** de l'application ma-moulinette.
 
 Les résultats de l'analyse du W3C ne vaut que pour la version 2.0.0-RELEASE.
 
-### Version et référentiel sonarqube
+### Version et référentiel SonarQube
 
-La version de sonarqube utilisée pour réaliser l'ensemble des analyses est la version **8.9.9 (build 56886) LTS**.
+La version de SonarQube utilisée pour réaliser l'ensemble des analyses est la version **8.9.9 (build 56886) LTS**.
 
 La barrière qualité est constituée des règles suivantes :
 
@@ -67,25 +67,25 @@ Les règles et profils de qualité utilisés lors de l'analyse sont les suivante
 
 Résultats sans filtres :
 
-![sonarqube v1.0.0](/documentation/ressources/audit-v1.0.0a.jpg)
+![SonarQube v1.0.0](/documentation/ressources/audit-v1.0.0a.jpg)
 
 ![ma-moulinette v1.0.0](/documentation/ressources/ma-moulinette-v1.0.0.jpg)
 
 Résultats avec prise en compte des **Faux positifs**.
 
-![sonarqube-001](/documentation/ressources/audit-v1.0.0.jpg)
+![SonarQube-001](/documentation/ressources/audit-v1.0.0.jpg)
 
 Liste des "**faux positifs**" où "**ne sera pas corrigé**".
 
-* [**009**] **faux positif** `javascript:S1451` :  L'expression régulière ne fonctionne pas. Les fichiers on bien un en-tête de copyright.
-* [**026**] **faux positif** `php:S1451` : L'expression régulière ne fonctionne pas. Les fichiers on bien un en-tête de copyright.
+* [**009**] **faux positif** `javascript:S1451` :  L'expression régulière ne fonctionne pas. Les fichiers ont bien une en-tête de copyright.
+* [**026**] **faux positif** `php:S1451` : L'expression régulière ne fonctionne pas. Les fichiers ont bien une en-tête de copyright.
 * [**005**] **faux positif** `Web:PageWithoutTitleCheck` : La balise <\title> est injectée en TWIG.
-* [**020**] **faux positif** `Web:UnclosedTagCheck` : Twig non pris en charge par le parseur HTML de sonarqube. Par exemple dans l'expresssion {% if toto < 1 %} Le parseur trouve une balse html ouvrante qui n'est jamais fermée.
+* [**020**] **faux positif** `Web:UnclosedTagCheck` : Twig non pris en charge par le parseur HTML de SonarQube. Par exemple dans l'expresssion {% if toto < 1 %} Le parseur trouve une balse html ouvrante qui n'est jamais fermée.
 
 * [**148**] `php:S116` **Ne sera pas corrigé** : Nommage des entity conforme à la norme SQL. Utilisation de PascalCase à la place de camelCase. **J'assume !!!**.
 * [**043**] **faux positif** php:S1578 : Framework Symfony.
 
-* [**002**] **faux positif** `Weak Cryptography` : Utilisation de la fonction Math.random pour effectuer un tirage aléatoire sur un tabeau de couleurs. Les deux sighanelemnts seront corrigés. *Oui Monsieur !!!*.
+* [**002**] **faux positif** `Weak Cryptography` : Utilisation de la fonction **Math.random** pour effectuer un tirage aléatoire sur un tabeau de couleurs. Les deux sighanelemnts seront corrigés. *Oui Monsieur !!!*.
 
 Les règles suivantes sont déclarées en : **Ne sera pas corrigé**. Il n'est pas toujours possible dans le "contexte fonctionnel" de l'application de faire autrement.
 *Non je rigole !!!* Ces signalements seront donc pris en compte lors des prochaines versions.
@@ -99,7 +99,7 @@ C'est la complexité liée aux besoins fonctionnels.
 
 ##### Complexité Cyclomatique
 
-C'est la complexité liée au nombre d'instruction où de ligne de code pour réaliser une action.
+C'est la complexité liée au nombre d'instructions où de ligne de code pour réaliser une action.
 
 * [**003**] `php:S1541` : Complexité cyclomatique.
 * [**025**] `php:S134` : Control Flow supérieur à 4 (if, else, switch,...).
@@ -107,7 +107,7 @@ C'est la complexité liée au nombre d'instruction où de ligne de code pour ré
 
 ##### Tests unitaires
 
-Pas de tests unitaires prévus. Enfin, quand j'aurais appris à en faire ne php j'en ferais certainement.
+Pas de tests unitaires prévus. Enfin, quand j'aurai appris à en faire en php, j'en ferais certainement.
 
 * [***009***] common-js:InsufficientLineCoverage.
 * [***044***] common-php:InsufficientLineCoverage.
@@ -116,29 +116,29 @@ Pas de tests unitaires prévus. Enfin, quand j'aurais appris à en faire ne php 
 
 Résultats sans filtres :
 
-![sonarqube 1.1.0](/documentation/ressources/audit-v1.1.0.jpg)
+![SonarQube 1.1.0](/documentation/ressources/audit-v1.1.0.jpg)
 
 ![ma-moulinette v1.1.0](/documentation/ressources/ma-moulinette-v1.1.0.jpg)
 
 Résultats avec prise en compte des **Faux positifs**.
 
-![sonarqube-001](/documentation/ressources/audit-v1.1.0.jpg)
+![SonarQube-001](/documentation/ressources/audit-v1.1.0.jpg)
 
 ##### Analyse de la version **1.2.0**
 
 Résultats sans filtres :
 
-![sonarqube 1.2.0](/documentation/ressources/audit-v1.2.0a.jpg)
+![SonarQube 1.2.0](/documentation/ressources/audit-v1.2.0a.jpg)
 
 ![ma-moulinette v1.2.0](/documentation/ressources/ma-moulinette-v1.2.0.jpg)
 
 Résultats avec prise en compte des **Faux positifs**.
 
-![sonarqube-001](/documentation/ressources/audit-v1.2.0.jpg)
+![SonarQube-001](/documentation/ressources/audit-v1.2.0.jpg)
 
 Liste des "**Faux positifs**" où "**ne sera pas corrigé**".
 
-* [**06**] **Faux positif**Web:PageWithoutFaviconCheck : Include Twig depuis le composants header ;
+* [**06**] **Faux positif**Web:PageWithoutFaviconCheck : Include Twig depuis le composant header ;
 
 ##### Complexité cognitive (1.2.0)
 
@@ -155,13 +155,13 @@ Liste des "**Faux positifs**" où "**ne sera pas corrigé**".
 
 Résultats sans filtres :
 
-![sonarqube 1.2.6](/documentation/ressources/audit-v1.2.6.jpg)
+![SonarQube 1.2.6](/documentation/ressources/audit-v1.2.6.jpg)
 
 ![ma-moulinette v1.2.6](/documentation/ressources/ma-moulinette-v1.2.6.jpg)
 
 Résultats avec prise en compte des **Faux positifs**.
 
-![sonarqube 1.2.5](/documentation/ressources/audit-v1.2.5.jpg)
+![SonarQube 1.2.5](/documentation/ressources/audit-v1.2.5.jpg)
 
 Liste des "**Faux positifs**" où "**ne sera pas corrigé**".
 
@@ -180,13 +180,13 @@ Liste des "**Faux positifs**" où "**ne sera pas corrigé**".
 
 Résultats sans filtres :
 
-![sonarqube 1.3.0](/documentation/ressources/audit-v1.3.0a.jpg)
+![SonarQube 1.3.0](/documentation/ressources/audit-v1.3.0a.jpg)
 
 ![ma-moulinette v1.3.0](/documentation/ressources/ma-moulinette-v1.3.0.jpg)
 
 Résultats avec prise en compte des **Faux positifs**.
 
-![sonarqube 1.3.0](/documentation/ressources/audit-v1.3.0.jpg)
+![SonarQube 1.3.0](/documentation/ressources/audit-v1.3.0.jpg)
 
 Liste des "**Faux positifs**" où "**ne sera pas corrigé**".
 
@@ -196,13 +196,13 @@ Liste des "**Faux positifs**" où "**ne sera pas corrigé**".
 
 Résultats sans filtres :
 
-![sonarqube 1.4.0](/documentation/ressources/audit-v1.4.0a.jpg)
+![SonarQube 1.4.0](/documentation/ressources/audit-v1.4.0a.jpg)
 
 ![ma-moulinette v1.4.0](/documentation/ressources/ma-moulinette-v1.4.0.jpg)
 
 Résultats avec prise en compte des **Faux positifs**.
 
-![sonarqube 1.4.0](/documentation/ressources/audit-v1.4.0.jpg)
+![SonarQube 1.4.0](/documentation/ressources/audit-v1.4.0.jpg)
 
 Liste des "**Faux positifs**" où "**ne sera pas corrigé**".
 
@@ -212,18 +212,18 @@ Liste des "**Faux positifs**" où "**ne sera pas corrigé**".
 
 Résultats sans filtres :
 
-![sonarqube 1.5.0](/documentation/ressources/audit-v1.5.0a.jpg)
+![SonarQube 1.5.0](/documentation/ressources/audit-v1.5.0a.jpg)
 
 ![ma-moulinette v1.5.0](/documentation/ressources/ma-moulinette-v1.5.0.jpg)
 
 Résultats avec prise en compte des **Faux positifs**.
 
-![sonarqube 1.5.0](/documentation/ressources/audit-v1.5.0.jpg)
+![SonarQube 1.5.0](/documentation/ressources/audit-v1.5.0.jpg)
 
 Liste des "**Faux positifs**" où "**Ne sera pas corrigé**".
 
 * [**010**] **faux positif** `Web:PageWithoutTitleCheck` : La balise <\title> est injectée en TWIG ;
-* [**014**] **faux positif** `Web:UnclosedTagCheck` : Twig non pris en charge par le parseur HTML de sonarqube ;
+* [**014**] **faux positif** `Web:UnclosedTagCheck` : Twig non pris en charge par le parseur HTML de SonarQube ;
 * [**005**] **faux positif** `php:S1451` : L'expression régulière ne fonctionne pas. Les fichiers ont bien une en-tête de copyright.
 
 * [**015**] **sera corrigé** `javascript:S109` : Un commentaire a été ajouté.
@@ -234,15 +234,15 @@ Liste des "**Faux positifs**" où "**Ne sera pas corrigé**".
 
 Résultats sans filtres :
 
-![sonarqube 1.6.0](/documentation/ressources/audit-v1.6.0a.jpg)
+![SonarQube 1.6.0](/documentation/ressources/audit-v1.6.0a.jpg)
 
 ![ma-moulinette v1.6.0](/documentation/ressources/ma-moulinette-v1.6.0.jpg)
 
 Résultats avec prise en compte des **Faux positifs**.
 
-![sonarqube 1.6.0](/documentation/ressources/audit-v1.6.0.jpg)
+![SonarQube 1.6.0](/documentation/ressources/audit-v1.6.0.jpg)
 
-### Bilan Sonarqube 1.6.0
+### Bilan SonarQube 1.6.0
 
 Pour la version 1.6.0 :
 
@@ -264,7 +264,7 @@ Pour la version 1.6.0 :
 * [**02**] **sera corrigé** `Web:InputWithoutLabelCheck` : Associate a valid label to this input field..
 * [**01**] **sera corrigé** `php:S836` : Variables should be initialized before use.
 
-##### 30 signalements mineures
+##### 30 signalements mineurs
 
 * [**17**] **faux positif** `Web:UnclosedTagCheck` : All HTML tags should be closed.
 
