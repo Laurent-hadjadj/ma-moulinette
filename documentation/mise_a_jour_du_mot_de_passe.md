@@ -2,18 +2,18 @@
 
 ![Ma-Moulinette](/documentation/ressources/home-000.jpg)
 
-
 ## Objectif
 
 La page de mise à jour du mot de passe, répond à deux (2) objectifs :
-- [x] Forcer le changement du mot de passe à la premiere connexion avec le compte `admin`, i.e. le mot de passe étant publique, il convient de le changer ;
+
+- [x] Forcer le changement du mot de passe à la première connexion avec le compte `admin`, i.e. le mot de passe étant publique, il convient de le changer ;
 - [ ] Permettre à un utilisateur de mettre à jour son mot de passe à tout moment ;
 
-## Mise à jour du mot de passe
+## Mot de passe
 
-Pour mettre à jour son mot de passe, il convient préalabrement d'être authentifié. Pour le compte `admin`, une redicrection automatique est utilisée pour permettre à l'utilisateur de merttre à jour le mot de passe par défaut.
+Pour mettre à jour son mot de passe, il convient préalablement d'être authentifié. Pour le compte `admin`, une redirection automatique est utilisée pour permettre à l'utilisateur de mettre à jour le mot de passe par défaut.
 
-Pour tout les autres utilisateurs, il suffira de cliquer sur le menu Utilisateur pour selectionner l'option détails.
+Pour tous les autres utilisateurs, il suffira de cliquer sur le menu Utilisateur pour sélectionner l'option détails.
 
 ## Mise à jour du mot de passe Admin
 
@@ -26,12 +26,11 @@ Le formulaire de mise à jour est constitué des éléments suivants :
 1. Le compte utilisateur est affiché. Il n'est pas modifiable.
 2. L'ancien mot de passe. L'utilisateur doit re-saisir son mot de passe.
 3. Le nouveau mot de passe. L'utilisateur doit saisir son nouveau mot de passe.
-4. La resaissie du mot de pase. L'utilisateur doit resaisir son nouveau mot de passe.
-
+4. La ressaisie du mot de passe. L'utilisateur doit ressaisir son nouveau mot de passe.
 
 `Note :` Pour chaque champ de saisie, il est possible d'afficher en clair la valeur saisie.
 
-Tout semble correcte.
+Tout semble correct.
 
 ![reset](/documentation/ressources/reset-002.jpg)
 
