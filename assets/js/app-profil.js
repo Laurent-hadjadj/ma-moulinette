@@ -46,78 +46,73 @@ import {contentType, paletteCouleur, matrice, dateOptions, dateOptionsShort} fro
  * @author    Laurent HADJADJ <laurent_h@me.com>
  * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
-const refreshQuality=function() {
+const refreshQuality=async function() {
   const options = {
     url: `${serveur()}/api/quality/profiles`, type: 'GET',
     dataType: 'json',  contentType };
 
-  return $.ajax(options)
-    .then( r => {
-      /** Problème de droits */
-      if (r.type === 'alert')
-      {
-        $('#callout-profil-message').removeClass('hide success warning primary secondary');
-        $('#callout-profil-message').addClass(r.type);
-        $('#js-reference-information').html(r.reference);
-        $('#js-message-information').html(r.message);
-        return;
-      }
-
-      /** On a pas trouvé de profils */
-      if (r.type === 'warning')
-      {
-        $('#callout-profil-message').removeClass('hide success alert primary secondary');
-        $('#callout-profil-message').addClass(r.type);
-        $('#js-reference-information').html(r.reference);
-        $('#js-message-information').html(r.message);
-        return;
-      }
-
-      let statut1='', statut2='', str='', total=0;
-
-      // On efface le tableau
-      $('#tableau-liste-profil').html('');
-      const profils=r.listeProfil;
-
-      profils.forEach( profil => {
-        if (profil.actif === 1) {
-          statut1='Oui';
-          statut2='O';
-        } else {
-            statut1='Non';
-            statut2='N';
-        }
-        /** On construit le tableau */
-        str +=`<tr class="open-sans">
+  const r = await $.ajax(options);
+  /** Problème de droits */
+  if (r.type === 'alert')
+  {
+    $('#callout-profil-message').removeClass('hide success warning primary secondary');
+    $('#callout-profil-message').addClass(r.type);
+    $('#js-reference-information').html(r.reference);
+    $('#js-message-information').html(r.message);
+    return;
+  }
+  /** On a pas trouvé de profils */
+  if (r.type === 'warning')
+  {
+    $('#callout-profil-message').removeClass('hide success alert primary secondary');
+    $('#callout-profil-message').addClass(r.type);
+    $('#js-reference-information').html(r.reference);
+    $('#js-message-information').html(r.message);
+    return;
+  }
+  let statut1 = '', statut2 = '', str = '', total = 0;
+  // On efface le tableau
+  $('#tableau-liste-profil').html('');
+  const profils = r.listeProfil;
+  profils.forEach(profil =>
+  {
+    if (profil.actif === 1)
+    {
+      statut1 = 'Oui';
+      statut2 = 'O';
+    } else
+    {
+      statut1 = 'Non';
+      statut2 = 'N';
+    }
+    /** On construit le tableau */
+    str += `<tr class="open-sans">
                 <td></td>
-                <td>${profil.profil}</td>
-                <td class="text-center">${profil.langage}</td>
+                <td>${ profil.profil }</td>
+                <td class="text-center">${ profil.langage }</td>
                 <td class="text-center">
-                    ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(profil.regle)}
+                    ${ new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(profil.regle) }
                 </td>
                 <td class="text-center">
                     <span class="show-for-small-only">
-                      ${new Intl.DateTimeFormat('default', dateOptionsShort).format(new Date(profil.date))}
+                      ${ new Intl.DateTimeFormat('default', dateOptionsShort).format(new Date(profil.date)) }
                     </span>
-                    <span class="show-for-medium">${new Intl.DateTimeFormat('default', dateOptions).format(new Date(profil.date))}
+                    <span class="show-for-medium">${ new Intl.DateTimeFormat('default', dateOptions).format(new Date(profil.date)) }
                     </span>
                 </td>
                 <td class="text-center">
-                    <span class="show-for-small-only">${statut2}</span>
-                    <span class="show-for-medium">${statut1}</span>
+                    <span class="show-for-small-only">${ statut2 }</span>
+                    <span class="show-for-medium">${ statut1 }</span>
                 </td>
               </tr>`;
-        total = total + profil.regle;
-      });
-
-      $('#tableau-liste-profil').html(str);
-      $('.js-total').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(total));
-
-      $('#callout-profil-message').removeClass('hide success alert primary secondary');
-      $('#callout-profil-message').addClass(r.type);
-      $('#js-reference-information').html(r.reference);
-      $('#js-message-information').html(r.message);
-    });
+    total = total + profil.regle;
+  });
+  $('#tableau-liste-profil').html(str);
+  $('.js-total').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(total));
+  $('#callout-profil-message').removeClass('hide success alert primary secondary');
+  $('#callout-profil-message').addClass(r.type);
+  $('#js-reference-information').html(r.reference);
+  $('#js-message-information').html(r.message);
 };
 
 /**
