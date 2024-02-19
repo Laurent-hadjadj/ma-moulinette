@@ -548,8 +548,15 @@ $('.js-modifier-analyse').on('click', function () {
         /** SQLite : 0 (false) and 1 (true). */
         favori=un;
       }
+        const mavenKey=$('#js-nom').data('maven');
+        /** On vérifie la clé maven */
+        if (mavenKey===undefined) {
+          const message=`La clé maven n'est pas valide !`;
+          $('#message').html(callboxError+message+callboxFermer);
+          return;
+        }
 
-        const dataFavori = { mavenKey: $('#js-nom').data('maven'), favori, version, date, mode:'null' };
+        const dataFavori = { maven_key: mavenKey, favori, version, date_version: date, mode:'null' };
         const optionsFavori = {
           url: `${serveur()}/api/suivi/version/favori`, type: 'PUT',
           dataType: 'json', data: JSON.stringify(dataFavori), contentType };
@@ -558,10 +565,13 @@ $('.js-modifier-analyse').on('click', function () {
          */
         $.ajax(optionsFavori).then((t) => {
           if (t.code===200) {
-            const message='Mise à jour du favori.';
+            const message='Mise à jour du favori efféctuée.';
             $('#message').html(callboxSuccess+message+callboxFermer);
+          } else if (t.code===201) {
+            const message=`Cette version a été supprimé des favoris.`;
+            $('#message').html(callboxWarning+message+callboxFermer);
           } else {
-            const message=`Erreur lors de la mise à jour (${t.code}).`;
+            const message=`Erreur lors de la mise à jour (${t.erreur}).`;
             $('#message').html(callboxError+message+callboxFermer);
           }
         });
@@ -597,7 +607,7 @@ $('.js-modifier-analyse').on('click', function () {
           const message=`Vous n'êtes pas autorisé à effectuer cette opération.`;
           $('#message').html(callboxWarning+message+callboxFermer);
         } else {
-          const message=`Erreur lors de la mise à jour (${t.code}).`;
+          const message=`Erreur lors de la mise à jour (${t.erreur}).`;
           $('#message').html(callboxError+message+callboxFermer);
         }
       });
