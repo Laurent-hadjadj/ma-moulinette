@@ -30,6 +30,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 /** Accès aux tables SLQLite */
 use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Main\Properties;
 
 /** Client HTTP */
 use App\Service\Client;
@@ -72,60 +73,50 @@ class ApiProfilController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/quality/profiles', name: 'liste_quality_profiles', methods: ['GET'])]
-    public function listeQualityProfiles(Security $security, Client $client): response
+    #[Route('/api/quality/profiles', name: 'liste_quality_profiles', methods: ['POST'])]
+    public function listeQualityProfiles(Request $request, Security $security, Client $client): response
     {
+        /** on décode le body */
+        $data = json_decode($request->getContent());
 
         /** On crée un objet response */
         $response = new JsonResponse();
 
-        /* On bind les informations utilisateur */
-        $roles = $security->getUser()->getRoles();
+        /** On teste si la clé est valide */
+        if ($data === null) {
+        return $response->setData(['mode' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
 
-        if (in_array("ROLE_GESTIONNAIRE", $roles) !== true) {
-            /** On envoi un message à l'utilisateur */
-            $reference = "<strong>[PROFIL-001]</strong>";
-            $message = "Vous devez avoir le rôle GESTIONNAIRE pour réaliser cette action.";
-            $type = "alert";
-            return $response->setData([
-              "reference" => $reference,
-              "message" => $message,
-              "type" => $type,
-              Response::HTTP_OK]);
+        /** si on est pas GESTIONNAIRE on ne fait rien. */
+        if (!$security->isGranted('ROLE_GESTIONNAIRE')){
+            return $response->setData(['mode' => $data->mode, 'code' => 403, Response::HTTP_OK]);
         }
 
-        /** On définit l'URL */
+        /** On définit l'URL et on ajoute le nom des profils sonarqube*/
         $url = $this->getParameter(static::$sonarUrl)
-              . "/api/qualityprofiles/search?qualityProfile="
-              . $this->getParameter('sonar.profiles');
+            . "/api/qualityprofiles/search?qualityProfile="
+            . $this->getParameter('sonar.profiles');
 
         /** On appel le client http */
         $r = $client->http($url);
 
-        /** Vérifie qu'il existe au moins  un profil */
+        /** On Vérifie qu'il existe au moins un profil */
         if (empty($r['profiles'])) {
-            /** On envoi un message à l'utilisateur */
-            $reference = "<strong>[PROFIL-002]</strong>";
-            $message = "Vous devez avoir au moins un profil déclaré sur le serveur sonarqube
-                correspondant à la clé définie dans le fichier de propriétés.";
-            $type = "warning";
-            return $response->setData([
-              "reference" => $reference,
-              "message" => $message,
-              "type" => $type,
-              Response::HTTP_OK]);
+            return $response->setData(['mode' => $data->mode, 'code' => 202, Response::HTTP_OK]);
         }
 
+        /*** Super on a récupéré la liste des profils par langage */
         $date = new DateTime();
         $date->setTimezone(new DateTimeZone('Europe/Paris'));
         $nombre = 0;
 
         /** On supprime les données de la table avant d'importer les données;*/
-        $sql = "DELETE FROM profiles";
-        $delete = $this->em->getConnection()->prepare($sql);
-        $delete->executeQuery();
+        $profiles = $this->em->getRepository(Profiles::class);
+        $request=$profiles->deleteProfiles($data->mode);
+        if ($request['code']===500) {
+            return $response->setData(['mode' => $data->mode, 'code' => 500, 'erreur'=>$request['erreur'], Response::HTTP_OK]);
+        }
 
-        /** On insert les profiles dans la table profiles. */
+        /** On insert les profils dans la table profiles. */
         foreach ($r["profiles"] as $profil) {
             $nombre = $nombre + 1;
 
@@ -142,32 +133,17 @@ class ApiProfilController extends AbstractController
             $this->em->flush();
         }
 
-        /** On récupère la liste des profils; */
-        $sql = "SELECT name as profil, language_name as langage,
-            active_rule_count as regle, rules_update_at as date,
-            is_default as actif FROM profiles";
-        $select = $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
-        $liste = $select->fetchAllAssociative();
+        /** On récupère la nouvelle liste des profils; */
+        $request=$profiles->selectProfiles($data->mode);
 
         /** On met à jour la table proprietes */
         $dateModificationProfil = $date->format("Y-m-d H:i:s");
+        $map=['profil_bd'=>$nombre, 'profil_sonar'=>$nombre, 'date_modification_profil'=>$dateModificationProfil];
+        $properties = $this->em->getRepository(Properties::class);
+        $properties->updateProfilesProperties($data->mode, $map);
 
-        $sql = "UPDATE properties
-    SET profil_bd = $nombre,
-        profil_sonar = $nombre,
-        date_modification_profil = '$dateModificationProfil'
-    WHERE type = 'properties'";
-        $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
-
-        $reference = "<strong>[PROFIL-002]</strong>";
-        $message = "Bravo, la liste des référentiels a été mise à jour.";
-        $type = "success";
         return $response->setData([
-          "reference" => $reference,
-          "message" => $message,
-          "type" => $type,
-          "listeProfil" => $liste,
-          Response::HTTP_OK]);
+            'mode' => $data->mode, 'code' => 200, "listeProfil" => $request['liste'], Response::HTTP_OK]);
     }
 
     /**
