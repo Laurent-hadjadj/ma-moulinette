@@ -36,6 +36,12 @@ import Chance from 'chance';
 /** On importe les constantes */
 import {contentType, paletteCouleur, matrice, dateOptions, dateOptionsShort} from './constante.js';
 
+/* Construction des callbox de type success */
+const callboxInformation='<div id="js-message" class="callout alert-callout-border primary" data-closable="slide-out-right" role="alert"><p class="open-sans color-bleu padding-right-1"><span class="lead">Information ! </span>';
+const callboxSuccess='<div id="js-message" class="callout alert-callout-border success" data-closable="slide-out-right" role="alert"><span class="open-sans color-bleu padding-right-1"><span class="lead">Bravo ! </span> ';
+const callboxWarning='<div id="js-message" class="callout alert-callout-border warning" data-closable="slide-out-right" role="alert"><span class="open-sans padding-right-1 color-bleu">span class="lead">Attention ! </strong>';
+const callboxError='<div id="js-message" class="callout alert-callout-border alert" data-closable="slide-out-right"><span class="open-sans padding-right-1 color-bleu"><trong>Ooups ! </trong>';
+const callboxFermer='</span><button class="close-button" aria-label="Fermer la fenêtre" type="button" data-close><span aria-hidden="true">&times;</span></button></div>';
 
 /**
  * [Description for refreshQuality]
@@ -47,33 +53,44 @@ import {contentType, paletteCouleur, matrice, dateOptions, dateOptionsShort} fro
  * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
 const refreshQuality=async function() {
-  const options = {
-    url: `${serveur()}/api/quality/profiles`, type: 'GET',
-    dataType: 'json',  contentType };
+  const dataRefresh = { mode:'null' };
+  const optionsRefresh = {
+        url: `${serveur()}/api/quality/profiles`, type: 'POST',
+        dataType: 'json', data: JSON.stringify(dataRefresh), contentType };
 
-  const r = await $.ajax(options);
-  /** Problème de droits */
-  if (r.type === 'alert')
-  {
-    $('#callout-profil-message').removeClass('hide success warning primary secondary');
-    $('#callout-profil-message').addClass(r.type);
-    $('#js-reference-information').html(r.reference);
-    $('#js-message-information').html(r.message);
-    return;
+  /** On appel l'API */
+  const t = await $.ajax(optionsRefresh);
+  let message='';
+  switch (t.code) {
+    case 200 :
+      console.log('code 200');
+      message='Mise à jour de la liste effectuée.';
+      $('#message').html(callboxSuccess+message+callboxFermer);
+      /** On efface le message flash */
+      $('.js-message').remove();
+      break;
+    case 202:
+      message=`Vous devez au moins avoir un profil déclaré sur le serveur SonarQube correspondant à la clé définie dans le fichier de propriétés de Ma-Moulinette.`;
+      $('#message').html(callboxInformation+message+callboxFermer);
+    break;
+    case 400:
+      message=`La requête n'est pas conforme (Erreur 400).`;
+      $('#message').html(callboxError+message+callboxFermer);
+      break;
+    case 403:
+      message=`Vous n'êtes pas autorisé à effectuer cette opération.`;
+      $('#message').html(callboxWarning+message+callboxFermer);
+      break;
+    default:
+      message=`Erreur lors de la mise à jour (${t.erreur}).`;
+      $('#message').html(callboxError+message+`(${t.erreur}).`+callboxFermer);
   }
-  /** On a pas trouvé de profils */
-  if (r.type === 'warning')
-  {
-    $('#callout-profil-message').removeClass('hide success alert primary secondary');
-    $('#callout-profil-message').addClass(r.type);
-    $('#js-reference-information').html(r.reference);
-    $('#js-message-information').html(r.message);
-    return;
-  }
+
   let statut1 = '', statut2 = '', str = '', total = 0;
+
   // On efface le tableau
   $('#tableau-liste-profil').html('');
-  const profils = r.listeProfil;
+  const profils = t.listeProfil;
   profils.forEach(profil =>
   {
     if (profil.actif === 1)
@@ -85,6 +102,7 @@ const refreshQuality=async function() {
       statut1 = 'Non';
       statut2 = 'N';
     }
+
     /** On construit le tableau */
     str += `<tr class="open-sans">
                 <td></td>
@@ -109,10 +127,6 @@ const refreshQuality=async function() {
   });
   $('#tableau-liste-profil').html(str);
   $('.js-total').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(total));
-  $('#callout-profil-message').removeClass('hide success alert primary secondary');
-  $('#callout-profil-message').addClass(r.type);
-  $('#js-reference-information').html(r.reference);
-  $('#js-message-information').html(r.message);
 };
 
 /**
@@ -172,7 +186,7 @@ const palette=function() {
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const dessineMoiUnMouton=function(label, dataset) {
-  const nouvellePalette = palette(); 
+  const nouvellePalette = palette();
   const data =
   {
     labels: label,
