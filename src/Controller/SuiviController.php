@@ -677,48 +677,32 @@ class SuiviController extends AbstractController
     {
         /** on décode le body */
         $data = json_decode($request->getContent());
-        $mavenKey = $data->mavenKey;
-        $favori = $data->favori;
-        $date = $data->date;
-        $version = $data->version;
-        $mode = $data->mode;
 
         /** On créé un nouvel objet Json */
         $response = new JsonResponse();
-        return $response->setData(["code" => "OK", Response::HTTP_OK]);
 
-        /** On met à jour les preferences de l'utilisateur */
+        /** On met à jour le favori et la version favorite */
         $preference = $this->getUser()->getPreference();
         $courriel = $this->getUser()->getCourriel();
 
-        /** On récupéres les préférences */
-        $statut = $preference['statut'];
-        $projet = $preference['projet'];
-        $version = $preference['version'];
-        $bookmark = $preference['bookmark'];
-
-        /** On supprime le projet favori de la liste */
-        $nouvelleListeFavori = array_diff($preference['favori'], [$mavenKey]);
-
-        /** On met à jour l'objet. */
-        $jarray = json_encode([
-            'statut' => $statut,
-            'projet' => $projet,
-            'favori' => $nouvelleListeFavori,
-            'version' => $version,
-            'bookmark' => $bookmark
-        ]);
-
-        /** On met à jour les préférences. */
-        $sql = "UPDATE utilisateur
-                SET preference = '$jarray'
-                WHERE courriel='$courriel';";
-        $trim = trim(preg_replace(static::$regex, " ", $sql));
-        $exec = $this->em->getConnection()->prepare($trim)->executeQuery();
-        if ($mode !== 'TEST') {
-            $exec->fetchAllAssociative();
+        $map=['favori'=>$data->favori, 'courriel'=> $courriel, 'maven_key'=>$data->maven_key, 'version'=>$data->version, 'date_version'=>$data->date_version];
+        $utilisateur = $this->em->getRepository(Utilisateur::class);
+        /** si le favori a été supprimé favori=0 */
+        if ($data->favori===0) {
+            $request=$utilisateur->deleteUtilisateurPreferenceFavori($data->mode, $preference, $map);
+            return $response->setData(['mode' => $data->mode, 'code' => 201, Response::HTTP_OK]);
         }
-        return $response->setData(["mode" => $mode, "code" => "OK", Response::HTTP_OK]);
+
+        $request=$utilisateur->insertUtilisateurPreferenceFavori($data->mode, $preference, $map);
+        if ($request['code']!=200) {
+            return $response->setData([
+                'mode' => $data->mode, 'maven_key' => $data->maven_key,
+                'code'=>$request['code'], 'erreur' => $request['erreur'],
+                Response::HTTP_OK]);
+        }
+
+        /** Tout c'est bien passé */
+        return $response->setData(['mode' => $data->mode, 'code' => 200, Response::HTTP_OK]);
     }
 
     /**
