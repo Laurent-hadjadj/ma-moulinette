@@ -25,7 +25,7 @@
 
 ## Page profil
 
-Cette page affiche la liste des référentiels disponibles sur le serveur sonarqube.
+Cette page affiche la liste des référentiels disponibles sur le serveur SonarQube.
 
 > Evolutions 2.0.0
 
@@ -33,7 +33,7 @@ Cette page affiche la liste des référentiels disponibles sur le serveur sonarq
 * [x] Ajout de la colonne `Outil` et de l'icône pour afficher le détail des changements pour le profil.
 * [x] Suppression de la date dans la légende du tableau.
 
-![profil](/documentation/ressources/profil-000g.jpg) est disponnible sur la page **Acueil**.
+![profil](/documentation/ressources/profil-000g.jpg) est disponible sur la page **Accueil**.
 
 ![profil](/documentation/ressources/profil-000a.jpg)
 
@@ -47,11 +47,11 @@ Si la liste des référentiels de règles est vide, il faudra cliquer sur le bou
 
 ![profil](/documentation/ressources/profil-000c.jpg)
 
-Vous devez avoir au moins un profil déclaré sur le serveur sonarqube correspondant à la clé définie dans le fichier de propriétés.
+Vous devez avoir au moins un profil déclaré sur le serveur SonarQube correspondant à la clé définie dans le fichier de propriétés.
 
 ![profil](/documentation/ressources/profil-000d.jpg)
 
-Une fois la liste mise à jour, le tableau des profils est affiché. Toutefois, il n'est pas possible de consulter le détails d'un profil sans rafraichir la page (F5).
+Une fois la liste mise à jour, le tableau des profils est affiché. Toutefois, il n'est pas possible de consulter le détail d'un profil sans rafraichir la page (F5).
 
 ![profil](/documentation/ressources/profil-000e.jpg)
 
@@ -81,7 +81,7 @@ Ci-dessous notre référentiel pour les applications `JAVA`, `WEB`, `PHP`, `PYTH
 
 ## Répartition des règles par langage
 
-La distribution par langage est affiché dès lors que l'on appuie sur le bouton :
+La distribution par langage est affichée dès lors que l'on appuie sur le bouton :
 
 ![profil](/documentation/ressources/profil-004.jpg)
 
