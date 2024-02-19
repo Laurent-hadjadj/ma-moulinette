@@ -36,7 +36,7 @@ Cette page regroupe plusieurs indicateurs construits sur les données locales hi
 
 > Pensez à enregistrer  chaque collecte de données.
 
-Si aucune données n'est enregsitré dans la table historique alors la page s'ouvre sans aucune information.
+Si aucune données n'est enregistrée dans la table *historique*, alors la page s'ouvre sans aucune information.
 
 ![suivi](/documentation/ressources/suivi-007.jpg)
 
@@ -67,7 +67,7 @@ Choisissez une version disponible dans la liste des versions.
 
 ![suivi](/documentation/ressources/suivi-ajout-002.jpg)
 
-Si le projet n'existe plus dans sonarqube, un message d'erreur est affiché et aucune valeur n'est remontée.
+Si le projet n'existe plus dans SonarQube, un message d'erreur est affiché et aucune valeur n'est remontée.
 
 ![suivi](/documentation/ressources/suivi-ajout-003.jpg)
 
@@ -87,23 +87,63 @@ Il suffit de cliquer sur le bouton **Ajouter** pour ajouter cette version dans l
 
 ### Modifier la configuration
 
-Si un projet n'a pas été sélctionné, alors un message d'erreur est affiché à l'utiliosateur.
+Il est possible de définir les propriétés d'une version d'un projet.
 
-![suivi-modification](/documentation/ressources/suivi-modification-004.jpg)
-
-Il est possible de modifier les paramètres d'affichage d'une version en activant ou non l'option **favori** et/ou l'option **version de référence**.
+* [ ] La version favorite d'un projet est propre à chaque utilisateur.
+* [ ] La version de référence pour ce projet est partagée par tous les utilisateurs. Elle est définie par l'utilisateur ayant le rôle **gestionnaire**.
+* [ ] La suppression, i.e. la poubelle, permet de supprimer la version du projet de l'historique. Seul l'utilisateur ayant le rôle **gestionnaire** peut réaliser cette action.
 
 ![suivi-modification](/documentation/ressources/suivi-modification-001.jpg)
 
-`Note :` la version de référence est la version qui sera utilisée pour comparer les versions lors da présentation de la tendance.
+#### Les favoris
+
+La version favorite d'un projet et/ou d'une version est définie pour chaque utilisateur dans ses préférences (depuis la version 2.0.0).
+
+> Une seule instance du projet peut être en favoris par contre il est possible d'avoir plusieurs versions de ce projet en favoris.
+
+Il suffit pour cela de cliquer sur le bouton de sélection  pour choisir de mettre la version en favori.
+
+Si un projet n'a pas été sélectionné, i.e. la clé maven est non défini, alors un message d'erreur est affiché à l'utilisateur.
+
+![suivi-modification](/documentation/ressources/suivi-modification-004.jpg)
+
+Si tout va bien, le projet est enregistré dans les favoris de l'utilisateur.
+
+![suivi-modification](/documentation/ressources/suivi-modification-008.jpg)
+
+Si l'utilisateur souhaite supprimer la version des favoris, il lui suffira de désélectionner la version à partir du bouton de sélection.
+
+![suivi-modification](/documentation/ressources/suivi-modification-010.jpg)
+
+Enfin, en mode **test**, un message d'erreur est affiché.
+
+![suivi-modification](/documentation/ressources/suivi-modification-009.jpg)
+
+#### La version de référence
+
+La version de référence correspond à la version initiale à partir de laquelle toutes les mesures sont comparées.
+
+> Il ne peut y a voir qu'une seule version de référence.
+
+Si un projet n'a pas été sélectionné, i.e. la clé maven est non défini, alors un message d'erreur est affiché à l'utilisateur.
+
+![suivi-modification](/documentation/ressources/suivi-modification-004.jpg)
+
+Il suffit de cliquer sur le bouton de sélection de la version pour enregistrer la version en référence pour les calculs.
 
 ![suivi-modification](/documentation/ressources/suivi-modification-002.jpg)
 
-En cliquant sur le bouton représentant une poubelle, le projet est supprimé de la table historique. Cette action nécessite d'avoir le rôle [GESTIONNAIRE].
+Le choix de la version de référence n'est possible que si l'utilisateur a le rôle **gestionnaire**.
 
 ![suivi-modification](/documentation/ressources/suivi-modification-003.jpg)
 
-Ici, la suppression a été simulé en mode TEST (TU).
+#### Supprimer la version
+
+Il suffit de cliquer sur le bouton *effacer* la version de l'historique, i.e. la poubelle. Cette action nécessite d'avoir le rôle **gestionnaire**.
+
+![suivi-modification](/documentation/ressources/suivi-modification-003.jpg)
+
+Ici, la suppression a été simulée en mode TEST (TU).
 
 ![suivi-modification](/documentation/ressources/suivi-modification-005.jpg)
 
@@ -111,7 +151,7 @@ Le projet a été correctement supprimé.
 
 ![suivi-modification](/documentation/ressources/suivi-modification-006.jpg)
 
-Le projet a été correctement supprimé ainsi que dans la liste des projet/version de favoris.
+Le projet a été correctement supprimé ainsi que dans la liste des projets/versions de favoris.
 
 ![suivi-modification](/documentation/ressources/suivi-modification-007.jpg)
 
