@@ -16,7 +16,7 @@ L'authentification est obligatoire. L'utilisation de `ma-moulinette` doit avoir 
 
 ![authentification](/documentation/ressources/authentification-001.jpg)
 
-Le formulaire de connexion propose deux (2) options:
+Le formulaire de connexion propose deux (2) options :
 
 1 - Saisir son identifiant, son mot de passe et choisir si l'on souhaite ajouter un cookie de connexion automatique.
 
@@ -24,7 +24,7 @@ Le formulaire de connexion propose deux (2) options:
 
 `Note :` l'option de **changer son mot de passe** est dans le backlog.
 
-L'identifiant est l'adresse mél. de l'utilisateur. L'identifiant doit être unique.
+L'identifiant est l'adresse mél de l'utilisateur. L'identifiant doit être unique.
 
 ![authentification](/documentation/ressources/authentification-002.jpg)
 
@@ -42,19 +42,19 @@ Les messages d'erreurs sont affichés sous le formulaire de connexion. C'est mon
 
 ## Mise à jour du mot de passe
 
-Le mot de passe est obligatoire mis à jour pour le compte admin, à la première connexion.
+Le mot de passe est obligatoirement mis à jour pour le compte admin, à la première connexion.
 
 Pour les autres utilisateurs, il est possible depuis le menu d'identification de changer son mot de passe.
 
-Une fois authentifié, l'utilisateur est redirigé vers la page d'acceuil de l'application.
+Une fois authentifié, l'utilisateur est redirigé vers la page d'accueil  de l'application.
 
 ![authentification](/documentation/ressources/authentification-005.jpg)
 
-L'identifiant de connexion afficher sous le menu en haut à droite de la page permet l'accès au menu **Détails**.
+L'identifiant de connexion  affiché sous le menu en haut à droite de la page permet l'accès au menu **Détails**.
 
 ![authentification](/documentation/ressources/authentification-006.jpg)
 
-En cliquant sur son identifiant le menu laisse apparaitre un menu.
+En cliquant sur son identifiant,  le menu laisse apparaitre un menu.
 
 ![authentification](/documentation/ressources/authentification-007.jpg)
 
