@@ -13,26 +13,97 @@ Elles contiennent l'ensemble des tables définies depuis les class du dossier **
 
 Les tables pour la base **data** sont les suivantes :
 
-- Anomalie
-- AnomalieDetails
-- Favori
-- Historique
-- HotspotsDetails
-- HotspotOwasp
-- Hotspots
-- InformationProjet
-- ListeProjet
-- Mesures
-- NoSonar
-- Notes
-- Owasp
-- Profiles
-- Utilisateur
-- MaMoulinette
+  > activite (v2.0.0)
+
+![ER-Diagram](/documentation/ressources/database/data.db_-_activite.png)
+
+> anomalie
+
+![ER-Diagram](/documentation/ressources/database/data.db_-_anomalie.png)
+
+> anomalie_details
+
+![ER-Diagram](/documentation/ressources/database/data.db_-_anomalie_details.png)
+
+> batch (v2.0.0)
+
+![ER-Diagram](/documentation/ressources/database/data.db_-_batch.png)
+
+> batch_traitement (v2.0.0)
+
+![ER-Diagram](/documentation/ressources/database/data.db_-_batch_traitement.png)
+
+> ~~favori~~ (v2.0.0)
+
+Table supprimée.
+
+> historique
+
+![ER-Diagram](/documentation/ressources/database/data.db_-_historique.png)
+
+> hotspots_details
+
+![ER-Diagram](/documentation/ressources/database/data.db_-_hotspot_details.png)
+
+> hotspot_owasp
+
+![ER-Diagram](/documentation/ressources/database/data.db_-_hotspot_owasp.png)
+
+> hotspots
+
+![ER-Diagram](/documentation/ressources/database/data.db_-_hotspots.png)
+
+> information_projet
+
+![ER-Diagram](/documentation/ressources/database/data.db_-_information_projet.png)
+
+> liste_projet
+
+![ER-Diagram](/documentation/ressources/database/data.db_-_liste_projet.png)
+
+> ma_moulinette (v1.6.0)
+
+![ER-Diagram](/documentation/ressources/database/data.db_-_ma_moulinette.png)
+
+> mesures
+
+![ER-Diagram](/documentation/ressources/database/data.db_-_mesures.png)
+
+> no_sonar
+
+![ER-Diagram](/documentation/ressources/database/data.db_-_no_sonar.png)
+
+> notes
+
+![ER-Diagram](/documentation/ressources/database/data.db_-_notes.png)
+
+> owasp
+
+![ER-Diagram](/documentation/ressources/database/data.db_-_owasp.png)
+
+> profiles
+
+![ER-Diagram](/documentation/ressources/database/data.db_-_profiles.png)
+
+> profiles_historique (v2.0.0)
+
+![ER-Diagram](/documentation/ressources/database/data.db_-_anomalie.png)
+
+> properties (1.6.0)
+
+![ER-Diagram](/documentation/ressources/database/data.db_-_properties.png)
+
+> todo (1.6.0)
+
+![ER-Diagram](/documentation/ressources/database/data.db_-_todo.png)
+
+> Utilisateur
+
+![ER-Diagram](/documentation/ressources/database/data.db_-_utilisateur.png)
 
 Les tables pour la base **temp** sont les suivantes :
 
-- Repartition
+- repartition
 
 ### Génération des entities
 
@@ -396,6 +467,12 @@ ALTER TABLE utilisateur ADD COLUMN equipe CLOB DEFAULT NULL;
 
 COMMIT;
 ```
+
+## Migration 1.6.0 vers 2.0.0
+
+`Note :` Le fichier SQL `data-2.0.0.sql` de mise à jour, est disponible dans le dossier **/migrations/**.
+
+La version **2.0.0** introduit plusieurs changements :
 
 -**-- FIN --**-
 
