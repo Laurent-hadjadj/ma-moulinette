@@ -10,7 +10,7 @@
 * [Portefeuille](/documentation/portefeuille.md)
 * [Batch](/documentation/batch.md)
 
-La gestion des utilisateurs s'appuie sur un contrôleur CRUD du bundle EasyAdmin. Les options disponibles  sont les suivantes :
+La gestion des utilisateurs s'appuie sur un contrôleur CRUD du bundle EasyAdmin. Les options disponibles sont les suivantes :
 
 * [X] Je peux visualiser la liste des utilisateurs ;
 * [X] Je peux afficher le détail de l'utilisateur ;
@@ -27,17 +27,17 @@ Il faut avoir le rôle `GESTIONNAIRE` et cliquer sur l'icône utilisateurs en ha
 
 ![utilisateur](/documentation/ressources/utilisateur-002.jpg)
 
-Par défaut cinq (5) utilisateurs sont créés.
+Par défaut, cinq (5) utilisateurs sont créés.
 
 * [x] admin, avec le rôle `Gestionnaire` et le statut `Actif`. Il est l'utilisateur par défaut.
-* [ ] Aurélie, une utilisatrice de test.
-* [ ] Josh, un utilisateur de test.
-* [ ] Emma, une utilisateur de test.
-* [ ] Nathan, un utilisateur de test.
+* [ ] Aurélie, une utilisatrice de tests.
+* [ ] Josh, un utilisateur de tests.
+* [ ] Emma, une utilisatrice de tests.
+* [ ] Nathan, un utilisateur de tests.
 
 Les utilisateurs **Aurélie**, **Josh**, **Emma** et **Nathan** ont pour rôle **GESTIONNAIRE**, **UTILISATEUR**, **BATCH** et **COLLECTE**. Les comptes de tests sont rattachés à une équipe et sont `désactivés` par défaut.
 
-Pour chaque utilisateur, le tableau de suivi affiche les éléments suivants  :
+Pour chaque utilisateur, le tableau de suivi affiche les éléments suivants :
 
 * L'avatar ;
 * La personne (Nom + Prénom) ;
@@ -58,7 +58,7 @@ Il est possible de `supprimer` l'utilisateur, de `revenir à la liste` où de l'
 
 ![utilisateur](/documentation/ressources/utilisateur-004.jpg)
 
-## Editez les paramètres du compte
+## Éditez les paramètres du compte
 
 Il est possible de :
 
