@@ -24,21 +24,20 @@
 - [Répartition détaillée](/documentation/repartition_details.md)
 - [Préférences](/documentation/preferences.md)
 
-## Evolutions
+## Évolutions
 
 > En version **2.0.0** :
 
 - [x] l'application est compatible multi-utilisateur (i.e. utilisation d'un serveur). La gestion des droits est renforcée et les préférences individuelles sont sauvegardées.
-
-- [x] il et possible d'afficher les informations des projets favoris ou des versions des projets favoris.
-
+- [x] il est possible d'afficher les informations des projets favoris ou des versions des projets favoris.
 - [x] Le *logger* est supprimé et laisse sa place à une boîte d'information.
-
 - [x] l'icône **traitement** apparaît dès lors que vous avez le rôle **[BATCH]**.
-
-- [x] l'icône **préference** apparaît.
-
+- [x] l'icône **préférence** apparaît.
 - [x] il est possible d'ouvrir, depuis la zone des favoris, le projet directement en cliquant sur l'icône de raccourci situé à côté du titre.
+- [x] la gestion des préférences a été ajouté pour gérer ses projets et ses favoris.
+- [x] la gestion de l'authentificationa a été améliorée. La sécurité a été renforcée.
+- [x] l'identification de l'utilisateur et le renouvellement de son mot de passe a été ajouté.
+- [x] prise en compte partielle du WCAG 2.2.
 
 > En version **1.6.0** :
 
@@ -53,32 +52,32 @@
 
 Cette page est la page d'ouverture de l'application. Elle permet :
 
-- [ ] de mettre à jour la liste du référentiel des applications sonarqube ;
-- [ ] de mettre à jour la liste du référentiel des règles sonarqube ;
-- [ ] d'afficher le nombre de projet de type **privé** ;
-- [ ] d'afficher le nombre de projet de type **public**
+- [ ] de mettre à jour la liste du référentiel des applications SonarQube ;
+- [ ] de mettre à jour la liste du référentiel des règles SonarQube ;
+- [ ] d'afficher le nombre de projets de type **privé** ;
+- [ ] d'afficher le nombre de projets de type **public**
 - [ ] d'afficher les projets favoris par projet et/ou par version.
 
 ![home](/documentation/ressources/home-001.jpg)
 
-Si la version de l'application et de la base de données sont identiques, tout va bien. Par contre si une différence est détectée, alors un message est affiché à l'utilisateur connecté.
+Si la version de l'application et de la base de données sont identiques, tout va bien. Par contre, si une différence est détectée, alors un message est affiché à l'utilisateur connecté.
 
 Il faudra passer le ou les scripts de migration pour aligner la version de l'application au shéma de la base de données.
 
 ![home](/documentation/ressources/home-001a.jpg)
 
-La détection des changements des référentiels signale toutes modifications sur le référentiel des projets ou celui des règles sonarqube.
+La détection des changements des référentiels signale toutes modifications sur le référentiel des projets ou celui des règles SonarQube.
 
 La mise à jour est signalée quand :
 
-- [x] le nombre de projets et/ou de profils est différent de ceux présents sur le serveur sonarqube ;
+- [x] le nombre de projets et/ou de profils est différent de ceux présents sur le serveur SonarQube ;
 
 Le contrôle se fait en fonction de la fréquence choisie, par défaut :
 
 - [x] 1 jour pour les projets ;
 - [x] 30 jours pour les profils ;
 
-Cela veut dire que si la table de référence des projets et profils a été mise à jour dans la journée, il n'y aura pas de signalement en cas de différences avec le serveur sonarqube. En d'autres termes, il faudra lancer la mise à jour de la table locale manuellement, comme on le faisait précédemment.
+Cela veut dire que si la table de référence des projets et des profils a été mise à jour dans la journée, il n'y aura pas de signalement en cas de différences avec le serveur SonarQube. En d'autres termes, il faudra lancer la mise à jour de la table locale manuellement, comme on le faisait précédemment.
 
 Si la table des projets et des profils n'est pas à jour, un message s'affiche pour indiquer que la mise à jour est recommandée. Le nombre de projets et/ou de profils en plus ou en moins est indiqué.
 
@@ -101,7 +100,7 @@ Notez, en haut à droite, l'affichage de cinq (5) liens en fonction des droits d
 - [ ] `Utilisateur` : gestion des utilisateurs ;
 - [ ] `Traitements` : gestion des traitements de masse ;
 - [x] `Préfernces` : gestion des préférences de l'utilisateur ;
-- [x] `Dashboard` : informations sur l'applications ;
+- [x] `Dashboard` : informations sur l'application ;
 - [x] `Logout` : pour se déconnecter de l'application ;
 
 Le bouton **mon projet** permet l'accès à la page des projets.
@@ -110,7 +109,7 @@ Le bouton **mon projet** permet l'accès à la page des projets.
 
 Dans la partie inférieure, la liste des applications favorites est affichée par projet et/ou par version.
 
-- [x] si l'utilisateur a désactivé dans ces préférences la gestion des favoris alors rien n'est affiché.
+- [x] si l'utilisateur a désactivé dans ces préférences la gestion des favoris, alors rien n'est affiché.
 
 ![home](/documentation/ressources/home-004.jpg)
 
