@@ -55,7 +55,7 @@ La collecte progresse :)
 La collecte est terminée.
 ![repartition-module](/documentation/ressources/repartition-module-006.jpg)
 
-La phase d'analyse permet de lancer et afficher le tableau de répartition par module des signalements sonarqube. Il faut pour cela cliquer sur le bouton **Analyser**.
+La phase d'analyse permet de lancer et afficher le tableau de répartition par module des signalements SonarQube. Il faut pour cela cliquer sur le bouton **Analyser**.
 
 Le bouton **Afficher** permet quant à lui d'afficher la dernière analyse si elle existe pour le projet.
 
