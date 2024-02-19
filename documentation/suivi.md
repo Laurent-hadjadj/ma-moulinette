@@ -28,13 +28,13 @@ La page permet l'affichage des 10 dernières versions de l'application sélectio
 
 ![suivi](/documentation/ressources/suivi-001.jpg)
 
-Cette page regroupe plusieurs indicateurs construits sur les données locales historisées et  trois boutons  d'action pour :
+Cette page regroupe plusieurs indicateurs construits sur les données locales historisées et trois boutons d'action pour :
 
 * [ ] Imprimer un rapport PDF ;
 * [ ] Ajouter les indicateurs consolidés d'une version précédente à la version courante ;
 * [ ] Modifier les **favoris** et la **version de référence** ;
 
-> Pensez à enregistrer  chaque collecte de données.
+> Pensez à enregistrer chaque collecte de données.
 
 Si aucune données n'est enregistrée dans la table *historique*, alors la page s'ouvre sans aucune information.
 
@@ -101,7 +101,7 @@ La version favorite d'un projet et/ou d'une version est définie pour chaque uti
 
 > Une seule instance du projet peut être en favoris par contre il est possible d'avoir plusieurs versions de ce projet en favoris.
 
-Il suffit pour cela de cliquer sur le bouton de sélection  pour choisir de mettre la version en favori.
+Il suffit pour cela de cliquer sur le bouton de sélection pour choisir de mettre la version en favori.
 
 Si un projet n'a pas été sélectionné, i.e. la clé maven est non défini, alors un message d'erreur est affiché à l'utilisateur.
 
