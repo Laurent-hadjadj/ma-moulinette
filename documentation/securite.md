@@ -36,9 +36,10 @@ Il est nécessaire de définir dans le fichier **.env** la valeur de ces deux pa
 TRUST_HOST1="^ma-petite-entrprise\.fr$"
 TRUST_HOST2="10.0.0.1"
 ```
+
 ## La gestion de la sécurité
 
-Le fichier `security.yml` contient le paramètrage de la sécurité et de l'authentification.
+Le fichier `security.yml` contient le paramétrage de la sécurité et de l'authentification.
 
 ```yaml
   # On active le mécanisme d'authentification
@@ -47,7 +48,7 @@ Le fichier `security.yml` contient le paramètrage de la sécurité et de l'auth
     hide_user_not_found: false
 ```
 
-La hiéarchie des rôles permet l'héritage de droits.
+La hiérarchie des rôles permet l'héritage de droits.
 
 ```yaml
     role_hierarchy:
@@ -69,7 +70,7 @@ Les points d'accès sont définis de cette façon :
     - { path: ^/, roles: ROLE_UTILISATEUR }
 ```
 
-Le chiffrement utilise l'algorithme **brcrypt** par défaut avec un niveau de hasshage de 13.
+Le chiffrement utilise l'algorithme **brcrypt** par défaut avec un niveau de hachage de niveau 13.
 
 ```yaml
 password_hashers:
@@ -80,15 +81,15 @@ password_hashers:
 
 ## Firewall
 
-Le firewall dans Symfony permet de sécuriser par le biais de rôles, l'accès aux pages de l'applications.
+Le firewall dans Symfony permet de sécuriser, par le biais de rôles, l'accès aux pages de l'application.
 
-Il existe deux rôles par défaut auquel nous avons ajouté **trois** rôles fonctionnelles.
+Il existe deux rôles par défaut auquel nous avons ajouté **trois** rôles fonctionnels.
 
 - [x] **PUBLIC_ACCESS**, permet à l'accès aux pages publiques.
-- [ ] **ROLE_USER**, permet dans Symfony l'accès à des pages privées.
+- [ ] **ROLE_USER**, permet dans Symfony l'accès à des pages privés.
 - [x] **ROLE_UTILISATEUR**, permet l'accès à toutes les pages privées ayant se rôle.
 - [x] **ROLE_GESTIONNAIRE**, permet l'accès aux pages de gestion de l'application.
-- [x] **ROLE_BATCH**, permet l'accès à la page de suivi des traitemenst automatique et manuel.
+- [x] **ROLE_BATCH**, permet l'accès à la page de suivi des traitements automatique et manuel.
 
 Toute personne authentifiée peut accéder à l'ensemble des pages de l'application, à l'exception des pages destinées aux personnes ayant le rôle de `GESTIONNAIRE` et `BTACH` (Traitement).
 
@@ -119,7 +120,7 @@ Le fichier `security.yaml` contient la configuration suivante pour étendre les 
 - `UTILISATEUR` avec les droits de `BATCH`.
 - `UTILISATEUR` avec les droits de `GESTIONNAIRE`.
 
-## Filtrage twig et dans les controlleurs
+## Filtrage twig et dans les contrôleurs
 
 Le contrôle des droits se fait au niveau des pages twig ou des contrôleurs.
 
