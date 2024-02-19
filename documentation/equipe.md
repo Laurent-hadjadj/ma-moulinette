@@ -25,12 +25,12 @@ Il faut avoir le rôle `GESTIONNAIRE` et cliquer sur l'icône utilisateurs en ha
 
 ![utilisateur-icône](/documentation/ressources/utilisateur-001.jpg)
 
-Puis, depuis le menu latérale, cliquez sur l'icône **équipe**.
+Puis, depuis le menu latéral, cliquez sur l'icône **équipe**.
 ![equipe-icône](/documentation/ressources/equipe-000.jpg)
 
 ## Afficher la liste des équipes
 
-Par exemple, ci-dessous la liste est vide.
+Par exemple, ci-dessous, la liste est vide.
 
 ![equipe-liste](/documentation/ressources/equipe-001.jpg)
 
@@ -70,7 +70,7 @@ Puis cliquez sur le bouton `Créer` pour valider le formulaire.
 
 ![utilisateur](/documentation/ressources/equipe-004.jpg)
 
-`Note :` Initialement, l'attribut `#[UniqueEntity...]` était utilisé au niveau de la class pour contrôler l'unicité de l'attribut `Titre` mais son utilisation n'étant assez fiable (i.e. son fonctionnement n'est pas garanti), une contrainte de validité `#[AcmeAssert\ContainsEquipeUnique()]` a été ajouté au niveau de l'attribut lui même. Un contrôle a été ajouté également au niveau du controller CRUD.
+`Note :` Initialement, l'attribut `#[UniqueEntity...]` était utilisé au niveau de la class pour contrôler l'unicité de l'attribut `Titre` mais son utilisation n'étant assez fiable (i.e. son fonctionnement n'est pas garanti), une contrainte de validité `#[AcmeAssert\ContainsEquipeUnique()]` a été ajouté au niveau de l'attribut lui même. Un contrôle a été ajouté également au niveau du contrôler CRUD.
 
 Le code avant :
 
