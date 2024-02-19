@@ -25,13 +25,13 @@
 
 ## Page COmité de SUIvi
 
-Cette page affiche le tableau de suivi du Comité de Suivi des signalements Sonarqube.
+Cette page affiche le tableau de suivi du Comité de Suivi des signalements SonarQube.
 
 ![suivi](/documentation/ressources/cosui-001.jpg)
 
 Le **setup** correspond à la valeur de la dernière analyse de répartition des signalements des modules de l'application. Si la valeur est à **NaN** le tableau affichera des valeurs égales à (0) zéro.
 
-Le premier tableau présente les résultats de la dernière analyse sonarqube. Les informations sont les suivantes :
+Le premier tableau présente les résultats de la dernière analyse SonarQube. Les informations sont les suivantes :
 
 * **Application** : corresponds à la version de référence qui servira de version étalon pour les comparaisons.
 * **Critère** : rassemble les critères qualité du moins importants au plus importants.
@@ -39,7 +39,7 @@ Le premier tableau présente les résultats de la dernière analyse sonarqube. L
 * **Bloquant** : signalements bloquants.
 * **Critique** : signalements critiques.
 * **Majeur** : signalements majeurs.
-* **Note** : note Sonarqube.
+* **Note** : note SonarQube.
 
 ![suivi](/documentation/ressources/cosui-002.jpg)
 
@@ -51,7 +51,7 @@ Si vous n'avez pas choisi de projet de référence, vous aurez un message d'erre
 
 ![suivi](/documentation/ressources/cosui-002a.jpg)
 
-Il est possible d'afficher les variations entre la version de référence et la dernière version en cliquant sur le bouton **Afficher la variations ?**
+Il est possible d'afficher les variations entre la version de référence et la dernière version en cliquant sur le bouton **Afficher les variations ?**
 
 ![suivi](/documentation/ressources/cosui-004.jpg)
 
