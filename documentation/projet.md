@@ -23,7 +23,7 @@
 * [Répartition détaillée](/documentation/repartition_details.md)
 * [Préférences](/documentation/preferences.md)
 
-## Evolutions
+## Évolutions
 
 > En version 2.0.0
 
@@ -33,9 +33,9 @@
 * [x] la liste affiche uniquement les projets de l'équipe.
 * [x] la fenêtre modale "Liste des projets" a été modifié pour prendre en compte les préférences de l'utilisateur.
 * [x] un bookmark pour conserver le dernier projet analysé a été ajouté. Il permet l'accès aux informations sans rechercher le projet.
-* [x] le rattachement à une équipe correspondant à un TAG de projet Sonarqube est obligatoire.
+* [x] le rattachement à une équipe correspondant à un TAG de projet SonarQube est obligatoire.
 * [x] le bloc **type de version** a été modifié pour afficher les versions **autres** que Release ou Snapshot.
-* [x] le nombre de commentaires de type **Todo** a été ajouté dans le pannel Informations.
+* [x] le nombre de commentaires de type **Todo** a été ajouté dans le panel Informations.
 
 > En version 1.5.0
 
@@ -47,7 +47,7 @@
 
 > En version 1.4.0
 
-* [x] le bloc d'actions a été ajouté pour permettre de un accès rapide aux opérations courrantes comme dévérouiller un projet de la liste, lancer une collecte ou afficher la page de suivi.
+* [x] le bloc d'actions a été ajouté pour permettre un accès rapide aux opérations courantes comme déverrouiller un projet de la liste, lancer une collecte ou afficher la page de suivi.
 
 > En version 1.3.0
 
@@ -55,7 +55,7 @@
 
 ## Page Projet
 
-La page projet permet, une fois sélectionné un projet ou avoir activé dans ses préférences l'option **bookmark**, la collecte des données et/ou l'affichage des résultats de la dernière collecte ainsi que l'accès aux différents tableau de bord permettant le suivi des indicateurs.
+La page projet permet, une fois sélectionné un projet ou avoir activé dans ses préférences l'option **bookmark**, la collecte des données et/ou l'affichage des résultats de la dernière collecte ainsi que l'accès aux différents tableaux de bord permettant le suivi des indicateurs.
 
 ![projet](/documentation/ressources/projet-000.jpg)
 
@@ -63,7 +63,7 @@ Si l'utilisateur n'est pas rattaché à une équipe, il ne pourra pas choisir de
 
 ![projet](/documentation/ressources/projet-000b.jpg)
 
-L'utilisateur est bien rattaché à une équipe mais aucun `tag` présent sur le serveur sonarqube ne correspond.
+L'utilisateur est bien rattaché à une équipe mais, aucun `tag` présent sur le serveur SonarQube ne correspond.
 
 ![projet](/documentation/ressources/projet-000c.jpg)
 
@@ -80,7 +80,7 @@ Je choisis mon projet à partir du référentiel local.
 ![projet](/documentation/ressources/projet-001b.jpg)
 
 * [ ] je lance la collecte pour une nouvelle analyse.
-* [X] j'affiche les résultats présent dans la base.
+* [X] j'affiche les résultats présents dans la base.
 
 Si l'utilisateur n'a pas le rôle `Collecte` ou `Gestionnaire`, il ne pourra pas lancer la collecte des indicateurs qualités du projet.
 
@@ -126,7 +126,7 @@ La page du projet propose plusieurs fenêtres modales pour :
 
 ![projet](/documentation/ressources/projet-009.jpg)
 
-Et enfin, je peux afficher la liste des projets que j'ai déjà analysés et ceux qui sont favoris en cliquant sur le bouton :
+Et enfin, je peux afficher la liste des projets que j'ai déjà analysée et ceux qui sont favoris en cliquant sur le bouton :
 
 ![projet](/documentation/ressources/projet-007.jpg)
 
@@ -168,7 +168,7 @@ Le message de fin de traitement est affiché.
 
 ![projet](/documentation/ressources/projet-007e.jpg)
 
-* [ ]  si l'on souhaite afficher le tableau de suivui COSUI, il suffit de cliquer sur le bouton **C**.
+* [ ]  si l'on souhaite afficher le tableau de suivi COSUI, il suffit de cliquer sur le bouton **C**.
 
 ![projet](/documentation/ressources/projet-007f.jpg)
 
@@ -182,7 +182,7 @@ Le message de fin de traitement est affiché.
 
 ## Les autres actions
 
-![projet](/documentation/ressources/projet-010.jpg) pour ouvrir la page présant le rapport d'analyse OWASP 2017 ;
+![projet](/documentation/ressources/projet-010.jpg) pour ouvrir la page présentant le rapport d'analyse OWASP 2017 ;
 
 ![projet](/documentation/ressources/projet-011.jpg) pour ouvrir la page permettant de réaliser l'analyse du projet et la répartition des signalements par module (Présentation, métier et autres) ;
 
