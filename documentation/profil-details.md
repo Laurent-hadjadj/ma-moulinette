@@ -25,7 +25,7 @@
 
 ## Page profil détails
 
-Cette page affiche la liste des changements groupés par date. Le nombre de changement est limité dans cette version à **500**.
+Cette page affiche la liste des changements groupés par date. Le nombre de changements est limité dans cette version à **500**.
 
 ![profil-details](/documentation/ressources/profil-details-000a.jpg) Pour afficher la page, il suffit de choisir un langage dans la page `Profil` et cliquer sur l'icône de suivi des changements.
 
@@ -43,7 +43,7 @@ Cette section présente les informations suivantes :
 
 * [x] la date d'initialisation du référentiel de règles ;
 * [x] la date de la dernière modification ;
-* [x] le nombre total de règle ;
+* [x] le nombre total de règles ;
 * [x] le nombre de règles activé ;
 * [x] Le nombre de règles modifié ;
 * [x] le nombre de règles désactivé ;
