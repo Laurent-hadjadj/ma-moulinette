@@ -11,7 +11,7 @@ Unable to access cssRules property DOMException :
 CSSStyleSheet. cssRules getter : Not allowed to access cross-origin stylesheet
 ```
 
-Cette erreur est due à l'utilisation d'une extension du navigateur. Par exemple dans Firefox, l'utilisation de l'extension merciApp doit être désactivée.
+Cette erreur est due à l'utilisation d'une extension du navigateur. Par exemple, dans Firefox, l'utilisation de l'extension merciApp doit être désactivée.
 
 Pour identifier l'extension en cause, il suffit de désactiver toutes les extensions et de les ajouter l'une après l'autre et vérifier ainsi laquelle peut poser un problème.
 
