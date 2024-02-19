@@ -2,11 +2,11 @@
 
 ![Ma-Moulinette](/documentation/ressources/home-000.jpg)
 
-Il est possible de passer la *moulinette* sur toutes les applications disponibles sur la plateforme sonarqube.
+Il est possible de passer la *moulinette* sur toutes les applications disponibles sur la plateforme SonarQube.
 
-Cependant, certains indicateurs ne seront pas calculés si l'architecture n'est pas conforme avec l'organisation qui a été retenue pour les applications Java.
+Cependant, certains indicateurs ne seront pas calculés si l'architecture n'est pas conforme à l'organisation qui a été retenue pour les applications Java.
 
-L'architecture pour les applications Java repose sur les principes SOA et de cloisonnement des resposabilités. Les applications sont composés des deux applications JAVA, l'une pour le frontend et la seconde pour le backend.
+L'architecture pour les applications Java repose sur les principes SOA et de cloisonnement des responsabilités. Les applications sont composées des deux applications JAVA, l'une pour le frontend et la seconde pour le backend.
 
 Les indicateurs de suivi par module (frontend, backend et autre) sont calculés sur la base d'un filtrage du nom du dossier parent.
 
