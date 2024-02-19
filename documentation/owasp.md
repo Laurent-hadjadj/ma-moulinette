@@ -25,7 +25,7 @@
 
 ## Page OWASP
 
-Cette page permet l'affichage des vulnérabilités et des hotspots selon le référentiel **OWASP 2017** (sonarqube 8).
+Cette page permet l'affichage des vulnérabilités et des hotspots selon le référentiel **OWASP 2017** (SonarQube 8).
 
 Quand tout va bien :)
 
