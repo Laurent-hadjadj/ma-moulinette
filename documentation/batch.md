@@ -13,13 +13,13 @@
 La gestion des **Traitements** s'appuie sur un contrôleur CRUD du bundle EasyAdmin. Les options disponibles sont les suivantes :
 
 * [X] Je peux visualiser la liste des traitements ;
-* [X] Je peux afficher le détail d'un traitements ;
-* [X] Je peux modifier le titre et la description d'un traitements ;
+* [X] Je peux afficher le détail d'un traitement ;
+* [X] Je peux modifier le titre et la description d'un traitement ;
 * [X] Je peux supprimer un traitement ;
 
-L'entité `Batch` permet de traiter la collecte des indicateurs d'un portefeuilles de projets. Un traitement peut-être `Automatique` ou `Manuel`.
+L'entité `Batch` permet de traiter la collecte des indicateurs d'un portefeuille de projets. Un traitement peut-être `Automatique` ou `Manuel`.
 
-Un traitement automatique est un traitement lancé la depuis un orchestrateur de tâches, par exemple CRON. Un traitement manuel est un traitement lancé par un utilisateur depuis la page des traitements.
+Un traitement automatique est un traitement lancé depuis un orchestrateur de tâches, par exemple CRON. Un traitement manuel est un traitement lancé par un utilisateur depuis la page des traitements.
 
 ## Accéder à l'interface d'administration
 
@@ -27,12 +27,12 @@ Il faut avoir le rôle `BATCH` et cliquer sur l'icône **Traitements** en haut �
 
 ![traitement-icône](/documentation/ressources/bo-traitement-000.jpg)
 
-Il est possible d'accèder à la page de gestion des traitements le menu latérale, en cliquant sur l'icône **traitement**.
+Il est possible d'accéder à la page de gestion des traitements, depuis le menu latérale en cliquant sur l'icône **traitement**.
 ![traitement-icône](/documentation/ressources/bo-traitement-001.jpg)
 
 ## Afficher la liste des traitements
 
-La liste des traitements est vide par défaut. Nous avons ajouté un traitement pour la collete des indicateurs de l'application **Ma-Moulinette**.
+La liste des traitements est vide par défaut. Nous avons ajouté un traitement pour la collecte des indicateurs de l'application **Ma-Moulinette**.
 
 ![portefeuille-liste](/documentation/ressources/bo-traitement-002.jpg)
 
@@ -53,7 +53,7 @@ Le menu en fin de ligne permet, pour chaque traitement, de consulter, éditer et
 
 ## Ajouter un nouveau traitement
 
-Il suffit de cliquez sur le bouton **Créer Traitement** en haut à droite de l'écran. En suite, il suffira de saisir le `titre` du traitement, de sélectionner le `portefeuille` des projets et de saisir la description du traitement `description`.
+Il suffit de cliquer sur le bouton **Créer Traitement** en haut à droite de l'écran. En suite, il suffira de saisir le `titre` du traitement, de sélectionner le `portefeuille` des projets et de saisir la description du traitement `description`.
 
 ![bo-traitement-ajouter](/documentation/ressources/bo-traitement-003.jpg)
 
@@ -71,7 +71,7 @@ Exemple pour le `portefeuille`.
 
 ![bo-traitement-erreur-portefeuille](/documentation/ressources/bo-traitement-005a.jpg)
 
-`Note :` Un portefeuilles a été ajoutée par défaut pour l'équipe de développement de `Ma Moulinette`. Il contient le projet `Ma Moulinette`.
+`Note :` Un portefeuille a été ajouté par défaut pour l'équipe de développement de `Ma Moulinette`. Il contient le projet `Ma Moulinette`.
 
 ## Consulter le traitement
 
@@ -83,7 +83,7 @@ Il est possible de :
 
 ![bo-traitement-consulter](/documentation/ressources/bo-traitement-006.jpg)
 
-## Editez l'équipe
+## Éditez l'équipe
 
 Il est possible de :
 
@@ -101,9 +101,8 @@ Pour valider la modification, il suffira de cliquer sur le bouton `Sauvegarder l
 
 ![bo-traitement-message](/documentation/ressources/bo-traitement-008.jpg)
 
-* Le traitement existe déjà.
-  Il n'y a pas de message car on utilise la contrainte d'unicité et non le listner.
-_
+* Le traitement existe déjà. Il n'y a pas de message car on utilise la contrainte d'unicité et non le listner.
+
 * Suppression du traitement.
 
 ![bo-traitement](/documentation/ressources/bo-traitement-010.jpg)
