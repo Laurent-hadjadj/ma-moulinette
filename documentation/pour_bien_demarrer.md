@@ -2,7 +2,7 @@
 
 ![Ma-Moulinette](/documentation/ressources/home-000.jpg)
 
-- [x] modifiez les paramètres **APP_ENV** et **APP_DEBUG**  du fichier `.env` :
+- [x] modifiez les paramètres **APP_ENV** et **APP_DEBUG** du fichier `.env` :
 
 ```yaml
 APP_ENV = dev
@@ -11,8 +11,8 @@ APP_DEBUG = 1
 
 Par défaut, les programmes de démarrage et d'arrêt sont dans le dossier bin/ du projet.
 
-- [x] lancez le programme **symfony_start.bat** pour démarrer le serveur symfony ;
-- [x] lancez le programme **encore.bat** pour démarrer la compilation à la volée des ressources JS/CSS (**--watch**) ;
+- [x] lancez le programme **symfony_start.bat** pour lancer le serveur symfony ;
+- [x] lancez le programme **encore.bat** pour lancer la compilation à la volée des ressources JS/CSS (**--watch**) ;
 
 `Note :` pour arrêter le serveur symfony-cli, lancez la commande **symfony_stop.bat** ;
 
