@@ -2,7 +2,6 @@
 
 namespace App\Repository\Main;
 
-use ApiPlatform\JsonApi\State\JsonApiProvider;
 use App\Entity\Main\Utilisateur;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
