@@ -194,9 +194,9 @@ class HomeController extends AbstractController
         $date = new DateTime();
         $date->setTimezone(new DateTimeZone(static::$europeParis));
 
-        $map=['bd'=>$bd, 'sonar'=>$sonar,
-                'dateModificationProjet'=> $date->format(static::$dateFormat),
-                'dateModificationProfil'=> $date->format(static::$dateFormat)];
+        $map=['profil_bd'=>$bd, 'profil_sonar'=>$sonar,
+                'date_modification_projet'=> $date->format(static::$dateFormat),
+                'date_modification_profil'=>$date->format(static::$dateFormat)];
 
         $repository = $this->em->getRepository(Properties::class);
 
@@ -234,11 +234,11 @@ class HomeController extends AbstractController
             $projetModificationDate = $date->format(static::$dateFormat);
             $profilModificationDate = $date->format(static::$dateFormat);
             $map=[
-                'projetBD'=>$projetBD, 'projetSonar'=>$projetSonar,
-                'profilBD'=>$profilBD, 'profilSonar'=>$profilSonar,
-                'dateCreationFormat'=>$dateCreationFormat,
-                'projetModificationDate'=>$projetModificationDate,
-                'profilModificationDate'=>$profilModificationDate];
+                'projet_bd'=>$projetBD, 'projet_sonar'=>$projetSonar,
+                'profil_bd'=>$profilBD, 'profil_Sonar'=>$profilSonar,
+                'date_creation'=>$dateCreationFormat,
+                'date_modification_projet'=>$projetModificationDate,
+                'date_modification_profil'=>$profilModificationDate];
 
             $repository = $this->em->getRepository(Properties::class);
             $repository->insertProperties($map);
