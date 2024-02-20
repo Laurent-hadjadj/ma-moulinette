@@ -22,11 +22,11 @@ class BatchTraitement
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: Types::INTEGER)]
     private $id;
 
     /** Démarage ? Manuel ou automatique */
-    #[ORM\Column(type: 'string', length: 16, )]
+    #[ORM\Column(type: Types::STRING, length: 16, )]
     private $demarrage = "Manuel";
 
     /** Résultat  */
@@ -34,30 +34,30 @@ class BatchTraitement
     private $resultat = 0;
 
     /** Nom du traitement */
-    #[ORM\Column(type: 'string', length: 32)]
+    #[ORM\Column(type: Types::STRING, length: 32)]
     private $titre;
 
     /** Nom du portefeuille de projet */
-    #[ORM\Column(type: 'string', length: 32)]
+    #[ORM\Column(type: Types::STRING, length: 32)]
     private $portefeuille = "Aucun";
 
     /** Nombre de projet */
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: Types::INTEGER)]
     private $nombreProjet = 0;
 
-    #[ORM\Column(type: 'string', length: 128)]
+    #[ORM\Column(type: Types::STRING, length: 128)]
     private $responsable;
 
     /** Debut du traitement */
-    #[ORM\Column(type: 'datetime', nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private $debutTraitement;
 
     /** Fin du traitement */
-    #[ORM\Column(type: 'datetime', nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private $finTraitement;
 
     /** Date d'enregistrement */
-    #[ORM\Column(type: 'datetime')]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private $dateEnregistrement;
 
     /**

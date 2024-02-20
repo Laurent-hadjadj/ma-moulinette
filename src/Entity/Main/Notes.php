@@ -21,21 +21,21 @@ use Doctrine\ORM\Mapping as ORM;
 class Notes
 {
     #[ORM\Id]
-    #[ORM\Column(type: 'string', length: 128)]
+    #[ORM\Column(type: Types::STRING, length: 128)]
     private $mavenKey;
 
     #[ORM\Id]
-    #[ORM\Column(type: 'string', length: 16)]
+    #[ORM\Column(type: Types::STRING, length: 16)]
     private $type;
 
     #[ORM\Id]
-    #[ORM\Column(type: 'datetime')]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private $date;
 
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: Types::INTEGER)]
     private $value;
 
-    #[ORM\Column(type: 'datetime')]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private $dateEnregistrement;
 
     /**

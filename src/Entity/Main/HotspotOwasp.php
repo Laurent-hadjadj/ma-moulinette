@@ -22,25 +22,25 @@ class HotspotOwasp
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: Types::INTEGER)]
     private $id;
 
-    #[ORM\Column(type: 'string', length: 128)]
+    #[ORM\Column(type: Types::STRING, length: 128)]
     private $mavenKey;
 
-    #[ORM\Column(type: 'string', length: 8)]
+    #[ORM\Column(type: Types::STRING, length: 8)]
     private $menace;
 
-    #[ORM\Column(type: 'string', length: 8)]
+    #[ORM\Column(type: Types::STRING, length: 8)]
     private $probability;
 
-    #[ORM\Column(type: 'string', length: 16)]
+    #[ORM\Column(type: Types::STRING, length: 16)]
     private $status;
 
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: Types::INTEGER)]
     private $niveau;
 
-    #[ORM\Column(type: 'datetime')]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private $dateEnregistrement;
 
     /**
