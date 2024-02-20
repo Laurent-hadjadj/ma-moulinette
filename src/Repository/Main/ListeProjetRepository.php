@@ -11,6 +11,8 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ListeProjetRepository extends ServiceEntityRepository
 {
+    public static $removeReturnline = "/\s+/u";
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, ListeProjet::class);
@@ -35,9 +37,11 @@ class ListeProjetRepository extends ServiceEntityRepository
     }
 
     /**
-     * [Description for countVisibility]
+     * [Description for countListeProjetVisibility]
      * Execute une requête paramétrique count avec type= PRIVATE || PUBLIC
-     * @param mixed $type
+     *
+     * @param string $mode
+     * @param string $type
      *
      * @return array
      *
@@ -45,27 +49,53 @@ class ListeProjetRepository extends ServiceEntityRepository
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function countVisibility($type): array
+    public function countListeProjetVisibility($mode, $type): array
     {
-      $sql = "SELECT count(*) as visibility FROM liste_projet WHERE visibility=:visibility";
-      $r=$this->getEntityManager()->getConnection()->prepare($sql);
-      $r->bindValue(":visibility", $type);
-      return  $r->executeQuery()->fetchAllAssociative();
+        $sql = "SELECT count(*) as visibility
+                FROM liste_projet
+                WHERE visibility=:visibility";
+        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+        $conn->bindValue(":visibility", $type);
+        try {
+            if ($mode !== 'TEST') {
+                $request=$conn->executeQuery()->fetchAllAssociative();
+            } else {
+                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+            }
+        } catch (\Doctrine\DBAL\Exception $e) {
+            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+        }
+        return ['mode'=>$mode, 'code'=>200, 'request'=>$request, 'erreur'=>''];
     }
 
+
     /**
-     * [Description for countProjet]
+     * [Description for countListProjet]
      * Compte le nombre total de projet.
+     *
+     * @param string $mode
+     *
      * @return array
      *
      * Created at: 27/10/2023 13:54:53 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function countProjet(): array
+    public function countListeProjet($mode): array
     {
-      $sql = $sql = "SELECT COUNT(*) as total from liste_projet";
-      return  $this->getEntityManager()->getConnection()->prepare($sql)->executeQuery()->fetchAllAssociative();
+        $sql = "SELECT COUNT(*) AS total
+        FROM liste_projet";
+        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+        try {
+            if ($mode !== 'TEST') {
+                $request=$conn->executeQuery()->fetchAllAssociative();
+            } else {
+                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+            }
+        } catch (\Doctrine\DBAL\Exception $e) {
+            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+        }
+        return ['mode'=>$mode, 'code'=>200, 'request'=>$request, 'erreur'=>''];
     }
 
 }

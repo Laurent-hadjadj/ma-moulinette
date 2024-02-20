@@ -39,7 +39,9 @@ class PropertiesRepository extends ServiceEntityRepository
     /**
      * [Description for getProperties]
      * Récupère la liste des properties
-     * @param mixed $type
+     *
+     * @param string $mode
+     * @param string $type
      *
      * @return array
      *
@@ -47,18 +49,31 @@ class PropertiesRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function getProperties($type): array
+    public function getProperties($mode, $type): array
     {
-      $sql = "SELECT * FROM properties WHERE (:type)";
-      $r=$this->getEntityManager()->getConnection()->prepare($sql);
-      $r->bindValue(":type", $type);
-      return  $r->executeQuery()->fetchAllAssociative();
+      $sql = "SELECT *
+              FROM properties
+              WHERE type=:type";
+      $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+      $conn->bindValue(':type', $type);
+      try {
+        if ($mode !== 'TEST') {
+            $request=$conn->executeQuery()->fetchAllAssociative();
+        } else {
+            return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+        }
+      } catch (\Doctrine\DBAL\Exception $e) {
+          return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+      }
+      return ['mode'=>$mode, 'code'=>200, 'request'=>$request, 'erreur'=>''];
     }
 
     /**
      * [Description for insertProperties]
      * Ajoute les properties
-     * @param mixed $map
+     *
+     * @param string $mode
+     * @param array $map
      *
      * @return array
      *
@@ -66,30 +81,52 @@ class PropertiesRepository extends ServiceEntityRepository
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function insertProperties($map): array
+    public function insertProperties($mode, $map): array
     {
-
       $sql = "INSERT INTO properties
-                (type, projet_bd, projet_sonar, profil_bd, profil_sonar,
-                date_modification_projet, date_modification_profil, date_creation)
+                (type,
+                  projet_bd,
+                  projet_sonar,
+                  profil_bd,
+                  profil_sonar,
+                  date_modification_projet,
+                  date_modification_profil,
+                  date_creation)
               VALUES
-                ('properties', :projetBD, :projetSonar, :profilBD, :profilSonar,
-                :projetModificationDate, :profilModificationDate, :dateCreationFormat)";
+                ('properties',
+                  :projet_bd,
+                  :projet_sonar,
+                  :profil_bd,
+                  :profil_sonar,
+                  :date_modification_projet,
+                  :date_modification_profil,
+                  :date_creation)";
       $r=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-      $r->bindValue(":projetBD", $map["projetBD"]);
-      $r->bindValue(":projetSonar", $map["projetSonar"]);
-      $r->bindValue(":profilBD", $map["profilBD"]);
-      $r->bindValue(":profilSonar", $map["profilSonar"]);
-      $r->bindValue(":projetModificationDate", $map["projetModificationDate"]);
-      $r->bindValue(":profilModificationDate", $map["profilModificationDate"]);
-      $r->bindValue(":dateCreationFormat", $map["dateCreationFormat"]);
-      return  $r->executeQuery()->fetchAllAssociative();
+      $r->bindValue(":projet_bd", $map["projet_bd"]);
+      $r->bindValue(":projet_sonar", $map["projet_sonar"]);
+      $r->bindValue(":profil_bd", $map["profil_bd"]);
+      $r->bindValue(":profil_sonar", $map["profil_sonar"]);
+      $r->bindValue(":date_modification_projet", $map["date_modification_projet"]);
+      $r->bindValue(":date_modification_profil", $map["date_modification_profil"]);
+      $r->bindValue(":date_creation", $map["date_creation"]);
+      try {
+        if ($mode !== 'TEST') {
+            $r->executeQuery();
+        } else {
+            return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+        }
+      } catch (\Doctrine\DBAL\Exception $e) {
+          return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+      }
+      return ['mode'=>$mode, 'code'=>200, 'erreur'=>''];
     }
 
     /**
-     * [Description for updateProjetProperties]
+     * [Description for updatePropertiesProjet]
      * Mise à jour des properties pour les projets
-     * @param mixed $map
+     *
+     * @param string $mode
+     * @param array $map
      *
      * @return array
      *
@@ -97,23 +134,34 @@ class PropertiesRepository extends ServiceEntityRepository
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function updateProjetProperties($map): array
+    public function updatePropertiesProjet($mode, $map): array
     {
       $sql = "UPDATE properties
-              SET projet_bd = :bd, projet_sonar = :sonar, date_modification_projet = :dateModificationProjet
+              SET projet_bd = :projet_bd,
+                  projet_sonar = :projet_sonar,
+                  date_modification_projet = :date_modification_projet
               WHERE type = :properties";
       $r=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-      $r->bindValue(":bd", $map["bd"]);
-      $r->bindValue(":sonar", $map["sonar"]);
-      $r->bindValue(":dateModificationProjet", $map["dateModificationProjet"]);
+      $r->bindValue(":projet_bd", $map["projet_bd"]);
+      $r->bindValue(":projet_sonar", $map["projet_sonar"]);
+      $r->bindValue(":date_modification_projet", $map["date_modification_projet"]);
       $r->bindValue(":properties", "properties");
-      return  $r->executeQuery()->fetchAllAssociative();
+      try {
+        if ($mode !== 'TEST') {
+            $r->executeQuery();
+          } else {
+              return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+          }
+      } catch (\Doctrine\DBAL\Exception $e) {
+        return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+      }
+      return ['mode'=>$mode, 'code'=>200, 'erreur'=>''];
     }
 
     /**
-     * [Description for updateProfilProperties]
+     * [Description for updatePropertiesProfiles]
      * Mise à jour des properties pour les profils
-     * @param mixed $map
+     * @param array $map
      *
      * @return array
      *
@@ -121,16 +169,27 @@ class PropertiesRepository extends ServiceEntityRepository
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function updateProfilProperties($map): array
+    public function updatePropertiesProfiles($mode, $map): array
     {
       $sql = "UPDATE properties
-              SET profil_bd = :bd, profil_sonar = :sonar, date_modification_profil = :dateModificationProfil
-              WHERE type = :properties";
-      $r=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-      $r->bindValue(":bd", $map["bd"]);
-      $r->bindValue(":sonar", $map["sonar"]);
-      $r->bindValue(":dateModificationProfil", $map["dateModificationProfil"]);
-      $r->bindValue(":properties", "properties");
-      return  $r->executeQuery()->fetchAllAssociative();
+              SET profil_bd=:profil_bd,
+                  profil_sonar=:profil_sonar,
+                  date_modification_profil=:date_modification_profil
+              WHERE type=:properties";
+      $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+      $conn->bindValue(':profil_bd', $map['profil_bd']);
+      $conn->bindValue(':profil_sonar', $map['profil_sonar']);
+      $conn->bindValue(':date_modification_profil', $map['date_modification_profil']);
+      $conn->bindValue(':properties', 'properties');
+      try {
+        if ($mode !== 'TEST') {
+            $conn->executeQuery();
+        } else {
+            return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+        }
+    } catch (\Doctrine\DBAL\Exception $e) {
+        return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+    }
+    return ['mode'=>$mode, 'code'=>200, 'erreur'=>''];
     }
 }
