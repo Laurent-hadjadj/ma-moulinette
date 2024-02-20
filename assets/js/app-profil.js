@@ -227,12 +227,13 @@ const dessineMoiUnMouton=function(label, dataset) {
 
 /** Création du graphique par language */
 $('.js-profil-graphique').on('click', async () => {
-    const options = {
-          url: `${serveur()}/api/quality/langage`, type: 'GET',
-          dataType: 'json', contentType };
+  const data = { mode:'null' };
+  const options = {
+          url: `${serveur()}/api/quality/langage`, type: 'POST',
+          dataType: 'json', data: JSON.stringify(data), contentType };
 
   const t = await $.ajax(options);
-  /*
+  /**
    * const label = t.label;
    * const dataset = t.dataset;
    */
