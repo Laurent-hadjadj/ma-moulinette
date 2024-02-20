@@ -75,18 +75,17 @@ class HomeController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function countProjetBD(): int
+    private function countProjetBD($mode): int
     {
         /**
          * On récupère le nombre de projet depuis la table liste_projet
          */
-        $repository = $this->em->getRepository(ListeProjet::class);
-        $r = $repository->countProjet();
+        $listeProjet = $this->em->getRepository(ListeProjet::class);
+        $countListeProjet = $listeProjet->countListeProjet($mode);
 
-        if (!$r) {
-            $projet = 0;
-        } else {
-            $projet = $r[0]['total'];
+        $projet = 0;
+        if ($countListeProjet['request']){
+            $projet = $countListeProjet['request'][0]['total'];
         }
         return $projet;
     }
@@ -137,16 +136,14 @@ class HomeController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function countProfilBD(): int
+    private function countProfilBD($mode): int
     {
         /** On récupère le nombre de profil depuis la table profils */
-        $repository = $this->em->getRepository(Profiles::class);
-        $r = $repository->countProfiles();
-
-        if (!$r) {
-            $profil = 0;
-        } else {
-            $profil = $r[0]['total'];
+        $profiles = $this->em->getRepository(Profiles::class);
+        $countProfiles = $profiles->countProfiles($mode);
+        $profil = 0;
+        if ($countProfiles['request']) {
+            $profil = $countProfiles['request'][0]['total'];
         }
         return $profil;
     }
@@ -188,22 +185,23 @@ class HomeController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function majProperties($type, $bd, $sonar)
+    private function majProperties($mode, $type, $bd, $sonar)
     {
         /** On met à jour la date de modification */
         $date = new DateTime();
         $date->setTimezone(new DateTimeZone(static::$europeParis));
 
-        $map=['profil_bd'=>$bd, 'profil_sonar'=>$sonar,
-                'date_modification_projet'=> $date->format(static::$dateFormat),
+        $map=[  'projet_bd'=>$bd, 'projet_sonar'=>$sonar,
+                'profil_bd'=>$bd, 'profil_sonar'=>$sonar,
+                'date_modification_projet'=>$date->format(static::$dateFormat),
                 'date_modification_profil'=>$date->format(static::$dateFormat)];
 
-        $repository = $this->em->getRepository(Properties::class);
+        $properties = $this->em->getRepository(Properties::class);
 
-        if ($type === "projet") {
-            $repository->updateProjetProperties($map);
+        if ($type === 'projet') {
+            $properties->updatePropertiesProjet($mode,$map);
         } else {
-            $repository->updateProfilProperties($map);
+            $properties->updatePropertiesProfil($mode, $map);
         }
     }
 
@@ -217,45 +215,45 @@ class HomeController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function getProperties(): array
+    private function getProperties($mode): array
     {
         /** On récupère le nombre de projet et de profil */
-        $repository = $this->em->getRepository(Properties::class);
-        $r = $repository->getProperties('properties');
+        $properties = $this->em->getRepository(Properties::class);
+        $getProperties = $properties->getProperties($mode,'properties');
 
         /** La table est vide. On initialise les valeurs */
-        if (!$r) {
-            $projetBD = $projetSonar = $profilBD = $profilSonar = 0;
+        if (!$getProperties['request']) {
+            $projetBd = $projetSonar = $profilBd = $profilSonar = 0;
 
             $date = new DateTime();
             $date->setTimezone(new DateTimeZone(static::$europeParis));
 
             $dateCreationFormat = $date->format(static::$dateFormat);
-            $projetModificationDate = $date->format(static::$dateFormat);
-            $profilModificationDate = $date->format(static::$dateFormat);
+            $dateModificationProjet = $date->format(static::$dateFormat);
+            $dateModificationProfil = $date->format(static::$dateFormat);
             $map=[
-                'projet_bd'=>$projetBD, 'projet_sonar'=>$projetSonar,
-                'profil_bd'=>$profilBD, 'profil_Sonar'=>$profilSonar,
+                'projet_bd'=>$projetBd, 'projet_sonar'=>$projetSonar,
+                'profil_bd'=>$profilBd, 'profil_sonar'=>$profilSonar,
                 'date_creation'=>$dateCreationFormat,
-                'date_modification_projet'=>$projetModificationDate,
-                'date_modification_profil'=>$profilModificationDate];
+                'date_modification_projet'=>$dateModificationProjet,
+                'date_modification_profil'=>$dateModificationProfil];
 
-            $repository = $this->em->getRepository(Properties::class);
-            $repository->insertProperties($map);
+            $properties = $this->em->getRepository(Properties::class);
+            $properties->insertProperties($mode,$map);
         } else {
-            $projetBD = $r[0]["projet_bd"];
-            $projetSonar = $r[0]["projet_sonar"];
-            $projetModificationDate = $r[0]["date_modification_projet"];
-            $profilBD = $r[0]["profil_bd"];
-            $profilSonar = $r[0]["profil_sonar"];
-            $profilModificationDate = $r[0]["date_modification_profil"];
+            $projetBd = $getProperties['request'][0]['projet_bd'];
+            $projetSonar = $getProperties['request'][0]['projet_sonar'];
+            $dateModificationProjet = $getProperties['request'][0]['date_modification_projet'];
+            $profilBd = $getProperties['request'][0]['profil_bd'];
+            $profilSonar = $getProperties['request'][0]["profil_sonar"];
+            $dateModificationProfil = $getProperties['request'][0]['date_modification_profil'];
         }
-        return ['projetBD' => $projetBD,
-                'projetSonar' => $projetSonar,
-                'projetDateModification' => $projetModificationDate,
-                'profilBD' => $profilBD,
-                'profilSonar' => $profilSonar,
-                'profilDateModification' => $profilModificationDate
+        return ['projet_bd' => $projetBd,
+                'projet_sonar' => $projetSonar,
+                'date_modification_projet' => $dateModificationProjet,
+                'profil_bd' => $profilBd,
+                'profil_sonar' => $profilSonar,
+                'date_modification_profil' => $dateModificationProfil
             ];
     }
 
@@ -263,18 +261,20 @@ class HomeController extends AbstractController
      * [Description for getVersion]
      * On récupère le numéro de version en base
      *
+     * @param string $mode
+     *
      * @return string
      *
      * Created at: 15/12/2022, 22:09:07 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function getVersion(): string
+    private function getVersion($mode): string
     {
       /** On récupère le numéro de la dernère version en base */
-        $repository = $this->em->getRepository(MaMoulinette::class);
-        $getVersion = $repository->getVersion();
-        return $getVersion[0]['version'];
+        $maMoulinette = $this->em->getRepository(MaMoulinette::class);
+        $getmaMoulinetteVersion = $maMoulinette->getMaMoulinetteVersion($mode);
+        return $getmaMoulinetteVersion['request'][0]['version'];
     }
 
     /**
@@ -441,7 +441,11 @@ class HomeController extends AbstractController
     #[Route('/home', name: 'home', methods:'GET')]
     public function index(Client $client, Security $security, Request $request): Response
     {
+        // On test si on est en mode Test ou pas
         $mode = $request->get('mode');
+        if (empty($mode)){
+            $mode='null';
+        }
         /**
          * Description du processus :
          * 1 - On regarde si la base locale a déjà été mise à jour, i.e.
@@ -458,20 +462,20 @@ class HomeController extends AbstractController
         $date->setTimezone(new DateTimeZone(static::$europeParis));
 
         /** On récupère les properties des projets et profils */
-        $properties = static::getProperties();
-        $dateVerificationProjet = "false";
-        $dateVerificationProfil = "false";
+        $properties = static::getProperties($mode);
+        $dateVerificationProjet = 'false';
+        $dateVerificationProfil = 'false';
 
         /** ***************** 1 - Date   ****************************  */
         /** On convertit la date en datetime. */
         /** On applique la la fréquence de mise à jour pour les projets et les profils. */
-        $majProjet = "-".$this->getParameter('maj.projet')." day";
-        $majProfil = "-".$this->getParameter('maj.profil')." day";
+        $majProjet = '-'.$this->getParameter('maj.projet').' day';
+        $majProfil = '-'.$this->getParameter('maj.profil').' day';
 
-        $dateModificationProjet = new DateTime($properties['projetDateModification']);
+        $dateModificationProjet = new DateTime($properties['date_modification_projet']);
         $dateModificationProjet->modify($majProjet);
 
-        $dateModificationProfil = new DateTime($properties['profilDateModification']);
+        $dateModificationProfil = new DateTime($properties['date_modification_projet']);
         $dateModificationProfil->modify($majProfil);
 
         /** ***** Date - Projet ***** */
@@ -481,12 +485,12 @@ class HomeController extends AbstractController
             /** On récupère le nombre de projet depuis le serveur sonar */
             $projetSonar = static::countProjetSonar($client);
             /** On récupère le nombre de projet en base */
-            $projetBD = static::countProjetBD();
+            $projetBd = static::countProjetBD($mode);
             $dateVerificationProjet = "true";
         } else {
             /** Sinon, on récupère les valeurs de la table de properties */
-            $projetBD = $properties['projetBD'];
-            $projetSonar = $properties['projetSonar'];
+            $projetBd = $properties['projet_bd'];
+            $projetSonar = $properties['projet_sonar'];
         }
 
         /** ***** Date - Profil ***** */
@@ -496,20 +500,20 @@ class HomeController extends AbstractController
         if (date_diff($dateModificationProfil, $date)->format('%a') >=
         $this->getParameter('maj.profil')) {
             /** On récupère le nombre de profil en base. */
-            $profilBD = static::countProfilBD();
+            $profilBd = static::countProfilBD($mode);
             /** On récupère le nombre de projet depuis le serveur sonar */
             $profilSonar = static::countProfilSonar($client);
             $dateVerificationProfil = "true";
         } else {
             /** Sinon, on récupère les valeurs de la table de properties */
-            $profilBD = $properties['profilBD'];
-            $profilSonar = $properties['profilSonar'];
+            $profilBd = $properties['profil_bd'];
+            $profilSonar = $properties['profil_sonar'];
         }
 
         /** ***************** 2 - Projet *****************************  */
         if ($dateVerificationProjet == "true") {
             /** Si le referentiel local est différent de celui sur le serveur. */
-            if ($projetSonar !== $projetBD) {
+            if ($projetSonar !== $projetBd) {
                 /**
                  * Si le nombre de projetSonar est différent de projetBD
                  * alors on envoit un message à l'utilisateur pour qu'il mette à jour.
@@ -522,15 +526,15 @@ class HomeController extends AbstractController
              * Si le referentiel sonar est égale de celui sur le serveur et que la table
              * de properties n'est pas à jour, on met à jour la table.
              */
-            if ($projetSonar == $projetBD  && $projetSonar !== $properties['projetSonar']) {
-                $this->majProperties("projet", $projetBD, $projetSonar);
+            if ($projetSonar == $projetBd  && $projetSonar !== $properties['projet_sonar']) {
+                $this->majProperties($mode, 'projet', $projetBd, $projetSonar);
             }
         }
 
         /** ***************** 3 - PROFIL *****************************  */
         /** Si les properties ne sont pas à jour. */
-        if ($dateVerificationProfil == "true") {
-            if ($profilSonar !== $profilBD) {
+        if ($dateVerificationProfil == 'true') {
+            if ($profilSonar !== $profilBd) {
                 /**
                  * Si le nombre de projetSonar est différent de projetBD
                  * alors on envoit un message à l'utilisateur pour qu'il mette à jour.
@@ -542,28 +546,28 @@ class HomeController extends AbstractController
              * Si le referentiel sonar est égale de celui sur le serveur et que la table
              * de properties n'est pas à jour, on met à jour la table.
              */
-            if ($profilSonar == $profilBD  && $profilSonar !== $properties['profilSonar']) {
-                $this->majProperties("profil", $profilBD, $profilSonar);
+            if ($profilSonar == $profilBd  && $profilSonar !== $properties['profil_sonar']) {
+                $this->majProperties($mode, 'profil', $profilBd, $profilSonar);
             }
         }
 
         /** ***************** 4 - Visibility *****************************  */
-        $repository = $this->em->getRepository(ListeProjet::class);
-        $t1 = $repository->countVisibility('public');
-        $t2 = $repository->countVisibility('private');
+        $listeProjet = $this->em->getRepository(ListeProjet::class);
+        $t1 = $listeProjet->countListeProjetVisibility($mode,'public');
+        $t2 = $listeProjet->countListeProjetVisibility($mode,'private');
 
-        $public = $t1[0]['visibility'];
-        $private = $t2[0]['visibility'];
+        $public = $t1['request'][0]['visibility'];
+        $private = $t2['request'][0]['visibility'];
 
         /** ***************** VERSION *** ************************* */
         /** On récupère le numero de version en base */
-        $versionBD = static::getVersion();
+        $versionBd = static::getVersion($mode);
         /** On récupère la version de l'application */
-        $versionAPP = $this->getParameter('version');
+        $versionApp = $this->getParameter('version');
         /** si la dernière version en base est inférieure, on renvoie une alerte ; */
-        if ($versionAPP !== $versionBD) {
-            $m1 = "Oooups !!! La base de données est en version ".$versionBD." ";
-            $m2 = "Vous devez passer le script de migration ".$versionAPP.".";
+        if ($versionApp !== $versionBd) {
+            $m1 = "Oooups !!! La base de données est en version ".$versionBd." ";
+            $m2 = "Vous devez passer le script de migration ".$versionApp.".";
             $message = $m1.$m2;
             $this->addFlash('alert', $message);
         }
@@ -581,31 +585,31 @@ class HomeController extends AbstractController
         if ($data1->statut) {
             $favori = $data1->listeFavori;
             $nombreProjet = $data1->nombreProjet;
-            $composant = "projet";
+            $composant = 'projet';
         } elseif ($data2->statut) {
             $favori = $data2->listeVersion;
             $nombreProjet = $data2->nombreProjet;
-            $composant = "version";
+            $composant = 'version';
         } else {
             $nombreProjet = 0;
             $favori = false;
-            $composant = "vide";
+            $composant = 'vide';
         }
 
         /** On récupère le rôle de l'utilisateur  */
-        $refreshBD=false;
-        if ($this->isGranted('ROLE_GESTIONNAIRE')) { $refreshBD=true; }
+        $refreshBd=false;
+        if ($this->isGranted('ROLE_GESTIONNAIRE')) { $refreshBd=true; }
         $response = new JsonResponse();
         $render = [
-            'refreshBD'=>$refreshBD,
-            'projetBD' => $projetBD, 'projetSonar' => $projetSonar,
-            'profilBD' => $profilBD, 'profilSonar' => $profilSonar,
+            'refreshBD'=>$refreshBd,
+            'projetBD' => $projetBd, 'projetSonar' => $projetSonar,
+            'profilBD' => $profilBd, 'profilSonar' => $profilSonar,
             'composant' => $composant, 'nombreProjet' => $nombreProjet, 'favori' => $favori,
             'public' => $public, 'private' => $private,
-            'version' => $versionAPP, 'dateCopyright' => \date('Y'),
+            'version' => $versionApp, 'dateCopyright' => \date('Y'),
             'mode' => $mode, Response::HTTP_OK];
 
-        if ($mode === "TEST") {
+        if ($mode === 'TEST') {
             return $response->setData($render);
         } else {
             return $this->render('home/index.html.twig', $render);
