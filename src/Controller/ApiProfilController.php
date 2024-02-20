@@ -31,12 +31,10 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 /** Accès aux tables SLQLite */
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Main\Properties;
+use App\Entity\Main\Profiles;
 
 /** Client HTTP */
 use App\Service\Client;
-
-/** Entity */
-use App\Entity\Main\Profiles;
 
 class ApiProfilController extends AbstractController
 {
@@ -46,7 +44,6 @@ class ApiProfilController extends AbstractController
     public static $europeParis = "Europe/Paris";
     public static $dateFormat = "Y-m-d H:i:s";
     public static $dateFormatShort = "Y-m-d";
-    public static $regex = "/\s+/u";
 
     /**
      * [Description for __construct]
@@ -149,7 +146,7 @@ class ApiProfilController extends AbstractController
     /**
      * [Description for listeQualityLangage]
      * Revoie le tableau des labels et des dataset
-     * Permet de tracer un jolie dessin sur la répartition des langages de programmation.
+     * Permet de tracer un joli dessin sur la répartition des langages de programmation.
      *
      * @return response
      *
@@ -157,29 +154,38 @@ class ApiProfilController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/quality/langage', name: 'liste_quality_langage', methods: ['GET'])]
-    public function listeQualityLangage(): response
+    #[Route('/api/quality/langage', name: 'liste_quality_langage', methods: ['POST'])]
+    public function listeQualityLangage(Request $request): response
     {
+        /** on décode le body */
+        $data = json_decode($request->getContent());
+
+        /** On crée un objet response */
+        $response = new JsonResponse();
+
+        /** On teste si la clé est valide */
+        if ($data === null) {
+        return $response->setData(['mode' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
+
         $listeLabel = [];
         $listeDataset = [];
 
+        /** On instancie la classe */
+        $profiles = $this->em->getRepository(Profiles::class);
+        /** On récupère la liste des langage */
+        $selectProfilesLanguage=$profiles->selectProfilesLanguage($data->mode);
         /** On créé la liste des libellés et des données */
-        $sql = "SELECT language_name AS profile FROM profiles";
-        $select = $this->em->getConnection()->prepare($sql)->executeQuery();
-        $labels = $select->fetchAllAssociative();
-        foreach ($labels as $label) {
-            array_push($listeLabel, $label["profile"]);
+        foreach ($selectProfilesLanguage['labels'] as $label) {
+            array_push($listeLabel, $label['profile']);
         }
-
-        $sql = "SELECT active_rule_count AS total FROM profiles";
-        $select = $this->em->getConnection()->prepare($sql)->executeQuery();
-        $dataSets = $select->fetchAllAssociative();
-        foreach ($dataSets as $dataSet) {
-            array_push($listeDataset, $dataSet["total"]);
+        /** On récupère le nombre de règle de chaque profil */
+        $selectProfilesRuleCount=$profiles->selectProfilesRuleCount($data->mode);
+        foreach ($selectProfilesRuleCount['data-set'] as $dataSet) {
+            array_push($listeDataset, $dataSet['total']);
         }
 
         $response = new JsonResponse();
-        return $response->setData(["label" => $listeLabel, "dataset" => $listeDataset, Response::HTTP_OK]);
+        return $response->setData(['label' => $listeLabel, 'dataset' => $listeDataset, Response::HTTP_OK]);
     }
 
     /**
@@ -250,8 +256,8 @@ class ApiProfilController extends AbstractController
               (date_courte, langage, date, action, auteur, regle, description, detail, date_enregistrement)
               VALUES ('$dateCourte', '$language', '$dateModification', '$action', '$auteur',
                       '$regle', '$reEncode', '$detail', '$dateEnregistrement');";
-            $trim = trim(preg_replace(static::$regex, " ", $sql));
-            $this->em->getConnection()->prepare($trim)->executeQuery();
+            //$trim = trim(preg_replace(static::$regex, " ", $sql));
+            $this->em->getConnection()->prepare($sql)->executeQuery();
         }
 
         /** Nombre de règles activé **/
@@ -294,8 +300,8 @@ class ApiProfilController extends AbstractController
             $tempo = [];
 
             $sql = "SELECT * FROM profiles_historique WHERE langage='$language' AND date_courte='$dateGroupe'";
-            $trim = trim(preg_replace(static::$regex, " ", $sql));
-            $modif = $this->em->getConnection()->prepare($trim)->executeQuery()->fetchAllAssociative();
+           // $trim = trim(preg_replace(static::$regex, " ", $sql));
+            $modif = $this->em->getConnection()->prepare($sql)->executeQuery()->fetchAllAssociative();
 
             /* On ajoute la date du groupe */
             array_push($tempoDateGroupe, $dateGroupe);
