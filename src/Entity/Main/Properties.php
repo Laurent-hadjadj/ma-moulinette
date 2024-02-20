@@ -22,32 +22,32 @@ class Properties
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: Types::INTEGER)]
     private $id;
 
     /**  Type = property */
-    #[ORM\Column(type: 'string')]
+    #[ORM\Column(type: Types::STRING)]
     private $type;
 
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: Types::INTEGER)]
     private $projetBd;
 
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: Types::INTEGER)]
     private $projetSonar;
 
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: Types::INTEGER)]
     private $profilBd;
 
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: Types::INTEGER)]
     private $profilSonar;
 
-    #[ORM\Column(type: 'datetime')]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private $dateCreation;
 
-    #[ORM\Column(type: 'datetime', nullable:true)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable:true)]
     private $dateModificationProjet;
 
-    #[ORM\Column(type: 'datetime', nullable:true)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable:true)]
     private $dateModificationProfil;
 
     /**

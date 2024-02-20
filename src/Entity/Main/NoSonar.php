@@ -22,22 +22,22 @@ class NoSonar
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: Types::INTEGER)]
     private $id;
 
-    #[ORM\Column(type: 'string', length: 128)]
+    #[ORM\Column(type: Types::STRING, length: 128)]
     private $mavenKey;
 
-    #[ORM\Column(type: 'string', length: 128)]
+    #[ORM\Column(type: Types::STRING, length: 128)]
     private $rule;
 
-    #[ORM\Column(type: 'text')]
+    #[ORM\Column(type: Types::TEXT)]
     private $component;
 
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: Types::INTEGER)]
     private $line;
 
-    #[ORM\Column(type: 'datetime')]
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
     private $dateEnregistrement;
 
     /**

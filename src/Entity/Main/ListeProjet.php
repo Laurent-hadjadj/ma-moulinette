@@ -22,22 +22,22 @@ class ListeProjet
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: Types::INTEGER)]
     private $id;
 
-    #[ORM\Column(type: 'string', length: 128)]
+    #[ORM\Column(type: Types::STRING, length: 128)]
     private $mavenKey;
 
-    #[ORM\Column(type: 'string', length: 128)]
+    #[ORM\Column(type: Types::STRING, length: 128)]
     private $name;
 
-    #[ORM\Column(type: 'json')]
+    #[ORM\Column(type: Types::JSON)]
     private $tags = [];
 
-    #[ORM\Column(type: 'string', length: 8)]
+    #[ORM\Column(type: Types::STRING, length: 8)]
     private $visibility;
 
-    #[ORM\Column(type: 'datetime')]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private $dateEnregistrement;
 
     /**

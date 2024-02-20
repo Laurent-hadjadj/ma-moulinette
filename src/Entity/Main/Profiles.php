@@ -22,28 +22,28 @@ class Profiles
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: Types::INTEGER)]
     private $id;
 
-    #[ORM\Column(type: 'string', length: 128)]
+    #[ORM\Column(type: Types::STRING, length: 128)]
     private $key;
 
-    #[ORM\Column(type: 'string', length: 128)]
+    #[ORM\Column(type: Types::STRING, length: 128)]
     private $name;
 
-    #[ORM\Column(type: 'string', length: 64)]
+    #[ORM\Column(type: Types::STRING, length: 64)]
     private $languageName;
 
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: Types::INTEGER)]
     private $activeRuleCount;
 
-    #[ORM\Column(type: 'datetime')]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private $rulesUpdateAt;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: TYPES::BOOLEAN)]
     private $isDefault;
 
-    #[ORM\Column(type: 'datetime')]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private $dateEnregistrement;
 
     /**

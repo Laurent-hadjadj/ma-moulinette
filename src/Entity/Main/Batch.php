@@ -25,46 +25,46 @@ class Batch
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: Types::INTEGER)]
     private $id;
 
     /** Statut d'activité du traitement */
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: Types::BOOLEAN)]
     private $statut = false;
 
     /** Nom du traitement */
-    #[ORM\Column(type: 'string', length: 32, unique: true)]
+    #[ORM\Column(type: Types::STRING, length: 32, unique: true)]
     #[AcmeAssert\ContainsBatchUnique()]
     private $titre;
 
     /** Description du traitement */
-    #[ORM\Column(type: 'string', length: 128)]
+    #[ORM\Column(type: Types::STRING, length: 128)]
     private $description;
 
     /** Nom de l'utilisateur */
-    #[ORM\Column(type: 'string', length: 128)]
+    #[ORM\Column(type: Types::STRING, length: 128)]
     private $responsable;
 
 
     /** Nom du portefeuille de projet */
-    #[ORM\Column(type: 'string', length: 32, unique: true)]
+    #[ORM\Column(type: Types::STRING, length: 32, unique: true)]
     #[AcmeAssert\ContainsBatchUnique()]
     private $portefeuille = "Aucun";
 
     /** Nombre de projet */
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: Types::INTEGER)]
     private $nombreProjet = 0;
 
     /** Etat d'éxection (start, pending, error, end) */
-    #[ORM\Column(type: 'string', length: 8, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: 8, nullable: true)]
     private $execution;
 
     /** Date de modification */
-    #[ORM\Column(type: 'datetime', nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private $dateModification;
 
     /** Date d'enregistrement */
-    #[ORM\Column(type: 'datetime')]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private $dateEnregistrement;
 
     /**

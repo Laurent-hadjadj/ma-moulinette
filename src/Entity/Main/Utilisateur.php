@@ -14,6 +14,7 @@
 namespace App\Entity\Main;
 
 use App\Repository\Main\UtilisateurRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -25,22 +26,22 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: Types::INTEGER)]
     private $id;
 
-    #[ORM\Column(type: 'string', length: 32)]
+    #[ORM\Column(type: Types::STRING, length: 32)]
     private $prenom;
 
-    #[ORM\Column(type: 'string', length: 64)]
+    #[ORM\Column(type: Types::STRING, length: 64)]
     private $nom;
 
-    #[ORM\Column(type: 'string', length: 128, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: 128, nullable: true)]
     private $avatar;
 
     /** Honeypot */
     private $email;
 
-    #[ORM\Column(type: 'string', length: 320, unique: true)]
+    #[ORM\Column(type: Types::STRING, length: 320, unique: true)]
     private $courriel;
 
     #[ORM\Column(type: 'json')]
@@ -49,7 +50,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'json')]
     private $equipe = [];
 
-    #[ORM\Column(type: 'string', length: 64)]
+    #[ORM\Column(type: Types::STRING, length: 64)]
     private $password;
 
     #[ORM\Column(type: 'boolean', nullable: false, options: ['default' => 0])]
@@ -59,13 +60,13 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'json', nullable: false)]
     private $preference = [];
 
-    #[ORM\Column(type: 'integer', nullable: false)]
+    #[ORM\Column(type: Types::INTEGER, nullable: false)]
     private $init=0;
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private $dateModification;
 
-    #[ORM\Column(type: 'datetime')]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private $dateEnregistrement;
 
     public function getId(): ?int
