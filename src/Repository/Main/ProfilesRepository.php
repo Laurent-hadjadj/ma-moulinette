@@ -1,5 +1,16 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2021-2022.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
 namespace App\Repository\Main;
 
 use App\Entity\Main\Profiles;
@@ -16,24 +27,6 @@ class ProfilesRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Profiles::class);
-    }
-
-    public function add(Profiles $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->persist($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
-    public function remove(Profiles $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->remove($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
     }
 
     /**
@@ -126,4 +119,49 @@ class ProfilesRepository extends ServiceEntityRepository
         return ['mode'=>$mode, 'code'=>200, 'erreur'=>''];
     }
 
+
+    /**
+     * [Description for selectProfilesLanguage]
+     *
+     * @param string $mode
+     *
+     * @return array
+     *
+     * Created at: 20/02/2024 11:15:53 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function selectProfilesLanguage($mode):array
+    {
+        $sql = "SELECT language_name AS profile
+                FROM profiles";
+        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+        try {
+            if ($mode !== 'TEST') {
+                $labels=$conn->executeQuery()->fetchAllAssociative();
+            } else {
+                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+            }
+        } catch (\Doctrine\DBAL\Exception $e) {
+            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+        }
+        return ['mode'=>$mode, 'code'=>200, 'labels'=>$labels, 'erreur'=>''];
+    }
+
+    public function selectProfilesRuleCount($mode):array
+    {
+        $sql = "SELECT active_rule_count AS total
+                FROM profiles";
+        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+        try {
+            if ($mode !== 'TEST') {
+                $dataSets=$conn->executeQuery()->fetchAllAssociative();
+            } else {
+                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+            }
+        } catch (\Doctrine\DBAL\Exception $e) {
+            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+        }
+        return ['mode'=>$mode, 'code'=>200, 'data-set'=>$dataSets, 'erreur'=>''];
+    }
 }

@@ -1,5 +1,16 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2021-2022.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
 namespace App\Repository\Main;
 
 use App\Entity\Main\InformationProjet;
@@ -7,12 +18,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<InformationProjet>
- *
- * @method InformationProjet|null find($id, $lockMode = null, $lockVersion = null)
- * @method InformationProjet|null findOneBy(array $criteria, array $orderBy = null)
- * @method InformationProjet[]    findAll()
- * @method InformationProjet[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * [Description InformationProjetRepository]
  */
 class InformationProjetRepository extends ServiceEntityRepository
 {
@@ -20,24 +26,5 @@ class InformationProjetRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, InformationProjet::class);
     }
-
-    public function add(InformationProjet $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->persist($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
-    public function remove(InformationProjet $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->remove($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
 
 }

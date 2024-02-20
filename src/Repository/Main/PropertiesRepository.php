@@ -1,5 +1,16 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2021-2022.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
 namespace App\Repository\Main;
 
 use App\Entity\Main\Properties;
@@ -18,23 +29,6 @@ class PropertiesRepository extends ServiceEntityRepository
         parent::__construct($registry, Properties::class);
     }
 
-    public function add(Properties $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->persist($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
-    public function remove(Properties $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->remove($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
 
     /**
      * [Description for getProperties]
@@ -51,21 +45,21 @@ class PropertiesRepository extends ServiceEntityRepository
      */
     public function getProperties($mode, $type): array
     {
-      $sql = "SELECT *
-              FROM properties
-              WHERE type=:type";
-      $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-      $conn->bindValue(':type', $type);
-      try {
-        if ($mode !== 'TEST') {
-            $request=$conn->executeQuery()->fetchAllAssociative();
-        } else {
-            return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+        $sql = "SELECT *
+                FROM properties
+                WHERE type=:type";
+        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+        $conn->bindValue(':type', $type);
+        try {
+            if ($mode !== 'TEST') {
+                $request=$conn->executeQuery()->fetchAllAssociative();
+            } else {
+                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+            }
+        } catch (\Doctrine\DBAL\Exception $e) {
+            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
         }
-      } catch (\Doctrine\DBAL\Exception $e) {
-          return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
-      }
-      return ['mode'=>$mode, 'code'=>200, 'request'=>$request, 'erreur'=>''];
+        return ['mode'=>$mode, 'code'=>200, 'request'=>$request, 'erreur'=>''];
     }
 
     /**
@@ -83,42 +77,42 @@ class PropertiesRepository extends ServiceEntityRepository
      */
     public function insertProperties($mode, $map): array
     {
-      $sql = "INSERT INTO properties
-                (type,
-                  projet_bd,
-                  projet_sonar,
-                  profil_bd,
-                  profil_sonar,
-                  date_modification_projet,
-                  date_modification_profil,
-                  date_creation)
-              VALUES
-                ('properties',
-                  :projet_bd,
-                  :projet_sonar,
-                  :profil_bd,
-                  :profil_sonar,
-                  :date_modification_projet,
-                  :date_modification_profil,
-                  :date_creation)";
-      $r=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-      $r->bindValue(":projet_bd", $map["projet_bd"]);
-      $r->bindValue(":projet_sonar", $map["projet_sonar"]);
-      $r->bindValue(":profil_bd", $map["profil_bd"]);
-      $r->bindValue(":profil_sonar", $map["profil_sonar"]);
-      $r->bindValue(":date_modification_projet", $map["date_modification_projet"]);
-      $r->bindValue(":date_modification_profil", $map["date_modification_profil"]);
-      $r->bindValue(":date_creation", $map["date_creation"]);
-      try {
-        if ($mode !== 'TEST') {
-            $r->executeQuery();
-        } else {
-            return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+        $sql = "INSERT INTO properties (
+                    type,
+                    projet_bd,
+                    projet_sonar,
+                    profil_bd,
+                    profil_sonar,
+                    date_modification_projet,
+                    date_modification_profil,
+                    date_creation)
+                VALUES (
+                    'properties',
+                    :projet_bd,
+                    :projet_sonar,
+                    :profil_bd,
+                    :profil_sonar,
+                    :date_modification_projet,
+                    :date_modification_profil,
+                    :date_creation)";
+        $r=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+        $r->bindValue(":projet_bd", $map["projet_bd"]);
+        $r->bindValue(":projet_sonar", $map["projet_sonar"]);
+        $r->bindValue(":profil_bd", $map["profil_bd"]);
+        $r->bindValue(":profil_sonar", $map["profil_sonar"]);
+        $r->bindValue(":date_modification_projet", $map["date_modification_projet"]);
+        $r->bindValue(":date_modification_profil", $map["date_modification_profil"]);
+        $r->bindValue(":date_creation", $map["date_creation"]);
+        try {
+            if ($mode !== 'TEST') {
+                $r->executeQuery();
+            } else {
+                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+            }
+        } catch (\Doctrine\DBAL\Exception $e) {
+            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
         }
-      } catch (\Doctrine\DBAL\Exception $e) {
-          return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
-      }
-      return ['mode'=>$mode, 'code'=>200, 'erreur'=>''];
+        return ['mode'=>$mode, 'code'=>200, 'erreur'=>''];
     }
 
     /**
@@ -136,26 +130,26 @@ class PropertiesRepository extends ServiceEntityRepository
      */
     public function updatePropertiesProjet($mode, $map): array
     {
-      $sql = "UPDATE properties
-              SET projet_bd = :projet_bd,
-                  projet_sonar = :projet_sonar,
-                  date_modification_projet = :date_modification_projet
-              WHERE type = :properties";
-      $r=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-      $r->bindValue(":projet_bd", $map["projet_bd"]);
-      $r->bindValue(":projet_sonar", $map["projet_sonar"]);
-      $r->bindValue(":date_modification_projet", $map["date_modification_projet"]);
-      $r->bindValue(":properties", "properties");
-      try {
-        if ($mode !== 'TEST') {
-            $r->executeQuery();
-          } else {
-              return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-          }
-      } catch (\Doctrine\DBAL\Exception $e) {
-        return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
-      }
-      return ['mode'=>$mode, 'code'=>200, 'erreur'=>''];
+        $sql = "UPDATE properties
+                SET projet_bd = :projet_bd,
+                    projet_sonar = :projet_sonar,
+                    date_modification_projet = :date_modification_projet
+                WHERE type = :properties";
+        $r=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+        $r->bindValue(":projet_bd", $map["projet_bd"]);
+        $r->bindValue(":projet_sonar", $map["projet_sonar"]);
+        $r->bindValue(":date_modification_projet", $map["date_modification_projet"]);
+        $r->bindValue(":properties", "properties");
+        try {
+            if ($mode !== 'TEST') {
+                $r->executeQuery();
+            } else {
+                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+            }
+        } catch (\Doctrine\DBAL\Exception $e) {
+            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+        }
+        return ['mode'=>$mode, 'code'=>200, 'erreur'=>''];
     }
 
     /**
@@ -171,25 +165,25 @@ class PropertiesRepository extends ServiceEntityRepository
      */
     public function updatePropertiesProfiles($mode, $map): array
     {
-      $sql = "UPDATE properties
-              SET profil_bd=:profil_bd,
-                  profil_sonar=:profil_sonar,
-                  date_modification_profil=:date_modification_profil
-              WHERE type=:properties";
-      $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-      $conn->bindValue(':profil_bd', $map['profil_bd']);
-      $conn->bindValue(':profil_sonar', $map['profil_sonar']);
-      $conn->bindValue(':date_modification_profil', $map['date_modification_profil']);
-      $conn->bindValue(':properties', 'properties');
-      try {
-        if ($mode !== 'TEST') {
-            $conn->executeQuery();
-        } else {
-            return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+        $sql = "UPDATE properties
+                SET profil_bd=:profil_bd,
+                    profil_sonar=:profil_sonar,
+                    date_modification_profil=:date_modification_profil
+                WHERE type=:properties";
+        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+        $conn->bindValue(':profil_bd', $map['profil_bd']);
+        $conn->bindValue(':profil_sonar', $map['profil_sonar']);
+        $conn->bindValue(':date_modification_profil', $map['date_modification_profil']);
+        $conn->bindValue(':properties', 'properties');
+        try {
+            if ($mode !== 'TEST') {
+                $conn->executeQuery();
+            } else {
+                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+            }
+        } catch (\Doctrine\DBAL\Exception $e) {
+            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
         }
-    } catch (\Doctrine\DBAL\Exception $e) {
-        return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
-    }
-    return ['mode'=>$mode, 'code'=>200, 'erreur'=>''];
+        return ['mode'=>$mode, 'code'=>200, 'erreur'=>''];
     }
 }
