@@ -11,7 +11,7 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
-namespace App\Repository;
+namespace App\Repository\Main;
 
 use App\Entity\Main\Activite;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
