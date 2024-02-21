@@ -13,7 +13,7 @@
 
 namespace App\Entity\Main;
 
-use App\Repository\ProfilesHistoriqueRepository;
+use App\Repository\Main\ProfilesHistoriqueRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
