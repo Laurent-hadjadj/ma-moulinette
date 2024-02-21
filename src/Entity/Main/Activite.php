@@ -13,7 +13,7 @@
 
 namespace App\Entity\Main;
 
-use App\Repository\ActiviteRepository;
+use App\Repository\Main\ActiviteRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
