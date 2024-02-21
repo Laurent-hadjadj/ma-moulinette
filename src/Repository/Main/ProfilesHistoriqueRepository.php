@@ -17,7 +17,6 @@ use App\Entity\Main\ProfilesHistorique;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-
 /**
  * [Description ProfilesHistoriqueRepository]
  */
