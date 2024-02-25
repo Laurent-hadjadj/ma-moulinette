@@ -52,7 +52,7 @@ class SuiviController extends AbstractController
     public static $dateFormat = "Y-m-d H:i:s";
     public static $sonarUrl = "sonar.url";
     public static $europeParis = "Europe/Paris";
-    public static $regex = "/\s+/u";
+    public static $removeReturnline = "/\s+/u";
     public static $erreurMavenKey = "La clé maven est vide !";
 
     /**
@@ -290,6 +290,7 @@ class SuiviController extends AbstractController
      * On récupère les données disponibles pour une version données
      * http://{url}}/api/get/version
      *
+     * @param Client $client
      * @param Request $request
      *
      * @return Response
@@ -298,27 +299,30 @@ class SuiviController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/get/version', name: 'get_version', methods: ['GET','POST'])]
+    #[Route('/api/get/version', name: 'get_version', methods: ['POST'])]
     public function getVersion(Client $client, Request $request): Response
     {
         /** On décode le body */
         $data = json_decode($request->getContent());
-        $mavenKey = $data->mavenKey;
-        $mode = $data->mode;
 
         /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
 
-        /** Réponse HTTP */
-        $message = 200;
-
-        /** On teste si la clé est valide */
-        if ($mavenKey === "TEST" && $mode === "TEST") {
-            return $response->setData(["message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
-        }
+        /**
+         * On teste si la clé et/ou le mode est valide :
+         *  la clé ou le mode peuvent $etre vide
+         *  la clé ou le mode peuvent $etre null
+         * */
+        /** On teste si $data est valide */
+        if ($data === null) {
+            return $response->setData(['data' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'maven_key')) {
+            return $response->setData(['maven_key' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'mode')) {
+            return $response->setData(['mode' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
 
         /**  On modifie la date de 11-02-2022 16:02:06 à 2022-02-11 16:02:06 */
-        if ($mode === 'TEST') {
+        if ($data->mode === 'TEST') {
             $d = new Datetime("11-02-2022 16:02:06");
         } else {
             $d = new Datetime($data->date);
@@ -329,19 +333,19 @@ class SuiviController extends AbstractController
         $urlStatic = $this->getParameter(static::$sonarUrl);
 
         $url = "$urlStatic/api/measures/search_history?component=
-            $mavenKey&metrics=reliability_rating,
-            security_rating,sqale_rating,bugs,
-            vulnerabilities,code_smells,security_hotspots,
-            security_review_rating,lines,ncloc,coverage,
-            tests,sqale_index,duplicated_lines_density
-            &from=$urlencodeDate&to=$urlencodeDate";
+                $data->maven_key&metrics=reliability_rating,
+                security_rating,sqale_rating,bugs,
+                vulnerabilities,code_smells,security_hotspots,
+                security_review_rating,lines,ncloc,coverage,
+                tests,sqale_index,duplicated_lines_density
+                &from=$urlencodeDate&to=$urlencodeDate";
 
         /** On appel le client http */
-        if ($mode != "TEST") {
-            $result = $client->http(trim(preg_replace(static::$regex, " ", $url)));
+        if ($data->mode != "TEST") {
+            $result = $client->http(trim(preg_replace(static::$removeReturnline, " ", $url)));
         }
 
-        if ($mode === "TEST") {
+        if ($data->mode === "TEST") {
             $result = ["measures" => [
                 ["metric" => "lines", "history" => [["date" => "2022-04-10T00:00:01+0200", "value" => 20984]]],
                 ["metric" => "duplicated_lines_density", "history" => [
@@ -363,9 +367,10 @@ class SuiviController extends AbstractController
             ];
         }
 
+
         /** Si on récupère un message alors on a un problème. */
-        if (array_key_exists("message", $result)) {
-            return $response->setData(['message' => 404]);
+        if (array_key_exists('code', $result) && $result["code"]===404) {
+            return $response->setData(['mode' => $data->mode, 'maven_key'=>$data->maven_key, 'code'=>404, Response::HTTP_NOT_FOUND]);
         }
 
         $data = $result["measures"];
@@ -450,7 +455,7 @@ class SuiviController extends AbstractController
         }
 
         return $response->setData([
-            'message' => $message,
+            'code' => 200,
             'noteReliability' => $noteReliability, 'noteSecurity' => $noteSecurity,
             'noteSqale' => $noteSqale, 'noteHotspotsReview' => $noteHotspotsReview,
             'bug' => $bug, 'vulnerabilities' => $vulnerabilities,
@@ -548,7 +553,7 @@ class SuiviController extends AbstractController
         '$tempoDateEnregistrement')";
 
         // On exécute la requête
-        $con = $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)));
+        $con = $this->em->getConnection()->prepare(trim(preg_replace(static::$removeReturnline, " ", $sql)));
         try {
             $con->executeQuery();
         } catch (\Doctrine\DBAL\Exception $e) {
