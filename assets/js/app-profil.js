@@ -21,6 +21,8 @@ import 'motion-ui';
 import './foundation.js';
 import './app-authentification-details.js';
 
+import {encode} from './core/encode.js'
+
 // On importe les paramètres serveur
 import {serveur} from './properties.js';
 
@@ -52,7 +54,7 @@ const callboxFermer='</span><button class="close-button" aria-label="Fermer la f
  * @author    Laurent HADJADJ <laurent_h@me.com>
  * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
-const refreshQuality=async function() {
+  const refreshQuality=async function() {
   const dataRefresh = { mode:'null' };
   const optionsRefresh = {
         url: `${serveur()}/api/quality/profiles`, type: 'POST',
@@ -251,16 +253,17 @@ $('.js-profil-info').on('click', (e) => {
   const target = e.currentTarget.id;
   const elm = document.getElementById(target);
 
+  /* on passe le mode à null */
+  const mode='null';
+  /* On récupère le nom du langage. */
+  const language=elm.dataset.language;
   /* On récupère le nom du profil. */
   const profil=elm.dataset.profil;
-  /* On récupère le nom du profil. */
-  const language=elm.dataset.language;
 
-  /** on ouvre la page de détails */
-  const uri=`?language=${language}&profil=${profil}&mode=null`
-  const url=`${serveur()}/profil/details${uri}`;
-
-  $(location).prop('href', url);
+  /** on créé un token pour encoder les paramètres */
+  const parametre=`${mode}|${language}|${profil}`;
+  const a=encode(btoa(parametre));
+  location.href=`${serveur()}/profil/details?token=${a}`;
 });
 
 /**
