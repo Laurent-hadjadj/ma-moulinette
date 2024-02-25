@@ -36,7 +36,7 @@ Chart.register(zoomPlugin);
 import Chance from 'chance';
 
 /** On importe les constantes */
-import {contentType, paletteCouleur, matrice, dateOptions, dateOptionsShort} from './constante.js';
+import {http_200, http_202, http_400, http_403, contentType, paletteCouleur, matrice, dateOptions, dateOptionsShort} from './constante.js';
 
 /* Construction des callbox de type success */
 const callboxInformation='<div id="js-message" class="callout alert-callout-border primary" data-closable="slide-out-right" role="alert"><p class="open-sans color-bleu padding-right-1"><span class="lead">Information ! </span>';
@@ -64,22 +64,21 @@ const callboxFermer='</span><button class="close-button" aria-label="Fermer la f
   const t = await $.ajax(optionsRefresh);
   let message='';
   switch (t.code) {
-    case 200 :
-      console.log('code 200');
+    case http_200 :
       message='Mise à jour de la liste effectuée.';
       $('#message').html(callboxSuccess+message+callboxFermer);
       /** On efface le message flash */
       $('.js-message').remove();
       break;
-    case 202:
+    case http_202:
       message=`Vous devez au moins avoir un profil déclaré sur le serveur SonarQube correspondant à la clé définie dans le fichier de propriétés de Ma-Moulinette.`;
       $('#message').html(callboxInformation+message+callboxFermer);
     break;
-    case 400:
+    case http_400:
       message=`La requête n'est pas conforme (Erreur 400).`;
       $('#message').html(callboxError+message+callboxFermer);
       break;
-    case 403:
+    case http_403:
       message=`Vous n'êtes pas autorisé à effectuer cette opération.`;
       $('#message').html(callboxWarning+message+callboxFermer);
       break;
