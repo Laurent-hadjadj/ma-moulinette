@@ -234,8 +234,8 @@ class ApiProfilController extends AbstractController
             return $this->render('profil/details.html.twig', $render);
         }
 
-    $language = strtolower($exxplode[1]);
-    $profil = $exxplode[2];
+        $language = strtolower($exxplode[1]);
+        $profil = $exxplode[2];
 
 
         /** On renome les langages pour sonarqube */
