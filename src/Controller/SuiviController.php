@@ -41,6 +41,8 @@ use Psr\Log\LoggerInterface;
 /** Client HTTP */
 use App\Service\Client;
 
+use function PHPUnit\Framework\isEmpty;
+
 /**
  * [Description SuiviController]
  */
@@ -90,155 +92,107 @@ class SuiviController extends AbstractController
         $mavenKey = $request->get('mavenKey');
         $mode = $request->get('mode');
 
-        /** On teste si la clé est valide */
-        if ($mavenKey === 'null' || is_null($mavenKey)  || is_null($mode)) {
-            return $response->setData([
-                'mode' => $mode, 'mavenKey' => $mavenKey,
-                'code'=>400, Response::HTTP_BAD_REQUEST]);
+        /** On prépare une réponse par défaut */
+        $render = [
+            'mode' => $mode,
+            'suivi' => [], 'severite' => [], 'details' => [],
+            'nom' => 'N.C', 'mavenKey' => '',
+            'data1' =>0, 'data2' => 0,
+            'data3' => 0, 'labels' => 0,
+            'version' => $this->getParameter('version'), 'dateCopyright' => \date('Y'),
+            Response::HTTP_OK
+        ];
+
+        /**
+         * On teste si la clé et/ou le mode est valide :
+         *  la clé ou le mode peuvent $etre vide
+         *  la clé ou le mode peuvent $etre null
+         * */
+        if (isEmpty($mavenKey)===true || is_null($mavenKey)===true || isEmpty($mode)===true || is_null($mode)===true) {
+            /** On prepare un message flash */
+            $this->addFlash('alert', sprintf(
+                '%s : %s', "[Erreur 001]","La clé maven est incorrecte."
+            ));
+
+            return $this->render('suivi/index.html.twig', $render);
         }
 
         /**On vérifie que le projet est bien dans l'historique */
         $map=['maven_key'=>$mavenKey];
         $historique = $this->em->getRepository(Historique::class);
         $request=$historique->countHistoriqueProjet($mode, $map);
-        if ($request['code']!=200) {
-            return $response->setData([
-                'mode' => $mode, 'mavenKey' => $mavenKey,
-                'code'=>$request['code'], 'erreur' => $request['erreur'],
-                Response::HTTP_OK]);
-        }
-        /** Si on a pas de projet dans la table historique on sort avec un message */
-        if ($request['nombre']===0){
+        if ($request['code']!=200 || $request['nombre']===0) {
             /** On prepare un message flash */
             $this->addFlash('alert', sprintf(
-                '%s : %s', "[Erreur 001]","Vous n'avez pas enregistré d'analyse."
+                '%s : %s', "[Erreur 002]","Le projet n'a pas été sauvegardé dans l'historique."
             ));
-
-            $render = [
-                'suivi' => [], 'severite' => [], 'details' => [],
-                'nom' => 'N.C', 'mavenKey' => '',
-                'data1' =>0, 'data2' => 0,
-                'data3' => 0, 'labels' => 0,
-                'version' => $this->getParameter('version'), 'dateCopyright' => \date('Y'),
-                Response::HTTP_OK
-            ];
-
             return $this->render('suivi/index.html.twig', $render);
         }
 
-        /** Tableau de suivi principal */
-        $sql = "SELECT * FROM
-                (SELECT nom_projet as nom, date_version as date, version,
-                    suppress_warning, no_sonar, nombre_bug as bug,
-                    nombre_vulnerability as faille,
-                    nombre_code_smell as mauvaise_pratique,
-                    hotspot_total as nombre_hotspot,
-                    frontend as presentation, backend as metier, autre,
-                    note_reliability as fiabilite,
-                    note_security as securite, note_hotspot,
-                    note_sqale as maintenabilite, initial
-                FROM historique
-                WHERE maven_key='$mavenKey' AND initial=TRUE)
-                UNION SELECT * FROM
-                (SELECT nom_projet as nom, date_version as date,
-                    version, suppress_warning, no_sonar, nombre_bug as bug,
-                    nombre_vulnerability as faille,
-                    nombre_code_smell as mauvaise_pratique,
-                    hotspot_total as nombre_hotspot,
-                    frontend as presentation, backend as metier,
-                    autre, note_reliability as fiabilite,
-                    note_security as securite, note_hotspot,
-                    note_sqale as maintenabilite, initial
-                FROM historique
-                WHERE maven_key='$mavenKey' AND initial=FALSE
-                ORDER BY date_version DESC LIMIT 9)";
+        /** On vérifie que le projet est disponible pour l'utilisateur */
+        // TODO
 
-        $select = $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
-        $suivi = $select->fetchAllAssociative();
+        /** on construit le tableau des données pour les requêtes */
+        $map=['mode'=>$mode, 'maven_key'=>$mavenKey, 'limit'=>$this->getParameter('nombre.favori')];
+        $historique = $this->em->getRepository(Historique::class);
+
+        /** Tableau de suivi principal */
+        $suivi=$historique-> selectUnionHistoriqueProjet($mode, $map);
+        if ($request['code']!=200) {
+            /** On prepare un message flash */
+            $code="[Erreur ".$request['code'];
+            $message="Une erreur s'est produite (".$request['erreur'].").";
+            $this->addFlash('alert', sprintf('%s : %s', $code,$message));
+        }
 
         /** On récupère les anomalies par sévérité */
-        $sql = "SELECT * FROM
-                (SELECT date_version as date,
-                    nombre_anomalie_bloquant as bloquant,
-                    nombre_anomalie_critique as critique,
-                    nombre_anomalie_majeur as majeur,
-                    nombre_anomalie_mineur as mineur
-                FROM historique
-                WHERE maven_key='$mavenKey' AND initial=TRUE)
-                UNION SELECT * FROM
-                (SELECT date_version as date,
-                    nombre_anomalie_bloquant as bloquant,
-                    nombre_anomalie_critique as critique,
-                    nombre_anomalie_majeur as majeur,
-                    nombre_anomalie_mineur as mineur
-                FROM historique
-                WHERE maven_key='$mavenKey' AND initial=FALSE
-                ORDER BY date_version DESC LIMIT 9)";
-
-        $select = $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
-        $severite = $select->fetchAllAssociative();
+        $severite=$historique-> selectUnionHistoriqueAnomalie($mode, $map);
+        if ($request['code']!=200) {
+            /** On prepare un message flash */
+            $code="[Erreur ".$request['code'];
+            $message="Une erreur s'est produite (".$request['erreur'].").";
+            $this->addFlash('alert', sprintf('%s : %s', $code,$message));
+        }
 
         /** On récupère les anomalies par type et sévérité. */
-        $sql = "SELECT * FROM
-                (SELECT date_version as date, version,
-                        bug_blocker, bug_critical, bug_major,
-                        bug_minor, bug_info,
-                        vulnerability_blocker, vulnerability_critical,
-                        vulnerability_major, vulnerability_minor,
-                        vulnerability_info,
-                        code_smell_blocker, code_smell_critical,
-                        code_smell_major, code_smell_minor,
-                        code_smell_info, initial
-                FROM historique
-                WHERE maven_key='$mavenKey' AND initial=TRUE)
-                UNION SELECT * FROM
-                (SELECT date_version as date, version,
-                        bug_blocker, bug_critical, bug_major,
-                        bug_minor, bug_info,
-                        vulnerability_blocker, vulnerability_critical,
-                        vulnerability_major, vulnerability_minor,
-                        vulnerability_info,
-                        code_smell_blocker, code_smell_critical,
-                        code_smell_major, code_smell_minor,
-                        code_smell_info, initial
-                FROM historique
-                WHERE maven_key='$mavenKey' AND initial=FALSE
-                ORDER BY date_version DESC LIMIT 9)";
-
-        $select = $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
-        $details = $select->fetchAllAssociative();
+        $details=$historique-> selectUnionHistoriqueDetails($mode, $map);
+        if ($request['code']!=200) {
+            /** On prepare un message flash */
+            $code="[Erreur ".$request['code'];
+            $message="Une erreur s'est produite (".$request['erreur'].").";
+            $this->addFlash('alert', sprintf('%s : %s', $code,$message));
+        }
 
         /** Graphique */
-        $sql = "SELECT nombre_bug as bug, nombre_vulnerability as secu,
-                nombre_code_smell as code_smell, date_version as date
-                FROM historique WHERE maven_key='$mavenKey'
-                GROUP BY date_version ORDER BY date_version ASC";
-
-        $select = $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
-        $graph = $select->fetchAllAssociative();
+        $graph=$historique->selectHistoriqueAnomalieGraphique($mode, $map);
+        if ($request['code']!=200) {
+            /** On prepare un message flash */
+            $code="[Erreur ".$request['code'];
+            $message="Une erreur s'est produite (".$request['erreur'].").";
+            $this->addFlash('alert', sprintf('%s : %s', $code,$message));
+        }
 
         /** On compte le nombre de résultat */
-        $nl = count((array)$graph);
-
+        $nl = count((array)$graph['request']);
         for ($i = 0; $i < $nl; $i++) {
-            $bug[$i] = $graph[$i]["bug"];
-            $secu[$i] = $graph[$i]["secu"];
-            $codeSmell[$i] = $graph[$i]["code_smell"];
-            $date[$i] = $graph[$i]["date"];
+            $bug[$i] = $graph['request'][$i]["bug"];
+            $secu[$i] = $graph['request'][$i]["secu"];
+            $codeSmell[$i] = $graph['request'][$i]["code_smell"];
+            $date[$i] = $graph['request'][$i]["date"];
         }
 
         /** On ajoute une valeur null a la fin de chaque série. */
         $bug[$nl + 1] = 0;
         $secu[$nl + 1] = 0;
         $codeSmell[$nl + 1] = 0;
-        $dd = new DateTime($graph[$nl - 1]["date"]);
+        $dd = new DateTime($graph['request'][$nl - 1]["date"]);
         $dd->modify('+1 day');
         $ddd = $dd->format('Y-m-d');
         $date[$nl + 1] = $ddd;
 
         $render = [
-            'suivi' => $suivi, 'severite' => $severite, 'details' => $details,
-            'nom' => $suivi[0]["nom"], 'mavenKey' => $mavenKey,
+            'suivi' => $suivi['request'], 'severite' => $severite['request'], 'details' => $details['request'],
+            'nom' => $suivi['request'][0]["nom"], 'mavenKey' => $mavenKey,
             'data1' => json_encode($bug), 'data2' => json_encode($secu),
             'data3' => json_encode($codeSmell), 'labels' => json_encode($date),
             'version' => $this->getParameter('version'), 'dateCopyright' => \date('Y'),

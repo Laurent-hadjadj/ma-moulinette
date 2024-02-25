@@ -204,5 +204,201 @@ class HistoriqueRepository extends ServiceEntityRepository
             $response=['mode'=>$mode, 'code'=> 500, 'erreur'=>$e->getCode()];
         }
         return $response;
-}
+    }
+
+    /**
+     * [Description for selectUnionHistoriqueProjet]
+     * Remonte les projets en historique
+     *
+     * @param string $mode
+     * @param array $map
+     *
+     * @return array
+     *
+     * Created at: 25/02/2024 10:13:53 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function selectUnionHistoriqueProjet($mode, $map):array {
+        /** On prépare la requête */
+        $sql = "SELECT * FROM
+                (SELECT nom_projet AS nom, date_version AS date, version,
+                    suppress_warning, no_sonar, nombre_bug AS bug,
+                    nombre_vulnerability AS faille,
+                    nombre_code_smell AS mauvaise_pratique,
+                    hotspot_total AS nombre_hotspot,
+                    frontend AS presentation, backend as metier, autre,
+                    note_reliability AS fiabilite,
+                    note_security AS securite, note_hotspot,
+                    note_sqale AS maintenabilite, initial
+                FROM historique
+                WHERE maven_key=:maven_key AND initial=:initial_true)
+                UNION SELECT * FROM
+                (SELECT nom_projet as nom, date_version as date,
+                    version, suppress_warning, no_sonar, nombre_bug as bug,
+                    nombre_vulnerability as faille,
+                    nombre_code_smell as mauvaise_pratique,
+                    hotspot_total as nombre_hotspot,
+                    frontend as presentation, backend as metier,
+                    autre, note_reliability as fiabilite,
+                    note_security as securite, note_hotspot,
+                    note_sqale as maintenabilite, initial
+                FROM historique
+                WHERE maven_key=:maven_key AND initial=:initial_false
+                ORDER BY date_version DESC LIMIT :limit)";
+
+        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+        $conn->bindValue(':maven_key', $map['maven_key']);
+        $conn->bindValue(':initial_true', TRUE);
+        $conn->bindValue(':initial_false', FALSE);
+        $conn->bindValue(':limit', $map['limit']);
+        try {
+            if ($mode !== 'TEST') {
+                $suivi=$conn->executeQuery()->fetchAllAssociative();
+            } else {
+                $response=['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+            }
+        } catch (\Doctrine\DBAL\Exception $e) {
+            $response=['mode'=>$mode, 'code'=> 500, 'erreur'=>$e->getCode()];
+        }
+        /** on prépare la réponse */
+        $response=['mode'=>$mode, 'code'=>200, 'request'=>$suivi, 'erreur'=>''];
+        return $response;
+    }
+
+    /**
+     * [Description for selectUnionHistoriqueAnomalie]
+     * On remonte les anomalies des projets favoris
+     *
+     * @param string $mode
+     * @param array $map
+     *
+     * @return array
+     *
+     * Created at: 25/02/2024 12:38:18 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function selectUnionHistoriqueAnomalie($mode, $map):array {
+        /** On prépare la requête */
+        $sql = "SELECT * FROM
+                (SELECT date_version AS date,
+                        nombre_anomalie_bloquant AS bloquant,
+                        nombre_anomalie_critique AS critique,
+                        nombre_anomalie_majeur AS majeur,
+                        nombre_anomalie_mineur AS mineur
+                FROM historique
+                WHERE maven_key=:maven_key AND initial=:initial_true)
+                UNION SELECT * FROM
+                (SELECT date_version AS date,
+                        nombre_anomalie_bloquant AS bloquant,
+                        nombre_anomalie_critique as critique,
+                        nombre_anomalie_majeur as majeur,
+                        nombre_anomalie_mineur as mineur
+                FROM historique
+                WHERE maven_key=:maven_key AND initial=:initial_false
+                ORDER BY date_version DESC LIMIT :limit)";
+        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+        $conn->bindValue(':maven_key', $map['maven_key']);
+        $conn->bindValue(':initial_true', TRUE);
+        $conn->bindValue(':initial_false', FALSE);
+        $conn->bindValue(':limit', $map['limit']);
+        try {
+            if ($mode !== 'TEST') {
+                $severite=$conn->executeQuery()->fetchAllAssociative();
+            } else {
+                $response=['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+            }
+        } catch (\Doctrine\DBAL\Exception $e) {
+            $response=['mode'=>$mode, 'code'=> 500, 'erreur'=>$e->getCode()];
+        }
+        /** on prépare la réponse */
+        $response=['mode'=>$mode, 'code'=>200, 'request'=>$severite, 'erreur'=>''];
+        return $response;
+    }
+
+    /**
+     * [Description for selectUnionHistoriqueDetails]
+     * remonte les anomalies par type des favoris
+     *
+     * @param string $mode
+     * @param array $map
+     *
+     * @return array
+     *
+     * Created at: 25/02/2024 12:48:30 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function selectUnionHistoriqueDetails($mode, $map):array {
+        /** On prépare la requête */
+        $sql = "SELECT * FROM
+                (SELECT date_version AS date, version,
+                        bug_blocker, bug_critical, bug_major,
+                        bug_minor, bug_info,
+                        vulnerability_blocker, vulnerability_critical,
+                        vulnerability_major, vulnerability_minor,
+                        vulnerability_info,
+                        code_smell_blocker, code_smell_critical,
+                        code_smell_major, code_smell_minor,
+                        code_smell_info, initial
+                FROM historique
+                WHERE maven_key=:maven_key AND initial=:initial_true)
+                UNION SELECT * FROM
+                (SELECT date_version AS date, version,
+                        bug_blocker, bug_critical, bug_major,
+                        bug_minor, bug_info,
+                        vulnerability_blocker, vulnerability_critical,
+                        vulnerability_major, vulnerability_minor,
+                        vulnerability_info,
+                        code_smell_blocker, code_smell_critical,
+                        code_smell_major, code_smell_minor,
+                        code_smell_info, initial
+                FROM historique
+                WHERE maven_key=:maven_key AND initial=:initial_false
+                ORDER BY date_version DESC LIMIT :limit)";
+
+        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+        $conn->bindValue(':maven_key', $map['maven_key']);
+        $conn->bindValue(':initial_true', TRUE);
+        $conn->bindValue(':initial_false', FALSE);
+        $conn->bindValue(':limit', $map['limit']);
+        try {
+            if ($mode !== 'TEST') {
+                $details=$conn->executeQuery()->fetchAllAssociative();
+            } else {
+                $response=['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+            }
+        } catch (\Doctrine\DBAL\Exception $e) {
+            $response=['mode'=>$mode, 'code'=> 500, 'erreur'=>$e->getCode()];
+        }
+        /** on prépare la réponse */
+        $response=['mode'=>$mode, 'code'=>200, 'request'=>$details, 'erreur'=>''];
+        return $response;
+    }
+
+    public function selectHistoriqueAnomalieGraphique($mode, $map):array {
+        /** On prépare la requête */
+        $sql = "SELECT  nombre_bug AS bug, nombre_vulnerability AS secu,
+                        nombre_code_smell AS code_smell, date_version AS date
+                FROM historique
+                WHERE maven_key=:maven_key
+                GROUP BY date_version
+                ORDER BY date_version ASC";
+        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+        $conn->bindValue(':maven_key', $map['maven_key']);
+        try {
+            if ($mode !== 'TEST') {
+                $graph=$conn->executeQuery()->fetchAllAssociative();
+            } else {
+                $response=['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+            }
+        } catch (\Doctrine\DBAL\Exception $e) {
+            $response=['mode'=>$mode, 'code'=> 500, 'erreur'=>$e->getCode()];
+        }
+        /** on prépare la réponse */
+        $response=['mode'=>$mode, 'code'=>200, 'request'=>$graph, 'erreur'=>''];
+        return $response;
+    }
+
 }
