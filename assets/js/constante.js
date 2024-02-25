@@ -11,6 +11,7 @@
 
 /** Liste des constantes HTTP */
 export const http_200=200;
+export const http_201=201;
 export const http_202=202;
 export const http_400=400;
 export const http_401=401;
