@@ -27,7 +27,7 @@ import {serveur} from './properties.js';
 
 /** On importe les constantes */
 import {contentType, couleur, note, espace, rien,
-        http406, listeOwasp2017,
+        http_406, listeOwasp2017,
         un, deux, trois, quatre, cinq, six, sept, huit, neuf, dix, onze,
         vingtNeuf, trente, soixanteNeuf, soixanteDix, cent} from './constante';
 
@@ -111,7 +111,7 @@ const remplissageOwaspInfo=function(idMaven) {
 
   $.ajax(options).then(r => {
     /** 406 = code HTTP */
-    if (r.code === http406){
+    if (r.code === http_406){
         console.info('Le projet n\'existe pas..');
         return;
       }
