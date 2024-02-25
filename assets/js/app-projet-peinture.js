@@ -16,7 +16,7 @@ import $ from 'jquery';
 import {serveur} from './properties.js';
 
 /** On importe les constantes */
-import {contentType, dateOptions, http406,
+import {contentType, dateOptions, http_406,
         un, deux, trois, quatre, cinq, dix, cent, dixMille} from './constante.js';
 
 /**
@@ -62,7 +62,7 @@ export const remplissage=function(mavenKey) {
      * Si la requête à un résultat, il est toujours égal à 200
      * sinon 406 pour signaler que le projet n'a pas encore été analysé.
      */
-    if (t[0] === http406){
+    if (t[0] === http_406){
         log(' - ERROR : Récupération de la version.');
         log(t.message);
         return;
@@ -155,7 +155,7 @@ export const remplissage=function(mavenKey) {
     dataType: 'json', data, contentType };
 
   $.ajax(optionsProjet).then(t=> {
-    if (t[0] === http406){
+    if (t[0] === http_406){
       log(' - ERROR : Récupération des informations.');
       log(t.message);
       return;
@@ -188,7 +188,7 @@ export const remplissage=function(mavenKey) {
           dataType: 'json', data, contentType };
 
   $.ajax(optionsAnomalie).then(t=> {
-    if (t[0] === http406) {
+    if (t[0] === http_406) {
       log(' - ERROR : Récupération des anomalies.');
       log(t.message);
       return;
@@ -387,7 +387,7 @@ export const remplissage=function(mavenKey) {
 
   $.ajax(optionsAnomalieDetails).then(t=> {
 
-    if (t[0] === http406) {
+    if (t[0] === http_406) {
       log(' - ERROR : Récupération du détails des anomalies.');
       log(t.message);
       return;
@@ -453,7 +453,7 @@ export const remplissage=function(mavenKey) {
   $.ajax(optionsHotspots).then(t=> {
     let couleur='';
 
-    if (t[0] === http406) {
+    if (t[0] === http_406) {
       log(' - ERROR : Récupération des anomalies.');
       log(t.message);
       return;

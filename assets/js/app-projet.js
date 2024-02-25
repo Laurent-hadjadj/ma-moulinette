@@ -44,7 +44,7 @@ import {remplissage} from './app-projet-peinture.js';
 import {enregistrement} from './app-projet-enregistrement.js';
 
 /** On importe les constantes */
-import {contentType, http200, http406, dateOptions,
+import {contentType, http_200, http_406, dateOptions,
         matrice, paletteCouleur,
         deuxMille, troisMille, cinqMille} from './constante.js';
 
@@ -574,7 +574,7 @@ const projetHotspotOwaspDetails=function(mavenKey) {
         $('#js-reference-information').html(t.reference);
         $('#js-message-information').html(t.message);
       } else {
-        if (t.code === http406) {
+        if (t.code === http_406) {
           log(' - INFO : (10) Aucun détails n\'est disponible pour les hotspots.');
         } else {
           /* On a trouvé des hotspots OWASP */
@@ -893,7 +893,7 @@ const afficheHotspotDetails=function (mavenKey){
     url: `${serveur()}/api/peinture/projet/hotspot/details`,
     type: 'GET', dataType: 'json', data, contentType };
   $.ajax(options).then(t=> {
-    if (t.code !== http200) {
+    if (t.code !== http_200) {
       log(' - ERROR : La liste des hotspot n\'a pas été trouvée.');
       return;
     }
