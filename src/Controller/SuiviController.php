@@ -310,8 +310,8 @@ class SuiviController extends AbstractController
 
         /**
          * On teste si la clé et/ou le mode est valide :
-         *  la clé ou le mode peuvent $etre vide
-         *  la clé ou le mode peuvent $etre null
+         *  la clé ou le mode peuvent être vide
+         *  la clé ou le mode peuvent être null
          * */
         /** On teste si $data est valide */
         if ($data === null) {
@@ -484,82 +484,61 @@ class SuiviController extends AbstractController
     {
         /** On décode le body */
         $data = json_decode($request->getContent());
-        $dateEnregistrement = new Datetime();
-        $dateEnregistrement->setTimezone(new DateTimeZone(static::$europeParis));
-        $dateVersion = new Datetime($data->date);
-        $mode = $data->mode;
 
-        /** On créé un nouvel objet Json. */
+        /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
 
-        /** On bind chaque valeur. */
-        $tempoDateVersion = $dateVersion->format(static::$dateFormat);
-        $tempoDateEnregistrement = $dateEnregistrement->format(static::$dateFormat);
-        $tempoMavenKey = $data->mavenKey;
-        $tempoVersion = $data->version;
-        $tempoNom = $data->nom;
-        $tempoLines = $data->lines;
-        $tempoNcloc = $data->ncloc;
-        $tempoCoverage = $data->coverage;
-        $tempoDuplication = $data->duplication;
-        $tempoTests = $data->tests;
-        $tempoDefauts = $data->defauts;
-        $tempoDette = $data->dette;
-        $tempoBug = $data->bug;
-        $tempoVulnerabilities = $data->vulnerabilities;
-        $tempoCodeSmell = $data->codeSmell;
-        $tempoNoteReliability = $data->noteReliability;
-        $tempoNoteSecurity = $data->noteSecurity;
-        $tempoNoteSqale = $data->noteSqale;
-        $tempoNoteHotspotsReview = $data->noteHotspotsReview;
-        $tempoHotspotsReview = $data->hotspotsReview;
-        $tempoInitial = $data->initial;
+        /**
+         * On teste si la clé et/ou le mode est valide :
+        *  le data peuvent être vide ou null
+        *  le mode peuvent être null ou null
+        * */
+        /** On teste si $data est valide */
+        if ($data === null) {
+            return $response->setData(['data' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'mode')) {
+            return $response->setData(['mode' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
 
-        $sql = "INSERT OR IGNORE INTO historique
-        (maven_key,version,date_version,
-        nom_projet,version_release,version_snapshot,
-        suppress_warning,no_sonar,nombre_ligne,
-        nombre_ligne_code,couverture,
-        duplication,tests_unitaires,nombre_defaut,dette,
-        nombre_bug,nombre_vulnerability,nombre_code_smell,
-        bug_blocker, bug_critical, bug_major, bug_minor, bug_info,
-        vulnerability_blocker, vulnerability_critical, vulnerability_major,
-        vulnerability_minor, vulnerability_info,
-        code_smell_blocker, code_smell_critical, code_smell_major,
-        code_smell_minor, code_smell_info,
-        frontend,backend,autre,
-        nombre_anomalie_bloquant,nombre_anomalie_critique,
-        nombre_anomalie_majeur,
-        nombre_anomalie_mineur,nombre_anomalie_info,
-        note_reliability,note_security,
-        note_sqale,note_hotspot,hotspot_total,
-        hotspot_high,hotspot_medium,hotspot_low,
-        initial,date_enregistrement)
-        VALUES
-        ('$tempoMavenKey','$tempoVersion',
-        '$tempoDateVersion','$tempoNom',-1,-1,-1,-1,
-        $tempoLines,$tempoNcloc,
-        $tempoCoverage,$tempoDuplication,$tempoTests,
-        $tempoDefauts,$tempoDette,$tempoBug,
-        $tempoVulnerabilities,$tempoCodeSmell,
-        -1,-1,-1,-1,-1,
-        -1,-1,-1,-1,-1,
-        -1,-1,-1,-1,-1,
-        -1,-1,-1,
-        -1,-1,-1,-1,-1,
-        '$tempoNoteReliability','$tempoNoteSecurity','$tempoNoteSqale',
-        '$tempoNoteHotspotsReview',$tempoHotspotsReview,
-        -1,-1,-1, $tempoInitial,
-        '$tempoDateEnregistrement')";
+        /** On créé objet date */
+        $dateEnregistrement = new Datetime();
+        $dateEnregistrement->setTimezone(new DateTimeZone(static::$europeParis));
+        $dateVersion = new Datetime($data->date_version);
 
-        // On exécute la requête
-        $con = $this->em->getConnection()->prepare(trim(preg_replace(static::$removeReturnline, " ", $sql)));
-        try {
-            $con->executeQuery();
-        } catch (\Doctrine\DBAL\Exception $e) {
-            return $response->setData(["code" => $e->getCode(), Response::HTTP_OK]);
+        /** On bind chaque valeur dans une map. */
+        $map=[
+            'maven_key' => $data->maven_key, 'version' => $data->version,
+            'date_version' => $dateVersion->format(static::$dateFormat),
+            'nom_projet' => $data->nom_projet, 'version_release' => -1, 'version_snapshot' => -1,
+            'suppress_warning' => -1,'no_sonar' => -1, 'nombre_ligne' => $data->nombre_ligne,
+            'nombre_ligne_code' => $data->nombre_ligne_code, 'couverture' => $data->couverture,
+            'duplication' => $data->duplication, 'tests_unitaires' => $data->tests_unitaires,
+            'nombre_defaut' => $data->nombre_defaut, 'dette' => $data->dette,
+            'nombre_bug' => $data->nombre_bug, 'nombre_vulnerability' => $data->nombre_vulnerability,
+            'nombre_code_smell' => $data->nombre_code_smell, 'bug_blocker'=> -1,
+            'bug_critical'=> -1, 'bug_major'=> -1, 'bug_minor'=> -1, 'bug_info'=> -1,
+            'vulnerability_blocker'=>-1, 'vulnerability_critical'=>-1,
+            'vulnerability_major'=> -1, 'vulnerability_minor'=> -1, 'vulnerability_info'=> -1,
+            'code_smell_blocker'=> -1, 'code_smell_critical'=> -1,
+            'code_smell_major'=> -1, 'code_smell_minor'=> -1,
+            'code_smell_info'=> -1, 'frontend' => -1,
+            'backend' => -1, 'autre' => -1, 'nombre_anomalie_bloquant' => -1,
+            'nombre_anomalie_critique' => -1, 'nombre_anomalie_majeur' => -1,
+            'nombre_anomalie_mineur' => -1, 'nombre_anomalie_info' =>-1,
+            'note_reliability' => $data->note_reliability, 'note_security' => $data->note_security,
+            'note_sqale' => $data->note_sqale, 'note_hotspot' => $data->note_hotspot,
+            'hotspot_total' => $data->hotspot_total, 'hotspot_high' => -1,
+            'hotspot_medium' => -1, 'hotspot_low' => -1, 'initial' => $data->initial,
+            'date_enregistrement' => $dateEnregistrement->format(static::$dateFormat)
+        ];
+
+        /** On enregistre */
+        $historique = $this->em->getRepository(Historique::class);
+        $request=$historique->countHistoriqueProjet($data->mode, $map);
+        if ($request['code']!=200) {
+            return $response->setData(["mode" => $data->mode, "code" => $request['code'], 'message'=>$request['erreur'],Response::HTTP_OK]);
         }
-        return $response->setData(["mode" => $mode, "code" => 200, Response::HTTP_OK]);
+
+        return $response->setData(["mode" => $data->mode, "code" => 200, Response::HTTP_OK]);
     }
 
     /**

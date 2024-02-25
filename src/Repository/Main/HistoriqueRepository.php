@@ -72,15 +72,14 @@ class HistoriqueRepository extends ServiceEntityRepository
             if ($mode !== 'TEST') {
                 $request=$conn->executeQuery()->fetchAllAssociative();
             } else {
-                $response=['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
             }
         } catch (\Doctrine\DBAL\Exception $e) {
-            $response=['mode'=>$mode, 'code'=> 500, 'erreur'=>$e->getCode()];
+            return ['mode'=>$mode, 'code'=> 500, 'erreur'=>$e->getCode()];
         }
 
         /** on prépare la réponse */
-        $response=['mode'=>$mode, 'code'=>200, 'erreur'=>'', 'nombre'=>$request[0]['nombre']];
-        return $response;
+        return ['mode'=>$mode, 'code'=>200, 'erreur'=>'', 'nombre'=>$request[0]['nombre']];
     }
 
     /**
@@ -97,11 +96,11 @@ class HistoriqueRepository extends ServiceEntityRepository
     public function getProjetFavori($where): array
     {
     $sql = "SELECT DISTINCT
-            maven_key as mavenkey, nom_projet as nom,
-            version, date_version as date, note_reliability as fiabilite,
-            note_security as securite, note_hotspot as hotspot,
-            note_sqale as sqale, nombre_bug as bug, nombre_vulnerability as vulnerability,
-            nombre_code_smell as code_smell, hotspot_total as hotspots
+                maven_key as mavenkey, nom_projet as nom,
+                version, date_version as date, note_reliability as fiabilite,
+                note_security as securite, note_hotspot as hotspot,
+                note_sqale as sqale, nombre_bug as bug, nombre_vulnerability as vulnerability,
+                nombre_code_smell as code_smell, hotspot_total as hotspots
             FROM historique
             WHERE :where
             ORDER BY date_version DESC limit 4";
@@ -256,14 +255,13 @@ class HistoriqueRepository extends ServiceEntityRepository
             if ($mode !== 'TEST') {
                 $suivi=$conn->executeQuery()->fetchAllAssociative();
             } else {
-                $response=['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
             }
         } catch (\Doctrine\DBAL\Exception $e) {
-            $response=['mode'=>$mode, 'code'=> 500, 'erreur'=>$e->getCode()];
+            return ['mode'=>$mode, 'code'=> 500, 'erreur'=>$e->getCode()];
         }
         /** on prépare la réponse */
-        $response=['mode'=>$mode, 'code'=>200, 'request'=>$suivi, 'erreur'=>''];
-        return $response;
+        return ['mode'=>$mode, 'code'=>200, 'request'=>$suivi, 'erreur'=>''];
     }
 
     /**
@@ -307,14 +305,13 @@ class HistoriqueRepository extends ServiceEntityRepository
             if ($mode !== 'TEST') {
                 $severite=$conn->executeQuery()->fetchAllAssociative();
             } else {
-                $response=['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
             }
         } catch (\Doctrine\DBAL\Exception $e) {
-            $response=['mode'=>$mode, 'code'=> 500, 'erreur'=>$e->getCode()];
+            return ['mode'=>$mode, 'code'=> 500, 'erreur'=>$e->getCode()];
         }
         /** on prépare la réponse */
-        $response=['mode'=>$mode, 'code'=>200, 'request'=>$severite, 'erreur'=>''];
-        return $response;
+        return ['mode'=>$mode, 'code'=>200, 'request'=>$severite, 'erreur'=>''];
     }
 
     /**
@@ -367,16 +364,28 @@ class HistoriqueRepository extends ServiceEntityRepository
             if ($mode !== 'TEST') {
                 $details=$conn->executeQuery()->fetchAllAssociative();
             } else {
-                $response=['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
             }
         } catch (\Doctrine\DBAL\Exception $e) {
-            $response=['mode'=>$mode, 'code'=> 500, 'erreur'=>$e->getCode()];
+            return ['mode'=>$mode, 'code'=> 500, 'erreur'=>$e->getCode()];
         }
         /** on prépare la réponse */
-        $response=['mode'=>$mode, 'code'=>200, 'request'=>$details, 'erreur'=>''];
-        return $response;
+        return ['mode'=>$mode, 'code'=>200, 'request'=>$details, 'erreur'=>''];
     }
 
+    /**
+     * [Description for selectHistoriqueAnomalieGraphique]
+     * On remonte les données pour construire le graphique.
+     *
+     * @param string $mode
+     * @param array $map
+     *
+     * @return array
+     *
+     * Created at: 25/02/2024 17:31:09 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function selectHistoriqueAnomalieGraphique($mode, $map):array {
         /** On prépare la requête */
         $sql = "SELECT  nombre_bug AS bug, nombre_vulnerability AS secu,
@@ -391,14 +400,133 @@ class HistoriqueRepository extends ServiceEntityRepository
             if ($mode !== 'TEST') {
                 $graph=$conn->executeQuery()->fetchAllAssociative();
             } else {
-                $response=['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
             }
         } catch (\Doctrine\DBAL\Exception $e) {
-            $response=['mode'=>$mode, 'code'=> 500, 'erreur'=>$e->getCode()];
+            return ['mode'=>$mode, 'code'=> 500, 'erreur'=>$e->getCode()];
         }
         /** on prépare la réponse */
-        $response=['mode'=>$mode, 'code'=>200, 'request'=>$graph, 'erreur'=>''];
-        return $response;
+        return ['mode'=>$mode, 'code'=>200, 'request'=>$graph, 'erreur'=>''];
     }
 
+    /**
+     * [Description for insertHistoriqueAjoutProjet]
+     * On ajoute une version à l'historique à partir des données SonarQube historisées.
+     *
+     * @param string $mode
+     * @param array $map
+     *
+     * @return array
+     *
+     * Created at: 25/02/2024 17:34:11 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function insertHistoriqueAjoutProjet($mode, $map):array {
+        /** On prépare la requête */
+        $sql = "INSERT OR IGNORE INTO historique
+                    (maven_key,version,date_version,
+                    nom_projet,version_release,version_snapshot,
+                    suppress_warning,no_sonar,nombre_ligne,
+                    nombre_ligne_code,couverture,
+                    duplication,tests_unitaires,nombre_defaut,dette,
+                    nombre_bug,nombre_vulnerability,nombre_code_smell,
+                    bug_blocker, bug_critical, bug_major, bug_minor, bug_info,
+                    vulnerability_blocker, vulnerability_critical, vulnerability_major,
+                    vulnerability_minor, vulnerability_info,
+                    code_smell_blocker, code_smell_critical, code_smell_major,
+                    code_smell_minor, code_smell_info,
+                    frontend,backend,autre,
+                    nombre_anomalie_bloquant,nombre_anomalie_critique,
+                    nombre_anomalie_majeur,
+                    nombre_anomalie_mineur,nombre_anomalie_info,
+                    note_reliability,note_security,
+                    note_sqale,note_hotspot,hotspot_total,
+                    hotspot_high,hotspot_medium,hotspot_low,
+                    initial,date_enregistrement)
+                VALUES (
+                    :map->maven_key, :version, :date_version, :nom_projet,
+                    :version_release, :version_snapshot,
+                    :suppress_warning, :no_sonar, :nombre_ligne, :nombre_ligne_code,
+                    :couverture, :duplication, :tests_unitaires,
+                    :nombre_defaut' :map->nombre_defaut,
+                    :dette' :map->dette,
+                    :nombre_bug' :map->nombre_bug,
+                    :nombre_vulnerability' :map->nombre_vulnerability,
+                    :nombre_code_smell' :map->nombre_code_smell,
+                    :bug_blocker, :bug_critical, :bug_major, :bug_minor, :bug_info,
+                    :vulnerability_blocker, :vulnerability_critical, :vulnerability_major, :vulnerability_minor, :vulnerability_info,
+                    :code_smell_blocker, :code_smell_critical, :code_smell_major, :code_smell_minor,code_smell_info,
+                    :frontend, :backend, :autre,
+                    :nombre_anomalie_bloquant, :nombre_anomalie_critique, :nombre_anomalie_majeur,
+                    :nombre_anomalie_mineur, :nombre_anomalie_info,
+                    :note_reliability, :note_security, :note_sqale, :note_hotspot,
+                    :hotspot_total, :hotspot_high, :hotspot_medium, :hotspot_low,
+                    :initial, :date_enregistrement)";
+
+        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+        $conn->bindValue(':maven_key', $map['maven_key']);
+        $conn->bindValue(':version', $map['version']);
+        $conn->bindValue(':date_version', $map['date_version']);
+        $conn->bindValue(':nom_projet', $map['nom_projet']);
+        $conn->bindValue(':version_release', $map['version_release']);
+        $conn->bindValue(':version_snapshot', $map['version_snapshot']);
+        $conn->bindValue(':suppress_warning', $map['suppress_warning']);
+        $conn->bindValue(':no_sonar', $map['no_sonar']);
+        $conn->bindValue(':nombre_ligne', $map['nombre_ligne']);
+        $conn->bindValue(':nombre_ligne_code', $map['nombre_ligne_code']);
+        $conn->bindValue(':couverture', $map['couverture']);
+        $conn->bindValue(':duplication', $map['duplication']);
+        $conn->bindValue(':tests_unitaires', $map['tests_unitaires']);
+        $conn->bindValue(':nombre_defaut', $map['nombre_defaut']);
+        $conn->bindValue(':dette', $map['dette']);
+        $conn->bindValue(':nombre_bug', $map['nombre_bug']);
+        $conn->bindValue(':nombre_vulnerability', $map['nombre_vulnerability']);
+        $conn->bindValue(':nombre_code_smell', $map['nombre_code_smell']);
+        $conn->bindValue(':bug_blocker', $map['bug_blocker']);
+        $conn->bindValue(':bug_critical', $map['bug_critical']);
+        $conn->bindValue(':bug_major', $map['bug_major']);
+        $conn->bindValue(':bug_minor', $map['bug_minor']);
+        $conn->bindValue(':bug_info', $map['bug_info']);
+        $conn->bindValue(':vulnerability_blocker', $map['vulnerability_blocker']);
+        $conn->bindValue(':vulnerability_critical', $map['vulnerability_critical']);
+        $conn->bindValue(':vulnerability_major', $map['vulnerability_major']);
+        $conn->bindValue(':vulnerability_minor', $map['vulnerability_minor']);
+        $conn->bindValue(':vulnerability_info', $map['vulnerability_info']);
+        $conn->bindValue(':code_smell_blocker', $map['code_smell_blocker']);
+        $conn->bindValue(':code_smell_critical', $map['code_smell_critical']);
+        $conn->bindValue(':code_smell_major', $map['code_smell_major']);
+        $conn->bindValue(':code_smell_minor', $map['code_smell_minor']);
+        $conn->bindValue(':code_smell_info', $map['code_smell_info']);
+        $conn->bindValue(':frontend' , $map['frontend']);
+        $conn->bindValue(':backend' , $map['backend']);
+        $conn->bindValue(':autre' , $map['autre']);
+        $conn->bindValue(':nombre_anomalie_bloquant' , $map['nombre_anomalie_bloquant']);
+        $conn->bindValue(':nombre_anomalie_critique' , $map['nombre_anomalie_critique']);
+        $conn->bindValue(':nombre_anomalie_majeur' , $map['nombre_anomalie_majeur']);
+        $conn->bindValue(':nombre_anomalie_mineur' , $map['nombre_anomalie_mineu']);
+        $conn->bindValue(':nombre_anomalie_info' , $map['nombre_anomalie_info']);
+        $conn->bindValue(':note_reliability', $map['note_reliability']);
+        $conn->bindValue(':note_security', $map['note_security']);
+        $conn->bindValue(':note_sqale', $map['note_sqale']);
+        $conn->bindValue(':note_hotspot', $map['note_hotspot']);
+        $conn->bindValue(':hotspot_total', $map['hotspot_total']);
+        $conn->bindValue(':hotspot_high' , $map['hotspot_high']);
+        $conn->bindValue(':hotspot_medium' , $map['hotspot_medium']);
+        $conn->bindValue(':hotspot_low' , $map['hotspot_low']);
+        $conn->bindValue(':initial', $map['initial']);
+        $conn->bindValue(':date_enregistrement', $map['date_enregistrement']);
+        try {
+            if ($mode !== 'TEST') {
+                $conn->executeQuery();
+            } else {
+                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+            }
+        } catch (\Doctrine\DBAL\Exception $e) {
+            return ['mode'=>$mode, 'code'=> 500, 'erreur'=>$e->getCode()];
+        }
+        /** on prépare la réponse */
+        $response=['mode'=>$mode, 'code'=>200, 'erreur'=>''];
+        return $response;
+    }
 }
