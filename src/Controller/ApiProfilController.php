@@ -40,7 +40,6 @@ use App\Service\Client;
 class ApiProfilController extends AbstractController
 {
     /** Définition des constantes */
-    public static $strContentType = 'application/json';
     public static $sonarUrl = "sonar.url";
     public static $europeParis = "Europe/Paris";
     public static $dateFormat = "Y-m-d H:i:s";
