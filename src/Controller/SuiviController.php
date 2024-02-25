@@ -47,7 +47,6 @@ use App\Service\Client;
 class SuiviController extends AbstractController
 {
     /** Définition des constantes */
-    public static $strContentType = 'application/json';
     public static $dateFormat = "Y-m-d H:i:s";
     public static $sonarUrl = "sonar.url";
     public static $europeParis = "Europe/Paris";
@@ -92,13 +91,7 @@ class SuiviController extends AbstractController
         $mode = $request->get('mode');
 
         /** On teste si la clé est valide */
-        if (is_null($mavenKey) && $mode === "TEST") {
-            return $response->setData(
-                ["mode" => $mode, "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
-        }
-
-        /** On teste si la clé est valide */
-        if ($mavenKey === 'null' || is_null($mavenKey)  || is_null($mode) || $mode === 'TEST') {
+        if ($mavenKey === 'null' || is_null($mavenKey)  || is_null($mode)) {
             return $response->setData([
                 'mode' => $mode, 'mavenKey' => $mavenKey,
                 'code'=>400, Response::HTTP_BAD_REQUEST]);
