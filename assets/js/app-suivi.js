@@ -46,7 +46,7 @@ const a= moment().toString();
 console.info(a);
 
 /** On importe les constantes */
-import { contentType, http_200, http_400, http_404, chartColors, zero, un, deux, soixante, cent } from './constante.js';
+import { contentType, http_200, http_201, http_202, http_400, http_404, chartColors, zero, un, deux, soixante, cent } from './constante.js';
 
 /* Construction des callbox de type success */
 const callboxInformation='<div id="js-message" class="callout alert-callout-border primary" data-closable="slide-out-right" role="alert"><p class="open-sans color-bleu padding-right-1"><span class="lead"></span>Information ! </strong>';
@@ -58,10 +58,10 @@ const callboxFermer='</span><button class="close-button" aria-label="Fermer la f
 /**
  * [Description for dessineMoiUnMouton]
  * Affiche le graphique des sources *
- * @param mixed labels
- * @param mixed data1
- * @param mixed data2
- * @param mixed data3
+ * @param array labels
+ * @param array data1
+ * @param array data2
+ * @param array data3
  *
  * @return [type]
  *
@@ -174,7 +174,7 @@ dessineMoiUnMouton(
 * [Description for selectVersion]
 * Création du sélecteur de projet.
 *
-* @param mixed mavenKey
+* @param string mavenKey
 *
 * @return [type]
 *
@@ -206,7 +206,7 @@ const selectVersion=async function(mavenKey) {
 $('.js-ajouter-analyse').on('click', function () {
   const mavenKey=$('#js-nom').data('maven');
 
-  /** Si la clé mavenkey n'est pas défini on pouvre pas la fene^tre modale */
+  /** Si la clé mavenkey n'est pas défini on pouvre pas la fenêtre modale */
   if (mavenKey===null || mavenKey==='') {
     return;
   }
@@ -421,11 +421,16 @@ $('.js-enregistrer-analyse').on('click', ()=>{
   const dette=t14.dataset.dette;
 
   const initial=0;
-  const data={
-    date:dateVersion, mavenKey, nom, version, noteReliability, noteSecurity,
-    noteSqale, noteHotspotsReview, defauts, bug, vulnerabilities,codeSmell,
-    hotspotsReview, lines, ncloc, coverage, duplication,tests, dette,
-    initial, mode: 'null' };
+  const data={'maven_key':mavenKey, 'version':version, 'date_version':dateVersion,
+              'nom_projet':nom, 'nombre_ligne':lines,
+              'nombre_ligne_code':ncloc, 'couverture':coverage,
+              'duplication':duplication, 'tests_unitaires':tests,
+              'nombre_defaut':defauts, 'dette':dette,
+              'nombre_bug':bug, 'nombre_vulnerability':vulnerabilities,
+              'nombre_code_smell':codeSmell,
+              'note_reliability':noteReliability, 'note_security':noteSecurity,
+              'note_sqale':noteSqale, 'note_hotspot':noteHotspotsReview,
+              'hotspot_total':hotspotsReview, 'initial':initial, mode:'null'};
     /**
      * On lance l'API de mise à jour
      */
@@ -434,13 +439,20 @@ $('.js-enregistrer-analyse').on('click', ()=>{
     dataType: 'json', data: JSON.stringify(data), contentType };
 
   $.ajax(options).then(t => {
-      if (t.code===200) {
-        const message='Enregistrement des informations effectué.';
+    let message='';
+    switch (t.code) {
+      case http_200 :
+        message=`Enregistrement des informations effectué.`;
         $('#message-ajout-projet').html(callboxSuccess+message+callboxFermer);
-        } else {
-          const message=`L'enregistrement n'a pas été effectué !! !.`;
-          $('#message-ajout-projet').html(callboxError+message+callboxFermer);
-        }
+        break;
+      case http_202:
+        message=`Mode Test activé`;
+        $('#message-ajout-projet').html(callboxError+message+` (${t.erreur}).`+callboxFermer);
+      break;
+      default:
+        message=`Erreur lors de la mise à jour (${t.erreur}).`;
+        $('#message-ajout-projet').html(callboxError+message+`(${t.erreur}).`+callboxFermer);
+    }
     });
 });
 
@@ -580,10 +592,10 @@ $('.js-modifier-analyse').on('click', function () {
          * On appel l'API de mise à jour du favori
          */
         $.ajax(optionsFavori).then((t) => {
-          if (t.code===200) {
+          if (t.code===http_200) {
             const message='Mise à jour du favori efféctuée.';
             $('#message').html(callboxSuccess+message+callboxFermer);
-          } else if (t.code===201) {
+          } else if (t.code===http_201) {
             const message=`Cette version a été supprimé des favoris.`;
             $('#message').html(callboxWarning+message+callboxFermer);
           } else {
