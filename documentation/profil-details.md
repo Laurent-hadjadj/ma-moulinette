@@ -27,13 +27,17 @@
 
 Cette page affiche la liste des changements groupés par date. Le nombre de changements est limité dans cette version à **500**.
 
-![profil-details](/documentation/ressources/profil-details-000a.jpg) Pour afficher la page, il suffit de choisir un langage dans la page `Profil` et cliquer sur l'icône de suivi des changements.
+![profil-details](/documentation/ressources/profil-details-000a.jpg) Pour afficher la page, il suffit de choisir un langage sur la page `Profil` et cliquer sur l'icône de suivi des changements.
 
-![profil-details](/documentation/ressources/profil-details-000.jpg)
+![profil-details](/documentation/ressources/profil-details-000b.jpg)
 
 Une nouvelle page s'ouvre avec la liste des changements.
 
 ![profil-details](/documentation/ressources/profil-details-001.jpg)
+
+Un message est affiché si le token passé est corrompu.
+
+![profil-details](/documentation/ressources/profil-details-004.jpg)
 
 Cette page est composée d'une zone d'information et d'un menu de type accordéon permettant de regrouper par date les changements.
 
