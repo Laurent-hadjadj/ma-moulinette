@@ -157,7 +157,7 @@ class ApiProfilController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/quality/langage', name: 'liste_quality_langage', methods: ['GET','POST'])]
+    #[Route('/api/quality/langage', name: 'liste_quality_langage', methods: ['POST'])]
     public function listeQualityLangage(Request $request): response
     {
         /** on décode le body */
