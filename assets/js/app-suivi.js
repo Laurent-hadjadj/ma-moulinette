@@ -46,7 +46,7 @@ const a= moment().toString();
 console.info(a);
 
 /** On importe les constantes */
-import { contentType, http404, chartColors, zero, un, deux, soixante, cent } from './constante.js';
+import { contentType, http_200, http_400, http_404, chartColors, zero, un, deux, soixante, cent } from './constante.js';
 
 /* Construction des callbox de type success */
 const callboxInformation='<div id="js-message" class="callout alert-callout-border primary" data-closable="slide-out-right" role="alert"><p class="open-sans color-bleu padding-right-1"><span class="lead"></span>Information ! </strong>';
@@ -225,7 +225,7 @@ $('#fermer-choisir-analyse').on('click', ()=>{
 
 /**
  * description
- * On charge les données de la version selectionnée
+ * On charge les données de la version selectionnée depuis la fenetre ajouté
  */
 $('select[name="version"]').on('change', function () {
   /** si la valeur selectionné est TheId alors on sort */
@@ -235,13 +235,12 @@ $('select[name="version"]').on('change', function () {
   /* On affiche la clé */
   $('#key-maven').html($('#js-nom').data('maven').trim());
 
-
   /* On affiche le nom */
   const n=$('#js-nom').data('maven').trim();
   const name=n.split(':');
   $('#nom').html(name[1]);
 
-  /* On récupère la date et l'a nettoie avant de l'envoyer */
+  /* On récupère la date et on l'a nettoie avant de l'envoyer */
   const d=$('#liste-version :selected').text();
   const d1=d.split('(');
   const d2=d1[1].split(')');
@@ -257,7 +256,7 @@ $('select[name="version"]').on('change', function () {
   /**
    *  On appel l'API de récupération des versions
   */
-  const data = { mavenKey: $('#key-maven').text().trim(), date:d2[0], mode: 'null' };
+  const data = { maven_key: $('#key-maven').text().trim(), date:d2[0], mode: 'null' };
   const options = {
     url: `${serveur()}/api/get/version`, type: 'POST',
     dataType: 'json', data: JSON.stringify(data), contentType };
@@ -268,10 +267,27 @@ $('select[name="version"]').on('change', function () {
      * Si 200 --> on continue
      * si <> 200 et 404, exception symfony
     */
-    if (t.message===http404) {
-      const message='Le projet n\'existe plus sur le serveur sonarqube !';
+    if (t.code===http_400 && t.data===null || t.code===http_400 && t.maven_key===null) {
+      const message=`La clé maven n'est pas correcte !`;
       $('#message-ajout-projet').html(callboxError+message+callboxFermer);
       return;
+    }
+    if (t.code===http_400 && t.mode===null) {
+      const message=`Le mode n'est pas défini !`;
+      $('#message-ajout-projet').html(callboxWarning+message+callboxFermer);
+      return;
+    }
+
+    if (t.code===http_404) {
+      const message=`Le projet n'existe plus sur le serveur SonarQube !`;
+      $('#message-ajout-projet').html(callboxError+message+callboxFermer);
+      return;
+    }
+
+    /** Tout va bien. */
+    if (t.code===http_200) {
+      const message=`Les données pour le projet sont disponibles.`;
+      $('#message-ajout-projet').html(callboxInformation+message+callboxFermer);
     }
 
     const tNotes1 = ['', 'a', 'b', 'c', 'd', 'e', 'z'];
