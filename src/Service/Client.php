@@ -20,6 +20,9 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 /** Logger */
 use Psr\Log\LoggerInterface;
 
+/**
+ * [Description Client]
+ */
 class Client
 {
     /** Définition des constantes */
@@ -53,24 +56,40 @@ class Client
             'GET',
             $url,
             [
-            'ciphers' => trim(preg_replace(static::$regex, " ", $ciphers)),
-            'auth_basic' => [$user, $password], 'timeout' => 45,
-            'headers' => [
-            'Accept' => static::$strContentType,
-            'Content-Type' => static::$strContentType,
-            "verify_peer" => 0, "verify_host" => 0
+                'ciphers' => trim(preg_replace(static::$regex, " ", $ciphers)),
+                'auth_basic' => [$user, $password], 'timeout' => 45,
+                'headers' => [
+                    'Accept' => static::$strContentType,
+                    'Content-Type' => static::$strContentType,
+                    "verify_peer" => 0, "verify_host" => 0
+                ]
             ]
-      ]
         );
+        /** catch les erreurs 400, 404 les erreurs 401 et eutres génére une erreur 500 */
         if (200 !== $response->getStatusCode()) {
-            if ($response->getStatusCode() == 401) {
-                throw new \UnexpectedValueException('Erreur d\'Authentification. La clé n\'est pas correcte.');
-            } else {
-                throw new \UnexpectedValueException('Retour de la réponse différent de ce qui est prévu. Erreur '
-                  . $response->getStatusCode());
+            if ($response->getStatusCode() == 400) {
+                $this->logger->ERROR("Erreur 400 - L'URL n'est pas correcte.");
+                return ['code'=> 400];
             }
-        }
+            if ($response->getStatusCode() == 401) {
+                $this->logger->ERROR("Erreur 401 - Erreur d\'Authentification. La clé n\'est pas correcte.");
+                throw new \UnexpectedValueException('Erreur d\'Authentification. La clé n\'est pas correcte.');
+                return ['code'=> 401];
+            }
+            if ($response->getStatusCode() == 404) {
+                $this->logger->ERROR("Erreur 404 - Le service n'a pas trouvé les éléments.");
+                return ['code'=> 404];
+            }
+            throw new \UnexpectedValueException('Retour de la réponse différent de ce qui est prévu. Erreur '
+                    . $response->getStatusCode());
+            }
 
+
+        /** Si tous va bien on ajoute une trace dans les log */
+        $message="[".$response->getInfo('http_method')."] - ".$response->getInfo('http_code')." - ".$response->getInfo('total_time')." - ".$response->getInfo('url');
+        $this->logger->INFO($message);
+
+        /** On retourne la réponse. */
         $responseJson = $response->getContent();
         return json_decode($responseJson, true, 512, JSON_THROW_ON_ERROR);
     }
