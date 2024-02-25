@@ -32,6 +32,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Main\Properties;
 use App\Entity\Main\Profiles;
+use App\Entity\Main\ProfilesHistorique;
 
 /** Client HTTP */
 use App\Service\Client;
@@ -148,13 +149,15 @@ class ApiProfilController extends AbstractController
      * Revoie le tableau des labels et des dataset
      * Permet de tracer un joli dessin sur la répartition des langages de programmation.
      *
+     * @param Request $request
+     *
      * @return response
      *
      * Created at: 15/12/2022, 21:24:33 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/quality/langage', name: 'liste_quality_langage', methods: ['POST'])]
+    #[Route('/api/quality/langage', name: 'liste_quality_langage', methods: ['GET','POST'])]
     public function listeQualityLangage(Request $request): response
     {
         /** on décode le body */
@@ -189,7 +192,11 @@ class ApiProfilController extends AbstractController
     }
 
     /**
-     * [Description for profilQualityChangement]
+     * [Description for profilDetails]
+     * Affichage des règles par profils avec les changement.
+     *
+     * @param Request $request
+     * @param Client $client
      *
      * @return response
      *
@@ -198,12 +205,38 @@ class ApiProfilController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/profil/details', name: 'profil_details', methods: ['GET'])]
-    public function profilDetails(Request $request, Client $client): response
+    public function profilDetails(Request $request, Client $client)
     {
-        /** On récupère les données */
-        $profil = $request->get('profil');
-        $language = strtolower($request->get('language'));
-        $mode = $request->get('mode');
+        $token = $request->get('token');
+        if (empty($token)){
+            return;
+        }
+        //b64=bnVsbHxDU1N8RnJhbmNlQWdyaU1lciB2Mi4wLjAgKDIwMjEp
+        //rot13=oaIfoUkQH1A8EaWuozAyDJqlnH1ypvO2Zv4jYwNtXQVjZwRc
+        $string=str_rot13($token);
+        $decode=base64_decode($string);
+        $exxplode=preg_split("/[|]+/",$decode);
+        $mode=$exxplode[0];
+
+        /** on initialise une réponse par défaut */
+        $render = [
+            "profil" => 'NC', "langage" => 'aucun',
+            "opened" =>0, "closed" => 0, "updated" => 0, "totalRegle" => null,
+            "first" => null, "last"=> null, "dateGroupe" => null, "nbGroupe" => null, "liste" => null, "badge" => null,
+            "version" => $this->getParameter("version"),
+            "dateCopyright" => \date("Y"), Response::HTTP_OK];
+        /** si le mode n'est pas défini ou si le tableau ne contient pas trois clé alors */
+        if ($mode === null || count($exxplode) !=3) {
+             /** On prepare un message flash */
+            $this->addFlash('alert', sprintf(
+                '%s : %s', "[Erreur 001]","La clé est incorrecte."
+            ));
+            return $this->render('profil/details.html.twig', $render);
+        }
+
+    $language = strtolower($exxplode[1]);
+    $profil = $exxplode[2];
+
 
         /** On renome les langages pour sonarqube */
         switch ($language) {
@@ -217,15 +250,13 @@ class ApiProfilController extends AbstractController
                 break;
             case "python": $language = "py";
                 break;
-            default: $language = "null";
+            default: $language = $language;
         }
-
-        /** On créé un objet response pour le retour JSON. */
-        $response = new JsonResponse();
 
         /* On récupère que les 500 premiers */
         $baseURL = $this->getParameter(static::$sonarUrl);
         $url = "$baseURL/api/qualityprofiles/changelog?language=$language&qualityProfile=$profil&ps=500&p=1";
+
         /** On appel le client http */
         $r = $client->http($url);
         $events = $r['events'];
@@ -236,12 +267,13 @@ class ApiProfilController extends AbstractController
         $date->setTimezone(new DateTimeZone(static::$europeParis));
         $dateEnregistrement = $date->format(static::$dateFormat);
 
+        $profilesHistorique = $this->em->getRepository(ProfilesHistorique::class);
+        /** On met à jkour la table contenant l'historique des changements. */
         foreach($events as $event) {
             /* On bind les données avant de les enregsitrer */
             $dc = new DateTime($event["date"]);
             $dc->setTimezone(new DateTimeZone(static::$europeParis));
             $dateCourte = $dc->format(static::$dateFormatShort);
-
             $dateModification = $event["date"];
             $action = $event["action"];
             $auteur = $event["authorName"];
@@ -249,67 +281,52 @@ class ApiProfilController extends AbstractController
             $description = $event["ruleName"];
             $detail = json_encode($event["params"]);
 
-            /** On escape les ' */
-            $reEncode = str_replace("'", "''", $description);
-
-            $sql = "INSERT OR IGNORE INTO profiles_historique
-              (date_courte, langage, date, action, auteur, regle, description, detail, date_enregistrement)
-              VALUES ('$dateCourte', '$language', '$dateModification', '$action', '$auteur',
-                      '$regle', '$reEncode', '$detail', '$dateEnregistrement');";
-            //$trim = trim(preg_replace(static::$regex, " ", $sql));
-            $this->em->getConnection()->prepare($sql)->executeQuery();
+            /** On prépare les données pour la requête */
+            $map=['date_courte'=>$dateCourte, 'langage'=>$language, 'date'=>$dateModification, 'action'=>$action, 'auteur'=>$auteur, 'regle'=>$regle, 'description'=>$description, 'detail'=>$detail, 'date_enregistrement'=>$dateEnregistrement];
+            /** on lance la requête */
+            $profilesHistorique->insertProfilesHistorique($mode, $map);
         }
 
         /** Nombre de règles activé **/
-        $sql1 = "SELECT COUNT() AS 'nombre' FROM profiles_historique WHERE action='ACTIVATED' AND langage='$language'";
-        $activited = $this->em->getConnection()->prepare($sql1)->executeQuery()->fetchAllAssociative();
+        $map = ['langage'=>$language, 'action'=>'ACTIVATED'];
+        $activated=$profilesHistorique->selectProfilesHistoriqueAction($mode, $map);
 
         /** Nombre de règles désactivé --> DEACTIVATED **/
-        $sql2 = "SELECT COUNT() AS 'nombre' FROM profiles_historique WHERE action='DEACTIVATED' AND langage='$language'";
-        $desactivited = $this->em->getConnection()->prepare($sql2)->executeQuery()->fetchAllAssociative();
-        if (empty($desactivited)) {
-            $desactivited = 0;
-        }
+        $map = ['langage'=>$language, 'action'=>'DEACTIVATE'];
+        $desactivited = $profilesHistorique->selectProfilesHistoriqueAction($mode, $map);
 
         /** Nombre de règles mise à jour **/
-        $sql3 = "SELECT COUNT() AS 'nombre' FROM profiles_historique WHERE action='UPDATED' AND langage='$language'";
-        $updated = $this->em->getConnection()->prepare($sql3)->executeQuery()->fetchAllAssociative();
-        if (empty($updated)) {
-            $updated = 0;
-        }
+        $map = ['langage'=>$language, 'action'=>'UPDATED'];
+        $updated = $profilesHistorique->selectProfilesHistoriqueAction($mode, $map);
 
         /** Date de la première modification **/
-        $sql4 = "SELECT date FROM profiles_historique WHERE langage='$language' ORDER BY date ASC limit 1";
-        $first = $this->em->getConnection()->prepare($sql4)->executeQuery()->fetchAllAssociative();
+        $map2 = ['langage'=>$language, 'tri'=>'ASC', 'limit'=>1];
+        $first = $profilesHistorique->selectProfilesHistoriqueDateTri($mode, $map2);
+
         /** Date de la dernière modification **/
-        $sql5 = "SELECT date FROM profiles_historique WHERE langage='$language' ORDER BY date DESC limit 1";
-        $last = $this->em->getConnection()->prepare($sql5)->executeQuery()->fetchAllAssociative();
+        $map3 = ['langage'=>$language, 'tri'=>'DESC', 'limit'=>1];
+        $last = $profilesHistorique->selectProfilesHistoriqueDateTri($mode, $map3);
+
         /** Calcul le  nombre de groupe de modification **/
-        $sql6 = "SELECT date_courte FROM profiles_historique
-          WHERE langage='$language' GROUP BY date_courte ORDER BY date_courte DESC";
-        $groupes = $this->em->getConnection()->prepare($sql6)->executeQuery()->fetchAllAssociative();
+        $map = ['langage'=>$language];
+        $groupes = $profilesHistorique->selectProfilesHistoriqueDateCourteGroupeBy($mode, $map);
 
         /** Pour chaque groupe on récupère dans un tableau les modifications */
         $i = 0;
-        $liste = [];
-        $tempoDateGroupe = [];
-        $badge = [];
-        foreach ($groupes as $groupe) {
-            $dateGroupe = $groupe["date_courte"];
+        $liste = $tempoDateGroupe = $badge = [];
+        foreach ($groupes['request'] as $groupe) {
+            $dateGroupe = $groupe['date_courte'];
             $badgeA = $badgeU = $badgeD = 0;
             $tempo = [];
-
-            $sql = "SELECT * FROM profiles_historique WHERE langage='$language' AND date_courte='$dateGroupe'";
-           // $trim = trim(preg_replace(static::$regex, " ", $sql));
-            $modif = $this->em->getConnection()->prepare($sql)->executeQuery()->fetchAllAssociative();
-
+            $map=['langage'=>$language, 'date_courte'=>$dateGroupe];
+            $modif = $profilesHistorique->selectProfilesHistoriqueLangageDateCourte($mode, $map);
             /* On ajoute la date du groupe */
             array_push($tempoDateGroupe, $dateGroupe);
 
-            foreach ($modif as $m) {
-                $g = ["groupe" => $i, "date" => $m["date"], "action" => $m["action"],
-                    "auteur" => $m["auteur"], "regle" => $m["regle"],
-                    "description" => $m["description"], "detail" => $m["detail"]];
+            foreach ($modif['request'] as $m) {
+                $g = [  "groupe" => $i, "date" => $m["date"], "action" => $m["action"],
+                        "auteur" => $m["auteur"], "regle" => $m["regle"],
+                        "description" => $m["description"], "detail" => $m["detail"]];
                 array_push($tempo, $g);
                 if ($m["action"] === "UPDATED") {
                     $badgeU += 1;
@@ -329,19 +346,19 @@ class ApiProfilController extends AbstractController
         }
 
         $render = [
-          "mode" => $mode,
-          "profil" => $profil, "langage" => $language,
-          "opened" => $activited[0]['nombre'], "closed" => $desactivited[0]['nombre'], "updated" => $updated[0]['nombre'],
-          "totalRegle" => $total,
-          "first" => $first[0], "last" => $last[0],
-          "dateGroupe" => $tempoDateGroupe, "nbGroupe" => $i, "liste" => $liste, "badge" => $badge,
-          "version" => $this->getParameter("version"),
-          "dateCopyright" => \date("Y"),
-          Response::HTTP_OK];
-        if ($mode == "TEST") {
+            "profil" => $profil, "langage" => $language,
+            "opened" => $activated['request'][0]['nombre'], "closed" => $desactivited['request'][0]['nombre'], "updated" => $updated['request'][0]['nombre'],
+            "totalRegle" => $total,
+            "first" => $first['request'][0], "last" => $last['request'][0],
+            "dateGroupe" => $tempoDateGroupe, "nbGroupe" => $i, "liste" => $liste, "badge" => $badge,
+            "version" => $this->getParameter("version"),
+            "dateCopyright" => \date("Y"), Response::HTTP_OK];
+
+        if ($mode === 'TEST') {
+            $response = new JsonResponse();
             return $response->setData($render);
-        } else {
-            return $this->render('profil/details.html.twig', $render);
         }
+
+        return $this->render('profil/details.html.twig', $render);
     }
 }
