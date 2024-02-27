@@ -53,7 +53,6 @@ class SuiviController extends AbstractController
     public static $sonarUrl = "sonar.url";
     public static $europeParis = "Europe/Paris";
     public static $removeReturnline = "/\s+/u";
-    public static $erreurMavenKey = "La clé maven est vide !";
 
     /**
      * [Description for __construct]
@@ -243,7 +242,7 @@ class SuiviController extends AbstractController
         /** On teste si la clé est valide */
         if (is_null($mavenKey) && $mode === "TEST") {
             return $response->setData(
-                ["mode" => $mode, "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+                ["mode" => $mode, "message" => 'static::$erreurMavenKey', Response::HTTP_BAD_REQUEST]);
         }
 
         $versions = [];
@@ -559,35 +558,30 @@ class SuiviController extends AbstractController
     {
         /** On décode le body */
         $data = json_decode($request->getContent());
-        $mavenKey = $data->mavenKey;
-        $mode = $data->mode;
 
         /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
 
-        /** On teste si la clé est valide */
-        if ($mavenKey === "null" && $mode === "TEST") {
-            return $response->setData([
-                "mode" => $mode, "mavenKey" => $mavenKey,
-                "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
-        }
+        // on regarde si $Data est null
+        if ($data === null) {
+            return $response->setData(['data' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'mode')) {
+            return $response->setData(['mode' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'maven_key')) {
+            return $response->setData(['maven_key' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
 
-        /**  On créé un nouvel objet Json. */
         /**  On récupère les versions et la date pour la clé du projet. */
-        $sql = "SELECT maven_key, version, date_version as date, initial
-            FROM historique
-            WHERE maven_key='$mavenKey'
-            ORDER BY date_version DESC";
-
-        /** On exécute la requête. */
-        $con = $this->em->getConnection()->prepare($sql);
-        try {
-            $select = $con->executeQuery();
-            $version = $select->fetchAllAssociative();
-        } catch (\Doctrine\DBAL\Exception $e) {
-            return $response->setData(["code" => $e->getCode(), Response::HTTP_OK]);
+        $map=['maven_key'=>$data->maven_key];
+        $historique = $this->em->getRepository(Historique::class);
+        $request=$historique->selectHistoriqueProjetByDate($data->mode, $map);
+        if ($request['code']!=200) {
+            return $response->setData([
+                'mode' => $data->mode, 'maven_key' => $data->maven_key,
+                'code'=>$request['code'], 'erreur' => $request['erreur'],
+                Response::HTTP_OK]);
         }
-        return $response->setData(["code" => "OK", "versions" => $version, Response::HTTP_OK]);
+
+        return $response->setData(["code" => 200, "versions" => $request['version'], Response::HTTP_OK]);
     }
 
     /**
@@ -667,7 +661,7 @@ class SuiviController extends AbstractController
         /** On teste si la clé est valide */
         if ($data->maven_key === 'null' || $data->mode === 'TEST') {
             return $response->setData([
-                'mode' => $data->mode, 'mavenKey' => $data->maven_key,
+                'mode' => $data->mode, 'maven_key' => $data->maven_key,
                 'code'=>400, Response::HTTP_BAD_REQUEST]);
         }
 

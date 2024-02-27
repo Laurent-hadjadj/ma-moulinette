@@ -529,4 +529,41 @@ class HistoriqueRepository extends ServiceEntityRepository
         $response=['mode'=>$mode, 'code'=>200, 'erreur'=>''];
         return $response;
     }
+
+    /**
+     * [Description for selectHistoriqueProjetByDate]
+     * Retourne ma liste des projet par date décroissant
+     *
+     * @param string $mode
+     * @param array $map
+     *
+     * @return array
+     *
+     * Created at: 27/02/2024 19:08:46 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function selectHistoriqueProjetByDate($mode, $map):array {
+
+        /** On prépare la requête */
+        $sql = "SELECT maven_key, version, date_version as date, initial
+                FROM historique
+                WHERE maven_key=:maven_key
+                ORDER BY date_version DESC";
+
+        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+        $conn->bindValue(':maven_key', $map['maven_key']);
+        try {
+            if ($mode !== 'TEST') {
+                $version=$conn->executeQuery()->fetchAllAssociative();
+            } else {
+                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+            }
+        } catch (\Doctrine\DBAL\Exception $e) {
+            return ['mode'=>$mode, 'code'=> 500, 'erreur'=>$e->getCode()];
+        }
+        /** on prépare la réponse */
+        return ['mode'=>$mode, 'code'=>200, 'version'=>$version, 'erreur'=>''];
+    }
+
 }
