@@ -499,7 +499,7 @@ $('.js-modifier-analyse').on('click', function () {
     </svg>`;
 
   /* On récupère la clé maven */
-  const data = { mavenKey: $('#js-nom').data('maven'), mode: 'null' };
+  const data = { maven_key: $('#js-nom').data('maven'), mode: 'null' };
 
   const options = {
     url: `${serveur()}/api/suivi/version/liste`, type: 'POST',
@@ -508,13 +508,13 @@ $('.js-modifier-analyse').on('click', function () {
   $.ajax(options).then(t => {
 
     /* On gére le résultat de la requête */
-    if (t.code!=='OK') {
+    if (t.code===http_200) {
+      const message=`La liste des versions a été chargée correctement.`;
+      $('#message').html(callboxInformation+message+callboxFermer);
+    }
+    if (t.code===http_400) {
       const message=`Je n'ai pas réussi à charger la liste des versions (${t.code}).`;
       $('#message').html(callboxError+message+callboxFermer);
-      return;
-    } else {
-      const message='La liste des versions a été chargée correctement.';
-      $('#message').html(callboxInformation+message+callboxFermer);
     }
 
     /* On boucle pour construire le tableau */
