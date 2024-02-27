@@ -307,11 +307,6 @@ class SuiviController extends AbstractController
         /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
 
-        /**
-         * On teste si la clé et/ou le mode est valide :
-         *  la clé ou le mode peuvent être vide
-         *  la clé ou le mode peuvent être null
-         * */
         /** On teste si $data est valide */
         if ($data === null) {
             return $response->setData(['data' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
@@ -487,11 +482,6 @@ class SuiviController extends AbstractController
         /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
 
-        /**
-         * On teste si la clé et/ou le mode est valide :
-        *  le data peuvent être vide ou null
-        *  le mode peuvent être null ou null
-        * */
         /** On teste si $data est valide */
         if ($data === null) {
             return $response->setData(['data' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
@@ -653,16 +643,19 @@ class SuiviController extends AbstractController
         /** On créé un nouvel objet Json */
         $response = new JsonResponse();
 
+        /** On regarde si $data est valide */
+        if ($data === null) {
+            return $response->setData(['data' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'mode')) {
+            return $response->setData(['mode' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'maven_key')) {
+            return $response->setData(['maven_key' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'version')) {
+            return $response->setData(['version' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
+
         /** si on est pas GESTIONNAIRE on ne fait rien. */
         if (!$security->isGranted('ROLE_GESTIONNAIRE')){
             return $response->setData(["mode" => $data->mode, "code" => 403, Response::HTTP_OK]);
-        }
-
-        /** On teste si la clé est valide */
-        if ($data->maven_key === 'null' || $data->mode === 'TEST') {
-            return $response->setData([
-                'mode' => $data->mode, 'maven_key' => $data->maven_key,
-                'code'=>400, Response::HTTP_BAD_REQUEST]);
         }
 
         /** On créé la map pour la requête de mise à jour */
@@ -704,16 +697,21 @@ class SuiviController extends AbstractController
         /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
 
+        /** On regarde si $data est valide */
+        if ($data === null) {
+            return $response->setData(['data' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'mode')) {
+            return $response->setData(['mode' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'maven_key')) {
+            return $response->setData(['maven_key' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'version')) {
+            return $response->setData(['version' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'version')) {
+            return $response->setData(['date_version' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
+
         /** si on est pas GESTIONNAIRE on ne fait rien. */
         if (!$security->isGranted('ROLE_GESTIONNAIRE')){
             return $response->setData(['mode' => $data->mode, 'code' => 403, Response::HTTP_OK]);
-        }
-
-        /** On teste si la clé est valide */
-        if ($data->maven_key === 'null' || $data->mode === 'TEST') {
-            return $response->setData([
-                'mode' => $data->mode, 'mavenKey' => $data->maven_key,
-                'code'=>400, Response::HTTP_BAD_REQUEST]);
         }
 
         /** On supprime la version du projet */
