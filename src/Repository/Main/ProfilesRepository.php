@@ -148,6 +148,18 @@ class ProfilesRepository extends ServiceEntityRepository
         return ['mode'=>$mode, 'code'=>200, 'labels'=>$labels, 'erreur'=>''];
     }
 
+    /**
+     * [Description for selectProfilesRuleCount]
+     * Remonte le nombre de règle avtive pour un profil
+     *
+     * @param string $mode
+     *
+     * @return array
+     *
+     * Created at: 27/02/2024 21:36:40 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function selectProfilesRuleCount($mode):array
     {
         $sql = "SELECT active_rule_count AS total
