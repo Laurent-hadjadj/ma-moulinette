@@ -34,6 +34,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Main\Utilisateur;
 use App\Entity\Main\Historique;
+use App\Entity\Main\InformationProjet;
 
 /** Logger */
 use Psr\Log\LoggerInterface;
@@ -211,7 +212,7 @@ class SuiviController extends AbstractController
 
     /**
      * [Description for listeVersion]
-     * On récupère la liste des projets nom + clé
+     * On récupère la liste des projets nom + clé pour le selecteur de projet.
      * http://{url}}/api/liste/version
      *
      * @param Request $request
@@ -222,49 +223,38 @@ class SuiviController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/liste/version', name: 'liste_version', methods: ['GET'])]
+    #[Route('/api/liste/version', name: 'liste_version', methods: ['POST'])]
     public function listeVersion(Request $request): Response
     {
+        /** On décode le body */
+        $data = json_decode($request->getContent());
+
         /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
 
-        /** On vérifie si on a activé le mode test */
-        if (is_null($request->get('mode'))) {
-            $mode = "null";
-        } else {
-            $mode = $request->get('mode');
-        }
+        // on regarde si $Data est null
+        if ($data === null) {
+            return $response->setData(['data' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'maven_key')) {
+            return $response->setData(['maven_key' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'mode')) {
+            return $response->setData(['mode' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
 
-        /** On récupère la clé du projet */
-        $mavenKey = $request->get('mavenKey');
-        $exception = $request->get('exception');
-
-        /** On teste si la clé est valide */
-        if (is_null($mavenKey) && $mode === "TEST") {
-            return $response->setData(
-                ["mode" => $mode, "message" => 'static::$erreurMavenKey', Response::HTTP_BAD_REQUEST]);
-        }
-
-        $versions = [];
-        /** On récupère les versions et la date pour la clé du projet */
-        $sql = "SELECT maven_key, project_version as version, date
-            FROM information_projet
-            WHERE maven_key='$mavenKey'";
-        $select = $this->em->getConnection()->prepare($sql)->executeQuery();
-
-        if (is_null($exception)) {
-            $versions = $select->fetchAllAssociative();
-        }
-
-        if (!$versions) {
-            $response->setData([Response::HTTP_NOT_FOUND]);
-            throw $this->createNotFoundException('Oops - Il y a un problème.');
+        /** On vérifie  */
+        $map=['maven_key'=>$data->maven_key];
+        $informationProjet = $this->em->getRepository(InformationProjet::class);
+        $request=$informationProjet->selectInformationProjetVersion($data->mode, $map);
+        if ($request['code']!=200) {
+            return $response->setData([
+                'mode' => $data->mode, 'maven_key' => $data->maven_key,
+                'code'=>$request['code'], 'erreur' => $request['erreur'],
+                Response::HTTP_OK]);
         }
 
         $liste = [];
         $id = 0;
         /** objet = { id: clé, text: "blablabla" }; */
-        foreach ($versions as $version) {
+        foreach ($request['versions'] as $version) {
             $ts = new DateTime($version['date'], new DateTimeZone(static::$europeParis));
             $cc = $ts->format("d-m-Y H:i:sO");
             $objet = [
@@ -274,9 +264,9 @@ class SuiviController extends AbstractController
             $id++;
         }
 
-        if ($mode === "TEST") {
+        if ($data->mode === "TEST") {
             $httpResponse = $response->setData(
-                ['mode' => 'TEST','versions' => $versions, 'liste' => $liste, Response::HTTP_OK]);
+                ['mode' => 'TEST','versions' => $request['versions'], 'liste' => $liste, Response::HTTP_OK]);
         } else {
             $httpResponse = $response->setData(["liste" => $liste, Response::HTTP_OK]);
         }

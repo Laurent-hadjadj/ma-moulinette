@@ -172,7 +172,7 @@ dessineMoiUnMouton(
 
 /**
 * [Description for selectVersion]
-* Création du sélecteur de projet.
+* Création de la liste des projets pour le selecteur.
 *
 * @param string mavenKey
 *
@@ -182,12 +182,18 @@ dessineMoiUnMouton(
 * @author     Laurent HADJADJ <laurent_h@me.com>
 */
 const selectVersion=async function(mavenKey) {
-  const data={ mavenKey };
+  const data={ maven_key: mavenKey, mode: 'null' };
   const options = {
-    url: `${serveur()}/api/liste/version`, type: 'GET',
-    dataType: 'json', data, contentType };
+    url: `${serveur()}/api/liste/version`, type: 'POST',
+    dataType: 'json', data: JSON.stringify(data), contentType };
 
   const r = await $.ajax(options);
+  if (r.code===http_400) {
+    const message=`Une erreur s'est produite lors de l'analyse des données !`;
+    $('#message-ajout-projet').html(callboxError+message+callboxFermer);
+    return;
+  }
+
   $('.js-version').select2({
     placeholder: 'Cliquez pour ouvrir la liste',
     selectOnClose: true,
