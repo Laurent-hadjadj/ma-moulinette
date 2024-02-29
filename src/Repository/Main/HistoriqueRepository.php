@@ -248,8 +248,8 @@ class HistoriqueRepository extends ServiceEntityRepository
 
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         $conn->bindValue(':maven_key', $map['maven_key']);
-        $conn->bindValue(':initial_true', TRUE);
-        $conn->bindValue(':initial_false', FALSE);
+        $conn->bindValue(':initial_true', 0);
+        $conn->bindValue(':initial_false', 1);
         $conn->bindValue(':limit', $map['limit']);
         try {
             if ($mode !== 'TEST') {
@@ -298,8 +298,8 @@ class HistoriqueRepository extends ServiceEntityRepository
                 ORDER BY date_version DESC LIMIT :limit)";
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         $conn->bindValue(':maven_key', $map['maven_key']);
-        $conn->bindValue(':initial_true', TRUE);
-        $conn->bindValue(':initial_false', FALSE);
+        $conn->bindValue(':initial_true', 0);
+        $conn->bindValue(':initial_false', 1);
         $conn->bindValue(':limit', $map['limit']);
         try {
             if ($mode !== 'TEST') {
@@ -357,8 +357,8 @@ class HistoriqueRepository extends ServiceEntityRepository
 
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         $conn->bindValue(':maven_key', $map['maven_key']);
-        $conn->bindValue(':initial_true', TRUE);
-        $conn->bindValue(':initial_false', FALSE);
+        $conn->bindValue(':initial_true', 0);
+        $conn->bindValue(':initial_false', 1);
         $conn->bindValue(':limit', $map['limit']);
         try {
             if ($mode !== 'TEST') {
