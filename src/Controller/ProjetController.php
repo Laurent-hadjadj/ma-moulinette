@@ -25,11 +25,14 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-/** Accès aux tables SLQLite */
-use Doctrine\Persistence\ManagerRegistry;
-use Doctrine\DBAL\Connection;
+/** Accès aux tables SLQLite*/
+use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Secondary\Repartition;
+use App\Entity\Main\Historique;
 
+/**
+ * [Description ProjetController]
+ */
 class ProjetController extends AbstractController
 {
     public static $dateFormat = "Y-m-d H:i:s";
@@ -44,12 +47,11 @@ class ProjetController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-
-    public function __construct(
-        private Connection $connection,
-        private ManagerRegistry $manager,
-    ) {
+    public function __construct(private EntityManagerInterface $em)
+    {
+        $this->em = $em;
     }
+
 
     /**
      * [Description for index]
@@ -80,11 +82,11 @@ class ProjetController extends AbstractController
         $mode = $request->get('mode');
 
         $render = [
-          'mode' => $mode,
-          'version' => $this->getParameter('version'),
-          'dateCopyright' => \date('Y'),
-          'bookmark' => $bookmark,
-          Response::HTTP_OK
+            'mode' => $mode,
+            'version' => $this->getParameter('version'),
+            'dateCopyright' => \date('Y'),
+            'bookmark' => $bookmark,
+            Response::HTTP_OK
         ];
 
         if ($mode === 'TEST') {
@@ -97,7 +99,8 @@ class ProjetController extends AbstractController
     /**
      * [Description for setup]
      * On récupère le dernier setup du projet
-     * @param mixed $mavenKey
+     *
+     * @param string $mavenKey
      *
      * @return string
      *
@@ -108,9 +111,9 @@ class ProjetController extends AbstractController
     private function setup($mavenKey): string
     {
         /** On se connecte à la base pour connaitre la version du dernier setup pour le projet. */
-        $reponse = $this->manager->getManager('secondary')
-        ->getRepository(Repartition::class)
-        ->findBy(['mavenKey' => $mavenKey], ['setup' => 'DESC'], 1);
+        //$reponse = $this->manager->getManager('secondary')
+        //->getRepository(Repartition::class)
+        //->findBy(['mavenKey' => $mavenKey], ['setup' => 'DESC'], 1);
 
         if (empty($reponse)) {
             $setup = "NaN";
@@ -123,8 +126,10 @@ class ProjetController extends AbstractController
 
     /**
      * [Description for notes]
-     * On récupère les indicateurs du bloc infomation pour le projet
-     * @param mixed $mavenKey
+     * On récupère les indicateurs du bloc information pour le projet
+     *
+     * @param string $mavenKey
+     * @param string $mode
      *
      * @return array
      *
@@ -132,58 +137,57 @@ class ProjetController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function notes($mavenKey): array
+    private function notes($mavenKey, $mode): array
     {
         /** On récupère les informations du projet de la table historique */
-        $sql = "SELECT version, nom_projet AS name, date_version,
-                  note_reliability, note_security, note_hotspot,note_sqale,
-                  bug_blocker, bug_critical, bug_major,
-                  vulnerability_blocker, vulnerability_critical, vulnerability_major,
-                  code_smell_blocker, code_smell_critical, code_smell_major,
-                  hotspot_total
-                FROM historique
-                WHERE maven_key='$mavenKey'
-                ORDER BY date_version DESC LIMIT 1";
-        $r = $this->connection->fetchAllAssociative($sql);
-
-        $resultat = true;
-        if (!$r) {
-            $resultat = false;
-            return ['resultat' => $resultat];
+        $map=['maven_key'=>$mavenKey];
+        $historique = $this->em->getRepository(Historique::class);
+        $request=$historique->selectHistoriqueProjetLast($mode, $map);
+        if ($request['code']!=200) {
+            return [
+                    'mode' => $mode, 'maven_key' => $mavenKey,
+                    'code'=>$request['code'], 'erreur' => $request['erreur']
+                ];
         }
+        if (!$request['infos']) {
+            return ['resultat' => false];
+        }
+
         /**
          * On sépare la version du type de version
          * On considére que la version est version-type
          * Par exemple : 1.0.0-Release
          */
-        $tempo = explode("-", $r[0]["version"]);
+        $tempo = explode("-", $request['infos'][0]["version"]);
 
-        return ['resultat' => $resultat,
-                'name' => $r[0]["name"],
+        return ['resultat' => true,
+                'name' => $request['infos'][0]["name"],
                 'version' => $tempo[0],
                 'type' => $tempo[1],
-                'date_version' => $r[0]["date_version"],
-                'note_reliability' => $r[0]["note_reliability"],
-                'note_security' => $r[0]["note_security"],
-                'note_hotspot' => $r[0]["note_hotspot"],
-                'note_code_smell' => $r[0]["note_sqale"],
-                'bug_blocker' => $r[0]["bug_blocker"],
-                'bug_critical' => $r[0]["bug_critical"],
-                'bug_major' => $r[0]["bug_major"],
-                'vulnerability_blocker' => $r[0]["vulnerability_blocker"],
-                'vulnerability_critical' => $r[0]["vulnerability_critical"],
-                'vulnerability_major' => $r[0]["vulnerability_major"],
-                'code_smell_blocker' => $r[0]["code_smell_blocker"],
-                'code_smell_critical' => $r[0]["code_smell_critical"],
-                'code_smell_major' => $r[0]["code_smell_major"],
-                'hotspot_total' => $r[0]["hotspot_total"],
-              ];
+                'date_version' => $request['infos'][0]["date_version"],
+                'note_reliability' => $request['infos'][0]["note_reliability"],
+                'note_security' => $request['infos'][0]["note_security"],
+                'note_hotspot' => $request['infos'][0]["note_hotspot"],
+                'note_code_smell' => $request['infos'][0]["note_sqale"],
+                'bug_blocker' => $request['infos'][0]["bug_blocker"],
+                'bug_critical' => $request['infos'][0]["bug_critical"],
+                'bug_major' => $request['infos'][0]["bug_major"],
+                'vulnerability_blocker' => $request['infos'][0]["vulnerability_blocker"],
+                'vulnerability_critical' => $request['infos'][0]["vulnerability_critical"],
+                'vulnerability_major' => $request['infos'][0]["vulnerability_major"],
+                'code_smell_blocker' => $request['infos'][0]["code_smell_blocker"],
+                'code_smell_critical' => $request['infos'][0]["code_smell_critical"],
+                'code_smell_major' => $request['infos'][0]["code_smell_major"],
+                'hotspot_total' => $request['infos'][0]["hotspot_total"],
+            ];
     }
 
     /**
      * [Description for reference]
      * On récupère les informations du projet de référence.
-     * @param mixed $mavenKey
+     *
+     * @param string $mavenKey
+     * @param string $mode
      *
      * @return array
      *
@@ -191,7 +195,7 @@ class ProjetController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function reference($mavenKey): array
+    private function reference($mavenKey, $mode): array
     {
         /** On récupère les informations du projet de référence */
         $sql = "SELECT  version, date_version,
@@ -413,7 +417,7 @@ class ProjetController extends AbstractController
         $mavenKey = $request->get('mavenKey');
 
         /** On récupère les notes */
-        $n = static::notes($mavenKey);
+        $n = static::notes($mavenKey, $mode);
 
         if ($n["resultat"] === false) {
             $nameApplication = $versionApplication = $typeApplication = "NaN";
