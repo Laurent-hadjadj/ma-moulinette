@@ -204,7 +204,7 @@ class SuiviController extends AbstractController
         }
 
         $this->addFlash('sucsess', sprintf(
-            '%s : %s', "[Info 001]","Les données ont été récupérées correctement."
+            '%s : %s', "[Information]","Les données ont été correctement récupérées."
         ));
 
         return $this->render('suivi/index.html.twig', $render);
