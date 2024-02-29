@@ -618,6 +618,7 @@ $('.js-modifier-analyse').on('click', function () {
       const l=id.split('-');
       const version=$(`#version-${l[deux]}`).text().trim();
       const date=$(`#date-${l[deux]}`).text().trim();
+      const mavenKey=$('#js-nom').data('maven');
 
       let initial=zero;
       if ($(`#${id}:checked`).length===un){
