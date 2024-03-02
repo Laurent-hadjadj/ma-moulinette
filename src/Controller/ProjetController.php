@@ -27,6 +27,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 /** Accès aux tables SLQLite*/
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 use App\Entity\Secondary\Repartition;
 use App\Entity\Main\Historique;
 
@@ -47,15 +48,20 @@ class ProjetController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function __construct(private EntityManagerInterface $em)
+    public function __construct(private EntityManagerInterface $em, private ManagerRegistry $mr)
     {
         $this->em = $em;
+        $this->mr = $mr;
     }
 
 
     /**
      * [Description for index]
      * Affiche la page projet
+     *
+     * @param Security $security
+     * @param Request $request
+     *
      * @return Response
      *
      * Created at: 15/12/2022, 22:16:04 (Europe/Paris)
@@ -111,14 +117,12 @@ class ProjetController extends AbstractController
     private function setup($mavenKey): string
     {
         /** On se connecte à la base pour connaitre la version du dernier setup pour le projet. */
-        //$reponse = $this->manager->getManager('secondary')
-        //->getRepository(Repartition::class)
-        //->findBy(['mavenKey' => $mavenKey], ['setup' => 'DESC'], 1);
+        $reponse = $this->mr->getRepository(Repartition::class, 'secondary')
+                    ->findBy(['mavenKey' => $mavenKey], ['setup' => 'DESC'], 1);
 
+        $setup = $reponse[0]->getSetup();
         if (empty($reponse)) {
             $setup = "NaN";
-        } else {
-            $setup = $reponse[0]->getSetup();
         }
 
         return $setup;
@@ -149,6 +153,7 @@ class ProjetController extends AbstractController
                     'code'=>$request['code'], 'erreur' => $request['erreur']
                 ];
         }
+
         if (!$request['infos']) {
             return ['resultat' => false];
         }
@@ -198,46 +203,46 @@ class ProjetController extends AbstractController
     private function reference($mavenKey, $mode): array
     {
         /** On récupère les informations du projet de référence */
-        $sql = "SELECT  version, date_version,
-                  note_reliability, note_security, note_hotspot, note_sqale,
-                  bug_blocker, bug_critical, bug_major,
-                  vulnerability_blocker, vulnerability_critical, vulnerability_major,
-                  code_smell_blocker, code_smell_critical, code_smell_major, hotspot_total
-                FROM historique
-                WHERE maven_key='$mavenKey' AND initial=1";
-        $r = $this->connection->fetchAllAssociative($sql);
-        $resultat = true;
-        if (!$r) {
-            $resultat = false;
-            return ['resultat' => $resultat];
+        $map=['maven_key'=>$mavenKey];
+        $historique = $this->em->getRepository(Historique::class);
+        $request=$historique->selectHistoriqueProjetReference($mode, $map);
+        if ($request['code']!=200) {
+            return [
+                    'mode' => $mode, 'maven_key' => $mavenKey,
+                    'code'=>$request['code'], 'erreur' => $request['erreur']
+                ];
         }
-        $tempo = explode("-", $r[0]["version"]);
-        return ['resultat' => $resultat,
+        if (!$request['reference']) {
+            return ['resultat' => false];
+        }
+
+        $tempo = explode("-", $request['reference'][0]["version"]);
+        return ['resultat' => true,
                 'initial_version_application' => $tempo[0],
-                'initial_date_version' => $r[0]["date_version"],
-                'initial_note_reliability' => $r[0]["note_reliability"],
-                'initial_note_security' => $r[0]["note_security"],
-                'initial_note_hotspot' => $r[0]["note_hotspot"],
-                'initial_note_code_smell' => $r[0]["note_sqale"],
-                'initial_bug_blocker' => $r[0]["bug_blocker"],
-                'initial_bug_critical' => $r[0]["bug_critical"],
-                'initial_bug_major' => $r[0]["bug_major"],
-                'initial_vulnerability_blocker' => $r[0]["vulnerability_blocker"],
-                'initial_vulnerability_critical' => $r[0]["vulnerability_critical"],
-                'initial_vulnerability_major' => $r[0]["vulnerability_major"],
-                'initial_code_smell_blocker' => $r[0]["code_smell_blocker"],
-                'initial_code_smell_critical' => $r[0]["code_smell_critical"],
-                'initial_code_smell_major' => $r[0]["code_smell_major"],
-                'initial_hotspot_total' => $r[0]["hotspot_total"],
-              ];
+                'initial_date_version' => $request['reference'][0]["date_version"],
+                'initial_note_reliability' => $request['reference'][0]["note_reliability"],
+                'initial_note_security' => $request['reference'][0]["note_security"],
+                'initial_note_hotspot' => $request['reference'][0]["note_hotspot"],
+                'initial_note_code_smell' => $request['reference'][0]["note_sqale"],
+                'initial_bug_blocker' => $request['reference'][0]["bug_blocker"],
+                'initial_bug_critical' => $request['reference'][0]["bug_critical"],
+                'initial_bug_major' => $request['reference'][0]["bug_major"],
+                'initial_vulnerability_blocker' => $request['reference'][0]["vulnerability_blocker"],
+                'initial_vulnerability_critical' => $request['reference'][0]["vulnerability_critical"],
+                'initial_vulnerability_major' => $request['reference'][0]["vulnerability_major"],
+                'initial_code_smell_blocker' => $request['reference'][0]["code_smell_blocker"],
+                'initial_code_smell_critical' => $request['reference'][0]["code_smell_critical"],
+                'initial_code_smell_major' => $request['reference'][0]["code_smell_major"],
+                'initial_hotspot_total' => $request['reference'][0]["hotspot_total"],
+            ];
     }
 
     /**
      * [Description for repartition]
      * On calcule le nombre de défaut par module
      *
-     * @param mixed $mavenKey
-     * @param mixed $contents
+     * @param string $mavenKey
+     * @param array $contents
      *
      * @return array
      *
@@ -256,7 +261,16 @@ class ProjetController extends AbstractController
             $mavenKey = "fr.ma-petite-entreprise:ma-moulinette";
         }
 
+        /**
+         * On récupère le nom de l'application depuis la clé mavenKey
+         * [fr.ma-petite-entreprise] : [ma-moulinette]
+         */
         $app = explode(":", $mavenKey);
+        if (count($app)===1) {
+            /** La clé maven n'est pas conforme, on ne peut pas déduire le nom de l'application */
+            array_push($app, $mavenKey);
+        }
+
         foreach ($contents as $el) {
             /**
              * On supprime le début de la ligne
@@ -315,10 +329,10 @@ class ProjetController extends AbstractController
     /**
      * [Description for traitement]
      *
-     * @param mixed $mavenKey
-     * @param mixed $setup
-     * @param mixed $type
-     * @param mixed $severity
+     * @param string $mavenKey
+     * @param string $setup
+     * @param string $type
+     * @param string $severity
      *
      * @return array
      *
@@ -333,16 +347,14 @@ class ProjetController extends AbstractController
          * Type : BUG, VULNERABILITY, CODE_SMELL
          * Severity : BLOCKER, CRITICAL, MAJOR,..
          */
-
-        $liste = $this->manager->getManager('secondary')
-                  ->getRepository(Repartition::class)
-                  ->findBy(
-                      [
-                'type' => $type,
-                'severity' => $severity,
-                'setup' => $setup
-              ]
-                  );
+        $liste = $this->mr->getRepository(Repartition::class, 'secondary')
+            ->findBy(
+                [
+                    'type' => $type,
+                    'severity' => $severity,
+                    'setup' => $setup
+                ]
+        );
 
         return self::repartition($mavenKey, $liste);
     }
@@ -352,8 +364,8 @@ class ProjetController extends AbstractController
      * [Description for variation]
      * Calcul de la variation entre deux notes
      *
-     * @param mixed $a
-     * @param mixed $b
+     * @param integer $a
+     * @param integer $b
      *
      * @return string
      *
@@ -392,6 +404,7 @@ class ProjetController extends AbstractController
     /**
      * [Description for projetCosui]
      * On ouvre la page COSUI
+     *
      * @param Request $request
      *
      * @return Response
@@ -463,7 +476,7 @@ class ProjetController extends AbstractController
         }
 
         /** On récupères les indicateurs de la version de référence */
-        $nn = self::reference($mavenKey);
+        $nn = self::reference($mavenKey, $mode);
         if ($nn["resultat"] === false) {
             $initialVersionApplication = "NaN";
             $initialDateApplication = "01/01/1980";
