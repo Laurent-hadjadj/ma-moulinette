@@ -95,18 +95,18 @@ class HistoriqueRepository extends ServiceEntityRepository
      */
     public function getProjetFavori($where): array
     {
-    $sql = "SELECT DISTINCT
-                maven_key as mavenkey, nom_projet as nom,
-                version, date_version as date, note_reliability as fiabilite,
-                note_security as securite, note_hotspot as hotspot,
-                note_sqale as sqale, nombre_bug as bug, nombre_vulnerability as vulnerability,
-                nombre_code_smell as code_smell, hotspot_total as hotspots
-            FROM historique
-            WHERE :where
-            ORDER BY date_version DESC limit 4";
-    $select=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-    $select->bindValue(":where", $where);
-    return $select->fetchAllAssociative();
+        $sql = "SELECT DISTINCT
+                    maven_key as mavenkey, nom_projet as nom,
+                    version, date_version as date, note_reliability as fiabilite,
+                    note_security as securite, note_hotspot as hotspot,
+                    note_sqale as sqale, nombre_bug as bug, nombre_vulnerability as vulnerability,
+                    nombre_code_smell as code_smell, hotspot_total as hotspots
+                FROM historique
+                WHERE :where
+                ORDER BY date_version DESC limit 4";
+        $select=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+        $select->bindValue(":where", $where);
+        return $select->fetchAllAssociative();
     }
 
     /**
@@ -123,7 +123,6 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function updateHistoriqueReference($mode, $map):array {
-
         /** on prépare la réponse */
         $response=['mode'=>$mode, 'code'=>200, 'erreur'=>''];
 
@@ -564,6 +563,85 @@ class HistoriqueRepository extends ServiceEntityRepository
         }
         /** on prépare la réponse */
         return ['mode'=>$mode, 'code'=>200, 'version'=>$version, 'erreur'=>''];
+    }
+
+    /**
+     * [Description for selectHistoriqueProjetLast]
+     * On récupère les informations du projet le plus récent
+     * (i.e ayant la date d'analyse la plus récente).
+     *
+     * @param string $mode
+     * @param array $map
+     *
+     * @return array
+     *
+     * Created at: 29/02/2024 18:15:37 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function selectHistoriqueProjetLast($mode, $map):array {
+
+        /** On prépare la requête */
+        $sql =  "SELECT version, nom_projet AS name, date_version,
+                        note_reliability, note_security, note_hotspot,note_sqale,
+                        bug_blocker, bug_critical, bug_major,
+                        vulnerability_blocker, vulnerability_critical, vulnerability_major,
+                        code_smell_blocker, code_smell_critical, code_smell_major,
+                        hotspot_total
+                FROM historique
+                WHERE maven_key=:maven_key
+                ORDER BY date_version DESC LIMIT 1";
+        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+        $conn->bindValue(':maven_key', $map['maven_key']);
+        try {
+            if ($mode !== 'TEST') {
+                $infos=$conn->executeQuery()->fetchAllAssociative();
+            } else {
+                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+            }
+        } catch (\Doctrine\DBAL\Exception $e) {
+            return ['mode'=>$mode, 'code'=> 500, 'erreur'=>$e->getCode()];
+        }
+        /** on prépare la réponse */
+        return ['mode'=>$mode, 'code'=>200, 'infos'=>$infos, 'erreur'=>''];
+    }
+
+    /**
+     * [Description for selectHistoriqueProjetReference]
+     * Remonte les informations du projet de référence.
+     *
+     * @param string $mode
+     * @param string $map
+     *
+     * @return array
+     *
+     * Created at: 29/02/2024 18:49:45 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function selectHistoriqueProjetReference($mode, $map):array {
+
+        /** On prépare la requête */
+        $sql = "SELECT  version, date_version,
+                        note_reliability, note_security, note_hotspot, note_sqale,
+                        bug_blocker, bug_critical, bug_major,
+                        vulnerability_blocker, vulnerability_critical, vulnerability_major,
+                        code_smell_blocker, code_smell_critical, code_smell_major, hotspot_total
+                FROM historique
+                WHERE maven_key=:maven_key AND initial=1";
+        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+        $conn->bindValue(':maven_key', $map['maven_key']);
+        try {
+            if ($mode !== 'TEST') {
+                $reference=$conn->executeQuery()->fetchAllAssociative();
+            } else {
+                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+            }
+        } catch (\Doctrine\DBAL\Exception $e) {
+            return ['mode'=>$mode, 'code'=> 500, 'erreur'=>$e->getCode()];
+        }
+        /** on prépare la réponse */
+        return ['mode'=>$mode, 'code'=>200, 'reference'=>$reference, 'erreur'=>''];
     }
 
 }
