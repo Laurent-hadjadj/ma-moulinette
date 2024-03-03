@@ -220,33 +220,33 @@ const match=function(params, data) {
  * Created at: 19/12/2022, 22:11:56 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
-const selectProjet=function() {
+const selectProjet=async function() {
   const options = {
     url: `${serveur()}/api/liste/projet`, type: 'GET',
           dataType: 'json', contentType };
 
-  return $.ajax(options)
-    .then( data => {
-      if (data.type==='alert' || data.type==='warning'){
-        $('#callout-projet-message').removeClass('hide success warning primary secondary');
-        $('#callout-projet-message').addClass(data.type);
-        $('#js-reference-information').html(data.reference);
-        $('#js-message-information').html(data.message);
-      } else {
-        log(' - INFO : construction de la liste.');
-        $('.js-projet').select2({
-          matcher: match,
-          placeholder: 'Cliquez pour ouvrir la liste',
-          allowClear: true,
-          width: '100%',
-          minimumInputLength: 2,
-          minimumResultsForSearch: 20,
-          language: 'fr',
-          data: data.projet
-        });
-        $('.analyse').removeClass('hide');
-      }
+  const data = await $.ajax(options);
+  if (data.type === 'alert' || data.type === 'warning')
+  {
+    $('#callout-projet-message').removeClass('hide success warning primary secondary');
+    $('#callout-projet-message').addClass(data.type);
+    $('#js-reference-information').html(data.reference);
+    $('#js-message-information').html(data.message);
+  } else
+  {
+    log(' - INFO : construction de la liste.');
+    $('.js-projet').select2({
+      matcher: match,
+      placeholder: 'Cliquez pour ouvrir la liste',
+      allowClear: true,
+      width: '100%',
+      minimumInputLength: 2,
+      minimumResultsForSearch: 20,
+      language: 'fr',
+      data: data.projet
     });
+    $('.analyse').removeClass('hide');
+  }
 };
 
 /**
