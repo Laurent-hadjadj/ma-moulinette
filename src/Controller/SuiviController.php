@@ -654,7 +654,7 @@ class SuiviController extends AbstractController
         $request=$historique->updateHistoriqueReference($data->mode, $map);
         if ($request['code']!=200) {
             return $response->setData([
-                'mode' => $data->mode, 'mavenKey' => $data->maven_key,
+                'mode' => $data->mode, 'maven-Key' => $data->maven_key,
                 'code'=>$request['code'], 'erreur' => $request['erreur'],
                 Response::HTTP_OK]);
         }
@@ -710,7 +710,7 @@ class SuiviController extends AbstractController
         $request=$historique->deleteHistoriqueProjet($data->mode, $map);
         if ($request['code']!=200) {
             return $response->setData([
-                'mode' => $data->mode, 'mavenKey' => $data->maven_key,
+                'mode' => $data->mode, 'maven_key' => $data->maven_key,
                 'code'=>$request['code'], 'erreur' => $request['erreur'],
                 Response::HTTP_OK]);
         }
