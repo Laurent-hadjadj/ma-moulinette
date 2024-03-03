@@ -27,9 +27,16 @@ import {serveur} from './properties.js';
 
 /** On importe les constantes */
 import {contentType, couleur, note, espace, rien,
-        http_406, listeOwasp2017,
+        http_200, http_400, http_406, listeOwasp2017,
         un, deux, trois, quatre, cinq, six, sept, huit, neuf, dix, onze,
         vingtNeuf, trente, soixanteNeuf, soixanteDix, cent} from './constante';
+
+/* Construction des callbox de type success */
+const callboxInformation='<div id="js-message" class="callout alert-callout-border primary" data-closable="slide-out-right" role="alert"><p class="open-sans color-bleu padding-right-1"><span class="lead"></span>Information ! </strong>';
+const callboxSuccess='<div id="js-message" class="callout alert-callout-border success" data-closable="slide-out-right" role="alert"><span class="open-sans color-bleu padding-right-1"<span class="lead">Bravo ! </span>';
+const callboxWarning='<div id="js-message" class="callout alert-callout-border warning" data-closable="slide-out-right" role="alert"><span class="open-sans padding-right-1 color-bleu"><span class="lead">Attention ! </span>';
+const callboxError='<div id="js-message" class="callout alert-callout-border alert" data-closable="slide-out-right"><span class="open-sans padding-right-1 color-bleu"><span class="lead">Ooups ! </span>';
+const callboxFermer='</span><button class="close-button" aria-label="Fermer la fenêtre" type="button" data-close><span aria-hidden="true">&times;</span></button></div>';
 
 /**
  * [Description for calculNoteHotspot]
@@ -71,12 +78,10 @@ const calculNoteHotspot=function(taux) {
  * [Description for injectionOwaspInfo]
  * Fonction qui permet d'injecter dans la page les calcul des Owasp
  *
- * @param mixed id
- * @param mixed menace
- * @param mixed badge
- * @param mixed laNote
- *
- * @return [type]
+ * @param string id
+ * @param string menace
+ * @param string badge
+ * @param integer laNote
  *
  * Created at: 19/12/2022, 21:31:50 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -92,29 +97,39 @@ const injectionOwaspInfo=function(id, menace, badge, laNote) {
 * [Description for remplissageOwaspInfo]
 * Récupération des informations sur les vulnérabilités OWASP.
 *
-* @param mixed idMaven
-*
-* @return [type]
+* @param string idMaven
 *
 * Created at: 19/12/2022, 21:32:27 (Europe/Paris)
 * @author     Laurent HADJADJ <laurent_h@me.com>
 */
 const remplissageOwaspInfo=function(idMaven) {
+
+  /** si la clé maven n'est pas défini alors on sort */
   if (idMaven === undefined) {
     return;
   }
 
-  const data={'mavenKey': idMaven };
+  const data={'maven_key': idMaven, 'mode': 'null' };
   const options = {
-    url: `${serveur()}/api/peinture/owasp/liste`, type: 'GET',
-    dataType: 'json', data, contentType };
+    url: `${serveur()}/api/peinture/owasp/liste`, type: 'POST',
+    dataType: 'json', data: JSON.stringify(data), contentType };
 
   $.ajax(options).then(r => {
-    /** 406 = code HTTP */
-    if (r.code === http_406){
-        console.info('Le projet n\'existe pas..');
-        return;
-      }
+    if (r.code===http_200) {
+      const message=`Les données ont été trouvées.`;
+      $('#message').html(callboxInformation+message+callboxFermer);
+    }
+    if (r.code===http_400) {
+      const message=`[Owasp] La requête n'est pas conforme (Erreur 400) !`;
+      $('#message').html(callboxError+message+callboxFermer);
+      return;
+    }
+    if (r.code===http_406) {
+      const message=`Le projet n'a pas été trouvé !`;
+      $('#message').html(callboxWarning+message+callboxFermer);
+      return;
+    }
+
     /** On ajoute les valeurs pour les vulnérabilités */
     $('#nombre-faille-owasp').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.total));
     $('#nombre-faille-bloquant').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.bloquant));
@@ -366,29 +381,29 @@ const remplissageOwaspInfo=function(idMaven) {
   });
 };
 
-
 /**
  * [Description for remplissageHotspotInfo]
  * Récupération des informations sur les hotspots OWASP
  *
- * @param mixed idMaven
- *
- * @return [type]
+ * @param string idMaven
  *
  * Created at: 19/12/2022, 21:39:57 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const remplissageHotspotInfo=function(idMaven) {
+
+  /** si la clé maven n'existe pas alors on sort */
   if (idMaven === undefined) {
     return;
   }
 
-  const data={'mavenKey': idMaven };
+  const data={'maven_key': idMaven, 'mode': 'null' };
   const options = {
-    url: `${serveur()}/api/peinture/owasp/hotspot/info/`, type: 'GET',
-    dataType: 'json', data, contentType };
+    url: `${serveur()}/api/peinture/owasp/hotspot/info`, type: 'POST',
+    dataType: 'json', data: JSON.stringify(data), contentType };
 
   $.ajax(options).then(r=> {
+
   let i='';
   /** On compte le nombre de hotspot au status REVIEWED */
   $('#hotspot-reviewed').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.reviewed));
@@ -411,7 +426,7 @@ const remplissageHotspotInfo=function(idMaven) {
 
   const lowerLaNote=laNote[0].toLowerCase();
   i = `<span>${new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(leTaux)}</span>
-      <span class="badge ${lowerLaNote}"> ${laNote[1]}</span>`;
+        <span class="badge ${lowerLaNote}"> ${laNote[1]}</span>`;
   $('#note-hotspot').html(i);
   });
 };
@@ -420,12 +435,12 @@ const remplissageHotspotInfo=function(idMaven) {
 * [Description for injectionHotspotListe]
 * Fonction qui permet d'injecter dans la page les calcul des hotspots
 *
-* @param mixed id
-* @param mixed espace
-* @param mixed menace
-* @param mixed leTaux
-* @param mixed badge
-* @param mixed laNote
+* @param string id
+* @param string formatage
+* @param string menace
+* @param float leTaux
+* @param string badge
+* @param integr laNote
 *
 * @return [type]
 *
@@ -443,7 +458,7 @@ $(`#h${id}`).html(i);
 * [Description for remplissageHotspotListe]
 * Fonction de remplissage du tableau avec les infos hotspot owasp A1-A10.
 *
-* @param mixed idMaven
+* @paramstring idMaven
 *
 * @return [type]
 *
@@ -458,16 +473,23 @@ const remplissageHotspotListe=function(idMaven) {
 /**
  * On appel le l'API en charge de récupérer la liste des failles de type OWASP
  */
-  const data={'mavenKey': idMaven };
+  const data={'maven_key': idMaven, 'mode': 'null' };
   const options = {
-    url: `${serveur()}/api/peinture/owasp/hotspot/liste`, type: 'GET',
-          dataType: 'json', data, contentType };
+    url: `${serveur()}/api/peinture/owasp/hotspot/liste`, type: 'POST',
+          dataType: 'json', data: JSON.stringify(data), contentType };
 
   $.ajax(options).then(r => {
+    if (r.code===http_400) {
+      const message=`[Hotspot] La requête n'est pas conforme (Erreur 400) !`;
+      $('#message').html(callboxError+message+callboxFermer);
+      return;
+    }
   let leTaux=1, laNote=['a','A'], formatage;
   const hotspotTotal=parseInt(r.menaceA1+r.menaceA2+r.menaceA3+r.menaceA4+
                               r.menaceA5+r.menaceA6+r.menaceA7+r.menaceA8+
                               r.menaceA9+r.menaceA10,10);
+
+  formatage=espace;
 
   if ( hotspotTotal!==0 ){
     /* calcul A1 */
@@ -478,9 +500,6 @@ const remplissageHotspotListe=function(idMaven) {
     } else {
       formatage=rien;
       }
-    if ( leTaux*cent===cent) {
-      formatage=espace;
-    }
     injectionHotspotListe(un, formatage, r.menaceA1, leTaux, laNote[0], laNote[1]);
 
     /* calcul A2*/
@@ -491,9 +510,6 @@ const remplissageHotspotListe=function(idMaven) {
       } else {
         formatage=rien;
       }
-    if ( leTaux*cent===cent) {
-      formatage=espace;
-    }
     injectionHotspotListe(deux, formatage, r.menaceA2, leTaux, laNote[0], laNote[1]);
 
     /* calcul A3 */
@@ -503,9 +519,6 @@ const remplissageHotspotListe=function(idMaven) {
       formatage=espace+espace+espace;
     } else {
       formatage=rien;
-    }
-    if ( leTaux*cent===cent) {
-      formatage=espace;
     }
     injectionHotspotListe(trois, formatage, r.menaceA3, leTaux, laNote[0], laNote[1]);
 
@@ -517,9 +530,6 @@ const remplissageHotspotListe=function(idMaven) {
     } else {
       formatage=rien;
     }
-    if ( leTaux*cent===cent) {
-      formatage=espace;
-    }
     injectionHotspotListe(quatre, formatage, r.menaceA4, leTaux, laNote[0], laNote[1]);
 
     /* calcul A5 */
@@ -529,9 +539,6 @@ const remplissageHotspotListe=function(idMaven) {
       formatage=espace+espace+espace;
     } else {
         formatage=rien;
-    }
-    if ( leTaux*cent===cent) {
-      formatage=espace;
     }
     injectionHotspotListe(cinq, formatage, r.menaceA5, leTaux, laNote[0], laNote[1]);
 
@@ -543,9 +550,6 @@ const remplissageHotspotListe=function(idMaven) {
     } else {
         formatage=rien;
       }
-    if ( leTaux*cent===cent) {
-      formatage=espace;
-    }
     injectionHotspotListe(six, formatage, r.menaceA6, leTaux, laNote[0], laNote[1]);
 
     /* Calcul A7 */
@@ -555,9 +559,6 @@ const remplissageHotspotListe=function(idMaven) {
       formatage=espace+espace+espace;
     } else {
         formatage=rien;
-    }
-    if ( leTaux*cent===cent) {
-      formatage=espace;
     }
     injectionHotspotListe(sept, formatage, r.menaceA7, leTaux, laNote[0], laNote[1]);
 
@@ -569,9 +570,6 @@ const remplissageHotspotListe=function(idMaven) {
     } else {
         formatage=rien;
       }
-    if ( leTaux*cent===cent) {
-      formatage=espace;
-    }
     injectionHotspotListe(huit, formatage, r.menaceA8, leTaux, laNote[0], laNote[1]);
 
     /* calcul A9 */
@@ -581,11 +579,8 @@ const remplissageHotspotListe=function(idMaven) {
       formatage=espace+espace+espace;
     } else {
         formatage=rien;
-      }
-    if (leTaux*cent===cent) {
-      formatage=espace;
-      }
-      injectionHotspotListe(neuf, formatage, r.menaceA9, leTaux, laNote[0], laNote[1]);
+    }
+    injectionHotspotListe(neuf, formatage, r.menaceA9, leTaux, laNote[0], laNote[1]);
 
     /* Calcul A10 */
     leTaux = 1 - (r.menaceA10/ hotspotTotal);
@@ -594,9 +589,6 @@ const remplissageHotspotListe=function(idMaven) {
       formatage=espace+espace+espace;
     } else {
         formatage=rien;
-    }
-    if (leTaux*cent===cent) {
-      formatage=espace;
     }
     injectionHotspotListe(dix, formatage, r.menaceA10, leTaux, laNote[0], laNote[1]);
   } else {
@@ -612,14 +604,14 @@ const remplissageHotspotListe=function(idMaven) {
  * Injecte les ligne de détails pour les hotpsots
  *
  * @param mixed numero
- * @param mixed url
- * @param mixed color
- * @param mixed rule
- * @param mixed severity
- * @param mixed file
- * @param mixed line
- * @param mixed message
- * @param mixed status
+ * @param string url
+ * @param string color
+ * @param string rule
+ * @param string severity
+ * @param string file
+ * @param integer line
+ * @param string message
+ * @param string status
  *
  * @return [type]
  *
@@ -642,11 +634,11 @@ const injectionHotspotDetails=function(numero,url,color,rule,severity,file,line,
 /**
  * [Description for injectionModule]
  *
- * @param mixed module
- * @param mixed total
- * @param mixed taux
- * @param mixed bc
- * @param mixed zero
+ * @param string module
+ * @param integer total
+ * @param integer taux
+ * @param string bc
+ * @param integer zero
  *
  * @return [type]
  *
@@ -675,7 +667,7 @@ const injectionModule=function (module, total, taux, bc, zero){
  * [Description for remplissageHotspotDetails]
  * Affiche le tableau du détails des hotspots
  *
- * @param mixed idMaven
+ * @param string idMaven
  *
  * @return [type]
  *
@@ -683,20 +675,28 @@ const injectionModule=function (module, total, taux, bc, zero){
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const remplissageHotspotDetails=function(idMaven) {
+  /** Si la clé maven n'est pas défini on ne fait rien */
   if (idMaven === undefined) {
     return;
   }
 
-  const data={'mavenKey': idMaven };
+  const data={'maven_key': idMaven, 'mode': 'null'};
   const options = {
-    url: `${serveur()}/api/peinture/owasp/hotspot/details`, type: 'GET',
-    dataType: 'json', data, contentType };
+    url: `${serveur()}/api/peinture/owasp/hotspot/details`, type: 'POST',
+    dataType: 'json', data: JSON.stringify(data), contentType };
 
   $.ajax(options).then(r => {
+    if (r.code===http_400) {
+      const message=`[Details] La requête n'est pas conforme (Erreur 400) !`;
+      $('#message').html(callboxError+message+callboxFermer);
+      return;
+    }
+
     let numero=0, monNumero, ligne, c, frontend=0, backend=0, autre=0;
     let vide, too, totalABC, zero='', bc;
     const serveurURL=$('#js-serveur').data('serveur');
-    if (r.details==='vide') {
+
+    if (r.details.menances===undefined || r['details']['menaces'].length == 0) {
         /** On met ajour la répartition par module */
         vide = `<span class="stat-note">
         ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(0)}</span>
@@ -823,11 +823,9 @@ const remplissageHotspotDetails=function(idMaven) {
  * [Description for remplissageDetailsHotspotOwasp]
  * Permet d'afficher le détails de chaque hotspot
  *
- * @param mixed idMaven
- * @param mixed menace
- * @param mixed titre
- *
- * @return [type]
+ * @param string idMaven
+ * @param string menace
+ * @param string titre
  *
  * Created at: 19/12/2022, 21:49:48 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -837,22 +835,28 @@ const remplissageDetailsHotspotOwasp=function(idMaven, menace, titre) {
     return;
   }
 
-  const data={'mavenKey': idMaven, menace };
+  const data={'maven_key': idMaven, menace, 'mode': 'null' };
   const options = {
-    url: `${serveur()}/api/peinture/owasp/hotspot/severity`, type: 'GET',
-          dataType: 'json', data, contentType };
+    url: `${serveur()}/api/peinture/owasp/hotspot/severity`, type: 'POST',
+          dataType: 'json',data: JSON.stringify(data), contentType };
 
   $.ajax(options).then(r=> {
-  $('.details-titre').html(listeOwasp2017[titre]);
-  $('#detail-haut').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.high.total));
-  $('#detail-moyen').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.medium.total));
-  $('#detail-faible').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.low.total));
+    if (r.code===http_400) {
+      const message=`[Severity] La requête n'est pas conforme (Erreur 400) !`;
+      $('#message').html(callboxError+message+callboxFermer);
+      return;
+    }
+
+    $('.details-titre').html(listeOwasp2017[titre]);
+    $('#detail-haut').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.high.total));
+    $('#detail-moyen').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.medium.total));
+    $('#detail-faible').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.low.total));
   });
 };
 
 $('.js-details').on('click', function () {
   const id = $(this).attr('id').split('-');
-  const kkey=localStorage.getItem('projet');
+  const kkey=sessionStorage.getItem('projet');
   if (id[1] === 'a1') {
     remplissageDetailsHotspotOwasp(kkey, 'a1', un);
   }
@@ -888,7 +892,7 @@ $('.js-details').on('click', function () {
 
 /*************** Main du programme **************/
 /** On récupère la clé du projet */
-const key=localStorage.getItem('projet');
+const key=sessionStorage.getItem('projet');
 const projet=key.split(':');
 /** On met à jour la page */
 $('#js-application').html(projet[1]);
