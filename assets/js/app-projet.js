@@ -1244,10 +1244,13 @@ $('.js-cosui').on('click', () => {
  */
   $('.js-analyse-owasp').on('click', () => {
     if ($('select[name="projet"]').val() !=='' && $('select[name="projet"]').val() !=='TheID'){
-      const apiMaven = $('#select-result').text().trim();
+      const mavenKey = $('#select-result').text().trim();
+
       /* on écrase la clé maven au cas ou */
-      sessionStorage.setItem('projet',$('select[name="projet"]').val().trim());
-      window.location.href='/owasp?mavenKey='+apiMaven;
+      sessionStorage.setItem('projet', mavenKey);
+
+      /** On ne passe plus de paramètre dans le get */
+      window.location.href='/owasp';
     } else {
       log(' - ERROR - [OWASP] Vous devez chosir un projet dans la liste !! !');
       }
