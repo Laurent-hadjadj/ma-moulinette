@@ -12,9 +12,7 @@
   https://bitbucket.org/laurent_h/ma-moulinette
   © 2024 - CC BY-SA-NC 4.0
 -->
-
-<html
-	lang="fr">
+<html lang="fr">
 	{# Chargement de la section HEAD #}
 	<head>
 		{{ include('head.html.twig') }}
@@ -29,26 +27,20 @@
 		<br>
 
 		<header class="grid-container">
-			<nav aria-label="Ici : " role="navigation">
+			<nav aria-label="Vous êtes Ici : ">
 				<ul class="claire-hand breadcrumbs">
-					<li>
-						<a href="/">Accueil</a>
-					</li>
-					<li>
-						<a href="/projet">Projet</a>
-					</li>
-					<li>
-						<span class="show-for-sr">Current:</span>Owasp</li>
-				</ul>
+					<li><a href="/">Accueil</a></li>
+					<li><a href="/projet">Projet</a></li>
+					<li><span class="show-for-sr">Vous êtes ici:</span>Owasp</li></ul>
 			</nav>
 		</header>
 		<div class="grid-container grid-x">
 			<h1 class="h2 claire-hand">Vulnérabilités OWASP et points chauds.</h1>
 
-			<div
-				id="js-serveur" class="cell" data-serveur="{{serveur}}">
+			<div id="js-serveur" class="cell" data-serveur="{{serveur}}">
 				{# On ajoute un caractère pour éviter une erreur W3C #}
 				<h2 id="js-application" class="h3 claire-hand">&nbsp;</h2>
+        <div id="message"></div>
 			</div>
 
 			<fieldset class="fieldset cell">
