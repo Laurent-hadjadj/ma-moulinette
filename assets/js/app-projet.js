@@ -254,9 +254,9 @@ const selectProjet=async function() {
  * Récupère les informations du projet
  * (id de l'enregistrement, date de l'analyse, version, type de version)
  *
- * @param mixed mavenKey
+ * @param string mavenKey
  *
- * @return [type]
+ * @return
  *
  * Created at: 19/12/2022, 22:12:44 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -287,9 +287,9 @@ const projetAnalyse=function(mavenKey) {
  * [Description for projetMesure]
  * Met à jour les indicateurs du projet (lignes, couvertures, duplication, défauts).
  *
- * @param mixed mavenKey
+ * @param string mavenKey
  *
- * @return [type]
+ * @return response
  *
  * Created at: 19/12/2022, 22:13:13 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -321,9 +321,9 @@ const projetMesure=function(mavenKey) {
  * la répartition par dossier la répartition par severity et la dette technique total.
  * Arguements : mavenKey = clé du projet,
  *
- * @param mixed mavenKey
+ * @param string mavenKey
  *
- * @return [type]
+ * @return response
  *
  * Created at: 19/12/2022, 22:13:42 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -355,9 +355,9 @@ const projetAnomalie=function(mavenKey) {
  * le nombre de violation par type.
  * Arguements : mavenKey = clé du projet,
  *
- * @param mixed mavenKey
+ * @param string mavenKey
  *
- * @return [type]
+ * @return response
  *
  * Created at: 19/12/2022, 22:14:11 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -395,10 +395,10 @@ const projetAnomalieDetails=function(mavenKey) {
   * {mavenKey} = clé du projet
   * {type} = reliability, security, sqale
   *
-  * @param mixed mavenKey
-  * @param mixed type
+  * @param string mavenKey
+  * @param string type
   *
-  * @return [type]
+  * @return response
   *
   * Created at: 19/12/2022, 22:15:12 (Europe/Paris)
   * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -433,9 +433,9 @@ const projetRating=function(mavenKey, type) {
  * Attention une faille peut être comptée deux fois ou plus, cela dépend du tag. Donc il est
  * possible d'avoir pour la clé une faille de type OWASP-A3 et OWASP-A10
  *
- * @param mixed mavenKey
+ * @param string mavenKey
  *
- * @return [type]
+ * @return response
  *
  * Created at: 19/12/2022, 22:16:16 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -472,9 +472,9 @@ const projetOwasp=function(mavenKey) {
  * On récupère les Hotspot a examiner. Les clés sont uniques
  * (i.e. on ne se base pas sur les tags).
  *
- * @param mixed mavenKey
+ * @param string mavenKey
  *
- * @return [type]
+ * @return response
  *
  * Created at: 19/12/2022, 22:17:17 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -511,10 +511,10 @@ const projetHotspot=function(mavenKey) {
  * Pour chaque faille OWASP on récupère les information. Il est possible d'avoir des doublons
  * (i.e. a cause des tags).
  *
- * @param mixed mavenKey
- * @param mixed owasp
+ * @param string mavenKey
+ * @param string owasp
  *
- * @return [type]
+ * @return response
  *
  * Created at: 19/12/2022, 22:18:07 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -553,9 +553,9 @@ const projetHotspotOwasp=function(mavenKey, owasp) {
  * On enregistre le détails des hostspot owasp
  * http://{url}/api/projet/hotspot/details{mavenKey}
  *
- * @param mixed mavenKey
+ * @param string mavenKey
  *
- * @return [type]
+ * @return response
  *
  * Created at: 19/12/2022, 22:19:07 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -590,9 +590,9 @@ const projetHotspotOwaspDetails=function(mavenKey) {
  * [Description for projetNosonarDetails]
  * On récupére la liste des exclusions de code
  *
- * @param mixed mavenKey
+ * @param string mavenKey
  *
- * @return [type]
+ * @return response
  *
  * Created at: 19/12/2022, 22:19:44 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -626,9 +626,9 @@ const projetNosonarDetails=function(mavenKey){
  * [Description for projetNosonarDetails]
  * On récupére la liste des exclusions de code
  *
- * @param mixed mavenKey
+ * @param string mavenKey
  *
- * @return [type]
+ * @return response
  *
  * Created at: 10/04/2023, 15:11:30 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -662,7 +662,7 @@ const projetTodoDetails=function(mavenKey){
  * [Description for finCollecte]
  * Affiche un messag de fin de collecte
  *
- * @return [type]
+ * @return response
  *
  * Created at: 19/12/2022, 22:20:20 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -677,7 +677,7 @@ const finCollecte=function(){
  * On récupére la liste des projets et des favoris de l'utilisateur
  * http://{url}/api/projet/mes-applications/liste
  *
- * @return [type]
+ * @return response
  *
  * Created at: 19/12/2022, 22:21:16 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -880,9 +880,9 @@ const afficheMesProjets=function() {
  * On récupére la répartition des hotspots par sévérité
  * http://{url}/api/peinture/projet/hotspot/details{meven_key}
  *
- * @param mixed mavenKey
+ * @param string mavenKey
  *
- * @return [type]
+ * @return response
  *
  * Created at: 19/12/2022, 22:25:28 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -1014,8 +1014,12 @@ $('.js-analyse').on('click', function () {
  * description
  * Événement : Affiche le nom de la clé du projet, active le bouton pour l'analyse.
  */
-$('select[name="projet"]').change(function () {
+$('select[name="projet"]').on('change', function () {
   $('#select-result').html(`<strong>${$('select[name="projet"]').val().trim()}</strong>`);
+
+  /** On enregistre la clé maven dans le session storage (utile pour la page Owasp) */
+  sessionStorage.setItem('projet', $('select[name="projet"]').val().trim());
+
   /* On regarde si le projet est en favori */
   const data = { mavenKey: $('#select-result').text().trim() };
   const options = {
@@ -1241,6 +1245,8 @@ $('.js-cosui').on('click', () => {
   $('.js-analyse-owasp').on('click', () => {
     if ($('select[name="projet"]').val() !=='' && $('select[name="projet"]').val() !=='TheID'){
       const apiMaven = $('#select-result').text().trim();
+      /* on écrase la clé maven au cas ou */
+      sessionStorage.setItem('projet',$('select[name="projet"]').val().trim());
       window.location.href='/owasp?mavenKey='+apiMaven;
     } else {
       log(' - ERROR - [OWASP] Vous devez chosir un projet dans la liste !! !');
