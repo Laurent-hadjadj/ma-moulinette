@@ -29,6 +29,12 @@ class Hotspots
     private $mavenKey;
 
     #[ORM\Column(type: Types::STRING, length: 32)]
+    private $version;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private $dateVersion;
+
+    #[ORM\Column(type: Types::STRING, length: 32)]
     private $key;
 
     #[ORM\Column(type: Types::STRING, length: 8)]
@@ -49,7 +55,7 @@ class Hotspots
      * @return int|null
      *
      * Created at: 02/01/2023, 18:01:47 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getId(): ?int
@@ -63,7 +69,7 @@ class Hotspots
      * @return string|null
      *
      * Created at: 02/01/2023, 18:01:49 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getMavenKey(): ?string
@@ -79,7 +85,7 @@ class Hotspots
      * @return self
      *
      * Created at: 02/01/2023, 18:01:50 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setMavenKey(string $mavenKey): self
@@ -90,12 +96,76 @@ class Hotspots
     }
 
     /**
+     * [Description for getVersion]
+     *
+     * @return string|null
+     *
+     * Created at: 04/03/2024 10:37:35 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function getVersion(): ?string
+    {
+        return $this->version;
+    }
+
+    /**
+     * [Description for setVersion]
+     *
+     * @param string $version
+     *
+     * @return self
+     *
+     * Created at: 04/03/2024 10:37:40 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function setVersion(string $version): self
+    {
+        $this->version = $version;
+
+        return $this;
+    }
+
+    /**
+     * [Description for getDateVersion]
+     *
+     * @return \DateTimeInterface|null
+     *
+     * Created at: 04/03/2024 10:40:50 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function getDateVersion(): ?\DateTimeInterface
+    {
+        return $this->dateVersion;
+    }
+
+    /**
+     * [Description for setDateVersion]
+     *
+     * @param \DateTimeInterface $dateVersion
+     *
+     * @return self
+     *
+     * Created at: 04/03/2024 10:40:47 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function setDateVersion(\DateTimeInterface $dateVersion): self
+    {
+        $this->dateVersion = $dateVersion;
+
+        return $this;
+    }
+
+    /**
      * [Description for getKey]
      *
      * @return string|null
      *
      * Created at: 02/01/2023, 18:01:52 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getKey(): ?string
@@ -111,7 +181,7 @@ class Hotspots
      * @return self
      *
      * Created at: 02/01/2023, 18:01:53 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setKey(string $key): self
@@ -127,7 +197,7 @@ class Hotspots
      * @return string|null
      *
      * Created at: 02/01/2023, 18:01:55 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getProbability(): ?string
@@ -175,7 +245,7 @@ class Hotspots
      * @return self
      *
      * Created at: 02/01/2023, 18:01:59 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setStatus(string $status): self
@@ -191,7 +261,7 @@ class Hotspots
      * @return int|null
      *
      * Created at: 02/01/2023, 18:02:01 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getNiveau(): ?int
@@ -207,7 +277,7 @@ class Hotspots
      * @return self
      *
      * Created at: 02/01/2023, 18:02:03 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setNiveau(int $niveau): self
@@ -223,7 +293,7 @@ class Hotspots
      * @return \DateTimeInterface|null
      *
      * Created at: 02/01/2023, 18:02:04 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getDateEnregistrement(): ?\DateTimeInterface
@@ -239,7 +309,7 @@ class Hotspots
      * @return self
      *
      * Created at: 02/01/2023, 18:02:06 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setDateEnregistrement(\DateTimeInterface $dateEnregistrement): self
