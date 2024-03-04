@@ -82,7 +82,7 @@ class ApiOwaspPeintureController extends AbstractController
         /** On récupère les failles owasp */
         $map=['maven_key'=>$data->maven_key];
         $owasp = $this->em->getRepository(Owasp::class);
-        $request=$owasp->selectOwaspOrderBy($data->mode, $map);
+        $request=$owasp->selectOwaspOrderByDateEnregistrement($data->mode, $map);
         if ($request['code']!=200) {
             return $response->setData([
                 'mode' => $data->mode, 'maven_key' => $data->maven_key,
@@ -96,58 +96,60 @@ class ApiOwaspPeintureController extends AbstractController
         }
 
         /** Informations */
-        $total = $request['liste'][0]["a1"] + $request['liste'][0]["a2"] + $request['liste'][0]["a3"] + $request['liste'][0]["a4"]
-                    + $request['liste'][0]["a5"] + $request['liste'][0]["a6"] + $request['liste'][0]["a7"] + $request['liste'][0]["a8"]
-                    + $request['liste'][0]["a9"] + $request['liste'][0]["a10"];
+        $total = $request['liste'][0]['a1'] + $request['liste'][0]['a2'] + $request['liste'][0]['a3'] + $request['liste'][0]['a4']
+                    + $request['liste'][0]['a5'] + $request['liste'][0]['a6'] + $request['liste'][0]['a7'] + $request['liste'][0]['a8']
+                    + $request['liste'][0]['a9'] + $request['liste'][0]['a10'];
 
-        $bloquant = $request['liste'][0]["a1_blocker"] + $request['liste'][0]["a2_blocker"] + $request['liste'][0]["a3_blocker"]
-                    + $request['liste'][0]["a4_blocker"] + $request['liste'][0]["a5_blocker"] + $request['liste'][0]["a6_blocker"]
-                    + $request['liste'][0]["a7_blocker"] + $request['liste'][0]["a8_blocker"] + $request['liste'][0]["a9_blocker"]
-                    + $request['liste'][0]["a10_blocker"];
+        $bloquant = $request['liste'][0]['a1_blocker'] + $request['liste'][0]['a2_blocker'] + $request['liste'][0]['a3_blocker']
+                    + $request['liste'][0]['a4_blocker'] + $request['liste'][0]['a5_blocker'] + $request['liste'][0]['a6_blocker']
+                    + $request['liste'][0]['a7_blocker'] + $request['liste'][0]['a8_blocker'] + $request['liste'][0]['a9_blocker']
+                    + $request['liste'][0]['a10_blocker'];
 
-        $critique = $request['liste'][0]["a1_critical"] + $request['liste'][0]["a2_critical"]
-                    + $request['liste'][0]["a3_critical"] + $request['liste'][0]["a4_critical"]
-                    + $request['liste'][0]["a5_critical"] + $request['liste'][0]["a6_critical"]
-                    + $request['liste'][0]["a7_critical"] + $request['liste'][0]["a8_critical"]
-                    + $request['liste'][0]["a9_critical"] + $request['liste'][0]["a10_critical"];
+        $critique = $request['liste'][0]['a1_critical'] + $request['liste'][0]['a2_critical']
+                    + $request['liste'][0]['a3_critical'] + $request['liste'][0]['a4_critical']
+                    + $request['liste'][0]['a5_critical'] + $request['liste'][0]['a6_critical']
+                    + $request['liste'][0]['a7_critical'] + $request['liste'][0]['a8_critical']
+                    + $request['liste'][0]['a9_critical'] + $request['liste'][0]['a10_critical'];
 
-        $majeur = $request['liste'][0]["a1_major"] + $request['liste'][0]["a2_major"] + $request['liste'][0]["a3_major"]
-                    + $request['liste'][0]["a4_major"] + $request['liste'][0]["a5_major"] + $request['liste'][0]["a6_major"]
-                    + $request['liste'][0]["a7_major"] + $request['liste'][0]["a8_major"] + $request['liste'][0]["a9_major"]
-                    + $request['liste'][0]["a10_major"];
+        $majeur = $request['liste'][0]['a1_major'] + $request['liste'][0]['a2_major'] + $request['liste'][0]['a3_major']
+                    + $request['liste'][0]['a4_major'] + $request['liste'][0]['a5_major'] + $request['liste'][0]['a6_major']
+                    + $request['liste'][0]['a7_major'] + $request['liste'][0]['a8_major'] + $request['liste'][0]['a9_major']
+                    + $request['liste'][0]['a10_major'];
 
-        $mineur = $request['liste'][0]["a1_minor"] + $request['liste'][0]["a2_minor"] + $request['liste'][0]["a3_minor"]
-                    + $request['liste'][0]["a4_minor"] + $request['liste'][0]["a5_minor"] + $request['liste'][0]["a6_minor"]
-                    + $request['liste'][0]["a7_minor"] + $request['liste'][0]["a8_minor"] + $request['liste'][0]["a9_minor"]
-                    + $request['liste'][0]["a10_minor"];
+        $mineur = $request['liste'][0]['a1_minor'] + $request['liste'][0]['a2_minor'] + $request['liste'][0]['a3_minor']
+                    + $request['liste'][0]['a4_minor'] + $request['liste'][0]['a5_minor'] + $request['liste'][0]['a6_minor']
+                    + $request['liste'][0]['a7_minor'] + $request['liste'][0]['a8_minor'] + $request['liste'][0]['a9_minor']
+                    + $request['liste'][0]['a10_minor'];
 
         return $response->setData(
             [
-                'mode' => $data->mode, "code" => 200, "total" => $total,
-                "bloquant" => $bloquant, "critique" => $critique, "majeur" => $majeur, "mineur" => $mineur,
-                "a1" => $request['liste'][0]["a1"], "a2" => $request['liste'][0]["a2"], "a3" => $request['liste'][0]["a3"], "a4" => $request['liste'][0]["a4"],
-                "a5" => $request['liste'][0]["a5"], "a6" => $request['liste'][0]["a6"], "a7" => $request['liste'][0]["a7"], "a8" => $request['liste'][0]["a8"],
-                "a9" => $request['liste'][0]["a9"], "a10" => $request['liste'][0]["a10"],
-                "a1Blocker" => $request['liste'][0]["a1_blocker"], "a2Blocker" => $request['liste'][0]["a2_blocker"],
-                "a3Blocker" => $request['liste'][0]["a3_blocker"], "a4Blocker" => $request['liste'][0]["a4_blocker"],
-                "a5Blocker" => $request['liste'][0]["a5_blocker"], "a6Blocker" => $request['liste'][0]["a6_blocker"],
-                "a7Blocker" => $request['liste'][0]["a7_blocker"], "a8Blocker" => $request['liste'][0]["a8_blocker"],
-                "a9Blocker" => $request['liste'][0]["a9_blocker"], "a10Blocker" => $request['liste'][0]["a10_blocker"],
-                "a1Critical" => $request['liste'][0]["a1_critical"], "a2Critical" => $request['liste'][0]["a2_critical"],
-                "a3Critical" => $request['liste'][0]["a3_critical"], "a4Critical" => $request['liste'][0]["a4_critical"],
-                "a5Critical" => $request['liste'][0]["a5_critical"], "a6Critical" => $request['liste'][0]["a6_critical"],
-                "a7Critical" => $request['liste'][0]["a7_critical"], "a8Critical" => $request['liste'][0]["a8_critical"],
-                "a9Critical" => $request['liste'][0]["a9_critical"], "a10Critical" => $request['liste'][0]["a10_critical"],
-                "a1Major" => $request['liste'][0]["a1_major"], "a2Major" => $request['liste'][0]["a2_major"],
-                "a3Major" => $request['liste'][0]["a3_major"], "a4Major" => $request['liste'][0]["a4_major"],
-                "a5Major" => $request['liste'][0]["a5_major"], "a6Major" => $request['liste'][0]["a6_major"],
-                "a7Major" => $request['liste'][0]["a7_major"], "a8Major" => $request['liste'][0]["a8_major"],
-                "a9Major" => $request['liste'][0]["a9_major"], "a10Major" => $request['liste'][0]["a10_major"],
-                "a1Minor" => $request['liste'][0]["a1_minor"], "a2Minor" => $request['liste'][0]["a2_minor"],
-                "a3Minor" => $request['liste'][0]["a3_minor"], "a4Minor" => $request['liste'][0]["a4_minor"],
-                "a5Minor" => $request['liste'][0]["a5_minor"], "a6Minor" => $request['liste'][0]["a6_minor"],
-                "a7Minor" => $request['liste'][0]["a7_minor"], "a8Minor" => $request['liste'][0]["a8_minor"],
-                "a9Minor" => $request['liste'][0]["a9_minor"], "a10Minor" => $request['liste'][0]["a10_minor"],
+                'mode' => $data->mode, 'code' => 200,
+                'total' => $total,
+                'bloquant' => $bloquant, 'critique' => $critique, 'majeur' => $majeur, 'mineur' => $mineur,
+                'a1' => $request['liste'][0]['a1'], 'a2' => $request['liste'][0]['a2'], 'a3' => $request['liste'][0]['a3'],
+                'a4' => $request['liste'][0]['a4'], 'a5' => $request['liste'][0]['a5'], 'a6' => $request['liste'][0]['a6'],
+                'a7' => $request['liste'][0]['a7'], 'a8' => $request['liste'][0]['a8'], 'a9' => $request['liste'][0]['a9'],
+                'a10' => $request['liste'][0]['a10'],
+                'a1Blocker' => $request['liste'][0]['a1_blocker'], 'a2Blocker' => $request['liste'][0]['a2_blocker'],
+                'a3Blocker' => $request['liste'][0]['a3_blocker'], 'a4Blocker' => $request['liste'][0]['a4_blocker'],
+                'a5Blocker' => $request['liste'][0]['a5_blocker'], 'a6Blocker' => $request['liste'][0]['a6_blocker'],
+                'a7Blocker' => $request['liste'][0]['a7_blocker'], 'a8Blocker' => $request['liste'][0]['a8_blocker'],
+                'a9Blocker' => $request['liste'][0]['a9_blocker'], 'a10Blocker' => $request['liste'][0]['a10_blocker'],
+                'a1Critical' => $request['liste'][0]['a1_critical'], 'a2Critical' => $request['liste'][0]['a2_critical'],
+                'a3Critical' => $request['liste'][0]['a3_critical'], 'a4Critical' => $request['liste'][0]['a4_critical'],
+                'a5Critical' => $request['liste'][0]['a5_critical'], 'a6Critical' => $request['liste'][0]['a6_critical'],
+                'a7Critical' => $request['liste'][0]['a7_critical'], 'a8Critical' => $request['liste'][0]['a8_critical'],
+                'a9Critical' => $request['liste'][0]['a9_critical'], 'a10Critical' => $request['liste'][0]['a10_critical'],
+                'a1Major' => $request['liste'][0]['a1_major'], 'a2Major' => $request['liste'][0]['a2_major'],
+                'a3Major' => $request['liste'][0]['a3_major'], 'a4Major' => $request['liste'][0]['a4_major'],
+                'a5Major' => $request['liste'][0]['a5_major'], 'a6Major' => $request['liste'][0]['a6_major'],
+                'a7Major' => $request['liste'][0]['a7_major'], 'a8Major' => $request['liste'][0]['a8_major'],
+                'a9Major' => $request['liste'][0]['a9_major'], 'a10Major' => $request['liste'][0]['a10_major'],
+                'a1Minor' => $request['liste'][0]['a1_minor'], 'a2Minor' => $request['liste'][0]['a2_minor'],
+                'a3Minor' => $request['liste'][0]['a3_minor'], 'a4Minor' => $request['liste'][0]['a4_minor'],
+                'a5Minor' => $request['liste'][0]['a5_minor'], 'a6Minor' => $request['liste'][0]['a6_minor'],
+                'a7Minor' => $request['liste'][0]['a7_minor'], 'a8Minor' => $request['liste'][0]['a8_minor'],
+                'a9Minor' => $request['liste'][0]['a9_minor'], 'a10Minor' => $request['liste'][0]['a10_minor'],
                 Response::HTTP_OK
             ]
         );
@@ -219,23 +221,23 @@ class ApiOwaspPeintureController extends AbstractController
         $medium = 0;
         $low = 0;
         foreach ($probability['nombre'] as $elt) {
-            if ($elt["probability"] == "HIGH") {
-                $high = $elt["total"];
+            if ($elt['probability'] == "HIGH") {
+                $high = $elt['total'];
             }
-            if ($elt["probability"] == "MEDIUM") {
-                $medium = $elt["total"];
+            if ($elt['probability'] == "MEDIUM") {
+                $medium = $elt['total'];
             }
-            if ($elt["probability"] == "LOW") {
-                $low = $elt["total"];
+            if ($elt['probability'] == "LOW") {
+                $low = $elt['total'];
             }
         }
 
 
         return $response->setData(
             [
-            "reviewed" => $reviewed['request'][0]['nombre'], "toReview" => $toReview['request'][0]['nombre'],
-            "total" => $reviewed['request'][0]['nombre'] + $toReview['request'][0]['nombre'],
-            "high" => $high, "medium" => $medium, "low" => $low,
+            'reviewed' => $reviewed['request'][0]['nombre'], 'toReview' => $toReview['request'][0]['nombre'],
+            'total' => $reviewed['request'][0]['nombre'] + $toReview['request'][0]['nombre'],
+            'high' => $high, 'medium' => $medium, 'low' => $low,
             Response::HTTP_OK
         ]
         );
@@ -285,45 +287,45 @@ class ApiOwaspPeintureController extends AbstractController
         $menaceA1 = $menaceA2 = $menaceA3 = $menaceA4 = $menaceA5 = $menaceA6 = $menaceA7 = $menaceA8 = $menaceA9 = $menaceA10 = 0;
 
         foreach ($menaces['menaces'] as $elt) {
-            if ($elt["menace"] === "a1") {
-                $menaceA1 = $elt["total"];
+            if ($elt['menace'] === "a1") {
+                $menaceA1 = $elt['total'];
             }
-            if ($elt["menace"] === "a2") {
-                $menaceA2 = $elt["total"];
+            if ($elt['menace'] === "a2") {
+                $menaceA2 = $elt['total'];
             }
-            if ($elt["menace"] === "a3") {
-                $menaceA3 = $elt["total"];
+            if ($elt['menace'] === "a3") {
+                $menaceA3 = $elt['total'];
             }
-            if ($elt["menace"] === "a4") {
-                $menaceA4 = $elt["total"];
+            if ($elt['menace'] === "a4") {
+                $menaceA4 = $elt['total'];
             }
-            if ($elt["menace"] === "a5") {
-                $menaceA5 = $elt["total"];
+            if ($elt['menace'] === "a5") {
+                $menaceA5 = $elt['total'];
             }
-            if ($elt["menace"] === "a6") {
-                $menaceA6 = $elt["total"];
+            if ($elt['menace'] === "a6") {
+                $menaceA6 = $elt['total'];
             }
-            if ($elt["menace"] === "a7") {
-                $menaceA7 = $elt["total"];
+            if ($elt['menace'] === "a7") {
+                $menaceA7 = $elt['total'];
             }
-            if ($elt["menace"] === "a8") {
-                $menaceA8 = $elt["total"];
+            if ($elt['menace'] === "a8") {
+                $menaceA8 = $elt['total'];
             }
-            if ($elt["menace"] === "a9") {
-                $menaceA9 = $elt["total"];
+            if ($elt['menace'] === "a9") {
+                $menaceA9 = $elt['total'];
             }
-            if ($elt["menace"] === "a10") {
-                $menaceA10 = $elt["total"];
+            if ($elt['menace'] === "a10") {
+                $menaceA10 = $elt['total'];
             }
         }
 
         return $response->setData(
             [   $data->mode,
-                "menaceA1" => $menaceA1, "menaceA2" => $menaceA2,
-                "menaceA3" => $menaceA3, "menaceA4" => $menaceA4,
-                "menaceA5" => $menaceA5, "menaceA6" => $menaceA6,
-                "menaceA7" => $menaceA7, "menaceA8" => $menaceA8,
-                "menaceA9" => $menaceA9, "menaceA10" => $menaceA10,
+                'menaceA1' => $menaceA1, 'menaceA2' => $menaceA2,
+                'menaceA3' => $menaceA3, 'menaceA4' => $menaceA4,
+                'menaceA5' => $menaceA5, 'menaceA6' => $menaceA6,
+                'menaceA7' => $menaceA7, 'menaceA8' => $menaceA8,
+                'menaceA9' => $menaceA9, 'menaceA10' => $menaceA10,
                 Response::HTTP_OK
             ]
         );
@@ -369,7 +371,7 @@ class ApiOwaspPeintureController extends AbstractController
                 Response::HTTP_OK]);
         }
 
-        return $response->setData(["details" => $details, Response::HTTP_OK]);
+        return $response->setData(['details' => $details, Response::HTTP_OK]);
     }
 
     /**
@@ -458,7 +460,7 @@ class ApiOwaspPeintureController extends AbstractController
         }
 
         return $response->setData(
-            ["high" => $high, "medium" => $medium, "low" => $low, Response::HTTP_OK]
+            ['high' => $high, 'medium' => $medium, 'low' => $low, Response::HTTP_OK]
         );
     }
 
