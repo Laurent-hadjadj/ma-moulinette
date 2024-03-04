@@ -287,3 +287,22 @@ BEGIN TRANSACTION;
 ALTER TABLE utilisateur ADD COLUMN init INT DEFAULT 0;
 
 COMMIT;
+
+BEGIN TRANSACTION;
+
+-- 2024-03-04 : Ajout de l'attribut version et date_version à la table hotspot
+
+ALTER TABLE hotspots ADD COLUMN version VARCHAR(32) DEFAULT 0;
+ALTER TABLE hotspots ADD COLUMN date_version DATETIME;
+
+-- 2024-03-04 : Ajout de l'attribut version et date_version à la table hotspot_owasp
+
+ALTER TABLE hotspot_owasp ADD COLUMN version VARCHAR(32) DEFAULT 0;
+ALTER TABLE hotspot_owasp ADD COLUMN date_version DATETIME;
+
+-- 2024-03-04 : Ajout de l'attribut version et date_version à la table hotspot_details
+
+ALTER TABLE hotspot_details ADD COLUMN version VARCHAR(32) DEFAULT 0;
+ALTER TABLE hotspot_details ADD COLUMN date_version DATETIME;
+
+COMMIT;
