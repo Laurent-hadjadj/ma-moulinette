@@ -36,9 +36,6 @@ use App\Entity\Main\Historique;
  */
 class ProjetController extends AbstractController
 {
-    public static $dateFormat = "Y-m-d H:i:s";
-    public static $regex = "/\s+/u";
-
     /**
      * [Description for __construct]
      *
