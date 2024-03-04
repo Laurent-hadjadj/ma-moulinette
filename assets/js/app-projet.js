@@ -44,7 +44,7 @@ import {remplissage} from './app-projet-peinture.js';
 import {enregistrement} from './app-projet-enregistrement.js';
 
 /** On importe les constantes */
-import {contentType, http_200, http_406, dateOptions,
+import {contentType, http_200, http_400, http_401, http_403, http_404, http_406, dateOptions,
         matrice, paletteCouleur,
         deuxMille, troisMille, cinqMille} from './constante.js';
 
@@ -434,6 +434,8 @@ const projetRating=function(mavenKey, type) {
  * possible d'avoir pour la clé une faille de type OWASP-A3 et OWASP-A10
  *
  * @param string mavenKey
+ * @param string version
+ * @param string dateVersion
  *
  * @return response
  *
@@ -441,25 +443,25 @@ const projetRating=function(mavenKey, type) {
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const projetOwasp=function(mavenKey) {
-  const data = { mavenKey };
+  const data = { 'maven_key': mavenKey, 'mode': 'null'};
   const options = {
-    url: `${serveur()}/api/projet/issues/owasp`, type: 'GET',
-          dataType: 'json', data, contentType };
+    url: `${serveur()}/api/projet/issues/owasp`, type: 'POST',
+          dataType: 'json', data: JSON.stringify(data), contentType };
 
   return new Promise(resolve => {
     $.ajax(options).then(t=> {
-      if (t.type==='alert'){
+      if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
         $('#callout-projet-message').removeClass('hide success warning primary secondary');
         $('#callout-projet-message').addClass(t.type);
         $('#js-reference-information').html(t.reference);
         $('#js-message-information').html(t.message);
-      } else {
-        if (t.owasp===0) {
+        return;
+      }
+      if (t.code===http_200 && t.owasp===0){
           log(' - INFO : (4) Bravo aucune faille OWASP détectée.');
         } else {
           log(` - WARN : (4) J'ai trouvé ${t.owasp} faille(s).`);
         }
-      }
       resolve();
     });
   });
