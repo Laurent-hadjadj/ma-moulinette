@@ -124,7 +124,7 @@ class ApiOwaspPeintureController extends AbstractController
         return $response->setData(
             [
                 'mode' => $data->mode, 'code' => 200,
-                'total' => $total,
+                'total' => $total, 'version' => $request['liste'][0]['version'], 'date_version' => $request['liste'][0]['date_version'],
                 'bloquant' => $bloquant, 'critique' => $critique, 'majeur' => $majeur, 'mineur' => $mineur,
                 'a1' => $request['liste'][0]['a1'], 'a2' => $request['liste'][0]['a2'], 'a3' => $request['liste'][0]['a3'],
                 'a4' => $request['liste'][0]['a4'], 'a5' => $request['liste'][0]['a5'], 'a6' => $request['liste'][0]['a6'],
@@ -231,7 +231,6 @@ class ApiOwaspPeintureController extends AbstractController
                 $low = $elt['total'];
             }
         }
-
 
         return $response->setData(
             [
