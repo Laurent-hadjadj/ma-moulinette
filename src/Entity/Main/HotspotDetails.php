@@ -28,6 +28,12 @@ class HotspotDetails
     #[ORM\Column(type: Types::STRING, length: 128)]
     private $mavenKey;
 
+    #[ORM\Column(type: Types::STRING, length: 32)]
+    private $version;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private $dateVersion;
+
     #[ORM\Column(type: Types::STRING, length: 8)]
     private $severity;
 
@@ -70,7 +76,7 @@ class HotspotDetails
      * @return int|null
      *
      * Created at: 02/01/2023, 18:00:10 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getId(): ?int
@@ -84,7 +90,7 @@ class HotspotDetails
      * @return string|null
      *
      * Created at: 02/01/2023, 18:00:12 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getMavenKey(): ?string
@@ -100,7 +106,7 @@ class HotspotDetails
      * @return self
      *
      * Created at: 02/01/2023, 18:00:13 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setMavenKey(string $mavenKey): self
@@ -111,12 +117,76 @@ class HotspotDetails
     }
 
     /**
+     * [Description for getVersion]
+     *
+     * @return string|null
+     *
+     * Created at: 04/03/2024 10:37:35 (Europe/Paris)
+     * @author    Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function getVersion(): ?string
+    {
+        return $this->version;
+    }
+
+    /**
+     * [Description for setVersion]
+     *
+     * @param string $version
+     *
+     * @return self
+     *
+     * Created at: 04/03/2024 10:37:40 (Europe/Paris)
+     * @author    Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function setVersion(string $version): self
+    {
+        $this->version = $version;
+
+        return $this;
+    }
+
+    /**
+     * [Description for getDateVersion]
+     *
+     * @return \DateTimeInterface|null
+     *
+     * Created at: 04/03/2024 10:40:50 (Europe/Paris)
+     * @author    Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function getDateVersion(): ?\DateTimeInterface
+    {
+        return $this->dateVersion;
+    }
+
+    /**
+     * [Description for setDateVersion]
+     *
+     * @param \DateTimeInterface $dateVersion
+     *
+     * @return self
+     *
+     * Created at: 04/03/2024 10:40:47 (Europe/Paris)
+     * @author    Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function setDateVersion(\DateTimeInterface $dateVersion): self
+    {
+        $this->dateVersion = $dateVersion;
+
+        return $this;
+    }
+
+    /**
      * [Description for getSeverity]
      *
      * @return string|null
      *
      * Created at: 02/01/2023, 18:00:15 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getSeverity(): ?string
@@ -132,7 +202,7 @@ class HotspotDetails
      * @return self
      *
      * Created at: 02/01/2023, 18:00:17 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setSeverity(string $severity): self
@@ -148,7 +218,7 @@ class HotspotDetails
      * @return int|null
      *
      * Created at: 02/01/2023, 18:00:18 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getNiveau(): ?int
@@ -164,7 +234,7 @@ class HotspotDetails
      * @return self
      *
      * Created at: 02/01/2023, 18:00:20 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setNiveau(int $niveau): self
@@ -180,7 +250,7 @@ class HotspotDetails
      * @return string|null
      *
      * Created at: 02/01/2023, 18:00:22 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getStatus(): ?string
@@ -196,7 +266,7 @@ class HotspotDetails
      * @return self
      *
      * Created at: 02/01/2023, 18:00:24 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setStatus(string $status): self
@@ -212,7 +282,7 @@ class HotspotDetails
      * @return int|null
      *
      * Created at: 02/01/2023, 18:00:25 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getFrontend(): ?int
@@ -228,7 +298,7 @@ class HotspotDetails
      * @return self
      *
      * Created at: 02/01/2023, 18:00:27 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setFrontend(int $frontend): self
@@ -244,7 +314,7 @@ class HotspotDetails
      * @return int|null
      *
      * Created at: 02/01/2023, 18:00:31 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getBackend(): ?int
@@ -260,7 +330,7 @@ class HotspotDetails
      * @return self
      *
      * Created at: 02/01/2023, 18:00:33 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setBackend(int $backend): self
@@ -276,7 +346,7 @@ class HotspotDetails
      * @return int|null
      *
      * Created at: 02/01/2023, 18:00:35 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getAutre(): ?int
@@ -292,7 +362,7 @@ class HotspotDetails
      * @return self
      *
      * Created at: 02/01/2023, 18:00:37 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setAutre(int $autre): self
@@ -308,7 +378,7 @@ class HotspotDetails
      * @return string|null
      *
      * Created at: 02/01/2023, 18:00:38 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getFile(): ?string
@@ -324,7 +394,7 @@ class HotspotDetails
      * @return self
      *
      * Created at: 02/01/2023, 18:00:40 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setFile(string $file): self
@@ -340,7 +410,7 @@ class HotspotDetails
      * @return int|null
      *
      * Created at: 02/01/2023, 18:00:42 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getLine(): ?int
@@ -356,7 +426,7 @@ class HotspotDetails
      * @return self
      *
      * Created at: 02/01/2023, 18:00:44 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setLine(int $line): self
@@ -372,7 +442,7 @@ class HotspotDetails
      * @return string|null
      *
      * Created at: 02/01/2023, 18:00:46 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getRule(): ?string
@@ -388,7 +458,7 @@ class HotspotDetails
      * @return self
      *
      * Created at: 02/01/2023, 18:00:48 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setRule(string $rule): self
@@ -404,7 +474,7 @@ class HotspotDetails
      * @return string|null
      *
      * Created at: 02/01/2023, 18:00:50 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getMessage(): ?string
@@ -420,7 +490,7 @@ class HotspotDetails
      * @return self
      *
      * Created at: 02/01/2023, 18:00:52 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setMessage(string $message): self
@@ -436,7 +506,7 @@ class HotspotDetails
      * @return string|null
      *
      * Created at: 02/01/2023, 18:00:54 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getKey(): ?string
@@ -452,7 +522,7 @@ class HotspotDetails
      * @return self
      *
      * Created at: 02/01/2023, 18:00:56 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setKey(string $key): self
@@ -468,7 +538,7 @@ class HotspotDetails
      * @return \DateTimeInterface|null
      *
      * Created at: 02/01/2023, 18:00:58 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getDateEnregistrement(): ?\DateTimeInterface
@@ -484,7 +554,7 @@ class HotspotDetails
      * @return self
      *
      * Created at: 02/01/2023, 18:01:00 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setDateEnregistrement(\DateTimeInterface $dateEnregistrement): self
