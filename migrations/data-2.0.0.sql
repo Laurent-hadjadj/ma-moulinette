@@ -290,6 +290,11 @@ COMMIT;
 
 BEGIN TRANSACTION;
 
+-- 2024-03-04 : Ajout de l'attribut version et date_version à la table owasp
+
+ALTER TABLE owasp ADD COLUMN version VARCHAR(32) DEFAULT 0;
+ALTER TABLE owasp ADD COLUMN date_version DATETIME;
+
 -- 2024-03-04 : Ajout de l'attribut version et date_version à la table hotspot
 
 ALTER TABLE hotspots ADD COLUMN version VARCHAR(32) DEFAULT 0;
