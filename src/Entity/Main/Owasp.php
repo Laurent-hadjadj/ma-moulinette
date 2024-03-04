@@ -31,6 +31,12 @@ class Owasp
     #[ORM\Column(type: Types::STRING, length: 128)]
     private $mavenKey;
 
+    #[ORM\Column(type: Types::STRING, length: 32)]
+    private $version;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private $dateVersion;
+
     #[ORM\Column(type: Types::INTEGER)]
     private $effortTotal;
 
@@ -223,7 +229,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:05:03 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getId(): ?int
@@ -237,7 +243,7 @@ class Owasp
      * @return string|null
      *
      * Created at: 02/01/2023, 18:05:04 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getMavenKey(): ?string
@@ -253,7 +259,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:05:06 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setMavenKey(string $mavenKey): self
@@ -264,12 +270,76 @@ class Owasp
     }
 
     /**
+     * [Description for getVersion]
+     *
+     * @return string|null
+     *
+     * Created at: 04/03/2024 10:37:35 (Europe/Paris)
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function getVersion(): ?string
+    {
+        return $this->version;
+    }
+
+    /**
+     * [Description for setVersion]
+     *
+     * @param string $version
+     *
+     * @return self
+     *
+     * Created at: 04/03/2024 10:37:40 (Europe/Paris)
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function setVersion(string $version): self
+    {
+        $this->version = $version;
+
+        return $this;
+    }
+
+    /**
+     * [Description for getDateVersion]
+     *
+     * @return \DateTimeInterface|null
+     *
+     * Created at: 04/03/2024 10:40:50 (Europe/Paris)
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function getDateVersion(): ?\DateTimeInterface
+    {
+        return $this->dateVersion;
+    }
+
+    /**
+     * [Description for setDateVersion]
+     *
+     * @param \DateTimeInterface $dateVersion
+     *
+     * @return self
+     *
+     * Created at: 04/03/2024 10:40:47 (Europe/Paris)
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function setDateVersion(\DateTimeInterface $dateVersion): self
+    {
+        $this->dateVersion = $dateVersion;
+
+        return $this;
+    }
+
+    /**
      * [Description for getEffortTotal]
      *
      * @return int|null
      *
      * Created at: 02/01/2023, 18:05:08 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getEffortTotal(): ?int
@@ -285,7 +355,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:05:09 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setEffortTotal(int $effortTotal): self
@@ -301,7 +371,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:05:11 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA1(): ?int
@@ -317,7 +387,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:05:12 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     /**
@@ -328,7 +398,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:05:15 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA1(int $a1): self
@@ -344,7 +414,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:05:18 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA2(): ?int
@@ -360,7 +430,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:05:20 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA2(int $a2): self
@@ -376,7 +446,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:05:21 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA3(): ?int
@@ -392,7 +462,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:05:23 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA3(int $a3): self
@@ -408,7 +478,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:05:24 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA4(): ?int
@@ -424,7 +494,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:05:26 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA4(int $a4): self
@@ -448,7 +518,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:05:29 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA5(int $a5): self
@@ -464,7 +534,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:05:31 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA6(): ?int
@@ -480,7 +550,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:05:33 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA6(int $a6): self
@@ -504,7 +574,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:05:36 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA7(int $a7): self
@@ -521,7 +591,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:05:39 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA8(): ?int
@@ -537,7 +607,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:05:41 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA8(int $a8): self
@@ -553,7 +623,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:05:42 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA9(): ?int
@@ -569,7 +639,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:05:44 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA9(int $a9): self
@@ -585,7 +655,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:05:45 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA10(): ?int
@@ -601,7 +671,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:05:47 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA10(int $a10): self
@@ -617,7 +687,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:05:50 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA1Blocker(): ?int
@@ -633,7 +703,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:05:52 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA1Blocker(int $a1Blocker): self
@@ -649,7 +719,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:05:54 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA1Critical(): ?int
@@ -665,7 +735,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:05:55 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA1Critical(int $a1Critical): self
@@ -681,7 +751,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:05:57 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA1Major(): ?int
@@ -697,7 +767,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:05:58 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA1Major(int $a1Major): self
@@ -713,7 +783,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:06:00 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA1Info(): ?int
@@ -729,7 +799,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:06:02 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA1Info(int $a1Info): self
@@ -745,7 +815,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:06:03 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA1Minor(): ?int
@@ -761,7 +831,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:06:05 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA1Minor(int $a1Minor): self
@@ -777,7 +847,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:06:07 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA2Blocker(): ?int
@@ -793,7 +863,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:06:09 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA2Blocker(int $a2Blocker): self
@@ -809,7 +879,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:06:11 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA2Critical(): ?int
@@ -825,7 +895,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:06:12 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA2Critical(int $a2Critical): self
@@ -842,7 +912,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:06:15 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA2Major(): ?int
@@ -863,7 +933,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:06:18 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA2Info(): ?int
@@ -879,7 +949,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:06:20 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA2Info(int $a2Info): self
@@ -895,7 +965,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:06:22 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA2Minor(): ?int
@@ -911,7 +981,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:06:24 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA2Minor(int $a2Minor): self
@@ -927,7 +997,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:06:27 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA3Blocker(): ?int
@@ -943,7 +1013,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:06:29 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA3Blocker(int $a3Blocker): self
@@ -959,7 +1029,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:06:32 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA3Critical(): ?int
@@ -975,7 +1045,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:06:33 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA3Critical(int $a3Critical): self
@@ -991,7 +1061,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:06:35 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA3Major(): ?int
@@ -1007,7 +1077,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:06:37 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA3Major(int $a3Major): self
@@ -1023,7 +1093,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:06:39 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA3Info(): ?int
@@ -1039,7 +1109,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:06:40 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA3Info(int $a3Info): self
@@ -1055,7 +1125,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:06:42 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA3Minor(): ?int
@@ -1071,7 +1141,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:06:43 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA3Minor(int $a3Minor): self
@@ -1087,7 +1157,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:06:46 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA4Blocker(): ?int
@@ -1110,7 +1180,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:06:51 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA4Critical(): ?int
@@ -1126,7 +1196,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:06:56 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA4Critical(int $a4Critical): self
@@ -1142,7 +1212,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:06:58 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA4Major(): ?int
@@ -1158,7 +1228,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:06:59 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA4Major(int $a4Major): self
@@ -1174,7 +1244,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:07:01 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA4Info(): ?int
@@ -1190,7 +1260,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:07:03 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA4Info(int $a4Info): self
@@ -1206,7 +1276,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:07:04 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA4Minor(): ?int
@@ -1222,7 +1292,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:07:06 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA4Minor(int $a4Minor): self
@@ -1246,7 +1316,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:07:10 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA5Blocker(int $a5Blocker): self
@@ -1262,7 +1332,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:07:12 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA5Critical(): ?int
@@ -1278,7 +1348,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:07:13 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA5Critical(int $a5Critical): self
@@ -1294,7 +1364,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:07:15 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA5Major(): ?int
@@ -1310,7 +1380,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:07:16 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA5Major(int $a5Major): self
@@ -1326,7 +1396,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:07:18 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA5Info(): ?int
@@ -1342,7 +1412,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:07:20 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA5Info(int $a5Info): self
@@ -1358,7 +1428,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:07:22 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA5Minor(): ?int
@@ -1374,7 +1444,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:07:24 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA5Minor(int $a5Minor): self
@@ -1390,7 +1460,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:07:26 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA6Blocker(): ?int
@@ -1406,7 +1476,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:07:27 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA6Blocker(int $a6Blocker): self
@@ -1422,7 +1492,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:07:29 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA6Critical(): ?int
@@ -1438,7 +1508,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:07:31 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA6Critical(int $a6Critical): self
@@ -1454,7 +1524,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:07:32 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA6Major(): ?int
@@ -1470,7 +1540,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:07:34 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA6Major(int $a6Major): self
@@ -1486,7 +1556,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:07:37 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA6Info(): ?int
@@ -1502,7 +1572,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:07:38 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA6Info(int $a6Info): self
@@ -1518,7 +1588,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:07:40 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA6Minor(): ?int
@@ -1534,7 +1604,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:07:41 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA6Minor(int $a6Minor): self
@@ -1550,7 +1620,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:07:43 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA7Blocker(): ?int
@@ -1566,7 +1636,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:07:45 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA7Blocker(int $a7Blocker): self
@@ -1582,7 +1652,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:07:46 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA7Critical(): ?int
@@ -1598,7 +1668,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:07:48 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA7Critical(int $a7Critical): self
@@ -1614,7 +1684,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:07:50 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA7Major(): ?int
@@ -1630,7 +1700,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:07:51 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA7Major(int $a7Major): self
@@ -1646,7 +1716,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:07:53 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA7Info(): ?int
@@ -1662,7 +1732,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:07:55 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA7Info(int $a7Info): self
@@ -1678,7 +1748,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:07:56 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA7Minor(): ?int
@@ -1694,7 +1764,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:07:58 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA7Minor(int $a7Minor): self
@@ -1710,7 +1780,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:08:03 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA8Blocker(): ?int
@@ -1726,7 +1796,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:08:04 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA8Blocker(int $a8Blocker): self
@@ -1742,7 +1812,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:08:08 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA8Critical(): ?int
@@ -1758,7 +1828,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:08:09 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA8Critical(int $a8Critical): self
@@ -1774,7 +1844,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:08:12 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA8Major(): ?int
@@ -1790,7 +1860,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:08:13 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA8Major(int $a8Major): self
@@ -1806,7 +1876,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:08:15 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA8Info(): ?int
@@ -1822,7 +1892,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:08:16 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA8Info(int $a8Info): self
@@ -1838,7 +1908,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:08:19 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA8Minor(): ?int
@@ -1854,7 +1924,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:08:20 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA8Minor(int $a8Minor): self
@@ -1870,7 +1940,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:08:23 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA9Blocker(): ?int
@@ -1886,7 +1956,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:08:26 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA9Blocker(int $a9Blocker): self
@@ -1903,7 +1973,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:08:35 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA9Critical(): ?int
@@ -1919,7 +1989,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:08:31 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA9Critical(int $a9Critical): self
@@ -1935,7 +2005,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:08:40 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA9Major(): ?int
@@ -1951,7 +2021,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:08:42 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA9Major(int $a9Major): self
@@ -1967,7 +2037,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:08:44 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA9Info(): ?int
@@ -1983,7 +2053,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:08:46 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA9Info(int $a9Info): self
@@ -1999,7 +2069,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:08:48 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA9Minor(): ?int
@@ -2015,7 +2085,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:08:50 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA9Minor(int $a9Minor): self
@@ -2031,7 +2101,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:08:52 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA10Blocker(): ?int
@@ -2047,7 +2117,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:08:54 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA10Blocker(int $a10Blocker): self
@@ -2063,7 +2133,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:08:56 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA10Critical(): ?int
@@ -2079,7 +2149,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:08:58 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA10Critical(int $a10Critical): self
@@ -2095,7 +2165,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:09:02 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA10Major(): ?int
@@ -2111,7 +2181,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:09:06 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA10Major(int $a10Major): self
@@ -2127,7 +2197,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:09:09 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA10Info(): ?int
@@ -2143,7 +2213,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:09:11 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA10Info(int $a10Info): self
@@ -2159,7 +2229,7 @@ class Owasp
      * @return int|null
      *
      * Created at: 02/01/2023, 18:09:13 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getA10Minor(): ?int
@@ -2175,7 +2245,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:09:14 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setA10Minor(int $a10Minor): self
@@ -2191,7 +2261,7 @@ class Owasp
      * @return \DateTimeInterface|null
      *
      * Created at: 02/01/2023, 18:09:16 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getDateEnregistrement(): ?\DateTimeInterface
@@ -2207,7 +2277,7 @@ class Owasp
      * @return self
      *
      * Created at: 02/01/2023, 18:09:17 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setDateEnregistrement(\DateTimeInterface $dateEnregistrement): self
