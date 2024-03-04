@@ -130,6 +130,9 @@ const remplissageOwaspInfo=function(idMaven) {
       return;
     }
 
+    /** On affiche la version et la date du projet dans sonarqube */
+    $('#js-application-version').html(`<span class="color-noire open-sans">V${r.version}, (${r.date_version})</span>`);
+
     /** On ajoute les valeurs pour les vulnérabilités */
     $('#nombre-faille-owasp').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.total));
     $('#nombre-faille-bloquant').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.bloquant));
