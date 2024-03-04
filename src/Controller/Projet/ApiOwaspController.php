@@ -46,8 +46,13 @@ class ApiOwaspController extends AbstractController
     public static $europeParis = "Europe/Paris";
     public static $apiIssuesSearch = "/api/issues/search?componentKeys=";
     public static $regex = "/\s+/u";
-    public static $erreurMavenKey = "La clé maven est vide!";
-    public static $reference = "<strong>[PROJET-002]</strong>";
+    public static $reference = "<strong>[PROJET-004]</strong>";
+    public static $erreurMavenKey = "La clé maven est vide !";
+    public static $erreur400 = "La requête est incorrecte (Erreur 400).";
+    public static $erreur401 = "Erreur d\'Authentification. La clé n\'est pas correcte (Erreur 401).";
+    public static $erreur403 = "Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).";
+    public static $erreur404 = "L'appel à l'API n'a pas abouti (Erreur 404).";
+
     public static $message = "Vous devez avoir le rôle COLLECTE pour réaliser cette action.";
 
     /**
@@ -80,41 +85,78 @@ class ApiOwaspController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/projet/issues/owasp', name: 'projet_issues_owasp', methods: ['GET'])]
+    #[Route('/api/projet/issues/owasp', name: 'projet_issues_owasp', methods: ['POST'])]
     public function projetIssuesOwasp(Request $request, Client $client): response
     {
-
-        /** On créé un objet response */
-        $response = new JsonResponse();
+        /** On décode le body */
+        $data = json_decode($request->getContent());
 
         /** On bind les variables. */
-        $mavenKey = $request->get('mavenKey');
-        $mode = $request->get('mode');
         $tempoUrlLong = $this->getParameter(static::$sonarUrl).static::$apiIssuesSearch;
 
+        /** On crée un objet de reponse JSON */
+        $response = new JsonResponse();
+
         /** On teste si la clé est valide */
-        if ($mavenKey === "null" && $mode === "TEST") {
-            return $response->setData([
-              "mode" => $mode, "mavenKey" => $mavenKey,
-              "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
-        }
+        if ($data === null) {
+            return $response->setData(['data' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'mode')) {
+            return $response->setData(['mode' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'maven_key')) {
+            return $response->setData(['maven_key' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return $response->setData([
-              "mode" => $mode ,
-              "type" => 'alert',
-              "reference" => static::$reference,
-              "message" => static::$message,
-              Response::HTTP_OK]);
+                "mode" => $data->mode ,
+                "code" => 403,
+                "reference" => static::$reference,
+                "message" => static::$erreur403,
+                Response::HTTP_OK]);
         }
 
         /** URL de l'appel. */
-        $url = "$tempoUrlLong$mavenKey&facets=owaspTop10
-            &owaspTop10=a1,a2,a3,a4,a5,a6,a7,a8,a9,a10";
+        $url = "$tempoUrlLong$data->maven_key&facets=owaspTop10
+                &owaspTop10=a1,a2,a3,a4,a5,a6,a7,a8,a9,a10";
 
         /** On appel l'API. */
         $result = $client->http(trim(preg_replace(static::$regex, " ", $url)));
+
+        /** on catch les erreurs HTTP 400, 401 et 404, si possible :) */
+        if (array_key_exists('code', $result)){
+            if ($result['code']===401) {
+            return $response->setData([
+                "mode" => $data->mode ,
+                "code" => 401,
+                "reference" => static::$reference,
+                "message" => static::$erreur401,
+                Response::HTTP_OK]);
+            }
+            if ($result['code']===404){
+                return $response->setData([
+                    "mode" => $data->mode ,
+                    "code" => 404,
+                    "reference" => static::$reference,
+                    "message" => static::$erreur404,
+                    Response::HTTP_OK]);
+                }
+        }
+
+        /** On récupère dans la table information_projet la version et la date du projet la plus récente. */
+        $sql = "SELECT project_version, date FROM information_projet WHERE maven_key='$data->maven_key' ORDER by date DESC LIMIT 1";
+        $info=$this->em->getConnection()->prepare($sql)->executeQuery()->fetchAllAssociative();
+        if (!$info) {
+            return $response->setData([
+                "mode" => $data->mode ,
+                "code" => 404,
+                "reference" => static::$reference,
+                "message" => static::$erreur404,
+                Response::HTTP_OK]);
+        }
+        /** On converti la date de la version en dateTime */
+        $dateVersion= new DateTime($info[0]['date']);
+        $dateVersion->setTimezone(new DateTimeZone(static::$europeParis));
+
 
         $date = new DateTime();
         $date->setTimezone(new DateTimeZone(static::$europeParis));
@@ -360,14 +402,17 @@ class ApiOwaspController extends AbstractController
             }
         }
 
-        /** On supprime les informations sur le projet. */
-        $sql = "DELETE FROM owasp WHERE maven_key='$mavenKey'";
-        if ($mode !== "TEST") {
+        /** On supprime les informations sur le projet pour la dernière analyse. */
+        $sql = "DELETE FROM owasp WHERE maven_key='$data->maven_key'";
+        if ($data->mode !== "TEST") {
             $this->em->getConnection()->prepare($sql)->executeQuery();
         }
+
         /** Enregistre en base. */
         $owaspTop10 = new Owasp();
-        $owaspTop10->setMavenKey($request->get("mavenKey"));
+        $owaspTop10->setMavenKey($data->maven_key);
+        $owaspTop10->setVersion($info[0]['project_version']);
+        $owaspTop10->setDateVersion($dateVersion);
         $owaspTop10->setEffortTotal($effortTotal);
         $owaspTop10->setA1($owasp[1]);
         $owaspTop10->setA2($owasp[2]);
@@ -442,11 +487,12 @@ class ApiOwaspController extends AbstractController
 
         $owaspTop10->setDateEnregistrement($date);
         $this->em->persist($owaspTop10);
-        if ($mode !== "TEST") {
+
+        if ($data->mode !== "TEST") {
             $this->em->flush();
         }
 
-        return $response->setData(["mode" => $mode,"owasp" => $result["total"], Response::HTTP_OK]);
+        return $response->setData(['code' => 200, "mode"=> $data->mode, "owasp" => $result["total"], Response::HTTP_OK]);
     }
 
 }
