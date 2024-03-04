@@ -13,6 +13,7 @@
 
 namespace App\Controller;
 
+
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,10 +24,17 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 // Accès aux tables SLQLite
 use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Main\Owasp;
+use App\Entity\Main\HotspotOwasp;
+use App\Entity\Main\HotspotDetails;
 
+
+
+/**
+ * [Description ApiOwaspPeintureController]
+ */
 class ApiOwaspPeintureController extends AbstractController
 {
-    public static $erreurMavenKey = "La clé maven est vide!";
 
     /**
      * [Description for __construct]
@@ -34,7 +42,7 @@ class ApiOwaspPeintureController extends AbstractController
      *
      *
      * Created at: 13/02/2023, 08:54:50 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function __construct(private EntityManagerInterface $em)
@@ -52,111 +60,96 @@ class ApiOwaspPeintureController extends AbstractController
      *
      * Created at: 15/12/2022, 21:19:10 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/peinture/owasp/liste', name: 'peinture_owasp_liste', methods: ['GET'])]
+    #[Route('/api/peinture/owasp/liste', name: 'peinture_owasp_liste', methods: ['POST'])]
     public function peintureOwaspListe(Request $request): response
     {
-        $mavenKey = $request->get('mavenKey');
+        /** On décode le body */
+        $data = json_decode($request->getContent());
 
+        /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
+
         /** On teste si la clé est valide */
-        if (is_null($mavenKey)) {
-            return $response->setData(["message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
-        }
+        if ($data === null) {
+            return $response->setData(['data' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'mode')) {
+            return $response->setData(['mode' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'maven_key')) {
+            return $response->setData(['maven_key' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
 
         /** On récupère les failles owasp */
-        $sql = "SELECT * FROM owasp WHERE maven_key='$mavenKey'
-            ORDER BY date_enregistrement DESC LIMIT 1";
+        $map=['maven_key'=>$data->maven_key];
+        $owasp = $this->em->getRepository(Owasp::class);
+        $request=$owasp->selectOwaspOrderBy($data->mode, $map);
+        if ($request['code']!=200) {
+            return $response->setData([
+                'mode' => $data->mode, 'maven_key' => $data->maven_key,
+                'code'=>$request['code'], 'erreur' => $request['erreur'],
+                Response::HTTP_OK]);
+        }
 
-        $list = $this->em->getConnection()->prepare($sql)->executeQuery();
-        $owasp = $list->fetchAllAssociative();
-
-        /** si on ne trouve pas la liste */
-        if (empty($owasp)) {
-            return $response->setData(["code" => 406]);
+        /** si on ne trouve pas la liste on retourne une erreur HTTP 406 */
+        if (empty($request['liste'])) {
+            return $response->setData(['mode'=>$data->mode, 'code' => 406, 'liste' => $request['liste'], Response::HTTP_OK]);
         }
 
         /** Informations */
-        $total = $owasp[0]["a1"] + $owasp[0]["a2"] + $owasp[0]["a3"] + $owasp[0]["a4"]
-                + $owasp[0]["a5"] + $owasp[0]["a6"] + $owasp[0]["a7"] + $owasp[0]["a8"]
-                + $owasp[0]["a9"] + $owasp[0]["a10"];
+        $total = $request['liste'][0]["a1"] + $request['liste'][0]["a2"] + $request['liste'][0]["a3"] + $request['liste'][0]["a4"]
+                    + $request['liste'][0]["a5"] + $request['liste'][0]["a6"] + $request['liste'][0]["a7"] + $request['liste'][0]["a8"]
+                    + $request['liste'][0]["a9"] + $request['liste'][0]["a10"];
 
-        $bloquant = $owasp[0]["a1_blocker"] + $owasp[0]["a2_blocker"] + $owasp[0]["a3_blocker"]
-                  + $owasp[0]["a4_blocker"] + $owasp[0]["a5_blocker"] + $owasp[0]["a6_blocker"]
-                  + $owasp[0]["a7_blocker"] + $owasp[0]["a8_blocker"] + $owasp[0]["a9_blocker"]
-                  + $owasp[0]["a10_blocker"];
+        $bloquant = $request['liste'][0]["a1_blocker"] + $request['liste'][0]["a2_blocker"] + $request['liste'][0]["a3_blocker"]
+                    + $request['liste'][0]["a4_blocker"] + $request['liste'][0]["a5_blocker"] + $request['liste'][0]["a6_blocker"]
+                    + $request['liste'][0]["a7_blocker"] + $request['liste'][0]["a8_blocker"] + $request['liste'][0]["a9_blocker"]
+                    + $request['liste'][0]["a10_blocker"];
 
-        $critique = $owasp[0]["a1_critical"] + $owasp[0]["a2_critical"]
-                  + $owasp[0]["a3_critical"] + $owasp[0]["a4_critical"]
-                  + $owasp[0]["a5_critical"] + $owasp[0]["a6_critical"]
-                  + $owasp[0]["a7_critical"] + $owasp[0]["a8_critical"]
-                  + $owasp[0]["a9_critical"] + $owasp[0]["a10_critical"];
+        $critique = $request['liste'][0]["a1_critical"] + $request['liste'][0]["a2_critical"]
+                    + $request['liste'][0]["a3_critical"] + $request['liste'][0]["a4_critical"]
+                    + $request['liste'][0]["a5_critical"] + $request['liste'][0]["a6_critical"]
+                    + $request['liste'][0]["a7_critical"] + $request['liste'][0]["a8_critical"]
+                    + $request['liste'][0]["a9_critical"] + $request['liste'][0]["a10_critical"];
 
-        $majeur = $owasp[0]["a1_major"] + $owasp[0]["a2_major"] + $owasp[0]["a3_major"]
-                + $owasp[0]["a4_major"] + $owasp[0]["a5_major"] + $owasp[0]["a6_major"]
-                + $owasp[0]["a7_major"] + $owasp[0]["a8_major"] + $owasp[0]["a9_major"]
-                + $owasp[0]["a10_major"];
+        $majeur = $request['liste'][0]["a1_major"] + $request['liste'][0]["a2_major"] + $request['liste'][0]["a3_major"]
+                    + $request['liste'][0]["a4_major"] + $request['liste'][0]["a5_major"] + $request['liste'][0]["a6_major"]
+                    + $request['liste'][0]["a7_major"] + $request['liste'][0]["a8_major"] + $request['liste'][0]["a9_major"]
+                    + $request['liste'][0]["a10_major"];
 
-        $mineur = $owasp[0]["a1_minor"] + $owasp[0]["a2_minor"] + $owasp[0]["a3_minor"]
-                + $owasp[0]["a4_minor"] + $owasp[0]["a5_minor"] + $owasp[0]["a6_minor"]
-                + $owasp[0]["a7_minor"] + $owasp[0]["a8_minor"] + $owasp[0]["a9_minor"]
-                + $owasp[0]["a10_minor"];
+        $mineur = $request['liste'][0]["a1_minor"] + $request['liste'][0]["a2_minor"] + $request['liste'][0]["a3_minor"]
+                    + $request['liste'][0]["a4_minor"] + $request['liste'][0]["a5_minor"] + $request['liste'][0]["a6_minor"]
+                    + $request['liste'][0]["a7_minor"] + $request['liste'][0]["a8_minor"] + $request['liste'][0]["a9_minor"]
+                    + $request['liste'][0]["a10_minor"];
 
         return $response->setData(
             [
-            "code" => 200, "total" => $total,
-            "bloquant" => $bloquant,
-            "critique" => $critique,
-            "majeur" => $majeur,
-            "mineur" => $mineur,
-            "a1" => $owasp[0]["a1"], "a2" => $owasp[0]["a2"],
-            "a3" => $owasp[0]["a3"], "a4" => $owasp[0]["a4"],
-            "a5" => $owasp[0]["a5"], "a6" => $owasp[0]["a6"],
-            "a7" => $owasp[0]["a7"], "a8" => $owasp[0]["a8"],
-            "a9" => $owasp[0]["a9"], "a10" => $owasp[0]["a10"],
-            "a1Blocker" => $owasp[0]["a1_blocker"],
-            "a2Blocker" => $owasp[0]["a2_blocker"],
-            "a3Blocker" => $owasp[0]["a3_blocker"],
-            "a4Blocker" => $owasp[0]["a4_blocker"],
-            "a5Blocker" => $owasp[0]["a5_blocker"],
-            "a6Blocker" => $owasp[0]["a6_blocker"],
-            "a7Blocker" => $owasp[0]["a7_blocker"],
-            "a8Blocker" => $owasp[0]["a8_blocker"],
-            "a9Blocker" => $owasp[0]["a9_blocker"],
-            "a10Blocker" => $owasp[0]["a10_blocker"],
-            "a1Critical" => $owasp[0]["a1_critical"],
-            "a2Critical" => $owasp[0]["a2_critical"],
-            "a3Critical" => $owasp[0]["a3_critical"],
-            "a4Critical" => $owasp[0]["a4_critical"],
-            "a5Critical" => $owasp[0]["a5_critical"],
-            "a6Critical" => $owasp[0]["a6_critical"],
-            "a7Critical" => $owasp[0]["a7_critical"],
-            "a8Critical" => $owasp[0]["a8_critical"],
-            "a9Critical" => $owasp[0]["a9_critical"],
-            "a10Critical" => $owasp[0]["a10_critical"],
-            "a1Major" => $owasp[0]["a1_major"],
-            "a2Major" => $owasp[0]["a2_major"],
-            "a3Major" => $owasp[0]["a3_major"],
-            "a4Major" => $owasp[0]["a4_major"],
-            "a5Major" => $owasp[0]["a5_major"],
-            "a6Major" => $owasp[0]["a6_major"],
-            "a7Major" => $owasp[0]["a7_major"],
-            "a8Major" => $owasp[0]["a8_major"],
-            "a9Major" => $owasp[0]["a9_major"],
-            "a10Major" => $owasp[0]["a10_major"],
-            "a1Minor" => $owasp[0]["a1_minor"],
-            "a2Minor" => $owasp[0]["a2_minor"],
-            "a3Minor" => $owasp[0]["a3_minor"],
-            "a4Minor" => $owasp[0]["a4_minor"],
-            "a5Minor" => $owasp[0]["a5_minor"],
-            "a6Minor" => $owasp[0]["a6_minor"],
-            "a7Minor" => $owasp[0]["a7_minor"],
-            "a8Minor" => $owasp[0]["a8_minor"],
-            "a9Minor" => $owasp[0]["a9_minor"],
-            "a10Minor" => $owasp[0]["a10_minor"],
-            Response::HTTP_OK
-      ]
+                'mode' => $data->mode, "code" => 200, "total" => $total,
+                "bloquant" => $bloquant, "critique" => $critique, "majeur" => $majeur, "mineur" => $mineur,
+                "a1" => $request['liste'][0]["a1"], "a2" => $request['liste'][0]["a2"], "a3" => $request['liste'][0]["a3"], "a4" => $request['liste'][0]["a4"],
+                "a5" => $request['liste'][0]["a5"], "a6" => $request['liste'][0]["a6"], "a7" => $request['liste'][0]["a7"], "a8" => $request['liste'][0]["a8"],
+                "a9" => $request['liste'][0]["a9"], "a10" => $request['liste'][0]["a10"],
+                "a1Blocker" => $request['liste'][0]["a1_blocker"], "a2Blocker" => $request['liste'][0]["a2_blocker"],
+                "a3Blocker" => $request['liste'][0]["a3_blocker"], "a4Blocker" => $request['liste'][0]["a4_blocker"],
+                "a5Blocker" => $request['liste'][0]["a5_blocker"], "a6Blocker" => $request['liste'][0]["a6_blocker"],
+                "a7Blocker" => $request['liste'][0]["a7_blocker"], "a8Blocker" => $request['liste'][0]["a8_blocker"],
+                "a9Blocker" => $request['liste'][0]["a9_blocker"], "a10Blocker" => $request['liste'][0]["a10_blocker"],
+                "a1Critical" => $request['liste'][0]["a1_critical"], "a2Critical" => $request['liste'][0]["a2_critical"],
+                "a3Critical" => $request['liste'][0]["a3_critical"], "a4Critical" => $request['liste'][0]["a4_critical"],
+                "a5Critical" => $request['liste'][0]["a5_critical"], "a6Critical" => $request['liste'][0]["a6_critical"],
+                "a7Critical" => $request['liste'][0]["a7_critical"], "a8Critical" => $request['liste'][0]["a8_critical"],
+                "a9Critical" => $request['liste'][0]["a9_critical"], "a10Critical" => $request['liste'][0]["a10_critical"],
+                "a1Major" => $request['liste'][0]["a1_major"], "a2Major" => $request['liste'][0]["a2_major"],
+                "a3Major" => $request['liste'][0]["a3_major"], "a4Major" => $request['liste'][0]["a4_major"],
+                "a5Major" => $request['liste'][0]["a5_major"], "a6Major" => $request['liste'][0]["a6_major"],
+                "a7Major" => $request['liste'][0]["a7_major"], "a8Major" => $request['liste'][0]["a8_major"],
+                "a9Major" => $request['liste'][0]["a9_major"], "a10Major" => $request['liste'][0]["a10_major"],
+                "a1Minor" => $request['liste'][0]["a1_minor"], "a2Minor" => $request['liste'][0]["a2_minor"],
+                "a3Minor" => $request['liste'][0]["a3_minor"], "a4Minor" => $request['liste'][0]["a4_minor"],
+                "a5Minor" => $request['liste'][0]["a5_minor"], "a6Minor" => $request['liste'][0]["a6_minor"],
+                "a7Minor" => $request['liste'][0]["a7_minor"], "a8Minor" => $request['liste'][0]["a8_minor"],
+                "a9Minor" => $request['liste'][0]["a9_minor"], "a10Minor" => $request['liste'][0]["a10_minor"],
+                Response::HTTP_OK
+            ]
         );
     }
 
@@ -169,45 +162,63 @@ class ApiOwaspPeintureController extends AbstractController
      * @return response
      *
      * Created at: 15/12/2022, 22:11:35 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/peinture/owasp/hotspot/info', name: 'peinture_owasp_hotspot_info', methods: ['GET'])]
+    #[Route('/api/peinture/owasp/hotspot/info', name: 'peinture_owasp_hotspot_info', methods: ['POST'])]
     public function peintureOwaspHotspotInfo(Request $request): response
     {
-        $mavenKey = $request->get('mavenKey');
+        /** On décode le body */
+        $data = json_decode($request->getContent());
+
+        /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if (is_null($mavenKey)) {
-            return $response->setData(["message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
-        }
+        if ($data === null) {
+            return $response->setData(['data' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'mode')) {
+            return $response->setData(['mode' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'maven_key')) {
+            return $response->setData(['maven_key' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
+
+        /** On récupère le nombre de hotspost en fonction du status */
+        $hotspotOwasp = $this->em->getRepository(HotspotOwasp::class);
 
         /** On compte le nombre de hotspot REVIEWED */
-        $sql = "SELECT count(*) as reviewed FROM hotspot_owasp
-            WHERE maven_key='$mavenKey' AND status='REVIEWED'";
-
-        $list = $this->em->getConnection()->prepare($sql)->executeQuery();
-        $reviewed = $list->fetchAllAssociative();
+        $map=['maven_key'=>$data->maven_key, 'status'=>'REVIEWED'];
+        $reviewed=$hotspotOwasp->countHotspotOwaspStatus($data->mode, $map);
+        if ($reviewed['code']!=200) {
+            return $response->setData([
+                'mode' => $data->mode, 'maven_key' => $data->maven_key,
+                'code'=>$reviewed['code'], 'erreur' => $request['erreur'],
+                Response::HTTP_OK]);
+        }
 
         /** On compte le nombre de hotspot TO_REVIEW */
-        $sql = "SELECT count(*) as to_review FROM hotspot_owasp
-            WHERE maven_key='$mavenKey' AND status='TO_REVIEW'";
-
-        $list = $this->em->getConnection()->prepare($sql)->executeQuery();
-        $toReview = $list->fetchAllAssociative();
+        $map=['maven_key'=>$data->maven_key, 'status'=>'TO_REVIEW'];
+        $toReview=$hotspotOwasp->countHotspotOwaspStatus($data->mode, $map);
+        if ($toReview['code']!=200) {
+            return $response->setData([
+                'mode' => $data->mode, 'maven_key' => $data->maven_key,
+                'code'=>$toReview['code'], 'erreur' => $toReview['erreur'],
+                Response::HTTP_OK]);
+        }
 
         /** On récupère le nombre de hotspot owasp par niveau de sévérité potentiel. */
-        $sql = "SELECT probability, count(*) as total
-            FROM hotspot_owasp WHERE maven_key='$mavenKey'
-            AND status='TO_REVIEW' GROUP BY probability";
+        $map=['maven_key'=>$data->maven_key];
+        $probability=$hotspotOwasp->countHotspotOwaspProbability($data->mode, $map);
+        if ($probability['code']!=200) {
+            return $response->setData([
+                'mode' => $data->mode, 'maven_key' => $data->maven_key,
+                'code'=>$probability['code'], 'erreur' => $probability['erreur'],
+                Response::HTTP_OK]);
+        }
 
-        $count = $this->em->getConnection()->prepare($sql)->executeQuery();
-        $probability = $count->fetchAllAssociative();
         $high = 0;
         $medium = 0;
         $low = 0;
-        foreach ($probability as $elt) {
+        foreach ($probability['nombre'] as $elt) {
             if ($elt["probability"] == "HIGH") {
                 $high = $elt["total"];
             }
@@ -219,16 +230,14 @@ class ApiOwaspPeintureController extends AbstractController
             }
         }
 
+
         return $response->setData(
             [
-            "reviewed" => $reviewed[0]["reviewed"],
-            "toReview" => $toReview[0]["to_review"],
-            "total" => $reviewed[0]["reviewed"] + $toReview[0]["to_review"],
-            "high" => $high,
-            "medium" => $medium,
-            "low" => $low,
+            "reviewed" => $reviewed['request'][0]['nombre'], "toReview" => $toReview['request'][0]['nombre'],
+            "total" => $reviewed['request'][0]['nombre'] + $toReview['request'][0]['nombre'],
+            "high" => $high, "medium" => $medium, "low" => $low,
             Response::HTTP_OK
-      ]
+        ]
         );
     }
 
@@ -241,31 +250,41 @@ class ApiOwaspPeintureController extends AbstractController
      * @return response
      *
      * Created at: 15/12/2022, 21:20:20 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/peinture/owasp/hotspot/liste', name: 'peinture_owasp_hotspot_liste', methods: ['GET'])]
+    #[Route('/api/peinture/owasp/hotspot/liste', name: 'peinture_owasp_hotspot_liste', methods: ['POST'])]
     public function peintureOwaspHotspotListe(Request $request): response
     {
-        $mavenKey = $request->get('mavenKey');
+
+        /** On décode le body */
+        $data = json_decode($request->getContent());
+
+        /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if (is_null($mavenKey)) {
-            return $response->setData(["message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
-        }
+        if ($data === null) {
+            return $response->setData(['data' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'mode')) {
+            return $response->setData(['mode' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'maven_key')) {
+            return $response->setData(['maven_key' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
 
         /** On compte le nombre de hotspot de type OWASP au statut TO_REVIEWED */
-        $sql = "SELECT menace, count(*) as total FROM hotspot_owasp
-            WHERE maven_key='$mavenKey'
-            AND status='TO_REVIEW' GROUP BY menace";
-
-        $list = $this->em->getConnection()->prepare($sql)->executeQuery();
-        $menaces = $list->fetchAllAssociative();
+        $map=['maven_key'=>$data->maven_key];
+        $hotspotOwasp = $this->em->getRepository(HotspotOwasp::class);
+        $menaces=$hotspotOwasp->countHotspotOwaspMenaces($data->mode, $map);
+        if ($menaces['code']!=200) {
+            return $response->setData([
+                'mode' => $data->mode, 'maven_key' => $data->maven_key,
+                'code'=>$menaces['code'], 'erreur' => $menaces['erreur'],
+                Response::HTTP_OK]);
+        }
 
         $menaceA1 = $menaceA2 = $menaceA3 = $menaceA4 = $menaceA5 = $menaceA6 = $menaceA7 = $menaceA8 = $menaceA9 = $menaceA10 = 0;
 
-        foreach ($menaces as $elt) {
+        foreach ($menaces['menaces'] as $elt) {
             if ($elt["menace"] === "a1") {
                 $menaceA1 = $elt["total"];
             }
@@ -299,14 +318,14 @@ class ApiOwaspPeintureController extends AbstractController
         }
 
         return $response->setData(
-            [
-            "menaceA1" => $menaceA1, "menaceA2" => $menaceA2,
-            "menaceA3" => $menaceA3, "menaceA4" => $menaceA4,
-            "menaceA5" => $menaceA5, "menaceA6" => $menaceA6,
-            "menaceA7" => $menaceA7, "menaceA8" => $menaceA8,
-            "menaceA9" => $menaceA9, "menaceA10" => $menaceA10,
-            Response::HTTP_OK
-      ]
+            [   $data->mode,
+                "menaceA1" => $menaceA1, "menaceA2" => $menaceA2,
+                "menaceA3" => $menaceA3, "menaceA4" => $menaceA4,
+                "menaceA5" => $menaceA5, "menaceA6" => $menaceA6,
+                "menaceA7" => $menaceA7, "menaceA8" => $menaceA8,
+                "menaceA9" => $menaceA9, "menaceA10" => $menaceA10,
+                Response::HTTP_OK
+            ]
         );
     }
 
@@ -319,30 +338,35 @@ class ApiOwaspPeintureController extends AbstractController
      * @return response
      *
      * Created at: 15/12/2022, 21:20:54 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/peinture/owasp/hotspot/details', name: 'peinture_owasp_hotspot_details', methods: ['GET'])]
+    #[Route('/api/peinture/owasp/hotspot/details', name: 'peinture_owasp_hotspot_details', methods: ['POST'])]
     public function peintureOwaspHotspotDetails(Request $request): response
     {
-        $mavenKey = $request->get('mavenKey');
+        /** On décode le body */
+        $data = json_decode($request->getContent());
+
+        /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if (is_null($mavenKey)) {
-            return $response->setData(["message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
-        }
+        if ($data === null) {
+            return $response->setData(['data' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'mode')) {
+            return $response->setData(['mode' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'maven_key')) {
+            return $response->setData(['maven_key' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
 
-        /** On compte le nombre de hotspot de type OWASP au statut TO_REVIEWED */
-        $sql = "SELECT * FROM hotspot_details
-            WHERE maven_key='$mavenKey'
-            ORDER BY niveau ASC";
-
-        $list = $this->em->getConnection()->prepare($sql)->executeQuery();
-        $details = $list->fetchAllAssociative();
-
-        if (empty($details)) {
-            $details = "vide";
+        /** On récupère la liste des hotspots par status de la table détails. */
+        $map=['maven_key'=>$data->maven_key];
+        $hotspotDetails = $this->em->getRepository(HotspotDetails::class);
+        $details=$hotspotDetails->selectHotspotDetailsByStatus($data->mode, $map);
+        if ($details['code']!=200) {
+            return $response->setData([
+                'mode' => $data->mode, 'maven_key' => $data->maven_key,
+                'code'=>$details['code'], 'erreur' => $details['erreur'],
+                Response::HTTP_OK]);
         }
 
         return $response->setData(["details" => $details, Response::HTTP_OK]);
@@ -357,39 +381,60 @@ class ApiOwaspPeintureController extends AbstractController
      * @return response
      *
      * Created at: 15/12/2022, 21:21:20 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/peinture/owasp/hotspot/severity', name: 'peinture_owasp_hotspot_severity', methods: ['GET'])]
+    #[Route('/api/peinture/owasp/hotspot/severity', name: 'peinture_owasp_hotspot_severity', methods: ['POST'])]
     public function peintureOwaspSeverity(Request $request): response
     {
-        $mavenKey = $request->get('mavenKey');
-        $menace = $request->get('menace');
+        /** On décode le body */
+        $data = json_decode($request->getContent());
+
+        /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if (is_null($mavenKey)) {
-            return $response->setData(["message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+        if ($data === null) {
+            return $response->setData(['data' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'mode')) {
+            return $response->setData(['mode' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'maven_key')) {
+            return $response->setData(['maven_key' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'menace')) {
+            return $response->setData(['menace' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
+
+        $hotspotOwasp = $this->em->getRepository(HotspotOwasp::class);
+        /** On compte le nombre de faille OWASP au statut HIGH */
+        $map=['maven_key'=>$data->maven_key, 'menace'=>$data->menace, 'status'=>'HIGH'];
+        $high=$hotspotOwasp->countHotspotOwaspMenanceBystatus($data->mode, $map);
+        if ($high['code']!=200) {
+            return $response->setData([
+                'mode' => $data->mode, 'maven_key' => $data->maven_key,
+                'code'=>$high['code'], 'erreur' => $high['erreur'],
+                Response::HTTP_OK]);
         }
 
-        $strSelect = "SELECT count(*) as total FROM hotspot_owasp WHERE maven_key='";
-        $strMenace = "' AND menace='";
-
-        /** On compte le nombre de faille OWASP u statut HIGH */
-        $sql = $strSelect . $mavenKey . $strMenace . $menace . "' AND status='TO_REVIEW' AND probability='HIGH'";
-        $count = $this->em->getConnection()->prepare($sql)->executeQuery();
-        $hhigh = $count->fetchAllAssociative();
-
         /** On compte le nombre de faille OWASP au statut MEDIUM */
-        $sql = $strSelect . $mavenKey . $strMenace . $menace . "' AND status='TO_REVIEW' AND probability='MEDIUM'";
-        $count = $this->em->getConnection()->prepare($sql)->executeQuery();
-        $mmedium = $count->fetchAllAssociative();
+        $map=['maven_key'=>$data->maven_key, 'menace'=>$data->menace, 'status'=>'MEDIUM'];
+        $medium=$hotspotOwasp->countHotspotOwaspMenanceBystatus($data->mode, $map);
+        if ($high['code']!=200) {
+            return $response->setData([
+                'mode' => $data->mode, 'maven_key' => $data->maven_key,
+                'code'=>$medium['code'], 'erreur' => $medium['erreur'],
+                Response::HTTP_OK]);
+        }
 
-        /**  n compte le nombre de faille OWASP au statut LOW */
-        $sql = $strSelect . $mavenKey . $strMenace . $menace . "' AND status='TO_REVIEW' AND probability='LOW'";
-        $count = $this->em->getConnection()->prepare($sql)->executeQuery();
-        $llow = $count->fetchAllAssociative();
+        /**  On compte le nombre de faille OWASP au statut LOW */
+        $map=['maven_key'=>$data->maven_key, 'menace'=>$data->menace, 'status'=>'LOW'];
+        $low=$hotspotOwasp->countHotspotOwaspMenanceBystatus($data->mode, $map);
+        if ($high['code']!=200) {
+            return $response->setData([
+                'mode' => $data->mode, 'maven_key' => $data->maven_key,
+                'code'=>$low['code'], 'erreur' => $low['erreur'],
+                Response::HTTP_OK]);
+        }
 
+        dd($high, $medium, $low);
         /**
          * On vérifie la valeur des vulnerabilité de type HIGH, MEDIUMet LOW
          * Si la valeur est null alors on initialise à 0
