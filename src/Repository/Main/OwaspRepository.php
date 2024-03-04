@@ -27,7 +27,7 @@ class OwaspRepository extends ServiceEntityRepository
     }
 
     /**
-     * [Description for selectOwaspOrderBy]
+     * [Description for selectOwaspOrderByDateEnregistrement]
      * On récupère les infos de la dernière analyse.
      *
      * @param string $mode
@@ -39,7 +39,7 @@ class OwaspRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectOwaspOrderBy($mode,$map):array
+    public function selectOwaspOrderByDateEnregistrement($mode,$map):array
     {
         $sql = "SELECT *
                 FROM owasp
