@@ -310,4 +310,12 @@ ALTER TABLE hotspot_owasp ADD COLUMN date_version DATETIME;
 ALTER TABLE hotspot_details ADD COLUMN version VARCHAR(32) DEFAULT 0;
 ALTER TABLE hotspot_details ADD COLUMN date_version DATETIME;
 
+-- 2024-03-04 : Ajout de l'attribut sqale_debt_ratio à la table historique
+
+ALTER TABLE historique ADD COLUMN sqale_debt_ratio DOUBLE PRECISION DEFAULT -1;
+
+-- 2024-03-04 : Ajout de l'attribut sqale_debt_ratio à la table mesure
+
+ALTER TABLE mesures ADD COLUMN sqale_debt_ratio DOUBLE PRECISION DEFAULT -1;
+
 COMMIT;
