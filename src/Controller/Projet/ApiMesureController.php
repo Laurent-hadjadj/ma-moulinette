@@ -86,11 +86,11 @@ class ApiMesureController extends AbstractController
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return $response->setData([
-              "mode" => $mode ,
-              "type" => 'alert',
-              "reference" => static::$reference,
-              "message" => static::$message,
-              Response::HTTP_OK]);
+                "mode" => $mode ,
+                "type" => 'alert',
+                "reference" => static::$reference,
+                "message" => static::$message,
+                Response::HTTP_OK]);
         }
 
         /** On bind les variables */
@@ -150,12 +150,22 @@ class ApiMesureController extends AbstractController
             $ncloc = 0;
         }
 
+        /** On récupère le ration de dette technique */
+        $url3 = "$tempoUrl/api/measures/component?component=$mavenKey&metricKeys=sqale_debt_ratio";
+        $result3 = $client->http($url3);
+
+        $sqaleRatio = -1;
+        if (array_key_exists("measures", $result3["component"])) {
+            $sqaleRatio = intval($result3["component"]["measures"][0]["value"]);
+        }
+
         /** On enregistre */
         $mesure = new Mesures();
         $mesure->setMavenKey($mavenKey);
         $mesure->setProjectName($result1["projectName"]);
         $mesure->setLines($lines);
         $mesure->setNcloc($ncloc);
+        $mesure->setSqaleDebtRatio($sqaleRatio);
         $mesure->setCoverage($coverage);
         $mesure->setDuplicationDensity($duplicationDensity);
         $mesure->setTests(intval($tests));
