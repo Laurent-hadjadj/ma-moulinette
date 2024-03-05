@@ -41,7 +41,7 @@ class ApiInformationController extends AbstractController
     /** Définition des constantes */
     public static $sonarUrl = "sonar.url";
     public static $europeParis = "Europe/Paris";
-    public static $reference = "<strong>[PROJET-002]</strong>";
+    public static $reference = "<strong>[PROJET-001]</strong>";
     public static $message = "Vous devez avoir le rôle COLLECTE pour réaliser cette action.";
 
     /**
@@ -109,7 +109,7 @@ class ApiInformationController extends AbstractController
             $this->em->getConnection()->prepare($sql)->executeQuery();
         }
 
-        /** On ajoute les informations du projets dans la table information_projet. */
+        /** On ajoute les informations du projet dans la table information_projet. */
         $nombreVersion = 0;
 
         foreach ($result["analyses"] as $analyse) {
