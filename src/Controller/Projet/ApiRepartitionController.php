@@ -79,6 +79,10 @@ class ApiRepartitionController extends AbstractController
         $frontend = $backend = $autre = 0;
         /** nom du projet */
         $app = explode(":", $mavenKey);
+        if (count($app)===1) {
+            /** La clé maven n'est pas conforme, on ne peut pas déduire le nom de l'application */
+            array_push($app, $mavenKey);
+        }
         foreach ($elements as $element) {
             $file = str_replace($mavenKey . ":", "", $element->getComponent());
             $module = explode("/", $file);

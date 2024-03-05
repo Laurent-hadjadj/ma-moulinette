@@ -316,6 +316,10 @@ class ApiHotspotController extends AbstractController
         $frontend = $backend = $autre = 0;
         /** nom du projet. */
         $app = explode(":", $mavenKey);
+        if (count($app)===1) {
+            /** La clé maven n'est pas conforme, on ne peut pas déduire le nom de l'application */
+            array_push($app, $mavenKey);
+        }
 
         $status = $hotspot["status"];
         $file = str_replace($mavenKey . ":", "", $hotspot["component"]["key"]);
