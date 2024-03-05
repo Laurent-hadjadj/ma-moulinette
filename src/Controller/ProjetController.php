@@ -117,9 +117,9 @@ class ProjetController extends AbstractController
         $reponse = $this->mr->getRepository(Repartition::class, 'secondary')
                     ->findBy(['mavenKey' => $mavenKey], ['setup' => 'DESC'], 1);
 
-        $setup = $reponse[0]->getSetup();
-        if (empty($reponse)) {
-            $setup = "NaN";
+        $setup = "NaN";
+        if (!empty($reponse)) {
+            $setup = $reponse[0]->getSetup();
         }
 
         return $setup;
