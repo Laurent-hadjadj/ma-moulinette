@@ -73,6 +73,10 @@ class RepartitionController extends AbstractController
 
         /** On enregistre le nom du projet */
         $app = explode(":", $mavenKey);
+        if (count($app)===1) {
+            /** La clé maven n'est pas conforme, on ne peut pas déduire le nom de l'application */
+            array_push($app, $mavenKey);
+        }
 
         /** On se connecte à la base pour connaitre la version du dernier setup pour le projet. */
         $reponse = $this->doctrine->getManager('secondary')
