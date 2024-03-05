@@ -321,7 +321,8 @@ class SuiviController extends AbstractController
                 security_rating,sqale_rating,bugs,
                 vulnerabilities,code_smells,security_hotspots,
                 security_review_rating,lines,ncloc,coverage,
-                tests,sqale_index,duplicated_lines_density
+                tests,sqale_index,duplicated_lines_density,
+                sqale_debt_ratio
                 &from=$urlencodeDate&to=$urlencodeDate";
 
         /** On appel le client http */
