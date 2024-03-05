@@ -31,7 +31,7 @@ class Todo
     #[ORM\Column(type: Types::STRING, length: 128)]
     private $rule;
 
-    #[ORM\Column(Type: TYPES::TEXT)]
+    #[ORM\Column(type: TYPES::TEXT)]
     private $component;
 
     #[ORM\Column(type: Types::INTEGER)]
