@@ -40,7 +40,6 @@
   © 2024 - CC BY-SA-NC 4.0
 -->
 <html lang="fr">
-
   {# Chargement de la section HEAD #}
   <head>
     {{ include('head.html.twig') }}
@@ -142,7 +141,7 @@
                 {{code_smell_major|number_format(0, '.', ' ')}}
                 <span class="{{evolution_code_smell_major}} hide"></span>
               </td>
-              <td id="note-01" class="text-center note-{{note_code_smell|lower}}">
+              <td id="note-01" class="text-center note-{{note_code_smell|lower}} bordure-top bordure-bottom">
                 {{note_code_smell}}
               </td>
             </tr>
@@ -160,7 +159,7 @@
                 {{bug_major|number_format(0, '.', ' ')}}
                 <span class="{{evolution_bug_major}} hide"></span>
               </td>
-              <td id="note-02" class="text-center note-{{note_reliability|lower}}">
+              <td id="note-02" class="text-center note-{{note_reliability|lower}} bordure-top bordure-bottom">
                 {{note_reliability}}
               </td>
             </tr>
@@ -178,7 +177,7 @@
                 {{vulnerability_major|number_format(0, '.', ' ')}}
                 <span class="{{evolution_vulnerability_blocker}} hide"></span>
               </td>
-              <td id="note-03" class="text-center note-{{note_security|lower}}">
+              <td id="note-03" class="text-center note-{{note_security|lower}} bordure-top bordure-bottom">
                 {{note_security}}
               </td>
             </tr>
@@ -188,7 +187,7 @@
                 {{hotspot|number_format(0, '.', ' ')}}
                 <span class="{{evolution_hotspot}} hide"></span>
               </td>
-              <td id="note-04" class="text-center note-{{note_hotspot|lower}}">
+              <td id="note-04" class="text-center note-{{note_hotspot|lower}} bordure-top bordure-bottom">
                 {{note_hotspot}}
               </td>
             </tr>
