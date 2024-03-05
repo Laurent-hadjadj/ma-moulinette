@@ -33,9 +33,9 @@ class OwaspController extends AbstractController
         return $this->render(
             'owasp/index.html.twig',
             [
-              "serveur" => $this->getParameter("sonar.url"),
-              "version" => $this->getParameter("version"), "dateCopyright" => \date("Y")
-      ]
+                "serveur" => $this->getParameter("sonar.url"),
+                "version" => $this->getParameter("version"), "dateCopyright" => \date("Y")
+            ]
         );
     }
 }
