@@ -41,6 +41,9 @@ class Mesures
     private $coverage;
 
     #[ORM\Column(type: Types::FLOAT)]
+    private $sqaleDebtRatio;
+
+    #[ORM\Column(type: Types::FLOAT)]
     private $duplicationDensity;
 
     #[ORM\Column(type: Types::INTEGER)]
@@ -58,7 +61,7 @@ class Mesures
      * @return int|null
      *
      * Created at: 02/01/2023, 18:03:41 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getId(): ?int
@@ -72,7 +75,7 @@ class Mesures
      * @return string|null
      *
      * Created at: 02/01/2023, 18:03:43 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getMavenKey(): ?string
@@ -88,7 +91,7 @@ class Mesures
      * @return self
      *
      * Created at: 02/01/2023, 18:03:44 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setMavenKey(string $mavenKey): self
@@ -104,7 +107,7 @@ class Mesures
      * @return string|null
      *
      * Created at: 02/01/2023, 18:03:46 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getProjectName(): ?string
@@ -120,7 +123,7 @@ class Mesures
      * @return self
      *
      * Created at: 02/01/2023, 18:03:47 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setProjectName(string $projectName): self
@@ -136,7 +139,7 @@ class Mesures
      * @return int|null
      *
      * Created at: 02/01/2023, 18:03:49 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getLines(): ?int
@@ -158,7 +161,7 @@ class Mesures
      * @return int|null
      *
      * Created at: 02/01/2023, 18:03:52 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getNcloc(): ?int
@@ -174,7 +177,7 @@ class Mesures
      * @return self
      *
      * Created at: 02/01/2023, 18:03:54 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setNcloc(int $ncloc): self
@@ -190,7 +193,7 @@ class Mesures
      * @return float|null
      *
      * Created at: 02/01/2023, 18:03:56 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getCoverage(): ?float
@@ -206,7 +209,7 @@ class Mesures
      * @return self
      *
      * Created at: 02/01/2023, 18:03:57 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setCoverage(float $coverage): self
@@ -217,12 +220,44 @@ class Mesures
     }
 
     /**
+     * [Description for getSqaleDebtRatio]
+     *
+     * @return float|null
+     *
+     * Created at: 05/03/2024 22:19:23 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function getSqaleDebtRatio(): ?float
+    {
+        return $this->sqaleDebtRatio;
+    }
+
+    /**
+     * [Description for setSqaleDebtRatio]
+     *
+     * @param float $sqaleDebtRatio
+     *
+     * @return self
+     *
+     * Created at: 05/03/2024 22:19:20 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function setSqaleDebtRatio(float $sqaleDebtRatio): self
+    {
+        $this->sqaleDebtRatio = $sqaleDebtRatio;
+
+        return $this;
+    }
+
+    /**
      * [Description for getDuplicationDensity]
      *
      * @return float|null
      *
      * Created at: 02/01/2023, 18:03:59 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getDuplicationDensity(): ?float
@@ -238,7 +273,7 @@ class Mesures
      * @return self
      *
      * Created at: 02/01/2023, 18:04:01 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setDuplicationDensity(float $duplicationDensity): self
@@ -254,7 +289,7 @@ class Mesures
      * @return int|null
      *
      * Created at: 02/01/2023, 18:04:03 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getTests(): ?int
@@ -270,7 +305,7 @@ class Mesures
      * @return self
      *
      * Created at: 02/01/2023, 18:04:04 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setTests(int $tests): self
@@ -286,7 +321,7 @@ class Mesures
      * @return int|null
      *
      * Created at: 02/01/2023, 18:04:06 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getIssues(): ?int
@@ -302,7 +337,7 @@ class Mesures
      * @return self
      *
      * Created at: 02/01/2023, 18:04:08 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setIssues(int $issues): self
@@ -318,7 +353,7 @@ class Mesures
      * @return \DateTimeInterface|null
      *
      * Created at: 02/01/2023, 18:04:10 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getDateEnregistrement(): ?\DateTimeInterface
@@ -334,7 +369,7 @@ class Mesures
      * @return self
      *
      * Created at: 02/01/2023, 18:04:11 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setDateEnregistrement(\DateTimeInterface $dateEnregistrement): self
