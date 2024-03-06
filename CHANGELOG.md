@@ -298,25 +298,26 @@ General error: 1 near "4.1": syntax error"
 ## v2.0.0 - 01/01/2023 - RC1
 
 * Mise à jour webpack-5.75.0 et webpack-encore 4.1.2 ;
-* Migration symfony 6.2.10 ;
-* Migration symfony 7.0 ;
-* Migration webpack to AssetMapper ;
-* Fix : Définition de la timezone [Europe/Paris] pour la gestion des dates;
+* Migration symfony 6.4.10 ;
+* Fix: Ajout de traces lors des appel HTTP 200, 400, 401 et 404. Catch et traitement des erreurs 400 et 404 ;
+* Fix : Définition de la timezone [Europe/Paris] pour la gestion des dates ;
 * Fix : Correction type attribut hotspot_high varchar(4)-->integer ;
-* Fix : Ajustement de la taille des bulles utilisées pour les notes.
+* Fix : Ajustement de la taille des bulles utilisées pour les notes ;
 * Fix : Correction des deux hotspots -> remplacement de Math.random() par chance() ;
 * Fix : Affichage du nombre de règles à la place du language dans le tableau profil ;
 * Refactor: mises à jour des commentaires ;
+* Refactor: regroupement des classes dans des packages ;
 * CC : Externalisation des constantes JS ;
 * Code Clean W3C & sonarqube ;
 * [Docker] Ajout du fichier docker-compose.yml ;
 * [BD] Ajout aux scripts SQLite, des scripts PostgreSQL ;
 * [BD] Suppression de la table `tags` ;
 * [BD] Ajout des "tags" et de la "visibilité" dans la table `liste_projet` ;
+* [TU] Ajout d'une base sqlite "in memory" pour les tests unitaires.
 * [Page_Home] Correction de l'affichage NaN pour les projets de type privé quand la table est vide ;
 * [Page_Home] Ajout de la vue **Projet** pour l'affichage des projets favoris, de la vue **Version** pour l'affichage des versions favorites et de vue **Vide** utiliée quand l'utilisateur a désactivé l'affichage des favoris ;
 * [Page_Portefeuille] Initialise la liste des projets à "Aucun projet" quand la table des projets est vide ;
-* [EasyAdmin] Ajout d'un **listner** pour afficher les messages utilisateur pour les évenements des class **equipe**, **portefeuille** et **batch** ;
+* [EasyAdmin] Ajout d'un **listner** pour afficher les messages utilisateurs pour les évenements des class **equipe**, **portefeuille** et **batch** ;
 * [EasyAdmin] Ajout d'un **Validator** pour la contrainte d'unicité sur l'attribut `titre` ;
 * [EasyAdmin] Ajout d'un controller CRUD pour gérer les **équipes** ;
 * [EasyAdmin] Ajout d'un controller CRUD pour gérer les **portefeuilles** de projets ;
@@ -350,3 +351,13 @@ General error: 1 near "4.1": syntax error"
 * [Page_Login] TODO : Ajout, j'ai oublié mon mot de passe, aider-moi :)
 * [Composant_Menu] Ajout du nom de l'utilisateur ;
 * [Composant_Menu] Ajout des informations utilisateurs utiles ;
+* [Page_Suivi_Modification] Une seule version de référence pour un projet.
+* [Page_Suivi_Modification] Changer la version de référence nécessite le role GESTIONNAIRE (i.e. impact sur les calcul).
+* [Page_Suivi_Modification] Un utilisateur peut avoir une ou plusieurs versions du même projet en favori (impact Acceuil)
+* [Page_Home] Afficher par défaut la version la plus récente du projet favoris ;
+* [Page_Home] Ajouter une page pour afficher les différentes version d'un projet favori (i.e. modification des préférences de l'utilisateur) ;
+* [Page_Préference] Ajout du support des versions de projet en favoris ;
+* [Page_Préference] Ajout du support de la version des projets favoris ou des versions du projet favoris ;
+* [Page_Projet] Lors de la collecte des données, le ration de dette technique est récupéré (table mesure) ;
+* [Page_Suivi] Lors de l'intégration d'une version dans l'historique, le ratio de dette technique est récupéré depuis le serveur ;
+* [Page_Projet] Lors de la collecte des données, les données de la versions courrantes sont conservées.
