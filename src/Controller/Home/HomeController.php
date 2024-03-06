@@ -11,7 +11,7 @@
 *  http://creativecommons.org/licenses/by-nc-sa/4.0/
 */
 
-namespace App\Controller;
+namespace App\Controller\Home;
 
 /** Core */
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
