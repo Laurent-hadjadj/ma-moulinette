@@ -11,7 +11,7 @@
 *  http://creativecommons.org/licenses/by-nc-sa/4.0/
 */
 
-namespace App\Controller;
+namespace App\Controller\Batch;
 
 /** Core */
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -688,6 +688,10 @@ class BatchApiController extends AbstractController
 
             /** nom du projet */
             $app = explode(":", $mavenKey);
+            if (count($app)===1) {
+                /** La clé maven n'est pas conforme, on ne peut pas déduire le nom de l'application */
+                array_push($app, $mavenKey);
+            }
 
             $anomalieTotal = $result1["total"];
             $detteMinute = $result1["effortTotal"];
@@ -958,7 +962,6 @@ class BatchApiController extends AbstractController
 
             /** On enregistre les données en base */
             $this->em->persist($details);
-            $this->em->flush();
 
             /** On catch l'erreur sur la clé composite : maven_key, version, date_version */
             try {
