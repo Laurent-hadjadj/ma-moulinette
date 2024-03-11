@@ -40,8 +40,12 @@ class ApiMesureController extends AbstractController
     /** Définition des constantes */
     public static $sonarUrl = "sonar.url";
     public static $europeParis = "Europe/Paris";
+    public static $removeReturnline = "/\s+/u";
     public static $reference = "<strong>[PROJET-002]</strong>";
-    public static $message = "Vous devez avoir le rôle COLLECTE pour réaliser cette action.";
+    public static $erreur400 = "La requête est incorrecte (Erreur 400).";
+    public static $erreur401 = "Erreur d\'Authentification. La clé n\'est pas correcte (Erreur 401).";
+    public static $erreur403 = "Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).";
+    public static $erreur404 = "L'appel à l'API n'a pas abouti (Erreur 404).";
 
     /**
      * [Description for __construct]
@@ -63,6 +67,7 @@ class ApiMesureController extends AbstractController
      * http://{URL}/api/measures/component?component={key}&metricKeys=ncloc
      *
      * @param Request $request
+     * @param Client $client
      *
      * @return response
      *
@@ -70,89 +75,108 @@ class ApiMesureController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/projet/mesures', name: 'projet_mesures', methods: ['GET'])]
-    public function projetMesures(Request $request, Client $client): response
+    #[Route('/api/projet/mesure', name: 'projet_mesure', methods: ['POST'])]
+    public function projetMesure(Request $request, Client $client): response
     {
-        /** oN créé un objet réponse */
+        /** On décode le body */
+        $data = json_decode($request->getContent());
+
+        /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
 
-        /** On on vérifie si on a activé le mode test */
-        if (is_null($request->get('mode'))) {
-            $mode = "null";
-        } else {
-            $mode = $request->get('mode');
-        }
+        /** On teste si la clé est valide */
+        if ($data === null) {
+            return $response->setData(['data' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'mode')) {
+            return $response->setData(['mode' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'maven_key')) {
+            return $response->setData(['maven_key' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return $response->setData([
-                "mode" => $mode ,
-                "type" => 'alert',
+                "mode" => $data->mode ,
+                "code" => 403,
                 "reference" => static::$reference,
-                "message" => static::$message,
+                "message" => static::$erreur403,
                 Response::HTTP_OK]);
         }
 
-        /** On bind les variables */
+        /** On récupère l'URL du serveur */
         $tempoUrl = $this->getParameter(static::$sonarUrl);
-        $mavenKey = $request->get('mavenKey');
 
-        /** mesures globales */
-        $url1 = "$tempoUrl/api/components/app?component=$mavenKey";
+        /** On forge l'URL */
+        $url1 = "$tempoUrl/api/components/app?component=$data->maven_key";
 
         /** on appel le client http */
-        $result1 = $client->http($url1);
+        $result1 = $client->http(trim(preg_replace(static::$removeReturnline, " ", $url1)));
+
+        /** On catch les erreurs HTTP 400, 401 et 404, si possible :) */
+        if (array_key_exists('code', $result1)){
+            if ($result1['code']===401) {
+            return $response->setData([
+                "mode" => $data->mode ,
+                "code" => 401,
+                "reference" => static::$reference,
+                "message" => static::$erreur401,
+                Response::HTTP_OK]);
+            }
+            if ($result1['code']===404){
+                return $response->setData([
+                    "mode" => $data->mode ,
+                    "code" => 404,
+                    "reference" => static::$reference,
+                    "message" => static::$erreur404,
+                    Response::HTTP_OK]);
+                }
+        }
+
+        /** On créé un objet date */
         $date = new DateTime();
         $date->setTimezone(new DateTimeZone(static::$europeParis));
 
         /** On ajoute les mesures dans la table mesures. */
+        $lines = 0;
         if (intval($result1["measures"]["lines"])) {
             $lines = intval($result1["measures"]["lines"]);
-        } else {
-            $lines = 0;
         }
 
         /** Warning: Undefined array key "coverage" */
+        $coverage = 0;
         if (array_key_exists("coverage", $result1["measures"])) {
             $coverage = $result1["measures"]["coverage"];
-        } else {
-            $coverage = 0;
         }
 
         /** Warning: Undefined array key "duplicationDensity" */
+        $duplicationDensity = 0;
         if (array_key_exists("duplicationDensity", $result1["measures"])) {
             $duplicationDensity = $result1["measures"]["duplicationDensity"];
-        } else {
-            $duplicationDensity = 0;
         }
 
         /** Warning: Undefined array key "measures" */
+        $tests = 0;
         if (array_key_exists("tests", $result1["measures"])) {
             $tests = intval($result1["measures"]["tests"]);
-        } else {
-            $tests = 0;
         }
 
         /** Warning: Undefined array key "issues" */
+        $issues = 0;
         if (array_key_exists("issues", $result1["measures"])) {
             $issues = intval($result1["measures"]["issues"]);
-        } else {
-            $issues = 0;
         }
 
         /** On récupère le nombre de ligne de code */
-        $url2 = "$tempoUrl/api/measures/component?component=$mavenKey&metricKeys=ncloc";
-        $result2 = $client->http($url2);
+        $url2 = "$tempoUrl/api/measures/component?component=$data->maven_key&metricKeys=ncloc";
+        $result2 = $client->http(trim(preg_replace(static::$removeReturnline, " ", $url2)));
 
+        $ncloc = 0;
         if (array_key_exists("measures", $result2["component"])) {
             $ncloc = intval($result2["component"]["measures"][0]["value"]);
-        } else {
-            $ncloc = 0;
         }
 
         /** On récupère le ration de dette technique */
-        $url3 = "$tempoUrl/api/measures/component?component=$mavenKey&metricKeys=sqale_debt_ratio";
-        $result3 = $client->http($url3);
+        $url3 = "$tempoUrl/api/measures/component?component=$data->maven_key&metricKeys=sqale_debt_ratio";
+        $result3 = $client->http(preg_replace(static::$removeReturnline, " ", $url3));
 
         $sqaleRatio = -1;
         if (array_key_exists("measures", $result3["component"])) {
@@ -161,7 +185,7 @@ class ApiMesureController extends AbstractController
 
         /** On enregistre */
         $mesure = new Mesures();
-        $mesure->setMavenKey($mavenKey);
+        $mesure->setMavenKey($data->maven_key);
         $mesure->setProjectName($result1["projectName"]);
         $mesure->setLines($lines);
         $mesure->setNcloc($ncloc);
@@ -172,18 +196,18 @@ class ApiMesureController extends AbstractController
         $mesure->setIssues(intval($issues));
         $mesure->setDateEnregistrement($date);
         $this->em->persist($mesure);
-        if ($mode != "TEST") {
+        if ($data->mode != 'TEST') {
             $this->em->flush();
         }
 
-        if ($mode = "TEST") {
-            $mesures = ['coverage' => $coverage,
-                      'duplicationDensity' => $duplicationDensity,
-                      'tests' => $tests, 'issues' => $issues, 'ncloc' => $ncloc];
+        if ($mode = 'TEST') {
+            $mesures = ['lines'=>$lines, 'ncloc' => $ncloc, 'coverage' => $coverage,
+                        'duplicationDensity' => $duplicationDensity,
+                        'tests' => $tests, 'issues' => $issues, ];
             return $response->setData(["mode" => $mode, 'mesures' => $mesures, Response::HTTP_OK]);
         }
 
-        return $response->setData([Response::HTTP_OK]);
+        return $response->setData(["mode" => $data->mode , "code" => 200, Response::HTTP_OK]);
     }
 
 }

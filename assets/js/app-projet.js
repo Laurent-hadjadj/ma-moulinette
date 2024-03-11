@@ -270,15 +270,19 @@ const projetInformation=function(mavenKey) {
 
   return new Promise(resolve => {
     $.ajax(options).then(t => {
-      if (t.type==='alert'){
-        $('#callout-projet-message').removeClass('hide success warning primary secondary');
-        $('#callout-projet-message').addClass(t.type);
-        $('#js-reference-information').html(t.reference);
-        $('#js-message-information').html(t.message);
-      } else {
-        log(` - INFO : (1) Nombre de version disponible : ${t.nombreVersion}`);
-      }
+      $.ajax(options).then(t => {
+        if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
+          $('#callout-projet-message').removeClass('hide success warning primary secondary');
+          $('#callout-projet-message').addClass(t.type);
+          $('#js-reference-information').html(t.reference);
+          $('#js-message-information').html(t.message);
+          return;
+        }
+        if (t.code===http_200){
+          log(` - INFO : (1) Nombre de version disponible : ${t.nombreVersion}`);
+          }
       resolve();
+      });
     });
   });
 };
@@ -297,17 +301,18 @@ const projetInformation=function(mavenKey) {
 const projetMesure=function(mavenKey) {
   const data = { mavenKey };
   const options = {
-    url: `${serveur()}/api/projet/mesures`, type: 'GET',
+    url: `${serveur()}/api/projet/mesure`, type: 'POST',
           dataType: 'json', data, contentType };
   return new Promise(resolve => {
-    $.ajax(options).then(
-      t => {
-        if (t.type==='alert'){
-          $('#callout-projet-message').removeClass('hide success warning primary secondary');
-          $('#callout-projet-message').addClass(t.type);
-          $('#js-reference-information').html(t.reference);
-          $('#js-message-information').html(t.message);
-        } else {
+    $.ajax(options).then(t => {
+      if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
+        $('#callout-projet-message').removeClass('hide success warning primary secondary');
+        $('#callout-projet-message').addClass(t.type);
+        $('#js-reference-information').html(t.reference);
+        $('#js-message-information').html(t.message);
+        return;
+      }
+      if (t.code===http_200){
           log(' - INFO : (2) Ajout des mesures.');
         }
         resolve();
@@ -336,14 +341,16 @@ const projetAnomalie=function(mavenKey) {
 
   return new Promise(resolve => {
     $.ajax(options).then(t => {
-      if (t.type==='alert'){
+      if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
         $('#callout-projet-message').removeClass('hide success warning primary secondary');
         $('#callout-projet-message').addClass(t.type);
         $('#js-reference-information').html(t.reference);
         $('#js-message-information').html(t.message);
-      } else {
-        log(` - INFO : (6) ${t.info}`);
+        return;
       }
+      if (t.code===http_200){
+          log(` - INFO : (6) ${t.info}`);
+        }
     resolve();
     });
   });
@@ -369,8 +376,8 @@ const projetAnomalieDetails=function(mavenKey) {
           dataType: 'json', data, contentType };
 
   return new Promise(resolve => {
-    $.ajax(options).then(
-      t => {
+    $.ajax(options).then(t => {
+
         if (t.type==='alert'){
           $('#callout-projet-message').removeClass('hide success warning primary secondary');
           $('#callout-projet-message').addClass(t.type);
@@ -959,7 +966,7 @@ $('.js-analyse').on('click', function () {
 
   async function fnAsync() {
     /* Analyse du projet */
-    await projetInformation(idProject);               /*(1)*/
+    await projetInformation(idProject);           /*(1)*/
     await projetMesure(idProject);                /*(2)*/
 
     /* Analyse Sécurité et Owasp. */
