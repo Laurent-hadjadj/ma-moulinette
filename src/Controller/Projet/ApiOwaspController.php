@@ -45,15 +45,12 @@ class ApiOwaspController extends AbstractController
     public static $sonarUrl = "sonar.url";
     public static $europeParis = "Europe/Paris";
     public static $apiIssuesSearch = "/api/issues/search?componentKeys=";
-    public static $regex = "/\s+/u";
+    public static $removeReturnline = "/\s+/u";
     public static $reference = "<strong>[PROJET-004]</strong>";
-    public static $erreurMavenKey = "La clé maven est vide !";
     public static $erreur400 = "La requête est incorrecte (Erreur 400).";
     public static $erreur401 = "Erreur d\'Authentification. La clé n\'est pas correcte (Erreur 401).";
     public static $erreur403 = "Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).";
     public static $erreur404 = "L'appel à l'API n'a pas abouti (Erreur 404).";
-
-    public static $message = "Vous devez avoir le rôle COLLECTE pour réaliser cette action.";
 
     /**
      * [Description for __construct]
@@ -120,7 +117,7 @@ class ApiOwaspController extends AbstractController
                 &owaspTop10=a1,a2,a3,a4,a5,a6,a7,a8,a9,a10";
 
         /** On appel l'API. */
-        $result = $client->http(trim(preg_replace(static::$regex, " ", $url)));
+        $result = $client->http(trim(preg_replace(static::$removeReturnline, " ", $url)));
 
         /** on catch les erreurs HTTP 400, 401 et 404, si possible :) */
         if (array_key_exists('code', $result)){
