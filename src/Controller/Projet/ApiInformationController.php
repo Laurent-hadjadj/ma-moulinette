@@ -168,7 +168,8 @@ class ApiInformationController extends AbstractController
             }
         }
 
-        return $response->setData(["mode" => $data->mode ,'nombreVersion' => $nombreVersion, Response::HTTP_OK]);
+        return $response->setData(['mode' => $data->mode ,
+            'code'=> 200, 'nombreVersion' => $nombreVersion, Response::HTTP_OK]);
     }
 
 }
