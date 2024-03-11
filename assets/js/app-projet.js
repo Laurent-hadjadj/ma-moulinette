@@ -261,10 +261,10 @@ const selectProjet=async function() {
  * Created at: 19/12/2022, 22:12:44 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
-const projetAnalyse=function(mavenKey) {
+const projetInformation=function(mavenKey) {
   const data = { mavenKey };
   const options = {
-    url: `${serveur()}/api/projet/analyses`, type: 'GET',
+    url: `${serveur()}/api/projet/information`, type: 'POST',
           dataType: 'json', data, contentType,
   };
 
@@ -959,7 +959,7 @@ $('.js-analyse').on('click', function () {
 
   async function fnAsync() {
     /* Analyse du projet */
-    await projetAnalyse(idProject);               /*(1)*/
+    await projetInformation(idProject);               /*(1)*/
     await projetMesure(idProject);                /*(2)*/
 
     /* Analyse Sécurité et Owasp. */
