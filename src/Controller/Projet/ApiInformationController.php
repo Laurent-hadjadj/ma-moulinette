@@ -41,8 +41,13 @@ class ApiInformationController extends AbstractController
     /** Définition des constantes */
     public static $sonarUrl = "sonar.url";
     public static $europeParis = "Europe/Paris";
+    public static $apiIssuesSearch = "/api/issues/search?componentKeys=";
+    public static $removeReturnline = "/\s+/u";
     public static $reference = "<strong>[PROJET-001]</strong>";
-    public static $message = "Vous devez avoir le rôle COLLECTE pour réaliser cette action.";
+    public static $erreur400 = "La requête est incorrecte (Erreur 400).";
+    public static $erreur401 = "Erreur d\'Authentification. La clé n\'est pas correcte (Erreur 401).";
+    public static $erreur403 = "Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).";
+    public static $erreur404 = "L'appel à l'API n'a pas abouti (Erreur 404).";
 
     /**
      * [Description for __construct]
@@ -63,6 +68,7 @@ class ApiInformationController extends AbstractController
      * http://{url}/api/project_analyses/search?project={key}
      *
      * @param Request $request
+     * @param Client $client
      *
      * @return response
      *
@@ -70,74 +76,101 @@ class ApiInformationController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/projet/analyses', name: 'projet_analyses', methods: ['GET'])]
-    public function projetAnalyses(Request $request, Client $client): response
+    #[Route('/api/projet/information', name: 'projet_information', methods: ['POST'])]
+    public function projetInformation(Request $request, Client $client): response
     {
-        /** oN créé un objet réponse */
+        /** On décode le body */
+        $data = json_decode($request->getContent());
+
+        /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
 
-        /** On on vérifie si on a activé le mode test */
-        if (is_null($request->get('mode'))) {
-            $mode = "null";
-        } else {
-            $mode = $request->get('mode');
-        }
+        /** On teste si la clé est valide */
+        if ($data === null) {
+            return $response->setData(['data' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'mode')) {
+            return $response->setData(['mode' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'maven_key')) {
+            return $response->setData(['maven_key' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return $response->setData([
-              "mode" => $mode ,
-              "type" => 'alert',
-              "reference" => static::$reference,
-              "message" => static::$message,
-              Response::HTTP_OK]);
+                "mode" => $data->mode ,
+                "code" => 403,
+                "reference" => static::$reference,
+                "message" => static::$erreur403,
+                Response::HTTP_OK]);
         }
 
+        /** On forge la requête */
         $url = $this->getParameter(static::$sonarUrl) .
-          "/api/project_analyses/search?project=" . $request->get('mavenKey');
+                "/api/project_analyses/search?project=" . $data->maven_key;
 
         /** On appel le client http */
-        $result = $client->http($url);
-        /** On récupère le manager de BD */
+        $result = $client->http(trim(preg_replace(static::$removeReturnline, " ", $url)));
+
+        /** On catch les erreurs HTTP 400, 401 et 404, si possible :) */
+        if (array_key_exists('code', $result)){
+            if ($result['code']===401) {
+            return $response->setData([
+                "mode" => $data->mode ,
+                "code" => 401,
+                "reference" => static::$reference,
+                "message" => static::$erreur401,
+                Response::HTTP_OK]);
+            }
+            if ($result['code']===404){
+                return $response->setData([
+                    "mode" => $data->mode ,
+                    "code" => 404,
+                    "reference" => static::$reference,
+                    "message" => static::$erreur404,
+                    Response::HTTP_OK]);
+                }
+        }
+
+        /** On créé un objet date */
         $date = new DateTime();
         $date->setTimezone(new DateTimeZone(static::$europeParis));
-        $mavenKey = $request->get('mavenKey');
 
-        /** On supprime les informations sur le projet */
-        $sql = "DELETE FROM information_projet WHERE maven_key='$mavenKey'";
-        if ($mode != "TEST") {
-            $this->em->getConnection()->prepare($sql)->executeQuery();
+        /** On supprime les informations pour la maven_key. */
+        $informationProjet = $this->em->getRepository(InformationProjet::class);
+        $map=['maven_key'=>$data->maven_key];
+        $request=$informationProjet->deleteInformationProjetMavenKey($data->mode, $map);
+        if ($request['code']!=200) {
+            return $response->setData(['mode' => $data->mode, 'code' => $request['code'], 'message'=>$request['erreur'], Response::HTTP_OK]);
         }
 
         /** On ajoute les informations du projet dans la table information_projet. */
         $nombreVersion = 0;
 
-        foreach ($result["analyses"] as $analyse) {
+        foreach ($result["analyses"] as $information) {
             $nombreVersion++;
             /**
              *  La version du projet doit être xxx-release, xxx-snapshot ou xxx
              *  Dans ce cas le tableau renvoi toujours [0] pour la version et
              *  [1] pour le type de version (release, snaphot ou null)
              */
-            $explode = explode("-", $analyse["projectVersion"]);
+            $explode = explode('-', $information['projectVersion']);
             if (empty($explode[1])) {
                 $explode[1] = 'N.C';
             }
 
             $informationProjet = new InformationProjet();
-            $informationProjet->setMavenKey($mavenKey);
-            $informationProjet->setAnalyseKey($analyse["key"]);
-            $informationProjet->setDate(new DateTime($analyse["date"]));
-            $informationProjet->setProjectVersion($analyse["projectVersion"]);
+            $informationProjet->setMavenKey($data->maven_key);
+            $informationProjet->setAnalyseKey($information['key']);
+            $informationProjet->setDate(new DateTime($information['date']));
+            $informationProjet->setProjectVersion($information['projectVersion']);
             $informationProjet->setType(strtoupper($explode[1]));
             $informationProjet->setDateEnregistrement($date);
             $this->em->persist($informationProjet);
-            if ($mode != "TEST") {
+            if ($data->mode != 'TEST') {
                 $this->em->flush();
             }
         }
 
-        return $response->setData(["mode" => $mode ,"nombreVersion" => $nombreVersion, Response::HTTP_OK]);
+        return $response->setData(["mode" => $data->mode ,'nombreVersion' => $nombreVersion, Response::HTTP_OK]);
     }
 
 }
