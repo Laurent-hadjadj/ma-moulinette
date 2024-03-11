@@ -45,6 +45,43 @@ class CosuiController extends AbstractController
 
 
     /**
+     * [Description for note2point]
+     * Renvoie la valeur de la note en point sur 100 ;
+     * A=100, B=70, C=50, D=25, E=5, F=0;
+     *
+     * @param mixed $note
+     *
+     * @return int
+     *
+     * Created at: 06/03/2024 19:45:38 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function note2point($note): int
+    {
+        switch ($note) {
+            case 'A':
+                $p=100;
+                break;
+            case 'B':
+                $p=80;
+                break;
+            case 'C':
+                $p=60;
+                break;
+            case 'D':
+                $p=30;
+                break;
+            case 'E':
+                $p=10;
+                break;
+            default:
+                $p=0;
+        }
+        return $p;
+    }
+
+    /**
      * [Description for setup]
      * On récupère le dernier setup du projet
      *
@@ -105,27 +142,29 @@ class CosuiController extends AbstractController
          * On considére que la version est version-type
          * Par exemple : 1.0.0-Release
          */
-        $tempo = explode("-", $request['infos'][0]["version"]);
+        $tempo = explode("-", $request['infos'][0]['version']);
 
         return ['resultat' => true,
-                'name' => $request['infos'][0]["name"],
+                'name' => $request['infos'][0]['name'],
                 'version' => $tempo[0],
                 'type' => $tempo[1],
-                'date_version' => $request['infos'][0]["date_version"],
-                'note_reliability' => $request['infos'][0]["note_reliability"],
-                'note_security' => $request['infos'][0]["note_security"],
-                'note_hotspot' => $request['infos'][0]["note_hotspot"],
-                'note_code_smell' => $request['infos'][0]["note_sqale"],
-                'bug_blocker' => $request['infos'][0]["bug_blocker"],
-                'bug_critical' => $request['infos'][0]["bug_critical"],
-                'bug_major' => $request['infos'][0]["bug_major"],
-                'vulnerability_blocker' => $request['infos'][0]["vulnerability_blocker"],
-                'vulnerability_critical' => $request['infos'][0]["vulnerability_critical"],
-                'vulnerability_major' => $request['infos'][0]["vulnerability_major"],
-                'code_smell_blocker' => $request['infos'][0]["code_smell_blocker"],
-                'code_smell_critical' => $request['infos'][0]["code_smell_critical"],
-                'code_smell_major' => $request['infos'][0]["code_smell_major"],
-                'hotspot_total' => $request['infos'][0]["hotspot_total"],
+                'date_version' => $request['infos'][0]['date_version'],
+                'note_reliability' => $request['infos'][0]['note_reliability'],
+                'note_security' => $request['infos'][0]['note_security'],
+                'note_hotspot' => $request['infos'][0]['note_hotspot'],
+                'note_code_smell' => $request['infos'][0]['note_sqale'],
+                'bug_blocker' => $request['infos'][0]['bug_blocker'],
+                'bug_critical' => $request['infos'][0]['bug_critical'],
+                'bug_major' => $request['infos'][0]['bug_major'],
+                'vulnerability_blocker' => $request['infos'][0]['vulnerability_blocker'],
+                'vulnerability_critical' => $request['infos'][0]['vulnerability_critical'],
+                'vulnerability_major' => $request['infos'][0]['vulnerability_major'],
+                'code_smell_blocker' => $request['infos'][0]['code_smell_blocker'],
+                'code_smell_critical' => $request['infos'][0]['code_smell_critical'],
+                'code_smell_major' => $request['infos'][0]['code_smell_major'],
+                'hotspot_total' => $request['infos'][0]['hotspot_total'],
+                'couverture' => $request['infos'][0]['couverture'],
+                'sqale_debt_ratio' => $request['infos'][0]['sqale_debt_ratio']
             ];
     }
 
@@ -152,30 +191,33 @@ class CosuiController extends AbstractController
             return [
                     'mode' => $mode, 'maven_key' => $mavenKey,
                     'code'=>$request['code'], 'erreur' => $request['erreur']
-                ];
+                    ];
         }
         if (!$request['reference']) {
             return ['resultat' => false];
         }
 
-        $tempo = explode("-", $request['reference'][0]["version"]);
+        $tempo = explode("-", $request['reference'][0]['version']);
         return ['resultat' => true,
                 'initial_version_application' => $tempo[0],
-                'initial_date_version' => $request['reference'][0]["date_version"],
-                'initial_note_reliability' => $request['reference'][0]["note_reliability"],
-                'initial_note_security' => $request['reference'][0]["note_security"],
-                'initial_note_hotspot' => $request['reference'][0]["note_hotspot"],
-                'initial_note_code_smell' => $request['reference'][0]["note_sqale"],
-                'initial_bug_blocker' => $request['reference'][0]["bug_blocker"],
-                'initial_bug_critical' => $request['reference'][0]["bug_critical"],
-                'initial_bug_major' => $request['reference'][0]["bug_major"],
-                'initial_vulnerability_blocker' => $request['reference'][0]["vulnerability_blocker"],
-                'initial_vulnerability_critical' => $request['reference'][0]["vulnerability_critical"],
-                'initial_vulnerability_major' => $request['reference'][0]["vulnerability_major"],
-                'initial_code_smell_blocker' => $request['reference'][0]["code_smell_blocker"],
-                'initial_code_smell_critical' => $request['reference'][0]["code_smell_critical"],
-                'initial_code_smell_major' => $request['reference'][0]["code_smell_major"],
-                'initial_hotspot_total' => $request['reference'][0]["hotspot_total"],
+                'initial_date_version' => $request['reference'][0]['date_version'],
+                'initial_note_reliability' => $request['reference'][0]['note_reliability'],
+                'initial_note_security' => $request['reference'][0]['note_security'],
+                'initial_note_hotspot' => $request['reference'][0]['note_hotspot'],
+                'initial_note_code_smell' => $request['reference'][0]['note_sqale'],
+                'initial_bug_blocker' => $request['reference'][0]['bug_blocker'],
+                'initial_bug_critical' => $request['reference'][0]['bug_critical'],
+                'initial_bug_major' => $request['reference'][0]['bug_major'],
+                'initial_vulnerability_blocker' => $request['reference'][0]['vulnerability_blocker'],
+                'initial_vulnerability_critical' => $request['reference'][0]['vulnerability_critical'],
+                'initial_vulnerability_major' => $request['reference'][0]['vulnerability_major'],
+                'initial_code_smell_blocker' => $request['reference'][0]['code_smell_blocker'],
+                'initial_code_smell_critical' => $request['reference'][0]['code_smell_critical'],
+                'initial_code_smell_major' => $request['reference'][0]['code_smell_major'],
+                'initial_hotspot_total' => $request['reference'][0]['hotspot_total'],
+                'initial_couverture' => $request['reference'][0]['couverture'],
+                'initial_sqale_debt_ratio' => $request['reference'][0]['sqale_debt_ratio']
+
             ];
     }
 
@@ -362,9 +404,8 @@ class CosuiController extends AbstractController
         $response = new JsonResponse();
 
         /** On on vérifie si on a activé le mode test */
-        if (is_null($request->get('mode'))) {
-            $mode = "null";
-        } else {
+        $mode = 'null';
+        if (!is_null($request->get('mode'))) {
             $mode = $request->get('mode');
         }
 
@@ -374,10 +415,10 @@ class CosuiController extends AbstractController
         /** On récupère les notes */
         $n = static::notes($mavenKey, $mode);
 
-        if ($n["resultat"] === false) {
-            $nameApplication = $versionApplication = $typeApplication = "NaN";
-            $dateApplication = "01/01/1980";
-            $noteCodeSmell = $noteReliability = $noteSecurity = $noteHotspot = "F";
+        if ($n['resultat'] === false) {
+            $nameApplication = $versionApplication = $typeApplication = 'NaN';
+            $dateApplication = '01/01/1980';
+            $noteCodeSmell = $noteReliability = $noteSecurity = $noteHotspot = 'F';
             $nombreMetierCodeSmellBlocker = $nombreMetierCodeSmellCritical = $nombreMetierCodeSmellMajor = 0;
             $nombrePresentationCodeSmellBlocker = $nombrePresentationCodeSmellCritical = 0;
             $nombrePresentationCodeSmellMajor = 0;
@@ -385,7 +426,7 @@ class CosuiController extends AbstractController
             $bugBlocker = $bugCritical = $bugMajor = 0;
             $vulnerabilityBlocker = $vulnerabilityCritical = $vulnerabilityMajor = 0;
             $codeSmellBlocker = $codeSmellCritical = $codeSmellMajor = 0;
-            $hotspot = 0;
+            $hotspot = $couverture = $sqaleDebtRatio = 0;
 
             $nombrePresentationReliabilityBlocker = $nombrePresentationReliabilityCritical = 0;
             $nombrePresentationReliabilityMajor = 0;
@@ -397,33 +438,35 @@ class CosuiController extends AbstractController
             $message = "[COSUI-001] Il n'y a pas de données dans la babase !";
             $this->addFlash('alert', $message);
         } else {
-            $nameApplication = $n["name"];
-            $versionApplication = $n["version"];
-            $typeApplication = $n["type"];
-            $dateApplication = $n["date_version"];
-            $noteCodeSmell = $n["note_code_smell"];
-            $noteReliability = $n["note_reliability"];
-            $noteSecurity = $n["note_security"];
-            $noteHotspot = $n["note_hotspot"];
-            $bugBlocker = $n["bug_blocker"];
-            $bugCritical = $n["bug_critical"];
-            $bugMajor = $n["bug_major"];
-            $vulnerabilityBlocker = $n["vulnerability_blocker"];
-            $vulnerabilityCritical = $n["vulnerability_critical"];
-            $vulnerabilityMajor = $n["vulnerability_major"];
-            $codeSmellBlocker = $n["code_smell_blocker"];
-            $codeSmellCritical = $n["code_smell_critical"];
-            $codeSmellMajor = $n["code_smell_major"];
-            $hotspot = $n["hotspot_total"];
+            $nameApplication = $n['name'];
+            $versionApplication = $n['version'];
+            $typeApplication = $n['type'];
+            $dateApplication = $n['date_version'];
+            $noteCodeSmell = $n['note_code_smell'];
+            $noteReliability = $n['note_reliability'];
+            $noteSecurity = $n['note_security'];
+            $noteHotspot = $n['note_hotspot'];
+            $bugBlocker = $n['bug_blocker'];
+            $bugCritical = $n['bug_critical'];
+            $bugMajor = $n['bug_major'];
+            $vulnerabilityBlocker = $n['vulnerability_blocker'];
+            $vulnerabilityCritical = $n['vulnerability_critical'];
+            $vulnerabilityMajor = $n['vulnerability_major'];
+            $codeSmellBlocker = $n['code_smell_blocker'];
+            $codeSmellCritical = $n['code_smell_critical'];
+            $codeSmellMajor = $n['code_smell_major'];
+            $hotspot = $n['hotspot_total'];
+            $couverture = $n['couverture'];
+            $sqaleDebtRatio = $n['sqale_debt_ratio'];
         }
 
         /** On récupères les indicateurs de la version de référence */
         $nn = self::reference($mavenKey, $mode);
-        if ($nn["resultat"] === false) {
-            $initialVersionApplication = "NaN";
-            $initialDateApplication = "01/01/1980";
-            $initialNoteCodeSmell = $initialNoteReliability = $initialNoteReliability = "F";
-            $initialNoteSecurity = $initialNoteHotspot = "F";
+        if ($nn['resultat'] === false) {
+            $initialVersionApplication = 'NaN';
+            $initialDateApplication = '01/01/1980';
+            $initialNoteCodeSmell = $initialNoteReliability = $initialNoteReliability = 'F';
+            $initialNoteSecurity = $initialNoteHotspot = 'F';
             $initialBugBlocker = $initialBugCritical = $initialBugMajor = 0;
             $initialVulnerabilityBlocker = $initialVulnerabilityCritical = $initialVulnerabilityMajor = 0;
             $initialCodeSmellBlocker = $initialCodeSmellCritical = $initialCodeSmellMajor = 0;
@@ -431,22 +474,24 @@ class CosuiController extends AbstractController
             $message = "[COSUI-002] Vous devez choisir un projet comme référence !";
             $this->addFlash('alert', $message);
         } else {
-            $initialVersionApplication = $nn["initial_version_application"];
-            $initialDateApplication = $nn["initial_date_version"];
-            $initialNoteCodeSmell = $nn["initial_note_code_smell"];
-            $initialNoteReliability = $nn["initial_note_reliability"];
-            $initialNoteSecurity = $nn["initial_note_security"];
-            $initialNoteHotspot = $nn["initial_note_hotspot"];
-            $initialBugBlocker = $nn["initial_bug_blocker"];
-            $initialBugCritical = $nn["initial_bug_critical"];
-            $initialBugMajor = $nn["initial_bug_major"];
-            $initialVulnerabilityBlocker = $nn["initial_vulnerability_blocker"];
-            $initialVulnerabilityCritical = $nn["initial_vulnerability_critical"];
-            $initialVulnerabilityMajor = $nn["initial_vulnerability_major"];
-            $initialCodeSmellBlocker = $nn["initial_code_smell_blocker"];
-            $initialCodeSmellCritical = $nn["initial_code_smell_critical"];
-            $initialCodeSmellMajor = $nn["initial_code_smell_major"];
-            $initialHotspot = $nn["initial_hotspot_total"];
+            $initialVersionApplication = $nn['initial_version_application'];
+            $initialDateApplication = $nn['initial_date_version'];
+            $initialNoteCodeSmell = $nn['initial_note_code_smell'];
+            $initialNoteReliability = $nn['initial_note_reliability'];
+            $initialNoteSecurity = $nn['initial_note_security'];
+            $initialNoteHotspot = $nn['initial_note_hotspot'];
+            $initialBugBlocker = $nn['initial_bug_blocker'];
+            $initialBugCritical = $nn['initial_bug_critical'];
+            $initialBugMajor = $nn['initial_bug_major'];
+            $initialVulnerabilityBlocker = $nn['initial_vulnerability_blocker'];
+            $initialVulnerabilityCritical = $nn['initial_vulnerability_critical'];
+            $initialVulnerabilityMajor = $nn['initial_vulnerability_major'];
+            $initialCodeSmellBlocker = $nn['initial_code_smell_blocker'];
+            $initialCodeSmellCritical = $nn['initial_code_smell_critical'];
+            $initialCodeSmellMajor = $nn['initial_code_smell_major'];
+            $initialHotspot = $nn['initial_hotspot_total'];
+            $initialCouverture = $nn['initial_couverture'];
+            $initialSqaleDebtRatio = $nn['initial_sqale_debt_ratio'];
         }
         /** on récupère le dernier setup pour le projet */
         $setup = self::setup($mavenKey);
@@ -454,48 +499,48 @@ class CosuiController extends AbstractController
         /** On récupère la répartition pour l'application backend */
         /** Fiabilité Blocker */
         $fiabilite01 = self::traitement($mavenKey, $setup, 'BUG', 'BLOCKER');
-        $nombrePresentationReliabilityBlocker = $fiabilite01["frontend"];
-        $nombreMetierReliabilityBlocker = $fiabilite01["backend"];
+        $nombrePresentationReliabilityBlocker = $fiabilite01['frontend'];
+        $nombreMetierReliabilityBlocker = $fiabilite01['backend'];
 
         /** Fiabilité Critical */
         $fiabilite02 = self::traitement($mavenKey, $setup, 'BUG', 'CRITICAL');
-        $nombrePresentationReliabilityCritical = $fiabilite02["frontend"];
-        $nombreMetierReliabilityCritical = $fiabilite02["backend"];
+        $nombrePresentationReliabilityCritical = $fiabilite02['frontend'];
+        $nombreMetierReliabilityCritical = $fiabilite02['backend'];
 
         /** Fiabilité Major */
         $fiabilite03 = self::traitement($mavenKey, $setup, 'BUG', 'MAJOR');
-        $nombrePresentationReliabilityMajor = $fiabilite03["frontend"];
-        $nombreMetierReliabilityMajor = $fiabilite03["backend"];
+        $nombrePresentationReliabilityMajor = $fiabilite03['frontend'];
+        $nombreMetierReliabilityMajor = $fiabilite03['backend'];
 
         /** Vulnérabilité Blocker */
         $vulnerabilite01 = self::traitement($mavenKey, $setup, 'VULNERABILITY', 'BLOCKER');
-        $nombrePresentationVulnerabilityBlocker = $vulnerabilite01["frontend"];
-        $nombreMetierVulnerabilityBlocker = $vulnerabilite01["backend"];
+        $nombrePresentationVulnerabilityBlocker = $vulnerabilite01['frontend'];
+        $nombreMetierVulnerabilityBlocker = $vulnerabilite01['backend'];
 
         /** Vulnérabilité Critical */
         $vulnerabilite02 = self::traitement($mavenKey, $setup, 'VULNERABILITY', 'CRITICAL');
-        $nombrePresentationVulnerabilityCritical = $vulnerabilite02["frontend"];
-        $nombreMetierVulnerabilityCritical = $vulnerabilite02["backend"];
+        $nombrePresentationVulnerabilityCritical = $vulnerabilite02['frontend'];
+        $nombreMetierVulnerabilityCritical = $vulnerabilite02['backend'];
 
         /** Vulnérabilité Major */
         $vulnerabilite03 = self::traitement($mavenKey, $setup, 'VULNERABILITY', 'MAJOR');
-        $nombrePresentationVulnerabilityMajor = $vulnerabilite03["frontend"];
-        $nombreMetierVulnerabilityMajor = $vulnerabilite03["backend"];
+        $nombrePresentationVulnerabilityMajor = $vulnerabilite03['frontend'];
+        $nombreMetierVulnerabilityMajor = $vulnerabilite03['backend'];
 
         /** Maintenabilité Bloqant*/
         $codeSmell01 = self::traitement($mavenKey, $setup, 'CODE_SMELL', 'BLOCKER');
-        $nombrePresentationCodeSmellBlocker = $codeSmell01["frontend"];
-        $nombreMetierCodeSmellBlocker = $codeSmell01["backend"];
+        $nombrePresentationCodeSmellBlocker = $codeSmell01['frontend'];
+        $nombreMetierCodeSmellBlocker = $codeSmell01['backend'];
 
         /** Maintenabilité Critical */
         $codeSmell02 = self::traitement($mavenKey, $setup, 'CODE_SMELL', 'CRITICAL');
-        $nombrePresentationCodeSmellCritical = $codeSmell02["frontend"];
-        $nombreMetierCodeSmellCritical = $codeSmell02["backend"];
+        $nombrePresentationCodeSmellCritical = $codeSmell02['frontend'];
+        $nombreMetierCodeSmellCritical = $codeSmell02['backend'];
 
         /** Maintenabilité Major */
         $codeSmell03 = self::traitement($mavenKey, $setup, 'CODE_SMELL', 'MAJOR');
-        $nombrePresentationCodeSmellMajor = $codeSmell03["frontend"];
-        $nombreMetierCodeSmellMajor = $codeSmell03["frontend"];
+        $nombrePresentationCodeSmellMajor = $codeSmell03['frontend'];
+        $nombreMetierCodeSmellMajor = $codeSmell03['frontend'];
 
         /** On calcul l'évolution pour chaque indicateur par rapport
          *  aux notes de référence.
@@ -520,13 +565,40 @@ class CosuiController extends AbstractController
         $evolutionBugMajor = self::variation($initialBugMajor, $bugMajor);
 
         /** serie pour la version de référence et la version courrante */
+        // ['Fiabilité','Vulnérabilité','Hotspot','Maintenabilité','Couverture','Dette']
+        // >100, 70, 50 30 10
 
-        //labels: ['Fiabilité','Vulnérabilité','Hotspot', 'Maintenabilité','Couverture','Dette'],
-        //const dataset1=[60, 80, 100, 60, 2, 100-17]; >100, 70, 50 30 10
-        //https://sonarqube2.franceagrimer.fr/api/measures/component?component=fr.franceagrimer:monapplication-mat&metricKeys=sqale_debt_ratio
-        //sqale_index
+        /** On calcul la valeur des notes pour le Radar */
+        $idata1=$idata2=$idata3=$idata4=$idata5=$idata6=0;
+        $idata1=static::note2point($initialNoteReliability);
+        $idata2=static::note2point($initialNoteSecurity);
+        $idata3=static::note2point($initialNoteHotspot);
+        $idata4=static::note2point($initialNoteCodeSmell);
+        $idata5=$initialCouverture;
+
+        $idata6=100-$initialSqaleDebtRatio*10;
+        if ($initialSqaleDebtRatio===-1.0) {
+            $idata6=0;
+        }
+
+        $data1=$data2=$data3=$data4=$data5=$data6=0;
+        $data1=static::note2point($noteReliability);
+        $data2=static::note2point($noteSecurity);
+        $data3=static::note2point($noteHotspot);
+        $data4=static::note2point($noteCodeSmell);
+        $data5=$couverture;
+        $data6=100-$sqaleDebtRatio*10;
+        if ($sqaleDebtRatio===-1.0) {
+            $data6=0;
+        }
+
+        /** On constitue les dataSet */
+        $dataSet1="$idata1, $idata2, $idata3, $idata4, $idata5, $idata6";
+        $dataSet2="$data1, $data2, $data3, $data4, $data5, $data6";
 
         $render = [
+            'dataset1'=>$dataSet1, 'dataset2'=>$dataSet2,
+            'label1'=>$initialVersionApplication, 'label2'=>$versionApplication,
             'setup' => $setup, 'monApplication' => $nameApplication, 'version_application' => $versionApplication,
             'type_application' => $typeApplication, 'date_application' => $dateApplication,
             'note_code_smell' => $noteCodeSmell, 'note_reliability' => $noteReliability,
@@ -535,25 +607,31 @@ class CosuiController extends AbstractController
             'vulnerability_critical' => $vulnerabilityCritical, 'vulnerability_major' => $vulnerabilityMajor,
             'code_smell_blocker' => $codeSmellBlocker, 'code_smell_critical' => $codeSmellCritical,
             'code_smell_major' => $codeSmellMajor, 'hotspot' => $hotspot,
-            'initial_version_application' => $initialVersionApplication, 'initial_date_application' => $initialDateApplication,
+            'initial_version_application' => $initialVersionApplication,
+            'initial_date_application' => $initialDateApplication,
             'initial_note_code_smell' => $initialNoteCodeSmell, 'initial_note_reliability' => $initialNoteReliability,
             'initial_note_security' => $initialNoteSecurity, 'initial_note_hotspot' => $initialNoteHotspot,
             'initial_bug_blocker' => $initialBugBlocker, 'initial_bug_critical' => $initialBugCritical,
             'initial_bug_major' => $initialBugMajor, 'initial_vulnerability_blocker' => $initialVulnerabilityBlocker,
-            'initial_vulnerability_critical' => $initialVulnerabilityCritical, 'initial_vulnerability_major' => $initialVulnerabilityMajor,
-            'initial_code_smell_blocker' => $initialCodeSmellBlocker, 'initial_code_smell_critical' => $initialCodeSmellCritical,
+            'initial_vulnerability_critical' => $initialVulnerabilityCritical,
+            'initial_vulnerability_major' => $initialVulnerabilityMajor,
+            'initial_code_smell_blocker' => $initialCodeSmellBlocker,
+            'initial_code_smell_critical' => $initialCodeSmellCritical,
             'initial_code_smell_major' => $initialCodeSmellMajor, 'evolution_bug_blocker' => $evolutionBugBlocker,
             'evolution_bug_critical' => $evolutionBugCritical, 'evolution_bug_major' => $evolutionBugMajor,
             'evolution_vulnerability_blocker' => $evolutionVulnerabilityBlocker,
             'evolution_vulnerability_critical' => $evolutionVulnerabilityCritical,
             'evolution_vulnerability_major' => $evolutionVulnerabilityMajor,
-            'evolution_code_smell_blocker' => $evolutionCodeSmellBlocker, 'evolution_code_smell_critical' => $evolutionCodeSmellCritical,
+            'evolution_code_smell_blocker' => $evolutionCodeSmellBlocker,
+            'evolution_code_smell_critical' => $evolutionCodeSmellCritical,
             'evolution_code_smell_major' => $evolutionCodeSmellMajor, 'evolution_hotspot' => $evolutionHotspot,
             'modal_initial_bug_blocker' => $initialBugBlocker, 'modal_initial_bug_critical' => $initialBugCritical,
-            'modal_initial_bug_major' => $initialBugMajor,'modal_initial_vulnerability_blocker' => $initialVulnerabilityBlocker,
+            'modal_initial_bug_major' => $initialBugMajor,
+            'modal_initial_vulnerability_blocker' => $initialVulnerabilityBlocker,
             'modal_initial_vulnerability_critical' => $initialVulnerabilityCritical,
             'modal_initial_vulnerability_major' => $initialVulnerabilityMajor,
-            'modal_initial_code_smell_blocker' => $initialCodeSmellBlocker, 'modal_initial_code_smell_critical' => $initialCodeSmellCritical,
+            'modal_initial_code_smell_blocker' => $initialCodeSmellBlocker,
+            'modal_initial_code_smell_critical' => $initialCodeSmellCritical,
             'modal_initial_code_smell_major' => $initialCodeSmellMajor, 'modal_initial_hotspot' => $initialHotspot,
             'nombre_metier_code_smell_blocker' => $nombreMetierCodeSmellBlocker,
             'nombre_metier_code_smell_critical' => $nombreMetierCodeSmellCritical,

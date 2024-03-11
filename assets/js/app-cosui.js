@@ -22,7 +22,7 @@ import './foundation.js';
 import './app-authentification-details.js';
 
 /** On importe les constantes */
-import { zero, vingt, trente, quarante, cinquante, soixante, soixanteDix, cent, quatreVingt } from './constante.js';
+import { zero, dix, vingt, trente, quarante, cinquante, soixante, soixanteDix, cent, quatreVingt } from './constante.js';
 
 /** Gestion des graphiques */
 import Chart from 'chart.js/auto';
@@ -31,7 +31,6 @@ Chart.register(ChartDataLabels);
 
 const ouiNon='#js-oui-non';
 const upDownEqual='.up, .down, .equal';
-
 
 /**
  * The function `dessineMoiUnRadar(dataset, labels)` is responsible for drawing a radar chart using the Chart.js library.
@@ -49,7 +48,7 @@ const dessineMoiUnRadar=function dessineMoiUnRadar(dataset1, dataset2, label1, l
     labels: ['Fiabilité','Vulnérabilité','Hotspot', 'Maintenabilité','Couverture','Dette'],
     datasets: [
     {
-      label:label1,
+      label:'v'+label1,
       backgroundColor: 'rgba(255, 99, 132, 0.2)',
       borderColor: 'rgba(255, 99, 132, 0.5)',
       pointBackgroundColor: '#FF6384',
@@ -60,7 +59,7 @@ const dessineMoiUnRadar=function dessineMoiUnRadar(dataset1, dataset2, label1, l
       fill: true,
       tension: 0.2 },
       {
-        label:label2,
+        label:'v'+label2,
         backgroundColor: 'rgba(0, 68, 91, 0.2)',
         borderColor: 'rgba(0, 68, 91, 0.5)',
         pointBackgroundColor: '#00445b',
@@ -92,10 +91,10 @@ const dessineMoiUnRadar=function dessineMoiUnRadar(dataset1, dataset2, label1, l
                     if (context.parsed.r===soixante){
                       return ' Note : C';
                     }
-                    if (context.parsed.r===quarante){
+                    if (context.parsed.r===trente){
                       return ' Note : D';
                     }
-                    if (context.parsed.r===vingt){
+                    if (context.parsed.r===dix){
                       return ' Note : E';
                     }
                     if (context.parsed.r===zero){
@@ -156,7 +155,7 @@ const dessineMoiUnRadar=function dessineMoiUnRadar(dataset1, dataset2, label1, l
     const ctx = document.getElementById('graphique-note').getContext('2d');
     const charts = new Chart(ctx, { type: 'radar', data, options });
     if (charts === null) {
-      console.info('null');
+      sessionStorage.setItem('error', "c'est pour rire, il ne peut pas y avoir d'erreur ici :)");
     }
 
   };
@@ -181,7 +180,7 @@ $(ouiNon).on('click', function () {
 });
 
 /**
- * On affiche les indicateurs de projet de référence
+ * On affiche les indicateurs du projet de référence
  *
  * @method
  * @name JQuery
@@ -190,10 +189,45 @@ $('.js-affiche-projet-reference').on('click', function () {
   $('#modal-projet-reference').foundation('open');
 });
 
-/** Afiche le radar des indicateurs clés */
-const dataset1=[60, 80, 100, 60, 2, 100-17];
-const dataset2=[20, 40, 60, 80, 28, 100-55];
+/**
+ * selectVersion
+ *
+ * @var [type]
+ */
+const mouton=async function() {
+  const data={ mode: 'null' };
+  const options = {
+    url: `${serveur()}/api/liste/version`, type: 'POST',
+    dataType: 'json', data: JSON.stringify(data), contentType };
 
-const label1='v1.2.0';
-const label2='v2.5.1';
-dessineMoiUnRadar(dataset1, dataset2, label1, label2);
+  const r = await $.ajax(options);
+  if (r.code===http_400) {
+    const message=`Une erreur s'est produite lors de l'analyse des données !`;
+    $('#message-ajout-projet').html(callboxError+message+callboxFermer);
+    return;
+  }
+
+  $('.js-version').select2({
+    placeholder: 'Cliquez pour ouvrir la liste',
+    selectOnClose: true,
+    width: '100%',
+    minimumResultsForSearch: 5,
+    language: 'fr',
+    data: r.liste
+  });
+  $('.analyse').removeClass('hide');
+  };
+
+/** Affiche le radar des indicateurs clés */
+const elm=document.getElementById('js-series');
+let s1=[], s2=[];
+
+// ['Fiabilité','Vulnérabilité','Hotspot', 'Maintenabilité','Couverture','Dette']
+elm.dataset.seriea.split(',').forEach(element => {
+  s1.push(parseInt(element,10));
+});
+elm.dataset.serieb.split(',').forEach(element => {
+  s2.push(parseInt(element,10));
+});
+
+dessineMoiUnRadar(s1, s2, elm.dataset.labela, elm.dataset.labelb);

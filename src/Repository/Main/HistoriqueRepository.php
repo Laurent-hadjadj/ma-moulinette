@@ -587,7 +587,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                         bug_blocker, bug_critical, bug_major,
                         vulnerability_blocker, vulnerability_critical, vulnerability_major,
                         code_smell_blocker, code_smell_critical, code_smell_major,
-                        hotspot_total
+                        hotspot_total, couverture, sqale_debt_ratio
                 FROM historique
                 WHERE maven_key=:maven_key
                 ORDER BY date_version DESC LIMIT 1";
@@ -626,7 +626,8 @@ class HistoriqueRepository extends ServiceEntityRepository
                         note_reliability, note_security, note_hotspot, note_sqale,
                         bug_blocker, bug_critical, bug_major,
                         vulnerability_blocker, vulnerability_critical, vulnerability_major,
-                        code_smell_blocker, code_smell_critical, code_smell_major, hotspot_total
+                        code_smell_blocker, code_smell_critical, code_smell_major,
+                        hotspot_total, couverture, sqale_debt_ratio
                 FROM historique
                 WHERE maven_key=:maven_key AND initial=1";
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
