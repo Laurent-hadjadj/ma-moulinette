@@ -26,9 +26,8 @@ use DateTime;
 use DateTimeZone;
 
 // Accès aux tables SLQLite
-use App\Entity\Main\InformationProjet;
-
 use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Main\InformationProjet;
 
 /** Client HTTP */
 use App\Service\Client;
@@ -41,7 +40,6 @@ class ApiInformationController extends AbstractController
     /** Définition des constantes */
     public static $sonarUrl = "sonar.url";
     public static $europeParis = "Europe/Paris";
-    public static $apiIssuesSearch = "/api/issues/search?componentKeys=";
     public static $removeReturnline = "/\s+/u";
     public static $reference = "<strong>[PROJET-001]</strong>";
     public static $erreur400 = "La requête est incorrecte (Erreur 400).";
