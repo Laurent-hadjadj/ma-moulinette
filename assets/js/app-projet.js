@@ -262,17 +262,17 @@ const selectProjet=async function() {
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const projetInformation=function(mavenKey) {
-  const data = { mavenKey };
+  const data = { maven_key: mavenKey, mode: 'null' };
   const options = {
     url: `${serveur()}/api/projet/information`, type: 'POST',
-          dataType: 'json', data, contentType,
+          dataType: 'json', data: JSON.stringify(data), contentType,
   };
 
   return new Promise(resolve => {
     $.ajax(options).then(t => {
-      $.ajax(options).then(t => {
+      console.log(t);
         if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
-          $('#callout-projet-message').removeClass('hide success warning primary secondary');
+          $('#callout-projet-message').removeClass('hide success alert warning primary secondary');
           $('#callout-projet-message').addClass(t.type);
           $('#js-reference-information').html(t.reference);
           $('#js-message-information').html(t.message);
@@ -284,7 +284,6 @@ const projetInformation=function(mavenKey) {
       resolve();
       });
     });
-  });
 };
 
 /**
@@ -299,10 +298,10 @@ const projetInformation=function(mavenKey) {
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const projetMesure=function(mavenKey) {
-  const data = { mavenKey };
+  const data = { maven_key: mavenKey, mode: 'null' };
   const options = {
     url: `${serveur()}/api/projet/mesure`, type: 'POST',
-          dataType: 'json', data, contentType };
+          dataType: 'json', data: JSON.stringify(data), contentType };
   return new Promise(resolve => {
     $.ajax(options).then(t => {
       if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
