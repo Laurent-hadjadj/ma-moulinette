@@ -85,19 +85,21 @@ class ApiInformationController extends AbstractController
 
         /** On teste si la clé est valide */
         if ($data === null) {
-            return $response->setData(['data' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+            return $response->setData(['data' => null, 'code'=>400, 'type'=>'alert', 'reference'=> static::$reference,
+            'message' => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
         if (!property_exists($data, 'mode')) {
-            return $response->setData(['mode' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+            return $response->setData(['mode' => null, 'code'=>400, 'type'=>'alert','reference'=> static::$reference,'message' => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
         if (!property_exists($data, 'maven_key')) {
-            return $response->setData(['maven_key' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+            return $response->setData(['maven_key' => null, 'code'=>400, 'type'=>'alert','reference'=> static::$reference,'message' => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return $response->setData([
-                "mode" => $data->mode ,
-                "code" => 403,
-                "reference" => static::$reference,
-                "message" => static::$erreur403,
+                'type'=>'warning',
+                'mode' => $data->mode ,
+                'code' => 403,
+                'reference' => static::$reference,
+                'message' => static::$erreur403,
                 Response::HTTP_OK]);
         }
 
@@ -112,18 +114,20 @@ class ApiInformationController extends AbstractController
         if (array_key_exists('code', $result)){
             if ($result['code']===401) {
             return $response->setData([
-                "mode" => $data->mode ,
-                "code" => 401,
-                "reference" => static::$reference,
-                "message" => static::$erreur401,
+                'type'=>'warning',
+                'mode' => $data->mode ,
+                'code' => 401,
+                'reference' => static::$reference,
+                'message' => static::$erreur401,
                 Response::HTTP_OK]);
             }
             if ($result['code']===404){
                 return $response->setData([
-                    "mode" => $data->mode ,
-                    "code" => 404,
-                    "reference" => static::$reference,
-                    "message" => static::$erreur404,
+                    'type'=>'alert',
+                    'mode' => $data->mode ,
+                    'code' => 404,
+                    'reference' => static::$reference,
+                    'message' => static::$erreur404,
                     Response::HTTP_OK]);
                 }
         }
@@ -137,7 +141,12 @@ class ApiInformationController extends AbstractController
         $map=['maven_key'=>$data->maven_key];
         $request=$informationProjet->deleteInformationProjetMavenKey($data->mode, $map);
         if ($request['code']!=200) {
-            return $response->setData(['mode' => $data->mode, 'code' => $request['code'], 'message'=>$request['erreur'], Response::HTTP_OK]);
+            return $response->setData([
+                'mode' => $data->mode,
+                'reference' => static::$reference,
+                'code' => $request['code'],
+                'message'=>$request['erreur'],
+                Response::HTTP_OK]);
         }
 
         /** On ajoute les informations du projet dans la table information_projet. */
