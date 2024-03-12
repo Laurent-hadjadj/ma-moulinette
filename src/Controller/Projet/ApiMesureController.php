@@ -86,19 +86,20 @@ class ApiMesureController extends AbstractController
 
         /** On teste si la clé est valide */
         if ($data === null) {
-            return $response->setData(['data' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+            return $response->setData(['data' => null, 'type'=>'alert', 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
         if (!property_exists($data, 'mode')) {
-            return $response->setData(['mode' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+            return $response->setData(['mode' => null, 'type'=>'alert', 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
         if (!property_exists($data, 'maven_key')) {
-            return $response->setData(['maven_key' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+            return $response->setData(['maven_key' => null, 'type'=>'alert', 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return $response->setData([
-                "mode" => $data->mode ,
-                "code" => 403,
-                "reference" => static::$reference,
-                "message" => static::$erreur403,
+                'type'=>'warning',
+                'mode' => $data->mode ,
+                'code' => 403,
+                'reference' => static::$reference,
+                'message' => static::$erreur403,
                 Response::HTTP_OK]);
         }
 
@@ -110,19 +111,20 @@ class ApiMesureController extends AbstractController
 
         /** on appel le client http */
         $result1 = $client->http(trim(preg_replace(static::$removeReturnline, " ", $url1)));
-
         /** On catch les erreurs HTTP 400, 401 et 404, si possible :) */
         if (array_key_exists('code', $result1)){
             if ($result1['code']===401) {
             return $response->setData([
-                "mode" => $data->mode ,
-                "code" => 401,
-                "reference" => static::$reference,
-                "message" => static::$erreur401,
+                'type'=>'warning',
+                'mode' => $data->mode ,
+                'code' => 401,
+                'reference' => static::$reference,
+                'message' => static::$erreur401,
                 Response::HTTP_OK]);
             }
             if ($result1['code']===404){
                 return $response->setData([
+                    'type'=>'alert',
                     "mode" => $data->mode ,
                     "code" => 404,
                     "reference" => static::$reference,
