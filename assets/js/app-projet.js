@@ -214,6 +214,7 @@ const match=function(params, data) {
 /**
  * [Description for selectProjet]
  * Création du selecteur de projet.
+ * http://{url}/api/liste/projet
  *
  * @return [type]
  *
@@ -251,8 +252,13 @@ const selectProjet=async function() {
 
 /**
  * [Description for projetAnalyse]
- * Récupère les informations du projet
- * (id de l'enregistrement, date de l'analyse, version, type de version)
+ * Collecte les informations du projet (projet, version, date)
+ * http://{url}/api/projet/information
+ *
+ * Phase 01
+ *
+ * {mode} = null, TEST
+ * {mavenKey} = clé du projet
  *
  * @param string mavenKey
  *
@@ -279,7 +285,7 @@ const projetInformation=function(mavenKey) {
           return;
         }
         if (t.code===http_200){
-          log(` - INFO : (1) Nombre de version disponible : ${t.nombreVersion}`);
+          log(` - INFO : (01) Nombre de version disponible : ${t.nombreVersion}`);
           }
       resolve();
       });
@@ -288,8 +294,14 @@ const projetInformation=function(mavenKey) {
 
 /**
  * [Description for projetMesure]
- * Met à jour les indicateurs du projet (lignes, couvertures, duplication, défauts).
+ * Collecte des mesures clés du projet (lignes, couvertures, duplication, défauts).
+ * http://{url}/api/projet/mesure
  *
+ * Phase 02
+ *
+* {mode} = null, TEST
+* {mavenKey} = clé du projet
+*
  * @param string mavenKey
  *
  * @return response
@@ -305,14 +317,15 @@ const projetMesure=function(mavenKey) {
   return new Promise(resolve => {
     $.ajax(options).then(t => {
       if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
-        $('#callout-projet-message').removeClass('hide success warning primary secondary');
+        $('#callout-projet-message').removeClass('hide success alert warning primary secondary');
         $('#callout-projet-message').addClass(t.type);
         $('#js-reference-information').html(t.reference);
         $('#js-message-information').html(t.message);
+        sessionStorage.setItem('collecte', 'Erreur pahse 003');
         return;
       }
       if (t.code===http_200){
-          log(' - INFO : (2) Ajout des mesures.');
+          log(' - INFO : (02) Ajout des mesures.');
         }
         resolve();
     });
@@ -320,10 +333,53 @@ const projetMesure=function(mavenKey) {
 };
 
 /**
+  * [Description for projetRating]
+  * Récupère la note pour la fiabilité, la sécurité et les mauvaises pratiques.
+  * http://{url}'/api/projet/note
+  *
+  * Phase 03
+  *
+  * {mode} = null, TEST
+  * {mavenKey} = clé du projet
+  * {type} = reliability, security, sqale
+  *
+  * @param string mavenKey
+  * @param string type
+  *
+  * @return response
+  *
+  * Created at: 19/12/2022, 22:15:12 (Europe/Paris)
+  * @author     Laurent HADJADJ <laurent_h@me.com>
+  */
+const projetRating=function(mavenKey, type) {
+  const data = { maven_key: mavenKey, type, mode: 'null' };
+  const options = {
+    url: `${serveur()}/api/projet/note`, type: 'POST',
+    dataType: 'json', data: JSON.stringify(data), contentType };
+
+  return new Promise(resolve => {
+    $.ajax(options).then(t => {
+        if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
+          $('#callout-projet-message').removeClass('hide success alert warning primary secondary');
+          $('#callout-projet-message').addClass(t.type);
+          $('#js-reference-information').html(t.reference);
+          $('#js-message-information').html(t.message);
+          return;
+        }
+        if (t.code===http_200){
+          log(` - INFO : (03) Reprise des notes pour le type : ${t.type}`);
+          log(`              : ${t.nombre} résultats.`);
+          }
+          resolve();
+      });
+  });
+};
+
+/**
  * [Description for projetAnomalie]
  * On récupère le nombre total des défauts (BUG, VULNERABILITY, CODE_SMELL),
  * la répartition par dossier la répartition par severity et la dette technique total.
- * Arguements : mavenKey = clé du projet,
+ * Phase 003
  *
  * @param string mavenKey
  *
@@ -333,10 +389,10 @@ const projetMesure=function(mavenKey) {
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const projetAnomalie=function(mavenKey) {
-  const data = { mavenKey };
+  const data = { mavenèkey: mavenKey, mode: 'mode' };
   const options = {
     url: `${serveur()}/api/projet/anomalie`, type: 'GET',
-          dataType: 'json', data, contentType };
+          dataType: 'json', data: JSON.stringify(data), contentType };
 
   return new Promise(resolve => {
     $.ajax(options).then(t => {
@@ -390,43 +446,6 @@ const projetAnomalieDetails=function(mavenKey) {
           }
         }
       resolve();
-      });
-  });
-};
-
-/**
-  * [Description for projetRating]
-  * Récupère la note pour la fiabilité, la sécurité et les mauvaises pratiques.
-  * http://{url}'/api/projet/historique/note
-  * {mavenKey} = clé du projet
-  * {type} = reliability, security, sqale
-  *
-  * @param string mavenKey
-  * @param string type
-  *
-  * @return response
-  *
-  * Created at: 19/12/2022, 22:15:12 (Europe/Paris)
-  * @author     Laurent HADJADJ <laurent_h@me.com>
-  */
-const projetRating=function(mavenKey, type) {
-  const data = { mavenKey, type };
-  const options = {
-    url: `${serveur()}/api/projet/historique/note`, type: 'GET',
-    dataType: 'json', data, contentType };
-
-  return new Promise(resolve => {
-    $.ajax(options).then(t => {
-      if (t.type==='alert'){
-        $('#callout-projet-message').removeClass('hide success warning primary secondary');
-        $('#callout-projet-message').addClass(t.type);
-        $('#js-reference-information').html(t.reference);
-        $('#js-message-information').html(t.message);
-      } else {
-        log(` - INFO : (3) Reprise des notes pour le type : ${t.type}`);
-        log(`              : ${t.nombre} résultats.`);
-      }
-        resolve();
       });
   });
 };
@@ -1027,6 +1046,9 @@ $('select[name="projet"]').on('change', function () {
 
   /** On enregistre la clé maven dans le session storage (utile pour la page Owasp) */
   sessionStorage.setItem('projet', $('select[name="projet"]').val().trim());
+
+  /** On supprime la clé de collecte */
+  sessionStorage.setItem('collecte', '');
 
   /* On regarde si le projet est en favori */
   const data = { mavenKey: $('#select-result').text().trim() };
