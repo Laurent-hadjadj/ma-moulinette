@@ -376,6 +376,52 @@ const projetRating=function(mavenKey, type) {
 };
 
 /**
+ * [Description for projetOwasp]
+ * Récupère le top 10 OWASP et construit la vue
+ * Attention une faille peut être comptée deux fois ou plus, cela dépend du tag. Donc il est
+ * possible d'avoir pour la clé une faille de type OWASP-A3 et OWASP-A10
+ * http://{url}/api/issues/search?componentKeys={key}&facets=owaspTop10&
+ * owaspTop10=a1,a2,a3,a4,a5,a6,a7,a8,a9,a10
+ *
+ * Phase 04
+ *
+ * {mode} = null, TEST
+ * {mavenKey} = clé du projet
+ *
+ * @param string mavenKey
+ *
+ * @return response
+ *
+ * Created at: 19/12/2022, 22:16:16 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ */
+const projetOwasp=function(mavenKey) {
+  const data = { 'maven_key': mavenKey, 'mode': 'null'};
+  const options = {
+    url: `${serveur()}/api/projet/issues/owasp`, type: 'POST',
+          dataType: 'json', data: JSON.stringify(data), contentType };
+
+  return new Promise(resolve => {
+    $.ajax(options).then(t=> {
+      if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
+        $('#callout-projet-message').removeClass('hide success alert warning primary secondary');
+        $('#callout-projet-message').addClass(t.type);
+        $('#js-reference-information').html(t.reference);
+        $('#js-message-information').html(t.message);
+        return;
+      }
+      if (t.code===http_200 && t.owasp===0){
+          log(' - INFO : (04) Bravo aucune faille OWASP détectée.');
+        } else {
+          log(` - WARN : (04) J'ai trouvé ${t.owasp} faille(s).`);
+        }
+      resolve();
+    });
+  });
+};
+
+
+/**
  * [Description for projetAnomalie]
  * On récupère le nombre total des défauts (BUG, VULNERABILITY, CODE_SMELL),
  * la répartition par dossier la répartition par severity et la dette technique total.
@@ -447,48 +493,6 @@ const projetAnomalieDetails=function(mavenKey) {
         }
       resolve();
       });
-  });
-};
-
-/**
- * [Description for projetOwasp]
- * Récupère le top 10 OWASP et construit la vue
- * http://{url}/api/issues/search?componentKeys={key}&facets=owaspTop10&
- * owaspTop10=a1,a2,a3,a4,a5,a6,a7,a8,a9,a10
- * Attention une faille peut être comptée deux fois ou plus, cela dépend du tag. Donc il est
- * possible d'avoir pour la clé une faille de type OWASP-A3 et OWASP-A10
- *
- * @param string mavenKey
- * @param string version
- * @param string dateVersion
- *
- * @return response
- *
- * Created at: 19/12/2022, 22:16:16 (Europe/Paris)
- * @author     Laurent HADJADJ <laurent_h@me.com>
- */
-const projetOwasp=function(mavenKey) {
-  const data = { 'maven_key': mavenKey, 'mode': 'null'};
-  const options = {
-    url: `${serveur()}/api/projet/issues/owasp`, type: 'POST',
-          dataType: 'json', data: JSON.stringify(data), contentType };
-
-  return new Promise(resolve => {
-    $.ajax(options).then(t=> {
-      if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
-        $('#callout-projet-message').removeClass('hide success warning primary secondary');
-        $('#callout-projet-message').addClass(t.type);
-        $('#js-reference-information').html(t.reference);
-        $('#js-message-information').html(t.message);
-        return;
-      }
-      if (t.code===http_200 && t.owasp===0){
-          log(' - INFO : (4) Bravo aucune faille OWASP détectée.');
-        } else {
-          log(` - WARN : (4) J'ai trouvé ${t.owasp} faille(s).`);
-        }
-      resolve();
-    });
   });
 };
 
