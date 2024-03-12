@@ -142,6 +142,7 @@ class ApiInformationController extends AbstractController
         $request=$informationProjet->deleteInformationProjetMavenKey($data->mode, $map);
         if ($request['code']!=200) {
             return $response->setData([
+                'type'=>'alert',
                 'mode' => $data->mode,
                 'reference' => static::$reference,
                 'code' => $request['code'],
