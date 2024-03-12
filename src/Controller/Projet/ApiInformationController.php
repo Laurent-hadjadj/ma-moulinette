@@ -74,8 +74,8 @@ class ApiInformationController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/projet/information', name: 'projet_information', methods: ['POST'])]
-    public function projetInformation(Request $request, Client $client): response
+    #[Route('/api/projet/information', name: 'projet_information_collecte', methods: ['POST'])]
+    public function projetInformationCollecte(Request $request, Client $client): response
     {
         /** On décode le body */
         $data = json_decode($request->getContent());
