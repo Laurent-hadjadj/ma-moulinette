@@ -27,7 +27,6 @@ use DateTimeZone;
 
 // Accès aux tables SLQLite
 use App\Entity\Main\NoSonar;
-use App\Entity\Main\Todo;
 
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -39,10 +38,6 @@ use App\Service\Client;
 
 class ApiNosonarController extends AbstractController
 {
-    public static $regex = "/\s+/u";
-    public static $erreurMavenKey = "La clé maven est vide!";
-    public static $message = "Vous devez avoir le rôle COLLECTE pour réaliser cette action.";
-
     /** Définition des constantes */
     public static $sonarUrl = "sonar.url";
     public static $europeParis = "Europe/Paris";
@@ -104,16 +99,16 @@ class ApiNosonarController extends AbstractController
 
         /** On teste si la clé est valide */
         if ($data === null) {
-            return $response->setData(['data' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+            return $response->setData(['data' => null, 'code'=>400, 'message' => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
         if (!property_exists($data, 'mode')) {
-            return $response->setData(['mode' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+            return $response->setData(['mode' => null, 'code'=>400, 'message' => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
         if (!property_exists($data, 'maven_key')) {
-            return $response->setData(['maven_key' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+            return $response->setData(['maven_key' => null, 'code'=>400, 'message' => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return $response->setData([
-                "mode" => $data->mode ,
+                'mode' => $data->mode ,
                 "code" => 403,
                 "reference" => static::$reference,
                 "message" => static::$erreur403,
@@ -133,18 +128,18 @@ class ApiNosonarController extends AbstractController
         if (array_key_exists('code', $result)){
             if ($result['code']===401) {
             return $response->setData([
-                "mode" => $data->mode ,
-                "code" => 401,
-                "reference" => static::$reference,
-                "message" => static::$erreur401,
+                'mode' => $data->mode ,
+                'code' => 401,
+                'reference' => static::$reference,
+                'message' => static::$erreur401,
                 Response::HTTP_OK]);
             }
             if ($result['code']===404){
                 return $response->setData([
-                    "mode" => $data->mode ,
-                    "code" => 404,
-                    "reference" => static::$reference,
-                    "message" => static::$erreur404,
+                    'mode' => $data->mode ,
+                    'code' => 404,
+                    'reference' => static::$reference,
+                    'message' => static::$erreur404,
                     Response::HTTP_OK]);
                 }
         }
@@ -170,8 +165,8 @@ class ApiNosonarController extends AbstractController
          * Si on a trouvé des @notations de type nosSonar ou SuprressWarning.
          * dans le code alors on les dénombre
          */
-        if ($result["paging"]["total"] !== 0) {
-            foreach ($result["issues"] as $issue) {
+        if ($result['paging']['total'] !== 0) {
+            foreach ($result['issues'] as $issue) {
                 $nosonar = new NoSonar();
                 $nosonar->setMavenKey($data->maven_key);
                 $nosonar->setRule($issue['rule']);
@@ -194,7 +189,7 @@ class ApiNosonarController extends AbstractController
             /** Il n'y a pas de noSOnar ou de suppressWarning */
         }
 
-        return $response->setData(['mode' => $data->mode, 'code'=>200, 'nosonar' => $result["paging"]["total"], Response::HTTP_OK]);
+        return $response->setData(['mode' => $data->mode, 'code'=>200, 'nosonar' => $result["paging"]['total'], Response::HTTP_OK]);
     }
 
 }
