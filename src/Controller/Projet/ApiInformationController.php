@@ -77,6 +77,9 @@ class ApiInformationController extends AbstractController
     #[Route('/api/projet/information', name: 'projet_information_collecte', methods: ['POST'])]
     public function projetInformationCollecte(Request $request, Client $client): response
     {
+        /** On instancie l'EntityRepository */
+        $informationProjet = $this->em->getRepository(InformationProjet::class);
+
         /** On décode le body */
         $data = json_decode($request->getContent());
 
@@ -137,7 +140,6 @@ class ApiInformationController extends AbstractController
         $date->setTimezone(new DateTimeZone(static::$europeParis));
 
         /** On supprime les informations pour la maven_key. */
-        $informationProjet = $this->em->getRepository(InformationProjet::class);
         $map=['maven_key'=>$data->maven_key];
         $request=$informationProjet->deleteInformationProjetMavenKey($data->mode, $map);
         if ($request['code']!=200) {

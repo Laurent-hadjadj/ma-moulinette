@@ -26,9 +26,9 @@ use DateTime;
 use DateTimeZone;
 
 // Accès aux tables SLQLite
-use App\Entity\Main\Owasp;
-
 use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Main\Owasp;
+use App\Entity\Main\InformationProjet;
 
 /** Logger */
 use Psr\Log\LoggerInterface;
@@ -46,7 +46,7 @@ class ApiOwaspController extends AbstractController
     public static $europeParis = "Europe/Paris";
     public static $apiIssuesSearch = "/api/issues/search?componentKeys=";
     public static $removeReturnline = "/\s+/u";
-    public static $reference = "<strong>[PROJET-004]</strong>";
+    public static $reference = "<strong>[PROJET-011]</strong>";
     public static $erreur400 = "La requête est incorrecte (Erreur 400).";
     public static $erreur401 = "Erreur d\'Authentification. La clé n\'est pas correcte (Erreur 401).";
     public static $erreur403 = "Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).";
@@ -85,6 +85,10 @@ class ApiOwaspController extends AbstractController
     #[Route('/api/projet/issues/owasp', name: 'projet_issues_owasp', methods: ['POST'])]
     public function projetIssuesOwasp(Request $request, Client $client): response
     {
+        /** On instancie l'entityRepository */
+        $informationProjet = $this->em->getRepository(InformationProjet::class);
+        $owasp = $this->em->getRepository(Owasp::class);
+
         /** On décode le body */
         $data = json_decode($request->getContent());
 
@@ -140,24 +144,27 @@ class ApiOwaspController extends AbstractController
         }
 
         /** On récupère dans la table information_projet la version et la date du projet la plus récente. */
-        $sql = "SELECT project_version, date FROM information_projet WHERE maven_key='$data->maven_key' ORDER by date DESC LIMIT 1";
-        $info=$this->em->getConnection()->prepare($sql)->executeQuery()->fetchAllAssociative();
-        if (!$info) {
-            return $response->setData([
-                "mode" => $data->mode ,
-                "code" => 404,
+        $map=['maven_key'=>$data->maven_key];
+        $request=$informationProjet->selectInformationProjetProjectVersion($data->mode, $map);
+        if ($request['code']!=200) {
+            return $response->setData(["mode" => $data->mode, "code" => $request['code'], 'message'=>$request['erreur'],Response::HTTP_OK]);
+        }
+
+        if (!$request['info']) {
+            return $response->setData([ "mode" => $data->mode , "code" => 404,
                 "reference" => static::$reference,
                 "message" => static::$erreur404,
                 Response::HTTP_OK]);
         }
+
         /** On converti la date de la version en dateTime */
-        $dateVersion= new DateTime($info[0]['date']);
+        $dateVersion= new DateTime($request['info'][0]['date']);
         $dateVersion->setTimezone(new DateTimeZone(static::$europeParis));
 
 
         $date = new DateTime();
         $date->setTimezone(new DateTimeZone(static::$europeParis));
-        $owasp = [$result["total"]];
+        $owasp = [$result['total']];
         $effortTotal = $result["effortTotal"];
 
         for ($a = 0; $a < 10; $a++) {
@@ -400,15 +407,16 @@ class ApiOwaspController extends AbstractController
         }
 
         /** On supprime les informations sur le projet pour la dernière analyse. */
-        $sql = "DELETE FROM owasp WHERE maven_key='$data->maven_key'";
-        if ($data->mode !== "TEST") {
-            $this->em->getConnection()->prepare($sql)->executeQuery();
+        $map=['maven_key'=>$data->maven_key];
+        $request=$owasp->deleteOwaspMavenKey($data->mode, $map);
+        if ($request['code']!=200) {
+            return $response->setData(["mode" => $data->mode, "code" => $request['code'], 'message'=>$request['erreur'], Response::HTTP_OK]);
         }
 
         /** Enregistre en base. */
         $owaspTop10 = new Owasp();
         $owaspTop10->setMavenKey($data->maven_key);
-        $owaspTop10->setVersion($info[0]['project_version']);
+        $owaspTop10->setVersion($request['info'][0]['project_version']);
         $owaspTop10->setDateVersion($dateVersion);
         $owaspTop10->setEffortTotal($effortTotal);
         $owaspTop10->setA1($owasp[1]);

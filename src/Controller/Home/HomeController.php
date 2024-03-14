@@ -77,10 +77,10 @@ class HomeController extends AbstractController
      */
     private function countProjetBD($mode): int
     {
-        /**
-         * On récupère le nombre de projet depuis la table liste_projet
-         */
+        /** On instancie l'entityRepository */
         $listeProjet = $this->em->getRepository(ListeProjet::class);
+
+        /* On récupère le nombre de projet depuis la table liste_projet */
         $countListeProjet = $listeProjet->countListeProjet($mode);
 
         $projet = 0;
@@ -138,8 +138,10 @@ class HomeController extends AbstractController
      */
     private function countProfilBD($mode): int
     {
-        /** On récupère le nombre de profil depuis la table profils */
+        /** On instancie l'entityRepository */
         $profiles = $this->em->getRepository(Profiles::class);
+
+        /** On récupère le nombre de profil depuis la table profils */
         $countProfiles = $profiles->countProfiles($mode);
         $profil = 0;
         if ($countProfiles['request']) {
@@ -187,6 +189,9 @@ class HomeController extends AbstractController
      */
     private function majProperties($mode, $type, $bd, $sonar)
     {
+        /** On instancie l'entityRepository */
+        $properties = $this->em->getRepository(Properties::class);
+
         /** On met à jour la date de modification */
         $date = new DateTime();
         $date->setTimezone(new DateTimeZone(static::$europeParis));
@@ -195,8 +200,6 @@ class HomeController extends AbstractController
                 'profil_bd'=>$bd, 'profil_sonar'=>$sonar,
                 'date_modification_projet'=>$date->format(static::$dateFormat),
                 'date_modification_profil'=>$date->format(static::$dateFormat)];
-
-        $properties = $this->em->getRepository(Properties::class);
 
         if ($type === 'projet') {
             $properties->updatePropertiesProjet($mode,$map);
@@ -217,8 +220,9 @@ class HomeController extends AbstractController
      */
     private function getProperties($mode): array
     {
-        /** On récupère le nombre de projet et de profil */
         $properties = $this->em->getRepository(Properties::class);
+
+        /** On récupère le nombre de projet et de profil */
         $getProperties = $properties->getProperties($mode,'properties');
 
         /** La table est vide. On initialise les valeurs */
@@ -238,7 +242,6 @@ class HomeController extends AbstractController
                 'date_modification_projet'=>$dateModificationProjet,
                 'date_modification_profil'=>$dateModificationProfil];
 
-            $properties = $this->em->getRepository(Properties::class);
             $properties->insertProperties($mode,$map);
         } else {
             $projetBd = $getProperties['request'][0]['projet_bd'];
@@ -271,8 +274,10 @@ class HomeController extends AbstractController
      */
     private function getVersion($mode): string
     {
-      /** On récupère le numéro de la dernère version en base */
+      /** On instancie l'entityRepository */
         $maMoulinette = $this->em->getRepository(MaMoulinette::class);
+
+      /** On récupère le numéro de la dernère version en base */
         $getmaMoulinetteVersion = $maMoulinette->getMaMoulinetteVersion($mode);
         return $getmaMoulinetteVersion['request'][0]['version'];
     }
@@ -395,6 +400,9 @@ class HomeController extends AbstractController
     #[Route('/home/liste/version', name: 'home_liste_version', methods:'GET')]
     public function getListeVersion(Security $security, Request $request): response
     {
+        /** On instancie l'entityRepository */
+        $historique = $this->em->getRepository(Historique::class);
+
         /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
 
@@ -411,10 +419,9 @@ class HomeController extends AbstractController
         } else {
             $keys = array_values($listeVersion);
             $liste = [];
-            $repository = $this->em->getRepository(Historique::class);
             for ($i = 0; $i < count($keys); $i++) {
                 $where = static::contruitMaRequete($keys, array_keys($keys[$i]), $i);
-                $favori = $repository->getProjetFavori($where);
+                $favori = $historique->getProjetFavori($where);
                 array_push($liste, $favori);
             }
         }
@@ -441,6 +448,9 @@ class HomeController extends AbstractController
     #[Route('/home', name: 'home', methods:'GET')]
     public function index(Client $client, Security $security, Request $request): Response
     {
+        /** On instancie l'entityRepository */
+        $listeProjet = $this->em->getRepository(ListeProjet::class);
+
         // On test si on est en mode Test ou pas
         $mode = $request->get('mode');
         if (empty($mode)){
@@ -552,7 +562,6 @@ class HomeController extends AbstractController
         }
 
         /** ***************** 4 - Visibility *****************************  */
-        $listeProjet = $this->em->getRepository(ListeProjet::class);
         $t1 = $listeProjet->countListeProjetVisibility($mode,'public');
         $t2 = $listeProjet->countListeProjetVisibility($mode,'private');
 

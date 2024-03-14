@@ -85,6 +85,9 @@ class SuiviController extends AbstractController
     #[Route('/suivi', name: 'suivi', methods: ['GET'])]
     public function suivi(Request $request): response
     {
+        /** On instancie l'entityRepository */
+        $historique = $this->em->getRepository(Historique::class);
+
         /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
 
@@ -119,7 +122,6 @@ class SuiviController extends AbstractController
 
         /**On vérifie que le projet est bien dans l'historique */
         $map=['maven_key'=>$mavenKey];
-        $historique = $this->em->getRepository(Historique::class);
         $request=$historique->countHistoriqueProjet($mode, $map);
         if ($request['code']!=200 || $request['nombre']===0) {
             /** On prepare un message flash */
@@ -134,7 +136,6 @@ class SuiviController extends AbstractController
 
         /** on construit le tableau des données pour les requêtes */
         $map=['mode'=>$mode, 'maven_key'=>$mavenKey, 'limit'=>$this->getParameter('nombre.favori')];
-        $historique = $this->em->getRepository(Historique::class);
 
         /** Tableau de suivi principal */
         $suivi=$historique-> selectUnionHistoriqueProjet($mode, $map);
@@ -226,6 +227,9 @@ class SuiviController extends AbstractController
     #[Route('/api/liste/version', name: 'liste_version', methods: ['POST'])]
     public function listeVersion(Request $request): Response
     {
+        /** On instancie l'entityRepository */
+        $informationProjet = $this->em->getRepository(InformationProjet::class);
+
         /** On décode le body */
         $data = json_decode($request->getContent());
 
@@ -242,7 +246,6 @@ class SuiviController extends AbstractController
 
         /** On vérifie  */
         $map=['maven_key'=>$data->maven_key];
-        $informationProjet = $this->em->getRepository(InformationProjet::class);
         $request=$informationProjet->selectInformationProjetVersion($data->mode, $map);
         if ($request['code']!=200) {
             return $response->setData([
@@ -467,6 +470,9 @@ class SuiviController extends AbstractController
     #[Route('/api/suivi/mise-a-jour', name: 'suivi_mise_a_jour', methods: ['PUT'])]
     public function suiviMiseAJour(Request $request): Response
     {
+        /** On instancie l'entityRepository */
+        $historique = $this->em->getRepository(Historique::class);
+
         /** On décode le body */
         $data = json_decode($request->getContent());
 
@@ -512,7 +518,6 @@ class SuiviController extends AbstractController
         ];
 
         /** On enregistre */
-        $historique = $this->em->getRepository(Historique::class);
         $request=$historique->countHistoriqueProjet($data->mode, $map);
         if ($request['code']!=200) {
             return $response->setData(["mode" => $data->mode, "code" => $request['code'], 'message'=>$request['erreur'],Response::HTTP_OK]);
@@ -537,6 +542,9 @@ class SuiviController extends AbstractController
     #[Route('/api/suivi/version/liste', name: 'suivi_version_liste', methods: ['POST'])]
     public function suiviVersionListe(Request $request): Response
     {
+        /** On instancie l'entityRepository */
+        $historique = $this->em->getRepository(Historique::class);
+
         /** On décode le body */
         $data = json_decode($request->getContent());
 
@@ -553,7 +561,6 @@ class SuiviController extends AbstractController
 
         /**  On récupère les versions et la date pour la clé du projet. */
         $map=['maven_key'=>$data->maven_key];
-        $historique = $this->em->getRepository(Historique::class);
         $request=$historique->selectHistoriqueProjetByDate($data->mode, $map);
         if ($request['code']!=200) {
             return $response->setData([
@@ -581,6 +588,9 @@ class SuiviController extends AbstractController
     #[Route('/api/suivi/version/favori', name: 'suivi_version_favori', methods: ['PUT'])]
     public function suiviVersionFavori(Request $request): response
     {
+        /** On instancie l'entityRepository */
+        $utilisateur = $this->em->getRepository(Utilisateur::class);
+
         /** on décode le body */
         $data = json_decode($request->getContent());
 
@@ -592,7 +602,6 @@ class SuiviController extends AbstractController
         $courriel = $this->getUser()->getCourriel();
 
         $map=['favori'=>$data->favori, 'courriel'=> $courriel, 'maven_key'=>$data->maven_key, 'version'=>$data->version, 'date_version'=>$data->date_version];
-        $utilisateur = $this->em->getRepository(Utilisateur::class);
         /** si le favori a été supprimé favori=0 */
         if ($data->favori===0) {
             $request=$utilisateur->deleteUtilisateurPreferenceFavori($data->mode, $preference, $map);
@@ -628,6 +637,9 @@ class SuiviController extends AbstractController
     #[Route('/api/suivi/version/reference', name: 'suivi_version_reference', methods: ['PUT'])]
     public function suiviVersionReference(Request $request, Security $security): response
     {
+        /** On instancie l'entityRepository */
+        $historique = $this->em->getRepository(Historique::class);
+
         /** On décode le body */
         $data = json_decode($request->getContent());
 
@@ -651,7 +663,6 @@ class SuiviController extends AbstractController
 
         /** On créé la map pour la requête de mise à jour */
         $map=[ 'initial'=>$data->initial, 'maven_key'=>$data->maven_key, 'version'=>$data->version, 'date_version'=>$data->date_version];
-        $historique = $this->em->getRepository(Historique::class);
         $request=$historique->updateHistoriqueReference($data->mode, $map);
         if ($request['code']!=200) {
             return $response->setData([
@@ -682,6 +693,10 @@ class SuiviController extends AbstractController
     #[Route('/api/suivi/version/poubelle', name: 'suivi_version_poubelle', methods: ['PUT'])]
     public function suiviVersionPoubelle(Request $request, Security $security): response
     {
+        /** On instancie l'entityRepository */
+        $historique = $this->em->getRepository(Historique::class);
+        $utilisateur = $this->em->getRepository(Utilisateur::class);
+
         /** on décode le body */
         $data = json_decode($request->getContent());
 
@@ -707,7 +722,6 @@ class SuiviController extends AbstractController
 
         /** On supprime la version du projet */
         $map=['maven_key'=>$data->maven_key, 'version'=>$data->version, 'date_version'=>$data->date_version];
-        $historique = $this->em->getRepository(Historique::class);
         $request=$historique->deleteHistoriqueProjet($data->mode, $map);
         if ($request['code']!=200) {
             return $response->setData([
@@ -727,8 +741,6 @@ class SuiviController extends AbstractController
         if  (str_contains(\serialize($preference['version']), $data->maven_key)){
             $courriel = $security->getUser()->getCourriel();
             $map=['courriel'=>$courriel, 'maven_key'=>$data->maven_key, 'version'=>$data->version, 'date_version'=>$data->date_version];
-
-            $utilisateur = $this->em->getRepository(Utilisateur::class);
             $request=$utilisateur->deleteUtilisateurPreferenceFavori($data->mode, $preference, $map);
             $message='Le projet a été également supprimé de vos préférences.';
         }

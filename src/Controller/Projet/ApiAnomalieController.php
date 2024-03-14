@@ -127,6 +127,9 @@ class ApiAnomalieController extends AbstractController
     #[Route('/api/projet/anomalie', name: 'projet_anomalie_collect', methods: ['POST'])]
     public function projetAnomalieCollect(Request $request, Client $client, DateTools $dateTools): response
     {
+        /** On instancie l'EntityRepository */
+        $anomalie = $this->em->getRepository(Anomalie::class);
+
         /** On décode le body */
         $data = json_decode($request->getContent());
 
@@ -214,11 +217,9 @@ class ApiAnomalieController extends AbstractController
         $app=static::extractNameFromMavenKey($data->maven_key);
 
         if ($result1['paging']['total'] != 0) {
-            /** On bind l'EntityRepository */
-            $notes = $this->em->getRepository(Anomalie::class);
             /** On supprime les anomalies pour la maven_key. */
             $map=['maven_key'=>$data->maven_key];
-            $request=$notes->deleteAnomalieMavenKey($data->mode, $map);
+            $request=$anomalie->deleteAnomalieMavenKey($data->mode, $map);
             if ($request['code']!=200) {
                 return $response->setData([
                     'type' => 'alert',
@@ -376,6 +377,9 @@ class ApiAnomalieController extends AbstractController
     #[Route('/api/projet/anomalie/details', name: 'projet_anomalie_details_collect', methods: ['GET'])]
     public function projetAnomalieDetailCollect(Request $request, Client $client): response
     {
+        /** On instancie l'EntityRepository */
+        $anomalieDetails = $this->em->getRepository(AnomalieDetails::class);
+
         /** On décode le body */
         $data = json_decode($request->getContent());
 
@@ -450,11 +454,9 @@ class ApiAnomalieController extends AbstractController
         $total3 = $result3['paging']['total'];
 
         if ($total1 !== 0 || $total2 !== 0 || $total3 !== 0) {
-            /** On bind l'EntityRepository */
-            $notes = $this->em->getRepository(AnomalieDetails::class);
             /** On supprime le detail des anomalies pour la maven_key. */
             $map=['maven_key'=>$data->maven_key];
-            $request=$notes->deleteAnomalieMavenKey($data->mode, $map);
+            $request=$anomalieDetails->deleteAnomalieMavenKey($data->mode, $map);
             if ($request['code']!=200) {
                 return $response->setData([
                     'type' => 'alert',
