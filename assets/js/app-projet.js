@@ -380,8 +380,7 @@ const projetRating=function(mavenKey, type) {
  * Récupère le top 10 OWASP et construit la vue
  * Attention une faille peut être comptée deux fois ou plus, cela dépend du tag. Donc il est
  * possible d'avoir pour la clé une faille de type OWASP-A3 et OWASP-A10
- * http://{url}/api/issues/search?componentKeys={key}&facets=owaspTop10&
- * owaspTop10=a1,a2,a3,a4,a5,a6,a7,a8,a9,a10
+ * http://{url}/api/projet/issues/owasp
  *
  * Phase 04
  *
@@ -396,7 +395,7 @@ const projetRating=function(mavenKey, type) {
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const projetOwasp=function(mavenKey) {
-  const data = { 'maven_key': mavenKey, 'mode': 'null'};
+  const data = { maven_key: mavenKey, mode: 'null'};
   const options = {
     url: `${serveur()}/api/projet/issues/owasp`, type: 'POST',
           dataType: 'json', data: JSON.stringify(data), contentType };
@@ -420,88 +419,17 @@ const projetOwasp=function(mavenKey) {
   });
 };
 
-
-/**
- * [Description for projetAnomalie]
- * On récupère le nombre total des défauts (BUG, VULNERABILITY, CODE_SMELL),
- * la répartition par dossier la répartition par severity et la dette technique total.
- * Phase 003
- *
- * @param string mavenKey
- *
- * @return response
- *
- * Created at: 19/12/2022, 22:13:42 (Europe/Paris)
- * @author     Laurent HADJADJ <laurent_h@me.com>
- */
-const projetAnomalie=function(mavenKey) {
-  const data = { mavenèkey: mavenKey, mode: 'mode' };
-  const options = {
-    url: `${serveur()}/api/projet/anomalie`, type: 'GET',
-          dataType: 'json', data: JSON.stringify(data), contentType };
-
-  return new Promise(resolve => {
-    $.ajax(options).then(t => {
-      if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
-        $('#callout-projet-message').removeClass('hide success warning primary secondary');
-        $('#callout-projet-message').addClass(t.type);
-        $('#js-reference-information').html(t.reference);
-        $('#js-message-information').html(t.message);
-        return;
-      }
-      if (t.code===http_200){
-          log(` - INFO : (6) ${t.info}`);
-        }
-    resolve();
-    });
-  });
-};
-
-/**
- * [Description for projetAnomalieDetails]
- * On récupère pour chaque type (Bug, Vulnerability et Code Smell)
- * le nombre de violation par type.
- * Arguements : mavenKey = clé du projet,
- *
- * @param string mavenKey
- *
- * @return response
- *
- * Created at: 19/12/2022, 22:14:11 (Europe/Paris)
- * @author     Laurent HADJADJ <laurent_h@me.com>
- */
-const projetAnomalieDetails=function(mavenKey) {
-  const data = { mavenKey };
-  const options = {
-    url: `${serveur()}/api/projet/anomalie/details`, type: 'GET',
-          dataType: 'json', data, contentType };
-
-  return new Promise(resolve => {
-    $.ajax(options).then(t => {
-
-        if (t.type==='alert'){
-          $('#callout-projet-message').removeClass('hide success warning primary secondary');
-          $('#callout-projet-message').addClass(t.type);
-          $('#js-reference-information').html(t.reference);
-          $('#js-message-information').html(t.message);
-        } else {
-          if (t.code==='OK'){
-              log(' - INFO : (7) Le frequence des sévérités par type a été collectée.');
-          } else {
-              log(` - ERROR : (7) Je n'ai pas réussi à collecter les données (${t.code}).`);
-          }
-        }
-      resolve();
-      });
-  });
-};
-
 /**
  * [Description for projetHotspot]
  * Traitement des hotspots de type owasp pour sonarqube 8.9 et >
- * http://{url}/api/hotspots/search?projectKey={key}&ps=500&p=1
  * On récupère les Hotspot a examiner. Les clés sont uniques
  * (i.e. on ne se base pas sur les tags).
+ * http://{url}/api/projet/hotspot
+ *
+ * Phase 05
+ *
+ * {mode} = null, TEST
+ * {mavenKey} = clé du projet
  *
  * @param string mavenKey
  *
@@ -511,27 +439,111 @@ const projetAnomalieDetails=function(mavenKey) {
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const projetHotspot=function(mavenKey) {
-  const data = { mavenKey };
+  const data = { maven_key: mavenKey, mode: 'null'};
   const options = {
-    url: `${serveur()}/api/projet/hotspot`, type: 'GET',
-    dataType: 'json', data, contentType };
+    url: `${serveur()}/api/projet/hotspot`, type: 'POST',
+    dataType: 'json', data: JSON.stringify(data), contentType };
 
   return new Promise(resolve => {
     $.ajax(options).then(t=> {
-      if (t.type==='alert'){
-        $('#callout-projet-message').removeClass('hide success warning primary secondary');
+      if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
+        $('#callout-projet-message').removeClass('hide success alert warning primary secondary');
         $('#callout-projet-message').addClass(t.type);
         $('#js-reference-information').html(t.reference);
         $('#js-message-information').html(t.message);
-      } else {
-        if (t.hotspots === 0) {
-          log(' - INFO : (5) Bravo aucune faille potentielle détectée.');
-        } else {
-          log(` - WARN : (5) J'ai trouvé ${t.hotspots} faille(s) potentielle(s).`);
-        }
+        return;
       }
+      if (t.code===http_200 && t.hotspots===0){
+          log(' - INFO : (05) Bravo aucune faille potentielle détectée.');
+        } else {
+          log(` - WARN : (05) J'ai trouvé ${t.hotspots} faille(s) potentielle(s).`);
+        }
     resolve();
     });
+  });
+};
+
+
+/**
+ * [Description for projetAnomalie]
+ * On récupère le nombre total des défauts (BUG, VULNERABILITY, CODE_SMELL),
+ * la répartition par dossier la répartition par severity et la dette technique total.
+ * http://{url}/api/projet/anomalie
+ *
+ * Phase 06
+ *
+ * {mode} = null, TEST
+ * {mavenKey} = clé du projet
+ *
+ * @param string mavenKey
+ *
+ * @return response
+ *
+ * Created at: 19/12/2022, 22:13:42 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ */
+const projetAnomalie=function(mavenKey) {
+  const data = { maven_key: mavenKey, mode: 'null' };
+  const options = {
+    url: `${serveur()}/api/projet/anomalie`, type: 'POST',
+          dataType: 'json', data: JSON.stringify(data), contentType };
+
+  return new Promise(resolve => {
+    $.ajax(options).then(t => {
+      if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
+        $('#callout-projet-message').removeClass('hide success alert warning primary secondary');
+        $('#callout-projet-message').addClass(t.type);
+        $('#js-reference-information').html(t.reference);
+        $('#js-message-information').html(t.message);
+        return;
+      }
+      if (t.code===http_200){
+          log(` - INFO : (06) ${t.info}`);
+        }
+    resolve();
+    });
+  });
+};
+
+/**
+ * [Description for projetAnomalieDetails]
+ * On récupère pour chaque type (Bug, Vulnerability et Code Smell)
+ * http://{url}/api/projet/anomalie/details
+ *
+ * Phase 07
+ *
+ * {mode} = null, TEST
+ * {mavenKey} = clé du projet
+ *
+ * @param string mavenKey
+ *
+ * @return response
+ *
+ * Created at: 19/12/2022, 22:14:11 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ */
+const projetAnomalieDetails=function(mavenKey) {
+  const data = { maven_key: mavenKey, mode: 'null' };
+  const options = {
+    url: `${serveur()}/api/projet/anomalie/details`, type: 'POST',
+          dataType: 'json', data: JSON.stringify(data), contentType };
+
+  return new Promise(resolve => {
+    $.ajax(options).then(t => {
+      if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
+        $('#callout-projet-message').removeClass('hide success alert warning primary secondary');
+        $('#callout-projet-message').addClass(t.type);
+        $('#js-reference-information').html(t.reference);
+        $('#js-message-information').html(t.message);
+        return;
+      }
+      if (t.code===http_200){
+        log(' - INFO : (07) Le frequence des sévérités par type a été collectée.');
+      } else {
+          log(` - ERROR : (07) Je n'ai pas réussi à collecter les données (${t.erreur}).`);
+      }
+      resolve();
+      });
   });
 };
 
@@ -1002,7 +1014,7 @@ $('.js-analyse').on('click', function () {
     /* On récupère les infos sur les anomalies*/
     await projetAnomalie(idProject);              /*(6)*/
 
-    /* On récupère le détails surr les anomalies*/
+    /* On récupère le détails sur les anomalies*/
     await projetAnomalieDetails(idProject);       /*(7)*/
 
     /* On efface les traces :)*/

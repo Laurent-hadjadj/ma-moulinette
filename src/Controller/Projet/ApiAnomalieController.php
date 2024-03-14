@@ -47,12 +47,16 @@ class ApiAnomalieController extends AbstractController
 {
     /** Définition des constantes */
     public static $sonarUrl = "sonar.url";
+    public static $dateFormat = "Y-m-d H:i:s";
     public static $europeParis = "Europe/Paris";
+    public static $removeReturnline = "/\s+/u";
+    public static $reference = "<strong>[PROJET-003]</strong>";
+    public static $erreur400 = "La requête est incorrecte (Erreur 400).";
+    public static $erreur401 = "Erreur d\'Authentification. La clé n\'est pas correcte (Erreur 401).";
+    public static $erreur403 = "Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).";
+    public static $erreur404 = "L'appel à l'API n'a pas abouti (Erreur 404).";
+
     public static $apiIssuesSearch = "/api/issues/search?componentKeys=";
-    public static $regex = "/\s+/u";
-    public static $erreurMavenKey = "La clé maven est vide!";
-    public static $reference = "<strong>[PROJET-002]</strong>";
-    public static $message = "Vous devez avoir le rôle COLLECTE pour réaliser cette action.";
     public static $statuses = "OPEN,REOPENED";
     public static $statusesMin = "OPEN,CONFIRMED,REOPENED,RESOLVED";
     public static $statusesAll = "OPEN, CONFIRMED, REOPENED, RESOLVED, CLOSED";
@@ -73,41 +77,83 @@ class ApiAnomalieController extends AbstractController
     }
 
     /**
-     * [Description for Anomalie]
+     * [Description for extractNameFromMavenKey]
+     * Extrait le nom du projet de la clé
+     *
+     * @param mixed $mavenKey
+     *
+     * @return string
+     *
+     * Created at: 13/03/2024 21:47:51 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function extractNameFromMavenKey($mavenKey): string
+    {
+        /**
+         * On récupère le nom de l'application depuis la clé mavenKey
+         * [fr.ma-petite-entreprise] : [ma-moulinette]
+         */
+        $app = explode(":", $mavenKey);
+        if (count($app)===1) {
+            /** La clé maven n'est pas conforme, on ne peut pas déduire le nom de l'application */
+            $name=$mavenKey;
+        } else {
+            $name=$app[1];
+        }
+        return $name;
+    }
+
+    /**
+     * [Description for projetAnomalieCollect]
      * Récupère le total des anomalies, avec un filtre par répertoire, sévérité et types.
-     * https://{URL}/api/issues/search?componentKeys={mavenKey}&facets=directories,types,severities&p=1&ps=1&statuses=OPEN
-     * https://{URL}/api/issues/search?componentKeys={mavenKey}&types={type}&p=1&ps=1
+     * https://{URL}/api/projet/anomalie
+     *
+     * Phase 06
+     *
+     * {mode} : null | TEST
+     * {maven_key} : Clé du projet
      *
      * @param Request $request
+     * @param Client $client
+     * @param DateTools $dateTools
      *
      * @return response
      *
      * Created at: 15/12/2022, 21:32:28 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/projet/anomalie', name: 'projet_anomalie', methods: ['GET'])]
-    public function projetAnomalie(Request $request, Client $client, DateTools $dateTools): response
+    #[Route('/api/projet/anomalie', name: 'projet_anomalie_collect', methods: ['POST'])]
+    public function projetAnomalieCollect(Request $request, Client $client, DateTools $dateTools): response
     {
-        /** On créé un objet response */
+        /** On décode le body */
+        $data = json_decode($request->getContent());
+
+        /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
 
-        /** On bind les variables. */
-        $tempoUrlLong = $this->getParameter(static::$sonarUrl) . static::$apiIssuesSearch;
-        $mavenKey = $request->get('mavenKey');
-        $mode = $request->get('mode');
-
         /** On teste si la clé est valide */
-        if ($mavenKey === "null" && $mode === "TEST") {
-            return $response->setData(["mode" => $mode, "mavenKey" => $mavenKey,
-                                      "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
-        }
+        if ($data === null) {
+            return $response->setData(['data' => null, 'type'=>'alert', 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'mode')) {
+            return $response->setData(['mode' => null, 'type'=>'alert', 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'maven_key')) {
+            return $response->setData(['maven_key' => null, 'type'=>'alert', 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
-            return $response->setData(["mode" => $mode , "type" => 'alert',
-                                      "reference" => static::$reference, "message" => static::$message, Response::HTTP_OK]);
+            return $response->setData([
+                'type'=>'warning',
+                'mode' => $data->mode ,
+                'code' => 403,
+                'reference' => static::$reference,
+                'message' => static::$erreur403,
+                Response::HTTP_OK]);
         }
+
+        /** On construit l'URL de base. */
+        $tempoUrlLong = $this->getParameter(static::$sonarUrl) . static::$apiIssuesSearch;
 
         /** On créé un objet date. */
         $date = new DateTime();
@@ -118,125 +164,159 @@ class ApiAnomalieController extends AbstractController
          * Type : statuses, statusesMin et statusesAll
          */
         $typeStatuses = static::$statuses;
-        $url1 = "$tempoUrlLong$mavenKey&facets=directories,types,severities&p=1&ps=1&statuses=$typeStatuses";
+        $url1 = "$tempoUrlLong"."$data->maven_key&facets=directories,types,severities&p=1&ps=1&statuses=$typeStatuses";
 
         /** On récupère le total de la Dette technique pour les BUG. */
-        $url2 = "$tempoUrlLong$mavenKey&types=BUG&p=1&ps=1";
+        $url2 = "$tempoUrlLong"."$data->maven_key&types=BUG&p=1&ps=1";
 
         /** On récupère le total de la Dette technique pour les VULNERABILITY. */
-        $url3 = "$tempoUrlLong$mavenKey&types=VULNERABILITY&p=1&ps=1";
+        $url3 = "$tempoUrlLong"."$data->maven_key&types=VULNERABILITY&p=1&ps=1";
 
         /** On récupère le total de la Dette technique pour les CODE_SMELL. */
-        $url4 = "$tempoUrlLong$mavenKey&types=CODE_SMELL&p=1&ps=1";
+        $url4 = "$tempoUrlLong"."$data->maven_key&types=CODE_SMELL&p=1&ps=1";
 
-        /** On appel le client http pour les requête 1 à 4 (2 à 4 pour la dette). */
-        $result1 = $client->http(trim(preg_replace(static::$regex, " ", $url1)));
-        $result2 = $client->http($url2);
-        $result3 = $client->http($url3);
-        $result4 = $client->http($url4);
+        /** On appel le client http pour les requêtes 1 à 4 (2 à 4 pour la dette). */
+        $result1 = $client->http(trim(preg_replace(static::$removeReturnline, " ", $url1)));
+        $result2 = $client->http(trim(preg_replace(static::$removeReturnline, " ", $url2)));
+        $result3 = $client->http(trim(preg_replace(static::$removeReturnline, " ", $url3)));
+        $result4 = $client->http(trim(preg_replace(static::$removeReturnline, " ", $url4)));
+        /** On catch les erreurs HTTP 400, 401 et 404, si possible :) */
+        if (array_key_exists('code', $result1)||
+            array_key_exists('code', $result2)||
+            array_key_exists('code', $result3)||
+            array_key_exists('code', $result4) ){
+            if ($result1['code']===401||
+                $result2['code']===401||
+                $result3['code']===403||
+                $result4['code']===401) {
+            return $response->setData([
+                'type'=>'warning',
+                'mode' => $data->mode ,
+                'code' => 401,
+                'reference' => static::$reference,
+                'message' => static::$erreur401,
+                Response::HTTP_OK]);
+            }
+            if ($result1['code']===404||
+                $result2['code']===404||
+                $result3['code']===404||
+                $result4['code']===404) {
+                return $response->setData([
+                    'type'=>'alert',
+                    "mode" => $data->mode ,
+                    "code" => 404,
+                    "reference" => static::$reference,
+                    "message" => static::$erreur404,
+                    Response::HTTP_OK]);
+                }
+        }
 
-        if ($result1["paging"]["total"] != 0) {
-            //** On supprime  les enregistrement correspondant à la clé. */
-            $sql = "DELETE FROM anomalie WHERE maven_key='$mavenKey'";
-            if ($mode !== "TEST") {
-                $this->em->getConnection()->prepare($sql)->executeQuery();
+        $app=static::extractNameFromMavenKey($data->maven_key);
+
+        if ($result1['paging']['total'] != 0) {
+            /** On bind l'EntityRepository */
+            $notes = $this->em->getRepository(Anomalie::class);
+            /** On supprime les anomalies pour la maven_key. */
+            $map=['maven_key'=>$data->maven_key];
+            $request=$notes->deleteAnomalieMavenKey($data->mode, $map);
+            if ($request['code']!=200) {
+                return $response->setData([
+                    'type' => 'alert',
+                    'mode' => $data->mode,
+                    'reference' => static::$reference,
+                    'code' => $request['code'],
+                    'message'=>$request['erreur'],
+                    Response::HTTP_OK]);
             }
 
-            /** nom du projet. */
-            $app = explode(":", $mavenKey);
-            if (count($app)===1) {
-                /** La clé maven n'est pas conforme, on ne peut pas déduire le nom de l'application */
-                array_push($app, $mavenKey);
-            }
-
-            $anomalieTotal = $result1["total"];
-            $detteMinute = $result1["effortTotal"];
+            $anomalieTotal = $result1['total'];
+            $detteMinute = $result1['effortTotal'];
             $dette = $dateTools->minutesTo($detteMinute);
-            $detteReliabilityMinute = $result2["effortTotal"];
+            $detteReliabilityMinute = $result2['effortTotal'];
             $detteReliability = $dateTools->minutesTo($detteReliabilityMinute);
-            $detteVulnerabilityMinute = $result3["effortTotal"];
+            $detteVulnerabilityMinute = $result3['effortTotal'];
             $detteVulnerability = $dateTools->minutesTo($detteVulnerabilityMinute);
-            $detteCodeSmellMinute = $result4["effortTotal"];
+            $detteCodeSmellMinute = $result4['effortTotal'];
             $detteCodeSmell = $dateTools->minutesTo($detteCodeSmellMinute);
 
-            $facets = $result1["facets"];
+            $facets = $result1['facets'];
             /** Modules. */
             $frontend = $backend = $autre = $nombreAnomalie = 0;
             foreach ($facets as $facet) {
                 $nombreAnomalie++;
                 /** On récupère le nombre de signalement par sévérité. */
-                if ($facet["property"] == "severities") {
-                    foreach ($facet["values"] as $severity) {
-                        switch ($severity["val"]) {
-                            case "BLOCKER" : $blocker = $severity["count"];
+                if ($facet['property'] == 'severities') {
+                    foreach ($facet['values'] as $severity) {
+                        switch ($severity['val']) {
+                            case 'BLOCKER' : $blocker = $severity['count'];
                                 break;
-                            case "CRITICAL" : $critical = $severity["count"];
+                            case 'CRITICAL' : $critical = $severity['count'];
                                 break;
-                            case "MAJOR" : $major = $severity["count"];
+                            case 'MAJOR' : $major = $severity['count'];
                                 break;
-                            case "INFO" : $info = $severity["count"];
+                            case 'INFO' : $info = $severity['count'];
                                 break;
-                            case "MINOR" : $minor = $severity["count"];
+                            case 'MINOR' : $minor = $severity['count'];
                                 break;
-                            default: $this->logger->INFO("Référentiel severité !");
+                            default: $this->logger->INFO('Référentiel severité !');
                         }
                     }
                 }
                 /** On récupère le nombre de signalement par type. */
-                if ($facet["property"] == "types") {
-                    foreach ($facet["values"] as $type) {
-                        switch ($type["val"]) {
-                            case "BUG" : $bug = $type["count"];
+                if ($facet['property'] == 'types') {
+                    foreach ($facet['values'] as $type) {
+                        switch ($type['val']) {
+                            case 'BUG' : $bug = $type['count'];
                                 break;
-                            case "VULNERABILITY" : $vulnerability = $type["count"];
+                            case 'VULNERABILITY' : $vulnerability = $type['count'];
                                 break;
-                            case "CODE_SMELL" : $codeSmell = $type["count"];
+                            case 'CODE_SMELL' : $codeSmell = $type['count'];
                                 break;
-                            default: $this->logger->INFO("Référentiel Type !");
+                            default: $this->logger->INFO('Référentiel Type !');
                         }
                     }
                 }
                 /** On récupère le nombre de signalement par module. */
-                if ($facet["property"] == "directories") {
-                    foreach ($facet["values"] as $directory) {
-                        $file = str_replace($mavenKey . ":", "", $directory["val"]);
-                        $module = explode("/", $file);
-                        if ($module[0] === "du-presentation" || $module[0] === "rs-presentation") {
-                            $frontend = $frontend + $directory["count"];
+                if ($facet['property'] == 'directories') {
+                    foreach ($facet['values'] as $directory) {
+                        $file = str_replace($data->maven_key . ':', "", $directory['val']);
+                        $module = explode('/', $file);
+                        if ($module[0] === 'du-presentation' || $module[0] === 'rs-presentation') {
+                            $frontend = $frontend + $directory['count'];
                         }
-                        if ($module[0] === $app[1] . "-presentation" || $module[0] === $app[1] . "-presentation-commun" ||
-                            $module[0] === $app[1] . "-presentation-ear" || $module[0] === $app[1] . "-webapp") {
+                        if ($module[0] === $app . '-presentation' || $module[0] === $app . '-presentation-commun' ||
+                            $module[0] === $app . '-presentation-ear' || $module[0] === $app . '-webapp') {
                             $frontend = $frontend + 1;
                         }
-                        if ($module[0] === "rs-metier") {
-                            $backend = $backend + $directory["count"];
+                        if ($module[0] === 'rs-metier') {
+                            $backend = $backend + $directory['count'];
                         }
-                        if ($module[0] === $app[1] . "-metier" || $module[0] === $app[1] . "-common" ||
-                            $module[0] === $app[1] . "-api" || $module[0] === $app[1] . "-dao") {
-                            $backend = $backend + $directory["count"];
+                        if ($module[0] === $app . '-metier' || $module[0] === $app . '-common' ||
+                            $module[0] === $app . '-api' || $module[0] === $app . '-dao') {
+                            $backend = $backend + $directory['count'];
                         }
-                        if ($module[0] === $app[1] . "-metier-ear" || $module[0] === $app[1] . "-service" ||
-                            $module[0] === $app[1] . "-serviceweb" || $module[0] === $app[1] . "-middleoffice") {
-                            $backend = $backend + $directory["count"];
+                        if ($module[0] === $app . '-metier-ear' || $module[0] === $app . "-service" ||
+                            $module[0] === $app . '-serviceweb' || $module[0] === $app . "-middleoffice") {
+                            $backend = $backend + $directory['count'];
                         }
-                        if ($module[0] === $app[1] . "-metier-rest" || $module[0] === $app[1] . "-entite" ||
-                            $module[0] === $app[1] . "-serviceweb-client") {
-                            $backend = $backend + $directory["count"];
+                        if ($module[0] === $app . '-metier-rest' || $module[0] === $app . "-entite" ||
+                            $module[0] === $app . '-serviceweb-client') {
+                            $backend = $backend + $directory['count'];
                         }
-                        if ($module[0] === $app[1] . "-batch" || $module[0] === $app[1] . "-batchs" ||
-                            $module[0] === $app[1] . "-batch-envoi-dem-aval" || $module[0] === $app[1] . "-batch-import-billets") {
-                            $autre = $autre + $directory["count"];
+                        if ($module[0] === $app . '-batch' || $module[0] === $app . '-batchs' ||
+                            $module[0] === $app . '-batch-envoi-dem-aval' || $module[0] === $app . '-batch-import-billets') {
+                            $autre = $autre + $directory['count'];
                         }
-                        if ($module[0] === $app[1] . "-rdd") {
-                            $autre = $autre + $directory["count"];
+                        if ($module[0] === $app . '-rdd') {
+                            $autre = $autre + $directory['count'];
                         }
                     }
                 }
             }
             /** Enregistrement dans la table Anomalie. */
             $issue = new Anomalie();
-            $issue->setMavenKey($mavenKey);
-            $issue->setProjectName($app[1]);
+            $issue->setMavenKey($data->maven_key);
+            $issue->setProjectName(static::extractNameFromMavenKey($data->maven_key));
             $issue->setAnomalieTotal($anomalieTotal);
             $issue->setDette($dette);
             $issue->setDetteMinute($detteMinute);
@@ -260,24 +340,32 @@ class ApiAnomalieController extends AbstractController
             $issue->setDateEnregistrement($date);
 
             $this->em->persist($issue);
-            if ($mode !== "TEST") {
+            if ($data->mode !== 'TEST') {
                 $this->em->flush();
             }
         }
 
         $info = "Enregistrement des défauts (" . $nombreAnomalie . ") correctement effectué.";
-        return $response->setData(["mode" => $mode, "info" => $info, Response::HTTP_OK]);
+        return $response->setData(['mode' => $data->mode, 'code'=>200, "info" => $info, Response::HTTP_OK]);
     }
 
 
     /**
      * [Description for projetAnomalieDetails]
      * Récupère le détails des sévérités pour chaque type
-     * https://{URL}/api/issues/search?componentKeys={key}&&facets=severities&types=BUG&ps=1&p=1&statuses=OPEN
-     * https://{URL}/api/issues/search?componentKeys={key}&&facets=severities&types=VULNERABILITY&ps=1&p=1&statuses=OPEN
-     * https://{URL}/api/issues/search?componentKeys={key}&&facets=severities&types=CODE_SMELLBUG&ps=1&p=1&statuses=OPEN
+     * https://{URL}/api/projet/anomalie/details
+     *
+     * Phase 07
+     *
+     * {mode} : null | TEST
+     * {maven_key} : Clé du projet
      *
      * @param Request $request
+     * @param Client $client
+     * @param DateTools $dateTools
+     *
+     * @param Request $request
+     * @param Client $client
      *
      * @return response
      *
@@ -285,128 +373,162 @@ class ApiAnomalieController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/projet/anomalie/details', name: 'projet_anomalie_details', methods: ['GET'])]
-    public function projetAnomalieDetails(Request $request, Client $client): response
+    #[Route('/api/projet/anomalie/details', name: 'projet_anomalie_details_collect', methods: ['GET'])]
+    public function projetAnomalieDetailCollect(Request $request, Client $client): response
     {
+        /** On décode le body */
+        $data = json_decode($request->getContent());
 
-        /** On créé un objet response */
+        /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
 
-        /** On bind les variables. */
-        $mavenKey = $request->get('mavenKey');
-        $tempoUrlLong = $this->getParameter(static::$sonarUrl) . static::$apiIssuesSearch;
-        $mode = $request->get('mode');
-
         /** On teste si la clé est valide */
-        if ($mavenKey === "null" && $mode === "TEST") {
-            return $response->setData([
-              "mode" => $mode, "mavenKey" => $mavenKey,
-              "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
-        }
+        if ($data === null) {
+            return $response->setData(['data' => null, 'type'=>'alert', 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'mode')) {
+            return $response->setData(['mode' => null, 'type'=>'alert', 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'maven_key')) {
+            return $response->setData(['maven_key' => null, 'type'=>'alert', 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return $response->setData([
-              "mode" => $mode ,
-              "type" => 'alert',
-              "reference" => static::$reference,
-              "message" => static::$message,
-              Response::HTTP_OK]);
+                'type'=>'warning',
+                'mode' => $data->mode ,
+                'code' => 403,
+                'reference' => static::$reference,
+                'message' => static::$erreur403,
+                Response::HTTP_OK]);
         }
 
+        /** On construit l'URL */
+        $tempoUrlLong = $this->getParameter(static::$sonarUrl) . static::$apiIssuesSearch;
+
         /** Pour les Bug. */
-        $url1 = "$tempoUrlLong$mavenKey&facets=severities&types=BUG&ps=1&p=1&statuses=OPEN";
+        $url1 = "$tempoUrlLong"."$data->maven_key&facets=severities&types=BUG&ps=1&p=1&statuses=OPEN";
 
         /** Pour les Vulnérabilités. */
-        $url2 = "$tempoUrlLong$mavenKey&facets=severities&types=VULNERABILITY&ps=1&p=1&statuses=OPEN";
+        $url2 = "$tempoUrlLong"."$data->maven_key&facets=severities&types=VULNERABILITY&ps=1&p=1&statuses=OPEN";
 
         /** Pour les mauvaises pratiques. */
-        $url3 = "$tempoUrlLong$mavenKey&facets=severities&types=CODE_SMELL&ps=1&p=1&statuses=OPEN";
+        $url3 = "$tempoUrlLong"."$data->maven_key&facets=severities&types=CODE_SMELL&ps=1&p=1&statuses=OPEN";
 
         /** On appel le client http pour les requête 1 à 3. */
-        $result1 = $client->http($url1);
-        $result2 = $client->http($url2);
-        $result3 = $client->http($url3);
+        $result1 = $client->http(trim(preg_replace(static::$removeReturnline, " ", $url1)));
+        $result2 = $client->http(trim(preg_replace(static::$removeReturnline, " ", $url2)));
+        $result3 = $client->http(trim(preg_replace(static::$removeReturnline, " ", $url3)));
+        /** On catch les erreurs HTTP 400, 401 et 404, si possible :) */
+        if (array_key_exists('code', $result1)||
+            array_key_exists('code', $result2)||
+            array_key_exists('code', $result3)){
+            if ($result1['code']===401||
+                $result2['code']===401||
+                $result3['code']===403) {
+            return $response->setData([
+                'type'=>'warning',
+                'mode' => $data->mode ,
+                'code' => 401,
+                'reference' => static::$reference,
+                'message' => static::$erreur401,
+                Response::HTTP_OK]);
+            }
+            if ($result1['code']===404||
+                $result2['code']===404||
+                $result3['code']===404) {
+                return $response->setData([
+                    'type'=>'alert',
+                    "mode" => $data->mode ,
+                    "code" => 404,
+                    "reference" => static::$reference,
+                    "message" => static::$erreur404,
+                    Response::HTTP_OK]);
+                }
+        }
 
-        $total1 = $result1["paging"]["total"];
-        $total2 = $result2["paging"]["total"];
-        $total3 = $result3["paging"]["total"];
+        $total1 = $result1['paging']['total'];
+        $total2 = $result2['paging']['total'];
+        $total3 = $result3['paging']['total'];
 
         if ($total1 !== 0 || $total2 !== 0 || $total3 !== 0) {
-            /** On supprime  l'enregistrement correspondant à la clé. */
-            $sql = "DELETE FROM anomalie_details WHERE maven_key='$mavenKey'";
-            if ($mode !== "TEST") {
-                $this->em->getConnection()->prepare($sql)->executeQuery();
+            /** On bind l'EntityRepository */
+            $notes = $this->em->getRepository(AnomalieDetails::class);
+            /** On supprime le detail des anomalies pour la maven_key. */
+            $map=['maven_key'=>$data->maven_key];
+            $request=$notes->deleteAnomalieMavenKey($data->mode, $map);
+            if ($request['code']!=200) {
+                return $response->setData([
+                    'type' => 'alert',
+                    'mode' => $data->mode,
+                    'reference' => static::$reference,
+                    'code' => $request['code'],
+                    'message'=>$request['erreur'],
+                    Response::HTTP_OK]);
             }
 
             $date = new DateTime();
             $date->setTimezone(new DateTimeZone(static::$europeParis));
-            $r1 = $result1["facets"];
-            $r2 = $result2["facets"];
-            $r3 = $result3["facets"];
+            $r1 = $result1['facets'];
+            $r2 = $result2['facets'];
+            $r3 = $result3['facets'];
 
-            foreach ($r1[0]["values"] as $severity) {
-                if ($severity["val"] === "BLOCKER") {
-                    $bugBlocker = $severity["count"];
+            foreach ($r1[0]['values'] as $severity) {
+                if ($severity['val'] === 'BLOCKER') {
+                    $bugBlocker = $severity['count'];
                 }
-                if ($severity["val"] === "CRITICAL") {
-                    $bugCritical = $severity["count"];
+                if ($severity['val'] === 'CRITICAL') {
+                    $bugCritical = $severity['count'];
                 }
-                if ($severity["val"] === "MAJOR") {
-                    $bugMajor = $severity["count"];
+                if ($severity['val'] === 'MAJOR') {
+                    $bugMajor = $severity['count'];
                 }
-                if ($severity["val"] === "MINOR") {
-                    $bugMinor = $severity["count"];
+                if ($severity['val'] === 'MINOR') {
+                    $bugMinor = $severity['count'];
                 }
-                if ($severity["val"] === "INFO") {
-                    $bugInfo = $severity["count"];
+                if ($severity['val'] === 'INFO') {
+                    $bugInfo = $severity['count'];
                 }
             }
 
-            foreach ($r2[0]["values"] as $severity) {
-                if ($severity["val"] === "BLOCKER") {
-                    $vulnerabilityBlocker = $severity["count"];
+            foreach ($r2[0]['values'] as $severity) {
+                if ($severity['val'] === 'BLOCKER') {
+                    $vulnerabilityBlocker = $severity['count'];
                 }
-                if ($severity["val"] === "CRITICAL") {
-                    $vulnerabilityCritical = $severity["count"];
+                if ($severity['val'] === 'CRITICAL') {
+                    $vulnerabilityCritical = $severity['count'];
                 }
-                if ($severity["val"] === "MAJOR") {
-                    $vulnerabilityMajor = $severity["count"];
+                if ($severity['val'] === 'MAJOR') {
+                    $vulnerabilityMajor = $severity['count'];
                 }
-                if ($severity["val"] === "MINOR") {
-                    $vulnerabilityMinor = $severity["count"];
+                if ($severity['val'] === 'MINOR') {
+                    $vulnerabilityMinor = $severity['count'];
                 }
-                if ($severity["val"] === "INFO") {
-                    $vulnerabilityInfo = $severity["count"];
-                }
-            }
-
-            foreach ($r3[0]["values"] as $severity) {
-                if ($severity["val"] === "BLOCKER") {
-                    $codeSmellBlocker = $severity["count"];
-                }
-                if ($severity["val"] === "CRITICAL") {
-                    $codeSmellCritical = $severity["count"];
-                }
-                if ($severity["val"] === "MAJOR") {
-                    $codeSmellMajor = $severity["count"];
-                }
-                if ($severity["val"] === "MINOR") {
-                    $codeSmellMinor = $severity["count"];
-                }
-                if ($severity["val"] === "INFO") {
-                    $codeSmellInfo = $severity["count"];
+                if ($severity['val'] === 'INFO') {
+                    $vulnerabilityInfo = $severity['count'];
                 }
             }
 
-            /** On récupère le nom de l'application. */
-            $explode = explode(":", $mavenKey);
-            $name = $explode[1];
+            foreach ($r3[0]['values'] as $severity) {
+                if ($severity['val'] === 'BLOCKER') {
+                    $codeSmellBlocker = $severity['count'];
+                }
+                if ($severity['val'] === 'CRITICAL') {
+                    $codeSmellCritical = $severity['count'];
+                }
+                if ($severity['val'] === 'MAJOR') {
+                    $codeSmellMajor = $severity['count'];
+                }
+                if ($severity['val'] === 'MINOR') {
+                    $codeSmellMinor = $severity['count'];
+                }
+                if ($severity['val'] === 'INFO') {
+                    $codeSmellInfo = $severity['count'];
+                }
+            }
 
             /** On enregistre en base. */
             $details = new AnomalieDetails();
-            $details->setMavenKey($mavenKey);
-            $details->setName($name);
+            $details->setMavenKey($data->mavenKey);
+            $details->setName(static::extractNameFromMavenKey($data->maven_key));
 
             $details->setBugBlocker($bugBlocker);
             $details->setBugCritical($bugCritical);
@@ -431,14 +553,14 @@ class ApiAnomalieController extends AbstractController
 
             /** On catch l'erreur sur la clé composite : maven_key, version, date_version. */
             try {
-                if ($mode !== "TEST") {
+                if ($data->mode !== "TEST") {
                     $this->em->flush();
                 }
             } catch (\Doctrine\DBAL\Exception $e) {
-                return $response->setData(["code" => $e->getCode(), Response::HTTP_OK]);
+                return $response->setData(['erreur' => $e->getCode(), Response::HTTP_OK]);
             }
         }
-        return $response->setData(["mode" => $mode, "code" => "OK", Response::HTTP_OK]);
+        return $response->setData(['mode' => $data->mode, 'code' => 200, Response::HTTP_OK]);
     }
 
 }
