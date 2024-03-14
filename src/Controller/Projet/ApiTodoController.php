@@ -33,7 +33,7 @@ use Doctrine\ORM\EntityManagerInterface;
 /** Client HTTP */
 use App\Service\Client;
 
-class ApiNosonarController extends AbstractController
+class ApiTodoController extends AbstractController
 {
     /** Définition des constantes */
     public static $sonarUrl = "sonar.url";
