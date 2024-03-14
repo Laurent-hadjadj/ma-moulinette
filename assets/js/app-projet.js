@@ -463,7 +463,6 @@ const projetHotspot=function(mavenKey) {
   });
 };
 
-
 /**
  * [Description for projetAnomalie]
  * On récupère le nombre total des défauts (BUG, VULNERABILITY, CODE_SMELL),
@@ -550,9 +549,15 @@ const projetAnomalieDetails=function(mavenKey) {
 /**
  * [Description for projetHotspotOwasp]
  * Traitement des hotspot de type owasp pour sonarqube 8.9 et >
- * http://{url}/api/hotspots/search?projectKey={key}{owasp}&ps=500&p=1
  * Pour chaque faille OWASP on récupère les information. Il est possible d'avoir des doublons
  * (i.e. a cause des tags).
+ * http://{url}/api/projet/hotspot/owasp
+ *
+ * Phase 8 et 9
+ *
+ * {mode} = null, TEST
+ * {mavenKey} = clé du projet
+ * {owasp} = type d'indicateur OWASP
  *
  * @param string mavenKey
  * @param string owasp
@@ -563,28 +568,28 @@ const projetAnomalieDetails=function(mavenKey) {
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const projetHotspotOwasp=function(mavenKey, owasp) {
-  const data = { mavenKey, owasp };
+  const data = { maven_key: mavenKey, owasp };
   const options = {
-    url: `${serveur()}/api/projet/hotspot/owasp`, type: 'GET',
-          dataType: 'json', data, contentType };
+    url: `${serveur()}/api/projet/hotspot/owasp`, type: 'POST',
+          dataType: 'json', data: JSON.stringify(data), contentType };
 
   return new Promise(resolve => {
     $.ajax(options).then(t=> {
-      if (t.type==='alert'){
-        $('#callout-projet-message').removeClass('hide success warning primary secondary');
+      if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
+        $('#callout-projet-message').removeClass('hide success alert warning primary secondary');
         $('#callout-projet-message').addClass(t.type);
         $('#js-reference-information').html(t.reference);
         $('#js-message-information').html(t.message);
-      } else {
-        if (t.info==='effacement') {
-          log(' - INFO : (8) Les enregistrements ont été supprimé de la table hostspot_owasp.');
-        }
-        if (t.hotspots === 0 && t.info==='enregistrement') {
-          log(` - INFO : (9) Bravo aucune faille OWASP ${owasp} potentielle détectée.`);
-        }
-        if (t.hotspots !== 0 && t.info==='enregistrement') {
-          log(` - WARN : (9) J'ai trouvé ${t.hotspots} faille(s) OWASP ${owasp} potentielle(s).`);
-        }
+        return;
+      }
+      if (t.code===http_200 && t.info==='effacement'){
+          log(' - INFO : (08) Les enregistrements ont été supprimé de la table hostspot_owasp.');
+      }
+      if (t.code===http_200 && t.hotspots === 0 && t.info==='enregistrement') {
+          log(` - INFO : (09) Bravo aucune faille OWASP ${owasp} potentielle détectée.`);
+      }
+      if (t.code===http_200 && t.hotspots !== 0 && t.info==='enregistrement') {
+        log(` - WARN : (09) J'ai trouvé ${t.hotspots} faille(s) OWASP ${owasp} potentielle(s).`);
       }
       resolve();
     });
@@ -594,7 +599,12 @@ const projetHotspotOwasp=function(mavenKey, owasp) {
 /**
  * [Description for projetHotspotOwaspDetails]
  * On enregistre le détails des hostspot owasp
- * http://{url}/api/projet/hotspot/details{mavenKey}
+ * http://{url}/api/projet/hotspot/details
+ *
+ * Phase 10
+ *
+ * {mode} = null, TEST
+ * {mavenKey} = clé du projet
  *
  * @param string mavenKey
  *
@@ -604,25 +614,25 @@ const projetHotspotOwasp=function(mavenKey, owasp) {
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const projetHotspotOwaspDetails=function(mavenKey) {
-  const data = { mavenKey };
+  const data = { maven_key: mavenKey, mode: 'null' };
   const options = {
     url: `${serveur()}/api/projet/hotspot/details`, type: 'GET',
-          dataType: 'json', data, contentType };
+          dataType: 'json', data: JSON.stringify(data), contentType };
 
   return new Promise(resolve => {
     $.ajax(options).then(t=> {
-      if (t.type==='alert'){
-        $('#callout-projet-message').removeClass('hide success warning primary secondary');
+      if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
+        $('#callout-projet-message').removeClass('hide success alert warning primary secondary');
         $('#callout-projet-message').addClass(t.type);
         $('#js-reference-information').html(t.reference);
         $('#js-message-information').html(t.message);
-      } else {
-        if (t.code === http_406) {
-          log(' - INFO : (10) Aucun détails n\'est disponible pour les hotspots.');
-        } else {
-          /* On a trouvé des hotspots OWASP */
-          log(` - INFO : (10) On a trouvé ${t.ligne} descriptions.`);
-        }
+        return;
+      }
+      if (t.code===http_200) {
+        log(` - INFO : (10) On a trouvé ${t.ligne} descriptions.`);
+      }
+      if (t.code===http_406){
+        log(` - INFO : (10) Aucun détails n'est disponible pour les hotspots.`);
       }
       resolve();
     });
