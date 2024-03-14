@@ -31,7 +31,7 @@ class NotesRepository extends ServiceEntityRepository
 
     /**
      * [Description for deleteNotesMavenKey]
-     * Supprime les données de la version courrante (i.e. correspondant à la maven_key)
+     * Supprime les notes de la version courrante (i.e. correspondant à la maven_key)
      *
      * @param mixed $mode
      * @param mixed $map
@@ -42,7 +42,7 @@ class NotesRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function deleteNoSonarMavenKey($mode,$map):array
+    public function deleteNotesMavenKey($mode,$map):array
     {
         $sql = "DELETE
                 FROM notes
@@ -61,7 +61,20 @@ class NotesRepository extends ServiceEntityRepository
         return ['mode'=>$mode, 'code'=>200, 'erreur'=>''];
     }
 
-    public function SelectOrIgnoreNotes($mode,$map):array
+    /**
+     * [Description for InsertOrIgnoreNotes]
+     * Ajoute les notes pour le projet
+     *
+     * @param string $mode
+     * @param array $map
+     *
+     * @return array
+     *
+     * Created at: 12/03/2024 21:47:11 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function InsertOrIgnoreNotes($mode,$map):array
     {
         $sql = "INSERT OR IGNORE INTO notes (maven_key, type, date, value, date_enregistrement)
                 VALUES (:maven_key, :type, :date, :value,:date_enregistrement)";
