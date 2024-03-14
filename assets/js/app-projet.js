@@ -287,6 +287,12 @@ const afficheMessage=function(t){
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const projetInformation=function(mavenKey) {
+  /** On vérifie s'il n'y a pas d'erreur lors du traitement */
+  const collecte = sessionStorage.getItem('collecte');
+  if (!collecte || collecte!='Tout va bien!') {
+    return;
+  }
+
   const data = { maven_key: mavenKey, mode: 'null' };
   const options = {
     url: `${serveur()}/api/projet/information`, type: 'POST',
@@ -326,6 +332,12 @@ const projetInformation=function(mavenKey) {
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const projetMesure=function(mavenKey) {
+  /** On vérifie s'il n'y a pas d'erreur lors du traitement */
+  const collecte = sessionStorage.getItem('collecte');
+  if (!collecte || collecte!='Tout va bien!') {
+    return;
+  }
+
   const data = { maven_key: mavenKey, mode: 'null' };
   const options = {
     url: `${serveur()}/api/projet/mesure`, type: 'POST',
@@ -365,6 +377,11 @@ const projetMesure=function(mavenKey) {
   * @author     Laurent HADJADJ <laurent_h@me.com>
   */
 const projetRating=function(mavenKey, type) {
+  const collecte = sessionStorage.getItem('collecte');
+  if (!collecte || collecte!='Tout va bien!') {
+    return;
+  }
+
   const data = { maven_key: mavenKey, type, mode: 'null' };
   const options = {
     url: `${serveur()}/api/projet/note`, type: 'POST',
@@ -406,6 +423,11 @@ const projetRating=function(mavenKey, type) {
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const projetOwasp=function(mavenKey) {
+  const collecte = sessionStorage.getItem('collecte');
+  if (!collecte || collecte!='Tout va bien!') {
+    return;
+  }
+
   const data = { maven_key: mavenKey, mode: 'null'};
   const options = {
     url: `${serveur()}/api/projet/issues/owasp`, type: 'POST',
@@ -415,7 +437,7 @@ const projetOwasp=function(mavenKey) {
     $.ajax(options).then(t=> {
       if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
         afficheMessage(t)
-        sessionStorage.setItem('collecte', 'Erreur phase 04');
+        sessionStorage.setItem('collecte', 'Erreur phase 04.');
         return;
       }
       if (t.code===http_200 && t.owasp===0){
@@ -448,6 +470,12 @@ const projetOwasp=function(mavenKey) {
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const projetHotspot=function(mavenKey) {
+  /** On vérifie s'il n'y a pas d'erreur lors du traitement */
+  const collecte = sessionStorage.getItem('collecte');
+  if (!collecte || collecte!='Tout va bien!') {
+    return;
+  }
+
   const data = { maven_key: mavenKey, mode: 'null'};
   const options = {
     url: `${serveur()}/api/projet/hotspot`, type: 'POST',
@@ -457,7 +485,7 @@ const projetHotspot=function(mavenKey) {
     $.ajax(options).then(t=> {
       if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
         afficheMessage(t)
-        sessionStorage.setItem('collecte', 'Erreur phase 05');
+        sessionStorage.setItem('collecte', 'Erreur phase 05.');
         return;
       }
       if (t.code===http_200 && t.hotspots===0){
@@ -489,6 +517,12 @@ const projetHotspot=function(mavenKey) {
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const projetAnomalie=function(mavenKey) {
+  /** On vérifie s'il n'y a pas d'erreur lors du traitement */
+  const collecte = sessionStorage.getItem('collecte');
+  if (!collecte || collecte!='Tout va bien!') {
+    return;
+  }
+
   const data = { maven_key: mavenKey, mode: 'null' };
   const options = {
     url: `${serveur()}/api/projet/anomalie`, type: 'POST',
@@ -498,7 +532,7 @@ const projetAnomalie=function(mavenKey) {
     $.ajax(options).then(t => {
       if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
         afficheMessage(t)
-        sessionStorage.setItem('collecte', 'Erreur phase 06');
+        sessionStorage.setItem('collecte', 'Erreur phase 06.');
         return;
       }
       if (t.code===http_200){
@@ -527,6 +561,12 @@ const projetAnomalie=function(mavenKey) {
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const projetAnomalieDetails=function(mavenKey) {
+  /** On vérifie s'il n'y a pas d'erreur lors du traitement */
+  const collecte = sessionStorage.getItem('collecte');
+  if (!collecte || collecte!='Tout va bien!') {
+    return;
+  }
+
   const data = { maven_key: mavenKey, mode: 'null' };
   const options = {
     url: `${serveur()}/api/projet/anomalie/details`, type: 'POST',
@@ -540,7 +580,7 @@ const projetAnomalieDetails=function(mavenKey) {
         return;
       }
       if (t.code===http_200){
-          log(' - INFO : (07) Le frequence des sévérités par type a été collectée.');
+          log(' - INFO : (07) La fréquence des sévérités par type a été collectée.');
       } else {
           log(` - ERROR : (07) Je n'ai pas réussi à collecter les données (${t.erreur}).`);
       }
@@ -571,7 +611,14 @@ const projetAnomalieDetails=function(mavenKey) {
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const projetHotspotOwasp=function(mavenKey, owasp) {
-  const data = { maven_key: mavenKey, owasp };
+  /** On vérifie s'il n'y a pas d'erreur lors du traitement */
+  const collecte = sessionStorage.getItem('collecte');
+  if (!collecte || collecte!='Tout va bien!') {
+    return;
+  }
+
+  const data = { maven_key: mavenKey, mode: 'null', owasp };
+  console.log(data);
   const options = {
     url: `${serveur()}/api/projet/hotspot/owasp`, type: 'POST',
           dataType: 'json', data: JSON.stringify(data), contentType };
@@ -580,7 +627,7 @@ const projetHotspotOwasp=function(mavenKey, owasp) {
     $.ajax(options).then(t=> {
       if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
         afficheMessage(t)
-        sessionStorage.setItem('collecte', 'Erreur phase 08-09');
+        sessionStorage.setItem('collecte', 'Erreur phase 08-09.');
         return;
       }
       if (t.code===http_200 && t.info==='effacement'){
@@ -615,16 +662,22 @@ const projetHotspotOwasp=function(mavenKey, owasp) {
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const projetHotspotOwaspDetails=function(mavenKey) {
+  /** On vérifie s'il n'y a pas d'erreur lors du traitement */
+  const collecte = sessionStorage.getItem('collecte');
+  if (!collecte || collecte!='Tout va bien!') {
+    return;
+  }
+
   const data = { maven_key: mavenKey, mode: 'null' };
   const options = {
-    url: `${serveur()}/api/projet/hotspot/details`, type: 'GET',
+    url: `${serveur()}/api/projet/hotspot/details`, type: 'POST',
           dataType: 'json', data: JSON.stringify(data), contentType };
 
   return new Promise(resolve => {
     $.ajax(options).then(t=> {
       if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
         afficheMessage(t)
-        sessionStorage.setItem('collecte', 'Erreur phase 10');
+        sessionStorage.setItem('collecte', 'Erreur phase 10.');
         return;
       }
       if (t.code===http_200) {
@@ -656,6 +709,12 @@ const projetHotspotOwaspDetails=function(mavenKey) {
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const projetNoSonar=function(mavenKey){
+    /** On vérifie s'il n'y a pas d'erreur lors du traitement */
+    const collecte = sessionStorage.getItem('collecte');
+    if (!collecte || collecte!='Tout va bien!') {
+      return;
+    }
+
   const data = { maven_key: mavenKey, mode: 'null' };
   const options = {
     url: `${serveur()}/api/projet/nosonar`, type: 'POST',
@@ -665,7 +724,7 @@ const projetNoSonar=function(mavenKey){
     $.ajax(options).then(t=> {
       if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
         afficheMessage(t)
-        sessionStorage.setItem('collecte', 'Erreur phase 11');
+        sessionStorage.setItem('collecte', 'Erreur phase 11.');
         return;
       }
       if (t.code===http_200 && t.nosonar !== 0) {
@@ -696,6 +755,12 @@ const projetNoSonar=function(mavenKey){
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const projetTodo=function(mavenKey){
+    /** On vérifie s'il n'y a pas d'erreur lors du traitement */
+    const collecte = sessionStorage.getItem('collecte');
+    if (!collecte || collecte!='Tout va bien!') {
+      return;
+    }
+
   const data = { maven_key: mavenKey, mode: 'null' };
   const options = {
     url: `${serveur()}/api/projet/todo`, type: 'GET',
@@ -730,7 +795,17 @@ const projetTodo=function(mavenKey){
 const finCollecte=function(){
   setTimeout(function(){
     log(` - INFO : (13) La collecte des données est terminée.`), troisMille});
-}
+    /** On vérifie s'il n'y a pas d'erreur lors du traitement */
+    const collecte = sessionStorage.getItem('collecte');
+    if (!collecte || collecte!='Tout va bien!') {
+      const type='secondary';
+      const reference=`<strong>${collecte}</strong> `;
+      const message='Le processus de collecte a été interrompu !';
+      const t={type, reference, message};
+      afficheMessage(t);
+      return;
+    }
+  }
 
 /**
  * [Description for afficheMesProjets]
@@ -1078,7 +1153,7 @@ $('select[name="projet"]').on('change', function () {
   sessionStorage.setItem('projet', $('select[name="projet"]').val().trim());
 
   /** On supprime la clé de collecte */
-  sessionStorage.setItem('collecte', '');
+  sessionStorage.setItem('collecte', 'Tout va bien!');
 
   /* On regarde si le projet est en favori */
   const data = { mavenKey: $('#select-result').text().trim() };
@@ -1234,6 +1309,12 @@ $('#js-version-autre').on('click', () => {
 $('.js-affiche-resultat').on('click', () => {
   /* On récupère la clé du projet. */
   const apiMaven = $('#select-result').text().trim();
+  /** On regarde si tou vas bien ! */
+  const collecte=sessionStorage.getItem('collecte');
+  if (collecte===undefined || collecte!='Tout va bien!') {
+    t={}
+    return;
+  };
   /* On appel une fonction externe. */
   if ( $('.js-affiche-resultat').hasClass('affiche-resultat-enabled')){
       /* On récupère la répartition des hotspots. */
@@ -1258,12 +1339,10 @@ $('.js-enregistrement').on('click', () => {
 
   if (!roles.includes('ROLE_COLLECTE') && !roles.includes('ROLE_BATCH') && !roles.includes('ROLE_GESTIONNAIRE')) {
     const type='alert';
-    const reference='<strong>[PROJET-003]</strong>';
-    const message=' Vous devez avoir au moins le rôle COLLECTE pour lancer la commande d\'enregistrement.';
-    $('#callout-projet-message').removeClass('hide alert success warning primary secondary');
-    $('#callout-projet-message').addClass(type);
-    $('#js-reference-information').html(reference);
-    $('#js-message-information').html(message);
+    const reference='<strong>[PROJET-000]</strong>';
+    const message=` Vous devez avoir au moins le rôle COLLECTE pour lancer la commande d'enregistrement.`;
+    let t={type, reference, message}
+    afficheMessage(t);
     return;
   }
 
