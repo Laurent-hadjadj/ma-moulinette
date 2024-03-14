@@ -618,7 +618,6 @@ const projetHotspotOwasp=function(mavenKey, owasp) {
   }
 
   const data = { maven_key: mavenKey, mode: 'null', owasp };
-  console.log(data);
   const options = {
     url: `${serveur()}/api/projet/hotspot/owasp`, type: 'POST',
           dataType: 'json', data: JSON.stringify(data), contentType };
@@ -763,7 +762,7 @@ const projetTodo=function(mavenKey){
 
   const data = { maven_key: mavenKey, mode: 'null' };
   const options = {
-    url: `${serveur()}/api/projet/todo`, type: 'GET',
+    url: `${serveur()}/api/projet/todo`, type: 'POST',
           dataType: 'json', data: JSON.stringify(data), contentType };
 
   return new Promise(resolve => {
