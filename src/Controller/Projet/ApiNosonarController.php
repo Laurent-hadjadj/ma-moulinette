@@ -39,13 +39,20 @@ use App\Service\Client;
 
 class ApiNosonarController extends AbstractController
 {
+    public static $regex = "/\s+/u";
+    public static $erreurMavenKey = "La clé maven est vide!";
+    public static $message = "Vous devez avoir le rôle COLLECTE pour réaliser cette action.";
+
     /** Définition des constantes */
     public static $sonarUrl = "sonar.url";
     public static $europeParis = "Europe/Paris";
-    public static $regex = "/\s+/u";
-    public static $erreurMavenKey = "La clé maven est vide!";
-    public static $reference = "<strong>[PROJET-002]</strong>";
-    public static $message = "Vous devez avoir le rôle COLLECTE pour réaliser cette action.";
+    public static $apiIssuesSearch = "/api/issues/search?componentKeys=";
+    public static $removeReturnline = "/\s+/u";
+    public static $reference = "<strong>[PROJET-004]</strong>";
+    public static $erreur400 = "La requête est incorrecte (Erreur 400).";
+    public static $erreur401 = "Erreur d\'Authentification. La clé n\'est pas correcte (Erreur 401).";
+    public static $erreur403 = "Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).";
+    public static $erreur404 = "L'appel à l'API n'a pas abouti (Erreur 404).";
 
     /**
      * [Description for __construct]
@@ -63,14 +70,19 @@ class ApiNosonarController extends AbstractController
     }
 
     /**
-     * [Description for projetNosonarAjout]
+     * [Description for projetNosonarCollecte]
      * On récupère la liste des fichiers ayant fait l'objet d'un
      * @@supresswarning ou d'un noSONAR
-     * http://{url}api/issues/search?componentKeys={key}&rules={rules}&ps=500&p=1
+     * http://{url}/api/projet/nosonar
+     *
+     * Phase 11
+     *
+     * {mode} = null | TEST
      * {key} = la clé du projet
      * {rules} = java:S1309 et java:NoSonar
      *
      * @param Request $request
+     * @param Client $client
      *
      * @return response
      *
@@ -78,47 +90,81 @@ class ApiNosonarController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/projet/nosonar/details', name: 'projet_nosonar', methods: ['GET'])]
-    public function projetNosonarAjout(Client $client, Request $request): response
+    #[Route('/api/projet/nosonar', name: 'projet_nosonar_collect', methods: ['POST'])]
+    public function projetNosonarCollect(Client $client, Request $request): response
     {
-        /** On créé un objet response */
+        /** On instancie l'entityRepository */
+        $noSonar = $this->em->getRepository(NoSonar::class);
+
+        /** On décode le body */
+        $data = json_decode($request->getContent());
+
+        /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
 
-        /** On bind les variables. */
-        $mode = $request->get('mode');
-        $mavenKey = $request->get('mavenKey');
-        $tempoUrl = $this->getParameter(static::$sonarUrl);
-
         /** On teste si la clé est valide */
-        if ($mavenKey === "null" && $mode === "TEST") {
-            return $response->setData([
-              "mode" => $mode, "mavenKey" => $mavenKey,
-              "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
-        }
+        if ($data === null) {
+            return $response->setData(['data' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'mode')) {
+            return $response->setData(['mode' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'maven_key')) {
+            return $response->setData(['maven_key' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return $response->setData([
-              "mode" => $mode ,
-              "type" => 'alert',
-              "reference" => static::$reference,
-              "message" => static::$message,
-              Response::HTTP_OK]);
+                "mode" => $data->mode ,
+                "code" => 403,
+                "reference" => static::$reference,
+                "message" => static::$erreur403,
+                Response::HTTP_OK]);
         }
+
+       /** On récupère l'url du serveur */
+        $tempoUrl = $this->getParameter(static::$sonarUrl);
 
         /** On construit l'URL et on appel le WS. */
-        $url = "$tempoUrl/api/issues/search?componentKeys=$mavenKey
-            &rules=java:S1309,java:NoSonar&ps=500&p=1";
+        $url = "$tempoUrl/api/issues/search?componentKeys=$data->maven_key
+                &rules=java:S1309,java:NoSonar&ps=500&p=1";
 
-        $result = $client->http(trim(preg_replace(static::$regex, " ", $url)));
-        $date = new DateTime();
-        $date->setTimezone(new DateTimeZone(static::$europeParis));
-
-        /** On supprime les données du projet de la table NoSonar. */
-        $sql = "DELETE FROM no_sonar WHERE maven_key='$mavenKey'";
-        if($mode !== "TEST") {
-            $this->em->getConnection()->prepare($sql)->executeQuery();
+        /** On récupère les données. */
+        $result = $client->http(trim(preg_replace(static::$removeReturnline, " ", $url)));
+        /** on catch les erreurs HTTP 400, 401 et 404, si possible :) */
+        if (array_key_exists('code', $result)){
+            if ($result['code']===401) {
+            return $response->setData([
+                "mode" => $data->mode ,
+                "code" => 401,
+                "reference" => static::$reference,
+                "message" => static::$erreur401,
+                Response::HTTP_OK]);
+            }
+            if ($result['code']===404){
+                return $response->setData([
+                    "mode" => $data->mode ,
+                    "code" => 404,
+                    "reference" => static::$reference,
+                    "message" => static::$erreur404,
+                    Response::HTTP_OK]);
+                }
         }
+
+        /** On supprime les notes pour la maven_key. */
+        $map=['maven_key'=>$data->maven_key];
+        $request=$noSonar->deleteNoSonarMavenKey($data->mode, $map);
+        if ($request['code']!=200) {
+            return $response->setData([
+                'type' => 'alert',
+                'mode' => $data->mode,
+                'reference' => static::$reference,
+                'code' => $request['code'],
+                'message'=>$request['erreur'],
+                Response::HTTP_OK]);
+        }
+
+        /** On créé un objet date */
+        $dateEnregistrement = new Datetime();
+        $dateEnregistrement->setTimezone(new DateTimeZone(static::$europeParis));
 
         /**
          * Si on a trouvé des @notations de type nosSonar ou SuprressWarning.
@@ -127,20 +173,20 @@ class ApiNosonarController extends AbstractController
         if ($result["paging"]["total"] !== 0) {
             foreach ($result["issues"] as $issue) {
                 $nosonar = new NoSonar();
-                $nosonar->setMavenKey($request->get('mavenKey'));
-                $nosonar->setRule($issue["rule"]);
-                $component = str_replace("$mavenKey :", "", $issue["component"]);
+                $nosonar->setMavenKey($data->maven_key);
+                $nosonar->setRule($issue['rule']);
+                $component = str_replace('$data->maven_key :', "", $issue['component']);
                 $nosonar->setComponent($component);
-                if (empty($issue["line"])) {
+                if (empty($issue['line'])) {
                     $line = 0;
                 } else {
-                    $line = $issue["line"];
+                    $line = $issue['line'];
                 }
                 $nosonar->setLine($line);
-                $nosonar->setDateEnregistrement($date);
+                $nosonar->setDateEnregistrement($dateEnregistrement);
 
                 $this->em->persist($nosonar);
-                if ($mode != "TEST") {
+                if ($data->mode != 'TEST') {
                     $this->em->flush();
                 }
             }
@@ -148,94 +194,7 @@ class ApiNosonarController extends AbstractController
             /** Il n'y a pas de noSOnar ou de suppressWarning */
         }
 
-        return $response->setData(["mode" => $mode,"nosonar" => $result["paging"]["total"], Response::HTTP_OK]);
-    }
-
-    /**
-     * [Description for projetNosonarAjout]
-     * On récupère la liste des fichiers ayant fait l'objet d'un "To do"
-     * http://{url}api/issues/search?componentKeys={key}&rules={rules}&ps=500&p=1
-     * {key} = la clé du projet
-     * {rules} = javascript:S1135, xml:S1135, typescript:S1135, Web:S1135, java:S1135
-     *
-     * @param Request $request
-     *
-     * @return response
-     *
-     * Created at: 10/04/2023, 15:18:45 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    #[Route('/api/projet/todo/details', name: 'projet_todo', methods: ['GET'])]
-    public function projetTodoAjout(Client $client, Request $request): response
-    {
-        /** On créé un objet response */
-        $response = new JsonResponse();
-
-        /** On bind les variables. */
-        $mode = $request->get('mode');
-        $mavenKey = $request->get('mavenKey');
-        $tempoUrl = $this->getParameter(static::$sonarUrl);
-
-        /** On teste si la clé est valide */
-        if ($mavenKey === "null" && $mode === "TEST") {
-            return $response->setData([
-            "mode" => $mode, "mavenKey" => $mavenKey,
-            "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
-        }
-
-        /** On vérifie si l'utilisateur à un rôle Collecte ? */
-        if (!$this->isGranted('ROLE_COLLECTE')) {
-            return $response->setData([
-                "mode" => $mode ,
-                "type" => 'alert',
-                "reference" => static::$reference,
-                "message" => static::$message,
-                Response::HTTP_OK]);
-        }
-
-        /** On construit l'URL et on appel le WS. */
-        $url = "$tempoUrl/api/issues/search?componentKeys=$mavenKey
-            &rules=javascript:S1135,xml:S1135,typescript:S1135,Web:S1135,java:S1135&ps=500&p=1";
-
-        $result = $client->http(trim(preg_replace(static::$regex, " ", $url)));
-        $date = new DateTime();
-        $date->setTimezone(new DateTimeZone(static::$europeParis));
-
-        /** On supprime les données du projet de la table to do. */
-        $sql = "DELETE FROM todo WHERE maven_key='$mavenKey'";
-        if($mode !== "TEST") {
-            $this->em->getConnection()->prepare($sql)->executeQuery();
-        }
-
-        /**
-         * Si on a trouvé des to do dans le code alors on les dénombre
-         */
-        if ($result["paging"]["total"] !== 0) {
-            foreach ($result["issues"] as $issue) {
-                $todo = new Todo();
-                $todo->setMavenKey($request->get('mavenKey'));
-                $todo->setRule($issue["rule"]);
-                $component = str_replace("$mavenKey :", "", $issue["component"]);
-                $todo->setComponent($component);
-                if (empty($issue["line"])) {
-                    $line = 0;
-                } else {
-                    $line = $issue["line"];
-                }
-                $todo->setLine($line);
-                $todo->setDateEnregistrement($date);
-
-                $this->em->persist($todo);
-                if ($mode != "TEST") {
-                    $this->em->flush();
-                }
-            }
-        } else {
-            /** Il n'y a pas de to do */
-        }
-
-        return $response->setData(["mode" => $mode,"todo" => $result["paging"]["total"], Response::HTTP_OK]);
+        return $response->setData(['mode' => $data->mode, 'code'=>200, 'nosonar' => $result["paging"]["total"], Response::HTTP_OK]);
     }
 
 }
