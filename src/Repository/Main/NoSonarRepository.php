@@ -30,8 +30,8 @@ class NoSonarRepository extends ServiceEntityRepository
      * [Description for deleteNoSonarMavenKey]
      * Supprime les données de la version courrante (i.e. correspondant à la maven_key)
      *
-     * @param mixed $mode
-     * @param mixed $map
+     * @param string $mode
+     * @param array $map
      *
      * @return array
      *
