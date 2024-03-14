@@ -327,7 +327,7 @@ class ApiHotspotController extends AbstractController
         $tempoUrl = $this->getParameter(static::$sonarUrl);
 
         /** On construit l'Url. */
-        $url = "$tempoUrl/api/hotspots/search?projectKey=$data->mavenKey
+        $url = "$tempoUrl/api/hotspots/search?projectKey=$data->maven_key
             &owaspTop10=$data->owasp&ps=500&p=1";
 
         /** On appel l'Api */

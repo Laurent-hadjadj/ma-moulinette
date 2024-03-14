@@ -529,7 +529,7 @@ class ApiAnomalieController extends AbstractController
 
             /** On enregistre en base. */
             $details = new AnomalieDetails();
-            $details->setMavenKey($data->mavenKey);
+            $details->setMavenKey($data->maven_key);
             $details->setName(static::extractNameFromMavenKey($data->maven_key));
 
             $details->setBugBlocker($bugBlocker);
