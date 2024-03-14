@@ -639,7 +639,7 @@ const projetHotspotOwaspDetails=function(mavenKey) {
 };
 
 /**
- * [Description for projetNosonar]
+ * [Description for projetNoSonar]
  * On récupére la liste des exclusions de code
  * http://{url}/api/projet/nosonar
  *
@@ -655,7 +655,7 @@ const projetHotspotOwaspDetails=function(mavenKey) {
  * Created at: 19/12/2022, 22:19:44 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
-const projetNosonar=function(mavenKey){
+const projetNoSonar=function(mavenKey){
   const data = { maven_key: mavenKey, mode: 'null' };
   const options = {
     url: `${serveur()}/api/projet/nosonar`, type: 'POST',
@@ -679,8 +679,14 @@ const projetNosonar=function(mavenKey){
 };
 
 /**
- * [Description for projetNosonarDetails]
- * On récupére la liste des exclusions de code
+ * [Description for projetTodo]
+ * On récupére la liste des t_odo
+ * http://{url}/api/projet/todo
+ *
+ * Phase 12
+ *
+ * {mode} = null, TEST
+ * {mavenKey} = clé du projet
  *
  * @param string mavenKey
  *
@@ -689,17 +695,17 @@ const projetNosonar=function(mavenKey){
  * Created at: 10/04/2023, 15:11:30 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
-const projetTodoDetails=function(mavenKey){
-  const data = { mavenKey };
+const projetTodo=function(mavenKey){
+  const data = { maven_key: mavenKey, mode: 'null' };
   const options = {
-    url: `${serveur()}/api/projet/todo/details`, type: 'GET',
-          dataType: 'json', data, contentType };
+    url: `${serveur()}/api/projet/todo`, type: 'GET',
+          dataType: 'json', data: JSON.stringify(data), contentType };
 
   return new Promise(resolve => {
     $.ajax(options).then(t=> {
       if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
         afficheMessage(t)
-        sessionStorage.setItem('collecte', 'Erreur phase 11');
+        sessionStorage.setItem('collecte', 'Erreur phase 12');
         return;
       }
       if (t.code===http_200 && t.todo !== 0) {
@@ -746,10 +752,7 @@ const afficheMesProjets=function() {
     $.ajax(options).then(t=> {
       let str, favori, i;
       if (t.type !== undefined) {
-        $('#callout-profil-message').removeClass('hide success alert primary secondary');
-        $('#callout-profil-message').addClass(t.type);
-        $('#js-reference-information').html(t.reference);
-        $('#js-message-information').html(t.message);
+        afficheMessage(t)
         return;
       }
 
@@ -1046,7 +1049,7 @@ $('.js-analyse').on('click', function () {
     await projetHotspotOwaspDetails(idProject);   /*(10)*/
 
     /* Récupération des signalements noSonar et SuppressWarning. */
-    await projetNosonarD(idProject);              /*(11)*/
+    await projetNoSonar(idProject);               /*(11)*/
 
     /* Récupération des signalements Todo (TS, JAVA, XML). */
     await projetTodo(idProject);                  /*(12)*/
@@ -1257,7 +1260,7 @@ $('.js-enregistrement').on('click', () => {
     const type='alert';
     const reference='<strong>[PROJET-003]</strong>';
     const message=' Vous devez avoir au moins le rôle COLLECTE pour lancer la commande d\'enregistrement.';
-    $('#callout-projet-message').removeClass('hide success warning primary secondary');
+    $('#callout-projet-message').removeClass('hide alert success warning primary secondary');
     $('#callout-projet-message').addClass(type);
     $('#js-reference-information').html(reference);
     $('#js-message-information').html(message);
