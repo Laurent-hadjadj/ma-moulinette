@@ -117,7 +117,7 @@ class ApiNoteController extends AbstractController
         $tempoUrl = $this->getParameter(static::$sonarUrl);
 
         /** On construit l'URL */
-        $url = "$tempoUrl/api/measures/search_history?component=$data->mavenKey&metrics=$data->type"."_rating&ps=1000";
+        $url = "$tempoUrl/api/measures/search_history?component=$data->maven_key&metrics=$data->type"."_rating&ps=1000";
 
         /** On appel le client http. */
         $result = $client->http(trim(preg_replace(static::$removeReturnline, " ", $url)));
@@ -169,7 +169,7 @@ class ApiNoteController extends AbstractController
         foreach ($mesures as $mesure) {
             $tempoMesureDate = $mesure["date"];
             $tempoMesureValue = $mesure["value"];
-            $map=['maven_key'=>$data->mavenKey, 'type'=>$data->type, 'date'=>$tempoMesureDate, 'value'=>$tempoMesureValue, 'date_enregistrement'=>$tempoDate];
+            $map=['maven_key'=>$data->maven_key, 'type'=>$data->type, 'date'=>$tempoMesureDate, 'value'=>$tempoMesureValue, 'date_enregistrement'=>$tempoDate];
         }
 
         if ($data->type == "reliability") {
