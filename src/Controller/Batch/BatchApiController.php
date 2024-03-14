@@ -75,6 +75,34 @@ class BatchApiController extends AbstractController
     }
 
     /**
+     * [Description for extractNameFromMavenKey]
+     * Extrait le nom du projet de la clé
+     *
+     * @param mixed $mavenKey
+     *
+     * @return string
+     *
+     * Created at: 13/03/2024 21:50:34 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function extractNameFromMavenKey($mavenKey): string
+    {
+        /**
+         * On récupère le nom de l'application depuis la clé mavenKey
+         * [fr.ma-petite-entreprise] : [ma-moulinette]
+         */
+        $app = explode(":", $mavenKey);
+        if (count($app)===1) {
+            /** La clé maven n'est pas conforme, on ne peut pas déduire le nom de l'application */
+            $name=$mavenKey;
+        } else {
+            $name=$app[1];
+        }
+        return $name;
+    }
+
+    /**
      * [Description for minutesTo]
      * Converti les minutes en jours, heures et minutes
      * @param mixed $minutes
@@ -687,11 +715,7 @@ class BatchApiController extends AbstractController
             $this->em->getConnection()->prepare($sql)->executeQuery();
 
             /** nom du projet */
-            $app = explode(":", $mavenKey);
-            if (count($app)===1) {
-                /** La clé maven n'est pas conforme, on ne peut pas déduire le nom de l'application */
-                array_push($app, $mavenKey);
-            }
+            $app = static::extractNameFromMavenKey($mavenKey);
 
             $anomalieTotal = $result1["total"];
             $detteMinute = $result1["effortTotal"];
@@ -754,39 +778,39 @@ class BatchApiController extends AbstractController
                             $module[0] === "rs-presentation") {
                             $frontend = $frontend + $directory["count"];
                         }
-                        if ($module[0] === $app[1] . "-presentation" ||
-                            $module[0] === $app[1] . "-presentation-commun" ||
-                            $module[0] === $app[1] . "-presentation-ear" ||
-                            $module[0] === $app[1] . "-webapp") {
+                        if ($module[0] === $app . "-presentation" ||
+                            $module[0] === $app . "-presentation-commun" ||
+                            $module[0] === $app . "-presentation-ear" ||
+                            $module[0] === $app . "-webapp") {
                             $frontend = $frontend + 1;
                         }
                         if ($module[0] === "rs-metier") {
                             $backend = $backend + $directory["count"];
                         }
-                        if ($module[0] === $app[1] . "-metier" ||
-                            $module[0] === $app[1] . "-common" ||
-                            $module[0] === $app[1] . "-api" ||
-                            $module[0] === $app[1] . "-dao") {
+                        if ($module[0] === $app . "-metier" ||
+                            $module[0] === $app . "-common" ||
+                            $module[0] === $app . "-api" ||
+                            $module[0] === $app . "-dao") {
                             $backend = $backend + $directory["count"];
                         }
-                        if ($module[0] === $app[1] . "-metier-ear" ||
-                            $module[0] === $app[1] . "-service" ||
-                            $module[0] === $app[1] . "-serviceweb" ||
-                            $module[0] === $app[1] . "-middleoffice") {
+                        if ($module[0] === $app . "-metier-ear" ||
+                            $module[0] === $app . "-service" ||
+                            $module[0] === $app . "-serviceweb" ||
+                            $module[0] === $app . "-middleoffice") {
                             $backend = $backend + $directory["count"];
                         }
-                        if ($module[0] === $app[1] . "-metier-rest" ||
-                            $module[0] === $app[1] . "-entite" ||
-                            $module[0] === $app[1] . "-serviceweb-client") {
+                        if ($module[0] === $app . "-metier-rest" ||
+                            $module[0] === $app . "-entite" ||
+                            $module[0] === $app . "-serviceweb-client") {
                             $backend = $backend + $directory["count"];
                         }
-                        if ($module[0] === $app[1] . "-batch" ||
-                            $module[0] === $app[1] . "-batchs" ||
-                            $module[0] === $app[1] . "-batch-envoi-dem-aval" ||
-                            $module[0] === $app[1] . "-batch-import-billets") {
+                        if ($module[0] === $app . "-batch" ||
+                            $module[0] === $app . "-batchs" ||
+                            $module[0] === $app . "-batch-envoi-dem-aval" ||
+                            $module[0] === $app . "-batch-import-billets") {
                             $autre = $autre + $directory["count"];
                         }
-                        if ($module[0] === $app[1] . "-rdd") {
+                        if ($module[0] === $app . "-rdd") {
                             $autre = $autre + 1;
                         }
                     }
@@ -795,7 +819,7 @@ class BatchApiController extends AbstractController
             /** Enregistrement dans la table Anomalie */
             $issue = new Anomalie();
             $issue->setMavenKey($mavenKey);
-            $issue->setProjectName($app[1]);
+            $issue->setProjectName($app);
             $issue->setAnomalieTotal($anomalieTotal);
             $issue->setDette($dette);
             $issue->setDetteMinute($detteMinute);
@@ -931,14 +955,10 @@ class BatchApiController extends AbstractController
                 }
             }
 
-            /** On récupère le nom de l'application */
-            $explode = explode(":", $mavenKey);
-            $name = $explode[1];
-
             /** On enregistre en base */
             $details = new AnomalieDetails();
             $details->setMavenKey($mavenKey);
-            $details->setName($name);
+            $details->setName(static::extractNameFromMavenKey($mavenKey));
 
             $details->setBugBlocker($bugBlocker);
             $details->setBugCritical($bugCritical);

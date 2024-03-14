@@ -42,6 +42,34 @@ class RepartitionController extends AbstractController
     }
 
     /**
+     * [Description for extractNameFromMavenKey]
+     * Extrait le nom du projet de la clé
+     *
+     * @param mixed $mavenKey
+     *
+     * @return string
+     *
+     * Created at: 13/03/2024 22:11:36 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function extractNameFromMavenKey($mavenKey): string
+    {
+        /**
+         * On récupère le nom de l'application depuis la clé mavenKey
+         * [fr.ma-petite-entreprise] : [ma-moulinette]
+         */
+        $app = explode(":", $mavenKey);
+        if (count($app)===1) {
+            /** La clé maven n'est pas conforme, on ne peut pas déduire le nom de l'application */
+            $name=$mavenKey;
+        } else {
+            $name=$app[1];
+        }
+        return $name;
+    }
+
+    /**
      * [Description for projetRepartition]
      *
      * @param Request $request
@@ -72,11 +100,7 @@ class RepartitionController extends AbstractController
         }
 
         /** On enregistre le nom du projet */
-        $app = explode(":", $mavenKey);
-        if (count($app)===1) {
-            /** La clé maven n'est pas conforme, on ne peut pas déduire le nom de l'application */
-            array_push($app, $mavenKey);
-        }
+        $app = static::extractNameFromMavenKey($mavenKey);
 
         /** On se connecte à la base pour connaitre la version du dernier setup pour le projet. */
         $reponse = $this->doctrine->getManager('secondary')
@@ -93,20 +117,20 @@ class RepartitionController extends AbstractController
 
         if ($mode === "TEST") {
             return $response->setData(
-                ['monApplication' => $app[1], 'mavenKey' => $mavenKey,
-          'setup' =>  $setup, 'statut' => $statut, Response::HTTP_OK]
+                ['monApplication' => $app, 'mavenKey' => $mavenKey,
+                'setup' =>  $setup, 'statut' => $statut, Response::HTTP_OK]
             );
         }
 
         return $this->render(
             'projet/details.html.twig',
             [
-            'monApplication' => $app[1],
+            'monApplication' => $app,
             'mavenKey' => $mavenKey,
             'setup' =>  $setup,
             'statut' => $statut,
             'version' => $this->getParameter('version'), 'dateCopyright' => \date('Y')
-      ]
+            ]
         );
     }
 }
