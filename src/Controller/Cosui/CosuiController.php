@@ -43,6 +43,34 @@ class CosuiController extends AbstractController
         $this->mr = $mr;
     }
 
+    /**
+     * [Description for extractNameFromMavenKey]
+     * Extrait le nom du projet de la clé
+     *
+     * @param mixed $mavenKey
+     *
+     * @return string
+     *
+      * Created at: 13/03/2024 21:47:51 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function extractNameFromMavenKey($mavenKey): string
+    {
+        /**
+         * On récupère le nom de l'application depuis la clé mavenKey
+         * [fr.ma-petite-entreprise] : [ma-moulinette]
+         */
+        $app = explode(":", $mavenKey);
+        if (count($app)===1) {
+            /** La clé maven n'est pas conforme, on ne peut pas déduire le nom de l'application */
+            $name=$mavenKey;
+        } else {
+            $name=$app[1];
+        }
+        return $name;
+    }
+
 
     /**
      * [Description for note2point]
@@ -245,15 +273,7 @@ class CosuiController extends AbstractController
             $mavenKey = "fr.ma-petite-entreprise:ma-moulinette";
         }
 
-        /**
-         * On récupère le nom de l'application depuis la clé mavenKey
-         * [fr.ma-petite-entreprise] : [ma-moulinette]
-         */
-        $app = explode(":", $mavenKey);
-        if (count($app)===1) {
-            /** La clé maven n'est pas conforme, on ne peut pas déduire le nom de l'application */
-            array_push($app, $mavenKey);
-        }
+        $app=static::extractNameFromMavenKey($mavenKey);
 
         foreach ($contents as $el) {
             /**
@@ -271,39 +291,39 @@ class CosuiController extends AbstractController
                 $module[0] === "rs-presentation") {
                 $frontend = $frontend + 1;
             }
-            if ($module[0] === $app[1] . "-presentation" ||
-                $module[0] === $app[1] . "-presentation-commun" ||
-                $module[0] === $app[1] . "-presentation-ear" ||
-                $module[0] === $app[1] . "-webapp") {
+            if ($module[0] === $app . "-presentation" ||
+                $module[0] === $app . "-presentation-commun" ||
+                $module[0] === $app . "-presentation-ear" ||
+                $module[0] === $app . "-webapp") {
                 $frontend = $frontend + 1;
             }
             if ($module[0] === "rs-metier") {
                 $backend = $backend + 1;
             }
-            if ($module[0] === $app[1] . "-metier" ||
-                $module[0] === $app[1] . "-common" ||
-                $module[0] === $app[1] . "-api" ||
-                $module[0] === $app[1] . "-dao") {
+            if ($module[0] === $app . "-metier" ||
+                $module[0] === $app . "-common" ||
+                $module[0] === $app . "-api" ||
+                $module[0] === $app . "-dao") {
                 $backend = $backend + 1;
             }
-            if ($module[0] === $app[1] . "-metier-ear" ||
-                $module[0] === $app[1] . "-service" ||
-                $module[0] === $app[1] . "-serviceweb" ||
-                $module[0] === $app[1] . "-middleoffice") {
+            if ($module[0] === $app . "-metier-ear" ||
+                $module[0] === $app . "-service" ||
+                $module[0] === $app . "-serviceweb" ||
+                $module[0] === $app . "-middleoffice") {
                 $backend = $backend + 1;
             }
-            if ($module[0] === $app[1] . "-metier-rest" ||
-                $module[0] === $app[1] . "-entite" ||
-                $module[0] === $app[1] . "-serviceweb-client") {
+            if ($module[0] === $app . "-metier-rest" ||
+                $module[0] === $app . "-entite" ||
+                $module[0] === $app . "-serviceweb-client") {
                 $backend = $backend + 1;
             }
-            if ($module[0] === $app[1] . "-batch" ||
-                $module[0] === $app[1] . "-batchs" ||
-                $module[0] === $app[1] . "-batch-envoi-dem-aval" ||
-                $module[0] === $app[1] . "-batch-import-billets") {
+            if ($module[0] === $app . "-batch" ||
+                $module[0] === $app . "-batchs" ||
+                $module[0] === $app . "-batch-envoi-dem-aval" ||
+                $module[0] === $app . "-batch-import-billets") {
                 $autre = $autre + 1;
             }
-            if ($module[0] === $app[1] . "-rdd") {
+            if ($module[0] === $app . "-rdd") {
                 $autre = $autre + 1;
             }
         }
