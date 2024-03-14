@@ -50,6 +50,9 @@ class ProfilController extends AbstractController
     #[Route('/profil', name: 'profil', methods: 'GET')]
     public function index(Request $request): Response
     {
+        /** On instancie l'EntityRepository */
+        $profiles = $this->em->getRepository(Profiles::class);
+
         /** oN créé un objet réponse */
         $response = new JsonResponse();
 
@@ -60,7 +63,6 @@ class ProfilController extends AbstractController
         }
 
         /** On récupère la liste des profiles; */
-        $profiles = $this->em->getRepository(Profiles::class);
         $request=$profiles->selectProfiles($mode);
         switch ($request['code']) {
             case 202:

@@ -64,6 +64,9 @@ class ApiOwaspPeintureController extends AbstractController
     #[Route('/api/peinture/owasp/liste', name: 'peinture_owasp_liste', methods: ['POST'])]
     public function peintureOwaspListe(Request $request): response
     {
+        /** On instancie l'entityRepository */
+        $owasp = $this->em->getRepository(Owasp::class);
+
         /** On décode le body */
         $data = json_decode($request->getContent());
 
@@ -80,7 +83,6 @@ class ApiOwaspPeintureController extends AbstractController
 
         /** On récupère les failles owasp */
         $map=['maven_key'=>$data->maven_key];
-        $owasp = $this->em->getRepository(Owasp::class);
         $request=$owasp->selectOwaspOrderByDateEnregistrement($data->mode, $map);
         if ($request['code']!=200) {
             return $response->setData([
@@ -169,6 +171,9 @@ class ApiOwaspPeintureController extends AbstractController
     #[Route('/api/peinture/owasp/hotspot/info', name: 'peinture_owasp_hotspot_info', methods: ['POST'])]
     public function peintureOwaspHotspotInfo(Request $request): response
     {
+        /** On instancie l'entityRepository */
+        $hotspotOwasp = $this->em->getRepository(HotspotOwasp::class);
+
         /** On décode le body */
         $data = json_decode($request->getContent());
 
@@ -182,9 +187,6 @@ class ApiOwaspPeintureController extends AbstractController
             return $response->setData(['mode' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
         if (!property_exists($data, 'maven_key')) {
             return $response->setData(['maven_key' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
-
-        /** On récupère le nombre de hotspost en fonction du status */
-        $hotspotOwasp = $this->em->getRepository(HotspotOwasp::class);
 
         /** On compte le nombre de hotspot REVIEWED */
         $map=['maven_key'=>$data->maven_key, 'status'=>'REVIEWED'];
@@ -256,6 +258,8 @@ class ApiOwaspPeintureController extends AbstractController
     #[Route('/api/peinture/owasp/hotspot/liste', name: 'peinture_owasp_hotspot_liste', methods: ['POST'])]
     public function peintureOwaspHotspotListe(Request $request): response
     {
+        /** On instancie l'entityRepository */
+        $hotspotOwasp = $this->em->getRepository(HotspotOwasp::class);
 
         /** On décode le body */
         $data = json_decode($request->getContent());
@@ -273,7 +277,6 @@ class ApiOwaspPeintureController extends AbstractController
 
         /** On compte le nombre de hotspot de type OWASP au statut TO_REVIEWED */
         $map=['maven_key'=>$data->maven_key];
-        $hotspotOwasp = $this->em->getRepository(HotspotOwasp::class);
         $menaces=$hotspotOwasp->countHotspotOwaspMenaces($data->mode, $map);
         if ($menaces['code']!=200) {
             return $response->setData([
@@ -344,6 +347,9 @@ class ApiOwaspPeintureController extends AbstractController
     #[Route('/api/peinture/owasp/hotspot/details', name: 'peinture_owasp_hotspot_details', methods: ['POST'])]
     public function peintureOwaspHotspotDetails(Request $request): response
     {
+        /** On instancie l'entityRepository */
+        $hotspotDetails = $this->em->getRepository(HotspotDetails::class);
+
         /** On décode le body */
         $data = json_decode($request->getContent());
 
@@ -360,7 +366,6 @@ class ApiOwaspPeintureController extends AbstractController
 
         /** On récupère la liste des hotspots par status de la table détails. */
         $map=['maven_key'=>$data->maven_key];
-        $hotspotDetails = $this->em->getRepository(HotspotDetails::class);
         $details=$hotspotDetails->selectHotspotDetailsByStatus($data->mode, $map);
         if ($details['code']!=200) {
             return $response->setData([
@@ -387,6 +392,9 @@ class ApiOwaspPeintureController extends AbstractController
     #[Route('/api/peinture/owasp/hotspot/severity', name: 'peinture_owasp_hotspot_severity', methods: ['POST'])]
     public function peintureOwaspSeverity(Request $request): response
     {
+        /** On instancie l'entityRepository */
+        $hotspotOwasp = $this->em->getRepository(HotspotOwasp::class);
+
         /** On décode le body */
         $data = json_decode($request->getContent());
 
@@ -403,10 +411,9 @@ class ApiOwaspPeintureController extends AbstractController
         if (!property_exists($data, 'menace')) {
             return $response->setData(['menace' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
 
-        $hotspotOwasp = $this->em->getRepository(HotspotOwasp::class);
         /** On compte le nombre de faille OWASP au statut HIGH */
         $map=['maven_key'=>$data->maven_key, 'menace'=>$data->menace, 'status'=>'HIGH'];
-        $high=$hotspotOwasp->countHotspotOwaspMenanceBystatus($data->mode, $map);
+        $high=$hotspotOwasp->countHotspotOwaspMenaceByStatus($data->mode, $map);
         if ($high['code']!=200) {
             return $response->setData([
                 'mode' => $data->mode, 'maven_key' => $data->maven_key,
@@ -416,7 +423,7 @@ class ApiOwaspPeintureController extends AbstractController
 
         /** On compte le nombre de faille OWASP au statut MEDIUM */
         $map=['maven_key'=>$data->maven_key, 'menace'=>$data->menace, 'status'=>'MEDIUM'];
-        $medium=$hotspotOwasp->countHotspotOwaspMenanceBystatus($data->mode, $map);
+        $medium=$hotspotOwasp->countHotspotOwaspMenaceByStatus($data->mode, $map);
         if ($high['code']!=200) {
             return $response->setData([
                 'mode' => $data->mode, 'maven_key' => $data->maven_key,
@@ -426,7 +433,7 @@ class ApiOwaspPeintureController extends AbstractController
 
         /**  On compte le nombre de faille OWASP au statut LOW */
         $map=['maven_key'=>$data->maven_key, 'menace'=>$data->menace, 'status'=>'LOW'];
-        $low=$hotspotOwasp->countHotspotOwaspMenanceBystatus($data->mode, $map);
+        $low=$hotspotOwasp->countHotspotOwaspMenaceByStatus($data->mode, $map);
         if ($high['code']!=200) {
             return $response->setData([
                 'mode' => $data->mode, 'maven_key' => $data->maven_key,

@@ -150,9 +150,11 @@ class CosuiController extends AbstractController
      */
     private function notes($mavenKey, $mode): array
     {
+        /** On instancie l'entityRepository */
+        $historique = $this->em->getRepository(Historique::class);
+
         /** On récupère les informations du projet de la table historique */
         $map=['maven_key'=>$mavenKey];
-        $historique = $this->em->getRepository(Historique::class);
         $request=$historique->selectHistoriqueProjetLast($mode, $map);
         if ($request['code']!=200) {
             return [
@@ -211,9 +213,11 @@ class CosuiController extends AbstractController
      */
     private function reference($mavenKey, $mode): array
     {
+        /** On instancie l'entityRepository */
+        $historique = $this->em->getRepository(Historique::class);
+
         /** On récupère les informations du projet de référence */
         $map=['maven_key'=>$mavenKey];
-        $historique = $this->em->getRepository(Historique::class);
         $request=$historique->selectHistoriqueProjetReference($mode, $map);
         if ($request['code']!=200) {
             return [

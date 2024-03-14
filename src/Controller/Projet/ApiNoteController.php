@@ -65,9 +65,11 @@ class ApiNoteController extends AbstractController
     /**
      * [Description for historiqueNoteAjout]
      * Récupère les notes pour la fiabilité, la sécurité et les mauvaises pratiques.
-     * http://{url}https://{url}/api/measures/search_history?component={key}}&metrics={type}&ps=1000
      * On récupère que la première page soit 1000 résultat max.
      * Les valeurs possibles pour {type} sont : reliability_rating,security_rating,sqale_rating
+     * http://{url}https://{url}/api/measures/search_history?component={key}}&metrics={type}&ps=1000
+     *
+     * Phase 04
      *
      * @param Request $request
      * @param Client $client
@@ -81,6 +83,9 @@ class ApiNoteController extends AbstractController
     #[Route('/api/projet/note', name: 'projet_note_collecte', methods: ['POST'])]
     public function projetNoteCollecte(Client $client, Request $request): response
     {
+        /** On instancie l'entityRepository */
+        $notes = $this->em->getRepository(Notes::class);
+
         /** On décode le body */
         $data = json_decode($request->getContent());
 
@@ -118,25 +123,25 @@ class ApiNoteController extends AbstractController
         $result = $client->http(trim(preg_replace(static::$removeReturnline, " ", $url)));
         /** On catch les erreurs HTTP 400, 401 et 404, si possible :) */
         if (array_key_exists('code', $result)){
-        if ($result['code']===401) {
-        return $response->setData([
-            'type'=>'warning',
-            'mode' => $data->mode ,
-            'code' => 401,
-            'reference' => static::$reference,
-            'message' => static::$erreur401,
-            Response::HTTP_OK]);
-        }
-        if ($result['code']===404){
+            if ($result['code']===401) {
             return $response->setData([
-                'type'=>'alert',
-                "mode" => $data->mode ,
-                "code" => 404,
-                "reference" => static::$reference,
-                "message" => static::$erreur404,
+                'type'=>'warning',
+                'mode' => $data->mode ,
+                'code' => 401,
+                'reference' => static::$reference,
+                'message' => static::$erreur401,
                 Response::HTTP_OK]);
             }
-    }
+            if ($result['code']===404){
+                return $response->setData([
+                    'type'=>'alert',
+                    "mode" => $data->mode ,
+                    "code" => 404,
+                    "reference" => static::$reference,
+                    "message" => static::$erreur404,
+                    Response::HTTP_OK]);
+                }
+        }
 
         /** On construit un objet date */
         $date = new DateTime();
@@ -146,9 +151,6 @@ class ApiNoteController extends AbstractController
         /** on récupère le nombre et les mesures */
         $nombre = $result["paging"]["total"];
         $mesures = $result["measures"][0]["history"];
-
-        /** On bind l'entityRepository */
-        $notes = $this->em->getRepository(Notes::class);
 
         /** On supprime les notes pour la maven_key. */
         $map=['maven_key'=>$data->maven_key];

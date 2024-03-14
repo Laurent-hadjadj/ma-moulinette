@@ -73,6 +73,10 @@ class ApiProfilController extends AbstractController
     #[Route('/api/quality/profiles', name: 'liste_quality_profiles', methods: ['POST'])]
     public function listeQualityProfiles(Request $request, Security $security, Client $client): response
     {
+        /** On instancie l'entityRepository */
+        $profiles = $this->em->getRepository(Profiles::class);
+        $properties = $this->em->getRepository(Properties::class);
+
         /** on décode le body */
         $data = json_decode($request->getContent());
 
@@ -107,7 +111,6 @@ class ApiProfilController extends AbstractController
         $nombre = 0;
 
         /** On supprime les données de la table avant d'importer les données;*/
-        $profiles = $this->em->getRepository(Profiles::class);
         $request=$profiles->deleteProfiles($data->mode);
         if ($request['code']===500) {
             return $response->setData(['mode' => $data->mode, 'code' => 500, 'erreur'=>$request['erreur'], Response::HTTP_OK]);
@@ -136,7 +139,6 @@ class ApiProfilController extends AbstractController
         /** On met à jour la table proprietes */
         $dateModificationProfil = $date->format("Y-m-d H:i:s");
         $map=['profil_bd'=>$nombre, 'profil_sonar'=>$nombre, 'date_modification_profil'=>$dateModificationProfil];
-        $properties = $this->em->getRepository(Properties::class);
         $properties->updateProfilesProperties($data->mode, $map);
 
         return $response->setData([
@@ -159,6 +161,9 @@ class ApiProfilController extends AbstractController
     #[Route('/api/quality/langage', name: 'liste_quality_langage', methods: ['POST'])]
     public function listeQualityLangage(Request $request): response
     {
+        /** On instancie la classe */
+        $profiles = $this->em->getRepository(Profiles::class);
+
         /** on décode le body */
         $data = json_decode($request->getContent());
 
@@ -172,8 +177,6 @@ class ApiProfilController extends AbstractController
         $listeLabel = [];
         $listeDataset = [];
 
-        /** On instancie la classe */
-        $profiles = $this->em->getRepository(Profiles::class);
         /** On récupère la liste des langage */
         $selectProfilesLanguage=$profiles->selectProfilesLanguage($data->mode);
         /** On créé la liste des libellés et des données */
@@ -206,6 +209,9 @@ class ApiProfilController extends AbstractController
     #[Route('/profil/details', name: 'profil_details', methods: ['GET'])]
     public function profilDetails(Request $request, Client $client)
     {
+        /** On instancie la classe */
+        $profilesHistorique = $this->em->getRepository(ProfilesHistorique::class);
+
         $token = $request->get('token');
         if (empty($token)){
             return;
@@ -266,7 +272,6 @@ class ApiProfilController extends AbstractController
         $date->setTimezone(new DateTimeZone(static::$europeParis));
         $dateEnregistrement = $date->format(static::$dateFormat);
 
-        $profilesHistorique = $this->em->getRepository(ProfilesHistorique::class);
         /** On met à jkour la table contenant l'historique des changements. */
         foreach($events as $event) {
             /* On bind les données avant de les enregsitrer */
