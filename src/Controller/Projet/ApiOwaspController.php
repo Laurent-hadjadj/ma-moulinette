@@ -122,7 +122,6 @@ class ApiOwaspController extends AbstractController
 
         /** On appel l'API. */
         $result = $client->http(trim(preg_replace(static::$removeReturnline, " ", $url)));
-
         /** on catch les erreurs HTTP 400, 401 et 404, si possible :) */
         if (array_key_exists('code', $result)){
             if ($result['code']===401) {
@@ -145,59 +144,58 @@ class ApiOwaspController extends AbstractController
 
         /** On récupère dans la table information_projet la version et la date du projet la plus récente. */
         $map=['maven_key'=>$data->maven_key];
-        $request=$informationProjet->selectInformationProjetProjectVersion($data->mode, $map);
-        if ($request['code']!=200) {
-            return $response->setData(["mode" => $data->mode, "code" => $request['code'], 'message'=>$request['erreur'],Response::HTTP_OK]);
+        $select=$informationProjet->selectInformationProjetProjectVersion($data->mode, $map);
+        if ($select['code']!=200) {
+            return $response->setData(['mode' => $data->mode, 'code' => $select['code'], 'message'=>$select['erreur'], Response::HTTP_OK]);
         }
 
-        if (!$request['info']) {
-            return $response->setData([ "mode" => $data->mode , "code" => 404,
-                "reference" => static::$reference,
-                "message" => static::$erreur404,
+        if (!$select['info']) {
+            return $response->setData([ 'mode' => $data->mode , 'code' => 404,
+                'reference' => static::$reference, 'message' => static::$erreur404,
                 Response::HTTP_OK]);
         }
 
         /** On converti la date de la version en dateTime */
-        $dateVersion= new DateTime($request['info'][0]['date']);
+        $dateVersion= new DateTime($select['info'][0]['date']);
         $dateVersion->setTimezone(new DateTimeZone(static::$europeParis));
 
 
         $date = new DateTime();
         $date->setTimezone(new DateTimeZone(static::$europeParis));
-        $owasp = [$result['total']];
+        $nombre = [$result['total']];
         $effortTotal = $result["effortTotal"];
 
         for ($a = 0; $a < 10; $a++) {
             switch ($result["facets"][0]["values"][$a]["val"]) {
                 case 'a1':
-                    $owasp[1] = $result["facets"][0]["values"][$a]["count"];
+                    $nombre[1] = $result["facets"][0]["values"][$a]["count"];
                     break;
                 case 'a2':
-                    $owasp[2] = $result["facets"][0]["values"][$a]["count"];
+                    $nombre[2] = $result["facets"][0]["values"][$a]["count"];
                     break;
                 case 'a3':
-                    $owasp[3] = $result["facets"][0]["values"][$a]["count"];
+                    $nombre[3] = $result["facets"][0]["values"][$a]["count"];
                     break;
                 case 'a4':
-                    $owasp[4] = $result["facets"][0]["values"][$a]["count"];
+                    $nombre[4] = $result["facets"][0]["values"][$a]["count"];
                     break;
                 case 'a5':
-                    $owasp[5] = $result["facets"][0]["values"][$a]["count"];
+                    $nombre[5] = $result["facets"][0]["values"][$a]["count"];
                     break;
                 case 'a6':
-                    $owasp[6] = $result["facets"][0]["values"][$a]["count"];
+                    $nombre[6] = $result["facets"][0]["values"][$a]["count"];
                     break;
                 case 'a7':
-                    $owasp[7] = $result["facets"][0]["values"][$a]["count"];
+                    $nombre[7] = $result["facets"][0]["values"][$a]["count"];
                     break;
                 case 'a8':
-                    $owasp[8] = $result["facets"][0]["values"][$a]["count"];
+                    $nombre[8] = $result["facets"][0]["values"][$a]["count"];
                     break;
                 case 'a9':
-                    $owasp[9] = $result["facets"][0]["values"][$a]["count"];
+                    $nombre[9] = $result["facets"][0]["values"][$a]["count"];
                     break;
                 case 'a10':
-                    $owasp[10] = $result["facets"][0]["values"][$a]["count"];
+                    $nombre[10] = $result["facets"][0]["values"][$a]["count"];
                     break;
                 default:
                     $this->logger->NOTICE("HoneyPot : Référentiel OWASP !");
@@ -215,17 +213,17 @@ class ApiOwaspController extends AbstractController
         $a9Blocker = $a9Critical = $a9Major = $a9Info = $a9Minor = 0;
         $a10Blocker = $a10Critical = $a10Major = $a10Info = $a10Minor = 0;
 
-        if ($result["total"] != 0) {
-            foreach ($result["issues"] as $issue) {
-                $severity = $issue["severity"];
+        if ($result['total'] != 0) {
+            foreach ($result['issues'] as $issue) {
+                $severity = $issue['severity'];
                 if (
-                    $issue["status"] == 'OPEN' ||
-                    $issue["status"] == 'CONFIRMED' ||
-                    $issue["status"] == 'REOPENED'
+                    $issue['status'] == 'OPEN' ||
+                    $issue['status'] == 'CONFIRMED' ||
+                    $issue['status'] == 'REOPENED'
                 ) {
                     $tagMatch = preg_match("/owasp-a/is", var_export($issue["tags"], true));
                     if ($tagMatch != 0) {
-                        foreach ($issue["tags"] as $tag) {
+                        foreach ($issue['tags'] as $tag) {
                             switch ($tag) {
                                 case "owasp-a1":
                                     if ($severity == 'BLOCKER') {
@@ -408,27 +406,27 @@ class ApiOwaspController extends AbstractController
 
         /** On supprime les informations sur le projet pour la dernière analyse. */
         $map=['maven_key'=>$data->maven_key];
-        $request=$owasp->deleteOwaspMavenKey($data->mode, $map);
-        if ($request['code']!=200) {
-            return $response->setData(["mode" => $data->mode, "code" => $request['code'], 'message'=>$request['erreur'], Response::HTTP_OK]);
+        $delete=$owasp->deleteOwaspMavenKey($data->mode, $map);
+        if ($delete['code']!=200) {
+            return $response->setData(['mode' => $data->mode, 'code' => $delete['code'], 'message'=>$delete['erreur'], Response::HTTP_OK]);
         }
 
         /** Enregistre en base. */
         $owaspTop10 = new Owasp();
         $owaspTop10->setMavenKey($data->maven_key);
-        $owaspTop10->setVersion($request['info'][0]['project_version']);
+        $owaspTop10->setVersion($select['info'][0]['project_version']);
         $owaspTop10->setDateVersion($dateVersion);
         $owaspTop10->setEffortTotal($effortTotal);
-        $owaspTop10->setA1($owasp[1]);
-        $owaspTop10->setA2($owasp[2]);
-        $owaspTop10->setA3($owasp[3]);
-        $owaspTop10->setA4($owasp[4]);
-        $owaspTop10->setA5($owasp[5]);
-        $owaspTop10->setA6($owasp[6]);
-        $owaspTop10->setA7($owasp[7]);
-        $owaspTop10->setA8($owasp[8]);
-        $owaspTop10->setA9($owasp[9]);
-        $owaspTop10->setA10($owasp[10]);
+        $owaspTop10->setA1($nombre[1]);
+        $owaspTop10->setA2($nombre[2]);
+        $owaspTop10->setA3($nombre[3]);
+        $owaspTop10->setA4($nombre[4]);
+        $owaspTop10->setA5($nombre[5]);
+        $owaspTop10->setA6($nombre[6]);
+        $owaspTop10->setA7($nombre[7]);
+        $owaspTop10->setA8($nombre[8]);
+        $owaspTop10->setA9($nombre[9]);
+        $owaspTop10->setA10($nombre[10]);
 
         $owaspTop10->setA1Blocker($a1Blocker);
         $owaspTop10->setA1Critical($a1Critical);
@@ -493,11 +491,11 @@ class ApiOwaspController extends AbstractController
         $owaspTop10->setDateEnregistrement($date);
         $this->em->persist($owaspTop10);
 
-        if ($data->mode !== "TEST") {
+        if ($data->mode !== 'TEST') {
             $this->em->flush();
         }
 
-        return $response->setData(['code' => 200, "mode"=> $data->mode, "owasp" => $result["total"], Response::HTTP_OK]);
+        return $response->setData(['code' => 200, 'mode'=> $data->mode, 'owasp' => $result["total"], Response::HTTP_OK]);
     }
 
 }
