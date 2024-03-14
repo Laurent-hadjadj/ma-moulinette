@@ -639,7 +639,7 @@ const projetHotspotOwaspDetails=function(mavenKey) {
 };
 
 /**
- * [Description for projetNosonarDetails]
+ * [Description for projetNosonar]
  * On récupére la liste des exclusions de code
  * http://{url}/api/projet/nosonar
  *
@@ -655,7 +655,7 @@ const projetHotspotOwaspDetails=function(mavenKey) {
  * Created at: 19/12/2022, 22:19:44 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
-const projetNosonarDetails=function(mavenKey){
+const projetNosonar=function(mavenKey){
   const data = { maven_key: mavenKey, mode: 'null' };
   const options = {
     url: `${serveur()}/api/projet/nosonar`, type: 'POST',
@@ -1011,45 +1011,45 @@ $('.js-analyse').on('click', function () {
 
   async function fnAsync() {
     /* Analyse du projet */
-    await projetInformation(idProject);           /*(1)*/
-    await projetMesure(idProject);                /*(2)*/
+    await projetInformation(idProject);           /*(01)*/
+    await projetMesure(idProject);                /*(02)*/
 
     /* Analyse Sécurité et Owasp. */
-    await projetRating(idProject, 'reliability'); /*(3)*/
-    await projetRating(idProject, 'security');    /*(3)*/
-    await projetRating(idProject, 'sqale');       /*(3)*/
+    await projetRating(idProject, 'reliability'); /*(03)*/
+    await projetRating(idProject, 'security');    /*(03)*/
+    await projetRating(idProject, 'sqale');       /*(03)*/
 
-    await projetOwasp(idProject);                 /*(4)*/
-    await projetHotspot(idProject);               /*(5)*/
+    await projetOwasp(idProject);                 /*(04)*/
+    await projetHotspot(idProject);               /*(05)*/
 
     /* On récupère les infos sur les anomalies*/
-    await projetAnomalie(idProject);              /*(6)*/
+    await projetAnomalie(idProject);              /*(06)*/
 
     /* On récupère le détails sur les anomalies*/
-    await projetAnomalieDetails(idProject);       /*(7)*/
+    await projetAnomalieDetails(idProject);       /*(07)*/
 
     /* On efface les traces :)*/
-    await projetHotspotOwasp(idProject, 'a0');    /*(8)*/
+    await projetHotspotOwasp(idProject, 'a0');    /*(08)*/
     /* On enregistre les résultats*/
-    await projetHotspotOwasp(idProject, 'a1');    /*(9)*/
-    await projetHotspotOwasp(idProject, 'a2');    /*(9)*/
-    await projetHotspotOwasp(idProject, 'a3');    /*(9)*/
-    await projetHotspotOwasp(idProject, 'a4');    /*(9)*/
-    await projetHotspotOwasp(idProject, 'a5');    /*(9)*/
-    await projetHotspotOwasp(idProject, 'a6');    /*(9)*/
-    await projetHotspotOwasp(idProject, 'a7');    /*(9)*/
-    await projetHotspotOwasp(idProject, 'a8');    /*(9)*/
-    await projetHotspotOwasp(idProject, 'a9');    /*(9)*/
-    await projetHotspotOwasp(idProject, 'a10');   /*(9)*/
+    await projetHotspotOwasp(idProject, 'a1');    /*(09)*/
+    await projetHotspotOwasp(idProject, 'a2');    /*(09)*/
+    await projetHotspotOwasp(idProject, 'a3');    /*(09)*/
+    await projetHotspotOwasp(idProject, 'a4');    /*(09)*/
+    await projetHotspotOwasp(idProject, 'a5');    /*(09)*/
+    await projetHotspotOwasp(idProject, 'a6');    /*(09)*/
+    await projetHotspotOwasp(idProject, 'a7');    /*(09)*/
+    await projetHotspotOwasp(idProject, 'a8');    /*(09)*/
+    await projetHotspotOwasp(idProject, 'a9');    /*(09)*/
+    await projetHotspotOwasp(idProject, 'a10');   /*(09)*/
 
     /* On enregistre le détails de chaque hotspot owasp. */
     await projetHotspotOwaspDetails(idProject);   /*(10)*/
 
     /* Récupération des signalements noSonar et SuppressWarning. */
-    await projetNosonarDetails(idProject);        /*(11)*/
+    await projetNosonarD(idProject);              /*(11)*/
 
     /* Récupération des signalements Todo (TS, JAVA, XML). */
-    await projetTodoDetails(idProject);           /*(12)*/
+    await projetTodo(idProject);                  /*(12)*/
 
     /* Renvoie le statut de fin */
     finCollecte();
