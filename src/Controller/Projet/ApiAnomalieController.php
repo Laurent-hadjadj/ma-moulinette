@@ -374,7 +374,7 @@ class ApiAnomalieController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/projet/anomalie/details', name: 'projet_anomalie_details_collect', methods: ['GET'])]
+    #[Route('/api/projet/anomalie/details', name: 'projet_anomalie_details_collect', methods: ['POST'])]
     public function projetAnomalieDetailCollect(Request $request, Client $client): response
     {
         /** On instancie l'EntityRepository */
