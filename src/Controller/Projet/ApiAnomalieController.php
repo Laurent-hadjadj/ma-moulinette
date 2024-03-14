@@ -456,7 +456,7 @@ class ApiAnomalieController extends AbstractController
         if ($total1 !== 0 || $total2 !== 0 || $total3 !== 0) {
             /** On supprime le detail des anomalies pour la maven_key. */
             $map=['maven_key'=>$data->maven_key];
-            $request=$anomalieDetails->deleteAnomalieMavenKey($data->mode, $map);
+            $request=$anomalieDetails->deleteAnomalieDetailsMavenKey($data->mode, $map);
             if ($request['code']!=200) {
                 return $response->setData([
                     'type' => 'alert',
