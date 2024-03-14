@@ -251,6 +251,25 @@ const selectProjet=async function() {
 };
 
 /**
+ * [Description for afficheMessage]
+ * Mutualise l'affichage des messages d'erreur.
+ *
+ * @param mixed t
+ *
+ * @return void
+ *
+ * Created at: 14/03/2024 10:11:15 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ */
+const afficheMessage=function(t){
+  $('#callout-projet-message').removeClass('hide success alert warning primary secondary');
+  $('#callout-projet-message').addClass(t.type);
+  $('#js-reference-information').html(t.reference);
+  $('#js-message-information').html(t.message);
+}
+
+/**
  * [Description for projetAnalyse]
  * Collecte les informations du projet (projet, version, date)
  * http://{url}/api/projet/information
@@ -276,17 +295,14 @@ const projetInformation=function(mavenKey) {
 
   return new Promise(resolve => {
     $.ajax(options).then(t => {
-      console.log(t);
-        if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
-          $('#callout-projet-message').removeClass('hide success alert warning primary secondary');
-          $('#callout-projet-message').addClass(t.type);
-          $('#js-reference-information').html(t.reference);
-          $('#js-message-information').html(t.message);
-          return;
-        }
-        if (t.code===http_200){
-          log(` - INFO : (01) Nombre de version disponible : ${t.nombreVersion}`);
-          }
+      if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
+        afficheMessage(t)
+        sessionStorage.setItem('collecte', 'Erreur phase 01');
+        return;
+      }
+      if (t.code===http_200){
+        log(` - INFO : (01) Nombre de version disponible : ${t.nombreVersion}`);
+      }
       resolve();
       });
     });
@@ -317,16 +333,13 @@ const projetMesure=function(mavenKey) {
   return new Promise(resolve => {
     $.ajax(options).then(t => {
       if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
-        $('#callout-projet-message').removeClass('hide success alert warning primary secondary');
-        $('#callout-projet-message').addClass(t.type);
-        $('#js-reference-information').html(t.reference);
-        $('#js-message-information').html(t.message);
-        sessionStorage.setItem('collecte', 'Erreur pahse 003');
+        afficheMessage(t)
+        sessionStorage.setItem('collecte', 'Erreur phase 02');
         return;
       }
       if (t.code===http_200){
           log(' - INFO : (02) Ajout des mesures.');
-        }
+      }
         resolve();
     });
   });
@@ -359,19 +372,17 @@ const projetRating=function(mavenKey, type) {
 
   return new Promise(resolve => {
     $.ajax(options).then(t => {
-        if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
-          $('#callout-projet-message').removeClass('hide success alert warning primary secondary');
-          $('#callout-projet-message').addClass(t.type);
-          $('#js-reference-information').html(t.reference);
-          $('#js-message-information').html(t.message);
-          return;
-        }
-        if (t.code===http_200){
-          log(` - INFO : (03) Reprise des notes pour le type : ${t.type}`);
-          log(`              : ${t.nombre} résultats.`);
-          }
-          resolve();
-      });
+      if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
+        afficheMessage(t)
+        sessionStorage.setItem('collecte', 'Erreur phase 03');
+        return;
+      }
+      if (t.code===http_200){
+        log(` - INFO : (03) Reprise des notes pour le type : ${t.type}`);
+        log(`              : ${t.nombre} résultats.`);
+      }
+        resolve();
+    });
   });
 };
 
@@ -403,17 +414,15 @@ const projetOwasp=function(mavenKey) {
   return new Promise(resolve => {
     $.ajax(options).then(t=> {
       if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
-        $('#callout-projet-message').removeClass('hide success alert warning primary secondary');
-        $('#callout-projet-message').addClass(t.type);
-        $('#js-reference-information').html(t.reference);
-        $('#js-message-information').html(t.message);
+        afficheMessage(t)
+        sessionStorage.setItem('collecte', 'Erreur phase 04');
         return;
       }
       if (t.code===http_200 && t.owasp===0){
           log(' - INFO : (04) Bravo aucune faille OWASP détectée.');
-        } else {
+      } else {
           log(` - WARN : (04) J'ai trouvé ${t.owasp} faille(s).`);
-        }
+      }
       resolve();
     });
   });
@@ -447,17 +456,15 @@ const projetHotspot=function(mavenKey) {
   return new Promise(resolve => {
     $.ajax(options).then(t=> {
       if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
-        $('#callout-projet-message').removeClass('hide success alert warning primary secondary');
-        $('#callout-projet-message').addClass(t.type);
-        $('#js-reference-information').html(t.reference);
-        $('#js-message-information').html(t.message);
+        afficheMessage(t)
+        sessionStorage.setItem('collecte', 'Erreur phase 05');
         return;
       }
       if (t.code===http_200 && t.hotspots===0){
           log(' - INFO : (05) Bravo aucune faille potentielle détectée.');
-        } else {
+      } else {
           log(` - WARN : (05) J'ai trouvé ${t.hotspots} faille(s) potentielle(s).`);
-        }
+      }
     resolve();
     });
   });
@@ -490,15 +497,13 @@ const projetAnomalie=function(mavenKey) {
   return new Promise(resolve => {
     $.ajax(options).then(t => {
       if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
-        $('#callout-projet-message').removeClass('hide success alert warning primary secondary');
-        $('#callout-projet-message').addClass(t.type);
-        $('#js-reference-information').html(t.reference);
-        $('#js-message-information').html(t.message);
+        afficheMessage(t)
+        sessionStorage.setItem('collecte', 'Erreur phase 06');
         return;
       }
       if (t.code===http_200){
           log(` - INFO : (06) ${t.info}`);
-        }
+      }
     resolve();
     });
   });
@@ -530,19 +535,17 @@ const projetAnomalieDetails=function(mavenKey) {
   return new Promise(resolve => {
     $.ajax(options).then(t => {
       if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
-        $('#callout-projet-message').removeClass('hide success alert warning primary secondary');
-        $('#callout-projet-message').addClass(t.type);
-        $('#js-reference-information').html(t.reference);
-        $('#js-message-information').html(t.message);
+        afficheMessage(t)
+        sessionStorage.setItem('collecte', 'Erreur phase 07');
         return;
       }
       if (t.code===http_200){
-        log(' - INFO : (07) Le frequence des sévérités par type a été collectée.');
+          log(' - INFO : (07) Le frequence des sévérités par type a été collectée.');
       } else {
           log(` - ERROR : (07) Je n'ai pas réussi à collecter les données (${t.erreur}).`);
       }
       resolve();
-      });
+    });
   });
 };
 
@@ -576,17 +579,15 @@ const projetHotspotOwasp=function(mavenKey, owasp) {
   return new Promise(resolve => {
     $.ajax(options).then(t=> {
       if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
-        $('#callout-projet-message').removeClass('hide success alert warning primary secondary');
-        $('#callout-projet-message').addClass(t.type);
-        $('#js-reference-information').html(t.reference);
-        $('#js-message-information').html(t.message);
+        afficheMessage(t)
+        sessionStorage.setItem('collecte', 'Erreur phase 08-09');
         return;
       }
       if (t.code===http_200 && t.info==='effacement'){
-          log(' - INFO : (08) Les enregistrements ont été supprimé de la table hostspot_owasp.');
+        log(' - INFO : (08) Les enregistrements ont été supprimé de la table hostspot_owasp.');
       }
       if (t.code===http_200 && t.hotspots === 0 && t.info==='enregistrement') {
-          log(` - INFO : (09) Bravo aucune faille OWASP ${owasp} potentielle détectée.`);
+        log(` - INFO : (09) Bravo aucune faille OWASP ${owasp} potentielle détectée.`);
       }
       if (t.code===http_200 && t.hotspots !== 0 && t.info==='enregistrement') {
         log(` - WARN : (09) J'ai trouvé ${t.hotspots} faille(s) OWASP ${owasp} potentielle(s).`);
@@ -622,10 +623,8 @@ const projetHotspotOwaspDetails=function(mavenKey) {
   return new Promise(resolve => {
     $.ajax(options).then(t=> {
       if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
-        $('#callout-projet-message').removeClass('hide success alert warning primary secondary');
-        $('#callout-projet-message').addClass(t.type);
-        $('#js-reference-information').html(t.reference);
-        $('#js-message-information').html(t.message);
+        afficheMessage(t)
+        sessionStorage.setItem('collecte', 'Erreur phase 10');
         return;
       }
       if (t.code===http_200) {
@@ -642,6 +641,12 @@ const projetHotspotOwaspDetails=function(mavenKey) {
 /**
  * [Description for projetNosonarDetails]
  * On récupére la liste des exclusions de code
+ * http://{url}/api/projet/nosonar
+ *
+ * Phase 11
+ *
+ * {mode} = null, TEST
+ * {mavenKey} = clé du projet
  *
  * @param string mavenKey
  *
@@ -651,24 +656,22 @@ const projetHotspotOwaspDetails=function(mavenKey) {
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const projetNosonarDetails=function(mavenKey){
-  const data = { mavenKey };
+  const data = { maven_key: mavenKey, mode: 'null' };
   const options = {
-    url: `${serveur()}/api/projet/nosonar/details`, type: 'GET',
-          dataType: 'json', data, contentType };
+    url: `${serveur()}/api/projet/nosonar`, type: 'POST',
+          dataType: 'json', data: JSON.stringify(data), contentType };
 
   return new Promise(resolve => {
     $.ajax(options).then(t=> {
-      if (t.type==='alert'){
-        $('#callout-projet-message').removeClass('hide success warning primary secondary');
-        $('#callout-projet-message').addClass(t.type);
-        $('#js-reference-information').html(t.reference);
-        $('#js-message-information').html(t.message);
+      if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
+        afficheMessage(t)
+        sessionStorage.setItem('collecte', 'Erreur phase 11');
+        return;
+      }
+      if (t.code===http_200 && t.nosonar !== 0) {
+        log(` - WARM : (11) J'ai trouvé ${t.nosonar} exclusion(s) NoSonar.`);
       } else {
-        if (t.nosonar !== 0) {
-          log(` - WARM : (11) J'ai trouvé ${t.nosonar} exclusion(s) NoSonar.`);
-        } else {
-          log(` - INFO : (11) Bravo !!! ${t.nosonar} exclusion NoSonar trouvée.`);
-        }
+        log(` - INFO : (11) Bravo !!! ${t.nosonar} exclusion NoSonar trouvée.`);
       }
       resolve();
     });
@@ -694,18 +697,16 @@ const projetTodoDetails=function(mavenKey){
 
   return new Promise(resolve => {
     $.ajax(options).then(t=> {
-      if (t.type==='alert'){
-        $('#callout-projet-message').removeClass('hide success warning primary secondary');
-        $('#callout-projet-message').addClass(t.type);
-        $('#js-reference-information').html(t.reference);
-        $('#js-message-information').html(t.message);
-      } else {
-        if (t.todo !== 0) {
+      if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
+        afficheMessage(t)
+        sessionStorage.setItem('collecte', 'Erreur phase 11');
+        return;
+      }
+      if (t.code===http_200 && t.todo !== 0) {
           log(` - WARM : (12) J'ai trouvé ${t.todo} ToDo(s) à vérifier.`);
         } else {
           log(` - INFO : (12) Bravo !!! ${t.todo} ToDo trouvé.`);
         }
-      }
       resolve();
     });
   });
