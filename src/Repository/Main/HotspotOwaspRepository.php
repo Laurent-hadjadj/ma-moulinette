@@ -125,8 +125,8 @@ class HotspotOwaspRepository extends ServiceEntityRepository
     }
 
     /**
-     * [Description for countHotspotOwaspMenanceBystatus]
-     *  On comote le nombre de menace par type de Status
+     * [Description for countHotspotOwaspMenaceByStatus]
+     *  On compte le nombre de menace par type de Status
      *
      * @param string $mode
      * @param array $map
@@ -137,7 +137,7 @@ class HotspotOwaspRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function countHotspotOwaspMenanceBystatus($mode,$map):array
+    public function countHotspotOwaspMenaceByStatus($mode,$map):array
     {
         $sql = "SELECT count(*) as total
                 FROM hotspot_owasp
@@ -162,4 +162,35 @@ class HotspotOwaspRepository extends ServiceEntityRepository
         return ['mode'=>$mode, 'code'=>200, 'nombre'=>$nombre, 'erreur'=>''];
     }
 
+    /**
+     * [Description for deleteHotspotOwaspMavenKey]
+     * Supprime les hotspots de type owasp pour la version courrante (i.e. correspondant à la maven_key)
+     *
+     * @param mixed $mode
+     * @param mixed $map
+     *
+     * @return array
+     *
+     * Created at: 14/03/2024 08:21:10 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function deleteHotspotOwaspMavenKey($mode,$map):array
+    {
+        $sql = "DELETE
+                FROM hotspot_owasp
+                WHERE maven_key=:maven_key";
+        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+        $conn->bindValue(':maven_key', $map['maven_key']);
+        try {
+                if ($mode !== 'TEST') {
+                    $conn->executeQuery();
+                } else {
+                    return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+                }
+        } catch (\Doctrine\DBAL\Exception $e) {
+            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+        }
+        return ['mode'=>$mode, 'code'=>200, 'erreur'=>''];
+    }
 }
