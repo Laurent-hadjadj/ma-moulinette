@@ -154,14 +154,14 @@ class ApiNoteController extends AbstractController
 
         /** On supprime les notes pour la maven_key. */
         $map=['maven_key'=>$data->maven_key];
-        $request=$notes->deleteNotesMavenKey($data->mode, $map);
-        if ($request['code']!=200) {
+        $delete=$notes->deleteNotesMavenKey($data->mode, $map);
+        if ($delete['code']!=200) {
             return $response->setData([
                 'type' => 'alert',
                 'mode' => $data->mode,
                 'reference' => static::$reference,
-                'code' => $request['code'],
-                'message'=>$request['erreur'],
+                'code' => $delete['code'],
+                'message'=>$delete['erreur'],
                 Response::HTTP_OK]);
         }
 
@@ -170,6 +170,7 @@ class ApiNoteController extends AbstractController
             $tempoMesureDate = $mesure["date"];
             $tempoMesureValue = $mesure["value"];
             $map=['maven_key'=>$data->maven_key, 'type'=>$data->type, 'date'=>$tempoMesureDate, 'value'=>$tempoMesureValue, 'date_enregistrement'=>$tempoDate];
+            $request=$notes->InsertOrIgnoreNotes($data->mode, $map);
         }
 
         if ($data->type == "reliability") {
