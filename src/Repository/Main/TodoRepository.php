@@ -46,7 +46,7 @@ class TodoRepository extends ServiceEntityRepository
     public function deleteTodoMavenKey($mode,$map):array
     {
         $sql = "DELETE
-                FROM no_sonar
+                FROM todo
                 WHERE maven_key=:maven_key";
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         $conn->bindValue(':maven_key', $map['maven_key']);
