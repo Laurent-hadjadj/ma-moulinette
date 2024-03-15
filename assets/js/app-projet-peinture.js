@@ -112,7 +112,6 @@ export const remplissage=function(mavenKey) {
       dataType: 'json', data, contentType };
 
     $.ajax(optionsTodo).then(t=> {
-
       /** On injecte dans la fenêtre modale les résultats */
       $('#todo-liste').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.todo));
       $('#js-java').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.java));
@@ -123,6 +122,8 @@ export const remplissage=function(mavenKey) {
 
       /* On ajoute la liste détaillée des fichiers */
       let l, cutRule, cutComponent;
+      /** On efface le tableau */
+      $('#tableau-liste-detaillee').html('');
       t.details.forEach(element => {
         cutRule=element.rule.split(':');
         cutComponent=element.component.split(':');
