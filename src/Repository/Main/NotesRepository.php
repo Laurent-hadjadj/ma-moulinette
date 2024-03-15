@@ -46,9 +46,10 @@ class NotesRepository extends ServiceEntityRepository
     {
         $sql = "DELETE
                 FROM notes
-                WHERE maven_key=:maven_key";
+                WHERE maven_key=:maven_key and type=:type";
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         $conn->bindValue(':maven_key', $map['maven_key']);
+        $conn->bindValue(':type', $map['type']);
         try {
                 if ($mode !== 'TEST') {
                     $conn->executeQuery();
@@ -62,7 +63,7 @@ class NotesRepository extends ServiceEntityRepository
     }
 
     /**
-     * [Description for InsertOrIgnoreNotes]
+     * [Description for InsertNotes]
      * Ajoute les notes pour le projet
      *
      * @param string $mode
@@ -74,14 +75,13 @@ class NotesRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function InsertOrIgnoreNotes($mode,$map):array
+    public function InsertNotes($mode,$map):array
     {
-        $sql = "INSERT OR IGNORE INTO notes (maven_key, type, date, value, date_enregistrement)
-                VALUES (:maven_key, :type, :date, :value,:date_enregistrement)";
+        $sql = "INSERT INTO notes (maven_key, type, value, date_enregistrement)
+                VALUES (:maven_key, :type, :value, :date_enregistrement)";
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         $conn->bindValue(':maven_key', $map['maven_key']);
         $conn->bindValue(':type', $map['type']);
-        $conn->bindValue(':date', $map['date']);
         $conn->bindValue(':value', $map['value']);
         $conn->bindValue(':date_enregistrement', $map['date_enregistrement']);
         try {

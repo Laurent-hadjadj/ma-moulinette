@@ -395,8 +395,7 @@ const projetRating=function(mavenKey, type) {
         return;
       }
       if (t.code===http_200){
-        log(` - INFO : (03) Reprise des notes pour le type : ${t.type}`);
-        log(`              : ${t.nombre} résultats.`);
+        log(` - INFO : (03) Collecte de la note pour le type : ${t.type}`);
       }
         resolve();
     });

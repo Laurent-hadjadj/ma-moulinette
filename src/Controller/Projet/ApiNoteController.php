@@ -102,6 +102,7 @@ class ApiNoteController extends AbstractController
         if (!property_exists($data, 'type')) {
             return $response->setData(['type' => null, '_type'=>'alert', 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
 
+
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return $response->setData([
@@ -115,10 +116,8 @@ class ApiNoteController extends AbstractController
 
         /** On récupère l'URl du serveur. */
         $tempoUrl = $this->getParameter(static::$sonarUrl);
-
         /** On construit l'URL */
-        $url = "$tempoUrl/api/measures/search_history?component=$data->maven_key&metrics=$data->type"."_rating&ps=1000";
-
+        $url = "$tempoUrl/api/measures/component?component=$data->maven_key&metricKeys=$data->type"."_rating";
         /** On appel le client http. */
         $result = $client->http(trim(preg_replace(static::$removeReturnline, " ", $url)));
         /** On catch les erreurs HTTP 400, 401 et 404, si possible :) */
@@ -142,18 +141,15 @@ class ApiNoteController extends AbstractController
                     Response::HTTP_OK]);
                 }
         }
+        //dd('reliability', $data->type, $url, $result);
 
         /** On construit un objet date */
         $date = new DateTime();
         $date->setTimezone(new DateTimeZone(static::$europeParis));
         $tempoDate = $date->format(static::$dateFormat);
 
-        /** on récupère le nombre et les mesures */
-        $nombre = $result["paging"]["total"];
-        $mesures = $result["measures"][0]["history"];
-
         /** On supprime les notes pour la maven_key. */
-        $map=['maven_key'=>$data->maven_key];
+        $map=['maven_key'=>$data->maven_key, 'type'=>$data->type];
         $delete=$notes->deleteNotesMavenKey($data->mode, $map);
         if ($delete['code']!=200) {
             return $response->setData([
@@ -166,23 +162,20 @@ class ApiNoteController extends AbstractController
         }
 
         /** Enregistrement des nouvelles valeurs. */
-        foreach ($mesures as $mesure) {
-            $tempoMesureDate = $mesure["date"];
-            $tempoMesureValue = $mesure["value"];
-            $map=['maven_key'=>$data->maven_key, 'type'=>$data->type, 'date'=>$tempoMesureDate, 'value'=>$tempoMesureValue, 'date_enregistrement'=>$tempoDate];
-            $request=$notes->InsertOrIgnoreNotes($data->mode, $map);
-        }
+        $note=$result['component']['measures'][0]['value'];
+        $map=['maven_key'=>$data->maven_key, 'type'=>$data->type, 'value'=>$note, 'date_enregistrement'=>$tempoDate];
+        $request=$notes->InsertNotes($data->mode, $map);
 
         if ($data->type == "reliability") {
-            $type = "Fiabilité";
+            $types = "Fiabilité";
         }
         if ($data->type == "security") {
-            $type = "Sécurité";
+            $types = "Sécurité";
         }
         if ($data->type == "sqale") {
-            $type = "Mauvaises Pratiques";
+            $types = "Mauvaises Pratiques";
         }
 
-        return $response->setData(['mode' => $data->mode,'code' => 200, 'nombre' => $nombre, 'type' => $type, Response::HTTP_OK]);
+        return $response->setData(['mode' => $data->mode,'code' => 200, 'type' => $types, Response::HTTP_OK]);
     }
 }
