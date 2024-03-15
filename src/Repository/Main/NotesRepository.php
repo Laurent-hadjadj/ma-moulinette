@@ -83,7 +83,7 @@ class NotesRepository extends ServiceEntityRepository
         $conn->bindValue(':type', $map['type']);
         $conn->bindValue(':date', $map['date']);
         $conn->bindValue(':value', $map['value']);
-        $conn->bindValue(':date_enregistrement', $map['date_enregsitrement']);
+        $conn->bindValue(':date_enregistrement', $map['date_enregistrement']);
         try {
                 if ($mode !== 'TEST') {
                     $conn->executeQuery();
