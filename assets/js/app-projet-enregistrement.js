@@ -85,12 +85,14 @@ export const enregistrement=function(mavenKey) {
   const t6 = document.getElementById('nombre-ligne');
   const t7 = document.getElementById('nombre-ligne-de-code');
   const t8 = document.getElementById('couverture');
+  const t8a = document.getElementById('sqale-debt-ratio');
   const t9 = document.getElementById('duplication');
   const t10 = document.getElementById('tests-unitaires');
   const t11 = document.getElementById('nombre-defaut');
   const nombreLigne=t6.dataset.nombreLigne;
   const nombreLigneDeCode=t7.dataset.nombreLigneDeCode;
   const couverture=t8.dataset.coverage;
+  const sqalesebtRatio=t8a.dataset.sqaleDebtRatio;
   const duplication=t9.dataset.duplication;
   const testsUnitaires=t10.dataset.testsUnitaires;
   const nombreDefaut=t11.dataset.nombreDefaut;
@@ -184,7 +186,7 @@ export const enregistrement=function(mavenKey) {
     versionRelease, versionSnapshot, versionAutre, version,
     dateVersion, suppressWarning, noSonar, todo,
     nombreLigneDeCode, nombreLigne, couverture, duplication,
-    testsUnitaires, nombreDefaut,
+    sqalesebtRatio, testsUnitaires, nombreDefaut,
     dette,
     nombreBug, nombreVulnerability, nombreCodeSmell,
     frontend,backend, autre,
