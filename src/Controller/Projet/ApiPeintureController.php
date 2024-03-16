@@ -256,7 +256,7 @@ class ApiPeintureController extends AbstractController
         }
 
         /** On récupère la dernière version et sa date de publication */
-        $sql = "SELECT project_name as name, ncloc, lines, coverage,
+        $sql = "SELECT project_name as name, ncloc, lines, coverage, sqale_debt_ratio
             duplication_density as duplication, tests, issues
             FROM mesures
             WHERE maven_key='$mavenKey'
@@ -266,11 +266,12 @@ class ApiPeintureController extends AbstractController
         $infoProjet = $r->fetchAllAssociative();
 
         return $response->setData([
-            "name" => $infoProjet[0]["name"], "ncloc" => $infoProjet[0]["ncloc"],
-            "lines" => $infoProjet[0]["lines"],
-            "coverage" => $infoProjet[0]["coverage"],
-            "duplication" => $infoProjet[0]["duplication"],
-            "tests" => $infoProjet[0]["tests"], "issues" => $infoProjet[0]["issues"],
+            'name' => $infoProjet[0]['name'], 'ncloc' => $infoProjet[0]['ncloc'],
+            'lines' => $infoProjet[0]['lines'],
+            'coverage' => $infoProjet[0]['coverage'],
+            'sqaleDebtRatio' => $infoProjet[0]['sqale_debt_ratio'],
+            'duplication' => $infoProjet[0]['duplication'],
+            'tests' => $infoProjet[0]['tests'], 'issues' => $infoProjet[0]['issues'],
             Response::HTTP_OK
         ]);
     }
@@ -343,11 +344,11 @@ class ApiPeintureController extends AbstractController
         $types = ["reliability", "security", "sqale"];
         foreach ($types as $type) {
             $sql = "SELECT type, value FROM notes
-                WHERE maven_key='$mavenKey' AND type='$type'
-                ORDER BY date DESC LIMIT 1";
+                WHERE maven_key='$mavenKey' AND type='$type'";
 
             $r = $this->em->getConnection()->prepare($sql)->executeQuery();
             $note = $r->fetchAllAssociative();
+
             if ($type == "reliability") {
                 $noteReliability = $note[0]["value"];
             }
