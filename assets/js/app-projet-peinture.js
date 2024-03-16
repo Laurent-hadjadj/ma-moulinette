@@ -164,6 +164,7 @@ export const remplissage=function(mavenKey) {
     $('#nombre-ligne').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.lines));
     $('#nombre-ligne-de-code').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.ncloc));
     $('#couverture').html(new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(parseInt(t.coverage,10)/cent));
+    $('ratio-dette-technique').html(new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(parseInt(t.duplication,10)/cent));
     $('#duplication').html(new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(parseInt(t.duplication,10)/cent));
     $('#tests-unitaires').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.tests));
     $('#nombre-defaut').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.issues));
@@ -172,12 +173,15 @@ export const remplissage=function(mavenKey) {
     const t7 = document.getElementById('nombre-ligne');
     const t8 = document.getElementById('nombre-ligne-de-code');
     const t9 = document.getElementById('couverture');
+    const t9a = document.getElementById('ratio-dette-technique');
     const t10 = document.getElementById('duplication');
     const t11 = document.getElementById('tests-unitaires');
     const t12 = document.getElementById('nombre-defaut');
+
     t7.dataset.nombreLigne=(t.lines);
     t8.dataset.nombreLigneDeCode=(t.ncloc);
     t9.dataset.coverage=(t.coverage);
+    t9a.dataset.coverage=(t.sqaledebtRatio);
     t10.dataset.duplication=(t.duplication);
     t11.dataset.testsUnitaires=(t.tests);
     t12.dataset.nombreDefaut=(t.issues);
