@@ -204,7 +204,7 @@ class HomeController extends AbstractController
         if ($type === 'projet') {
             $properties->updatePropertiesProjet($mode,$map);
         } else {
-            $properties->updatePropertiesProfil($mode, $map);
+            $properties->updatePropertiesProfiles($mode, $map);
         }
     }
 

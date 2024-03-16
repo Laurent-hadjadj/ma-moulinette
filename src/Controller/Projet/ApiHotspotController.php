@@ -355,8 +355,8 @@ class ApiHotspotController extends AbstractController
         }
 
         /** On créé un objet Date. */
-        $date = new DateTime();
-        $date->setTimezone(new DateTimeZone(static::$europeParis));
+        $dateEnregistement = new DateTime();
+        $dateEnregistement->setTimezone(new DateTimeZone(static::$europeParis));
         $niveau = 0;
 
         /** On fleche la vulnérabilité */
@@ -370,7 +370,7 @@ class ApiHotspotController extends AbstractController
                 $hotspot->setProbability($value['vulnerabilityProbability']);
                 $hotspot->setStatus($value['status']);
                 $hotspot->setNiveau($niveau);
-                $hotspot->setDateEnregistrement($date);
+                $hotspot->setDateEnregistrement($dateEnregistement);
 
                 $this->em->persist($hotspot);
                 if ($data->mode !== 'TEST') {
@@ -379,12 +379,12 @@ class ApiHotspotController extends AbstractController
             }
         } else {
             $hotspot = new  HotspotOwasp();
-            $hotspot->setMavenKey($request->get('mavenKey'));
-            $hotspot->setMenace($request->get('owasp'));
+            $hotspot->setMavenKey($data->maven_key);
+            $hotspot->setMenace($data->owasp);
             $hotspot->setProbability('NC');
             $hotspot->setStatus('NC');
             $hotspot->setNiveau('0');
-            $hotspot->setDateEnregistrement($date);
+            $hotspot->setDateEnregistrement($dateEnregistement);
             $this->em->persist($hotspot);
             if ($data->mode !== 'TEST') {
                 $this->em->flush();
