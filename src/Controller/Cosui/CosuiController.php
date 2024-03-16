@@ -600,9 +600,16 @@ class CosuiController extends AbstractController
         $idata4=static::note2point($initialNoteCodeSmell);
         $idata5=$initialCouverture;
 
-        $idata6=100-$initialSqaleDebtRatio*10;
-        if ($initialSqaleDebtRatio===-1.0) {
-            $idata6=0;
+        /** On inverse la courbe, plus le résultat est proche de 100 et plus la dette est petite */
+        $idata6=100-$initialSqaleDebtRatio;
+
+        /* si la dette technique est > à 100M alors le ration est de 100% */
+        if ($initialSqaleDebtRatio>100) {
+            $idata6=100;
+        }
+        /** Si on a pad de données pour l'indicateur on fixe le niveau à 50 */
+        if ($initialSqaleDebtRatio<0) {
+            $idata6=50;
         }
 
         $data1=$data2=$data3=$data4=$data5=$data6=0;
@@ -611,9 +618,17 @@ class CosuiController extends AbstractController
         $data3=static::note2point($noteHotspot);
         $data4=static::note2point($noteCodeSmell);
         $data5=$couverture;
-        $data6=100-$sqaleDebtRatio*10;
-        if ($sqaleDebtRatio===-1.0) {
-            $data6=0;
+
+        /** On inverse la courbe, plus le résultat est proche de 100 et plus la dette est petite */
+        $data6=100-$sqaleDebtRatio;
+
+        /* si la dette technique est > à 100M alors le ration est de 100% */
+        if ($sqaleDebtRatio>100) {
+            $data6=100;
+        }
+        /** Si on a pad de données pour l'indicateur on fixe le niveau à 50 */
+        if ($sqaleDebtRatio<0) {
+            $data6=50;
         }
 
         /** On constitue les dataSet */
