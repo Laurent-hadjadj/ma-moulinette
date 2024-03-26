@@ -85,12 +85,10 @@ class ApiMesureController extends AbstractController
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if ($data === null) {
-            return $response->setData(['data' => null, 'type'=>'alert', 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'mode')) {
-            return $response->setData(['mode' => null, 'type'=>'alert', 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'maven_key')) {
-            return $response->setData(['maven_key' => null, 'type'=>'alert', 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+        if ($data === null || !property_exists($data, 'mode') || !property_exists($data, 'maven_key') ) {
+            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
+                                        'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+        }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
@@ -139,32 +137,32 @@ class ApiMesureController extends AbstractController
 
         /** On ajoute les mesures dans la table mesures. */
         $lines = 0;
-        if (intval($result1["measures"]["lines"])) {
-            $lines = intval($result1["measures"]["lines"]);
+        if (intval($result1['measures']['lines'])) {
+            $lines = intval($result1['measures']['lines']);
         }
 
         /** Warning: Undefined array key "coverage" */
         $coverage = 0;
-        if (array_key_exists("coverage", $result1["measures"])) {
-            $coverage = $result1["measures"]["coverage"];
+        if (array_key_exists('coverage', $result1['measures'])) {
+            $coverage = $result1['measures']['coverage'];
         }
 
         /** Warning: Undefined array key "duplicationDensity" */
         $duplicationDensity = 0;
-        if (array_key_exists("duplicationDensity", $result1["measures"])) {
-            $duplicationDensity = $result1["measures"]["duplicationDensity"];
+        if (array_key_exists('duplicationDensity', $result1['measures'])) {
+            $duplicationDensity = $result1['measures']['duplicationDensity'];
         }
 
         /** Warning: Undefined array key "measures" */
         $tests = 0;
-        if (array_key_exists("tests", $result1["measures"])) {
-            $tests = intval($result1["measures"]["tests"]);
+        if (array_key_exists('tests', $result1['measures'])) {
+            $tests = intval($result1['measures']['tests']);
         }
 
         /** Warning: Undefined array key "issues" */
         $issues = 0;
-        if (array_key_exists("issues", $result1["measures"])) {
-            $issues = intval($result1["measures"]["issues"]);
+        if (array_key_exists('issues', $result1['measures'])) {
+            $issues = intval($result1['measures']['issues']);
         }
 
         /** On récupère le nombre de ligne de code */
@@ -172,8 +170,8 @@ class ApiMesureController extends AbstractController
         $result2 = $client->http(trim(preg_replace(static::$removeReturnline, " ", $url2)));
 
         $ncloc = 0;
-        if (array_key_exists("measures", $result2["component"])) {
-            $ncloc = intval($result2["component"]["measures"][0]["value"]);
+        if (array_key_exists('measures', $result2['component'])) {
+            $ncloc = intval($result2['component']['measures'][0]['value']);
         }
 
         /** On récupère le ration de dette technique */
@@ -181,8 +179,8 @@ class ApiMesureController extends AbstractController
         $result3 = $client->http(preg_replace(static::$removeReturnline, " ", $url3));
 
         $sqaleRatio = -1;
-        if (array_key_exists("measures", $result3["component"])) {
-            $sqaleRatio = intval($result3["component"]["measures"][0]["value"]);
+        if (array_key_exists('measures', $result3['component'])) {
+            $sqaleRatio = intval($result3['component']['measures'][0]['value']);
         }
 
         /** On enregistre */
@@ -209,7 +207,7 @@ class ApiMesureController extends AbstractController
             return $response->setData(["mode" => $mode, 'mesures' => $mesures, Response::HTTP_OK]);
         }
 
-        return $response->setData(["mode" => $data->mode , "code" => 200, Response::HTTP_OK]);
+        return $response->setData(['mode' => $data->mode , 'code' => 200, Response::HTTP_OK]);
     }
 
 }
