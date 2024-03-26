@@ -261,4 +261,101 @@ class UtilisateurRepository extends ServiceEntityRepository
         return $response;
     }
 
+    /**
+     * [Description for updateUtilisateurPreferenceFavori]
+     * Met à jour le favori pour le projet
+     *
+     * @param string $mode
+     * @param mixed $preference
+     * @param mixed $map
+     *
+     * @return array
+     *
+     * Created at: 26/03/2024 17:00:51 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function updateUtilisateurPreferenceFavori($mode, $preference, $map):array {
+        /** On regarde si la projet est dans les favoris */
+        $isFavori = in_array($map->maven_key, $preference['favori']);
+
+        /**
+         * On le supprime de la liste des favoris s'il exsite dans les préferences
+         * Sinon on l'ajoute
+         */
+
+        /** On récupére les préférences */
+        $statut = $preference['statut'];
+        $listeProjet = $preference['projet'];
+        $listeFavori = $preference['favori'];
+        $listeVersion = $preference['version'];
+        $bookmark = $preference['bookmark'];
+
+        $response = ['mode'=>$mode, 'code'=> 206, 'statut'=>-1, 'erreur'=>''];
+        if ($isFavori) {
+            /** on supprime le projet de la liste */
+            $nouvelleListeFavori = array_diff($listeFavori, [$map->maven_key]);
+            $statut['favori'] = false;
+
+            /** On met à jour l'objet. */
+            $jarray = json_encode([
+                'statut' => $statut,
+                'projet' => $listeProjet,
+                'favori' => $nouvelleListeFavori,
+                'version' =>$listeVersion,
+                'bookmark' => $bookmark
+            ]);
+
+            /** On met à jour les préférences. */
+            $sql = "UPDATE utilisateur
+                    SET preference = '$jarray'
+                    WHERE courriel=:courriel";
+            $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+            $conn->bindValue(':courriel', $map['courriel']);
+            try {
+                    if ($mode !== 'TEST') {
+                        $conn->executeQuery();
+                    } else {
+                        $response = ['mode'=>$mode, 'code'=> 202, 'statut'=>-1, 'erreur'=>'TEST'];
+                    }
+            } catch (\Doctrine\DBAL\Exception $e) {
+                $response = ['mode'=>$mode, 'code'=>500, 'statut'=>-1, 'erreur'=> $e->getCode()];
+            }
+            $response = ['mode'=>$mode, 'code'=> 200, 'statut'=>0, 'erreur'=>''];
+        } else {
+            /** On ajoute le projet à la liste */
+            array_push($preference['favori'], $map->maven_key);
+            $statut['favori'] = true;
+
+            /** On met à jour l'objet. */
+            $jarray = json_encode([
+                'statut' => $statut,
+                'projet' => $listeProjet,
+                'favori' => $listeFavori,
+                'version' => $listeVersion,
+                'bookmark' => $bookmark
+            ]);
+
+            /** On met à jour les préférences. */
+            $sql = "UPDATE utilisateur
+                    SET preference = '$jarray'
+                    WHERE courriel=:courriel";
+            $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+            $conn->bindValue(':courriel', $map['courriel']);
+            try {
+                    if ($mode !== 'TEST') {
+                        $conn->executeQuery();
+                    } else {
+                        $response = ['mode'=>$mode, 'code'=> 202, 'statut'=>-1, 'erreur'=>'TEST'];
+                    }
+            } catch (\Doctrine\DBAL\Exception $e) {
+                $response = ['mode'=>$mode, 'code'=>500, 'statut'=>-1, 'erreur'=> $e->getCode()];
+            }
+            $response = ['mode'=>$mode, 'code'=> 200, 'statut'=>1, 'erreur'=>''];
+        }
+
+        return $response;
+    }
+
+
 }
