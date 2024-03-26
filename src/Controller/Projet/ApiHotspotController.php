@@ -365,7 +365,7 @@ class ApiHotspotController extends AbstractController
                 static::vulnerabilityProbability($value['vulnerabilityProbability']);
 
                 $hotspot = new  HotspotOwasp();
-                $hotspot->setMavenKey($data->mavenKey);
+                $hotspot->setMavenKey($data->maven_key);
                 $hotspot->setMenace($data->owasp);
                 $hotspot->setProbability($value['vulnerabilityProbability']);
                 $hotspot->setStatus($value['status']);
@@ -664,7 +664,7 @@ class ApiHotspotController extends AbstractController
             $ligne++;
             $key = $this->hotspotDetails($data->maven_key, $elt['key'], $client);
             $details = new  HotspotDetails();
-            $details->setMavenKey($data->mavenKey);
+            $details->setMavenKey($data->maven_key);
             $details->setSeverity($key['severity']);
             $details->setNiveau($key['niveau']);
             $details->setStatus($key['status']);
