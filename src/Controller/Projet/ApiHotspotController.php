@@ -146,7 +146,7 @@ class ApiHotspotController extends AbstractController
     public function projetHotspotCollect(Request $request, Client $client): response
     {
         /** On instancie l'EntityRepository */
-        $hotspots = $this->em->getRepository(Hotspots::class);
+        $hotspotsEntity = $this->em->getRepository(Hotspots::class);
 
         /** On décode le body */
         $data = json_decode($request->getContent());
@@ -155,12 +155,10 @@ class ApiHotspotController extends AbstractController
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if ($data === null) {
-            return $response->setData(['data' => null, 'type'=>'alert', 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'mode')) {
-            return $response->setData(['mode' => null, 'type'=>'alert', 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'maven_key')) {
-            return $response->setData(['maven_key' => null, 'type'=>'alert', 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+        if ($data === null || !property_exists($data, 'mode') || !property_exists($data, 'maven_key') ) {
+            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
+                                        'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+        }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
@@ -210,7 +208,7 @@ class ApiHotspotController extends AbstractController
 
         /** On supprime les hotspots pour la maven_key. */
         $map=['maven_key'=>$data->maven_key];
-        $request=$hotspots->deleteHotspotsMavenKey($data->mode, $map);
+        $request=$hotspotsEntity->deleteHotspotsMavenKey($data->mode, $map);
         if ($request['code']!=200) {
             return $response->setData([
                 'type' => 'alert',
@@ -276,7 +274,7 @@ class ApiHotspotController extends AbstractController
     public function projetHotspotOwaspCollect(Request $request, Client $client): response
     {
         /** On instancie l'EntityRepository */
-        $hotspotOwasp = $this->em->getRepository(HotspotOwasp::class);
+        $hotspotOwaspEntity = $this->em->getRepository(HotspotOwasp::class);
         $informationProjetEntity = $this->em->getRepository(InformationProjet::class);
 
         /** On décode le body */
@@ -286,14 +284,11 @@ class ApiHotspotController extends AbstractController
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if ($data === null) {
-            return $response->setData(['data' => null, 'type'=>'alert', 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'mode')) {
-            return $response->setData(['mode' => null, 'type'=>'alert', 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'maven_key')) {
-            return $response->setData(['maven_key' => null, 'type'=>'alert', 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'owasp')) {
-            return $response->setData(['owasp' => null, 'type'=>'alert', 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+        if ($data === null || !property_exists($data, 'mode') ||
+            !property_exists($data, 'maven_key') || !property_exists($data, 'owasp')) {
+            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
+                                        'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+        }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
@@ -309,7 +304,7 @@ class ApiHotspotController extends AbstractController
         if ($data->owasp == 'a0') {
             /** On supprime les hotspots pour la maven_key. */
             $map=['maven_key'=>$data->maven_key];
-            $request=$hotspotOwasp->deleteHotspotOwaspMavenKey($data->mode, $map);
+            $request=$hotspotOwaspEntity->deleteHotspotOwaspMavenKey($data->mode, $map);
             if ($request['code']!=200) {
                 return $response->setData([
                     'type' => 'alert',
@@ -615,8 +610,8 @@ class ApiHotspotController extends AbstractController
     public function hotspotDetailsCollect(Request $request, Client $client): response
     {
         /** On instancie l'EntityRepository */
-        $hotspots = $this->em->getRepository(Hotspots::class);
-        $hotspotDetails = $this->em->getRepository(HotspotDetails::class);
+        $hotspotsEntity = $this->em->getRepository(Hotspots::class);
+        $hotspotDetailsEntity = $this->em->getRepository(HotspotDetails::class);
 
         /** On décode le body */
         $data = json_decode($request->getContent());
@@ -625,12 +620,10 @@ class ApiHotspotController extends AbstractController
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if ($data === null) {
-            return $response->setData(['data' => null, 'type'=>'alert', 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'mode')) {
-            return $response->setData(['mode' => null, 'type'=>'alert', 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'maven_key')) {
-            return $response->setData(['maven_key' => null, 'type'=>'alert', 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+        if ($data === null || !property_exists($data, 'mode') || !property_exists($data, 'maven_key') ) {
+            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
+                                        'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+        }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
@@ -645,7 +638,7 @@ class ApiHotspotController extends AbstractController
 
         /** On récupère la liste des hotspots au status TO_REVIEW */
         $map=['maven_key'=>$data->maven_key];
-        $request=$hotspots->selectHotspotsToReview($data->mode, $map);
+        $request=$hotspotsEntity->selectHotspotsToReview($data->mode, $map);
         if ($request['code']!=200) {
             return $response->setData([
                 'type' => 'alert',
@@ -658,7 +651,7 @@ class ApiHotspotController extends AbstractController
 
         /** On supprime le details des hotspots pour la maven_key. */
         $map=['maven_key'=>$data->maven_key];
-        $request=$hotspotDetails->deleteHotspotDetailsMavenKey($data->mode, $map);
+        $request=$hotspotDetailsEntity->deleteHotspotDetailsMavenKey($data->mode, $map);
         if ($request['code']!=200) {
             return $response->setData([
                 'type' => 'alert',
