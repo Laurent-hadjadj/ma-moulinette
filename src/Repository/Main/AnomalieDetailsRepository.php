@@ -62,4 +62,36 @@ class AnomalieDetailsRepository extends ServiceEntityRepository
         return ['mode'=>$mode, 'code'=>200, 'erreur'=>''];
     }
 
+    /**
+     * [Description for selectAnomalieDetailsMavenKey]
+     * Retoune la liste du détails des anomalies pour un projet.
+     *
+     * @param mixed $mode
+     * @param mixed $map
+     *
+     * @return array
+     *
+     * Created at: 20/03/2024 16:33:35 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function selectAnomalieDetailsMavenKey($mode,$map):array
+    {
+        $sql = "SELECT *
+                FROM anomalie_details
+                WHERE maven_key=:maven_key";
+        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+        $conn->bindValue(':maven_key', $map['maven_key']);
+        try {
+                if ($mode !== 'TEST') {
+                    $exec=$conn->executeQuery();
+                    $liste=$exec->fetchAllAssociative();
+                } else {
+                    return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+                }
+        } catch (\Doctrine\DBAL\Exception $e) {
+            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+        }
+        return ['mode'=>$mode, 'code'=>200, 'liste'=>$liste, 'erreur'=>''];
+    }
 }
