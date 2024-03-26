@@ -46,7 +46,7 @@ import {enregistrement} from './app-projet-enregistrement.js';
 /** On importe les constantes */
 import {contentType, http_200, http_400, http_401, http_403, http_404, http_406, dateOptions,
         matrice, paletteCouleur,
-        deuxMille, troisMille, cinqMille} from './constante.js';
+        deuxMille, troisMille, cinqMille, http_500} from './constante.js';
 
 /**
  * [Description for shuffle]
@@ -223,19 +223,17 @@ const match=function(params, data) {
  */
 const selectProjet=async function() {
   const options = {
-    url: `${serveur()}/api/liste/projet`, type: 'GET',
+    url: `${serveur()}/api/liste/projet`, type: 'POST',
           dataType: 'json', contentType };
 
   const data = await $.ajax(options);
-  if (data.type === 'alert' || data.type === 'warning')
-  {
-    $('#callout-projet-message').removeClass('hide success warning primary secondary');
-    $('#callout-projet-message').addClass(data.type);
-    $('#js-reference-information').html(data.reference);
-    $('#js-message-information').html(data.message);
-  } else
-  {
-    log(' - INFO : construction de la liste.');
+  if (t.code===http_406 || t.code===http_500){
+    afficheMessage(t)
+    sessionStorage.setItem('liste des projet autorisée', "L'utilisateur n'est pas rattaché à une équipe ou pas de projet.");
+    return;
+  }
+  if (t.code===http_200){
+    log(' - INFO : Je construit la liste des projets autorisées.');
     $('.js-projet').select2({
       matcher: match,
       placeholder: 'Cliquez pour ouvrir la liste',
@@ -816,195 +814,196 @@ const finCollecte=function(){
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const afficheMesProjets=function() {
+  const data = { mode: 'null' };
   const options = {
-    url: `${serveur()}/api/projet/mes-applications/liste`,
-          type: 'GET', dataType: 'json', contentType
-  };
+    url: `${serveur()}/api/projet/mes-applications/liste`, type: 'POST',
+    dataType: 'json', data: JSON.stringify(data), contentType  };
 
   return new Promise(resolve => {
     $.ajax(options).then(t=> {
-      let str, favori, i;
-      if (t.type !== undefined) {
+      if (t.code===http_400 || t.code===http_406){
         afficheMessage(t)
         return;
       }
+      let str, favori, i;
 
-    /* On efface les données.*/
-    $('#tableau-liste-projet').html('');
-    $('.information-texte').html('[00] - Je dors !!!');
+      if (t.code===http_200){
+        /* On efface les données.*/
+        $('#tableau-liste-projet').html('');
+        $('.information-texte').html('[00] - Je dors !!!');
 
-    i=0;
-    const favoriSvg=`<svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="favori-liste-svg">
-    <g transform="translate(0 512) scale(.1 -.1)">
-    <path d="m1215 4984c-531-89-963-456-1139-966-52-151-69-268-70-463 0-144 4-203 22-297 99-527 412-1085 962-1713 365-418 941-950 1436-1326l134-102 134 102c495 376 1071 908 1436 1326 550 628 863 1186 962 1713 31 167 31 432-1 582-109 513-470 924-951 1084-162 54-239 67-420 73-139 4-183 2-280-16-310-55-567-188-782-403l-98-98-98 98c-213 213-472 347-777 402-128 24-346 25-470 4zm438-341c274-52 521-211 691-444 23-30 79-123 125-207 47-84 88-152 91-152s44 68 91 152c128 231 214 337 362 449 218 164 482 241 755 218 276-23 512-137 708-340 127-133 222-302 271-486 24-88 27-116 27-278 0-163-3-191-28-300-105-447-394-942-865-1480-326-373-749-775-1196-1135l-125-101-125 101c-325 262-717 620-952 868-633 668-987 1227-1109 1747-25 109-28 137-28 300 0 162 3 190 27 278 92 343 335 620 657 750 201 81 411 101 623 60z" />
-    </g></svg>`;
+        i=0;
+        const favoriSvg=`<svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="favori-liste-svg">
+        <g transform="translate(0 512) scale(.1 -.1)">
+        <path d="m1215 4984c-531-89-963-456-1139-966-52-151-69-268-70-463 0-144 4-203 22-297 99-527 412-1085 962-1713 365-418 941-950 1436-1326l134-102 134 102c495 376 1071 908 1436 1326 550 628 863 1186 962 1713 31 167 31 432-1 582-109 513-470 924-951 1084-162 54-239 67-420 73-139 4-183 2-280-16-310-55-567-188-782-403l-98-98-98 98c-213 213-472 347-777 402-128 24-346 25-470 4zm438-341c274-52 521-211 691-444 23-30 79-123 125-207 47-84 88-152 91-152s44 68 91 152c128 231 214 337 362 449 218 164 482 241 755 218 276-23 512-137 708-340 127-133 222-302 271-486 24-88 27-116 27-278 0-163-3-191-28-300-105-447-394-942-865-1480-326-373-749-775-1196-1135l-125-101-125 101c-325 262-717 620-952 868-633 668-987 1227-1109 1747-25 109-28 137-28 300 0 162 3 190 27 278 92 343 335 620 657 750 201 81 411 101 623 60z" />
+        </g></svg>`;
 
-    /**
-     * Pour chaque élément de la liste des projets analysés,
-     * on affiche le projet et si le projet est en favori
-     * on ajoute un petit-coeur.
-     */
-    t.projets.forEach(element => {
-      i++;
-      if (element.favori){
-        favori = favoriSvg;
-      } else {
-        favori=' - ';
+        /**
+         * Pour chaque élément de la liste des projets analysés,
+         * on affiche le projet et si le projet est en favori
+         * on ajoute un petit-coeur.
+         */
+        t.projets.forEach(element => {
+          i++;
+          if (element.favori){
+            favori = favoriSvg;
+          } else {
+            favori=' - ';
+          }
+
+          str = `<tr id="name-${i}" class="open-sans">
+                  <td id="key-${i}" data-mavenkey="${element.key}">${element.name}</td>
+                  <td class="text-center">${favori}</td>
+                  <td class="text-center capsule">
+                    <span id="V-${i}" class="capsule-bulle V js-liste-valider">
+                      <span id="tooltips-${i}" data-tooltip tabindex="1" title="Je choisi ce projet.">V</span>
+                    <span>
+                  </td>
+                  <td class="text-center capsule">
+                    <span id="R-${i}" class="capsule-bulle R js-liste-afficher-resultat">
+                      <span id="tooltips-${i}" data-tooltip tabindex="2" title="J'affiche les résultats.">R</span>
+                    </span>
+                  </td>
+                  <td class="text-center capsule">
+                    <span id="S-${i}" class="capsule-bulle S js-liste-afficher-indicateur">
+                      <span id="tooltips-${i}" data-tooltip tabindex="3" title="J'affiche le tableau de suivi.">S</span>
+                    </span>
+                  </td>
+                  <td class="text-center capsule">
+                    <span id="C-${i}" class="capsule-bulle C js-liste-cosui">
+                      <span id="tooltips-${i}" data-tooltip tabindex="4" title="J'affiche le tableau d'analyse COSUI.">C</span>
+                    </span>
+                  </td>
+                  <td class="text-center capsule">
+                    <span id="O-${i}" class="capsule-bulle O js-liste-owasp">
+                      <span id="tooltips-${i}" data-tooltip tabindex="5" title="J'affiche le rapport OWASP.">O</span>
+                    </span>
+                  </td>
+                  <td class="text-center capsule">
+                    <span id="RM-${i}" class="capsule-bulle RM js-liste-repartition-module">
+                      <span id="tooltips-${i}" data-tooltip tabindex="6" title="J'affiche le tableau de répartition par module.">RM</span>
+                    </span>
+                  </td>
+                  </tr>`;
+          $('#tableau-liste-projet').append(str);
+        });
+        $(document).foundation();
+        /* On met à jour le nombre des projets collectés. */
+        $('#affiche-total-projet').html(`<span id="nombre-projet" class="stat">${i}</span>`);
+
+        /* On gére le click sur le bouton V (Valider) */
+        $('.js-liste-valider').on('click', e => {
+          /* On récupère la valeur de l'ID. */
+          const id = e.currentTarget.id;
+          const a = id.split('-');
+          const key='key-'+a[1];
+
+          /* On récupère la clé maven du projet. */
+          const element = document.getElementById(key);
+          const mavenKey=element.dataset.mavenkey;
+
+          /* On récupère le nom du projet */
+          const b = mavenKey.split(':');
+          const nom = b[1];
+          const $newOption = $("<option selected='selected'></option>").val(mavenKey).text(nom);
+          /* On  active le projet */
+          $('select[name="projet"]').append($newOption).trigger('change');
+          setTimeout(function(){
+            $('.information-texte').html('[01] - Le choix du projet a été validé.');
+          }, deuxMille);
+        });
+
+        /* On gére le click sur le bouton R (afficher les Résulats) */
+        $('.js-liste-afficher-resultat').on('click', e => {
+
+          /* On récupère la valeur de l'ID */
+          const id = e.currentTarget.id;
+          const a = id.split('-');
+          const key='key-'+a[1];
+
+          /* On récupère la clé maven du projet */
+          const element = document.getElementById(key);
+          const mavenKey=element.dataset.mavenkey;
+          $('#select-result').html(`<strong>${mavenKey}</strong>`);
+          /* on active le bouton pour afficher les infos du projet */
+          $('.js-affiche-resultat').removeClass('affiche-resultat-disabled');
+          $('.js-affiche-resultat').addClass('affiche-resultat-enabled');
+          /* On clique sur le bouton afficher les résultats */
+          $('.js-affiche-resultat').trigger('click');
+          setTimeout(function(){
+            $('.information-texte').html('[02] - L\'affichage des résultats est terminé.');
+          }, cinqMille);
+        });
+
+        /* On gére le click sur le bouton S (afficher le tableau de suivi) */
+        $('.js-liste-afficher-indicateur').on('click', e => {
+
+          /* On récupère la valeur de l'ID. */
+          const id = e.currentTarget.id;
+          const a = id.split('-');
+          const key='key-'+a[1];
+
+          /* On récupère la clé maven du projet */
+          const element = document.getElementById(key);
+          const mavenKey=element.dataset.mavenkey;
+          $('#select-result').html(`<strong>${mavenKey}</strong>`);
+          /* On clique sur le bouton tableau de suivi */
+          $('.js-tableau-suivi').trigger('click');
+        });
+
+        /* On gére le click sur le bouton C (Cosui) */
+        $('.js-liste-cosui').on('click', e => {
+          /* On récupère la valeur de l'ID */
+          const id = e.currentTarget.id;
+          const a = id.split('-');
+          const key='key-'+a[1];
+
+          /* On récupère la clé maven du projet */
+          const element = document.getElementById(key);
+          const mavenKey=element.dataset.mavenkey;
+          $('#select-result').html(`<strong>${mavenKey}</strong>`);
+
+          /* On clique sur le bouton COSUI */
+          $('.js-cosui').removeClass('cosui-disabled');
+          $('.js-cosui').trigger('click');
+        });
+
+        /* On gére le click sur le bouton O (afficher le rapport OWASP) */
+        $('.js-liste-owasp').on('click', e => {
+
+          /* On récupère la valeur de l'ID */
+          const id = e.currentTarget.id;
+          const a = id.split('-');
+          const key='key-'+a[1];
+
+          /* On récupère la clé maven du projet */
+          const element = document.getElementById(key);
+          const mavenKey=element.dataset.mavenkey;
+          $('#select-result').html(`<strong>${mavenKey}</strong>`);
+          /* On clique sur le bouton OWASP */
+          $('.js-analyse-owasp').trigger('click');
+        });
+
+        /* On gére le click sur le bouton RM (afficher le rapport de Répartition par Module) */
+        $('.js-liste-repartition-module').on('click', e => {
+
+          /* On récupère la valeur de l'ID */
+          const id = e.currentTarget.id;
+          const a = id.split('-');
+          const key='key-'+a[1];
+
+          /* On récupère la clé maven du projet */
+          const element = document.getElementById(key);
+          const mavenKey=element.dataset.mavenkey;
+          $('#select-result').html(`<strong>${mavenKey}</strong>`);
+          /* On clique sur le bouton Répartition par module */
+          $('.js-repartition-module').trigger('click');
+        });
       }
-
-      str = `<tr id="name-${i}" class="open-sans">
-              <td id="key-${i}" data-mavenkey="${element.key}">${element.name}</td>
-              <td class="text-center">${favori}</td>
-              <td class="text-center capsule">
-                <span id="V-${i}" class="capsule-bulle V js-liste-valider">
-                  <span id="tooltips-${i}" data-tooltip tabindex="1" title="Je choisi ce projet.">V</span>
-                <span>
-              </td>
-              <td class="text-center capsule">
-                <span id="R-${i}" class="capsule-bulle R js-liste-afficher-resultat">
-                  <span id="tooltips-${i}" data-tooltip tabindex="2" title="J'affiche les résultats.">R</span>
-                </span>
-              </td>
-              <td class="text-center capsule">
-                <span id="S-${i}" class="capsule-bulle S js-liste-afficher-indicateur">
-                  <span id="tooltips-${i}" data-tooltip tabindex="3" title="J'affiche le tableau de suivi.">S</span>
-                </span>
-              </td>
-              <td class="text-center capsule">
-                <span id="C-${i}" class="capsule-bulle C js-liste-cosui">
-                  <span id="tooltips-${i}" data-tooltip tabindex="4" title="J'affiche le tableau d'analyse COSUI.">C</span>
-                </span>
-              </td>
-              <td class="text-center capsule">
-                <span id="O-${i}" class="capsule-bulle O js-liste-owasp">
-                  <span id="tooltips-${i}" data-tooltip tabindex="5" title="J'affiche le rapport OWASP.">O</span>
-                </span>
-              </td>
-              <td class="text-center capsule">
-                <span id="RM-${i}" class="capsule-bulle RM js-liste-repartition-module">
-                  <span id="tooltips-${i}" data-tooltip tabindex="6" title="J'affiche le tableau de répartition par module.">RM</span>
-                </span>
-              </td>
-              </tr>`;
-      $('#tableau-liste-projet').append(str);
+      resolve();
     });
-    $(document).foundation();
-    /* On met à jour le nombre des projets collectés. */
-    $('#affiche-total-projet').html(`<span id="nombre-projet" class="stat">${i}</span>`);
-
-    /* On gére le click sur le bouton V (Valider) */
-    $('.js-liste-valider').on('click', e => {
-      /* On récupère la valeur de l'ID. */
-      const id = e.currentTarget.id;
-      const a = id.split('-');
-      const key='key-'+a[1];
-
-      /* On récupère la clé maven du projet. */
-      const element = document.getElementById(key);
-      const mavenKey=element.dataset.mavenkey;
-
-      /* On récupère le nom du projet */
-      const b = mavenKey.split(':');
-      const nom = b[1];
-      const $newOption = $("<option selected='selected'></option>").val(mavenKey).text(nom);
-      /* On  active le projet */
-      $('select[name="projet"]').append($newOption).trigger('change');
-      setTimeout(function(){
-        $('.information-texte').html('[01] - Le choix du projet a été validé.');
-      }, deuxMille);
-    });
-
-    /* On gére le click sur le bouton R (afficher les Résulats) */
-    $('.js-liste-afficher-resultat').on('click', e => {
-
-      /* On récupère la valeur de l'ID */
-      const id = e.currentTarget.id;
-      const a = id.split('-');
-      const key='key-'+a[1];
-
-      /* On récupère la clé maven du projet */
-      const element = document.getElementById(key);
-      const mavenKey=element.dataset.mavenkey;
-      $('#select-result').html(`<strong>${mavenKey}</strong>`);
-      /* on active le bouton pour afficher les infos du projet */
-      $('.js-affiche-resultat').removeClass('affiche-resultat-disabled');
-      $('.js-affiche-resultat').addClass('affiche-resultat-enabled');
-      /* On clique sur le bouton afficher les résultats */
-      $('.js-affiche-resultat').trigger('click');
-      setTimeout(function(){
-        $('.information-texte').html('[02] - L\'affichage des résultats est terminé.');
-      }, cinqMille);
-    });
-
-    /* On gére le click sur le bouton S (afficher le tableau de suivi) */
-    $('.js-liste-afficher-indicateur').on('click', e => {
-
-      /* On récupère la valeur de l'ID. */
-      const id = e.currentTarget.id;
-      const a = id.split('-');
-      const key='key-'+a[1];
-
-      /* On récupère la clé maven du projet */
-      const element = document.getElementById(key);
-      const mavenKey=element.dataset.mavenkey;
-      $('#select-result').html(`<strong>${mavenKey}</strong>`);
-      /* On clique sur le bouton tableau de suivi */
-      $('.js-tableau-suivi').trigger('click');
-    });
-
-    /* On gére le click sur le bouton C (Cosui) */
-    $('.js-liste-cosui').on('click', e => {
-      /* On récupère la valeur de l'ID */
-      const id = e.currentTarget.id;
-      const a = id.split('-');
-      const key='key-'+a[1];
-
-      /* On récupère la clé maven du projet */
-      const element = document.getElementById(key);
-      const mavenKey=element.dataset.mavenkey;
-      $('#select-result').html(`<strong>${mavenKey}</strong>`);
-
-      /* On clique sur le bouton COSUI */
-      $('.js-cosui').removeClass('cosui-disabled');
-      $('.js-cosui').trigger('click');
-    });
-
-    /* On gére le click sur le bouton O (afficher le rapport OWASP) */
-    $('.js-liste-owasp').on('click', e => {
-
-      /* On récupère la valeur de l'ID */
-      const id = e.currentTarget.id;
-      const a = id.split('-');
-      const key='key-'+a[1];
-
-      /* On récupère la clé maven du projet */
-      const element = document.getElementById(key);
-      const mavenKey=element.dataset.mavenkey;
-      $('#select-result').html(`<strong>${mavenKey}</strong>`);
-      /* On clique sur le bouton OWASP */
-      $('.js-analyse-owasp').trigger('click');
-    });
-
-    /* On gére le click sur le bouton RM (afficher le rapport de Répartition par Module) */
-    $('.js-liste-repartition-module').on('click', e => {
-
-      /* On récupère la valeur de l'ID */
-      const id = e.currentTarget.id;
-      const a = id.split('-');
-      const key='key-'+a[1];
-
-      /* On récupère la clé maven du projet */
-      const element = document.getElementById(key);
-      const mavenKey=element.dataset.mavenkey;
-      $('#select-result').html(`<strong>${mavenKey}</strong>`);
-      /* On clique sur le bouton Répartition par module */
-      $('.js-repartition-module').trigger('click');
-    });
-    resolve();
-  });
   });
 };
-
 
 /*************** Main du programme **************/
 /* On dit bonjour */
@@ -1114,17 +1113,22 @@ $('select[name="projet"]').on('change', function () {
   sessionStorage.setItem('collecte', 'Tout va bien!');
 
   /* On regarde si le projet est en favori */
-  const data = { mavenKey: $('#select-result').text().trim() };
+  const data = { mavenKey: $('#select-result').text().trim(), 'mode': 'null' };
   const options = {
-    url: `${serveur()}/api/favori/check`, type: 'GET',
-          dataType: 'json', data, contentType };
+    url: `${serveur()}/api/favori/check`, type: 'POST',
+          dataType: 'json', data: JSON.stringify(data), contentType };
   $.ajax(options).then(t=> {
+    if (t.code===!http_200){
+      afficheMessage(t)
+      sessionStorage.setItem('favori', 'Erreur check.');
+      return;
+    }
     /*SQLite : 0 (false) and 1 (true). */
-    if ( t.favori===0 || t.favori===false) {
-          $('.favori-svg').removeClass('favori-svg-select');
-        }
-    if (t.favori===1 || t.favori===true) {
-          $('.favori-svg').addClass('favori-svg-select');
+    if (t.code===http_200 && t.favori===0 || t.favori===false) {
+      $('.favori-svg').removeClass('favori-svg-select');
+    }
+    if (t.code===http_200 && t.favori===1 || t.favori===true) {
+      $('.favori-svg').addClass('favori-svg-select');
     } else {
       $('.favori-svg').removeClass('favori-svg-select');
     }
@@ -1224,16 +1228,22 @@ $('.favori-svg').on('click', () => {
         $('.favori-svg').addClass('favori-svg-select');
       }
 
-    const data = { mavenKey: $('#select-result').text().trim() };
+    const data = { maven_key: $('#select-result').text().trim(), mode: 'null' };
     const options = {
-      url: `${serveur()}/api/favori`, type: 'GET',
-      dataType: 'json',  data, contentType };
+      url: `${serveur()}/api/favori`, type: 'POST',
+      dataType: 'json',  data: JSON.stringify(data), contentType };
       $.ajax(options).then( t => {
-        if (t.statut===1){
-          log(' - INFO : Ajout du projet à la liste des favoris.');
+        if (t.code===!http_200){
+          afficheMessage(t)
+          sessionStorage.setItem('favori', 'Erreur update.');
+          return;
         }
-        if (t.statut===0) {
+        /*SQLite : 0 (false) and 1 (true). */
+        if (t.code===http_200 && t.statut===0) {
           log(' - INFO : Suppression du projet à la liste des favoris.');
+        }
+        if (t.code===http_200 && t.statut===1) {
+          log(' - INFO : Ajout du projet à la liste des favoris.');
         }
       });
   }

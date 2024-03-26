@@ -25,6 +25,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\SecurityBundle\Security;
 
 use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Main\Utilisateur;
+use App\Entity\Main\ListeProjet;
 
 /**
  * [Description ApiProjetController]
@@ -32,10 +34,10 @@ use Doctrine\ORM\EntityManagerInterface;
 class ApiProjetController extends AbstractController
 {
     /** Définition des constantes */
-    public static $regex = "/\s+/u";
-    public static $erreurMavenKey = "La clé maven est vide!";
+    public static $removeReturnline = "/\s+/u";
     public static $reference = "<strong>[PROJET-002]</strong>";
     public static $message = "Vous devez avoir le rôle COLLECTE pour réaliser cette action.";
+    public static $erreur400 = "La requête est incorrecte (Erreur 400).";
 
     /**
      * [Description for __construct]
@@ -63,97 +65,35 @@ class ApiProjetController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/favori', name: 'favori', methods: ['GET'])]
+    #[Route('/api/favori', name: 'favori', methods: ['POST'])]
     public function favori(Security $security, Request $request): response
     {
+        /** On instancie l'entityRepository */
+        $utilisateurEntity = $this->em->getRepository(Utilisateur::class);
+
+        /** On décode le body */
+        $data = json_decode($request->getContent());
+
+        /** On crée un objet de reponse JSON */
+        $response = new JsonResponse();
+
+        /** On teste si la clé est valide */
+        if ($data === null || !property_exists($data, 'mode') || !property_exists($data, 'maven_key') ) {
+            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
+                                        'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+        }
+
         /** On récupère l'objet User du contexte de sécurité */
         $preference = $security->getUser()->getPreference();
         $courriel = $security->getUser()->getCourriel();
 
-        /** oN créé un objet réponse */
-        $response = new JsonResponse();
-
-        /** On on vérifie si on a activé le mode test */
-        if (is_null($request->get('mode'))) {
-            $mode = "null";
-        } else {
-            $mode = $request->get('mode');
+        $map=['maven_key'=>$data->maven_key, 'courriel'=>$courriel];
+        $request = $utilisateurEntity->updateUtilisateurPreferenceFavori($data->mode, $preference, $map);
+        if ($request['code']!=200) {
+            return $response->setData(['code' => $request['code'], Response::HTTP_OK]);
         }
 
-        /** On bind les variables */
-        $mavenKey = $request->get('mavenKey');
-
-        /** On teste si la clé est valide */
-        if ($mavenKey === "null" && $mode === "TEST") {
-            return $response->setData([
-              "mode" => $mode, "mavenKey" => $mavenKey,
-              "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
-        }
-
-        /** On regarde si la projet est dans les favoris */
-        $isFavori = in_array($mavenKey, $preference['favori']);
-
-        /**
-         * On le supprime de la liste des favoris s'il exsite dans les préferences
-         * Sinon on l'ajoute
-         */
-
-        /** On récupéres les préférences */
-        $statut = $preference['statut'];
-        $projet = $preference['projet'];
-        $favori = $preference['favori'];
-        $bookmark = $preference['bookmark'];
-
-        if ($isFavori) {
-            /** on supprime le projet de la liste */
-            $nouvelleListeFavori = array_diff($favori, [$mavenKey]);
-
-            $statut['favori'] = false;
-
-            /** On met à jour l'objet. */
-            $jarray = json_encode([
-              'statut' => $statut,
-              'projet' => $projet,
-              'favori' => $nouvelleListeFavori,
-              'bookmark' => $bookmark
-            ]);
-
-            /** On met à jour les préférences. */
-            $sql = "UPDATE utilisateur
-        SET preference = '$jarray'
-        WHERE courriel='$courriel';";
-            $trim = trim(preg_replace(static::$regex, " ", $sql));
-            $exec = $this->em->getConnection()->prepare($trim)->executeQuery();
-            if ($mode !== 'TEST') {
-                $exec->fetchAllAssociative();
-            }
-            $statut = 0;
-        } else {
-            /** On ajoute le projet à la liste */
-            array_push($preference['favori'], $mavenKey);
-            $statut['favori'] = true;
-
-            /** On met à jour l'objet. */
-            $jarray = json_encode([
-              'statut' => $statut,
-              'projet' => $projet,
-              'favori' => $preference['favori'],
-              'bookmark' => $bookmark
-            ]);
-
-            /** On met à jour les préférences. */
-            $sql = "UPDATE utilisateur
-        SET preference = '$jarray'
-        WHERE courriel='$courriel';";
-            $trim = trim(preg_replace(static::$regex, " ", $sql));
-            $exec = $this->em->getConnection()->prepare($trim)->executeQuery();
-            if ($mode !== 'TEST') {
-                $exec->fetchAllAssociative();
-            }
-            $statut = 1;
-        }
-
-        return $response->setData(["mode" => $mode, "statut" => $statut, Response::HTTP_OK]);
+        return $response->setData(['mode' => $data->mode, 'code'=>200, 'statut' => $request['statut'], Response::HTTP_OK]);
     }
 
     /**
@@ -170,18 +110,26 @@ class ApiProjetController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/favori/check', name: 'favori_check', methods: ['GET'])]
+    #[Route('/api/favori/check', name: 'favori_check', methods: ['POST'])]
     public function favoriCheck(Security $security, Request $request): response
     {
+        /** On décode le body */
+        $data = json_decode($request->getContent());
+
+        /** On crée un objet de reponse JSON */
+        $response = new JsonResponse();
+
+        /** On teste si la clé est valide */
+        if ($data === null || !property_exists($data, 'mode') || !property_exists($data, 'maven_key') ) {
+            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
+                                        'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+        }
+
         /** On récupère l'objet User du contexte de sécurité */
         $preference = $security->getUser()->getPreference();
 
-        /** oN créé un objet réponse */
-        $response = new JsonResponse();
-        $mavenKey = $request->get('mavenKey');
-
-        $favori = in_array($mavenKey, $preference['favori']);
-        return $response->setData(["favori" => $favori, Response::HTTP_OK]);
+        $favori = in_array($data->mavenKey, $preference['favori']);
+        return $response->setData(['favori' => $favori, Response::HTTP_OK]);
     }
 
     /**
@@ -190,6 +138,7 @@ class ApiProjetController extends AbstractController
      * http://{url}}/api/liste/projet
      *
      * @param Security $security
+     * @param Request $request
      *
      * @return response
      *
@@ -197,11 +146,23 @@ class ApiProjetController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/liste/projet', name: 'liste_projet', methods: ['GET'])]
-    public function liste_projet(Security $security): response
+    #[Route('/api/liste/projet', name: 'liste_projet', methods: ['POST'])]
+    public function liste_projet(Security $security, Request $request): response
     {
-        /** On créé un objet response */
+        /** On instancie l'entityRepository */
+        $listeProjetEntity = $this->em->getRepository(ListeProjet::class);
+
+        /** On décode le body */
+        $data = json_decode($request->getContent());
+
+        /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
+
+        /** On teste si la clé est valide */
+        if ($data === null || !property_exists($data, 'mode') || !property_exists($data, 'maven_key') ) {
+            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
+                                        'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+        }
 
         /* On bind les informations utilisateur */
         $equipes = $security->getUser()->getEquipe();
@@ -209,11 +170,11 @@ class ApiProjetController extends AbstractController
         /** Si l'utilisateur n'est pas rattaché à une équipe on ne charge rien */
         if (empty($equipes)) {
             /** On envoi un message à l'utilisateur */
-            $reference2 = "<strong>[PROJET-003]</strong>";
-            $message2 = "Vous devez être rattaché à une équipe.";
-            $type = "alert";
-            return $response->setData(["reference" => $reference2, "message" => $message2,
-              "type" => $type, Response::HTTP_OK]);
+            $reference2 = '<strong>[PROJET]</strong>';
+            $message2 = "Vous devez être rattaché à une équipe (erreur 406)";
+            $type = 'alert';
+            return $response->setData(['mode'=>$data->mdoe, 'code'=>406, 'reference' => $reference2,
+                    'message' => $message2, 'type' => $type, Response::HTTP_OK]);
         }
 
         /** On recherche les projets pour les équipes rattaché à l'utilisateur */
@@ -231,23 +192,24 @@ class ApiProjetController extends AbstractController
         $inTrim = rtrim($in, " OR ");
 
         /** On construit la requête de selection des projets en fonction de(s) (l')équipes */
-        $sql = "SELECT DISTINCT liste_projet.maven_key as id, liste_projet.name as text
-          FROM liste_projet, json_each(liste_projet.tags)
-          WHERE $inTrim";
-        $trim = trim(preg_replace(static::$regex, " ", $sql));
-        $exec = $this->em->getConnection()->prepare($trim)->executeQuery();
-        $projets = $exec->fetchAllAssociative();
+        $map=['clause_where'=>$inTrim];
+        $request = $listeProjetEntity->selectListeProjetByEquipe($data->mode,$map);
+        if ($request['code']!=200) {
+            return $response->setData(['code' => $request['code'], Response::HTTP_OK]);
+        }
+
+        $projets = $request['liste'];
 
         /** j'ai pas trouvé de projet pour cette équipe. */
         if (empty($projets)) {
-            $reference3 = "<strong>[PROJET-004]</strong>";
-            $message3 = "Je n'ai pas trouvé de projets pour ton équipe.";
-            $type = "warning";
-            return $response->setData(["reference" => $reference3, "message" => $message3,
-              "type" => $type, Response::HTTP_OK]);
+            $reference3 = '<strong>[PROJET]</strong>';
+            $message3 = "Je n'ai pas trouvé de projets pour ton équipe (erreur 406).";
+            $type = 'warning';
+            return $response->setData(['mode'=>$data->mode, 'code'=>406, 'reference' => $reference3, 'message' => $message3,
+                'type' => $type, Response::HTTP_OK]);
         }
 
-        return $response->setData(["projet" => $projets, Response::HTTP_OK]);
+        return $response->setData(['mode'=>$data->mode, 'code'=>200, 'projet' => $projets, Response::HTTP_OK]);
     }
 
 }
