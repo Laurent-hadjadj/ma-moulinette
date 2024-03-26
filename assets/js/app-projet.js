@@ -37,10 +37,10 @@ import Chance from 'chance';
 
 /**
  * On importe les méthodes pour :
- * Enregistrer les données ;
  * Afficher les données ;
+ * Enregistrer les données ;
  */
-import {remplissage} from './app-projet-peinture.js';
+import {remplissage, afficheHotspotDetails} from './app-projet-peinture.js';
 import {enregistrement} from './app-projet-enregistrement.js';
 
 /** On importe les constantes */
@@ -1005,46 +1005,6 @@ const afficheMesProjets=function() {
   });
 };
 
-/**
- * [Description for afficheHotspotDetails]
- * On récupére la répartition des hotspots par sévérité
- * http://{url}/api/peinture/projet/hotspot/details{meven_key}
- *
- * @param string mavenKey
- *
- * @return response
- *
- * Created at: 19/12/2022, 22:25:28 (Europe/Paris)
- * @author     Laurent HADJADJ <laurent_h@me.com>
- */
-const afficheHotspotDetails=function (mavenKey){
-  const data = { mavenKey };
-  const options = {
-    url: `${serveur()}/api/peinture/projet/hotspot/details`,
-    type: 'GET', dataType: 'json', data, contentType };
-  $.ajax(options).then(t=> {
-    if (t.code !== http_200) {
-      log(' - ERROR : La liste des hotspot n\'a pas été trouvée.');
-      return;
-    }
-
-    /* On efface les données.*/
-    $('#tableau-liste-hotspot').html('');
-    const str =`<tr id="hotspot-1" class="open-sans">
-              <td id="hotspot-high" class="text-center stat" data-hotspot-high="${t.high}">
-              ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.high)}</td>
-              <td id="hotspot-medium" class="text-center stat" data-hotspot-medium="${t.medium}">
-              ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.medium)}</td>
-              <td id="hotspot-low" class="text-center stat" data-hotspot-low="${t.low}">
-              ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.low)}</td>
-              </tr>`;
-    $('#tableau-liste-hotspot').append(str);
-    $('#hotspot-total').html(`<span class="stat">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.total)}</span>`);
-
-    const t1 = document.getElementById('hotspot-total');
-    t1.dataset.hotspotTotal=(t.total);
-  });
-};
 
 /*************** Main du programme **************/
 /* On dit bonjour */
@@ -1315,10 +1275,10 @@ $('.js-affiche-resultat').on('click', () => {
   };
   /* On appel une fonction externe. */
   if ( $('.js-affiche-resultat').hasClass('affiche-resultat-enabled')){
-      /* On récupère la répartition des hotspots. */
-      afficheHotspotDetails(apiMaven);
       /* On récupère les résultats. */
       remplissage(apiMaven);
+      afficheHotspotDetails(apiMaven);
+
       if ($('#enregistrement').hasClass('enregistrement-disabled')){
             $('#enregistrement').addClass('enregistrement');
             $('#enregistrement').removeClass('enregistrement-disabled');
