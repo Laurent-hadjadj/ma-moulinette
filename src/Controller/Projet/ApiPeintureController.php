@@ -151,7 +151,7 @@ class ApiPeintureController extends AbstractController
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if ($data === null || !property_exists($data, 'mode') || !property_exists($data, 'maven_key') ) {
+        if ($data === null || !property_exists($data, 'mode') ) {
             return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
                                         'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
         }
