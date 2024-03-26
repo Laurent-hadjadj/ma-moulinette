@@ -96,6 +96,19 @@ class NotesRepository extends ServiceEntityRepository
         return ['mode'=>$mode, 'code'=>200, 'erreur'=>''];
     }
 
+/**
+     * [Description for selectNoteMavenType]
+     * retourne la note par type (reliability, security, sqale) pour un projet.
+     *
+     * @param string $mode
+     * @param array $map
+     *
+     * @return array
+     *
+     * Created at: 20/03/2024 16:20:18 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function selectNotesMavenType($mode,$map):array
     {
         $sql = "SELECT type, value
