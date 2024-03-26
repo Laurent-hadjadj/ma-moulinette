@@ -84,7 +84,7 @@ class ApiNoteController extends AbstractController
     public function projetNoteCollecte(Client $client, Request $request): response
     {
         /** On instancie l'entityRepository */
-        $notes = $this->em->getRepository(Notes::class);
+        $notesEntity = $this->em->getRepository(Notes::class);
 
         /** On décode le body */
         $data = json_decode($request->getContent());
@@ -93,15 +93,11 @@ class ApiNoteController extends AbstractController
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if ($data === null) {
-            return $response->setData(['data' => null, 'type'=>'alert', 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'mode')) {
-            return $response->setData(['mode' => null, 'type'=>'alert', 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'maven_key')) {
-            return $response->setData(['maven_key' => null, 'type'=>'alert', 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'type')) {
-            return $response->setData(['type' => null, '_type'=>'alert', 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
-
+        if ($data === null || !property_exists($data, 'mode') ||
+        !property_exists($data, 'maven_key') || !\property_exists($data, 'type')) {
+            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
+                                        'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+        }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
@@ -150,7 +146,7 @@ class ApiNoteController extends AbstractController
 
         /** On supprime les notes pour la maven_key. */
         $map=['maven_key'=>$data->maven_key, 'type'=>$data->type];
-        $delete=$notes->deleteNotesMavenKey($data->mode, $map);
+        $delete=$notesEntity->deleteNotesMavenKey($data->mode, $map);
         if ($delete['code']!=200) {
             return $response->setData([
                 'type' => 'alert',
@@ -164,18 +160,19 @@ class ApiNoteController extends AbstractController
         /** Enregistrement des nouvelles valeurs. */
         $note=$result['component']['measures'][0]['value'];
         $map=['maven_key'=>$data->maven_key, 'type'=>$data->type, 'value'=>$note, 'date_enregistrement'=>$tempoDate];
-        $request=$notes->InsertNotes($data->mode, $map);
+        $request=$notesEntity->InsertNotes($data->mode, $map);
 
-        if ($data->type == "reliability") {
-            $types = "Fiabilité";
+        if ($data->type == 'reliability') {
+            $types = 'Fiabilité';
         }
-        if ($data->type == "security") {
-            $types = "Sécurité";
+        if ($data->type == 'security') {
+            $types = 'Sécurité';
         }
-        if ($data->type == "sqale") {
-            $types = "Mauvaises Pratiques";
+        if ($data->type == 'sqale') {
+            $types = 'Mauvaises Pratiques';
         }
 
         return $response->setData(['mode' => $data->mode,'code' => 200, 'type' => $types, Response::HTTP_OK]);
     }
+
 }
