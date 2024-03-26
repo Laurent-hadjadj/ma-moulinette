@@ -26,6 +26,14 @@ use Symfony\Bundle\SecurityBundle\Security;
 
 // Accès aux tables SLQLite
 use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Main\InformationProjet;
+use App\Entity\Main\Anomalie;
+use App\Entity\Main\AnomalieDetails;
+use App\Entity\Main\Mesures;
+use App\Entity\Main\NoSonar;
+use App\Entity\Main\Hotspots;
+use App\Entity\Main\Notes;
+use App\Entity\Main\Todo;
 
 /**
  * [Description ApiPeintureController]
@@ -47,15 +55,19 @@ class ApiPeintureController extends AbstractController
         $this->em = $em;
     }
 
-    public static $erreurMavenKey = "La clé maven est vide!";
-    public const HTTP_ERROR_406 = "                   Vous devez lancer une analyse pour ce projet !!!";
-    public static $regex = "/\s+/u";
+    /** Définition des constantes */
+    public static $removeReturnline = "/\s+/u";
+    public static $reference = "<strong>[Peinture]</strong> ";
+    public static $erreur400 = "La requête est incorrecte (Erreur 400).";
+    public static $erreur406 = "Je n'ai pas trouvé les données. Vous devez lancer une collecte (Erreur 406)";
+    public static $erreur500 = "Je n'ai pas trouvé d'analyse. (Erreur 500).";
 
     /**
      * [Description for isValide]
-     *
-     * @param mixed $mavenKey
      * Vérification de l'existence du projet dans la table information_projet
+     *
+     * @param string $mavenKey
+     * @param string mode
      *
      * @return array
      *
@@ -63,21 +75,62 @@ class ApiPeintureController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    protected function isValide($mavenKey): array
+    private function isValide($mode, $mavenKey): array
     {
+        /** On instancie l'entityRepository */
+        $informationProjetEntity = $this->em->getRepository(InformationProjet::class);
+
+        /** On crée un objet de reponse JSON */
+        $response = new JsonResponse();
+
         /** On regarde si une analyse a été réalisée. */
-        $sql = "SELECT * FROM information_projet WHERE maven_key='$mavenKey' LIMIT 1";
-        $r = $this->em->getConnection()->prepare($sql)->executeQuery();
-        $response = $r->fetchAllAssociative();
-        if (empty($response)) {
-            return ["code" => 406];
+        $map=['maven_key'=>$mavenKey];
+        $request=$informationProjetEntity->selectInformationProjetisValide($mode, $map);
+        if ($request['code']!=200) {
+            return $response->setData([
+                'code' => $request['code'],
+                Response::HTTP_OK]);
         }
-        return ["code" => 200];
+        return ['code' => 200];
+    }
+
+    /**
+     * [Description for calculNoteHospot]
+     * retourne la note A, B, C, D ou E en fonction du ratio sonarqube.
+     *
+     * @param int $toReview
+     * @param int $reviewed
+     *
+     * @return string
+     *
+     * Created at: 20/03/2024 19:34:58 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function calculNoteHospot($toReview, $reviewed): string
+    {
+        $ratio = intval($reviewed) * 100 / intval($toReview) + intval($reviewed);
+        if ($ratio >= 80) {
+            $note = "A";
+        }
+        if ($ratio >= 70 && $ratio < 80) {
+            $note = "B";
+        }
+        if ($ratio >= 50 && $ratio < 70) {
+            $note = "C";
+        }
+        if ($ratio >= 30 && $ratio < 50) {
+            $note = "D";
+        }
+        if ($ratio < 30) {
+            $note = "E";
+        }
+        return $note;
     }
 
     /**
      * [Description for projetMesApplicationsListe]
-     * Récupupère la liste des projets que j'ai visité et ceux en favori
+     * Récupère la liste des projets que j'ai visité et ceux en favori
      *
      * @return response
      *
@@ -85,35 +138,48 @@ class ApiPeintureController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/projet/mes-applications/liste', name: 'projet_mes_applications_liste', methods: ['GET'])]
-    public function projetMesApplicationsListe(Security $security): response
+    #[Route('/api/projet/mes-applications/liste', name: 'projet_mes_applications_liste', methods: ['POST'])]
+    public function projetMesApplicationsListe(Request $request, Security $security): response
     {
-        /** On récupère l'objet User du contexte de sécurité */
-        $preference = $security->getUser()->getPreference();
+        /** On instancie l'entityRepository */
+        $anomalieEntity = $this->em->getRepository(Anomalie::class);
 
-        /** On crée un objet response */
+        /** On décode le body */
+        $data = json_decode($request->getContent());
+
+        /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
+
+        /** On teste si la clé est valide */
+        if ($data === null) {
+            return $response->setData(['data' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'mode')) {
+            return $response->setData(['mode' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'maven_key')) {
+            return $response->setData(['maven_key' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
 
         /**
          * On récupère la liste des projets ayant déjà fait l'objet d'une analyse.
          * On n'utilise plus le critère liste=TRUE/FALSE car on utilise les préferences
          * de l'utilisateur
-         * */
-        $sql = "SELECT maven_key as key
-            FROM anomalie
-            GROUP BY maven_key
-            ORDER BY project_name ASC";
-
-        $select = $this->em->getConnection()->prepare($sql)->executeQuery();
-        $analyses = $select->fetchAllAssociative();
+         */
+        $request = $anomalieEntity->selectAnomalieByProjectName($data->mode);
+        if ($request['code']!=200) {
+            return $response->setData([
+                'code' => $request['code'],
+                Response::HTTP_OK]);
+        }
 
         /** Si on a pas trouvé d'application. */
-        if (empty($analyses)) {
-            $type = "primary";
-            $reference = "<strong>[Mes projets]</strong>";
-            $message = "je n'ai pas trouvé d'analyse. Vous devez lancer une collecte.";
-            return $response->setData(["type" => $type, "reference" => $reference, "message" => $message, Response::HTTP_OK]);
+        if (empty($request['liste'])) {
+            $type = 'primary';
+            $reference = static::$reference;
+            $message = static::$erreur406;
+            return $response->setData(['code'=>406, 'type' => $type, 'reference' => $reference, 'message' => $message, Response::HTTP_OK]);
         }
+
+        /** On récupère l'objet User du contexte de sécurité */
+        $preference = $security->getUser()->getPreference();
 
         /**
          * Pour chaque projet de la liste de préference,
@@ -124,15 +190,16 @@ class ApiPeintureController extends AbstractController
         $mesFavoris = $preference['favori'];
         $projets = [];
         foreach ($mesProjets as $projet) {
-            if (in_array(["key" => $projet], $analyses)) {
-                $t = explode(":", $projet);
-                array_push($projets, ["key" => $projet, "name" => $t[1], "favori" => in_array($projet, $mesFavoris)]);
+            if (in_array(['key' => $projet], $request)) {
+                $t = explode(':', $projet);
+                array_push($projets, ['key' => $projet, 'name' => $t[1], 'favori' => in_array($projet, $mesFavoris)]);
             }
         }
 
         return $response->setData([
-            "code" => 200,
-            "projets" => $projets,
+            'mode' => $data->mode,
+            'code' => 200,
+            'projets' => $projets,
             Response::HTTP_OK]);
     }
 
@@ -150,89 +217,101 @@ class ApiPeintureController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/peinture/projet/version', name: 'peinture_projet_version', methods: ['GET'])]
+    #[Route('/api/peinture/projet/version', name: 'peinture_projet_version', methods: ['POST'])]
     public function peintureProjetVersion(Request $request): response
     {
-        $mavenKey = $request->get('mavenKey');
+        /** On instancie l'entityRepository */
+        $informationProjetEntity = $this->em->getRepository(InformationProjet::class);
+
+        /** On décode le body */
+        $data = json_decode($request->getContent());
+
+        /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
 
-        $isValide = $this->isValide($mavenKey);
-        if ($isValide["code"] == 406) {
-            return $response->setData(["message" => static::HTTP_ERROR_406, Response::HTTP_NOT_ACCEPTABLE]);
+        /** On teste si la clé est valide */
+        if ($data === null || !property_exists($data, 'mode') || !property_exists($data, 'maven_key') ) {
+            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
+                                        'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
         }
 
-        /** Toutes les versions */
-        $sql = "SELECT COUNT(type) AS 'total'
-    FROM information_projet
-    WHERE maven_key='$mavenKey'";
-        $e = $this->em->getConnection()->prepare($sql)->executeQuery();
-        $toutesLesVersions = $e->fetchAllAssociative();
+        /** On regarde si le projet existe */
+        $isValide = $this->isValide($data->mode, $data->maven_key);
+        if ($isValide['code'] === 406) {
+            return $response->setData(['code'=>406, 'type'=> 'secondary', 'reference'=> static::$reference,
+                                        'message' => static::$erreur406, Response::HTTP_NOT_ACCEPTABLE]);
+        }
+
+        /** Toutes les versions par type (RELEASE, SNAPSHOT, AUTRE) */
+        $map=['maven_key'=>$data->maven_key];
+        $toutesLesVersions=$informationProjetEntity->countInformationProjetAllType($data->mode, $map);
+        if ($toutesLesVersions['code']!=200) {
+            return $response->setData(['code' => $toutesLesVersions['code'], 'type'=>'alert',
+                                        'reference'=> static::$reference, 'message'=> static::$erreur500, Response::HTTP_OK]);
+        }
 
         /** Les releases */
-        $sql = "SELECT type, COUNT(type) AS 'total'
-    FROM information_projet
-    WHERE maven_key='$mavenKey' AND type='RELEASE'";
-        $e = $this->em->getConnection()->prepare($sql)->executeQuery();
-        $release = $e->fetchAllAssociative();
+        $map=['maven_key'=>$data->maven_key, 'type'=>'RELEASE'];
+        $release=$informationProjetEntity->countInformationProjetType($data->mode, $map);
+        if ($release['code']!=200) {
+            return $response->setData(['code' => $release['code'], Response::HTTP_OK]);
+        }
 
         /** Les snapshots */
-        $sql = "SELECT type, COUNT(type) AS 'total'
-    FROM information_projet
-    WHERE maven_key='$mavenKey' AND type='SNAPSHOT'";
-        $e = $this->em->getConnection()->prepare($sql)->executeQuery();
-        $snapshot = $e->fetchAllAssociative();
+        $map=['maven_key'=>$data->maven_key, 'type'=>'SNAPSHOT'];
+        $snapshot=$informationProjetEntity->countInformationProjetType($data->mode, $map);
+        if ($snapshot['code']!=200) {
+            return $response->setData([ 'code' => $snapshot['code'], Response::HTTP_OK]);
+        }
 
         /** On calcul la valeur pour les autres types de version */
-        $lesAutres = $toutesLesVersions[0]['total'] - $release[0]['total'] - $snapshot[0]['total'];
+        $lesAutres = $toutesLesVersions['nombre'][0]['total'] - $release['nombre'][0]['total'] - $snapshot['nombre'][0]['total'];
 
         /** On récupére le nombre de version par type pour le graphique */
-        $sql = "SELECT type, COUNT(type) AS 'total'
-            FROM information_projet
-            WHERE maven_key='$mavenKey'
-            GROUP BY type";
-        $e = $this->em->getConnection()->prepare($sql)->executeQuery();
-        $infoVersion = $e->fetchAllAssociativeIndexed();
+        $map=['maven_key'=>$data->maven_key];
+        $infoVersion=$informationProjetEntity->selectInformationProjetTypeIndexed($data->mode, $map);
+        if ($snapshot['code']!=200) {
+            return $response->setData(['code' => $snapshot['code'], Response::HTTP_OK]);
+        }
 
         $label = [];
         $dataset = [];
-        foreach ($infoVersion as $key => $value) {
+        foreach ($infoVersion['liste'] as $key => $value) {
             array_push($label, $key);
-            array_push($dataset, $value["total"]);
+            array_push($dataset, $value['total']);
         }
 
         /** On récupère la dernière version et sa date de publication */
-        $sql = "SELECT project_version as projet, date
-            FROM information_projet
-            WHERE maven_key='$mavenKey'
-            ORDER BY date DESC LIMIT 1 ";
-
-        $r = $this->em->getConnection()->prepare($sql)->executeQuery();
-        $infoRelease = $r->fetchAllAssociative();
-
-        /** Contrôle de la valeur des versions release, snapshot et release */
-        if (empty($release[0]['total'])) {
-            $release = 0;
-        } else {
-            $release = $release[0]['total'];
+        $map=['maven_key'=>$data->maven_key];
+        $infoRelease=$informationProjetEntity->selectInformationProjetVersionLast($data->mode, $map);
+        if ($infoRelease['code']!=200) {
+            return $response->setData(['code' => $infoRelease['code'], Response::HTTP_OK]);
         }
 
-        if (empty($snapshot[0]['total'])) {
-            $snapshot = 0;
-        } else {
-            $snapshot = $snapshot[0]['total'];
+        /** Contrôle de la valeur des versions release, snapshot et release */
+        $release = 0;
+        if (!empty($release['nombre'][0]['total'])) {
+            $release = $release['nombre'][0]['total'];
+        }
+
+        $snapshot = 0;
+        if (!empty($snapshot['nombre'][0]['total'])) {
+            $snapshot = $snapshot['nombre'][0]['total'];
         }
 
         return $response->setData(
             [
-        "release" => $release, "snapshot" => $snapshot,  "autre" => $lesAutres,
-        "label" => $label,
-        "dataset" => $dataset, "projet" => $infoRelease[0]["projet"],
-        "date" => $infoRelease[0]["date"], Response::HTTP_OK]
+                'code'=>200, 'mode'=>$data->mode,
+                'release' => $release, 'snapshot' => $snapshot,  'autre' => $lesAutres,
+                'label' => $label,
+                'dataset' => $dataset, 'projet' => $infoRelease['version'][0]['projet'],
+                'date' => $infoRelease['version'][0]['date'],
+                Response::HTTP_OK]
         );
     }
 
     /**
-     * [Description for peintureProjetInformation]
+     * [Description for peintureProjetMesures]
      * Récupère les informations sur le projet : type de version, dernière version,
      * date de l'audit
      *
@@ -244,34 +323,52 @@ class ApiPeintureController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/peinture/projet/information', name: 'peinture_projet_information', methods: ['GET'])]
-    public function peintureProjetInformation(Request $request): response
+    #[Route('/api/peinture/projet/mesures', name: 'peinture_projet_mesures', methods: ['POST'])]
+    public function peintureProjetMesures(Request $request): response
     {
-        $mavenKey = $request->get('mavenKey');
+        /** On instancie l'entityRepository */
+        $mesuresEntity = $this->em->getRepository(Mesures::class);
+
+        /** On décode le body */
+        $data = json_decode($request->getContent());
+
+        /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
 
-        $isValide = $this->isValide($mavenKey);
-        if ($isValide["code"] == 406) {
-            return $response->setData(["message" => static::HTTP_ERROR_406, Response::HTTP_NOT_ACCEPTABLE]);
+        /** On teste si la clé est valide */
+        if ($data === null) {
+            return $response->setData(['data' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'mode')) {
+            return $response->setData(['mode' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'maven_key')) {
+            return $response->setData(['maven_key' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+
+        /** On regarde si le projet existe */
+        $isValide = $this->isValide($data->mode, $data->maven_key);
+        if ($isValide['code'] === 406) {
+            return $response->setData(['code'=>406, 'type'=> 'secondary', 'reference'=> static::$reference,
+                                        'message' => static::$erreur406, Response::HTTP_NOT_ACCEPTABLE]);
         }
 
         /** On récupère la dernière version et sa date de publication */
-        $sql = "SELECT project_name as name, ncloc, lines, coverage, sqale_debt_ratio
-            duplication_density as duplication, tests, issues
-            FROM mesures
-            WHERE maven_key='$mavenKey'
-            ORDER BY date_enregistrement DESC LIMIT 1";
-
-        $r = $this->em->getConnection()->prepare($sql)->executeQuery();
-        $infoProjet = $r->fetchAllAssociative();
+        $map=['maven_key'=>$data->maven_key];
+        $request=$mesuresEntity->selectMesuresVersionLast($data->mode, $map);
+        if ($request['code']!=200) {
+            return $response->setData([
+                'code' => $request['code'],
+                Response::HTTP_OK]);
+        }
 
         return $response->setData([
-            'name' => $infoProjet[0]['name'], 'ncloc' => $infoProjet[0]['ncloc'],
-            'lines' => $infoProjet[0]['lines'],
-            'coverage' => $infoProjet[0]['coverage'],
-            'sqaleDebtRatio' => $infoProjet[0]['sqale_debt_ratio'],
-            'duplication' => $infoProjet[0]['duplication'],
-            'tests' => $infoProjet[0]['tests'], 'issues' => $infoProjet[0]['issues'],
+            'code'=>200,
+            'mode'=>$data->mode,
+            'name' => $request['mesures'][0]['name'], 'ncloc' => $request['mesures'][0]['ncloc'],
+            'lines' => $request['mesures'][0]['lines'],
+            'coverage' => $request['mesures'][0]['coverage'],
+            'sqaleDebtRatio' => $request['mesures'][0]['sqale_debt_ratio'],
+            'duplication' => $request['mesures'][0]['duplication'],
+            'tests' => $request['mesures'][0]['tests'],
+            'issues' => $request['mesures'][0]['issues'],
             Response::HTTP_OK
         ]);
     }
@@ -288,99 +385,115 @@ class ApiPeintureController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/peinture/projet/anomalie', name: 'peinture_projet_anomalie', methods: ['GET'])]
+    #[Route('/api/peinture/projet/anomalie', name: 'peinture_projet_anomalie', methods: ['POST'])]
     public function peintureProjetAnomalie(Request $request): response
     {
-        /** On bind les variables. */
-        $mavenKey = $request->get('mavenKey');
+        /** On instancie l'entityRepository */
+        $anomalieEntity = $this->em->getRepository(Anomalie::class);
+        $notesEntity = $this->em->getRepository(Notes::class);
 
-        /** On créé un objet json. */
+        /** On décode le body */
+        $data = json_decode($request->getContent());
+
+        /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
 
-        $isValide = $this->isValide($mavenKey);
-        if ($isValide["code"] == 406) {
-            return $response->setData(
-                ["message" => static::HTTP_ERROR_406, Response::HTTP_NOT_ACCEPTABLE]
-            );
+        /** On teste si la clé est valide */
+        if ($data === null) {
+            return $response->setData(['data' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'mode')) {
+            return $response->setData(['mode' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'maven_key')) {
+            return $response->setData(['maven_key' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+
+        /** On regarde si le projet existe */
+        $isValide = $this->isValide($data->mode, $data->maven_key);
+        if ($isValide['code'] === 406) {
+            return $response->setData(['code'=>406, 'type'=> 'secondary', 'reference'=> static::$reference,
+                                        'message' => static::$erreur406, Response::HTTP_NOT_ACCEPTABLE]);
         }
 
-        /** On récupère la dernière version et sa date de publication. */
-        $sql = "SELECT * FROM anomalie WHERE maven_key='$mavenKey'";
-        $r = $this->em->getConnection()->prepare($sql)->executeQuery();
-        $anomalies = $r->fetchAllAssociative();
+        /** On récupère la dernière version et sa date de publication */
+        $map=['maven_key'=>$data->maven_key];
+        $anomalie=$anomalieEntity->selectAnomalie($data->mode, $map);
+        if ($anomalie['code']!=200) {
+            return $response->setData(['code' => $anomalie['code'], Response::HTTP_OK]);
+        }
 
         /**
          * Dette : Dette total, répartition de la dette en fonction du type.
          * On récupère la valeur en jour, heure, minute pour l'affichage et la valeur en minutes
          * pour la historique (i.e on fera les comparaison sur cette valeur)
         */
-        $dette = $anomalies[0]["dette"];
-        $detteMinute = $anomalies[0]["dette_minute"];
-        $detteReliability = $anomalies[0]["dette_reliability"];
-        $detteReliabilityMinute = $anomalies[0]["dette_reliability_minute"];
-        $detteVulnerability = $anomalies[0]["dette_vulnerability"];
-        $detteVulnerabilityMinute = $anomalies[0]["dette_vulnerability_minute"];
-        $detteCodeSmell = $anomalies[0]["dette_code_smell"];
-        $detteCodeSmellMinute = $anomalies[0]["dette_code_smell_minute"];
+        $dette = $anomalie['liste'][0]['dette'];
+        $detteMinute = $anomalie['liste'][0]['dette_minute'];
+        $detteReliability = $anomalie['liste'][0]['dette_reliability'];
+        $detteReliabilityMinute = $anomalie['liste'][0]['dette_reliability_minute'];
+        $detteVulnerability = $anomalie['liste'][0]['dette_vulnerability'];
+        $detteVulnerabilityMinute = $anomalie['liste'][0]['dette_vulnerability_minute'];
+        $detteCodeSmell = $anomalie['liste'][0]['dette_code_smell'];
+        $detteCodeSmellMinute = $anomalie['liste'][0]['dette_code_smell_minute'];
 
         /** Types */
-        $typeBug = $anomalies[0]["bug"];
-        $typeVulnerability = $anomalies[0]["vulnerability"];
-        $typeCodeSmell = $anomalies[0]["code_smell"];
+        $typeBug = $anomalie['liste'][0]['bug'];
+        $typeVulnerability = $anomalie['liste'][0]['vulnerability'];
+        $typeCodeSmell = $anomalie['liste'][0]['code_smell'];
 
         /** Severity */
-        $severityBlocker = $anomalies[0]["blocker"];
-        $severityCritical = $anomalies[0]["critical"];
-        $severityMajor = $anomalies[0]["major"];
-        $severityInfo = $anomalies[0]["info"];
-        $severityMinor = $anomalies[0]["minor"];
+        $severityBlocker = $anomalie['liste'][0]['blocker'];
+        $severityCritical = $anomalie['liste'][0]['critical'];
+        $severityMajor = $anomalie['liste'][0]['major'];
+        $severityInfo = $anomalie['liste'][0]['info'];
+        $severityMinor = $anomalie['liste'][0]['minor'];
 
         /** Module */
-        $frontend = $anomalies[0]["frontend"];
-        $backend = $anomalies[0]["backend"];
-        $autre = $anomalies[0]["autre"];
+        $frontend = $anomalie['liste'][0]['frontend'];
+        $backend = $anomalie['liste'][0]['backend'];
+        $autre = $anomalie['liste'][0]['autre'];
 
         /* On récupère les notes (A-F) */
-        $types = ["reliability", "security", "sqale"];
+        $types = ['reliability', 'security', 'sqale'];
         foreach ($types as $type) {
-            $sql = "SELECT type, value FROM notes
-                WHERE maven_key='$mavenKey' AND type='$type'";
-
-            $r = $this->em->getConnection()->prepare($sql)->executeQuery();
-            $note = $r->fetchAllAssociative();
-
-            if ($type == "reliability") {
-                $noteReliability = $note[0]["value"];
+            $map=['maven_key'=>$data->maven_key, 'type'=>$type];
+            $note=$notesEntity->selectNotesMavenType($data->mode, $map);
+            if ($note['code']!=200) {
+                return $response->setData([
+                    'code' => $note['code'],
+                    Response::HTTP_OK]);
             }
-            if ($type == "security") {
-                $noteSecurity = $note[0]["value"];
+
+            if ($type == 'reliability') {
+                $noteReliability = $note['liste'][0]['value'];
             }
-            if ($type == "sqale") {
-                $noteSqale = $note[0]["value"];
+            if ($type == 'security') {
+                $noteSecurity = $note['liste'][0]['value'];
+            }
+            if ($type == 'sqale') {
+                $noteSqale = $note['liste'][0]['value'];
             }
         }
 
         return $response->setData([
-            "dette" => $dette,
-            "detteReliability" => $detteReliability,
-            "detteVulnerability" => $detteVulnerability,
-            "detteCodeSmell" => $detteCodeSmell,
-            "detteMinute" => $detteMinute,
-            "detteReliabilityMinute" => $detteReliabilityMinute,
-            "detteVulnerabilityMinute" => $detteVulnerabilityMinute,
-            "detteCodeSmellMinute" => $detteCodeSmellMinute,
-            "bug" => $typeBug,
-            "vulnerability" => $typeVulnerability,
-            "codeSmell" => $typeCodeSmell,
-            "blocker" => $severityBlocker,
-            "critical" => $severityCritical,
-            "info" => $severityInfo,
-            "major" => $severityMajor,
-            "minor" => $severityMinor,
-            "frontend" => $frontend, "backend" => $backend, "autre" => $autre,
-            "noteReliability" => $noteReliability,
-            "noteSecurity" => $noteSecurity,
-            "noteSqale" => $noteSqale, Response::HTTP_OK
+            'code'=>200,
+            'mode'=>$data->mode,
+            'dette' => $dette,
+            'detteReliability' => $detteReliability,
+            'detteVulnerability' => $detteVulnerability,
+            'detteCodeSmell' => $detteCodeSmell,
+            'detteMinute' => $detteMinute,
+            'detteReliabilityMinute' => $detteReliabilityMinute,
+            'detteVulnerabilityMinute' => $detteVulnerabilityMinute,
+            'detteCodeSmellMinute' => $detteCodeSmellMinute,
+            'bug' => $typeBug, 'vulnerability' => $typeVulnerability, 'codeSmell' => $typeCodeSmell,
+            'blocker' => $severityBlocker,
+            'critical' => $severityCritical,
+            'info' => $severityInfo,
+            'major' => $severityMajor,
+            'minor' => $severityMinor,
+            'frontend' => $frontend, 'backend' => $backend, 'autre' => $autre,
+            'noteReliability' => $noteReliability,
+            'noteSecurity' => $noteSecurity,
+            'noteSqale' => $noteSqale, Response::HTTP_OK
         ]);
     }
 
@@ -396,44 +509,63 @@ class ApiPeintureController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/peinture/projet/anomalie/details', name: 'peinture_projet_anomalie_details', methods: ['GET'])]
+    #[Route('/api/peinture/projet/anomalie/details', name: 'peinture_projet_anomalie_details', methods: ['POST'])]
     public function peintureProjetAnomalieDetails(Request $request): response
     {
-        $mavenKey = $request->get('mavenKey');
+        /** On instancie l'entityRepository */
+        $anomalieDetailsEntity = $this->em->getRepository(AnomalieDetails::class);
+
+        /** On décode le body */
+        $data = json_decode($request->getContent());
+
+        /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
 
-        $isValide = $this->isValide($mavenKey);
-        if ($isValide["code"] == 406) {
-            return $response->setData(
-                ["message" => static::HTTP_ERROR_406, Response::HTTP_NOT_ACCEPTABLE]
-            );
+        /** On teste si la clé est valide */
+        if ($data === null) {
+            return $response->setData(['data' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'mode')) {
+            return $response->setData(['mode' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'maven_key')) {
+            return $response->setData(['maven_key' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+
+        /** On regarde si le projet existe */
+        $isValide = $this->isValide($data->mode, $data->maven_key);
+        if ($isValide['code'] === 406) {
+            return $response->setData(['code'=>406, 'type'=> 'secondary', 'reference'=> static::$reference,
+                                        'message' => static::$erreur406, Response::HTTP_NOT_ACCEPTABLE]);
         }
 
         /** On récupère les données pour le projet */
-        $sql = "SELECT * FROM anomalie_details WHERE maven_key='$mavenKey'";
-        $r = $this->em->getConnection()->prepare($sql)->executeQuery();
-        $details = $r->fetchAllAssociative();
+        $map=['maven_key'=>$data->maven_key];
+        $details=$anomalieDetailsEntity->selectAnomalieDetailsMavenKey($data->mode, $map);
+        if ($details['code']!=200) {
+            return $response->setData([
+                'code' => $details['code'],
+                Response::HTTP_OK]);
+        }
 
-        $bugBlocker = $details[0]["bug_blocker"];
-        $bugCritical = $details[0]["bug_critical"];
-        $bugMajor = $details[0]["bug_major"];
-        $bugMinor = $details[0]["bug_minor"];
-        $bugInfo = $details[0]["bug_info"];
+        $bugBlocker = $details['liste'][0]['bug_blocker'];
+        $bugCritical = $details['liste'][0]['bug_critical'];
+        $bugMajor = $details['liste'][0]['bug_major'];
+        $bugMinor = $details['liste'][0]['bug_minor'];
+        $bugInfo = $details['liste'][0]['bug_info'];
 
-        $vulnerabilityBlocker = $details[0]["vulnerability_blocker"];
-        $vulnerabilityCritical = $details[0]["vulnerability_critical"];
-        $vulnerabilityMajor = $details[0]["vulnerability_major"];
-        $vulnerabilityMinor = $details[0]["vulnerability_minor"];
-        $vulnerabilityInfo = $details[0]["vulnerability_info"];
+        $vulnerabilityBlocker = $details['liste'][0]['vulnerability_blocker'];
+        $vulnerabilityCritical = $details['liste'][0]['vulnerability_critical'];
+        $vulnerabilityMajor = $details['liste'][0]['vulnerability_major'];
+        $vulnerabilityMinor = $details['liste'][0]['vulnerability_minor'];
+        $vulnerabilityInfo = $details['liste'][0]['vulnerability_info'];
 
-        $codeSmellBlocker = $details[0]["code_smell_blocker"];
-        $codeSmellCritical = $details[0]["code_smell_critical"];
-        $codeSmellMajor = $details[0]["code_smell_major"];
-        $codeSmellMinor = $details[0]["code_smell_minor"];
-        $codeSmellInfo = $details[0]["code_smell_info"];
+        $codeSmellBlocker = $details['liste'][0]['code_smell_blocker'];
+        $codeSmellCritical = $details['liste'][0]['code_smell_critical'];
+        $codeSmellMajor = $details['liste'][0]['code_smell_major'];
+        $codeSmellMinor = $details['liste'][0]['code_smell_minor'];
+        $codeSmellInfo = $details['liste'][0]['code_smell_info'];
 
         return $response->setData([
-            "message" => 200,
+            "mode"=>$data->mode,
+            "code" => 200,
             "bugBlocker" => $bugBlocker,
             "bugCritical" => $bugCritical,
             "bugMajor" => $bugMajor,
@@ -465,61 +597,59 @@ class ApiPeintureController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/peinture/projet/hotspots', name: 'peinture_projet_hotspots', methods: ['GET'])]
+    #[Route('/api/peinture/projet/hotspots', name: 'peinture_projet_hotspots', methods: ['POST'])]
     public function peintureProjetHotspots(Request $request): response
     {
-        /** On Bind les variables. */
-        $mavenKey = $request->get('mavenKey');
+        /** On instancie l'entityRepository */
+        $hotspotsEntity = $this->em->getRepository(Hotspots::class);
 
-        /** On créé un objet JSON. */
+        /** On décode le body */
+        $data = json_decode($request->getContent());
+
+        /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
 
-        /** On envoi un code 406 si aucun éléments n'est trouvé. */
-        $isValide = $this->isValide($mavenKey);
-        if ($isValide["code"] == 406) {
-            return $response->setData(
-                ["message" => static::HTTP_ERROR_406, Response::HTTP_NOT_ACCEPTABLE]
-            );
+        /** On teste si la clé est valide */
+        if ($data === null) {
+            return $response->setData(['data' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'mode')) {
+            return $response->setData(['mode' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'maven_key')) {
+            return $response->setData(['maven_key' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+
+        /** On regarde si le projet existe */
+        $isValide = $this->isValide($data->mode, $data->maven_key);
+        if ($isValide['code'] === 406) {
+            return $response->setData(['code'=>406, 'type'=> 'secondary', 'reference'=> static::$reference,
+                                        'message' => static::$erreur406, Response::HTTP_NOT_ACCEPTABLE]);
         }
 
-        /** On le nombre de hotspot au statut TO_REVIEW */
-        $sql = "SELECT COUNT(*) as to_review FROM hotspots WHERE maven_key='$mavenKey' AND status='TO_REVIEW'";
-        $r = $this->em->getConnection()->prepare($sql)->executeQuery();
-        $toReview = $r->fetchAllAssociative();
+        /** On compte le nombre de hotspot au statut TO_REVIEW */
+        $map=['maven_key'=>$data->maven_key, 'status'=>'TO_REVIEW'];
+        $toReview=$hotspotsEntity->countHotspotsStatus($data->mode, $map);
+        if ($toReview['code']!=200) {
+            return $response->setData(['code' => $toReview['code'], Response::HTTP_OK]);
+        }
 
-        /** On le nombre de hotspot au statut REVIEWED */
-        $sql = "SELECT COUNT(*) as reviewed FROM hotspots WHERE maven_key='$mavenKey' AND status='REVIEWED'";
-        $r = $this->em->getConnection()->prepare($sql)->executeQuery();
-        $reviewed = $r->fetchAllAssociative();
+        /** On compte le nombre de hotspot au statut REVIEWED */
+        $map=['maven_key'=>$data->maven_key, 'status'=>'REVIEWED'];
+        $reviewed=$hotspotsEntity->countHotspotsStatus($data->mode, $map);
+        if ($reviewed['code']!=200) {
+            return $response->setData(['code' => $reviewed['code'], Response::HTTP_OK]);
+        }
 
         /** On calul la note sonar */
-        if (empty($toReview[0]["to_review"])) {
+        if (empty($toReview['nombre'][0]['to_review'])) {
             $note = "A";
         } else {
-            $ratio = intval($reviewed[0]["reviewed"]) * 100 / intval($toReview[0]["to_review"]) +
-                intval($reviewed[0]["reviewed"]);
-            if ($ratio >= 80) {
-                $note = "A";
-            }
-            if ($ratio >= 70 && $ratio < 80) {
-                $note = "B";
-            }
-            if ($ratio >= 50 && $ratio < 70) {
-                $note = "C";
-            }
-            if ($ratio >= 30 && $ratio < 50) {
-                $note = "D";
-            }
-            if ($ratio < 30) {
-                $note = "E";
-            }
+            $note=static::calculNoteHospot($toReview['nombre'][0]['to_review'], $reviewed['nombre'][0]['reviewed']);
         }
 
-        return $response->setData(["note" => $note, Response::HTTP_OK]);
+        return $response->setData(['code'=>200, 'mode'=>$data->mode, 'note' => $note, Response::HTTP_OK]);
     }
 
     /**
-     * [Description for peintureProjetHotspotDetails]
+     * [Description for peintureProjetHotspotsDetails]
      * Récupère le détails des hotspots du projet
      *
      * @param Request $request
@@ -530,50 +660,62 @@ class ApiPeintureController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/peinture/projet/hotspot/details', name: 'peinture_projet_hotspot_details', methods: ['GET'])]
-    public function peintureProjetHotspotDetails(Request $request): response
+    #[Route('/api/peinture/projet/hotspots/details', name: 'peinture_projet_hotspots_details', methods: ['POST'])]
+    public function peintureProjetHotspotsDetails(Request $request): response
     {
-        /** On bind  les variables. */
-        $mavenKey = $request->get('mavenKey');
+        /** On instancie l'entityRepository */
+        $hotspotsEntity = $this->em->getRepository(Hotspots::class);
+
+        /** On décode le body */
+        $data = json_decode($request->getContent());
+
+        /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
 
-        $isValide = $this->isValide($mavenKey);
-        if ($isValide["code"] == 406) {
-            return $response->setData(
-                ["message" => static::HTTP_ERROR_406, Response::HTTP_NOT_ACCEPTABLE]
-            );
+        /** On teste si la clé est valide */
+        if ($data === null) {
+            return $response->setData(['data' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'mode')) {
+            return $response->setData(['mode' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'maven_key')) {
+            return $response->setData(['maven_key' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+
+        /** On regarde si le projet existe */
+        $isValide = $this->isValide($data->mode, $data->maven_key);
+        if ($isValide['code'] === 406) {
+            return $response->setData(['code'=>406, 'type'=> 'secondary', 'reference'=> static::$reference,
+                                        'message' => static::$erreur406, Response::HTTP_NOT_ACCEPTABLE]);
         }
 
-        $high = $medium = $low = 0;
+        $total = $high = $medium = $low = 0;
         /** On récupère la dernière version et sa date de publication. */
-        $sql = "SELECT niveau, count(*) as hotspot
-            FROM hotspots
-            WHERE maven_key='$mavenKey'
-            AND status='TO_REVIEW'
-            GROUP BY niveau";
-        $r = $this->em->getConnection()->prepare($sql)->executeQuery();
-        $niveaux = $r->fetchAllAssociative();
-
-        foreach ($niveaux as $niveau) {
-            if ($niveau["niveau"] == "1") {
-                $high = $niveau["hotspot"];
-            }
-            if ($niveau["niveau"] == "2") {
-                $medium = $niveau["hotspot"];
-            }
-            if ($niveau["niveau"] == "3") {
-                $low = $niveau["hotspot"];
-            }
+        $map=['maven_key'=>$data->maven_key, 'status'=>'REVIEWED'];
+        $niveaux=$hotspotsEntity->selectHotspotsByNiveau($data->mode, $map);
+        if ($niveaux['code']!=200) {
+            return $response->setData(['code' => $niveaux['code'], Response::HTTP_OK]);
         }
-        $total = intval($high) + intval($medium) + intval($low);
+        if (!$niveaux){
+            foreach ($niveaux as $niveau) {
+                if ($niveau['liste']['niveau'] == '1') {
+                    $high = $niveau['liste']['hotspot'];
+                }
+                if ($niveau['liste']['niveau'] == '2') {
+                    $medium = $niveau['liste']['hotspot'];
+                }
+                if ($niveau['liste']['niveau'] == '3') {
+                    $low = $niveau['liste']['hotspot'];
+                }
+            }
+            $total = intval($high) + intval($medium) + intval($low);
+        }
         return $response->setData(
-            ["code" => 200, "total" => $total, "high" => $high,
-            "medium" => $medium, "low" => $low, Response::HTTP_OK]
+            ['code' => 200, 'mode'=>$data->mode, 'total' => $total, 'high' => $high,
+            'medium' => $medium, 'low' => $low, Response::HTTP_OK]
         );
     }
 
     /**
-     * [Description for peintureProjetNosonarDetails]
+     * [Description for peintureProjetNosonar]
      * Récupère les exclusions nosonar et suppressWarning pour Java
      *
      * @param Request $request
@@ -584,50 +726,59 @@ class ApiPeintureController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/peinture/projet/nosonar/details', name: 'peinture_projet_nosonar_details', methods: ['GET'])]
+    #[Route('/api/peinture/projet/nosonar', name: 'peinture_projet_nosonar', methods: ['POST'])]
     public function peintureProjetNosonarDetails(Request $request): response
     {
+        /** On instancie l'entityRepository */
+        $noSonarEntity = $this->em->getRepository(NoSonar::class);
 
-        /** On créé un objet response */
+        /** On décode le body */
+        $data = json_decode($request->getContent());
+
+        /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
 
-        /** On bind les variables. */
-        $mavenKey = $request->get('mavenKey');
-        $mode = $request->get('mode');
-
         /** On teste si la clé est valide */
-        if ($mavenKey === "null" && $mode === "TEST") {
-            return $response->setData([
-                "mode" => $mode, "mavenKey" => $mavenKey,
-                "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+        if ($data === null) {
+            return $response->setData(['data' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'mode')) {
+            return $response->setData(['mode' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'maven_key')) {
+            return $response->setData(['maven_key' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+
+        /** On regarde si le projet existe */
+        $isValide = $this->isValide($data->mode, $data->maven_key);
+        if ($isValide['code'] === 406) {
+            return $response->setData(['code'=>406, 'type'=> 'secondary', 'reference'=> static::$reference,
+                                        'message' => static::$erreur406, Response::HTTP_NOT_ACCEPTABLE]);
+        }
+        /** On récupère la liste des règles et leur nombre pour un projet. */
+        $map=['maven_key'=>$data->maven_key];
+        $rules=$noSonarEntity->selectNoSonarRuleGroupByRule($data->mode, $map);
+        if ($rules['code']!=200) {
+            return $response->setData(['code' => $rules['code'], Response::HTTP_OK]);
         }
 
-        $sql = "SELECT rule, count(*) as total FROM no_sonar WHERE maven_key='"
-            . $mavenKey . "' GROUP BY rule";
-        $r = $this->em->getConnection()->prepare($sql)->executeQuery();
-        $rules = $r->fetchAllAssociative();
-
         $sonar1309 = $nosonar = $total = 0;
-
-        if (empty($rules) === false) {
-            foreach ($rules as $rule) {
-                if ($rule["rule"] == "java:S1309") {
-                    $sonar1309 = $rule["total"];
+        if (!empty($rules)) {
+            foreach ($rules['liste'] as $rule) {
+                if ($rule['rule'] == 'java:S1309') {
+                    $sonar1309 = $rule['total'];
                 }
-                if ($rule["rule"] == "java:NoSonar") {
-                    $nosonar = $rule["total"];
+                if ($rule['rule'] == 'java:NoSonar') {
+                    $nosonar = $rule['total'];
                 }
             }
             $total = intval($sonar1309, 10) + intval($nosonar, 10);
         }
 
         return $response->setData(
-            ["total" => $total, "s1309" => $sonar1309, "nosonar" => $nosonar, Response::HTTP_OK]
+            ['code'=>200, 'mode'=>$data->mode, 'total' => $total, 's1309' => $sonar1309, 'nosonar' => $nosonar, Response::HTTP_OK]
         );
     }
 
     /**
-       * [Description for peintureProjetTodoDetails]
+       * [Description for peintureProjetTodo]
        * Récupère les tags to do pour : java, js, ts, html et xml
        *
        * @param Request $request
@@ -638,59 +789,74 @@ class ApiPeintureController extends AbstractController
        * @author    Laurent HADJADJ <laurent_h@me.com>
        * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
        */
-    #[Route('/api/peinture/projet/todo/details', name: 'peinture_projet_todo_details', methods: ['GET'])]
-    public function peintureProjetTodoDetails(Request $request): response
+    #[Route('/api/peinture/projet/todo', name: 'peinture_projet_todo', methods: ['POST'])]
+    public function peintureProjetTodo(Request $request): response
     {
-        /** On créé un objet response */
+        /** On instancie l'entityRepository */
+        $todoEntity = $this->em->getRepository(Todo::class);
+
+        /** On décode le body */
+        $data = json_decode($request->getContent());
+
+        /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
 
-        /** On bind les variables. */
-        $mavenKey = $request->get('mavenKey');
-        $mode = $request->get('mode');
-
         /** On teste si la clé est valide */
-        if ($mavenKey === "null" && $mode === "TEST") {
-            return $response->setData([
-                "mode" => $mode, "mavenKey" => $mavenKey,
-                "message" => static::$erreurMavenKey, Response::HTTP_BAD_REQUEST]);
+        if ($data === null) {
+            return $response->setData(['data' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'mode')) {
+            return $response->setData(['mode' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+        if (!property_exists($data, 'maven_key')) {
+            return $response->setData(['maven_key' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+
+        /** On regarde si le projet existe */
+        $isValide = $this->isValide($data->mode, $data->maven_key);
+        if ($isValide['code'] === 406) {
+            return $response->setData(['code'=>406, 'type'=> 'secondary', 'reference'=> static::$reference,
+                                        'message' => static::$erreur406, Response::HTTP_NOT_ACCEPTABLE]);
         }
 
-        $sql = "SELECT rule, count(*) as total FROM todo WHERE maven_key='$mavenKey' GROUP BY rule";
-        $r = $this->em->getConnection()->prepare($sql)->executeQuery();
-        $rules = $r->fetchAllAssociative();
+        /** On récupère la liste des todo pour le projet. */
+        $map=['maven_key'=>$data->maven_key];
+        $rules=$todoEntity->selectTodoRuleGroupByRule($data->mode, $map);
+        if ($rules['code']!=200) {
+            return $response->setData(['code' => $rules['code'], Response::HTTP_OK]);
+        }
+
         $todo = $java = $javascript = $typescript = $html = $xml = 0;
 
-        if (empty($rules) === false) {
+        if (!empty($rules)) {
             /** On récupère le nombre total de To do par langage */
-            foreach ($rules as $rule) {
-                if ($rule["rule"] == "java:S1135") {
-                    $java = $rule["total"];
+            foreach ($rules['liste'] as $rule) {
+                if ($rule['rule'] == 'java:S1135') {
+                    $java = $rule['total'];
                 }
-                if ($rule["rule"] == "javascript:S1135") {
-                    $javascript = $rule["total"];
+                if ($rule['rule'] == 'javascript:S1135') {
+                    $javascript = $rule['total'];
                 }
-                if ($rule["rule"] == "typescript:S1135") {
-                    $typescript = $rule["total"];
+                if ($rule['rule'] == 'typescript:S1135') {
+                    $typescript = $rule['total'];
                 }
-                if ($rule["rule"] == "Web:S1135") {
-                    $html = $rule["total"];
+                if ($rule['rule'] == 'Web:S1135') {
+                    $html = $rule['total'];
                 }
-                if ($rule["rule"] == "xml:S1135") {
-                    $xml = $rule["total"];
+                if ($rule['rule'] == 'xml:S1135') {
+                    $xml = $rule['total'];
                 }
             }
             $todo = intval($java, 10) + intval($javascript, 10) + intval($typescript, 10) + intval($html, 10) + intval($xml, 10);
         }
 
         /** On récupère la liste détaillée. */
-        $sql = "SELECT rule, component, line FROM todo WHERE maven_key='$mavenKey' ORDER BY rule";
-        $r = $this->em->getConnection()->prepare($sql)->executeQuery();
-        $details = $r->fetchAllAssociative();
+        $map=['maven_key'=>$data->maven_key];
+        $details=$todoEntity->selectTodoComponentOrderByRule($data->mode, $map);
+        if ($details['code']!=200) {
+            return $response->setData(['code' => $details['code'], Response::HTTP_OK]);
+        }
 
         return $response->setData(
-            ["todo" => $todo, "java" => $java, "javascript" => $javascript,
-        "typescript" => $typescript, "html" => $html,
-        "xml" => $xml, "details" => $details, Response::HTTP_OK]
+            ['code'=>200, 'mode'=>$data->mode, 'todo' => $todo, 'java' => $java, 'javascript' => $javascript,
+                'typescript' => $typescript, 'html' => $html, 'xml' => $xml, "details" => $details, Response::HTTP_OK]
         );
     }
 
