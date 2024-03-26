@@ -30,11 +30,179 @@ class InformationProjetRepository extends ServiceEntityRepository
     }
 
     /**
-     * [Description for selectInformationProjetversion]
-     * Remonte la liste des versons pour un projet.
+     * [Description for selectInformationProjetisValide]
+     * Vérifie si le projet existe.
      *
-     * @param mixed $mode
-     * @param mixed $map
+     * @param string $mode
+     * @param array $map
+     *
+     * @return array
+     *
+     * Created at: 16/03/2024 21:06:43 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function selectInformationProjetisValide($mode, $map):array
+    {
+        $sql = "SELECT *
+                FROM information_projet
+                WHERE maven_key=:maven_key LIMIT 1";
+
+        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+        $conn->bindValue(':maven_key', $map['maven_key']);
+        try {
+            if ($mode !== 'TEST') {
+                $exec=$conn->executeQuery();
+                $isValide=$exec->fetchAllAssociative();
+            } else {
+                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+            }
+        } catch (\Doctrine\DBAL\Exception $e) {
+            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+        }
+        return ['mode'=>$mode, 'code'=>200, 'is_valide'=>$isValide, 'erreur'=>''];
+    }
+
+    /**
+     * [Description for countInformationProjetAllType]
+     * Compte le nombre de version de tgype RELEASE, SNAPHOT ou AUTRE
+     *
+     * @param string $mode
+     * @param array $map
+     *
+     * @return array
+     *
+     * Created at: 16/03/2024 21:43:04 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function countInformationProjetAllType($mode, $map):array
+    {
+        $sql = "SELECT COUNT(type) AS 'total'
+                FROM information_projet
+                WHERE maven_key=:maven_key";
+        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+        $conn->bindValue(':maven_key', $map['maven_key']);
+        try {
+            if ($mode !== 'TEST') {
+                $exec=$conn->executeQuery();
+                $nombre=$exec->fetchAllAssociative();
+            } else {
+                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+            }
+        } catch (\Doctrine\DBAL\Exception $e) {
+            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+        }
+        return ['mode'=>$mode, 'code'=>200, 'nombre'=>$nombre, 'erreur'=>''];
+    }
+
+    /**
+     * [Description for countInformationProjetType]
+     * On retourne le nombre de version pour un type donné.
+     *
+     * @param string $mode
+     * @param array $map
+     *
+     * @return array
+     *
+     * Created at: 17/03/2024 22:18:09 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function countInformationProjetType($mode, $map):array
+    {
+        $sql = "SELECT type, COUNT(type) AS 'total'
+                FROM information_projet
+                WHERE maven_key=:maven_key AND type=:type";
+        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+        $conn->bindValue(':maven_key', $map['maven_key']);
+        $conn->bindValue(':type', $map['type']);
+        try {
+            if ($mode !== 'TEST') {
+                $exec=$conn->executeQuery();
+                $nombre=$exec->fetchAllAssociative();
+            } else {
+                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+            }
+        } catch (\Doctrine\DBAL\Exception $e) {
+            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+        }
+        return ['mode'=>$mode, 'code'=>200, 'nombre'=>$nombre, 'erreur'=>''];
+    }
+
+    /**
+     * [Description for selectInformationProjetType]
+     *
+     * @param string $mode
+     * @param array $map
+     *
+     * @return array
+     *
+     * Created at: 17/03/2024 22:27:26 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function selectInformationProjetTypeIndexed($mode, $map):array
+    {
+        $sql = "SELECT type, COUNT(type) AS 'total'
+                FROM information_projet
+                WHERE maven_key=:maven_key
+                GROUP BY type";
+        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+        $conn->bindValue(':maven_key', $map['maven_key']);
+        try {
+            if ($mode !== 'TEST') {
+                $exec=$conn->executeQuery();
+                $liste=$exec->fetchAllAssociativeIndexed();
+            } else {
+                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+            }
+        } catch (\Doctrine\DBAL\Exception $e) {
+            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+        }
+        return ['mode'=>$mode, 'code'=>200, 'liste'=>$liste, 'erreur'=>''];
+    }
+
+    /**
+     * [Description for selectInformationProjetVersionLast]
+     * Retourne la version du dernier projet.
+     *
+     * @param string $mode
+     * @param array $map
+     *
+     * @return array
+     *
+     * Created at: 17/03/2024 22:34:34 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function selectInformationProjetVersionLast($mode, $map):array
+    {
+        $sql = "SELECT project_version as projet, date
+                FROM information_projet
+                WHERE maven_key=:maven_key
+                ORDER BY date DESC LIMIT 1";
+        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+        $conn->bindValue(':maven_key', $map['maven_key']);
+        try {
+            if ($mode !== 'TEST') {
+                $exec=$conn->executeQuery();
+                $liste=$exec->fetchAllAssociative();
+            } else {
+                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+            }
+        } catch (\Doctrine\DBAL\Exception $e) {
+            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+        }
+        return ['mode'=>$mode, 'code'=>200, 'version'=>$liste, 'erreur'=>''];
+    }
+
+    /**
+     * [Description for selectInformationProjetversion]
+     * Retourne la liste des versions pour un projet.
+     *
+     * @param string $mode
+     * @param array $map
      *
      * @return array
      *
@@ -52,14 +220,15 @@ class InformationProjetRepository extends ServiceEntityRepository
         $conn->bindValue(':maven_key', $map['maven_key']);
         try {
             if ($mode !== 'TEST') {
-                $versions=$conn->executeQuery()->fetchAllAssociative();
+                $exec=$conn->executeQuery();
+                $liste=$exec->fetchAllAssociative();
             } else {
                 return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
             }
         } catch (\Doctrine\DBAL\Exception $e) {
             return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
         }
-        return ['mode'=>$mode, 'code'=>200, 'versions'=>$versions, 'erreur'=>''];
+        return ['mode'=>$mode, 'code'=>200, 'versions'=>$liste, 'erreur'=>''];
     }
 
     /**
@@ -86,14 +255,15 @@ class InformationProjetRepository extends ServiceEntityRepository
         $conn->bindValue(':maven_key', $map['maven_key']);
         try {
             if ($mode !== 'TEST') {
-                $info=$conn->executeQuery()->fetchAllAssociative();
+                $exec=$conn->executeQuery();
+                $liste=$exec->fetchAllAssociative();
             } else {
                 return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
             }
         } catch (\Doctrine\DBAL\Exception $e) {
             return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
         }
-        return ['mode'=>$mode, 'code'=>200, 'info'=>$info, 'erreur'=>''];
+        return ['mode'=>$mode, 'code'=>200, 'info'=>$liste, 'erreur'=>''];
     }
 
     /**
@@ -127,6 +297,5 @@ class InformationProjetRepository extends ServiceEntityRepository
         }
         return ['mode'=>$mode, 'code'=>200, 'erreur'=>''];
     }
-
 
 }

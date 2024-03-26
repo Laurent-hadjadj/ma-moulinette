@@ -95,4 +95,27 @@ class NotesRepository extends ServiceEntityRepository
         }
         return ['mode'=>$mode, 'code'=>200, 'erreur'=>''];
     }
+
+    public function selectNotesMavenType($mode,$map):array
+    {
+        $sql = "SELECT type, value
+                FROM notes
+                WHERE maven_key=:maven_key AND type=:type
+                ORDER BY date_enregistrement DESC LIMIT 1";
+        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+        $conn->bindValue(':maven_key', $map['maven_key']);
+        $conn->bindValue(':type', $map['type']);
+        try {
+                if ($mode !== 'TEST') {
+                    $exec=$conn->executeQuery();
+                    $liste=$exec->fetchAllAssociative();
+                } else {
+                    return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+                }
+        } catch (\Doctrine\DBAL\Exception $e) {
+            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+        }
+        return ['mode'=>$mode, 'code'=>200, 'liste'=>$liste, 'erreur'=>''];
+    }
+
 }
