@@ -112,9 +112,9 @@ class TodoRepository extends ServiceEntityRepository
 	public function selectTodoComponentOrderByRule($mode,$map):array
 	{
 		$sql = "SELECT rule, component, line
-				FROM todo
-				WHERE maven_key=:maven_key
-				ORDER BY rule";
+						FROM todo
+						WHERE maven_key=:maven_key
+						ORDER BY rule";
 		$conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
 		$conn->bindValue(':maven_key', $map['maven_key']);
 		try {
