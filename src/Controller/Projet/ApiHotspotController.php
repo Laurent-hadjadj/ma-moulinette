@@ -29,7 +29,7 @@ use DateTimeZone;
 use App\Entity\Main\Hotspots;
 use App\Entity\Main\HotspotOwasp;
 use App\Entity\Main\HotspotDetails;
-
+use App\Entity\Main\InformationProjet;
 use Doctrine\ORM\EntityManagerInterface;
 
 /** Logger */
@@ -37,7 +37,6 @@ use Psr\Log\LoggerInterface;
 
 /** Client HTTP */
 use App\Service\Client;
-use App\Tests\Entity\Main\HotspotsTest;
 
 class ApiHotspotController extends AbstractController
 {
@@ -278,6 +277,7 @@ class ApiHotspotController extends AbstractController
     {
         /** On instancie l'EntityRepository */
         $hotspotOwasp = $this->em->getRepository(HotspotOwasp::class);
+        $informationProjetEntity = $this->em->getRepository(InformationProjet::class);
 
         /** On décode le body */
         $data = json_decode($request->getContent());
@@ -354,10 +354,27 @@ class ApiHotspotController extends AbstractController
                 }
         }
 
+        /** On récupère dans la table information_projet la version et la date du projet la plus récente. */
+        $map=['maven_key'=>$data->maven_key];
+        $liste=$informationProjetEntity->selectInformationProjetProjectVersion($data->mode, $map);
+        if ($liste['code']!=200) {
+            return $response->setData(['mode' => $data->mode, 'code' => $liste['code'], 'message'=>$liste['erreur'], Response::HTTP_OK]);
+        }
+
+        if (!$liste['info']) {
+            return $response->setData([ 'mode' => $data->mode , 'code' => 404,
+                'reference' => static::$reference, 'message' => static::$erreur404,
+                Response::HTTP_OK]);
+        }
+
         /** On créé un objet Date. */
         $dateEnregistement = new DateTime();
         $dateEnregistement->setTimezone(new DateTimeZone(static::$europeParis));
         $niveau = 0;
+
+        /** On converti la date de la version en dateTime */
+        $dateVersion= new DateTime($liste['info'][0]['date']);
+        $dateVersion->setTimezone(new DateTimeZone(static::$europeParis));
 
         /** On fleche la vulnérabilité */
         if ($result['paging']['total'] != 0) {
@@ -366,6 +383,8 @@ class ApiHotspotController extends AbstractController
 
                 $hotspot = new  HotspotOwasp();
                 $hotspot->setMavenKey($data->maven_key);
+                $hotspot->setVersion($liste['info'][0]['project_version']);
+                $hotspot->setDateVersion($dateVersion);
                 $hotspot->setMenace($data->owasp);
                 $hotspot->setProbability($value['vulnerabilityProbability']);
                 $hotspot->setStatus($value['status']);
@@ -381,8 +400,8 @@ class ApiHotspotController extends AbstractController
             $hotspot = new  HotspotOwasp();
             $hotspot->setMavenKey($data->maven_key);
             $hotspot->setMenace($data->owasp);
-            $hotspot->setProbability('NC');
-            $hotspot->setStatus('NC');
+            $hotspot->setProbability('NONE');
+            $hotspot->setStatus('NONE');
             $hotspot->setNiveau('0');
             $hotspot->setDateEnregistrement($dateEnregistement);
             $this->em->persist($hotspot);
