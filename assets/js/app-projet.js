@@ -222,30 +222,32 @@ const match=function(params, data) {
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const selectProjet=async function() {
+  const data = { mode: 'null' };
   const options = {
-    url: `${serveur()}/api/liste/projet`, type: 'POST',
-          dataType: 'json', contentType };
-
-  const data = await $.ajax(options);
-  if (t.code===http_406 || t.code===http_500){
-    afficheMessage(t)
-    sessionStorage.setItem('liste des projet autorisée', "L'utilisateur n'est pas rattaché à une équipe ou pas de projet.");
-    return;
-  }
-  if (t.code===http_200){
-    log(' - INFO : Je construit la liste des projets autorisées.');
-    $('.js-projet').select2({
-      matcher: match,
-      placeholder: 'Cliquez pour ouvrir la liste',
-      allowClear: true,
-      width: '100%',
-      minimumInputLength: 2,
-      minimumResultsForSearch: 20,
-      language: 'fr',
-      data: data.projet
-    });
-    $('.analyse').removeClass('hide');
-  }
+    url: `${serveur()}/api/projet/liste`, type: 'POST',
+          dataType: 'json', data: JSON.stringify(data), contentType };
+  const async = await $.ajax(options).then(t => {
+    console.log(t);
+    if (t.code===http_400 || t.code===http_406 || t.code===http_500){
+      afficheMessage(t)
+      sessionStorage.setItem('liste des projet autorisée', "L'utilisateur n'est pas rattaché à une équipe ou pas de projet.");
+      return;
+    }
+    if (t.code===http_200){
+      log(' - INFO : Je construit la liste des projets autorisées.');
+      $('.js-projet').select2({
+        matcher: match,
+        placeholder: 'Cliquez pour ouvrir la liste',
+        allowClear: true,
+        width: '100%',
+        minimumInputLength: 2,
+        minimumResultsForSearch: 20,
+        language: 'fr',
+        data: t.projet
+      });
+      $('.analyse').removeClass('hide');
+    }
+  })
 };
 
 /**
