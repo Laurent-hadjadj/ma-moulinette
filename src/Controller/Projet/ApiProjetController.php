@@ -35,7 +35,7 @@ class ApiProjetController extends AbstractController
 {
     /** Définition des constantes */
     public static $removeReturnline = "/\s+/u";
-    public static $reference = "<strong>[PROJET-002]</strong>";
+    public static $reference = "<strong>[PROJET]</strong>";
     public static $message = "Vous devez avoir le rôle COLLECTE pour réaliser cette action.";
     public static $erreur400 = "La requête est incorrecte (Erreur 400).";
 
@@ -133,9 +133,9 @@ class ApiProjetController extends AbstractController
     }
 
     /**
-     * [Description for liste_projet]
+     * [Description for projet_liste]
      * Récupère la liste des projets nom + clé pour une équipe
-     * http://{url}}/api/liste/projet
+     * http://{url}}/api/projet/liste
      *
      * @param Security $security
      * @param Request $request
@@ -146,7 +146,7 @@ class ApiProjetController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/liste/projet', name: 'liste_projet', methods: ['POST'])]
+    #[Route('/api/projet/liste', name: 'projet_liste', methods: ['POST'])]
     public function liste_projet(Security $security, Request $request): response
     {
         /** On instancie l'entityRepository */
@@ -159,21 +159,20 @@ class ApiProjetController extends AbstractController
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if ($data === null || !property_exists($data, 'mode') || !property_exists($data, 'maven_key') ) {
+        if ($data === null || !property_exists($data, 'mode')) {
             return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
                                         'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
         }
 
         /* On bind les informations utilisateur */
         $equipes = $security->getUser()->getEquipe();
-
         /** Si l'utilisateur n'est pas rattaché à une équipe on ne charge rien */
         if (empty($equipes)) {
             /** On envoi un message à l'utilisateur */
             $reference2 = '<strong>[PROJET]</strong>';
             $message2 = "Vous devez être rattaché à une équipe (erreur 406)";
             $type = 'alert';
-            return $response->setData(['mode'=>$data->mdoe, 'code'=>406, 'reference' => $reference2,
+            return $response->setData(['mode'=>$data->mode, 'code'=>406, 'reference' => $reference2,
                     'message' => $message2, 'type' => $type, Response::HTTP_OK]);
         }
 
