@@ -109,9 +109,8 @@ class ListeProjetRepository extends ServiceEntityRepository
     {
         $sql = "SELECT DISTINCT liste_projet.maven_key as id, liste_projet.name as text
                 FROM liste_projet, json_each(liste_projet.tags)
-                WHERE :clause_where";
+                WHERE ".$map['clause_where'];
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-        $conn->bindValue(':clause_where', $map['clause_where']);
         try {
             if ($mode !== 'TEST') {
                 $exec=$conn->executeQuery();
