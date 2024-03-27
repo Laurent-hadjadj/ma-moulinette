@@ -92,6 +92,49 @@ const injectionOwaspInfo=function(id, menace, badge, laNote) {
   $(`#a${id}`).html(i);
 };
 
+/**
+ * [Description for videLeTableau]
+ *
+ * @return void
+ *
+ * Created at: 27/03/2024 13:05:58 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ */
+const videLeTableau = function() {
+  /** réinitialise les valeurs. */
+  /** version et la date du projet dans sonarqube */
+  $('#js-application-version').html('');
+
+  /** les vulnérabilités */
+  $('#nombre-faille-owasp').html('');
+  $('#nombre-faille-bloquant').html('');
+  $('#nombre-faille-critique').html('');
+  $('#nombre-faille-majeur').html('');
+  $('#nombre-faille-mineur').html('');
+
+  /** nombre de hotspot au status REVIEWED */
+  $('#hotspot-reviewed').html('');
+  /** nombre de hotspot au status TO_REVIEW */
+  $('#hotspot-to-review').html('');
+
+/**  hotspot OWASP  */
+  $('#hotspot-total').html('');
+  $('#nombre-hotspot-high').html('');
+  $('#nombre-hotspot-medium').html('');
+  $('#nombre-hotspot-low').html('');
+  $('#note-hotspot').html('');
+
+  /* Hotspots */
+  for (let id=0; id<11; id++) {
+    $(`#h${id}`).html('');
+  }
+
+  /** répartition front/back */
+  $('#frontend').html('');
+  $('#backend').html('');
+  $('#autre').html('');
+}
 
 /**
 * [Description for remplissageOwaspInfo]
@@ -115,18 +158,20 @@ const remplissageOwaspInfo=function(idMaven) {
     dataType: 'json', data: JSON.stringify(data), contentType };
 
   $.ajax(options).then(r => {
-    if (r.code===http_200) {
+    if (r.code===!http_200) {
       const message=`Les données ont été trouvées.`;
       $('#message').html(callboxInformation+message+callboxFermer);
     }
     if (r.code===http_400) {
       const message=`[Owasp] La requête n'est pas conforme (Erreur 400) !`;
       $('#message').html(callboxError+message+callboxFermer);
+      videLeTableau();
       return;
     }
     if (r.code===http_406) {
       const message=`Le projet n'a pas été trouvé !`;
       $('#message').html(callboxWarning+message+callboxFermer);
+      videLeTableau();
       return;
     }
 
@@ -406,32 +451,37 @@ const remplissageHotspotInfo=function(idMaven) {
     dataType: 'json', data: JSON.stringify(data), contentType };
 
   $.ajax(options).then(r=> {
+    if (r.code===http_400) {
+      const message=`[hotspot] La requête n'est pas conforme (Erreur 400) !`;
+      $('#message').html(callboxError+message+callboxFermer);
+      videLeTableau();
+      return;
+    }
+    let i='';
+    /** On compte le nombre de hotspot au status REVIEWED */
+    $('#hotspot-reviewed').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.reviewed));
+    /** On compte le nombre de hotspot au status TO_REVIEW */
+    $('#hotspot-to-review').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.toReview));
+    const hotspotToReview = r.toReview;
 
-  let i='';
-  /** On compte le nombre de hotspot au status REVIEWED */
-  $('#hotspot-reviewed').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.reviewed));
-  /** On compte le nombre de hotspot au status TO_REVIEW */
-  $('#hotspot-to-review').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.toReview));
-  const hotspotToReview = r.toReview;
+  /** On affiche le nombre de hotspot OWASP et par la répartition */
+    $('#hotspot-total').html(r.total);
+    const hotspotTotal=r.total;
+    $('#nombre-hotspot-high').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.high));
+    $('#nombre-hotspot-medium').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.medium));
+    $('#nombre-hotspot-low').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.low));
 
- /** On affiche le nombre de hotspot OWASP et par la répartition */
-  $('#hotspot-total').html(r.total);
-  const hotspotTotal=r.total;
-  $('#nombre-hotspot-high').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.high));
-  $('#nombre-hotspot-medium').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.medium));
-  $('#nombre-hotspot-low').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.low));
+    let leTaux=1, laNote=['a', 'A'];
+    if ( hotspotTotal !==0 ) {
+      leTaux = 1 - (parseInt(hotspotToReview,10) / hotspotTotal);
+      laNote = calculNoteHotspot(leTaux);
+    }
 
-  let leTaux=1, laNote=['a', 'A'];
-  if ( hotspotTotal !==0 ) {
-    leTaux = 1 - (parseInt(hotspotToReview,10) / hotspotTotal);
-    laNote = calculNoteHotspot(leTaux);
-  }
-
-  const lowerLaNote=laNote[0].toLowerCase();
-  i = `<span>${new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(leTaux)}</span>
-        <span class="badge ${lowerLaNote}"> ${laNote[1]}</span>`;
-  $('#note-hotspot').html(i);
-  });
+    const lowerLaNote=laNote[0].toLowerCase();
+    i = `<span>${new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(leTaux)}</span>
+          <span class="badge note-${lowerLaNote}"> ${laNote[1]}</span>`;
+    $('#note-hotspot').html(i);
+    });
 };
 
 /**
@@ -485,6 +535,7 @@ const remplissageHotspotListe=function(idMaven) {
     if (r.code===http_400) {
       const message=`[Hotspot] La requête n'est pas conforme (Erreur 400) !`;
       $('#message').html(callboxError+message+callboxFermer);
+      videLeTableau();
       return;
     }
   let leTaux=1, laNote=['a','A'], formatage;
@@ -662,7 +713,7 @@ const injectionModule=function (module, total, taux, bc, zero){
       $('#autre').html(i);
       break;
     default:
-      console.info(`Oops !!!, je ne connais pas ${module}.`);
+      sessionStorage.set('Owasp : ' `Oops !!!, je ne connais pas ${module}.`);
   }
 };
 
@@ -692,6 +743,7 @@ const remplissageHotspotDetails=function(idMaven) {
     if (r.code===http_400) {
       const message=`[Details] La requête n'est pas conforme (Erreur 400) !`;
       $('#message').html(callboxError+message+callboxFermer);
+      videLeTableau();
       return;
     }
 
@@ -841,7 +893,7 @@ const remplissageDetailsHotspotOwasp=function(idMaven, menace, titre) {
   const data={'maven_key': idMaven, menace, 'mode': 'null' };
   const options = {
     url: `${serveur()}/api/peinture/owasp/hotspot/severity`, type: 'POST',
-          dataType: 'json',data: JSON.stringify(data), contentType };
+          dataType: 'json', data: JSON.stringify(data), contentType };
 
   $.ajax(options).then(r=> {
     if (r.code===http_400) {
