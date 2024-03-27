@@ -38,7 +38,11 @@ Cette page regroupe plusieurs indicateurs construits sur les données locales hi
 
 Si aucune données n'est enregistrée dans la table *historique*, alors la page s'ouvre sans aucune information.
 
-![suivi](/documentation/ressources/suivi-007.jpg)
+![suivi](/documentation/ressources/suivi-001a.jpg)
+
+> Si la clé du projet n'est pas correcte alors un message est affiché.
+
+![suivi](/documentation/ressources/suivi-001b.jpg)
 
 Les tableaux sont les suivants :
 
