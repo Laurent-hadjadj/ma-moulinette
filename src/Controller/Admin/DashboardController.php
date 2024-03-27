@@ -280,8 +280,8 @@ class DashboardController extends AbstractDashboardController
             ->setFaviconPath('build/favicon/favicon-32x32.png')
             ->renderContentMaximized()
             ->renderSidebarMinimized()
-            ->disableDarkMode()
-            ->generateRelativeUrls();
+            ->disableDarkMode();
+            //->generateRelativeUrls();
     }
 
     /**
@@ -328,7 +328,7 @@ class DashboardController extends AbstractDashboardController
     public function configureUserMenu(UserInterface $utilisateur): UserMenu
     {
         if (!$utilisateur instanceof Utilisateur) {
-            throw new \Exception('Mauvais utilisateur !!!');
+            throw new \LogicException('Mauvais utilisateur !!!');
         }
 
         return parent::configureUserMenu($utilisateur)
