@@ -332,12 +332,10 @@ class ApiPeintureController extends AbstractController
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if ($data === null) {
-            return $response->setData(['data' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'mode')) {
-            return $response->setData(['mode' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'maven_key')) {
-            return $response->setData(['maven_key' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+        if ($data === null || !property_exists($data, 'mode') || !property_exists($data, 'maven_key') ) {
+            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
+                                        'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+        }
 
         /** On regarde si le projet existe */
         $isValide = $this->isValide($data->mode, $data->maven_key);
@@ -395,12 +393,10 @@ class ApiPeintureController extends AbstractController
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if ($data === null) {
-            return $response->setData(['data' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'mode')) {
-            return $response->setData(['mode' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'maven_key')) {
-            return $response->setData(['maven_key' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+        if ($data === null || !property_exists($data, 'mode') || !property_exists($data, 'maven_key') ) {
+            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
+                                        'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+        }
 
         /** On regarde si le projet existe */
         $isValide = $this->isValide($data->mode, $data->maven_key);
@@ -518,12 +514,10 @@ class ApiPeintureController extends AbstractController
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if ($data === null) {
-            return $response->setData(['data' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'mode')) {
-            return $response->setData(['mode' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'maven_key')) {
-            return $response->setData(['maven_key' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+        if ($data === null || !property_exists($data, 'mode') || !property_exists($data, 'maven_key') ) {
+            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
+                                        'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+        }
 
         /** On regarde si le projet existe */
         $isValide = $this->isValide($data->mode, $data->maven_key);
@@ -606,12 +600,10 @@ class ApiPeintureController extends AbstractController
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if ($data === null) {
-            return $response->setData(['data' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'mode')) {
-            return $response->setData(['mode' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'maven_key')) {
-            return $response->setData(['maven_key' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+        if ($data === null || !property_exists($data, 'mode') || !property_exists($data, 'maven_key') ) {
+            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
+                                        'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+        }
 
         /** On regarde si le projet existe */
         $isValide = $this->isValide($data->mode, $data->maven_key);
@@ -669,13 +661,10 @@ class ApiPeintureController extends AbstractController
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if ($data === null) {
-            return $response->setData(['data' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'mode')) {
-            return $response->setData(['mode' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'maven_key')) {
-            return $response->setData(['maven_key' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
-
+        if ($data === null || !property_exists($data, 'mode') || !property_exists($data, 'maven_key') ) {
+            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
+                                        'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+        }
         /** On regarde si le projet existe */
         $isValide = $this->isValide($data->mode, $data->maven_key);
         if ($isValide['code'] === 406) {
@@ -735,12 +724,10 @@ class ApiPeintureController extends AbstractController
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if ($data === null) {
-            return $response->setData(['data' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'mode')) {
-            return $response->setData(['mode' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'maven_key')) {
-            return $response->setData(['maven_key' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+        if ($data === null || !property_exists($data, 'mode') || !property_exists($data, 'maven_key') ) {
+            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
+                                        'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+        }
 
         /** On regarde si le projet existe */
         $isValide = $this->isValide($data->mode, $data->maven_key);
@@ -798,12 +785,10 @@ class ApiPeintureController extends AbstractController
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if ($data === null) {
-            return $response->setData(['data' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'mode')) {
-            return $response->setData(['mode' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'maven_key')) {
-            return $response->setData(['maven_key' => null, 'code'=>400, "message" => static::$erreur400, Response::HTTP_BAD_REQUEST]); }
+        if ($data === null || !property_exists($data, 'mode') || !property_exists($data, 'maven_key') ) {
+            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
+                                        'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+        }
 
         /** On regarde si le projet existe */
         $isValide = $this->isValide($data->mode, $data->maven_key);
