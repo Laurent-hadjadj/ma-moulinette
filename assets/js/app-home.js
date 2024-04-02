@@ -31,8 +31,8 @@ import { dateOptions, contentType } from './constante.js';
   * [Description for log]
   * Affiche la log.
   *
-  * @param mixed txt
-  * @return [type]
+  * @param string txt
+  * @return void
   *
   */
 const log=function(txt) {
@@ -51,9 +51,10 @@ const log=function(txt) {
   *
   */
 const sonarIsUp=async function() {
+  const data={'mode': 'null' };
   const options = {
-    url: `${serveur()}/api/status`, type: 'GET',
-    dataType: 'json',  contentType };
+    url: `${serveur()}/api/status`, type: 'POST',
+    dataType: 'json',  data: JSON.stringify(data), contentType };
   try
   {
     return await $.ajax(options);
@@ -61,9 +62,9 @@ const sonarIsUp=async function() {
   {
     $('#callout-accueil-message').removeClass('hide success alert primary secondary');
     $('#callout-accueil-message').addClass('alert');
-    $('#js-reference-information').html('<strong>[Accueil-001]</strong>');
+    $('#js-reference-information').html('<strong>[Accueil]</strong>');
     $('#js-message-information').html(`État du serveur sonarqube : DOWN (${ message.statusText })`);
-    return (message.statusText);
+    return ['504', message.statusText];
   }
 };
 
@@ -76,9 +77,7 @@ const sonarIsUp=async function() {
   */
 const miseAJourListe=function() {
   const options = {
-    url: `${serveur()}/api/projet/liste`, type: 'GET',
-    dataType: 'json', contentType };
-
+    url: `${serveur()}/api/projet/liste`, type: 'POST', dataType: 'json', contentType };
     return new Promise(resolve => {
       $.ajax(options).then(t => {
         if (t.type==='alert'){
@@ -122,6 +121,7 @@ const miseAJourListe=function() {
   *
   */
 const miseAJourListeAsync= async function() {
+  console.log('je rentre !!!');
   await miseAJourListe();
 };
 
@@ -132,12 +132,21 @@ const miseAJourListeAsync= async function() {
  * description
  * Événement : on recharge la liste des projets.
  */
-$('.refresh-bd').on('click', function() {
+$('.refresh-bd').on('click', ()=> {
   sonarIsUp()
-    .then(function (result) {
-      if (result !== 'error') {
-        miseAJourListeAsync();
+    .then((result)=> {
+      if (result[0]===504 || result[0]===400 || result[1] === 'Internal Server Error') {
+        if (result[0]===400) {
+          $('#callout-accueil-message').removeClass('hide success alert primary secondary');
+          $('#callout-accueil-message').addClass('alert');
+          $('#js-reference-information').html('<strong>[Accueil]</strong>');
+          $('#js-message-information').html(`La requête est incorrecte (Erreur 400).`);
+        }
+        return;
       }
+      /** si le serveur est disponible */
+
+      miseAJourListeAsync();
     });
 });
 
