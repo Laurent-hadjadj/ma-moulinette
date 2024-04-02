@@ -36,8 +36,9 @@ class ApiProjetController extends AbstractController
     /** Définition des constantes */
     public static $removeReturnline = "/\s+/u";
     public static $reference = "<strong>[PROJET]</strong>";
-    public static $message = "Vous devez avoir le rôle COLLECTE pour réaliser cette action.";
     public static $erreur400 = "La requête est incorrecte (Erreur 400).";
+    public static $erreur404 = "Vous devez être rattaché à une équipe (erreur 404)";
+    public static $erreur406 = "Je n'ai pas trouvé de projets pour ton équipe (erreur 406).";
 
     /**
      * [Description for __construct]
@@ -79,8 +80,8 @@ class ApiProjetController extends AbstractController
 
         /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'mode') || !property_exists($data, 'maven_key') ) {
-            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
-                                        'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert',
+                        'reference'=> static::$reference, 'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
         }
 
         /** On récupère l'objet User du contexte de sécurité */
@@ -169,11 +170,8 @@ class ApiProjetController extends AbstractController
         /** Si l'utilisateur n'est pas rattaché à une équipe on ne charge rien */
         if (empty($equipes)) {
             /** On envoi un message à l'utilisateur */
-            $reference2 = '<strong>[PROJET]</strong>';
-            $message2 = "Vous devez être rattaché à une équipe (erreur 406)";
-            $type = 'alert';
-            return $response->setData(['mode'=>$data->mode, 'code'=>406, 'reference' => $reference2,
-                    'message' => $message2, 'type' => $type, Response::HTTP_OK]);
+            return $response->setData(['mode'=>$data->mode, 'code'=>406, 'reference' => static::$reference,
+                    'message' => static::$erreur404, 'type' => 'alert', Response::HTTP_OK]);
         }
 
         /** On recherche les projets pour les équipes rattaché à l'utilisateur */
@@ -201,11 +199,9 @@ class ApiProjetController extends AbstractController
 
         /** j'ai pas trouvé de projet pour cette équipe. */
         if (empty($projets)) {
-            $reference3 = '<strong>[PROJET]</strong>';
-            $message3 = "Je n'ai pas trouvé de projets pour ton équipe (erreur 406).";
             $type = 'warning';
-            return $response->setData(['mode'=>$data->mode, 'code'=>406, 'reference' => $reference3, 'message' => $message3,
-                'type' => $type, Response::HTTP_OK]);
+            return $response->setData(['mode'=>$data->mode, 'code'=>406, 'reference' =>  static::$reference,
+                'message' => static::$erreur406, 'type' => $type, Response::HTTP_OK]);
         }
 
         return $response->setData(['mode'=>$data->mode, 'code'=>200, 'projet' => $projets, Response::HTTP_OK]);
