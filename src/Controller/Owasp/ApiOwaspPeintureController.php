@@ -34,6 +34,9 @@ use App\Entity\Main\HotspotDetails;
  */
 class ApiOwaspPeintureController extends AbstractController
 {
+    /** Définition des constantes */
+    public static $reference = "<strong>[OWASP]</strong>";
+    public static $erreur400 = "La requête est incorrecte (Erreur 400).";
 
     /**
      * [Description for __construct]
@@ -74,12 +77,10 @@ class ApiOwaspPeintureController extends AbstractController
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if ($data === null) {
-            return $response->setData(['data' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'mode')) {
-            return $response->setData(['mode' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'maven_key')) {
-            return $response->setData(['maven_key' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
+        if ($data === null || !property_exists($data, 'mode') || !property_exists($data, 'maven_key')) {
+            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
+                                        'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+        }
 
         /** On récupère les failles owasp */
         $map=['maven_key'=>$data->maven_key];
@@ -181,12 +182,10 @@ class ApiOwaspPeintureController extends AbstractController
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if ($data === null) {
-            return $response->setData(['data' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'mode')) {
-            return $response->setData(['mode' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'maven_key')) {
-            return $response->setData(['maven_key' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
+        if ($data === null || !property_exists($data, 'mode') || !property_exists($data, 'maven_key')) {
+            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
+                                        'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+        }
 
         /** On compte le nombre de hotspot REVIEWED */
         $map=['maven_key'=>$data->maven_key, 'status'=>'REVIEWED'];
@@ -268,12 +267,10 @@ class ApiOwaspPeintureController extends AbstractController
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if ($data === null) {
-            return $response->setData(['data' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'mode')) {
-            return $response->setData(['mode' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'maven_key')) {
-            return $response->setData(['maven_key' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
+        if ($data === null || !property_exists($data, 'mode') || !property_exists($data, 'maven_key') ) {
+        return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
+                    'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+        }
 
         /** On compte le nombre de hotspot de type OWASP au statut TO_REVIEWED */
         $map=['maven_key'=>$data->maven_key];
@@ -357,12 +354,10 @@ class ApiOwaspPeintureController extends AbstractController
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if ($data === null) {
-            return $response->setData(['data' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'mode')) {
-            return $response->setData(['mode' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'maven_key')) {
-            return $response->setData(['maven_key' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
+        if ($data === null || !property_exists($data, 'mode') || !property_exists($data, 'maven_key')) {
+            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
+                                        'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+        }
 
         /** On récupère la liste des hotspots par status de la table détails. */
         $map=['maven_key'=>$data->maven_key];
@@ -402,14 +397,10 @@ class ApiOwaspPeintureController extends AbstractController
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if ($data === null) {
-            return $response->setData(['data' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'mode')) {
-            return $response->setData(['mode' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'maven_key')) {
-            return $response->setData(['maven_key' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'menace')) {
-            return $response->setData(['menace' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
+        if ($data === null || !property_exists($data, 'mode') || !property_exists($data, 'maven_key')) {
+            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
+                                        'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+        }
 
         /** On compte le nombre de faille OWASP au statut HIGH */
         $map=['maven_key'=>$data->maven_key, 'menace'=>$data->menace, 'status'=>'HIGH'];
