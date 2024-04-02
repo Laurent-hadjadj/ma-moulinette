@@ -74,8 +74,8 @@ class ApiProfilController extends AbstractController
     public function listeQualityProfiles(Request $request, Security $security, Client $client): response
     {
         /** On instancie l'entityRepository */
-        $profiles = $this->em->getRepository(Profiles::class);
-        $properties = $this->em->getRepository(Properties::class);
+        $profilesEntity = $this->em->getRepository(Profiles::class);
+        $propertiesEntity = $this->em->getRepository(Properties::class);
 
         /** on décode le body */
         $data = json_decode($request->getContent());
@@ -83,9 +83,10 @@ class ApiProfilController extends AbstractController
         /** On crée un objet response */
         $response = new JsonResponse();
 
-        /** On teste si la clé est valide */
-        if ($data === null) {
-        return $response->setData(['mode' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
+       /** On teste si la clé est valide */
+        if ($data === null || !property_exists($data, 'mode')) {
+        return $response->setData(['data'=>$data,'code'=>400, Response::HTTP_BAD_REQUEST]);
+        }
 
         /** si on est pas GESTIONNAIRE on ne fait rien. */
         if (!$security->isGranted('ROLE_GESTIONNAIRE')){
@@ -111,22 +112,22 @@ class ApiProfilController extends AbstractController
         $nombre = 0;
 
         /** On supprime les données de la table avant d'importer les données;*/
-        $request=$profiles->deleteProfiles($data->mode);
+        $request=$profilesEntity->deleteProfiles($data->mode);
         if ($request['code']===500) {
             return $response->setData(['mode' => $data->mode, 'code' => 500, 'erreur'=>$request['erreur'], Response::HTTP_OK]);
         }
 
         /** On insert les profils dans la table profiles. */
-        foreach ($r["profiles"] as $profil) {
+        foreach ($r['profiles'] as $profil) {
             $nombre = $nombre + 1;
 
             $profils = new Profiles();
-            $profils->setKey($profil["key"]);
-            $profils->setName($profil["name"]);
-            $profils->setLanguageName($profil["languageName"]);
-            $profils->setIsDefault($profil["isDefault"]);
-            $profils->setActiveRuleCount($profil["activeRuleCount"]);
-            $rulesDate = new DateTime($profil["rulesUpdatedAt"]);
+            $profils->setKey($profil['key']);
+            $profils->setName($profil['name']);
+            $profils->setLanguageName($profil['languageName']);
+            $profils->setIsDefault($profil['isDefault']);
+            $profils->setActiveRuleCount($profil['activeRuleCount']);
+            $rulesDate = new DateTime($profil['rulesUpdatedAt']);
             $profils->setRulesUpdateAt($rulesDate);
             $profils->setDateEnregistrement($date);
             $this->em->persist($profils);
@@ -134,12 +135,12 @@ class ApiProfilController extends AbstractController
         }
 
         /** On récupère la nouvelle liste des profils; */
-        $request=$profiles->selectProfiles($data->mode);
+        $request=$profilesEntity->selectProfiles($data->mode);
 
         /** On met à jour la table proprietes */
         $dateModificationProfil = $date->format("Y-m-d H:i:s");
         $map=['profil_bd'=>$nombre, 'profil_sonar'=>$nombre, 'date_modification_profil'=>$dateModificationProfil];
-        $properties->updateProfilesProperties($data->mode, $map);
+        $propertiesEntity->updatePropertiesProfiles($data->mode, $map);
 
         return $response->setData([
             'mode' => $data->mode, 'code' => 200, "listeProfil" => $request['liste'], Response::HTTP_OK]);
@@ -162,7 +163,7 @@ class ApiProfilController extends AbstractController
     public function listeQualityLangage(Request $request): response
     {
         /** On instancie la classe */
-        $profiles = $this->em->getRepository(Profiles::class);
+        $profilesEntity = $this->em->getRepository(Profiles::class);
 
         /** on décode le body */
         $data = json_decode($request->getContent());
@@ -170,21 +171,22 @@ class ApiProfilController extends AbstractController
         /** On crée un objet response */
         $response = new JsonResponse();
 
-        /** On teste si la clé est valide */
-        if ($data === null) {
-        return $response->setData(['mode' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
+      /** On teste si la clé est valide */
+        if ($data === null || !property_exists($data, 'mode')) {
+        return $response->setData(['data'=>$data,'code'=>400, Response::HTTP_BAD_REQUEST]);
+        }
 
         $listeLabel = [];
         $listeDataset = [];
 
         /** On récupère la liste des langage */
-        $selectProfilesLanguage=$profiles->selectProfilesLanguage($data->mode);
+        $selectProfilesLanguage=$profilesEntity->selectProfilesLanguage($data->mode);
         /** On créé la liste des libellés et des données */
         foreach ($selectProfilesLanguage['labels'] as $label) {
             array_push($listeLabel, $label['profile']);
         }
         /** On récupère le nombre de règle de chaque profil */
-        $selectProfilesRuleCount=$profiles->selectProfilesRuleCount($data->mode);
+        $selectProfilesRuleCount=$profilesEntity->selectProfilesRuleCount($data->mode);
         foreach ($selectProfilesRuleCount['data-set'] as $dataSet) {
             array_push($listeDataset, $dataSet['total']);
         }
@@ -210,7 +212,7 @@ class ApiProfilController extends AbstractController
     public function profilDetails(Request $request, Client $client)
     {
         /** On instancie la classe */
-        $profilesHistorique = $this->em->getRepository(ProfilesHistorique::class);
+        $profilesHistoriqueEntity = $this->em->getRepository(ProfilesHistorique::class);
 
         $token = $request->get('token');
         if (empty($token)){
@@ -288,32 +290,32 @@ class ApiProfilController extends AbstractController
             /** On prépare les données pour la requête */
             $map=['date_courte'=>$dateCourte, 'langage'=>$language, 'date'=>$dateModification, 'action'=>$action, 'auteur'=>$auteur, 'regle'=>$regle, 'description'=>$description, 'detail'=>$detail, 'date_enregistrement'=>$dateEnregistrement];
             /** on lance la requête */
-            $profilesHistorique->insertProfilesHistorique($mode, $map);
+            $profilesHistoriqueEntity->insertProfilesHistorique($mode, $map);
         }
 
         /** Nombre de règles activé **/
         $map = ['langage'=>$language, 'action'=>'ACTIVATED'];
-        $activated=$profilesHistorique->selectProfilesHistoriqueAction($mode, $map);
+        $activated=$profilesHistoriqueEntity->selectProfilesHistoriqueAction($mode, $map);
 
         /** Nombre de règles désactivé --> DEACTIVATED **/
         $map = ['langage'=>$language, 'action'=>'DEACTIVATE'];
-        $desactivited = $profilesHistorique->selectProfilesHistoriqueAction($mode, $map);
+        $desactivited = $profilesHistoriqueEntity->selectProfilesHistoriqueAction($mode, $map);
 
         /** Nombre de règles mise à jour **/
         $map = ['langage'=>$language, 'action'=>'UPDATED'];
-        $updated = $profilesHistorique->selectProfilesHistoriqueAction($mode, $map);
+        $updated = $profilesHistoriqueEntity->selectProfilesHistoriqueAction($mode, $map);
 
         /** Date de la première modification **/
         $map2 = ['langage'=>$language, 'tri'=>'ASC', 'limit'=>1];
-        $first = $profilesHistorique->selectProfilesHistoriqueDateTri($mode, $map2);
+        $first = $profilesHistoriqueEntity->selectProfilesHistoriqueDateTri($mode, $map2);
 
         /** Date de la dernière modification **/
         $map3 = ['langage'=>$language, 'tri'=>'DESC', 'limit'=>1];
-        $last = $profilesHistorique->selectProfilesHistoriqueDateTri($mode, $map3);
+        $last = $profilesHistoriqueEntity->selectProfilesHistoriqueDateTri($mode, $map3);
 
         /** Calcul le  nombre de groupe de modification **/
         $map = ['langage'=>$language];
-        $groupes = $profilesHistorique->selectProfilesHistoriqueDateCourteGroupeBy($mode, $map);
+        $groupes = $profilesHistoriqueEntity->selectProfilesHistoriqueDateCourteGroupeBy($mode, $map);
 
         /** Pour chaque groupe on récupère dans un tableau les modifications */
         $i = 0;
@@ -323,7 +325,7 @@ class ApiProfilController extends AbstractController
             $badgeA = $badgeU = $badgeD = 0;
             $tempo = [];
             $map=['langage'=>$language, 'date_courte'=>$dateGroupe];
-            $modif = $profilesHistorique->selectProfilesHistoriqueLangageDateCourte($mode, $map);
+            $modif = $profilesHistoriqueEntity->selectProfilesHistoriqueLangageDateCourte($mode, $map);
             /* On ajoute la date du groupe */
             array_push($tempoDateGroupe, $dateGroupe);
 
