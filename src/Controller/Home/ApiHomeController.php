@@ -11,7 +11,7 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
-namespace App\Controller;
+namespace App\Controller\Home;
 
 /** Core */
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -23,7 +23,6 @@ use DateTimeZone;
 
 /** Accès aux tables SLQLite */
 use Doctrine\ORM\EntityManagerInterface;
-
 use App\Entity\Main\Profiles;
 use App\Entity\Main\ListeProjet;
 
@@ -38,6 +37,10 @@ use Psr\Log\LoggerInterface;
 /** Client HTTP */
 use App\Service\Client;
 
+
+/**
+ * [Description ApiHomeController]
+ */
 class ApiHomeController extends AbstractController
 {
     /** Définition des constantes */
@@ -64,10 +67,10 @@ class ApiHomeController extends AbstractController
         $this->em = $em;
     }
 
-    /**
+        /**
      * [Description for sonarStatus]
      * Vérifie si le serveur sonarqube est UP
-     * http://{url}}/api/system/status
+     * http://{url}}/api/status
      *
      * @return response
      *
@@ -75,15 +78,26 @@ class ApiHomeController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/status', name: 'sonar_status', methods: ['GET'])]
-    public function sonarStatus(Client $client): response
+    #[Route('/api/status', name: 'api_sonar_status', methods: ['POST'])]
+    public function apiSonarStatus(Request $request, Client $client): response
     {
+        /** On décode le body */
+        $data = json_decode($request->getContent());
+
+        /** On crée un objet de reponse JSON */
+        $response = new JsonResponse();
+
+        /** On teste si le body est correcte */
+        if ($data === null || !property_exists($data, 'mode')) {
+        return $response->setData(['data'=>$data,'code'=>400, Response::HTTP_BAD_REQUEST]);
+        }
+
         $url = $this->getParameter(static::$sonarUrl) . "/api/system/status";
 
         /** On appel le client http */
         $result = $client->http($url);
 
-        return new JsonResponse($result, Response::HTTP_OK);
+        return $response->setData([$result, Response::HTTP_OK]);
     }
 
     /**
@@ -98,8 +112,8 @@ class ApiHomeController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/health', name: 'sonar_health', methods: ['GET'])]
-    public function sonarHealth(Client $client): response
+    #[Route('/api/health', name: 'sonar_health', methods: ['POST'])]
+    public function sonarHealth(Request $request, Client $client): response
     {
         $url = $this->getParameter(static::$sonarUrl) . "/api/system/health";
 
@@ -121,8 +135,8 @@ class ApiHomeController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/system/info', name: 'information_systeme', methods: ['GET'])]
-    public function informationSysteme(Client $client): response
+    #[Route('/api/system/info', name: 'information_systeme', methods: ['POST'])]
+    public function informationSysteme(Request $request, Client $client): response
     {
         $url = $this->getParameter(static::$sonarUrl) . "/api/system/info";
 
@@ -144,9 +158,10 @@ class ApiHomeController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/projet/liste', name: 'projet_liste', methods: ['GET'])]
+    #[Route('/api/projet/liste', name: 'projet_liste', methods: ['POST'])]
     public function projetListe(Request $request, Client $client): response
     {
+        dd('projet_liste');
         /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
 
@@ -162,7 +177,7 @@ class ApiHomeController extends AbstractController
             return $response->setData([
                 "mode" => $mode ,
                 "type" => 'alert',
-                "reference" => "<strong>[Accueil-004]</strong>",
+                "reference" => "<strong>[Accueil]</strong>",
                 "message" => "Vous devez disposer du rôle GESTIONNAIRE pour effectuée cette action",
                 Response::HTTP_OK]);
         }
@@ -181,7 +196,7 @@ class ApiHomeController extends AbstractController
 
         /** On vérifie que sonarqube a au moins 1 projet */
         if (!$result) {
-            $reference = "<strong>[Accueil-003]</strong>";
+            $reference = "<strong>[Accueil]</strong>";
             $type = "alert";
             $message = "Je n'ai pas trouvé de projet sur le serveur sonarqube.";
             return $response->setData(
@@ -260,8 +275,7 @@ class ApiHomeController extends AbstractController
             "private" => $private,
             "empty_tags" => $emptyTags,
             Response::HTTP_OK
-      ]
-        );
+        ]);
     }
 
     /**
@@ -276,7 +290,7 @@ class ApiHomeController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/quality/profiles', name: 'liste_quality_profiles', methods: ['GET'])]
+    #[Route('/api/quality/profiles', name: 'liste_quality_profiles', methods: ['POST'])]
     public function listeQualityProfiles(Request $request, Client $client): response
     {
         /** On crée un objet de reponse JSON */
@@ -333,10 +347,10 @@ class ApiHomeController extends AbstractController
         $dateModificationProfil = $date->format(static::$dateFormatShort);
 
         $sql = "UPDATE properties
-    SET profil_bd = $nombre,
+        SET profil_bd = $nombre,
         profil_sonar = $nombre,
         date_modification_profil = '$dateModificationProfil'
-    WHERE type = 'properties'";
+         WHERE type = 'properties'";
 
         if ($mode != "TEST") {
             $this->em->getConnection()
@@ -358,11 +372,10 @@ class ApiHomeController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/visibility', name: 'visibility', methods: ['GET'])]
+    #[Route('/api/visibility', name: 'visibility', methods: ['POST'])]
     public function visibility(Client $client): response
     {
-        $url = $this->getParameter(static::$sonarUrl) .
-              "/api/projects/search?qualifiers=TRK&ps=500";
+        $url = $this->getParameter(static::$sonarUrl)."/api/projects/search?qualifiers=TRK&ps=500";
 
         /** On appel le client http */
         $components = $client->http($url);
