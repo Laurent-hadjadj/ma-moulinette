@@ -396,7 +396,7 @@ class ApiOwaspPeintureController extends AbstractController
         /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
 
-        /** On teste si la clé est valide */
+        /** On teste si le body est correcte */
         if ($data === null || !property_exists($data, 'mode') || !property_exists($data, 'maven_key')) {
             return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
                                         'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
