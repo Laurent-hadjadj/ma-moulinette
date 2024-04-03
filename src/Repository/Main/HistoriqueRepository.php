@@ -645,4 +645,45 @@ class HistoriqueRepository extends ServiceEntityRepository
         return ['mode'=>$mode, 'code'=>200, 'reference'=>$reference, 'erreur'=>''];
     }
 
+    /**
+     * [Description for selectHistoriqueProjetfavori]
+     * retoure la liste des données pour les projets favoris.
+     *
+     * @param string $mode
+     * @param array $map
+     *
+     * @return array
+     *
+     * Created at: 27/03/2024 19:07:45 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function selectHistoriqueProjetfavori($mode, $map):array {
+        /** On prépare la requête */
+        $sql = "SELECT DISTINCT maven_key as mavenkey, nom_projet as nom,
+                                version, date_version as date,
+                                note_reliability as fiabilite,
+                                note_security as securite, note_hotspot as hotspot,
+                                note_sqale as sqale, nombre_bug as bug,
+                                nombre_vulnerability as vulnerability,
+                                nombre_code_smell as code_smell,
+                                hotspot_total as hotspots
+                FROM historique
+                WHERE ".$map['clause_where'].
+                " GROUP BY maven_key LIMIT ".$map['nombre_projet_favori'];
+        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+        try {
+            if ($mode !== 'TEST') {
+                $exec=$conn->executeQuery();
+                $liste=$exec->fetchAllAssociative();
+            } else {
+                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+            }
+        } catch (\Doctrine\DBAL\Exception $e) {
+            return ['mode'=>$mode, 'code'=> 500, 'erreur'=>$e->getCode()];
+        }
+        /** on prépare la réponse */
+        return ['mode'=>$mode, 'code'=>200, 'liste'=>$liste, 'erreur'=>''];
+    }
+
 }
