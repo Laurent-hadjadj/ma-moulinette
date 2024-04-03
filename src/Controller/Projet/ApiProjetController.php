@@ -123,7 +123,7 @@ class ApiProjetController extends AbstractController
         /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'mode') || !property_exists($data, 'maven_key') ) {
             return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
-                                        'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+            'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
         }
 
         /** On récupère l'objet User du contexte de sécurité */
