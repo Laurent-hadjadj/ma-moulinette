@@ -93,6 +93,20 @@ Pour effectuer la mise à jour, il faut avoir le rôle **[GESTIONNAIRE]**.
 
 ![home](/documentation/ressources/home-001d.jpg)
 
+Les messages d'erreurs peuvent apparaître si :
+
+> Les paramètres de la requête ne sont pas correctes.
+
+![home](/documentation/ressources/home-001f.jpg)
+
+> Le serveur n'est pas disponible.
+
+![home](/documentation/ressources/home-001g.jpg)
+
+> Aucun projet n'a été trouvé.
+
+![home](/documentation/ressources/home-001h.jpg)
+
 Notez, en haut à droite, l'affichage de cinq (5) liens en fonction des droits de l'utilisateur (cf. chapitre sécurité) :
 
 ![home](/documentation/ressources/home-002.jpg)
