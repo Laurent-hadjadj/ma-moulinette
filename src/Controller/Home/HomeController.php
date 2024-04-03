@@ -49,6 +49,8 @@ class HomeController extends AbstractController
     public static $sonarUrl = "sonar.url";
     public static $dateFormat = "Y-m-d H:i:s";
     public static $europeParis = "Europe/Paris";
+    public static $reference = "<strong>[HOME]</strong>";
+    public static $erreur400 = "La requête est incorrecte (Erreur 400).";
 
     /**
      * [Description for __construct]
@@ -78,14 +80,14 @@ class HomeController extends AbstractController
     private function countProjetBD($mode): int
     {
         /** On instancie l'entityRepository */
-        $listeProjet = $this->em->getRepository(ListeProjet::class);
+        $listeProjetEntity = $this->em->getRepository(ListeProjet::class);
 
         /* On récupère le nombre de projet depuis la table liste_projet */
-        $countListeProjet = $listeProjet->countListeProjet($mode);
+        $nombre = $listeProjetEntity->countListeProjet($mode);
 
         $projet = 0;
-        if ($countListeProjet['request']){
-            $projet = $countListeProjet['request'][0]['total'];
+        if ($nombre['request']){
+            $projet = $nombre['request'][0]['total'];
         }
         return $projet;
     }
@@ -112,13 +114,13 @@ class HomeController extends AbstractController
          * On compte le nombre de projet.
          */
         $nombre = 0;
-        foreach ($result["components"] as $component) {
+        foreach ($result['components'] as $component) {
             /**
              * On exclue les projets archivés avec le suffixe "-SVN".
              *  "project": "fr.domaine:mon-application-SVN"
              */
             $mystring = $component["project"];
-            $findme   = "-SVN";
+            $findme   = '-SVN';
             if (!strpos($mystring, $findme)) {
                 $nombre = $nombre + 1;
             }
@@ -139,13 +141,13 @@ class HomeController extends AbstractController
     private function countProfilBD($mode): int
     {
         /** On instancie l'entityRepository */
-        $profiles = $this->em->getRepository(Profiles::class);
+        $profilesEntity = $this->em->getRepository(Profiles::class);
 
         /** On récupère le nombre de profil depuis la table profils */
-        $countProfiles = $profiles->countProfiles($mode);
+        $nombre = $profilesEntity->countProfiles($mode);
         $profil = 0;
-        if ($countProfiles['request']) {
-            $profil = $countProfiles['request'][0]['total'];
+        if ($nombre['request']) {
+            $profil = $nombre['request'][0]['total'];
         }
         return $profil;
     }
@@ -190,7 +192,7 @@ class HomeController extends AbstractController
     private function majProperties($mode, $type, $bd, $sonar)
     {
         /** On instancie l'entityRepository */
-        $properties = $this->em->getRepository(Properties::class);
+        $propertiesEntity = $this->em->getRepository(Properties::class);
 
         /** On met à jour la date de modification */
         $date = new DateTime();
@@ -202,9 +204,9 @@ class HomeController extends AbstractController
                 'date_modification_profil'=>$date->format(static::$dateFormat)];
 
         if ($type === 'projet') {
-            $properties->updatePropertiesProjet($mode,$map);
+            $propertiesEntity->updatePropertiesProjet($mode,$map);
         } else {
-            $properties->updatePropertiesProfiles($mode, $map);
+            $propertiesEntity->updatePropertiesProfiles($mode, $map);
         }
     }
 
@@ -220,10 +222,10 @@ class HomeController extends AbstractController
      */
     private function getProperties($mode): array
     {
-        $properties = $this->em->getRepository(Properties::class);
+        $propertiesEntity = $this->em->getRepository(Properties::class);
 
         /** On récupère le nombre de projet et de profil */
-        $getProperties = $properties->getProperties($mode,'properties');
+        $getProperties = $propertiesEntity->getProperties($mode,'properties');
 
         /** La table est vide. On initialise les valeurs */
         if (!$getProperties['request']) {
@@ -242,7 +244,7 @@ class HomeController extends AbstractController
                 'date_modification_projet'=>$dateModificationProjet,
                 'date_modification_profil'=>$dateModificationProfil];
 
-            $properties->insertProperties($mode,$map);
+            $propertiesEntity->insertProperties($mode,$map);
         } else {
             $projetBd = $getProperties['request'][0]['projet_bd'];
             $projetSonar = $getProperties['request'][0]['projet_sonar'];
@@ -275,10 +277,10 @@ class HomeController extends AbstractController
     private function getVersion($mode): string
     {
       /** On instancie l'entityRepository */
-        $maMoulinette = $this->em->getRepository(MaMoulinette::class);
+        $maMoulinetteEntity = $this->em->getRepository(MaMoulinette::class);
 
       /** On récupère le numéro de la dernère version en base */
-        $getmaMoulinetteVersion = $maMoulinette->getMaMoulinetteVersion($mode);
+        $getmaMoulinetteVersion = $maMoulinetteEntity->getMaMoulinetteVersion($mode);
         return $getmaMoulinetteVersion['request'][0]['version'];
     }
 
@@ -295,16 +297,17 @@ class HomeController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/home/liste/favori', name: 'home_liste_favori', methods:'GET')]
-    public function getListeFavori(Security $security, Request $request): response
+    #[Route('/home/liste/favori', name: 'home_liste_favori')]
+    private function getListeFavori(Security $security): response
     {
+        /** On instancie l'entityRepository */
+        $historiqueEntity = $this->em->getRepository(Historique::class);
+
         /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
 
-        $mode = $request->get('mode');
-
         /** On récupère le nombre de favori que l'on souhaite afficher au max (10) */
-        $envFavori = $this->getParameter('nombre.favori');
+        $nombreProjetFavori = $this->getParameter('nombre.favori');
 
         /** On récupère l'objet User du contexte de sécurité */
         $preference = $security->getUser()->getPreference();
@@ -322,33 +325,14 @@ class HomeController extends AbstractController
             }
 
             /** On supprime le dernier OR */
-            $andTRIM = rtrim($condition, " OR ");
-
-            $sql = "SELECT DISTINCT
-                        maven_key as mavenkey,
-                        nom_projet as nom,
-                        version, date_version as date,
-                        note_reliability as fiabilite,
-                        note_security as securite,
-                        note_hotspot as hotspot,
-                        note_sqale as sqale,
-                        nombre_bug as bug,
-                        nombre_vulnerability as vulnerability,
-                        nombre_code_smell as code_smell,
-                        hotspot_total as hotspots
-                    FROM historique
-                    WHERE $andTRIM
-                    GROUP BY maven_key LIMIT $envFavori";
-
-                    $trim = trim(preg_replace("/\s+/u", " ", $sql));
-                    $select = $this->em->getConnection()->prepare($trim)->executeQuery();
-                    $liste = $select->fetchAllAssociative();
+            $clauseWhere = rtrim($condition, " OR ");
+            $map=['clause_where'=>$clauseWhere, 'nombre_projet_favori'=>$nombreProjetFavori];
+            $liste = $historiqueEntity->selectHistoriqueProjetfavori('null', $map);
         }
 
         $data = [
-            'mode' => $mode,
-            'statut' => $statutFavori, 'listeFavori' => $liste,
-            'nombreProjet' => count($listeFavori), Response::HTTP_OK];
+                    'statut' => $statutFavori, 'listeFavori' => $liste,
+                    'nombreProjet' => count($listeFavori), Response::HTTP_OK];
         return $response->setData($data);
     }
 
@@ -389,7 +373,6 @@ class HomeController extends AbstractController
      * Récupération de la liste des projets par version (limité à 4).
      *
      * @param Security $security
-     * @param Request $request
      *
      * @return response
      *
@@ -397,16 +380,14 @@ class HomeController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/home/liste/version', name: 'home_liste_version', methods:'GET')]
-    public function getListeVersion(Security $security, Request $request): response
+    #[Route('/home/liste/version', name: 'home_liste_version')]
+    private function getListeVersion(Security $security): response
     {
         /** On instancie l'entityRepository */
-        $historique = $this->em->getRepository(Historique::class);
+        $historiqueEntity = $this->em->getRepository(Historique::class);
 
         /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
-
-        $mode = $request->get('mode');
 
         /** On récupère l'objet User du contexte de sécurité */
         $preference = $security->getUser()->getPreference();
@@ -421,13 +402,12 @@ class HomeController extends AbstractController
             $liste = [];
             for ($i = 0; $i < count($keys); $i++) {
                 $where = static::contruitMaRequete($keys, array_keys($keys[$i]), $i);
-                $favori = $historique->getProjetFavori($where);
+                $favori = $historiqueEntity->getProjetFavori($where);
                 array_push($liste, $favori);
             }
         }
 
         $data = [
-            'mode' => $mode,
             'statut' => $statutVersion, 'listeVersion' => $liste,
             'nombreProjet' => count($listeVersion), Response::HTTP_OK];
         return $response->setData($data);
@@ -582,10 +562,10 @@ class HomeController extends AbstractController
         }
 
         /** On va chercher les projets favoris ou les versions des projets */
-        $t = static::getListeFavori($security, $request);
-        $data1 = json_decode($t->getContent());
-        $t = static::getListeVersion($security, $request);
-        $data2 = json_decode($t->getContent());
+        $t3 = static::getListeFavori($security, $request);
+        $data1 = json_decode($t3->getContent());
+        $t4 = static::getListeVersion($security, $request);
+        $data2 = json_decode($t4->getContent());
 
         /** On a choisi la liste des projets favori
          *  sinon la liste des versions

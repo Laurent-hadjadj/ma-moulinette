@@ -81,14 +81,15 @@ class ProfilesRepository extends ServiceEntityRepository
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         try {
             if ($mode !== 'TEST') {
-                $request=$conn->executeQuery()->fetchAllAssociative();
+                $exec=$conn->executeQuery();
+                $liste=$exec->fetchAllAssociative();
             } else {
                 return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
             }
         } catch (\Doctrine\DBAL\Exception $e) {
             return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
         }
-        return ['mode'=>$mode, 'liste'=>$request, 'code'=>200, 'erreur'=>''];
+        return ['mode'=>$mode, 'liste'=>$liste, 'code'=>200, 'erreur'=>''];
     }
 
     /**

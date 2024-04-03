@@ -25,6 +25,7 @@ use DateTimeZone;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Main\Profiles;
 use App\Entity\Main\ListeProjet;
+use App\Entity\Main\Properties;
 
 /** Gestion de accès aux API */
 use Symfony\Component\HttpFoundation\Request;
@@ -48,7 +49,11 @@ class ApiHomeController extends AbstractController
     public static $dateFormatShort = "Y-m-d";
     public static $dateFormat = "Y-m-d H:i:s";
     public static $europeParis = "Europe/Paris";
-    public static $regex = "/\s+/u";
+    public static $removeReturnline = "/\s+/u";
+    public static $reference = '<strong>[Accueil]</strong>';
+    public static $erreur400 = "La requête est incorrecte (Erreur 400).";
+    public static $erreur403 = "Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).";
+    public static $erreur404 = "Je n'ai pas trouvé de projets sur le serveur sonarqube (Erreur 404).";
 
     /**
      * [Description for __construct]
@@ -67,7 +72,7 @@ class ApiHomeController extends AbstractController
         $this->em = $em;
     }
 
-        /**
+    /**
      * [Description for sonarStatus]
      * Vérifie si le serveur sonarqube est UP
      * http://{url}}/api/status
@@ -89,60 +94,14 @@ class ApiHomeController extends AbstractController
 
         /** On teste si le body est correcte */
         if ($data === null || !property_exists($data, 'mode')) {
-        return $response->setData(['data'=>$data,'code'=>400, Response::HTTP_BAD_REQUEST]);
-        }
+            return $response->setData(['data'=>$data, 'code'=>400, 'reference'=>static::$reference, 'message'=>static::$erreur400, 'type'=>'alert', 'result'=>'',Response::HTTP_BAD_REQUEST]);
+            }
 
         $url = $this->getParameter(static::$sonarUrl) . "/api/system/status";
 
         /** On appel le client http */
         $result = $client->http($url);
-
         return $response->setData([$result, Response::HTTP_OK]);
-    }
-
-    /**
-     * [Description for sonarHealth]
-     * Vérifie l'état du serveur
-     * http://{url}}/api/system/health
-     * Encore une fois, c'est null, il faut être admin pour récupérrer le résultat.
-     *
-     * @return response
-     *
-     * Created at: 15/12/2022, 21:14:20 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    #[Route('/api/health', name: 'sonar_health', methods: ['POST'])]
-    public function sonarHealth(Request $request, Client $client): response
-    {
-        $url = $this->getParameter(static::$sonarUrl) . "/api/system/health";
-
-        /** On appel le client http */
-        $result = $client->http($url);
-        return new JsonResponse($result, Response::HTTP_OK);
-    }
-
-    /**
-     * [Description for informationSysteme]
-     * On récupère les informations système du serveur
-     * http://{url}}/api/system/info
-     *
-     * Attention, il faut avoir le role sonar administrateur
-     *
-     * @return response
-     *
-     * Created at: 15/12/2022, 21:14:39 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    #[Route('/api/system/info', name: 'information_systeme', methods: ['POST'])]
-    public function informationSysteme(Request $request, Client $client): response
-    {
-        $url = $this->getParameter(static::$sonarUrl) . "/api/system/info";
-
-        /** On appel le client http */
-        $result = $client->http($url);
-        return new JsonResponse($result, Response::HTTP_OK);
     }
 
     /**
@@ -158,28 +117,31 @@ class ApiHomeController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/projet/liste', name: 'projet_liste', methods: ['POST'])]
-    public function projetListe(Request $request, Client $client): response
+    #[Route('/api/home/projet', name: 'home_projet_liste', methods: ['POST'])]
+    public function homlProjetListe(Request $request, Client $client): response
     {
-        dd('projet_liste');
+        /** On instancie l'EntityRepository */
+        $listeProjetEntity = $this->em->getRepository(ListeProjet::class);
+        $propertiesEntity = $this->em->getRepository(Properties::class);
+
+        /** On décode le body */
+        $data = json_decode($request->getContent());
+
         /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
 
-        /** On vérifie si on a activé le mode test */
-        if (is_null($request->get('mode'))) {
-            $mode = "null";
-        } else {
-            $mode = $request->get('mode');
+        /** On teste si le body est correcte */
+        if ($data === null || !property_exists($data, 'mode')) {
+        return $response->setData(['data'=>$data,'code'=>400, 'reference'=>static::$reference, 'message'=>static::$erreur400, 'type'=>'alert', Response::HTTP_BAD_REQUEST]);
         }
 
-        /** On vérifie si l'utilisateur à un rôle Gestionnaire ? */
-        if (!$this->isGranted('ROLE_GESTIONNAIRE')) {
+        /** On vérifie si l'utilisateur à un rôle Collecte ? */
+        if (!$this->isGranted('ROLE_COLLECTE')) {
             return $response->setData([
-                "mode" => $mode ,
-                "type" => 'alert',
-                "reference" => "<strong>[Accueil]</strong>",
-                "message" => "Vous devez disposer du rôle GESTIONNAIRE pour effectuée cette action",
-                Response::HTTP_OK]);
+                'mode' => $data->mode,
+                'type'=>'warning', 'code' => 403,
+                'reference' => static::$reference,
+                'message' => static::$erreur403, Response::HTTP_OK]);
         }
 
         $url = $this->getParameter(static::$sonarUrl)."/api/components/search_projects?ps=500";
@@ -195,20 +157,22 @@ class ApiHomeController extends AbstractController
         $date->setTimezone($timezone);
 
         /** On vérifie que sonarqube a au moins 1 projet */
-        if (!$result) {
-            $reference = "<strong>[Accueil]</strong>";
-            $type = "alert";
-            $message = "Je n'ai pas trouvé de projet sur le serveur sonarqube.";
-            return $response->setData(
-                ["reference" => $reference, "type" => $type,
-                    "message" => $message, Response::HTTP_OK]);
+        if (!$result || $result['paging']['total']<1 || count($result['components'])<1) {
+            return $response->setData([
+                'type' => 'warning', 'mode' => $data->mode,
+                'reference' => static::$reference, 'code' => 404,
+                'message'=>static::$erreur404, Response::HTTP_OK]);
         }
+
         /** On supprime les données de la table avant d'importer les données. */
-        $sql = "DELETE FROM liste_projet";
-        $delete = $this->em->getConnection()->prepare($sql);
-        if ($mode != 'TEST') {
-            $delete->executeQuery();
+        $request=$listeProjetEntity->deleteListeProjet($data->mode);
+        if ($request['code']!=200) {
+            return $response->setData([
+                'type' => 'alert', 'mode' => $data->mode,
+                'reference' => static::$reference, 'code' => $request['code'],
+                'message'=>$request['erreur'], Response::HTTP_OK]);
         }
+
         /**
          * Si la table est vide on insert les résultats et
          * on revoie les résultats.
@@ -228,7 +192,7 @@ class ApiHomeController extends AbstractController
                 $listeProjet->setVisibility($projet["visibility"]);
                 $listeProjet->setDateEnregistrement($date);
                 $this->em->persist($listeProjet);
-                if ($mode != 'TEST') {
+                if ($data->mode != 'TEST') {
                     $this->em->flush();
                 }
                 $nombre++;
@@ -246,43 +210,37 @@ class ApiHomeController extends AbstractController
         }
 
         /** On met à jour la table proprietes */
-        $dateModificationProjet = $date->format(static::$dateFormatShort);
-
-        $sql = "UPDATE properties
-                SET projet_bd = $nombre,
-                    projet_sonar = $nombre,
-                    date_modification_projet = '$dateModificationProjet'
-                WHERE type = 'properties'";
-        if ($mode != 'TEST') {
-            $this->em->getConnection()
-                    ->prepare(trim(preg_replace(static::$regex, " ", $sql)))
-                    ->executeQuery();
+        $map=[  'projet_bd'=>$nombre, 'projet_sonar'=>$nombre,
+                'date_modification_projet'=>$date->format(static::$dateFormatShort),
+            ];
+        $r=$propertiesEntity->updatePropertiesProjet($data->mode,$map);
+        if ($r['code']!=200) {
+            return $response->setData([
+                'type' => 'alert', 'mode' => $data->mode,
+                'reference' => static::$reference, 'code' => $r['code'],
+                'message'=>$propertiesEntity['erreur'], Response::HTTP_OK]);
         }
 
         /** on renvoie les résultats */
-        $reference = "<strong>[Accueil-002]</strong>";
-        $type = "success";
         $message = "Mise à jour de la liste des projets effectuée.";
 
         return $response->setData(
-            [
-            "mode" => $mode,
-            "reference" => $reference,
-            "type" => $type,
-            "message" => $message,
-            "nombre" => $nombre,
-            "public" => $public,
-            "private" => $private,
-            "empty_tags" => $emptyTags,
-            Response::HTTP_OK
-        ]);
+            [ 'mode' => $data->mode, 'code' => 200,
+            'reference' => static::$reference, 'type' => 'success',
+            'message' => $message,'nombre' => $nombre,
+            'public' => $public, 'private' => $private,
+            'empty_tags' => $emptyTags, Response::HTTP_OK ]);
     }
 
     /**
      * [Description for listeQualityProfiles]
-     * liste_quality_profiles
+     * Retourne la liste des profils qualité
+     *
      * Renvoie la liste des profils qualités
-     * http://{url}/api/qualityprofiles/search?qualityProfile={name}
+     * http://{url}/api/quality/profiles
+     *
+     * @param Request $request
+     * @param Client $client
      *
      * @return response
      *
@@ -293,15 +251,24 @@ class ApiHomeController extends AbstractController
     #[Route('/api/quality/profiles', name: 'liste_quality_profiles', methods: ['POST'])]
     public function listeQualityProfiles(Request $request, Client $client): response
     {
+        /** On instancie l'EntityRepository */
+        $profilesEntity = $this->em->getRepository(Profiles::class);
+        $propertiesEntity = $this->em->getRepository(Properties::class);
+
+        /** On décode le body */
+        $data = json_decode($request->getContent());
+
         /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
 
-        /** On vérifie si on a activé le mode test */
-        $mode = $request->get('mode');
+        /** On teste si le body est correcte */
+        if ($data === null || !property_exists($data, 'mode')) {
+        return $response->setData(['data'=>$data,'code'=>400, 'reference'=>static::$reference, 'message'=>static::$erreur400, 'type'=>'alert', Response::HTTP_BAD_REQUEST]);
+        }
 
         $url1 = $this->getParameter(static::$sonarUrl)
-              . "/api/qualityprofiles/search?qualityProfile="
-              . $this->getParameter('sonar.profiles');
+                . "/api/qualityprofiles/search?qualityProfile="
+                . $this->getParameter('sonar.profiles');
 
         /** On appel le client http */
         $result = $client->http($url1);
@@ -310,92 +277,56 @@ class ApiHomeController extends AbstractController
         $date->setTimezone(new DateTimeZone(static::$europeParis));
         $nombre = 0;
 
-        /** On supprime les données de la table avant d'importer les données;*/
-        $sql = "DELETE FROM profiles";
-        $delete = $this->em->getConnection()->prepare($sql);
-        if ($mode != "TEST") {
-            $delete->executeQuery();
+        /** On supprime les données de la table avant d'importer les données. */
+        $request=$profilesEntity->deleteProfiles($data->mode);
+        if ($request['code']!=200) {
+            return $response->setData([
+                'type' => 'alert', 'mode' => $data->mode,
+                'reference' => static::$reference, 'code' => $request['code'],
+                'message'=>$request['erreur'], Response::HTTP_OK]);
         }
 
         /** On insert les profiles dans la table profiles. */
-        foreach ($result["profiles"] as $profil) {
+        foreach ($result['profiles'] as $profil) {
             $nombre = $nombre + 1;
 
             $profils = new Profiles();
-            $profils->setKey($profil["key"]);
-            $profils->setName($profil["name"]);
-            $profils->setLanguageName($profil["languageName"]);
-            $profils->setIsDefault($profil["isDefault"]);
-            $profils->setActiveRuleCount($profil["activeRuleCount"]);
-            $rulesDate = new DateTime($profil["rulesUpdatedAt"]);
+            $profils->setKey($profil['key']);
+            $profils->setName($profil['name']);
+            $profils->setLanguageName($profil['languageName']);
+            $profils->setIsDefault($profil['isDefault']);
+            $profils->setActiveRuleCount($profil['activeRuleCount']);
+            $rulesDate = new DateTime($profil['rulesUpdatedAt']);
             $profils->setRulesUpdateAt($rulesDate);
             $profils->setDateEnregistrement($date);
             $this->em->persist($profils);
-            if ($mode != "TEST") {
+            if ($data->mode != 'TEST') {
                 $this->em->flush();
             }
         }
 
         /** On récupère la liste des profils; */
-        $sql = "SELECT name as profil, language_name as langage,
-            active_rule_count as regle, rules_update_at as date,
-            is_default as actif FROM profiles";
-        $select = $this->em->getConnection()->prepare(trim(preg_replace(static::$regex, " ", $sql)))->executeQuery();
-        $liste = $select->fetchAllAssociative();
+        $liste = $profilesEntity->selectProfile($data->mode);
+        if ($liste['code']!=200) {
+            return $response->setData([
+                'type' => 'alert', 'mode' => $data->mode,
+                'reference' => static::$reference, 'code' => $liste['code'],
+                'message'=>$liste['erreur'], Response::HTTP_OK]);
+        }
 
         /** On met à jour la table proprietes */
-        $dateModificationProfil = $date->format(static::$dateFormatShort);
-
-        $sql = "UPDATE properties
-        SET profil_bd = $nombre,
-        profil_sonar = $nombre,
-        date_modification_profil = '$dateModificationProfil'
-         WHERE type = 'properties'";
-
-        if ($mode != "TEST") {
-            $this->em->getConnection()
-                  ->prepare(trim(preg_replace(static::$regex, " ", $sql)))
-                  ->executeQuery();
-        }
-        return $response->setData(["mode" => $mode, "listeProfil" => $liste, Response::HTTP_OK]);
-    }
-
-    /**
-     * [Description for visibility]
-     * Renvoi le nombre de projet private ou public
-     * Il faut avoir un droit Administrateur !!!
-     * http://{url}/api/projects/search?qualifiers=TRK&ps=500
-     *
-     * @return response
-     *
-     * Created at: 15/12/2022, 21:17:03 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    #[Route('/api/visibility', name: 'visibility', methods: ['POST'])]
-    public function visibility(Client $client): response
-    {
-        $url = $this->getParameter(static::$sonarUrl)."/api/projects/search?qualifiers=TRK&ps=500";
-
-        /** On appel le client http */
-        $components = $client->http($url);
-
-        $private = 0;
-        $public = 0;
-
-        foreach ($components["components"] as $component) {
-            if ($component == "private") {
-                $private++;
-            }
-            if ($component == "public") {
-                $public++;
-            }
+        $map=['profil_bd'=>$nombre, 'profil_sonar'=>$nombre,
+        'date_modification_profil'=>$date->format(static::$dateFormatShort),
+        ];
+        $r=$propertiesEntity->updatePropertiesProfil($data->mode,$map);
+        if ($r['code']!=200) {
+            return $response->setData([
+                'type' => 'alert', 'mode' => $data->mode,
+                'reference' => static::$reference, 'code' => $r['code'],
+                'message'=>$propertiesEntity['erreur'], Response::HTTP_OK]);
         }
 
-        $response = new JsonResponse();
-        return $response->setData(
-            ["private" => $private, "public" => $public, Response::HTTP_OK]
-        );
+        return $response->setData(['mode' => $data->mode, 'listeProfil' => $liste, Response::HTTP_OK]);
     }
 
 }

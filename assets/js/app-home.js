@@ -25,22 +25,26 @@ import './app-authentification-details.js';
 import {serveur} from './properties.js';
 
 /** On importe les constantes */
-import { dateOptions, contentType } from './constante.js';
+import { http_200, http_400, http_401, http_404, http_406, http_500, contentType } from './constante.js';
 
 /**
-  * [Description for log]
-  * Affiche la log.
-  *
-  * @param string txt
-  * @return void
-  *
-  */
-const log=function(txt) {
-  const textarea = document.getElementById('log');
-  textarea.scrollTop = textarea.scrollHeight;
-  textarea.value += `${new Intl.DateTimeFormat('default',
-  dateOptions).format(new Date())} ${txt}\n`;
-};
+ * [Description for afficheMessage]
+ * Mutualise l'affichage des messages d'erreur.
+ *
+ * @param mixed t
+ *
+ * @return void
+ *
+ * Created at: 14/03/2024 10:11:15 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ */
+const afficheMessage=function(t){
+    $('#callout-accueil-message').removeClass('hide success alert warning primary secondary');
+    $('#callout-accueil-message').addClass(t.type);
+    $('#js-reference-information').html(t.reference);
+    $('#js-message-information').html(t.message);
+}
 
 /**
   * [Description for sonarIsUp]
@@ -55,16 +59,21 @@ const sonarIsUp=async function() {
   const options = {
     url: `${serveur()}/api/status`, type: 'POST',
     dataType: 'json',  data: JSON.stringify(data), contentType };
+  let message=[];
   try
   {
     return await $.ajax(options);
-  } catch (message)
-  {
-    $('#callout-accueil-message').removeClass('hide success alert primary secondary');
-    $('#callout-accueil-message').addClass('alert');
-    $('#js-reference-information').html('<strong>[Accueil]</strong>');
-    $('#js-message-information').html(`État du serveur sonarqube : DOWN (${ message.statusText })`);
-    return ['504', message.statusText];
+  } catch (t) {
+    message.type='alert';
+    message.reference='<strong>[Accueil]</strong>';
+    if (t.status===http_404){
+      message.message='La requête est incorrecte (Erreur 404).'
+    }
+    if (t.status===http_500 || t.staus==='DOWN'){
+      message.message='État du serveur sonarqube : DOWN.'
+    }
+    afficheMessage(message);
+    return;
   }
 };
 
@@ -76,17 +85,17 @@ const sonarIsUp=async function() {
   *
   */
 const miseAJourListe=function() {
+  const data={'mode': 'null' };
   const options = {
-    url: `${serveur()}/api/projet/liste`, type: 'POST', dataType: 'json', contentType };
+    url: `${serveur()}/api/home/projet`, type: 'POST',
+          dataType: 'json', data: JSON.stringify(data), contentType };
     return new Promise(resolve => {
       $.ajax(options).then(t => {
-        if (t.type==='alert'){
-          $('#callout-accueil-message').removeClass('hide success alert primary secondary');
-          $('#callout-accueil-message').addClass(t.type);
-          $('#js-reference-information').html(t.reference);
-          $('#js-message-information').html(t.message);
+        if (t.code!==http_200){
+          afficheMessage(t);
           return;
         } else {
+          console.log(t)
           /** On affiche le nombre de projet */
           $('#js-nombre-projet').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.nombre));
           /** On efface le plus|moins */
@@ -104,10 +113,7 @@ const miseAJourListe=function() {
             }
 
           /** On affiche un message à l'utilisateur */
-          $('#callout-accueil-message').removeClass('hide success alert primary secondary');
-          $('#callout-accueil-message').addClass(t.type);
-          $('#js-reference-information').html(t.reference);
-          $('#js-message-information').html(t.message);
+          afficheMessage(t);
         }
         resolve();
       });
@@ -121,7 +127,6 @@ const miseAJourListe=function() {
   *
   */
 const miseAJourListeAsync= async function() {
-  console.log('je rentre !!!');
   await miseAJourListe();
 };
 
@@ -134,18 +139,15 @@ const miseAJourListeAsync= async function() {
  */
 $('.refresh-bd').on('click', ()=> {
   sonarIsUp()
-    .then((result)=> {
-      if (result[0]===504 || result[0]===400 || result[1] === 'Internal Server Error') {
-        if (result[0]===400) {
-          $('#callout-accueil-message').removeClass('hide success alert primary secondary');
-          $('#callout-accueil-message').addClass('alert');
-          $('#js-reference-information').html('<strong>[Accueil]</strong>');
-          $('#js-message-information').html(`La requête est incorrecte (Erreur 400).`);
+    .then((t)=> {
+      if (t.code === 504 || t.code === http_400 || t.message === 'Internal Server Error') {
+        if (t.code=== http_404) {
+          return;
         }
+        afficheMessage(t);
         return;
       }
       /** si le serveur est disponible */
-
       miseAJourListeAsync();
     });
 });
@@ -163,6 +165,6 @@ $('.suivi-svg').on('click', function(e) {
   if (mavenKey!==''){
     window.location.href='/suivi?mavenKey='+mavenKey;
     } else {
-    log(' - ERROR - La clé n\'est pas correcte !! !');
+    //log(' - ERROR - La clé n\'est pas correcte !! !');
   }
 });

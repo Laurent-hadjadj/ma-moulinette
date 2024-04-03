@@ -124,4 +124,34 @@ class ListeProjetRepository extends ServiceEntityRepository
         return ['mode'=>$mode, 'code'=>200, 'liste'=>$liste, 'erreur'=>''];
     }
 
+    /**
+     * [Description for deleteListeProjet]
+     *  Supprime tous les projets de la table
+     *
+     * @param string $mode
+     * @param array $map
+     *
+     * @return array
+     *
+     * Created at: 03/04/2024 09:47:35 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function deleteListeProjet($mode):array
+    {
+        $sql = "DELETE
+                FROM liste_projet";
+        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+        try {
+                if ($mode !== 'TEST') {
+                    $conn->executeQuery();
+                } else {
+                    return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+                }
+        } catch (\Doctrine\DBAL\Exception $e) {
+            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+        }
+        return ['mode'=>$mode, 'code'=>200, 'erreur'=>''];
+    }
+
 }
