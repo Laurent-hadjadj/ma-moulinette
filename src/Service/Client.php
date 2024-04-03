@@ -42,6 +42,10 @@ class Client
 
     public function http($url): array
     {
+        if (empty($this->params->get('sonar.token')) && empty($this->params->get('sonar.user'))){
+            return ['code'=> 401];
+        }
+
         if (empty($this->params->get('sonar.token'))) {
             $user = $this->params->get('sonar.user');
             $password = $this->params->get('sonar.password');
@@ -49,12 +53,9 @@ class Client
             $user = $this->params->get('sonar.token');
             $password = '';
         }
-
         /** Fix problème Error:141A318A:SSL routines:tls_process_ske_dhe:dh key too small */
         $ciphers = "DEFAULT:!DH";
-        $response = $this->client->request(
-            'GET',
-            $url,
+        $response = $this->client->request('GET', $url,
             [
                 'ciphers' => trim(preg_replace(static::$regex, " ", $ciphers)),
                 'auth_basic' => [$user, $password], 'timeout' => 45,
