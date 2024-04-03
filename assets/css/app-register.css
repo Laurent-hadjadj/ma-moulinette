@@ -19,7 +19,7 @@
 
 /* Media Small */
 @media (width <= 20em) {
-  .video-arbres {
+  .video-dessin-anime2 {
     height: auto;
     width: 100%;
   }
@@ -34,7 +34,7 @@
 
 /* Media Small */
 @media (20.025em <= width <= 22em) {
-  .video-arbres {
+  .video-dessin-anime2 {
     height: auto;
     width: 100%;
   }
@@ -49,7 +49,7 @@
 
 /* Media Small */
 @media (22.025em <= width <= 30em) {
-  .video-arbres {
+  .video-dessin-anime2 {
     height: auto;
     width: 100%;
   }
@@ -66,7 +66,7 @@
 
 /* Media Small */
 @media (30.025em <= width <= 40em) {
-  .video-arbres {
+  .video-dessin-anime2 {
     height: auto;
     width: 100%;
   }
@@ -82,7 +82,7 @@
 
 /* Media Medium */
 @media (40.025em <= width <= 46em) {
-  .video-arbres {
+  .video-dessin-anime2 {
     height: auto;
     width: 95%;
   }
@@ -97,7 +97,7 @@
 
 /* Media Medium */
 @media (46.025em <= width <= 64em) {
-  .video-arbres {
+  .video-dessin-anime2 {
     height: auto;
     width: 95%;
   }
@@ -112,7 +112,7 @@
 
 /* Media Large */
 @media (64.025em <= width <= 90em) {
-  .video-arbres {
+  .video-dessin-anime2 {
     height: auto;
     width: 95%;
   }
@@ -126,7 +126,7 @@
 
 /* Media Large */
 @media (90.025em <= width <= 120em) {
-  .video-arbres {
+  .video-dessin-anime2 {
     height: auto;
     width: 95%;
   }
@@ -142,7 +142,7 @@
 
 /* Media Extra-Large */
 @media (120.025 <= width <= 160em) {
-  .video-arbres {
+  .video-dessin-anime2 {
     height: auto;
     width: 95%;
   }
@@ -174,9 +174,7 @@
 /* gestion du formulaire de connexion */
 
 /** Gestion des labels */
-.floated-label-wrapper {
-  position: relative;
-}
+.floated-label-wrapper { position: relative; }
 
 .floated-label-wrapper label {
   background: #fefefe;
