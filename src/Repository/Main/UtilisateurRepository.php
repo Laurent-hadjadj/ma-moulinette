@@ -357,5 +357,38 @@ class UtilisateurRepository extends ServiceEntityRepository
         return $response;
     }
 
+    /**
+     * [Description for updateUtilisateurResetPassword]
+     * Modifie l'indicateur reset du mot de passe.
+     *
+     * @param string $mode
+     * @param array $map
+     *
+     * @return array
+     *
+     * Created at: 03/04/2024 19:34:48 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function updateUtilisateurResetPassword($mode, $map):array {
+
+        $sql = "UPDATE utilisateur
+                SET init = :init, date_modification=:date_modification
+                WHERE courriel=:courriel";
+        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+        $conn->bindValue(':init', $map['init']);
+        $conn->bindValue(':date_modification', $map['date_modification']);
+        $conn->bindValue(':courriel', $map['courriel']);
+        try {
+                if ($mode !== 'TEST') {
+                    $conn->executeQuery();
+                } else {
+                    return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+                }
+        } catch (\Doctrine\DBAL\Exception $e) {
+            return ['mode'=>$mode, 'code'=>500, 'statut'=>-1, 'erreur'=> $e->getCode()];
+        }
+        return ['mode'=>$mode, 'code'=>200, 'erreur'=>''];
+    }
 
 }
