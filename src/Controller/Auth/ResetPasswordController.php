@@ -21,6 +21,7 @@ use Symfony\Component\HttpFoundation\Request;
 /** Accès aux tables SLQLite*/
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\Main\UtilisateurRepository;
+use App\Entity\Main\Utilisateur;
 
 /** API */
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -43,8 +44,9 @@ class ResetPasswordController extends AbstractController
 {
     /** Définition des constantes */
     public static $europeParis = "Europe/Paris";
-    public static $regex = "/\s+/u";
     public static $dateFormat = "Y-m-d H:i:s";
+    public static $reference = '<strong>[Auth]</strong>';
+    public static $erreur400 = "La requête est incorrecte (Erreur 400).";
 
     public function __construct(
         private UtilisateurRepository $utilisateurRepository,
@@ -132,7 +134,7 @@ class ResetPasswordController extends AbstractController
             $this->em->flush();
             /** On prepare un message flash */
             $this->addFlash('success', sprintf(
-                '%s : %s', "[Info 001]","Votre mot de passe a été changé."
+                '%s : %s', "[AUTH]","Votre mot de passe a été changé."
             ));
             return $this->redirectToRoute('reset_mot_de_passe');
         }
@@ -159,8 +161,19 @@ class ResetPasswordController extends AbstractController
     #[Route('/api/mot-de-passe/mise-a-jour', name: 'api_reset_mot_de_passe', methods:'POST')]
     public function apiResetMotDePasse(Request $request): Response
     {
+        /** On instancie l'EntityRepository */
+        $utilisateurEntity = $this->em->getRepository(Utilisateur::class);
+
+        /** On décode le body */
+        $data = json_decode($request->getContent());
+
         /** On créé on objet de reponse HTTP */
         $response = new JsonResponse();
+
+        /** On teste si le body est correcte */
+        if ($data === null || !property_exists($data, 'mode')  || !property_exists($data, 'init')) {
+            return $response->setData(['data'=>$data,'code'=>400, 'reference'=>static::$reference, 'message'=>static::$erreur400, 'type'=>'alert', Response::HTTP_BAD_REQUEST]);
+            }
 
         /** On récupère le filtre de recherche */
         $data = json_decode($request->getContent());
@@ -171,23 +184,22 @@ class ResetPasswordController extends AbstractController
         $date = new DateTime();
         $timezone = new DateTimeZone(static::$europeParis);
         $date->setTimezone($timezone);
-        $formatDate = $date->format(static::$dateFormat);
+        $dateModification = $date->format(static::$dateFormat);
 
         /** on récupère l'adresse mél de l'utilisateur qui fait la demande */
         $courriel = $this->getUser()->getCourriel();
 
-        /** On met à jour les préférences. */
-        $sql = "UPDATE utilisateur
-        SET init = '$init', date_modification='$formatDate'
-        WHERE courriel='$courriel';";
-        $trim = trim(preg_replace(static::$regex, " ", $sql));
-        $exec = $this->em->getConnection()->prepare($trim)->executeQuery();
-
-        if ($mode !== 'TEST') {
-            $exec->fetchAllAssociative();
+        /** On met à jour la table proprietes */
+        $map=[ 'init'=>$init, 'date_modification'=>$dateModification,
+                'courriel'=>$courriel ];
+        $r=$utilisateurEntity->updateUtilisateurResetPassword($data->mode,$map);
+        if ($r['code']!=200) {
+            return $response->setData([
+                'type' => 'alert', 'mode' => $data->mode,
+                'reference' => static::$reference, 'code' => $r['code'],
+                'message'=>$r['erreur'], Response::HTTP_OK]);
         }
 
-        $data = ['mode' => $mode,Response::HTTP_OK];
-        return $response->setData($data);
+        return $response->setData(['mode' => $data->mode, 'code'=>200 , Response::HTTP_OK]);
     }
 }
