@@ -218,7 +218,7 @@ class ApiHomeController extends AbstractController
             return $response->setData([
                 'type' => 'alert', 'mode' => $data->mode,
                 'reference' => static::$reference, 'code' => $r['code'],
-                'message'=>$propertiesEntity['erreur'], Response::HTTP_OK]);
+                'message'=>$r['erreur'], Response::HTTP_OK]);
         }
 
         /** on renvoie les résultats */
