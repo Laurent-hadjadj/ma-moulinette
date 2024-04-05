@@ -13,10 +13,11 @@
 import $ from 'jquery';
 
 /** On importe les constantes */
-import { un, contentType } from './constante.js';
+import { http_200, http_400, http_500, un, contentType } from './constante.js';
 
 /* On importe les paramètres serveur. */
 import {serveur} from './properties.js';
+
 
 /**
  * description
@@ -31,10 +32,8 @@ $('#js-indentifiant-oui-non').on('click', function () {
 
   const ouinon = $('#js-indentifiant-oui-non').is(':checked');
 
-
   /** Par défaut on bloque la mise à jour du mot de passe. */
   data={ 'mode': 'null', 'init': 0 };
-
   if (ouinon===true) {
     data={ 'mode': 'null', 'init': 1 };
     init=1
@@ -47,8 +46,12 @@ $('#js-indentifiant-oui-non').on('click', function () {
 
   return new Promise(resolve => {
       $.ajax(options).then(t=> {
+        if (t.code===http_400 || t.code===http_500){
+          $('#mise-a-jour-message').html(t.message)
+          return;
+        }
         const message='<span class="color-rouge">Vous devez vous reconnecter pour changer votre mot de passe.</span>';
-        if (t[0]===200) {
+        if (t.code===http_200) {
           const r=document.getElementById('js-indentifiant-oui-non');
           r.dataset.init=init;
         }
