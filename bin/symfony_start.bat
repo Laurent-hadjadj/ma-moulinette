@@ -14,24 +14,24 @@
 @echo:
 @echo Env       : dev
 @echo Script    : v1.6.0
-@echo Symfony   : v6.4.3
+@echo Symfony   : v6.4.7
 @echo Php       : v8.3.0-NTS
 @echo nodejs    : 18.17.1
 @echo:
 
 @set lecteur=c:
-@set app=%lecteur%\environnement\projet\ma-moulinette
-@set php=%app%\php-8.3.0-NTS\
-@set nodejs=%app%\node-18.17.1\
+@set app=%lecteur%\environnement
+@set php=%app%\0_toolz\php-8.3.0-NTS\
+@set nodejs=%app%\0_toolz\node-18.17.1\
 
 @set HTTP_PROXY=
 @set HTTPS_PROXY=
 
-@set PATH=%app%\symfony-cli\current;%php%;%PATH%
+@set PATH=%app%\0_toolz\symfony-cli\current;%php%;%PATH%
 
 @cd %app%\ma-moulinette
 
 rem @symfony.exe server:ca:install
-rem @https_proxy=http://127.0.0.1:8000 curl https://sonar-dash.wip
+rem @https_proxy=http://127.0.0.1:8000 curl https://ma-moulinette.wip
 @symfony server:stop
 @symfony server:start --no-tls
