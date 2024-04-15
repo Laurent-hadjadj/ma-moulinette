@@ -7,9 +7,12 @@
 imports:
     - { resource: ma-moulinette.yaml }
 parameters:
+    # SQLite
     env(DATABASE_HOST): localhost
     sqlite.pirmary.path: '%env(DATABASE_DEFAULT_URL)%'
     sqlite.secondary.path: '%env(DATABASE_SECONDARY_URL)%'
+
+    # Sonaqube
     sonar.url: '%env(SONAR_URL)%'
     sonar.token: '%env(SONAR_TOKEN)%'
     sonar.user: '%env(SONAR_USER)%'
@@ -17,11 +20,19 @@ parameters:
     sonar.profiles: '%env(SONAR_PROFILES)%'
     sonar.organization: '%env(SONAR_ORGANIZATION)%'
     nombre.favori: '%env(NOMBRE_FAVORI)%'
+
+    # Gestion des projets et profils
     maj.projet: '%env(MAJ_PROJET)%'
     maj.profil: '%env(MAJ_PROFIL)%'
+
+    # Traitement
     csrf.salt: '%env(SALT)%'
     path.audit: '%env(AUDIT)%'
+
+    # RGA
     rgaa: '%env(RGAA)%'
+
+    # CGU
     cgu.editeur: '%env(CGU_EDITEUR)%'
     cgu.adresse: '%env(CGU_ADRESSE)%'
     cgu.siret: '%env(CGU_SIRET)%'
@@ -32,6 +43,14 @@ parameters:
     cgu.source.url: '%env(CGU_SOURCE_URL)%'
     cgu.source.scm: '%env(CGU_SOURCE_SCM)%'
     cgu.hebergement: '%env(CGU_HEBERGEMENT)%'
+
+    # RabbitMQ
+    rabbitmq.host: '%env(RABBITMQ_HOST)%'
+    rabbitmq.host6: '%env(RABBITMQ_HOST6)%'
+    rabbitmq.vhost: '%env(RABBITMQ_VHOST)%'
+    rabbitmq.port: '%env(RABBITMQ_PORT)%'
+    rabbitmq.username: '%env(RABBITMQ_USERNAME)%'
+    rabbitmq.password: '%env(RABBITMQ_PASSWORD)%'
 
 services:
     # default configuration for services in *this* file
