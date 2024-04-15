@@ -4,7 +4,6 @@ Le plus important dans l'utilisation de SonarQube ce n'est pas les indicateurs e
 
 Cette partie est issue de la documentation de SonarQube.
 
-
 * Changer la projectKey par une valeur pour vous.
 * http(s)://ip.ou.domaine.vers.votre.sonar par le lien vers votre SonarQube.
 * VOTRE-TOKEN par le token obtenu à l'étape précédente
@@ -27,4 +26,50 @@ sonarqube-check:
   allow_failure: true
   only:
     - master
+```
+
+docker
+
+```plaintext
+- name: Setup PHP with Xdebug
+    uses: shivammathur/setup-php@v2
+    with:
+      php-version: '8.1'
+      coverage: xdebug
+
+- name: Install dependencies with composer
+    run: composer update --no-ansi --no-interaction --no-progress
+
+- name: Run tests with phpunit/phpunit
+    run: vendor/bin/phpunit --coverage-clover=coverage.xml
+```
+
+```plaintext
+name: build
+on:
+  - pull_request
+  - push
+jobs:
+  tests:
+      name: Tests
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v2
+          with:
+            fetch-depth: 0
+        - name: Setup PHP with Xdebug
+          uses: shivammathur/setup-php@v2
+          with:
+            php-version: '8.1'
+            coverage: xdebug
+        - name: Install dependencies with composer
+          run: composer update --no-ansi --no-interaction --no-progress
+        - name: Run tests with phpunit/phpunit
+          run: vendor/bin/phpunit --coverage-clover=coverage.xml
+        - name: SonarQube Scan
+          uses: SonarSource/sonarqube-scan-action@master
+          env:
+            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+            SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 ```
