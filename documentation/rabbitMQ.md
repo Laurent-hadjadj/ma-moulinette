@@ -111,6 +111,53 @@ Le démarrage du serveur se fait en lancant la commande suivante :
 
 Il faut décommenter l'extension **sockets** dans le fichier **php.ini**.
 
+## Stratégie
+
+- [x] Point-à-point entre le publisher et le broker pour les échanges d'information.
+- [X] Demannde-réponse pour les traitements inter-application.
+
+## Commandes utiles
+
+> Création d'un utilisateur
+
+`rabbitmqctl add_user <login> <mot_de_passe>`
+
+- [x] rabbitmqctl add_user admin <mot_de_passe>
+
+- rabbitmqctl add_user full_access s3crEt
+- rabbitmqctl set_user_tags full_access administrator
+
+> Donner les droits d'administration
+
+`rabbitmqctl.bat set_user_tags <utilisateur> administrator`
+
+> Création des vhosts
+
+Pour créer un espace de communication.
+
+`rabbitmqctl.bat add_vhost <vhost>`
+
+- [x] rabbitmqctl.bat add_vhost information
+- [x] rabbitmqctl.bat add_vhost traitement
+
+> Changer les droits d'un utilisateur sur un vhost
+
+Les doits possible sont :
+
+- [x] configure
+- [x] write
+- [x] read
+
+`rabbitmqctl.bat set_permissions –p <vhost> <utilisateur> ".*" ".*" ".*"`
+
+> Afficher les permissions
+
+`rabbitmqctl.bat list_permissions`
+
+> Supprimer les permissions pour un utilisateurs
+
+`rabbitmqctl.bat clear_permissions -p <vhost> <utilisateur>`
+
 -**-- FIN --**-
 
 [Retour au menu principal](/README.md)
