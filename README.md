@@ -2,25 +2,25 @@
 
 ![Ma-Moulinette](/documentation/ressources/home-000.jpg)
 
-Ma Moulinette est une application, locale (pour le moment...), qui a pour objectif de simplifier la consultation et le suivi des principaux indicateurs collectés et calculés par la plateforme sonarqube.
+Ma Moulinette est une application, locale (pour le moment...), qui a pour objectif de simplifier la consultation et le suivi des principaux indicateurs collectés et calculés par la plateforme SonarQube.
 
-L'application fonctionne avec la version sonarqube 8.9.9 LTS et supérieure. Elle s'appuie sur les API publiques de l'application.
+L'application fonctionne avec la version SonarQube 8.9.9 LTS et supérieure. Elle s'appuie sur les API publiques de l'application.
 
-`Note :` L'application est compatible avec le version 8 et 9 de sonarqube.
+`Note :` L'application est compatible avec les versions 8, 9 et 10 de SonarQube.
 
 ## Histoire
 
-C'est lors d'un échange avec mes étudiants en stage PHP/Symfony, que j'ai présenté Sonarqube et l'application de gestion et de suivi des indicateurs qualité. L'objectif étant de leur montrer la réalisation d'une petite application web en HTML5/JS et les bonnes pratiques de conception et de réalisation.
+C'est lors d'un échange avec mes étudiants en stage PHP/Symfony, que j'ai présenté SonarQube et l'application de gestion et de suivi des indicateurs de qualité. L'objectif étant de leur montrer la réalisation d'une petite application web en HTML5/JS et les bonnes pratiques de conception et de réalisation.
 
-Par la suite, l'application a été amélioré et utilisé dans le cadre de mes travaux.
+Par la suite, l'application a été améliorée et utilisée dans le cadre de mes travaux.
 
-Cette première version développée en 10 jours a été réalisée en HTML5, CSS et Javascript. Le stockage en base de données utilisait indexedDB (dexieJs). Cette application se voulait autonome, légere et simple d'utilisation. Elle permetait à un utilisateur de gèrer localement son suivi des projets sonarqube.
+Cette première version développée en 10 jours a été réalisée en HTML5, CSS et Javascript. Le stockage en base de données utilisait indexedDB (dexieJs). Cette application se voulait autonome, légère et simple d'utilisation. Elle permettait à un utilisateur de gérer localement son suivi des projets SonarQube.
 
 Cependant, il n'a pas été possible de l'utiliser en condition de production. Pour autant, elle fonctionnait parfaitement dans notre environnement de développement.
 
 Après de nombreux tests et réécritures de codes, la version a été abandonnée pour une application reposant sur le langage PHP et Symfony. Les premiers tests étant concluants, la migration de la version HTML5/JS a pu commencer.
 
-Aujourd'hui, l'application est régulièrement utilisé et a fait l'objet de nombreuses évolutions.
+Aujourd'hui, l'application est régulièrement utilisée et a fait l'objet de nombreuses évolutions.
 
 ## Architecture
 
@@ -41,8 +41,8 @@ Aujourd'hui, l'application est régulièrement utilisé et a fait l'objet de nom
 ### Ma-Moulinette
 
 * [Accueil](/documentation/accueil.md)
-* [Profil-details](/documentation/profil-details.md)
 * [Profil](/documentation/profil.md)
+* [Profil-details](/documentation/profil-details.md)
 * [Projet](/documentation/projet.md)
 * [OWASP](/documentation/owasp.md)
 * [Suivi](/documentation/suivi.md)
@@ -54,7 +54,7 @@ Aujourd'hui, l'application est régulièrement utilisé et a fait l'objet de nom
 
 * [Dashboard](/documentation/indicateurs.md)
 * [Utilisateur](/documentation/utilisateur.md)
-* [Equipe](/documentation/equipe.md)
+* [Équipe](/documentation/equipe.md)
 * [Portefeuille](/documentation/portefeuille.md)
 * [Batch](/documentation/batch.md)
 
@@ -65,7 +65,7 @@ Aujourd'hui, l'application est régulièrement utilisé et a fait l'objet de nom
 ### Gestion des erreurs
 
 * [Erreur HTTP](/documentation/http-erreur.md)
-* [Erreurs courrantes](/documentation/erreur.md)
+* [Erreurs courantes](/documentation/erreur.md)
 
 ### Audit de sécurité
 
