@@ -62,7 +62,7 @@ class PreferenceController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/preference/statut', name: 'api_preference_statut', methods:'POST')]
-    public function apiPreferenceStatut(Security $security, Client $client, Request $request): Response
+    public function apiPreferenceStatut(Security $security, Request $request): Response
     {
         /** On créé on objet de reponse HTTP */
         $response = new JsonResponse();
@@ -84,22 +84,22 @@ class PreferenceController extends AbstractController
         $version = $preference['version'];
         $bookmark = $preference['bookmark'];
 
-        /** On change me statut pour la catégorie. */
+        /** On change le statut pour la catégorie. */
         $statut[$categorie] = $etat;
 
         /** On met à jour l'objet. */
         $jarray = json_encode([
-          'statut' => $statut,
-          'projet' => $projet,
-          'favori' => $favori,
-          'version' => $version,
-          'bookmark' => $bookmark
-          ]);
+            'statut' => $statut,
+            'projet' => $projet,
+            'favori' => $favori,
+            'version' => $version,
+            'bookmark' => $bookmark
+        ]);
 
         /** On met à jour les préférences. */
         $sql = "UPDATE utilisateur
-    SET preference = '$jarray'
-    WHERE courriel='$courriel';";
+                SET preference = '$jarray'
+                WHERE courriel='$courriel';";
         $trim = trim(preg_replace(static::$regex, " ", $sql));
         $exec = $this->em->getConnection()->prepare($trim)->executeQuery();
         if ($mode !== 'TEST') {
@@ -152,12 +152,12 @@ class PreferenceController extends AbstractController
             'favori' => $nouvelleListeFavori,
             'version' => $version,
             'bookmark' => $bookmark
-          ]);
+        ]);
 
         /** On met à jour les préférences. */
         $sql = "UPDATE utilisateur
-    SET preference = '$jarray'
-    WHERE courriel='$courriel';";
+                SET preference = '$jarray'
+                WHERE courriel='$courriel';";
         $trim = trim(preg_replace(static::$regex, " ", $sql));
         $exec = $this->em->getConnection()->prepare($trim)->executeQuery();
         if ($mode !== 'TEST') {
@@ -205,6 +205,10 @@ class PreferenceController extends AbstractController
         $favori = $preference['favori'];
         $bookmark = $preference['bookmark'];
 
+        /** Le modele
+         * "version":[ {"mavenKey":["version","version"]}, {"mavenKey":["version"]} ],
+        */
+
         /** On construit la nouvelle liste */
         $nouvelleListeVersion = array_diff($preference['version'][$index][$mavenKey], [$version]);
         $nouvelleVersion = [$mavenKey => $nouvelleListeVersion];
@@ -226,13 +230,13 @@ class PreferenceController extends AbstractController
             'favori' => $favori,
             'version' => $object,
             'bookmark' => $bookmark
-      ])
+        ])
         );
 
         /** On met à jour les préférences. */
         $sql = "UPDATE utilisateur
-    SET preference = '$jarray'
-    WHERE courriel='$courriel';";
+                SET preference = '$jarray'
+                WHERE courriel='$courriel';";
         $trim = trim(preg_replace(static::$regex, " ", $sql));
         if ($mode !== 'TEST') {
             $this->em->getConnection()->prepare($trim)->executeQuery();
@@ -316,21 +320,21 @@ class PreferenceController extends AbstractController
         $descriptionBookmark = "Afficher le dernier projet.";
 
         $mesPreferences = [
-          "projet" => ["option" => "Projet", "description" => $descriptionProjet, "statut" => $preferences['statut']['projet']],
-          "favori" => ["option" => "Favori", "description" => $descriptionFavori,
-          "statut" => $preferences['statut']['favori']],
-          "version" => ["option" => "Version","description" => $descriptionVersion,
-          "statut" => $preferences['statut']['version']],
-          "bookmark" => ["option" => "Bookmark", "description" => $descriptionBookmark, "statut" => $preferences['statut']['bookmark']]
+            "projet" => ["option" => "Projet", "description" => $descriptionProjet, "statut" => $preferences['statut']['projet']],
+            "favori" => ["option" => "Favori", "description" => $descriptionFavori,
+            "statut" => $preferences['statut']['favori']],
+            "version" => ["option" => "Version","description" => $descriptionVersion,
+            "statut" => $preferences['statut']['version']],
+            "bookmark" => ["option" => "Bookmark", "description" => $descriptionBookmark, "statut" => $preferences['statut']['bookmark']]
         ];
 
         $versionAPP = $this->getParameter('version');
         $render = [
-          'prenom' => $prenom, 'nom' => $nom, 'avatar' => $avatar, 'courriel' => $courriel,
-          'roles' => $roles, 'equipes' => $equipes,
-          'preferences' => $mesPreferences,
-          'version' => $versionAPP, 'dateCopyright' => \date('Y'),
-          'mode' => $mode, Response::HTTP_OK];
+            'prenom' => $prenom, 'nom' => $nom, 'avatar' => $avatar, 'courriel' => $courriel,
+            'roles' => $roles, 'equipes' => $equipes,
+            'preferences' => $mesPreferences,
+            'version' => $versionAPP, 'dateCopyright' => \date('Y'),
+            'mode' => $mode, Response::HTTP_OK];
 
         if ($mode === "TEST") {
             return $response->setData($render);

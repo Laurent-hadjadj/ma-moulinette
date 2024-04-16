@@ -1,0 +1,341 @@
+/**
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2021-2022.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ */
+
+/* stylelint-disable selector-class-pattern */
+
+/**
+  * Propriétés pour les class en fonction des medias type
+  *
+  */
+
+/* Media Small */
+@media (width <= 20em) {
+  .prenom-nom-ajouter {
+    margin-top: 0.7rem;
+    font-size: 1.1rem;
+  }
+  .prenom-nom { margin-left: 0.7rem; }
+  .adresse-mel { margin-left: 0.7rem; }
+  .privilege-titre { margin-left: 0.7rem; }
+  .mon-equipe { margin-left: 0.7rem; }
+  .privilege-liste { margin-left: 1rem; }
+}
+
+/* Media Small */
+@media (20.025em <= width <= 22em) {
+  .prenom-nom-ajouter {
+    margin-top: 0.7rem;
+    font-size: 1.1rem;
+  }
+  .prenom-nom { margin-left: 0.7rem; }
+  .adresse-mel { margin-left: 0.7rem; }
+  .privilege-titre { margin-left: 0.7rem; }
+  .mon-equipe { margin-left: 0.7rem; }
+  .privilege-liste { margin-left: 1rem; }
+}
+
+/* Media Small */
+@media (22.025em <= width <= 30em) {
+  .prenom-nom-ajouter {
+    margin-top: 0.7rem;
+    font-size: 1.1rem;
+  }
+  .prenom-nom { margin-left: 0.7rem; }
+  .adresse-mel { margin-left: 0.7rem; }
+  .privilege-titre { margin-left: 0.7rem; }
+  .mon-equipe { margin-left: 0.7rem; }
+  .privilege-liste { margin-left: 1rem; }
+}
+
+/* Media Small */
+@media (30.025em <= width <= 40em) {
+  .prenom-nom-ajouter {
+    margin-top: 0.7rem;
+    font-size: 1.1rem;
+  }
+  .prenom-nom { margin-left: 0.7rem; }
+  .privilege-titre { margin-left: 0.7rem; }
+  .mon-equipe { margin-left: 0.7rem; }
+  .privilege-liste { margin-left: 1rem; }
+}
+
+/* Media Medium */
+@media (40.025em <= width <= 64em) {
+  .avatar-container {
+    justify-content: center;
+    align-items: center;
+  }
+
+  .prenom-nom-ajouter {
+    margin-left: 0.5rem;
+    margin-top: 1rem;
+    font-size: 1.3rem;
+  }
+  .prenom-nom { margin-top: 1.5rem; }
+  .adresse-mel { margin-top: 0.3rem; }
+  .privilege-titre { margin-top: 0.3rem; }
+  .mon-equipe { margin-top: 0.3rem; }
+  .privilege-liste { margin-left: 4rem; }
+}
+
+/* Media Large */
+@media (64.025em <= width <= 90em) {
+  .avatar-container {
+    justify-content: center;
+    align-items: center;
+  }
+
+  .prenom-nom-ajouter {
+    margin-top: 1rem;
+    font-size: 1.3rem;
+  }
+  .prenom-nom { margin-top: 1.5rem; }
+  .adresse-mel { margin-top: 0.3rem; }
+  .privilege-titre { margin-top: 0.3rem; }
+  .mon-equipe { margin-top: 0.3rem; }
+  .privilege-liste { margin-left: 7rem; }
+}
+
+/* Media Large */
+@media (90.025em <= width <= 120em) {
+  .avatar-container {
+    justify-content: center;
+    align-items: center;
+  }
+
+  .prenom-nom-ajouter {
+    margin-top: 1rem;
+    font-size: 1.3rem;
+  }
+  .prenom-nom { margin-top: 1.5rem; }
+  .adresse-mel { margin-top: 0.3rem; }
+  .privilege-titre { margin-top: 0.3rem; }
+  .mon-equipe { margin-top: 0.3rem; }
+  .privilege-liste { margin-left: 7rem; }
+}
+
+/* Media Extra-Large */
+@media (120.025em <= width <= 160em) {
+  .avatar-container {
+    justify-content: center;
+    align-items: center;
+  }
+
+  .prenom-nom-ajouter {
+    margin-top: 3rem;
+    font-size: 1.2rem;
+  }
+  .prenom-nom { margin-top: 1.5rem; }
+  .adresse-mel { margin-top: 0.3rem; }
+  .privilege-titre { margin-top: 0.3rem; }
+  .mon-equipe { margin-top: 0.3rem; }
+  .privilege-liste { margin-left: 7rem; }
+}
+
+/*************************          Global     *********************************/
+
+.fieldset-information { background-color: #fff; }
+
+/* affiche prenom + nom */
+.prenom-nom { font-size: 1rem; }
+
+/* affiche adress-mel */
+.adresse-mel { font-size: 1rem; }
+
+/* affiche privilege */
+.privilege-titre { font-size: 1.1rem; }
+.privilege-liste { font-size: 1.1rem; }
+
+/* affiche equipe */
+.mon-equipe { font-size: 1rem; }
+
+/* SVG */
+.courriel-svg,
+.role-svg,
+.mon-equipe-svg,
+.preference-svg {
+  fill: #00445b;
+  width: 36px;
+  height: 36px;
+  margin-left: 0.7rem;
+}
+
+/** Alignement de la legende avec l'icone. */
+.legend-custom {
+  display: flex;
+  align-items: center;
+}
+
+/** Affiche une icone information pour la légende. */
+.information-svg {
+  fill: #00445b;
+  width: 28px;
+  height: 28px;
+  margin-bottom: 1rem;
+}
+
+.information-svg:hover,
+.preference-svg:hover {
+  fill: #ed7d20;
+}
+
+/** Retrait de liste pour la modale information */
+.retrait { padding-left: 1 rem; }
+
+/** Switch oui ou non  */
+.preference-switch {
+  display: flex;
+  justify-content: space-around;
+}
+
+/* Réduction de la marge */
+.switch-non {
+  top: 10%;
+  right: -5%;
+  position: relative;
+  color: #00445b;
+}
+
+.switch-oui {
+  top: 13%;
+  left: 8%;
+  position: relative;
+  color: #cacacaca;
+}
+
+/* décalage vers la droite */
+.switch {
+  padding-left: 1rem;
+  margin-bottom: 0.1rem;
+}
+
+/** page ajouter - taille de l'avatar */
+.avatar-container { display: flex; }
+#mon-avatar { width: 48px; }
+
+/******* fenetre modal bookmark, favori *****/
+#fermer-preference-bookmark,
+#fermer-preference-favori {
+  background-color: #00445b;
+  color: #fff;
+}
+
+#fermer-preference-bookmark:hover,
+#fermer-preference-favori:hover {
+  background-color: #006182;
+  color: #fff;
+}
+
+/** Couleurs et tailles pour les labels */
+.option-true { color: #0a0; }
+.option-false { color: #d4333f; }
+
+#modal-bookmark-label,
+#modal-favori-label,
+.option-true,
+.option-false,
+.preference-ligne-tableau { font-size: 1.1rem; }
+
+.preference-compteur-tableau { font-size: 1.4rem; }
+
+/*************** FIN *****************************/
+
+/** Bouton Ajouter/modifier/supprimer */
+.bouton-preference-ajouter-liste-favoris,
+.bouton-preference-ajouter-liste-bookmark,
+.preference-valider,
+.preference-effacer {
+  background-color: #00445b;
+}
+
+/* gestion du passage sur les boutons */
+.bouton-preference-ajouter-liste-favoris:hover,
+.bouton-preference-ajouter-liste-bookmark:hover,
+.preference-valider:hover,
+.preference-effacer:hover {
+  background-color: #006182;
+}
+
+/* select2 custom
+ *  placehoder
+ *  Ici on surchage les class de l'api select2
+ */
+
+/* Couleur du container Single */
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+  line-height: 30px;
+  color: #00445b;
+}
+
+/* Couleur du placeholder single */
+.select2-container--default .select2-selection--single .select2-selection__placeholder,
+.select2-container--default .selection .select2-selection--single .select2-selection__placeholder {
+  color: #99b4bd;
+}
+
+/* taille de la barre de selection single */
+.select2-container--default .select2-selection--single,
+.select2-container--default .selection .select2-selection--single {
+  height: 2.4375rem;
+  line-height: 1.5;
+  padding: 0.4rem;
+}
+
+/* taille de la Flêche single */
+.select2-container--default .select2-selection--single .select2-selection__arrow,
+.select2-container--default .selection .select2-selection--single .select2-selection__arrow {
+  height: 2.4375rem;
+  position: absolute;
+  top: 0;
+  right: 1px;
+  width: 20px;
+}
+
+/* Couleur de ma Flêche single */
+.select2-container--default .select2-selection--single .select2-selection__arrow b,
+.select2-container--default .selection .select2-selection--single .select2-selection__arrow b {
+  border-color: #333 transparent transparent;
+  top: 50%;
+  border-style: solid;
+  border-width: 6px 4px 0;
+  height: 0;
+  left: 50%;
+  margin-left: -4px;
+  margin-top: -2px;
+  position: absolute;
+  width: 0;
+}
+
+/* Affichage de : Proposition trouvé */
+.select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+  background-color: #006a8e;
+  color: #fff;
+}
+
+/* Couleur des options dans le selecteur */
+.select2-results__option { color: #00445b; }
+
+textarea { min-height: 1px; }
+
+.select2-container .select2-selection--multiple {
+  min-height: 32px;
+}
+
+/* Couleur de la boite de recherche Multiple */
+.select2-container--default.select2-container--disabled .select2-selection--multiple {
+  background-color: #fff;
+}
+
+/* Alignement a gauche Multiple */
+.select2-container .select2-selection--multiple .select2-selection__rendered {
+  margin-left: 0;
+}

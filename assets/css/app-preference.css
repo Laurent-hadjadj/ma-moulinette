@@ -118,8 +118,7 @@
 
 .preference-svg:hover { fill: #ed7d20; }
 
-/* Changement de la couleur par défaut par 00445b */
-input:checked ~ .switch-paddle { background: #00445b; }
+input:checked ~ .switch-paddle { background-color: #00445b; }
 
 /** Switch oui ou non  */
 .preference-switch {
