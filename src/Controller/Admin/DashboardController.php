@@ -2,16 +2,22 @@
 
 namespace App\Controller\Admin;
 
+use Symfony\Component\Routing\Annotation\Route;
+
+use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Main\Utilisateur;
 use App\Entity\Main\Equipe;
 use App\Entity\Main\Portefeuille;
 use App\Entity\Main\Batch;
-
 use PDO;
-use Doctrine\ORM\EntityManagerInterface;
+
+use App\Service\Client;
+
 
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
+
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
@@ -31,6 +37,9 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
  */
 class DashboardController extends AbstractDashboardController
 {
+    public static $sonarUrl = "sonar.url";
+    public static $removeReturnline = "/\s+/u";
+
     /**
      * [Description for __construct]
      *
@@ -46,6 +55,50 @@ class DashboardController extends AbstractDashboardController
         $this->em = $em;
     }
 
+    /**
+     * [Description for sonarHealth]
+     * Vérifie l'état du serveur
+     * http://{url}}/api/system/health
+     * Encore une fois, c'est null, il faut être admin pour récupérrer le résultat.
+     *
+     * @return response
+     *
+     * Created at: 15/12/2022, 21:14:20 (Europe/Paris)
+     * @author    Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    #[Route('/api/health', name: 'sonar_health', methods: ['POST'])]
+    public function sonarHealth(Request $request, Client $client): response
+    {
+        $url = $this->getParameter(static::$sonarUrl) . "/api/system/health";
+
+        /** On appel le client http */
+        $result = $client->http($url);
+        return new JsonResponse($result, Response::HTTP_OK);
+    }
+
+    /**
+     * [Description for informationSysteme]
+     * On récupère les informations système du serveur
+     * http://{url}}/api/system/info
+     *
+     * Attention, il faut avoir le role sonar administrateur
+     *
+     * @return response
+     *
+     * Created at: 15/12/2022, 21:14:39 (Europe/Paris)
+     * @author    Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    #[Route('/api/system/info', name: 'information_systeme', methods: ['POST'])]
+    public function informationSysteme(Request $request, Client $client): response
+    {
+        $url = $this->getParameter(static::$sonarUrl) . "/api/system/info";
+
+        /** On appel le client http */
+        $result = $client->http($url);
+        return new JsonResponse($result, Response::HTTP_OK);
+    }
     /**
      * [Description for index]
      *
