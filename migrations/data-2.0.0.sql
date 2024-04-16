@@ -5,7 +5,7 @@
 BEGIN TRANSACTION;
 
 -- ## Ajout de la version 2.0.0 dans la table ma_moulinette
-INSERT INTO ma_moulinette (version, date_version, date_enregistrement) VALUES ('2.0.0', '2023-05-30', date('now'));
+INSERT INTO ma_moulinette (version, date_version, date_enregistrement) VALUES ('2.0.0', '2024-04-22', date('now'));
 
 COMMIT;
 
@@ -317,5 +317,22 @@ ALTER TABLE historique ADD COLUMN sqale_debt_ratio DOUBLE PRECISION DEFAULT -1;
 -- 2024-03-04 : Ajout de l'attribut sqale_debt_ratio à la table mesure
 
 ALTER TABLE mesures ADD COLUMN sqale_debt_ratio DOUBLE PRECISION DEFAULT -1;
+
+COMMIT;
+
+BEGIN TRANSACTION;
+
+-- 2024-03-15 : Suppression de la table Notes et ajout de la table notes
+
+DROP TABLE IF EXISTS notes;
+
+CREATE TABLE "notes" (
+	"id"	INTEGER NOT NULL,
+	"maven_key"	VARCHAR(128) NOT NULL,
+	"type"	VARCHAR(16) NOT NULL,
+	"value"	INTEGER NOT NULL,
+	"date_enregistrement"	DATETIME NOT NULL,
+	PRIMARY KEY("id" AUTOINCREMENT)
+);
 
 COMMIT;
