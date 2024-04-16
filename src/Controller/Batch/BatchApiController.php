@@ -169,9 +169,9 @@ class BatchApiController extends AbstractController
         $projet = $this->em->getConnection()->prepare($sql)->executeQuery()->fetchAllAssociative();
 
         return [
-          "release" => $release, "snapshot" => $snapshot, "autre" => $autre,
-          "projet" => $projet[0]["projet"],
-          "date" => $projet[0]["date"]
+            "release" => $release, "snapshot" => $snapshot, "autre" => $autre,
+            "projet" => $projet[0]["projet"],
+            "date" => $projet[0]["date"]
         ];
 
     }
@@ -317,13 +317,13 @@ class BatchApiController extends AbstractController
 
         /** On défini les données à historiser par le batch */
         $mesure = [
-          "project_name" => $result1["projectName"],
-          "lines" => $lines,
-          "ncloc" => $ncloc,
-          "coverage" => $coverage,
-          "duplication_density" => $duplicationDensity,
-          "tests" => intval($tests),
-          "issues" => intval($issues),
+            "project_name" => $result1["projectName"],
+            "lines" => $lines,
+            "ncloc" => $ncloc,
+            "coverage" => $coverage,
+            "duplication_density" => $duplicationDensity,
+            "tests" => intval($tests),
+            "issues" => intval($issues),
         ];
 
         return [ "mesure" => $mesure ];
@@ -362,14 +362,14 @@ class BatchApiController extends AbstractController
             $tempoMesureValue = $mesure["value"];
 
             $sql = "INSERT OR IGNORE INTO notes (maven_key, type, date, value, date_enregistrement)
-              VALUES ('$mavenKey', '$type', '$tempoMesureDate', '$tempoMesureValue', '$tempoDate')";
+                    VALUES ('$mavenKey', '$type', '$tempoMesureDate', '$tempoMesureValue', '$tempoDate')";
             $this->em->getConnection()->prepare($sql)->executeQuery();
         }
         /** On récupère la dernière note */
         $sql = "SELECT value FROM notes
-            WHERE maven_key='$mavenKey' AND type='$type'
-            ORDER BY date DESC
-            LIMIT 1;";
+                WHERE maven_key='$mavenKey' AND type='$type'
+                ORDER BY date DESC
+                LIMIT 1;";
         $r = $this->em->getConnection()->prepare($sql)->executeQuery()->fetchAllAssociative();
 
         /** On converti la valeur en note A, B , C, D, ou E */
@@ -472,8 +472,8 @@ class BatchApiController extends AbstractController
 
         /** On enregiste les données */
         $hotspot = [
-          "nombre" => $result["paging"]["total"],
-          "high" => $high, "medium" => $medium, "low" => $low
+            "nombre" => $result["paging"]["total"],
+            "high" => $high, "medium" => $medium, "low" => $low
         ];
 
         return [ "hotspot" => $hotspot ];
@@ -552,10 +552,10 @@ class BatchApiController extends AbstractController
 
         /** On enregistre les données */
         $hotspotDetails = [
-          "nombre" => $result["paging"]["total"],
-          "high" => $high,
-          "medium" => $medium,
-          "low" => $low,
+            "nombre" => $result["paging"]["total"],
+            "high" => $high,
+            "medium" => $medium,
+            "low" => $low,
         ];
 
         return [ "hotspot_details" => $hotspotDetails ];
@@ -576,7 +576,7 @@ class BatchApiController extends AbstractController
             $note = "A";
         } else {
             $ratio = intval($reviewed[0]["reviewed"]) * 100 / intval($toReview[0]["to_review"]) +
-              intval($reviewed[0]["reviewed"]);
+                    intval($reviewed[0]["reviewed"]);
             if ($ratio >= 80) {
                 $note = "A";
             }
@@ -848,10 +848,10 @@ class BatchApiController extends AbstractController
 
         /** On enregistre les données */
         $anomalie = [
-          "anomalie_totale" => $anomalieTotal, "dette_minute" => $detteMinute,
-          "frontend" => $frontend, "backend" => $backend, "autre" => $autre,
-          "blocker" => $blocker,"critical" => $critical,"major" => $major,"info" => $info,"minor" => $minor,
-          "bug" => $bug,"vulnerability" => $vulnerability,"code_smell" => $codeSmell,
+            "anomalie_totale" => $anomalieTotal, "dette_minute" => $detteMinute,
+            "frontend" => $frontend, "backend" => $backend, "autre" => $autre,
+            "blocker" => $blocker,"critical" => $critical,"major" => $major,"info" => $info,"minor" => $minor,
+            "bug" => $bug,"vulnerability" => $vulnerability,"code_smell" => $codeSmell,
         ];
 
         return [ "anomalie" => $anomalie ];
@@ -993,23 +993,23 @@ class BatchApiController extends AbstractController
 
         //** On enregiste les données */
         $anomalieDetails = [
-          "bug_blocker" => $bugBlocker,
-          "bug_critical" => $bugCritical,
-          "bug_major" => $bugMajor,
-          "bug_minor" => $bugMinor,
-          "bug_info" => $bugInfo,
+            "bug_blocker" => $bugBlocker,
+            "bug_critical" => $bugCritical,
+            "bug_major" => $bugMajor,
+            "bug_minor" => $bugMinor,
+            "bug_info" => $bugInfo,
 
-          "vulnerability_blocker" => $vulnerabilityBlocker,
-          "vulnerability_critical" => $vulnerabilityCritical,
-          "vulnerability_major" => $vulnerabilityMajor,
-          "vulnerability_minor" => $vulnerabilityMinor,
-          "vulnerability_info" => $vulnerabilityInfo,
+            "vulnerability_blocker" => $vulnerabilityBlocker,
+            "vulnerability_critical" => $vulnerabilityCritical,
+            "vulnerability_major" => $vulnerabilityMajor,
+            "vulnerability_minor" => $vulnerabilityMinor,
+            "vulnerability_info" => $vulnerabilityInfo,
 
-          "code_smell_blocker" => $codeSmellBlocker,
-          "code_smell_critical" => $codeSmellCritical,
-          "code_smell_major" => $codeSmellMajor,
-          "code_smell_minor" => $codeSmellMinor,
-          "code_smell_info" => $codeSmellInfo,
+            "code_smell_blocker" => $codeSmellBlocker,
+            "code_smell_critical" => $codeSmellCritical,
+            "code_smell_major" => $codeSmellMajor,
+            "code_smell_minor" => $codeSmellMinor,
+            "code_smell_info" => $codeSmellInfo,
         ];
 
         return [ "anomalie_details" => $anomalieDetails ];

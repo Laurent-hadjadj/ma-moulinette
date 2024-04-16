@@ -180,9 +180,12 @@ class BatchCrudController extends AbstractCrudController
         $sql = "SELECT liste FROM portefeuille ORDER BY titre ASC";
         $l = $this->emm->getConnection()->prepare($sql)->executeQuery();
         $r = $l->fetchAssociative();
-        $nombreProjet = count(json_decode($r['liste']));
+        $nombreProjet=0;
+        if ($r){
+            $nombreProjet = count(json_decode($r['liste']));
+        }
 
-        /** On enregistre le données que l'on veut modifier */
+        /** On enregistre les données que l'on veut modifier */
         $entityInstance->setTitre(mb_strtoupper($titre));
         $entityInstance->setResponsable($user->getPrenom().' '.$user->getNom());
         $entityInstance->setNombreProjet($nombreProjet);
