@@ -358,6 +358,8 @@ General error: 1 near "4.1": syntax error"
 * [Page_Home] Ajouter une page pour afficher les différentes version d'un projet favori (i.e. modification des préférences de l'utilisateur) ;
 * [Page_Préference] Ajout du support des versions de projet en favoris ;
 * [Page_Préference] Ajout du support de la version des projets favoris ou des versions du projet favoris ;
-* [Page_Projet] Lors de la collecte des données, le ration de dette technique est récupéré (table mesure) ;
+* [Page_Projet] Lors de la collecte des données, le ratio de dette technique est récupéré (table mesure) ;
 * [Page_Suivi] Lors de l'intégration d'une version dans l'historique, le ratio de dette technique est récupéré depuis le serveur ;
-* [Page_Projet] Lors de la collecte des données, les données de la versions courrantes sont conservées.
+* [Page_Projet] Lors de la collecte des données, les données de la version courrante est conservée.
+* [Page_Projet] refactoring des traitements de collecte (message, catch des erreurs).
+* [Page_Projet] Si une erreur est détéctée lors de la collecte, on arrête la collecte (i.e on ne lance pas les autres traitements).
