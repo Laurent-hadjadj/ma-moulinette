@@ -22,27 +22,46 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class PortefeuilleRepository extends ServiceEntityRepository
 {
+    public static $removeReturnline = "/\s+/u";
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Portefeuille::class);
     }
 
-    public function save(Portefeuille $entity, bool $flush = false): void
+    /**
+     * [Description for selectPortefeuille]
+     * Retourne la liste des projets d'un portefeuille
+     *
+     * @param string $mode
+     * @param array $map
+     *
+     * @return array
+     *
+     * Created at: 10/04/2024 11:23:35 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function selectPortefeuille($mode, $map):array
     {
-        $this->getEntityManager()->persist($entity);
+        $sql = "SELECT liste
+                FROM portefeuille
+                WHERE titre=:portefeuille";
+        /** On escape les ' : normalement on en a pas bedoin */
+        //$reEncode = str_replace("'", "''", $map['portefeuille']);
 
-        if ($flush) {
-            $this->getEntityManager()->flush();
+        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+        $conn->bindValue(':portefeuille', $map['portefeuille']);
+        try {
+            if ($mode !== 'TEST') {
+                $exec=$conn->executeQuery();
+                $liste=$exec->fetchAllAssociative();
+            } else {
+                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
+            }
+        } catch (\Doctrine\DBAL\Exception $e) {
+            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
         }
+        return ['mode'=>$mode, 'code'=>200, 'liste'=>$liste, 'erreur'=>''];
     }
-
-    public function remove(Portefeuille $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->remove($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
 }
