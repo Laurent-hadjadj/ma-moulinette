@@ -126,7 +126,7 @@ const favori=async function(){
       {
         zero = '0';
       }
-      let ligne = "";
+      let ligne = '';
       ligne = `<tr id="ligne-favori-${ n }">
                 <td class="preference-compteur-tableau">${ zero }${ n }</td>
                 <td id="mavenkey-favori-${ n }" class="preference-ligne-tableau">${ l }</td>
@@ -157,7 +157,7 @@ const favori=async function(){
 
 /**
  * [Description for version]
- * Récupération de la liste et suppression d'un favori
+ * Récupération de la liste des versions favorites
  *
  * @return [type]
  *
@@ -168,15 +168,17 @@ const favori=async function(){
 const version=async function(){
   /** on récupère les préférences */
   const data={ categorie: 'version' }
-  const options = {
-    url: `${serveur()}/api/preference/categorie`, type: 'GET',
-          dataType: 'json', data, contentType };
+  const options = { url: `${serveur()}/api/preference/categorie`, type: 'GET',
+                    dataType: 'json', data, contentType };
 
   const r = await $.ajax(options);
+
   /** Par défaut on affiche pas de version */
   $('#js-modal-version-statut').html(`<span class="option-false"><strong>Désactivée.</strong></span>`);
+
   /** On a une version ? */
   let n = 1, m, lignes, ligne, debut, fin;
+
   if (r.statut.version && r.version.length > 0)
   {
     $('#js-modal-version-statut').html(`<span class="option-true"><strong>Activée.</strong></span>`);
@@ -184,8 +186,7 @@ const version=async function(){
     $('.js-accordion').html('');
     r.version.forEach(o =>
     {
-      for (const [key, value] of Object.entries(o))
-      {
+      for (const [key, value] of Object.entries(o)) {
         debut = `
               <li class="accordion-item" data-accordion-item>
                 <a href="#" class="accordion-title open-sans accordion-custom">${ key }</a>
@@ -215,6 +216,7 @@ const version=async function(){
       }
     });
   }
+
   /** On ouvre la fenêtre modal */
   $('#modal-version').foundation('open');
   /** On initialise l'accordéon */
@@ -235,12 +237,12 @@ const version=async function(){
 
     const data_1 = { mode, index, mavenKey, version };
     const options_1 = {
-      /** On appel le service de suppresion du favori */
+      /** On appel le service de suppresion de la version favorite */
       url: `${ serveur() }/api/preference/version/delete`, type: 'POST',
       dataType: 'json', data: JSON.stringify(data_1), contentType
     };
     console.log(options_1);
-    $.ajax(options_1).then(r_1 => { console.log(r_1); });
+    //$.ajax(options_1).then(r_1 => { console.log(r_1); });
   });
 }
 
