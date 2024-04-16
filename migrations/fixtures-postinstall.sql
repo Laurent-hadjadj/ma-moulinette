@@ -23,10 +23,6 @@ BEGIN TRANSACTION;
 
 UPDATE sqlite_sequence SET seq = 0 WHERE seq > 0;
 
-COMMIT;
-
-BEGIN TRANSACTION;
-
 -- ## Initialise la table des versions. 0 (false) and 1 (true).
 INSERT INTO ma_moulinette (version, date_version, date_enregistrement) VALUES ('1.0.0', '2022-01-04', date('now'));
 INSERT INTO ma_moulinette (version, date_version, date_enregistrement) VALUES ('1.1.0', '2022-04-24', date('now'));
@@ -92,7 +88,7 @@ VALUES
 
 
 -- ## Ajout de l'équipe par défaut
-INSERT INTO utilisateur (titre, description, date_enregistrement)
+INSERT INTO equipe (titre, description, date_enregistrement)
 VALUES ('["AUCUNE"]', 'Personne ne m''aime !', '1980-01-01 00:00:00');
 
 -- ## On met à jour la colonne equipe et preference
