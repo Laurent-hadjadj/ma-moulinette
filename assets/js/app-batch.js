@@ -93,8 +93,8 @@ $('.i-am-human-svg').on('click', function() {
   const idTab = id.split('-');
 
   /** On récupère le nom du Job */
-  const job=$(`#job-${idTab[trois]}`).text();
-  $('#js-nom-job').html(job);
+  const portefeuille=$(`#job-${idTab[trois]}`).text();
+  $('#js-nom-job').html(portefeuille);
 
   /** On ouvre la fenêtre modal */
   $('#modal-traitement-manuel').foundation('open');
@@ -116,7 +116,7 @@ $('.i-am-human-svg').on('click', function() {
     $(collecteAnimation).addClass('sp-volume');
     $(collecteTexte).html(`Démarrage du traitement...`);
 
-    const data = { job, mode:'null' };
+    const data = { portefeuille , mode:'null' };
     const options = {
       url: `${serveur()}/traitement/pending`, type: 'GET',
       dataType: 'json', data, contentType};
@@ -140,7 +140,7 @@ $('.i-am-human-svg').on('click', function() {
         }, mille);
       }
       /* on lance le traitement */
-      batchManuel(idTab[trois], job);
+      batchManuel(idTab[trois], portefeuille);
       resolve();
       });
     });
@@ -150,7 +150,8 @@ $('.i-am-human-svg').on('click', function() {
 
 /**
  * [Description for batchManuel]
- *  Lance le batch manuel
+ * Lance le batch manuel
+ *
  * @param string id
  * @param string job
  *
@@ -160,13 +161,13 @@ $('.i-am-human-svg').on('click', function() {
  * @author    Laurent HADJADJ <laurent_h@me.com>
  * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
-const batchManuel = function(id, job){
+const batchManuel = function(id, portefeuille){
   /** On lance le processus */
   const infoBulle='#info-bulle';
   const collecteTexte='#collecte-texte';
   const collecteAnimation='#collecte-animation';
 
-  const data = { job };
+  const data = { portefeuille, mode: 'null' };
   const options = {
     url: `${serveur()}/traitement/manuel`, type: 'POST',
     dataType: 'json', data: JSON.stringify(data), contentType};
@@ -246,8 +247,9 @@ const lireInformationManuel = function(job, type){
 
 /**
  * [Description for traitementAuto]
+ * Démmarrage du traitement automatique.
  *
- * @return [type]
+ * @return void
  *
  * Created at: 08/02/2023, 17:09:11 (Europe/Paris)
  * @author    Laurent HADJADJ <laurent_h@me.com>
@@ -257,7 +259,8 @@ const traitementAuto=function(){
   /** On récupère le token */
   const e = document.querySelector('.batch-processing-svg');
   const token=e.dataset.session;
-  const data = { token };
+  const data = { token, mode: 'null' };
+
   const options = {
   url: `${serveur()}/traitement/auto`, type: 'POST',
   dataType: 'json', data: JSON.stringify(data), contentType};
@@ -268,6 +271,7 @@ const traitementAuto=function(){
   });
 };
 
+/** On lance un traitement automatique */
 $('.batch-processing-svg').on('click', ()=>{
   traitementAuto();
 });
