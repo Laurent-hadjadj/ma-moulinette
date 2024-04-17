@@ -74,20 +74,20 @@ class Client
             }
             if ($response->getStatusCode() == 401) {
                 $this->logger->ERROR("Erreur 401 - Erreur d\'Authentification. La clé n\'est pas correcte.");
-                throw new \UnexpectedValueException('Erreur d\'Authentification. La clé n\'est pas correcte.');
                 return ['code'=> 401];
             }
             if ($response->getStatusCode() == 404) {
                 $this->logger->ERROR("Erreur 404 - Le service n'a pas trouvé les éléments.");
                 return ['code'=> 404];
             }
-            throw new \UnexpectedValueException('Retour de la réponse différent de ce qui est prévu. Erreur '
-                    . $response->getStatusCode());
-            }
+        }
 
 
         /** Si tous va bien on ajoute une trace dans les log */
-        $message="[".$response->getInfo('http_method')."] - ".$response->getInfo('http_code')." - ".$response->getInfo('total_time')." - ".$response->getInfo('url');
+        $message="[".$response->getInfo('http_method')."] - ".
+                    $response->getInfo('http_code')." - ".
+                    $response->getInfo('total_time')." - ".
+                    $response->getInfo('url');
         $this->logger->INFO($message);
 
         /** On retourne la réponse. */
