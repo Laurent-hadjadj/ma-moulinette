@@ -111,18 +111,20 @@ class HomeController extends AbstractController
         $result = $client->http($url);
 
         /**
-         * On compte le nombre de projet.
+         * On compte le nombre de projet si la table n'est pas vide.
          */
         $nombre = 0;
-        foreach ($result['components'] as $component) {
-            /**
-             * On exclue les projets archivés avec le suffixe "-SVN".
-             *  "project": "fr.domaine:mon-application-SVN"
-             */
-            $mystring = $component["project"];
-            $findme   = '-SVN';
-            if (!strpos($mystring, $findme)) {
-                $nombre = $nombre + 1;
+        if ($result['code']===200){
+            foreach ($result['components'] as $component) {
+                /**
+                 * On exclue les projets archivés avec le suffixe "-SVN".
+                 *  "project": "fr.domaine:mon-application-SVN"
+                 */
+                $mystring = $component["project"];
+                $findme   = '-SVN';
+                if (!strpos($mystring, $findme)) {
+                    $nombre = $nombre + 1;
+                }
             }
         }
         return $nombre;
