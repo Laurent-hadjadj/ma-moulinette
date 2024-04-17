@@ -49,7 +49,6 @@ class ApiHomeController extends AbstractController
     public static $dateFormatShort = "Y-m-d";
     public static $dateFormat = "Y-m-d H:i:s";
     public static $europeParis = "Europe/Paris";
-    public static $removeReturnline = "/\s+/u";
     public static $reference = '<strong>[Accueil]</strong>';
     public static $erreur400 = "La requête est incorrecte (Erreur 400).";
     public static $erreur403 = "Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).";
