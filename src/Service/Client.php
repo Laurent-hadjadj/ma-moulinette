@@ -40,6 +40,17 @@ class Client
     }
 
 
+    /**
+     * [Description for http]
+     *
+     * @param string $url
+     *
+     * @return array
+     *
+     * Created at: 17/04/2024 18:46:29 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function http($url): array
     {
         if (empty($this->params->get('sonar.token')) && empty($this->params->get('sonar.user'))){
