@@ -2,6 +2,13 @@
 
 ![Ma-Moulinette](/documentation/ressources/home-000.jpg)
 
+┏┓┏┓┏┓ ┏━━┓ ┏━━━┓
+┃┃┃┃┃┃ ┗┫┣┛ ┃┏━┓┃
+┃┃┃┃┃┃━━┃┃━━┃┗━┛┃
+┃┗┛┗┛┃━━┃┃━━┃┏━━┛
+┗┓┏┓┏┛ ┏┫┣┓ ┃┃
+ ┗┛┗┛  ┗━━┛ ┗┛  NeXt 2.0.0 Release on september 2024 !
+
 Ma Moulinette est une application, locale (pour le moment...), qui a pour objectif de simplifier la consultation et le suivi des principaux indicateurs collectés et calculés par la plateforme SonarQube.
 
 L'application fonctionne avec la version SonarQube 8.9.9 LTS et supérieure. Elle s'appuie sur les API publiques de l'application.
