@@ -114,7 +114,7 @@ class HomeController extends AbstractController
          * On compte le nombre de projet si la table n'est pas vide.
          */
         $nombre = 0;
-        if ($result['code']===200){
+        if (array_key_exists('code', $result)){
             foreach ($result['components'] as $component) {
                 /**
                  * On exclue les projets archivés avec le suffixe "-SVN".
