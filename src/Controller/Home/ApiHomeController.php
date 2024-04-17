@@ -94,7 +94,8 @@ class ApiHomeController extends AbstractController
 
         /** On teste si le body est correcte */
         if ($data === null || !property_exists($data, 'mode')) {
-            return $response->setData(['data'=>$data, 'code'=>400, 'reference'=>static::$reference, 'message'=>static::$erreur400, 'type'=>'alert', 'result'=>'',Response::HTTP_BAD_REQUEST]);
+            return $response->setData(['data'=>$data, 'code'=>400, 'reference'=>static::$reference,
+            'message'=>static::$erreur400, 'type'=>'alert','result'=>'',Response::HTTP_BAD_REQUEST]);
             }
 
         $url = $this->getParameter(static::$sonarUrl) . "/api/system/status";
@@ -118,7 +119,7 @@ class ApiHomeController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/home/projet', name: 'home_projet_liste', methods: ['POST'])]
-    public function homlProjetListe(Request $request, Client $client): response
+    public function homeProjetListe(Request $request, Client $client): response
     {
         /** On instancie l'EntityRepository */
         $listeProjetEntity = $this->em->getRepository(ListeProjet::class);
@@ -132,7 +133,9 @@ class ApiHomeController extends AbstractController
 
         /** On teste si le body est correcte */
         if ($data === null || !property_exists($data, 'mode')) {
-        return $response->setData(['data'=>$data,'code'=>400, 'reference'=>static::$reference, 'message'=>static::$erreur400, 'type'=>'alert', Response::HTTP_BAD_REQUEST]);
+        return $response->setData(['data'=>$data,'code'=>400,
+        'reference'=>static::$reference, 'message'=>static::$erreur400,
+        'type'=>'alert', Response::HTTP_BAD_REQUEST]);
         }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
@@ -263,7 +266,8 @@ class ApiHomeController extends AbstractController
 
         /** On teste si le body est correcte */
         if ($data === null || !property_exists($data, 'mode')) {
-        return $response->setData(['data'=>$data,'code'=>400, 'reference'=>static::$reference, 'message'=>static::$erreur400, 'type'=>'alert', Response::HTTP_BAD_REQUEST]);
+        return $response->setData(['data'=>$data,'code'=>400, 'reference'=>static::$reference,
+        'message'=>static::$erreur400, 'type'=>'alert', Response::HTTP_BAD_REQUEST]);
         }
 
         $url1 = $this->getParameter(static::$sonarUrl)
