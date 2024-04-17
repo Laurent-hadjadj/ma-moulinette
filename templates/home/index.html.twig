@@ -83,7 +83,7 @@
             </div>
           </div>
           <div class="small-4 medium-2 large-2 referentiel-resultat cell">
-            <p class="text-center">
+            <p class="margin-left-2">
               <span id="js-nombre-projet" class="stat color-noir">{{projetBD|format_number}}</span>
               {% set difference = projetBD - projetSonar %}
               {% if difference > 0 %}
@@ -120,7 +120,7 @@
             </div>
           </div>
           <div class="small-4 medium-2 large-2 referentiel-resultat cell">
-            <p id="nombre-profil" class="text-center">
+            <p id="nombre-profil" class="margin-left-2">
               <span class="stat color-noir">{{profilBD|format_number}}</span>
               {% set difference = profilBD - profilSonar %}
               {% if difference > 0 %}
@@ -139,7 +139,7 @@
 
         <div class="grid-x cell">
           {% for message in app.flashes('info') %}
-            <div class="callout primary cell" data-closable>
+            <div class="callout alert-callout-border primary cell" data-closable>
               <p class="open-sans text-justify callout-message">{{ message }}</p>
               <button id="info-close" class="close-button" aria-label="Dismiss alert" type="button" data-close>
                 <span aria-hidden="true">&times;</span>
