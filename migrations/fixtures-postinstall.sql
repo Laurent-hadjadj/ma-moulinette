@@ -51,7 +51,7 @@ VALUES
 (1,'admin@ma-moulinette.fr','["ROLE_GESTIONNAIRE"]',
 '$2y$13$6n72QhYwz.iufebkV.XaAOO4IOm3zOYcfzPUmal.jDTs8/QFq1p4K',
 'admin','@ma-moulinette','1980-01-01 00:00:00',1,'chiffre/01.png',
-'AUCUNE');
+'["AUCUNE"]');
 
 -- ## Ajout des comptes de tests (bcrypt)
 INSERT INTO utilisateur
