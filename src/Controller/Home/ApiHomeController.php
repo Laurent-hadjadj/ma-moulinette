@@ -148,7 +148,6 @@ class ApiHomeController extends AbstractController
         }
 
         $url = $this->getParameter(static::$sonarUrl)."/api/components/search_projects?ps=500";
-
         /** On appel le client http */
         $result = $client->http($url);
         /** On, initialiser les variables  */
@@ -160,11 +159,13 @@ class ApiHomeController extends AbstractController
         $date->setTimezone($timezone);
 
         /** On vérifie que sonarqube a au moins 1 projet */
-        if (!$result || $result['paging']['total']<1 || count($result['components'])<1) {
-            return $response->setData([
-                'type' => 'warning', 'mode' => $data->mode,
-                'reference' => static::$reference, 'code' => 404,
-                'message'=>static::$erreur404, Response::HTTP_OK]);
+        if (array_key_exists('total', $result)){
+            if ($result['code']===404) {
+                return $response->setData([
+                    'type' => 'warning', 'mode' => $data->mode,
+                    'reference' => static::$reference, 'code' => 404,
+                    'message'=>static::$erreur404, Response::HTTP_OK]);
+            }
         }
 
         /** On supprime les données de la table avant d'importer les données. */
