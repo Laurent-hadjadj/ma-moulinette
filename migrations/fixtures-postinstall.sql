@@ -97,7 +97,9 @@ SET equipe = '[]'
 WHERE equipe IS NULL or equipe = "";
 
 UPDATE utilisateur
-SET preference = '{"statut":{"projet":false,"favori":false,"version":false,"bookmark":false}'
+SET preference = '{
+"statut":{"projet":false,"favori":false,"version":false,"bookmark":false},
+"projet":[],"favori":[],"version":[],"bookmark":[]}'
 WHERE preference IS NULL OR preference = "";
 
 COMMIT;
