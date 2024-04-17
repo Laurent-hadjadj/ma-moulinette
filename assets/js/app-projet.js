@@ -227,7 +227,6 @@ const selectProjet=async function() {
     url: `${serveur()}/api/projet/liste`, type: 'POST',
           dataType: 'json', data: JSON.stringify(data), contentType };
   const async = await $.ajax(options).then(t => {
-    console.log(t);
     if (t.code===http_400 || t.code===http_406 || t.code===http_500){
       afficheMessage(t)
       sessionStorage.setItem('liste des projet autorisée', "L'utilisateur n'est pas rattaché à une équipe ou pas de projet.");
