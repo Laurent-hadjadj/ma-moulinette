@@ -73,7 +73,8 @@ class ResetPasswordController extends AbstractController
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/mot-de-passe/mise-a-jour', name: 'reset_mot_de_passe')]
-    public function resetMotDePasse(Request $request, UserPasswordHasherInterface $passwordHasher, TokenInterface $token): Response
+    public function resetMotDePasse(Request $request,
+        UserPasswordHasherInterface $passwordHasher, TokenInterface $token): Response
     {
         /** on récupère le login de l'utilisateur connecté */
         $courriel=$token->getUser()->getCourriel();
@@ -172,12 +173,12 @@ class ResetPasswordController extends AbstractController
 
         /** On teste si le body est correcte */
         if ($data === null || !property_exists($data, 'mode')  || !property_exists($data, 'init')) {
-            return $response->setData(['data'=>$data,'code'=>400, 'reference'=>static::$reference, 'message'=>static::$erreur400, 'type'=>'alert', Response::HTTP_BAD_REQUEST]);
+            return $response->setData(['data'=>$data,'code'=>400, 'reference'=>static::$reference,
+                'message'=>static::$erreur400, 'type'=>'alert', Response::HTTP_BAD_REQUEST]);
             }
 
         /** On récupère le filtre de recherche */
         $data = json_decode($request->getContent());
-        $mode = $data->mode;
         $init = $data->init;
 
         /** On créé un objet DateTime */
