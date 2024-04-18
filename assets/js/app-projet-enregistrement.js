@@ -92,7 +92,7 @@ export const enregistrement=function(mavenKey) {
   const nombreLigne=t6.dataset.nombreLigne;
   const nombreLigneDeCode=t7.dataset.nombreLigneDeCode;
   const couverture=t8.dataset.coverage;
-  const sqalesebtRatio=t8a.dataset.sqaleDebtRatio;
+  const sqaleDebtRatio=t8a.dataset.sqaleDebtRatio;
   const duplication=t9.dataset.duplication;
   const testsUnitaires=t10.dataset.testsUnitaires;
   const nombreDefaut=t11.dataset.nombreDefaut;
@@ -186,7 +186,7 @@ export const enregistrement=function(mavenKey) {
     versionRelease, versionSnapshot, versionAutre, version,
     dateVersion, suppressWarning, noSonar, todo,
     nombreLigneDeCode, nombreLigne, couverture, duplication,
-    sqalesebtRatio, testsUnitaires, nombreDefaut,
+    sqaleDebtRatio, testsUnitaires, nombreDefaut,
     dette,
     nombreBug, nombreVulnerability, nombreCodeSmell,
     frontend,backend, autre,

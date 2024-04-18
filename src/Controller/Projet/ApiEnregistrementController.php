@@ -93,7 +93,7 @@ class ApiEnregistrementController extends AbstractController
         $save->setNombreLigne($data->nombreLigne);
         $save->setNombreLigneCode($data->nombreLigneDeCode);
         $save->setCouverture($data->couverture);
-        $save->setSqaleDebtRatio($data->sqaledebtRatio);
+        $save->setSqaleDebtRatio($data->sqaleDebtRatio);
         $save->setDuplication($data->duplication);
         $save->setTestsUnitaires($data->testsUnitaires);
         $save->setNombreDefaut($data->nombreDefaut);
