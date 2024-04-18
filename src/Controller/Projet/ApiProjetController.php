@@ -34,7 +34,6 @@ use App\Entity\Main\ListeProjet;
 class ApiProjetController extends AbstractController
 {
     /** Définition des constantes */
-    public static $removeReturnline = "/\s+/u";
     public static $reference = "<strong>[PROJET]</strong>";
     public static $erreur400 = "La requête est incorrecte (Erreur 400).";
     public static $erreur404 = "Vous devez être rattaché à une équipe (erreur 404)";
@@ -94,7 +93,8 @@ class ApiProjetController extends AbstractController
             return $response->setData(['code' => $request['code'], Response::HTTP_OK]);
         }
 
-        return $response->setData(['mode' => $data->mode, 'code'=>200, 'statut' => $request['statut'], Response::HTTP_OK]);
+        return $response->setData(['mode' => $data->mode, 'code'=>200,
+        'statut' => $request['statut'], Response::HTTP_OK]);
     }
 
     /**
@@ -161,8 +161,8 @@ class ApiProjetController extends AbstractController
 
         /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'mode')) {
-            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
-                                        'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert',
+            'reference'=> static::$reference, 'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
         }
 
         /* On bind les informations utilisateur */
