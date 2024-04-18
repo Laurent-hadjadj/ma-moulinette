@@ -7,25 +7,26 @@
 @echo *****************************************
 
 @echo:
-@echo Env       : dev
-@echo Script    : v1.1.0
-@echo Symfony   : v6.4.3
-@echo Php       : v8.3.0-NTS
-@echo nodejs    : 18.17.1
+@echo Env       	: dev
+@echo Script    	: 1.1.0
+@echo Symfony   	: 6.4
+@echo Symfony-cli 	: 5.8.2
+@echo Php       	: 8.3.0-NTS
+@echo nodejs    	: 18.17.1
 @echo:
 
 @echo Génére le rapport de couverture des tests unitaires.
 @echo Le rapport se trouve dans le dossier ma-moulinette/reports
 
 @set lecteur=c:
-@set app=%lecteur%\environnement\projet\ma-moulinette
-@set php=%app%\php-8.3.0-NTS\
-@set nodejs=%app%\node-18.17.1\
+@set app=%lecteur%\environnement
+@set php=%app%\0_toolz\php-8.3.0-NTS\
+@set nodejs=%app%\0_toolz\node-18.17.1\
 
 @set HTTP_PROXY=
 @set HTTPS_PROXY=
 
-@set PATH=%app%\symfony-cli\current;%app%\composer\;%php%;%nodejs%;%PATH%
+@set PATH=%app%\symfony-cli\current;%php%;%nodejs%;%PATH%
 
 @cd %app%\ma-moulinette
 
