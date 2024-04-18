@@ -457,7 +457,8 @@ class CosuiController extends AbstractController
 
             $nombrePresentationVulnerabilityBlocker = $nombrePresentationVulnerabilityCritical = 0;
             $nombrePresentationVulnerabilityMajor = 0;
-            $nombreMetierVulnerabilityBlocker = $nombreMetierVulnerabilityCritical = $nombreMetierVulnerabilityMajor = 0;
+            $nombreMetierVulnerabilityBlocker = $nombreMetierVulnerabilityCritical = 0;
+            $nombreMetierVulnerabilityMajor = 0;
 
             $message = "[COSUI-001] Il n'y a pas de données dans la babase !";
             $this->addFlash('alert', $message);
@@ -489,12 +490,13 @@ class CosuiController extends AbstractController
         if ($nn['resultat'] === false) {
             $initialVersionApplication = 'NaN';
             $initialDateApplication = '01/01/1980';
-            $initialNoteCodeSmell = $initialNoteReliability = $initialNoteReliability = 'F';
+            $initialNoteCodeSmell = $initialNoteReliability = 'F';
             $initialNoteSecurity = $initialNoteHotspot = 'F';
             $initialBugBlocker = $initialBugCritical = $initialBugMajor = 0;
             $initialVulnerabilityBlocker = $initialVulnerabilityCritical = $initialVulnerabilityMajor = 0;
             $initialCodeSmellBlocker = $initialCodeSmellCritical = $initialCodeSmellMajor = 0;
-            $initialHotspot = 0;
+            $initialCouverture = $initialHotspot = 0;
+            $initialSqaleDebtRatio = 100;
             $message = "[COSUI-002] Vous devez choisir un projet comme référence !";
             $this->addFlash('alert', $message);
         } else {
