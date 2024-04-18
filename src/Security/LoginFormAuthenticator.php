@@ -124,7 +124,7 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
         if ($init==0){
             return new RedirectResponse($this->urlGenerator->generate('home'));
         } else {
-            return new RedirectResponse($this->urlGenerator->generate('renew'));
+            return new RedirectResponse($this->urlGenerator->generate('reset_mot_de_passe'));
         }
     }
 
