@@ -210,16 +210,16 @@ const options = {
       if (t.code === 'OK') {
         const message='Enregistrement des informations effectué.';
         log(` - INFO : ${message}`);
-        const callbox=`<div class="callout success text-justify" data-closable="slide-out-right">
-                        <p style="color:#187e3d;" class="open-sans" cell">Bravo ! ${message}</p>
+        const callbox=`<div class="callout alert-callout-border success text-justify" data-closable="slide-out-right">
+                        <p class="open-sans cell"><strong>Bravo !</strong> ${message}</p>
                         <button class="close-button" aria-label="Fermer la fenêtre" type="button" data-close>
                         <span aria-hidden="true">&times;</span></button></div>`;
         $('#message').html(callbox);
       } else {
         const message='Cette version existe déjà dans l\'historique.';
         log(` - ERROR (${t.code}) : ${message}`);
-        const callbox=`<div class="callout warning text-justify" data-closable="slide-out-right">
-                      <p style="color:#00445b;" class="open-sans" cell">Ooups ! ${message}</p>
+        const callbox=`<div class="callout alert-callout-border warning text-justify" data-closable="slide-out-right">
+                      <p class="open-sans cell"><strong>Ooups !</strong> ${message}</p>
                       <button class="close-button" aria-label="Fermer la fenêtre" type="button" data-close>
                       <span aria-hidden="true">&times;</span></button></div>`;
         $('#message').html(callbox);
