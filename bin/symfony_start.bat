@@ -12,11 +12,12 @@
 @echo *****************************************
 
 @echo:
-@echo Env       : dev
-@echo Script    : v1.6.0
-@echo Symfony   : v6.4.7
-@echo Php       : v8.3.0-NTS
-@echo nodejs    : 18.17.1
+@echo Env         	: dev
+@echo Script      	: 1.6.0
+@echo Symfony     	: 6.4
+@echo Symfony-cli 	: 5.8.2
+@echo Php         	: 8.3.0-NTS
+@echo nodejs      	: 18.17.1
 @echo:
 
 @set lecteur=c:
