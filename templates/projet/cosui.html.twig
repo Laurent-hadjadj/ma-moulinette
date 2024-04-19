@@ -74,7 +74,7 @@
 
       {# On affiche les messages #}
       {% for message in app.flashes('alert') %}
-        <div class="callout alert" data-closable>
+        <div class="callout alert-callout-border alert" data-closable>
           <p class="open-sans text-justify callout-message">{{ message }}</p>
           <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
             <span aria-hidden="true">&times;</span>
@@ -103,8 +103,6 @@
                     data-labelA="{{label1}}"
                     data-labelB="{{label2}}">
           </caption>
-
-          ></caption>
           <thead>
             <tr class="open-sans">
               <th colspan="1" scope="col" class="text-center">Application</th>
