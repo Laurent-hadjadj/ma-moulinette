@@ -67,7 +67,7 @@ Aujourd'hui, l'application est régulièrement utilisée et a fait l'objet de no
 
 ### Pour bien démarrer
 
-[Pour bien démarrer](/documentation/pour_bien_démarre.md)
+[Pour bien démarrer](/documentation/pour_bien_demarrer.md)
 
 ### Gestion des erreurs
 
