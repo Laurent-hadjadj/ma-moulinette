@@ -16,7 +16,7 @@
 * [Accueil](/documentation/accueil.md)
 * [Profil](/documentation/profil.md)
 * [Profil-details](/documentation/profil-details.md)
-* [owasp](/documentation/projet.md)
+* [projet](/documentation/projet.md)
 * [**OWASP**](/documentation/owasp.md)
 * [Suivi](/documentation/suivi.md)
 * [COSUI](/documentation/cosui.md)
