@@ -4,7 +4,7 @@
 
 ## Backoffice de gestion
 
-* [Dashboard](/documentation/indicateurs.md)
+* [Dashboard](/documentation/dashboard.md)
 * [**Utilisateur**](/documentation/utilisateur.md)
 * [Equipe](/documentation/equipe.md)
 * [Portefeuille](/documentation/portefeuille.md)
