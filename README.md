@@ -59,7 +59,7 @@ Aujourd'hui, l'application est régulièrement utilisée et a fait l'objet de no
 
 ### Backoffice de gestion
 
-* [Dashboard](/documentation/indicateurs.md)
+* [Dashboard](/documentation/dashboard.md)
 * [Utilisateur](/documentation/utilisateur.md)
 * [Équipe](/documentation/equipe.md)
 * [Portefeuille](/documentation/portefeuille.md)
