@@ -72,7 +72,7 @@ Aujourd'hui, l'application est régulièrement utilisée et a fait l'objet de no
 ### Gestion des erreurs
 
 * [Erreur HTTP](/documentation/http-erreur.md)
-* [Erreurs courantes](/documentation/erreur.md)
+* [Erreurs courantes](/documentation/erreurs.md)
 
 ### Audit de sécurité
 
