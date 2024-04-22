@@ -187,7 +187,8 @@ class ApiNosonarController extends AbstractController
             /** Il n'y a pas de noSOnar ou de suppressWarning */
         }
 
-        return $response->setData(['mode' => $data->mode, 'code'=>200, 'nosonar' => $result["paging"]['total'], Response::HTTP_OK]);
+        return $response->setData(['mode' => $data->mode, 'code'=>200,
+        'nosonar' => $result["paging"]['total'], Response::HTTP_OK]);
     }
 
 }
