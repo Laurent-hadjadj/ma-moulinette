@@ -353,7 +353,8 @@ class ApiHotspotController extends AbstractController
         $map=['maven_key'=>$data->maven_key];
         $liste=$informationProjetEntity->selectInformationProjetProjectVersion($data->mode, $map);
         if ($liste['code']!=200) {
-            return $response->setData(['mode' => $data->mode, 'code' => $liste['code'], 'message'=>$liste['erreur'], Response::HTTP_OK]);
+            return $response->setData([
+                'mode' => $data->mode, 'code' => $liste['code'], 'message'=>$liste['erreur'], Response::HTTP_OK]);
         }
 
         if (!$liste['info']) {
@@ -663,7 +664,7 @@ class ApiHotspotController extends AbstractController
         }
 
         /** Si la liste des hotspots est vide on envoi un code http 406 */
-        if (empty($liste)) {
+        if (empty($request['liste'])) {
             return $response->setData(['mode' => $data->mode, 'code' => 406, Response::HTTP_OK]);
         }
 
@@ -672,7 +673,7 @@ class ApiHotspotController extends AbstractController
          * On envoie la clé du projet et la clé du hotspot.
          */
         $ligne = 0;
-        foreach ($liste as $elt) {
+        foreach ($request['liste'] as $elt) {
             $ligne++;
             $key = $this->hotspotDetails($data->maven_key, $elt['key'], $client);
             $details = new  HotspotDetails();
