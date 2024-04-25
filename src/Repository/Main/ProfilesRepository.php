@@ -44,7 +44,8 @@ class ProfilesRepository extends ServiceEntityRepository
     public function countProfiles($mode): array
     {
         $sql = "SELECT COUNT(*) AS total
-                FROM profiles";
+                FROM profiles
+                WHERE is_default = 1";
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         try {
             if ($mode !== 'TEST') {
@@ -77,7 +78,8 @@ class ProfilesRepository extends ServiceEntityRepository
                         active_rule_count as regle,
                         rules_update_at as date,
                         is_default as actif
-                        FROM profiles";
+                        FROM profiles
+                        WHERE is_default = 1";
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         try {
             if ($mode !== 'TEST') {
