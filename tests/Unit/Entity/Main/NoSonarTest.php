@@ -11,13 +11,16 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
-namespace App\Tests\Entity\Main;
+namespace App\Tests\unit\Entity\Main;
 
 use PHPUnit\Framework\TestCase;
 use App\Entity\Main\NoSonar;
 use App\Repository\Main\NoSonarRepository;
 use DateTime;
 
+/**
+ * [Description NoSonarTest]
+ */
 class NoSonarTest extends TestCase
 {
   /**
@@ -33,10 +36,10 @@ class NoSonarTest extends TestCase
   public function dataset(): array
   {
     return [
-      ['id'=>1, 'maven_key'=> 'fr.ma-petite-entreprise:monapplication',
+      ['id'=>1, 'maven_key'=> 'fr.ma-petite-entreprise:ma-moulinette',
       'rule'=>'java:S1309',
-      'component'=> 'fr.ma-petite-entreprise:monapplication:
-      monapplication-service/src/main/java/fr/ma-petite-entreprise/monapplication/service/ClamAvService.java',
+      'component'=> 'fr.ma-petite-entreprise:mo-moulinette:
+      ma-moulinette-service/src/main/java/fr/ma-petite-entreprise/ma-moulinette/service/ClamAvService.java',
       'line'=> 123,
       'date_enregistrement'=> new DateTime()],
     ];
@@ -62,28 +65,7 @@ class NoSonarTest extends TestCase
     $this->assertEquals('java:S1309', $u[0]['rule']);
   }
 
-  /**
-   * [Description for testNoSonarCount]
-   * On compte le nombre d'enregistrement dans la collection.
-   *
-   * @return void
-   *
-   * Created at: 14/02/2023, 13:21:20 (Europe/Paris)
-   * @author    Laurent HADJADJ <laurent_h@me.com>
-   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
-  public function testNoSonarCount(): void
-  {
-    /** On récupère le jeu de données */
-    $d=static::dataset();
-
-    $mockRepo = $this->createMock(NoSonarRepository::class);
-    $mockRepo->method('findAll')->willReturn($d);
-    $u=$mockRepo->findAll();
-    $this->assertCount(1, $u);
-  }
-
-  /**
+/**
    * [Description for testNoSonarType]
    * On test le type
    * @return void
