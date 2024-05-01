@@ -11,14 +11,14 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
-namespace App\Tests\Entity\Main;
+namespace App\Tests\unit\Entity\Main;
 
-use PHPUnit\Framework\TestCase;
-use App\Entity\Main\Notes;
-use App\Repository\Main\NotesRepository;
 use DateTime;
+use PHPUnit\Framework\TestCase;
+use App\Entity\Main\Portefeuille;
+use App\Repository\Main\PortefeuilleRepository;
 
-class NotesTest extends TestCase
+class PortefeuilleTest extends TestCase
 {
   /**
    * [Description for dataset]
@@ -26,23 +26,23 @@ class NotesTest extends TestCase
    *
    * @return array
    *
-   * Created at: 14/02/2023, 12:26:32 (Europe/Paris)
+   * Created at: 14/02/2023, 10:52:26 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   public function dataset(): array
   {
     return [
-      ['maven_key'=> 'fr.ma-petite-entreprise:ma-moulinette',
-      'type'=>'reliability',
-      'date'=> new DateTime(),
-      'value'=> 1,
+      ['id' =>1, 'titre'=> 'TEST MULTI PROJETS',
+      'equipe'=>'MA PETITE ENTREPRISE',
+      'liste'=>["fr.ma-petite-entreprise:ma-moulinette"],
+      'date_modification'=> new DateTime(),
       'date_enregistrement'=> new DateTime()],
     ];
   }
 
   /**
-   * [Description for testNotesFindAll]
+   * [Description for testPortefeuilleFindAll]
    * On récupère l'ensemble des données, on fait un getMavenKey().
    * @return void
    *
@@ -50,19 +50,19 @@ class NotesTest extends TestCase
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function testNotesFindAll(): void
+  public function testPortefeuilleFindAll(): void
   {
     /** On récupère le jeu de données */
     $d=static::dataset();
 
-    $mockRepo = $this->createMock(NotesRepository::class);
+    $mockRepo = $this->createMock(PortefeuilleRepository::class);
     $mockRepo->method('findAll')->willReturn($d);
     $u=$mockRepo->findAll();
-    $this->assertEquals('fr.ma-petite-entreprise:ma-moulinette', $u[0]['maven_key']);
+    $this->assertEquals('MA PETITE ENTREPRISE', $u[0]['equipe']);
   }
 
   /**
-   * [Description for testNotesCount]
+   * [Description for testPortefeuilleCount]
    * On compte le nombre d'enregistrement dans la collection.
    *
    * @return void
@@ -71,19 +71,19 @@ class NotesTest extends TestCase
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function testNotesCount(): void
+  public function testPortefeuilleCount(): void
   {
     /** On récupère le jeu de données */
     $d=static::dataset();
 
-    $mockRepo = $this->createMock(NotesRepository::class);
+    $mockRepo = $this->createMock(PortefeuilleRepository::class);
     $mockRepo->method('findAll')->willReturn($d);
     $u=$mockRepo->findAll();
     $this->assertCount(1, $u);
   }
 
   /**
-   * [Description for testNotesType]
+   * [Description for testPortefeuilleType]
    * On test le type
    * @return void
    *
@@ -91,71 +91,77 @@ class NotesTest extends TestCase
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function testNotesType(): void
+  public function testPortefeuilleType(): void
   {
     /** On récupère le jeu de données */
     $dd=static::dataset();
     $d=$dd[0];
 
-    $p = new Notes();
-    $p->setMavenKey($d['maven_key']);
-    $p->setType($d['type']);
-    $p->setDate($d['date']);
-    $p->setValue($d['value']);
+    $p = new Portefeuille();
+    $p->setId($d['id']);
+    $p->setTitre($d['titre']);
+    $p->setEquipe($d['equipe']);
+    $p->setListe($d['liste']);
+    $p->setDateModification($d['date_modification']);
     $p->setDateEnregistrement($d['date_enregistrement']);
 
-    $this->assertIsString($p->getMavenKey());
-    $this->assertIsString($p->getType());
-    $this->assertIsObject($p->getDate());
-    $this->assertIsInt($p->getValue());
+    $this->assertIsInt($p->getId());
+    $this->assertIsString($p->getTitre());
+    $this->assertIsString($p->getEquipe());
+    $this->assertIsArray($p->getListe());
+    $this->assertIsObject($p->getDateModification());
     $this->assertIsObject($p->getDateEnregistrement());
   }
 
-
   /**
-   * [Description for testNotes]
-   *  Pas d'attribut id
+   * [Description for testPortefeuilleTitreUnique]
+   * On test si le titre dans l'entité est le même que dans le set !
    * @return void
    *
-   * Created at: 14/02/2023, 13:14:10 (Europe/Paris)
-   * @author    Laurent HADJADJ <laurent_h@me.com>
+   * Created at: 14/02/2023, 12:11:54 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function testNotesNotHasKeyId(): void
+  public function testPortefeuilleTitreUnique(): void
   {
     /** On récupère le jeu de données */
     $dd=static::dataset();
     $d=$dd[0];
-    $this->assertArrayNotHasKey('id', $d);
+
+    $p = new Portefeuille();
+    $p->setTitre('TEST MULTI PROJETS');
+    $this->assertEquals($d['titre'], $p->getTitre());
   }
 
   /**
-   * [Description for testNotes]
+   * [Description for testPortefeuille]
    * test des getter/setter
    *
    * @return void
    *
-   * Created at: 14/02/2023, 13:12:49 (Europe/Paris)
+   * Created at: 14/02/2023, 11:09:46 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function testNotes(): void
+  public function testPortefeuille(): void
   {
     /** On récupère le jeu de données */
     $dd=static::dataset();
     $d=$dd[0];
 
-    $p = new Notes();
-    $p->setMavenKey($d['maven_key']);
-    $p->setType($d['type']);
-    $p->setDate($d['date']);
-    $p->setValue($d['value']);
+    $p = new Portefeuille();
+    $p->setId($d['id']);
+    $p->setTitre($d['titre']);
+    $p->setEquipe($d['equipe']);
+    $p->setListe($d['liste']);
+    $p->setDateModification($d['date_modification']);
     $p->setDateEnregistrement($d['date_enregistrement']);
 
-    $this->assertEquals($d['maven_key'],$p->getMavenKey());
-    $this->assertSame($d['type'],$p->getType());
-    $this->assertSame($d['date'],$p->getDate());
-    $this->assertSame($d['value'],$p->getValue());
+    $this->assertEquals(1, $p->getId());
+    $this->assertSame($d['titre'],$p->getTitre());
+    $this->assertSame($d['equipe'],$p->getEquipe());
+    $this->assertSame($d['liste'],$p->getListe());
+    $this->assertSame($d['date_modification'],$p->getDateModification());
     $this->assertSame($d['date_enregistrement'],$p->getDateEnregistrement());
   }
 

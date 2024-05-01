@@ -11,7 +11,7 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
-namespace App\Tests\Entity\Main;
+namespace App\Tests\unit\Entity\Main;
 
 use App\Entity\Main\Equipe;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;

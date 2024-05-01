@@ -11,15 +11,14 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
-namespace App\Tests\Entity\Main;
+namespace App\Tests\unit\Entity\Main;
 
-use DateTime;
-use App\Entity\Main\Equipe;
-use App\Repository\Main\EquipeRepository;
 use PHPUnit\Framework\TestCase;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use App\Entity\Main\ListeProjet;
+use App\Repository\Main\ListeProjetRepository;
+use DateTime;
 
-class EquipeTest extends TestCase
+class ListeProjetTest extends TestCase
 {
   /**
    * [Description for dataset]
@@ -27,56 +26,54 @@ class EquipeTest extends TestCase
    *
    * @return array
    *
-   * Created at: 15/02/2023, 07:08:27 (Europe/Paris)
+   * Created at: 14/02/2023, 15:40:43 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
   public function dataset(): array
   {
     return [
-      ['id'=>1,
-      'titre'=> 'MA PETITE ENTREPRISE',
-      'description'=>"Développement de l'application Ma-Moulinette",
-      'date_modification'=> new DateTime(),
+      ['id'=>1, 'maven_key'=> 'fr.ma-petite-entreprise:ma-moulinette',
+      'name'=> 'Ma-Moulinette',
       'date_enregistrement'=> new DateTime()]
     ];
   }
 
   /**
-   * [Description for testEquipeFindAll]
+   * [Description for testListeProjetFindAll]
    * On récupère l'ensemble des données, on fait un getMavenKey().
    * @return void
    *
-   * Created at: 15/02/2023, 07:10:24 (Europe/Paris)
+   * Created at: 14/02/2023, 15:43:43 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function testEquipeFindAll(): void
+  public function testListeProjetFindAll(): void
   {
     /** On récupère le jeu de données */
     $d=static::dataset();
 
-    $mockRepo = $this->createMock(EquipeRepository::class);
+    $mockRepo = $this->createMock(ListeProjetRepository::class);
     $mockRepo->method('findAll')->willReturn($d);
     $u=$mockRepo->findAll();
-    $this->assertEquals('MA PETITE ENTREPRISE', $u[0]['titre']);
+    $this->assertEquals('Ma-Moulinette', $u[0]['name']);
   }
 
   /**
-   * [Description for testEquipeCountAttribut]
+   * [Description for testListeProjetCountAttribut]
    * On vérifie le nombre d'attribut
    * @return void
    *
-   * Created at: 15/02/2023, 07:11:17 (Europe/Paris)
-   * @author    Laurent HADJADJ <laurent_h@me.com>
+   * Created at: 14/02/2023, 15:43:57 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function testEquipeCountAttribut(): void
+  public function testListeProjetCountAttribut(): void
   {
     /** On récupère le jeu de données */
     $d=static::dataset();
 
-    $mockRepo = $this->createMock(Equipe::class);
+    $mockRepo = $this->createMock(ListeProjet::class);
     /**
      * On compte le nombre attribut de la classe
      * On enlève :
@@ -87,103 +84,78 @@ class EquipeTest extends TestCase
   }
 
   /**
-   * [Description for testEquipeCount]
+   * [Description for testListeProjetCount]
    * On compte le nombre d'enregistrement dans la collection.
    *
    * @return void
    *
-   * Created at: 14/02/2023, 19:04:34 (Europe/Paris)
+   * Created at: 14/02/2023, 15:44:11 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function testEquipeCount(): void
+  public function testListeProjetCount(): void
   {
     /** On récupère le jeu de données */
     $d=static::dataset();
 
-    $mockRepo = $this->createMock(EquipeRepository::class);
+    $mockRepo = $this->createMock(ListeProjetRepository::class);
     $mockRepo->method('findAll')->willReturn($d);
     $u=$mockRepo->findAll();
     $this->assertCount(1, $u);
   }
 
-    /**
-   * [Description for testEquipeTitreUnique]
-   * On test si le titre dans l'entité est le même que dans le set !
-   * @return void
-   *
-   * Created at: 15/02/2023, 07:18:54 (Europe/Paris)
-   * @author    Laurent HADJADJ <laurent_h@me.com>
-   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   *
-   */
-  public function testEquipeTitreUnique(): void
-  {
-    /** On récupère le jeu de données */
-    $dd=static::dataset();
-    $d=$dd[0];
-
-    $p = new Equipe();
-    $p->setTitre('MA PETITE ENTREPRISE');
-    $this->assertEquals($d['titre'], $p->getTitre());
-  }
-
   /**
-   * [Description for testEquipeType]
+   * [Description for testListeProjetType]
    * On test le type
    * @return void
    *
-   * Created at: 14/02/2023, 19:04:51 (Europe/Paris)
+   * Created at: 14/02/2023, 15:44:34 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function testEquipeType(): void
+  public function testListeProjetType(): void
   {
     /** On récupère le jeu de données */
     $dd=static::dataset();
     $d=$dd[0];
 
-    $p = new Equipe();
+    $p = new ListeProjet();
     $p->setId($d['id']);
-    $p->setTitre($d['titre']);
-    $p->setDescription($d['description']);
-    $p->setDateModification($d['date_modification']);
+    $p->setMavenKey($d['maven_key']);
+    $p->setName($d['name']);
     $p->setDateEnregistrement($d['date_enregistrement']);
 
     $this->assertIsInt($p->getId());
-    $this->assertIsString($p->getTitre());
-    $this->assertIsString($p->getDescription());
-    $this->assertIsObject($p->getDateModification());
+    $this->assertIsString($p->getMavenKey());
+    $this->assertIsString($p->getName());
     $this->assertIsObject($p->getDateEnregistrement());
   }
 
   /**
-   * [Description for testEquipe]
+   * [Description for testListeProjet]
    * test des getter/setter
    *
    * @return void
    *
-   * Created at: 15/02/2023, 07:15:39 (Europe/Paris)
+   * Created at: 14/02/2023, 15:46:44 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function testEquipe(): void
+  public function testListeProjet(): void
   {
     /** On récupère le jeu de données */
     $dd=static::dataset();
     $d=$dd[0];
 
-    $p = new Equipe();
+    $p = new ListeProjet();
     $p->setId($d['id']);
-    $p->setTitre($d['titre']);
-    $p->setDescription($d['description']);
-    $p->setDateModification($d['date_modification']);
+    $p->setMavenKey($d['maven_key']);
+    $p->setName($d['name']);
     $p->setDateEnregistrement($d['date_enregistrement']);
 
     $this->assertEquals($d['id'], $p->getId());
-    $this->assertSame($d['titre'],$p->getTitre());
-    $this->assertSame($d['description'],$p->getDescription());
-    $this->assertSame($d['date_modification'],$p->getDateModification());
+    $this->assertSame($d['maven_key'],$p->getMavenKey());
+    $this->assertSame($d['name'],$p->getName());
     $this->assertSame($d['date_enregistrement'],$p->getDateEnregistrement());
 
   }

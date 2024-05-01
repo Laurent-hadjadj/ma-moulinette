@@ -11,14 +11,14 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
-namespace App\Tests\Entity\Main;
+namespace App\Tests\unit\Entity\Main;
 
 use DateTime;
-use App\Entity\Main\BatchTraitement;
-use App\Repository\Main\BatchTraitementRepository;
+use App\Entity\Main\Batch;
+use App\Repository\Main\BatchRepository;
 use PHPUnit\Framework\TestCase;
 
-class BatchTraitementTest extends TestCase
+class BatchTest extends TestCase
 {
   /**
    * [Description for dataset]
@@ -26,7 +26,7 @@ class BatchTraitementTest extends TestCase
    *
    * @return array
    *
-   * Created at: 15/02/2023, 13:45:24 (Europe/Paris)
+   * Created at: 15/02/2023, 14:03:48 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
@@ -34,53 +34,53 @@ class BatchTraitementTest extends TestCase
   {
     return [
       ['id'=>1,
-      'demarrage'=> 'Auto',
-      'resultat'=>"1",
-      'titre'=>"RECETTE 2.0.0-RC1",
-      'portefeuille'=>"TEST MULTI PROJETS",
-      'nombre_projet'=>1,
+      'statut'=> 1,
+      'titre'=>'RECETTE 2.0.0-RC1',
+      'description'=>'Tests de traitement multi-projets.',
+      'portefeuille'=>'TEST MULTI PROJETS',
       'responsable'=>'admin @ma-moulinette',
-      'debut_traitement'=> new DateTime(),
-      'fin_traitement'=> new DateTime(),
+      'nombre_projet'=>1,
+      'execution'=>'x',
+      'date_modification'=> new DateTime(),
       'date_enregistrement'=> new DateTime()]
     ];
   }
 
   /**
-   * [Description for testBatchTraitementFindAll]
+   * [Description for testBatchFindAll]
    * On récupère l'ensemble des données, on fait un getMavenKey().
    * @return void
    *
-   * Created at: 15/02/2023, 13:48:39 (Europe/Paris)
+   * Created at: 15/02/2023, 14:08:20 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function testBatchTraitementFindAll(): void
+  public function testBatchFindAll(): void
   {
     /** On récupère le jeu de données */
     $d=static::dataset();
 
-    $mockRepo = $this->createMock(BatchTraitementRepository::class);
+    $mockRepo = $this->createMock(BatchRepository::class);
     $mockRepo->method('findAll')->willReturn($d);
     $u=$mockRepo->findAll();
-    $this->assertEquals('Auto', $u[0]['demarrage']);
+    $this->assertEquals('TEST MULTI PROJETS', $u[0]['portefeuille']);
   }
 
   /**
-   * [Description for testBatchTraitementCountAttribut]
+   * [Description for testBatchCountAttribut]
    * On vérifie le nombre d'attribut
    * @return void
    *
-   * Created at: 15/02/2023, 13:49:23 (Europe/Paris)
+   * Created at: 15/02/2023, 14:09:37 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function testBatchTraitementCountAttribut(): void
+  public function testBatchCountAttribut(): void
   {
     /** On récupère le jeu de données */
     $d=static::dataset();
 
-    $mockRepo = $this->createMock(BatchTraitement::class);
+    $mockRepo = $this->createMock(Batch::class);
     /**
      * On compte le nombre attribut de la classe
      * On enlève :
@@ -91,49 +91,49 @@ class BatchTraitementTest extends TestCase
   }
 
   /**
-   * [Description for testBatchTraitementCount]
+   * [Description for testBatchCount]
    * On compte le nombre d'enregistrement dans la collection.
    *
    * @return void
    *
-   * Created at: 15/02/2023, 13:49:49 (Europe/Paris)
+   * Created at: 15/02/2023, 14:09:54 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function testBatchTraitementCount(): void
+  public function testBatchCount(): void
   {
     /** On récupère le jeu de données */
     $d=static::dataset();
 
-    $mockRepo = $this->createMock(BatchTraitementRepository::class);
+    $mockRepo = $this->createMock(BatchRepository::class);
     $mockRepo->method('findAll')->willReturn($d);
     $u=$mockRepo->findAll();
     $this->assertCount(1, $u);
   }
 
     /**
-   * [Description for testBatchTraitementTitreUnique]
+   * [Description for testBatchTitreUnique]
    * On test si le titre dans l'entité est le même que dans le set !
    * @return void
    *
-   * Created at: 15/02/2023, 13:50:13 (Europe/Paris)
+   * Created at: 15/02/2023, 14:10:08 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    *
    */
-  public function testBatchTraitementTitreUnique(): void
+  public function testBatchTitreUnique(): void
   {
     /** On récupère le jeu de données */
     $dd=static::dataset();
     $d=$dd[0];
 
-    $p = new BatchTraitement();
+    $p = new Batch();
     $p->setTitre('RECETTE 2.0.0-RC1');
     $this->assertEquals($d['titre'], $p->getTitre());
   }
 
   /**
-   * [Description for testBatchTraitementType]
+   * [Description for testBatchType]
    * On test le type
    * @return void
    *
@@ -141,73 +141,72 @@ class BatchTraitementTest extends TestCase
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function testBatchTraitementType(): void
+  public function testBatchType(): void
   {
     /** On récupère le jeu de données */
     $dd=static::dataset();
     $d=$dd[0];
 
-    $p = new BatchTraitement();
+    $p = new Batch();
     $p->setId($d['id']);
-    $p->setDemarrage($d['demarrage']);
-    $p->setResultat($d['resultat']);
+    $p->setStatut($d['statut']);
     $p->setTitre($d['titre']);
+    $p->setDescription($d['description']);
     $p->setPortefeuille($d['portefeuille']);
-    $p->setNombreProjet($d['nombre_projet']);
     $p->setResponsable($d['responsable']);
-    $p->setDebutTraitement($d['debut_traitement']);
-    $p->setFinTraitement($d['fin_traitement']);
+    $p->setNombreProjet($d['nombre_projet']);
+    $p->setExecution($d['execution']);
+    $p->setDateModification($d['date_modification']);
     $p->setDateEnregistrement($d['date_enregistrement']);
 
     $this->assertIsInt($p->getId());
-    $this->assertIsString($p->getDemarrage());
-    $this->assertIsBool($p->isResultat());
+    $this->assertIsBool($p->isStatut());
     $this->assertIsString($p->getTitre());
+    $this->assertIsString($p->getDescription());
     $this->assertIsString($p->getPortefeuille());
-    $this->assertIsInt($p->getNombreProjet());
     $this->assertIsString($p->getResponsable());
-    $this->assertIsObject($p->getDebutTraitement());
-    $this->assertIsObject($p->getFinTraitement());
+    $this->assertIsInt($p->getNombreProjet());
+    //$this->assertIsString($p->getExecution());
+    $this->assertIsObject($p->getDateModification());
     $this->assertIsObject($p->getDateEnregistrement());
   }
 
   /**
-   * [Description for testBatchTraitement]
+   * [Description for testBatch]
    * test des getter/setter
    *
    * @return void
    *
-   * Created at: 15/02/2023, 13:58:31 (Europe/Paris)
+   * Created at: 15/02/2023, 14:14:39 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function testBatchTraitement(): void
+  public function testBatch(): void
   {
     /** On récupère le jeu de données */
     $dd=static::dataset();
     $d=$dd[0];
 
-    $p = new BatchTraitement();
+    $p = new Batch();
     $p->setId($d['id']);
-    $p->setDemarrage($d['demarrage']);
-    $p->setResultat($d['resultat']);
+    $p->setStatut($d['statut']);
     $p->setTitre($d['titre']);
+    $p->setDescription($d['description']);
     $p->setPortefeuille($d['portefeuille']);
-    $p->setNombreProjet($d['nombre_projet']);
     $p->setResponsable($d['responsable']);
-    $p->setDebutTraitement($d['debut_traitement']);
-    $p->setFinTraitement($d['fin_traitement']);
+    $p->setNombreProjet($d['nombre_projet']);
+    $p->setExecution($d['execution']);
+    $p->setDateModification($d['date_modification']);
     $p->setDateEnregistrement($d['date_enregistrement']);
 
     $this->assertEquals($d['id'], $p->getId());
-    $this->assertSame($d['demarrage'],$p->getDemarrage());
-    $this->assertEquals($d['resultat'],$p->isResultat());
     $this->assertSame($d['titre'],$p->getTitre());
-    $this->assertSame($d['portefeuille'],$p->getPortefeuille());
-    $this->assertEquals($d['nombre_projet'],$p->getNombreProjet());
+    $this->assertSame($d['description'],$p->getDescription());
+    //$this->assertSame($d['portefeuille'],$p->getPortefeuille());
     $this->assertSame($d['responsable'],$p->getResponsable());
-    $this->assertSame($d['debut_traitement'],$p->getDebutTraitement());
-    $this->assertSame($d['fin_traitement'],$p->getFinTraitement());
+    $this->assertEquals($d['nombre_projet'],$p->getNombreProjet());
+    //$this->assertSame($d['execution'],$p->getExecution());
+    $this->assertSame($d['date_modification'],$p->getDateModification());
     $this->assertSame($d['date_enregistrement'],$p->getDateEnregistrement());
   }
 
