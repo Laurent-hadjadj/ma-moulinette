@@ -11,7 +11,7 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
-namespace App\Controller\Projet;
+namespace App\Controller\Repartition;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -399,15 +399,15 @@ class ApiRepartitionController extends AbstractController
 
         /** On récupère la liste des bugs */
         $liste = $this->doctrine
-          ->getManager('secondary')
-          ->getRepository(Repartition::class)
-          ->findBy(
-              [
-              'mavenKey' => $mavenKey,
-              'type' => $type,
-              'severity' => $severity,
-              'setup' => $setup]
-          );
+            ->getManager('secondary')
+            ->getRepository(Repartition::class)
+            ->findBy(
+                [
+                'mavenKey' => $mavenKey,
+                'type' => $type,
+                'severity' => $severity,
+                'setup' => $setup]
+            );
         /** on appelle le service d'analyse */
         $result = $this->batch_analyse($liste, $mavenKey);
         return $response->setData(["mode" => $mode,"code" => "OK", "repartition" => $result, Response::HTTP_OK]);
