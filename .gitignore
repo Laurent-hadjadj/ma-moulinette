@@ -48,6 +48,8 @@ sonar-project.properties
 ###> sqlite ###
 /var/data-*
 /var/temp-*
+/var/data_*
+/var/temp_*
 /var/data.db-journal*
 ###< sqlite ###
 
