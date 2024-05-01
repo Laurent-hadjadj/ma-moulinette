@@ -11,14 +11,14 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
-namespace App\Tests\Entity\Main;
+namespace App\Tests\unit\Entity\Main;
 
 use PHPUnit\Framework\TestCase;
-use App\Entity\Main\HotspotDetails;
-use App\Repository\Main\HotspotDetailsRepository;
+use App\Entity\Main\Hotspots;
+use App\Repository\Main\HotspotsRepository;
 use DateTime;
 
-class HotspotDetailsTest extends TestCase
+class HotspotsTest extends TestCase
 {
   /**
    * [Description for dataset]
@@ -26,7 +26,7 @@ class HotspotDetailsTest extends TestCase
    *
    * @return array
    *
-   * Created at: 14/02/2023, 16:35:33 (Europe/Paris)
+   * Created at: 14/02/2023, 16:14:55 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
@@ -34,56 +34,49 @@ class HotspotDetailsTest extends TestCase
   {
     return [
       ['id'=>1, 'maven_key'=> 'fr.ma-petite-entreprise:ma-moulinette',
-      'severity'=> 'HIGH',
-      'niveau'=> '1',
-      'status'=> 'NC',
-      'frontend'=> '100',
-      'backend'=>'100',
-      'autre'=> '0',
-      'file'=>'path',
-      'line'=>123,
-      'message'=>'message sonarqube',
-      'rule'=>'description sonarqube',
-      'key'=>'xxxxxxxxx',
+      'key'=> 'AYVymv5uo0TJpgSeq1g8',
+      'probability'=> 'MEDIUM',
+      'status'=> 'TO_REVIEW',
+      'niveau'=>'2',
       'date_enregistrement'=> new DateTime()]
     ];
   }
 
   /**
-   * [Description for testHotspotDetailsFindAll]
+   * [Description for testHotspotsFindAll]
    * On récupère l'ensemble des données, on fait un getMavenKey().
    * @return void
    *
-   * Created at: 14/02/2023, 16:39:16 (Europe/Paris)
+   * Created at: 14/02/2023, 16:16:58 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function testHotspotDetailsFindAll(): void
+  public function testHotspotsFindAll(): void
   {
     /** On récupère le jeu de données */
     $d=static::dataset();
 
-    $mockRepo = $this->createMock(HotspotDetailsRepository::class);
+    $mockRepo = $this->createMock(HotspotsRepository::class);
     $mockRepo->method('findAll')->willReturn($d);
     $u=$mockRepo->findAll();
-    $this->assertEquals('100', $u[0]['frontend']);
+    $this->assertEquals('MEDIUM', $u[0]['probability']);
   }
 
   /**
-   * [Description for testHotspotDetailsCountAttribut]
+   * [Description for testHotspotsCountAttribut]
    * On vérifie le nombre d'attribut
    * @return void
    *
-   * Created at: 14/02/2023, 16:40:02 (Europe/Paris)
+   * Created at: 14/02/2023, 16:17:38 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function testHotspotDetailsCountAttribut(): void
+  public function testHotspotsCountAttribut(): void
   {
     /** On récupère le jeu de données */
     $d=static::dataset();
 
-    $mockRepo = $this->createMock(HotspotDetails::class);
+    $mockRepo = $this->createMock(Hotspots::class);
     /**
      * On compte le nombre attribut de la classe
      * On enlève :
@@ -94,113 +87,90 @@ class HotspotDetailsTest extends TestCase
   }
 
   /**
-   * [Description for testHotspotDetailsCount]
+   * [Description for testHotspotsCount]
    * On compte le nombre d'enregistrement dans la collection.
    *
    * @return void
    *
-   * Created at: 14/02/2023, 16:40:19 (Europe/Paris)
+   * Created at: 14/02/2023, 16:18:14 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function testHotspotDetailsCount(): void
+  public function testHotspotsCount(): void
   {
     /** On récupère le jeu de données */
     $d=static::dataset();
 
-    $mockRepo = $this->createMock(HotspotDetailsRepository::class);
+    $mockRepo = $this->createMock(HotspotsRepository::class);
     $mockRepo->method('findAll')->willReturn($d);
     $u=$mockRepo->findAll();
     $this->assertCount(1, $u);
   }
 
   /**
-   * [Description for testHotspotDetailsType]
+   * [Description for testHotspotsType]
    * On test le type
    * @return void
    *
-   * Created at: 14/02/2023, 16:40:40 (Europe/Paris)
+   * Created at: 14/02/2023, 16:18:45 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function testHotspotDetailsType(): void
+  public function testHotspotsType(): void
   {
     /** On récupère le jeu de données */
     $dd=static::dataset();
     $d=$dd[0];
 
-    $p = new HotspotDetails();
+    $p = new Hotspots();
     $p->setId($d['id']);
     $p->setMavenKey($d['maven_key']);
-    $p->setSeverity($d['severity']);
-    $p->setNiveau($d['niveau']);
-    $p->setStatus($d['status']);
-    $p->setFrontend($d['frontend']);
-    $p->setBackend($d['backend']);
-    $p->setAutre($d['autre']);
-    $p->setFile($d['file']);
-    $p->setLine($d['line']);
-    $p->setMessage($d['message']);
-    $p->setRule($d['rule']);
     $p->setKey($d['key']);
+    $p->setProbability($d['probability']);
+    $p->setStatus($d['status']);
+    $p->setNiveau($d['niveau']);
     $p->setDateEnregistrement($d['date_enregistrement']);
 
     $this->assertIsInt($p->getId());
     $this->assertIsString($p->getMavenKey());
-    $this->assertIsString($p->getSeverity());
-    $this->assertIsInt($p->getNiveau());
-    $this->assertIsString($p->getStatus());
-    $this->assertIsInt($p->getFrontend());
-    $this->assertIsInt($p->getBackend());
-    $this->assertIsInt($p->getAutre());
-    $this->assertIsString($p->getFile());
-    $this->assertIsInt($p->getLine());
-    $this->assertIsString($p->getMessage());
-    $this->assertIsString($p->getRule());
     $this->assertIsString($p->getKey());
+    $this->assertIsString($p->getProbability());
+    $this->assertIsString($p->getStatus());
+    $this->assertIsInt($p->getNiveau());
     $this->assertIsObject($p->getDateEnregistrement());
   }
 
   /**
-   * [Description for testHotspotDetails]
+   * [Description for testHotspots]
    * test des getter/setter
    *
    * @return void
    *
-   * Created at: 14/02/2023, 16:29:39 (Europe/Paris)
+   * Created at: 14/02/2023, 16:21:22 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function testHotspotDetails(): void
+  public function testHotspots(): void
   {
     /** On récupère le jeu de données */
     $dd=static::dataset();
     $d=$dd[0];
 
-    $p = new HotspotDetails();
+    $p = new Hotspots();
     $p->setId($d['id']);
     $p->setMavenKey($d['maven_key']);
-    $p->setSeverity($d['severity']);
-    $p->setNiveau($d['niveau']);
-    $p->setStatus($d['status']);
-    $p->setFrontend($d['frontend']);
-    $p->setBackend($d['backend']);
-    $p->setAutre($d['autre']);
-    $p->setFile($d['file']);
-    $p->setRule($d['rule']);
     $p->setKey($d['key']);
+    $p->setProbability($d['probability']);
+    $p->setStatus($d['status']);
+    $p->setNiveau($d['niveau']);
     $p->setDateEnregistrement($d['date_enregistrement']);
 
     $this->assertEquals($d['id'], $p->getId());
     $this->assertSame($d['maven_key'],$p->getMavenKey());
-    $this->assertSame($d['severity'],$p->getSeverity());
-    $this->assertEquals($d['niveau'],$p->getNiveau());
-    $this->assertEquals($d['frontend'],$p->getFrontend());
-    $this->assertEquals($d['backend'],$p->getBackend());
-    $this->assertEquals($d['autre'],$p->getAutre());
-    $this->assertSame($d['file'],$p->getFile());
-    $this->assertSame($d['rule'],$p->getRule());
     $this->assertSame($d['key'],$p->getKey());
+    $this->assertSame($d['probability'],$p->getProbability());
+    $this->assertSame($d['status'],$p->getStatus());
+    $this->assertEquals($d['niveau'],$p->getNiveau());
     $this->assertSame($d['date_enregistrement'],$p->getDateEnregistrement());
 
   }
