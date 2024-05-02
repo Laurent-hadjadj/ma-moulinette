@@ -20,11 +20,11 @@ class UtilisateurFixtures extends Fixture
         ->setNom('@ma-moulinette')
         ->setDateEnregistrement(new \DateTime('1980-01-01 00:00:00'))
         ->setActif(1)
-        ->setAvatar('chiffre/01.png')
-        ->setEquipe([])
-        ->setPreference(['{
-          "statut":{"projet":false,"favori":false,"version":false,"bookmark":false},
-          "projet":[],"favori":[],"version":[],"bookmark":[]}']);
+        ->setAvatar('chiffre/01.png');
+        //->setEquipe([]);
+        //->setPreference(['{
+        //  "statut":{"projet":false,"favori":false,"version":false,"bookmark":false},
+        //  "projet":[],"favori":[],"version":[],"bookmark":[]}']);
 
         $manager->persist(($utilisateur));
         $manager->flush();
