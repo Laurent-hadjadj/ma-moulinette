@@ -16,6 +16,7 @@ namespace App\Entity\Main;
 use App\Repository\Main\UtilisateurRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -26,47 +27,114 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => "clé unique de la table"]
+        )]
     private $id;
 
-    #[ORM\Column(type: Types::STRING, length: 32)]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 32,
+        nullable: false,
+        options: ['comment' => "Prénom de l'utilisateur"]
+        )]
+    #[Assert\NotBlank]
     private $prenom;
 
-    #[ORM\Column(type: Types::STRING, length: 64)]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 64,
+        nullable: false,
+        options: ['comment' => "Nom de l'utilisateur"]
+        )]
+    #[Assert\NotBlank]
     private $nom;
 
-    #[ORM\Column(type: Types::STRING, length: 128, nullable: true)]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 128,
+        nullable: true,
+        options: ['comment' => "Avatar de l'utilisateur"]
+        )]
     private $avatar;
 
     /** Honeypot */
     private $email;
 
-    #[ORM\Column(type: Types::STRING, length: 320, unique: true)]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 320,
+        nullable: false,
+        unique: true,
+        options: ['comment' => "Adresse de courriel, clé unique"]
+        )]
+    #[Assert\NotBlank]
     private $courriel;
 
-    #[ORM\Column(type: 'json')]
+    #[ORM\Column(
+        type: Types::JSON, /* le type array est deprecated */
+        nullable: true,
+        options: ['comment' => "Liste des rôles"]
+        )]
+    #[Assert\NotBlank]
     private $roles = [];
 
-    #[ORM\Column(type: 'json')]
+    #[ORM\Column(
+        type: Types::JSON, /* le type array est deprecated */
+        nullable: true,
+        options: ['comment' => "Liste des équipes"]
+        )]
+    #[Assert\NotBlank]
     private $equipe = [];
 
-    #[ORM\Column(type: Types::STRING, length: 64)]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 64,
+        nullable: false,
+        options: ['comment' => "Mot de passe de l'utilisateur"]
+        )]
+    #[Assert\NotBlank]
     private $password;
 
-    #[ORM\Column(type: 'boolean', nullable: false, options: ['default' => 0])]
+    #[ORM\Column(
+        type: Types::BOOLEAN,
+        nullable: false,
+        options: ['default' => 0, 'comment' => "L'utilisateur est déseactivé"]
+        )]
     private $actif;
 
     # Préférences de l'utilisateur
-    #[ORM\Column(type: 'json', nullable: false)]
+    #[ORM\Column(
+        type: Types::JSON,
+        nullable: false,
+        options: ['comment' => "Préférences de l'utilisateur"]
+        )]
+    #[Assert\NotBlank]
     private $preference = [];
 
-    #[ORM\Column(type: Types::INTEGER, nullable: false)]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => "Indicateur de réinitilisation du mot de passe"]
+        )]
+    #[Assert\NotBlank]
     private $init=0;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[ORM\Column(
+        type: Types::DATETIME_MUTABLE,
+        nullable: true,
+        options: ['comment' => "Date de modification"]
+        )]
     private $dateModification;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(
+        type: Types::DATETIME_MUTABLE,
+        nullable: false,
+        options: ['comment' => "Date de création"]
+        )]
+    #[Assert\NotBlank]
     private $dateEnregistrement;
 
     public function getId(): ?int
