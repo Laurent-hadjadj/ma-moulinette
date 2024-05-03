@@ -90,8 +90,9 @@ const callboxFermer='</span><button class="close-button" aria-label="Fermer la f
   let statut1 = '', statut2 = '', str = '', total = 0;
 
   // On efface le tableau
-  $('#tableau-liste-profil').html('');
+  $('.tableau-liste-profil').html('');
   const profils = t.listeProfil;
+  let langage = 'null';
   profils.forEach(profil =>
   {
     if (profil.actif === 1)
@@ -104,29 +105,45 @@ const callboxFermer='</span><button class="close-button" aria-label="Fermer la f
       statut2 = 'N';
     }
 
+    if (!langage.includes(profil.langage)){
+      langage = profil.langage;
+      str += `<div class="callout secondary" style="width: 585px;">
+      <h3 class="h5">${profil.langage }</h3>
+      <table class="hover">
+        <thead>
+          <tr>
+            <th scope="col" class="open-sans text-center"></th>
+            <th scope="col" class="open-sans text-center">Version</th>
+            <th scope="col" class="open-sans text-center">Règle</th>
+            <th scope="col" class="open-sans text-center">Date</th>
+            <th scope="col" class="open-sans text-center">Actif</th>
+          </tr>
+        </thead>`;
+    }
+
     /** On construit le tableau */
     str += `<tr class="open-sans">
-                <td></td>
-                <td>${ profil.profil }</td>
-                <td class="text-center">${ profil.langage }</td>
-                <td class="text-center">
-                    ${ new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(profil.regle) }
-                </td>
-                <td class="text-center">
-                    <span class="show-for-small-only">
-                      ${ new Intl.DateTimeFormat('default', dateOptionsShort).format(new Date(profil.date)) }
-                    </span>
-                    <span class="show-for-medium">${ new Intl.DateTimeFormat('default', dateOptions).format(new Date(profil.date)) }
-                    </span>
-                </td>
-                <td class="text-center">
-                    <span class="show-for-small-only">${ statut2 }</span>
-                    <span class="show-for-medium">${ statut1 }</span>
-                </td>
-              </tr>`;
+              <td></td>
+              <td>${ profil.profil }</td>
+              <td class="text-center">${ profil.langage }</td>
+              <td class="text-center">
+                  ${ new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(profil.regle) }
+              </td>
+              <td class="text-center">
+                  <span class="show-for-small-only">
+                    ${ new Intl.DateTimeFormat('default', dateOptionsShort).format(new Date(profil.date)) }
+                  </span>
+                  <span class="show-for-medium">${ new Intl.DateTimeFormat('default', dateOptions).format(new Date(profil.date)) }
+                  </span>
+              </td>
+              <td class="text-center">
+                  <span class="show-for-small-only">${ statut2 }</span>
+                  <span class="show-for-medium">${ statut1 }</span>
+              </td>
+            </tr>`;
     total = total + profil.regle;
   });
-  $('#tableau-liste-profil').html(str);
+  $('.tableau-liste-profil').html(str);
   $('.js-total').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(total));
 };
 
@@ -263,6 +280,12 @@ $('.js-profil-info').on('click', (e) => {
   const parametre=`${mode}|${language}|${profil}`;
   const a=encode(btoa(parametre));
   location.href=`${serveur()}/profil/details?token=${a}`;
+});
+
+
+
+$('.tableau-profil-hide').on('click', ()=>{
+  console.log("sen");
 });
 
 /**
