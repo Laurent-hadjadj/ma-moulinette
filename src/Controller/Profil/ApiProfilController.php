@@ -95,7 +95,7 @@ class ApiProfilController extends AbstractController
 
         /** On définit l'URL et on ajoute le nom des profils sonarqube*/
         $url = $this->getParameter(static::$sonarUrl)
-            . "/api/qualityprofiles/search?defaults=true";
+            . "/api/qualityprofiles/search";
 
         /** On appel le client http */
         $r = $client->http($url);
