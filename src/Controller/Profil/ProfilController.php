@@ -78,7 +78,7 @@ class ProfilController extends AbstractController
                     sprintf('%s : %s', "[PROFIL-003]","La liste des profils est vide. Vous devez la mettre à jour !"));
                 } else {
                 $this->addFlash('info',
-                        sprintf('%s : %s', "[PROFIL-001]","La liste des profils a pas été récupurée."));
+                        sprintf('%s : %s', "[PROFIL-001]","La liste des profils a été récupurée."));
                 }
             break;
         }
