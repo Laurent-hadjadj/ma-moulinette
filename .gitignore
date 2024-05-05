@@ -46,9 +46,11 @@ sonar-project.properties
 ###< php-cs-fixe ###
 
 ###> sqlite ###
-/var/data-rec.db
-/var/data-monapplication.db
-/var/data.db-journal
+/var/data-*
+/var/temp-*
+/var/data_*
+/var/temp_*
+/var/data.db-journal*
 ###< sqlite ###
 
 ###> docker ###
@@ -76,3 +78,7 @@ composer.bat
 ###> rabbitMQ ###
 RabbitMQ
 ###< rabbitMQ ###
+
+###> phpstan/phpstan ###
+phpstan.neon
+###< phpstan/phpstan ###

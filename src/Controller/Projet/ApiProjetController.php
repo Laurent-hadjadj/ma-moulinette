@@ -36,8 +36,9 @@ class ApiProjetController extends AbstractController
     /** Définition des constantes */
     public static $reference = "<strong>[PROJET]</strong>";
     public static $erreur400 = "La requête est incorrecte (Erreur 400).";
-    public static $erreur404 = "Vous devez être rattaché à une équipe (erreur 404)";
-    public static $erreur406 = "Je n'ai pas trouvé de projets pour ton équipe (erreur 406).";
+    public static $erreur404 = "Vous devez être rattaché à une équipe (erreur 404).";
+    public static $erreur406 = "Je n'ai pas trouvé de projets pour ton équipe. ".
+    "Vérifiez le nom du tag utilisé dans sonarqube (erreur 406).";
 
     /**
      * [Description for __construct]
@@ -170,7 +171,7 @@ class ApiProjetController extends AbstractController
         /** Si l'utilisateur n'est pas rattaché à une équipe on ne charge rien */
         if (empty($equipes)) {
             /** On envoi un message à l'utilisateur */
-            return $response->setData(['mode'=>$data->mode, 'code'=>406, 'reference' => static::$reference,
+            return $response->setData(['mode'=>$data->mode, 'code'=>404, 'reference' => static::$reference,
                     'message' => static::$erreur404, 'type' => 'alert', Response::HTTP_OK]);
         }
 
