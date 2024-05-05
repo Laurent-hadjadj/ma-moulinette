@@ -9,12 +9,14 @@ doctrine:
                 host: 127.0.0.1
                 charset: UTF8
                 server_version: '3'
+                use_savepoints: true
             secondary:
                 url: '%env(resolve:DATABASE_SECONDARY_URL)%'
                 driver: pdo_sqlite
                 host: 127.0.0.1
                 charset: UTF8
                 server_version: '3'
+                use_savepoints: true
     orm:
         default_entity_manager: default
         auto_generate_proxy_classes: true
@@ -39,4 +41,30 @@ doctrine:
                         dir: '%kernel.project_dir%/src/Entity/Secondary'
                         prefix: 'App\Entity\Secondary'
                         alias: Secondary
+
+when@test:
+    doctrine:
+        dbal:
+            # "TEST_TOKEN" is typically set by ParaTest
+            dbname_suffix: '_test%env(default::TEST_TOKEN)%'
+
+when@prod:
+    doctrine:
+        orm:
+            auto_generate_proxy_classes: false
+            proxy_dir: '%kernel.build_dir%/doctrine/orm/Proxies'
+            query_cache_driver:
+                type: pool
+                pool: doctrine.system_cache_pool
+            result_cache_driver:
+                type: pool
+                pool: doctrine.result_cache_pool
+
+    framework:
+        cache:
+            pools:
+                doctrine.result_cache_pool:
+                    adapter: cache.app
+                doctrine.system_cache_pool:
+                    adapter: cache.system
 ...
