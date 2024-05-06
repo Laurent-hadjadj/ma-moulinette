@@ -47,7 +47,7 @@ class UtilisateurFixtures extends Fixture
 
         /** Création de l'utilisateur AURELIE */
         $aurelie=(new Utilisateur())
-        ->setInit(1)
+        ->setInit(0)
         ->setAvatar('fille-1/05.png')
         ->setPrenom('Aurélie')
         ->setNom('PETIT COEUR')
@@ -62,7 +62,7 @@ class UtilisateurFixtures extends Fixture
 
         /** Création de l'utilisateur EMMA */
         $emma=(new Utilisateur())
-        ->setInit(1)
+        ->setInit(0)
         ->setAvatar('fille-2/03.png')
         ->setPrenom('Emma')
         ->setNom('VAN DE BERG')
@@ -76,7 +76,7 @@ class UtilisateurFixtures extends Fixture
 
         /** Création de l'utilisateur NATHAN */
         $nathan=(new Utilisateur())
-        ->setInit(1)
+        ->setInit(0)
         ->setAvatar('garcon-1/05.png')
         ->setPrenom('Nathan')
         ->setNom('JONES')
@@ -91,7 +91,7 @@ class UtilisateurFixtures extends Fixture
 
         /** Création de l'utilisateur JOSH */
         $josh=(new Utilisateur())
-        ->setInit(1)
+        ->setInit(0)
         ->setAvatar('garcon-1/10.png')
         ->setPrenom('Josh')
         ->setNom('LIBERMAN')
