@@ -84,7 +84,7 @@ class UtilisateurRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function insertUtilisateurPreferenceFavori($mode, $preference, $map):array
+    public function insertUtilisateurPreferenceFavori($preference, $map):array
     {
         /** On récupére les préférences */
         $statut = $preference['statut'];
@@ -146,7 +146,7 @@ class UtilisateurRepository extends ServiceEntityRepository
                 ])
         );
 
-        $response=['mode'=>$mode, 'code'=>200, 'erreur'=>''];
+        $response=['code'=>200, 'erreur'=>''];
         $sql = "UPDATE utilisateur
                 SET preference=:preference
                 WHERE courriel=:courriel";
@@ -154,13 +154,10 @@ class UtilisateurRepository extends ServiceEntityRepository
         $conn->bindValue(':courriel', $map['courriel']);
         $conn->bindValue(':preference', $jsonArray);
         try {
-            if ($mode !== 'TEST') {
-                $conn->executeQuery();
-            } else {
-                $response=['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-            }
+            $conn->executeQuery();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $response=['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+            $this->getEntityManager()->rollback();
+            $response=['code'=>500, 'erreur'=> $e->getCode()];
         }
         return $response;
     }
