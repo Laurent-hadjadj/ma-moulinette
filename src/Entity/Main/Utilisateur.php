@@ -32,6 +32,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         nullable: false,
         options: ['comment' => "clé unique de la table"]
         )]
+    #[Assert\NotBlank]
     private $id;
 
     #[ORM\Column(
@@ -78,7 +79,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         nullable: true,
         options: ['comment' => "Liste des rôles"]
         )]
-    #[Assert\NotBlank]
     private $roles = [];
 
     #[ORM\Column(
@@ -86,7 +86,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         nullable: true,
         options: ['comment' => "Liste des équipes"]
         )]
-    #[Assert\NotBlank]
     private $equipe = [];
 
     #[ORM\Column(
@@ -351,8 +350,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function eraseCredentials():void
     {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
+        $this->password = null;
     }
 
     /**
