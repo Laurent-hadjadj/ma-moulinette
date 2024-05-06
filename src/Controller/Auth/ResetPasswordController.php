@@ -172,7 +172,7 @@ class ResetPasswordController extends AbstractController
         $response = new JsonResponse();
 
         /** On teste si le body est correcte */
-        if ($data === null || !property_exists($data, 'mode')  || !property_exists($data, 'init')) {
+        if ($data === null || !property_exists($data, 'init')) {
             return $response->setData(['data'=>$data,'code'=>400, 'reference'=>static::$reference,
                 'message'=>static::$erreur400, 'type'=>'alert', Response::HTTP_BAD_REQUEST]);
             }
@@ -193,7 +193,7 @@ class ResetPasswordController extends AbstractController
         /** On met à jour la table proprietes */
         $map=[ 'init'=>$init, 'date_modification'=>$dateModification,
                 'courriel'=>$courriel ];
-        $r=$utilisateurEntity->updateUtilisateurResetPassword($data->mode,$map);
+        $r=$utilisateurEntity->updateUtilisateurResetPassword($map);
         if ($r['code']!=200) {
             return $response->setData([
                 'type' => 'alert', 'mode' => $data->mode,
@@ -201,6 +201,6 @@ class ResetPasswordController extends AbstractController
                 'message'=>$r['erreur'], Response::HTTP_OK]);
         }
 
-        return $response->setData(['mode' => $data->mode, 'code'=>200 , Response::HTTP_OK]);
+        return $response->setData(['code'=>200 , Response::HTTP_OK]);
     }
 }

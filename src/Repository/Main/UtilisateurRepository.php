@@ -370,7 +370,7 @@ class UtilisateurRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function updateUtilisateurResetPassword($mode, $map):array {
+    public function updateUtilisateurResetPassword($map):array {
 
         $sql = "UPDATE utilisateur
                 SET init = :init, date_modification=:date_modification
@@ -380,15 +380,12 @@ class UtilisateurRepository extends ServiceEntityRepository
         $conn->bindValue(':date_modification', $map['date_modification']);
         $conn->bindValue(':courriel', $map['courriel']);
         try {
-                if ($mode !== 'TEST') {
-                    $conn->executeQuery();
-                } else {
-                    return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-                }
+                $conn->executeQuery();
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=>500, 'statut'=>-1, 'erreur'=> $e->getCode()];
+            $this->getEntityManager()->rollback();
+            return ['code'=>500, 'statut'=>-1, 'erreur'=> $e->getCode()];
         }
-        return ['mode'=>$mode, 'code'=>200, 'erreur'=>''];
+        return ['code'=>200, 'erreur'=>''];
     }
 
 }
