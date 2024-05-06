@@ -176,7 +176,8 @@ class UtilisateurRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function deleteUtilisateurPreferenceFavori($mode, $preference, $map):array {
+    public function deleteUtilisateurPreferenceFavori($preference, $map):array {
+
         /**
          * On regarde d'abord si le projet à une version en favori
          * ensuite on regarde conblen de version pour ce projet sont en favori
@@ -197,6 +198,7 @@ class UtilisateurRepository extends ServiceEntityRepository
          * on regarde si la version est unique.
          */
         $i=$index=-1;
+        $nombreVersion=0;
         foreach($preference['version'] as $item){
             $i++;
             if (array_key_exists($map['maven_key'],$item)){
@@ -239,7 +241,7 @@ class UtilisateurRepository extends ServiceEntityRepository
                 ])
             );
 
-        $response=['mode'=>$mode, 'code'=>200, 'erreur'=>''];
+        $response=['code'=>200, 'erreur'=>''];
         $sql = "UPDATE utilisateur
                 SET preference=:preference
                 WHERE courriel=:courriel";
@@ -247,13 +249,10 @@ class UtilisateurRepository extends ServiceEntityRepository
         $conn->bindValue(':courriel', $map['courriel']);
         $conn->bindValue(':preference', $jsonArray);
         try {
-            if ($mode !== 'TEST') {
                 $conn->executeQuery();
-            } else {
-                $response=['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-            }
         } catch (\Doctrine\DBAL\Exception $e) {
-            $response=['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+            $this->getEntityManager()->rollback();
+            $response=['code'=>500, 'erreur'=> $e->getCode()];
         }
         return $response;
     }
