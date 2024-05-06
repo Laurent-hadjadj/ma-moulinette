@@ -50,7 +50,7 @@ INSERT INTO utilisateur
 VALUES
 (1,'admin@ma-moulinette.fr','["ROLE_GESTIONNAIRE"]',
 '$2y$13$6n72QhYwz.iufebkV.XaAOO4IOm3zOYcfzPUmal.jDTs8/QFq1p4K',
-'admin','@ma-moulinette','1980-01-01 00:00:00',1,'chiffre/01.png',
+'Admin','@ma-moulinette','1980-01-01 00:00:00',1,'chiffre/01.png',
 '[]');
 
 -- ## Ajout des comptes de tests (bcrypt)
@@ -75,7 +75,7 @@ INSERT INTO utilisateur
 VALUES
 ('nathan.jones@ma-moulinette.fr','["ROLE_COLLECTE"]',
 '$2y$13$hwX0QJOw8fSgjiBq1CL/FuJsf4miOeLJRBw8jzt1WrsV/qLR.DxN.',
-'Nathan', 'Jones','1980-01-01 00:00:00', 0,'garcon-1/05.png',
+'Nathan', 'JONES','1980-01-01 00:00:00', 0,'garcon-1/05.png',
 '[]');
 
 INSERT INTO utilisateur
