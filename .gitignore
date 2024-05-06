@@ -7,7 +7,8 @@
 /var/log/dev*.log
 /var/cache/dev/
 /vendor/
-/migrations/*.php
+/migrations/default/*.php
+/migration/secondary/*.php
 composer.lock
 /var/sessions/*
 /var/cache/*
@@ -69,6 +70,7 @@ composer.bat
 /.phpunit.cache/
 /reports/
 .env.test
+.env.test.local
 ###< phpunit/phpunit ###
 
 ###> Traces batch ###
