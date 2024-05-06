@@ -74,7 +74,6 @@ class UtilisateurRepository extends ServiceEntityRepository
     /**
      * [Description for insertUtilisateurPreferenceFavori]
      *
-     * @param string $mode
      * @param array $preference
      * @param array $map
      *
@@ -166,7 +165,6 @@ class UtilisateurRepository extends ServiceEntityRepository
      * [Description for deletePreferenceFavoris]
      * Permet de supprimer un favoris ou une version favorite d'un projet
      *
-     * @param string $mode
      * @param array $preference
      * @param array $map
      *
@@ -261,7 +259,6 @@ class UtilisateurRepository extends ServiceEntityRepository
      * [Description for updateUtilisateurPreferenceFavori]
      * Met à jour le favori pour le projet
      *
-     * @param string $mode
      * @param mixed $preference
      * @param mixed $map
      *
@@ -271,9 +268,9 @@ class UtilisateurRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function updateUtilisateurPreferenceFavori($mode, $preference, $map):array {
+    public function updateUtilisateurPreferenceFavori($preference, $map):array {
         /** On regarde si la projet est dans les favoris */
-        $isFavori = in_array($map->maven_key, $preference['favori']);
+        $isFavori = in_array($map['maven_key'], $preference['favori']);
 
         /**
          * On le supprime de la liste des favoris s'il exsite dans les préferences
@@ -287,10 +284,10 @@ class UtilisateurRepository extends ServiceEntityRepository
         $listeVersion = $preference['version'];
         $bookmark = $preference['bookmark'];
 
-        $response = ['mode'=>$mode, 'code'=> 206, 'statut'=>-1, 'erreur'=>''];
+        $response = ['code'=> 206, 'statut'=>-1, 'erreur'=>''];
         if ($isFavori) {
             /** on supprime le projet de la liste */
-            $nouvelleListeFavori = array_diff($listeFavori, [$map->maven_key]);
+            $nouvelleListeFavori = array_diff($listeFavori, [$map['maven_key']]);
             $statut['favori'] = false;
 
             /** On met à jour l'objet. */
@@ -309,15 +306,11 @@ class UtilisateurRepository extends ServiceEntityRepository
             $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
             $conn->bindValue(':courriel', $map['courriel']);
             try {
-                    if ($mode !== 'TEST') {
                         $conn->executeQuery();
-                    } else {
-                        $response = ['mode'=>$mode, 'code'=> 202, 'statut'=>-1, 'erreur'=>'TEST'];
-                    }
             } catch (\Doctrine\DBAL\Exception $e) {
-                $response = ['mode'=>$mode, 'code'=>500, 'statut'=>-1, 'erreur'=> $e->getCode()];
+                $response = ['code'=>500, 'statut'=>-1, 'erreur'=> $e->getCode()];
             }
-            $response = ['mode'=>$mode, 'code'=> 200, 'statut'=>0, 'erreur'=>''];
+            $response = ['code'=> 200, 'statut'=>0, 'erreur'=>''];
         } else {
             /** On ajoute le projet à la liste */
             array_push($preference['favori'], $map->maven_key);
@@ -339,15 +332,11 @@ class UtilisateurRepository extends ServiceEntityRepository
             $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
             $conn->bindValue(':courriel', $map['courriel']);
             try {
-                    if ($mode !== 'TEST') {
                         $conn->executeQuery();
-                    } else {
-                        $response = ['mode'=>$mode, 'code'=> 202, 'statut'=>-1, 'erreur'=>'TEST'];
-                    }
             } catch (\Doctrine\DBAL\Exception $e) {
-                $response = ['mode'=>$mode, 'code'=>500, 'statut'=>-1, 'erreur'=> $e->getCode()];
+                $response = ['code'=>500, 'statut'=>-1, 'erreur'=> $e->getCode()];
             }
-            $response = ['mode'=>$mode, 'code'=> 200, 'statut'=>1, 'erreur'=>''];
+            $response = ['code'=> 200, 'statut'=>1, 'erreur'=>''];
         }
 
         return $response;
@@ -357,7 +346,6 @@ class UtilisateurRepository extends ServiceEntityRepository
      * [Description for updateUtilisateurResetPassword]
      * Modifie l'indicateur reset du mot de passe.
      *
-     * @param string $mode
      * @param array $map
      *
      * @return array
