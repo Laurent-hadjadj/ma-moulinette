@@ -101,7 +101,7 @@ class UtilisateurRepository extends ServiceEntityRepository
             $i++;
             if (array_key_exists($map['maven_key'],$projet)){
                 $index=$i;
-            };
+            }
         }
 
 
@@ -205,7 +205,7 @@ class UtilisateurRepository extends ServiceEntityRepository
             if (array_key_exists($map['maven_key'],$item)){
                 $index=$i;
                 $nombreVersion=count($item);
-            };
+            }
         }
 
         /** On supprime le projet en favori car il n'y a qu'une version en favori*/
