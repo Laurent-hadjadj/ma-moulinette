@@ -604,20 +604,20 @@ class SuiviController extends AbstractController
         $map=['favori'=>$data->favori, 'courriel'=> $courriel, 'maven_key'=>$data->maven_key, 'version'=>$data->version, 'date_version'=>$data->date_version];
         /** si le favori a été supprimé favori=0 */
         if ($data->favori===0) {
-            $request=$utilisateur->deleteUtilisateurPreferenceFavori($data->mode, $preference, $map);
-            return $response->setData(['mode' => $data->mode, 'code' => 201, Response::HTTP_OK]);
+            $request=$utilisateur->deleteUtilisateurPreferenceFavori($preference, $map);
+            return $response->setData(['code' => 201, Response::HTTP_OK]);
         }
 
-        $request=$utilisateur->insertUtilisateurPreferenceFavori($data->mode, $preference, $map);
+        $request=$utilisateur->insertUtilisateurPreferenceFavori($preference, $map);
         if ($request['code']!=200) {
             return $response->setData([
-                'mode' => $data->mode, 'maven_key' => $data->maven_key,
+                'maven_key' => $data->maven_key,
                 'code'=>$request['code'], 'erreur' => $request['erreur'],
                 Response::HTTP_OK]);
         }
 
         /** Tout c'est bien passé */
-        return $response->setData(['mode' => $data->mode, 'code' => 200, Response::HTTP_OK]);
+        return $response->setData(['code' => 200, Response::HTTP_OK]);
     }
 
     /**
