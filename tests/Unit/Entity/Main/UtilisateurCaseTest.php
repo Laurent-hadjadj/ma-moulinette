@@ -95,7 +95,7 @@ class UtilisateurCaseTest extends TestCase
   public function testUtilisateurPersonneIsEmptyByDefault(): void
   {
     $utilisateur = new Utilisateur();
-    $this->assertEquals('', $utilisateur->getPersonne());
+    $this->assertEquals('', $utilisateur->getPersonne(), "La personne ne peut pas être vide.");
   }
 
   /**
@@ -110,7 +110,7 @@ class UtilisateurCaseTest extends TestCase
   public function testUtilisateurAvatarUrlIsNull(): void
   {
     $utilisateur = new Utilisateur();
-    $this->assertNull($utilisateur->getAvatarUrl());
+    $this->assertNull($utilisateur->getAvatarUrl(), "L'url de l'avatar ne peux pas être vide.");
   }
 
   /**
@@ -161,21 +161,21 @@ class UtilisateurCaseTest extends TestCase
     $entity->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
 
     // Vérification des valeurs
-    $this->assertEquals(static::$id, $entity->getId());
-    $this->assertEquals(static::$init, $entity->getInit());
-    $this->assertEquals(static::$avatar, $entity->getAvatar());
-    $this->assertEquals(static::$prenom, $entity->getPrenom());
-    $this->assertEquals(static::$nom, $entity->getNom());
-    $this->assertEquals(static::$courriel, $entity->getCourriel());
-    $this->assertEquals(static::$courriel, $entity->getUserIdentifier());
-    $this->assertEquals(static::$password, $entity->getPassword());
+    $this->assertEquals(static::$id, $entity->getId(), "Erreur ID");
+    $this->assertEquals(static::$init, $entity->getInit(), "Erreur INIT");
+    $this->assertEquals(static::$avatar, $entity->getAvatar(), "Erreur AVATAR");
+    $this->assertEquals(static::$prenom, $entity->getPrenom(), "Erreur PRENOM");
+    $this->assertEquals(static::$nom, $entity->getNom(), "Erreur NOM");
+    $this->assertEquals(static::$courriel, $entity->getCourriel(), "Erreur COURRIEL");
+    $this->assertEquals(static::$courriel, $entity->getUserIdentifier(), "Erreur USERIdent");
+    $this->assertEquals(static::$password, $entity->getPassword(), "Erreur PASSWORD");
     $entity->eraseCredentials();
-    $this->assertNull($entity->getPassword());
-    $this->assertTrue(true, $entity->isActif());
-    $this->assertEquals(static::$roles, $entity->getRoles());
-    $this->assertEquals(static::$equipe, $entity->getEquipe());
-    $this->assertEquals(static::$preference, $entity->getPreference());
-    $this->assertEquals(new \DateTime(static::$dateModification), $entity->getDateModification());
-    $this->assertEquals(new \DateTime(static::$dateEnregistrement), $entity->getDateEnregistrement());
+    $this->assertNull($entity->getPassword(), "Mot de passe non null");
+    $this->assertTrue(true, $entity->isActif(), "isActif doit être vari");
+    $this->assertEquals(static::$roles, $entity->getRoles(), "Erreur ROLES");
+    $this->assertEquals(static::$equipe, $entity->getEquipe(), "Erreur EQUIPE");
+    $this->assertEquals(static::$preference, $entity->getPreference(),"Erreur PREFERENCE");
+    $this->assertEquals(new \DateTime(static::$dateModification), $entity->getDateModification(), "Erreur DATEModification");
+    $this->assertEquals(new \DateTime(static::$dateEnregistrement), $entity->getDateEnregistrement(), "Erreur DATEEnregistrement");
   }
 }
