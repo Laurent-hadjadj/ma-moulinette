@@ -741,7 +741,7 @@ class SuiviController extends AbstractController
         if  (str_contains(\serialize($preference['version']), $data->maven_key)){
             $courriel = $security->getUser()->getCourriel();
             $map=['courriel'=>$courriel, 'maven_key'=>$data->maven_key, 'version'=>$data->version, 'date_version'=>$data->date_version];
-            $request=$utilisateur->deleteUtilisateurPreferenceFavori($data->mode, $preference, $map);
+            $request=$utilisateur->deleteUtilisateurPreferenceFavori($preference, $map);
             $message='Le projet a été également supprimé de vos préférences.';
         }
 
