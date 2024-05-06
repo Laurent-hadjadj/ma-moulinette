@@ -15,6 +15,7 @@ namespace App\Entity\Main;
 
 use App\Repository\Main\NotesRepository;
 use Doctrine\DBAL\Types\Types;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: NotesRepository::class)]
@@ -22,20 +23,25 @@ class Notes
 {
     #[ORM\Id]
     #[ORM\Column(type: Types::STRING, length: 128)]
+    #[Assert\NotBlank]
     private $mavenKey;
 
     #[ORM\Id]
     #[ORM\Column(type: Types::STRING, length: 16)]
+    #[Assert\NotBlank]
     private $type;
 
     #[ORM\Id]
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotBlank]
     private $date;
 
     #[ORM\Column(type: Types::INTEGER)]
+    #[Assert\NotBlank]
     private $value;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotBlank]
     private $dateEnregistrement;
 
     /**
