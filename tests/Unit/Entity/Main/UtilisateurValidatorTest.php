@@ -26,9 +26,9 @@ class UtilisateurValidatorTest extends KernelTestCase
   public static $id = 1;
   public static $init = 1;
   public static $avatar = 'chiffre/01.png';
-  public static $prenom = 'admin';
-  public static $nom = '@ma-moulinette';
-  public static $courriel = 'admin@ma-moulinette.fr';
+  public static $prenom = 'Laurent';
+  public static $nom = 'HADJADJ';
+  public static $courriel = 'laurent.hadjadj@ma-petite-entreprise.fr';
   public static $password = '$2y$13$6n72QhYwz.iufebkV.XaAOO4IOm3zOYcfzPUmal.jDTs8/QFq1p4K';
   public static $actif = 1;
   public static $roles = ["ROLE_GESTIONNAIRE"];
