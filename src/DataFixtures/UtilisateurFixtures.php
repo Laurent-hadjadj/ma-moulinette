@@ -16,18 +16,6 @@ class UtilisateurFixtures extends Fixture
     "projet":[],"favori":[],"version":[],"bookmark":[]}'];
   public static $dateEnregistrement = '1980-01-01 00:00:00';
 
-  /**
-   * [Description for load]
-   * Chargement des utilisateurs
-   *
-   * @param ObjectManager $manager
-   *
-   * @return void
-   *
-   * Created at: 05/05/2024 18:43:05 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
   public function load(ObjectManager $manager): void
     {
      /** création de l'utilisateur  ADMIN */
