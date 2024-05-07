@@ -72,7 +72,8 @@ class UtilisateurFixtures extends Fixture
         ->setRoles(["ROLE_BATCH"])
         ->setEquipe([])
         ->setPreference(static::$preference)
-        ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));        $manager->persist($emma);
+        ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
+        $manager->persist($emma);
 
         /** Création de l'utilisateur NATHAN */
         $nathan=(new Utilisateur())
