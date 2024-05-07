@@ -12,9 +12,10 @@
  */
 
 namespace App\Entity\Main;
-
+use Symfony\Component\Validator\Constraints as Assert;
 use App\Repository\Main\PropertiesRepository;
 use Doctrine\DBAL\Types\Types;
+
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PropertiesRepository::class)]
@@ -27,21 +28,27 @@ class Properties
 
     /**  Type = property */
     #[ORM\Column(type: Types::STRING)]
+    #[Assert\NotBlank]
     private $type;
 
     #[ORM\Column(type: Types::INTEGER)]
+    #[Assert\NotBlank]
     private $projetBd;
 
     #[ORM\Column(type: Types::INTEGER)]
+    #[Assert\NotBlank]
     private $projetSonar;
 
     #[ORM\Column(type: Types::INTEGER)]
+    #[Assert\NotBlank]
     private $profilBd;
 
     #[ORM\Column(type: Types::INTEGER)]
+    #[Assert\NotBlank]
     private $profilSonar;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotBlank]
     private $dateCreation;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable:true)]
