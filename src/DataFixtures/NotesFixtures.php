@@ -7,7 +7,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
 /**
- * [Description UtilisateurFixtures]
+ * [Description NotesFixtures]
  */
 class NotesFixtures extends Fixture
 {
