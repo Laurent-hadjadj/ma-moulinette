@@ -94,6 +94,11 @@ class UtilisateurValidatorTest extends KernelTestCase
     $this->assertHasErrors($this->getEntity()->setActif(''), 0);
   }
 
+  public function testValidIntegerEntity(): void
+  {
+    $this->assertHasErrors($this->getEntity()->setInit(-1), 0);
+  }
+
   public function testCountAttribut(): void
   {
       $entity = $this->getEntity();
