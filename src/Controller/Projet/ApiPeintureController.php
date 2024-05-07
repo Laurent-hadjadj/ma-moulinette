@@ -67,7 +67,6 @@ class ApiPeintureController extends AbstractController
      * Vérification de l'existence du projet dans la table information_projet
      *
      * @param string $mavenKey
-     * @param string mode
      *
      * @return array
      *
@@ -75,7 +74,7 @@ class ApiPeintureController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function isValide($mode, $mavenKey): array
+    private function isValide($mavenKey): array
     {
         /** On instancie l'entityRepository */
         $informationProjetEntity = $this->em->getRepository(InformationProjet::class);
@@ -85,7 +84,7 @@ class ApiPeintureController extends AbstractController
 
         /** On regarde si une analyse a été réalisée. */
         $map=['maven_key'=>$mavenKey];
-        $request=$informationProjetEntity->selectInformationProjetisValide($mode, $map);
+        $request=$informationProjetEntity->selectInformationProjetisValide($map);
         if ($request['code']!=200) {
             return $response->setData([
                 'code' => $request['code'],
@@ -151,9 +150,10 @@ class ApiPeintureController extends AbstractController
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if ($data === null || !property_exists($data, 'mode') ) {
-            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
-                                        'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+        if ($data === null) {
+            return $response->setData([
+                'data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
+                'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
         }
 
         /**
@@ -161,7 +161,7 @@ class ApiPeintureController extends AbstractController
          * On n'utilise plus le critère liste=TRUE/FALSE car on utilise les préferences
          * de l'utilisateur
          */
-        $request = $anomalieEntity->selectAnomalieByProjectName($data->mode);
+        $request = $anomalieEntity->selectAnomalieByProjectName();
         if ($request['code']!=200) {
             return $response->setData(['code' => $request['code'], Response::HTTP_OK]);
         }
@@ -193,7 +193,6 @@ class ApiPeintureController extends AbstractController
         }
 
         return $response->setData([
-            'mode' => $data->mode,
             'code' => 200,
             'projets' => $projets,
             Response::HTTP_OK]);
@@ -226,36 +225,39 @@ class ApiPeintureController extends AbstractController
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if ($data === null || !property_exists($data, 'mode') || !property_exists($data, 'maven_key') ) {
-            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
-                                        'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+        if ($data === null || !property_exists($data, 'maven_key') ) {
+            return $response->setData([
+                'data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
+                'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
         }
 
         /** On regarde si le projet existe */
-        $isValide = $this->isValide($data->mode, $data->maven_key);
+        $isValide = $this->isValide($data->maven_key);
         if ($isValide['code'] === 406) {
-            return $response->setData(['code'=>406, 'type'=> 'secondary', 'reference'=> static::$reference,
-                                        'message' => static::$erreur406, Response::HTTP_NOT_ACCEPTABLE]);
+            return $response->setData([
+                'code'=>406, 'type'=> 'secondary', 'reference'=> static::$reference,
+                'message' => static::$erreur406, Response::HTTP_NOT_ACCEPTABLE]);
         }
 
         /** Toutes les versions par type (RELEASE, SNAPSHOT, AUTRE) */
         $map=['maven_key'=>$data->maven_key];
-        $toutesLesVersions=$informationProjetEntity->countInformationProjetAllType($data->mode, $map);
+        $toutesLesVersions=$informationProjetEntity->countInformationProjetAllType($map);
         if ($toutesLesVersions['code']!=200) {
-            return $response->setData(['code' => $toutesLesVersions['code'], 'type'=>'alert',
-                                        'reference'=> static::$reference, 'message'=> static::$erreur500, Response::HTTP_OK]);
+            return $response->setData([
+                'code' => $toutesLesVersions['code'], 'type'=>'alert',
+                'reference'=> static::$reference, 'message'=> static::$erreur500, Response::HTTP_OK]);
         }
 
         /** Les releases */
         $map=['maven_key'=>$data->maven_key, 'type'=>'RELEASE'];
-        $release=$informationProjetEntity->countInformationProjetType($data->mode, $map);
+        $release=$informationProjetEntity->countInformationProjetType($map);
         if ($release['code']!=200) {
             return $response->setData(['code' => $release['code'], Response::HTTP_OK]);
         }
 
         /** Les snapshots */
         $map=['maven_key'=>$data->maven_key, 'type'=>'SNAPSHOT'];
-        $snapshot=$informationProjetEntity->countInformationProjetType($data->mode, $map);
+        $snapshot=$informationProjetEntity->countInformationProjetType($map);
         if ($snapshot['code']!=200) {
             return $response->setData([ 'code' => $snapshot['code'], Response::HTTP_OK]);
         }
@@ -265,7 +267,7 @@ class ApiPeintureController extends AbstractController
 
         /** On récupére le nombre de version par type pour le graphique */
         $map=['maven_key'=>$data->maven_key];
-        $infoVersion=$informationProjetEntity->selectInformationProjetTypeIndexed($data->mode, $map);
+        $infoVersion=$informationProjetEntity->selectInformationProjetTypeIndexed($map);
         if ($snapshot['code']!=200) {
             return $response->setData(['code' => $snapshot['code'], Response::HTTP_OK]);
         }
@@ -279,7 +281,7 @@ class ApiPeintureController extends AbstractController
 
         /** On récupère la dernière version et sa date de publication */
         $map=['maven_key'=>$data->maven_key];
-        $infoRelease=$informationProjetEntity->selectInformationProjetVersionLast($data->mode, $map);
+        $infoRelease=$informationProjetEntity->selectInformationProjetVersionLast($map);
         if ($infoRelease['code']!=200) {
             return $response->setData(['code' => $infoRelease['code'], Response::HTTP_OK]);
         }
@@ -297,7 +299,7 @@ class ApiPeintureController extends AbstractController
 
         return $response->setData(
             [
-                'code'=>200, 'mode'=>$data->mode,
+                'code'=>200,
                 'release' => $release, 'snapshot' => $snapshot,  'autre' => $lesAutres,
                 'label' => $label,
                 'dataset' => $dataset, 'projet' => $infoRelease['version'][0]['projet'],
@@ -332,30 +334,30 @@ class ApiPeintureController extends AbstractController
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if ($data === null || !property_exists($data, 'mode') || !property_exists($data, 'maven_key') ) {
-            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
-                                        'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+        if ($data === null || !property_exists($data, 'maven_key') ) {
+            return $response->setData([
+                'data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
+                'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
         }
 
         /** On regarde si le projet existe */
-        $isValide = $this->isValide($data->mode, $data->maven_key);
+        $isValide = $this->isValide($data->maven_key);
         if ($isValide['code'] === 406) {
-            return $response->setData(['code'=>406, 'type'=> 'secondary', 'reference'=> static::$reference,
-                                        'message' => static::$erreur406, Response::HTTP_NOT_ACCEPTABLE]);
+            return $response->setData([
+                'code'=>406, 'type'=> 'secondary', 'reference'=> static::$reference,
+                'message' => static::$erreur406, Response::HTTP_NOT_ACCEPTABLE]);
         }
 
         /** On récupère la dernière version et sa date de publication */
         $map=['maven_key'=>$data->maven_key];
-        $request=$mesuresEntity->selectMesuresVersionLast($data->mode, $map);
+        $request=$mesuresEntity->selectMesuresVersionLast($map);
         if ($request['code']!=200) {
             return $response->setData([
-                'code' => $request['code'],
-                Response::HTTP_OK]);
+                'code' => $request['code'], Response::HTTP_OK]);
         }
 
         return $response->setData([
             'code'=>200,
-            'mode'=>$data->mode,
             'name' => $request['mesures'][0]['name'], 'ncloc' => $request['mesures'][0]['ncloc'],
             'lines' => $request['mesures'][0]['lines'],
             'coverage' => $request['mesures'][0]['coverage'],
@@ -393,21 +395,23 @@ class ApiPeintureController extends AbstractController
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if ($data === null || !property_exists($data, 'mode') || !property_exists($data, 'maven_key') ) {
-            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
-                                        'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+        if ($data === null || !property_exists($data, 'maven_key') ) {
+            return $response->setData([
+                'data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
+                'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
         }
 
         /** On regarde si le projet existe */
-        $isValide = $this->isValide($data->mode, $data->maven_key);
+        $isValide = $this->isValide($data->maven_key);
         if ($isValide['code'] === 406) {
-            return $response->setData(['code'=>406, 'type'=> 'secondary', 'reference'=> static::$reference,
-                                        'message' => static::$erreur406, Response::HTTP_NOT_ACCEPTABLE]);
+            return $response->setData([
+                'code'=>406, 'type'=> 'secondary', 'reference'=> static::$reference,
+                'message' => static::$erreur406, Response::HTTP_NOT_ACCEPTABLE]);
         }
 
         /** On récupère la dernière version et sa date de publication */
         $map=['maven_key'=>$data->maven_key];
-        $anomalie=$anomalieEntity->selectAnomalie($data->mode, $map);
+        $anomalie=$anomalieEntity->selectAnomalie($map);
         if ($anomalie['code']!=200) {
             return $response->setData(['code' => $anomalie['code'], Response::HTTP_OK]);
         }
@@ -447,7 +451,7 @@ class ApiPeintureController extends AbstractController
         $types = ['reliability', 'security', 'sqale'];
         foreach ($types as $type) {
             $map=['maven_key'=>$data->maven_key, 'type'=>$type];
-            $note=$notesEntity->selectNotesMavenType($data->mode, $map);
+            $note=$notesEntity->selectNotesMavenType($map);
             if ($note['code']!=200) {
                 return $response->setData([
                     'code' => $note['code'],
@@ -467,7 +471,6 @@ class ApiPeintureController extends AbstractController
 
         return $response->setData([
             'code'=>200,
-            'mode'=>$data->mode,
             'dette' => $dette,
             'detteReliability' => $detteReliability,
             'detteVulnerability' => $detteVulnerability,
@@ -514,25 +517,26 @@ class ApiPeintureController extends AbstractController
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if ($data === null || !property_exists($data, 'mode') || !property_exists($data, 'maven_key') ) {
-            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
-                                        'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+        if ($data === null || !property_exists($data, 'maven_key') ) {
+            return $response->setData([
+                'data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
+                'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
         }
 
         /** On regarde si le projet existe */
-        $isValide = $this->isValide($data->mode, $data->maven_key);
+        $isValide = $this->isValide($data->maven_key);
         if ($isValide['code'] === 406) {
-            return $response->setData(['code'=>406, 'type'=> 'secondary', 'reference'=> static::$reference,
-                                        'message' => static::$erreur406, Response::HTTP_NOT_ACCEPTABLE]);
+            return $response->setData([
+                'code'=>406, 'type'=> 'secondary', 'reference'=> static::$reference,
+                'message' => static::$erreur406, Response::HTTP_NOT_ACCEPTABLE]);
         }
 
         /** On récupère les données pour le projet */
         $map=['maven_key'=>$data->maven_key];
-        $details=$anomalieDetailsEntity->selectAnomalieDetailsMavenKey($data->mode, $map);
+        $details=$anomalieDetailsEntity->selectAnomalieDetailsMavenKey($map);
         if ($details['code']!=200) {
             return $response->setData([
-                'code' => $details['code'],
-                Response::HTTP_OK]);
+                'code' => $details['code'], Response::HTTP_OK]);
         }
 
         $bugBlocker = $details['liste'][0]['bug_blocker'];
@@ -554,7 +558,6 @@ class ApiPeintureController extends AbstractController
         $codeSmellInfo = $details['liste'][0]['code_smell_info'];
 
         return $response->setData([
-            "mode"=>$data->mode,
             "code" => 200,
             "bugBlocker" => $bugBlocker,
             "bugCritical" => $bugCritical,
@@ -600,28 +603,29 @@ class ApiPeintureController extends AbstractController
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if ($data === null || !property_exists($data, 'mode') || !property_exists($data, 'maven_key') ) {
-            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
-                                        'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+        if ($data === null || !property_exists($data, 'maven_key') ) {
+            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert',
+            'reference'=> static::$reference, 'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
         }
 
         /** On regarde si le projet existe */
-        $isValide = $this->isValide($data->mode, $data->maven_key);
+        $isValide = $this->isValide($data->maven_key);
         if ($isValide['code'] === 406) {
-            return $response->setData(['code'=>406, 'type'=> 'secondary', 'reference'=> static::$reference,
-                                        'message' => static::$erreur406, Response::HTTP_NOT_ACCEPTABLE]);
+            return $response->setData([
+                'code'=>406, 'type'=> 'secondary', 'reference'=> static::$reference,
+                'message' => static::$erreur406, Response::HTTP_NOT_ACCEPTABLE]);
         }
 
         /** On compte le nombre de hotspot au statut TO_REVIEW */
         $map=['maven_key'=>$data->maven_key, 'status'=>'TO_REVIEW'];
-        $toReview=$hotspotsEntity->countHotspotsStatus($data->mode, $map);
+        $toReview=$hotspotsEntity->countHotspotsStatus($map);
         if ($toReview['code']!=200) {
             return $response->setData(['code' => $toReview['code'], Response::HTTP_OK]);
         }
 
         /** On compte le nombre de hotspot au statut REVIEWED */
         $map=['maven_key'=>$data->maven_key, 'status'=>'REVIEWED'];
-        $reviewed=$hotspotsEntity->countHotspotsStatus($data->mode, $map);
+        $reviewed=$hotspotsEntity->countHotspotsStatus($map);
         if ($reviewed['code']!=200) {
             return $response->setData(['code' => $reviewed['code'], Response::HTTP_OK]);
         }
@@ -633,7 +637,7 @@ class ApiPeintureController extends AbstractController
             $note=static::calculNoteHospot($toReview['nombre'][0]['to_review'], $reviewed['nombre'][0]['reviewed']);
         }
 
-        return $response->setData(['code'=>200, 'mode'=>$data->mode, 'note' => $note, Response::HTTP_OK]);
+        return $response->setData(['code'=>200, 'note' => $note, Response::HTTP_OK]);
     }
 
     /**
@@ -661,21 +665,23 @@ class ApiPeintureController extends AbstractController
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if ($data === null || !property_exists($data, 'mode') || !property_exists($data, 'maven_key') ) {
-            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
-                                        'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+        if ($data === null || !property_exists($data, 'maven_key') ) {
+            return $response->setData([
+                'data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
+                'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
         }
         /** On regarde si le projet existe */
-        $isValide = $this->isValide($data->mode, $data->maven_key);
+        $isValide = $this->isValide($data->maven_key);
         if ($isValide['code'] === 406) {
-            return $response->setData(['code'=>406, 'type'=> 'secondary', 'reference'=> static::$reference,
-                                        'message' => static::$erreur406, Response::HTTP_NOT_ACCEPTABLE]);
+            return $response->setData([
+                'code'=>406, 'type'=> 'secondary', 'reference'=> static::$reference,
+                'message' => static::$erreur406, Response::HTTP_NOT_ACCEPTABLE]);
         }
 
         $total = $high = $medium = $low = 0;
         /** On récupère la dernière version et sa date de publication. */
         $map=['maven_key'=>$data->maven_key, 'status'=>'REVIEWED'];
-        $niveaux=$hotspotsEntity->selectHotspotsByNiveau($data->mode, $map);
+        $niveaux=$hotspotsEntity->selectHotspotsByNiveau($map);
         if ($niveaux['code']!=200) {
             return $response->setData(['code' => $niveaux['code'], Response::HTTP_OK]);
         }
@@ -694,7 +700,7 @@ class ApiPeintureController extends AbstractController
             $total = intval($high) + intval($medium) + intval($low);
         }
         return $response->setData(
-            ['code' => 200, 'mode'=>$data->mode, 'total' => $total, 'high' => $high,
+            ['code' => 200, 'total' => $total, 'high' => $high,
             'medium' => $medium, 'low' => $low, Response::HTTP_OK]
         );
     }
@@ -724,20 +730,20 @@ class ApiPeintureController extends AbstractController
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if ($data === null || !property_exists($data, 'mode') || !property_exists($data, 'maven_key') ) {
-            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
-                                        'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+        if ($data === null) {
+            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference, 'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
         }
 
-        /** On regarde si le projet existe */
-        $isValide = $this->isValide($data->mode, $data->maven_key);
+        /** On regarde si le projet existe */$nosonar = new NoSonar();
+        $isValide = $this->isValide($data->maven_key);
         if ($isValide['code'] === 406) {
-            return $response->setData(['code'=>406, 'type'=> 'secondary', 'reference'=> static::$reference,
-                                        'message' => static::$erreur406, Response::HTTP_NOT_ACCEPTABLE]);
+            return $response->setData([
+                'code'=>406, 'type'=> 'secondary', 'reference'=> static::$reference,
+                'message' => static::$erreur406, Response::HTTP_NOT_ACCEPTABLE]);
         }
         /** On récupère la liste des règles et leur nombre pour un projet. */
         $map=['maven_key'=>$data->maven_key];
-        $rules=$noSonarEntity->selectNoSonarRuleGroupByRule($data->mode, $map);
+        $rules=$noSonarEntity->selectNoSonarRuleGroupByRule($map);
         if ($rules['code']!=200) {
             return $response->setData(['code' => $rules['code'], Response::HTTP_OK]);
         }
@@ -756,7 +762,7 @@ class ApiPeintureController extends AbstractController
         }
 
         return $response->setData(
-            ['code'=>200, 'mode'=>$data->mode, 'total' => $total, 's1309' => $sonar1309, 'nosonar' => $nosonar, Response::HTTP_OK]
+            ['code'=>200, 'total' => $total, 's1309' => $sonar1309, 'nosonar' => $nosonar, Response::HTTP_OK]
         );
     }
 
@@ -785,21 +791,23 @@ class ApiPeintureController extends AbstractController
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if ($data === null || !property_exists($data, 'mode') || !property_exists($data, 'maven_key') ) {
-            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
-                                        'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+        if ($data === null || !property_exists($data, 'maven_key') ) {
+            return $response->setData([
+                'data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
+                'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
         }
 
         /** On regarde si le projet existe */
-        $isValide = $this->isValide($data->mode, $data->maven_key);
+        $isValide = $this->isValide($data->maven_key);
         if ($isValide['code'] === 406) {
-            return $response->setData(['code'=>406, 'type'=> 'secondary', 'reference'=> static::$reference,
-                                        'message' => static::$erreur406, Response::HTTP_NOT_ACCEPTABLE]);
+            return $response->setData([
+                'code'=>406, 'type'=> 'secondary', 'reference'=> static::$reference,
+                'message' => static::$erreur406, Response::HTTP_NOT_ACCEPTABLE]);
         }
 
-        /** On récupère la liste des todo pour le projet. */
+        /** On récupère la liste des to do pour le projet. */
         $map=['maven_key'=>$data->maven_key];
-        $rules=$todoEntity->selectTodoRuleGroupByRule($data->mode, $map);
+        $rules=$todoEntity->selectTodoRuleGroupByRule($map);
         if ($rules['code']!=200) {
             return $response->setData(['code' => $rules['code'], Response::HTTP_OK]);
         }
@@ -830,13 +838,13 @@ class ApiPeintureController extends AbstractController
 
         /** On récupère la liste détaillée. */
         $map=['maven_key'=>$data->maven_key];
-        $details=$todoEntity->selectTodoComponentOrderByRule($data->mode, $map);
+        $details=$todoEntity->selectTodoComponentOrderByRule($map);
         if ($details['code']!=200) {
             return $response->setData(['code' => $details['code'], Response::HTTP_OK]);
         }
 
         return $response->setData(
-            ['code'=>200, 'mode'=>$data->mode, 'todo' => $todo, 'java' => $java, 'javascript' => $javascript,
+            ['code'=>200, 'todo' => $todo, 'java' => $java, 'javascript' => $javascript,
                 'typescript' => $typescript, 'html' => $html, 'xml' => $xml, "details" => $details, Response::HTTP_OK]
         );
     }
