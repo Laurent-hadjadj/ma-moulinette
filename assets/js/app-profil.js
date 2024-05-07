@@ -95,9 +95,9 @@ const callboxFermer='</span><button class="close-button" aria-label="Fermer la f
   const profils = t.listeProfil;
   profils.forEach(profil =>
   {
-   id=id+1;
+    id=id+1;
       str +=
-      `<div class="callout secondary small-12 medium-6 langage-6 cell">
+      `<div class="callout secondary small-12 medium-6 langage-6 cell box-langage">
         <h3 class="h5">${profil.langage }</h3>
         <table class="hover">
           <thead>
@@ -126,10 +126,14 @@ const callboxFermer='</span><button class="close-button" aria-label="Fermer la f
             </tr>
           </tbody>
         </table>
-        <div class="small-12 medium-6 large-6 bouton-profil-refresh-left cell">
-        <p class="button expanded float-center bouton-profil-refresh js-bouton-autre-profil" id="autre-${id}">Afficher les autres profils
-        </p>
-      </div>
+        <div class="small-12 medium-6 large-6 cell">
+							<p class="button expanded float-center bouton-profil-refresh js-bouton-autre-profil" data-language="${profil.langage}" id="language-${profil.langage}}">
+								<button data-open="fenetre-modal" class="fenetre-modal">Afficher les autres profils</button>
+							</p>
+						</div>
+					</div>
+					<div class="reveal" id="fenetre-modal" data-reveal>
+					</div>
       </div>`;
     total = total + profil.regle; });
 
@@ -139,12 +143,75 @@ const callboxFermer='</span><button class="close-button" aria-label="Fermer la f
 
   $('.js-bouton-autre-profil').on('click', (e)=>{
     console.log("----------------Youpi",e);
-    //appel d'une méthode
   });
 };
 
+
+const recupereProfilNonActif=async function(langage){
+  /** Construction de la requete */
+  const dataRefresh = { mode:'null', langage: langage};
+  const optionsRefresh = {
+        url: `${serveur()}/api/quality/off`, type: 'POST',
+        dataType: 'json', data: JSON.stringify(dataRefresh), contentType };
+  /** On appel l'API */
+  const t = await $.ajax(optionsRefresh);
+
+  let id= 0, str = '';
+
+  $('#toto').html('');
+  const profils = t.listeProfil;
+
+  // En tête du tableau
+  str += `<table class="hover">
+  <thead>
+    <tr>
+      <th scope="col" class="open-sans text-center"></th>
+      <th scope="col" class="open-sans text-center">Version</th>
+      <th scope="col" class="open-sans text-center">Règle</th>
+      <th scope="col" class="open-sans text-center">Date</th>
+    </tr>
+  </thead>`
+
+  // Bloucle ur le profil pour construire le tablea
+  profils.forEach(profil =>
+    {
+      id=id+1;
+      str +=
+      `   <tbody>
+            <tr class="open-sans">
+              <td></td>
+              <td class="text-left">${ profil.profil }</td>
+              <td class="text-center">${ new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(profil.regle) }</td>
+              <td class="text-center">
+                <span class="show-for-small-only"> ${ new Intl.DateTimeFormat('default', dateOptionsShort).format(new Date(profil.date)) }</span>
+                <span class="show-for-medium">${ new Intl.DateTimeFormat('default', dateOptions).format(new Date(profil.date)) }</span>
+              </td>
+            </tr>
+      </div>`;
+    }
+  )
+  // Fin du tableau avec le boutton pour fermer la page
+  str += `  </tbody>
+          </table>
+          <button class="close-button" data-close aria-label="Close reveal" type="button">
+          <span aria-hidden="true">&times;</span>
+          </button>`;
+
+  $('#toto').html(str);
+  $('#fenetre-modal').foundation('open');
+  console.log(str);
+}
+
 $('.js-bouton-autre-profil').on('click', (e)=>{
-  console.log("----------------Youpi",e);
+  console.log("JAAJ",e);
+
+  /* On récupère l'id */
+  const target = e.currentTarget.id;
+  const elm = document.getElementById(target);
+  /* On récupère le nom du langage. */
+  const language=elm.dataset.language;
+  // Methode qui appel l'api et qui envoie le tableau qui ce trouveras dans la fenetre modal
+  recupereProfilNonActif(language);
 });
 
 /**

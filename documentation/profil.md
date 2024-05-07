@@ -84,13 +84,19 @@ Vous devez avoir au moins un profil déclaré sur le serveur SonarQube correspon
 SONAR_PROFILES="Ma petite Entreprise V1.0.0"
 ```
 
-![profil](/documentation/ressources/profil-008.jpg)
+![profil](/documentation/ressources/profil-012.jpg)
 
-## Liste des référentiels
+## Liste des référentiels actifs
 
 Ci-dessous notre référentiel pour les applications `JAVA`, `WEB`, `PHP`, `PYTHON`.
 
-![profil](/documentation/ressources/profil-010.jpg)
+![profil](/documentation/ressources/profil-013.jpg)
+
+## Liste des référenciels non actifs
+
+Le bouton `Afficher les autres profils` ![profil](/documentation/ressources/profil-015.jpg) affiche une fenetre modal donnant les profils qui ne sont pas actifs pour le language selectionné.
+
+![profil](/documentation/ressources/profil-014.jpg)
 
 ## Répartition des règles par langage
 

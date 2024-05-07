@@ -132,7 +132,6 @@ class ApiProfilController extends AbstractController
             $this->em->persist($profils);
             $this->em->flush();
         }
-
         /** On récupère la nouvelle liste des profils; */
         $request=$profilesEntity->selectProfiles($data->mode);
 
@@ -365,5 +364,42 @@ class ApiProfilController extends AbstractController
         }
 
         return $this->render('profil/details.html.twig', $render);
+    }
+
+    /**
+     * [Description for listeQualityOff]
+     * Renvoie la lit ede profil qui ne ont pa acitf pour un certain langage donnée
+     *
+     * @param Request $request
+     *
+     * @return response
+     *
+     */
+    #[Route('/api/quality/off', name: 'liste_quality_off', methods: ['POST'])]
+    public function listeQualityOff(Request $request): response
+    {
+        /** On instancie la classe */
+        $profilesEntity = $this->em->getRepository(Profiles::class);
+
+        /** on décode le body */
+        $data = json_decode($request->getContent());
+
+        $langage = $data->langage;
+        /** On crée un objet response */
+        $response = new JsonResponse();
+
+
+      /** On teste si la clé est valide */
+        if ($data === null || !property_exists($data, 'mode')) {
+        return $response->setData(['data'=>$data,'code'=>400, Response::HTTP_BAD_REQUEST]);
+        }
+
+        /** On récupère la liste des profiles pas actifs */
+        $isDefault = '0';
+        $request=$profilesEntity->selectProfiles($data->mode,$isDefault,$langage);
+
+        $response = new JsonResponse();
+        return $response->setData([
+            'mode' => $data->mode, 'code' => 200, "listeProfil" => $request['liste'], Response::HTTP_OK]);
     }
 }
