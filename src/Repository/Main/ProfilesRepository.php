@@ -61,7 +61,7 @@ class ProfilesRepository extends ServiceEntityRepository
 
     /**
      * [Description for selectProfiles]
-     * On récupre la liste des profils
+     * On récupre la liste des profils (par default on recupere les profils actifs)
      *
      * @param string $mode
      *
@@ -71,7 +71,7 @@ class ProfilesRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectProfiles($mode):array
+    public function selectProfiles($mode, $isDefault='1', $langage = null):array
     {
         $sql = "SELECT name as profil,
                         language_name as langage,
@@ -79,7 +79,10 @@ class ProfilesRepository extends ServiceEntityRepository
                         rules_update_at as date,
                         is_default as actif
                         FROM profiles
-                        WHERE is_default = 1";
+                        WHERE is_default = ".$isDefault;
+        if ($langage !== null ){
+            $sql .= " AND language_name LIKE '".$langage."'";
+        }
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         try {
             if ($mode !== 'TEST') {
