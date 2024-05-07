@@ -26,7 +26,6 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 class UtilisateurRepositoryTest extends KernelTestCase
 {
 
-
     public static $courriel = 'aurelie.petit-coeur@ma-moulinette.fr';
     public static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
     public static $version = '2.0.0-RELEASE';
