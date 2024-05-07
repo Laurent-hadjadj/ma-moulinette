@@ -62,6 +62,11 @@ class NotesValidatorTest extends KernelTestCase
     $this->assertHasErrors($this->getEntity()->setType(''), 1);
   }
 
+  public function testValidIntegerEntity(): void
+  {
+    $this->assertHasErrors($this->getEntity()->setValue(-1), 0);
+  }
+
   public function testCountAttribut(): void
   {
       $entity = $this->getEntity();
