@@ -40,15 +40,17 @@ class NoSonarRepository extends ServiceEntityRepository
      */
     public function deleteNoSonarMavenKey($map):array
     {
-        $sql = "DELETE
-                FROM no_sonar
-                WHERE maven_key=:maven_key";
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-        $conn->bindValue(':maven_key', $map['maven_key']);
         try {
-                $conn->executeQuery();
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "DELETE
+                        FROM no_sonar
+                        WHERE maven_key=:maven_key";
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $stmt->bindValue(':maven_key', $map['maven_key']);
+                    $stmt->executeStatement();
+            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->rollback();
+            $this->getEntityManager()->getConnection()->rollBack();
             return ['code'=>500, 'erreur'=> $e->getCode()];
         }
         return ['code'=>200, 'erreur'=>''];
@@ -68,17 +70,19 @@ class NoSonarRepository extends ServiceEntityRepository
      */
     public function selectNoSonarRuleGroupByRule($map):array
     {
-        $sql = "SELECT rule, count(*) as total
-                FROM no_sonar
-                WHERE maven_key=:maven_key
-                GROUP BY rule";
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-        $conn->bindValue(':maven_key', $map['maven_key']);
         try {
-                $exec=$conn->executeQuery();
-                $liste=$exec->fetchAllAssociative();
+                $this->getEntityManager()->getConnection()->beginTransaction();
+                    $sql = "SELECT rule, count(*) as total
+                            FROM no_sonar
+                            WHERE maven_key=:maven_key
+                            GROUP BY rule";
+                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                        $stmt->bindValue(':maven_key', $map['maven_key']);
+                        $exec=$stmt->executeQuery();
+                        $liste=$exec->fetchAllAssociative();
+                $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->rollback();
+            $this->getEntityManager()->getConnection()->rollBack();
             return ['code'=>500, 'erreur'=> $e->getCode()];
         }
         return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
@@ -98,21 +102,22 @@ class NoSonarRepository extends ServiceEntityRepository
      */
     public function insertNoSonar($map):array
     {
-        $sql = "INSERT INTO no_sonar (maven_key, rule, component, line, date_enregistrement)
-                VALUES (:maven_key, :rule, :component, :line, :date_enregistrement)";
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-        $conn->bindValue(':maven_key', $map['maven_key']);
-        $conn->bindValue(':rule', $map['rule']);
-        $conn->bindValue(':component', $map['component']);
-        $conn->bindValue(':line', $map['line']);
-        $conn->bindValue(':date_enregistrement', $map['date_enregistrement']);
         try {
-                $exec=$conn->executeQuery();
-                $liste=$exec->fetchAllAssociative();
+                $this->getEntityManager()->getConnection()->beginTransaction();
+                    $sql = "INSERT INTO no_sonar (maven_key, rule, component, line, date_enregistrement)
+                            VALUES (:maven_key, :rule, :component, :line, :date_enregistrement)";
+                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                        $stmt->bindValue(':maven_key', $map['maven_key']);
+                        $stmt->bindValue(':rule', $map['rule']);
+                        $stmt->bindValue(':component', $map['component']);
+                        $stmt->bindValue(':line', $map['line']);
+                        $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']);
+                        $stmt->executeStatement();
+                $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->rollback();
+            $this->getEntityManager()->getConnection()->rollBack();
             return ['code'=>500, 'erreur'=> $e->getCode()];
         }
-        return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
+        return ['code'=>200, 'erreur'=>''];
     }
 }
