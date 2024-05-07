@@ -20,18 +20,6 @@ class NoSonarFixtures extends Fixture
   private static $line = 118;
   private static $dateEnregistrement = '2024-03-26 14:46:38';
 
-  /**
-   * [Description for load]
-   * Chargement des utilisateurs
-   *
-   * @param ObjectManager $manager
-   *
-   * @return void
-   *
-   * Created at: 05/05/2024 18:43:05 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
   public function load(ObjectManager $manager): void
     {
       /** création de la note RELIABILITY */
