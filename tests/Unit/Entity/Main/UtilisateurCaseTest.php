@@ -38,16 +38,6 @@ class UtilisateurCaseTest extends TestCase
   public static $dateModification = '1981-01-01 00:00:00';
   public static $dateEnregistrement = '1980-01-01 00:00:00';
 
-/**
-   * [Description for getEntity]
-   * Prépare le jeu de données
-   *
-   * @return Utilisateur
-   *
-   * Created at: 02/05/2024 20:44:25 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
   public function getEntity(): Utilisateur
   {
     return (new utilisateur())
@@ -66,15 +56,6 @@ class UtilisateurCaseTest extends TestCase
       ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
   }
 
-  /**
-   * [Description for testUtilisateurPersonne]
-   *  On récupère une personne
-   * @return void
-   *
-   * Created at: 13/02/2023, 15:18:34 (Europe/Paris)
-   * @author    Laurent HADJADJ <laurent_h@me.com>
-   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
   public function testUtilisateurPersonne(): void
   {
     $utilisateur = new Utilisateur();
@@ -83,45 +64,18 @@ class UtilisateurCaseTest extends TestCase
     $this->assertEquals(static::$nom .' '. static::$prenom, $utilisateur->getPersonne());
   }
 
-  /**
-   * [Description for testUtilisateurPersonneIsEmptyByDefault]
-   * On test si la personne est vide par défau.
-   * @return void
-   *
-   * Created at: 14/02/2023, 09:24:11 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
   public function testUtilisateurPersonneIsEmptyByDefault(): void
   {
     $utilisateur = new Utilisateur();
     $this->assertEquals('', $utilisateur->getPersonne(), "La personne ne peut pas être vide.");
   }
 
-  /**
-   * [Description for testUtilisateurAvatarUrlIsNull]
-   * On test l'url de retour si l'avatar n'est pas défini
-   * @return void
-   *
-   * Created at: 14/02/2023, 09:24:47 (Europe/Paris)
-   * @author    Laurent HADJADJ <laurent_h@me.com>
-   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
   public function testUtilisateurAvatarUrlIsNull(): void
   {
     $utilisateur = new Utilisateur();
     $this->assertNull($utilisateur->getAvatarUrl(), "L'url de l'avatar ne peux pas être vide.");
   }
 
-  /**
-   * [Description for testUtilisateurAvatarUrlIsNotNull]
-   * On test l'url de l'avatar si l'avatar existe.
-   * @return void
-   *
-   * Created at: 14/02/2023, 09:25:26 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com
-   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
   public function testUtilisateurAvatarUrlIsNotNull(): void
   {
     $utilisateur = new Utilisateur();
@@ -130,16 +84,6 @@ class UtilisateurCaseTest extends TestCase
   }
 
 
-  /**
-   * [Description for testGettersAndSetters]
-   * On vérifie les setters et les getters de la classe
-   *
-   * @return void
-   *
-   * Created at: 03/05/2024 17:52:18 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
   public function testGettersAndSetters(): void
     {
     // Définition de l'entité

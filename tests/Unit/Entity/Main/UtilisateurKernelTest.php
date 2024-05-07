@@ -39,16 +39,6 @@ class UtilisateurKernelTest extends KernelTestCase
     "projet":[],"favori":[],"version":[],"bookmark":[]}'];
   public static $dateEnregistrement = '1980-01-01 00:00:00';
 
-  /**
-   * [Description for getEntity]
-   * Prépare le jeu de données
-   *
-   * @return Utilisateur
-   *
-   * Created at: 02/05/2024 20:44:25 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
   public function getEntity(): Utilisateur
   {
     return (new utilisateur())
@@ -65,16 +55,6 @@ class UtilisateurKernelTest extends KernelTestCase
       ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
   }
 
-    /**
-     * [Description for setUp]
-     * Création des utilisateurs en base depuis les fixtures
-     *
-     * @return void
-     *
-     * Created at: 05/05/2024 18:15:50 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     protected function setUp(): void
     {
         self::bootKernel();
@@ -85,15 +65,6 @@ class UtilisateurKernelTest extends KernelTestCase
         $executor->execute([new UtilisateurFixtures()]);
     }
 
-    /**
-     * [Description for testAjoutUtilisateurAvecCourrielExistant]
-     *
-     * @return void
-     *
-     * Created at: 05/05/2024 18:18:32 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function testAjoutUtilisateurAvecCourrielExistant(): void
     {
         /* Création d'un nouvel utilisateur avec un courriel déjà existant */
@@ -110,15 +81,6 @@ class UtilisateurKernelTest extends KernelTestCase
         $entityManager->flush();
     }
 
-    /**
-     * [Description for testCompteUtilisateurNoActif]
-     *
-     * @return void
-     *
-     * Created at: 05/05/2024 22:07:26 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function testCompteUtilisateurNoActif(): void
     {
         /* On se connecte à la base de tests */
@@ -131,15 +93,6 @@ class UtilisateurKernelTest extends KernelTestCase
         $this->assertEquals(4, $count);
     }
 
-    /**
-     * [Description for testUtilisateurFindOne]
-     *
-     * @return void
-     *
-     * Created at: 05/05/2024 22:07:35 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function testUtilisateurFindOneBy(): void
     {
         /* On se connecte à la base de tests */

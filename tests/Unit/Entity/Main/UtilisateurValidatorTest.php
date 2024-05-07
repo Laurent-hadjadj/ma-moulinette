@@ -39,16 +39,6 @@ class UtilisateurValidatorTest extends KernelTestCase
   public static $dateModification = '1981-01-01 00:00:00';
   public static $dateEnregistrement = '1980-01-01 00:00:00';
 
-  /**
-   * [Description for getEntity]
-   * Prépare le jeu de données
-   *
-   * @return Utilisateur
-   *
-   * Created at: 02/05/2024 20:44:25 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
   public function getEntity(): Utilisateur
   {
     return (new utilisateur())
@@ -67,18 +57,7 @@ class UtilisateurValidatorTest extends KernelTestCase
       ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
   }
 
-  /**
-   * [Description for assertHasErrors]
-   *
-   * @param Utilisateur $entity
-   * @param int $number
-   *
-   * @return [type]
-   *
-   * Created at: 02/05/2024 22:24:59 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
+
   public function assertHasErrors(Utilisateur $entity, int $number = 0)
   {
     self::bootKernel();
@@ -92,31 +71,11 @@ class UtilisateurValidatorTest extends KernelTestCase
     $this->assertCount($number, $errors, implode(', ', $messages));
   }
 
-  /**
-   * [Description for testValidEntity]
-   * Vérification de l'entity
-   *
-   * @return void
-   *
-   * Created at: 03/05/2024 16:38:53 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
   public function testValidEntity(): void
   {
     $this->assertHasErrors($this->getEntity(), 0);
   }
 
-
-  /**
-   * [Description for testInvalidBlankEntity]
-   * Vérification des attributs qui ne peuvent pas être null/vide
-   * @return void
-   *
-   * Created at: 03/05/2024 16:38:43 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
   public function testInvalidBlankEntity(): void
   {
     $this->assertHasErrors($this->getEntity()->setId(''), 1);
@@ -127,16 +86,6 @@ class UtilisateurValidatorTest extends KernelTestCase
     $this->assertHasErrors($this->getEntity()->setPreference([]), 1);
   }
 
-  /**
-   * [Description for testValidBlankEntity]
-   * Vérification des attributs qui peuvent être null/vide
-   *
-   * @return void
-   *
-   * Created at: 03/05/2024 16:40:24 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
   public function testValidBlankEntity(): void
   {
     $this->assertHasErrors($this->getEntity()->setAvatar(''), 0);
@@ -144,21 +93,12 @@ class UtilisateurValidatorTest extends KernelTestCase
     $this->assertHasErrors($this->getEntity()->setEquipe([]), 0);
     $this->assertHasErrors($this->getEntity()->setActif(''), 0);
   }
-  /**
-   * [Description for testUtilisateurCountAttribut]
-   * On vérifie le nombre d'attribut
-   *
-   * @return void
-   *
-   * Created at: 14/02/2023, 15:19:00 (Europe/Paris)
-   * @author    Laurent HADJADJ <laurent_h@me.com>
-   * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
-    public function testCountAttribut(): void
-    {
-        $entity = $this->getEntity();
-        $reflectionClass = new \ReflectionClass($entity);
-        $nbAttributs = count($reflectionClass->getProperties());
-        $this->assertEquals($nbAttributs, 14);
-    }
+
+  public function testCountAttribut(): void
+  {
+      $entity = $this->getEntity();
+      $reflectionClass = new \ReflectionClass($entity);
+      $nbAttributs = count($reflectionClass->getProperties());
+      $this->assertEquals($nbAttributs, 14);
+  }
 }

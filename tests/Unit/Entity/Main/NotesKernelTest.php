@@ -28,16 +28,6 @@ class NotesKernelTest extends KernelTestCase
   private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
   private static $dateEnregistrement = '2024-03-26 14:46:38';
 
-  /**
-   * [Description for getEntity]
-   * Prépare le jeu de données
-   *
-   * @return Utilisateur
-   *
-   * Created at: 02/05/2024 20:44:25 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
   public function getEntity(): Notes
   {
     return (new notes())
@@ -46,16 +36,6 @@ class NotesKernelTest extends KernelTestCase
       ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
   }
 
-    /**
-     * [Description for setUp]
-     * Création des utilisateurs en base depuis les fixtures
-     *
-     * @return void
-     *
-     * Created at: 05/05/2024 18:15:50 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     protected function setUp(): void
     {
         self::bootKernel();
