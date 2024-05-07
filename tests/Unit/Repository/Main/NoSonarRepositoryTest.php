@@ -33,6 +33,7 @@ class NoSonarRepositoryTest extends KernelTestCase
     ma-moulinette-service/src/main/java/fr/ma-petite-entreprise/ma-moulinette/service/ClamAvService.java';
     private static $line = 118;
     private static $dateEnregistrement = '2024-03-26 14:46:38';
+
     private static $erreurCode200 = 'Erreur le code retour doit être 200';
 
     protected function setUp(): void
@@ -96,8 +97,8 @@ class NoSonarRepositoryTest extends KernelTestCase
                 'date_enregistrement'=> static::$dateEnregistrement ];
 
         // Appel de la méthode
-        $notesRepository = $entityManager->getRepository(NoSonar::class);
-        $r = $notesRepository->insertNoSonar($map);
+        $nosonarRepository = $entityManager->getRepository(NoSonar::class);
+        $r = $nosonarRepository->insertNoSonar($map);
 
         // Assert
         $this->assertEquals(200, $r['code'], static::$erreurCode200);
