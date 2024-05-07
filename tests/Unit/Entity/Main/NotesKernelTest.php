@@ -25,17 +25,6 @@ use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 class NotesKernelTest extends KernelTestCase
 {
 
-  private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
-  private static $dateEnregistrement = '2024-03-26 14:46:38';
-
-  public function getEntity(): Notes
-  {
-    return (new notes())
-      ->setMavenKey(static::$mavenKey)
-      ->setValue(3)
-      ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
-  }
-
     protected function setUp(): void
     {
         self::bootKernel();
@@ -57,8 +46,9 @@ class NotesKernelTest extends KernelTestCase
         $security = $notesRepository->findOneBy(['type' => 'security']);
         $sqale = $notesRepository->findOneBy(['type' => 'sqale']);
 
-        $this->assertCount(1, [$reliability]);
-        $this->assertCount(1, [$security]);
-        $this->assertCount(1, [$sqale]);
-  }
+        $this->assertNotNull($reliability, 'Aucune entité a été trouvée');
+        $this->assertCount(1, [$reliability], 'RELIABILITY : Aucune réponse');
+        $this->assertCount(1, [$security], 'SECURITY: Aucune réponse trouvée');
+        $this->assertCount(1, [$sqale], 'SQALE: Aucune réponse trouvée');
+    }
 }
