@@ -46,11 +46,11 @@ class NotesRepository extends ServiceEntityRepository
         $sql = "DELETE
                 FROM notes
                 WHERE maven_key=:maven_key and type=:type";
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-        $conn->bindValue(':maven_key', $map['maven_key']);
-        $conn->bindValue(':type', $map['type']);
+        $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+        $stmt->bindValue(':maven_key', $map['maven_key']);
+        $stmt->bindValue(':type', $map['type']);
         try {
-                $conn->executeQuery();
+                $stmt->executeQuery();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->rollback();
             return ['code'=>500, 'erreur'=> $e->getCode()];
@@ -73,17 +73,19 @@ class NotesRepository extends ServiceEntityRepository
      */
     public function InsertNotes($map):array
     {
-        $sql = "INSERT INTO notes (maven_key, type, value, date_enregistrement)
-                VALUES (:maven_key, :type, :value, :date_enregistrement)";
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-        $conn->bindValue(':maven_key', $map['maven_key']);
-        $conn->bindValue(':type', $map['type']);
-        $conn->bindValue(':value', $map['value']);
-        $conn->bindValue(':date_enregistrement', $map['date_enregistrement']);
         try {
-                $conn->executeQuery();
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "INSERT INTO notes (maven_key, type, value, date_enregistrement)
+                VALUES (:maven_key, :type, :value, :date_enregistrement)";
+                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $stmt->bindValue(':maven_key', $map['maven_key']);
+                    $stmt->bindValue(':type', $map['type']);
+                    $stmt->bindValue(':value', $map['value']);
+                    $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']);
+                    $stmt->executeStatement();
+            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->rollback();
+            $this->getEntityManager()->getConnection()->rollBack();
             return ['code'=>500, 'erreur'=> $e->getCode()];
         }
         return ['code'=>200, 'erreur'=>''];
@@ -103,18 +105,20 @@ class NotesRepository extends ServiceEntityRepository
      */
     public function selectNotesMavenType($map):array
     {
-        $sql = "SELECT type, value, date_enregistrement
-                FROM notes
-                WHERE maven_key=:maven_key AND type=:type
-                ORDER BY date_enregistrement DESC LIMIT 1";
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-        $conn->bindValue(':maven_key', $map['maven_key']);
-        $conn->bindValue(':type', $map['type']);
         try {
-                $exec=$conn->executeQuery();
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "SELECT type, value, date_enregistrement
+                        FROM notes
+                        WHERE maven_key=:maven_key AND type=:type
+                        ORDER BY date_enregistrement DESC LIMIT 1";
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $stmt->bindValue(':maven_key', $map['maven_key']);
+                $stmt->bindValue(':type', $map['type']);
+                $exec=$stmt->executeQuery();
                 $liste=$exec->fetchAllAssociative();
+            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->rollback();
+            $this->getEntityManager()->getConnection()->rollBack();
             return ['code'=>500, 'erreur'=> $e->getCode()];
         }
         return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
