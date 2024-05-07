@@ -33,8 +33,7 @@ class NotesRepository extends ServiceEntityRepository
      * [Description for deleteNotesMavenKey]
      * Supprime les notes de la version courrante (i.e. correspondant à la maven_key)
      *
-     * @param mixed $mode
-     * @param mixed $map
+     * @param array $map
      *
      * @return array
      *
@@ -42,7 +41,7 @@ class NotesRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function deleteNotesMavenKey($mode,$map):array
+    public function deleteNotesMavenKey($map):array
     {
         $sql = "DELETE
                 FROM notes
@@ -51,15 +50,12 @@ class NotesRepository extends ServiceEntityRepository
         $conn->bindValue(':maven_key', $map['maven_key']);
         $conn->bindValue(':type', $map['type']);
         try {
-                if ($mode !== 'TEST') {
-                    $conn->executeQuery();
-                } else {
-                    return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-                }
+                $conn->executeQuery();
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+            $this->getEntityManager()->rollback();
+            return ['code'=>500, 'erreur'=> $e->getCode()];
         }
-        return ['mode'=>$mode, 'code'=>200, 'erreur'=>''];
+        return ['code'=>200, 'erreur'=>''];
     }
 
     /**
@@ -75,7 +71,7 @@ class NotesRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function InsertNotes($mode,$map):array
+    public function InsertNotes($map):array
     {
         $sql = "INSERT INTO notes (maven_key, type, value, date_enregistrement)
                 VALUES (:maven_key, :type, :value, :date_enregistrement)";
@@ -85,22 +81,18 @@ class NotesRepository extends ServiceEntityRepository
         $conn->bindValue(':value', $map['value']);
         $conn->bindValue(':date_enregistrement', $map['date_enregistrement']);
         try {
-                if ($mode !== 'TEST') {
-                    $conn->executeQuery();
-                } else {
-                    return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-                }
+                $conn->executeQuery();
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+            $this->getEntityManager()->rollback();
+            return ['code'=>500, 'erreur'=> $e->getCode()];
         }
-        return ['mode'=>$mode, 'code'=>200, 'erreur'=>''];
+        return ['code'=>200, 'erreur'=>''];
     }
 
 /**
      * [Description for selectNoteMavenType]
      * retourne la note par type (reliability, security, sqale) pour un projet.
      *
-     * @param string $mode
      * @param array $map
      *
      * @return array
@@ -109,9 +101,9 @@ class NotesRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectNotesMavenType($mode,$map):array
+    public function selectNotesMavenType($map):array
     {
-        $sql = "SELECT type, value
+        $sql = "SELECT type, value, date_enregistrement
                 FROM notes
                 WHERE maven_key=:maven_key AND type=:type
                 ORDER BY date_enregistrement DESC LIMIT 1";
@@ -119,16 +111,13 @@ class NotesRepository extends ServiceEntityRepository
         $conn->bindValue(':maven_key', $map['maven_key']);
         $conn->bindValue(':type', $map['type']);
         try {
-                if ($mode !== 'TEST') {
-                    $exec=$conn->executeQuery();
-                    $liste=$exec->fetchAllAssociative();
-                } else {
-                    return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-                }
+                $exec=$conn->executeQuery();
+                $liste=$exec->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+            $this->getEntityManager()->rollback();
+            return ['code'=>500, 'erreur'=> $e->getCode()];
         }
-        return ['mode'=>$mode, 'code'=>200, 'liste'=>$liste, 'erreur'=>''];
+        return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
     }
 
 }
