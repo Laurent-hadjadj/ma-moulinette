@@ -146,16 +146,18 @@ class UtilisateurRepository extends ServiceEntityRepository
         );
 
         $response=['code'=>200, 'erreur'=>''];
-        $sql = "UPDATE utilisateur
-                SET preference=:preference
-                WHERE courriel=:courriel";
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-        $conn->bindValue(':courriel', $map['courriel']);
-        $conn->bindValue(':preference', $jsonArray);
         try {
-            $conn->executeQuery();
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "UPDATE utilisateur
+                    SET preference=:preference
+                    WHERE courriel=:courriel";
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $stmt->bindValue(':courriel', $map['courriel']);
+                $stmt->bindValue(':preference', $jsonArray);
+                $stmt->executeStatement();
+            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->rollback();
+            $this->getEntityManager()->getConnection()->rollBack();
             $response=['code'=>500, 'erreur'=> $e->getCode()];
         }
         return $response;
@@ -240,16 +242,20 @@ class UtilisateurRepository extends ServiceEntityRepository
             );
 
         $response=['code'=>200, 'erreur'=>''];
-        $sql = "UPDATE utilisateur
-                SET preference=:preference
-                WHERE courriel=:courriel";
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-        $conn->bindValue(':courriel', $map['courriel']);
-        $conn->bindValue(':preference', $jsonArray);
         try {
-                $conn->executeQuery();
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "UPDATE utilisateur
+                        SET preference=:preference
+                        WHERE courriel=:courriel";
+
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $stmt->bindValue(':courriel', $map['courriel']);
+                $stmt->bindValue(':preference', $jsonArray);
+
+                $stmt->executeStatement();
+            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->rollback();
+            $this->getEntityManager()->getConnection()->rollBack();
             $response=['code'=>500, 'erreur'=> $e->getCode()];
         }
         return $response;
@@ -300,14 +306,16 @@ class UtilisateurRepository extends ServiceEntityRepository
             ]);
 
             /** On met à jour les préférences. */
-            $sql = "UPDATE utilisateur
-                    SET preference = '$jarray'
-                    WHERE courriel=:courriel";
-            $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-            $conn->bindValue(':courriel', $map['courriel']);
             try {
-                        $conn->executeQuery();
+                    $this->getEntityManager()->getConnection()->beginTransaction();
+                        $sql = "UPDATE utilisateur
+                                SET preference = '$jarray'
+                                WHERE courriel=:courriel";
+                        $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                        $stmt->bindValue(':courriel', $map['courriel']);
+                        $stmt->executeStatement();
             } catch (\Doctrine\DBAL\Exception $e) {
+                $this->getEntityManager()->getConnection()->rollBack();
                 $response = ['code'=>500, 'statut'=>-1, 'erreur'=> $e->getCode()];
             }
             $response = ['code'=> 200, 'statut'=>0, 'erreur'=>''];
@@ -326,19 +334,22 @@ class UtilisateurRepository extends ServiceEntityRepository
             ]);
 
             /** On met à jour les préférences. */
-            $sql = "UPDATE utilisateur
-                    SET preference = '$jarray'
-                    WHERE courriel=:courriel";
-            $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-            $conn->bindValue(':courriel', $map['courriel']);
             try {
-                        $conn->executeQuery();
+                $this->getEntityManager()->getConnection()->beginTransaction();
+                    $sql = "UPDATE utilisateur
+                        SET preference = '$jarray'
+                        WHERE courriel=:courriel";
+                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $stmt->bindValue(':courriel', $map['courriel']);
+                    $stmt->executeStatement();
+                $this->getEntityManager()->getConnection()->commit();
+
             } catch (\Doctrine\DBAL\Exception $e) {
+                $this->getEntityManager()->getConnection()->rollBack();
                 $response = ['code'=>500, 'statut'=>-1, 'erreur'=> $e->getCode()];
             }
             $response = ['code'=> 200, 'statut'=>1, 'erreur'=>''];
         }
-
         return $response;
     }
 
@@ -355,18 +366,19 @@ class UtilisateurRepository extends ServiceEntityRepository
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function updateUtilisateurResetPassword($map):array {
-
-        $sql = "UPDATE utilisateur
-                SET init = :init, date_modification=:date_modification
-                WHERE courriel=:courriel";
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-        $conn->bindValue(':init', $map['init']);
-        $conn->bindValue(':date_modification', $map['date_modification']);
-        $conn->bindValue(':courriel', $map['courriel']);
         try {
-                $conn->executeQuery();
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "UPDATE utilisateur
+                        SET init = :init, date_modification=:date_modification
+                        WHERE courriel=:courriel";
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $stmt->bindValue(':init', $map['init']);
+                    $stmt->bindValue(':date_modification', $map['date_modification']);
+                    $stmt->bindValue(':courriel', $map['courriel']);
+                $stmt->executeStatement();
+            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->rollback();
+            $this->getEntityManager()->getConnection()->rollBack();
             return ['code'=>500, 'statut'=>-1, 'erreur'=> $e->getCode()];
         }
         return ['code'=>200, 'erreur'=>''];
