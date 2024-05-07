@@ -169,8 +169,10 @@ class ApiNosonarController extends AbstractController
                 if (!empty($issue['line'])) {
                     $line = $issue['line'];
                 }
+
                 $map=['maven_key'=>$data->maven_key, 'rule'=>$issue['rule'],
-                'component'=>$component, 'line'=>$line, 'date_enregistrement'=>$dateEnregistrement];
+                'component'=>$component, 'line'=>$line,
+                'date_enregistrement'=>$dateEnregistrement];
                 $request=$noSonarEntity->InsertNoSonar($map);
                 if ($request['code']!=200) {
                     return $response->setData([
