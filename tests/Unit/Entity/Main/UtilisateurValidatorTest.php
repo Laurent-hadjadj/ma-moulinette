@@ -154,15 +154,11 @@ class UtilisateurValidatorTest extends KernelTestCase
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function testCountAttribut(): void
-  {
-    $mockRepo = $this->createMock(Utilisateur::class);
-    /**
-     * On compte le nombre d'attribut de la classe
-     * On enlève 3 objets :
-     * __phpunit_originalObject, __phpunit_returnValueGeneration,__phpunit_invocationMocker
-     */
-    $nb=count((array)$mockRepo)-3;
-    $this->assertEquals(count((array)$this->getEntity()), $nb);
-  }
+    public function testCountAttribut(): void
+    {
+        $entity = $this->getEntity();
+        $reflectionClass = new \ReflectionClass($entity);
+        $nbAttributs = count($reflectionClass->getProperties());
+        $this->assertEquals($nbAttributs, 14);
+    }
 }
