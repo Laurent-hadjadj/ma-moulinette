@@ -15,6 +15,7 @@ namespace App\Entity\Main;
 
 use App\Repository\Main\NoSonarRepository;
 use Doctrine\DBAL\Types\Types;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: NoSonarRepository::class)]
@@ -26,18 +27,23 @@ class NoSonar
     private $id;
 
     #[ORM\Column(type: Types::STRING, length: 128)]
+    #[Assert\NotBlank]
     private $mavenKey;
 
     #[ORM\Column(type: Types::STRING, length: 128)]
+    #[Assert\NotBlank]
     private $rule;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank]
     private $component;
 
     #[ORM\Column(type: Types::INTEGER)]
+    #[Assert\NotBlank]
     private $line;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Assert\NotBlank]
     private $dateEnregistrement;
 
     /**
@@ -179,7 +185,6 @@ class NoSonar
 
         return $this;
     }
-
 
     /**
      * Set the value of id
