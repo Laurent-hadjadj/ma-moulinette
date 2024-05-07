@@ -30,7 +30,6 @@ class NoSonarRepository extends ServiceEntityRepository
      * [Description for deleteNoSonarMavenKey]
      * Supprime les données de la version courrante (i.e. correspondant à la maven_key)
      *
-     * @param string $mode
      * @param array $map
      *
      * @return array
@@ -39,7 +38,7 @@ class NoSonarRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function deleteNoSonarMavenKey($mode,$map):array
+    public function deleteNoSonarMavenKey($map):array
     {
         $sql = "DELETE
                 FROM no_sonar
@@ -47,22 +46,18 @@ class NoSonarRepository extends ServiceEntityRepository
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         $conn->bindValue(':maven_key', $map['maven_key']);
         try {
-                if ($mode !== 'TEST') {
-                    $conn->executeQuery();
-                } else {
-                    return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-                }
+                $conn->executeQuery();
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+            $this->getEntityManager()->rollback();
+            return ['code'=>500, 'erreur'=> $e->getCode()];
         }
-        return ['mode'=>$mode, 'code'=>200, 'erreur'=>''];
+        return ['code'=>200, 'erreur'=>''];
     }
 
     /**
      * [Description for selectNoSonarRuleGroupByRule]
      * Retourne la liste des règles pour un projet groupé par règle.
      *
-     * @param string $mode
      * @param array $map
      *
      * @return array
@@ -71,7 +66,7 @@ class NoSonarRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectNoSonarRuleGroupByRule($mode,$map):array
+    public function selectNoSonarRuleGroupByRule($map):array
     {
         $sql = "SELECT rule, count(*) as total
                 FROM no_sonar
@@ -80,15 +75,44 @@ class NoSonarRepository extends ServiceEntityRepository
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         $conn->bindValue(':maven_key', $map['maven_key']);
         try {
-                if ($mode !== 'TEST') {
-                    $exec=$conn->executeQuery();
-                    $liste=$exec->fetchAllAssociative();
-                } else {
-                    return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-                }
+                $exec=$conn->executeQuery();
+                $liste=$exec->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+            $this->getEntityManager()->rollback();
+            return ['code'=>500, 'erreur'=> $e->getCode()];
         }
-        return ['mode'=>$mode, 'code'=>200, 'liste'=>$liste, 'erreur'=>''];
+        return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
+    }
+
+    /**
+     * [Description for insertNoSonar]
+     * Ajout d'un noSonar ou d'un supressWarning
+     *
+     * @param array $map
+     *
+     * @return array
+     *
+     * Created at: 07/05/2024 13:19:22 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function insertNoSonar($map):array
+    {
+        $sql = "INSERT INTO no_sonar (maven_key, rule, component, line, date_enregistrement)
+                VALUES (:maven_key, :rule, :component, :line, :date_enregistrement)";
+        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+        $conn->bindValue(':maven_key', $map['maven_key']);
+        $conn->bindValue(':rule', $map['rule']);
+        $conn->bindValue(':component', $map['component']);
+        $conn->bindValue(':line', $map['line']);
+        $conn->bindValue(':date_enregistrement', $map['date_enregistrement']);
+        try {
+                $exec=$conn->executeQuery();
+                $liste=$exec->fetchAllAssociative();
+        } catch (\Doctrine\DBAL\Exception $e) {
+            $this->getEntityManager()->rollback();
+            return ['code'=>500, 'erreur'=> $e->getCode()];
+        }
+        return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
     }
 }
