@@ -16,6 +16,9 @@ namespace App\Tests\Unit\Entity\Main;
 use App\Entity\Main\Notes;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * [Description NotesCaseTest]
+ */
 class NotesCaseTest extends TestCase
 {
     private $notes;
@@ -25,15 +28,6 @@ class NotesCaseTest extends TestCase
     private static $value = 3;
     private static $dateEnregistrement = '2024-03-26 14:46:38';
 
-    /**
-     * [Description for getEntity]
-     *
-     * @return Notes
-     *
-     * Created at: 06/05/2024 17:46:08 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     private function getEntity(): Notes
     {
         return (new notes())
@@ -43,78 +37,34 @@ class NotesCaseTest extends TestCase
         ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
     }
 
-    /**
-     * [Description for setUp]
-     *
-     * @return void
-     *
-     * Created at: 06/05/2024 17:46:12 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     protected function setUp(): void
     {
         parent::setUp();
         $this->notes = $this->getEntity();
     }
 
-    /**
-     * [Description for testMavenKey]
-     *
-     * @return void
-     *
-     * Created at: 06/05/2024 17:46:17 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function testMavenKey(): void
+    public function testSettingAndGettingMavenKey(): void
     {
         $this->notes->setMavenKey(static::$mavenKey);
         $this->assertEquals(static::$mavenKey, $this->notes->getMavenKey());
     }
 
-    /**
-     * [Description for testType]
-     *
-     * @return void
-     *
-     * Created at: 06/05/2024 17:46:20 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function testType(): void
+    public function testSettingAndGettingType(): void
     {
         $this->notes->setType(static::$type);
         $this->assertEquals(static::$type, $this->notes->getType());
     }
 
-    /**
-     * [Description for testValue]
-     *
-     * @return void
-     *
-     * Created at: 06/05/2024 17:46:27 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function testValue(): void
+    public function testSettingAndGettingValue(): void
     {
         $this->notes->setValue(static::$value);
         $this->assertEquals(static::$value, $this->notes->getValue());
     }
 
-    /**
-     * [Description for testDateEnregistrement]
-     *
-     * @return void
-     *
-     * Created at: 06/05/2024 17:46:30 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function testDateEnregistrement(): void
+    public function testSettingAndGettingDateEnregistrement(): void
     {
-        $this->notes->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
-        $this->assertEquals(new \DateTime(static::$dateEnregistrement), $this->notes->getDateEnregistrement());
+        $newDate=new \DateTime(static::$dateEnregistrement);
+        $this->notes->setDateEnregistrement($newDate);
+        $this->assertEquals($newDate, $this->notes->getDateEnregistrement());
     }
 }
