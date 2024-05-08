@@ -38,7 +38,7 @@ class PropertiesKernelTest extends KernelTestCase
         $executor->execute([new PropertiesFixtures()]);
     }
 
-    public function testNotesFindOneBy(): void
+    public function testPropertiesFindOneBy(): void
     {
         /* On se connecte à la base de tests */
         $container = static::getContainer();

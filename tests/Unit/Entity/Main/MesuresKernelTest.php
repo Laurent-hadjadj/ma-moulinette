@@ -19,6 +19,9 @@ use App\Entity\Main\Mesures;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 
+/**
+ * [Description MesuresKernelTest]
+ */
 class MesuresKernelTest extends KernelTestCase
 {
 
@@ -34,7 +37,7 @@ class MesuresKernelTest extends KernelTestCase
         $executor->execute([new MesuresFixtures()]);
     }
 
-    public function testNotesFindOneBy(): void
+    public function testMesuresFindOneBy(): void
     {
         /* On se connecte à la base de tests */
         $container = static::getContainer();

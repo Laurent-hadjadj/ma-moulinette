@@ -37,7 +37,7 @@ class NoSonarKernelTest extends KernelTestCase
         $executor->execute([new NoSonarFixtures()]);
     }
 
-    public function testNotesFindOneBy(): void
+    public function testNoSonarFindOneBy(): void
     {
         /* On se connecte à la base de tests */
         $container = static::getContainer();
