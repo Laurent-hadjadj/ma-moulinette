@@ -38,24 +38,20 @@ class PropertiesRepository extends ServiceEntityRepository
      * @return array
      *
      * Created at: 27/10/2023 14:06:11 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getProperties($type): array
     {
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-
-            $sql = "SELECT *
-                    FROM properties
-                    WHERE type=:type";
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-            $stmt->bindValue(':type', $type);
-
-            $stmtequest = $stmt->executeQuery()->fetchAllAssociative();
-
+                $sql = "SELECT *
+                        FROM properties
+                        WHERE type=:type";
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $stmt->bindValue(':type', $type);
+                    $stmtequest = $stmt->executeQuery()->fetchAllAssociative();
             $this->getEntityManager()->getConnection()->commit();
-
             return ['code' => 200, 'request' => $stmtequest, 'erreur' => ''];
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
