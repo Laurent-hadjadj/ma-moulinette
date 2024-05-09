@@ -32,7 +32,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         nullable: false,
         options: ['comment' => "clé unique de la table"]
         )]
-    #[Assert\NotBlank]
     private $id;
 
     #[ORM\Column(
