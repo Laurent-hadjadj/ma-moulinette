@@ -15,6 +15,7 @@ namespace App\Entity\Main;
 
 use App\Repository\Main\MaMoulinetteRepository;
 use Doctrine\DBAL\Types\Types;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: MaMoulinetteRepository::class)]
@@ -26,12 +27,15 @@ class MaMoulinette
     private $id;
 
     #[ORM\Column(type: Types::STRING, length: 8)]
+    #[Assert\NotBlank]
     private $version;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotBlank]
     private $dateVersion;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotBlank]
     private $dateEnregistrement;
 
     /**
