@@ -47,11 +47,11 @@ class ProfilesHistoriqueRepository extends ServiceEntityRepository
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "INSERT OR IGNORE INTO profiles_historique (
-                            date_courte, langage, date,
+                            date_courte, language, date,
                             action, auteur, regle,
                             description, detail, date_enregistrement)
                         VALUES (
-                            :date_courte, :langage, :date,
+                            :date_courte, :language, :date,
                             :action, :auteur, :regle,
                             :description, :detail, :date_enregistrement)";
 
@@ -96,7 +96,6 @@ class ProfilesHistoriqueRepository extends ServiceEntityRepository
                 $sql = "SELECT COUNT() AS 'nombre'
                         FROM profiles_historique
                         WHERE action=:action AND language=:language";
-
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
                     $stmt->bindValue(':action', $map['action']);
                     $stmt->bindValue(static::$phLanguage, $map['language']);
@@ -110,7 +109,7 @@ class ProfilesHistoriqueRepository extends ServiceEntityRepository
     }
 
     /**
-     * [Description for selectProfilesHistoriqueDateTr]
+     * [Description for selectProfilesHistoriqueDateTri]
      * Remonte les n premieres dates trié ordre croissant ou décroissant
      *
      * @param array $map
@@ -127,11 +126,10 @@ class ProfilesHistoriqueRepository extends ServiceEntityRepository
             $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "SELECT date
                         FROM profiles_historique
-                        WHERE langage=:langage
+                        WHERE language=:language
                         ORDER BY date ".$map['tri']." limit ".$map['limit'];
-
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-                    $stmt->bindValue(':language', $map['language']);
+                    $stmt->bindValue(static::$phLanguage, $map['language']);
                 $request=$stmt->executeQuery()->fetchAllAssociative();
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
@@ -159,11 +157,11 @@ class ProfilesHistoriqueRepository extends ServiceEntityRepository
             $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "SELECT date_courte
                         FROM profiles_historique
-                        WHERE langage=:langage
+                        WHERE language=:language
                         GROUP BY date_courte
                         ORDER BY date_courte DESC";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-                    $stmt->bindValue(static::$phLanguage, $map['langage']);
+                    $stmt->bindValue(static::$phLanguage, $map['language']);
                 $request=$stmt->executeQuery()->fetchAllAssociative();
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
@@ -190,10 +188,10 @@ class ProfilesHistoriqueRepository extends ServiceEntityRepository
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "SELECT *
-                FROM profiles_historique
-                WHERE language=:language AND date_courte=:date_courte";
+                        FROM profiles_historique
+                        WHERE language=:language AND date_courte=:date_courte";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-                    $stmt->bindValue(static::$phLanguage, $map['langage']);
+                    $stmt->bindValue(static::$phLanguage, $map['language']);
                     $stmt->bindValue(':date_courte', $map['date_courte']);
                 $request=$stmt->executeQuery()->fetchAllAssociative();
             $this->getEntityManager()->getConnection()->commit();
