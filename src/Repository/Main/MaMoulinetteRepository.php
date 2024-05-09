@@ -41,22 +41,21 @@ class MaMoulinetteRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function getMaMoulinetteVersion($mode): array
+    public function getMaMoulinetteVersion(): array
     {
-        $sql = "SELECT version
-                FROM ma_moulinette
-                ORDER BY date_version DESC LIMIT 1";
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         try {
-            if ($mode !== 'TEST') {
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "SELECT version
+                        FROM ma_moulinette
+                        ORDER BY date_version DESC LIMIT 1";
+                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
                 $request=$conn->executeQuery()->fetchAllAssociative();
-            } else {
-                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-            }
+            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+            $this->getEntityManager()->getConnection()->rollBack();
+            return ['code'=>500, 'erreur'=> $e->getCode()];
         }
-        return ['mode'=>$mode, 'code'=>200, 'request'=>$request, 'erreur'=>''];
+        return ['code'=>200, 'request'=>$request, 'erreur'=>''];
     }
 
 }
