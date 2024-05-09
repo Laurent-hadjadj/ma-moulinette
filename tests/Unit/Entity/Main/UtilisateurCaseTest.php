@@ -29,7 +29,7 @@ class UtilisateurCaseTest extends TestCase
   public static $nom = '@ma-moulinette';
   public static $courriel = 'admin@ma-moulinette.fr';
   public static $password = '$2y$13$6n72QhYwz.iufebkV.XaAOO4IOm3zOYcfzPUmal.jDTs8/QFq1p4K';
-  public static $actif = 1;
+  public static $actif = true;
   public static $roles = ["ROLE_GESTIONNAIRE"];
   public static $equipe = [];
   public static $preference = ['{
