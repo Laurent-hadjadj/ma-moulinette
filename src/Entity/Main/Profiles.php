@@ -47,7 +47,7 @@ class Profiles
 
     #[ORM\Column(type: TYPES::BOOLEAN)]
     #[Assert\NotBlank]
-    private $isDefault;
+    private $referentielDefault;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Assert\NotBlank]
@@ -228,7 +228,7 @@ class Profiles
     }
 
     /**
-     * [Description for isDefault]
+     * [Description for referentielDefault]
      *
      * @return bool|null
      *
@@ -236,15 +236,15 @@ class Profiles
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function isDefault(): ?bool
+    public function isReferentielDefault(): ?bool
     {
-        return $this->isDefault;
+        return $this->referentielDefault;
     }
 
     /**
-     * [Description for setDefault]
+     * [Description for setReferentielDefault]
      *
-     * @param bool $isDefault
+     * @param bool $referentielDefault
      *
      * @return self
      *
@@ -252,9 +252,9 @@ class Profiles
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setDefault(bool $default): self
+    public function setReferentielDefault(bool $referentielDefault): self
     {
-        $this->isDefault = $default;
+        $this->referentielDefault = $referentielDefault;
 
         return $this;
     }

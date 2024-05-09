@@ -33,37 +33,32 @@ class ProfilesRepository extends ServiceEntityRepository
      * [Description for countProfiles]
      * Compte le nombre total de profiles
      *
-     * @param string $mode
-     *
      * @return array
      *
      * Created at: 27/10/2023 13:56:31 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function countProfiles($mode): array
+    public function countProfiles(): array
     {
-        $sql = "SELECT COUNT(*) AS total
-                FROM profiles
-                WHERE is_default = 1";
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         try {
-            if ($mode !== 'TEST') {
-                $request=$conn->executeQuery()->fetchAllAssociative();
-            } else {
-                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-            }
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "SELECT COUNT(*) AS total
+                        FROM profiles
+                        WHERE referentiel_default = true";
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $request=$stmt->executeQuery()->fetchAllAssociative();
+            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+            $this->getEntityManager()->getConnection()->rollBack();
+            return ['code'=>500, 'erreur'=> $e->getCode()];
         }
-        return ['mode'=>$mode, 'request'=>$request, 'code'=>200, 'erreur'=>''];
+        return ['request'=>$request, 'code'=>200, 'erreur'=>''];
     }
 
     /**
      * [Description for selectProfiles]
      * On récupre la liste des profils
-     *
-     * @param string $mode
      *
      * @return array
      *
@@ -71,34 +66,29 @@ class ProfilesRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectProfiles($mode):array
+    public function selectProfiles():array
     {
-        $sql = "SELECT name as profil,
-                        language_name as langage,
-                        active_rule_count as regle,
-                        rules_update_at as date,
-                        is_default as actif
-                        FROM profiles
-                        WHERE is_default = 1";
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         try {
-            if ($mode !== 'TEST') {
-                $exec=$conn->executeQuery();
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "SELECT name as profil, language_name as langage,
+                                        active_rule_count as regle, rules_update_at as date,
+                                        referentiel_default as actif
+                        FROM profiles
+                        WHERE referentiel_default = true";
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $exec=$stmt->executeQuery();
                 $liste=$exec->fetchAllAssociative();
-            } else {
-                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-            }
+            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+            $this->getEntityManager()->getConnection()->rollBack();
+            return ['code'=>500, 'erreur'=> $e->getCode()];
         }
-        return ['mode'=>$mode, 'liste'=>$liste, 'code'=>200, 'erreur'=>''];
+        return ['liste'=>$liste, 'code'=>200, 'erreur'=>''];
     }
 
     /**
      * [Description for deleteProfiles]
      * Suppression des enregistrements de la table profiles
-     *
-     * @param string $mode
      *
      * @return array
      *
@@ -106,20 +96,19 @@ class ProfilesRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function deleteProfiles($mode):array
+    public function deleteProfiles():array
     {
-        $sql = "DELETE FROM profiles";
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         try {
-            if ($mode !== 'TEST') {
-                $conn->executeQuery();
-            } else {
-                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-            }
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "DELETE FROM profiles";
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $stmt->executeStatement();
+            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+            $this->getEntityManager()->getConnection()->rollBack();
+            return ['code'=>500, 'erreur'=> $e->getCode()];
         }
-        return ['mode'=>$mode, 'code'=>200, 'erreur'=>''];
+        return ['code'=>200, 'erreur'=>''];
     }
 
 
@@ -134,28 +123,25 @@ class ProfilesRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectProfilesLanguage($mode):array
+    public function selectProfilesLanguage():array
     {
-        $sql = "SELECT language_name AS profile
-                FROM profiles";
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         try {
-            if ($mode !== 'TEST') {
-                $labels=$conn->executeQuery()->fetchAllAssociative();
-            } else {
-                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-            }
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "SELECT language_name AS profile
+                        FROM profiles";
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $labels=$stmt->executeQuery()->fetchAllAssociative();
+            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+            $this->getEntityManager()->getConnection()->rollBack();
+            return ['code'=>500, 'erreur'=> $e->getCode()];
         }
-        return ['mode'=>$mode, 'code'=>200, 'labels'=>$labels, 'erreur'=>''];
+        return ['code'=>200, 'labels'=>$labels, 'erreur'=>''];
     }
 
     /**
      * [Description for selectProfilesRuleCount]
      * Remonte le nombre de règle avtive pour un profil
-     *
-     * @param string $mode
      *
      * @return array
      *
@@ -163,20 +149,19 @@ class ProfilesRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectProfilesRuleCount($mode):array
+    public function selectProfilesRuleCount():array
     {
-        $sql = "SELECT active_rule_count AS total
-                FROM profiles";
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         try {
-            if ($mode !== 'TEST') {
-                $dataSets=$conn->executeQuery()->fetchAllAssociative();
-            } else {
-                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-            }
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "SELECT active_rule_count AS total
+                        FROM profiles";
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $dataSets=$stmt->executeQuery()->fetchAllAssociative();
+            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+            $this->getEntityManager()->getConnection()->rollBack();
+            return ['code'=>500, 'erreur'=> $e->getCode()];
         }
-        return ['mode'=>$mode, 'code'=>200, 'data-set'=>$dataSets, 'erreur'=>''];
+        return ['code'=>200, 'data-set'=>$dataSets, 'erreur'=>''];
     }
 }
