@@ -15,6 +15,7 @@ namespace App\Entity\Main;
 
 use App\Repository\Main\ProfilesHistoriqueRepository;
 use Doctrine\DBAL\Types\Types;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ProfilesHistoriqueRepository::class)]
@@ -26,30 +27,39 @@ class ProfilesHistorique
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotBlank]
     private $dateCourte = null;
 
     #[ORM\Column(type: Types::STRING, length: 16)]
-    private $langage = null;
+    #[Assert\NotBlank]
+    private $language = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotBlank]
     private $date = null;
 
     #[ORM\Column(type: Types::STRING, length: 16)]
+    #[Assert\NotBlank]
     private $action = null;
 
     #[ORM\Column(type: Types::STRING, length: 64)]
+    #[Assert\NotBlank]
     private $auteur = null;
 
     #[ORM\Column(type: Types::STRING, length: 128)]
+    #[Assert\NotBlank]
     private $regle = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank]
     private $description = null;
 
     #[ORM\Column(type: Types::BLOB)]
+    #[Assert\NotBlank]
     private $detail = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotBlank]
     private $dateEnregistrement = null;
 
     /**
@@ -99,7 +109,7 @@ class ProfilesHistorique
     }
 
     /**
-     * [Description for getLangage]
+     * [Description for getLanguage]
      *
      * @return string|null
      *
@@ -107,15 +117,15 @@ class ProfilesHistorique
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function getLangage(): ?string
+    public function getLanguage(): ?string
     {
-        return $this->langage;
+        return $this->language;
     }
 
     /**
      * [Description for setLangage]
      *
-     * @param string $langage
+     * @param string $language
      *
      * @return static
      *
@@ -123,9 +133,9 @@ class ProfilesHistorique
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setLangage(string $langage): static
+    public function setLanguage(string $language): static
     {
-        $this->langage = $langage;
+        $this->language = $language;
 
         return $this;
     }
