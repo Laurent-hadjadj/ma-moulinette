@@ -21,7 +21,7 @@ use PHPUnit\Framework\TestCase;
  */
 class ListeProjetCaseTest extends TestCase
 {
-    private $listeprojet;
+    private $listeProjet;
 
     private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
     private static $name = 'Ma-Moulinette';
@@ -31,49 +31,49 @@ class ListeProjetCaseTest extends TestCase
 
     private function getEntity(): ListeProjet
     {
-        return (new listeprojet())
+        return (new ListeProjet())
         ->setMavenKey(static::$mavenKey)
         ->setName(static::$name)
         ->setTags(static::$tags)
         ->setVisibility(static::$visibility)
         ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
-  }
+    }
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->listeprojet = $this->getEntity();
+        $this->listeProjet = $this->getEntity();
     }
 
     public function testSettingAndGettingMavenKey(): void
     {
-        $this->listeprojet->setMavenKey(static::$mavenKey);
-        $this->assertEquals(static::$mavenKey, $this->listeprojet->getMavenKey());
+        $this->listeProjet->setMavenKey(static::$mavenKey);
+        $this->assertEquals(static::$mavenKey, $this->listeProjet->getMavenKey());
     }
 
     public function testSettingAndGettingName(): void
     {
-        $this->listeprojet->setName(static::$name);
-        $this->assertEquals(static::$name, $this->listeprojet->getName());
+        $this->listeProjet->setName(static::$name);
+        $this->assertEquals(static::$name, $this->listeProjet->getName());
     }
 
     public function testSettingAndGettingTags(): void
     {
-        $this->listeprojet->setTags(static::$tags);
-        $this->assertEquals(static::$tags, $this->listeprojet->getTags());
+        $this->listeProjet->setTags(static::$tags);
+        $this->assertEquals(static::$tags, $this->listeProjet->getTags());
     }
 
     public function testSettingAndGettingVisibility(): void
     {
-        $this->listeprojet->setVisibility(static::$visibility);
-        $this->assertEquals(static::$visibility, $this->listeprojet->getVisibility());
+        $this->listeProjet->setVisibility(static::$visibility);
+        $this->assertEquals(static::$visibility, $this->listeProjet->getVisibility());
     }
 
     public function testSettingAndGettingDateEnregistrement(): void
     {
         $newDate=new \DateTime(static::$dateEnregistrement);
-        $this->listeprojet->setDateEnregistrement($newDate);
-        $this->assertEquals($newDate, $this->listeprojet->getDateEnregistrement());
+        $this->listeProjet->setDateEnregistrement($newDate);
+        $this->assertEquals($newDate, $this->listeProjet->getDateEnregistrement());
     }
 
 }
