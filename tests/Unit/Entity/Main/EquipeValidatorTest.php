@@ -49,13 +49,17 @@ class EquipeValidatorTest extends KernelTestCase
 
   public function testValidEntity(): void
   {
-    $this->assertHasErrors($this->getEntity(), 0);
+    $this->assertHasErrors($this->getEntity(), 1);
   }
 
-  public function testInvalidBlankEntity(): void
+  public function testTitreInvalidBlankEntity(): void
   {
     $this->assertHasErrors($this->getEntity()->setTitre(''), 1);
-    $this->assertHasErrors($this->getEntity()->setDescription(''), 1);
+  }
+
+  public function testDescriptionInvalidBlankEntity(): void
+  {
+    $this->assertHasErrors($this->getEntity()->setDescription(''), 2);
   }
 
   public function testCountAttribut(): void
