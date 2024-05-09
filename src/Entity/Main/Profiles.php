@@ -15,6 +15,7 @@ namespace App\Entity\Main;
 
 use App\Repository\Main\ProfilesRepository;
 use Doctrine\DBAL\Types\Types;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ProfilesRepository::class)]
@@ -26,24 +27,30 @@ class Profiles
     private $id;
 
     #[ORM\Column(type: Types::STRING, length: 128)]
+    #[Assert\NotBlank]
     private $key;
 
     #[ORM\Column(type: Types::STRING, length: 128)]
+    #[Assert\NotBlank]
     private $name;
 
     #[ORM\Column(type: Types::STRING, length: 64)]
+    #[Assert\NotBlank]
     private $languageName;
 
     #[ORM\Column(type: Types::INTEGER)]
+    #[Assert\NotBlank]
     private $activeRuleCount;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private $rulesUpdateAt;
 
     #[ORM\Column(type: TYPES::BOOLEAN)]
+    #[Assert\NotBlank]
     private $isDefault;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotBlank]
     private $dateEnregistrement;
 
     /**
@@ -202,7 +209,6 @@ class Profiles
         return $this->rulesUpdateAt;
     }
 
-
     /**
      * [Description for setRulesUpdateAt]
      *
@@ -211,7 +217,7 @@ class Profiles
      * @return self
      *
      * Created at: 02/01/2023, 18:10:16 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setRulesUpdateAt(\DateTimeInterface $rulesUpdateAt): self
@@ -222,37 +228,36 @@ class Profiles
     }
 
     /**
-     * [Description for isIsDefault]
+     * [Description for isDefault]
      *
      * @return bool|null
      *
      * Created at: 02/01/2023, 18:10:18 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function isIsDefault(): ?bool
+    public function isDefault(): ?bool
     {
         return $this->isDefault;
     }
 
     /**
-     * [Description for setIsDefault]
+     * [Description for setDefault]
      *
      * @param bool $isDefault
      *
      * @return self
      *
      * Created at: 02/01/2023, 18:10:20 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setIsDefault(bool $isDefault): self
+    public function setDefault(bool $default): self
     {
-        $this->isDefault = $isDefault;
+        $this->isDefault = $default;
 
         return $this;
     }
-
 
     /**
      * [Description for getDateEnregistrement]
