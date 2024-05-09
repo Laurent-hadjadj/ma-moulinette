@@ -23,14 +23,13 @@ use Symfony\Component\Validator\ConstraintViolation;
 class UtilisateurValidatorTest extends KernelTestCase
 {
 
-  public static $id = 1;
   public static $init = 1;
   public static $avatar = 'chiffre/01.png';
   public static $prenom = 'Laurent';
   public static $nom = 'HADJADJ';
   public static $courriel = 'laurent.hadjadj@ma-petite-entreprise.fr';
   public static $password = '$2y$13$6n72QhYwz.iufebkV.XaAOO4IOm3zOYcfzPUmal.jDTs8/QFq1p4K';
-  public static $actif = 1;
+  public static $actif = true;
   public static $roles = ["ROLE_GESTIONNAIRE"];
   public static $equipe = [];
   public static $preference = ['{
@@ -42,7 +41,6 @@ class UtilisateurValidatorTest extends KernelTestCase
   public function getEntity(): Utilisateur
   {
     return (new utilisateur())
-      ->setId(static::$id)
       ->setInit(static::$init)
       ->setAvatar(static::$avatar)
       ->setPrenom(static::$prenom)
@@ -78,7 +76,6 @@ class UtilisateurValidatorTest extends KernelTestCase
 
   public function testInvalidBlankEntity(): void
   {
-    $this->assertHasErrors($this->getEntity()->setId(''), 1);
     $this->assertHasErrors($this->getEntity()->setPrenom(''), 1);
     $this->assertHasErrors($this->getEntity()->setNom(''), 1);
     $this->assertHasErrors($this->getEntity()->setCourriel(''), 1);
@@ -91,12 +88,16 @@ class UtilisateurValidatorTest extends KernelTestCase
     $this->assertHasErrors($this->getEntity()->setAvatar(''), 0);
     $this->assertHasErrors($this->getEntity()->setRoles([]), 0);
     $this->assertHasErrors($this->getEntity()->setEquipe([]), 0);
-    $this->assertHasErrors($this->getEntity()->setActif(''), 0);
   }
 
   public function testValidIntegerEntity(): void
   {
     $this->assertHasErrors($this->getEntity()->setInit(-1), 0);
+  }
+
+  public function testValidBooleanEntity(): void
+  {
+    $this->assertHasErrors($this->getEntity()->setActif(true), 0);
   }
 
   public function testCountAttribut(): void
