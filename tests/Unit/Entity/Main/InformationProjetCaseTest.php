@@ -30,7 +30,7 @@ class InformationProjetCaseTest extends TestCase
     private static $type = 'RELEASE';
     private static $dateEnregistrement = '2024-04-12 16:23:11';
 
-    private function getEntity(): informationProjet
+    private function getEntity(): InformationProjet
     {
         return (new informationProjet())
         ->setMavenKey(static::$mavenKey)
