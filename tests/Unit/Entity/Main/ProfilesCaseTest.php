@@ -28,7 +28,7 @@ class ProfilesCaseTest extends TestCase
     private static $languageName = 'CSS';
     private static $activeRuleCount = 31;
     private static $rulesUpdateAt = '2024-04-13 12:10:51';
-    private static $default = true;
+    private static $referentielDefault = true;
     private static $dateEnregistrement = '2024-04-12 16:23:11';
 
     private function getEntity(): Profiles
@@ -39,7 +39,7 @@ class ProfilesCaseTest extends TestCase
         ->setLanguageName(static::$languageName)
         ->setActiveRuleCount(static::$activeRuleCount)
         ->setRulesUpdateAt(new \DateTime(static::$rulesUpdateAt))
-        ->setdefault(static::$default)
+        ->setReferentielDefault(static::$referentielDefault)
         ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
     }
 
@@ -80,10 +80,10 @@ class ProfilesCaseTest extends TestCase
         $this->assertEquals($newDate, $this->profiles->getRulesUpdateAt());
     }
 
-    public function testSettingAndGettingDefault(): void
+    public function testSettingAndGettingReferentielDefault(): void
     {
-        $this->profiles->setDefault(static::$default);
-        $this->assertEquals(static::$default, $this->profiles->isDefault());
+        $this->profiles->setReferentielDefault(static::$referentielDefault);
+        $this->assertEquals(static::$referentielDefault, $this->profiles->isReferentielDefault());
     }
 
     public function testSettingAndGettingDateEnregistrement(): void

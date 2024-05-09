@@ -28,7 +28,7 @@ class ProfilesValidatorTest extends KernelTestCase
   private static $languageName = 'CSS';
   private static $activeRuleCount = 31;
   private static $rulesUpdateAt = '2024-04-13 12:10:51';
-  private static $default = true;
+  private static $referentielDefault = true;
   private static $dateEnregistrement = '2024-04-12 16:23:11';
 
   private function getEntity(): Profiles
@@ -39,7 +39,7 @@ class ProfilesValidatorTest extends KernelTestCase
       ->setLanguageName(static::$languageName)
       ->setActiveRuleCount(static::$activeRuleCount)
       ->setRulesUpdateAt(new \DateTime(static::$rulesUpdateAt))
-      ->setdefault(static::$default)
+      ->setReferentielDefault(static::$referentielDefault)
       ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
   }
 
@@ -76,7 +76,7 @@ class ProfilesValidatorTest extends KernelTestCase
 
   public function testValidBooleanEntity(): void
   {
-    $this->assertHasErrors($this->getEntity()->setDefault(true), 0);
+    $this->assertHasErrors($this->getEntity()->setReferentielDefault(true), 0);
   }
 
   public function testCountAttribut(): void
