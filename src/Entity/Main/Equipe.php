@@ -19,7 +19,6 @@ use Doctrine\ORM\Mapping as ORM;
 
 use App\Validator as AcmeAssert;
 use Symfony\Component\Validator\Constraints as Assert;
-
 #[ORM\Entity(repositoryClass: EquipeRepository::class)]
 class Equipe
 {
@@ -30,15 +29,18 @@ class Equipe
 
     #[ORM\Column(name: 'titre', type: Types::STRING, length: 32, unique: true)]
     #[AcmeAssert\ContainsEquipeUnique()]
+    #[Assert\NotBlank]
     private $titre;
 
     #[ORM\Column(type: Types::STRING, length: 128)]
+    #[Assert\NotBlank]
     private $description;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private $dateModification;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotBlank]
     private $dateEnregistrement;
 
     /**
