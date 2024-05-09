@@ -159,10 +159,10 @@ class PropertiesRepository extends ServiceEntityRepository
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "UPDATE properties
-                SET profil_bd=:profil_bd,
-                    profil_sonar=:profil_sonar,
-                    date_modification_profil=:date_modification_profil
-                WHERE type=:type";
+                        SET profil_bd=:profil_bd,
+                            profil_sonar=:profil_sonar,
+                            date_modification_profil=:date_modification_profil
+                        WHERE type=:type";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
                     $stmt->bindValue(':profil_bd', $map['profil_bd']);
                     $stmt->bindValue(':profil_sonar', $map['profil_sonar']);
