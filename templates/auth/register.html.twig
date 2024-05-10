@@ -29,7 +29,7 @@
     {{ include('header.html.twig') }}
     <br><br>
 
-    <div class="grid-container" role="main">
+    <main class="grid-container">
       <div class="grid-x">
         <div class="small-12 medium-6 large-6 cell">
           <video id="video-dessin-anime2" class="video-dessin-anime2" preload="metadata" loop autoplay muted>
@@ -73,7 +73,7 @@
                   <div class="small-1 medium-1 large-1 cell">
                     <span id="register-info-check-nom"></span>
                   </div>
-                  <div role="presentation" class="small-12 medium-4 large-4 cell">&nbsp;</div>
+                  <div aria-hidden=true  class="small-12 medium-4 large-4 cell">&nbsp;</div>
 
                   {# Ajout du prénom #}
                   <div class="small-11 medium-7 large-7 cell">
@@ -277,7 +277,7 @@
               </li>
             </ul>
           </div>
-        </div>
+        </main>
         {# Chargement de la section footer #}
         {{ include('footer.html.twig') }}
         {# Chargement du code javascript #}
