@@ -30,7 +30,7 @@
     <main class="grid-container grid-x">
       <h1 class="h2 claire-hand">Mentions légales</h1>
       <hr>
-      <section id="section-editeur" class="cell" aria-description="Section éditeur">
+      <section id="section-editeur" class="cell">
         <h2 class="h4 claire-hand">Éditeur</h2>
         <p id="editeur" class="open-sans text-justify">Ce site est édité par
           {{ editeur| default("Ma Moulinette, l'équipe en charge des développements de l'application Ma-Moulinette.") }}.</p>
@@ -50,20 +50,20 @@
         <br>
       </section>
 
-      <section id="section-directeur-de-publication" class="cell" aria-description="Section Directeur de publication">
+      <section id="section-directeur-de-publication" class="cell">
         <h2 class="h4 claire-hand cell">Directeur de publication</h2>
         <p id="directeur-publication" class="open-sans text-left">{{ directeurPublication | default("Laurent HADJADJ") }}</p>
         <br>
       </section>
 
-      <section id="section-conception-gestion-du-site" class="cell" aria-description="Section Conception et gestion du site">
+      <section id="section-conception-gestion-du-site" class="cell">
         <h2 class="h4 claire-hand">Conception et gestion du site</h2>
         <p class="open-sans text-justify">Ce site est développé selon un principe d’amélioration continue.</p>
         <p class="open-sans text-justify">Le suivi éditorial et graphique est assuré au quotidien par l'équipe de conception de Ma-Moulinette. L'ensemble des technologies utilisé est respectueuse des bonnes pratiques formalisées par le W3C et le WCAG.</p>
         <br>
       </section>
 
-      <section id="section-code-source" class="cell" aria-description="Section Code source du site">
+      <section id="section-code-source" class="cell">
         <h2 class="h4 claire-hand cell">Code source du site</h2>
         <p id="code-source" class="open-sans">Le code source du site est
           <a class="source-link" href="{{ sourceURL | default('https://github.com/Laurent-hadjadj/ma-moulinette') }}">
@@ -72,17 +72,17 @@
         <br>
       </section>
 
-      <section id="section-propriete-intellectuelle" class="cell" aria-description="Section Propriété intellectuelle">
+      <section id="section-propriete-intellectuelle" class="cell">
         <h2 class="h3 claire-hand">Propriété intellectuelle</h2>
         <p class="open-sans text-justify">Tout site public ou privé est autorisé à établir, sans autorisation préalable, un lien (y compris profond) vers les informations diffusées sur ma-moulinette.fr</p>
 
         <div class="callout alert-callout-border primary">
           <p class="open-sans inline-block">
-            <a class="source-link" href="https://github.com/Laurent-hadjadj/ma-moulinette" rel="external" aria-description="Lien vers le site de référence">Ma-Moulinette</a>
+            <a class="source-link" href="https://github.com/Laurent-hadjadj/ma-moulinette" rel="external" >Ma-Moulinette</a>
             de
             <span>Laurent HADJADJ</span>
             est sous licence
-            <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.fr" target="_blank" rel="license noopener noreferrer" aria-description="Licence CC by-nv-sa v4.0">
+            <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.fr" target="_blank" rel="license noopener noreferrer">
               <span class="show-for-small-only"><br></span>
               <span class="source-link">CC BY-NC-SA 4.0</span>
               <img class="cc" src="/build/images/cc.svg" alt="Creative Commons">
@@ -100,7 +100,7 @@
         <br>
       </section>
 
-      <section id="section-hebergement" class="cell" aria-description="Section Hébergement">
+      <section id="section-hebergement" class="cell">
         <h2 class="h3 claire-hand">Hébergement</h2>
         <p id="hebergement" class="open-sans">
           {{ hebergement | default("Ma-moulinette, <br> La Mi-Voie, route du grand chemin. <br> BP 770, Brooklyn. N.Y")|raw }}
