@@ -40,7 +40,7 @@
       </nav>
     </header>
 
-    <div class="grid-container" role="main">
+    <main class="grid-container">
       {% for message in app.flashes('alert') %}
         <div class="callout alert" data-closable>
           <p class="open-sans text-justify callout-message">{{ message }}</p>
@@ -151,7 +151,7 @@
           {% endfor %}
         </div>
       </fieldset>
-    </div>
+    </main>
     <br>
 
     <div class="grid-container grid-x">
