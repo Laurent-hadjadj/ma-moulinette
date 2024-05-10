@@ -232,7 +232,7 @@ class ApiProfilController extends AbstractController
             "version" => $this->getParameter("version"),
             "dateCopyright" => \date("Y"), Response::HTTP_OK];
         /** si le mode n'est pas défini ou si le tableau ne contient pas trois clé alors */
-        if ($mode === null || count($exxplode) !=3) {
+        if (count($exxplode) !=3) {
              /** On prepare un message flash */
             $this->addFlash('alert', sprintf(
                 '%s : %s', "[Erreur 001]","La clé est incorrecte."
@@ -256,7 +256,7 @@ class ApiProfilController extends AbstractController
                 break;
             case "python": $language = "py";
                 break;
-            default: $language = $language;
+            default: $language = 'aucun';
         }
 
         /* On récupère que les 500 premiers */
@@ -289,32 +289,32 @@ class ApiProfilController extends AbstractController
             /** On prépare les données pour la requête */
             $map=['date_courte'=>$dateCourte, 'langage'=>$language, 'date'=>$dateModification, 'action'=>$action, 'auteur'=>$auteur, 'regle'=>$regle, 'description'=>$description, 'detail'=>$detail, 'date_enregistrement'=>$dateEnregistrement];
             /** on lance la requête */
-            $profilesHistoriqueEntity->insertProfilesHistorique($mode, $map);
+            $profilesHistoriqueEntity->insertProfilesHistorique($map);
         }
 
         /** Nombre de règles activé **/
         $map = ['langage'=>$language, 'action'=>'ACTIVATED'];
-        $activated=$profilesHistoriqueEntity->selectProfilesHistoriqueAction($mode, $map);
+        $activated=$profilesHistoriqueEntity->selectProfilesHistoriqueAction($map);
 
         /** Nombre de règles désactivé --> DEACTIVATED **/
         $map = ['langage'=>$language, 'action'=>'DEACTIVATE'];
-        $desactivited = $profilesHistoriqueEntity->selectProfilesHistoriqueAction($mode, $map);
+        $desactivited = $profilesHistoriqueEntity->selectProfilesHistoriqueAction($map);
 
         /** Nombre de règles mise à jour **/
         $map = ['langage'=>$language, 'action'=>'UPDATED'];
-        $updated = $profilesHistoriqueEntity->selectProfilesHistoriqueAction($mode, $map);
+        $updated = $profilesHistoriqueEntity->selectProfilesHistoriqueAction($map);
 
         /** Date de la première modification **/
         $map2 = ['langage'=>$language, 'tri'=>'ASC', 'limit'=>1];
-        $first = $profilesHistoriqueEntity->selectProfilesHistoriqueDateTri($mode, $map2);
+        $first = $profilesHistoriqueEntity->selectProfilesHistoriqueDateTri($map2);
 
         /** Date de la dernière modification **/
         $map3 = ['langage'=>$language, 'tri'=>'DESC', 'limit'=>1];
-        $last = $profilesHistoriqueEntity->selectProfilesHistoriqueDateTri($mode, $map3);
+        $last = $profilesHistoriqueEntity->selectProfilesHistoriqueDateTri($map3);
 
         /** Calcul le  nombre de groupe de modification **/
         $map = ['langage'=>$language];
-        $groupes = $profilesHistoriqueEntity->selectProfilesHistoriqueDateCourteGroupeBy($mode, $map);
+        $groupes = $profilesHistoriqueEntity->selectProfilesHistoriqueDateCourteGroupeBy($map);
 
         /** Pour chaque groupe on récupère dans un tableau les modifications */
         $i = 0;
@@ -324,7 +324,7 @@ class ApiProfilController extends AbstractController
             $badgeA = $badgeU = $badgeD = 0;
             $tempo = [];
             $map=['langage'=>$language, 'date_courte'=>$dateGroupe];
-            $modif = $profilesHistoriqueEntity->selectProfilesHistoriqueLangageDateCourte($mode, $map);
+            $modif = $profilesHistoriqueEntity->selectProfilesHistoriqueLangageDateCourte($map);
             /* On ajoute la date du groupe */
             array_push($tempoDateGroupe, $dateGroupe);
 
@@ -358,11 +358,6 @@ class ApiProfilController extends AbstractController
             "dateGroupe" => $tempoDateGroupe, "nbGroupe" => $i, "liste" => $liste, "badge" => $badge,
             "version" => $this->getParameter("version"),
             "dateCopyright" => \date("Y"), Response::HTTP_OK];
-
-        if ($mode === 'TEST') {
-            $response = new JsonResponse();
-            return $response->setData($render);
-        }
 
         return $this->render('profil/details.html.twig', $render);
     }

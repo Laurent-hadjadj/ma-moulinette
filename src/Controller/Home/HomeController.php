@@ -77,13 +77,13 @@ class HomeController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function countProjetBD($mode): int
+    private function countProjetBD(): int
     {
         /** On instancie l'entityRepository */
         $listeProjetEntity = $this->em->getRepository(ListeProjet::class);
 
         /* On récupère le nombre de projet depuis la table liste_projet */
-        $nombre = $listeProjetEntity->countListeProjet($mode);
+        $nombre = $listeProjetEntity->countListeProjet();
 
         $projet = 0;
         if ($nombre['request']){
@@ -140,13 +140,13 @@ class HomeController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function countProfilBD($mode): int
+    private function countProfilBD(): int
     {
         /** On instancie l'entityRepository */
         $profilesEntity = $this->em->getRepository(Profiles::class);
 
         /** On récupère le nombre de profil depuis la table profils */
-        $nombre = $profilesEntity->countProfiles($mode);
+        $nombre = $profilesEntity->countProfiles();
         $profil = 0;
         if ($nombre['request']) {
             $profil = $nombre['request'][0]['total'];
@@ -190,7 +190,7 @@ class HomeController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function majProperties($mode, $type, $bd, $sonar)
+    private function majProperties($type, $bd, $sonar)
     {
         /** On instancie l'entityRepository */
         $propertiesEntity = $this->em->getRepository(Properties::class);
@@ -205,9 +205,9 @@ class HomeController extends AbstractController
                 'date_modification_profil'=>$date->format(static::$dateFormat)];
 
         if ($type === 'projet') {
-            $propertiesEntity->updatePropertiesProjet($mode,$map);
+            $propertiesEntity->updatePropertiesProjet($map);
         } else {
-            $propertiesEntity->updatePropertiesProfiles($mode, $map);
+            $propertiesEntity->updatePropertiesProfiles($map);
         }
     }
 
@@ -221,12 +221,12 @@ class HomeController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function getProperties($mode): array
+    private function getProperties(): array
     {
         $propertiesEntity = $this->em->getRepository(Properties::class);
 
         /** On récupère le nombre de projet et de profil */
-        $getProperties = $propertiesEntity->getProperties($mode,'properties');
+        $getProperties = $propertiesEntity->getProperties('properties');
 
         /** La table est vide. On initialise les valeurs */
         if (!$getProperties['request']) {
@@ -245,7 +245,7 @@ class HomeController extends AbstractController
                 'date_modification_projet'=>$dateModificationProjet,
                 'date_modification_profil'=>$dateModificationProfil];
 
-            $propertiesEntity->insertProperties($mode,$map);
+            $propertiesEntity->insertProperties($map);
         } else {
             $projetBd = $getProperties['request'][0]['projet_bd'];
             $projetSonar = $getProperties['request'][0]['projet_sonar'];
@@ -267,21 +267,19 @@ class HomeController extends AbstractController
      * [Description for getVersion]
      * On récupère le numéro de version en base
      *
-     * @param string $mode
-     *
      * @return string
      *
      * Created at: 15/12/2022, 22:09:07 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function getVersion($mode): string
+    private function getVersion(): string
     {
       /** On instancie l'entityRepository */
         $maMoulinetteEntity = $this->em->getRepository(MaMoulinette::class);
 
       /** On récupère le numéro de la dernère version en base */
-        $getmaMoulinetteVersion = $maMoulinetteEntity->getMaMoulinetteVersion($mode);
+        $getmaMoulinetteVersion = $maMoulinetteEntity->getMaMoulinetteVersion();
         return $getmaMoulinetteVersion['request'][0]['version'];
     }
 
@@ -328,7 +326,7 @@ class HomeController extends AbstractController
             /** On supprime le dernier OR */
             $clauseWhere = rtrim($condition, " OR ");
             $map=['clause_where'=>$clauseWhere, 'nombre_projet_favori'=>$nombreProjetFavori];
-            $liste = $historiqueEntity->selectHistoriqueProjetfavori('null', $map);
+            $liste = $historiqueEntity->selectHistoriqueProjetfavori($map);
         }
 
         $data = [
@@ -432,11 +430,6 @@ class HomeController extends AbstractController
         /** On instancie l'entityRepository */
         $listeProjet = $this->em->getRepository(ListeProjet::class);
 
-        // On test si on est en mode Test ou pas
-        $mode = $request->get('mode');
-        if (empty($mode)){
-            $mode='null';
-        }
         /**
          * Description du processus :
          * 1 - On regarde si la base locale a déjà été mise à jour, i.e.
@@ -453,7 +446,7 @@ class HomeController extends AbstractController
         $date->setTimezone(new DateTimeZone(static::$europeParis));
 
         /** On récupère les properties des projets et profils */
-        $properties = static::getProperties($mode);
+        $properties = static::getProperties();
         $dateVerificationProjet = 'false';
         $dateVerificationProfil = 'false';
 
@@ -476,7 +469,7 @@ class HomeController extends AbstractController
             /** On récupère le nombre de projet depuis le serveur sonar */
             $projetSonar = static::countProjetSonar($client);
             /** On récupère le nombre de projet en base */
-            $projetBd = static::countProjetBD($mode);
+            $projetBd = static::countProjetBD();
 
             $dateVerificationProjet = "true";
         } else {
@@ -492,7 +485,7 @@ class HomeController extends AbstractController
         if (date_diff($dateModificationProfil, $date)->format('%a') >=
         $this->getParameter('maj.profil')) {
             /** On récupère le nombre de profil en base. */
-            $profilBd = static::countProfilBD($mode);
+            $profilBd = static::countProfilBD();
             /** On récupère le nombre de projet depuis le serveur sonar */
             $profilSonar = static::countProfilSonar($client);
             $dateVerificationProfil = "true";
@@ -519,7 +512,7 @@ class HomeController extends AbstractController
              * de properties n'est pas à jour, on met à jour la table.
              */
             if ($projetSonar == $projetBd  && $projetSonar !== $properties['projet_sonar']) {
-                $this->majProperties($mode, 'projet', $projetBd, $projetSonar);
+                $this->majProperties('projet', $projetBd, $projetSonar);
             }
         }
 
@@ -539,20 +532,20 @@ class HomeController extends AbstractController
              * de properties n'est pas à jour, on met à jour la table.
              */
             if ($profilSonar == $profilBd  && $profilSonar !== $properties['profil_sonar']) {
-                $this->majProperties($mode, 'profil', $profilBd, $profilSonar);
+                $this->majProperties('profil', $profilBd, $profilSonar);
             }
         }
 
         /** ***************** 4 - Visibility *****************************  */
-        $t1 = $listeProjet->countListeProjetVisibility($mode,'public');
-        $t2 = $listeProjet->countListeProjetVisibility($mode,'private');
+        $t1 = $listeProjet->countListeProjetVisibility('public');
+        $t2 = $listeProjet->countListeProjetVisibility('private');
 
         $public = $t1['request'][0]['visibility'];
         $private = $t2['request'][0]['visibility'];
 
         /** ***************** VERSION *** ************************* */
         /** On récupère le numero de version en base */
-        $versionBd = static::getVersion($mode);
+        $versionBd = static::getVersion();
         /** On récupère la version de l'application */
         $versionApp = $this->getParameter('version');
         /** si la dernière version en base est inférieure, on renvoie une alerte ; */
@@ -590,7 +583,7 @@ class HomeController extends AbstractController
         /** On récupère le rôle de l'utilisateur  */
         $refreshBd=false;
         if ($this->isGranted('ROLE_GESTIONNAIRE')) { $refreshBd=true; }
-        $response = new JsonResponse();
+
         $render = [
             'refreshBD'=>$refreshBd,
             'projetBD' => $projetBd, 'projetSonar' => $projetSonar,
@@ -598,12 +591,8 @@ class HomeController extends AbstractController
             'composant' => $composant, 'nombreProjet' => $nombreProjet, 'favori' => $favori,
             'public' => $public, 'private' => $private,
             'version' => $versionApp, 'dateCopyright' => \date('Y'),
-            'mode' => $mode, Response::HTTP_OK];
+            Response::HTTP_OK];
 
-        if ($mode === 'TEST') {
-            return $response->setData($render);
-        } else {
             return $this->render('home/index.html.twig', $render);
-        }
     }
 }
