@@ -13,17 +13,19 @@
   https://bitbucket.org/laurent_h/ma-moulinette
   © 2024 - CC BY-SA-NC 4.0
 -->
-<html	lang="fr">
+<html lang="fr">
 
   {# Chargement de la section HEAD #}
   <head>
+    <title>{{ title }}</title>
     {{ include('head.html.twig') }}
     {% block stylesheets %}
       {{ encore_entry_link_tags('home') }}
     {% endblock %}
   </head>
 
-  <body dir="ltr">
+  <body
+    dir="ltr">
     {# Chargement de la section header #}
     {{ include('header.html.twig') }}
     <br>
@@ -58,7 +60,8 @@
 
       <fieldset class="fieldset cell fieldset-container">
         <legend class="open-sans">Référentiel local.</legend>
-        <div class="grid-x cell">
+        <div
+          class="grid-x cell">
           <!-- Mise à jour de référentiel des projets sonarqube -->
           <div class="small-8 medium-10 large-10 referentiel-bouton cell">
             {% if refreshBD is same as(true) %}

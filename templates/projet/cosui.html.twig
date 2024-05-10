@@ -42,6 +42,7 @@
 <html lang="fr">
   {# Chargement de la section HEAD #}
   <head>
+    <title>{{ title }}</title>
     {{ include('head.html.twig') }}
     {% block stylesheets %}
       {{ encore_entry_link_tags('cosui') }}
@@ -55,8 +56,12 @@
     <header class="grid-container">
       <nav aria-label="vous êtes ici :">
         <ul class="claire-hand breadcrumbs">
-          <li><a href="/">Accueil</a></li>
-          <li><a href="/projet">Projet</a></li>
+          <li>
+            <a href="/">Accueil</a>
+          </li>
+          <li>
+            <a href="/projet">Projet</a>
+          </li>
           <li>
             <span class="show-for-sr">vous êtes ici :</span>COSUI</li>
         </ul>
@@ -96,13 +101,7 @@
       <br>
       <div id="tableau-notes" class="table-scroll">
         <table>
-          <caption class=" no-caption"
-                    id="js-series" aria-hidden="true"
-                    data-serieA="{{dataset1}}"
-                    data-serieB="{{dataset2}}"
-                    data-labelA="{{label1}}"
-                    data-labelB="{{label2}}">
-          </caption>
+          <caption class=" no-caption" id="js-series" aria-hidden="true" data-seriea="{{dataset1}}" data-serieb="{{dataset2}}" data-labela="{{label1}}" data-labelb="{{label2}}"></caption>
           <thead>
             <tr class="open-sans">
               <th colspan="1" scope="col" class="text-center">Application</th>
