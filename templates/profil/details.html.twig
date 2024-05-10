@@ -15,6 +15,7 @@
 <html	lang="fr">
   {# Chargement de la section HEAD #}
   <head>
+    <title>{{ title }}</title>
     {{ include('head.html.twig') }}
     {% block stylesheets %}
       {{ encore_entry_link_tags('profil-details') }}
@@ -29,9 +30,14 @@
     <header class="grid-container">
       <nav aria-label="Vous êtes Ici :" role="navigation">
         <ul class="claire-hand breadcrumbs">
-          <li><a href="/">Accueil</a></li>
-          <li><a href="/profil">Profil</a></li>
-          <li><span class="show-for-sr">Vous êtes ici :</span>Détails</li>
+          <li>
+            <a href="/">Accueil</a>
+          </li>
+          <li>
+            <a href="/profil">Profil</a>
+          </li>
+          <li>
+            <span class="show-for-sr">Vous êtes ici :</span>Détails</li>
         </ul>
       </nav>
     </header>
@@ -57,8 +63,10 @@
         {% set s = "" %}
       {% endif %}
       <h2 class="h4 profil-titre">
-        <span id="affiche-titre">Langage </span>
-        <span class="color-noir">{{langage|upper}}, </span>
+        <span id="affiche-titre">Langage
+        </span>
+        <span class="color-noir">{{langage|upper}},
+        </span>
         <span id="affiche-total-profil" class="stat">{{totalRegle|length}}</span>
         changement{{s}}
         trouvé{{s}}.
@@ -86,10 +94,10 @@
           </span>
         </div>
         <div class="open-sans small-6 cell">
-        {% if first is not empty %}
-          <span class="show-for-small-only profil-first-date float-right">{{first["date"]|date("d/m/y H:m", "Europe/Paris")}}</span>
-          <span class="show-for-medium profil-first-date float-right">{{first["date"]|date("d/m/y H:m:s", "Europe/Paris")}}</span>
-        {% endif %}
+          {% if first is not empty %}
+            <span class="show-for-small-only profil-first-date float-right">{{first["date"]|date("d/m/y H:m", "Europe/Paris")}}</span>
+            <span class="show-for-medium profil-first-date float-right">{{first["date"]|date("d/m/y H:m:s", "Europe/Paris")}}</span>
+          {% endif %}
         </div>
       </div>
 
@@ -104,10 +112,10 @@
           </span>
         </div>
         <div class="open-sans small-6 cell">
-        {% if last is not empty %}
-          <span class="show-for-small-only profil-last-date float-right">{{last["date"]|date("d/m/y H:m", "Europe/Paris")}}</span>
-          <span class="show-for-medium profil-last-date float-right">{{last["date"]|date("d/m/y H:m:s", "Europe/Paris")}}</span>
-        {% endif %}
+          {% if last is not empty %}
+            <span class="show-for-small-only profil-last-date float-right">{{last["date"]|date("d/m/y H:m", "Europe/Paris")}}</span>
+            <span class="show-for-medium profil-last-date float-right">{{last["date"]|date("d/m/y H:m:s", "Europe/Paris")}}</span>
+          {% endif %}
         </div>
       </div>
 

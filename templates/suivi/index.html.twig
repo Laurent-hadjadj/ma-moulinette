@@ -15,6 +15,7 @@
 <html lang="fr">
   {# Chargement de la section HEAD #}
   <head>
+    <title>{{ title }}</title>
     {{ include('head.html.twig') }}
     {% block stylesheets %}
       {{ encore_entry_link_tags('suivi') }}
@@ -28,9 +29,14 @@
     <header class="grid-container">
       <nav aria-label="vous êtes Ici : ">
         <ul class="claire-hand breadcrumbs">
-          <li><a href="/">Accueil</a></li>
-          <li><a href="/projet">Projet</a></li>
-          <li><span class="show-for-sr">Vous êtes Ici :</span>Suivi</li>
+          <li>
+            <a href="/">Accueil</a>
+          </li>
+          <li>
+            <a href="/projet">Projet</a>
+          </li>
+          <li>
+            <span class="show-for-sr">Vous êtes Ici :</span>Suivi</li>
         </ul>
       </nav>
     </header>
@@ -83,7 +89,7 @@
                   {% else %}
                     {% set reference="null" %}
                   {% endif %}
-                <th scope="col" class="open-sans text-right {{reference}}">{{suivi[i]["version"]}}</th>
+                  <th scope="col" class="open-sans text-right {{reference}}">{{suivi[i]["version"]}}</th>
                 {% endfor %}
               {% endif %}
             </tr>
@@ -105,7 +111,7 @@
                 {% for i in 0..suivi|length-1 %}
                   <td class="text-right">
                     <span>{{suivi[i]["bug"]|format_number(locale='fr')}}</span>
-                    <span class="note note-{{suivi[i]["fiabilite"]|lower}}">{{suivi[i]["fiabilite"]}}</span>
+                    <span class="note note-{{suivi[i][" fiabilite"]|lower}}">{{suivi[i]["fiabilite"]}}</span>
                   </td>
                 {% endfor %}
               {% endif %}
@@ -116,7 +122,7 @@
                 {% for i in 0..suivi|length-1 %}
                   <td class="text-right">
                     <span>{{suivi[i]["faille"]|format_number(locale='fr')}}</span>
-                    <span class="note note-{{suivi[i]["securite"]|lower}}">{{suivi[i]["securite"]}}</span>
+                    <span class="note note-{{suivi[i][" securite"]|lower}}">{{suivi[i]["securite"]}}</span>
                   </td>
                 {% endfor %}
               {% endif %}
@@ -131,7 +137,7 @@
                     {% else %}
                       <span>&nbsp;-&nbsp;</span>
                     {% endif %}
-                    <span class="note note-{{suivi[i]["note_hotspot"]|lower}}">{{suivi[i]["note_hotspot"]}}</span>
+                    <span class="note note-{{suivi[i][" note_hotspot"]|lower}}">{{suivi[i]["note_hotspot"]}}</span>
                   </td>
                 {% endfor %}
               {% endif %}
@@ -142,7 +148,7 @@
                 {% for i in 0..suivi|length-1 %}
                   <td class="text-right">
                     <span>{{suivi[i]["mauvaise_pratique"]|format_number(locale='fr')}}</span>
-                    <span class="note note-{{suivi[i]["maintenabilite"]|lower}}">{{suivi[i]["maintenabilite"]}}</span>
+                    <span class="note note-{{suivi[i][" maintenabilite"]|lower}}">{{suivi[i]["maintenabilite"]}}</span>
                   </td>
                 {% endfor %}
               {% endif %}
@@ -289,7 +295,7 @@
                       <span>&nbsp;-&nbsp;</span>
                     {% endif %}
                   {% endfor %}
-              {% endif %}
+                {% endif %}
               </td>
             </tr>
             <tr>
@@ -542,7 +548,7 @@
                     <strong>MP</strong>
                   </td>
                 {% endfor %}
-            {% endif %}
+              {% endif %}
             </tr>
             <tr>
               <td class="text-rouge">Bloquant</td>
@@ -598,7 +604,7 @@
                       </td>
                     {% endif %}
                   {% endfor %}
-              {% endif %}
+                {% endif %}
               </tr>
             </tr>
             <tr>
@@ -849,8 +855,7 @@
         <div class="small-12 medium-12 large-12 cell">
           <h2 class="h4 open-sans">Liste des versions disponibles.</h2>
           <label for="liste-version"></label>
-          <select
-            id="liste-version" class="js-version open-class" name="version">
+          <select id="liste-version" class="js-version open-class" name="version">
             <option value="TheID" selected="selected">--- Version ---</option>
           </select>
         </div>
@@ -956,10 +961,10 @@
           <thead>
             <tr class="open-sans text-center">
               <th id="action" scope="col" headers="modifier-preference">Action</th>
-              <th id="date" scope="col"  headers="modifier-preference">Date</th>
-              <th id="version" scope="col"  headers="modifier-preference">Version</th>
-              <th id="favori" scope="col"  headers="modifier-preference">Favori</th>
-              <th id="reference" scope="col"  headers="modifier-preference">Référence</th>
+              <th id="date" scope="col" headers="modifier-preference">Date</th>
+              <th id="version" scope="col" headers="modifier-preference">Version</th>
+              <th id="favori" scope="col" headers="modifier-preference">Favori</th>
+              <th id="reference" scope="col" headers="modifier-preference">Référence</th>
             </tr>
           </thead>
           <tbody

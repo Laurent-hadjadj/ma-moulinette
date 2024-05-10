@@ -12,9 +12,10 @@
   https://bitbucket.org/laurent_h/ma-moulinette
   © 2024 - CC BY-SA-NC 4.0
 -->
-<html	lang="fr">
+<html lang="fr">
   {# Chargement de la section HEAD #}
   <head>
+    <title>{{ title }}</title>
     {{ include('head.html.twig') }}
     {% block stylesheets %}
       {{ encore_entry_link_tags('welcome') }}
@@ -32,60 +33,61 @@
           <video id="video-ville" class="video-ville" preload="metadata" loop autoplay muted>
             <source src="{{ asset('build/video/Ville.mp4') }}">
             <track label="Français" kind="captions" srclang="fr" default src="{{ asset('build/video/ville_subtitles_fr.vtt') }}">
-            <track label="English" kind="captions" srclang="en" src="{{ asset('build/video/ville_subtitles_en.vtt') }}">
-          </video>
-          <span class="open-sans float-center text-center">
-            {% set a="https://pixabay.com/fr/" %}
-            {% set b="users/cassiosaguiar-6583616/" %}
-            {% set c="?utm_source=link-attribution&amp;utm_medium=referral"%}
-            {% set d="&amp;utm_campaign=video&amp;utm_content=34687" %}
-            <a class="open-sans credit source-link" href="{{a}}{{b}}{{c}}{{d}}">Cássio Aguiar</a>
-            <span id="sur">sur</span>
-            <a class="open-sans credit source-link" href="{{a}}{{c}}{{d}}">Pixabay</a>
-          </span>
-        </div>
-        <div class="small-12 medium-6 large-6 cell">
-          <h1 class="h2 claire-hand">Bienvenue.</h1>
-          <p class="open-sans text-justify">
-            Vous venez de réaliser votre inscription à l'application ma-moulinette. Bravo !!!
-          </p>
-          <p class="open-sans text-justify">
-            Toutefois, il vous reste encore une étape importante. Vous devez contacter le
-            gestionnaire en charge de valider votre inscription afin qu'il active manuellement votre compte.
-          </p>
-        </div>
-      </div>
+              <track label="English" kind="captions" srclang="en" src="{{ asset('build/video/ville_subtitles_en.vtt') }}"></video>
+              <span class="open-sans float-center text-center">
+                {% set a="https://pixabay.com/fr/" %}
+                {% set b="users/cassiosaguiar-6583616/" %}
+                {% set c="?utm_source=link-attribution&amp;utm_medium=referral"%}
+                {% set d="&amp;utm_campaign=video&amp;utm_content=34687" %}
+                <a class="open-sans credit source-link" href="{{a}}{{b}}{{c}}{{d}}">Cássio Aguiar</a>
+                <span id="sur">sur</span>
+                <a class="open-sans credit source-link" href="{{a}}{{c}}{{d}}">Pixabay</a>
+              </span>
+            </div>
+            <div class="small-12 medium-6 large-6 cell">
+              <h1 class="h2 claire-hand">Bienvenue.</h1>
+              <p class="open-sans text-justify">
+                Vous venez de réaliser votre inscription à l'application ma-moulinette. Bravo !!!
+              </p>
+              <p class="open-sans text-justify">
+                Toutefois, il vous reste encore une étape importante. Vous devez contacter le
+                                                            gestionnaire en charge de valider votre inscription afin qu'il active manuellement votre compte.
+              </p>
+            </div>
+          </div>
 
-      <div class="grid-container ">
-        <div class="fieldset information-inscription">
-          <div class="callout open-sans small">
-            <span class="lead">
-              <strong>Nom :
-              </strong>
-            </span>
-            {{nom}}</div>
-          <div class="callout open-sans small">
-            <span class="lead">
-              <strong>Prénom :
-              </strong>
-            </span>
-            {{prenom}}</div>
-          <div class="callout open-sans small">
-            <span class="lead">
-              <strong>Mel :
-              </strong>
-            </span>
-            {{courriel}}</div>
+          <div class="grid-container ">
+            <div class="fieldset information-inscription">
+              <div class="callout open-sans small">
+                <span class="lead">
+                  <strong>Nom :
+                  </strong>
+                </span>
+                {{nom}}</div>
+              <div class="callout open-sans small">
+                <span class="lead">
+                  <strong>Prénom :
+                  </strong>
+                </span>
+                {{prenom}}</div>
+              <div class="callout open-sans small">
+                <span class="lead">
+                  <strong>Mel :
+                  </strong>
+                </span>
+                {{courriel}}</div>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
 
-    <br><br>
-    {# Chargement de la section footer #}
-    {{ include('footer.html.twig') }}
-    {# Chargement du code javascript #}
-    {% block javascripts %}
-      {{ encore_entry_script_tags('welcome') }}
-    {% endblock %}
+        <br><br>
+        {# Chargement de la section footer #}
+        {{ include('footer.html.twig') }}
+        {# Chargement du code javascript #}
+        {% block javascripts %}
+          {{ encore_entry_script_tags('welcome') }}
+        {% endblock %}
+      </body>
+    </html>
   </body>
 </html>
