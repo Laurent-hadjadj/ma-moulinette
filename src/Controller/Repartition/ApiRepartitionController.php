@@ -279,7 +279,6 @@ class ApiRepartitionController extends AbstractController
         $type = $data->type;
         $severity = $data->severity;
         $setup = $data->setup;
-        $mode = $data->mode;
 
         /** on créé un objet date */
         $date = new DateTime();
@@ -307,16 +306,15 @@ class ApiRepartitionController extends AbstractController
 
                 $manager = $this->doctrine->getManager('secondary');
                 $manager->persist($issue);
-                if ($mode !== "TEST") {
-                    $manager->flush();
-                }
+
+                $manager->flush();
+
             }
             $i++;
         }
         $date2 = time();
         $response = new JsonResponse();
-        return $response->setData(
-            [ "mode" => $mode,
+        return $response->setData([
             "total" => $result["total"],
             "type" => $type,
             "severity" => $severity,
@@ -345,7 +343,6 @@ class ApiRepartitionController extends AbstractController
 
         /** On bind les variables */
         $mavenKey = $data->mavenKey;
-        $mode = $data->mode;
 
         /** On créé un nouvel objet Json */
         $response = new JsonResponse();
@@ -353,14 +350,12 @@ class ApiRepartitionController extends AbstractController
         /** On surprime de la table historique le projet */
         $sql = "DELETE FROM repartition WHERE maven_key='$mavenKey'";
         $conn = \Doctrine\DBAL\DriverManager::getConnection(['url' => $this->getParameter('sqlite.secondary.path')]);
-        if ($mode != "TEST") {
             try {
                 $conn->prepare($sql)->executeQuery();
             } catch (\Doctrine\DBAL\Exception $e) {
                 return $response->setData(["code" => $e->getCode(), Response::HTTP_OK]);
             }
-        }
-        return $response->setData(["mode" => $mode, "code" => "OK", Response::HTTP_OK]);
+        return $response->setData(["code" => "OK", Response::HTTP_OK]);
     }
 
     /**
@@ -386,7 +381,6 @@ class ApiRepartitionController extends AbstractController
         $type = $data->type;
         $severity = $data->severity;
         $setup = $data->setup;
-        $mode = $data->mode;
 
         /**$mode='null';
         $mavenKey = "fr.franceagrimer:rnm";
@@ -410,7 +404,7 @@ class ApiRepartitionController extends AbstractController
             );
         /** on appelle le service d'analyse */
         $result = $this->batch_analyse($liste, $mavenKey);
-        return $response->setData(["mode" => $mode,"code" => "OK", "repartition" => $result, Response::HTTP_OK]);
+        return $response->setData(["code" => "OK", "repartition" => $result, Response::HTTP_OK]);
     }
 
 }
