@@ -30,18 +30,24 @@ class Portefeuille
 
     #[ORM\Column(type: Types::STRING, length: 32, unique: true)]
     #[AcmeAssert\ContainsPortefeuilleUnique()]
+    #[Assert\NotNull]
+    #[Assert\NotBlank]
     private $titre;
 
     #[ORM\Column(type: Types::STRING, length: 32)]
+    #[Assert\NotNull]
+    #[Assert\NotBlank]
     private $equipe;
 
     #[ORM\Column(type: 'json')]
+    #[Assert\NotBlank]
     private $liste = [];
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private $dateModification;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotNull]
     private $dateEnregistrement;
 
     /**
