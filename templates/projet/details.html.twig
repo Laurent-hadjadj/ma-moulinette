@@ -14,282 +14,287 @@
 -->
 <html lang="fr">
 
-	{# Chargement de la section HEAD #}
-	<head>
-		{{ include('head.html.twig') }}
-		{% block stylesheets %}
-			{{ encore_entry_link_tags('repartition') }}
-		{% endblock %}
-	</head>
+  {# Chargement de la section HEAD #}
+  <head>
+    <title>{{ title }}</title>
+    {{ include('head.html.twig') }}
+    {% block stylesheets %}
+      {{ encore_entry_link_tags('repartition') }}
+    {% endblock %}
+  </head>
 
-	<body>
-		{# Chargement de la section header #}
-		{{ include('header.html.twig') }}
-		<br>
-		<header class="grid-container">
-			<nav aria-label="vous êtes ici :">
-				<ul class="claire-hand breadcrumbs">
-					<li><a href="/">Accueil</a></li>
-					<li><a href="/projet">Projet</a></li>
-					<li>
-						<span class="show-for-sr">vous êtes ici :</span>Répartition</li>
-				</ul>
-			</nav>
-		</header>
+  <body>
+    {# Chargement de la section header #}
+    {{ include('header.html.twig') }}
+    <br>
+    <header class="grid-container">
+      <nav aria-label="vous êtes ici :">
+        <ul class="claire-hand breadcrumbs">
+          <li>
+            <a href="/">Accueil</a>
+          </li>
+          <li>
+            <a href="/projet">Projet</a>
+          </li>
+          <li>
+            <span class="show-for-sr">vous êtes ici :</span>Répartition</li>
+        </ul>
+      </nav>
+    </header>
 
-		<div class="grid-container">
-			<h1 id="app" class="h3 claire-hand grid-x" data-application="{{mavenKey}}">
-				<div id="collecte-animation" class="sp"></div>
-				<span class="spinner-titre">{{monApplication}}</span>
-			</h1>
+    <div class="grid-container">
+      <h1 id="app" class="h3 claire-hand grid-x" data-application="{{mavenKey}}">
+        <div id="collecte-animation" class="sp"></div>
+        <span class="spinner-titre">{{monApplication}}</span>
+      </h1>
 
-			<p class="open-sans">
-				<span class="open-sans">Setup :</span>
-				<span id="js-setup" class="open-sans color-noir" data-statut={{statut}}>{{setup}}</span>
-			</p>
+      <p class="open-sans">
+        <span class="open-sans">Setup :</span>
+        <span id="js-setup" class="open-sans color-noir" data-statut={{statut}}>{{setup}}</span>
+      </p>
 
-			{# On affiche les messages #}
-			<div id="message"></div>
+      {# On affiche les messages #}
+      <div id="message"></div>
 
-			<ul class="vertical menu accordion-menu" data-accordion-menu>
-				<li>
-					<a class="callout open-sans">Tableau des sévérités par type.</a>
-					<ul class="menu vertical">
-						<div class="fieldset open-sans">
-							<legend>
-								<strong>Informations</strong>
-							</legend>
-							<br>
-							<p class="ligne">
-								<strong>Fiabilité</strong>&nbsp;:
-								<span id="nombre-bug" class="stat resultat"></span>
-							</p>
-							<ul class="stats-list">
-								<li>
-									<span class="stats-list-label">B</span>
-									<span id="bug-bloquant" class="stats-list-rouge-intense">0</span>
-								</li>
-								<li>
-									<span class="stats-list-label">C</span>
-									<span id="bug-critique" class="stats-list-rouge-claire">0</span>
-								</li>
-								<li>
-									<span class="stats-list-label">I</span>
-									<span id="bug-info" class="stats-list-bleu">0</span>
-								</li>
-								<li>
-									<span class="stats-list-label">M</span>
-									<span id="bug-majeur" class="stats-list-orange">0</span>
-								</li>
-								<li>
-									<span class="stats-list-label">m</span>
-									<span id="bug-mineur" class="stats-list-vert">0</span>
-								</li>
-							</ul>
-							<p class="ligne">
-								<strong>Sécurité</strong>&nbsp;:
-								<span id="nombre-vulnerabilite" class="stat resultat"></span>
-							</p>
-							<ul class="stats-list">
-								<li>
-									<span class="stats-list-label">B</span>
-									<span id="vulnerabilite-bloquant" class="stats-list-rouge-intense">0</span>
-								</li>
-								<li>
-									<span class="stats-list-label">C</span>
-									<span id="vulnerabilite-critique" class="stats-list-rouge-claire">0</span>
-								</li>
-								<li>
-									<span class="stats-list-label">I</span>
-									<span id="vulnerabilite-info" class="stats-list-bleu">0</span>
-								</li>
-								<li>
-									<span class="stats-list-label">M</span>
-									<span id="vulnerabilite-majeur" class="stats-list-orange">0</span>
-								</li>
-								<li>
-									<span class="stats-list-label">m</span>
-									<span id="vulnerabilite-mineur" class=" stats-list-vert">0</span>
-								</li>
-							</ul>
+      <ul class="vertical menu accordion-menu" data-accordion-menu>
+        <li>
+          <a class="callout open-sans">Tableau des sévérités par type.</a>
+          <ul class="menu vertical">
+            <div class="fieldset open-sans">
+              <legend>
+                <strong>Informations</strong>
+              </legend>
+              <br>
+              <p class="ligne">
+                <strong>Fiabilité</strong>&nbsp;:
+                <span id="nombre-bug" class="stat resultat"></span>
+              </p>
+              <ul class="stats-list">
+                <li>
+                  <span class="stats-list-label">B</span>
+                  <span id="bug-bloquant" class="stats-list-rouge-intense">0</span>
+                </li>
+                <li>
+                  <span class="stats-list-label">C</span>
+                  <span id="bug-critique" class="stats-list-rouge-claire">0</span>
+                </li>
+                <li>
+                  <span class="stats-list-label">I</span>
+                  <span id="bug-info" class="stats-list-bleu">0</span>
+                </li>
+                <li>
+                  <span class="stats-list-label">M</span>
+                  <span id="bug-majeur" class="stats-list-orange">0</span>
+                </li>
+                <li>
+                  <span class="stats-list-label">m</span>
+                  <span id="bug-mineur" class="stats-list-vert">0</span>
+                </li>
+              </ul>
+              <p class="ligne">
+                <strong>Sécurité</strong>&nbsp;:
+                <span id="nombre-vulnerabilite" class="stat resultat"></span>
+              </p>
+              <ul class="stats-list">
+                <li>
+                  <span class="stats-list-label">B</span>
+                  <span id="vulnerabilite-bloquant" class="stats-list-rouge-intense">0</span>
+                </li>
+                <li>
+                  <span class="stats-list-label">C</span>
+                  <span id="vulnerabilite-critique" class="stats-list-rouge-claire">0</span>
+                </li>
+                <li>
+                  <span class="stats-list-label">I</span>
+                  <span id="vulnerabilite-info" class="stats-list-bleu">0</span>
+                </li>
+                <li>
+                  <span class="stats-list-label">M</span>
+                  <span id="vulnerabilite-majeur" class="stats-list-orange">0</span>
+                </li>
+                <li>
+                  <span class="stats-list-label">m</span>
+                  <span id="vulnerabilite-mineur" class=" stats-list-vert">0</span>
+                </li>
+              </ul>
 
-							<p class="ligne">
-								<strong>Maintenalibité</strong>&nbsp;:
-								<span id="nombre-mauvaise-pratique" class="stat resultat"></span>
-							</p>
-							<ul class="stats-list">
-								<li>
-									<span class="stats-list-label">B</span>
-									<span id="mauvaise-pratique-bloquant" class="stats-list-rouge-intense">0</span>
-								</li>
-								<li>
-									<span class="stats-list-label">C</span>
-									<span id="mauvaise-pratique-critique" class="stats-list-rouge-claire">0</span>
-								</li>
-								<li>
-									<span class="stats-list-label">I</span>
-									<span id="mauvaise-pratique-info" class="stats-list-bleu">0</span>
-								</li>
-								<li>
-									<span class="stats-list-label">M</span>
-									<span id="mauvaise-pratique-majeur" class="stats-list-orange">0</span>
-								</li>
-								<li>
-									<span class="stats-list-label">m</span>
-									<span id="mauvaise-pratique-mineur" class="stats-list-vert">0</span>
-								</li>
-							</ul>
-						</div>
-					</ul>
-				</li>
-			</ul>
-			<br>
+              <p class="ligne">
+                <strong>Maintenalibité</strong>&nbsp;:
+                <span id="nombre-mauvaise-pratique" class="stat resultat"></span>
+              </p>
+              <ul class="stats-list">
+                <li>
+                  <span class="stats-list-label">B</span>
+                  <span id="mauvaise-pratique-bloquant" class="stats-list-rouge-intense">0</span>
+                </li>
+                <li>
+                  <span class="stats-list-label">C</span>
+                  <span id="mauvaise-pratique-critique" class="stats-list-rouge-claire">0</span>
+                </li>
+                <li>
+                  <span class="stats-list-label">I</span>
+                  <span id="mauvaise-pratique-info" class="stats-list-bleu">0</span>
+                </li>
+                <li>
+                  <span class="stats-list-label">M</span>
+                  <span id="mauvaise-pratique-majeur" class="stats-list-orange">0</span>
+                </li>
+                <li>
+                  <span class="stats-list-label">m</span>
+                  <span id="mauvaise-pratique-mineur" class="stats-list-vert">0</span>
+                </li>
+              </ul>
+            </div>
+          </ul>
+        </li>
+      </ul>
+      <br>
 
-			{# Bouttons de collecte #}
-			<h2 class="h4 claire-hand">1 - Collecte.</h2>
-			<div id="collecte">
-				<div class="grid-x cell">
-					<div class="grid-x show-for-medium etape cell">
-						<div class="medium-4 large-4 cell">
-							<div id="etape-1" class="stat text-center open-sans">1</div>
-						</div>
-						<div class="medium-4 large-4 cell">
-							<div id="etape-2" class="stat text-center open-sans">2</div>
-						</div>
-						<div class="medium-4 large-4 cell">
-							<div id="etape-3" class="stat text-center open-sans">3</div>
-						</div>
-					</div>
+      {# Bouttons de collecte #}
+      <h2 class="h4 claire-hand">1 - Collecte.</h2>
+      <div id="collecte">
+        <div class="grid-x cell">
+          <div class="grid-x show-for-medium etape cell">
+            <div class="medium-4 large-4 cell">
+              <div id="etape-1" class="stat text-center open-sans">1</div>
+            </div>
+            <div class="medium-4 large-4 cell">
+              <div id="etape-2" class="stat text-center open-sans">2</div>
+            </div>
+            <div class="medium-4 large-4 cell">
+              <div id="etape-3" class="stat text-center open-sans">3</div>
+            </div>
+          </div>
 
-					<div class="small-12 medium-4 large-4 cell">
-						<div id="collecte-bug" class="button expanded bouton-collecte-bug open-sans">
-							<span class="show-for-small-only stat">1 -
-							</span>
-							Fiabilité</div>
-					</div>
-					<div class="small-12 medium-4 large-4 bouton-afficher-left cell">
-						<div id="collecte-vulnerabilite" class="button expanded bouton-collecte-vulnerabilite open-sans">
-							<span class="show-for-small-only text-left stat">2 -
-							</span>Sécurité</div>
-					</div>
-					<div class="small-12 medium-4 large-4 bouton-afficher-left cell">
-						<div id="collecte-mauvaise-pratique" class="button expanded bouton-collecte-mauvaise-pratique open-sans">
-							<span class="show-for-small-only text-left stat">3 -
-							</span>Mauvaise Pratique</div>
-					</div>
-				</div>
-				{# Temps passé #}
-				<div class="grid-x cell">
-					<div id="collecte-bug-time" class="text-center small-12 medium-4 large-4 cell">
-						<div class="show-for-medium">
-							<span id="js-bug-time" class="stat">0.0</span>
-							<span>min</span>
-						</div>
-					</div>
-					<div id="collecte-vulnerabilite-time" class="text-center small-12 medium-4 large-4 cell">
-						<div class="show-for-medium">
-							<span id="js-vulnerabilite-time" class="stat">0.0</span>
-							<span>min</span>
-						</div>
-					</div>
-					<div id="collecte-mauvaise-pratique-time" class="text-center small-12 medium-4 large-4 cell">
-						<div class="show-for-medium">
-							<span id="js-mauvaise-pratique-time" class="stat">0.0</span>
-							<span>min</span>
-						</div>
-					</div>
-				</div>
-			</div>
-			<br>
-			{# Supprimer les données du projets #}
-			<div class="small-12 medium-12 large-12 cell">
-				<div id="bouton-supprime-donnees" class="button expanded open-sans bouton-supprime-donnees">
-					Supprimer les données.
-				</div>
-			</div>
+          <div class="small-12 medium-4 large-4 cell">
+            <div id="collecte-bug" class="button expanded bouton-collecte-bug open-sans">
+              <span class="show-for-small-only stat">1 -
+              </span>
+              Fiabilité</div>
+          </div>
+          <div class="small-12 medium-4 large-4 bouton-afficher-left cell">
+            <div id="collecte-vulnerabilite" class="button expanded bouton-collecte-vulnerabilite open-sans">
+              <span class="show-for-small-only text-left stat">2 -
+              </span>Sécurité</div>
+          </div>
+          <div class="small-12 medium-4 large-4 bouton-afficher-left cell">
+            <div id="collecte-mauvaise-pratique" class="button expanded bouton-collecte-mauvaise-pratique open-sans">
+              <span class="show-for-small-only text-left stat">3 -
+              </span>Mauvaise Pratique</div>
+          </div>
+        </div>
+        {# Temps passé #}
+        <div class="grid-x cell">
+          <div id="collecte-bug-time" class="text-center small-12 medium-4 large-4 cell">
+            <div class="show-for-medium">
+              <span id="js-bug-time" class="stat">0.0</span>
+              <span>min</span>
+            </div>
+          </div>
+          <div id="collecte-vulnerabilite-time" class="text-center small-12 medium-4 large-4 cell">
+            <div class="show-for-medium">
+              <span id="js-vulnerabilite-time" class="stat">0.0</span>
+              <span>min</span>
+            </div>
+          </div>
+          <div id="collecte-mauvaise-pratique-time" class="text-center small-12 medium-4 large-4 cell">
+            <div class="show-for-medium">
+              <span id="js-mauvaise-pratique-time" class="stat">0.0</span>
+              <span>min</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <br>
+      {# Supprimer les données du projets #}
+      <div class="small-12 medium-12 large-12 cell">
+        <div id="bouton-supprime-donnees" class="button expanded open-sans bouton-supprime-donnees">
+          Supprimer les données.
+        </div>
+      </div>
 
-			{# progress bar #}
-			<div class="grid-x cell">
-				<div class="small-10 medium-10 large-10 cell">
-					<div class="progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuetext="0 percent" aria-valuemax="100">
-						<span class="progress-meter progress-meter-custom">
-							<span class="progress-meter-text open-sans">0%</span>
-						</span>
-					</div>
-				</div>
-				<div class="small-2 medium-2 large-2 cell">
-					<span id="nombre-anomalie" class="progress-stat">0</span>
-				</div>
-			</div>
+      {# progress bar #}
+      <div class="grid-x cell">
+        <progress class="small-10 medium-10 large-10 cell">
+          <div class="progress" aria-valuenow="0" aria-valuemin="0" aria-valuetext="0 percent" aria-valuemax="100">
+            <span class="progress-meter progress-meter-custom">
+              <span class="progress-meter-text open-sans">0%</span>
+            </span>
+          </div>
+        </progress>
+        <div class="small-2 medium-2 large-2 cell">
+          <span id="nombre-anomalie" class="progress-stat">0</span>
+        </div>
+      </div>
 
-			{# Analyse #}
-			<h2 class="h4 claire-hand">2 - Analyse.</h2>
-			<div id="Analyse">
-				<div class="grid-x cell">
-					<div class="small-12 medium-6 large-6 cell">
-						<div id="repartition-affiche-resultat" class="button expanded
-														                bouton-repartition-affiche-resultat
-														                bouton-repartition-affiche-resultat-disabled open-sans">Afficher</div>
-					</div>
-					<div class="small-12 medium-6 large-6 bouton-afficher-left cell">
-						<div id="repartition-traitement-donnees" class="button expanded bouton-repartition-traitement-donnees open-sans">Analyser
-						</div>
-					</div>
-				</div>
-				<div class="fieldset">
-					<div class="grid-x cell">
-						<div id="analyse-animation" class="sp"></div>
-						<div id="analyse-texte" class="open-sans je-dors">Statut : Je dors !!!</div>
-					</div>
-				</div>
+      {# Analyse #}
+      <h2 class="h4 claire-hand">2 - Analyse.</h2>
+      <div id="Analyse">
+        <div class="grid-x cell">
+          <div class="small-12 medium-6 large-6 cell">
+            <div id="repartition-affiche-resultat" class="button expanded
+                                                                                      bouton-repartition-affiche-resultat
+                                                                                      bouton-repartition-affiche-resultat-disabled open-sans">Afficher</div>
+          </div>
+          <div class="small-12 medium-6 large-6 bouton-afficher-left cell">
+            <div id="repartition-traitement-donnees" class="button expanded bouton-repartition-traitement-donnees open-sans">Analyser
+            </div>
+          </div>
+        </div>
+        <div class="fieldset">
+          <div class="grid-x cell">
+            <div id="analyse-animation" class="sp"></div>
+            <div id="analyse-texte" class="open-sans je-dors">Statut : Je dors !!!</div>
+          </div>
+        </div>
 
-				{# On affiche les messages du traitement de l'analyse #}
-				<div id="message-analyse"></div>
+        {# On affiche les messages du traitement de l'analyse #}
+        <div id="message-analyse"></div>
 
-				<div id="tableau-1" class="table-scroll hide">
-					<table class="hover">
-						<caption class="claire-hand"></caption>
-						<thead>
-							<tr>
-								<th colspan="5" scope="col" class="open-sans text-center">Fiabilité</th>
-							</tr>
-						</thead>
-						<tbody id="mon-bo-tableau1" class="open-sans"></tbody>
-					</table>
-				</div>
-				<br>
-				<div id="tableau-2" class="table-scroll hide">
-					<table class="hover">
-						<caption class="claire-hand"></caption>
-						<thead>
-							<tr>
-								<th colspan="5" scope="col" class="open-sans text-center">Sécurité</th>
-							</tr>
-						</thead>
-						<tbody id="mon-bo-tableau2" class="open-sans"></tbody>
-					</table>
-				</div>
-				<br>
-				<div id="tableau-3" class="table-scroll hide">
-					<table class="hover">
-						<caption class="claire-hand"></caption>
-						<thead>
-							<tr>
-								<th colspan="5" scope="col" class="open-sans text-center">Mainetanabilité</th>
-							</tr>
-						</thead>
-						<tbody id="mon-bo-tableau3" class="open-sans"></tbody>
-					</table>
-				</div>
-			</div>
-		</div>
+        <div id="tableau-1" class="table-scroll hide">
+          <table class="hover">
+            <caption class="claire-hand"></caption>
+            <thead>
+              <tr>
+                <th colspan="5" scope="col" class="open-sans text-center">Fiabilité</th>
+              </tr>
+            </thead>
+            <tbody id="mon-bo-tableau1" class="open-sans"></tbody>
+          </table>
+        </div>
+        <br>
+        <div id="tableau-2" class="table-scroll hide">
+          <table class="hover">
+            <caption class="claire-hand"></caption>
+            <thead>
+              <tr>
+                <th colspan="5" scope="col" class="open-sans text-center">Sécurité</th>
+              </tr>
+            </thead>
+            <tbody id="mon-bo-tableau2" class="open-sans"></tbody>
+          </table>
+        </div>
+        <br>
+        <div id="tableau-3" class="table-scroll hide">
+          <table class="hover">
+            <caption class="claire-hand"></caption>
+            <thead>
+              <tr>
+                <th colspan="5" scope="col" class="open-sans text-center">Mainetanabilité</th>
+              </tr>
+            </thead>
+            <tbody id="mon-bo-tableau3" class="open-sans"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
 
-		<br><br>
-		{# Chargement de la section footer #}
-		{{ include('footer.html.twig') }}
-		{# Chargement du code javascript #}
-		{% block javascripts %}
-			{{ encore_entry_script_tags('repartition') }}
-		{% endblock %}
-	</body>
+    <br><br>
+    {# Chargement de la section footer #}
+    {{ include('footer.html.twig') }}
+    {# Chargement du code javascript #}
+    {% block javascripts %}
+      {{ encore_entry_script_tags('repartition') }}
+    {% endblock %}
+  </body>
 </html>

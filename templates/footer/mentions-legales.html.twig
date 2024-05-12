@@ -4,6 +4,7 @@
 <html lang="fr">
   {# Chargement de la section HEAD #}
   <head>
+    <title>{{ title }}</title>
     {{ include('head.html.twig') }}
     {% block stylesheets %}
       {{ encore_entry_link_tags('mention-legale') }}
@@ -18,81 +19,95 @@
     <header class="grid-container">
       <nav aria-label="Vous êtes sur la page">
         <ol class="claire-hand breadcrumbs">
-          <li><a href="/">Accueil</a></li>
-          <li><span class="show-for-sr">Vous êtes sur la page :</span>mentions-légales</li>
+          <li>
+            <a href="/">Accueil</a>
+          </li>
+          <li>
+            <span class="show-for-sr">Vous êtes sur la page :</span>mentions-légales</li>
         </ol>
       </nav>
     </header>
-    <div class="grid-container grid-x" role="main">
+    <main class="grid-container grid-x">
       <h1 class="h2 claire-hand">Mentions légales</h1>
       <hr>
-      <section id="section-editeur" class="cell" aria-description="Section éditeur">
+      <section id="section-editeur" class="cell">
         <h2 class="h4 claire-hand">Éditeur</h2>
-        <p id="editeur" class="open-sans text-justify">Ce site est édité par {{ editeur| default("Ma Moulinette, l'équipe en charge des développements de l'application Ma-Moulinette.") }}.
+        <p id="editeur" class="open-sans text-justify">Ce site est édité par
+          {{ editeur| default("Ma Moulinette, l'équipe en charge des développements de l'application Ma-Moulinette.") }}.</p>
         <p id="adresse" class="open-sans">{{ adresse | default("Ma-moulinette, <br> La Mi-Voie, route du grand chemin. <br> BP 770, Brooklyn. N.Y")|raw }}</p>
         <div id="bloc-siret-siren" class="cell" aria-description="Section SIRET et SIREN">
           {% if siret is same as(true) %}
-          <p id="siret" class="open-sans"><strong>Siret :</strong> {{numSiret| default("000 000 000 000 15") }}</p>
+            <p id="siret" class="open-sans">
+              <strong>Siret :</strong>
+              {{numSiret| default("000 000 000 000 15") }}</p>
           {% endif %}
           {% if siren is same as(true) %}
-          <p id="siren" class="open-sans"><strong>Siren :</strong> {{numSiren| default("000 000 009") }}</p>
+            <p id="siren" class="open-sans">
+              <strong>Siren :</strong>
+              {{numSiren| default("000 000 009") }}</p>
           {% endif %}
         </div>
         <br>
       </section>
 
-      <section id="section-directeur-de-publication" class="cell" aria-description="Section Directeur de publication">
+      <section id="section-directeur-de-publication" class="cell">
         <h2 class="h4 claire-hand cell">Directeur de publication</h2>
         <p id="directeur-publication" class="open-sans text-left">{{ directeurPublication | default("Laurent HADJADJ") }}</p>
         <br>
       </section>
 
-      <section id="section-conception-gestion-du-site" class="cell"
-                aria-description="Section Conception et gestion du site">
+      <section id="section-conception-gestion-du-site" class="cell">
         <h2 class="h4 claire-hand">Conception et gestion du site</h2>
         <p class="open-sans text-justify">Ce site est développé selon un principe d’amélioration continue.</p>
         <p class="open-sans text-justify">Le suivi éditorial et graphique est assuré au quotidien par l'équipe de conception de Ma-Moulinette. L'ensemble des technologies utilisé est respectueuse des bonnes pratiques formalisées par le W3C et le WCAG.</p>
         <br>
       </section>
 
-      <section id="section-code-source" class="cell" aria-description="Section Code source du site">
+      <section id="section-code-source" class="cell">
         <h2 class="h4 claire-hand cell">Code source du site</h2>
-        <p id="code-source" class="open-sans">Le code source du site est <a class="source-link" href="{{ sourceURL | default('https://github.com/Laurent-hadjadj/ma-moulinette') }}"> disponible sur {{ sourceSCM | default("github") }}</a>.</p>
+        <p id="code-source" class="open-sans">Le code source du site est
+          <a class="source-link" href="{{ sourceURL | default('https://github.com/Laurent-hadjadj/ma-moulinette') }}">
+            disponible sur
+            {{ sourceSCM | default("github") }}</a>.</p>
         <br>
       </section>
 
-      <section id="section-propriete-intellectuelle" class="cell" aria-description="Section Propriété intellectuelle">
+      <section id="section-propriete-intellectuelle" class="cell">
         <h2 class="h3 claire-hand">Propriété intellectuelle</h2>
         <p class="open-sans text-justify">Tout site public ou privé est autorisé à établir, sans autorisation préalable, un lien (y compris profond) vers les informations diffusées sur ma-moulinette.fr</p>
 
         <div class="callout alert-callout-border primary">
           <p class="open-sans inline-block">
-            <a class="source-link" href="https://github.com/Laurent-hadjadj/ma-moulinette" rel="external" aria-description="Lien vers le site de référence">Ma-Moulinette</a> de <span>Laurent HADJADJ</span> est sous licence
-            <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.fr"
-                target="_blank" rel="license noopener noreferrer" aria-description="Licence CC by-nv-sa v4.0">
-                <span class="show-for-small-only"><br></span>
-                <span class="source-link">CC BY-NC-SA 4.0</span>
-                <img class="cc" src="/build/images/cc.svg" alt="Creative Commons">
-                <img class="by" src="/build/images/by.svg" alt="Attribution : signature de l’auteur initial">
-                <img class="nc" src="/build/images/nc.svg" alt="Non Commercial : interdiction de tirer un profit commercial de l’œuvre sans autorisation de l'auteur">
-                <img class="sa" src="/build/images/sa.svg" alt="Share alike : partage de l’œuvre, avec obligation de rediffuser selon la même licence ou une licence similaire">
+            <a class="source-link" href="https://github.com/Laurent-hadjadj/ma-moulinette" rel="external" >Ma-Moulinette</a>
+            de
+            <span>Laurent HADJADJ</span>
+            est sous licence
+            <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.fr" target="_blank" rel="license noopener noreferrer">
+              <span class="show-for-small-only"><br></span>
+              <span class="source-link">CC BY-NC-SA 4.0</span>
+              <img class="cc" src="/build/images/cc.svg" alt="Creative Commons">
+              <img class="by" src="/build/images/by.svg" alt="Attribution : signature de l’auteur initial">
+              <img class="nc" src="/build/images/nc.svg" alt="Non Commercial : interdiction de tirer un profit commercial de l’œuvre sans autorisation de l'auteur">
+              <img class="sa" src="/build/images/sa.svg" alt="Share alike : partage de l’œuvre, avec obligation de rediffuser selon la même licence ou une licence similaire">
             </a>
           </p>
         </div>
         <p class="open-sans text-justify">Sauf mention de propriété intellectuelle détenue par des tiers (notamment un crédit sur certaines images), les contenus de ce site sont proposés sous licence ouverte.</p>
 
-        <p class="open-sans text-justify">La mise en place de liens vers nos contenus et documents est cependant est à privilégier par rapport à la reproduction sur un site tiers. La mention explicite du site source <strong>ma-moulinette.fr</strong> est recommandée.</p>
+        <p class="open-sans text-justify">La mise en place de liens vers nos contenus et documents est cependant est à privilégier par rapport à la reproduction sur un site tiers. La mention explicite du site source
+          <strong>ma-moulinette.fr</strong>
+          est recommandée.</p>
         <br>
       </section>
 
-      <section id="section-hebergement" class="cell" aria-description="Section Hébergement">
+      <section id="section-hebergement" class="cell">
         <h2 class="h3 claire-hand">Hébergement</h2>
         <p id="hebergement" class="open-sans">
           {{ hebergement | default("Ma-moulinette, <br> La Mi-Voie, route du grand chemin. <br> BP 770, Brooklyn. N.Y")|raw }}
         </p>
 
       </section>
-    </div>
+    </main>
     {# Chargement de la section footer #}
     {{ include('footer.html.twig') }}
     {# Chargement du code javascript #}

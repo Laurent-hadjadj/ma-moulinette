@@ -13,9 +13,10 @@
   https://bitbucket.org/laurent_h/ma-moulinette
   © 2024 - CC BY-SA-NC 4.0
 -->
-<html	lang="fr">
+<html lang="fr">
   {# Chargement de la section HEAD #}
   <head>
+    <title>{{ title }}</title>
     {{ include('head.html.twig') }}
     {% block stylesheets %}
       {{ encore_entry_link_tags('login') }}
@@ -32,62 +33,60 @@
           <video id="video-hongkong" class="video-hongkong" preload="metadata" loop autoplay muted>
             <source src="{{ asset('build/video/HongKong.mp4') }}" type="video/mp4">
             <track label="Français" kind="captions" srclang="fr" default src="{{ asset('build/video/hongkong_subtitles_fr.vtt') }}">
-            <track label="English" kind="captions" srclang="en" src="{{ asset('build/video/hongkong_subtitles_en.vtt') }}">
-          </video>
+              <track label="English" kind="captions" srclang="en" src="{{ asset('build/video/hongkong_subtitles_en.vtt') }}"></video>
 
-          <span class="open-sans float-center text-center">
-            {% set a="https://pixabay.com/fr/" %}
-            {% set b="users/magictv-18171246/" %}
-            {% set c="?utm_source=link-attribution&amp;utm_medium=referral"%}
-            {% set d="&amp;utm_campaign=video&amp;utm_content=116732" %}
-            <a class="open-sans credit source-link" href="{{a}}{{b}}{{c}}{{d}}">Timo Volz</a>
-            <span id="sur">sur</span>
-            <a class="open-sans credit source-link" href="{{a}}{{c}}{{d}}">Pixabay</a>
-          </span>
+              <span class="open-sans float-center text-center">
+                {% set a="https://pixabay.com/fr/" %}
+                {% set b="users/magictv-18171246/" %}
+                {% set c="?utm_source=link-attribution&amp;utm_medium=referral"%}
+                {% set d="&amp;utm_campaign=video&amp;utm_content=116732" %}
+                <a class="open-sans credit source-link" href="{{a}}{{b}}{{c}}{{d}}">Timo Volz</a>
+                <span id="sur">sur</span>
+                <a class="open-sans credit source-link" href="{{a}}{{c}}{{d}}">Pixabay</a>
+              </span>
+            </div>
+            <div class="small-12 medium-5 large-5 cell">
+              <form class="callout" method="post">
+                <h1 class="h3 claire-hand text-center">Authentification.</h1>
+                <div class="floated-label-wrapper">
+                  <label for="courriel">Courriel</label>
+                  <input type="email" id="courriel" name="courriel" placeholder="laurent.hadjadj@ma-petite-entreprise.fr" required autofocus autocomplete="email">
+                </div>
+                <div class="floated-label-wrapper">
+                  <label for="mot-de-passe">Mot de passe</label>
+                  <input id="mot-de-passe" class="open-sans" type="password" name="password" placeholder="Mot de passe" required autocomplete="current-password">
+                  <button id="afficher-masquer-mot-de-passe" class="afficher-masquer" type="button" title="Affiche/masque le mot de passe">Afficher|masquer
+                  </button>
+                </div>
+                <label>
+                  <input type="checkbox" name="_remember_me" class="float-left text-left" aria-label="Se souvenir">
+                  <span id="remember-me" class="float-left text-left open-sans remember-me">Se souvenir de moi.</span>
+                </label>
+                <input id="valider-formulaire-login" class="button expanded" type="submit" value="Valider" aria-label="Valider">
+                {% if is_granted('IS_AUTHENTICATED_REMEMBERED') == false %}
+                  <a href="{{ path('register') }}" class="float-left open-sans pas-encore-inscrit">Pas encore inscrit ?</a>
+                  <br>
+                {% endif %}
+                <input
+                type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+              {# {% if app.user %}
+                                                      {{ path('register') }}
+                                                    {% endif %}#}
+              </form>
+              {% if error %}
+                <div class="label alert" role="alert">{{ error.messageKey|trans(error.messageData, 'security') }}
+                </div>
+              {% endif %}
+            </div>
+          </div>
         </div>
-        <div class="small-12 medium-5 large-5 cell">
-          <form class="callout" method="post">
-            <h1 class="h3 claire-hand text-center">Authentification.</h1>
-            <div class="floated-label-wrapper">
-              <label for="courriel">Courriel</label>
-              <input type="email" id="courriel" name="courriel" placeholder="laurent.hadjadj@ma-petite-entreprise.fr"
-              required autofocus autocomplete="email">
-            </div>
-            <div class="floated-label-wrapper">
-              <label for="mot-de-passe">Mot de passe</label>
-              <input id="mot-de-passe" class="open-sans" type="password"
-              name="password" placeholder="Mot de passe" required autocomplete="current-password">
-              <button id="afficher-masquer-mot-de-passe"
-                      class="afficher-masquer" type="button"
-								      title="Affiche/masque le mot de passe" >Afficher|masquer
-							</button>
-            </div>
-            <label>
-              <input type="checkbox" name="_remember_me" class="float-left text-left" aria-label="Se souvenir">
-              <span id="remember-me" class="float-left text-left open-sans remember-me">Se souvenir de moi.</span>
-            </label>
-            <input id="valider-formulaire-login" class="button expanded" type="submit" value="Valider" aria-label="Valider">
-            {% if is_granted('IS_AUTHENTICATED_REMEMBERED') == false %}
-              <a href="{{ path('register') }}" class="float-left open-sans pas-encore-inscrit">Pas encore inscrit ?</a>
-              <br>
-            {% endif %}
-            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-          {# {% if app.user %}
-            {{ path('register') }}
-          {% endif %}#}
-          </form>
-          {% if error %}
-            <div class="label alert" role="alert">{{ error.messageKey|trans(error.messageData, 'security') }}
-            </div>
-          {% endif %}
-        </div>
-      </div>
-    </div>
-    {# Chargement de la section footer #}
-    {{ include('footer.html.twig') }}
-    {# Chargement du code javascript #}
-    {% block javascripts %}
-      {{ encore_entry_script_tags('login') }}
-    {% endblock %}
+        {# Chargement de la section footer #}
+        {{ include('footer.html.twig') }}
+        {# Chargement du code javascript #}
+        {% block javascripts %}
+          {{ encore_entry_script_tags('login') }}
+        {% endblock %}
+      </body>
+    </html>
   </body>
 </html>

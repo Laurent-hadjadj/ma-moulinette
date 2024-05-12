@@ -89,7 +89,7 @@ class ApiProjetController extends AbstractController
         $courriel = $security->getUser()->getCourriel();
 
         $map=['maven_key'=>$data->maven_key, 'courriel'=>$courriel];
-        $request = $utilisateurEntity->updateUtilisateurPreferenceFavori($data->mode, $preference, $map);
+        $request = $utilisateurEntity->updateUtilisateurPreferenceFavori($preference, $map);
         if ($request['code']!=200) {
             return $response->setData(['code' => $request['code'], Response::HTTP_OK]);
         }
@@ -161,7 +161,7 @@ class ApiProjetController extends AbstractController
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if ($data === null || !property_exists($data, 'mode')) {
+        if ($data === null) {
             return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert',
             'reference'=> static::$reference, 'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
         }
@@ -171,8 +171,9 @@ class ApiProjetController extends AbstractController
         /** Si l'utilisateur n'est pas rattaché à une équipe on ne charge rien */
         if (empty($equipes)) {
             /** On envoi un message à l'utilisateur */
-            return $response->setData(['mode'=>$data->mode, 'code'=>404, 'reference' => static::$reference,
-                    'message' => static::$erreur404, 'type' => 'alert', Response::HTTP_OK]);
+            return $response->setData([
+                'code'=>404, 'reference' => static::$reference,
+                'message' => static::$erreur404, 'type' => 'alert', Response::HTTP_OK]);
         }
 
         /** On recherche les projets pour les équipes rattaché à l'utilisateur */
@@ -191,7 +192,7 @@ class ApiProjetController extends AbstractController
 
         /** On construit la requête de selection des projets en fonction de(s) (l')équipes */
         $map=['clause_where'=>$inTrim];
-        $request = $listeProjetEntity->selectListeProjetByEquipe($data->mode,$map);
+        $request = $listeProjetEntity->selectListeProjetByEquipe($map);
         if ($request['code']!=200) {
             return $response->setData(['code' => $request['code'], Response::HTTP_OK]);
         }
@@ -205,7 +206,7 @@ class ApiProjetController extends AbstractController
                 'message' => static::$erreur406, 'type' => $type, Response::HTTP_OK]);
         }
 
-        return $response->setData(['mode'=>$data->mode, 'code'=>200, 'projet' => $projets, Response::HTTP_OK]);
+        return $response->setData(['code'=>200, 'projet' => $projets, Response::HTTP_OK]);
     }
 
 }
