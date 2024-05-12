@@ -15,28 +15,65 @@ namespace App\Entity\Main;
 
 use App\Repository\Main\NotesRepository;
 use Doctrine\DBAL\Types\Types;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: NotesRepository::class)]
 class Notes
 {
     #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: Types::INTEGER)]
+    private $id;
+
     #[ORM\Column(type: Types::STRING, length: 128)]
+    #[Assert\NotBlank]
     private $mavenKey;
 
-    #[ORM\Id]
     #[ORM\Column(type: Types::STRING, length: 16)]
+    #[Assert\NotBlank]
     private $type;
 
-    #[ORM\Id]
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private $date;
-
     #[ORM\Column(type: Types::INTEGER)]
+    #[Assert\NotBlank]
     private $value;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotBlank]
     private $dateEnregistrement;
+
+    /**
+     * [Description for getId]
+     *
+     * @return int|null
+     *
+     * Created at: 02/01/2023, 18:04:21 (Europe/Paris)
+     * @author    Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+
+    /**
+     * [Description for setId]
+     *
+     * @param mixed $id
+     *
+     * @return integer
+     *
+     * Created at: 07/05/2024 10:50:41 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
 
     /**
      * [Description for getMavenKey]
@@ -64,20 +101,6 @@ class Notes
     public function getType(): ?string
     {
         return $this->type;
-    }
-
-    /**
-     * [Description for getDate]
-     *
-     * @return \DateTimeInterface|null
-     *
-     * Created at: 02/01/2023, 18:04:48 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getDate(): ?\DateTimeInterface
-    {
-        return $this->date;
     }
 
     /**
@@ -151,15 +174,4 @@ class Notes
         return $this;
     }
 
-    /**
-     * Set the value of date
-     *
-     * @return  self
-     */
-    public function setDate($date)
-    {
-        $this->date = $date;
-
-        return $this;
-    }
 }

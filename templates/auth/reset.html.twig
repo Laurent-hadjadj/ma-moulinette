@@ -17,6 +17,7 @@
 
   {# Chargement de la section HEAD #}
   <head>
+    <title>{{ title }}</title>
     {{ include('head.html.twig') }}
     {% block stylesheets %}
       {{ encore_entry_link_tags('reset') }}
@@ -28,121 +29,116 @@
     {{ include('header.html.twig') }}
     <br><br>
 
-    <div class="grid-container" role="main">
-    {% for message in app.flashes('warning') %}
-      <div class="open-sans callout alert-callout-border warning" role="alert">{{ message }}</div>
-    {% endfor %}
-    {% for message in app.flashes('success') %}
-      <div class="open-sans callout alert-callout-border success" role="alert">{{ message }}</div>
-    {% endfor %}
+    <main class="grid-container">
+      {% for message in app.flashes('warning') %}
+        <div class="open-sans callout alert-callout-border warning" role="alert">{{ message }}</div>
+      {% endfor %}
+      {% for message in app.flashes('success') %}
+        <div class="open-sans callout alert-callout-border success" role="alert">{{ message }}</div>
+      {% endfor %}
       <div class="grid-x">
         <div class="small-12 medium-6 large-6 cell">
           <video id="video-dessin-anime" class="video-dessin-anime" preload="metadata" loop autoplay muted>
             <source src="{{ asset('build/video/DessinAnime.mp4') }}">
             <track label="Français" kind="captions" srclang="fr" default src="{{ asset('build/video/dessin_anime_subtitles_fr.vtt') }}">
-            <track label="English" kind="captions" srclang="en" src="{{ asset('build/video/dessin_anime_subtitles_en.vtt') }}">
-          </video>
-          <span class="open-sans float-center text-center">
-            {% set a="https://pixabay.com/fr/" %}
-            {% set b="users/u_cakf541pns-41051938/" %}
-            {% set c="?utm_source=link-attribution&amp;utm_medium=referral"%}
-            {% set d="&amp;utm_campaign=video&amp;utm_content=191860" %}
-            <a class="open-sans credit source-link" href="{{a}}{{b}}{{c}}{{d}}">u_cakf541pns</a>
-            <span id="sur">sur</span>
-            <a class="open-sans credit source-link" href="{{a}}{{c}}{{d}}">Pixabay</a>
-          </span>
-        </div>
-
-        <div class="small-12 medium-6 large-6 cell">
-          {% form_theme resetPasswordForm 'foundation_6_layout.html.twig' %}
-          {{ form_start(resetPasswordForm) }}
-          <div class="callout">
-            <h1 class="h3 claire-hand text-center">Mise-à-jour.</h1>
-              {# Ajout du courriel #}
-              <div class="isolation grid-x cell">
-                <div class="small-11 medium-11 large-11 cell">
-                  <div>
-                    <label for="mel" class="affiche color-bleu">Compte utilisateur</label>
-                  </div>
-                  <input type="text" id="mel" readonly="readonly" class="color-noir" value="{{courriel}}"
-                          aria-description="compte utilisateur de {{courriel}}">
-                </div>
-                <div class="small-1 medium-1 large-1 cell">
-                  <span id="reset-info-check-courriel" role="presentation"></span>
-                </div>
-              </div>
-
-              {# Ancien mot de passe #}
-              <div class="isolation grid-x cell">
-                <div class="small-11 medium-11 large-11 cell">
-                  <div class="floated-label-wrapper">
-                    {{ form_label(resetPasswordForm.ancienMotDePasse) }}
-                  </div>
-                  {{ form_widget(resetPasswordForm.ancienMotDePasse) }}
-                  <button class="unmask0" type="button"
-                          title="Affiche/masque le mot de passe">Afficher|Masquer
-                  </button>
-                </div>
-                <div class="small-1 medium-1 large-1 cell">
-                  <span role="presentation">&nbsp;</span>
-                </div>
-              </div>
-
-              {# nouveau Mot de passe #}
-              <div class="isolation grid-x cell">
-                <div class="small-11 medium-11 large-11 cell">
-                  <div class="floated-label-wrapper">
-                    {{ form_label(resetPasswordForm.plainPassword.first) }}
-                  </div>
-                  {{ form_widget(resetPasswordForm.plainPassword.first) }}
-                  <button class="unmask1" type="button"
-                          title="Affiche/masque le mot de passe">Afficher|Masquer
-                  </button>
-                </div>
-                <div class="check-svg small-1 medium-1 large-1 cell">
-                  <span id="reset-info-check-password"></span>
-                </div>
-              </div>
-
-              {# reMot de passe #}
-              <div class="isolation grid-x cell">
-                <div class="small-11 medium-11 large-11 cell check-svg">
-                  <div class="floated-label-wrapper">
-                    {{ form_label(resetPasswordForm.plainPassword.second) }}
-                  </div>
-                  {{ form_widget(resetPasswordForm.plainPassword.second) }}
-                  <button class="unmask2" type="button"
-                          title="Affiche/masque le mot de passe">Afficher|Masquer</button>
-                </div>
-                <div class="check-svg small-1 medium-1 large-1 cell">
-                  <span id="reset-info-check-repassword"></span>
-                </div>
-              </div>
-
-              {# Affiche la qualité du mot de passe. #}
-              <div class="affiche-info-mot-de-passe cell">
-              </div>
-
-              {# Affiche des messages d'erreur pour le champ mot-de-passe et re-mot-de-passe #}
-              <div class="form_erreur">
-                {{ form_errors(resetPasswordForm.plainPassword.first) }}
-                {{ form_errors(resetPasswordForm.plainPassword.second) }}
-              </div>
-
-              {# Bouton de validation #}
-              <input id="valider-formulaire-enregistrement" class="button expanded disabled-custom noselect" type="button" value="Valider">
-              <div role="alert" id="message-erreur-valider"></div>
+              <track label="English" kind="captions" srclang="en" src="{{ asset('build/video/dessin_anime_subtitles_en.vtt') }}"></video>
+              <span class="open-sans float-center text-center">
+                {% set a="https://pixabay.com/fr/" %}
+                {% set b="users/u_cakf541pns-41051938/" %}
+                {% set c="?utm_source=link-attribution&amp;utm_medium=referral"%}
+                {% set d="&amp;utm_campaign=video&amp;utm_content=191860" %}
+                <a class="open-sans credit source-link" href="{{a}}{{b}}{{c}}{{d}}">u_cakf541pns</a>
+                <span id="sur">sur</span>
+                <a class="open-sans credit source-link" href="{{a}}{{c}}{{d}}">Pixabay</a>
+              </span>
             </div>
+
+            <div class="small-12 medium-6 large-6 cell">
+              {% form_theme resetPasswordForm 'foundation_6_layout.html.twig' %}
+              {{ form_start(resetPasswordForm) }}
+              <div class="callout">
+                <h1 class="h3 claire-hand text-center">Mise-à-jour.</h1>
+                {# Ajout du courriel #}
+                <div class="isolation grid-x cell">
+                  <div class="small-11 medium-11 large-11 cell">
+                    <div>
+                      <label for="mel" class="affiche color-bleu">Compte utilisateur</label>
+                    </div>
+                    <input type="text" id="mel" readonly="readonly" class="color-noir" value="{{courriel}}">
+                  </div>
+                  <div class="small-1 medium-1 large-1 cell">
+                    <span id="reset-info-check-courriel" arira-hidden></span>
+                  </div>
+                </div>
+
+                {# Ancien mot de passe #}
+                <div class="isolation grid-x cell">
+                  <div class="small-11 medium-11 large-11 cell">
+                    <div class="floated-label-wrapper">
+                      {{ form_label(resetPasswordForm.ancienMotDePasse) }}
+                    </div>
+                    {{ form_widget(resetPasswordForm.ancienMotDePasse) }}
+                    <button class="unmask0" type="button" title="Affiche/masque le mot de passe">Afficher|Masquer
+                    </button>
+                  </div>
+                  <div class="small-1 medium-1 large-1 cell">
+                    <span aria-hidden>&nbsp;</span>
+                  </div>
+                </div>
+
+                {# nouveau Mot de passe #}
+                <div class="isolation grid-x cell">
+                  <div class="small-11 medium-11 large-11 cell">
+                    <div class="floated-label-wrapper">
+                      {{ form_label(resetPasswordForm.plainPassword.first) }}
+                    </div>
+                    {{ form_widget(resetPasswordForm.plainPassword.first) }}
+                    <button class="unmask1" type="button" title="Affiche/masque le mot de passe">Afficher|Masquer
+                    </button>
+                  </div>
+                  <div class="check-svg small-1 medium-1 large-1 cell">
+                    <span id="reset-info-check-password"></span>
+                  </div>
+                </div>
+
+                {# reMot de passe #}
+                <div class="isolation grid-x cell">
+                  <div class="small-11 medium-11 large-11 cell check-svg">
+                    <div class="floated-label-wrapper">
+                      {{ form_label(resetPasswordForm.plainPassword.second) }}
+                    </div>
+                    {{ form_widget(resetPasswordForm.plainPassword.second) }}
+                    <button class="unmask2" type="button" title="Affiche/masque le mot de passe">Afficher|Masquer</button>
+                  </div>
+                  <div class="check-svg small-1 medium-1 large-1 cell">
+                    <span id="reset-info-check-repassword"></span>
+                  </div>
+                </div>
+
+                {# Affiche la qualité du mot de passe. #}
+                <div class="affiche-info-mot-de-passe cell"></div>
+
+                {# Affiche des messages d'erreur pour le champ mot-de-passe et re-mot-de-passe #}
+                <div class="form_erreur">
+                  {{ form_errors(resetPasswordForm.plainPassword.first) }}
+                  {{ form_errors(resetPasswordForm.plainPassword.second) }}
+                </div>
+
+                {# Bouton de validation #}
+                <input id="valider-formulaire-enregistrement" class="button expanded disabled-custom noselect" type="button" value="Valider">
+                <div role="alert" id="message-erreur-valider"></div>
+              </div>
+            </div>
+            {{ form_end(resetPasswordForm) }}
           </div>
-          {{ form_end(resetPasswordForm) }}
-        </div>
+        </main>
       </div>
-    </div>
-    {# Chargement de la section footer #}
-    {{ include('footer.html.twig') }}
-    {# Chargement du code javascript #}
-    {% block javascripts %}
-      {{ encore_entry_script_tags('reset') }}
-    {% endblock %}
+      {# Chargement de la section footer #}
+      {{ include('footer.html.twig') }}
+      {# Chargement du code javascript #}
+      {% block javascripts %}
+        {{ encore_entry_script_tags('reset') }}
+      {% endblock %}
+    </body>
   </body>
 </html>

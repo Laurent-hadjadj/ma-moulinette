@@ -83,19 +83,12 @@ class RepartitionController extends AbstractController
     #[Route('/projet/repartition', name: 'projet_repartition')]
     public function projetRepartition(Request $request): Response
     {
-        /** On on vérifie si on a activé le mode test */
-        if (is_null($request->get('mode'))) {
-            $mode = "null";
-        } else {
-            $mode = $request->get('mode');
-        }
-
         /** On récupère la clé du projet */
         $mavenKey = $request->get('mavenKey');
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if (is_null($mavenKey) && $mode === "TEST") {
+        if (is_null($mavenKey)) {
             return $response->setData(["message" => "la clé maven est vide!", Response::HTTP_BAD_REQUEST]);
         }
 
@@ -115,21 +108,14 @@ class RepartitionController extends AbstractController
             $statut = "actuel";
         }
 
-        if ($mode === "TEST") {
-            return $response->setData(
-                ['monApplication' => $app, 'mavenKey' => $mavenKey,
-                'setup' =>  $setup, 'statut' => $statut, Response::HTTP_OK]
-            );
-        }
-
         return $this->render(
             'projet/details.html.twig',
             [
-            'monApplication' => $app,
-            'mavenKey' => $mavenKey,
-            'setup' =>  $setup,
-            'statut' => $statut,
-            'version' => $this->getParameter('version'), 'dateCopyright' => \date('Y')
+                'monApplication' => $app,
+                'mavenKey' => $mavenKey,
+                'setup' =>  $setup,
+                'statut' => $statut,
+                'version' => $this->getParameter('version'), 'dateCopyright' => \date('Y')
             ]
         );
     }

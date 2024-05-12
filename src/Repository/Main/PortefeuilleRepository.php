@@ -33,7 +33,6 @@ class PortefeuilleRepository extends ServiceEntityRepository
      * [Description for selectPortefeuille]
      * Retourne la liste des projets d'un portefeuille
      *
-     * @param string $mode
      * @param array $map
      *
      * @return array
@@ -42,26 +41,24 @@ class PortefeuilleRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectPortefeuille($mode, $map):array
+    public function selectPortefeuille($map):array
     {
-        $sql = "SELECT liste
-                FROM portefeuille
-                WHERE titre=:portefeuille";
-        /** On escape les ' : normalement on en a pas bedoin */
-        //$reEncode = str_replace("'", "''", $map['portefeuille']);
-
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-        $conn->bindValue(':portefeuille', $map['portefeuille']);
         try {
-            if ($mode !== 'TEST') {
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "SELECT liste
+                        FROM portefeuille
+                        WHERE titre=:portefeuille";
+                /** On escape les ' : normalement on en a pas bedoin */
+                //"$reEncode = str_replace("'", "''", $map['portefeuille']);
+
+                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $conn->bindValue(':portefeuille', $map['portefeuille']);
                 $exec=$conn->executeQuery();
                 $liste=$exec->fetchAllAssociative();
-            } else {
-                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-            }
-        } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+            $this->getEntityManager()->getConnection()->commit();
+            } catch (\Doctrine\DBAL\Exception $e) {
+            return ['code'=>500, 'erreur'=> $e->getCode()];
         }
-        return ['mode'=>$mode, 'code'=>200, 'liste'=>$liste, 'erreur'=>''];
+        return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
     }
 }

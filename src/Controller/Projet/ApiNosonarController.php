@@ -144,11 +144,10 @@ class ApiNosonarController extends AbstractController
 
         /** On supprime les notes pour la maven_key. */
         $map=['maven_key'=>$data->maven_key];
-        $request=$noSonarEntity->deleteNoSonarMavenKey($data->mode, $map);
+        $request=$noSonarEntity->deleteNoSonarMavenKey($map);
         if ($request['code']!=200) {
             return $response->setData([
                 'type' => 'alert',
-                'mode' => $data->mode,
                 'reference' => static::$reference,
                 'code' => $request['code'],
                 'message'=>$request['erreur'],
@@ -165,30 +164,30 @@ class ApiNosonarController extends AbstractController
          */
         if ($result['paging']['total'] !== 0) {
             foreach ($result['issues'] as $issue) {
-                $nosonar = new NoSonar();
-                $nosonar->setMavenKey($data->maven_key);
-                $nosonar->setRule($issue['rule']);
                 $component = str_replace('$data->maven_key :', "", $issue['component']);
-                $nosonar->setComponent($component);
-                if (empty($issue['line'])) {
-                    $line = 0;
-                } else {
+                $line = 0;
+                if (!empty($issue['line'])) {
                     $line = $issue['line'];
                 }
-                $nosonar->setLine($line);
-                $nosonar->setDateEnregistrement($dateEnregistrement);
 
-                $this->em->persist($nosonar);
-                if ($data->mode != 'TEST') {
-                    $this->em->flush();
+                $map=['maven_key'=>$data->maven_key, 'rule'=>$issue['rule'],
+                'component'=>$component, 'line'=>$line,
+                'date_enregistrement'=>$dateEnregistrement];
+                $request=$noSonarEntity->InsertNoSonar($map);
+                if ($request['code']!=200) {
+                    return $response->setData([
+                        'type' => 'alert',
+                        'reference' => static::$reference,
+                        'code' => $request['code'],
+                        'message'=>$request['erreur'],
+                        Response::HTTP_OK]);
                 }
             }
         } else {
             /** Il n'y a pas de noSOnar ou de suppressWarning */
         }
 
-        return $response->setData(['mode' => $data->mode, 'code'=>200,
-        'nosonar' => $result["paging"]['total'], Response::HTTP_OK]);
+        return $response->setData(['code'=>200, 'nosonar' => $result["paging"]['total'], Response::HTTP_OK]);
     }
 
 }

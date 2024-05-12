@@ -33,7 +33,6 @@ class ListeProjetRepository extends ServiceEntityRepository
      * [Description for countListeProjetVisibility]
      * Execute une requête paramétrique count avec type= PRIVATE || PUBLIC
      *
-     * @param string $mode
      * @param string $type
      *
      * @return array
@@ -42,23 +41,22 @@ class ListeProjetRepository extends ServiceEntityRepository
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function countListeProjetVisibility($mode, $type): array
+    public function countListeProjetVisibility($type): array
     {
-        $sql = "SELECT count(*) as visibility
-                FROM liste_projet
-                WHERE visibility=:visibility";
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-        $conn->bindValue(":visibility", $type);
         try {
-            if ($mode !== 'TEST') {
-                $request=$conn->executeQuery()->fetchAllAssociative();
-            } else {
-                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-            }
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "SELECT count(*) as visibility
+                        FROM liste_projet
+                        WHERE visibility=:visibility";
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $stmt->bindValue(":visibility", $type);
+                $request=$stmt->executeQuery()->fetchAllAssociative();
+            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+            $this->getEntityManager()->getConnection()->rollBack();
+            return ['code'=>500, 'erreur'=> $e->getCode()];
         }
-        return ['mode'=>$mode, 'code'=>200, 'request'=>$request, 'erreur'=>''];
+        return ['code'=>200, 'request'=>$request, 'erreur'=>''];
     }
 
 
@@ -74,29 +72,27 @@ class ListeProjetRepository extends ServiceEntityRepository
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function countListeProjet($mode): array
+    public function countListeProjet(): array
     {
-        $sql = "SELECT COUNT(*) AS total
-        FROM liste_projet";
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         try {
-            if ($mode !== 'TEST') {
-                $exec=$conn->executeQuery();
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "SELECT COUNT(*) AS total
+                        FROM liste_projet";
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $exec=$stmt->executeQuery();
                 $nombre=$exec->fetchAllAssociative();
-            } else {
-                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-            }
-        } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+            $this->getEntityManager()->getConnection()->commit();
+            } catch (\Doctrine\DBAL\Exception $e) {
+                $this->getEntityManager()->getConnection()->rollBack();
+                return ['code'=>500, 'erreur'=> $e->getCode()];
         }
-        return ['mode'=>$mode, 'code'=>200, 'request'=>$nombre, 'erreur'=>''];
+        return ['code'=>200, 'request'=>$nombre, 'erreur'=>''];
     }
 
     /**
      * [Description for selectListeProjetByEquipe]
      * retourne la liste des projets en fonction de(s) (l')équipes.
      *
-     * @param string $mode
      * @param array $map
      *
      * @return array
@@ -105,30 +101,28 @@ class ListeProjetRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectListeProjetByEquipe($mode, $map): array
+    public function selectListeProjetByEquipe($map): array
     {
-        $sql = "SELECT DISTINCT liste_projet.maven_key as id, liste_projet.name as text
-                FROM liste_projet, json_each(liste_projet.tags)
-                WHERE ".$map['clause_where'];
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         try {
-            if ($mode !== 'TEST') {
-                $exec=$conn->executeQuery();
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "SELECT DISTINCT liste_projet.maven_key as id, liste_projet.name as text
+                    FROM liste_projet, json_each(liste_projet.tags)
+                    WHERE ".$map['clause_where'];
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $exec=$stmt->executeQuery();
                 $liste=$exec->fetchAllAssociative();
-            } else {
-                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-            }
+            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+            $this->getEntityManager()->getConnection()->rollBack();
+            return ['code'=>500, 'erreur'=> $e->getCode()];
         }
-        return ['mode'=>$mode, 'code'=>200, 'liste'=>$liste, 'erreur'=>''];
+        return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
     }
 
     /**
      * [Description for deleteListeProjet]
      *  Supprime tous les projets de la table
      *
-     * @param string $mode
      * @param array $map
      *
      * @return array
@@ -137,21 +131,20 @@ class ListeProjetRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function deleteListeProjet($mode):array
+    public function deleteListeProjet():array
     {
-        $sql = "DELETE
-                FROM liste_projet";
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         try {
-                if ($mode !== 'TEST') {
-                    $conn->executeQuery();
-                } else {
-                    return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-                }
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "DELETE
+                        FROM liste_projet";
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $stmt->executeStatement();
+            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+            $this->getEntityManager()->getConnection()->rollBack();
+            return ['code'=>500, 'erreur'=> $e->getCode()];
         }
-        return ['mode'=>$mode, 'code'=>200, 'erreur'=>''];
+        return ['code'=>200, 'erreur'=>''];
     }
 
 }

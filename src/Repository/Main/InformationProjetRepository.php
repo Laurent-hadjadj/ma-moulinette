@@ -23,6 +23,7 @@ use Doctrine\Persistence\ManagerRegistry;
 class InformationProjetRepository extends ServiceEntityRepository
 {
     public static $removeReturnline = "/\s+/u";
+    public static $phMavenKey = ':maven_key';
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -33,7 +34,6 @@ class InformationProjetRepository extends ServiceEntityRepository
      * [Description for selectInformationProjetisValide]
      * Vérifie si le projet existe.
      *
-     * @param string $mode
      * @param array $map
      *
      * @return array
@@ -42,32 +42,29 @@ class InformationProjetRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectInformationProjetisValide($mode, $map):array
+    public function selectInformationProjetisValide($map):array
     {
-        $sql = "SELECT *
-                FROM information_projet
-                WHERE maven_key=:maven_key LIMIT 1";
-
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-        $conn->bindValue(':maven_key', $map['maven_key']);
         try {
-            if ($mode !== 'TEST') {
-                $exec=$conn->executeQuery();
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "SELECT *
+                        FROM information_projet
+                        WHERE maven_key=:maven_key LIMIT 1";
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $stmt->bindValue(static::$phMavenKey, $map['maven_key']);
+                $exec=$stmt->executeQuery();
                 $isValide=$exec->fetchAllAssociative();
-            } else {
-                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-            }
-        } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+            $this->getEntityManager()->getConnection()->commit();
+            } catch (\Doctrine\DBAL\Exception $e) {
+                $this->getEntityManager()->getConnection()->rollBack();
+                return ['code'=>500, 'erreur'=> $e->getCode()];
         }
-        return ['mode'=>$mode, 'code'=>200, 'is_valide'=>$isValide, 'erreur'=>''];
+        return ['code'=>200, 'is_valide'=>$isValide, 'erreur'=>''];
     }
 
     /**
      * [Description for countInformationProjetAllType]
      * Compte le nombre de version de tgype RELEASE, SNAPHOT ou AUTRE
      *
-     * @param string $mode
      * @param array $map
      *
      * @return array
@@ -76,31 +73,30 @@ class InformationProjetRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function countInformationProjetAllType($mode, $map):array
+    public function countInformationProjetAllType($map):array
     {
-        $sql = "SELECT COUNT(type) AS 'total'
-                FROM information_projet
-                WHERE maven_key=:maven_key";
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-        $conn->bindValue(':maven_key', $map['maven_key']);
         try {
-            if ($mode !== 'TEST') {
-                $exec=$conn->executeQuery();
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "SELECT COUNT(type) AS 'total'
+                        FROM information_projet
+                        WHERE maven_key=:maven_key";
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $stmt->bindValue(static::$phMavenKey, $map['maven_key']);
+
+                $exec=$stmt->executeQuery();
                 $nombre=$exec->fetchAllAssociative();
-            } else {
-                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-            }
+            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+            $this->getEntityManager()->getConnection()->rollBack();
+            return ['code'=>500, 'erreur'=> $e->getCode()];
         }
-        return ['mode'=>$mode, 'code'=>200, 'nombre'=>$nombre, 'erreur'=>''];
+        return ['code'=>200, 'nombre'=>$nombre, 'erreur'=>''];
     }
 
     /**
      * [Description for countInformationProjetType]
      * On retourne le nombre de version pour un type donné.
      *
-     * @param string $mode
      * @param array $map
      *
      * @return array
@@ -109,31 +105,29 @@ class InformationProjetRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function countInformationProjetType($mode, $map):array
+    public function countInformationProjetType($map):array
     {
-        $sql = "SELECT type, COUNT(type) AS 'total'
-                FROM information_projet
-                WHERE maven_key=:maven_key AND type=:type";
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-        $conn->bindValue(':maven_key', $map['maven_key']);
-        $conn->bindValue(':type', $map['type']);
         try {
-            if ($mode !== 'TEST') {
-                $exec=$conn->executeQuery();
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "SELECT type, COUNT(type) AS 'total'
+                        FROM information_projet
+                        WHERE maven_key=:maven_key AND type=:type";
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $stmt->bindValue(static::$phMavenKey, $map['maven_key']);
+                    $stmt->bindValue(':type', $map['type']);
+                $exec=$stmt->executeQuery();
                 $nombre=$exec->fetchAllAssociative();
-            } else {
-                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-            }
+            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+                $this->getEntityManager()->getConnection()->rollBack();
+            return ['code'=>500, 'erreur'=> $e->getCode()];
         }
-        return ['mode'=>$mode, 'code'=>200, 'nombre'=>$nombre, 'erreur'=>''];
+        return ['code'=>200, 'nombre'=>$nombre, 'erreur'=>''];
     }
 
     /**
      * [Description for selectInformationProjetType]
      *
-     * @param string $mode
      * @param array $map
      *
      * @return array
@@ -142,32 +136,30 @@ class InformationProjetRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectInformationProjetTypeIndexed($mode, $map):array
+    public function selectInformationProjetTypeIndexed($map):array
     {
-        $sql = "SELECT type, COUNT(type) AS 'total'
-                FROM information_projet
-                WHERE maven_key=:maven_key
-                GROUP BY type";
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-        $conn->bindValue(':maven_key', $map['maven_key']);
         try {
-            if ($mode !== 'TEST') {
-                $exec=$conn->executeQuery();
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "SELECT type, COUNT(type) AS 'total'
+                        FROM information_projet
+                        WHERE maven_key=:maven_key
+                        GROUP BY type";
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $stmt->bindValue(static::$phMavenKey, $map['maven_key']);
+                $exec=$stmt->executeQuery();
                 $liste=$exec->fetchAllAssociativeIndexed();
-            } else {
-                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-            }
+            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+            $this->getEntityManager()->getConnection()->rollBack();
+            return ['code'=>500, 'erreur'=> $e->getCode()];
         }
-        return ['mode'=>$mode, 'code'=>200, 'liste'=>$liste, 'erreur'=>''];
+        return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
     }
 
     /**
      * [Description for selectInformationProjetVersionLast]
      * Retourne la version du dernier projet.
      *
-     * @param string $mode
      * @param array $map
      *
      * @return array
@@ -176,32 +168,30 @@ class InformationProjetRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectInformationProjetVersionLast($mode, $map):array
+    public function selectInformationProjetVersionLast($map):array
     {
-        $sql = "SELECT project_version as projet, date
-                FROM information_projet
-                WHERE maven_key=:maven_key
-                ORDER BY date DESC LIMIT 1";
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-        $conn->bindValue(':maven_key', $map['maven_key']);
         try {
-            if ($mode !== 'TEST') {
-                $exec=$conn->executeQuery();
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "SELECT project_version as projet, date
+                        FROM information_projet
+                        WHERE maven_key=:maven_key
+                        ORDER BY date DESC LIMIT 1";
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $stmt->bindValue(static::$phMavenKey, $map['maven_key']);
+                $exec=$stmt->executeQuery();
                 $liste=$exec->fetchAllAssociative();
-            } else {
-                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-            }
+            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+            $this->getEntityManager()->getConnection()->rollBack();
+            return ['code'=>500, 'erreur'=> $e->getCode()];
         }
-        return ['mode'=>$mode, 'code'=>200, 'version'=>$liste, 'erreur'=>''];
+        return ['code'=>200, 'version'=>$liste, 'erreur'=>''];
     }
 
     /**
      * [Description for selectInformationProjetversion]
      * Retourne la liste des versions pour un projet.
      *
-     * @param string $mode
      * @param array $map
      *
      * @return array
@@ -210,32 +200,29 @@ class InformationProjetRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectInformationProjetVersion($mode, $map):array
+    public function selectInformationProjetVersion($map):array
     {
-        $sql = "SELECT maven_key, project_version as version, date
-                FROM information_projet
-                WHERE maven_key=:maven_key";
-
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-        $conn->bindValue(':maven_key', $map['maven_key']);
         try {
-            if ($mode !== 'TEST') {
-                $exec=$conn->executeQuery();
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "SELECT maven_key, project_version as version, date
+                        FROM information_projet
+                        WHERE maven_key=:maven_key";
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $stmt->bindValue(static::$phMavenKey, $map['maven_key']);
+                $exec=$stmt->executeQuery();
                 $liste=$exec->fetchAllAssociative();
-            } else {
-                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-            }
+            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+            $this->getEntityManager()->getConnection()->rollBack();
+            return ['code'=>500, 'erreur'=> $e->getCode()];
         }
-        return ['mode'=>$mode, 'code'=>200, 'versions'=>$liste, 'erreur'=>''];
+        return ['code'=>200, 'versions'=>$liste, 'erreur'=>''];
     }
 
     /**
      * [Description for selectInformationProjetProjectVersion]
      * Récupère la version du projet de la dernère version du projet
      *
-     * @param string $mode
      * @param array $map
      *
      * @return array
@@ -244,33 +231,30 @@ class InformationProjetRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectInformationProjetProjectVersion($mode, $map):array
+    public function selectInformationProjetProjectVersion($map):array
     {
-        $sql = "SELECT project_version, date
-                FROM information_projet
-                WHERE maven_key=:maven_key
-                ORDER by date DESC LIMIT 1";
-
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-        $conn->bindValue(':maven_key', $map['maven_key']);
         try {
-            if ($mode !== 'TEST') {
-                $exec=$conn->executeQuery();
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "SELECT project_version, date
+                        FROM information_projet
+                        WHERE maven_key=:maven_key
+                        ORDER by date DESC LIMIT 1";
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $stmt->bindValue(static::$phMavenKey, $map['maven_key']);
+                $exec=$stmt->executeQuery();
                 $liste=$exec->fetchAllAssociative();
-            } else {
-                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-            }
+            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+            $this->getEntityManager()->getConnection()->rollBack();
+            return ['code'=>500, 'erreur'=> $e->getCode()];
         }
-        return ['mode'=>$mode, 'code'=>200, 'info'=>$liste, 'erreur'=>''];
+        return ['code'=>200, 'info'=>$liste, 'erreur'=>''];
     }
 
     /**
      * [Description for deleteInformationProjetMavenKey]
      * On supprime les informations sur le projet
      *
-     * @param string $mode
      * @param array $map
      *
      * @return array
@@ -279,23 +263,22 @@ class InformationProjetRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function deleteInformationProjetMavenKey($mode,$map):array
+    public function deleteInformationProjetMavenKey($map):array
     {
-        $sql = "DELETE
-                FROM information_projet
-                WHERE maven_key=:maven_key";
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-        $conn->bindValue(':maven_key', $map['maven_key']);
         try {
-                if ($mode !== 'TEST') {
-                    $conn->executeQuery();
-                } else {
-                    return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-                }
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "DELETE
+                        FROM information_projet
+                        WHERE maven_key=:maven_key";
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $stmt->bindValue(static::$phMavenKey, $map['maven_key']);
+                    $stmt->executeStatement();
+            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+            $this->getEntityManager()->getConnection()->rollBack();
+            return ['code'=>500, 'erreur'=> $e->getCode()];
         }
-        return ['mode'=>$mode, 'code'=>200, 'erreur'=>''];
+        return ['code'=>200, 'erreur'=>''];
     }
 
 }

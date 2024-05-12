@@ -74,7 +74,6 @@ class UtilisateurRepository extends ServiceEntityRepository
     /**
      * [Description for insertUtilisateurPreferenceFavori]
      *
-     * @param string $mode
      * @param array $preference
      * @param array $map
      *
@@ -84,7 +83,7 @@ class UtilisateurRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function insertUtilisateurPreferenceFavori($mode, $preference, $map):array
+    public function insertUtilisateurPreferenceFavori($preference, $map):array
     {
         /** On récupére les préférences */
         $statut = $preference['statut'];
@@ -101,7 +100,7 @@ class UtilisateurRepository extends ServiceEntityRepository
             $i++;
             if (array_key_exists($map['maven_key'],$projet)){
                 $index=$i;
-            };
+            }
         }
 
 
@@ -146,21 +145,20 @@ class UtilisateurRepository extends ServiceEntityRepository
                 ])
         );
 
-        $response=['mode'=>$mode, 'code'=>200, 'erreur'=>''];
-        $sql = "UPDATE utilisateur
-                SET preference=:preference
-                WHERE courriel=:courriel";
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-        $conn->bindValue(':courriel', $map['courriel']);
-        $conn->bindValue(':preference', $jsonArray);
+        $response=['code'=>200, 'erreur'=>''];
         try {
-            if ($mode !== 'TEST') {
-                $conn->executeQuery();
-            } else {
-                $response=['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-            }
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "UPDATE utilisateur
+                    SET preference=:preference
+                    WHERE courriel=:courriel";
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $stmt->bindValue(':courriel', $map['courriel']);
+                $stmt->bindValue(':preference', $jsonArray);
+                $stmt->executeStatement();
+            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $response=['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+            $this->getEntityManager()->getConnection()->rollBack();
+            $response=['code'=>500, 'erreur'=> $e->getCode()];
         }
         return $response;
     }
@@ -169,7 +167,6 @@ class UtilisateurRepository extends ServiceEntityRepository
      * [Description for deletePreferenceFavoris]
      * Permet de supprimer un favoris ou une version favorite d'un projet
      *
-     * @param string $mode
      * @param array $preference
      * @param array $map
      *
@@ -179,7 +176,8 @@ class UtilisateurRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function deleteUtilisateurPreferenceFavori($mode, $preference, $map):array {
+    public function deleteUtilisateurPreferenceFavori($preference, $map):array {
+
         /**
          * On regarde d'abord si le projet à une version en favori
          * ensuite on regarde conblen de version pour ce projet sont en favori
@@ -200,12 +198,13 @@ class UtilisateurRepository extends ServiceEntityRepository
          * on regarde si la version est unique.
          */
         $i=$index=-1;
+        $nombreVersion=0;
         foreach($preference['version'] as $item){
             $i++;
             if (array_key_exists($map['maven_key'],$item)){
                 $index=$i;
                 $nombreVersion=count($item);
-            };
+            }
         }
 
         /** On supprime le projet en favori car il n'y a qu'une version en favori*/
@@ -242,21 +241,22 @@ class UtilisateurRepository extends ServiceEntityRepository
                 ])
             );
 
-        $response=['mode'=>$mode, 'code'=>200, 'erreur'=>''];
-        $sql = "UPDATE utilisateur
-                SET preference=:preference
-                WHERE courriel=:courriel";
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-        $conn->bindValue(':courriel', $map['courriel']);
-        $conn->bindValue(':preference', $jsonArray);
+        $response=['code'=>200, 'erreur'=>''];
         try {
-            if ($mode !== 'TEST') {
-                $conn->executeQuery();
-            } else {
-                $response=['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-            }
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "UPDATE utilisateur
+                        SET preference=:preference
+                        WHERE courriel=:courriel";
+
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $stmt->bindValue(':courriel', $map['courriel']);
+                $stmt->bindValue(':preference', $jsonArray);
+
+                $stmt->executeStatement();
+            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $response=['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+            $this->getEntityManager()->getConnection()->rollBack();
+            $response=['code'=>500, 'erreur'=> $e->getCode()];
         }
         return $response;
     }
@@ -265,7 +265,6 @@ class UtilisateurRepository extends ServiceEntityRepository
      * [Description for updateUtilisateurPreferenceFavori]
      * Met à jour le favori pour le projet
      *
-     * @param string $mode
      * @param mixed $preference
      * @param mixed $map
      *
@@ -275,9 +274,9 @@ class UtilisateurRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function updateUtilisateurPreferenceFavori($mode, $preference, $map):array {
+    public function updateUtilisateurPreferenceFavori($preference, $map):array {
         /** On regarde si la projet est dans les favoris */
-        $isFavori = in_array($map->maven_key, $preference['favori']);
+        $isFavori = in_array($map['maven_key'], $preference['favori']);
 
         /**
          * On le supprime de la liste des favoris s'il exsite dans les préferences
@@ -291,10 +290,10 @@ class UtilisateurRepository extends ServiceEntityRepository
         $listeVersion = $preference['version'];
         $bookmark = $preference['bookmark'];
 
-        $response = ['mode'=>$mode, 'code'=> 206, 'statut'=>-1, 'erreur'=>''];
+        $response = ['code'=> 206, 'statut'=>-1, 'erreur'=>''];
         if ($isFavori) {
             /** on supprime le projet de la liste */
-            $nouvelleListeFavori = array_diff($listeFavori, [$map->maven_key]);
+            $nouvelleListeFavori = array_diff($listeFavori, [$map['maven_key']]);
             $statut['favori'] = false;
 
             /** On met à jour l'objet. */
@@ -307,21 +306,19 @@ class UtilisateurRepository extends ServiceEntityRepository
             ]);
 
             /** On met à jour les préférences. */
-            $sql = "UPDATE utilisateur
-                    SET preference = '$jarray'
-                    WHERE courriel=:courriel";
-            $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-            $conn->bindValue(':courriel', $map['courriel']);
             try {
-                    if ($mode !== 'TEST') {
-                        $conn->executeQuery();
-                    } else {
-                        $response = ['mode'=>$mode, 'code'=> 202, 'statut'=>-1, 'erreur'=>'TEST'];
-                    }
+                    $this->getEntityManager()->getConnection()->beginTransaction();
+                        $sql = "UPDATE utilisateur
+                                SET preference = '$jarray'
+                                WHERE courriel=:courriel";
+                        $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                        $stmt->bindValue(':courriel', $map['courriel']);
+                        $stmt->executeStatement();
             } catch (\Doctrine\DBAL\Exception $e) {
-                $response = ['mode'=>$mode, 'code'=>500, 'statut'=>-1, 'erreur'=> $e->getCode()];
+                $this->getEntityManager()->getConnection()->rollBack();
+                $response = ['code'=>500, 'statut'=>-1, 'erreur'=> $e->getCode()];
             }
-            $response = ['mode'=>$mode, 'code'=> 200, 'statut'=>0, 'erreur'=>''];
+            $response = ['code'=> 200, 'statut'=>0, 'erreur'=>''];
         } else {
             /** On ajoute le projet à la liste */
             array_push($preference['favori'], $map->maven_key);
@@ -337,23 +334,22 @@ class UtilisateurRepository extends ServiceEntityRepository
             ]);
 
             /** On met à jour les préférences. */
-            $sql = "UPDATE utilisateur
-                    SET preference = '$jarray'
-                    WHERE courriel=:courriel";
-            $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-            $conn->bindValue(':courriel', $map['courriel']);
             try {
-                    if ($mode !== 'TEST') {
-                        $conn->executeQuery();
-                    } else {
-                        $response = ['mode'=>$mode, 'code'=> 202, 'statut'=>-1, 'erreur'=>'TEST'];
-                    }
-            } catch (\Doctrine\DBAL\Exception $e) {
-                $response = ['mode'=>$mode, 'code'=>500, 'statut'=>-1, 'erreur'=> $e->getCode()];
-            }
-            $response = ['mode'=>$mode, 'code'=> 200, 'statut'=>1, 'erreur'=>''];
-        }
+                $this->getEntityManager()->getConnection()->beginTransaction();
+                    $sql = "UPDATE utilisateur
+                        SET preference = '$jarray'
+                        WHERE courriel=:courriel";
+                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $stmt->bindValue(':courriel', $map['courriel']);
+                    $stmt->executeStatement();
+                $this->getEntityManager()->getConnection()->commit();
 
+            } catch (\Doctrine\DBAL\Exception $e) {
+                $this->getEntityManager()->getConnection()->rollBack();
+                $response = ['code'=>500, 'statut'=>-1, 'erreur'=> $e->getCode()];
+            }
+            $response = ['code'=> 200, 'statut'=>1, 'erreur'=>''];
+        }
         return $response;
     }
 
@@ -361,7 +357,6 @@ class UtilisateurRepository extends ServiceEntityRepository
      * [Description for updateUtilisateurResetPassword]
      * Modifie l'indicateur reset du mot de passe.
      *
-     * @param string $mode
      * @param array $map
      *
      * @return array
@@ -370,25 +365,23 @@ class UtilisateurRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function updateUtilisateurResetPassword($mode, $map):array {
-
-        $sql = "UPDATE utilisateur
-                SET init = :init, date_modification=:date_modification
-                WHERE courriel=:courriel";
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-        $conn->bindValue(':init', $map['init']);
-        $conn->bindValue(':date_modification', $map['date_modification']);
-        $conn->bindValue(':courriel', $map['courriel']);
+    public function updateUtilisateurResetPassword($map):array {
         try {
-                if ($mode !== 'TEST') {
-                    $conn->executeQuery();
-                } else {
-                    return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-                }
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "UPDATE utilisateur
+                        SET init = :init, date_modification=:date_modification
+                        WHERE courriel=:courriel";
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $stmt->bindValue(':init', $map['init']);
+                    $stmt->bindValue(':date_modification', $map['date_modification']);
+                    $stmt->bindValue(':courriel', $map['courriel']);
+                $stmt->executeStatement();
+            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=>500, 'statut'=>-1, 'erreur'=> $e->getCode()];
+            $this->getEntityManager()->getConnection()->rollBack();
+            return ['code'=>500, 'statut'=>-1, 'erreur'=> $e->getCode()];
         }
-        return ['mode'=>$mode, 'code'=>200, 'erreur'=>''];
+        return ['code'=>200, 'erreur'=>''];
     }
 
 }

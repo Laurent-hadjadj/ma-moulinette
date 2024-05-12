@@ -55,26 +55,12 @@ class ProjetController extends AbstractController
             $bookmark = $preference['bookmark'];
         }
 
-        /** On crée un objet de reponse JSON */
-        $response = new JsonResponse();
-
-        $mode = '';
-        /** On on vérifie si on a activé le mode test */
-        $mode = $request->get('mode');
-
         $render = [
-            'mode' => $mode,
             'version' => $this->getParameter('version'),
             'dateCopyright' => \date('Y'),
             'bookmark' => $bookmark,
             Response::HTTP_OK
         ];
-
-        if ($mode === 'TEST') {
-            return $response->setData($render);
-        } else {
             return $this->render('projet/index.html.twig', $render);
-        }
     }
-
 }

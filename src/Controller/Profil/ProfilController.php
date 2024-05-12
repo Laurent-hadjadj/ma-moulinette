@@ -56,14 +56,8 @@ class ProfilController extends AbstractController
         /** oN créé un objet réponse */
         $response = new JsonResponse();
 
-        /** On vérifie si on a activé le mode test */
-        $mode = "null";
-        if (!is_null($request->get('mode'))) {
-            $mode = $request->get('mode');
-        }
-
         /** On récupère la liste des profiles; */
-        $request=$profiles->selectProfiles($mode);
+        $request=$profiles->selectProfiles();
         switch ($request['code']) {
             case 202:
                 $this->addFlash('warning', sprintf('%s : %s', "[PROFIL-099]","Le mode TEST a été activé."));
@@ -84,16 +78,11 @@ class ProfilController extends AbstractController
         }
 
         $render =
-        [ "mode" => $mode, "liste" => $request['liste'],
+        [   "liste" => $request['liste'],
             "version" => $this->getParameter("version"),
             "dateCopyright" => \date("Y"),
             Response::HTTP_OK
         ];
-
-        if ($mode == "TEST") {
-            return $response->setData($render);
-        } else {
-            return $this->render('profil/index.html.twig', $render);
-        }
+        return $this->render('profil/index.html.twig', $render);
     }
 }

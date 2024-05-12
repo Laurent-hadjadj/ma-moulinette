@@ -12,9 +12,10 @@
   https://bitbucket.org/laurent_h/ma-moulinette
   © 2024 - CC BY-SA-NC 4.0
 -->
-<html	lang="fr">
+<html lang="fr">
   {# Chargement de la section HEAD #}
   <head>
+    <title>{{ title }}</title>
     {{ include('head.html.twig') }}
     {% block stylesheets %}
       {{ encore_entry_link_tags('batch') }}
@@ -28,8 +29,11 @@
     <header class="grid-container">
       <nav aria-label="vous êtes ici :">
         <ul class="claire-hand breadcrumbs">
-          <li><a href="/">Accueil</a></li>
-          <li><span class="show-for-sr">vous êtes ici :</span>Traitement</li>
+          <li>
+            <a href="/">Accueil</a>
+          </li>
+          <li>
+            <span class="show-for-sr">vous êtes ici :</span>Traitement</li>
         </ul>
       </nav>
     </header>
@@ -216,7 +220,10 @@
       <h1 class="claire-hand h2">Traitement manuel</h1>
       <p class="open-sans">
         Vous avez décidé de lancer la collecte des projets du portefeuille&nbsp;:
-        <strong><span id="js-nom-job"></span> </strong></p>
+        <strong>
+          <span id="js-nom-job"></span>
+        </strong>
+      </p>
       <p></p>
       <p class="open-sans">Voulez-vous lancer le traitement&nbsp;?</p>
       <div class="text-center open-sans">

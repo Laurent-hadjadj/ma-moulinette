@@ -42,6 +42,7 @@
 <html lang="fr">
   {# Chargement de la section HEAD #}
   <head>
+    <title>{{ title }}</title>
     {{ include('head.html.twig') }}
     {% block stylesheets %}
       {{ encore_entry_link_tags('cosui') }}
@@ -57,13 +58,12 @@
         <ul class="claire-hand breadcrumbs">
           <li><a href="/">Accueil</a></li>
           <li><a href="/projet">Projet</a></li>
-          <li>
-            <span class="show-for-sr">vous êtes ici :</span>COSUI</li>
+          <li><span class="show-for-sr">vous êtes ici :</span>COSUI</li>
         </ul>
       </nav>
     </header>
 
-    <div class="grid-container">
+    <main class="grid-container">
       <h1 class="h2 claire-hand">COmité de SUIvi.</h1>
       <h2 class="h3 claire-hand">Suivi des indicateurs.</h2>
       <div id="collecte-animation" class="sp"></div>
@@ -96,13 +96,7 @@
       <br>
       <div id="tableau-notes" class="table-scroll">
         <table>
-          <caption class=" no-caption"
-                    id="js-series" aria-hidden="true"
-                    data-serieA="{{dataset1}}"
-                    data-serieB="{{dataset2}}"
-                    data-labelA="{{label1}}"
-                    data-labelB="{{label2}}">
-          </caption>
+          <caption class=" no-caption" id="js-series" aria-hidden="true" data-seriea="{{dataset1}}" data-serieb="{{dataset2}}" data-labela="{{label1}}" data-labelb="{{label2}}"></caption>
           <thead>
             <tr class="open-sans">
               <th colspan="1" scope="col" class="text-center">Application</th>
@@ -297,10 +291,10 @@
       <div>
         <h2 class="h3 claire-hand">Notes Sonarqube</h2>
         <div class="float-center graphique-note-container">
-          <canvas id="graphique-note" aria-label="Distribution des notes." role="img"></canvas>
+          <canvas id="graphique-note" aria-label="Distribution des notes." arira-hidden=true></canvas>
         </div>
       </div>
-    </div>
+    </main>
 
     {# Affichage du tableau des projets #}
     <div id="modal-projet-reference" class="reveal" data-reveal data-close-on-click="true" data-animation-in="fade-in" data-animation-out="fade-out">

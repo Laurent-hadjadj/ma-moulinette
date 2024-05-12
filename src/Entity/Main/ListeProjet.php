@@ -15,6 +15,7 @@ namespace App\Entity\Main;
 
 use App\Repository\Main\ListeProjetRepository;
 use Doctrine\DBAL\Types\Types;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ListeProjetRepository::class)]
@@ -26,18 +27,23 @@ class ListeProjet
     private $id;
 
     #[ORM\Column(type: Types::STRING, length: 128)]
+    #[Assert\NotBlank]
     private $mavenKey;
 
     #[ORM\Column(type: Types::STRING, length: 128)]
+    #[Assert\NotBlank]
     private $name;
 
     #[ORM\Column(type: Types::JSON)]
-    private $tags = [];
+    #[Assert\NotBlank]
+    private $tags = ['Aucun'];
 
     #[ORM\Column(type: Types::STRING, length: 8)]
+    #[Assert\NotBlank]
     private $visibility;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotBlank]
     private $dateEnregistrement;
 
     /**
