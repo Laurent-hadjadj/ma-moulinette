@@ -31,7 +31,7 @@ class ProfilesRepository extends ServiceEntityRepository
 
     /**
      * [Description for countProfiles]
-     * Compte le nombre total de profiles
+     * Compte le nombre total de profiles (par default on compte les profils actifs)
      *
      * @param string $mode
      *
@@ -41,11 +41,14 @@ class ProfilesRepository extends ServiceEntityRepository
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function countProfiles($mode): array
+    public function countProfiles($mode,  $isDefault='1', $langage = null): array
     {
         $sql = "SELECT COUNT(*) AS total
                 FROM profiles
-                WHERE is_default = 1";
+                WHERE is_default = ".$isDefault;
+                if ($langage !== null ){
+                    $sql .= " AND language_name LIKE '".$langage."'";
+                }
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         try {
             if ($mode !== 'TEST') {

@@ -142,7 +142,6 @@ const callboxFermer='</span><button class="close-button" aria-label="Fermer la f
   $('.js-total').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(total));
 
   $('.js-bouton-autre-profil').on('click', (e)=>{
-    console.log("----------------Youpi",e);
   });
 };
 
@@ -160,8 +159,16 @@ const recupereProfilNonActif=async function(langage){
 
   $('#toto').html('');
   const profils = t.listeProfil;
-
+  const nombreProfils = t.countProfil;
   // En tête du tableau
+  console.log(nombreProfils.request.length);
+  console.log(nombreProfils.request);
+
+  if (nombreProfils.request[0].total > 1){
+    str += `<h2 class="h5 claire-hand">Il y a ${ nombreProfils.request[0].total } profils diponibles dans Sonarqube</h2>`
+  }else{
+    str += `<h2 class="h5 claire-hand">Il y a ${ nombreProfils.request[0].total } profil diponible dans Sonarqube</h2>`
+  }
   str += `<table class="hover">
   <thead>
     <tr>
@@ -199,11 +206,9 @@ const recupereProfilNonActif=async function(langage){
 
   $('#toto').html(str);
   $('#fenetre-modal').foundation('open');
-  console.log(str);
 }
 
 $('.js-bouton-autre-profil').on('click', (e)=>{
-  console.log("JAAJ",e);
 
   /* On récupère l'id */
   const target = e.currentTarget.id;
