@@ -15,6 +15,7 @@ namespace App\Entity\Main;
 
 use App\Repository\Main\TodoRepository;
 use Doctrine\DBAL\Types\Types;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TodoRepository::class)]
@@ -25,19 +26,46 @@ class Todo
     #[ORM\Column(type: Types::INTEGER)]
     private $id;
 
-    #[ORM\Column(type: Types::STRING, length: 128)]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 128,
+        nullable: false,
+        options: ['comment'=>"Clé unique du projet dans sonarqube"]
+    )]
+    #[Assert\NotBlank]
     private $mavenKey;
 
-    #[ORM\Column(type: Types::STRING, length: 128)]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 128,
+        nullable: false,
+        options: ['comment'=>"La référence à la règle sonarqube"]
+        )]
+    #[Assert\NotBlank]
     private $rule;
 
-    #[ORM\Column(type: TYPES::TEXT)]
+    #[ORM\Column(
+        type: TYPES::TEXT,
+        nullable: false,
+        options: ['comment'=>"Le fichier source concerné"]
+        )]
+    #[Assert\NotBlank]
     private $component;
 
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment'=>"Le numéro de la ligne concerné"]
+        )]
+    #[Assert\NotBlank]
     private $line;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(
+        type: Types::DATETIME_MUTABLE,
+        nullable: false,
+        options: ['comment'=>"La date d'enregistrement"]
+        )]
+    #[Assert\NotBlank]
     private $dateEnregistrement;
 
     /**

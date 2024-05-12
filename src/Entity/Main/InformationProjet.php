@@ -14,6 +14,7 @@
 namespace App\Entity\Main;
 
 use App\Repository\Main\InformationProjetRepository;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -26,21 +27,27 @@ class InformationProjet
     private $id;
 
     #[ORM\Column(type: Types::STRING, length: 128)]
+    #[Assert\NotBlank]
     private $mavenKey;
 
     #[ORM\Column(type: Types::STRING, length: 32)]
+    #[Assert\NotBlank]
     private $analyseKey;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotBlank]
     private $date;
 
     #[ORM\Column(type: Types::STRING, length: 32)]
+    #[Assert\NotBlank]
     private $projectVersion;
 
     #[ORM\Column(type: Types::STRING, length: 32)]
+    #[Assert\NotBlank]
     private $type;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotBlank]
     private $dateEnregistrement;
 
     /**

@@ -737,7 +737,7 @@ const projetNoSonar=function(mavenKey){
 /**
  * [Description for projetTodo]
  * On récupére la liste des t_odo
- * http://{url}/api/projet/todo
+ * http://{url}/api/projet/to do
  *
  * Phase 12
  *
@@ -800,7 +800,6 @@ const finCollecte=function(){
       const message='Le processus de collecte a été interrompu !';
       const t={type, reference, message};
       afficheMessage(t);
-      return;
     }
   }
 
@@ -1084,7 +1083,7 @@ $('.js-analyse').on('click', function () {
     /* Récupération des signalements noSonar et SuppressWarning. */
     await projetNoSonar(idProject);               /*(11)*/
 
-    /* Récupération des signalements Todo (TS, JAVA, XML). */
+    /* Récupération des signalements To do (TS, JAVA, XML). */
     await projetTodo(idProject);                  /*(12)*/
 
     /* Renvoie le statut de fin */
@@ -1207,7 +1206,7 @@ $('.js-affiche-details').on('click', () => {
 
 /**
  * description
- * On affiche la liste des tags todo par langage.
+ * On affiche la liste des tags to do par langage.
  */
 $('.js-affiche-todo').on('click', function () {
   if ($('select[name="projet"]').val() !=='' && $('select[name="projet"]').val() !=='TheID') {
@@ -1281,7 +1280,7 @@ $('.js-affiche-resultat').on('click', () => {
   /** On regarde si tou vas bien ! */
   const collecte=sessionStorage.getItem('collecte');
   if (collecte===undefined || collecte!='Tout va bien!') {
-    t={}
+    let t={}
     return;
   };
   /* On appel une fonction externe. */

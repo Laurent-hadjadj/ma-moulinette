@@ -140,7 +140,6 @@ class CosuiController extends AbstractController
      * On récupère les indicateurs du bloc information pour le projet
      *
      * @param string $mavenKey
-     * @param string $mode
      *
      * @return array
      *
@@ -148,18 +147,18 @@ class CosuiController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function notes($mavenKey, $mode): array
+    private function notes($mavenKey): array
     {
         /** On instancie l'entityRepository */
         $historique = $this->em->getRepository(Historique::class);
 
         /** On récupère les informations du projet de la table historique */
         $map=['maven_key'=>$mavenKey];
-        $request=$historique->selectHistoriqueProjetLast($mode, $map);
+        $request=$historique->selectHistoriqueProjetLast($map);
         if ($request['code']!=200) {
             return [
-                    'mode' => $mode, 'maven_key' => $mavenKey,
-                    'code'=>$request['code'], 'erreur' => $request['erreur']
+                    'maven_key' => $mavenKey,'code'=>$request['code'],
+                    'erreur' => $request['erreur']
                 ];
         }
 
@@ -203,7 +202,6 @@ class CosuiController extends AbstractController
      * On récupère les informations du projet de référence.
      *
      * @param string $mavenKey
-     * @param string $mode
      *
      * @return array
      *
@@ -211,18 +209,18 @@ class CosuiController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function reference($mavenKey, $mode): array
+    private function reference($mavenKey): array
     {
         /** On instancie l'entityRepository */
         $historique = $this->em->getRepository(Historique::class);
 
         /** On récupère les informations du projet de référence */
         $map=['maven_key'=>$mavenKey];
-        $request=$historique->selectHistoriqueProjetReference($mode, $map);
+        $request=$historique->selectHistoriqueProjetReference($map);
         if ($request['code']!=200) {
             return [
-                    'mode' => $mode, 'maven_key' => $mavenKey,
-                    'code'=>$request['code'], 'erreur' => $request['erreur']
+                    'maven_key' => $mavenKey,'code'=>$request['code'],
+                    'erreur' => $request['erreur']
                     ];
         }
         if (!$request['reference']) {
@@ -369,44 +367,30 @@ class CosuiController extends AbstractController
 
 
     /**
-     * [Description for variation]
-     * Calcul de la variation entre deux notes
+     * [Description for variationDirection]
      *
-     * @param integer $a
-     * @param integer $b
+     * @param integer $ancienneValeur
+     * @param integer $nouvelleValeur
      *
      * @return string
-     *
-     * Created at: 15/12/2022, 22:17:57 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * Created at: 10/05/2024 16:24:07 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function variation($a, $b): string
+    private function variation($ancienneValeur, $nouvelleValeur)
     {
-        /** Pas dévolution ou la valeur */
-        if ($a == -1 && $b == 0) {
-            return"equal";
-        }
-
-        if ($a == 0) {
-            $c = 0;
+        $resultat = 0;
+        if ($ancienneValeur === 0) {
             return "equal";
-        } else {
-
-            $c = (($b - $a) / $a) * 100;
         }
-
-        switch ($c) {
-            case $c > 0:
-                $evolution = "down";
-                break;
-            case $c < 0:
-                $evolution = "up";
-                break;
-            default:
-                echo "Le taux de variation ne peut pas être calculé.";
+        $resultat = (($nouvelleValeur - $ancienneValeur) / $ancienneValeur) * 100;
+        if ($resultat > 0) {
+            $response = 'down';
         }
-        return $evolution;
+        if ($resultat < 0) {
+            $response = 'up';
+        }
+        return $response;
     }
 
     /**
@@ -424,20 +408,11 @@ class CosuiController extends AbstractController
     #[Route('/projet/cosui', name: 'projet_cosui', methods: 'GET')]
     public function projetCosui(Request $request): Response
     {
-        /** On crée un objet de reponse JSON */
-        $response = new JsonResponse();
-
-        /** On on vérifie si on a activé le mode test */
-        $mode = 'null';
-        if (!is_null($request->get('mode'))) {
-            $mode = $request->get('mode');
-        }
-
         /** On bind les variables */
         $mavenKey = $request->get('mavenKey');
 
         /** On récupère les notes */
-        $n = static::notes($mavenKey, $mode);
+        $n = static::notes($mavenKey);
 
         if ($n['resultat'] === false) {
             $nameApplication = $versionApplication = $typeApplication = 'NaN';
@@ -486,7 +461,7 @@ class CosuiController extends AbstractController
         }
 
         /** On récupères les indicateurs de la version de référence */
-        $nn = self::reference($mavenKey, $mode);
+        $nn = self::reference($mavenKey);
         if ($nn['resultat'] === false) {
             $initialVersionApplication = 'NaN';
             $initialDateApplication = '01/01/1980';
@@ -693,14 +668,10 @@ class CosuiController extends AbstractController
             'nombre_presentation_vulnerability_critical' => $nombrePresentationVulnerabilityCritical,
             'nombre_presentation_vulnerability_major' => $nombrePresentationVulnerabilityMajor,
             'version' => $this->getParameter('version'), 'dateCopyright' => \date('Y'),
-            'mode' => $mode,  Response::HTTP_OK
+            Response::HTTP_OK
         ];
 
-        if ($mode === 'TEST') {
-            array_push($render, ['notes' => $n]);
-            return $response->setData($render);
-        } else {
-            return $this->render('projet/cosui.html.twig', $render);
-        }
+        return $this->render('projet/cosui.html.twig', $render);
+
     }
 }

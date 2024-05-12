@@ -69,7 +69,6 @@ class PreferenceController extends AbstractController
 
         /** On récupère le filtre de recherche */
         $data = json_decode($request->getContent());
-        $mode = $data->mode;
         $etat = $data->statut;
         $categorie = $data->categorie;
 
@@ -102,11 +101,11 @@ class PreferenceController extends AbstractController
                 WHERE courriel='$courriel';";
         $trim = trim(preg_replace(static::$regex, " ", $sql));
         $exec = $this->em->getConnection()->prepare($trim)->executeQuery();
-        if ($mode !== 'TEST') {
-            $exec->fetchAllAssociative();
-        }
 
-        $data = ['mode' => $mode,'statut' => $statut, 'categorie' => $categorie,Response::HTTP_OK];
+        $exec->fetchAllAssociative();
+
+
+        $data = ['statut' => $statut, 'categorie' => $categorie,Response::HTTP_OK];
         return $response->setData($data);
     }
 
@@ -129,7 +128,6 @@ class PreferenceController extends AbstractController
     {
         /** On bind les arguments passés depuis l'URL */
         $data = json_decode($request->getContent());
-        $mode = $data->mode;
         $mavenKey = $data->mavenKey;
 
         /** On récupère l'objet User du contexte de sécurité */
@@ -160,14 +158,13 @@ class PreferenceController extends AbstractController
                 WHERE courriel='$courriel';";
         $trim = trim(preg_replace(static::$regex, " ", $sql));
         $exec = $this->em->getConnection()->prepare($trim)->executeQuery();
-        if ($mode !== 'TEST') {
-            $exec->fetchAllAssociative();
-        }
+        $exec->fetchAllAssociative();
+
 
         /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
 
-        $data = ['mode' => $mode, Response::HTTP_OK];
+        $data = [Response::HTTP_OK];
         return $response->setData($data);
     }
 
@@ -190,7 +187,6 @@ class PreferenceController extends AbstractController
     {
         /** On bind les arguments passés depuis l'URL */
         $data = json_decode($request->getContent());
-        $mode = $data->mode;
         $index = $data->index;
         $mavenKey = $data->mavenKey;
         $version = $data->version;
@@ -238,13 +234,12 @@ class PreferenceController extends AbstractController
                 SET preference = '$jarray'
                 WHERE courriel='$courriel';";
         $trim = trim(preg_replace(static::$regex, " ", $sql));
-        if ($mode !== 'TEST') {
-            $this->em->getConnection()->prepare($trim)->executeQuery();
-        }
+        $this->em->getConnection()->prepare($trim)->executeStatement();
+ 
 
         /** On crée un objet de reponse JSON 'o'=>$object,'n'=>$nouvelleListeVersion,'t'=>$trim */
         $response = new JsonResponse();
-        $data = ['mode' => $mode, Response::HTTP_OK];
+        $data = [Response::HTTP_OK];
         return $response->setData($data);
     }
 
@@ -266,7 +261,6 @@ class PreferenceController extends AbstractController
     public function apiPreferenceCategori(Security $security, Client $client, Request $request): Response
     {
         /** On bind les arguments passés depuis l'URL */
-        $mode = $request->get('mode');
         $categorie = $request->get('categorie');
 
         /** On récupère l'objet User du contexte de sécurité */
@@ -275,7 +269,7 @@ class PreferenceController extends AbstractController
         /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
 
-        $data = ['mode' => $mode,
+        $data = [
                 'statut' => $preference['statut'], $categorie => $preference[$categorie], Response::HTTP_OK];
         return $response->setData($data);
     }
@@ -297,8 +291,6 @@ class PreferenceController extends AbstractController
     #[Route('/preferences', name: 'preferences', methods:'GET')]
     public function index(Security $security, Client $client, Request $request): Response
     {
-        $mode = $request->get('mode');
-
         $response = new JsonResponse();
 
         /** On bind les informations utilisateur */
@@ -334,13 +326,9 @@ class PreferenceController extends AbstractController
             'roles' => $roles, 'equipes' => $equipes,
             'preferences' => $mesPreferences,
             'version' => $versionAPP, 'dateCopyright' => \date('Y'),
-            'mode' => $mode, Response::HTTP_OK];
+            Response::HTTP_OK];
 
-        if ($mode === "TEST") {
-            return $response->setData($render);
-        } else {
-            return $this->render('preference/index.html.twig', $render);
-        }
+        return $this->render('preference/index.html.twig', $render);
     }
 
 }

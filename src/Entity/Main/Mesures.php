@@ -15,6 +15,7 @@ namespace App\Entity\Main;
 
 use App\Repository\Main\MesuresRepository;
 use Doctrine\DBAL\Types\Types;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: MesuresRepository::class)]
@@ -26,33 +27,43 @@ class Mesures
     private $id;
 
     #[ORM\Column(type: Types::STRING, length: 128)]
+    #[Assert\NotBlank]
     private $mavenKey;
 
     #[ORM\Column(type: Types::STRING, length: 128)]
+    #[Assert\NotBlank]
     private $projectName;
 
     #[ORM\Column(type: Types::INTEGER)]
+    #[Assert\NotBlank]
     private $lines;
 
     #[ORM\Column(type: Types::INTEGER)]
+    #[Assert\NotBlank]
     private $ncloc;
 
     #[ORM\Column(type: Types::FLOAT)]
+    #[Assert\NotBlank]
     private $coverage;
 
     #[ORM\Column(type: Types::FLOAT)]
+    #[Assert\NotBlank]
     private $sqaleDebtRatio;
 
     #[ORM\Column(type: Types::FLOAT)]
+    #[Assert\NotBlank]
     private $duplicationDensity;
 
     #[ORM\Column(type: Types::INTEGER)]
+    #[Assert\NotBlank]
     private $tests;
 
     #[ORM\Column(type: Types::INTEGER)]
+    #[Assert\NotBlank]
     private $issues;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotBlank]
     private $dateEnregistrement;
 
     /**

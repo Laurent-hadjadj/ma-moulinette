@@ -33,7 +33,6 @@ class MesuresRepository extends ServiceEntityRepository
      * [Description for selectMesuresVersionLast]
      * Retourne les mesures de la dernière version d'un projet
      *
-     * @param string $mode
      * @param array $map
      *
      * @return array
@@ -42,25 +41,24 @@ class MesuresRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectMesuresVersionLast($mode, $map):array
+    public function selectMesuresVersionLast($map):array
     {
-        $sql = "SELECT project_name as name, ncloc, lines, coverage, sqale_debt_ratio,
-                        duplication_density as duplication, tests, issues
-                FROM mesures
-                WHERE maven_key=:maven_key
-                ORDER BY date_enregistrement DESC LIMIT 1";
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-        $conn->bindValue(':maven_key', $map['maven_key']);
         try {
-            if ($mode !== 'TEST') {
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "SELECT project_name as name, ncloc, lines, coverage, sqale_debt_ratio,
+                duplication_density as duplication, tests, issues
+                        FROM mesures
+                        WHERE maven_key=:maven_key
+                        ORDER BY date_enregistrement DESC LIMIT 1";
+                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $conn->bindValue(':maven_key', $map['maven_key']);
                 $mesures=$conn->executeQuery()->fetchAllAssociative();
-            } else {
-                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-            }
+            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+            $this->getEntityManager()->getConnection()->rollBack();
+            return ['code'=>500, 'erreur'=> $e->getCode()];
         }
-        return ['mode'=>$mode, 'code'=>200, 'mesures'=>$mesures, 'erreur'=>''];
+        return ['code'=>200, 'mesures'=>$mesures, 'erreur'=>''];
     }
 
 }
