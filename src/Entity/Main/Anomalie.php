@@ -15,6 +15,7 @@ namespace App\Entity\Main;
 
 use App\Repository\Main\AnomalieRepository;
 use Doctrine\DBAL\Types\Types;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AnomalieRepository::class)]
@@ -26,72 +27,100 @@ class Anomalie
     private $id;
 
     #[ORM\Column(type: Types::STRING, length: 128)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $mavenKey;
 
     #[ORM\Column(type: Types::STRING, length: 128)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $projectName;
 
     #[ORM\Column(type: Types::INTEGER)]
+    #[Assert\NotNull]
     private $anomalieTotal;
 
     #[ORM\Column(type: Types::INTEGER)]
+    #[Assert\NotNull]
     private $detteMinute;
 
     #[ORM\Column(type: Types::INTEGER)]
+    #[Assert\NotNull]
     private $detteReliabilityMinute;
 
     #[ORM\Column(type: Types::INTEGER)]
+    #[Assert\NotNull]
     private $detteVulnerabilityMinute;
 
     #[ORM\Column(type: Types::INTEGER)]
+    #[Assert\NotNull]
     private $detteCodeSmellMinute;
 
     #[ORM\Column(type: Types::STRING, length: 32)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $detteReliability;
 
     #[ORM\Column(type: Types::STRING, length: 32)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $detteVulnerability;
 
     #[ORM\Column(type: Types::STRING, length: 32)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $dette;
 
     #[ORM\Column(type: Types::STRING, length: 32)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $detteCodeSmell;
 
     #[ORM\Column(type: Types::INTEGER)]
+    #[Assert\NotNull]
     private $frontend;
 
     #[ORM\Column(type: Types::INTEGER)]
+    #[Assert\NotNull]
     private $backend;
 
     #[ORM\Column(type: Types::INTEGER)]
+    #[Assert\NotNull]
     private $autre;
 
     #[ORM\Column(type: Types::INTEGER)]
-    private $blocker;
 
+    private $blocker;
+    #[Assert\NotNull]
     #[ORM\Column(type: Types::INTEGER)]
     private $critical;
 
     #[ORM\Column(type: Types::INTEGER)]
+    #[Assert\NotNull]
     private $major;
 
     #[ORM\Column(type: Types::INTEGER)]
+    #[Assert\NotNull]
     private $info;
 
     #[ORM\Column(type: Types::INTEGER)]
+    #[Assert\NotNull]
     private $minor;
 
     #[ORM\Column(type: Types::INTEGER)]
+    #[Assert\NotNull]
     private $bug;
 
     #[ORM\Column(type: Types::INTEGER)]
+    #[Assert\NotNull]
     private $vulnerability;
 
     #[ORM\Column(type: Types::INTEGER)]
+    #[Assert\NotNull]
     private $codeSmell;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Assert\NotNull]
     private $dateEnregistrement;
 
     /**
