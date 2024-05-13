@@ -2,7 +2,7 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\Main\Portefeuille;
+use App\Entity\Portefeuille;
 
 use Doctrine\ORM\EntityManagerInterface;
 

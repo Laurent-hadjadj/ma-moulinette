@@ -24,7 +24,7 @@ use DateTime;
 use DateTimeZone;
 
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Main\Utilisateur;
+use App\Entity\Utilisateur;
 
 use App\Form\RegistrationFormType;
 
