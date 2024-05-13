@@ -1,7 +1,7 @@
 BEGIN;
 
--- Insertion des versions dans your_schema.ma_moulinette avec les champs correctement ordonnés
-INSERT INTO your_schema.ma_moulinette (id, "version", date_version, date_enregistrement)
+-- Insertion des versions dans le schema ma_moulinette et la table ma_moulinette avec les champs correctement ordonnés
+INSERT INTO ma_moulinette.ma_moulinette (id, "version", date_version, date_enregistrement)
 VALUES
 (0, '1.0.0', '2022-01-04', NOW()),
 (1, '1.1.0', '2022-04-24', NOW()),
@@ -18,7 +18,7 @@ VALUES
 
 
 -- ## Ajout du compte admin
-INSERT INTO your_schema.utilisateur
+INSERT INTO ma_moulinette.utilisateur
 (preference, id, init, courriel, roles, password, prenom, nom, date_enregistrement, actif, avatar, equipe)
 VALUES
 ('{"statut":{"projet":false,"favori":false,"version":false,"bookmark":false},
@@ -26,7 +26,7 @@ VALUES
 '$2y$13$6n72QhYwz.iufebkV.XaAOO4IOm3zOYcfzPUmal.jDTs8/QFq1p4K', 'Admin', '@ma-moulinette', '1980-01-01', true, 'chiffre/01.png', '[]');
 
 -- Insertion pour 'Aurélie PETIT COEUR'
-INSERT INTO your_schema.utilisateur
+INSERT INTO ma_moulinette.utilisateur
 (preference, id, init, courriel, roles, password, prenom, nom, date_enregistrement, actif, avatar, equipe)
 VALUES
 ('{"statut":{"projet":false,"favori":false,"version":false,"bookmark":false},
@@ -34,7 +34,7 @@ VALUES
 '$2y$13$HMk1rgFp5OiveduUd.dNXeaxq1y/HiActAv3hiMpAFCNsCjNHIFya', 'Aurélie', 'PETIT COEUR', NOW(), false, 'fille-1/05.png', '[]');
 
 -- Insertion pour 'Emma VAN DE BERG'
-INSERT INTO your_schema.utilisateur
+INSERT INTO ma_moulinette.utilisateur
 (preference, id, init, courriel, roles, password, prenom, nom, date_enregistrement, actif, avatar, equipe)
 VALUES
 ('{"statut":{"projet":false,"favori":false,"version":false,"bookmark":false},
@@ -42,7 +42,7 @@ VALUES
 '$2y$13$BrmmLZ3WiFwZcOllwh9zNOrjBRH9RSLEdLCW2y8by5CFX5zS.b1MG', 'Emma', 'VAN DE BERG', NOW(), false, 'fille-2/03.png', '[]');
 
 -- Insertion pour 'Nathan Jones'
-INSERT INTO your_schema.utilisateur
+INSERT INTO ma_moulinette.utilisateur
 (preference, id, init, courriel, roles, password, prenom, nom, date_enregistrement, actif, avatar, equipe)
 VALUES
 ('{"statut":{"projet":false,"favori":false,"version":false,"bookmark":false},
@@ -50,7 +50,7 @@ VALUES
 '$2y$13$hwX0QJOw8fSgjiBq1CL/FuJsf4miOeLJRBw8jzt1WrsV/qLR.DxN.', 'Nathan', 'Jones', NOW(), false, 'garcon-1/05.png', '[]');
 
 -- Insertion pour 'Josh LIBERMAN'
-INSERT INTO your_schema.utilisateur
+INSERT INTO ma_moulinette.utilisateur
 (preference, id, init, courriel, roles, password, prenom, nom, date_enregistrement, actif, avatar, equipe)
 VALUES
 ('{"statut":{"projet":false,"favori":false,"version":false,"bookmark":false},
@@ -59,7 +59,7 @@ VALUES
 
 
 -- ## Ajout de l'équipe par défaut
-INSERT INTO your_schema.equipe (id, titre, description, date_enregistrement)
+INSERT INTO ma_moulinette.equipe (id, titre, description, date_enregistrement)
 VALUES (1, '["AUCUNE"]', 'Personne ne m''aime !', '1980-01-01 00:00:00');
 
 COMMIT;
