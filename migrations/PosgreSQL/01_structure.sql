@@ -1,11 +1,13 @@
--- Remplacez 'ma_moulinette' pour le nom du schema et du role.
--- Remplacez 'db_password' par un mot de passe sécurisé
+/*
+####################################################
+##                                                ##
+##         Création des tables et des objets      ##
+##               V1.0.0 - 14/05/2024              ##
+##                                                ##
+####################################################*/
 
 -- Création du schema
-CREATE SCHEMA ma_moulinette;
-
--- Création d'un rôle
-CREATE ROLE ma_moulinette LOGIN PASSWORD 'db_password';
+CREATE SCHEMA IF NOT EXISTS ma_moulinette;
 
 -- Création des tables :
 
