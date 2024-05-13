@@ -5,10 +5,10 @@ namespace App\Controller\Admin;
 use Symfony\Component\Routing\Annotation\Route;
 
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Main\Utilisateur;
-use App\Entity\Main\Equipe;
-use App\Entity\Main\Portefeuille;
-use App\Entity\Main\Batch;
+use App\Entity\Utilisateur;
+use App\Entity\Equipe;
+use App\Entity\Portefeuille;
+use App\Entity\Batch;
 use PDO;
 
 use App\Service\Client;

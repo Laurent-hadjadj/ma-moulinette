@@ -2,7 +2,7 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\Main\Properties;
+use App\Entity\Properties;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 

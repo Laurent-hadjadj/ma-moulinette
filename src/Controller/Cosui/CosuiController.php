@@ -25,7 +25,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Entity\Secondary\Repartition;
-use App\Entity\Main\Historique;
+use App\Entity\Historique;
 
 class CosuiController extends AbstractController
 {

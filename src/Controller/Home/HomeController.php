@@ -30,11 +30,11 @@ use Psr\Log\LoggerInterface;
 
 /** Accès aux tables SLQLite*/
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Main\ListeProjet;
-use App\Entity\Main\Profiles;
-use App\Entity\Main\Properties;
-use App\Entity\Main\Historique;
-use App\Entity\Main\MaMoulinette;
+use App\Entity\ListeProjet;
+use App\Entity\Profiles;
+use App\Entity\Properties;
+use App\Entity\Historique;
+use App\Entity\MaMoulinette;
 
 /** API */
 use Symfony\Component\HttpFoundation\JsonResponse;

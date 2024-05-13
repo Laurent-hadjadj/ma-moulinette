@@ -25,9 +25,9 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Translation\TranslatableMessage;
 
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Main\Equipe;
-use App\Entity\Main\Portefeuille;
-use App\Entity\Main\Utilisateur;
+use App\Entity\Equipe;
+use App\Entity\Portefeuille;
+use App\Entity\Utilisateur;
 
 final class EasyAdminListener implements EventSubscriberInterface
 {
