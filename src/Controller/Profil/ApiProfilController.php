@@ -124,7 +124,7 @@ class ApiProfilController extends AbstractController
             $profils->setKey($profil['key']);
             $profils->setName($profil['name']);
             $profils->setLanguageName($profil['languageName']);
-            $profils->setIsDefault($profil['isDefault']);
+            $profils->setReferentielDefault($profil['referentielDefault']);
             $profils->setActiveRuleCount($profil['activeRuleCount']);
             $rulesDate = new DateTime($profil['rulesUpdatedAt']);
             $profils->setRulesUpdateAt($rulesDate);
@@ -385,14 +385,14 @@ class ApiProfilController extends AbstractController
 
 
       /** On teste si la clé est valide */
-        if ($data === null || !property_exists($data, 'mode')) {
+        if ($data === null) {
         return $response->setData(['data'=>$data,'code'=>400, Response::HTTP_BAD_REQUEST]);
         }
 
         /** On récupère la liste des profiles pas actifs */
-        $isDefault = '0';
-        $request=$profilesEntity->selectProfiles($data->mode,$isDefault,$langage);
-        $compte=$profilesEntity->countProfiles($data->mode,$isDefault,$langage);
+        $referentielDefault = '0';
+        $request=$profilesEntity->selectProfiles($referentielDefault,$langage);
+        $compte=$profilesEntity->countProfiles($referentielDefault,$langage);
 
         $response = new JsonResponse();
         return $response->setData([

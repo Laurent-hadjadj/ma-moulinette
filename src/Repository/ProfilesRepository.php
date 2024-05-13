@@ -39,13 +39,13 @@ class ProfilesRepository extends ServiceEntityRepository
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function countProfiles($isDefault='1', $langage = null): array
+    public function countProfiles($referentielDefault='1', $langage = null): array
     {
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-                $sql = "SELECT COUNT(*) AS total
+                $sql = " SELECT COUNT(*) AS total
                         FROM profiles
-                        WHERE referentiel_default = ".$isDefault;
+                        WHERE referentiel_default = ".$referentielDefault;
                 if ($langage !== null ){
                     $sql .= " AND language_name LIKE '".$langage."'";
                 }                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
@@ -68,7 +68,7 @@ class ProfilesRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectProfiles($isDefault='1', $langage = null):array
+    public function selectProfiles($referentielDefault='1', $langage = null):array
     {
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
@@ -76,9 +76,9 @@ class ProfilesRepository extends ServiceEntityRepository
                         language_name as langage,
                         active_rule_count as regle,
                         rules_update_at as date,
-                        is_default as actif
+                        referentiel_default as actif
                         FROM profiles
-                        WHERE is_default = ".$isDefault;
+                        WHERE referentiel_default = ".$referentielDefault;
                 if ($langage !== null ){
                     $sql .= " AND language_name LIKE '".$langage."'";
                 }
