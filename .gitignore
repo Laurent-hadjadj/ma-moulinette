@@ -64,13 +64,15 @@ composer.bat
 ###< symfony/phpunit-bridge ###
 
 ###> phpunit/phpunit ###
-/phpunit.xml
+phpunit.xml
+phpunit.xml.dist
 .phpunit.result.cache
 /var/log/test.log
 /.phpunit.cache/
 /reports/
 .env.test
 .env.test.local
+.env.local
 ###< phpunit/phpunit ###
 
 ###> Traces batch ###
