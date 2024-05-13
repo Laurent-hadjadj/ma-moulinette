@@ -26,7 +26,7 @@ use DateTime;
 use DateTimeZone;
 
 // Accès aux tables SLQLite
-use App\Entity\Main\NoSonar;
+use App\Entity\NoSonar;
 
 use Doctrine\ORM\EntityManagerInterface;
 

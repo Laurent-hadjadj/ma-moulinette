@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\Request;
 /** Accès aux tables SLQLite*/
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\Main\UtilisateurRepository;
-use App\Entity\Main\Utilisateur;
+use App\Entity\Utilisateur;
 
 /** API */
 use Symfony\Component\HttpFoundation\JsonResponse;

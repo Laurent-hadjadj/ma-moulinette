@@ -27,7 +27,7 @@ use DateTimeZone;
 
 /** gestion des entity */
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Main\Notes;
+use App\Entity\Notes;
 
 /** Client HTTP */
 use App\Service\Client;

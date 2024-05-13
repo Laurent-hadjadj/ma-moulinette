@@ -32,9 +32,9 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 /** Accès aux tables SLQLite */
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Main\Utilisateur;
-use App\Entity\Main\Historique;
-use App\Entity\Main\InformationProjet;
+use App\Entity\Utilisateur;
+use App\Entity\Historique;
+use App\Entity\InformationProjet;
 
 /** Logger */
 use Psr\Log\LoggerInterface;

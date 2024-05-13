@@ -2,7 +2,7 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\Main\Batch;
+use App\Entity\Batch;
 
 use Doctrine\ORM\EntityManagerInterface;
 
