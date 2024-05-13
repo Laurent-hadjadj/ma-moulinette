@@ -22,8 +22,8 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 /** Accès aux tables SLQLite */
-use App\Entity\Secondary\Repartition;
-use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Repartition;
 
 /** Gestion du temps */
 use DateTime;
@@ -48,11 +48,11 @@ class ApiRepartitionController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function __construct(
-        private ManagerRegistry $doctrine,
-        private LoggerInterface $logger
+        private LoggerInterface $logger,
+        private EntityManagerInterface $em
     ) {
-        $this->doctrine = $doctrine;
         $this->logger = $logger;
+        $this->em = $em;
     }
 
     public static $sonarUrl = "sonar.url";
@@ -304,7 +304,7 @@ class ApiRepartitionController extends AbstractController
                 $issue->setSetup($setup);
                 $issue->setDateEnregistrement($date);
 
-                $manager = $this->doctrine->getManager('secondary');
+                $manager = $this->doctrine->getManager();
                 $manager->persist($issue);
 
                 $manager->flush();
@@ -349,12 +349,7 @@ class ApiRepartitionController extends AbstractController
 
         /** On surprime de la table historique le projet */
         $sql = "DELETE FROM repartition WHERE maven_key='$mavenKey'";
-        $conn = \Doctrine\DBAL\DriverManager::getConnection(['url' => $this->getParameter('sqlite.secondary.path')]);
-            try {
-                $conn->prepare($sql)->executeQuery();
-            } catch (\Doctrine\DBAL\Exception $e) {
-                return $response->setData(["code" => $e->getCode(), Response::HTTP_OK]);
-            }
+        $this->em->getConnection()->prepare($sql)->executeStatement();
         return $response->setData(["code" => "OK", Response::HTTP_OK]);
     }
 
@@ -393,7 +388,7 @@ class ApiRepartitionController extends AbstractController
 
         /** On récupère la liste des bugs */
         $liste = $this->doctrine
-            ->getManager('secondary')
+            ->getManager()
             ->getRepository(Repartition::class)
             ->findBy(
                 [
