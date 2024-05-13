@@ -11,59 +11,108 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
-namespace App\Entity\Main;
+namespace App\Entity;
 
-use App\Repository\Main\MesuresRepository;
+use App\Repository\MesuresRepository;
 use Doctrine\DBAL\Types\Types;
-use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 #[ORM\Entity(repositoryClass: MesuresRepository::class)]
 class Mesures
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Identifiant unique pour chaque mesure']
+    )]
     private $id;
 
-    #[ORM\Column(type: Types::STRING, length: 128)]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 255,
+        nullable: false,
+        options: ['comment' => 'Clé Maven du projet']
+    )]
     #[Assert\NotBlank]
+    #[Assert\Length(max: 255)]
     private $mavenKey;
 
-    #[ORM\Column(type: Types::STRING, length: 128)]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 128,
+        nullable: false,
+        options: ['comment' => 'Nom du projet']
+    )]
     #[Assert\NotBlank]
+    #[Assert\Length(max: 128)]
     private $projectName;
 
-    #[ORM\Column(type: Types::INTEGER)]
-    #[Assert\NotBlank]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Nombre total de lignes du projet']
+    )]
+    #[Assert\NotNull]
     private $lines;
 
-    #[ORM\Column(type: Types::INTEGER)]
-    #[Assert\NotBlank]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Lignes de code non commentées']
+    )]
+    #[Assert\NotNull]
     private $ncloc;
 
-    #[ORM\Column(type: Types::FLOAT)]
-    #[Assert\NotBlank]
+    #[ORM\Column(
+        type: Types::FLOAT,
+        nullable: false,
+        options: ['comment' => 'Pourcentage de couverture par les tests']
+    )]
+    #[Assert\NotNull]
     private $coverage;
 
-    #[ORM\Column(type: Types::FLOAT)]
-    #[Assert\NotBlank]
+    #[ORM\Column(
+        type: Types::FLOAT,
+        nullable: false,
+        options: ['comment' => 'Ratio de dette technique (SQALE)']
+    )]
+    #[Assert\NotNull]
     private $sqaleDebtRatio;
 
-    #[ORM\Column(type: Types::FLOAT)]
-    #[Assert\NotBlank]
+    #[ORM\Column(
+        type: Types::FLOAT,
+        nullable: false,
+        options: ['comment' => 'Densité de duplication du code']
+    )]
+    #[Assert\NotNull]
     private $duplicationDensity;
 
-    #[ORM\Column(type: Types::INTEGER)]
-    #[Assert\NotBlank]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Nombre total de tests']
+    )]
+    #[Assert\NotNull]
     private $tests;
 
-    #[ORM\Column(type: Types::INTEGER)]
-    #[Assert\NotBlank]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Nombre total de problèmes identifiés']
+    )]
+    #[Assert\NotNull]
     private $issues;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Assert\NotBlank]
+    #[ORM\Column(
+        type: Types::DATETIME_MUTABLE,
+        nullable: false,
+        options: ['comment' => 'Date d\'enregistrement de la mesure']
+    )]
+    #[Assert\NotNull]
     private $dateEnregistrement;
 
     /**

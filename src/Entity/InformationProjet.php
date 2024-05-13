@@ -11,43 +11,91 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
-namespace App\Entity\Main;
+namespace App\Entity;
 
-use App\Repository\Main\InformationProjetRepository;
-use Symfony\Component\Validator\Constraints as Assert;
+use App\Repository\InformationProjetRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: InformationProjetRepository::class)]
 class InformationProjet
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Identifiant unique pour chaque instance de InformationProjet']
+    )]
     private $id;
 
-    #[ORM\Column(type: Types::STRING, length: 128)]
-    #[Assert\NotBlank]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 255,
+        nullable: false,
+        options: ['comment' => 'Clé Maven du projet']
+    )]
+    #[Assert\NotBlank(message: "La clé Maven ne peut pas être vide.")]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "La clé Maven ne doit pas dépasser 128 caractères."
+    )]
     private $mavenKey;
 
-    #[ORM\Column(type: Types::STRING, length: 32)]
-    #[Assert\NotBlank]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 32,
+        nullable: false,
+        options: ['comment' => 'Clé d\'analyse du projet']
+    )]
+    #[Assert\NotBlank(message: "La clé d'analyse ne peut pas être vide.")]
+    #[Assert\Length(
+        max: 32,
+        maxMessage: "La clé d'analyse ne doit pas dépasser 32 caractères."
+    )]
     private $analyseKey;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Assert\NotBlank]
+    #[ORM\Column(
+        type: Types::DATETIME_MUTABLE,
+        nullable: false,
+        options: ['comment' => 'Date de l\'analyse du projet']
+    )]
+    #[Assert\NotNull(message: "La date de l'analyse ne peut pas être nulle.")]
     private $date;
 
-    #[ORM\Column(type: Types::STRING, length: 32)]
-    #[Assert\NotBlank]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 32,
+        nullable: false,
+        options: ['comment' => 'Version du projet lors de l\'analyse']
+    )]
+    #[Assert\NotBlank(message: "La version du projet ne peut pas être vide.")]
+    #[Assert\Length(
+        max: 32,
+        maxMessage: "La version du projet ne doit pas dépasser 32 caractères."
+    )]
     private $projectVersion;
 
-    #[ORM\Column(type: Types::STRING, length: 32)]
-    #[Assert\NotBlank]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 32,
+        nullable: false,
+        options: ['comment' => 'Type d\'analyse effectuée']
+    )]
+    #[Assert\NotBlank(message: "Le type d'analyse ne peut pas être vide.")]
+    #[Assert\Length(
+        max: 32,
+        maxMessage: "Le type d'analyse ne doit pas dépasser 32 caractères."
+    )]
     private $type;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Assert\NotBlank]
+    #[ORM\Column(
+        type: Types::DATETIME_MUTABLE,
+        nullable: false,
+        options: ['comment' => 'Date d\'enregistrement de l\'information du projet']
+    )]
+    #[Assert\NotNull(message: "La date d'enregistrement ne peut pas être nulle.")]
     private $dateEnregistrement;
 
     /**
