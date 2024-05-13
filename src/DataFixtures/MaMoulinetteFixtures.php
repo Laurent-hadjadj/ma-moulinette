@@ -2,7 +2,7 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\Main\MaMoulinette;
+use App\Entity\MaMoulinette;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 

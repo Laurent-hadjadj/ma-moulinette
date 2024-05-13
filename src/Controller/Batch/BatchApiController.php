@@ -27,14 +27,14 @@ use DateTimeZone;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 
-use App\Entity\Main\InformationProjet;
-use App\Entity\Main\NoSonar;
-use App\Entity\Main\Mesures;
-use App\Entity\Main\Anomalie;
-use App\Entity\Main\AnomalieDetails;
-use App\Entity\Main\Hotspots;
-use App\Entity\Main\HotspotOwasp;
-use App\Entity\Main\Historique;
+use App\Entity\InformationProjet;
+use App\Entity\NoSonar;
+use App\Entity\Mesures;
+use App\Entity\Anomalie;
+use App\Entity\AnomalieDetails;
+use App\Entity\Hotspots;
+use App\Entity\HotspotOwasp;
+use App\Entity\Historique;
 
 /** Client HTTP */
 use App\Service\Client;

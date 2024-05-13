@@ -2,7 +2,7 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\Main\Portefeuille;
+use App\Entity\Portefeuille;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
