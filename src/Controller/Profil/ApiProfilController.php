@@ -30,9 +30,9 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 /** Accès aux tables SLQLite */
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Main\Properties;
-use App\Entity\Main\Profiles;
-use App\Entity\Main\ProfilesHistorique;
+use App\Entity\Properties;
+use App\Entity\Profiles;
+use App\Entity\ProfilesHistorique;
 
 /** Client HTTP */
 use App\Service\Client;

@@ -26,10 +26,10 @@ use DateTime;
 use DateTimeZone;
 
 // Accès aux tables SLQLite
-use App\Entity\Main\Hotspots;
-use App\Entity\Main\HotspotOwasp;
-use App\Entity\Main\HotspotDetails;
-use App\Entity\Main\InformationProjet;
+use App\Entity\Hotspots;
+use App\Entity\HotspotOwasp;
+use App\Entity\HotspotDetails;
+use App\Entity\InformationProjet;
 use Doctrine\ORM\EntityManagerInterface;
 
 /** Logger */

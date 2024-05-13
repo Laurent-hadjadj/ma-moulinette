@@ -23,9 +23,9 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 // Accès aux tables SLQLite
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Main\Owasp;
-use App\Entity\Main\HotspotOwasp;
-use App\Entity\Main\HotspotDetails;
+use App\Entity\Owasp;
+use App\Entity\HotspotOwasp;
+use App\Entity\HotspotDetails;
 
 
 

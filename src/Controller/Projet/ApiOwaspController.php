@@ -27,8 +27,8 @@ use DateTimeZone;
 
 // Accès aux tables SLQLite
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Main\Owasp;
-use App\Entity\Main\InformationProjet;
+use App\Entity\Owasp;
+use App\Entity\InformationProjet;
 
 /** Logger */
 use Psr\Log\LoggerInterface;

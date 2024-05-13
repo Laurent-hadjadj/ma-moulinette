@@ -26,14 +26,14 @@ use Symfony\Bundle\SecurityBundle\Security;
 
 // Accès aux tables SLQLite
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Main\InformationProjet;
-use App\Entity\Main\Anomalie;
-use App\Entity\Main\AnomalieDetails;
-use App\Entity\Main\Mesures;
-use App\Entity\Main\NoSonar;
-use App\Entity\Main\Hotspots;
-use App\Entity\Main\Notes;
-use App\Entity\Main\Todo;
+use App\Entity\InformationProjet;
+use App\Entity\Anomalie;
+use App\Entity\AnomalieDetails;
+use App\Entity\Mesures;
+use App\Entity\NoSonar;
+use App\Entity\Hotspots;
+use App\Entity\Notes;
+use App\Entity\Todo;
 
 /**
  * [Description ApiPeintureController]

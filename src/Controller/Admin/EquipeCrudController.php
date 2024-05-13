@@ -2,7 +2,7 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\Main\Equipe;
+use App\Entity\Equipe;
 
 use Doctrine\ORM\EntityManagerInterface;
 

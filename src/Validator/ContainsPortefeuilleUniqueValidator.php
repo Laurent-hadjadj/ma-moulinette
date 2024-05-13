@@ -18,7 +18,7 @@ use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
 
-use App\Entity\Main\Portefeuille;
+use App\Entity\Portefeuille;
 use Doctrine\ORM\EntityManagerInterface;
 
 class ContainsPortefeuilleUniqueValidator extends ConstraintValidator

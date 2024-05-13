@@ -27,7 +27,7 @@ use DateTimeZone;
 
 // Accès aux tables SLQLite
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Main\InformationProjet;
+use App\Entity\InformationProjet;
 
 /** Client HTTP */
 use App\Service\Client;

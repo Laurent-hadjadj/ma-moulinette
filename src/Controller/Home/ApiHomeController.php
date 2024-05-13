@@ -23,9 +23,9 @@ use DateTimeZone;
 
 /** Accès aux tables SLQLite */
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Main\Profiles;
-use App\Entity\Main\ListeProjet;
-use App\Entity\Main\Properties;
+use App\Entity\Profiles;
+use App\Entity\ListeProjet;
+use App\Entity\Properties;
 
 /** Gestion de accès aux API */
 use Symfony\Component\HttpFoundation\Request;

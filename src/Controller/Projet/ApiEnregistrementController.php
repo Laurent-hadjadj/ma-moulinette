@@ -25,7 +25,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use DateTime;
 use DateTimeZone;
 
-use App\Entity\Main\Historique;
+use App\Entity\Historique;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
