@@ -1,47 +1,61 @@
-
 # Guide Complet de la Migration de la Base de Données SQLite vers PostgreSQL
+
+![Ma-Moulinette](/documentation/ressources/home-000.jpg)
 
 Ce guide détaille les étapes nécessaires pour configurer une base de données PostgreSQL en migrant les données depuis SQLite. Il couvre la création du schéma, des tables, et l'insertion des données.
 
 ## Prérequis
 
-- PostgreSQL installé sur votre système.
-- Droits d'administrateur pour créer des schémas, des rôles et insérer des données.
-- Accès au terminal ou à un client SQL capable de se connecter à PostgreSQL.
+- [x] PostgreSQL installé sur un serveur.
+- [x] Droits d'administrateur pour créer des schémas, des rôles et insérer des données.
+- [x] Accès au terminal ou à un client SQL capable de se connecter à PostgreSQL.
 
 ## Préparation des Scripts SQL
 
-Vous utiliserez deux scripts principaux : `01_migration_postgresql.sql` pour la structure de la base de données et `02_fixtures_postgres.sql` pour les données initiales. Modifiez les noms de schéma et de rôle dans ces scripts selon vos besoins avant de les exécuter.
+Trois scripts sont nécessires :
+
+1. `01_migration_postgre.sql` pour la structure de la base de données ;
+2. `02_fixtures_postgre.sql`pour les données initiales ;
+3. `03_grant_privileges_postgre.sql` pour données les droits à utilisateurs à la base de données ;
+
+> Important !
+
+- [ ] Le nom de la base, su schema et du role sont fixé par défaut à `ma_moulinette`.
+- [ ] Le mot de passe est par défaut : `votre_secure_password`. Vous devez le changer.
 
 ### Script de Création de Schéma et de Tables
 
 ```sql
--- Exemple de contenu pour `01_migration_postgresql.sql`
--- Remplacez 'your_schema', 'your_role' et 'your_secure_password' par les valeurs appropriées
+-- Remplacez 'ma_moulinette' pour le nom du schema et du role.
+-- Remplacez 'votre_secure_password' par un mot de passe sécurisé
 
-BEGIN;
+-- Création du schema
+CREATE SCHEMA ma_moulinette;
 
--- Création du schéma
-CREATE SCHEMA your_schema AUTHORIZATION your_role;
+-- Création d'un rôle
+CREATE ROLE ma_moulinette LOGIN PASSWORD 'votre_secure_password';
 
--- Création d'un rôle avec mot de passe
-CREATE ROLE your_role WITH LOGIN PASSWORD 'your_secure_password';
+-- Création des tables :
 
--- Création des tables
-CREATE TABLE your_schema.nom_table (
-    id SERIAL PRIMARY KEY,
-    nom VARCHAR(255) NOT NULL,
-    date_creation TIMESTAMP DEFAULT NOW()
+-- Création de la table activite
+
+CREATE TABLE ma_moulinette.activite (
+  id INTEGER NOT NULL, -- Identifiant unique de l'activité
+  maven_key varchar(255) NOT NULL, -- Clé Maven unique identifiant le projet
+  project_name varchar(64) NOT NULL, -- Nom du projet associé à l'activité
+  analyse_id varchar(26) NOT NULL, -- Identifiant de l'analyse
+  status varchar(16) NOT NULL, -- Statut de l'activité
+  submitter_login varchar(32) NOT NULL, -- Login de l'utilisateur soumettant l'activité
+  executed_at timestamp(0) NOT NULL, -- Date et heure d'exécution de l'activité
+  CONSTRAINT activite_pkey PRIMARY KEY (id)
 );
-
-COMMIT;
 ```
 
 ## Exécution des Scripts SQL
 
 ### Connexion à PostgreSQL et Exécution du Script de Création
 
-Pour exécuter vos scripts SQL, utilisez la commande suivante, en adaptant les paramètres à votre environnement :
+Pour exécuter les scripts SQL, utilisez la commande suivante, en adaptant les paramètres à votre environnement :
 
 ```bash
 psql -h [adresse_serveur] -U [nom_utilisateur] -w -f [chemin_complet_du_script]
@@ -54,7 +68,7 @@ psql -h [adresse_serveur] -U [nom_utilisateur] -w -f [chemin_complet_du_script]
 Exécutez d'abord le script de création de schéma et de tables :
 
 ```bash
-psql -h [adresse_serveur] -U [nom_utilisateur] -w -f c:\chemin\01_migration_postgresql.sql
+psql -h [adresse_serveur] -U [nom_utilisateur] -w -f /chemin/01_migration_postgre.sql
 ```
 
 ### Exécution du Script d'Insertion des Données
@@ -62,7 +76,7 @@ psql -h [adresse_serveur] -U [nom_utilisateur] -w -f c:\chemin\01_migration_post
 Après avoir créé les structures de la base de données, exécutez le script d'insertion des données :
 
 ```bash
-psql -h [adresse_serveur] -U [nom_utilisateur] -w -f c:\chemin\02_fixtures_postgres.sql
+psql -h [adresse_serveur] -U [nom_utilisateur] -w -f /chemin/02_fixtures_postgre.sql
 ```
 
 ### Exécution du Script d'Attribution des Privilèges
@@ -70,7 +84,7 @@ psql -h [adresse_serveur] -U [nom_utilisateur] -w -f c:\chemin\02_fixtures_postg
 Ensuite, assurez-vous que le rôle a les privilèges nécessaires pour opérer sur la base de données :
 
 ```bash
-psql -h [adresse_serveur] -U [nom_utilisateur] -w -f c:\\chemin\\03_grant_privileges.sql
+psql -h [adresse_serveur] -U [nom_utilisateur] -w -f /chemin/03_grant_privileges_postgre.sql
 ```
 
 ## Vérification des Données
@@ -78,7 +92,7 @@ psql -h [adresse_serveur] -U [nom_utilisateur] -w -f c:\\chemin\\03_grant_privil
 Pour confirmer que tout a été correctement configuré :
 
 ```bash
-psql -h [adresse_serveur] -U [nom_utilisateur] -d [nom_base_de_données] -c "SELECT * FROM your_schema.nom_table;"
+psql -h [adresse_serveur] -U [nom_utilisateur] -d [nom_base_de_données] -c "SELECT * FROM nom_base_de_données.ma_moulinette;"
 ```
 
 - **[nom_base_de_données]**: Remplacez par le nom de votre base de données pour vérifier les résultats.
@@ -89,11 +103,11 @@ Après avoir effectué la migration de vos scripts SQL, il est également essent
 
 ## Modification du .env et .env-prod
 
-Pour les environnements de développement et de production, modifiez vos fichiers .env et .env-prod comme suit :
+Pour les environnements de développement et de production, modifiez vos fichiers `.env` et `.env-prod` comme suit :
 
 Commentez ou supprimez les anciennes configurations SQLite.
 
-# Exemple de lignes à commenter ou supprimer
+### Exemple de lignes à commenter ou supprimer
 
 ```bash
 #DATABASE_DEFAULT_URL="sqlite:///%kernel.project_dir%/var/data.db"
@@ -103,7 +117,7 @@ Commentez ou supprimez les anciennes configurations SQLite.
 
 Ajoutez la nouvelle configuration pour PostgreSQL
 
-ans .env (pour le développement) et .env-prod (pour la production), ajoutez ou modifiez la configuration de la base de données :
+Dans `.env` (pour le développement) et `.env-prod` (pour la production), ajoutez ou modifiez la configuration de la base de données :
 
 ```bash
 DATABASE_URL="postgresql://<username>:<password>@<hostname>:<port>/<database>?serverVersion=<server_version>&charset=utf8"
@@ -111,4 +125,4 @@ DATABASE_URL="postgresql://<username>:<password>@<hostname>:<port>/<database>?se
 
 ## Conclusion
 
-Suivez ces étapes pour configurer et peupler votre base de données PostgreSQL après une migration de SQLite. Ce guide vous aidera à préparer, exécuter et vérifier vos scripts SQL pour assurer une transition sans erreur.
+Suivez ces étapes pour configurer et peupler la base de données PostgreSQL après une migration de SQLite. Ce guide vous aidera à préparer, exécuter et vérifier vos scripts SQL pour assurer une transition sans erreur.
