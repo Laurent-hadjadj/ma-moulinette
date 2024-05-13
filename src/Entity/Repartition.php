@@ -11,40 +11,85 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
-namespace App\Entity\Secondary;
+namespace App\Entity;
 
-use App\Repository\Secondary\RepartitionRepository;
+use App\Repository\RepartitionRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 #[ORM\Entity(repositoryClass: RepartitionRepository::class)]
 class Repartition
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private $id;
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'ID unique pour chaque répartition']
+    )]
+    private ?int $id = null;
 
-    #[ORM\Column(type: 'string', length: 128)]
-    private $mavenKey;
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 128,
+        nullable: false,
+        options: ['comment' => 'Clé Maven identifiant la répartition']
+    )]
+    #[Assert\NotBlank]
+    private string $mavenKey;
 
-    #[ORM\Column(type: 'string', length: 128)]
-    private $name;
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 128,
+        nullable: false,
+        options: ['comment' => 'Nom de la répartition']
+    )]
+    #[Assert\NotBlank]
+    private string $name;
 
-    #[ORM\Column(type: 'text')]
-    private $component;
+    #[ORM\Column(
+        type: Types::TEXT,
+        nullable: false,
+        options: ['comment' => 'Détails du composant concerné par la répartition']
+    )]
+    #[Assert\NotBlank]
+    private string $component;
 
-    #[ORM\Column(type: 'string', length: 16)]
-    private $type;
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 16,
+        nullable: false,
+        options: ['comment' => 'Type de la répartition']
+    )]
+    #[Assert\NotBlank]
+    private string $type;
 
-    #[ORM\Column(type: 'string', length: 8)]
-    private $severity;
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 8,
+        nullable: false,
+        options: ['comment' => 'Gravité de la répartition']
+    )]
+    #[Assert\NotBlank]
+    private string $severity;
 
-    #[ORM\Column(type: 'integer')]
-    private $setup;
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Paramètre de configuration pour la répartition']
+    )]
+    #[Assert\NotNull]
+    private int $setup;
 
-    #[ORM\Column(type: 'datetime')]
-    private $dateEnregistrement;
+    #[ORM\Column(
+        type: Types::DATETIME_MUTABLE,
+        nullable: false,
+        options: ['comment' => 'Date d\'enregistrement de la répartition dans le système']
+    )]
+    #[Assert\NotNull]
+    private \DateTimeInterface $dateEnregistrement;
 
     /**
      * [Description for getId]

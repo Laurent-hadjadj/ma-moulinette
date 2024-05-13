@@ -11,42 +11,112 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
-namespace App\Entity\Main;
+namespace App\Entity;
 
-use App\Repository\Main\HotspotOwaspRepository;
+use App\Repository\HotspotsRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: HotspotOwaspRepository::class)]
-class HotspotOwasp
+#[ORM\Entity(repositoryClass: HotspotsRepository::class)]
+class Hotspots
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Identifiant unique pour chaque hotspot']
+    )]
     private $id;
 
-    #[ORM\Column(type: Types::STRING, length: 128)]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 255,
+        nullable: false,
+        options: ['comment' => 'Clé Maven du hotspot']
+    )]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "La clé Maven ne doit pas dépasser 128 caractères."
+    )]
     private $mavenKey;
 
-    #[ORM\Column(type: Types::STRING, length: 32)]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 32,
+        nullable: false,
+        options: ['comment' => 'Version du hotspot']
+    )]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        max: 32,
+        maxMessage: "La version ne doit pas dépasser 32 caractères."
+    )]
     private $version;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(
+        type: Types::DATETIME_MUTABLE,
+        nullable: false,
+        options: ['comment' => 'Date de la version du hotspot']
+    )]
+    #[Assert\NotNull]
     private $dateVersion;
 
-    #[ORM\Column(type: Types::STRING, length: 8)]
-    private $menace;
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 32,
+        nullable: false,
+        options: ['comment' => 'Clé unique du hotspot']
+    )]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        max: 32,
+        maxMessage: "La clé ne doit pas dépasser 32 caractères."
+    )]
+    private $key;
 
-    #[ORM\Column(type: Types::STRING, length: 8)]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 8,
+        nullable: false,
+        options: ['comment' => 'Probabilité de risque du hotspot']
+    )]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        max: 8,
+        maxMessage: "La probabilité ne doit pas dépasser 8 caractères."
+    )]
     private $probability;
 
-    #[ORM\Column(type: Types::STRING, length: 16)]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 16,
+        nullable: false,
+        options: ['comment' => 'Statut du hotspot']
+    )]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        max: 16,
+        maxMessage: "Le statut ne doit pas dépasser 16 caractères."
+    )]
     private $status;
 
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Niveau de risque du hotspot']
+    )]
+    #[Assert\NotNull]
     private $niveau;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(
+        type: Types::DATETIME_MUTABLE,
+        nullable: false,
+        options: ['comment' => 'Date d\'enregistrement du hotspot']
+    )]
+    #[Assert\NotNull]
     private $dateEnregistrement;
 
     /**
@@ -54,8 +124,8 @@ class HotspotOwasp
      *
      * @return int|null
      *
-     * Created at: 02/01/2023, 18:01:11 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * Created at: 02/01/2023, 18:01:47 (Europe/Paris)
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getId(): ?int
@@ -68,8 +138,8 @@ class HotspotOwasp
      *
      * @return string|null
      *
-     * Created at: 02/01/2023, 18:01:13 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * Created at: 02/01/2023, 18:01:49 (Europe/Paris)
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getMavenKey(): ?string
@@ -84,8 +154,8 @@ class HotspotOwasp
      *
      * @return self
      *
-     * Created at: 02/01/2023, 18:01:14 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * Created at: 02/01/2023, 18:01:50 (Europe/Paris)
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setMavenKey(string $mavenKey): self
@@ -160,33 +230,33 @@ class HotspotOwasp
     }
 
     /**
-     * [Description for getMenace]
+     * [Description for getKey]
      *
      * @return string|null
      *
-     * Created at: 02/01/2023, 18:01:16 (Europe/Paris)
+     * Created at: 02/01/2023, 18:01:52 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function getMenace(): ?string
+    public function getKey(): ?string
     {
-        return $this->menace;
+        return $this->key;
     }
 
     /**
-     * [Description for setMenace]
+     * [Description for setKey]
      *
-     * @param string $menace
+     * @param string $key
      *
      * @return self
      *
-     * Created at: 02/01/2023, 18:01:18 (Europe/Paris)
-     * @author   Laurent HADJADJ <laurent_h@me.com>
+     * Created at: 02/01/2023, 18:01:53 (Europe/Paris)
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setMenace(string $menace): self
+    public function setKey(string $key): self
     {
-        $this->menace = $menace;
+        $this->key = $key;
 
         return $this;
     }
@@ -196,7 +266,7 @@ class HotspotOwasp
      *
      * @return string|null
      *
-     * Created at: 02/01/2023, 18:01:19 (Europe/Paris)
+     * Created at: 02/01/2023, 18:01:55 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
@@ -212,8 +282,8 @@ class HotspotOwasp
      *
      * @return self
      *
-     * Created at: 02/01/2023, 18:01:21 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
+     * Created at: 02/01/2023, 18:01:56 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setProbability(string $probability): self
@@ -228,8 +298,8 @@ class HotspotOwasp
      *
      * @return string|null
      *
-     * Created at: 02/01/2023, 18:01:24 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
+     * Created at: 02/01/2023, 18:01:58 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getStatus(): ?string
@@ -244,7 +314,7 @@ class HotspotOwasp
      *
      * @return self
      *
-     * Created at: 02/01/2023, 18:01:25 (Europe/Paris)
+     * Created at: 02/01/2023, 18:01:59 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
@@ -260,7 +330,7 @@ class HotspotOwasp
      *
      * @return int|null
      *
-     * Created at: 02/01/2023, 18:01:27 (Europe/Paris)
+     * Created at: 02/01/2023, 18:02:01 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
@@ -276,7 +346,7 @@ class HotspotOwasp
      *
      * @return self
      *
-     * Created at: 02/01/2023, 18:01:29 (Europe/Paris)
+     * Created at: 02/01/2023, 18:02:03 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
@@ -292,7 +362,7 @@ class HotspotOwasp
      *
      * @return \DateTimeInterface|null
      *
-     * Created at: 02/01/2023, 18:01:32 (Europe/Paris)
+     * Created at: 02/01/2023, 18:02:04 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
@@ -308,7 +378,7 @@ class HotspotOwasp
      *
      * @return self
      *
-     * Created at: 02/01/2023, 18:01:33 (Europe/Paris)
+     * Created at: 02/01/2023, 18:02:06 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */

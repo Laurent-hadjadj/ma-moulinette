@@ -11,9 +11,9 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
-namespace App\Entity\Main;
+namespace App\Entity;
 
-use App\Repository\Main\UtilisateurRepository;
+use App\Repository\UtilisateurRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -60,9 +60,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         )]
     private $avatar;
 
-    /** Honeypot */
-    private $email;
-
     #[ORM\Column(
         type: Types::STRING,
         length: 320,
@@ -78,6 +75,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         nullable: true,
         options: ['comment' => "Liste des rôles"]
         )]
+    #[Assert\NotBlank]
     private $roles = [];
 
     #[ORM\Column(
@@ -85,6 +83,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         nullable: true,
         options: ['comment' => "Liste des équipes"]
         )]
+    #[Assert\NotNull]
     private $equipe = [];
 
     #[ORM\Column(
@@ -101,6 +100,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         nullable: false,
         options: ['default' => 0, 'comment' => "L'utilisateur est déseactivé"]
         )]
+        #[Assert\NotNull]
     private $actif;
 
     # Préférences de l'utilisateur
@@ -109,7 +109,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         nullable: false,
         options: ['comment' => "Préférences de l'utilisateur"]
         )]
-    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $preference = [];
 
     #[ORM\Column(
@@ -117,7 +117,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         nullable: false,
         options: ['comment' => "Indicateur de réinitilisation du mot de passe"]
         )]
-    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $init=0;
 
     #[ORM\Column(
@@ -125,6 +125,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         nullable: true,
         options: ['comment' => "Date de modification"]
         )]
+        #[Assert\NotNull]
     private $dateModification;
 
     #[ORM\Column(
@@ -132,7 +133,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         nullable: false,
         options: ['comment' => "Date de création"]
         )]
-    #[Assert\NotBlank]
+        #[Assert\NotNull]
     private $dateEnregistrement;
 
     public function getId(): ?int
@@ -349,7 +350,8 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function eraseCredentials():void
     {
-        $this->password = null;
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
     }
 
     /**

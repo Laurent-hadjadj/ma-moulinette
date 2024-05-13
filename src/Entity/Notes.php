@@ -11,69 +11,58 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
-namespace App\Entity\Main;
+namespace App\Entity;
 
-use App\Repository\Main\NotesRepository;
+use App\Repository\NotesRepository;
 use Doctrine\DBAL\Types\Types;
-use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: NotesRepository::class)]
 class Notes
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::INTEGER)]
-    private $id;
-
-    #[ORM\Column(type: Types::STRING, length: 128)]
-    #[Assert\NotBlank]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 255,
+        nullable: false,
+        options: ['comment' => 'Clé Maven unique identifiant la note']
+    )]
     private $mavenKey;
 
-    #[ORM\Column(type: Types::STRING, length: 16)]
+    #[ORM\Id]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 16,
+        nullable: false,
+        options: ['comment' => 'Type de la note']
+    )]
     #[Assert\NotBlank]
     private $type;
 
-    #[ORM\Column(type: Types::INTEGER)]
-    #[Assert\NotBlank]
+    #[ORM\Column(
+        type: Types::DATETIME_MUTABLE,
+        nullable: false,
+        options: ['comment' => 'Date de la note']
+    )]
+    #[Assert\NotNull]
+    private $date;
+
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Valeur de la note']
+    )]
+    #[Assert\NotNull]
     private $value;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Assert\NotBlank]
+    #[ORM\Column(
+        type: Types::DATETIME_MUTABLE,
+        nullable: false,
+        options: ['comment' => 'Date d\'enregistrement de la note']
+    )]
+    #[Assert\NotNull]
     private $dateEnregistrement;
-
-    /**
-     * [Description for getId]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 18:04:21 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-
-    /**
-     * [Description for setId]
-     *
-     * @param mixed $id
-     *
-     * @return integer
-     *
-     * Created at: 07/05/2024 10:50:41 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-
-        return $this;
-    }
 
     /**
      * [Description for getMavenKey]
@@ -101,6 +90,20 @@ class Notes
     public function getType(): ?string
     {
         return $this->type;
+    }
+
+    /**
+     * [Description for getDate]
+     *
+     * @return \DateTimeInterface|null
+     *
+     * Created at: 02/01/2023, 18:04:48 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function getDate(): ?\DateTimeInterface
+    {
+        return $this->date;
     }
 
     /**
@@ -174,4 +177,15 @@ class Notes
         return $this;
     }
 
+    /**
+     * Set the value of date
+     *
+     * @return  self
+     */
+    public function setDate($date)
+    {
+        $this->date = $date;
+
+        return $this;
+    }
 }

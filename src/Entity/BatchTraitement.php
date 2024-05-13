@@ -11,53 +11,120 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
-namespace App\Entity\Main;
+namespace App\Entity;
 
-use App\Repository\Main\BatchTraitementRepository;
+use App\Repository\BatchTraitementRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: BatchTraitementRepository::class)]
 class BatchTraitement
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Identifiant unique du traitement']
+    )]
     private $id;
 
-    /** Démarage ? Manuel ou automatique */
-    #[ORM\Column(type: Types::STRING, length: 16, )]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 16,
+        nullable: false,
+        options: ['comment' => 'Mode de démarrage du traitement']
+    )]
+    ##[Assert\Choice(choices: ["Manuel", "Automatique"], message: "Le démarrage doit être 'Manuel' ou 'Automatique'")]
+    #[Assert\NotBlank]
     private $demarrage = "Manuel";
 
-    /** Résultat  */
-    #[ORM\Column(type: 'boolean')]
-    private $resultat = 0;
+    #[ORM\Column(
+        type: 'boolean',
+        nullable: false,
+        options: ['comment' => 'Indique si le traitement a réussi ou échoué']
+    )]
+    #[Assert\Type(
+        type: 'bool',
+        message: "Le résultat doit être un booléen."
+    )]
+    #[Assert\NotNull]
+    private $resultat = false;
 
-    /** Nom du traitement */
-    #[ORM\Column(type: Types::STRING, length: 32)]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 32,
+        nullable: false,
+        options: ['comment' => 'Titre du traitement']
+    )]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        max: 32,
+        maxMessage: "Le titre ne doit pas dépasser 32 caractères."
+    )]
     private $titre;
 
-    /** Nom du portefeuille de projet */
-    #[ORM\Column(type: Types::STRING, length: 32)]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 32,
+        nullable: false,
+        options: ['comment' => 'Nom du portefeuille de projets associé']
+    )]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        max: 32,
+        maxMessage: "Le nom du portefeuille ne doit pas dépasser 32 caractères."
+    )]
     private $portefeuille = "Aucun";
 
-    /** Nombre de projet */
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Nombre de projets traités']
+    )]
+    #[Assert\NotNull]
+    #[Assert\Type(
+        type: 'integer',
+        message: "Le nombre de projets doit être un entier."
+    )]
     private $nombreProjet = 0;
 
-    #[ORM\Column(type: Types::STRING, length: 128)]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 128,
+        nullable: false,
+        options: ['comment' => 'Responsable du traitement']
+    )]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        max: 128,
+        maxMessage: "Le nom du responsable ne doit pas dépasser 128 caractères."
+    )]
     private $responsable;
 
-    /** Debut du traitement */
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[ORM\Column(
+        type: Types::DATETIME_MUTABLE,
+        nullable: true,
+        options: ['comment' => 'Date et heure de début du traitement']
+    )]
+    #[Assert\NotNull]
     private $debutTraitement;
 
-    /** Fin du traitement */
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[ORM\Column(
+        type: Types::DATETIME_MUTABLE,
+        nullable: true,
+        options: ['comment' => 'Date et heure de fin du traitement']
+    )]
+    #[Assert\NotNull]
     private $finTraitement;
 
-    /** Date d'enregistrement */
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(
+        type: Types::DATETIME_MUTABLE,
+        nullable: false,
+        options: ['comment' => 'Date d\'enregistrement du traitement dans le système']
+    )]
+    #[Assert\NotNull]
     private $dateEnregistrement;
 
     /**

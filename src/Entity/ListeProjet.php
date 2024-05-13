@@ -11,39 +11,66 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
-namespace App\Entity\Main;
+namespace App\Entity;
 
-use App\Repository\Main\ListeProjetRepository;
+use App\Repository\ListeProjetRepository;
 use Doctrine\DBAL\Types\Types;
-use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ListeProjetRepository::class)]
 class ListeProjet
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Identifiant unique pour chaque instance de ListeProjet']
+    )]
     private $id;
 
-    #[ORM\Column(type: Types::STRING, length: 128)]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 255,
+        nullable: false,
+        options: ['comment' => 'Clé Maven du projet']
+    )]
     #[Assert\NotBlank]
     private $mavenKey;
 
-    #[ORM\Column(type: Types::STRING, length: 128)]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 128,
+        nullable: false,
+        options: ['comment' => 'Nom du projet']
+    )]
     #[Assert\NotBlank]
     private $name;
 
-    #[ORM\Column(type: Types::JSON)]
-    #[Assert\NotBlank]
-    private $tags = ['Aucun'];
+    #[ORM\Column(
+        type: Types::JSON,
+        nullable: false,
+        options: ['comment' => 'Tags associés au projet sous forme de tableau JSON']
+    )]
+    #[Assert\NotNull]
+    private $tags = [];
 
-    #[ORM\Column(type: Types::STRING, length: 8)]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 8,
+        nullable: false,
+        options: ['comment' => 'Visibilité du projet']
+    )]
     #[Assert\NotBlank]
     private $visibility;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Assert\NotBlank]
+    #[ORM\Column(
+        type: Types::DATETIME_MUTABLE,
+        nullable: false,
+        options: ['comment' => 'Date d\'enregistrement du projet']
+    )]
+    #[Assert\NotNull]
     private $dateEnregistrement;
 
     /**
