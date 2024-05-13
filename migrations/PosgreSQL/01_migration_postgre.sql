@@ -1,11 +1,11 @@
 -- Remplacez 'ma_moulinette' pour le nom du schema et du role.
--- Remplacez 'votre_secure_password' par un mot de passe sécurisé
+-- Remplacez 'db_password' par un mot de passe sécurisé
 
 -- Création du schema
 CREATE SCHEMA ma_moulinette;
 
 -- Création d'un rôle
-CREATE ROLE ma_moulinette LOGIN PASSWORD 'votre_secure_password';
+CREATE ROLE ma_moulinette LOGIN PASSWORD 'db_password';
 
 -- Création des tables :
 
