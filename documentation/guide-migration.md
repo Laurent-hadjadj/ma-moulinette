@@ -21,7 +21,7 @@ Trois scripts sont nécessires :
 > Important !
 
 - [ ] Le nom de la base, su schema et du role sont fixé par défaut à `ma_moulinette`.
-- [ ] Le mot de passe est par défaut : `votre_secure_password`. Vous devez le changer.
+- [ ] Le mot de passe est par défaut : `db_password`. **Vous devez le changer**.
 
 ### Script de Création de Schéma et de Tables
 
