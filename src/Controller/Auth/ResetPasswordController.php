@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 /** Accès aux tables SLQLite*/
 use Doctrine\ORM\EntityManagerInterface;
-use App\Repository\Main\UtilisateurRepository;
+use App\Repository\UtilisateurRepository;
 use App\Entity\Utilisateur;
 
 /** API */
