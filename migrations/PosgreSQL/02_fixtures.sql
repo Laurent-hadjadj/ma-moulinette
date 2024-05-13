@@ -1,3 +1,11 @@
+/*
+####################################################
+##                                                ##
+##         Données d'initialisation du projet     ##
+##               V1.0.0 - 14/05/2024              ##
+##                                                ##
+####################################################*/
+
 BEGIN;
 
 -- Insertion des versions dans le schema ma_moulinette et la table ma_moulinette avec les champs correctement ordonnés
