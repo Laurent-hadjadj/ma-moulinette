@@ -26,8 +26,8 @@ use DateTime;
 use DateTimeZone;
 
 // Accès aux tables SLQLite
-use App\Entity\Main\Anomalie;
-use App\Entity\Main\AnomalieDetails;
+use App\Entity\Anomalie;
+use App\Entity\AnomalieDetails;
 
 use Doctrine\ORM\EntityManagerInterface;
 

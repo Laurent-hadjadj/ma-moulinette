@@ -18,7 +18,7 @@ use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
 
-use App\Entity\Main\Equipe;
+use App\Entity\Equipe;
 use Doctrine\ORM\EntityManagerInterface;
 
 class ContainsEquipeUniqueValidator extends ConstraintValidator

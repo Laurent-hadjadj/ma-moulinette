@@ -36,8 +36,8 @@ use DateTimeZone;
 /** Accès aux tables SLQLite*/
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Main\BatchTraitement;
-//use App\Entity\Main\Historique;
+use App\Entity\BatchTraitement;
+//use App\Entity\Historique;
 
 /** Rotation des logs */
 use Cesargb\Log\Rotation;
@@ -45,7 +45,7 @@ use Cesargb\Log\Exceptions\RotationFailed;
 
 /** Class API Batch */
 use App\Controller\Batch\BatchApiController;
-use App\Entity\Main\Portefeuille;
+use App\Entity\Portefeuille;
 
 /** Client HTTP */
 use App\Service\Client;

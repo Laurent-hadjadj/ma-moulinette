@@ -26,7 +26,7 @@ use DateTime;
 use DateTimeZone;
 
 // Accès aux tables SLQLite
-use App\Entity\Main\Todo;
+use App\Entity\Todo;
 
 use Doctrine\ORM\EntityManagerInterface;
 

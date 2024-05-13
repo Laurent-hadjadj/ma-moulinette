@@ -25,8 +25,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\SecurityBundle\Security;
 
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Main\Utilisateur;
-use App\Entity\Main\ListeProjet;
+use App\Entity\Utilisateur;
+use App\Entity\ListeProjet;
 
 /**
  * [Description ApiProjetController]

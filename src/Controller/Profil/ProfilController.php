@@ -22,7 +22,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 // Accès aux tables SLQLite
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Main\Profiles;
+use App\Entity\Profiles;
 
 class ProfilController extends AbstractController
 {

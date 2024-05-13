@@ -18,7 +18,7 @@ use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
 
-use App\Entity\Main\Batch;
+use App\Entity\Batch;
 use Doctrine\ORM\EntityManagerInterface;
 
 class ContainsBatchUniqueValidator extends ConstraintValidator
