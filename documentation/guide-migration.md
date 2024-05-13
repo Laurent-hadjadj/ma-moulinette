@@ -7,6 +7,7 @@ Ce guide détaille les étapes nécessaires pour configurer une base de données
 ## Prérequis
 
 - [x] PostgreSQL installé sur un serveur.
+- [x] Activer le client PostgreSQL pour php (pdo_pgsql et pgsql).
 - [x] Droits d'administrateur pour créer des schémas, des rôles et insérer des données.
 - [x] Accès au terminal ou à un client SQL capable de se connecter à PostgreSQL.
 
