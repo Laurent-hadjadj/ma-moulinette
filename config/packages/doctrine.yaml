@@ -1,26 +1,19 @@
 ---
 doctrine:
     dbal:
-        default_connection: default
-        connections:
-            default:
-                url: '%env(resolve:DATABASE_URL)%'
-                driver: pdo_pgsql
-                host: 127.0.0.1
-                charset: UTF8
-                server_version: '15'
+        driver: pdo_pgsql
+        url: '%env(resolve:DATABASE_URL)%'
+        charset: UTF8
+        server_version: '15'
     orm:
-        default_entity_manager: default
         auto_generate_proxy_classes: true
-        entity_managers:
-            default:
-                connection: default
-                naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
-                mappings:
-                    Main:
-                        is_bundle: false
-                        type: attributes
-                        dir: '%kernel.project_dir%/src/Entity'
-                        prefix: 'App\Entity'
-                        alias: default
+        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+        auto_mapping: true
+        mappings:
+            App:
+                is_bundle: false
+                type: annotation
+                dir: '%kernel.project_dir%/src/Entity'
+                prefix: 'App\Entity'
+                alias: App
 ...
