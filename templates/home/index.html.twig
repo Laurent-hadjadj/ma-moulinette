@@ -13,197 +13,196 @@
   https://github.com/Laurent-hadjadj/ma-moulinette
   © 2024 - CC BY-SA-NC 4.0
 -->
-<html
-	lang="fr">
+<html	lang="fr">
 
-	{# Chargement de la section HEAD #}
-	<head>
-		<title>{{ title }}</title>
-		{{ include('head.html.twig') }}
-		{% block stylesheets %}
-			{{ encore_entry_link_tags('home') }}
-		{% endblock %}
-	</head>
+  {# Chargement de la section HEAD #}
+  <head>
+    <title>{{ title }}</title>
+    {{ include('head.html.twig') }}
+    {% block stylesheets %}
+      {{ encore_entry_link_tags('home') }}
+    {% endblock %}
+  </head>
 
-	<body
-		dir="ltr">
-		{# Chargement de la section header #}
-		{{ include('header.html.twig') }}
-		<br>
+  <body
+    dir="ltr">
+    {# Chargement de la section header #}
+    {{ include('header.html.twig') }}
+    <br>
 
-		<header class="grid-container">
-			<nav id="fil-ariane" aria-label="vous êtes ici :">
-				<ol class="claire-hand breadcrumbs">
-					<li>
-						<span class="show-for-sr">Vous êtes sur la page :</span>Accueil
-					</li>
-				</ol>
-			</nav>
-		</header>
+    <header class="grid-container">
+      <nav id="fil-ariane" aria-label="vous êtes ici :">
+        <ol class="claire-hand breadcrumbs">
+          <li>
+            <span class="show-for-sr">Vous êtes sur la page :</span>Accueil
+          </li>
+        </ol>
+      </nav>
+    </header>
 
-		<main class="grid-container">
-			{% for message in app.flashes('alert') %}
-				<div class="callout alert" data-closable>
-					<p class="open-sans text-justify callout-message">{{ message }}</p>
-					<button class="close-button" aria-label="Dismiss alert" type="button" data-close>
-						<span aria-hidden="true">&times;</span>
-					</button>
-				</div>
-			{% endfor %}
-			<h1 class="h4 claire-hand">Informations et outils.</h1>
-			{# Message d'information #}
-			<div id="callout-accueil-message" class="callout alert-callout-border hide">
-				<p class="open-sans text-justify js-message">
-					<span id="js-reference-information"></span>
-					<span id="js-message-information"></span>
-				</p>
-			</div>
+    <main class="grid-container">
+      {% for message in app.flashes('alert') %}
+        <div class="callout alert" data-closable>
+          <p class="open-sans text-justify callout-message">{{ message }}</p>
+          <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      {% endfor %}
+      <h1 class="h4 claire-hand">Informations et outils.</h1>
+      {# Message d'information #}
+      <div id="callout-accueil-message" class="callout alert-callout-border hide">
+        <p class="open-sans text-justify js-message">
+          <span id="js-reference-information"></span>
+          <span id="js-message-information"></span>
+        </p>
+      </div>
 
-			<fieldset class="fieldset cell fieldset-container">
-				<legend class="open-sans">Référentiel local.</legend>
-				<div
-					class="grid-x cell">
-					<!-- Mise à jour de référentiel des projets sonarqube -->
-					<div class="small-8 medium-10 large-10 referentiel-bouton cell">
-						{% if refreshBD is same as(true) %}
-							{% set statut="" %}
-						{% else %}
-							{% set statut="bouton-disabled" %}
-						{% endif %}
-						<button divid="mise-a-jour-referentiel" class="button expanded float-center refresh-bd {{ statut }}" aria-label="mise-a-jour-referentiel">
-							<div class="show-for-medium">
-								<svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="refresh-bd-svg">
-									<path d="M234 1C154.4 8.5 84.7 50.6 41 117.6c-8.2 12.6-21.4 38.8-22.9 45.4-4.4 19.1 5.2 38.8 22.9 46.9 16.2 7.5 34.1 4.1 46.3-8.8 4-4.2 7-9 11.9-19.1 16.9-34.6 41.1-60.4 73.5-78.3 50.4-27.8 113.1-28.4 163.3-1.5 8.9 4.7 24 14.6 24 15.7 0 .4-5 1.5-11.2 2.4-18.1 2.7-23.8 6.8-24.6 17.8-.5 6.8 1.6 11.9 6.2 15.3 5.1 3.8 130.6 59.8 135.3 60.4 7.8.9 16-4.9 18.3-12.9.5-1.7 1-35.7 1.1-75.5l.1-72.3-2.4-4.3c-5.2-9.5-18.7-11.8-26.7-4.5-1.3 1.2-6.3 8.2-11.2 15.4C440 67 435.7 73 435.4 73c-.3 0-3.6-2.8-7.2-6.1C396.1 37.4 354.2 15.6 311 6c-21.7-4.8-55.4-7-77-5zM37.2 300.1c-4.6 2.3-7.8 6.2-9.2 11-.5 1.7-1 35.7-1.1 75.5l-.1 72.3 2.4 4.3c5.2 9.5 18.7 11.8 26.7 4.5 1.3-1.2 6.3-8.2 11.2-15.4C72 445 76.3 439 76.6 439c.3 0 3.6 2.8 7.2 6.1 27.2 25 63.1 45.4 98.4 55.9 61.4 18.3 125.9 13.3 183.8-14.1 51.9-24.7 93.6-66 119.5-118.4 7.8-15.8 9.5-20.8 9.5-29 0-25.6-24.4-45.9-48.9-40.6-15.1 3.2-23.7 11.3-33.3 31.1-16.9 34.6-41.1 60.4-73.5 78.3-50.4 27.8-113.1 28.4-163.3 1.5-8.9-4.7-24-14.6-24-15.7 0-.4 5-1.5 11.2-2.4 18.1-2.7 23.8-6.8 24.6-17.8.5-6.8-1.6-11.9-6.2-15.3-1.7-1.3-31.9-15.3-67.1-31.1-44.8-20.2-65.3-28.9-68.5-29.2-3.3-.3-5.7.2-8.8 1.8z"/>
-								</svg>
-								<span class="show-for-medium open-sans color-blanc">&nbsp;Mise à jour de la liste des projets.</span>
-							</div>
-							<div class="show-for-small-only">
-								<svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="refresh-bd-svg">
-									<path d="M234 1C154.4 8.5 84.7 50.6 41 117.6c-8.2 12.6-21.4 38.8-22.9 45.4-4.4 19.1 5.2 38.8 22.9 46.9 16.2 7.5 34.1 4.1 46.3-8.8 4-4.2 7-9 11.9-19.1 16.9-34.6 41.1-60.4 73.5-78.3 50.4-27.8 113.1-28.4 163.3-1.5 8.9 4.7 24 14.6 24 15.7 0 .4-5 1.5-11.2 2.4-18.1 2.7-23.8 6.8-24.6 17.8-.5 6.8 1.6 11.9 6.2 15.3 5.1 3.8 130.6 59.8 135.3 60.4 7.8.9 16-4.9 18.3-12.9.5-1.7 1-35.7 1.1-75.5l.1-72.3-2.4-4.3c-5.2-9.5-18.7-11.8-26.7-4.5-1.3 1.2-6.3 8.2-11.2 15.4C440 67 435.7 73 435.4 73c-.3 0-3.6-2.8-7.2-6.1C396.1 37.4 354.2 15.6 311 6c-21.7-4.8-55.4-7-77-5zM37.2 300.1c-4.6 2.3-7.8 6.2-9.2 11-.5 1.7-1 35.7-1.1 75.5l-.1 72.3 2.4 4.3c5.2 9.5 18.7 11.8 26.7 4.5 1.3-1.2 6.3-8.2 11.2-15.4C72 445 76.3 439 76.6 439c.3 0 3.6 2.8 7.2 6.1 27.2 25 63.1 45.4 98.4 55.9 61.4 18.3 125.9 13.3 183.8-14.1 51.9-24.7 93.6-66 119.5-118.4 7.8-15.8 9.5-20.8 9.5-29 0-25.6-24.4-45.9-48.9-40.6-15.1 3.2-23.7 11.3-33.3 31.1-16.9 34.6-41.1 60.4-73.5 78.3-50.4 27.8-113.1 28.4-163.3 1.5-8.9-4.7-24-14.6-24-15.7 0-.4 5-1.5 11.2-2.4 18.1-2.7 23.8-6.8 24.6-17.8.5-6.8-1.6-11.9-6.2-15.3-1.7-1.3-31.9-15.3-67.1-31.1-44.8-20.2-65.3-28.9-68.5-29.2-3.3-.3-5.7.2-8.8 1.8z"/>
-								</svg>
-								<span class="open-sans color-blanc">
-									Projets.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-							</div>
-						</button>
-					</div>
-					<div class="small-4 medium-2 large-2 referentiel-resultat cell">
-						<p class="margin-left-2">
-							<span id="js-nombre-projet" class="stat color-noir">{{projetBD|format_number}}</span>
-							{% set difference = projetBD - projetSonar %}
-							{% if difference > 0 %}
-								<span id="js-plus" class="plus">
-									<strong>-{{difference}}</strong>
-								</span>
-							{% endif %}
-							{% if difference < 0 %}
-								<span id="js-moins" class="moins">
-									<strong>+{{difference|abs}}</strong>
-								</span>
-							{% endif %}
-						</p>
-					</div>
-				</div>
-				{# Profil qualité #}
-				<div class="grid-x cell">
-					<div class="small-8 medium-10 large-10 referentiel-bouton cell">
-						<div class="button expanded float-center affiche-profil">
-							<a href="{{ path('profil', {}) }}" rel="next" title="Aller sur la page des profils.">
-								<div class="cell">
-									<svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="affiche-profil-svg">
-										<path d="M256 0C141.158 0 51.2 44.979 51.2 102.4c0 57.421 89.958 102.4 204.8 102.4s204.8-44.979 204.8-102.4C460.8 44.979 370.842 0 256 0zm0 187.733c-101.76 0-187.733-39.083-187.733-85.333S154.24 17.067 256 17.067 443.733 56.149 443.733 102.4 357.76 187.733 256 187.733z"/>
-										<path d="M443.733 102.4v76.8c0 46.251-85.973 85.333-187.733 85.333S68.267 225.451 68.267 179.2v-76.8H51.2v76.8c0 57.421 89.958 102.4 204.8 102.4s204.8-44.979 204.8-102.4v-76.8h-17.067z"/>
-										<path d="M443.733 179.2V256c0 46.259-85.973 85.333-187.733 85.333S68.267 302.259 68.267 256v-76.8H51.2V256c0 57.421 89.958 102.4 204.8 102.4S460.8 313.421 460.8 256v-76.8h-17.067z"/>
-										<path d="M443.733 256v76.8c0 46.259-85.973 85.333-187.733 85.333S68.267 379.059 68.267 332.8V256H51.2v76.8c0 57.421 89.958 102.4 204.8 102.4s204.8-44.979 204.8-102.4V256h-17.067z"/>
-										<path d="M443.733 332.8v76.8c0 46.259-85.973 85.333-187.733 85.333S68.267 455.859 68.267 409.6v-76.8H51.2v76.8C51.2 467.021 141.158 512 256 512s204.8-44.979 204.8-102.4v-76.8h-17.067z"/>
-									</svg>
-									<span class="open-sans color-blanc">&nbsp;Profils qualités
-										<span class="show-for-medium">Sonarqube.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-									</span>
-								</div>
-							</a>
-						</div>
-					</div>
-					<div class="small-4 medium-2 large-2 referentiel-resultat cell">
-						<p id="nombre-profil" class="margin-left-2">
-							<span class="stat color-noir">{{profilBD|format_number}}</span>
-							{% set difference = profilBD - profilSonar %}
-							{% if difference > 0 %}
-								<span class="plus">
-									<strong>-{{difference}}</strong>
-								</span>
-							{% endif %}
-							{% if difference < 0 %}
-								<span class="moins">
-									<strong>+{{difference|abs}}</strong>
-								</span>
-							{% endif %}
-						</p>
-					</div>
-				</div>
+      <fieldset class="fieldset cell fieldset-container">
+        <legend class="open-sans">Référentiel local.</legend>
+        <div
+          class="grid-x cell">
+          <!-- Mise à jour de référentiel des projets sonarqube -->
+          <div class="small-8 medium-10 large-10 referentiel-bouton cell">
+            {% if refreshBD is same as(true) %}
+              {% set statut="" %}
+            {% else %}
+              {% set statut="bouton-disabled" %}
+            {% endif %}
+            <button divid="mise-a-jour-referentiel" class="button expanded float-center refresh-bd {{ statut }}" aria-label="mise-a-jour-referentiel">
+              <div class="show-for-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="refresh-bd-svg">
+                  <path d="M234 1C154.4 8.5 84.7 50.6 41 117.6c-8.2 12.6-21.4 38.8-22.9 45.4-4.4 19.1 5.2 38.8 22.9 46.9 16.2 7.5 34.1 4.1 46.3-8.8 4-4.2 7-9 11.9-19.1 16.9-34.6 41.1-60.4 73.5-78.3 50.4-27.8 113.1-28.4 163.3-1.5 8.9 4.7 24 14.6 24 15.7 0 .4-5 1.5-11.2 2.4-18.1 2.7-23.8 6.8-24.6 17.8-.5 6.8 1.6 11.9 6.2 15.3 5.1 3.8 130.6 59.8 135.3 60.4 7.8.9 16-4.9 18.3-12.9.5-1.7 1-35.7 1.1-75.5l.1-72.3-2.4-4.3c-5.2-9.5-18.7-11.8-26.7-4.5-1.3 1.2-6.3 8.2-11.2 15.4C440 67 435.7 73 435.4 73c-.3 0-3.6-2.8-7.2-6.1C396.1 37.4 354.2 15.6 311 6c-21.7-4.8-55.4-7-77-5zM37.2 300.1c-4.6 2.3-7.8 6.2-9.2 11-.5 1.7-1 35.7-1.1 75.5l-.1 72.3 2.4 4.3c5.2 9.5 18.7 11.8 26.7 4.5 1.3-1.2 6.3-8.2 11.2-15.4C72 445 76.3 439 76.6 439c.3 0 3.6 2.8 7.2 6.1 27.2 25 63.1 45.4 98.4 55.9 61.4 18.3 125.9 13.3 183.8-14.1 51.9-24.7 93.6-66 119.5-118.4 7.8-15.8 9.5-20.8 9.5-29 0-25.6-24.4-45.9-48.9-40.6-15.1 3.2-23.7 11.3-33.3 31.1-16.9 34.6-41.1 60.4-73.5 78.3-50.4 27.8-113.1 28.4-163.3 1.5-8.9-4.7-24-14.6-24-15.7 0-.4 5-1.5 11.2-2.4 18.1-2.7 23.8-6.8 24.6-17.8.5-6.8-1.6-11.9-6.2-15.3-1.7-1.3-31.9-15.3-67.1-31.1-44.8-20.2-65.3-28.9-68.5-29.2-3.3-.3-5.7.2-8.8 1.8z"/>
+                </svg>
+                <span class="show-for-medium open-sans color-blanc">&nbsp;Mise à jour de la liste des projets.</span>
+              </div>
+              <div class="show-for-small-only">
+                <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="refresh-bd-svg">
+                  <path d="M234 1C154.4 8.5 84.7 50.6 41 117.6c-8.2 12.6-21.4 38.8-22.9 45.4-4.4 19.1 5.2 38.8 22.9 46.9 16.2 7.5 34.1 4.1 46.3-8.8 4-4.2 7-9 11.9-19.1 16.9-34.6 41.1-60.4 73.5-78.3 50.4-27.8 113.1-28.4 163.3-1.5 8.9 4.7 24 14.6 24 15.7 0 .4-5 1.5-11.2 2.4-18.1 2.7-23.8 6.8-24.6 17.8-.5 6.8 1.6 11.9 6.2 15.3 5.1 3.8 130.6 59.8 135.3 60.4 7.8.9 16-4.9 18.3-12.9.5-1.7 1-35.7 1.1-75.5l.1-72.3-2.4-4.3c-5.2-9.5-18.7-11.8-26.7-4.5-1.3 1.2-6.3 8.2-11.2 15.4C440 67 435.7 73 435.4 73c-.3 0-3.6-2.8-7.2-6.1C396.1 37.4 354.2 15.6 311 6c-21.7-4.8-55.4-7-77-5zM37.2 300.1c-4.6 2.3-7.8 6.2-9.2 11-.5 1.7-1 35.7-1.1 75.5l-.1 72.3 2.4 4.3c5.2 9.5 18.7 11.8 26.7 4.5 1.3-1.2 6.3-8.2 11.2-15.4C72 445 76.3 439 76.6 439c.3 0 3.6 2.8 7.2 6.1 27.2 25 63.1 45.4 98.4 55.9 61.4 18.3 125.9 13.3 183.8-14.1 51.9-24.7 93.6-66 119.5-118.4 7.8-15.8 9.5-20.8 9.5-29 0-25.6-24.4-45.9-48.9-40.6-15.1 3.2-23.7 11.3-33.3 31.1-16.9 34.6-41.1 60.4-73.5 78.3-50.4 27.8-113.1 28.4-163.3 1.5-8.9-4.7-24-14.6-24-15.7 0-.4 5-1.5 11.2-2.4 18.1-2.7 23.8-6.8 24.6-17.8.5-6.8-1.6-11.9-6.2-15.3-1.7-1.3-31.9-15.3-67.1-31.1-44.8-20.2-65.3-28.9-68.5-29.2-3.3-.3-5.7.2-8.8 1.8z"/>
+                </svg>
+                <span class="open-sans color-blanc">
+                  Projets.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+              </div>
+            </button>
+          </div>
+          <div class="small-4 medium-2 large-2 referentiel-resultat cell">
+            <p class="margin-left-2">
+              <span id="js-nombre-projet" class="stat color-noir">{{projetBD|format_number}}</span>
+              {% set difference = projetBD - projetSonar %}
+              {% if difference > 0 %}
+                <span id="js-plus" class="plus">
+                  <strong>-{{difference}}</strong>
+                </span>
+              {% endif %}
+              {% if difference < 0 %}
+                <span id="js-moins" class="moins">
+                  <strong>+{{difference|abs}}</strong>
+                </span>
+              {% endif %}
+            </p>
+          </div>
+        </div>
+        {# Profil qualité #}
+        <div class="grid-x cell">
+          <div class="small-8 medium-10 large-10 referentiel-bouton cell">
+            <div class="button expanded float-center affiche-profil">
+              <a href="{{ path('profil', {}) }}" rel="next" title="Aller sur la page des profils.">
+                <div class="cell">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="affiche-profil-svg">
+                    <path d="M256 0C141.158 0 51.2 44.979 51.2 102.4c0 57.421 89.958 102.4 204.8 102.4s204.8-44.979 204.8-102.4C460.8 44.979 370.842 0 256 0zm0 187.733c-101.76 0-187.733-39.083-187.733-85.333S154.24 17.067 256 17.067 443.733 56.149 443.733 102.4 357.76 187.733 256 187.733z"/>
+                    <path d="M443.733 102.4v76.8c0 46.251-85.973 85.333-187.733 85.333S68.267 225.451 68.267 179.2v-76.8H51.2v76.8c0 57.421 89.958 102.4 204.8 102.4s204.8-44.979 204.8-102.4v-76.8h-17.067z"/>
+                    <path d="M443.733 179.2V256c0 46.259-85.973 85.333-187.733 85.333S68.267 302.259 68.267 256v-76.8H51.2V256c0 57.421 89.958 102.4 204.8 102.4S460.8 313.421 460.8 256v-76.8h-17.067z"/>
+                    <path d="M443.733 256v76.8c0 46.259-85.973 85.333-187.733 85.333S68.267 379.059 68.267 332.8V256H51.2v76.8c0 57.421 89.958 102.4 204.8 102.4s204.8-44.979 204.8-102.4V256h-17.067z"/>
+                    <path d="M443.733 332.8v76.8c0 46.259-85.973 85.333-187.733 85.333S68.267 455.859 68.267 409.6v-76.8H51.2v76.8C51.2 467.021 141.158 512 256 512s204.8-44.979 204.8-102.4v-76.8h-17.067z"/>
+                  </svg>
+                  <span class="open-sans color-blanc">&nbsp;Profils qualités
+                    <span class="show-for-medium">Sonarqube.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                  </span>
+                </div>
+              </a>
+            </div>
+          </div>
+          <div class="small-4 medium-2 large-2 referentiel-resultat cell">
+            <p id="nombre-profil" class="margin-left-2">
+              <span class="stat color-noir">{{profilBD|format_number}}</span>
+              {% set difference = profilBD - profilSonar %}
+              {% if difference > 0 %}
+                <span class="plus">
+                  <strong>-{{difference}}</strong>
+                </span>
+              {% endif %}
+              {% if difference < 0 %}
+                <span class="moins">
+                  <strong>+{{difference|abs}}</strong>
+                </span>
+              {% endif %}
+            </p>
+          </div>
+        </div>
 
-				<div class="grid-x cell">
-					{% for message in app.flashes('info') %}
-						<div class="callout alert-callout-border primary cell" data-closable>
-							<p class="open-sans text-justify callout-message">{{ message }}</p>
-							<button id="info-close" class="close-button" aria-label="Dismiss alert" type="button" data-close>
-								<span aria-hidden="true">&times;</span>
-							</button>
-						</div>
-					{% endfor %}
-				</div>
-			</fieldset>
-		</main>
-		<br>
+        <div class="grid-x cell">
+          {% for message in app.flashes('info') %}
+            <div class="callout alert-callout-border primary cell" data-closable>
+              <p class="open-sans text-justify callout-message">{{ message }}</p>
+              <button id="info-close" class="close-button" aria-label="Dismiss alert" type="button" data-close>
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          {% endfor %}
+        </div>
+      </fieldset>
+    </main>
+    <br>
 
-		<div class="grid-container grid-x">
-			<div class="small-12 medium-6 large-6 cell">
-				<fieldset class="fieldset fieldset-visibility cell">
-					<legend class="open-sans">Visibilité.</legend>
-					<div class="grid-x cell">
-						<div class="small-12 medium-6 large-6 cell">
-							<h2 class="h4 claire-hand visibility-box visibility-box-public">Public&nbsp;
-								<span id="js-public" class="stat stat-visibility float-right">{{public}}</span>
-							</h2>
-						</div>
+    <div class="grid-container grid-x">
+      <div class="small-12 medium-6 large-6 cell">
+        <fieldset class="fieldset fieldset-visibility cell">
+          <legend class="open-sans">Visibilité.</legend>
+          <div class="grid-x cell">
+            <div class="small-12 medium-6 large-6 cell">
+              <h2 class="h4 claire-hand visibility-box visibility-box-public">Public&nbsp;
+                <span id="js-public" class="stat stat-visibility float-right">{{public}}</span>
+              </h2>
+            </div>
 
-						<div class="small-12 medium-6 large-6 cell">
-							<h2 class="h4 claire-hand visibility-box">Privé
-								<span id="js-private" class="stat stat-visibility float-right">{{private}}</span>
-							</h2>
-						</div>
-					</div>
-				</fieldset>
-			</div>
-			<div class="medium-1 large-1 cell"></div>
-			<div class="small-12 medium-5 large-5 cell">
-				<a href="{{ path('projet', {}) }}" rel="next" title="Aller sur la page du projet.">
-					<div class="button expanded projet">
-						<svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" class="projet-svg">
-							<path d="M23.25 9h-9.5a.75.75 0 010-1.5h9.5a.75.75 0 010 1.5zM23.25 12h-9.5a.75.75 0 010-1.5h9.5a.75.75 0 010 1.5zM23.25 15h-9.5a.75.75 0 010-1.5h9.5a.75.75 0 010 1.5zM23.25 18h-9.5a.75.75 0 010-1.5h9.5a.75.75 0 010 1.5zM23.25 21h-9.5a.75.75 0 010-1.5h9.5a.75.75 0 010 1.5zM9.25 15h-7.5C.785 15 0 14.215 0 13.25v-4C0 8.285.785 7.5 1.75 7.5h7.5c.965 0 1.75.785 1.75 1.75v4c0 .965-.785 1.75-1.75 1.75zm-7.5-6a.25.25 0 00-.25.25v4c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-4A.25.25 0 009.25 9zM9.25 24h-7.5C.785 24 0 23.215 0 22.25v-4c0-.965.785-1.75 1.75-1.75h7.5c.965 0 1.75.785 1.75 1.75v4c0 .965-.785 1.75-1.75 1.75zm-7.5-6a.25.25 0 00-.25.25v4c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-4a.25.25 0 00-.25-.25zM23.25 24h-9.5a.75.75 0 010-1.5h9.5a.75.75 0 010 1.5zM22.25 6H9.75C8.785 6 8 5.215 8 4.25v-2.5C8 .785 8.785 0 9.75 0h12.5C23.215 0 24 .785 24 1.75v2.5C24 5.215 23.215 6 22.25 6zM9.75 1.5a.25.25 0 00-.25.25v2.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25v-2.5a.25.25 0 00-.25-.25zM3 6C1.346 6 0 4.654 0 3s1.346-3 3-3 3 1.346 3 3-1.346 3-3 3zm0-4.5c-.827 0-1.5.673-1.5 1.5S2.173 4.5 3 4.5 4.5 3.827 4.5 3 3.827 1.5 3 1.5z"/>
-						</svg>
-						<span class="open-sans color-blanc">mon Projet</span>
-					</div>
-				</a>
-			</div>
-		</div>
-		{# On chosi le composant en fonction des préférences #}
-		{% if composant == "projet" %}
-			{{ include('/home/_projet.html.twig') }}
-		{% elseif composant == "version" %}
-			{{ include('/home/_version.html.twig') }}
-		{% else %}
-			{{ include('/home/_vide.html.twig') }}
-		{% endif %}
-		<div class="grid-x">
-			<div class="grid-container">
-				<div class="grid-x grid-padding-x"></div>
-			</div>
-		</div>
-		{# Chargement de la section footer #}
-		{{ include('footer.html.twig') }}
-		{# Chargement du code javascript #}
-		{% block javascripts %}
-			{{ encore_entry_script_tags('home') }}
-		{% endblock %}
-	</body>
+            <div class="small-12 medium-6 large-6 cell">
+              <h2 class="h4 claire-hand visibility-box">Privé
+                <span id="js-private" class="stat stat-visibility float-right">{{private}}</span>
+              </h2>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+      <div class="medium-1 large-1 cell"></div>
+      <div class="small-12 medium-5 large-5 cell">
+        <a href="{{ path('projet', {}) }}" rel="next" title="Aller sur la page du projet.">
+          <div class="button expanded projet">
+            <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" class="projet-svg">
+              <path d="M23.25 9h-9.5a.75.75 0 010-1.5h9.5a.75.75 0 010 1.5zM23.25 12h-9.5a.75.75 0 010-1.5h9.5a.75.75 0 010 1.5zM23.25 15h-9.5a.75.75 0 010-1.5h9.5a.75.75 0 010 1.5zM23.25 18h-9.5a.75.75 0 010-1.5h9.5a.75.75 0 010 1.5zM23.25 21h-9.5a.75.75 0 010-1.5h9.5a.75.75 0 010 1.5zM9.25 15h-7.5C.785 15 0 14.215 0 13.25v-4C0 8.285.785 7.5 1.75 7.5h7.5c.965 0 1.75.785 1.75 1.75v4c0 .965-.785 1.75-1.75 1.75zm-7.5-6a.25.25 0 00-.25.25v4c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-4A.25.25 0 009.25 9zM9.25 24h-7.5C.785 24 0 23.215 0 22.25v-4c0-.965.785-1.75 1.75-1.75h7.5c.965 0 1.75.785 1.75 1.75v4c0 .965-.785 1.75-1.75 1.75zm-7.5-6a.25.25 0 00-.25.25v4c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-4a.25.25 0 00-.25-.25zM23.25 24h-9.5a.75.75 0 010-1.5h9.5a.75.75 0 010 1.5zM22.25 6H9.75C8.785 6 8 5.215 8 4.25v-2.5C8 .785 8.785 0 9.75 0h12.5C23.215 0 24 .785 24 1.75v2.5C24 5.215 23.215 6 22.25 6zM9.75 1.5a.25.25 0 00-.25.25v2.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25v-2.5a.25.25 0 00-.25-.25zM3 6C1.346 6 0 4.654 0 3s1.346-3 3-3 3 1.346 3 3-1.346 3-3 3zm0-4.5c-.827 0-1.5.673-1.5 1.5S2.173 4.5 3 4.5 4.5 3.827 4.5 3 3.827 1.5 3 1.5z"/>
+            </svg>
+            <span class="open-sans color-blanc">mon Projet</span>
+          </div>
+        </a>
+      </div>
+    </div>
+    {# On chosi le composant en fonction des préférences #}
+    {% if composant == "projet" %}
+      {{ include('/home/_projet.html.twig') }}
+    {% elseif composant == "version" %}
+      {{ include('/home/_version.html.twig') }}
+    {% else %}
+      {{ include('/home/_vide.html.twig') }}
+    {% endif %}
+    <div class="grid-x">
+      <div class="grid-container">
+        <div class="grid-x grid-padding-x"></div>
+      </div>
+    </div>
+    {# Chargement de la section footer #}
+    {{ include('footer.html.twig') }}
+    {# Chargement du code javascript #}
+    {% block javascripts %}
+      {{ encore_entry_script_tags('home') }}
+    {% endblock %}
+  </body>
 </html>
