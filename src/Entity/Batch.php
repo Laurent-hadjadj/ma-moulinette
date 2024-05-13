@@ -11,60 +11,123 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
-namespace App\Entity\Main;
+namespace App\Entity;
 
-use App\Repository\Main\BatchRepository;
+use App\Repository\BatchRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-
-use App\Validator as AcmeAssert;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Validator as AcmeAssert;
 
 #[ORM\Entity(repositoryClass: BatchRepository::class)]
 class Batch
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Identifiant unique du batch']
+    )]
     private $id;
 
-    /** Statut d'activité du traitement */
-    #[ORM\Column(type: Types::BOOLEAN)]
+    #[ORM\Column(
+        type: Types::BOOLEAN,
+        nullable: false,
+        options: ['comment' => 'Statut d\'activité du batch']
+    )]
+    #[Assert\NotNull]
+    #[Assert\Type(type: 'bool')]
     private $statut = false;
 
-    /** Nom du traitement */
-    #[ORM\Column(type: Types::STRING, length: 32, unique: true)]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 32,
+        unique: true,
+        nullable: false,
+        options: ['comment' => 'Titre du batch, unique']
+    )]
     #[AcmeAssert\ContainsBatchUnique()]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        max: 32,
+        maxMessage: "Le titre ne doit pas dépasser 32 caractères."
+    )]
     private $titre;
 
-    /** Description du traitement */
-    #[ORM\Column(type: Types::STRING, length: 128)]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 128,
+        nullable: false,
+        options: ['comment' => 'Description du batch']
+    )]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        max: 128,
+        maxMessage: "La description ne doit pas dépasser 128 caractères."
+    )]
     private $description;
 
-    /** Nom de l'utilisateur */
-    #[ORM\Column(type: Types::STRING, length: 128)]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 128,
+        nullable: false,
+        options: ['comment' => 'Nom de l\'utilisateur responsable']
+    )]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        max: 128,
+        maxMessage: "Le nom de l'utilisateur ne doit pas dépasser 128 caractères."
+    )]
     private $responsable;
 
-
-    /** Nom du portefeuille de projet */
-    #[ORM\Column(type: Types::STRING, length: 32, unique: true)]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 32,
+        unique: true,
+        nullable: false,
+        options: ['comment' => 'Portefeuille de projet, unique']
+    )]
     #[AcmeAssert\ContainsBatchUnique()]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        max: 32,
+        maxMessage: "Le portefeuille ne doit pas dépasser 32 caractères."
+    )]
     private $portefeuille = "Aucun";
 
-    /** Nombre de projet */
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Nombre de projets dans le batch']
+    )]
+    #[Assert\Type(type: 'integer')]
+    #[Assert\NotNull]
     private $nombreProjet = 0;
 
-    /** Etat d'éxection (start, pending, error, end) */
-    #[ORM\Column(type: Types::STRING, length: 8, nullable: true)]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 8,
+        nullable: true,
+        options: ['comment' => 'État d\'exécution du batch']
+    )]
+    #[Assert\NotBlank]
     private $execution;
 
-    /** Date de modification */
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[ORM\Column(
+        type: Types::DATETIME_MUTABLE,
+        nullable: true,
+        options: ['comment' => 'Date de la dernière modification du batch']
+    )]
+    #[Assert\NotNull]
     private $dateModification;
 
-    /** Date d'enregistrement */
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(
+        type: Types::DATETIME_MUTABLE,
+        nullable: false,
+        options: ['comment' => 'Date d\'enregistrement du batch']
+    )]
+    #[Assert\NotNull]
     private $dateEnregistrement;
 
     /**

@@ -11,63 +11,183 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
-namespace App\Entity\Main;
+namespace App\Entity;
 
-use App\Repository\Main\HotspotDetailsRepository;
+use App\Repository\HotspotDetailsRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: HotspotDetailsRepository::class)]
 class HotspotDetails
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Identifiant unique pour chaque détail de hotspot']
+    )]
     private $id;
 
-    #[ORM\Column(type: Types::STRING, length: 128)]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 255,
+        nullable: false,
+        options: ['comment' => 'Clé Maven du détail de hotspot']
+    )]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "La clé Maven ne doit pas dépasser 128 caractères."
+    )]
     private $mavenKey;
 
-    #[ORM\Column(type: Types::STRING, length: 32)]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 32,
+        nullable: false,
+        options: ['comment' => 'Version du détail de hotspot']
+    )]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        max: 32,
+        maxMessage: "La version ne doit pas dépasser 32 caractères."
+    )]
     private $version;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(
+        type: Types::DATETIME_MUTABLE,
+        nullable: false,
+        options: ['comment' => 'Date de la version du détail de hotspot']
+    )]
+    #[Assert\NotNull]
     private $dateVersion;
 
-    #[ORM\Column(type: Types::STRING, length: 8)]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 8,
+        nullable: false,
+        options: ['comment' => 'Sévérité du hotspot']
+    )]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        max: 8,
+        maxMessage: "La sévérité ne doit pas dépasser 8 caractères."
+    )]
     private $severity;
 
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Niveau de risque du hotspot']
+    )]
+    #[Assert\NotNull]
     private $niveau;
 
-    #[ORM\Column(type: Types::STRING, length: 16)]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 16,
+        nullable: false,
+        options: ['comment' => 'Statut du hotspot']
+    )]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        max: 16,
+        maxMessage: "Le statut ne doit pas dépasser 16 caractères."
+    )]
     private $status;
 
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Implémentation frontend associée au hotspot']
+    )]
+    #[Assert\NotNull]
     private $frontend;
 
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Implémentation backend associée au hotspot']
+    )]
+    #[Assert\NotNull]
     private $backend;
 
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Autres implémentations associées au hotspot']
+    )]
+    #[Assert\NotNull]
     private $autre;
 
-    #[ORM\Column(type: Types::STRING, length: 255)]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 255,
+        nullable: false,
+        options: ['comment' => 'Fichier associé au hotspot']
+    )]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "Le nom de fichier ne doit pas dépasser 255 caractères."
+    )]
     private $file;
 
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Ligne du fichier où se situe le hotspot']
+    )]
+    #[Assert\NotNull]
     private $line;
 
-    #[ORM\Column(type: Types::STRING, length: 255)]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 255,
+        nullable: false,
+        options: ['comment' => 'Règle associée au hotspot']
+    )]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "La règle ne doit pas dépasser 255 caractères."
+    )]
     private $rule;
 
-    #[ORM\Column(type: Types::STRING, length: 255)]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 255,
+        nullable: false,
+        options: ['comment' => 'Message descriptif du hotspot']
+    )]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "Le message ne doit pas dépasser 255 caractères."
+    )]
     private $message;
 
-    #[ORM\Column(type: Types::STRING, length: 32)]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 32,
+        nullable: false,
+        options: ['comment' => 'Clé unique du hotspot']
+    )]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        max: 32,
+        maxMessage: "La clé ne doit pas dépasser 32 caractères."
+    )]
     private $key;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(
+        type: Types::DATETIME_MUTABLE,
+        nullable: false,
+        options: ['comment' => 'Date d\'enregistrement du détail de hotspot']
+    )]
+    #[Assert\NotNull]
     private $dateEnregistrement;
 
     /**

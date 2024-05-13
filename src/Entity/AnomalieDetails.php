@@ -11,72 +11,177 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
-namespace App\Entity\Main;
+namespace App\Entity;
 
-use App\Repository\Main\AnomalieDetailsRepository;
+use App\Repository\AnomalieDetailsRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: AnomalieDetailsRepository::class)]
 class AnomalieDetails
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Identifiant unique pour les détails de l\'anomalie']
+    )]
     private $id;
 
-    #[ORM\Column(type: Types::STRING, length: 128)]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 255,
+        nullable: false,
+        options: ['comment' => 'Clé Maven pour l\'anomalie']
+    )]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "La clé Maven ne doit pas dépasser 128 caractères."
+    )]
     private $mavenKey;
 
-    #[ORM\Column(type: Types::STRING, length: 128)]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 128,
+        nullable: false,
+        options: ['comment' => 'Nom de l\'anomalie']
+    )]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        max: 128,
+        maxMessage: "Le nom ne doit pas dépasser 128 caractères."
+    )]
     private $name;
 
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Nombre de bugs bloquants']
+    )]
+    #[Assert\NotNull]
     private $bugBlocker;
 
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Nombre de bugs critiques']
+    )]
+    #[Assert\NotNull]
     private $bugCritical;
 
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Nombre de bugs d\'information']
+    )]
+    #[Assert\NotNull]
     private $bugInfo;
 
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Nombre de bugs majeurs']
+    )]
+    #[Assert\NotNull]
     private $bugMajor;
 
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Nombre de bugs mineurs']
+    )]
+    #[Assert\NotNull]
     private $bugMinor;
 
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Nombre de vulnérabilités bloquantes']
+    )]
+    #[Assert\NotNull]
     private $vulnerabilityBlocker;
 
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Nombre de vulnérabilités critiques']
+    )]
+    #[Assert\NotNull]
     private $vulnerabilityCritical;
 
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Nombre de vulnérabilités d\'information']
+    )]
+    #[Assert\NotNull]
     private $vulnerabilityInfo;
 
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Nombre de vulnérabilités majeures']
+    )]
+    #[Assert\NotNull]
     private $vulnerabilityMajor;
 
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Nombre de vulnérabilités mineures']
+    )]
+    #[Assert\NotNull]
     private $vulnerabilityMinor;
 
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Nombre d\'odeurs de code bloquantes']
+    )]
+    #[Assert\NotNull]
     private $codeSmellBlocker;
 
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Nombre d\'odeurs de code critiques']
+    )]
+    #[Assert\NotNull]
     private $codeSmellCritical;
 
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Nombre d\'odeurs de code d\'information']
+    )]
+    #[Assert\NotNull]
     private $codeSmellInfo;
 
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Nombre d\'odeurs de code majeures']
+    )]
+    #[Assert\NotNull]
     private $codeSmellMajor;
 
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Nombre d\'odeurs de code mineures']
+    )]
+    #[Assert\NotNull]
     private $codeSmellMinor;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(
+        type: Types::DATETIME_MUTABLE,
+        nullable: false,
+        options: ['comment' => 'Date d\'enregistrement des détails de l\'anomalie']
+    )]
+    #[Assert\NotNull]
     private $dateEnregistrement;
 
     /**

@@ -11,31 +11,52 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
-namespace App\Entity\Main;
+namespace App\Entity;
 
-use App\Repository\Main\MaMoulinetteRepository;
+use App\Repository\MaMoulinetteRepository;
 use Doctrine\DBAL\Types\Types;
-use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: MaMoulinetteRepository::class)]
 class MaMoulinette
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Unique identifier for each MaMoulinette instance']
+    )]
     private $id;
 
-    #[ORM\Column(type: Types::STRING, length: 8)]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 16,
+        nullable: false,
+        options: ['comment' => 'Version number of the MaMoulinette']
+    )]
     #[Assert\NotBlank]
+    #[Assert\Length(
+        max: 16,
+        maxMessage: "The version must not exceed 8 characters."
+    )]
     private $version;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Assert\NotBlank]
+    #[ORM\Column(
+        type: Types::DATETIME_MUTABLE,
+        nullable: false,
+        options: ['comment' => 'Date when the version was created']
+    )]
+    #[Assert\NotNull]
     private $dateVersion;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Assert\NotBlank]
+    #[ORM\Column(
+        type: Types::DATETIME_MUTABLE,
+        nullable: false,
+        options: ['comment' => 'Date when this record was registered']
+    )]
+    #[Assert\NotNull]
     private $dateEnregistrement;
 
     /**

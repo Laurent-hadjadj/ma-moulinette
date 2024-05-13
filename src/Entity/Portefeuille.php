@@ -11,9 +11,9 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
-namespace App\Entity\Main;
+namespace App\Entity;
 
-use App\Repository\Main\PortefeuilleRepository;
+use App\Repository\PortefeuilleRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -25,28 +25,55 @@ class Portefeuille
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Identifiant unique pour chaque portefeuille']
+    )]
     private $id;
 
-    #[ORM\Column(type: Types::STRING, length: 32, unique: true)]
-    #[AcmeAssert\ContainsPortefeuilleUnique()]
-    #[Assert\NotNull]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 32,
+        nullable: false,
+        unique: true,
+        options: ['comment' => 'Titre unique du portefeuille']
+    )]
     #[Assert\NotBlank]
+    #[Assert\Length(max: 32)]
+    #[AcmeAssert\ContainsPortefeuilleUnique]
+    //AcmeAssert\ContainsPortefeuilleUnique : Une validation personnalisée pour s'assurer que chaque titre de portefeuille est unique dans la base de données, prévenant les doublons.
     private $titre;
 
-    #[ORM\Column(type: Types::STRING, length: 32)]
-    #[Assert\NotNull]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 32,
+        nullable: false,
+        options: ['comment' => 'Nom de l\'équipe associée au portefeuille']
+    )]
     #[Assert\NotBlank]
+    #[Assert\Length(max: 32)]
     private $equipe;
 
-    #[ORM\Column(type: 'json')]
-    #[Assert\NotBlank]
+    #[ORM\Column(
+        type: 'json',
+        options: ['comment' => 'Liste des éléments ou des activités du portefeuille']
+    )]
     private $liste = [];
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[ORM\Column(
+        type: Types::DATETIME_MUTABLE,
+        nullable: true,
+        options: ['comment' => 'Date de la dernière modification du portefeuille']
+    )]
+    #[Assert\NotNull]
     private $dateModification;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(
+        type: Types::DATETIME_MUTABLE,
+        nullable: false,
+        options: ['comment' => 'Date d\'enregistrement du portefeuille']
+    )]
     #[Assert\NotNull]
     private $dateEnregistrement;
 

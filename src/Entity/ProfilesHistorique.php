@@ -11,56 +11,104 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
-namespace App\Entity\Main;
+namespace App\Entity;
 
-use App\Repository\Main\ProfilesHistoriqueRepository;
+use App\Repository\ProfilesHistoriqueRepository;
 use Doctrine\DBAL\Types\Types;
-use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ProfilesHistoriqueRepository::class)]
 class ProfilesHistorique
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Identifiant unique pour chaque historique de profil']
+    )]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Assert\NotBlank]
-    private $dateCourte = null;
+    #[ORM\Column(
+        type: Types::DATETIME_MUTABLE,
+        nullable: false,
+        options: ['comment' => 'Date courte associée à l’historique']
+    )]
+    #[Assert\NotNull]
+    private $dateCourte;
 
-    #[ORM\Column(type: Types::STRING, length: 16)]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 16,
+        nullable: false,
+        options: ['comment' => 'language de programmation associé']
+    )]
     #[Assert\NotBlank]
-    private $language = null;
+    #[Assert\Length(max: 16)]
+    private $language;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Assert\NotBlank]
-    private $date = null;
+    #[ORM\Column(
+        type: Types::DATETIME_MUTABLE,
+        nullable: false,
+        options: ['comment' => 'Date complète de l’événement de l’historique']
+    )]
+    #[Assert\NotNull]
+    private $date;
 
-    #[ORM\Column(type: Types::STRING, length: 16)]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 16,
+        nullable: false,
+        options: ['comment' => 'Action réalisée, par exemple "modification" ou "création"']
+    )]
     #[Assert\NotBlank]
-    private $action = null;
+    #[Assert\Length(max: 16)]
+    private $action;
 
-    #[ORM\Column(type: Types::STRING, length: 64)]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 64,
+        nullable: false,
+        options: ['comment' => 'Auteur de l’action dans l’historique']
+    )]
     #[Assert\NotBlank]
-    private $auteur = null;
+    #[Assert\Length(max: 64)]
+    private $auteur;
 
-    #[ORM\Column(type: Types::STRING, length: 128)]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 128,
+        nullable: false,
+        options: ['comment' => 'Règle ou norme concernée par l’historique']
+    )]
     #[Assert\NotBlank]
-    private $regle = null;
+    #[Assert\Length(max: 128)]
+    private $regle;
 
-    #[ORM\Column(type: Types::TEXT)]
+    #[ORM\Column(
+        type: Types::TEXT,
+        nullable: false,
+        options: ['comment' => 'Description détaillée de l’événement historique']
+    )]
     #[Assert\NotBlank]
-    private $description = null;
+    private $description;
 
-    #[ORM\Column(type: Types::BLOB)]
-    #[Assert\NotBlank]
-    private $detail = null;
+    #[ORM\Column(
+        type: Types::BLOB,
+        nullable: false,
+        options: ['comment' => 'Détails supplémentaires ou données binaires associées à l’événement']
+    )]
+    #[Assert\NotNull]
+    private $detail;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Assert\NotBlank]
-    private $dateEnregistrement = null;
+    #[ORM\Column(
+        type: Types::DATETIME_MUTABLE,
+        nullable: false,
+        options: ['comment' => 'Date d’enregistrement de l’entrée historique dans la base de données']
+    )]
+    #[Assert\NotNull]
+    private $dateEnregistrement;
 
     /**
      * [Description for getId]
@@ -109,7 +157,7 @@ class ProfilesHistorique
     }
 
     /**
-     * [Description for getLanguage]
+     * [Description for getlanguage]
      *
      * @return string|null
      *
@@ -117,13 +165,13 @@ class ProfilesHistorique
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function getLanguage(): ?string
+    public function getlanguage(): ?string
     {
         return $this->language;
     }
 
     /**
-     * [Description for setLangage]
+     * [Description for setLanguage]
      *
      * @param string $language
      *

@@ -11,46 +11,85 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
-namespace App\Entity\Main;
+namespace App\Entity;
 
-use App\Repository\Main\ProfilesRepository;
+use App\Repository\ProfilesRepository;
 use Doctrine\DBAL\Types\Types;
-use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ProfilesRepository::class)]
 class Profiles
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Identifiant unique pour chaque profil']
+    )]
     private $id;
 
-    #[ORM\Column(type: Types::STRING, length: 128)]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 255,
+        nullable: false,
+        options: ['comment' => 'Clé unique du profil']
+    )]
     #[Assert\NotBlank]
+    #[Assert\Length(max: 255)]
     private $key;
 
-    #[ORM\Column(type: Types::STRING, length: 128)]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 128,
+        nullable: false,
+        options: ['comment' => 'Nom du profil']
+    )]
     #[Assert\NotBlank]
+    #[Assert\Length(max: 128)]
     private $name;
 
-    #[ORM\Column(type: Types::STRING, length: 64)]
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 64,
+        nullable: false,
+        options: ['comment' => 'Nom du langage de programmation']
+    )]
     #[Assert\NotBlank]
+    #[Assert\Length(max: 64)]
     private $languageName;
 
-    #[ORM\Column(type: Types::INTEGER)]
-    #[Assert\NotBlank]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Nombre de règles actives associées au profil']
+    )]
+    #[Assert\NotNull]
     private $activeRuleCount;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(
+        type: Types::DATETIME_MUTABLE,
+        nullable: false,
+        options: ['comment' => 'Date de la dernière mise à jour des règles']
+    )]
+    #[Assert\NotNull]
     private $rulesUpdateAt;
 
-    #[ORM\Column(type: TYPES::BOOLEAN)]
-    #[Assert\NotBlank]
+    #[ORM\Column(
+        type: TYPES::BOOLEAN,
+        nullable: false,
+        options: ['comment' => 'Indique si le profil est le profil par défaut']
+    )]
+    #[Assert\NotNull]
     private $referentielDefault;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Assert\NotBlank]
+    #[ORM\Column(
+        type: Types::DATETIME_MUTABLE,
+        nullable: false,
+        options: ['comment' => 'Date d\'enregistrement du profil']
+    )]
+    #[Assert\NotNull]
     private $dateEnregistrement;
 
     /**
@@ -209,6 +248,7 @@ class Profiles
         return $this->rulesUpdateAt;
     }
 
+
     /**
      * [Description for setRulesUpdateAt]
      *
@@ -217,7 +257,7 @@ class Profiles
      * @return self
      *
      * Created at: 02/01/2023, 18:10:16 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
+     * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setRulesUpdateAt(\DateTimeInterface $rulesUpdateAt): self
@@ -228,15 +268,15 @@ class Profiles
     }
 
     /**
-     * [Description for referentielDefault]
+     * [Description for isreferentielDefault]
      *
      * @return bool|null
      *
      * Created at: 02/01/2023, 18:10:18 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
+     * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function isReferentielDefault(): ?bool
+    public function isreferentielDefault(): ?bool
     {
         return $this->referentielDefault;
     }
@@ -249,7 +289,7 @@ class Profiles
      * @return self
      *
      * Created at: 02/01/2023, 18:10:20 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
+     * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setReferentielDefault(bool $referentielDefault): self
@@ -258,6 +298,7 @@ class Profiles
 
         return $this;
     }
+
 
     /**
      * [Description for getDateEnregistrement]
