@@ -11,9 +11,9 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
-namespace App\Repository\Main;
+namespace App\Repository;
 
-use App\Entity\Main\InformationProjet;
+use App\Entity\InformationProjet;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
