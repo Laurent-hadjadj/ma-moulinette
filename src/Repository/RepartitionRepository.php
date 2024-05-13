@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Repository\Secondary;
+namespace App\Repository;
 
-use App\Entity\Secondary\Repartition;
+use App\Entity\Repartition;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
