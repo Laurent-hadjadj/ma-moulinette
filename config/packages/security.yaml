@@ -17,7 +17,7 @@ security:
     providers:
         app_utilisateur_provider:
             entity:
-                class: App\Entity\Main\Utilisateur
+                class: App\Entity\Utilisateur
                 property: courriel
 
     firewalls:
