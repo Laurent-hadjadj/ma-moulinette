@@ -124,7 +124,7 @@ class ApiProfilController extends AbstractController
             $profils->setKey($profil['key']);
             $profils->setName($profil['name']);
             $profils->setLanguageName($profil['languageName']);
-            $profils->setReferentielDefault($profil['referentielDefault']);
+            $profils->setReferentielDefault($profil['isDefault']);
             $profils->setActiveRuleCount($profil['activeRuleCount']);
             $rulesDate = new DateTime($profil['rulesUpdatedAt']);
             $profils->setRulesUpdateAt($rulesDate);
