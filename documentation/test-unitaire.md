@@ -32,17 +32,24 @@ Par convention, le répertoire doit répliquer le répertoire de l'application p
 
 Pour exécuter des tests, il est nécessaire de d'utiliser la commande : `./bin/phpunit`
 
-## Configuration : PHPUnit.xmldist et PHPUnit.xml
+### Les prérequis
+
+Executer les commandes suivantes :
+
+- `symfony composer require --dev symfony/test-pack`
+- `symfony composer require --dev orm-fixtures`
+
+### Configuration : PHPUnit.xmldist et PHPUnit.xml
 
 La verions **9.6**  de phpunit doit être utilisée pour symfony 6 et PHP 8.
 
 Le fichier de configuration pour PHPUnit par défaut est `phpunit.xml.dist`. Ce fichier est écrasé à chaque mise à jour de la recipe symfony, il convient donc de créer un fichier `phpunit.xml` qui contiendra la configuration pour l'application.
 
-## Configuration : .env.test et .env.test.local
+### Configuration : .env.test et .env.test.local
 
 Le fichier `.env.test` contient les paramètres spécifiques aux tests, i.e. les paramètres utilises du fichier `.env`. Il est propre à symfony et vient surcharger le fichier PHPUnit.xml.
 
-Attention, tout comme le fichier `PHPUnit.xml.dist`, le fichier `.env.test` est écrasé par la recipe symfony lors des mises à jour. Il faudra enregistrer les informations dans un dossier `.env.test.local`.
+Attxntion, tout comme le fichier `PHPUnit.xml.dist`, le fichier `.env.test` est écrasé par la recipe symfony lors des mises à jour. Il faudra enregistrer les informations dans un dossier `.env.test.local`.
 
 Exemple de paramètres utilises :
 
@@ -53,20 +60,30 @@ SYMFONY_DEPRECATIONS_HELPER='max[total]=10&max[self]=10&max[direct]=10&verbose=1
 DATABASE_URL="sqlite:///%kernel.project_dir%/var/data-test.db"
 ```
 
-0 - symfony composer require --dev symfony/test-pack
-1 - symfony composer require --dev orm-fixtures
-2 -  création de la base de tests :
-    php bin/console --env=test doctrine:database:create
-    php bin/console --env=test doctrine:schema:update --force
-	symfony console --env=test doctrine:database:drop --force || true
-	symfony console --env=test doctrine:database:create
-  symfony console --env=test doctrine:schema:update --force
-	symfony console doctrine:migrations:migrate -n --env=test
-	symfony console doctrine:fixtures:load -n --env=test
-	symfony php bin/phpunit $(MAKECMDGOALS)
+### Préparation de la base de données de test
 
-4 - php ./bin/phpunit ./tests/Unit/Repository/Main/UtilisateurRepositoryTest.php
-5 - php ./bin/phpunit --filter UtilisateurkernelTest
+Les tests unitaires sont éxuctés sur une base de données SQLIte.
+
+La création de la base de données de tests est relativement facile à mettre en place. Il suffit de taper la commande suivante depuis le dossier du projet :
+
+- `php bin/console --env=test doctrine:database:drop --force || true`
+- `php bin/console --env=test doctrine:database:create`
+- `php bin/console --env=test doctrine:schema:update --force`
+- `php bin/console --env=test doctrine:migrations:migrate -n`
+
+### Execution des tests unitaires
+
+Il est possible d'executer tous les tests avec la commande suivante :
+
+- `php bin\console phpunit`
+
+Ou d'éxceuter simplement un test en particulier :
+
+- `php ./bin/phpunit ./tests/Unit/Repository/UtilisateurRepositoryTest.php`
+
+Ou  d'éxecuer un ensemble de tests :
+
+- `php ./bin/phpunit --filter CaseTest`
 
 -**-- FIN --**-
 
