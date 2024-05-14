@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##         Création de la base de données         ##
-##               V1.0.0 - 14/05/2024              ##
+##               V1.1.0 - 14/05/2024              ##
 ##                                                ##
 ####################################################*/
 
@@ -20,6 +20,12 @@ ALTER DATABASE ma_moulinette SET search_path TO ma_moulinette;
 
 -- Configuration du search path pour l'utilisateur spécifique
 ALTER ROLE zgueddou SET search_path TO ma_moulinette;
+
+-- Configuration du search path pour la base de données
+ALTER DATABASE ma_moulinette SET search_path TO ma_moulinette;
+
+-- Configuration du search path pour l'utilisateur spécifique
+ALTER ROLE db_user SET search_path TO ma_moulinette;
 
 -- Droits sur la base de données
 GRANT ALL PRIVILEGES ON DATABASE ma_moulinette to zgueddou;
