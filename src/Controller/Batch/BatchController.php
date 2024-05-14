@@ -830,7 +830,7 @@ class BatchController extends AbstractController
         }
 
         /** Si on a pas trouvé de traitements dans la table */
-        if (empty($r)) {
+        if (empty($r['liste'])) {
             $message = "[BATCH] Aucun traitement trouvé.";
             $this->addFlash('info', $message);
             return $this->render('batch/index.html.twig', $render);
