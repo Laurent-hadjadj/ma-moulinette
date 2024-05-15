@@ -84,9 +84,9 @@ class HomeController extends AbstractController
 
         /* On récupère le nombre de projet depuis la table liste_projet */
         $nombre = $listeProjetEntity->countListeProjet();
-
+        
         $projet = 0;
-        if ($nombre['request']){
+        if ($nombre['code'] === 200){
             $projet = $nombre['request'][0]['total'];
         }
         return $projet;
@@ -109,7 +109,6 @@ class HomeController extends AbstractController
 
         /** On appel le client http */
         $result = $client->http($url);
-
         /**
          * On compte le nombre de projet si la table n'est pas vide.
          */
@@ -234,7 +233,6 @@ class HomeController extends AbstractController
 
             $date = new DateTime();
             $date->setTimezone(new DateTimeZone(static::$europeParis));
-
             $dateCreationFormat = $date->format(static::$dateFormat);
             $dateModificationProjet = $date->format(static::$dateFormat);
             $dateModificationProfil = $date->format(static::$dateFormat);
