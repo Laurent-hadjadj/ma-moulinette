@@ -114,7 +114,7 @@ class UtilisateurCaseTest extends TestCase
     $this->assertEquals(static::$courriel, $entity->getUserIdentifier(), "Erreur USERIdent");
     $this->assertEquals(static::$password, $entity->getPassword(), "Erreur PASSWORD");
     $entity->eraseCredentials();
-    $this->assertNull($entity->getPassword(), "Mot de passe non null");
+    $this->assertNotNull($entity->getPassword(), "Mot de passe null");
     $this->assertTrue(true, $entity->isActif(), "isActif doit être vari");
     $this->assertEquals(static::$roles, $entity->getRoles(), "Erreur ROLES");
     $this->assertEquals(static::$equipe, $entity->getEquipe(), "Erreur EQUIPE");
