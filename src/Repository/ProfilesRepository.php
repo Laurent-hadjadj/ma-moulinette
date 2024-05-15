@@ -68,7 +68,7 @@ class ProfilesRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectProfiles($referentielDefault=true, $langage = null):array
+    public function selectProfiles($referentielDefault=true ,$langage = null):array
     {
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();

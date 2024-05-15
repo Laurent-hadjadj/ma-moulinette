@@ -12,6 +12,7 @@ use Doctrine\Persistence\ObjectManager;
 class NotesFixtures extends Fixture
 {
   private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+  private static $date = '2024-023-29 17:23:18';
   private static $dateEnregistrement = '2024-03-26 14:46:38';
 
   /**
@@ -32,6 +33,7 @@ class NotesFixtures extends Fixture
       $reliability=(new Notes())
           ->setMavenKey(static::$mavenKey)
           ->setType('reliability')
+          ->setDate(new \DateTime(static::$date))
           ->setValue(3)
           ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
       $manager->persist($reliability);
@@ -40,6 +42,7 @@ class NotesFixtures extends Fixture
       $security=(new Notes())
           ->setMavenKey(static::$mavenKey)
           ->setType('securiy')
+          ->setDate(new \DateTime(static::$date))
           ->setValue(1)
           ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
       $manager->persist($security);
@@ -48,6 +51,7 @@ class NotesFixtures extends Fixture
       $sqale=(new Notes())
           ->setMavenKey(static::$mavenKey)
           ->setType('sqale')
+          ->setDate(new \DateTime(static::$date))
           ->setValue(2)
           ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
       $manager->persist($sqale);
