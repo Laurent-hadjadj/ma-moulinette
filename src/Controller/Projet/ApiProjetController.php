@@ -183,7 +183,7 @@ class ApiProjetController extends AbstractController
                 /** On met en minuscule */
                 $minus = trim(strtolower($equipe));
                 /** On construit la clause in et on remplace les espaces par des tirets  */
-                $in = $in."json_each.value LIKE '".preg_replace('/\s+/', '-', $minus)."%' OR ";
+                $in = $in." tag LIKE '".preg_replace('/\s+/', '-', $minus)."%' OR ";
             }
         }
 
