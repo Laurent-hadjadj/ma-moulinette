@@ -63,9 +63,6 @@ class ListeProjetRepository extends ServiceEntityRepository
     /**
      * [Description for countListProjet]
      * Compte le nombre total de projet.
-     *
-     * @param string $mode
-     *
      * @return array
      *
      * Created at: 27/10/2023 13:54:53 (Europe/Paris)

@@ -61,8 +61,6 @@ class NotesRepository extends ServiceEntityRepository
     /**
      * [Description for InsertNotes]
      * Ajoute les notes pour le projet
-     *
-     * @param string $mode
      * @param array $map
      *
      * @return array
