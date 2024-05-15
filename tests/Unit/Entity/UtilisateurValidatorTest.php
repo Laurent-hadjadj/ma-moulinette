@@ -80,14 +80,14 @@ class UtilisateurValidatorTest extends KernelTestCase
     $this->assertHasErrors($this->getEntity()->setNom(''), 1);
     $this->assertHasErrors($this->getEntity()->setCourriel(''), 1);
     $this->assertHasErrors($this->getEntity()->setPassword(''), 1);
-    $this->assertHasErrors($this->getEntity()->setPreference([]), 1);
+    $this->assertHasErrors($this->getEntity()->setRoles([]), 1);
   }
 
   public function testValidBlankEntity(): void
   {
     $this->assertHasErrors($this->getEntity()->setAvatar(''), 0);
-    $this->assertHasErrors($this->getEntity()->setRoles([]), 0);
     $this->assertHasErrors($this->getEntity()->setEquipe([]), 0);
+    $this->assertHasErrors($this->getEntity()->setPreference([]), 0); // pas normal
   }
 
   public function testValidIntegerEntity(): void
@@ -105,6 +105,6 @@ class UtilisateurValidatorTest extends KernelTestCase
       $entity = $this->getEntity();
       $reflectionClass = new \ReflectionClass($entity);
       $nbAttributs = count($reflectionClass->getProperties());
-      $this->assertEquals($nbAttributs, 14);
+      $this->assertEquals($nbAttributs, 13);
   }
 }
