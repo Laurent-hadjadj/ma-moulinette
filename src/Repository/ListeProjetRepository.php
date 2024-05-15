@@ -102,9 +102,9 @@ class ListeProjetRepository extends ServiceEntityRepository
     {
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-                $sql = "SELECT DISTINCT liste_projet.maven_key as id, liste_projet.name as text
-                    FROM liste_projet, json_each(liste_projet.tags)
-                    WHERE ".$map['clause_where'];
+                $sql = "SELECT DISTINCT liste_projet.maven_key AS id, liste_projet.name AS text
+                        FROM ma_moulinette.liste_projet, jsonb_array_elements_text(liste_projet.tags::jsonb) AS tag
+                        WHERE ".$map['clause_where'];
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
                 $exec=$stmt->executeQuery();
                 $liste=$exec->fetchAllAssociative();
