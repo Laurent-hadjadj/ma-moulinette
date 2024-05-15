@@ -68,7 +68,7 @@ class ProfilesRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectProfiles($referentielDefault='1', $langage = null):array
+    public function selectProfiles($referentielDefault=true ,$langage = null):array
     {
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
@@ -78,7 +78,7 @@ class ProfilesRepository extends ServiceEntityRepository
                         rules_update_at as date,
                         referentiel_default as actif
                         FROM profiles
-                        WHERE referentiel_default = ".$referentielDefault;
+                        WHERE referentiel_default = true";
                 if ($langage !== null ){
                     $sql .= " AND language_name LIKE '".$langage."'";
                 }

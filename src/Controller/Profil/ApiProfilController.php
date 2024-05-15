@@ -115,16 +115,14 @@ class ApiProfilController extends AbstractController
         if ($request['code']===500) {
             return $response->setData(['mode' => $data->mode, 'code' => 500, 'erreur'=>$request['erreur'], Response::HTTP_OK]);
         }
-
         /** On insert les profils dans la table profiles. */
         foreach ($r['profiles'] as $profil) {
             $nombre = $nombre + 1;
-
             $profils = new Profiles();
             $profils->setKey($profil['key']);
             $profils->setName($profil['name']);
             $profils->setLanguageName($profil['languageName']);
-            $profils->setReferentielDefault($profil['referentielDefault']);
+            $profils->setReferentielDefault($profil['isDefault']);
             $profils->setActiveRuleCount($profil['activeRuleCount']);
             $rulesDate = new DateTime($profil['rulesUpdatedAt']);
             $profils->setRulesUpdateAt($rulesDate);
