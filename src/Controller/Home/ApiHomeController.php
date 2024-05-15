@@ -124,9 +124,6 @@ class ApiHomeController extends AbstractController
         $listeProjetEntity = $this->em->getRepository(ListeProjet::class);
         $propertiesEntity = $this->em->getRepository(Properties::class);
 
-        /** On décode le body */
-        $data = json_decode($request->getContent());
-
         /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
 
