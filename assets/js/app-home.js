@@ -85,10 +85,9 @@ const sonarIsUp=async function() {
   *
   */
 const miseAJourListe=function() {
-  const data={'mode': 'null' };
   const options = {
     url: `${serveur()}/api/home/projet`, type: 'POST',
-          dataType: 'json', data: JSON.stringify(data), contentType };
+          dataType: 'json', data: JSON.stringify(), contentType };
     return new Promise(resolve => {
       $.ajax(options).then(t => {
         if (t.code!==http_200){

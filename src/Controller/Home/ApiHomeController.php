@@ -92,7 +92,7 @@ class ApiHomeController extends AbstractController
         $response = new JsonResponse();
 
         /** On teste si le body est correcte */
-        if ($data === null || !property_exists($data, 'mode')) {
+        if ($data === null) {
             return $response->setData(['data'=>$data, 'code'=>400, 'reference'=>static::$reference,
             'message'=>static::$erreur400, 'type'=>'alert','result'=>'',Response::HTTP_BAD_REQUEST]);
             }
@@ -130,17 +130,9 @@ class ApiHomeController extends AbstractController
         /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
 
-        /** On teste si le body est correcte */
-        if ($data === null || !property_exists($data, 'mode')) {
-        return $response->setData(['data'=>$data,'code'=>400,
-        'reference'=>static::$reference, 'message'=>static::$erreur400,
-        'type'=>'alert', Response::HTTP_BAD_REQUEST]);
-        }
-
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return $response->setData([
-                'mode' => $data->mode,
                 'type'=>'warning', 'code' => 403,
                 'reference' => static::$reference,
                 'message' => static::$erreur403, Response::HTTP_OK]);
@@ -161,17 +153,17 @@ class ApiHomeController extends AbstractController
         if (array_key_exists('total', $result)){
             if ($result['code']===404) {
                 return $response->setData([
-                    'type' => 'warning', 'mode' => $data->mode,
+                    'type' => 'warning',
                     'reference' => static::$reference, 'code' => 404,
                     'message'=>static::$erreur404, Response::HTTP_OK]);
             }
         }
 
         /** On supprime les données de la table avant d'importer les données. */
-        $request=$listeProjetEntity->deleteListeProjet($data->mode);
+        $request=$listeProjetEntity->deleteListeProjet();
         if ($request['code']!=200) {
             return $response->setData([
-                'type' => 'alert', 'mode' => $data->mode,
+                'type' => 'alert',
                 'reference' => static::$reference, 'code' => $request['code'],
                 'message'=>$request['erreur'], Response::HTTP_OK]);
         }
@@ -195,9 +187,7 @@ class ApiHomeController extends AbstractController
                 $listeProjet->setVisibility($projet["visibility"]);
                 $listeProjet->setDateEnregistrement($date);
                 $this->em->persist($listeProjet);
-                if ($data->mode != 'TEST') {
-                    $this->em->flush();
-                }
+                $this->em->flush();
                 $nombre++;
                 /** On calcul le nombre de projet public et privé */
                 if ($projet["visibility"] == 'public') {
@@ -216,10 +206,10 @@ class ApiHomeController extends AbstractController
         $map=[  'projet_bd'=>$nombre, 'projet_sonar'=>$nombre,
                 'date_modification_projet'=>$date->format(static::$dateFormatShort),
             ];
-        $r=$propertiesEntity->updatePropertiesProjet($data->mode,$map);
+        $r=$propertiesEntity->updatePropertiesProjet($map);
         if ($r['code']!=200) {
             return $response->setData([
-                'type' => 'alert', 'mode' => $data->mode,
+                'type' => 'alert',
                 'reference' => static::$reference, 'code' => $r['code'],
                 'message'=>$r['erreur'], Response::HTTP_OK]);
         }
@@ -228,7 +218,7 @@ class ApiHomeController extends AbstractController
         $message = "Mise à jour de la liste des projets effectuée.";
 
         return $response->setData(
-            [ 'mode' => $data->mode, 'code' => 200,
+            ['code' => 200,
             'reference' => static::$reference, 'type' => 'success',
             'message' => $message,'nombre' => $nombre,
             'public' => $public, 'private' => $private,
