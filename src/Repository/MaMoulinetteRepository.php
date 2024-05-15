@@ -32,9 +32,6 @@ class MaMoulinetteRepository extends ServiceEntityRepository
     /**
      * [Description for  getMaMoulinetteVersion]
      * Récupère la version de Ma Moulinette
-     *
-     * @param string $mode
-     *
      * @return array
      *
      * Created at: 27/10/2023 15:45:02 (Europe/Paris)

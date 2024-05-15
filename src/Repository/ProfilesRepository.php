@@ -121,9 +121,6 @@ class ProfilesRepository extends ServiceEntityRepository
 
     /**
      * [Description for selectProfilesLanguage]
-     *
-     * @param string $mode
-     *
      * @return array
      *
      * Created at: 20/02/2024 11:15:53 (Europe/Paris)
