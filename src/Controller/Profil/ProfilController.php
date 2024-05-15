@@ -77,6 +77,8 @@ class ProfilController extends AbstractController
             break;
         }
 
+        $liste = isset($request['liste']) ? $request['liste'] : []; // Fournit un tableau vide par défaut
+
         $render =
         [   "liste" => $request['liste'],
             "version" => $this->getParameter("version"),
