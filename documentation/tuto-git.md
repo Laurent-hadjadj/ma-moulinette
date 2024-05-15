@@ -43,3 +43,16 @@ Un raccourci utile avec ces deux commande est `git add .` et `git restore .` qui
 Après avoir ajouter tout les fichiers que vous vouliez on peut passer à la commande `git commit`.
 
 Cette commande va ajouter un commit à votre branche suivit du message que vous avez mis
+
+*Exemple de commit*
+
+### La mise en ligne de votre travail
+
+>git push
+
+Cette commande va envoyer tout les commits passer sur le repo en ligne de votre github.
+*Exemple de git push*
+
+## La fusion des travaux commun
+
+Pour bien commencer cette etape il faut imperativement que la branche develop 
