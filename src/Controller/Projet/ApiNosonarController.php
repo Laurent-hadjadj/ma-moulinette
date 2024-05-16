@@ -72,7 +72,6 @@ class ApiNosonarController extends AbstractController
      *
      * Phase 11
      *
-     * {mode} = null | TEST
      * {key} = la clé du projet
      * {rules} = java:S1309 et java:NoSonar
      *
@@ -98,15 +97,15 @@ class ApiNosonarController extends AbstractController
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if ($data === null || !property_exists($data, 'mode') || !property_exists($data, 'maven_key') ) {
-            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
-                                        'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+        if ($data === null || !property_exists($data, 'maven_key') ) {
+            return $response->setData(
+                ['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
+                'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
         }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return $response->setData([
-                'mode' => $data->mode ,
                 "code" => 403,
                 "reference" => static::$reference,
                 "message" => static::$erreur403,
@@ -126,7 +125,6 @@ class ApiNosonarController extends AbstractController
         if (array_key_exists('code', $result)){
             if ($result['code']===401) {
             return $response->setData([
-                'mode' => $data->mode ,
                 'code' => 401,
                 'reference' => static::$reference,
                 'message' => static::$erreur401,
@@ -134,7 +132,6 @@ class ApiNosonarController extends AbstractController
             }
             if ($result['code']===404){
                 return $response->setData([
-                    'mode' => $data->mode ,
                     'code' => 404,
                     'reference' => static::$reference,
                     'message' => static::$erreur404,
