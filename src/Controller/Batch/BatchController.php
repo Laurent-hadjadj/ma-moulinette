@@ -339,15 +339,15 @@ class BatchController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function listeProjet($mode, $portefeuille): array
+    public function listeProjet($portefeuille): array
     {
         /** On instancie l'EntityRepository */
         $portefeuilleEntity = $this->em->getRepository(Portefeuille::class);
 
         $map=[ 'portefeuille'=>$portefeuille ];
-        $r=$portefeuilleEntity->selectPortefeuille($mode, $map);
+        $r=$portefeuilleEntity->selectPortefeuille($map);
         if ($r['code']!=200) {
-            return ['mode' => $mode, 'code' => $r['code'], 'message'=>$r['erreur']];
+            return ['code' => $r['code'], 'message'=>$r['erreur']];
         }
 
         if (empty($r['liste'])) {
@@ -402,7 +402,6 @@ class BatchController extends AbstractController
     {
         /** On récupère le portefeuille */
         $portefeuille = $request->get('nom-traitement');
-        $mode = $request->get('mode');
 
         /** On créé un nouvel objet Json */
         $response = new JsonResponse();
@@ -412,7 +411,7 @@ class BatchController extends AbstractController
         $request = $this->em->getConnection()->prepare( $sql)->executeQuery()->fetchAllAssociative();
 
         if (empty($request)) {
-            return $response->setData(["mode" => $mode, "job" => $portefeuille, "code" => "KO", "execution" => "error", Response::HTTP_OK]);
+            return $response->setData(["job" => $portefeuille, "code" => "KO", "execution" => "error", Response::HTTP_OK]);
         }
 
         /**
@@ -431,7 +430,7 @@ class BatchController extends AbstractController
             $message = "pending";
         }
 
-        return $response->setData(["mode" => $mode, "code" => "OK", "execution" => $message, Response::HTTP_OK]);
+        return $response->setData(["code" => "OK", "execution" => $message, Response::HTTP_OK]);
     }
 
     /**
@@ -495,7 +494,7 @@ class BatchController extends AbstractController
              * On récupère la liste des jobs
              * liste" => array:1 [ 0 => "fr.ma-petite-entreprise:ma-moulinette" ]
              */
-            $listeProjet = $this->listeProjet($mode='null', $value['portefeuille']);
+            $listeProjet = $this->listeProjet($value['portefeuille']);
 
             /** On continue le traitement si la liste n'est pas vide */
             $message = explode(" ", $listeProjet['message']);
@@ -637,7 +636,7 @@ class BatchController extends AbstractController
              * On récupère la liste des projets pour le job
              * liste" => array:1 [ 0 => "fr.ma-petite-entreprise:ma-moulinette" ]
              */
-            $listeProjet = $this->listeProjet($data->mode,$value['portefeuille']);
+            $listeProjet = $this->listeProjet($value['portefeuille']);
 
             /** On continue le traitement si la liste des projets n'est pas vide */
             $message = explode(" ", $listeProjet["message"]);
@@ -785,12 +784,6 @@ class BatchController extends AbstractController
         /** On instancie l'EntityRepository */
         $batchTraitementEntity = $this->em->getRepository(BatchTraitement::class);
 
-        /** On teste si on est en mode Test ou pas */
-        $mode = $request->get('mode');
-        if (empty($mode)){
-            $mode='null';
-        }
-
         /** On initialise les information pour la bulle d'information */
         $bulle = 'bulle-info-vide';
         $infoNombre = 'x';
@@ -822,7 +815,7 @@ class BatchController extends AbstractController
          * On récupère la date du dernier traitement automatique ou programmé
          * Pour le 08/02/2023 : date" => "2023-02-08 08:57:53"
          */
-        $r=$batchTraitementEntity->selectBatchTraitementDateEnregistrementLast($mode);
+        $r=$batchTraitementEntity->selectBatchTraitementDateEnregistrementLast();
         if ($r['code']!=200) {
             $message=$r['erreur'];
             $this->addFlash('alert', $message);
@@ -844,7 +837,7 @@ class BatchController extends AbstractController
         /** retourne la date au format 2023-02-08 */
         $dateTab = explode(" ", $dateDernierBatch);
         $dateLike = $dateTab[0].'%';
-        $listeAll=$batchTraitementEntity->selectBatchTraitementLast($mode, $dateLike);
+        $listeAll=$batchTraitementEntity->selectBatchTraitementLast($dateLike);
         if ($listeAll['code']!=200) {
             $message=$listeAll['erreur'];
         }
