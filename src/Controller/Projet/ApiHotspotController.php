@@ -130,7 +130,6 @@ class ApiHotspotController extends AbstractController
      *
      * Phase 05
      *
-     * {mode} = null | TEST
      * {maven_key} = la clé du projet
      *
      * @param Request $request
@@ -155,16 +154,16 @@ class ApiHotspotController extends AbstractController
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if ($data === null || !property_exists($data, 'mode') || !property_exists($data, 'maven_key') ) {
-            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
-                                        'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+        if ($data === null || !property_exists($data, 'maven_key') ) {
+            return $response->setData(
+                ['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
+                'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
         }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return $response->setData([
                 'type'=>'warning',
-                'mode' => $data->mode ,
                 'code' => 403,
                 'reference' => static::$reference,
                 'message' => static::$erreur403,
@@ -184,7 +183,6 @@ class ApiHotspotController extends AbstractController
             if ($result['code']===401) {
             return $response->setData([
                 'type'=>'warning',
-                'mode' => $data->mode ,
                 'code' => 401,
                 'reference' => static::$reference,
                 'message' => static::$erreur401,
@@ -193,7 +191,6 @@ class ApiHotspotController extends AbstractController
             if ($result['code']===404){
                 return $response->setData([
                     'type'=>'alert',
-                    "mode" => $data->mode ,
                     "code" => 404,
                     "reference" => static::$reference,
                     "message" => static::$erreur404,
@@ -208,11 +205,10 @@ class ApiHotspotController extends AbstractController
 
         /** On supprime les hotspots pour la maven_key. */
         $map=['maven_key'=>$data->maven_key];
-        $request=$hotspotsEntity->deleteHotspotsMavenKey($data->mode, $map);
+        $request=$hotspotsEntity->deleteHotspotsMavenKey($map);
         if ($request['code']!=200) {
             return $response->setData([
                 'type' => 'alert',
-                'mode' => $data->mode,
                 'reference' => static::$reference,
                 'code' => $request['code'],
                 'message'=>$request['erreur'],
@@ -238,14 +234,12 @@ class ApiHotspotController extends AbstractController
         $hotspot->setStatus($value['status']);
         $hotspot->setNiveau($niveau);
         $hotspot->setDateEnregistrement($date);
-        $this->em->persist($hotspot);
 
-        if ($data->mode !== "TEST") {
-            $this->em->flush();
-        }
+        $this->em->persist($hotspot);
+        $this->em->flush();
 
         return $response->setData(
-            ['mode' => $data->mode, 'code' => 200, 'hotspots' => $result['paging']['total'], Response::HTTP_OK]
+            ['code' => 200, 'hotspots' => $result['paging']['total'], Response::HTTP_OK]
         );
     }
 
@@ -257,7 +251,6 @@ class ApiHotspotController extends AbstractController
      *
      * Phase 08 et 09
      *
-     * {mode} = null | TEST
      * {mavenKey} = la clé du projet
      * {owasp} = le type de faille (a1, a2, etc...)
      *
@@ -284,17 +277,17 @@ class ApiHotspotController extends AbstractController
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if ($data === null || !property_exists($data, 'mode') ||
-            !property_exists($data, 'maven_key') || !property_exists($data, 'owasp')) {
-            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
-                                        'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+        if ($data === null || !property_exists($data, 'maven_key') ||
+            !property_exists($data, 'owasp')) {
+            return $response->setData(
+                ['data'=>$data,'code'=>400, 'type'=>'alert',
+                'reference'=> static::$reference, 'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
         }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return $response->setData([
                 'type'=>'warning',
-                'mode' => $data->mode ,
                 'code' => 403,
                 'reference' => static::$reference,
                 'message' => static::$erreur403,
@@ -304,18 +297,18 @@ class ApiHotspotController extends AbstractController
         if ($data->owasp == 'a0') {
             /** On supprime les hotspots pour la maven_key. */
             $map=['maven_key'=>$data->maven_key];
-            $request=$hotspotOwaspEntity->deleteHotspotOwaspMavenKey($data->mode, $map);
+            $request=$hotspotOwaspEntity->deleteHotspotOwaspMavenKey($map);
             if ($request['code']!=200) {
                 return $response->setData([
                     'type' => 'alert',
-                    'mode' => $data->mode,
+
                     'reference' => static::$reference,
                     'code' => $request['code'],
                     'message'=>$request['erreur'],
                     Response::HTTP_OK]);
             }
 
-            return $response->setData(['mode'=>$data->mode, 'code'=>200, 'info' => 'effacement', Response::HTTP_OK]);
+            return $response->setData(['code'=>200, 'info' => 'effacement', Response::HTTP_OK]);
         }
 
         /** On récupère l'URL du serveur */
@@ -332,7 +325,6 @@ class ApiHotspotController extends AbstractController
             if ($result['code']===401) {
             return $response->setData([
                 'type'=>'warning',
-                'mode' => $data->mode ,
                 'code' => 401,
                 'reference' => static::$reference,
                 'message' => static::$erreur401,
@@ -341,7 +333,6 @@ class ApiHotspotController extends AbstractController
             if ($result['code']===404){
                 return $response->setData([
                     'type'=>'alert',
-                    "mode" => $data->mode ,
                     "code" => 404,
                     "reference" => static::$reference,
                     "message" => static::$erreur404,
@@ -351,16 +342,16 @@ class ApiHotspotController extends AbstractController
 
         /** On récupère dans la table information_projet la version et la date du projet la plus récente. */
         $map=['maven_key'=>$data->maven_key];
-        $liste=$informationProjetEntity->selectInformationProjetProjectVersion($data->mode, $map);
+        $liste=$informationProjetEntity->selectInformationProjetProjectVersion($map);
         if ($liste['code']!=200) {
-            return $response->setData([
-                'mode' => $data->mode, 'code' => $liste['code'], 'message'=>$liste['erreur'], Response::HTTP_OK]);
+            return $response->setData(
+                ['code' => $liste['code'], 'message'=>$liste['erreur'], Response::HTTP_OK]);
         }
 
         if (!$liste['info']) {
-            return $response->setData([ 'mode' => $data->mode , 'code' => 404,
-                'reference' => static::$reference, 'message' => static::$erreur404,
-                Response::HTTP_OK]);
+            return $response->setData(
+                ['code' => 404, 'reference' => static::$reference,
+                'message' => static::$erreur404, Response::HTTP_OK]);
         }
 
         /** On créé un objet Date. */
@@ -388,9 +379,7 @@ class ApiHotspotController extends AbstractController
                 $hotspot->setDateEnregistrement($dateEnregistement);
 
                 $this->em->persist($hotspot);
-                if ($data->mode !== 'TEST') {
-                    $this->em->flush();
-                }
+                $this->em->flush();
             }
         } else {
             $hotspot = new  HotspotOwasp();
@@ -400,15 +389,14 @@ class ApiHotspotController extends AbstractController
             $hotspot->setStatus('NONE');
             $hotspot->setNiveau('0');
             $hotspot->setDateEnregistrement($dateEnregistement);
+
             $this->em->persist($hotspot);
-            if ($data->mode !== 'TEST') {
-                $this->em->flush();
-            }
+            $this->em->flush();
+
         }
 
         return $response->setData(
-            [ 'mode' => $data->mode, 'code'=>200, 'info' => 'enregistrement',
-                'hotspots' => $result['paging']['total'], Response::HTTP_OK
+            [ 'code'=>200, 'info' => 'enregistrement', 'hotspots' => $result['paging']['total'], Response::HTTP_OK
             ]);
     }
 
@@ -593,7 +581,6 @@ class ApiHotspotController extends AbstractController
      *
      * Phase 10
      *
-     * {mode} = null | TEST
      * {mavenKey} = la clé du projet
      *
      * @param string $mavenKey
@@ -621,16 +608,16 @@ class ApiHotspotController extends AbstractController
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if ($data === null || !property_exists($data, 'mode') || !property_exists($data, 'maven_key') ) {
-            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
-                                        'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+        if ($data === null || !property_exists($data, 'maven_key') ) {
+            return $response->setData(
+                ['data'=>$data,'code'=>400, 'type'=>'alert',
+                'reference'=> static::$reference, 'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
         }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return $response->setData([
                 'type'=>'warning',
-                'mode' => $data->mode ,
                 'code' => 403,
                 'reference' => static::$reference,
                 'message' => static::$erreur403,
@@ -639,11 +626,10 @@ class ApiHotspotController extends AbstractController
 
         /** On récupère la liste des hotspots au status TO_REVIEW */
         $map=['maven_key'=>$data->maven_key];
-        $request=$hotspotsEntity->selectHotspotsToReview($data->mode, $map);
+        $request=$hotspotsEntity->selectHotspotsToReview($map);
         if ($request['code']!=200) {
             return $response->setData([
                 'type' => 'alert',
-                'mode' => $data->mode,
                 'reference' => static::$reference,
                 'code' => $request['code'],
                 'message'=>$request['erreur'],
@@ -652,11 +638,10 @@ class ApiHotspotController extends AbstractController
 
         /** On supprime le details des hotspots pour la maven_key. */
         $map=['maven_key'=>$data->maven_key];
-        $request=$hotspotDetailsEntity->deleteHotspotDetailsMavenKey($data->mode, $map);
+        $request=$hotspotDetailsEntity->deleteHotspotDetailsMavenKey($map);
         if ($request['code']!=200) {
             return $response->setData([
                 'type' => 'alert',
-                'mode' => $data->mode,
                 'reference' => static::$reference,
                 'code' => $request['code'],
                 'message'=>$request['erreur'],
@@ -665,7 +650,7 @@ class ApiHotspotController extends AbstractController
 
         /** Si la liste des hotspots est vide on envoi un code http 406 */
         if (empty($request['liste'])) {
-            return $response->setData(['mode' => $data->mode, 'code' => 406, Response::HTTP_OK]);
+            return $response->setData(['code' => 406, Response::HTTP_OK]);
         }
 
         /**
@@ -692,11 +677,10 @@ class ApiHotspotController extends AbstractController
             $details->setDateEnregistrement($key['date_enregistrement']);
 
             $this->em->persist($details);
-            if ($data->mode != 'TEST') {
-                $this->em->flush();
-            }
+            $this->em->flush();
+
         }
-        return $response->setData(['mode' => $data->mode, 'code'=>200, 'ligne' => $ligne, Response::HTTP_OK]);
+        return $response->setData(['code'=>200, 'ligne' => $ligne, Response::HTTP_OK]);
     }
 
 }
