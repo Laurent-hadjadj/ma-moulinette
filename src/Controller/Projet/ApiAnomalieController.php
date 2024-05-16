@@ -111,7 +111,6 @@ class ApiAnomalieController extends AbstractController
      *
      * Phase 06
      *
-     * {mode} : null | TEST
      * {maven_key} : Clé du projet
      *
      * @param Request $request
@@ -137,16 +136,16 @@ class ApiAnomalieController extends AbstractController
         $response = new JsonResponse();
 
        /** On teste si la clé est valide */
-        if ($data === null || !property_exists($data, 'mode') || !property_exists($data, 'maven_key') ) {
-        return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
-                                    'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+        if ($data === null || !property_exists($data, 'maven_key') ) {
+        return $response->setData(
+            ['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
+                'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
         }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return $response->setData([
                 'type'=>'warning',
-                'mode' => $data->mode ,
                 'code' => 403,
                 'reference' => static::$reference,
                 'message' => static::$erreur403,
@@ -192,7 +191,6 @@ class ApiAnomalieController extends AbstractController
                 $result4['code']===401) {
             return $response->setData([
                 'type'=>'warning',
-                'mode' => $data->mode ,
                 'code' => 401,
                 'reference' => static::$reference,
                 'message' => static::$erreur401,
@@ -204,7 +202,6 @@ class ApiAnomalieController extends AbstractController
                 $result4['code']===404) {
                 return $response->setData([
                     'type'=>'alert',
-                    "mode" => $data->mode ,
                     "code" => 404,
                     "reference" => static::$reference,
                     "message" => static::$erreur404,
@@ -217,11 +214,10 @@ class ApiAnomalieController extends AbstractController
         if ($result1['paging']['total'] != 0) {
             /** On supprime les anomalies pour la maven_key. */
             $map=['maven_key'=>$data->maven_key];
-            $request=$anomalieEntity->deleteAnomalieMavenKey($data->mode, $map);
+            $request=$anomalieEntity->deleteAnomalieMavenKey($map);
             if ($request['code']!=200) {
                 return $response->setData([
                     'type' => 'alert',
-                    'mode' => $data->mode,
                     'reference' => static::$reference,
                     'code' => $request['code'],
                     'message'=>$request['erreur'],
@@ -339,13 +335,12 @@ class ApiAnomalieController extends AbstractController
             $issue->setDateEnregistrement($date);
 
             $this->em->persist($issue);
-            if ($data->mode !== 'TEST') {
-                $this->em->flush();
-            }
+            $this->em->flush();
+
         }
 
         $info = "Enregistrement des défauts (" . $nombreAnomalie . ") correctement effectué.";
-        return $response->setData(['mode' => $data->mode, 'code'=>200, "info" => $info, Response::HTTP_OK]);
+        return $response->setData(['code'=>200, "info" => $info, Response::HTTP_OK]);
     }
 
 
@@ -356,7 +351,6 @@ class ApiAnomalieController extends AbstractController
      *
      * Phase 07
      *
-     * {mode} : null | TEST
      * {maven_key} : Clé du projet
      *
      * @param Request $request
@@ -385,16 +379,16 @@ class ApiAnomalieController extends AbstractController
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if ($data === null || !property_exists($data, 'mode') || !property_exists($data, 'maven_key') ) {
-            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
-                                        'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+        if ($data === null || !property_exists($data, 'maven_key') ) {
+            return $response->setData(
+                ['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
+                    'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
         }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return $response->setData([
                 'type'=>'warning',
-                'mode' => $data->mode ,
                 'code' => 403,
                 'reference' => static::$reference,
                 'message' => static::$erreur403,
@@ -426,7 +420,6 @@ class ApiAnomalieController extends AbstractController
                 $result3['code']===403) {
             return $response->setData([
                 'type'=>'warning',
-                'mode' => $data->mode ,
                 'code' => 401,
                 'reference' => static::$reference,
                 'message' => static::$erreur401,
@@ -437,7 +430,6 @@ class ApiAnomalieController extends AbstractController
                 $result3['code']===404) {
                 return $response->setData([
                     'type'=>'alert',
-                    "mode" => $data->mode ,
                     "code" => 404,
                     "reference" => static::$reference,
                     "message" => static::$erreur404,
@@ -452,11 +444,10 @@ class ApiAnomalieController extends AbstractController
         if ($total1 !== 0 || $total2 !== 0 || $total3 !== 0) {
             /** On supprime le detail des anomalies pour la maven_key. */
             $map=['maven_key'=>$data->maven_key];
-            $request=$anomalieDetailsEntity->deleteAnomalieDetailsMavenKey($data->mode, $map);
+            $request=$anomalieDetailsEntity->deleteAnomalieDetailsMavenKey($map);
             if ($request['code']!=200) {
                 return $response->setData([
                     'type' => 'alert',
-                    'mode' => $data->mode,
                     'reference' => static::$reference,
                     'code' => $request['code'],
                     'message'=>$request['erreur'],
@@ -551,14 +542,12 @@ class ApiAnomalieController extends AbstractController
 
             /** On catch l'erreur sur la clé composite : maven_key, version, date_version. */
             try {
-                if ($data->mode !== "TEST") {
                     $this->em->flush();
-                }
             } catch (\Doctrine\DBAL\Exception $e) {
                 return $response->setData(['erreur' => $e->getCode(), Response::HTTP_OK]);
             }
         }
-        return $response->setData(['mode' => $data->mode, 'code' => 200, Response::HTTP_OK]);
+        return $response->setData(['code' => 200, Response::HTTP_OK]);
     }
 
 }
