@@ -304,7 +304,7 @@ class ApiRepartitionController extends AbstractController
                 $issue->setSetup($setup);
                 $issue->setDateEnregistrement($date);
 
-                $manager = $this->doctrine->getManager();
+                $manager = $this->em->getManager();
                 $manager->persist($issue);
 
                 $manager->flush();
@@ -377,8 +377,7 @@ class ApiRepartitionController extends AbstractController
         $severity = $data->severity;
         $setup = $data->setup;
 
-        /**$mode='null';
-        $mavenKey = "fr.franceagrimer:rnm";
+        /**$mavenKey = "fr.franceagrimer:rnm";
         $type = "CODE_SMELL";
         $severity = "MAJOR";
         $setup = 1685694576592;**/
@@ -387,10 +386,7 @@ class ApiRepartitionController extends AbstractController
         $response = new JsonResponse();
 
         /** On récupère la liste des bugs */
-        $liste = $this->doctrine
-            ->getManager()
-            ->getRepository(Repartition::class)
-            ->findBy(
+        $liste = $this->em->getManager()->getRepository(Repartition::class)->findBy(
                 [
                 'mavenKey' => $mavenKey,
                 'type' => $type,
