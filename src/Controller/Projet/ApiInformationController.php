@@ -87,7 +87,7 @@ class ApiInformationController extends AbstractController
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if ($data === null || !property_exists($data, 'mode') || !property_exists($data, 'maven_key') ) {
+        if ($data === null || !property_exists($data, 'maven_key') ) {
             return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
                                         'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
         }
@@ -96,7 +96,6 @@ class ApiInformationController extends AbstractController
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return $response->setData([
                 'type'=>'warning',
-                'mode' => $data->mode ,
                 'code' => 403,
                 'reference' => static::$reference,
                 'message' => static::$erreur403,
@@ -115,7 +114,6 @@ class ApiInformationController extends AbstractController
             if ($result['code']===401) {
             return $response->setData([
                 'type'=>'warning',
-                'mode' => $data->mode ,
                 'code' => 401,
                 'reference' => static::$reference,
                 'message' => static::$erreur401,
@@ -124,7 +122,6 @@ class ApiInformationController extends AbstractController
             if ($result['code']===404){
                 return $response->setData([
                     'type'=>'alert',
-                    'mode' => $data->mode ,
                     'code' => 404,
                     'reference' => static::$reference,
                     'message' => static::$erreur404,
@@ -138,11 +135,10 @@ class ApiInformationController extends AbstractController
 
         /** On supprime les informations pour la maven_key. */
         $map=['maven_key'=>$data->maven_key];
-        $request=$informationProjetEntity->deleteInformationProjetMavenKey($data->mode, $map);
+        $request=$informationProjetEntity->deleteInformationProjetMavenKey($map);
         if ($request['code']!=200) {
             return $response->setData([
                 'type'=>'alert',
-                'mode' => $data->mode,
                 'reference' => static::$reference,
                 'code' => $request['code'],
                 'message'=>$request['erreur'],
@@ -171,14 +167,13 @@ class ApiInformationController extends AbstractController
             $informationProjet->setProjectVersion($information['projectVersion']);
             $informationProjet->setType(strtoupper($explode[1]));
             $informationProjet->setDateEnregistrement($date);
+
             $this->em->persist($informationProjet);
-            if ($data->mode != 'TEST') {
-                $this->em->flush();
-            }
+            $this->em->flush();
         }
 
-        return $response->setData(['mode' => $data->mode ,
-            'code'=> 200, 'nombreVersion' => $nombreVersion, Response::HTTP_OK]);
+        return $response->setData(
+            ['code'=> 200, 'nombreVersion' => $nombreVersion, Response::HTTP_OK]);
     }
 
 }
