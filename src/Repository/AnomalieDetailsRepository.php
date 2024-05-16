@@ -33,8 +33,7 @@ class AnomalieDetailsRepository extends ServiceEntityRepository
     /**
      * [Description for deleteAnomalieDetailsMavenKey]
      *  On supprime le détails des anomalies du projet
-     *
-     * @param string $mode
+     * 
      * @param array $map
      *
      * @return array
@@ -43,30 +42,28 @@ class AnomalieDetailsRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function deleteAnomalieDetailsMavenKey($mode,$map):array
+    public function deleteAnomalieDetailsMavenKey($map):array
     {
-        $sql = "DELETE
-                FROM anomalie_details
-                WHERE maven_key=:maven_key";
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-        $conn->bindValue(':maven_key', $map['maven_key']);
         try {
-                if ($mode !== 'TEST') {
-                    $conn->executeQuery();
-                } else {
-                    return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-                }
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "DELETE
+                        FROM anomalie_details
+                        WHERE maven_key=:maven_key";
+                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $conn->bindValue(':maven_key', $map['maven_key']);
+                    $conn->executeStatement();
+            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+            $this->getEntityManager()->getConnection()->rollBack();
+            return ['code'=>500, 'erreur'=> $e->getCode()];
         }
-        return ['mode'=>$mode, 'code'=>200, 'erreur'=>''];
+        return ['code'=>200, 'erreur'=>''];
     }
 
     /**
      * [Description for selectAnomalieDetailsMavenKey]
      * Retoune la liste du détails des anomalies pour un projet.
      *
-     * @param mixed $mode
      * @param mixed $map
      *
      * @return array
@@ -75,23 +72,22 @@ class AnomalieDetailsRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectAnomalieDetailsMavenKey($mode,$map):array
+    public function selectAnomalieDetailsMavenKey($map):array
     {
-        $sql = "SELECT *
-                FROM anomalie_details
-                WHERE maven_key=:maven_key";
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-        $conn->bindValue(':maven_key', $map['maven_key']);
         try {
-                if ($mode !== 'TEST') {
-                    $exec=$conn->executeQuery();
-                    $liste=$exec->fetchAllAssociative();
-                } else {
-                    return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-                }
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "SELECT *
+                        FROM anomalie_details
+                        WHERE maven_key=:maven_key";
+                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $conn->bindValue(':maven_key', $map['maven_key']);
+                $exec=$conn->executeQuery();
+                $liste=$exec->fetchAllAssociative();
+            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+            $this->getEntityManager()->getConnection()->rollBack();
+            return ['code'=>500, 'erreur'=> $e->getCode()];
         }
-        return ['mode'=>$mode, 'code'=>200, 'liste'=>$liste, 'erreur'=>''];
+        return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
     }
 }
