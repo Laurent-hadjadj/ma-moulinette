@@ -62,11 +62,10 @@ class ApiTodoController extends AbstractController
     /**
      * [Description for projetTodo]
      * On récupère la liste des fichiers ayant fait l'objet d'un "To do"
-     * http://{url}/api/projet/todo
+     * http://{url}/api/projet/to do
      *
      * Phase 12
      *
-     * {mode} = null | TEST
      * {key} = la clé du projet
      *
      * @param Request $request
@@ -91,15 +90,15 @@ class ApiTodoController extends AbstractController
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if ($data === null || !property_exists($data, 'mode') || !property_exists($data, 'maven_key') ) {
-            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert',
+        if ($data === null || !property_exists($data, 'maven_key') ) {
+            return $response->setData(
+                ['data'=>$data,'code'=>400, 'type'=>'alert',
                 'reference'=> static::$reference,'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
         }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return $response->setData([
-                "mode" => $data->mode ,
                 "code" => 403,
                 "reference" => static::$reference,
                 "message" => static::$erreur403,
@@ -119,7 +118,6 @@ class ApiTodoController extends AbstractController
         if (array_key_exists('code', $result)){
             if ($result['code']===401) {
             return $response->setData([
-                "mode" => $data->mode ,
                 "code" => 401,
                 "reference" => static::$reference,
                 "message" => static::$erreur401,
@@ -127,7 +125,6 @@ class ApiTodoController extends AbstractController
             }
             if ($result['code']===404){
                 return $response->setData([
-                    "mode" => $data->mode ,
                     "code" => 404,
                     "reference" => static::$reference,
                     "message" => static::$erreur404,
@@ -141,11 +138,10 @@ class ApiTodoController extends AbstractController
 
         /** On supprime les notes pour la maven_key. */
         $map=['maven_key'=>$data->maven_key];
-        $request=$todo->deleteTodoMavenKey($data->mode, $map);
+        $request=$todo->deleteTodoMavenKey($map);
         if ($request['code']!=200) {
             return $response->setData([
                 'type' => 'alert',
-                'mode' => $data->mode,
                 'reference' => static::$reference,
                 'code' => $request['code'],
                 'message'=>$request['erreur'],
@@ -171,15 +167,14 @@ class ApiTodoController extends AbstractController
                 $todo->setDateEnregistrement($dateEnregistrement);
 
                 $this->em->persist($todo);
-                if ($data->mode != 'TEST') {
-                    $this->em->flush();
-                }
+                $this->em->flush();
             }
         } else {
             /** Il n'y a pas de to do */
         }
 
-        return $response->setData(['mode' => $data->mode, 'code'=>200, 'todo' => $result["paging"]["total"], Response::HTTP_OK]);
+        return $response->setData(
+            ['code'=>200, 'todo' => $result["paging"]["total"], Response::HTTP_OK]);
     }
 
 }
