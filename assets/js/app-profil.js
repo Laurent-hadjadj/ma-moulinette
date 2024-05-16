@@ -154,6 +154,7 @@ const recupereProfilNonActif=async function(langage){
         dataType: 'json', data: JSON.stringify(dataRefresh), contentType };
   /** On appel l'API */
   const t = await $.ajax(optionsRefresh);
+  console.log(t);
 
   let id= 0, str = '';
 
@@ -161,6 +162,7 @@ const recupereProfilNonActif=async function(langage){
   const profils = t.listeProfil;
   const nombreProfils = t.countProfil;
   // En tête du tableau
+  console.log(nombreProfils);
 
 
   if (nombreProfils.request[0].total > 1){

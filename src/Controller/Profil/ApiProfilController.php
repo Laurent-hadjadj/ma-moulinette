@@ -388,10 +388,9 @@ class ApiProfilController extends AbstractController
         }
 
         /** On récupère la liste des profiles pas actifs */
-        $referentielDefault = '0';
+        $referentielDefault = "false";
         $request=$profilesEntity->selectProfiles($referentielDefault,$langage);
         $compte=$profilesEntity->countProfiles($referentielDefault,$langage);
-
         $response = new JsonResponse();
         return $response->setData([
             'code' => 200, "listeProfil" => $request['liste'], "countProfil" =>$compte ,Response::HTTP_OK]);
