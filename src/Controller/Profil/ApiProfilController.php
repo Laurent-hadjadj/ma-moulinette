@@ -84,13 +84,13 @@ class ApiProfilController extends AbstractController
         $response = new JsonResponse();
 
        /** On teste si la clé est valide */
-        if ($data === null || !property_exists($data, 'mode')) {
+        if ($data === null) {
         return $response->setData(['data'=>$data,'code'=>400, Response::HTTP_BAD_REQUEST]);
         }
 
         /** si on est pas GESTIONNAIRE on ne fait rien. */
         if (!$security->isGranted('ROLE_GESTIONNAIRE')){
-            return $response->setData(['mode' => $data->mode, 'code' => 403, Response::HTTP_OK]);
+            return $response->setData(['code' => 403, Response::HTTP_OK]);
         }
 
         /** On définit l'URL et on ajoute le nom des profils sonarqube*/
@@ -102,7 +102,7 @@ class ApiProfilController extends AbstractController
 
         /** On Vérifie qu'il existe au moins un profil */
         if (empty($r['profiles'])) {
-            return $response->setData(['mode' => $data->mode, 'code' => 202, Response::HTTP_OK]);
+            return $response->setData(['code' => 202, Response::HTTP_OK]);
         }
 
         /*** Super on a récupéré la liste des profils par langage */
@@ -111,9 +111,9 @@ class ApiProfilController extends AbstractController
         $nombre = 0;
 
         /** On supprime les données de la table avant d'importer les données;*/
-        $request=$profilesEntity->deleteProfiles($data->mode);
+        $request=$profilesEntity->deleteProfiles();
         if ($request['code']===500) {
-            return $response->setData(['mode' => $data->mode, 'code' => 500, 'erreur'=>$request['erreur'], Response::HTTP_OK]);
+            return $response->setData(['code' => 500, 'erreur'=>$request['erreur'], Response::HTTP_OK]);
         }
         /** On insert les profils dans la table profiles. */
         foreach ($r['profiles'] as $profil) {
@@ -131,15 +131,15 @@ class ApiProfilController extends AbstractController
             $this->em->flush();
         }
         /** On récupère la nouvelle liste des profils; */
-        $request=$profilesEntity->selectProfiles($data->mode);
+        $request=$profilesEntity->selectProfiles();
 
         /** On met à jour la table proprietes */
         $dateModificationProfil = $date->format("Y-m-d H:i:s");
         $map=['profil_bd'=>$nombre, 'profil_sonar'=>$nombre, 'date_modification_profil'=>$dateModificationProfil];
-        $propertiesEntity->updatePropertiesProfiles($data->mode, $map);
+        $propertiesEntity->updatePropertiesProfiles($map);
 
         return $response->setData([
-            'mode' => $data->mode, 'code' => 200, "listeProfil" => $request['liste'], Response::HTTP_OK]);
+            'code' => 200, "listeProfil" => $request['liste'], Response::HTTP_OK]);
     }
 
     /**
@@ -168,7 +168,7 @@ class ApiProfilController extends AbstractController
         $response = new JsonResponse();
 
       /** On teste si la clé est valide */
-        if ($data === null || !property_exists($data, 'mode')) {
+        if ($data === null) {
         return $response->setData(['data'=>$data,'code'=>400, Response::HTTP_BAD_REQUEST]);
         }
 
@@ -176,13 +176,13 @@ class ApiProfilController extends AbstractController
         $listeDataset = [];
 
         /** On récupère la liste des langage */
-        $selectProfilesLanguage=$profilesEntity->selectProfilesLanguage($data->mode);
+        $selectProfilesLanguage=$profilesEntity->selectProfilesLanguage();
         /** On créé la liste des libellés et des données */
         foreach ($selectProfilesLanguage['labels'] as $label) {
             array_push($listeLabel, $label['profile']);
         }
         /** On récupère le nombre de règle de chaque profil */
-        $selectProfilesRuleCount=$profilesEntity->selectProfilesRuleCount($data->mode);
+        $selectProfilesRuleCount=$profilesEntity->selectProfilesRuleCount();
         foreach ($selectProfilesRuleCount['data-set'] as $dataSet) {
             array_push($listeDataset, $dataSet['total']);
         }
@@ -394,6 +394,6 @@ class ApiProfilController extends AbstractController
 
         $response = new JsonResponse();
         return $response->setData([
-            'mode' => $data->mode, 'code' => 200, "listeProfil" => $request['liste'], "countProfil" =>$compte ,Response::HTTP_OK]);
+            'code' => 200, "listeProfil" => $request['liste'], "countProfil" =>$compte ,Response::HTTP_OK]);
     }
 }
