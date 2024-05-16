@@ -432,7 +432,7 @@ class ApiOwaspPeintureController extends AbstractController
                 'code'=>$low['code'], 'erreur' => $low['erreur'], Response::HTTP_OK]);
         }
 
-        dd($high, $medium, $low);
+
         /**
          * On vérifie la valeur des vulnerabilité de type HIGH, MEDIUMet LOW
          * Si la valeur est null alors on initialise à 0
