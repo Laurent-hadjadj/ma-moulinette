@@ -33,7 +33,6 @@ class BatchTraitementRepository extends ServiceEntityRepository
      * [Description for selectBatchTraitementDateEnregistrementAutomatiqueLast]
      * On récupère la dernière date de programmation du batch automatique
      *
-     * @param string $mode
      *
      * @return array
      *
@@ -41,31 +40,28 @@ class BatchTraitementRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectBatchTraitementDateEnregistrementAutomatiqueLast($mode):array
+    public function selectBatchTraitementDateEnregistrementAutomatiqueLast():array
     {
-        $sql = "SELECT date_enregistrement as date
-                FROM batch_traitement
-                WHERE demarrage='Automatique'
-                ORDER BY date_enregistrement DESC limit 1";
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         try {
-                if ($mode !== 'TEST') {
-                    $exec=$conn->executeQuery();
-                    $liste=$exec->fetchAllAssociative();
-                } else {
-                    return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-                }
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "SELECT date_enregistrement as date
+                        FROM batch_traitement
+                        WHERE demarrage='Automatique'
+                        ORDER BY date_enregistrement DESC limit 1";
+                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $exec=$conn->executeQuery();
+                $liste=$exec->fetchAllAssociative();
+            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+            $this->getEntityManager()->getConnection()->rollBack();
+            return ['code'=>500, 'erreur'=> $e->getCode()];
         }
-        return ['mode'=>$mode, 'code'=>200, 'liste'=>$liste, 'erreur'=>''];
+        return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
     }
 
     /**
      * [Description for selectBatchTraitementDateEnregistrementLast]
      * On récupère la dernière date du batch executé
-     *
-     * @param string $mode
      *
      * @return array
      *
@@ -73,23 +69,22 @@ class BatchTraitementRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectBatchTraitementDateEnregistrementLast($mode):array
+    public function selectBatchTraitementDateEnregistrementLast():array
     {
-        $sql = "SELECT date_enregistrement as date
-                FROM batch_traitement
-                ORDER BY date_enregistrement DESC limit 1";
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         try {
-                if ($mode !== 'TEST') {
-                    $exec=$conn->executeQuery();
-                    $liste=$exec->fetchAllAssociative();
-                } else {
-                    return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-                }
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "SELECT date_enregistrement as date
+                        FROM batch_traitement
+                        ORDER BY date_enregistrement DESC limit 1";
+                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $exec=$conn->executeQuery();
+                $liste=$exec->fetchAllAssociative();
+            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+            $this->getEntityManager()->getConnection()->rollBack();
+            return ['code'=>500, 'erreur'=> $e->getCode()];
         }
-        return ['mode'=>$mode, 'code'=>200, 'liste'=>$liste, 'erreur'=>''];
+        return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
     }
 
     /**
@@ -97,7 +92,6 @@ class BatchTraitementRepository extends ServiceEntityRepository
      * On récupere la liste des derniers traitements,
      * groupé par titre et ordonné par responsable
      *
-     * @param string $mode
      * @param string $date
      *
      * @return array
@@ -106,30 +100,28 @@ class BatchTraitementRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectBatchTraitementLast($mode, $dateLike):array
+    public function selectBatchTraitementLast($dateLike):array
     {
-        $sql = "SELECT  demarrage, resultat, titre, portefeuille,
-                        nombre_projet as projet, responsable,
-                        debut_traitement as debut, fin_traitement as fin
+        try {
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "SELECT  demarrage, resultat, titre, portefeuille,
+                                nombre_projet as projet, responsable,
+                                debut_traitement as debut, fin_traitement as fin
                         FROM batch_traitement
                         WHERE date_enregistrement like :dateLike
                         GROUP BY titre
                         ORDER BY responsable ASC, demarrage ASC";
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-        $conn->bindValue(':dateLike', $dateLike);
-        try {
-                if ($mode !== 'TEST') {
-                    $exec=$conn->executeQuery();
-                    $liste=$exec->fetchAllAssociative();
-                } else {
-                    return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-                }
+                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $conn->bindValue(':dateLike', $dateLike);
+                $exec=$conn->executeQuery();
+                $liste=$exec->fetchAllAssociative();
+            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+            $this->getEntityManager()->getConnection()->rollBack();
+            return ['code'=>500, 'erreur'=> $e->getCode()];
         }
-        return ['mode'=>$mode, 'code'=>200, 'liste'=>$liste, 'erreur'=>''];
+        return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
     }
 
 
-    
 }
