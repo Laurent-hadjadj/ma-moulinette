@@ -99,15 +99,15 @@ class ApiOwaspController extends AbstractController
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if ($data === null || !property_exists($data, 'mode') || !property_exists($data, 'maven_key')) {
-            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
-                                        'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+        if ($data === null || !property_exists($data, 'maven_key')) {
+            return $response->setData(
+                ['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
+                    'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
         }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return $response->setData([
-                "mode" => $data->mode ,
                 "code" => 403,
                 "reference" => static::$reference,
                 "message" => static::$erreur403,
@@ -124,7 +124,6 @@ class ApiOwaspController extends AbstractController
         if (array_key_exists('code', $result)){
             if ($result['code']===401) {
             return $response->setData([
-                "mode" => $data->mode ,
                 "code" => 401,
                 "reference" => static::$reference,
                 "message" => static::$erreur401,
@@ -132,7 +131,6 @@ class ApiOwaspController extends AbstractController
             }
             if ($result['code']===404){
                 return $response->setData([
-                    "mode" => $data->mode ,
                     "code" => 404,
                     "reference" => static::$reference,
                     "message" => static::$erreur404,
@@ -142,14 +140,15 @@ class ApiOwaspController extends AbstractController
 
         /** On récupère dans la table information_projet la version et la date du projet la plus récente. */
         $map=['maven_key'=>$data->maven_key];
-        $select=$informationProjet->selectInformationProjetProjectVersion($data->mode, $map);
+        $select=$informationProjet->selectInformationProjetProjectVersion($map);
         if ($select['code']!=200) {
-            return $response->setData(['mode' => $data->mode, 'code' => $select['code'], 'message'=>$select['erreur'], Response::HTTP_OK]);
+            return $response->setData(
+                ['code' => $select['code'], 'message'=>$select['erreur'], Response::HTTP_OK]);
         }
 
         if (!$select['info']) {
-            return $response->setData([ 'mode' => $data->mode , 'code' => 404,
-                'reference' => static::$reference, 'message' => static::$erreur404,
+            return $response->setData(
+                ['code' => 404, 'reference' => static::$reference, 'message' => static::$erreur404,
                 Response::HTTP_OK]);
         }
 
@@ -404,9 +403,10 @@ class ApiOwaspController extends AbstractController
 
         /** On supprime les informations sur le projet pour la dernière analyse. */
         $map=['maven_key'=>$data->maven_key];
-        $delete=$owasp->deleteOwaspMavenKey($data->mode, $map);
+        $delete=$owasp->deleteOwaspMavenKey($map);
         if ($delete['code']!=200) {
-            return $response->setData(['mode' => $data->mode, 'code' => $delete['code'], 'message'=>$delete['erreur'], Response::HTTP_OK]);
+            return $response->setData(
+                ['code' => $delete['code'], 'message'=>$delete['erreur'], Response::HTTP_OK]);
         }
 
         /** Enregistre en base. */
@@ -487,13 +487,12 @@ class ApiOwaspController extends AbstractController
         $owaspTop10->setA10Minor($a10Minor);
 
         $owaspTop10->setDateEnregistrement($date);
+
         $this->em->persist($owaspTop10);
+        $this->em->flush();
 
-        if ($data->mode !== 'TEST') {
-            $this->em->flush();
-        }
 
-        return $response->setData(['code' => 200, 'mode'=> $data->mode, 'owasp' => $result["total"], Response::HTTP_OK]);
+        return $response->setData(['code' => 200, 'owasp' => $result["total"], Response::HTTP_OK]);
     }
 
 }
