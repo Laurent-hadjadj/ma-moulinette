@@ -173,8 +173,10 @@ class ResetPasswordController extends AbstractController
 
         /** On teste si le body est correcte */
         if ($data === null || !property_exists($data, 'init')) {
-            return $response->setData(['data'=>$data,'code'=>400, 'reference'=>static::$reference,
-                'message'=>static::$erreur400, 'type'=>'alert', Response::HTTP_BAD_REQUEST]);
+            return $response->setData(
+                    ['data'=>$data,'code'=>400, 'reference'=>static::$reference,
+                'message'=>static::$erreur400,
+                'type'=>'alert', Response::HTTP_BAD_REQUEST]);
             }
 
         /** On récupère le filtre de recherche */
@@ -196,7 +198,7 @@ class ResetPasswordController extends AbstractController
         $r=$utilisateurEntity->updateUtilisateurResetPassword($map);
         if ($r['code']!=200) {
             return $response->setData([
-                'type' => 'alert', 'mode' => $data->mode,
+                'type' => 'alert',
                 'reference' => static::$reference, 'code' => $r['code'],
                 'message'=>$r['erreur'], Response::HTTP_OK]);
         }
