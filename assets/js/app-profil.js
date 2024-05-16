@@ -154,11 +154,10 @@ const recupereProfilNonActif=async function(langage){
         dataType: 'json', data: JSON.stringify(dataRefresh), contentType };
   /** On appel l'API */
   const t = await $.ajax(optionsRefresh);
-  console.log(t);
 
-  let id= 0, str = '';
+  let str = '';
 
-  $('#toto').html('');
+  $('#contenu-fenetre-modal').html('');
   const profils = t.listeProfil;
   const nombreProfils = t.countProfil;
   // En tête du tableau
@@ -183,7 +182,6 @@ const recupereProfilNonActif=async function(langage){
   // Bloucle ur le profil pour construire le tablea
   profils.forEach(profil =>
     {
-      id=id+1;
       str +=
       `   <tbody>
             <tr class="open-sans">
@@ -205,7 +203,7 @@ const recupereProfilNonActif=async function(langage){
           <span aria-hidden="true">&times;</span>
           </button>`;
 
-  $('#toto').html(str);
+  $('#contenu-fenetre-modal').html(str);
   $('#fenetre-modal').foundation('open');
 }
 
