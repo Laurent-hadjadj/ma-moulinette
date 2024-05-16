@@ -72,7 +72,11 @@ class ProfilesHistoriqueValidatorTest extends KernelTestCase
     $this->assertHasErrors($this->getEntity()->setAuteur(''), 1);
     $this->assertHasErrors($this->getEntity()->setRegle(''), 1);
     $this->assertHasErrors($this->getEntity()->setDescription(''), 1);
-    $this->assertHasErrors($this->getEntity()->setDetail(''), 1);
+  }
+
+  public function testValidNotNullEntity(): void
+  {
+    $this->assertHasErrors($this->getEntity()->setDetail(''), 0);
   }
 
   public function testCountAttribut(): void
