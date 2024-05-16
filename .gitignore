@@ -86,3 +86,7 @@ RabbitMQ
 ###> phpstan/phpstan ###
 phpstan.neon
 ###< phpstan/phpstan ###
+
+###> mkDocs ###
+mkDocs
+###< mkDocs ###

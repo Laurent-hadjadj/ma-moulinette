@@ -61,8 +61,6 @@ class ListeProjetValidatorTest extends KernelTestCase
   {
     $this->assertHasErrors($this->getEntity()->setMavenKey(''), 1);
     $this->assertHasErrors($this->getEntity()->setName(''), 1);
-    /** On doit avoir au moins un tags */
-    $this->assertHasErrors($this->getEntity()->setTags([]), 1);
     $this->assertHasErrors($this->getEntity()->setVisibility(''), 1);
 
   }

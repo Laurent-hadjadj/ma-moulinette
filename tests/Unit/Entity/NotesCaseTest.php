@@ -25,6 +25,7 @@ class NotesCaseTest extends TestCase
 
     private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
     private static $type = 'reliability';
+    private static $date = '2024-023-29 17:23:18';
     private static $value = 3;
     private static $dateEnregistrement = '2024-03-26 14:46:38';
 
@@ -33,6 +34,7 @@ class NotesCaseTest extends TestCase
         return (new notes())
         ->setMavenKey(static::$mavenKey)
         ->setType(static::$type)
+        ->setDate(new \DateTime(static::$date))
         ->setValue(static::$value)
         ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
     }
@@ -53,6 +55,13 @@ class NotesCaseTest extends TestCase
     {
         $this->notes->setType(static::$type);
         $this->assertEquals(static::$type, $this->notes->getType());
+    }
+
+    public function testSettingAndGettingDate(): void
+    {
+        $newDate=new \DateTime(static::$date);
+        $this->notes->setDate($newDate);
+        $this->assertEquals($newDate, $this->notes->getDate());
     }
 
     public function testSettingAndGettingValue(): void
