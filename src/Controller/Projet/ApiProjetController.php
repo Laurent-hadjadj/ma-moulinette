@@ -79,9 +79,9 @@ class ApiProjetController extends AbstractController
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if ($data === null || !property_exists($data, 'mode') || !property_exists($data, 'maven_key') ) {
-            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert',
-                        'reference'=> static::$reference, 'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+        if ($data === null || !property_exists($data, 'maven_key') ) {
+            return $response->setData(
+                ['data'=>$data,'code'=>400, 'type'=>'alert', 'reference'=> static::$reference, 'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
         }
 
         /** On récupère l'objet User du contexte de sécurité */
@@ -94,8 +94,8 @@ class ApiProjetController extends AbstractController
             return $response->setData(['code' => $request['code'], Response::HTTP_OK]);
         }
 
-        return $response->setData(['mode' => $data->mode, 'code'=>200,
-        'statut' => $request['statut'], Response::HTTP_OK]);
+        return $response->setData(
+            ['code'=>200, 'statut' => $request['statut'], Response::HTTP_OK]);
     }
 
     /**
@@ -122,8 +122,9 @@ class ApiProjetController extends AbstractController
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
-        if ($data === null || !property_exists($data, 'mode') || !property_exists($data, 'maven_key') ) {
-            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
+        if ($data === null || !property_exists($data, 'maven_key') ) {
+            return $response->setData(
+                ['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
             'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
         }
 
@@ -202,7 +203,8 @@ class ApiProjetController extends AbstractController
         /** j'ai pas trouvé de projet pour cette équipe. */
         if (empty($projets)) {
             $type = 'warning';
-            return $response->setData(['mode'=>$data->mode, 'code'=>406, 'reference' =>  static::$reference,
+            return $response->setData(
+                ['code'=>406, 'reference' =>  static::$reference,
                 'message' => static::$erreur406, 'type' => $type, Response::HTTP_OK]);
         }
 
