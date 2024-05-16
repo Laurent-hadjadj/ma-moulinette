@@ -94,7 +94,6 @@ class ApiMesureController extends AbstractController
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return $response->setData([
                 'type'=>'warning',
-                'mode' => $data->mode ,
                 'code' => 403,
                 'reference' => static::$reference,
                 'message' => static::$erreur403,
@@ -114,7 +113,6 @@ class ApiMesureController extends AbstractController
             if ($result1['code']===401) {
             return $response->setData([
                 'type'=>'warning',
-                'mode' => $data->mode ,
                 'code' => 401,
                 'reference' => static::$reference,
                 'message' => static::$erreur401,
@@ -123,7 +121,6 @@ class ApiMesureController extends AbstractController
             if ($result1['code']===404){
                 return $response->setData([
                     'type'=>'alert',
-                    "mode" => $data->mode ,
                     "code" => 404,
                     "reference" => static::$reference,
                     "message" => static::$erreur404,
@@ -196,11 +193,9 @@ class ApiMesureController extends AbstractController
         $mesure->setIssues(intval($issues));
         $mesure->setDateEnregistrement($date);
         $this->em->persist($mesure);
-        if ($data->mode != 'TEST') {
-            $this->em->flush();
-        }
+        $this->em->flush();
 
-        return $response->setData(['mode' => $data->mode , 'code' => 200, Response::HTTP_OK]);
+        return $response->setData(['code' => 200, Response::HTTP_OK]);
     }
 
 }
