@@ -19,13 +19,12 @@ use Symfony\Component\Routing\Annotation\Route;
 /** Gestion de accès aux API */
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\JsonResponse;
 
 /** Accès aux tables SLQLite */
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
-use App\Entity\Secondary\Repartition;
 use App\Entity\Historique;
+use App\Entity\Repartition;
 
 class CosuiController extends AbstractController
 {
@@ -124,7 +123,7 @@ class CosuiController extends AbstractController
     private function setup($mavenKey): string
     {
         /** On se connecte à la base pour connaitre la version du dernier setup pour le projet. */
-        $reponse = $this->mr->getRepository(Repartition::class, 'secondary')
+        $reponse = $this->mr->getRepository(Repartition::class)
                     ->findBy(['mavenKey' => $mavenKey], ['setup' => 'DESC'], 1);
 
         $setup = "NaN";
