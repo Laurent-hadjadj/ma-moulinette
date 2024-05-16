@@ -24,7 +24,7 @@ class PortefeuilleCaseTest extends TestCase
     private $portefeuille;
 
     private static $titre = 'MES PROJETS';
-    private static $equipe = 'MA PETITE ENTREPRISE - équipe de développement.';
+    private static $equipe = 'MA PETITE ENTREPRISE';
     private static $liste =  ['fr.ma-petite-entreprise:ma-moulinette'];
     private static $dateModification = '2024-03-26 14:46:38';
     private static $dateEnregistrement = '2024-03-25 12:26:58';

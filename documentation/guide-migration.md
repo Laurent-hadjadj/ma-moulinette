@@ -16,9 +16,9 @@ Ce guide détaille les étapes nécessaires pour configurer une base de données
 Trois scripts sont nécessires :
 
 1. `00_initalisation.sql` pour la création de la base de données et du role ;
-2. `01_structure.sql` pour la création des structures (tables, indexes, etc..) ;
+2. `01_structure.sql` pour la création des structures (tables, indexes, sequences, etc..) ;
 3. `02_fixtures.sql` pour l'intégration des données de l'application ;
-4. `03_grant_privileges.sql` pour appliquer les autorisations sur les objets de la base de données ;
+données ;
 
 > Important !
 
@@ -74,18 +74,6 @@ psql -h [adresse_serveur] -U [nom_utilisateur] -w -f /chemin/02_fixtures.sql
 **Note** : La connexion se fera avec l'utilisateur propriétaie de la bas de dnnées. Ici, `db_user`.
 
 > psql -h localhost -U db_user -w -f /opt/ma-moulinette/migration/PostgreSQL/02_fixtures.sql
-
-### Attribution des Privilèges
-
-Ensuite, assurez-vous que le rôle a les privilèges nécessaires pour opérer sur la base de données :
-
-```bash
-psql -h [adresse_serveur] -U [nom_utilisateur] -w -f /chemin/03_grant_privileges.sql
-```
-
-**Note** : La connexion se fera avec l'utilisateur administrateur de la bas de données. Ici, `postgres`.
-
-> psql -h localhost -U db_user -w -f /opt/ma-moulinette/migration/PostgreSQL/03_grant_privileges.sql
 
 ## Vérification des Données
 
