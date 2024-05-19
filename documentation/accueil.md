@@ -38,6 +38,7 @@
 - [x] la gestion de l'authentificationa a été améliorée. La sécurité a été renforcée.
 - [x] l'identification de l'utilisateur et le renouvellement de son mot de passe a été ajouté.
 - [x] prise en compte partielle du WCAG 2.2.
+- [x] ajout du bloc Tags pour afficher le nombre de projet orphelin.
 
 > En version **1.6.0** :
 
@@ -52,21 +53,64 @@
 
 Cette page est la page d'ouverture de l'application. Elle permet :
 
-- [ ] de mettre à jour la liste du référentiel des applications SonarQube ;
-- [ ] de mettre à jour la liste du référentiel des règles SonarQube ;
-- [ ] d'afficher le nombre de projets de type **privé** ;
-- [ ] d'afficher le nombre de projets de type **public**
+- [x] de mettre à jour la liste du référentiel des applications SonarQube ;
+- [x] de mettre à jour la liste du référentiel des règles SonarQube ;
+- [x] d'afficher le nombre de projets de type **privé** ;
+- [x] d'afficher le nombre de projets de type **public** ;
+- [x] d'afficher le nombre de projet ayant un tags ;
 - [ ] d'afficher les projets favoris par projet et/ou par version.
+
+A l'ouverture de la page d'accueil, plusieurs situations peuvent se présenter à l'utilisateur comme :
+
+- [ ] la version de l'application Ma-Moulinette installée n'est pas à jour ;
+- [ ] l'application a déctée des changements sur le nombre de projets présent dans l'application et le nombre de projets existant sur le serveur SonarQube ;
+- [ ] l'application à détectée un changement sur les référentiels de règles (profils) ;
+
+> A tout moment, il est possible de revenir sur la page d'accueil en cliquant sur le nom de l'application **Ma Moulinette** situé en haut à gauche de la page.
 
 ![home](/documentation/ressources/home-001.jpg)
 
-Si la version de l'application et de la base de données sont identiques, tout va bien. Par contre, si une différence est détectée, alors un message est affiché à l'utilisateur connecté.
+### Les liens rapides
+
+En haut à droite, cinq (5) liens sont affichés en fonction des droits de l'utilisateur (cf. chapitre sécurité) :
+
+![home](/documentation/ressources/home-002.jpg)
+
+- [ ] `Utilisateur` : gestion des utilisateurs ;
+- [ ] `Traitements` : gestion des traitements de masse ;
+- [x] `Préferences` : gestion des préférences de l'utilisateur ;
+- [x] `Dashboard` : informations sur l'application ;
+- [x] `Logout` : pour se déconnecter de l'application ;
+
+### La base de données locale n'est pas à jour
+
+Si la version de l'application et de la base de données sont identiques, tout va bien. Par contre, si une différence est détectée, alors un message   est affiché à l'utilisateur connecté.
 
 Il faudra passer le ou les scripts de migration pour aligner la version de l'application au shéma de la base de données.
 
-![home](/documentation/ressources/home-001a.jpg)
+![home](/documentation/ressources/home-003.jpg)
 
-La détection des changements des référentiels signale toutes modifications sur le référentiel des projets ou celui des règles SonarQube.
+### L'application a détectée des changements
+
+Le processus de détection des changements sur les référentiels de projets et de profils signale toutes les modifications entre l'application Ma-Moulinette et le serveur SonarQube.
+
+Lorsque l'application est installée pour la première fois, il est norlmal que le référentiel des projets et celui des profils soient vide.
+
+> Ci-dessous le bloc **référentiel local**.
+
+![home](/documentation/ressources/home-004.jpg)
+
+> ci-dessous le bloc **Tags**.
+
+![home](/documentation/ressources/home-005.jpg)
+
+> Ci-dessous le bloc **Visibilité**.
+
+![home](/documentation/ressources/home-006.jpg)
+
+> Ci-dessous le bloc **favoris**.
+
+![home](/documentation/ressources/home-007.jpg)
 
 La mise à jour est signalée quand :
 
@@ -77,67 +121,95 @@ Le contrôle se fait en fonction de la fréquence choisie, par défaut :
 - [x] 1 jour pour les projets ;
 - [x] 30 jours pour les profils ;
 
-Cela veut dire que si la table de référence des projets et des profils a été mise à jour dans la journée, il n'y aura pas de signalement en cas de différences avec le serveur SonarQube. En d'autres termes, il faudra lancer la mise à jour de la table locale manuellement, comme on le faisait précédemment.
+Cela veut dire que si la table de références des projets et des profils a été mise à jour dans la journée, il n'y aura pas de signalement en cas de différences avec le serveur SonarQube. En d'autres termes, il faudra lancer la mise à jour de la table locale manuellement, comme on le faisait précédemment.
 
 Si la table des projets et des profils n'est pas à jour, un message s'affiche pour indiquer que la mise à jour est recommandée. Le nombre de projets et/ou de profils en plus ou en moins est indiqué.
 
-![home](/documentation/ressources/home-001b.jpg)
+![home](/documentation/ressources/home-008.jpg)
 
-Lorsque l'on clique sur le bouton de mise à jour des projets ou des profils, l'indicateur se met à jour et le message disparaît.
+Lorsque le nombre de **projets** a changé :
 
-![home](/documentation/ressources/home-001c.jpg)
+![home](/documentation/ressources/home-009.jpg)
 
-Pour effectuer la mise à jour, il faut avoir le rôle **[GESTIONNAIRE]**.
+Lorsque le nombre de **profils** a changé :
 
-![home](/documentation/ressources/home-001e.jpg)
+![home](/documentation/ressources/home-010.jpg)
 
-![home](/documentation/ressources/home-001d.jpg)
+### Rôle nécessaire pour effectuer une mise à jour
+
+Pour effectuer la mise à jour, il faut avoir le rôle **[COLLECTEUR]**.
+
+Par défaut, le bouton est désactivé si l'utilisateur n'a pas de droits suffisant :
+
+![home](/documentation/ressources/home-011.jpg)
+
+Un message d'erreur est affiché si l'utilisateur tente de forcer l'action.
+
+![home](/documentation/ressources/home-012.jpg)
+
+### Mise à jour d'un référentiel
+
+En cliquant sur le bouton de mise à jour des projets ou des profils, l'indicateur se met à jour et le message disparaît.
+
+![home](/documentation/ressources/home-013.jpg)
+
+### Les messages d'erreur
 
 Les messages d'erreurs peuvent apparaître si :
 
 > Les paramètres de la requête ne sont pas correctes.
 
-![home](/documentation/ressources/home-001f.jpg)
+![home](/documentation/ressources/home-014.jpg)
 
 > Le serveur n'est pas disponible.
 
-![home](/documentation/ressources/home-001g.jpg)
+![home](/documentation/ressources/home-015.jpg)
 
 > Aucun projet n'a été trouvé.
 
-![home](/documentation/ressources/home-001h.jpg)
+![home](/documentation/ressources/home-016.jpg)
 
-Notez, en haut à droite, l'affichage de cinq (5) liens en fonction des droits de l'utilisateur (cf. chapitre sécurité) :
+### Le bloc Tags
 
-![home](/documentation/ressources/home-002.jpg)
+Le bloc **Tags** affiche le nombre de projet disponible dans l'application **Ma-Moulinette** et le nombre d'application disposnt d'un **Tags**.
 
-- [ ] `Utilisateur` : gestion des utilisateurs ;
-- [ ] `Traitements` : gestion des traitements de masse ;
-- [x] `Préfernces` : gestion des préférences de l'utilisateur ;
-- [x] `Dashboard` : informations sur l'application ;
-- [x] `Logout` : pour se déconnecter de l'application ;
+![home](/documentation/ressources/home-017.jpg)
 
-Le bouton **mon projet** permet l'accès à la page des projets.
+> Important.
 
-![home](/documentation/ressources/home-003.jpg)
+Un **projet** doit être rattaché à une **équipe** et un **utilisateur**. ce rattachement se fait par le biais d'un **Tag** disponible sur le projet disponible sur le serveur SonarQube.
 
-Dans la partie inférieure, la liste des applications favorites est affichée par projet et/ou par version.
+En d'autres termes, si un projet n'a pas de Tag SonarQube, il ne sera jamais disponible dans la liste des applications.
+
+L'icone **info** disponible dans la zone de légende du formulaire, affiche une information sur ce sujet dans une fenêtre modale.
+
+![home](/documentation/ressources/home-018.jpg)
+
+### Le bloc Visibilité
+
+ce bloc d'information indique affiche le nombre de projet **public** ou **privé**.
+
+Le bouton **mon projet** permet l'accès à la page de gestion des projets.
+
+![home](/documentation/ressources/home-019.jpg)
+
+### Le bloc des projets ou versions favorites
+
+Les applications favorites sont affichéeq par projet et/ou par version.
 
 - [x] si l'utilisateur a désactivé dans ces préférences la gestion des favoris, alors rien n'est affiché.
 
-![home](/documentation/ressources/home-004.jpg)
+- [x] si l'utilisateur a activé dans ces préférences la gestion des favoris par **projet**.
 
-- [x] si l'utilisateur a activé dans ces préférences la gestion des favoris par projet.
+![home](/documentation/ressources/home-020.jpg)
 
-![home](/documentation/ressources/home-005.jpg)
+- [x] si l'utilisateur a activé dans ces préférences la gestion des favoris par **version de projet**.
 
-- [x] si l'utilisateur a activé dans ces préférences la gestion des favoris par version de projet.
+![home](/documentation/ressources/home-021.jpg)
 
-![home](/documentation/ressources/home-006.jpg)
+Il est possible d'afficher directement le projet en cliquant sur l'icône située à **côté du titre** de la boîte d'information.
 
-Il est possible d'afficher directement le projet en cliquant sur l'icône située à côté du titre de la boîte d'information.
-
-![home](/documentation/ressources/home-007.jpg)
+![home](/documentation/ressources/home-021.jpg)
 
 -**-- FIN --**-
 
