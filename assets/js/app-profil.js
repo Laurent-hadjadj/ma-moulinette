@@ -48,17 +48,16 @@ const callboxFermer='</span><button class="close-button" aria-label="Fermer la f
 /**
  * [Description for refreshQuality]
  *
- * @return [type]
+ * @return void
  *
  * Created at: 07/05/2023, 21:02:59 (Europe/Paris)
  * @author    Laurent HADJADJ <laurent_h@me.com>
  * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
   const refreshQuality=async function() {
-  const dataRefresh = { mode:'null' };
   const optionsRefresh = {
         url: `${serveur()}/api/quality/profiles`, type: 'POST',
-        dataType: 'json', data: JSON.stringify(dataRefresh), contentType };
+        dataType: 'json', contentType };
 
   /** On appel l'API */
   const t = await $.ajax(optionsRefresh);
@@ -96,7 +95,7 @@ const callboxFermer='</span><button class="close-button" aria-label="Fermer la f
   profils.forEach(profil =>
   {
     id=id+1;
-      str +=
+    str +=
       `<div class="callout secondary small-12 medium-6 langage-6 cell box-langage">
         <h3 class="h5">${profil.langage }</h3>
         <table class="hover">
@@ -127,24 +126,26 @@ const callboxFermer='</span><button class="close-button" aria-label="Fermer la f
           </tbody>
         </table>
         <div class="small-12 medium-6 large-6 cell">
-							<p class="button expanded float-center bouton-profil-refresh js-bouton-autre-profil" data-language="${profil.langage}" id="language-${profil.langage}}">
-								<button data-open="fenetre-modal" class="fenetre-modal">Afficher les autres profils</button>
-							</p>
-						</div>
-					</div>
-					<div class="reveal" id="fenetre-modal" data-reveal>
-					</div>
-      </div>`;
-    total = total + profil.regle; });
+					<p class="button expanded float-center bouton-profil-refresh js-bouton-autre-profil"
+          data-language="${profil.langage}" id="language-${profil.langage}}">
+					<button data-open="fenetre-modal" class="fenetre-modal">Afficher les autres profils</button>
+					</p>
+				</div>
+			</div>
+		<div class="reveal" id="fenetre-modal" data-reveal></div>
+  </div>`;
+  total = total + profil.regle;
+  console.log(total);
+  });
 
   /** Affiche le container */
   $('#js-container-langage').html(str);
+  console.log('total', total);
   $('.js-total').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(total));
 
-  $('.js-bouton-autre-profil').on('click', (e)=>{
-  });
+  //$('.js-bouton-autre-profil').on('click', (e)=>{
+  //});
 };
-
 
 const recupereProfilNonActif=async function(langage){
   /** Construction de la requete */
@@ -160,10 +161,6 @@ const recupereProfilNonActif=async function(langage){
   $('#contenu-fenetre-modal').html('');
   const profils = t.listeProfil;
   const nombreProfils = t.countProfil;
-  // En tête du tableau
-  console.log(nombreProfils);
-
-
   if (nombreProfils.request[0].total > 1){
     str += `<h2 class="h5 claire-hand">Il y a ${ nombreProfils.request[0].total } profils diponibles dans Sonarqube</h2>`
   }else{
