@@ -51,14 +51,13 @@ const afficheMessage=function(t){
   * Vérifie si le serveur sonarqube est UP
   * Affiche la version du seveur
   *
-  * @return [type]
+  * @return void
   *
   */
 const sonarIsUp=async function() {
-  const data={'mode': 'null' };
   const options = {
     url: `${serveur()}/api/status`, type: 'POST',
-    dataType: 'json',  data: JSON.stringify(data), contentType };
+    dataType: 'json',  contentType };
   let message=[];
   try
   {
