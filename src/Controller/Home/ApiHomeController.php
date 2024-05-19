@@ -84,17 +84,8 @@ class ApiHomeController extends AbstractController
     #[Route('/api/status', name: 'api_sonar_status', methods: ['POST'])]
     public function apiSonarStatus(Request $request, Client $client): response
     {
-        /** On décode le body */
-        $data = json_decode($request->getContent());
-
         /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
-
-        /** On teste si le body est correcte */
-        if ($data === null) {
-            return $response->setData(['data'=>$data, 'code'=>400, 'reference'=>static::$reference,
-            'message'=>static::$erreur400, 'type'=>'alert','result'=>'',Response::HTTP_BAD_REQUEST]);
-            }
 
         $url = $this->getParameter(static::$sonarUrl) . "/api/system/status";
 
