@@ -55,11 +55,13 @@
 
       {# Message d'information #}
       <div id="message" class="cell"></div>
-      <div id="js-container-langage" class="container-custom grid-x cell grid-margin-x">
+
+      <div id="js-container-langage" class="container-custom grid-x cell">
         {% set total = 0 %}
         {% set id = 0 %}
         {% for profil in liste %}
           {% set id = id + 1 %}
+          {% set total = total + profil.regle %}
           {# On affiche la callbox pour le langage #}
           <div class="callout secondary small-12 medium-6 langage-6 cell box-langage">
             <h3 class="h5 claire-hand">{{ profil.langage }}</h3>
@@ -100,6 +102,7 @@
           </div>
         {% endfor %}
 
+        {# Fenêtre modale pour afficher les autres référentiels #}
         <div class="reveal" id="fenetre-modal" data-reveal>
           <h1 class="h4 claire-hand">
             Liste des profils disponibles</h1>
@@ -109,14 +112,16 @@
           </button>
         </div>
 
-                <p class="open-sans">Le référentiel des règles de développement contient
+        {# Affiche le nombre total de règles #}
+        <p class="open-sans">
+          Le référentiel des règles de développement contient
           <strong>
             <span class="js-total">{{ total|format_number(locale='fr') }}</span>
-          </strong>
-          règles.</p>
+          </strong> règles.
+        </p>
+
 
       <div class="grid-x cell">
-        {# Mise à jour #}
         <div class="small-12 medium-6 large-6 bouton-profil-refresh-left cell">
           <p class="button expanded float-center bouton-profil-refresh js-profil-refresh">
             <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="profil-refresh-svg">
@@ -125,7 +130,7 @@
             <span class="show-for-medium open-sans color-blanc">Mise à jour de la liste.</span>
             <span class="show-for-small-only open-sans color-blanc">Mise à jour.</span>
           </p>
-        </div>
+      </div>
 
         {# Graphique #}
         <div class="small-12 medium-6 large-6 bouton-profil-graphique-right cell">
