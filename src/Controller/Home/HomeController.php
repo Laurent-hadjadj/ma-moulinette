@@ -593,7 +593,7 @@ class HomeController extends AbstractController
 
         /** On récupère le rôle de l'utilisateur  */
         $refreshBd=false;
-        if ($this->isGranted('ROLE_GESTIONNAIRE')) { $refreshBd=true; }
+        if ($this->isGranted('ROLE_COLLECTE')) { $refreshBd=true; }
 
         $render = [
             'refreshBD'=>$refreshBd,
