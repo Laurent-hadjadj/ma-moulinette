@@ -86,7 +86,7 @@ const sonarIsUp=async function() {
 const miseAJourListe=function() {
   const options = {
     url: `${serveur()}/api/home/projet`, type: 'POST',
-          dataType: 'json', data: JSON.stringify(), contentType };
+          dataType: 'json', contentType };
     return new Promise(resolve => {
       $.ajax(options).then(t => {
         if (t.code!==http_200){
@@ -191,6 +191,6 @@ $('.suivi-svg').on('click', function(e) {
   if (mavenKey!==''){
     window.location.href='/suivi?mavenKey='+mavenKey;
     } else {
-    //log(' - ERROR - La clé n\'est pas correcte !! !');
+    sessionStorage.set('error', "La clé n'est pas correcte !! !");
   }
 });
