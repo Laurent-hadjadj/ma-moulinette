@@ -94,7 +94,6 @@ const miseAJourListe=function() {
           afficheMessage(t);
           return;
         } else {
-          console.log(t)
           /** On affiche le nombre de projet */
           $('#js-nombre-projet').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.nombre));
           /** On efface le plus|moins */
