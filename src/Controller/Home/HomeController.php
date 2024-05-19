@@ -505,8 +505,10 @@ class HomeController extends AbstractController
                  * Si le nombre de projetSonar est différent de projetBD
                  * alors on envoit un message à l'utilisateur pour qu'il mette à jour.
                  */
-                $message = "[PROJET] Vous devez mettre à jour le référentiel local !";
-                $this->addFlash('info', $message);
+                $titre = '[ACCUEIL]';
+                $message = 'Vous devez mettre à jour le référentiel local pour les';
+                $referentiel='PROJETS';
+                $this->addFlash('info', ['type'=>'primary', 'titre'=>$titre, 'message'=>$message, 'referentiel'=>$referentiel]);
             }
 
             /**
@@ -526,8 +528,10 @@ class HomeController extends AbstractController
                  * Si le nombre de projetSonar est différent de projetBD
                  * alors on envoit un message à l'utilisateur pour qu'il mette à jour.
                  */
-                $message = "[PROFIL] Vous devez mettre à jour le référentiel local !";
-                $this->addFlash('info', $message);
+                $titre = '[ACCUEIL]';
+                $message = 'Vous devez mettre à jour le référentiel local pour les';
+                $referentiel='PROFILS';
+                $this->addFlash('info', ['type'=>'primary', 'titre'=>$titre, 'message'=>$message, 'referentiel'=>$referentiel]);
             }
             /**
              * Si le referentiel sonar est égale de celui sur le serveur et que la table
@@ -556,10 +560,11 @@ class HomeController extends AbstractController
         $versionApp = $this->getParameter('version');
         /** si la dernière version en base est inférieure, on renvoie une alerte ; */
         if ($versionApp !== $versionBd) {
-            $m1 = "Oooups !!! La base de données est en version ".$versionBd." ";
+            $titre="Oooups !!!";
+            $m1= "La base de données est en version ".$versionBd.". ";
             $m2 = "Vous devez passer le script de migration ".$versionApp.".";
             $message = $m1.$m2;
-            $this->addFlash('alert', $message);
+            $this->addFlash('notice', ['type'=>'alert', 'titre'=>$titre, 'message'=>$message]);
         }
 
         /** On va chercher les projets favoris ou les versions des projets */

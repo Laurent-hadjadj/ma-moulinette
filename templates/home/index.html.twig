@@ -40,9 +40,9 @@
     </header>
 
     <main class="grid-container">
-      {% for message in app.flashes('alert') %}
-        <div class="callout alert" data-closable>
-          <p class="open-sans text-justify callout-message">{{ message }}</p>
+      {% for message in app.flashes('notice') %}
+        <div class="callout {{message.type}} alert-callout-border" data-closable>
+          <p class="open-sans text-justify callout-message"><strong>{{message.titre}}</strong> {{ message.message }}</p>
           <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
             <span aria-hidden="true">&times;</span>
           </button>
@@ -141,8 +141,8 @@
 
         <div class="grid-x cell">
           {% for message in app.flashes('info') %}
-            <div class="callout alert-callout-border primary cell" data-closable>
-              <p class="open-sans text-justify callout-message">{{ message }}</p>
+            <div class="callout alert-callout-border {{message.type}} cell" data-closable>
+              <p class="open-sans text-justify callout-message"><strong>{{message.titre}}</strong> {{ message.message }} <strong>{{message.referentiel}}</strong>.</p>
               <button id="info-close" class="close-button" aria-label="Dismiss alert" type="button" data-close>
                 <span aria-hidden="true">&times;</span>
               </button>
