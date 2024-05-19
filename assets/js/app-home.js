@@ -81,7 +81,7 @@ const sonarIsUp=async function() {
   * [Description for miseAJourListe]
   * Récupération de la liste des projets.
   *
-  * @return [type]
+  * @return void
   *
   */
 const miseAJourListe=function() {
@@ -109,9 +109,37 @@ const miseAJourListe=function() {
             } else {
               $('#js-private').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.private));
             }
+          /** On affiche le nombre de projet dans la zone tags */
+          $('#js-tag-projet').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.nombre));
 
           /** On affiche un message à l'utilisateur */
           afficheMessage(t);
+        }
+        resolve();
+      });
+    });
+};
+
+/**
+ * [Description for miseAJourTags]
+ * On met à jour le nombre de projet et le nombre de tags
+ * @return void
+ *
+ * Created at: 19/05/2024 11:18:10 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ */
+const miseAJourTags=function() {
+  const options = {
+    url: `${serveur()}/api/home/tags`, type: 'POST', dataType: 'json', contentType };
+    return new Promise(resolve => {
+      $.ajax(options).then(t => {
+        if (t.code!==http_200){
+          afficheMessage(t);
+          return;
+        } else {
+          /** On affiche le nombre de tags */
+          $('#js-tag-tag').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.nombre_tag));
         }
         resolve();
       });
@@ -126,6 +154,7 @@ const miseAJourListe=function() {
   */
 const miseAJourListeAsync= async function() {
   await miseAJourListe();
+  await miseAJourTags();
 };
 
 

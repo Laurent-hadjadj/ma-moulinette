@@ -84,7 +84,7 @@ class HomeController extends AbstractController
 
         /* On récupère le nombre de projet depuis la table liste_projet */
         $nombre = $listeProjetEntity->countListeProjet();
-        
+
         $projet = 0;
         if ($nombre['code'] === 200){
             $projet = $nombre['request'][0]['total'];
@@ -430,7 +430,7 @@ class HomeController extends AbstractController
     public function index(Client $client, Security $security, Request $request): Response
     {
         /** On instancie l'entityRepository */
-        $listeProjet = $this->em->getRepository(ListeProjet::class);
+        $listeProjetEntity = $this->em->getRepository(ListeProjet::class);
 
         /**
          * Description du processus :
@@ -539,11 +539,15 @@ class HomeController extends AbstractController
         }
 
         /** ***************** 4 - Visibility *****************************  */
-        $t1 = $listeProjet->countListeProjetVisibility('public');
-        $t2 = $listeProjet->countListeProjetVisibility('private');
+        $t1 = $listeProjetEntity->countListeProjetVisibility('public');
+        $t2 = $listeProjetEntity->countListeProjetVisibility('private');
 
         $public = $t1['request'][0]['visibility'];
         $private = $t2['request'][0]['visibility'];
+
+        /** ***************** 5 - Tags *****************************  */
+        /** Renvoi le nombre de projet et le nombre de tags */
+        $tag = $listeProjetEntity->countListeProjetTags();
 
         /** ***************** VERSION *** ************************* */
         /** On récupère le numero de version en base */
@@ -592,6 +596,8 @@ class HomeController extends AbstractController
             'profilBD' => $profilBd, 'profilSonar' => $profilSonar,
             'composant' => $composant, 'nombreProjet' => $nombreProjet, 'favori' => $favori,
             'public' => $public, 'private' => $private,
+            'nombre_projet' => $projetBd,
+            'nombre_tag' => $tag['nombre'][0]['tag'],
             'version' => $versionApp, 'dateCopyright' => \date('Y'),
             Response::HTTP_OK];
 
