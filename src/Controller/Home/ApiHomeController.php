@@ -23,7 +23,6 @@ use DateTimeZone;
 
 /** Accès aux tables SLQLite */
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Profiles;
 use App\Entity\ListeProjet;
 use App\Entity\Properties;
 
@@ -220,6 +219,30 @@ class ApiHomeController extends AbstractController
             'message' => $message,'nombre' => $nombre,
             'public' => $public, 'private' => $private,
             'empty_tags' => $emptyTags, Response::HTTP_OK ]);
+    }
+
+    #[Route('/api/home/tags', name: 'home_projet_tags', methods: ['POST'])]
+    public function homeProjetTags(Request $request, Client $client): response
+    {
+        /** On instancie l'EntityRepository */
+        $listeProjetEntity = $this->em->getRepository(ListeProjet::class);
+
+        /** On crée un objet de reponse JSON */
+        $response = new JsonResponse();
+
+        /** On vérifie si l'utilisateur à un rôle Collecte ? */
+        if (!$this->isGranted('ROLE_COLLECTE')) {
+            return $response->setData([
+                'type'=>'warning', 'code' => 403,
+                'reference' => static::$reference,
+                'message' => static::$erreur403, Response::HTTP_OK]);
+        }
+
+        $tag = $listeProjetEntity->countListeProjetTags();
+
+        return $response->setData(
+            ['code' => 200,
+            'nombre_tag' => $tag['nombre'][0]['tag'], Response::HTTP_OK ]);
     }
 
 }
