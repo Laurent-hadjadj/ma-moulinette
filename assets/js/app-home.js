@@ -25,7 +25,7 @@ import './app-authentification-details.js';
 import {serveur} from './properties.js';
 
 /** On importe les constantes */
-import { http_200, http_400, http_401, http_404, http_406, http_500, contentType } from './constante.js';
+import { http_200, http_400, http_401, http_404, http_500, contentType } from './constante.js';
 
 /**
  * [Description for afficheMessage]
@@ -55,9 +55,12 @@ const afficheMessage=function(t){
   *
   */
 const sonarIsUp=async function() {
+  /**  si le bouton de mise à jour des projets est désactivé on sort */
+  if ($('.refresh-bd').hasClass('bouton-disabled')){
+    return {code: http_401};
+  }
   const options = {
-    url: `${serveur()}/api/status`, type: 'POST',
-    dataType: 'json',  contentType };
+    url: `${serveur()}/api/status`, type: 'POST', dataType: 'json',  contentType };
   let message=[];
   try
   {
@@ -85,8 +88,7 @@ const sonarIsUp=async function() {
   */
 const miseAJourListe=function() {
   const options = {
-    url: `${serveur()}/api/home/projet`, type: 'POST',
-          dataType: 'json', contentType };
+    url: `${serveur()}/api/home/projet`, type: 'POST', dataType: 'json', contentType };
     return new Promise(resolve => {
       $.ajax(options).then(t => {
         if (t.code!==http_200){
@@ -148,14 +150,16 @@ const miseAJourTags=function() {
 /**
   * [Description for miseAJourListeAsync]
   * Fonctions asynchronnes (liste et profils)
-  * @return [type]
+  * @return void
   *
   */
 const miseAJourListeAsync= async function() {
+  if ($('.refresh-bd').hasClass('bouton-disabled') === true){
+    return;
+  }
   await miseAJourListe();
   await miseAJourTags();
 };
-
 
 /********* Evenement *******/
 
@@ -166,13 +170,22 @@ const miseAJourListeAsync= async function() {
 $('.refresh-bd').on('click', ()=> {
   sonarIsUp()
     .then((t)=> {
-      if (t.code === 504 || t.code === http_400 || t.message === 'Internal Server Error') {
+      /** On regarde si le serveur sonarqube est disponible */
+      if (t.code === 504 || t.code === http_400 || t.code=== http_404 || t.message === 'Internal Server Error') {
+        /** l'URL n'a pas été trouvé */
         if (t.code=== http_404) {
           return;
         }
+        /** On affiche le message d'erreur du serveur */
         afficheMessage(t);
         return;
       }
+
+      /** l'utilisateur n'a pas les droits */
+      if (t.code===http_401){
+        return;
+      }
+
       /** si le serveur est disponible */
       miseAJourListeAsync();
     });
