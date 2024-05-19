@@ -171,8 +171,12 @@ class HomeController extends AbstractController
         /** On appel le client http */
         $result = $client->http($url);
 
-        /** Si les profils custom n'existent pas on envoi un message */
-        return count($result['profiles']);
+        /** Si les profils custom n'existent pas on envoi 0 */
+        $count=0;
+        if (key_exists('profiles', $result)) {
+            $count=count($result['profiles']);
+        }
+        return $count;
     }
 
     /**
