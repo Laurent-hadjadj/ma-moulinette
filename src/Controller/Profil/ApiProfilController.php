@@ -346,7 +346,7 @@ class ApiProfilController extends AbstractController
 
     /**
      * [Description for listeQualityOff]
-     * Renvoie la lit ede profil qui ne ont pa acitf pour un certain langage donnée
+     * Renvoie la liste des profils qui ne ont pas acitf pour un language donné
      *
      * @param Request $request
      *
