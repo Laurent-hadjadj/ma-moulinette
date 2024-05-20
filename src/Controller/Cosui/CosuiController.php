@@ -27,7 +27,7 @@ use App\Entity\Historique;
 use App\Entity\Repartition;
 
 /** Import des services */
-use App\Service\ExtractNameFromMavenKey;
+use App\Service\ExtractName;
 
 class CosuiController extends AbstractController
 {
@@ -41,7 +41,7 @@ class CosuiController extends AbstractController
     public function __construct(
         private EntityManagerInterface $em,
         private ManagerRegistry $mr,
-        private ExtractNameFromMavenKey $serviceExtractName)
+        private ExtractName $serviceExtractName)
     {
         $this->em = $em;
         $this->mr = $mr;

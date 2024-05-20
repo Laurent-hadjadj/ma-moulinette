@@ -25,7 +25,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use App\Entity\Secondary\Repartition;
 
 /** Import des services */
-use App\Service\ExtractNameFromMavenKey;
+use App\Service\ExtractName;
 
 /**
  * [Description RepartitionController]
@@ -41,7 +41,7 @@ class RepartitionController extends AbstractController
      */
     public function __construct(
         private ManagerRegistry $doctrine,
-        private ExtractNameFromMavenKey $serviceExtractName)
+        private ExtractName $serviceExtractName)
     {
         $this->doctrine = $doctrine;
         $this->serviceExtractName = $serviceExtractName;
