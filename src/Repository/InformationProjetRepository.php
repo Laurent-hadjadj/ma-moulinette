@@ -77,7 +77,7 @@ class InformationProjetRepository extends ServiceEntityRepository
     {
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-                $sql = "SELECT COUNT(type) AS 'total'
+                $sql = "SELECT COUNT(type) AS total
                         FROM information_projet
                         WHERE maven_key=:maven_key";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
@@ -109,9 +109,9 @@ class InformationProjetRepository extends ServiceEntityRepository
     {
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-                $sql = "SELECT type, COUNT(type) AS 'total'
+                $sql = "SELECT type, COUNT(*) AS total
                         FROM information_projet
-                        WHERE maven_key=:maven_key AND type=:type";
+                        WHERE maven_key=:maven_key AND type=:type GROUP BY type";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
                     $stmt->bindValue(static::$phMavenKey, $map['maven_key']);
                     $stmt->bindValue(':type', $map['type']);
@@ -140,7 +140,7 @@ class InformationProjetRepository extends ServiceEntityRepository
     {
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-                $sql = "SELECT type, COUNT(type) AS 'total'
+                $sql = "SELECT type, COUNT(type) AS total
                         FROM information_projet
                         WHERE maven_key=:maven_key
                         GROUP BY type";
