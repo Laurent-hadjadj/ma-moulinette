@@ -90,9 +90,11 @@ const callboxFermer='</span><button class="close-button" aria-label="Fermer la f
 
   /** On efface le container */
   $('#js-container-langage').html('');
-  /** on recréé le cointainer */
   const profils = t.listeProfil;
-  profils.forEach(profil =>
+  console.log(profils, t);
+  return;
+  /** on recréé le cointainer */
+    profils.forEach(profil =>
   {
     id=id+1;
     str +=
