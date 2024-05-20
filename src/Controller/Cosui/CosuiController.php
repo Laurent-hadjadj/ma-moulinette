@@ -20,56 +20,33 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-/** Accès aux tables SLQLite */
+/** Accès aux tables */
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Entity\Historique;
 use App\Entity\Repartition;
 
+/** Import des services */
+use App\Service\ExtractNameFromMavenKey;
+
 class CosuiController extends AbstractController
 {
     /**
      * [Description for __construct]
-     *  EntityManagerInterface = em
      *
      * Created at: 13/02/2023, 08:57:23 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function __construct(private EntityManagerInterface $em, private ManagerRegistry $mr)
+    public function __construct(
+        private EntityManagerInterface $em,
+        private ManagerRegistry $mr,
+        private ExtractNameFromMavenKey $serviceExtractName)
     {
         $this->em = $em;
         $this->mr = $mr;
+        $this->serviceExtractName = $serviceExtractName;
     }
-
-    /**
-     * [Description for extractNameFromMavenKey]
-     * Extrait le nom du projet de la clé
-     *
-     * @param mixed $mavenKey
-     *
-     * @return string
-     *
-      * Created at: 13/03/2024 21:47:51 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    private function extractNameFromMavenKey($mavenKey): string
-    {
-        /**
-         * On récupère le nom de l'application depuis la clé mavenKey
-         * [fr.ma-petite-entreprise] : [ma-moulinette]
-         */
-        $app = explode(":", $mavenKey);
-        if (count($app)===1) {
-            /** La clé maven n'est pas conforme, on ne peut pas déduire le nom de l'application */
-            $name=$mavenKey;
-        } else {
-            $name=$app[1];
-        }
-        return $name;
-    }
-
 
     /**
      * [Description for note2point]
@@ -274,7 +251,7 @@ class CosuiController extends AbstractController
             $mavenKey = "fr.ma-petite-entreprise:ma-moulinette";
         }
 
-        $app=static::extractNameFromMavenKey($mavenKey);
+        $app=$this->serviceExtractName->extractNameFromMavenKey($mavenKey);
 
         foreach ($contents as $el) {
             /**

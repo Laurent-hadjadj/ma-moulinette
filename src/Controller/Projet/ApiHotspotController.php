@@ -38,6 +38,9 @@ use Psr\Log\LoggerInterface;
 /** Client HTTP */
 use App\Service\Client;
 
+/** Import des services */
+use App\Service\ExtractNameFromMavenKey;
+
 class ApiHotspotController extends AbstractController
 {
     /** Définition des constantes */
@@ -60,38 +63,12 @@ class ApiHotspotController extends AbstractController
      */
     public function __construct(
         private LoggerInterface $logger,
-        private EntityManagerInterface $em
+        private EntityManagerInterface $em,
+        private ExtractNameFromMavenKey $serviceExtractName
     ) {
         $this->logger = $logger;
         $this->em = $em;
-    }
-
-    /**
-     * [Description for extractNameFromMavenKey]
-     * Extrait le nom du projet de la clé
-     *
-     * @param mixed $mavenKey
-     *
-     * @return string
-     *
-     * Created at: 13/03/2024 21:47:51 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    private function extractNameFromMavenKey($mavenKey): string
-    {
-        /**
-         * On récupère le nom de l'application depuis la clé mavenKey
-         * [fr.ma-petite-entreprise] : [ma-moulinette]
-         */
-        $app = explode(":", $mavenKey);
-        if (count($app)===1) {
-            /** La clé maven n'est pas conforme, on ne peut pas déduire le nom de l'application */
-            $name=$mavenKey;
-        } else {
-            $name=$app[1];
-        }
-        return $name;
+        $this->serviceExtractName = $serviceExtractName;
     }
 
     /**
@@ -450,7 +427,7 @@ class ApiHotspotController extends AbstractController
         }
 
         $frontend = $backend = $autre = 0;
-        $app=static::extractNameFromMavenKey($mavenKey);
+        $app=$this->serviceExtractName->extractNameFromMavenKey($mavenKey);
 
         $status = $hotspot['status'];
         $file = str_replace($mavenKey . ":", "", $hotspot['component']['key']);
