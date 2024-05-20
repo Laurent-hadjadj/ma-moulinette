@@ -16,11 +16,9 @@ namespace App\Controller\Profil;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-// Accès aux tables SLQLite
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Profiles;
 
@@ -65,7 +63,6 @@ class ProfilController extends AbstractController
         } else {
             $this->addFlash('notice', ['type'=>'success', 'titre'=> '[PROFIL-001]', 'message'=>"La liste des profils a été récupurée."]);
         }
-        //$liste = isset($request['liste']) ? $request['liste'] : []; // Fournit un tableau vide par défaut
 
         return $this->render('profil/index.html.twig', [
             'liste' => $rq1['liste'],
