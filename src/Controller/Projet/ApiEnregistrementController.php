@@ -79,11 +79,25 @@ class ApiEnregistrementController extends AbstractController
         /** Informations version. */
         $save->setMavenKey($data->mavenKey);
         $save->setNomProjet($data->nomProjet);
-        $save->setVersionRelease($data->versionRelease);
-        $save->setVersionSnapshot($data->versionSnapshot);
-        $save->setVersionAutre($data->versionAutre);
-        $save->setVersion($data->version);
-        $save->setDateVersion($data->dateVersion);
+        if(property_exists($data, 'versionRelease')){
+            $save->setVersionRelease($data->versionRelease);
+        }
+        if(property_exists($data, 'versionSnapshot')){
+            $save->setVersionSnapshot($data->versionSnapshot);
+        }
+        if(property_exists($data, 'versionAutre')){
+            $save->setVersionAutre($data->versionAutre);
+        }
+        if(property_exists($data, 'version')){
+            $save->setVersion($data->version);
+        }
+        if (property_exists($data, 'dateVersion')) {
+            $dateVersion = new DateTime($data->dateVersion);
+            $dateVersion->setTimezone(new DateTimeZone(static::$europeParis));
+            $save->setDateVersion($dateVersion->format('Y-m-d H:i:s'));
+        } else {
+            $save->setDateVersion($date->format('Y-m-d H:i:s'));
+        }
 
         /** Informations sur les exceptions. */
         $save->setSuppressWarning($data->suppressWarning);
@@ -125,10 +139,18 @@ class ApiEnregistrementController extends AbstractController
         $save->setNoteHotspot($data->noteHotspot);
 
         /** Répartition des hotspots. */
-        $save->setHotspotHigh($data->hotspotHigh);
-        $save->setHotspotMedium($data->hotspotMedium);
-        $save->setHotspotLow($data->hotspotLow);
-        $save->setHotspotTotal($data->hotspotTotal);
+        if (property_exists($data, 'hotspotHigh')) {
+            $save->setHotspotHigh(intval($data->hotspotHigh));
+        }
+        if (property_exists($data, 'hotspotMedium')) {
+            $save->setHotspotMedium(intval($data->hotspotMedium));
+        }
+        if (property_exists($data, 'hotspotLow')) {
+            $save->setHotspotLow(intval($data->hotspotLow));
+        }
+        if (property_exists($data, 'hotspotTotal')) {
+            $save->setHotspotTotal(intval($data->hotspotTotal));
+        }
 
         /** Je suis une verion initiale ?  0 (false) and 1 (true). */
         /** On récupère 0 ou 1 et non FALSE et TRUE */

@@ -32,8 +32,6 @@ class HotspotsRepository extends ServiceEntityRepository
     /**
      * [Description for deleteHotspotsMavenKey]
      * Supprime les hotspots pour la version courrante (i.e. correspondant à la maven_key)
-     *
-     * @param mixed $mode
      * @param mixed $map
      *
      * @return array
@@ -42,7 +40,7 @@ class HotspotsRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function deleteHotspotsMavenKey($mode,$map):array
+    public function deleteHotspotsMavenKey($map):array
     {
         $sql = "DELETE
                 FROM hotspots
@@ -50,22 +48,20 @@ class HotspotsRepository extends ServiceEntityRepository
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         $conn->bindValue(':maven_key', $map['maven_key']);
         try {
-                if ($mode !== 'TEST') {
+                #if ($mode !== 'TEST') {
                     $conn->executeQuery();
-                } else {
-                    return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-                }
+                #} else {
+                    return ['code'=> 202, 'erreur'=>'TEST'];
+                #}
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+            return ['code'=>500, 'erreur'=> $e->getCode()];
         }
-        return ['mode'=>$mode, 'code'=>200, 'erreur'=>''];
+        return ['code'=>200, 'erreur'=>''];
     }
 
     /**
      * [Description for selectHotspotsToReview]
      * Retourne la liste des hotspots pour le status TO_REVIEW
-     *
-     * @param string $mode
      * @param array $map
      *
      * @return array
@@ -74,7 +70,7 @@ class HotspotsRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectHotspotsToReview($mode,$map):array
+    public function selectHotspotsToReview($map):array
     {
         $sql = "SELECT *
                 FROM hotspots
@@ -83,22 +79,20 @@ class HotspotsRepository extends ServiceEntityRepository
     $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         $conn->bindValue(':maven_key', $map['maven_key']);
         try {
-                if ($mode !== 'TEST') {
+                #if ($mode !== 'TEST') {
                     $liste=$conn->executeQuery()->fetchAllAssociative();
-                } else {
-                    return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-                }
+                #} else {
+                    return ['code'=> 202, 'erreur'=>'TEST'];
+                #}
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+            return ['code'=>500, 'erreur'=> $e->getCode()];
         }
-        return ['mode'=>$mode, 'code'=>200, 'erreur'=>'', 'liste'=>$liste];
+        return ['code'=>200, 'erreur'=>'', 'liste'=>$liste];
     }
 
     /**
      * [Description for countHotspotsStatus]
      * Compte le nombre de hotspots au status TO_REVIEW, REVIEWED
-     *
-     * @param string $mode
      * @param array $map
      *
      * @return array
@@ -107,7 +101,7 @@ class HotspotsRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function countHotspotsStatus($mode,$map):array
+    public function countHotspotsStatus($map):array
     {
         $sql = "SELECT COUNT(*) as nombre
                 FROM hotspots
@@ -116,23 +110,21 @@ class HotspotsRepository extends ServiceEntityRepository
         $conn->bindValue(':maven_key', $map['maven_key']);
         $conn->bindValue(':status', $map['status']);
         try {
-                if ($mode !== 'TEST') {
+                #if ($mode !== 'TEST') {
                     $exec=$conn->executeQuery();
                     $nombre=$exec->fetchAllAssociative();
-                } else {
-                    return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-                }
+                #} else {
+                    return ['code'=> 202, 'erreur'=>'TEST'];
+                #}
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+            return ['code'=>500, 'erreur'=> $e->getCode()];
         }
-        return ['mode'=>$mode, 'code'=>200, 'erreur'=>'', 'nombre'=>$nombre];
+        return ['code'=>200, 'erreur'=>'', 'nombre'=>$nombre];
     }
 
     /**
      * [Description for selectHotspotsByNiveau]
      * Retourne la liste du niveau et du nombre de hotspots pour une version au status TO_REVIEWED
-     *
-     * @param string $mode
      * @param array $map
      *
      * @return array
@@ -141,7 +133,7 @@ class HotspotsRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectHotspotsByNiveau($mode,$map):array
+    public function selectHotspotsByNiveau($map):array
     {
         $sql = "SELECT niveau, count(*) as hotspot
                 FROM hotspots
@@ -151,16 +143,16 @@ class HotspotsRepository extends ServiceEntityRepository
         $conn->bindValue(':maven_key', $map['maven_key']);
         $conn->bindValue(':status', $map['status']);
         try {
-                if ($mode !== 'TEST') {
+                #if ($mode !== 'TEST') {
                     $exec=$conn->executeQuery();
                     $liste=$exec->fetchAllAssociative();
-                } else {
-                    return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-                }
+                #} else {
+                    return ['code'=> 202, 'erreur'=>'TEST'];
+                #}
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+            return ['code'=>500, 'erreur'=> $e->getCode()];
         }
-        return ['mode'=>$mode, 'code'=>200, 'erreur'=>'', 'liste'=>$liste];
+        return ['code'=>200, 'erreur'=>'', 'liste'=>$liste];
     }
 
 }

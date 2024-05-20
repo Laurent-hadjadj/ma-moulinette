@@ -219,7 +219,6 @@ class ApiProfilController extends AbstractController
         $string=str_rot13($token);
         $decode=base64_decode($string);
         $exxplode=preg_split("/[|]+/",$decode);
-        $mode=$exxplode[0];
 
         /** on initialise une réponse par défaut */
         $render = [

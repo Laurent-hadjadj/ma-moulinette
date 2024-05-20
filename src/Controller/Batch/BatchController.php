@@ -450,7 +450,7 @@ class BatchController extends AbstractController
 
         /** On met à jour la liste des job */
         $initialise = $this->initialisationBatch();
-        dd($initialise);
+        #dd($initialise);
         $this->logger->INFO($initialise['message']);
         $message = explode(" ", $initialise['message']);
         if ($message[0] === "[BATCH-002]") {

@@ -50,8 +50,6 @@ class HistoriqueRepository extends ServiceEntityRepository
     /**
      * [Description for countHistoriqueprojet]
      * On veut savoir si le projet a été historisé ?
-     *
-     * @param string $mode
      * @param array $map
      *
      * @return array
@@ -60,7 +58,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function countHistoriqueprojet($mode, $map):array {
+    public function countHistoriqueprojet($map):array {
 
         /** On retire le statut à toute les versions du projet, radical mais efficace */
         $sql = "SELECT count(*) AS nombre
@@ -69,17 +67,17 @@ class HistoriqueRepository extends ServiceEntityRepository
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         $conn->bindValue(':maven_key', $map['maven_key']);
         try {
-            if ($mode !== 'TEST') {
+            #if ($mode !== 'TEST') {
                 $request=$conn->executeQuery()->fetchAllAssociative();
-            } else {
-                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-            }
+            #} else {
+                return ['code'=> 202, 'erreur'=>'TEST'];
+            #}
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=> 500, 'erreur'=>$e->getCode()];
+            return ['code'=> 500, 'erreur'=>$e->getCode()];
         }
 
         /** on prépare la réponse */
-        return ['mode'=>$mode, 'code'=>200, 'erreur'=>'', 'nombre'=>$request[0]['nombre']];
+        return ['code'=>200, 'erreur'=>'', 'nombre'=>$request[0]['nombre']];
     }
 
     /**
@@ -112,8 +110,6 @@ class HistoriqueRepository extends ServiceEntityRepository
     /**
      * [Description for updateHistoriqueReference]
      *  Met à jour la version de référence pour un projet
-     *
-     * @param string $mode
      * @param array $map
      *
      * @return array
@@ -122,9 +118,9 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function updateHistoriqueReference($mode, $map):array {
+    public function updateHistoriqueReference($map):array {
         /** on prépare la réponse */
-        $response=['mode'=>$mode, 'code'=>200, 'erreur'=>''];
+        $response=['code'=>200, 'erreur'=>''];
 
         /** On retire le statut à toute les versions du projet, radical mais efficace */
         $sql = "UPDATE historique
@@ -133,13 +129,13 @@ class HistoriqueRepository extends ServiceEntityRepository
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         $conn->bindValue(':maven_key', $map['maven_key']);
         try {
-            if ($mode !== 'TEST') {
+            #if ($mode !== 'TEST') {
                 $conn->executeQuery();
-            } else {
-                $response=['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-            }
+            #} else {
+                $response=['code'=> 202, 'erreur'=>'TEST'];
+            #}
         } catch (\Doctrine\DBAL\Exception $e) {
-            $response=['mode'=>$mode, 'code'=> 500, 'erreur'=>$e->getCode()];
+            $response=['code'=> 500, 'erreur'=>$e->getCode()];
         }
 
         /** On met ajour la version de réference pour le projet */
@@ -154,13 +150,13 @@ class HistoriqueRepository extends ServiceEntityRepository
         $conn->bindValue(':version', $map['version']);
         $conn->bindValue(':date_version', $map['date_version']);
         try {
-            if ($mode !== 'TEST') {
+            #if ($mode !== 'TEST') {
                 $conn->executeQuery();
-            } else {
-                $response=['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-            }
+            #} else {
+                $response=['code'=> 202, 'erreur'=>'TEST'];
+            #}
         } catch (\Doctrine\DBAL\Exception $e) {
-            $response=['mode'=>$mode, 'code'=> 500, 'erreur'=>$e->getCode()];
+            $response=['code'=> 500, 'erreur'=>$e->getCode()];
         }
         return $response;
     }
@@ -168,8 +164,6 @@ class HistoriqueRepository extends ServiceEntityRepository
     /**
      * [Description for deleteHistoriqueProjet]
      * Suppression de la table historique du projet
-     *
-     * @param string $mode
      * @param array $map
      *
      * @return array
@@ -178,10 +172,10 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function deleteHistoriqueProjet($mode, $map):array {
+    public function deleteHistoriqueProjet($map):array {
 
         /** on prépare la réponse */
-        $response=['mode'=>$mode, 'code'=>200, 'erreur'=>''];
+        $response=['code'=>200, 'erreur'=>''];
 
         /** On prépare la requête */
         $sql = "DELETE FROM historique
@@ -193,13 +187,13 @@ class HistoriqueRepository extends ServiceEntityRepository
         $conn->bindValue(':version', $map['version']);
         $conn->bindValue(':date_version', $map['date_version']);
         try {
-            if ($mode !== 'TEST') {
+            #if ($mode !== 'TEST') {
                 $conn->executeQuery();
-            } else {
-                $response=['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-            }
+            #} else {
+                $response=['code'=> 202, 'erreur'=>'TEST'];
+            #}
         } catch (\Doctrine\DBAL\Exception $e) {
-            $response=['mode'=>$mode, 'code'=> 500, 'erreur'=>$e->getCode()];
+            $response=['code'=> 500, 'erreur'=>$e->getCode()];
         }
         return $response;
     }
@@ -207,8 +201,6 @@ class HistoriqueRepository extends ServiceEntityRepository
     /**
      * [Description for selectUnionHistoriqueProjet]
      * Remonte les projets en historique
-     *
-     * @param string $mode
      * @param array $map
      *
      * @return array
@@ -217,7 +209,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectUnionHistoriqueProjet($mode, $map):array {
+    public function selectUnionHistoriqueProjet($map):array {
         /** On prépare la requête */
         $sql = "SELECT * FROM
                 (SELECT nom_projet AS nom, date_version AS date, version,
@@ -251,23 +243,21 @@ class HistoriqueRepository extends ServiceEntityRepository
         $conn->bindValue(':initial_false', 1);
         $conn->bindValue(':limit', $map['limit']);
         try {
-            if ($mode !== 'TEST') {
+            #if ($mode !== 'TEST') {
                 $suivi=$conn->executeQuery()->fetchAllAssociative();
-            } else {
-                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-            }
+            #} else {
+                return ['code'=> 202, 'erreur'=>'TEST'];
+            #}
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=> 500, 'erreur'=>$e->getCode()];
+            return ['code'=> 500, 'erreur'=>$e->getCode()];
         }
         /** on prépare la réponse */
-        return ['mode'=>$mode, 'code'=>200, 'request'=>$suivi, 'erreur'=>''];
+        return ['code'=>200, 'request'=>$suivi, 'erreur'=>''];
     }
 
     /**
      * [Description for selectUnionHistoriqueAnomalie]
      * On remonte les anomalies des projets favoris
-     *
-     * @param string $mode
      * @param array $map
      *
      * @return array
@@ -276,7 +266,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectUnionHistoriqueAnomalie($mode, $map):array {
+    public function selectUnionHistoriqueAnomalie($map):array {
         /** On prépare la requête */
         $sql = "SELECT * FROM
                 (SELECT date_version AS date,
@@ -301,23 +291,21 @@ class HistoriqueRepository extends ServiceEntityRepository
         $conn->bindValue(':initial_false', 1);
         $conn->bindValue(':limit', $map['limit']);
         try {
-            if ($mode !== 'TEST') {
+            #if ($mode !== 'TEST') {
                 $severite=$conn->executeQuery()->fetchAllAssociative();
-            } else {
-                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-            }
+            #} else {
+                return ['code'=> 202, 'erreur'=>'TEST'];
+            #}
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=> 500, 'erreur'=>$e->getCode()];
+            return ['code'=> 500, 'erreur'=>$e->getCode()];
         }
         /** on prépare la réponse */
-        return ['mode'=>$mode, 'code'=>200, 'request'=>$severite, 'erreur'=>''];
+        return ['code'=>200, 'request'=>$severite, 'erreur'=>''];
     }
 
     /**
      * [Description for selectUnionHistoriqueDetails]
      * remonte les anomalies par type des favoris
-     *
-     * @param string $mode
      * @param array $map
      *
      * @return array
@@ -326,7 +314,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectUnionHistoriqueDetails($mode, $map):array {
+    public function selectUnionHistoriqueDetails($map):array {
         /** On prépare la requête */
         $sql = "SELECT * FROM
                 (SELECT date_version AS date, version,
@@ -360,23 +348,21 @@ class HistoriqueRepository extends ServiceEntityRepository
         $conn->bindValue(':initial_false', 1);
         $conn->bindValue(':limit', $map['limit']);
         try {
-            if ($mode !== 'TEST') {
+            #if ($mode !== 'TEST') {
                 $details=$conn->executeQuery()->fetchAllAssociative();
-            } else {
-                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-            }
+            #} else {
+                return ['code'=> 202, 'erreur'=>'TEST'];
+            #}
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=> 500, 'erreur'=>$e->getCode()];
+            return ['code'=> 500, 'erreur'=>$e->getCode()];
         }
         /** on prépare la réponse */
-        return ['mode'=>$mode, 'code'=>200, 'request'=>$details, 'erreur'=>''];
+        return ['code'=>200, 'request'=>$details, 'erreur'=>''];
     }
 
     /**
      * [Description for selectHistoriqueAnomalieGraphique]
      * On remonte les données pour construire le graphique.
-     *
-     * @param string $mode
      * @param array $map
      *
      * @return array
@@ -385,7 +371,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectHistoriqueAnomalieGraphique($mode, $map):array {
+    public function selectHistoriqueAnomalieGraphique($map):array {
         /** On prépare la requête */
         $sql = "SELECT  nombre_bug AS bug, nombre_vulnerability AS secu,
                         nombre_code_smell AS code_smell, date_version AS date
@@ -396,23 +382,21 @@ class HistoriqueRepository extends ServiceEntityRepository
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         $conn->bindValue(':maven_key', $map['maven_key']);
         try {
-            if ($mode !== 'TEST') {
+            #if ($mode !== 'TEST') {
                 $graph=$conn->executeQuery()->fetchAllAssociative();
-            } else {
-                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-            }
+            #} else {
+                return ['code'=> 202, 'erreur'=>'TEST'];
+            #}
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=> 500, 'erreur'=>$e->getCode()];
+            return ['code'=> 500, 'erreur'=>$e->getCode()];
         }
         /** on prépare la réponse */
-        return ['mode'=>$mode, 'code'=>200, 'request'=>$graph, 'erreur'=>''];
+        return ['code'=>200, 'request'=>$graph, 'erreur'=>''];
     }
 
     /**
      * [Description for insertHistoriqueAjoutProjet]
      * On ajoute une version à l'historique à partir des données SonarQube historisées.
-     *
-     * @param string $mode
      * @param array $map
      *
      * @return array
@@ -421,7 +405,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function insertHistoriqueAjoutProjet($mode, $map):array {
+    public function insertHistoriqueAjoutProjet($map):array {
         /** On prépare la requête */
         $sql = "INSERT OR IGNORE INTO historique
                     (maven_key,version,date_version,
@@ -516,16 +500,16 @@ class HistoriqueRepository extends ServiceEntityRepository
         $conn->bindValue(':initial', $map['initial']);
         $conn->bindValue(':date_enregistrement', $map['date_enregistrement']);
         try {
-            if ($mode !== 'TEST') {
+            #if ($mode !== 'TEST') {
                 $conn->executeQuery();
-            } else {
-                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-            }
+            #} else {
+                return ['code'=> 202, 'erreur'=>'TEST'];
+            #}
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=> 500, 'erreur'=>$e->getCode()];
+            return ['code'=> 500, 'erreur'=>$e->getCode()];
         }
         /** on prépare la réponse */
-        $response=['mode'=>$mode, 'code'=>200, 'erreur'=>''];
+        $response=['code'=>200, 'erreur'=>''];
         return $response;
     }
 
@@ -542,7 +526,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectHistoriqueProjetByDate($mode, $map):array {
+    public function selectHistoriqueProjetByDate($map):array {
 
         /** On prépare la requête */
         $sql = "SELECT maven_key, version, date_version as date, initial
@@ -553,24 +537,22 @@ class HistoriqueRepository extends ServiceEntityRepository
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         $conn->bindValue(':maven_key', $map['maven_key']);
         try {
-            if ($mode !== 'TEST') {
+            #if ($mode !== 'TEST') {
                 $version=$conn->executeQuery()->fetchAllAssociative();
-            } else {
-                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-            }
+            #} else {
+                return ['code'=> 202, 'erreur'=>'TEST'];
+            #}
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=> 500, 'erreur'=>$e->getCode()];
+            return ['code'=> 500, 'erreur'=>$e->getCode()];
         }
         /** on prépare la réponse */
-        return ['mode'=>$mode, 'code'=>200, 'version'=>$version, 'erreur'=>''];
+        return ['code'=>200, 'version'=>$version, 'erreur'=>''];
     }
 
     /**
      * [Description for selectHistoriqueProjetLast]
      * On récupère les informations du projet le plus récent
      * (i.e ayant la date d'analyse la plus récente).
-     *
-     * @param string $mode
      * @param array $map
      *
      * @return array
@@ -579,7 +561,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectHistoriqueProjetLast($mode, $map):array {
+    public function selectHistoriqueProjetLast($map):array {
 
         /** On prépare la requête */
         $sql =  "SELECT version, nom_projet AS name, date_version,
@@ -594,23 +576,21 @@ class HistoriqueRepository extends ServiceEntityRepository
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         $conn->bindValue(':maven_key', $map['maven_key']);
         try {
-            if ($mode !== 'TEST') {
+            #if ($mode !== 'TEST') {
                 $infos=$conn->executeQuery()->fetchAllAssociative();
-            } else {
-                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-            }
+            #} else {
+                return ['code'=> 202, 'erreur'=>'TEST'];
+            #}
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=> 500, 'erreur'=>$e->getCode()];
+            return ['code'=> 500, 'erreur'=>$e->getCode()];
         }
         /** on prépare la réponse */
-        return ['mode'=>$mode, 'code'=>200, 'infos'=>$infos, 'erreur'=>''];
+        return ['code'=>200, 'infos'=>$infos, 'erreur'=>''];
     }
 
     /**
      * [Description for selectHistoriqueProjetReference]
      * Remonte les informations du projet de référence.
-     *
-     * @param string $mode
      * @param string $map
      *
      * @return array
@@ -619,7 +599,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectHistoriqueProjetReference($mode, $map):array {
+    public function selectHistoriqueProjetReference($map):array {
 
         /** On prépare la requête */
         $sql = "SELECT  version, date_version,
@@ -633,23 +613,21 @@ class HistoriqueRepository extends ServiceEntityRepository
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         $conn->bindValue(':maven_key', $map['maven_key']);
         try {
-            if ($mode !== 'TEST') {
+            #if ($mode !== 'TEST') {
                 $reference=$conn->executeQuery()->fetchAllAssociative();
-            } else {
-                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-            }
+            #} else {
+                return ['code'=> 202, 'erreur'=>'TEST'];
+            #}
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=> 500, 'erreur'=>$e->getCode()];
+            return ['code'=> 500, 'erreur'=>$e->getCode()];
         }
         /** on prépare la réponse */
-        return ['mode'=>$mode, 'code'=>200, 'reference'=>$reference, 'erreur'=>''];
+        return ['code'=>200, 'reference'=>$reference, 'erreur'=>''];
     }
 
     /**
      * [Description for selectHistoriqueProjetfavori]
      * retoure la liste des données pour les projets favoris.
-     *
-     * @param string $mode
      * @param array $map
      *
      * @return array
@@ -658,7 +636,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectHistoriqueProjetfavori($mode, $map):array {
+    public function selectHistoriqueProjetfavori($map):array {
         /** On prépare la requête */
         $sql = "SELECT DISTINCT maven_key as mavenkey, nom_projet as nom,
                                 version, date_version as date,
@@ -673,17 +651,17 @@ class HistoriqueRepository extends ServiceEntityRepository
                 " GROUP BY maven_key LIMIT ".$map['nombre_projet_favori'];
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         try {
-            if ($mode !== 'TEST') {
+            #if ($mode !== 'TEST') {
                 $exec=$conn->executeQuery();
                 $liste=$exec->fetchAllAssociative();
-            } else {
-                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-            }
+            #} else {
+                return ['code'=> 202, 'erreur'=>'TEST'];
+            #}
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=> 500, 'erreur'=>$e->getCode()];
+            return ['code'=> 500, 'erreur'=>$e->getCode()];
         }
         /** on prépare la réponse */
-        return ['mode'=>$mode, 'code'=>200, 'liste'=>$liste, 'erreur'=>''];
+        return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
     }
 
 }
