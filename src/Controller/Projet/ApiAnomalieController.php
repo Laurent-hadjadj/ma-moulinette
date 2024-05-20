@@ -37,7 +37,8 @@ use Psr\Log\LoggerInterface;
 /** Client HTTP */
 use App\Service\Client;
 
-/** minuteTools */
+/** Import des services */
+use App\Service\ExtractNameFromMavenKey;
 use App\Service\DateTools;
 
 /**
@@ -70,38 +71,12 @@ class ApiAnomalieController extends AbstractController
      */
     public function __construct(
         private LoggerInterface $logger,
-        private EntityManagerInterface $em
+        private EntityManagerInterface $em,
+        private ExtractNameFromMavenKey $serviceExtractName,
     ) {
         $this->logger = $logger;
         $this->em = $em;
-    }
-
-    /**
-     * [Description for extractNameFromMavenKey]
-     * Extrait le nom du projet de la clé
-     *
-     * @param mixed $mavenKey
-     *
-     * @return string
-     *
-     * Created at: 13/03/2024 21:47:51 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    private function extractNameFromMavenKey($mavenKey): string
-    {
-        /**
-         * On récupère le nom de l'application depuis la clé mavenKey
-         * [fr.ma-petite-entreprise] : [ma-moulinette]
-         */
-        $app = explode(":", $mavenKey);
-        if (count($app)===1) {
-            /** La clé maven n'est pas conforme, on ne peut pas déduire le nom de l'application */
-            $name=$mavenKey;
-        } else {
-            $name=$app[1];
-        }
-        return $name;
+        $this->serviceExtractName = $serviceExtractName;
     }
 
     /**
@@ -209,7 +184,7 @@ class ApiAnomalieController extends AbstractController
                 }
         }
 
-        $app=static::extractNameFromMavenKey($data->maven_key);
+        $app=$this->serviceExtractName->extractNameFromMavenKey($data->maven_key);
 
         if ($result1['paging']['total'] != 0) {
             /** On supprime les anomalies pour la maven_key. */
@@ -311,7 +286,9 @@ class ApiAnomalieController extends AbstractController
             /** Enregistrement dans la table Anomalie. */
             $issue = new Anomalie();
             $issue->setMavenKey($data->maven_key);
-            $issue->setProjectName(static::extractNameFromMavenKey($data->maven_key));
+            $app=$this->serviceExtractName->extractNameFromMavenKey($data->maven_key);
+
+            $issue->setProjectName($app);
             $issue->setAnomalieTotal($anomalieTotal);
             $issue->setDette($dette);
             $issue->setDetteMinute($detteMinute);
@@ -517,7 +494,8 @@ class ApiAnomalieController extends AbstractController
             /** On enregistre en base. */
             $details = new AnomalieDetails();
             $details->setMavenKey($data->maven_key);
-            $details->setName(static::extractNameFromMavenKey($data->maven_key));
+            $app=$this->serviceExtractName->extractNameFromMavenKey($data->maven_key);
+            $details->setName($app);
 
             $details->setBugBlocker($bugBlocker);
             $details->setBugCritical($bugCritical);
