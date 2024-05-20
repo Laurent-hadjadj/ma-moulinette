@@ -156,7 +156,6 @@ class BatchControllerTest extends ApiTestCase
     $this->assertResponseHeaderSame('content-type', static::$applicationJson);
     $this->assertIsArray($decode);
     $this->assertEquals('200', $decode[0]);
-    dd($decode);
     $this->assertEquals(3,count($decode));
     $this->assertArrayHasKey('mode', $decode);
     $this->assertArrayHasKey('job', $decode);

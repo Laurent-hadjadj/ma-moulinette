@@ -56,7 +56,8 @@
   .affiche-profil-svg,
   .projet-svg,
   .gomme-svg,
-  .suivi-svg {
+  .suivi-svg,
+  .information-svg {
     margin-bottom: -0.2rem;
     width: 32px;
     height: 32px;
@@ -83,7 +84,8 @@
   .affiche-profil-svg,
   .projet-svg,
   .gomme-svg,
-  .suivi-svg {
+  .suivi-svg,
+  .information-svg {
     margin-bottom: -0.2rem;
     width: 32px;
     height: 32px;
@@ -109,7 +111,8 @@
   .affiche-profil-svg,
   .projet-svg,
   .gomme-svg,
-  .suivi-svg {
+  .suivi-svg,
+  .information-svg {
     margin-bottom: -0.2rem;
     width: 32px;
     height: 32px;
@@ -129,14 +132,15 @@
 /* Media MEDIUM  */
 @media (40.025em <= width <= 64em) {
   .projet { margin-top: 1rem; }
-  .visibility-box-public { margin-right: 0.2rem; }
-  .visibility-box-private { margin-left: 0.2rem; }
+  .visibility-box-public, .tag-box-projet { margin-right: 0.2rem; }
+  .visibility-box-private, .tag-box-tag { margin-left: 0.2rem; }
 
   .refresh-bd-svg,
   .affiche-profil-svg,
   .projet-svg,
   .gomme-svg,
-  .suivi-svg {
+  .suivi-svg,
+  .information-svg {
     margin-bottom: -0.2rem;
     width: 32px;
     height: 32px;
@@ -156,14 +160,15 @@
 /* Media LARGE  */
 @media (64.025em <= width <= 90em) {
   .projet { margin-top: 1rem; }
-  .visibility-box-public { margin-right: 0.2rem; }
-  .visibility-box-private { margin-left: 0.2rem; }
+  .visibility-box-public, .tag-box-projet { margin-right: 0.2rem; }
+  .visibility-box-private, .tag-box-tag { margin-left: 0.2rem; }
 
   .refresh-bd-svg,
   .affiche-profil-svg,
   .projet-svg,
   .gomme-svg,
-  .suivi-svg {
+  .suivi-svg,
+  .information-svg {
     margin-bottom: -0.2rem;
     width: 32px;
     height: 32px;
@@ -183,14 +188,15 @@
 /* Media LARGE  */
 @media (90.025em <= width <= 120em) {
   .projet { margin-top: 1rem; }
-  .visibility-box-public { margin-right: 0.2rem; }
-  .visibility-box-private { margin-left: 0.2rem; }
+  .visibility-box-public, .tag-box-projet { margin-right: 0.2rem; }
+  .visibility-box-private, .tag-box-tag { margin-left: 0.2rem; }
 
   .refresh-bd-svg,
   .affiche-profil-svg,
   .projet-svg,
   .gomme-svg,
-  .suivi-svg {
+  .suivi-svg,
+  .information-svg {
     margin-bottom: -0.2rem;
     width: 32px;
     height: 32px;
@@ -210,14 +216,15 @@
 /* Media Extra-large  */
 @media (120.025em <= width <= 160em) {
   .projet { margin-top: 1rem; }
-  .visibility-box-public { margin-right: 0.4rem; }
-  .visibility-box-private { margin-left: 0.4rem; }
+  .visibility-box-public, .tag-box-projet { margin-right: 0.4rem; }
+  .visibility-box-private, .tag-box-tag { margin-left: 0.4rem; }
 
   .refresh-bd-svg,
   .affiche-profil-svg,
   .projet-svg,
   .gomme-svg,
-  .suivi-svg {
+  .suivi-svg,
+  .information-svg {
     margin-bottom: -0.2rem;
     width: 48px;
     height: 48px;
@@ -258,7 +265,8 @@
 .refresh-bd,
 .affiche-profil,
 .projet,
-#fermer-liste-profil {
+#fermer-liste-profil,
+#fermer-info-tag {
   color: #fff;
   background-color: #00445b;
 }
@@ -291,12 +299,14 @@
  *
  */
 .gomme-svg,
-.suivi-svg {
+.suivi-svg,
+.information-svg {
   fill: #00445b;
   cursor: pointer;
 }
 
-.suivi-svg:hover { fill: #850385; }
+.suivi-svg:hover,
+.information-svg:hover { fill: #850385; }
 
 /* Bouton désactivé */
 .bouton-disabled {
@@ -373,21 +383,24 @@
 .color-codesmell { color: #670267; }
 
 /* Affichage de la visibilité des projets */
-
-.fieldset-visibility {
+.fieldset-visibility, .fieldset-tag {
   /* haut | droit | bas | gauche */
   padding: 0.5rem;
   margin-top: -1rem;
 }
 
-.visibility-box {
+.fieldset-legend-custom {
+  display: flex;
+}
+
+.visibility-box, .tag-box {
   padding: 0.6rem;
   border: solid 1px #00445b;
   border-radius: 0.2rem;
   background-color: #fff;
 }
 
-.stat-visibility {
+.stat-visibility, .stat-tag {
   color: #222;
   font-family: "open sans", sans-serif;
 }

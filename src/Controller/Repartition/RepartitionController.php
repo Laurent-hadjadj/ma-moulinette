@@ -20,9 +20,12 @@ use Symfony\Component\Routing\Annotation\Route;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-/** Accès aux tables SLQLite */
+/** Accès aux tables */
 use Doctrine\Persistence\ManagerRegistry;
 use App\Entity\Secondary\Repartition;
+
+/** Import des services */
+use App\Service\ExtractName;
 
 /**
  * [Description RepartitionController]
@@ -36,37 +39,12 @@ class RepartitionController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function __construct(private ManagerRegistry $doctrine)
+    public function __construct(
+        private ManagerRegistry $doctrine,
+        private ExtractName $serviceExtractName)
     {
         $this->doctrine = $doctrine;
-    }
-
-    /**
-     * [Description for extractNameFromMavenKey]
-     * Extrait le nom du projet de la clé
-     *
-     * @param mixed $mavenKey
-     *
-     * @return string
-     *
-     * Created at: 13/03/2024 22:11:36 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    private function extractNameFromMavenKey($mavenKey): string
-    {
-        /**
-         * On récupère le nom de l'application depuis la clé mavenKey
-         * [fr.ma-petite-entreprise] : [ma-moulinette]
-         */
-        $app = explode(":", $mavenKey);
-        if (count($app)===1) {
-            /** La clé maven n'est pas conforme, on ne peut pas déduire le nom de l'application */
-            $name=$mavenKey;
-        } else {
-            $name=$app[1];
-        }
-        return $name;
+        $this->serviceExtractName = $serviceExtractName;
     }
 
     /**
@@ -93,7 +71,8 @@ class RepartitionController extends AbstractController
         }
 
         /** On enregistre le nom du projet */
-        $app = static::extractNameFromMavenKey($mavenKey);
+        $app=$this->serviceExtractName->extractNameFromMavenKey($mavenKey);
+
 
         /** On se connecte à la base pour connaitre la version du dernier setup pour le projet. */
         $reponse = $this->doctrine->getManager('secondary')

@@ -87,6 +87,32 @@ class ListeProjetRepository extends ServiceEntityRepository
     }
 
     /**
+     * [Description for countListeProjetTags]
+     * On retourne le nombre de projet récupéré du serveu sonarqube et
+     * le nombre de tag disponible
+     *
+     * @return array
+     *
+     * Created at: 19/05/2024 09:27:26 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function countListeProjetTags(): array
+    {
+        try {
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "SELECT count(tags) as tag FROM liste_projet where tags->'[]' IS NOT NULL;";
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $nombre=$stmt->executeQuery()->fetchAllAssociative();
+            $this->getEntityManager()->getConnection()->commit();
+        } catch (\Doctrine\DBAL\Exception $e) {
+            $this->getEntityManager()->getConnection()->rollBack();
+            return ['code'=>500, 'erreur'=> $e->getCode()];
+        }
+        return ['code'=>200, 'nombre'=>$nombre, 'erreur'=>''];
+    }
+
+    /**
      * [Description for selectListeProjetByEquipe]
      * retourne la liste des projets en fonction de(s) (l')équipes.
      *

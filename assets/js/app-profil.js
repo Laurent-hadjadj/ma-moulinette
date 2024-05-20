@@ -48,17 +48,16 @@ const callboxFermer='</span><button class="close-button" aria-label="Fermer la f
 /**
  * [Description for refreshQuality]
  *
- * @return [type]
+ * @return void
  *
  * Created at: 07/05/2023, 21:02:59 (Europe/Paris)
  * @author    Laurent HADJADJ <laurent_h@me.com>
  * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
   const refreshQuality=async function() {
-  const dataRefresh = { mode:'null' };
   const optionsRefresh = {
         url: `${serveur()}/api/quality/profiles`, type: 'POST',
-        dataType: 'json', data: JSON.stringify(dataRefresh), contentType };
+        dataType: 'json', contentType };
 
   /** On appel l'API */
   const t = await $.ajax(optionsRefresh);
@@ -91,12 +90,13 @@ const callboxFermer='</span><button class="close-button" aria-label="Fermer la f
 
   /** On efface le container */
   $('#js-container-langage').html('');
-  /** on recréé le cointainer */
   const profils = t.listeProfil;
-  profils.forEach(profil =>
+
+  /** on recréé le cointainer */
+    profils.forEach(profil =>
   {
     id=id+1;
-      str +=
+    str +=
       `<div class="callout secondary small-12 medium-6 langage-6 cell box-langage">
         <h3 class="h5">${profil.langage }</h3>
         <table class="hover">
@@ -127,24 +127,23 @@ const callboxFermer='</span><button class="close-button" aria-label="Fermer la f
           </tbody>
         </table>
         <div class="small-12 medium-6 large-6 cell">
-							<p class="button expanded float-center bouton-profil-refresh js-bouton-autre-profil" data-language="${profil.langage}" id="language-${profil.langage}}">
-								<button data-open="fenetre-modal" class="fenetre-modal">Afficher les autres profils</button>
-							</p>
-						</div>
-					</div>
-					<div class="reveal" id="fenetre-modal" data-reveal>
-					</div>
-      </div>`;
-    total = total + profil.regle; });
+					<p class="button expanded float-center bouton-profil-refresh js-bouton-autre-profil"
+          data-language="${profil.langage}" id="language-${profil.langage}}">
+					<button data-open="fenetre-modal" class="fenetre-modal">Afficher les autres profils</button>
+					</p>
+				</div>
+			</div>
+		<div class="reveal" id="fenetre-modal" data-reveal></div>
+  </div>`;
+  total = total + profil.regle;
+  console.log(total);
+  });
 
   /** Affiche le container */
   $('#js-container-langage').html(str);
+  console.log('total', total);
   $('.js-total').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(total));
-
-  $('.js-bouton-autre-profil').on('click', (e)=>{
-  });
 };
-
 
 const recupereProfilNonActif=async function(langage){
   /** Construction de la requete */
@@ -154,56 +153,38 @@ const recupereProfilNonActif=async function(langage){
         dataType: 'json', data: JSON.stringify(dataRefresh), contentType };
   /** On appel l'API */
   const t = await $.ajax(optionsRefresh);
+  let str = '', strNombreProfil='';
+  $('#contenu-fenetre-modal').html('');
+  $('#js-nombre-profil').html('');
 
-  let id= 0, str = '';
-
-  $('#toto').html('');
   const profils = t.listeProfil;
   const nombreProfils = t.countProfil;
-  // En tête du tableau
 
-
+  /** Mise à jour du nombre de profil */
+  strNombreProfil = `Il y a ${ nombreProfils.request[0].total } profil diponible dans SonarQube`;
   if (nombreProfils.request[0].total > 1){
-    str += `<h2 class="h5 claire-hand">Il y a ${ nombreProfils.request[0].total } profils diponibles dans Sonarqube</h2>`
-  }else{
-    str += `<h2 class="h5 claire-hand">Il y a ${ nombreProfils.request[0].total } profil diponible dans Sonarqube</h2>`
+    strNombreProfil= `Il y a ${ nombreProfils.request[0].total } profils diponibles dans SonarQube`;
   }
-  str += `<table class="hover">
-  <thead>
-    <tr>
-      <th scope="col" class="open-sans text-center"></th>
-      <th scope="col" class="open-sans text-center">Version</th>
-      <th scope="col" class="open-sans text-center">Règle</th>
-      <th scope="col" class="open-sans text-center">Date</th>
-    </tr>
-  </thead>`
+  $('#js-nombre-profil').html(strNombreProfil);
 
-  // Bloucle ur le profil pour construire le tablea
+  /** Bloucle sur le profil pour construire le tableau */
   profils.forEach(profil =>
     {
-      id=id+1;
       str +=
-      `   <tbody>
-            <tr class="open-sans">
-              <td></td>
-              <td class="text-left">${ profil.profil }</td>
-              <td class="text-center">${ new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(profil.regle) }</td>
-              <td class="text-center">
-                <span class="show-for-small-only"> ${ new Intl.DateTimeFormat('default', dateOptionsShort).format(new Date(profil.date)) }</span>
-                <span class="show-for-medium">${ new Intl.DateTimeFormat('default', dateOptions).format(new Date(profil.date)) }</span>
-              </td>
-            </tr>
-      </div>`;
+      `<tr class="open-sans">
+        <td></td>
+        <td class="text-left">${ profil.profil }</td>
+        <td class="text-center">${ new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(profil.regle) }</td>
+        <td class="text-center">
+          <span class="show-for-small-only"> ${ new Intl.DateTimeFormat('default', dateOptionsShort).format(new Date(profil.date)) }</span>
+          <span class="show-for-medium">${ new Intl.DateTimeFormat('default', dateOptions).format(new Date(profil.date)) }</span>
+        </td>
+      </tr>`;
     }
   )
-  // Fin du tableau avec le boutton pour fermer la page
-  str += `  </tbody>
-          </table>
-          <button class="close-button" data-close aria-label="Close reveal" type="button">
-          <span aria-hidden="true">&times;</span>
-          </button>`;
-
-  $('#toto').html(str);
+  /** Injection des lignes dans le tableau */
+  $('#js-contenu-fenetre-modal').html(str);
+  /** Ouverture de la fenêtre modale */
   $('#fenetre-modal').foundation('open');
 }
 
@@ -224,7 +205,7 @@ $('.js-bouton-autre-profil').on('click', (e)=>{
  *
  * @param mixed a
  *
- * @return [type]
+ * @return array
  *
  * Created at: 19/12/2022, 21:51:11 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -248,7 +229,7 @@ const shuffle=function(a) {
  * [Description for palette]
  * Renvoie une nouvelle palette de couleur
  *
- * @return [type]
+ * @return array
  *
  * Created at: 19/12/2022, 21:52:05 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -269,7 +250,7 @@ const palette=function() {
  * @param mixed label
  * @param mixed dataset
  *
- * @return [type]
+ * @return object
  *
  * Created at: 19/12/2022, 21:53:26 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -310,19 +291,16 @@ const dessineMoiUnMouton=function(label, dataset) {
   const ctx = document.getElementById('graphique-langage').getContext('2d');
   const charts = new Chart(ctx, { type: 'doughnut', data, options });
   if (charts === null) {
-    console.info('youpi ! charts ne peut pas être null !!!');
+    sessionStorage.setItem('info','youpi ! charts ne peut pas être null !!!');
   }
 };
 
 /** Création du graphique par language */
 $('.js-profil-graphique').on('click', async () => {
-  const data = { mode:'null' };
   const options = {
-          url: `${serveur()}/api/quality/langage`, type: 'POST',
-          dataType: 'json', data: JSON.stringify(data), contentType };
-
+        url: `${serveur()}/api/quality/langage`, type: 'POST', dataType: 'json', contentType };
   const t = await $.ajax(options);
-  /**
+    /**
    * const label = t.label;
    * const dataset = t.dataset;
    */

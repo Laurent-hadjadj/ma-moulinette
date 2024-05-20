@@ -25,7 +25,7 @@ import './app-authentification-details.js';
 import {serveur} from './properties.js';
 
 /** On importe les constantes */
-import { http_200, http_400, http_401, http_404, http_406, http_500, contentType } from './constante.js';
+import { http_200, http_400, http_401, http_404, http_500, contentType } from './constante.js';
 
 /**
  * [Description for afficheMessage]
@@ -51,14 +51,16 @@ const afficheMessage=function(t){
   * Vérifie si le serveur sonarqube est UP
   * Affiche la version du seveur
   *
-  * @return [type]
+  * @return void
   *
   */
 const sonarIsUp=async function() {
-  const data={'mode': 'null' };
+  /**  si le bouton de mise à jour des projets est désactivé on sort */
+  if ($('.refresh-bd').hasClass('bouton-disabled')){
+    return {code: http_401};
+  }
   const options = {
-    url: `${serveur()}/api/status`, type: 'POST',
-    dataType: 'json',  data: JSON.stringify(data), contentType };
+    url: `${serveur()}/api/status`, type: 'POST', dataType: 'json',  contentType };
   let message=[];
   try
   {
@@ -81,20 +83,18 @@ const sonarIsUp=async function() {
   * [Description for miseAJourListe]
   * Récupération de la liste des projets.
   *
-  * @return [type]
+  * @return void
   *
   */
 const miseAJourListe=function() {
   const options = {
-    url: `${serveur()}/api/home/projet`, type: 'POST',
-          dataType: 'json', data: JSON.stringify(), contentType };
+    url: `${serveur()}/api/home/projet`, type: 'POST', dataType: 'json', contentType };
     return new Promise(resolve => {
       $.ajax(options).then(t => {
         if (t.code!==http_200){
           afficheMessage(t);
           return;
         } else {
-          console.log(t)
           /** On affiche le nombre de projet */
           $('#js-nombre-projet').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.nombre));
           /** On efface le plus|moins */
@@ -110,6 +110,8 @@ const miseAJourListe=function() {
             } else {
               $('#js-private').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.private));
             }
+          /** On affiche le nombre de projet dans la zone tags */
+          $('#js-tag-projet').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.nombre));
 
           /** On affiche un message à l'utilisateur */
           afficheMessage(t);
@@ -120,15 +122,44 @@ const miseAJourListe=function() {
 };
 
 /**
+ * [Description for miseAJourTags]
+ * On met à jour le nombre de projet et le nombre de tags
+ * @return void
+ *
+ * Created at: 19/05/2024 11:18:10 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ */
+const miseAJourTags=function() {
+  const options = {
+    url: `${serveur()}/api/home/tags`, type: 'POST', dataType: 'json', contentType };
+    return new Promise(resolve => {
+      $.ajax(options).then(t => {
+        if (t.code!==http_200){
+          afficheMessage(t);
+          return;
+        } else {
+          /** On affiche le nombre de tags */
+          $('#js-tag-tag').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.nombre_tag));
+        }
+        resolve();
+      });
+    });
+};
+
+/**
   * [Description for miseAJourListeAsync]
   * Fonctions asynchronnes (liste et profils)
-  * @return [type]
+  * @return void
   *
   */
 const miseAJourListeAsync= async function() {
+  if ($('.refresh-bd').hasClass('bouton-disabled') === true){
+    return;
+  }
   await miseAJourListe();
+  await miseAJourTags();
 };
-
 
 /********* Evenement *******/
 
@@ -139,13 +170,22 @@ const miseAJourListeAsync= async function() {
 $('.refresh-bd').on('click', ()=> {
   sonarIsUp()
     .then((t)=> {
-      if (t.code === 504 || t.code === http_400 || t.message === 'Internal Server Error') {
+      /** On regarde si le serveur sonarqube est disponible */
+      if (t.code === 504 || t.code === http_400 || t.code=== http_404 || t.message === 'Internal Server Error') {
+        /** l'URL n'a pas été trouvé */
         if (t.code=== http_404) {
           return;
         }
+        /** On affiche le message d'erreur du serveur */
         afficheMessage(t);
         return;
       }
+
+      /** l'utilisateur n'a pas les droits */
+      if (t.code===http_401){
+        return;
+      }
+
       /** si le serveur est disponible */
       miseAJourListeAsync();
     });
@@ -164,6 +204,6 @@ $('.suivi-svg').on('click', function(e) {
   if (mavenKey!==''){
     window.location.href='/suivi?mavenKey='+mavenKey;
     } else {
-    //log(' - ERROR - La clé n\'est pas correcte !! !');
+    sessionStorage.set('error', "La clé n'est pas correcte !! !");
   }
 });

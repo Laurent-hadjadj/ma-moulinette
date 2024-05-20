@@ -84,7 +84,7 @@ class HomeController extends AbstractController
 
         /* On récupère le nombre de projet depuis la table liste_projet */
         $nombre = $listeProjetEntity->countListeProjet();
-        
+
         $projet = 0;
         if ($nombre['code'] === 200){
             $projet = $nombre['request'][0]['total'];
@@ -171,8 +171,12 @@ class HomeController extends AbstractController
         /** On appel le client http */
         $result = $client->http($url);
 
-        /** Si les profils custom n'existent pas on envoi un message */
-        return count($result['profiles']);
+        /** Si les profils custom n'existent pas on envoi 0 */
+        $count=0;
+        if (key_exists('profiles', $result)) {
+            $count=count($result['profiles']);
+        }
+        return $count;
     }
 
     /**
@@ -426,7 +430,7 @@ class HomeController extends AbstractController
     public function index(Client $client, Security $security, Request $request): Response
     {
         /** On instancie l'entityRepository */
-        $listeProjet = $this->em->getRepository(ListeProjet::class);
+        $listeProjetEntity = $this->em->getRepository(ListeProjet::class);
 
         /**
          * Description du processus :
@@ -501,8 +505,10 @@ class HomeController extends AbstractController
                  * Si le nombre de projetSonar est différent de projetBD
                  * alors on envoit un message à l'utilisateur pour qu'il mette à jour.
                  */
-                $message = "[PROJET] Vous devez mettre à jour le référentiel local !";
-                $this->addFlash('info', $message);
+                $titre = '[ACCUEIL]';
+                $message = 'Vous devez mettre à jour le référentiel local pour les';
+                $referentiel='PROJETS';
+                $this->addFlash('info', ['type'=>'primary', 'titre'=>$titre, 'message'=>$message, 'referentiel'=>$referentiel]);
             }
 
             /**
@@ -522,8 +528,10 @@ class HomeController extends AbstractController
                  * Si le nombre de projetSonar est différent de projetBD
                  * alors on envoit un message à l'utilisateur pour qu'il mette à jour.
                  */
-                $message = "[PROFIL] Vous devez mettre à jour le référentiel local !";
-                $this->addFlash('info', $message);
+                $titre = '[ACCUEIL]';
+                $message = 'Vous devez mettre à jour le référentiel local pour les';
+                $referentiel='PROFILS';
+                $this->addFlash('info', ['type'=>'primary', 'titre'=>$titre, 'message'=>$message, 'referentiel'=>$referentiel]);
             }
             /**
              * Si le referentiel sonar est égale de celui sur le serveur et que la table
@@ -535,11 +543,15 @@ class HomeController extends AbstractController
         }
 
         /** ***************** 4 - Visibility *****************************  */
-        $t1 = $listeProjet->countListeProjetVisibility('public');
-        $t2 = $listeProjet->countListeProjetVisibility('private');
+        $t1 = $listeProjetEntity->countListeProjetVisibility('public');
+        $t2 = $listeProjetEntity->countListeProjetVisibility('private');
 
         $public = $t1['request'][0]['visibility'];
         $private = $t2['request'][0]['visibility'];
+
+        /** ***************** 5 - Tags *****************************  */
+        /** Renvoi le nombre de projet et le nombre de tags */
+        $tag = $listeProjetEntity->countListeProjetTags();
 
         /** ***************** VERSION *** ************************* */
         /** On récupère le numero de version en base */
@@ -548,10 +560,11 @@ class HomeController extends AbstractController
         $versionApp = $this->getParameter('version');
         /** si la dernière version en base est inférieure, on renvoie une alerte ; */
         if ($versionApp !== $versionBd) {
-            $m1 = "Oooups !!! La base de données est en version ".$versionBd." ";
+            $titre="Oooups !!!";
+            $m1= "La base de données est en version ".$versionBd.". ";
             $m2 = "Vous devez passer le script de migration ".$versionApp.".";
             $message = $m1.$m2;
-            $this->addFlash('alert', $message);
+            $this->addFlash('notice', ['type'=>'alert', 'titre'=>$titre, 'message'=>$message]);
         }
 
         /** On va chercher les projets favoris ou les versions des projets */
@@ -580,7 +593,7 @@ class HomeController extends AbstractController
 
         /** On récupère le rôle de l'utilisateur  */
         $refreshBd=false;
-        if ($this->isGranted('ROLE_GESTIONNAIRE')) { $refreshBd=true; }
+        if ($this->isGranted('ROLE_COLLECTE')) { $refreshBd=true; }
 
         $render = [
             'refreshBD'=>$refreshBd,
@@ -588,6 +601,8 @@ class HomeController extends AbstractController
             'profilBD' => $profilBd, 'profilSonar' => $profilSonar,
             'composant' => $composant, 'nombreProjet' => $nombreProjet, 'favori' => $favori,
             'public' => $public, 'private' => $private,
+            'nombre_projet' => $projetBd,
+            'nombre_tag' => $tag['nombre'][0]['tag'],
             'version' => $versionApp, 'dateCopyright' => \date('Y'),
             Response::HTTP_OK];
 
