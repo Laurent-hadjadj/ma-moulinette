@@ -163,10 +163,12 @@ class ApiProfilController extends AbstractController
 
         /** On récupère la liste des langages */
         $selectProfilesLanguage=$profilesEntity->selectProfilesLanguage();
+
         /** On créé la liste des libellés et des données */
         foreach ($selectProfilesLanguage['labels'] as $label) {
             array_push($listeLabel, $label['profile']);
         }
+
         /** On récupère le nombre de règle de chaque profil */
         $selectProfilesRuleCount=$profilesEntity->selectProfilesRuleCount();
         foreach ($selectProfilesRuleCount['data-set'] as $dataSet) {

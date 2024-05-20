@@ -170,7 +170,8 @@ class ProfilesRepository extends ServiceEntityRepository
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "SELECT active_rule_count AS total
-                        FROM profiles";
+                        FROM profiles
+                        WHERE referentiel_default = true";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
                 $dataSets=$stmt->executeQuery()->fetchAllAssociative();
             $this->getEntityManager()->getConnection()->commit();
