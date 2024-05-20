@@ -12,17 +12,17 @@
 
 @media (width <= 20em) { /* vide */ }
 
-@media (20.025em <= width <= 22em) { 
-  #graphique-langage { height: 400px; } 
+@media (20.025em <= width <= 22em) {
+  #graphique-langage { height: 400px; }
 }
 
-@media (22.025em <= width <= 30em) { 
-  #graphique-langage { height: 400px; } 
+@media (22.025em <= width <= 30em) {
+  #graphique-langage { height: 400px; }
 }
 
-@media (30.025em <= width <= 40em) {   
-  #graphique-langage { height: 400px; } 
-} 
+@media (30.025em <= width <= 40em) {
+  #graphique-langage { height: 400px; }
+}
 
 @media (40.025em <= width <= 64em) {
   /** padding bouton */
@@ -56,14 +56,16 @@
 
 /** bouton mise-a-jour et graphique */
 .bouton-profil-refresh,
-.bouton-profil-graphique {
+.bouton-profil-graphique,
+#bouton-fermer-autre-profil {
   color: #fff;
   background-color: #00445b;
 }
 
 /* hover des boutons */
 .bouton-profil-refresh:hover,
-.bouton-profil-graphique:hover {
+.bouton-profil-graphique:hover,
+#bouton-fermer-autre-profil:hover {
   background-color: #006182;
 }
 
@@ -89,10 +91,7 @@
 /** Suppression style inline */
 .graphique-langage-container { width: 54vw; }
 
+/** ombre sur les cards */
 .box-langage{
-  box-shadow: 2px 2px 10px rgba(0,0,0,0.250);
-}
-
-.fenetre-modal{
-  color: white;
+  box-shadow: 2px 2px 10px rgb(0 0 0 / 25%);
 }
