@@ -155,7 +155,7 @@ class ApiHomeController extends AbstractController
                     'message'=>static::$erreur404, Response::HTTP_OK]);
             }
         }
-
+        
         /** On supprime les données de la table avant d'importer les données. */
         $request=$listeProjetEntity->deleteListeProjet();
         if ($request['code']!=200) {

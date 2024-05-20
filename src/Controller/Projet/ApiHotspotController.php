@@ -384,6 +384,8 @@ class ApiHotspotController extends AbstractController
         } else {
             $hotspot = new  HotspotOwasp();
             $hotspot->setMavenKey($data->maven_key);
+            $hotspot->setVersion('NONE');
+            $hotspot->setDateVersion($dateVersion);
             $hotspot->setMenace($data->owasp);
             $hotspot->setProbability('NONE');
             $hotspot->setStatus('NONE');

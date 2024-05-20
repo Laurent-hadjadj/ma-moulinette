@@ -29,8 +29,6 @@ class OwaspRepository extends ServiceEntityRepository
     /**
      * [Description for selectOwaspOrderByDateEnregistrement]
      * On récupère les infos de la dernière analyse.
-     *
-     * @param string $mode
      * @param array $map
      *
      * @return array
@@ -39,7 +37,7 @@ class OwaspRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectOwaspOrderByDateEnregistrement($mode,$map):array
+    public function selectOwaspOrderByDateEnregistrement($map):array
     {
         $sql = "SELECT *
                 FROM owasp
@@ -49,23 +47,21 @@ class OwaspRepository extends ServiceEntityRepository
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         $conn->bindValue(':maven_key', $map['maven_key']);
         try {
-            if ($mode !== 'TEST') {
+            #if ($mode !== 'TEST') {
                 $liste=$conn->executeQuery()->fetchAllAssociative();
-            } else {
-                return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-            }
+            #} else {
+                return ['code'=> 202, 'erreur'=>'TEST'];
+            #}
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+            return ['code'=>500, 'erreur'=> $e->getCode()];
         }
-        return ['mode'=>$mode, 'code'=>200, 'liste'=>$liste, 'erreur'=>''];
+        return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
     }
 
 
     /**
      * [Description for deleteOwaspMavenKey]
      * Supprime les données de la version courrante (i.e. correspondant à la maven_key)
-     *
-     * @param mixed $mode
      * @param mixed $map
      *
      * @return array
@@ -74,7 +70,7 @@ class OwaspRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function deleteOwaspMavenKey($mode,$map):array
+    public function deleteOwaspMavenKey($map):array
     {
         $sql = "DELETE
                 FROM owasp
@@ -82,15 +78,15 @@ class OwaspRepository extends ServiceEntityRepository
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         $conn->bindValue(':maven_key', $map['maven_key']);
         try {
-                if ($mode !== 'TEST') {
+                #if ($mode !== 'TEST') {
                     $conn->executeQuery();
-                } else {
-                    return ['mode'=>$mode, 'code'=> 202, 'erreur'=>'TEST'];
-                }
+                #} else {
+                    return ['code'=> 202, 'erreur'=>'TEST'];
+                #}
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['mode'=>$mode, 'code'=>500, 'erreur'=> $e->getCode()];
+            return ['code'=>500, 'erreur'=> $e->getCode()];
         }
-        return ['mode'=>$mode, 'code'=>200, 'erreur'=>''];
+        return ['code'=>200, 'erreur'=>''];
     }
 
 }

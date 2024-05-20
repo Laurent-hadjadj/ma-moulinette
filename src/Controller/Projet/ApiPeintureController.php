@@ -449,6 +449,8 @@ class ApiPeintureController extends AbstractController
 
         /* On récupère les notes (A-F) */
         $types = ['reliability', 'security', 'sqale'];
+        $noteReliability = $noteSecurity = $noteSqale = 'N/A';
+
         foreach ($types as $type) {
             $map=['maven_key'=>$data->maven_key, 'type'=>$type];
             $note=$notesEntity->selectNotesMavenType($map);
@@ -458,14 +460,14 @@ class ApiPeintureController extends AbstractController
                     Response::HTTP_OK]);
             }
 
-            if ($type == 'reliability') {
-                $noteReliability = $note['liste'][0]['value'];
-            }
-            if ($type == 'security') {
-                $noteSecurity = $note['liste'][0]['value'];
-            }
-            if ($type == 'sqale') {
-                $noteSqale = $note['liste'][0]['value'];
+            if (isset($note['liste'][0]['value'])) {
+                if ($type == 'reliability') {
+                    $noteReliability = $note['liste'][0]['value'];
+                } elseif ($type == 'security') {
+                    $noteSecurity = $note['liste'][0]['value'];
+                } elseif ($type == 'sqale') {
+                    $noteSqale = $note['liste'][0]['value'];
+                }
             }
         }
 
