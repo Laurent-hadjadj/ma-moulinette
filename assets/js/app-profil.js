@@ -91,8 +91,7 @@ const callboxFermer='</span><button class="close-button" aria-label="Fermer la f
   /** On efface le container */
   $('#js-container-langage').html('');
   const profils = t.listeProfil;
-  console.log(profils, t);
-  return;
+
   /** on recréé le cointainer */
     profils.forEach(profil =>
   {
@@ -144,9 +143,6 @@ const callboxFermer='</span><button class="close-button" aria-label="Fermer la f
   $('#js-container-langage').html(str);
   console.log('total', total);
   $('.js-total').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(total));
-
-  //$('.js-bouton-autre-profil').on('click', (e)=>{
-  //});
 };
 
 const recupereProfilNonActif=async function(langage){
@@ -157,52 +153,38 @@ const recupereProfilNonActif=async function(langage){
         dataType: 'json', data: JSON.stringify(dataRefresh), contentType };
   /** On appel l'API */
   const t = await $.ajax(optionsRefresh);
-
-  let str = '';
-
+  let str = '', strNombreProfil='';
   $('#contenu-fenetre-modal').html('');
+  $('#js-nombre-profil').html('');
+
   const profils = t.listeProfil;
   const nombreProfils = t.countProfil;
-  if (nombreProfils.request[0].total > 1){
-    str += `<h2 class="h5 claire-hand">Il y a ${ nombreProfils.request[0].total } profils diponibles dans Sonarqube</h2>`
-  }else{
-    str += `<h2 class="h5 claire-hand">Il y a ${ nombreProfils.request[0].total } profil diponible dans Sonarqube</h2>`
-  }
-  str += `<table class="hover">
-  <thead>
-    <tr>
-      <th scope="col" class="open-sans text-center"></th>
-      <th scope="col" class="open-sans text-center">Version</th>
-      <th scope="col" class="open-sans text-center">Règle</th>
-      <th scope="col" class="open-sans text-center">Date</th>
-    </tr>
-  </thead>`
 
-  // Bloucle ur le profil pour construire le tablea
+  /** Mise à jour du nombre de profil */
+  strNombreProfil = `Il y a ${ nombreProfils.request[0].total } profil diponible dans SonarQube`;
+  if (nombreProfils.request[0].total > 1){
+    strNombreProfil= `Il y a ${ nombreProfils.request[0].total } profils diponibles dans SonarQube`;
+  }
+  $('#js-nombre-profil').html(strNombreProfil);
+
+  /** Bloucle sur le profil pour construire le tableau */
   profils.forEach(profil =>
     {
       str +=
-      `   <tbody>
-            <tr class="open-sans">
-              <td></td>
-              <td class="text-left">${ profil.profil }</td>
-              <td class="text-center">${ new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(profil.regle) }</td>
-              <td class="text-center">
-                <span class="show-for-small-only"> ${ new Intl.DateTimeFormat('default', dateOptionsShort).format(new Date(profil.date)) }</span>
-                <span class="show-for-medium">${ new Intl.DateTimeFormat('default', dateOptions).format(new Date(profil.date)) }</span>
-              </td>
-            </tr>
-      </div>`;
+      `<tr class="open-sans">
+        <td></td>
+        <td class="text-left">${ profil.profil }</td>
+        <td class="text-center">${ new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(profil.regle) }</td>
+        <td class="text-center">
+          <span class="show-for-small-only"> ${ new Intl.DateTimeFormat('default', dateOptionsShort).format(new Date(profil.date)) }</span>
+          <span class="show-for-medium">${ new Intl.DateTimeFormat('default', dateOptions).format(new Date(profil.date)) }</span>
+        </td>
+      </tr>`;
     }
   )
-  // Fin du tableau avec le boutton pour fermer la page
-  str += `  </tbody>
-          </table>
-          <button class="close-button" data-close aria-label="Close reveal" type="button">
-          <span aria-hidden="true">&times;</span>
-          </button>`;
-
-  $('#contenu-fenetre-modal').html(str);
+  /** Injection des lignes dans le tableau */
+  $('#js-contenu-fenetre-modal').html(str);
+  /** Ouverture de la fenêtre modale */
   $('#fenetre-modal').foundation('open');
 }
 
