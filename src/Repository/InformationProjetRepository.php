@@ -53,6 +53,10 @@ class InformationProjetRepository extends ServiceEntityRepository
                     $stmt->bindValue(static::$phMavenKey, $map['maven_key']);
                 $exec=$stmt->executeQuery();
                 $isValide=$exec->fetchAllAssociative();
+                /** j'ai pas trouvé de projet */
+                if (!$isValide){
+                    return ['code'=>404];
+                }
             $this->getEntityManager()->getConnection()->commit();
             } catch (\Doctrine\DBAL\Exception $e) {
                 $this->getEntityManager()->getConnection()->rollBack();
