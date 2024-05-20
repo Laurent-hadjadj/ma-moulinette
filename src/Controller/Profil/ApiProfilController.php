@@ -359,25 +359,26 @@ class ApiProfilController extends AbstractController
         /** On instancie la classe */
         $profilesEntity = $this->em->getRepository(Profiles::class);
 
-        /** on décode le body */
+        /** On décode le body */
         $data = json_decode($request->getContent());
 
-        $langage = $data->langage;
-        /** On crée un objet response */
+        /** On instancie une nouvelle response */
         $response = new JsonResponse();
 
-
       /** On teste si la clé est valide */
-        if ($data === null) {
-        return $response->setData(['data'=>$data,'code'=>400, Response::HTTP_BAD_REQUEST]);
+        if ($data === null || !property_exists($data, 'langage')) {
+            return $response->setData(
+                ['data'=>$data,'code'=>400, Response::HTTP_BAD_REQUEST]);
         }
 
-        /** On récupère la liste des profiles pas actifs */
+        /** On récupère le language */
+        $langage = $data->langage;
+
+        /** On récupère la liste des profils pour un language non actif */
         $referentielDefault = "false";
         $request=$profilesEntity->selectProfiles($referentielDefault,$langage);
         $compte=$profilesEntity->countProfiles($referentielDefault,$langage);
-        $response = new JsonResponse();
         return $response->setData([
-            'code' => 200, "listeProfil" => $request['liste'], "countProfil" =>$compte ,Response::HTTP_OK]);
+            'code' => 200, 'listeProfil' => $request['liste'], 'countProfil' =>$compte, Response::HTTP_OK]);
     }
 }
