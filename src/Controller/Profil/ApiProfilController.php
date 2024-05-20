@@ -28,7 +28,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-/** Accès aux tables SLQLite */
+/** Accès aux tables */
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Properties;
 use App\Entity\Profiles;
@@ -161,7 +161,7 @@ class ApiProfilController extends AbstractController
         $listeLabel = [];
         $listeDataset = [];
 
-        /** On récupère la liste des langage */
+        /** On récupère la liste des langages */
         $selectProfilesLanguage=$profilesEntity->selectProfilesLanguage();
         /** On créé la liste des libellés et des données */
         foreach ($selectProfilesLanguage['labels'] as $label) {

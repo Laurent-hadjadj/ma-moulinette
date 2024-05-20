@@ -205,7 +205,7 @@ $('.js-bouton-autre-profil').on('click', (e)=>{
  *
  * @param mixed a
  *
- * @return [type]
+ * @return array
  *
  * Created at: 19/12/2022, 21:51:11 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -229,7 +229,7 @@ const shuffle=function(a) {
  * [Description for palette]
  * Renvoie une nouvelle palette de couleur
  *
- * @return [type]
+ * @return array
  *
  * Created at: 19/12/2022, 21:52:05 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -250,7 +250,7 @@ const palette=function() {
  * @param mixed label
  * @param mixed dataset
  *
- * @return [type]
+ * @return object
  *
  * Created at: 19/12/2022, 21:53:26 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -291,19 +291,16 @@ const dessineMoiUnMouton=function(label, dataset) {
   const ctx = document.getElementById('graphique-langage').getContext('2d');
   const charts = new Chart(ctx, { type: 'doughnut', data, options });
   if (charts === null) {
-    console.info('youpi ! charts ne peut pas être null !!!');
+    sessionStorage.setItem('info','youpi ! charts ne peut pas être null !!!');
   }
 };
 
 /** Création du graphique par language */
 $('.js-profil-graphique').on('click', async () => {
-  const data = { mode:'null' };
   const options = {
-          url: `${serveur()}/api/quality/langage`, type: 'POST',
-          dataType: 'json', data: JSON.stringify(data), contentType };
-
+        url: `${serveur()}/api/quality/langage`, type: 'POST', dataType: 'json', contentType };
   const t = await $.ajax(options);
-  /**
+    /**
    * const label = t.label;
    * const dataset = t.dataset;
    */
