@@ -77,16 +77,8 @@ class ApiProfilController extends AbstractController
         $profilesEntity = $this->em->getRepository(Profiles::class);
         $propertiesEntity = $this->em->getRepository(Properties::class);
 
-        /** on décode le body */
-        $data = json_decode($request->getContent());
-
         /** On crée un objet response */
         $response = new JsonResponse();
-
-       /** On teste si la clé est valide */
-        if ($data === null) {
-        return $response->setData(['data'=>$data,'code'=>400, Response::HTTP_BAD_REQUEST]);
-        }
 
         /** si on est pas GESTIONNAIRE on ne fait rien. */
         if (!$security->isGranted('ROLE_GESTIONNAIRE')){
@@ -111,12 +103,12 @@ class ApiProfilController extends AbstractController
         $nombre = 0;
 
         /** On supprime les données de la table avant d'importer les données;*/
-        $request=$profilesEntity->deleteProfiles();
-        if ($request['code']===500) {
-            return $response->setData(['code' => 500, 'erreur'=>$request['erreur'], Response::HTTP_OK]);
+        $rq1=$profilesEntity->deleteProfiles();
+        if ($rq1['code']===500) {
+            return $response->setData(['code' => 500, 'erreur'=>$rq1['erreur'], Response::HTTP_OK]);
         }
         /** On insert les profils dans la table profiles. */
-        foreach ($r['profiles'] as $profil) {
+        foreach ($rq1['profiles'] as $profil) {
             $nombre = $nombre + 1;
             $profils = new Profiles();
             $profils->setKey($profil['key']);
@@ -127,11 +119,12 @@ class ApiProfilController extends AbstractController
             $rulesDate = new DateTime($profil['rulesUpdatedAt']);
             $profils->setRulesUpdateAt($rulesDate);
             $profils->setDateEnregistrement($date);
+
             $this->em->persist($profils);
             $this->em->flush();
         }
         /** On récupère la nouvelle liste des profils; */
-        $request=$profilesEntity->selectProfiles();
+        $rq2=$profilesEntity->selectProfiles();
 
         /** On met à jour la table proprietes */
         $dateModificationProfil = $date->format("Y-m-d H:i:s");
@@ -139,7 +132,7 @@ class ApiProfilController extends AbstractController
         $propertiesEntity->updatePropertiesProfiles($map);
 
         return $response->setData([
-            'code' => 200, "listeProfil" => $request['liste'], Response::HTTP_OK]);
+            'code' => 200, "listeProfil" => $rq2['liste'], Response::HTTP_OK]);
     }
 
     /**
@@ -161,16 +154,8 @@ class ApiProfilController extends AbstractController
         /** On instancie la classe */
         $profilesEntity = $this->em->getRepository(Profiles::class);
 
-        /** on décode le body */
-        $data = json_decode($request->getContent());
-
         /** On crée un objet response */
         $response = new JsonResponse();
-
-      /** On teste si la clé est valide */
-        if ($data === null) {
-        return $response->setData(['data'=>$data,'code'=>400, Response::HTTP_BAD_REQUEST]);
-        }
 
         $listeLabel = [];
         $listeDataset = [];
@@ -187,8 +172,8 @@ class ApiProfilController extends AbstractController
             array_push($listeDataset, $dataSet['total']);
         }
 
-        $response = new JsonResponse();
-        return $response->setData(['label' => $listeLabel, 'dataset' => $listeDataset, Response::HTTP_OK]);
+        return $response->setData(
+            ['label' => $listeLabel, 'dataset' => $listeDataset, Response::HTTP_OK]);
     }
 
     /**
