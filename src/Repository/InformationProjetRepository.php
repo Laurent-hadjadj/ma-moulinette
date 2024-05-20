@@ -285,4 +285,37 @@ class InformationProjetRepository extends ServiceEntityRepository
         return ['code'=>200, 'erreur'=>''];
     }
 
+    /**
+     * [Description for insertInformationProjet]
+     *
+     * @param array $map
+     *
+     * @return array
+     *
+     * Created at: 20/05/2024 23:09:33 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function insertInformationProjet($map):array
+    {
+        try {
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "INSERT INTO information_projet (
+                                    maven_key, analyse_key, date, project_version, type, date_enregistrement)
+                        VALUES (:maven_key, :analyse_key, :date, :project_version, :type, :date_enregistrement)";
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $stmt->bindValue(':maven_key', $map['maven_key']);
+                    $stmt->bindValue(':analyse_key', $map['analyse_key']);
+                    $stmt->bindValue(':project_version', $map['project_version']);
+                    $stmt->bindValue(':type', $map['type']);
+                    $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']);
+                    $stmt->executeStatement();
+            $this->getEntityManager()->getConnection()->commit();
+        } catch (\Doctrine\DBAL\Exception $e) {
+            $this->getEntityManager()->getConnection()->rollBack();
+            return ['code'=>500, 'erreur'=> $e->getCode()];
+        }
+        return ['code'=>200, 'erreur'=>''];
+    }
+
 }
