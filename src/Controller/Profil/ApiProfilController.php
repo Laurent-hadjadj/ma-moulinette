@@ -90,10 +90,10 @@ class ApiProfilController extends AbstractController
             . "/api/qualityprofiles/search";
 
         /** On appel le client http */
-        $r = $client->http($url);
+        $httpReturn = $client->http($url);
 
         /** On Vérifie qu'il existe au moins un profil */
-        if (empty($r['profiles'])) {
+        if (empty($httpReturn['profiles'])) {
             return $response->setData(['code' => 202, Response::HTTP_OK]);
         }
 
@@ -107,8 +107,9 @@ class ApiProfilController extends AbstractController
         if ($rq1['code']===500) {
             return $response->setData(['code' => 500, 'erreur'=>$rq1['erreur'], Response::HTTP_OK]);
         }
+
         /** On insert les profils dans la table profiles. */
-        foreach ($rq1['profiles'] as $profil) {
+        foreach ($httpReturn['profiles'] as $profil) {
             $nombre = $nombre + 1;
             $profils = new Profiles();
             $profils->setKey($profil['key']);
@@ -123,7 +124,7 @@ class ApiProfilController extends AbstractController
             $this->em->persist($profils);
             $this->em->flush();
         }
-        /** On récupère la nouvelle liste des profils; */
+        /** On récupère la nouvelle liste des profils */
         $rq2=$profilesEntity->selectProfiles();
 
         /** On met à jour la table proprietes */
