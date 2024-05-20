@@ -39,7 +39,7 @@ use Psr\Log\LoggerInterface;
 use App\Service\Client;
 
 /** Import des services */
-use App\Service\ExtractNameFromMavenKey;
+use App\Service\ExtractName;
 
 class ApiHotspotController extends AbstractController
 {
@@ -64,7 +64,7 @@ class ApiHotspotController extends AbstractController
     public function __construct(
         private LoggerInterface $logger,
         private EntityManagerInterface $em,
-        private ExtractNameFromMavenKey $serviceExtractName
+        private ExtractName $serviceExtractName
     ) {
         $this->logger = $logger;
         $this->em = $em;

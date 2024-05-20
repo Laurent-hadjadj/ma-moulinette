@@ -14,9 +14,9 @@
 namespace App\Service;
 
 /**
- * [Description ExtractMavenKey]
+ * [Description ExtractName]
  */
-class ExtractNameFromMavenKey
+class ExtractName
 {
 
 /**
