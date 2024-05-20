@@ -143,7 +143,8 @@ class ProfilesRepository extends ServiceEntityRepository
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "SELECT language_name AS profile
-                        FROM profiles";
+                        FROM profiles
+                        WHERE referentiel_default = true";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
                 $labels=$stmt->executeQuery()->fetchAllAssociative();
             $this->getEntityManager()->getConnection()->commit();
