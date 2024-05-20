@@ -39,16 +39,22 @@ class ProfilesRepository extends ServiceEntityRepository
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function countProfiles($referentielDefault='1', $langage = null): array
+    public function countProfiles($referentielDefault="true", $langage = null): array
     {
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = " SELECT COUNT(*) AS total
                         FROM profiles
-                        WHERE referentiel_default = ".$referentielDefault;
-                if ($langage !== null ){
-                    $sql .= " AND language_name LIKE '".$langage."'";
-                }                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                        WHERE referentiel_default = :referencielDefault";
+                        if ($langage !== null ){
+                            $sql .= " AND language_name LIKE :langage ";
+                            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                            $stmt->bindValue("referencielDefault", $referentielDefault);
+                            $stmt->bindValue("langage", $langage);
+                        }else{
+                            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                            $stmt->bindValue("referencielDefault", $referentielDefault);
+                        }
                 $request=$stmt->executeQuery()->fetchAllAssociative();
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
@@ -68,7 +74,7 @@ class ProfilesRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectProfiles($referentielDefault=true ,$langage = null):array
+    public function selectProfiles($referentielDefault="true" ,$langage = null):array
     {
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
@@ -78,11 +84,16 @@ class ProfilesRepository extends ServiceEntityRepository
                         rules_update_at as date,
                         referentiel_default as actif
                         FROM profiles
-                        WHERE referentiel_default = true";
+                        WHERE referentiel_default = :referencielDefault";
                 if ($langage !== null ){
-                    $sql .= " AND language_name LIKE '".$langage."'";
+                    $sql .= " AND language_name LIKE :langage ";
+                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $stmt->bindValue("referencielDefault", $referentielDefault);
+                    $stmt->bindValue("langage", $langage);
+                }else{
+                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $stmt->bindValue("referencielDefault", $referentielDefault);
                 }
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
                 $exec=$stmt->executeQuery();
                 $liste=$exec->fetchAllAssociative();
             $this->getEntityManager()->getConnection()->commit();
@@ -132,7 +143,8 @@ class ProfilesRepository extends ServiceEntityRepository
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "SELECT language_name AS profile
-                        FROM profiles";
+                        FROM profiles
+                        WHERE referentiel_default = true";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
                 $labels=$stmt->executeQuery()->fetchAllAssociative();
             $this->getEntityManager()->getConnection()->commit();
@@ -158,7 +170,8 @@ class ProfilesRepository extends ServiceEntityRepository
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "SELECT active_rule_count AS total
-                        FROM profiles";
+                        FROM profiles
+                        WHERE referentiel_default = true";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
                 $dataSets=$stmt->executeQuery()->fetchAllAssociative();
             $this->getEntityManager()->getConnection()->commit();

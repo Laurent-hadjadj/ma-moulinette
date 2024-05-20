@@ -35,6 +35,9 @@ use Psr\Log\LoggerInterface;
 /** Client HTTP */
 use App\Service\Client;
 
+/** Import des services */
+use App\Service\ExtractName;
+
 /**
  * [Description ApiRepartitionController]
  */
@@ -49,44 +52,18 @@ class ApiRepartitionController extends AbstractController
      */
     public function __construct(
         private LoggerInterface $logger,
-        private EntityManagerInterface $em
+        private EntityManagerInterface $em,
+        private ExtractName $serviceExtractName
     ) {
         $this->logger = $logger;
         $this->em = $em;
+        $this->serviceExtractName = $serviceExtractName;
     }
 
     public static $sonarUrl = "sonar.url";
     public static $strContentType = 'application/json';
     public static $apiIssuesSearch = "/api/issues/search?componentKeys=";
     public static $regex = "/\s+/u";
-
-    /**
-     * [Description for extractNameFromMavenKey]
-     * Extrait le nom du projet de la clé
-     *
-     * @param mixed $mavenKey
-     *
-     * @return string
-     *
-      * Created at: 13/03/2024 21:47:51 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    private function extractNameFromMavenKey($mavenKey): string
-    {
-        /**
-         * On récupère le nom de l'application depuis la clé mavenKey
-         * [fr.ma-petite-entreprise] : [ma-moulinette]
-         */
-        $app = explode(":", $mavenKey);
-        if (count($app)===1) {
-            /** La clé maven n'est pas conforme, on ne peut pas déduire le nom de l'application */
-            $name=$mavenKey;
-        } else {
-            $name=$app[1];
-        }
-        return $name;
-    }
 
     /**
      * [Description for batch_Analyse]
@@ -104,7 +81,7 @@ class ApiRepartitionController extends AbstractController
     protected function batch_Analyse($elements, $mavenKey)
     {
         $frontend = $backend = $autre = 0;
-        $app=static::extractNameFromMavenKey($mavenKey);
+        $app=$this->serviceExtractName->extractNameFromMavenKey($mavenKey);
 
         foreach ($elements as $element) {
             $file = str_replace($mavenKey . ":", "", $element->getComponent());
@@ -297,7 +274,9 @@ class ApiRepartitionController extends AbstractController
 
                 $issue = new Repartition();
                 $issue->setMavenKey($mavenKey);
-                $issue->setName(static::extractNameFromMavenKey($mavenKey));
+                $app=$this->serviceExtractName->extractNameFromMavenKey($data->maven_key);
+
+                $issue->setName($app);
                 $issue->setComponent($component);
                 $issue->setType($type);
                 $issue->setSeverity($severity);

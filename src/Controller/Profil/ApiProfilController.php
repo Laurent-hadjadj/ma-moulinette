@@ -28,7 +28,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-/** Accès aux tables SLQLite */
+/** Accès aux tables */
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Properties;
 use App\Entity\Profiles;
@@ -77,16 +77,8 @@ class ApiProfilController extends AbstractController
         $profilesEntity = $this->em->getRepository(Profiles::class);
         $propertiesEntity = $this->em->getRepository(Properties::class);
 
-        /** on décode le body */
-        $data = json_decode($request->getContent());
-
         /** On crée un objet response */
         $response = new JsonResponse();
-
-       /** On teste si la clé est valide */
-        if ($data === null) {
-        return $response->setData(['data'=>$data,'code'=>400, Response::HTTP_BAD_REQUEST]);
-        }
 
         /** si on est pas GESTIONNAIRE on ne fait rien. */
         if (!$security->isGranted('ROLE_GESTIONNAIRE')){
@@ -98,10 +90,10 @@ class ApiProfilController extends AbstractController
             . "/api/qualityprofiles/search";
 
         /** On appel le client http */
-        $r = $client->http($url);
+        $httpReturn = $client->http($url);
 
         /** On Vérifie qu'il existe au moins un profil */
-        if (empty($r['profiles'])) {
+        if (empty($httpReturn['profiles'])) {
             return $response->setData(['code' => 202, Response::HTTP_OK]);
         }
 
@@ -111,12 +103,13 @@ class ApiProfilController extends AbstractController
         $nombre = 0;
 
         /** On supprime les données de la table avant d'importer les données;*/
-        $request=$profilesEntity->deleteProfiles();
-        if ($request['code']===500) {
-            return $response->setData(['code' => 500, 'erreur'=>$request['erreur'], Response::HTTP_OK]);
+        $rq1=$profilesEntity->deleteProfiles();
+        if ($rq1['code']===500) {
+            return $response->setData(['code' => 500, 'erreur'=>$rq1['erreur'], Response::HTTP_OK]);
         }
+
         /** On insert les profils dans la table profiles. */
-        foreach ($r['profiles'] as $profil) {
+        foreach ($httpReturn['profiles'] as $profil) {
             $nombre = $nombre + 1;
             $profils = new Profiles();
             $profils->setKey($profil['key']);
@@ -127,11 +120,12 @@ class ApiProfilController extends AbstractController
             $rulesDate = new DateTime($profil['rulesUpdatedAt']);
             $profils->setRulesUpdateAt($rulesDate);
             $profils->setDateEnregistrement($date);
+
             $this->em->persist($profils);
             $this->em->flush();
         }
-        /** On récupère la nouvelle liste des profils; */
-        $request=$profilesEntity->selectProfiles();
+        /** On récupère la nouvelle liste des profils */
+        $rq2=$profilesEntity->selectProfiles();
 
         /** On met à jour la table proprietes */
         $dateModificationProfil = $date->format("Y-m-d H:i:s");
@@ -139,7 +133,7 @@ class ApiProfilController extends AbstractController
         $propertiesEntity->updatePropertiesProfiles($map);
 
         return $response->setData([
-            'code' => 200, "listeProfil" => $request['liste'], Response::HTTP_OK]);
+            'code' => 200, "listeProfil" => $rq2['liste'], Response::HTTP_OK]);
     }
 
     /**
@@ -161,34 +155,28 @@ class ApiProfilController extends AbstractController
         /** On instancie la classe */
         $profilesEntity = $this->em->getRepository(Profiles::class);
 
-        /** on décode le body */
-        $data = json_decode($request->getContent());
-
         /** On crée un objet response */
         $response = new JsonResponse();
-
-      /** On teste si la clé est valide */
-        if ($data === null) {
-        return $response->setData(['data'=>$data,'code'=>400, Response::HTTP_BAD_REQUEST]);
-        }
 
         $listeLabel = [];
         $listeDataset = [];
 
-        /** On récupère la liste des langage */
+        /** On récupère la liste des langages */
         $selectProfilesLanguage=$profilesEntity->selectProfilesLanguage();
+
         /** On créé la liste des libellés et des données */
         foreach ($selectProfilesLanguage['labels'] as $label) {
             array_push($listeLabel, $label['profile']);
         }
+
         /** On récupère le nombre de règle de chaque profil */
         $selectProfilesRuleCount=$profilesEntity->selectProfilesRuleCount();
         foreach ($selectProfilesRuleCount['data-set'] as $dataSet) {
             array_push($listeDataset, $dataSet['total']);
         }
 
-        $response = new JsonResponse();
-        return $response->setData(['label' => $listeLabel, 'dataset' => $listeDataset, Response::HTTP_OK]);
+        return $response->setData(
+            ['label' => $listeLabel, 'dataset' => $listeDataset, Response::HTTP_OK]);
     }
 
     /**
@@ -360,7 +348,7 @@ class ApiProfilController extends AbstractController
 
     /**
      * [Description for listeQualityOff]
-     * Renvoie la lit ede profil qui ne ont pa acitf pour un certain langage donnée
+     * Renvoie la liste des profils qui ne ont pas acitf pour un language donné
      *
      * @param Request $request
      *
@@ -373,26 +361,26 @@ class ApiProfilController extends AbstractController
         /** On instancie la classe */
         $profilesEntity = $this->em->getRepository(Profiles::class);
 
-        /** on décode le body */
+        /** On décode le body */
         $data = json_decode($request->getContent());
 
-        $langage = $data->langage;
-        /** On crée un objet response */
+        /** On instancie une nouvelle response */
         $response = new JsonResponse();
-
 
       /** On teste si la clé est valide */
-        if ($data === null) {
-        return $response->setData(['data'=>$data,'code'=>400, Response::HTTP_BAD_REQUEST]);
+        if ($data === null || !property_exists($data, 'langage')) {
+            return $response->setData(
+                ['data'=>$data,'code'=>400, Response::HTTP_BAD_REQUEST]);
         }
 
-        /** On récupère la liste des profiles pas actifs */
-        $referentielDefault = '0';
+        /** On récupère le language */
+        $langage = $data->langage;
+
+        /** On récupère la liste des profils pour un language non actif */
+        $referentielDefault = "false";
         $request=$profilesEntity->selectProfiles($referentielDefault,$langage);
         $compte=$profilesEntity->countProfiles($referentielDefault,$langage);
-
-        $response = new JsonResponse();
         return $response->setData([
-            'code' => 200, "listeProfil" => $request['liste'], "countProfil" =>$compte ,Response::HTTP_OK]);
+            'code' => 200, 'listeProfil' => $request['liste'], 'countProfil' =>$compte, Response::HTTP_OK]);
     }
 }
