@@ -206,7 +206,7 @@ class ApiPeintureController extends AbstractController
         }
 
         /** On regarde si le projet existe */
-        $isValide=$this->isValidMavenKey->isValide($data->maven_key);
+        $isValide= $this->isValidMavenKey->isValide($data->maven_key);
 
         if ($isValide['code'] === 404) {
             return $response->setData([
@@ -226,6 +226,7 @@ class ApiPeintureController extends AbstractController
         /** Les releases */
         $map=['maven_key'=>$data->maven_key, 'type'=>'RELEASE'];
         $release=$informationProjetEntity->countInformationProjetType($map);
+        $releaseCount = isset($release['nombre'][0]['total']) ? $release['nombre'][0]['total'] : 0;
         if ($release['code']!=200) {
             return $response->setData(['code' => $release['code'], Response::HTTP_OK]);
         }
@@ -233,12 +234,14 @@ class ApiPeintureController extends AbstractController
         /** Les snapshots */
         $map=['maven_key'=>$data->maven_key, 'type'=>'SNAPSHOT'];
         $snapshot=$informationProjetEntity->countInformationProjetType($map);
+        $snapshotCount = isset($snapshot['nombre'][0]['total']) ? $snapshot['nombre'][0]['total'] : 0;
         if ($snapshot['code']!=200) {
             return $response->setData([ 'code' => $snapshot['code'], Response::HTTP_OK]);
         }
 
         /** On calcul la valeur pour les autres types de version */
-        $lesAutres = $toutesLesVersions['nombre'][0]['total'] - $release['nombre'][0]['total'] - $snapshot['nombre'][0]['total'];
+        $toutesLesVersionsCount = isset($toutesLesVersions['nombre'][0]['total']) ? $toutesLesVersions['nombre'][0]['total'] : 0;
+        $lesAutres = $toutesLesVersionsCount - $releaseCount - $snapshotCount;
 
         /** On récupére le nombre de version par type pour le graphique */
         $map=['maven_key'=>$data->maven_key];
@@ -316,7 +319,7 @@ class ApiPeintureController extends AbstractController
         }
 
         /** On regarde si le projet existe */
-        $isValide = $this->isValide($data->maven_key);
+        $isValide= $this->isValidMavenKey->isValide($data->maven_key);
         if ($isValide['code'] === 404) {
             return $response->setData([
                 'code'=>404, 'type'=> 'secondary', 'reference'=> static::$reference,
@@ -377,7 +380,7 @@ class ApiPeintureController extends AbstractController
         }
 
         /** On regarde si le projet existe */
-        $isValide = $this->isValide($data->maven_key);
+        $isValide= $this->isValidMavenKey->isValide($data->maven_key);
         if ($isValide['code'] === 404) {
             return $response->setData([
                 'code'=>404, 'type'=> 'secondary', 'reference'=> static::$reference,
@@ -501,7 +504,7 @@ class ApiPeintureController extends AbstractController
         }
 
         /** On regarde si le projet existe */
-        $isValide = $this->isValide($data->maven_key);
+        $isValide= $this->isValidMavenKey->isValide($data->maven_key);
         if ($isValide['code'] === 404) {
             return $response->setData([
                 'code'=>404, 'type'=> 'secondary', 'reference'=> static::$reference,
@@ -586,7 +589,7 @@ class ApiPeintureController extends AbstractController
         }
 
         /** On regarde si le projet existe */
-        $isValide = $this->isValide($data->maven_key);
+        $isValide= $this->isValidMavenKey->isValide($data->maven_key);
         if ($isValide['code'] === 404) {
             return $response->setData([
                 'code'=>404, 'type'=> 'secondary', 'reference'=> static::$reference,
@@ -648,7 +651,7 @@ class ApiPeintureController extends AbstractController
                 'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
         }
         /** On regarde si le projet existe */
-        $isValide = $this->isValide($data->maven_key);
+        $isValide= $this->isValidMavenKey->isValide($data->maven_key);
         if ($isValide['code'] === 404) {
             return $response->setData([
                 'code'=>404, 'type'=> 'secondary', 'reference'=> static::$reference,
@@ -712,7 +715,7 @@ class ApiPeintureController extends AbstractController
         }
 
         /** On regarde si le projet existe */
-        $isValide = $this->isValide($data->maven_key);
+        $isValide= $this->isValidMavenKey->isValide($data->maven_key);
         if ($isValide['code'] === 404) {
             return $response->setData([
                 'code'=>404, 'type'=> 'secondary', 'reference'=> static::$reference,
@@ -775,7 +778,7 @@ class ApiPeintureController extends AbstractController
         }
 
         /** On regarde si le projet existe */
-        $isValide = $this->isValide($data->maven_key);
+        $isValide= $this->isValidMavenKey->isValide($data->maven_key);
         if ($isValide['code'] === 404) {
             return $response->setData([
                 'code'=>404, 'type'=> 'secondary', 'reference'=> static::$reference,
