@@ -13,7 +13,7 @@ Ce guide détaille les étapes nécessaires pour configurer une base de données
 
 ## Préparation des Scripts SQL
 
-Trois scripts sont nécessires :
+Trois scripts sont nécessaires :
 
 1. `00_initalisation.sql` pour la création de la base de données et du role ;
 2. `01_structure.sql` pour la création des structures (tables, indexes, sequences, etc..) ;
@@ -28,7 +28,7 @@ données ;
 
 ## Script de Création de la base, du Schéma et des Tables
 
-La création de la base de données PostgreSQL est repose sur l'éxection de plusieurs scripts SQL. Ce choix est volontaire et facilite l'intégration de l'application dans un environnement de production.
+La création de la base de données PostgreSQL est repose sur l’exécution de plusieurs scripts SQL. Ce choix est volontaire et facilite l'intégration de l'application dans un environnement de production.
 
 ### Connexion à PostgreSQL et exécution des Scripts
 
@@ -49,7 +49,7 @@ psql -h [adresse_serveur] -U [nom_utilisateur] -w -d [nom_database] -f [chemin_c
 psql -h [adresse_serveur] -U [nom_utilisateur] -w -f /chemin/00_initialisation.sql
 ```
 
-**Note** : L'utilisteur doit avoir les droits suffisants pour créer la base de données.
+**Note** : L’utilisateur doit avoir les droits suffisants pour créer la base de données.
 
 > psql -h localhost -U postgres -w -f /opt/ma-moulinette/migration/PostgreSQL/00_initialisation.sql
 
@@ -59,7 +59,7 @@ psql -h [adresse_serveur] -U [nom_utilisateur] -w -f /chemin/00_initialisation.s
 psql -h [adresse_serveur] -U [nom_utilisateur] -w -f /chemin/01_structure.sql
 ```
 
-**Note** : La connexion se fera avec l'utilisateur propriétaie de la bas de dnnées. Ici, `db_user`.
+**Note** : La connexion se fera avec l'utilisateur propriétaire de la bas de données. Ici, `db_user`.
 
 > psql -h localhost -U db_user -w -f /opt/ma-moulinette/migration/PostgreSQL/01_structure.sql
 
@@ -71,7 +71,7 @@ Après avoir créé les structures de la base de données, exécutez le script d
 psql -h [adresse_serveur] -U [nom_utilisateur] -w -f /chemin/02_fixtures.sql
 ```
 
-**Note** : La connexion se fera avec l'utilisateur propriétaie de la bas de dnnées. Ici, `db_user`.
+**Note** : La connexion se fera avec l'utilisateur propriétaire de la base de données. Ici, `db_user`.
 
 > psql -h localhost -U db_user -w -f /opt/ma-moulinette/migration/PostgreSQL/02_fixtures.sql
 
@@ -95,7 +95,7 @@ Pour les environnements de développement et de production, modifiez vos fichier
 
 Commentez ou supprimez les anciennes configurations SQLite.
 
-### Exemple de lignes à commenter ou supprimer
+> Lignes à commenter ou supprimer
 
 ```bash
 #DATABASE_DEFAULT_URL="sqlite:///%kernel.project_dir%/var/data.db"

@@ -35,7 +35,7 @@
 - [x] l'icône **préférence** apparaît.
 - [x] il est possible d'ouvrir, depuis la zone des favoris, le projet directement en cliquant sur l'icône de raccourci situé à côté du titre.
 - [x] la gestion des préférences a été ajouté pour gérer ses projets et ses favoris.
-- [x] la gestion de l'authentificationa a été améliorée. La sécurité a été renforcée.
+- [x] la gestion de l’authentification a été améliorée. La sécurité a été renforcée.
 - [x] l'identification de l'utilisateur et le renouvellement de son mot de passe a été ajouté.
 - [x] prise en compte partielle du WCAG 2.2.
 - [x] ajout du bloc Tags pour afficher le nombre de projet orphelin.
@@ -63,7 +63,7 @@ Cette page est la page d'ouverture de l'application. Elle permet :
 A l'ouverture de la page d'accueil, plusieurs situations peuvent se présenter à l'utilisateur comme :
 
 - [ ] la version de l'application Ma-Moulinette installée n'est pas à jour ;
-- [ ] l'application a déctée des changements sur le nombre de projets présent dans l'application et le nombre de projets existant sur le serveur SonarQube ;
+- [ ] l'application a détectée des changements sur le nombre de projets présent dans l'application et le nombre de projets existant sur le serveur SonarQube ;
 - [ ] l'application à détectée un changement sur les référentiels de règles (profils) ;
 
 > A tout moment, il est possible de revenir sur la page d'accueil en cliquant sur le nom de l'application **Ma Moulinette** situé en haut à gauche de la page.
@@ -78,7 +78,7 @@ En haut à droite, cinq (5) liens sont affichés en fonction des droits de l'uti
 
 - [ ] `Utilisateur` : gestion des utilisateurs ;
 - [ ] `Traitements` : gestion des traitements de masse ;
-- [x] `Préferences` : gestion des préférences de l'utilisateur ;
+- [x] `Préférences` : gestion des préférences de l'utilisateur ;
 - [x] `Dashboard` : informations sur l'application ;
 - [x] `Logout` : pour se déconnecter de l'application ;
 
@@ -94,7 +94,7 @@ Il faudra passer le ou les scripts de migration pour aligner la version de l'app
 
 Le processus de détection des changements sur les référentiels de projets et de profils signale toutes les modifications entre l'application Ma-Moulinette et le serveur SonarQube.
 
-Lorsque l'application est installée pour la première fois, il est norlmal que le référentiel des projets et celui des profils soient vide.
+Lorsque l'application est installée pour la première fois, il est normal que le référentiel des projets et celui des profils soient vide.
 
 > Ci-dessous le bloc **référentiel local**.
 
@@ -171,7 +171,7 @@ Les messages d'erreurs peuvent apparaître si :
 
 ### Le bloc Tags
 
-Le bloc **Tags** affiche le nombre de projet disponible dans l'application **Ma-Moulinette** et le nombre d'application disposnt d'un **Tags**.
+Le bloc **Tags** affiche le nombre de projet disponible dans l'application **Ma-Moulinette** et le nombre d'application disposant d'un **Tags**.
 
 ![home](/documentation/ressources/home-017.jpg)
 
@@ -195,7 +195,7 @@ Le bouton **mon projet** permet l'accès à la page de gestion des projets.
 
 ### Le bloc des projets ou versions favorites
 
-Les applications favorites sont affichéeq par projet et/ou par version.
+Les applications favorites sont affichées par projet et/ou par version.
 
 - [x] si l'utilisateur a désactivé dans ces préférences la gestion des favoris, alors rien n'est affiché.
 

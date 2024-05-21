@@ -80,12 +80,12 @@ Liste des "**faux positifs**" où "**ne sera pas corrigé**".
 * [**009**] **faux positif** `javascript:S1451` :  L'expression régulière ne fonctionne pas. Les fichiers ont bien une en-tête de copyright.
 * [**026**] **faux positif** `php:S1451` : L'expression régulière ne fonctionne pas. Les fichiers ont bien une en-tête de copyright.
 * [**005**] **faux positif** `Web:PageWithoutTitleCheck` : La balise <\title> est injectée en TWIG.
-* [**020**] **faux positif** `Web:UnclosedTagCheck` : Twig non pris en charge par le parseur HTML de SonarQube. Par exemple dans l'expresssion {% if toto < 1 %} Le parseur trouve une balse html ouvrante qui n'est jamais fermée.
+* [**020**] **faux positif** `Web:UnclosedTagCheck` : Twig non pris en charge par le parseur HTML de SonarQube. Par exemple dans l’expression {% if toto < 1 %} Le parseur trouve une balise html ouvrante qui n'est jamais fermée.
 
 * [**148**] `php:S116` **Ne sera pas corrigé** : Nommage des entity conforme à la norme SQL. Utilisation de PascalCase à la place de camelCase. **J'assume !!!**.
 * [**043**] **faux positif** php:S1578 : Framework Symfony.
 
-* [**002**] **faux positif** `Weak Cryptography` : Utilisation de la fonction **Math.random** pour effectuer un tirage aléatoire sur un tabeau de couleurs. Les deux sighanelemnts seront corrigés. *Oui Monsieur !!!*.
+* [**002**] **faux positif** `Weak Cryptography` : Utilisation de la fonction **Math.random** pour effectuer un tirage aléatoire sur un tableau de couleurs. Les deux signalements seront corrigés. *Oui Monsieur !!!*.
 
 Les règles suivantes sont déclarées en : **Ne sera pas corrigé**. Il n'est pas toujours possible dans le "contexte fonctionnel" de l'application de faire autrement.
 *Non je rigole !!!* Ces signalements seront donc pris en compte lors des prochaines versions.
@@ -249,7 +249,7 @@ Pour la version 1.6.0 :
 * [x] Fiabilité     : 61 bugs ;
 * [x] Sécurité      : 0 faille ;
 * [x] Hotspot       : 2 hotspots review ;
-* [x] Mainetabilité : 1 865 mauvaises pratiques.
+* [x] Maintenabilité : 1 865 mauvaises pratiques.
 
 ![ma-moulinette v1.6.0-suivi](/documentation/ressources/ma-moulinette-v1.6.0-suivi.jpg)
 

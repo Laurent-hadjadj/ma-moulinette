@@ -44,7 +44,7 @@ On valide les données du formulaire en cliquant sur le bouton **valider**.
 
 >**Attention**, le nombre de tentative est de 5, après cela, le compte est véroullé. Il faudra mettre à jour manuellement le compte.
 
-Ooups! encore une erreur. Le mot de passe est trop court.
+Oups! encore une erreur. Le mot de passe est trop court.
 
 ![reset](/documentation/ressources/reset-005.jpg)
 

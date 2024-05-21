@@ -1,4 +1,4 @@
-# Authentfication
+# Authentification
 
 ![Ma-Moulinette](/documentation/ressources/home-000.jpg)
 
@@ -54,7 +54,7 @@ L'identifiant de connexion  affiché sous le menu en haut à droite de la page p
 
 ![authentification](/documentation/ressources/authentification-006.jpg)
 
-En cliquant sur son identifiant,  le menu laisse apparaitre un menu.
+En cliquant sur son identifiant,  le menu laisse apparaître un menu.
 
 ![authentification](/documentation/ressources/authentification-007.jpg)
 

@@ -69,13 +69,13 @@ L'utilisateur est bien rattaché à une équipe mais, aucun `tag` présent sur l
 
 ![projet](/documentation/ressources/projet-000c.jpg)
 
-> Depuis la version 2.0.0, il est possible d'activer un **bookmark** dans ses "préféreces". Si le bookmark est activé, le dernier projet affiché sera repris automatiquement et évitera ainsi la recherche depuis le selecteur.
+> Depuis la version 2.0.0, il est possible d'activer un **bookmark** dans ses "préférences". Si le bookmark est activé, le dernier projet affiché sera repris automatiquement et évitera ainsi la recherche depuis le sélecteur.
 
 Si vous n'avez pas mis en bookmark le projet, il faudra depuis sélecteur des projets, saisir les trois (3) premières lettres de son projet pour afficher la liste des projets disponibles et correspondant aux critères de recherche.
 
 ![projet](/documentation/ressources/projet-001.jpg)
 
-> Depuis la version 2.0.0, seul les projets de l'équipe sont disponible dans le selecteur.
+> Depuis la version 2.0.0, seul les projets de l'équipe sont disponible dans le sélecteur.
 
 Je choisis mon projet à partir du référentiel local.
 

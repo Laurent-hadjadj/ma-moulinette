@@ -35,7 +35,7 @@ Par exmeple pour Earlang OTP :
 set ERLANG_HOME=c:\env\ma-moulinette\Erlang-OTP
 ```
 
-Par exmeple pour l'application rabbitMQ :
+Par exemple pour l'application rabbitMQ :
 
 ```properties
 set RABBITMQ_BASE=c:\env\ma-moulinette\ma-moulinette\RabbitMQ
@@ -114,7 +114,7 @@ Il faut décommenter l'extension **sockets** dans le fichier **php.ini**.
 ## Stratégie
 
 - [x] Point-à-point entre le publisher et le broker pour les échanges d'information.
-- [X] Demannde-réponse pour les traitements inter-application.
+- [X] Demande-réponse pour les traitements inter-application.
 
 ## Commandes utiles
 
@@ -142,7 +142,7 @@ Pour créer un espace de communication.
 
 > Changer les droits d'un utilisateur sur un vhost
 
-Les doits possible sont :
+Les droits possibles sont :
 
 - [x] configure
 - [x] write
