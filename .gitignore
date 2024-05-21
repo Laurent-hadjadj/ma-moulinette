@@ -90,3 +90,7 @@ phpstan.neon
 ###> mkDocs ###
 mkDocs
 ###< mkDocs ###
+
+## Fichiers temporaires
+*.old
+*.backup
