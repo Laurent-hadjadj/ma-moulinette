@@ -78,10 +78,13 @@ class ApiMesureController extends AbstractController
     #[Route('/api/projet/mesure', name: 'projet_mesure_Collecte', methods: ['POST'])]
     public function projetMesureCollecte(Request $request, Client $client): response
     {
+        /** On instancie l'EntityRepository */
+        $mesuresEntity = $this->em->getRepository(Mesures::class);
+
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On crée un objet de reponse JSON */
+        /** On crée un objet de response JSON */
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
@@ -109,23 +112,35 @@ class ApiMesureController extends AbstractController
         /** on appel le client http */
         $result1 = $client->http(trim(preg_replace(static::$removeReturnline, " ", $url1)));
         /** On catch les erreurs HTTP 400, 401 et 404, si possible :) */
-        if (array_key_exists('code', $result1)){
-            if ($result1['code']===401) {
-            return $response->setData([
-                'type'=>'warning',
-                'code' => 401,
-                'reference' => static::$reference,
-                'message' => static::$erreur401,
-                Response::HTTP_OK]);
+        if (array_key_exists('code', $result1)) {
+            switch ($result1['code']) {
+                case 200:
+                    break;
+                case 401:
+                    return $response->setData([
+                        'type' => 'warning',
+                        'code' => 401,
+                        'reference' => static::$reference,
+                        'message' => static::$erreur401,
+                        Response::HTTP_OK
+                    ]);
+                case 404:
+                    return $response->setData([
+                        'type' => 'alert',
+                        'code' => 404,
+                        'reference' => static::$reference,
+                        'message' => static::$erreur404,
+                        Response::HTTP_OK
+                    ]);
+                default:
+                    return $response->setData([
+                        'type' => 'error',
+                        'code' => $result1['code'],
+                        'reference' => static::$reference,
+                        'message' => 'Unexpected error code',
+                        Response::HTTP_OK
+                    ]);
             }
-            if ($result1['code']===404){
-                return $response->setData([
-                    'type'=>'alert',
-                    "code" => 404,
-                    "reference" => static::$reference,
-                    "message" => static::$erreur404,
-                    Response::HTTP_OK]);
-                }
         }
 
         /** On créé un objet date */
@@ -133,67 +148,45 @@ class ApiMesureController extends AbstractController
         $date->setTimezone(new DateTimeZone(static::$europeParis));
 
         /** On ajoute les mesures dans la table mesures. */
-        $lines = 0;
-        if (intval($result1['measures']['lines'])) {
-            $lines = intval($result1['measures']['lines']);
-        }
-
-        /** Warning: Undefined array key "coverage" */
-        $coverage = 0;
-        if (array_key_exists('coverage', $result1['measures'])) {
-            $coverage = $result1['measures']['coverage'];
-        }
-
-        /** Warning: Undefined array key "duplicationDensity" */
-        $duplicationDensity = 0;
-        if (array_key_exists('duplicationDensity', $result1['measures'])) {
-            $duplicationDensity = $result1['measures']['duplicationDensity'];
-        }
-
-        /** Warning: Undefined array key "measures" */
-        $tests = 0;
-        if (array_key_exists('tests', $result1['measures'])) {
-            $tests = intval($result1['measures']['tests']);
-        }
-
-        /** Warning: Undefined array key "issues" */
-        $issues = 0;
-        if (array_key_exists('issues', $result1['measures'])) {
-            $issues = intval($result1['measures']['issues']);
-        }
+        $lines = intval($result1['measures']['lines'] ?? 0);
+        $coverage = $result1['measures']['coverage'] ?? 0;
+        $duplicationDensity = $result1['measures']['duplicationDensity'] ?? 0;
+        $tests = intval($result1['measures']['tests'] ?? 0);
+        $issues = intval($result1['measures']['issues'] ?? 0);
 
         /** On récupère le nombre de ligne de code */
         $url2 = "$tempoUrl/api/measures/component?component=$data->maven_key&metricKeys=ncloc";
         $result2 = $client->http(trim(preg_replace(static::$removeReturnline, " ", $url2)));
+        $ncloc = intval($result2['component']['measures'][0]['value'] ?? 0);
 
-        $ncloc = 0;
-        if (array_key_exists('measures', $result2['component'])) {
-            $ncloc = intval($result2['component']['measures'][0]['value']);
-        }
-
-        /** On récupère le ration de dette technique */
+        /** On récupère le ratio de dette technique */
         $url3 = "$tempoUrl/api/measures/component?component=$data->maven_key&metricKeys=sqale_debt_ratio";
         $result3 = $client->http(preg_replace(static::$removeReturnline, " ", $url3));
+        $sqaleRatio = intval($result3['component']['measures'][0]['value'] ?? -1);
 
-        $sqaleRatio = -1;
-        if (array_key_exists('measures', $result3['component'])) {
-            $sqaleRatio = intval($result3['component']['measures'][0]['value']);
+        /** On enregistre les données */
+        $mesureData = [
+            '$maven_key' => $data->maven_key,
+            'project_name' => $result1['projectName'],
+            'lines' => $lines,
+            'ncloc' => $ncloc,
+            'sqale_debt_ratio' => $sqaleRatio,
+            'coverage' => $coverage,
+            'duplication_density' => $duplicationDensity,
+            'tests' => $tests,
+            'issues' => $issues,
+            'date_enregistrement' => $date
+        ];
+        $insert=$mesuresEntity->insertMesures($mesureData);
+        if ($insert['code'] !== 200) {
+            return $response->setData([
+                'type' => 'error',
+                'code' => $insert['code'],
+                'reference' => static::$reference,
+                'message' => "Code d'erreur inattendu [" . $insert['code'] . "].",
+                Response::HTTP_OK
+            ]);
         }
-
-        /** On enregistre */
-        $mesure = new Mesures();
-        $mesure->setMavenKey($data->maven_key);
-        $mesure->setProjectName($result1["projectName"]);
-        $mesure->setLines($lines);
-        $mesure->setNcloc($ncloc);
-        $mesure->setSqaleDebtRatio($sqaleRatio);
-        $mesure->setCoverage($coverage);
-        $mesure->setDuplicationDensity($duplicationDensity);
-        $mesure->setTests(intval($tests));
-        $mesure->setIssues(intval($issues));
-        $mesure->setDateEnregistrement($date);
-        $this->em->persist($mesure);
-        $this->em->flush();
 
         return $response->setData(['code' => 200, Response::HTTP_OK]);
     }
