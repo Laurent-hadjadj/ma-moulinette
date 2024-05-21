@@ -300,9 +300,10 @@ class InformationProjetRepository extends ServiceEntityRepository
     {
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-                $sql = "INSERT INTO information_projet (
-                                    maven_key, analyse_key, date, project_version, type, date_enregistrement)
-                        VALUES (:maven_key, :analyse_key, :date, :project_version, :type, :date_enregistrement)";
+                $sql = "INSERT INTO information_projet
+                            (maven_key, analyse_key, date, project_version, type, date_enregistrement)
+                        VALUES
+                            (:maven_key, :analyse_key, :date, :project_version, :type, :date_enregistrement)";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
                     $stmt->bindValue(':maven_key', $map['maven_key']);
                     $stmt->bindValue(':analyse_key', $map['analyse_key']);
