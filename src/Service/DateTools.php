@@ -93,4 +93,23 @@ class DateTools
         }
     }
 
+    /**
+     * [Description for minutesToString]
+     *
+     * @param int $minutes
+     *
+     * @return string
+     *
+     * Created at: 20/05/2024 17:18:14 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function minutesToString(int $minutes): string
+    {
+        $j = (int)($minutes / 1440);
+        $h = (int)(($minutes - ($j * 1440)) / 60);
+        $m = round($minutes % 60, 0);
+
+        return sprintf('%d%sd, %dh:%dm', $j, $j > 1 ? 's' : '', $h, $m);
+    }
 }
