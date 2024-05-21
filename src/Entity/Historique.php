@@ -242,7 +242,7 @@ class Historique
 
     #[ORM\Column(
         type: Types::STRING,
-        length: 4,
+        length: 16,
         options: ['comment' => 'Note de fiabilité attribuée au projet']
     )]
     #[Assert\NotBlank]
@@ -250,7 +250,7 @@ class Historique
 
     #[ORM\Column(
         type: Types::STRING,
-        length: 4,
+        length: 16,
         options: ['comment' => 'Note de sécurité attribuée au projet']
     )]
     #[Assert\NotBlank]
@@ -258,7 +258,7 @@ class Historique
 
     #[ORM\Column(
         type: Types::STRING,
-        length: 4,
+        length: 16,
         options: ['comment' => 'Note SQALE attribuée au projet']
     )]
     #[Assert\NotBlank]
@@ -266,7 +266,7 @@ class Historique
 
     #[ORM\Column(
         type: Types::STRING,
-        length: 4,
+        length: 16,
         options: ['comment' => 'Note pour les hotspots de sécurité']
     )]
     #[Assert\NotBlank]
