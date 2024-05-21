@@ -61,4 +61,42 @@ class MesuresRepository extends ServiceEntityRepository
         return ['code'=>200, 'mesures'=>$mesures, 'erreur'=>''];
     }
 
+    /**
+     * [Description for insertMesures]
+     *
+     * @param array $map
+     *
+     * @return array
+     *
+     * Created at: 21/05/2024 22:57:29 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function insertMesures($map):array
+    {
+        try {
+                $this->getEntityManager()->getConnection()->beginTransaction();
+                    $sql = "INSERT INTO mesures
+                                (maven_key, project_name, lines, ncloc, sqale_debt_ratio, coverage, duplication_density, tests, issues, date_enregistrement)
+                            VALUES
+                                (:maven_key, :project_name, :lines, :ncloc, :sqale_debt_ratio, :coverage, :duplication_density, :tests, :issues, :date_enregistrement)";
+                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                        $stmt->bindValue(':maven_key', $map['maven_key']);
+                        $stmt->bindValue(':project_name', $map['project_name']);
+                        $stmt->bindValue(':lines', $map['lines']);
+                        $stmt->bindValue(':ncloc', $map['ncloc']);
+                        $stmt->bindValue(':sqale_debt_ratio', $map['sqale_debt_ratio']);
+                        $stmt->bindValue(':coverage', $map['coverage']);
+                        $stmt->bindValue(':duplication_density', $map['duplication_density']);
+                        $stmt->bindValue(':tests', $map['tests']);
+                        $stmt->bindValue(':issues', $map['issues']);
+                        $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']);
+                        $stmt->executeStatement();
+                $this->getEntityManager()->getConnection()->commit();
+        } catch (\Doctrine\DBAL\Exception $e) {
+            $this->getEntityManager()->getConnection()->rollBack();
+            return ['code'=>500, 'erreur'=> $e->getCode()];
+        }
+        return ['code'=>200, 'erreur'=>''];
+    }
 }
