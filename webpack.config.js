@@ -21,6 +21,7 @@ Encore
     .addEntry('reset', './assets/js/app-reset.js')
     .addEntry('welcome', './assets/js/app-welcome.js')
     .addEntry('home', './assets/js/app-home.js')
+    .addEntry('activite','./assets/js/app-activite.js')
     .addEntry('plan-du-site', './assets/js/app-footer-plan.js')
     .addEntry('mention-legale', './assets/js/app-footer-mention-legale.js')
     .addEntry('donnees-personnelles', './assets/js/app-footer-donnees-personnelles.js')
