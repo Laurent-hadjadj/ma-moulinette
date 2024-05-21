@@ -22,7 +22,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 /** Accès aux tables */
 use Doctrine\Persistence\ManagerRegistry;
-use App\Entity\Secondary\Repartition;
+use App\Entity\Repartition;
 
 /** Import des services */
 use App\Service\ExtractName;
@@ -75,7 +75,7 @@ class RepartitionController extends AbstractController
 
 
         /** On se connecte à la base pour connaitre la version du dernier setup pour le projet. */
-        $reponse = $this->doctrine->getManager('secondary')
+        $reponse = $this->doctrine->getManager()
                         ->getRepository(Repartition::class)
                         ->findBy(['mavenKey' => $mavenKey], ['setup' => 'DESC'], 1);
 

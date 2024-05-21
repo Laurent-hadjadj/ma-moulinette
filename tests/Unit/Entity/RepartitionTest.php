@@ -11,11 +11,11 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
-namespace App\Tests\Entity\Secondary;
+namespace App\Tests\Entity;
 
 use DateTime;
-use App\Entity\Secondary\Repartition;
-use App\Repository\Secondary\RepartitionRepository;
+use App\Entity\Repartition;
+use App\Repository\RepartitionRepository;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
