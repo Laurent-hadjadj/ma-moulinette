@@ -77,7 +77,7 @@ class BatchCollecteInformationProjetController extends AbstractController
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On crée un objet de reponse JSON */
+        /** On crée un objet de response JSON */
         $response = new JsonResponse();
 
         $isValide=$this->isValidMavenKey->isValide($data->maven_key);
@@ -151,13 +151,8 @@ class BatchCollecteInformationProjetController extends AbstractController
         $result = $client->http(trim(preg_replace(static::$removeReturnline, " ", $url)));
 
         /** On catch les erreurs HTTP 401 et 404, si possible :) */
-        if (array_key_exists('code', $result)){
-            if ($result['code']===401) {
-                return ['code' => 401];
-            }
-            if ($result['code']===404){
-                return ['code' => 404];
-            }
+        if (isset($result['code']) && in_array($result['code'], [401, 404])) {
+            return ['code' => $result['code']];
         }
 
         /** On créé un objet date */
@@ -176,21 +171,22 @@ class BatchCollecteInformationProjetController extends AbstractController
             /**
              *  La version du projet doit être xxx-release, xxx-snapshot ou xxx
              *  Dans ce cas, le tableau renvoi toujours [0] pour la version et
-             *  [1] pour le type de version (release, snaphot ou null)
+             *  [1] pour le type de version (release, snapshot ou null)
              */
             $explode = explode('-', $information['projectVersion']);
-            if (empty($explode[1])) {
+            if (!isset($explode[1]) || empty($explode[1])) {
                 $explode[1] = 'N.C';
             }
+
             $map=['maven_key'=>$mavenKey, 'analyse_key'=>$information['key'],
                 'date'=>new \DateTime($information['date']),
                 'project_version', $information['projectVersion'],
                 'type'=>strtoupper($explode[1]),
                 'date_enregistrement'=>$date];
-        }
-        $update=$informationProjetEntity->updateInformationProjet($map);
-        if ($update['code']!=200) {
-            return ['code' => $update['code'], 'methode'=>'deleteInformationProjetMavenKey'];
+            $insert=$informationProjetEntity->insertInformationProjet($map);
+            if ($insert['code']!=200) {
+                return ['code' => $insert['code'], 'methode'=>'insertInformationProjetMavenKey'];
+            }
         }
 
         /** On appel la méthode de traitement des données */
