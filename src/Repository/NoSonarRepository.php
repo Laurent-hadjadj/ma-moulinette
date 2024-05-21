@@ -28,7 +28,7 @@ class NoSonarRepository extends ServiceEntityRepository
 
     /**
      * [Description for deleteNoSonarMavenKey]
-     * Supprime les données de la version courrante (i.e. correspondant à la maven_key)
+     * Supprime les données de la version courante (i.e. correspondant à la maven_key)
      *
      * @param array $map
      *
@@ -104,7 +104,8 @@ class NoSonarRepository extends ServiceEntityRepository
     {
         try {
                 $this->getEntityManager()->getConnection()->beginTransaction();
-                    $sql = "INSERT INTO no_sonar (maven_key, rule, component, line, date_enregistrement)
+                    $sql = "INSERT INTO no_sonar
+                                (maven_key, rule, component, line, date_enregistrement)
                             VALUES (:maven_key, :rule, :component, :line, :date_enregistrement)";
                     $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
                         $stmt->bindValue(':maven_key', $map['maven_key']);
