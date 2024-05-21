@@ -137,7 +137,7 @@ tbody tr:nth-child(even) {
 /* disable */
 .disable { cursor: not-allowed; }
 
-/* bouton ferrmer */
+/* bouton fermer */
 #fermer-traitement-liste,
 #fermer-traitement-manuel {
   color: #fff;
@@ -239,7 +239,7 @@ tbody tr:nth-child(even) {
 
 .button-group-option .button + .button { margin-left: 0.35rem; }
 
-/** bouton permettant d'aller à la fin du textarea de lamodal-informatio */
+/** bouton permettant d'aller à la fin du textarea de la modal-information */
 .go-end {
   background-color: #00445b;
   color: #fff;

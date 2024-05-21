@@ -4,7 +4,7 @@
 
 ## Infrastructure et environnement
 
-Ma moulinette est une application web développée en PHP 8 Symfony 6 et JavaScript. Elle peut être déployée localement ou sur un serveur.
+Ma moulinette est une application web développée en PHP 8 symfony 6 et JavaScript. Elle peut être déployée localement ou sur un serveur.
 
 L'environnement de production se distingue de l'environnement de développement par l'absence des dépendances NPM utilisés lors du développement.
 
@@ -18,7 +18,7 @@ La liste ci-dessous indique la version du système d'exploitation et celle des f
 * [x] Serveur d'application : nginx + php-FPM ;
 * [x] Langages : PHP 8.3.0 ;
 * [x] Base de données locale : SQLite 4 ;
-* [ ] Base de données : postgresql ;
+* [ ] Base de données : PostgreSQL ;
 * [ ] Cache : opCache
 
 ### En développement
@@ -26,7 +26,7 @@ La liste ci-dessous indique la version du système d'exploitation et celle des f
 La liste ci-dessous indique la version du système d'exploitation et celle des frameworks utilisés en développement :
 
 * [x] OS : Windows | Linux Debian ;
-* [x] Serveur d'application : Symfony-cli 5.5.8 ;
+* [x] Serveur d'application : symfony-cli 5.5.8 ;
 * [x] Langages : symfony 6.4.3, PHP 8.3.0, HTML5, CSS 3 & Javascript ES2015 ;
 * [x] Tests unitaires : phpUnit 10.5.9
 * [x] Linter : EsLint, styleLint

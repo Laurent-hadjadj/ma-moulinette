@@ -41,7 +41,7 @@ Executer les commandes suivantes :
 
 ### Configuration : PHPUnit.xmldist et PHPUnit.xml
 
-La verions **9.6**  de phpunit doit être utilisée pour symfony 6 et PHP 8.
+La versions **9.6**  de phpunit doit être utilisée pour symfony 6 et PHP 8.
 
 Le fichier de configuration pour PHPUnit par défaut est `phpunit.xml.dist`. Ce fichier est écrasé à chaque mise à jour de la recipe symfony, il convient donc de créer un fichier `phpunit.xml` qui contiendra la configuration pour l'application.
 
@@ -49,7 +49,7 @@ Le fichier de configuration pour PHPUnit par défaut est `phpunit.xml.dist`. Ce 
 
 Le fichier `.env.test` contient les paramètres spécifiques aux tests, i.e. les paramètres utilises du fichier `.env`. Il est propre à symfony et vient surcharger le fichier PHPUnit.xml.
 
-Attxntion, tout comme le fichier `PHPUnit.xml.dist`, le fichier `.env.test` est écrasé par la recipe symfony lors des mises à jour. Il faudra enregistrer les informations dans un dossier `.env.test.local`.
+Attention, tout comme le fichier `PHPUnit.xml.dist`, le fichier `.env.test` est écrasé par la recipe symfony lors des mises à jour. Il faudra enregistrer les informations dans un dossier `.env.test.local`.
 
 Exemple de paramètres utilises :
 
@@ -62,7 +62,7 @@ DATABASE_URL="sqlite:///%kernel.project_dir%/var/data-test.db"
 
 ### Préparation de la base de données de test
 
-Les tests unitaires sont éxuctés sur une base de données SQLIte.
+Les tests unitaires sont exécutés sur une base de données SQLite.
 
 La création de la base de données de tests est relativement facile à mettre en place. Il suffit de taper la commande suivante depuis le dossier du projet :
 
@@ -77,11 +77,11 @@ Il est possible d'executer tous les tests avec la commande suivante :
 
 - `php bin\console phpunit`
 
-Ou d'éxceuter simplement un test en particulier :
+Ou d’exécuter simplement un test en particulier :
 
 - `php ./bin/phpunit ./tests/Unit/Repository/UtilisateurRepositoryTest.php`
 
-Ou  d'éxecuer un ensemble de tests :
+Ou  d’exécuter un ensemble de tests :
 
 - `php ./bin/phpunit --filter CaseTest`
 

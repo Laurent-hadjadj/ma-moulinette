@@ -38,7 +38,6 @@ Un raccourci utile avec ces deux commandes est `git add .` et `git restore .` qu
 
 >git commit -m "Le message de votre commit"
 
-
 Après avoir ajouté tous les fichiers que vous vouliez, on peut passer à la commande `git commit`.
 
 Cette commande va ajouter un commit à votre branche suivi du message que vous avez mis.
@@ -49,11 +48,9 @@ Cette commande va ajouter un commit à votre branche suivi du message que vous a
 
 >git push
 
-
 Cette commande va envoyer tous les commits passés sur le dépôt en ligne de votre GitHub.
 
 ![git](/documentation/ressources/git-push.jpg)
-
 
 ## La fusion des travaux communs
 
@@ -87,7 +84,7 @@ Puis faites la commande :
 
 Il y a deux cas : soit le merge se passe sans souci parce que le develop n'a pas été changé ou parce que les modifications apportées ne créent pas de conflit, soit le merge créera des conflits qu'il faudra résoudre.
 
-Dans le cas où il y a des conflits, il faudra les resoudre puis faire [l'étape de commit](#etapes-dun-commit).
+Dans le cas où il y a des conflits, il faudra les résoudre puis faire l'étape de commit.
 
 ### Fusion de votre branche
 

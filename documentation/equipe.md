@@ -2,11 +2,11 @@
 
 ![Ma-Moulinette](/documentation/ressources/home-000.jpg)
 
-## Backoffice de gestion
+## back-office de gestion
 
 * [Dashboard](/documentation/dashboard.md)
 * [Utilisateur](/documentation/utilisateur.md)
-* [**Equipe**](/documentation/equipe.md)
+* [**Équipe**](/documentation/equipe.md)
 * [Portefeuille](/documentation/portefeuille.md)
 * [Batch](/documentation/batch.md)
 
@@ -17,7 +17,7 @@ La gestion des **équipes** s'appuie sur un contrôleur CRUD du bundle EasyAdmin
 * [X] Je peux modifier le titre et la description de l'équipe ;
 * [X] Je peux supprimer une équipe ;
 
-L'entité `Èquipe` permet de regrouper des personnes travaillant sur les mêmes projets.
+L'entité `Equipe` permet de regrouper des personnes travaillant sur les mêmes projets.
 
 ## Accéder à l'interface d'administration
 

@@ -149,7 +149,7 @@ La commande permet de créer un fichier de version faisant état de l'cart entre
 
 ### Génération des fichiers de migrations
 
-La commande utilisé permt de générer le script de montée de version. Le fichier est présent dans le dossier **migrations** situé à la racidne du projet. Pour chaque base de données, un fichier sera créé soit dans le sous dossier **default** ou dans le dossier **secondary**.
+La commande utilisé permet de générer le script de montée de version. Le fichier est présent dans le dossier **migrations** situé à la racine du projet. Pour chaque base de données, un fichier sera créé soit dans le sous dossier **default** ou dans le dossier **secondary**.
 
 Pour la base de données **data** :
 
@@ -267,7 +267,7 @@ ALTER TABLE historique RENAME batch TO autre;
 
 ```sql
 ALTER TABLE hotspot_details RENAME batch TO autre;
-ALTER TABLE hotspot_details ADD COLUMN niveau INTERGER;
+ALTER TABLE hotspot_details ADD COLUMN niveau INTEGER;
 ```
 
 ### Mise à jour de la colonne niveau
@@ -462,7 +462,7 @@ COMMIT;
 ```sql
 BEGIN TRANSACTION;
 
--- ## Ajout de l'attribut equipe dans la table utiliasteur
+-- ## Ajout de l'attribut equipe dans la table utilisateur
 ALTER TABLE utilisateur ADD COLUMN equipe CLOB DEFAULT NULL;
 
 COMMIT;

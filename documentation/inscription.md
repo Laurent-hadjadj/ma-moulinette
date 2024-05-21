@@ -78,7 +78,7 @@ Je peux afficher mon mot de passe en cliquant sur le petit rond situé dans le c
 
 ![inscription](/documentation/ressources/registration-011.jpg)
 
-Je resaisi mon mot de passe pour activer le bouton *m'inscrire*.
+Je ressaisi mon mot de passe pour activer le bouton *m'inscrire*.
 
 ![inscription](/documentation/ressources/registration-012.jpg)
 

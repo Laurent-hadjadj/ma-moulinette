@@ -91,7 +91,7 @@ Il existe deux rôles par défaut auquel nous avons ajouté **trois** rôles fon
 - [x] **ROLE_GESTIONNAIRE**, permet l'accès aux pages de gestion de l'application.
 - [x] **ROLE_BATCH**, permet l'accès à la page de suivi des traitements automatique et manuel.
 
-Toute personne authentifiée peut accéder à l'ensemble des pages de l'application, à l'exception des pages destinées aux personnes ayant le rôle de `GESTIONNAIRE` et `BTACH` (Traitement).
+Toute personne authentifiée peut accéder à l'ensemble des pages de l'application, à l'exception des pages destinées aux personnes ayant le rôle de `GESTIONNAIRE` et `BATCH` (Traitement).
 
 Le tableau ci-dessous liste par rôle les droits des pages accessibles.
 

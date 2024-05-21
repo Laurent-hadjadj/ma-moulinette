@@ -34,7 +34,7 @@ Cette page affiche la liste des référentiels disponibles sur le serveur SonarQ
 * [x] Suppression de la date dans la légende du tableau.
 * [x] La requête de mise à jour de la liste des profils a été migré en POST.
 
-La consultation et/ou la mise à jour de la liste des profils qualités est disponnible en cliquant, depuis la page d'**accueil**, sur le bouton suivant `Profils qualités Sonarqube`:
+La consultation et/ou la mise à jour de la liste des profils qualités est disponnible en cliquant, depuis la page d'**accueil**, sur le bouton suivant `Profils qualités SonarQube`:
 
 ![profil](/documentation/ressources/profil-000.jpg)
 
@@ -48,11 +48,11 @@ La page affiche la liste des profils disponibles et pour chacun :
 
 ![profil](/documentation/ressources/profil-001.jpg)
 
-Plusieurs actions sont disponnibles :
+Plusieurs actions sont disponibles :
 
-* [x] je peux afficher le détails des règles pour une profil, i.e. les règles lié à un langage de programation ;
+* [x] je peux afficher le détails des règles pour une profil, i.e. les règles lié à un langage de programmation ;
 * [x] je peux mettre à jour les profils ;
-* [x] je peux afficher un graphique représentant la répartition des régles par langage ;
+* [x] je peux afficher un graphique représentant la répartition des règles par langage ;
 
 ## Mettre à jour le liste des profils
 
@@ -68,7 +68,7 @@ La requête de mise à jour utilise la méthode `POST`. Si vous essayez de lance
 
 ![profil](/documentation/ressources/profil-005.jpg)
 
-> Seul les utiliateurs ayant le rôle **gestionnaire** peuvent réaliser cette action.
+> Seul les utilisateurs ayant le rôle **gestionnaire** peuvent réaliser cette action.
 
 Si vous tentez de mettre à jour la liste des profils alors que vous n'avez pas le rôle **gestionnaire**, vous serez averti par un message.
 
@@ -92,9 +92,9 @@ Ci-dessous notre référentiel pour les applications `JAVA`, `WEB`, `PHP`, `PYTH
 
 ![profil](/documentation/ressources/profil-013.jpg)
 
-## Liste des référenciels non actifs
+## Liste des référentiels non actifs
 
-Le bouton `Afficher les autres profils` ![profil](/documentation/ressources/profil-015.jpg) affiche une fenetre modal donnant les profils qui ne sont pas actifs pour le language selectionné.
+Le bouton `Afficher les autres profils` ![profil](/documentation/ressources/profil-015.jpg) affiche une fenêtre modal donnant les profils qui ne sont pas actifs pour le language sélectionné.
 
 ![profil](/documentation/ressources/profil-014.jpg)
 

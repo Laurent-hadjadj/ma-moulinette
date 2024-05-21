@@ -2,11 +2,11 @@
 
 ![Ma-Moulinette](/documentation/ressources/home-000.jpg)
 
-## Backoffice de gestion
+## back-office de gestion
 
 * [Dashboard](/documentation/dashboard.md)
 * [Utilisateur](/documentation/utilisateur.md)
-* [Equipe](/documentation/equipe.md)
+* [Équipe](/documentation/equipe.md)
 * [**Portefeuille**](/documentation/portefeuille.md)
 * [Batch](/documentation/batch.md)
 
@@ -73,7 +73,7 @@ Il est possible de :
 
 ![portefeuille-consulter](/documentation/ressources/portefeuille-005.jpg)
 
-## Éditezl'équipe
+## Éditez l'équipe
 
 Il est possible de :
 
