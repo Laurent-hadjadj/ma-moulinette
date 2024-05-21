@@ -35,12 +35,12 @@ import {contentType, couleur, note, espace, rien,
 const callboxInformation='<div id="js-message" class="callout alert-callout-border primary" data-closable="slide-out-right" role="alert"><p class="open-sans color-bleu padding-right-1"><span class="lead"></span>Information ! </strong>';
 const callboxSuccess='<div id="js-message" class="callout alert-callout-border success" data-closable="slide-out-right" role="alert"><span class="open-sans color-bleu padding-right-1"<span class="lead">Bravo ! </span>';
 const callboxWarning='<div id="js-message" class="callout alert-callout-border warning" data-closable="slide-out-right" role="alert"><span class="open-sans padding-right-1 color-bleu"><span class="lead">Attention ! </span>';
-const callboxError='<div id="js-message" class="callout alert-callout-border alert" data-closable="slide-out-right"><span class="open-sans padding-right-1 color-bleu"><span class="lead">Ooups ! </span>';
+const callboxError='<div id="js-message" class="callout alert-callout-border alert" data-closable="slide-out-right"><span class="open-sans padding-right-1 color-bleu"><span class="lead">Oups ! </span>';
 const callboxFermer='</span><button class="close-button" aria-label="Fermer la fenêtre" type="button" data-close><span aria-hidden="true">&times;</span></button></div>';
 
 /**
  * [Description for calculNoteHotspot]
- * Calcul la note des hotspots
+ * Calcul la note des hotpots
  * @param mixed taux
  *
  * @return [type]
@@ -125,7 +125,7 @@ const videLeTableau = function() {
   $('#nombre-hotspot-low').html('');
   $('#note-hotspot').html('');
 
-  /* Hotspots */
+  /* Hotspot */
   for (let id=0; id<11; id++) {
     $(`#h${id}`).html('');
   }
@@ -208,7 +208,7 @@ const remplissageOwaspInfo=function(idMaven) {
       c = couleur[cinq];
       n = note[cinq];
     }
-    /** on injecte : ID, Menance, Badge Note */
+    /** on injecte : ID, Menace, Badge Note */
     injectionOwaspInfo(un, r.a1, c, n);
 
     /** Détails A2 */
@@ -233,7 +233,7 @@ const remplissageOwaspInfo=function(idMaven) {
       n = note[cinq];
     }
 
-    /** on injecte : ID, Menance, Badge Note */
+    /** on injecte : ID, Menace, Badge Note */
     injectionOwaspInfo(deux, r.a2, c, n);
 
     /* Détails A3 */
@@ -257,7 +257,7 @@ const remplissageOwaspInfo=function(idMaven) {
       c = couleur[cinq];
       n = note[cinq];
     }
-    /** on injecte : ID, Menance, Badge Note */
+    /** on injecte : ID, Menace, Badge Note */
     injectionOwaspInfo(trois, r.a3, c, n);
 
     /* Détails A4 */
@@ -281,7 +281,7 @@ const remplissageOwaspInfo=function(idMaven) {
       c = couleur[cinq];
       n = note[cinq];
     }
-    /** on injecte : ID, Menance, Badge Note */
+    /** on injecte : ID, Menace, Badge Note */
     injectionOwaspInfo(quatre, r.a4, c, n);
 
     /* Détails A5 */
@@ -328,7 +328,7 @@ const remplissageOwaspInfo=function(idMaven) {
       c = couleur[cinq];
       n = note[cinq];
     }
-    /** on injecte : ID, Menance, Badge Note */
+    /** on injecte : ID, Menace, Badge Note */
     injectionOwaspInfo(six, r.a6, c, n);
 
     /* Détails A7 */
@@ -352,7 +352,7 @@ const remplissageOwaspInfo=function(idMaven) {
       c = couleur[cinq];
       n = note[cinq];
     }
-    /** on injecte : ID, Menance, Badge Note */
+    /** on injecte : ID, Menace, Badge Note */
     injectionOwaspInfo(sept, r.a7, c, n);
 
     /* Détails A8 */
@@ -376,7 +376,7 @@ const remplissageOwaspInfo=function(idMaven) {
       c = couleur[cinq];
       n = note[cinq];
     }
-    /** on injecte : ID, Menance, Badge Note */
+    /** on injecte : ID, Menace, Badge Note */
     injectionOwaspInfo(huit, r.a8, c, n);
 
     /* Détails A9 */
@@ -400,7 +400,7 @@ const remplissageOwaspInfo=function(idMaven) {
       c = couleur[cinq];
       n = note[cinq];
     }
-    /** on injecte : ID, Menance, Badge Note */
+    /** on injecte : ID, Menace, Badge Note */
     injectionOwaspInfo(neuf, r.a9, c, n);
 
     /* Détails A10 */
@@ -424,14 +424,14 @@ const remplissageOwaspInfo=function(idMaven) {
       c = couleur[cinq];
       n = note[cinq];
     }
-    /** on injecte : ID, Menance, Badge Note */
+    /** on injecte : ID, Menace, Badge Note */
     injectionOwaspInfo(dix, r.a10, c, n);
   });
 };
 
 /**
  * [Description for remplissageHotspotInfo]
- * Récupération des informations sur les hotspots OWASP
+ * Récupération des informations sur les hotspot OWASP
  *
  * @param string idMaven
  *
@@ -486,14 +486,14 @@ const remplissageHotspotInfo=function(idMaven) {
 
 /**
 * [Description for injectionHotspotListe]
-* Fonction qui permet d'injecter dans la page les calcul des hotspots
+* Fonction qui permet d'injecter dans la page les calcul des hotspot
 *
 * @param string id
 * @param string formatage
 * @param string menace
 * @param float leTaux
 * @param string badge
-* @param integr laNote
+* @param integer laNote
 *
 * @return [type]
 *
@@ -511,7 +511,7 @@ $(`#h${id}`).html(i);
 * [Description for remplissageHotspotListe]
 * Fonction de remplissage du tableau avec les infos hotspot owasp A1-A10.
 *
-* @paramstring idMaven
+* @param string idMaven
 *
 * @return [type]
 *
@@ -655,7 +655,7 @@ const remplissageHotspotListe=function(idMaven) {
 
 /**
  * [Description for injectionHotspotDetails]
- * Injecte les ligne de détails pour les hotpsots
+ * Injecte les ligne de détails pour les hotspot
  *
  * @param mixed numero
  * @param string url
@@ -713,13 +713,13 @@ const injectionModule=function (module, total, taux, bc, zero){
       $('#autre').html(i);
       break;
     default:
-      sessionStorage.set('Owasp : ' `Oops !!!, je ne connais pas ${module}.`);
+      sessionStorage.set('Owasp : ' `Oups !!!, je ne connais pas ${module}.`);
   }
 };
 
 /**
  * [Description for remplissageHotspotDetails]
- * Affiche le tableau du détails des hotspots
+ * Affiche le tableau du détails des hotspot
  *
  * @param string idMaven
  *
@@ -751,7 +751,7 @@ const remplissageHotspotDetails=function(idMaven) {
     let vide, too, totalABC, zero='', bc;
     const serveurURL=$('#js-serveur').data('serveur');
 
-    if (r.details.menances===undefined || r['details']['menaces'].length == 0) {
+    if (r.details.menaces===undefined || r['details']['menaces'].length == 0) {
         /** On met ajour la répartition par module */
         vide = `<span class="stat-note">
         ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(0)}</span>
