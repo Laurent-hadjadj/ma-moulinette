@@ -153,10 +153,10 @@ CREATE TABLE historique (
   nombre_anomalie_info INTEGER NOT NULL, -- Nombre d'anomalies d'information
   nombre_anomalie_majeur INTEGER NOT NULL, -- Nombre d'anomalies majeures
   nombre_anomalie_mineur INTEGER NOT NULL, -- Nombre d'anomalies mineures
-  note_reliability varchar(4) NOT NULL, -- Note de fiabilité attribuée au projet
-  note_security varchar(4) NOT NULL, -- Note de sécurité attribuée au projet
-  note_sqale varchar(4) NOT NULL, -- Note SQALE attribuée au projet
-  note_hotspot varchar(4) NOT NULL, -- Note pour les hotspots de sécurité
+  note_reliability varchar(16) NOT NULL, -- Note de fiabilité attribuée au projet
+  note_security varchar(16) NOT NULL, -- Note de sécurité attribuée au projet
+  note_sqale varchar(16) NOT NULL, -- Note SQALE attribuée au projet
+  note_hotspot varchar(16) NOT NULL, -- Note pour les hotspots de sécurité
   hotspot_high INTEGER NOT NULL, -- Nombre de hotspots de sécurité de niveau élevé
   hotspot_medium INTEGER NOT NULL, -- Nombre de hotspots de sécurité de niveau moyen
   hotspot_low INTEGER NOT NULL, -- Nombre de hotspots de sécurité de niveau faible
