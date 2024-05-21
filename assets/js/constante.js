@@ -47,7 +47,7 @@ export const dateOptions = {
 export const dateOptionsShort = {year: 'numeric', month: 'numeric', day: 'numeric' };
 export const dateOptionsVeryShort = {year: '2-digit', month: 'numeric', day: 'numeric' };
 
-/** Tableau des notes sonarqube */
+/** Tableau des notes SonarQube */
 export const note = ['', 'A', 'B', 'C', 'D', 'E'];
 
 /** Tableau des couleurs pour les notes */

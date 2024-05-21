@@ -48,8 +48,8 @@ const afficheMessage=function(t){
 
 /**
   * [Description for sonarIsUp]
-  * Vérifie si le serveur sonarqube est UP
-  * Affiche la version du seveur
+  * Vérifie si le serveur SonarQube est UP
+  * Affiche la version du serveur
   *
   * @return void
   *
@@ -71,8 +71,8 @@ const sonarIsUp=async function() {
     if (t.status===http_404){
       message.message='La requête est incorrecte (Erreur 404).'
     }
-    if (t.status===http_500 || t.staus==='DOWN'){
-      message.message='État du serveur sonarqube : DOWN.'
+    if (t.status===http_500 || t.status==='DOWN'){
+      message.message='État du serveur SonarQube : DOWN.'
     }
     afficheMessage(message);
     return;
@@ -149,7 +149,7 @@ const miseAJourTags=function() {
 
 /**
   * [Description for miseAJourListeAsync]
-  * Fonctions asynchronnes (liste et profils)
+  * Fonctions asynchrones (liste et profils)
   * @return void
   *
   */
@@ -161,7 +161,7 @@ const miseAJourListeAsync= async function() {
   await miseAJourTags();
 };
 
-/********* Evenement *******/
+/********* Événement *******/
 
 /**
  * description
@@ -170,7 +170,7 @@ const miseAJourListeAsync= async function() {
 $('.refresh-bd').on('click', ()=> {
   sonarIsUp()
     .then((t)=> {
-      /** On regarde si le serveur sonarqube est disponible */
+      /** On regarde si le serveur SonarQube est disponible */
       if (t.code === 504 || t.code === http_400 || t.code=== http_404 || t.message === 'Internal Server Error') {
         /** l'URL n'a pas été trouvé */
         if (t.code=== http_404) {

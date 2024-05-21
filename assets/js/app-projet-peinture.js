@@ -60,7 +60,7 @@ export const remplissage=function(mavenKey) {
     dataType: 'json', data: JSON.stringify(data), contentType };
 
   $.ajax(optionsInfo).then(t=> {
-    /** La requête ajax a babasé */
+    /** La requête ajax a babaser */
     if (t.code === http_400){
         afficheMessage(t);
         sessionStorage.setItem('peinture', 'Erreur - récupération des informations de la version.');
@@ -106,7 +106,7 @@ export const remplissage=function(mavenKey) {
     dataType: 'json', data: JSON.stringify(data), contentType };
 
   $.ajax(optionsNoSonar).then(t=> {
-  /** La requête ajax a babasé */
+  /** La requête ajax a babaser */
   if (t.code === http_400){
     afficheMessage(t);
     sessionStorage.setItem('peinture', 'Erreur - récupération des alertes nosonar.');
@@ -128,13 +128,13 @@ export const remplissage=function(mavenKey) {
   });
 
 
-  /** On récupère les todo tags */
+  /** On récupère les to.do tags */
   const optionsTodo = {
     url: `${serveur()}/api/peinture/projet/todo`, type: 'POST',
     dataType: 'json', data: JSON.stringify(data), contentType };
 
   $.ajax(optionsTodo).then(t=> {
-  /** La requête ajax a babasé */
+  /** La requête ajax a babaser */
   if (t.code === http_400){
     afficheMessage(t);
     sessionStorage.setItem('peinture', 'Erreur - récupération de la liste des todos.');
@@ -191,7 +191,7 @@ export const remplissage=function(mavenKey) {
     dataType: 'json', data: JSON.stringify(data), contentType };
 
   $.ajax(optionsMesures).then(t=> {
-    /** La requête ajax a babasé */
+    /** La requête ajax a babaser */
     if (t.code === http_400){
       afficheMessage(t);
       sessionStorage.setItem('peinture', 'Erreur - récupération des mesures.');
@@ -214,7 +214,7 @@ export const remplissage=function(mavenKey) {
       $('#ratio-dette-technique').addClass('couleur-vert');
     }
     if (t.sqaleDebtRatio>30 && t.sqaleDebtRatio<=60){
-      /** La dette technique est importante, il faut absolument commnencer à la réduire */
+      /** La dette technique est importante, il faut absolument commencer à la réduire */
       $('#ratio-dette-technique').addClass('couleur-orange');
     }
     if (t.sqaleDebtRatio>60 && t.sqaleDebtRatio<=100){
@@ -386,7 +386,7 @@ export const remplissage=function(mavenKey) {
     t26.dataset.nombreAnomalieMajeur=t.major;
     t27.dataset.nombreAnomalieMineur=t.minor;
 
-    /** On récupère les notes sonarqube pour la version courante */
+    /** On récupère les notes SonarQube pour la version courante */
     let couleur1, couleur2, couleur3 = '';
     const tNotes = ['', 'A', 'B', 'C', 'D', 'E'];
 
@@ -456,7 +456,7 @@ export const remplissage=function(mavenKey) {
     });
 
     /**
-     * On récupère les hotspots.
+     * On récupère les hotspot.
      */
     const optionsHotspots = {
       url: `${serveur()}/api/peinture/projet/hotspots`, type: 'POST',
@@ -506,7 +506,7 @@ export const remplissage=function(mavenKey) {
           dataType: 'json', data: JSON.stringify(data), contentType };
 
     $.ajax(optionsAnomalieDetails).then(t=> {
-      /** La requête ajax a babasé */
+      /** La requête ajax a babaser */
       if (t.code === http_400){
         afficheMessage(t);
         sessionStorage.setItem('peinture', 'Erreur - récupération du détail des anomalies.');
@@ -574,7 +574,7 @@ export const remplissage=function(mavenKey) {
 
 /**
  * [Description for afficheHotspotDetails]
- * On récupére la répartition des hotspots par sévérité
+ * On récupère la répartition des hotspot par sévérité
  * http://{url}/api/peinture/projet/hotspot/details{meven_key}
  *
  * @param string mavenKey
@@ -585,7 +585,7 @@ export const remplissage=function(mavenKey) {
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 export const afficheHotspotDetails=function (mavenKey){
-  /* On récupère la répartition des hotspots. */
+  /* On récupère la répartition des hotspot. */
   const data = { maven_key: mavenKey, mode: 'null' };
   const options = {
     url: `${serveur()}/api/peinture/projet/hotspots/details`, type: 'POST',

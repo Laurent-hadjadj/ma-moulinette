@@ -146,7 +146,7 @@
 
       /**
        * [Description for reverse]
-       *  Fonction d'invertion d'une sequence de caractères
+       *  Fonction d’invention d'une sequence de caractères
        *
        * @param {string} str
        *
@@ -259,7 +259,7 @@
       resultat['NombreSymbole']=NombreSymbole*6;
 
       /** Nombre de midChar +(n*2) */
-      // le premier caractere ne peut pas être un chiffre : a1xxxxx =0
+      // le premier caractère ne peut pas être un chiffre : a1xxxxx =0
       // un ou des chiffres doivent être encadré par des lettres : a1n1a =2
       // si on a un groupe de chiffre encadré on compte le nombre de chiffre : a11n1a = 3
       let nombreAuMilieu=0;
@@ -280,7 +280,7 @@
       }
 
       /** Nombre de midChar +(n*2) */
-      // le premier caractere ne peut pas être un chiffre : a1xxxxx =0
+      // le premier caractère ne peut pas être un chiffre : a1xxxxx =0
       // un ou des chiffres doivent être encadré par des lettres : a1n1a =2
       // si on a un groupe de chiffre encadré on compte le nombre de chiffre : a11n1a = 3
       let symboleAuMilieu=0;
@@ -483,7 +483,7 @@
 
     /**
      * [Description for calculateColorFromPercentage]
-     * Calcule la barre de couluers en fonction du pourcentage.
+     * Calcule la barre de couleurs en fonction du pourcentage.
      *
      * @param {number} perc Le pourcentage de solidité du mot de passe.
      *
@@ -552,7 +552,7 @@
 
     /**
      * [Description for init]
-     * Initialise le plugin jquery, créé et attache les différents évenements.
+     * Initialise le plugin jquery, créé et attache les différents événements.
      * @return {Password} L'instance de Password
      *
      * Created at: 12/01/2024 14:23:14 (Europe/Paris)

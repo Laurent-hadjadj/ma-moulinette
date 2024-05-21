@@ -33,7 +33,7 @@ import {serveur} from './properties.js';
 
 /**
  * [Description for match]
- * Propriétés du selecteur de recherche.
+ * Propriétés du sélecteur de recherche.
  *
  * @param mixed params
  * @param mixed data
@@ -61,7 +61,7 @@ const match=function(params, data) {
 
 /**
  * [Description for selectProjet]
- * Création du selecteur de projet.
+ * Création du sélecteur de projet.
  *
  * @return [type]
  *
@@ -151,7 +151,7 @@ $('.js-preference-ajouter-favoris-enable').on('click', ()=> {
   }
 
   if(nombreEquipeChecked===0) {
-    const message="<strong>[Préference-004]</strong> Vous devez choisir au moins une équipe !";
+    const message="<strong>[Préférence-004]</strong> Vous devez choisir au moins une équipe !";
     /** On affiche un message */
     if ($('#callout-message').hasClass('hide')) {
       $('#callout-message').addClass('alert');
@@ -167,7 +167,6 @@ $('.js-preference-ajouter-favoris-enable').on('click', ()=> {
       $('#container-nom-liste-projet').addClass('hide');
     }
     $('.js-message').html(message);
-    return;
   } else {
     /* On met à jour la liste des projets disponibles */
     selectProjet();

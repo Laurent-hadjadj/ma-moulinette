@@ -78,7 +78,7 @@ const shuffle=function(a) {
  * [Description for palette]
  * Renvoie une nouvelle palette de couleur
  *
- * @return [type]
+ * @return void
  *
  * Created at: 19/12/2022, 22:09:07 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -148,7 +148,7 @@ const dessineMoiUnMouton=function(label, dataset) {
  * [Description for log]
  * Affiche la log.
  *
- * @param mixed txt
+ * @param string txt
  *
  * @return [type]
  *
@@ -166,7 +166,7 @@ const log=function(txt) {
  * [Description for ditBonjour]
  * Initialisation de la log.
  *
- * @return [type]
+ * @return void
  *
  * Created at: 19/12/2022, 22:10:52 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -213,10 +213,10 @@ const match=function(params, data) {
 
 /**
  * [Description for selectProjet]
- * Création du selecteur de projet.
+ * Création du sélecteur de projet.
  * http://{url}/api/liste/projet
  *
- * @return [type]
+ * @return void
  *
  * Created at: 19/12/2022, 22:11:56 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -450,7 +450,7 @@ const projetOwasp=function(mavenKey) {
 
 /**
  * [Description for projetHotspot]
- * Traitement des hotspots de type owasp pour sonarqube 8.9 et >
+ * Traitement des hotspots de type owasp pour SonarQube 8.9 et >
  * On récupère les Hotspot a examiner. Les clés sont uniques
  * (i.e. on ne se base pas sur les tags).
  * http://{url}/api/projet/hotspot
@@ -589,7 +589,7 @@ const projetAnomalieDetails=function(mavenKey) {
 
 /**
  * [Description for projetHotspotOwasp]
- * Traitement des hotspot de type owasp pour sonarqube 8.9 et >
+ * Traitement des hotspot de type owasp pour SonarQube 8.9 et >
  * Pour chaque faille OWASP on récupère les information. Il est possible d'avoir des doublons
  * (i.e. a cause des tags).
  * http://{url}/api/projet/hotspot/owasp
@@ -643,7 +643,7 @@ const projetHotspotOwasp=function(mavenKey, owasp) {
 
 /**
  * [Description for projetHotspotOwaspDetails]
- * On enregistre le détails des hostspot owasp
+ * On enregistre le détails des hotspot owasp
  * http://{url}/api/projet/hotspot/details
  *
  * Phase 10
@@ -782,7 +782,7 @@ const projetTodo=function(mavenKey){
 
 /**
  * [Description for finCollecte]
- * Affiche un messag de fin de collecte
+ * Affiche un message de fin de collecte
  *
  * @return response
  *
@@ -805,7 +805,7 @@ const finCollecte=function(){
 
 /**
  * [Description for afficheMesProjets]
- * On récupére la liste des projets et des favoris de l'utilisateur
+ * On récupère la liste des projets et des favoris de l'utilisateur
  * http://{url}/api/projet/mes-applications/liste
  *
  * @return response
@@ -951,7 +951,7 @@ const afficheMesProjets=function() {
           $('.js-tableau-suivi').trigger('click');
         });
 
-        /* On gére le click sur le bouton C (Cosui) */
+        /* On gère le click sur le bouton C (COSUI) */
         $('.js-liste-cosui').on('click', e => {
           /* On récupère la valeur de l'ID */
           const id = e.currentTarget.id;
@@ -984,7 +984,7 @@ const afficheMesProjets=function() {
           $('.js-analyse-owasp').trigger('click');
         });
 
-        /* On gére le click sur le bouton RM (afficher le rapport de Répartition par Module) */
+        /* On gère le click sur le bouton RM (afficher le rapport de Répartition par Module) */
         $('.js-liste-repartition-module').on('click', e => {
 
           /* On récupère la valeur de l'ID */
@@ -1033,7 +1033,7 @@ $('.js-analyse').on('click', function () {
   }
 
   log(' - INFO : On lance la collecte...');
-  /* on bloque le bouton afficher les resultats. */
+  /* on bloque le bouton afficher les résultats. */
   $('.js-affiche-resultat').removeClass('affiche-resultat-enabled');
   $('.js-affiche-resultat').addClass('affiche-resultat-disabled');
 
@@ -1090,7 +1090,7 @@ $('.js-analyse').on('click', function () {
     finCollecte();
   }
 
-  /* On appelle la fonction de récupèration des sévérités pour les VULNERABILITY. */
+  /* On appelle la fonction de récupération des sévérités pour les VULNERABILITY. */
   fnAsync();
 
   /* on active le bouton pour afficher les infos du projet. */
@@ -1321,14 +1321,14 @@ $('.js-enregistrement').on('click', () => {
 
 /**
  * description
- * On génére la route et on ouvre la page des tableau de suivi
+ * On génère la route et on ouvre la page des tableau de suivi
  */
 $('.js-tableau-suivi').on('click', () => {
   if ($('select[name="projet"]').val() !=='' && $('select[name="projet"]').val() !=='TheID'){
     const apiMaven = $('#select-result').text().trim();
     window.location.href='/suivi?mavenKey='+apiMaven+'&mode=null';
     } else {
-    log(' - ERROR - Vous devez chosir un projet dans la liste !! !');
+    log(' - ERROR - Vous devez choisir un projet dans la liste !! !');
     }
 });
 
@@ -1341,13 +1341,13 @@ $('.js-cosui').on('click', () => {
     const apiMaven = $('#select-result').text().trim();
     window.location.href='/projet/cosui?mavenKey='+apiMaven;
     } else {
-    log(' - ERROR - Vous devez chosir un projet dans la liste !! !');
+    log(' - ERROR - Vous devez choisir un projet dans la liste !! !');
     }
 });
 
 /**
  * description
- * On génére la route et on ouvre la page de répartition des indicateurs par module
+ * On génère la route et on ouvre la page de répartition des indicateurs par module
  */
   $('.js-analyse-owasp').on('click', () => {
     if ($('select[name="projet"]').val() !=='' && $('select[name="projet"]').val() !=='TheID'){
@@ -1359,20 +1359,20 @@ $('.js-cosui').on('click', () => {
       /** On ne passe plus de paramètre dans le get */
       window.location.href='/owasp';
     } else {
-      log(' - ERROR - [OWASP] Vous devez chosir un projet dans la liste !! !');
+      log(' - ERROR - [OWASP] Vous devez choisir un projet dans la liste !! !');
       }
   });
 
 /**
  * description
- * On génére la route et on ouvre la page de répartition des indicateurs par module
+ * On génère la route et on ouvre la page de répartition des indicateurs par module
  */
 $('.js-repartition-module').on('click', () => {
   if ($('select[name="projet"]').val() !=='' && $('select[name="projet"]').val() !=='TheID'){
     const apiMaven = $('#select-result').text().trim();
     window.location.href='/projet/repartition?mavenKey='+apiMaven;
   } else {
-    log(' - ERROR - [Répartition] Vous devez chosir un projet dans la liste !! !');
+    log(' - ERROR - [Répartition] Vous devez choisir un projet dans la liste !! !');
     }
 });
 

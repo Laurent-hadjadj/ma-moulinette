@@ -52,7 +52,7 @@ import { contentType, http_200, http_201, http_202, http_400, http_404, chartCol
 const callboxInformation='<div id="js-message" class="callout alert-callout-border primary" data-closable="slide-out-right" role="alert"><p class="open-sans color-bleu padding-right-1"><span class="lead"></span>Information ! </strong>';
 const callboxSuccess='<div id="js-message" class="callout alert-callout-border success" data-closable="slide-out-right" role="alert"><span class="open-sans color-bleu padding-right-1"<span class="lead">Bravo ! </span>';
 const callboxWarning='<div id="js-message" class="callout alert-callout-border warning" data-closable="slide-out-right" role="alert"><span class="open-sans padding-right-1 color-bleu"><span class="lead">Attention ! </span>';
-const callboxError='<div id="js-message" class="callout alert-callout-border alert" data-closable="slide-out-right"><span class="open-sans padding-right-1 color-bleu"><span class="lead">Ooups ! </span>';
+const callboxError='<div id="js-message" class="callout alert-callout-border alert" data-closable="slide-out-right"><span class="open-sans padding-right-1 color-bleu"><span class="lead">Oups ! </span>';
 const callboxFermer='</span><button class="close-button" aria-label="Fermer la fenêtre" type="button" data-close><span aria-hidden="true">&times;</span></button></div>';
 
 /**
@@ -172,7 +172,7 @@ dessineMoiUnMouton(
 
 /**
 * [Description for selectVersion]
-* Création de la liste des projets pour le selecteur.
+* Création de la liste des projets pour le sélecteur.
 *
 * @param string mavenKey
 *
@@ -212,7 +212,7 @@ const selectVersion=async function(mavenKey) {
 $('.js-ajouter-analyse').on('click', function () {
   const mavenKey=$('#js-nom').data('maven');
 
-  /** Si la clé mavenkey n'est pas défini on pouvre pas la fenêtre modale */
+  /** Si la clé mavenkey n'est pas défini on ouvre pas la fenêtre modale */
   if (mavenKey===null || mavenKey==='') {
     return;
   }
@@ -231,10 +231,10 @@ $('#fermer-choisir-analyse').on('click', ()=>{
 
 /**
  * description
- * On charge les données de la version selectionnée depuis la fenetre ajouté
+ * On charge les données de la version sélectionnée depuis la fenêtre ajouté
  */
 $('select[name="version"]').on('change', function () {
-  /** si la valeur selectionné est TheId alors on sort */
+  /** si la valeur sélectionné est TheId alors on sort */
   if ($('select[name="version"]')==='TheId'){
     return;
   }
@@ -376,14 +376,14 @@ $('select[name="version"]').on('change', function () {
 */
 $('.js-enregistrer-analyse').on('click', ()=>{
   const selectionVersion=$('select[name="version"]').val();
-  /** Si le projet n'a pas été selectionné */
+  /** Si le projet n'a pas été sélectionné */
   if (selectionVersion==='TheID') {
     const message='Vous devez choisir un projet !';
     $('#message-ajout-projet').html(callboxError+message+callboxFermer);
     return;
   }
 
-  /** Si le projet n'existe plus dans sonarqube 'error 404' */
+  /** Si le projet n'existe plus dans SonarQube 'error 404' */
   if ($('#js-message').hasClass('error')===true) {
     return;
   }
@@ -513,7 +513,7 @@ $('.js-modifier-analyse').on('click', function () {
 
   $.ajax(options).then(t => {
 
-    /* On gére le résultat de la requête */
+    /* On gère le résultat de la requête */
     if (t.code===http_200) {
       const message=`La liste des versions a été chargée correctement.`;
       $('#message').html(callboxInformation+message+callboxFermer);
@@ -538,7 +538,7 @@ $('.js-modifier-analyse').on('click', function () {
       switchFavori+='</label></div>';
 
       /* On défini le switch pour la référence */
-      switchReference='<div class="siwtch js-switch-reference">';
+      switchReference='<div class="switch js-switch-reference">';
       switchReference+=`<input class="switch-input" id="switch-reference-${ligne}" type="radio" name="switch-reference">`;
       switchReference+=`<label class="switch-paddle" for="switch-reference-${ligne}">`;
       switchReference+='<span class="show-for-sr">Projet de référence</span>';
@@ -569,7 +569,7 @@ $('.js-modifier-analyse').on('click', function () {
       }
     });
 
-    /* On gére le changement de favori */
+    /* On gère le changement de favori */
     $('[id^=switch-favori-]').on('click', e =>{
       /** on récupère la version et la date */
       const id=$(e.currentTarget).attr('id');
@@ -599,7 +599,7 @@ $('.js-modifier-analyse').on('click', function () {
          */
         $.ajax(optionsFavori).then((t) => {
           if (t.code===http_200) {
-            const message='Mise à jour du favori efféctuée.';
+            const message='Mise à jour du favori effectuée.';
             $('#message').html(callboxSuccess+message+callboxFermer);
           } else if (t.code===http_201) {
             const message=`Cette version a été supprimé des favoris.`;
@@ -611,7 +611,7 @@ $('.js-modifier-analyse').on('click', function () {
         });
     });
 
-    /* On gére le changement de reference */
+    /* On gère le changement de reference */
     $('[id^=switch-reference-]').on('click', e=>{
       /* on récupère la version et la date */
       const id=$(e.currentTarget).attr('id');
@@ -634,7 +634,7 @@ $('.js-modifier-analyse').on('click', function () {
       }
 
       /**
-       * On appel l'API de mise àjour de la version de référence
+       * On appel l'API de mise à jour de la version de référence
        */
       const dataReference = { maven_key: mavenKey, initial, version, date_version: date, mode:'null' };
       const optionsReference = {
