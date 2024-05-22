@@ -15,6 +15,9 @@ parameters:
     sonar.profiles: '%env(SONAR_PROFILES)%'
     sonar.organization: '%env(SONAR_ORGANIZATION)%'
     nombre.favori: '%env(NOMBRE_FAVORI)%'
+    sonar.activite.token: '%env(SONAR_ACTIVITE_TOKEN)%'
+    sonar.activite.user: '%env(SONAR_ACTIVITE_USER)%'
+    sonar.activite.password: '%env(SONAR_ACTIVITE_PASSWORD)%'
 
     # Gestion des projets et profils
     maj.projet: '%env(MAJ_PROJET)%'
