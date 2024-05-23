@@ -15,6 +15,7 @@ namespace App\Controller\Owasp;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
+use Doctrine\DBAL\Connection;
 
 class OwaspController extends AbstractController
 {
@@ -28,13 +29,22 @@ class OwaspController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/owasp', name: 'owasp')]
-    public function index()
+    public function index(Connection $connection)
     {
+        // Récupérer les données de l'OWASP 2017
+        $owasp2017 = $connection->fetchAllAssociative('SELECT * FROM owasp_top10 WHERE year = 2017');
+        
+        // Récupérer les données de l'OWASP 2021
+        $owasp2021 = $connection->fetchAllAssociative('SELECT * FROM owasp_top10 WHERE year = 2021');
+
         return $this->render(
             'owasp/index.html.twig',
             [
                 "serveur" => $this->getParameter("sonar.url"),
-                "version" => $this->getParameter("version"), "dateCopyright" => \date("Y")
+                "version" => $this->getParameter("version"),
+                "dateCopyright" => \date("Y"),
+                "owasp2017" => $owasp2017,
+                "owasp2021" => $owasp2021,
             ]
         );
     }

@@ -505,6 +505,15 @@ CREATE TABLE utilisateur (
   CONSTRAINT utilisateur_pkey PRIMARY KEY (id)
 );
 
+-- Création de la table Owasp_Top10
+
+CREATE TABLE owasp_top10 (
+  id INTEGER NOT NULL DEFAULT nextval('owasp_top10_id_seq'), -- Identifiant unique
+  year INT NOT NULL,
+  category VARCHAR(255) NOT NULL, -- Codes comme a1, a2, etc.
+  description TEXT NOT NULL -- Description de la vulnérabilité
+);
+
 -- Création des sequences :
 -- Activite
 CREATE SEQUENCE activite_id_seq START WITH 1 INCREMENT BY 1;

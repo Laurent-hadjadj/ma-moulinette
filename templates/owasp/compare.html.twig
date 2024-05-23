@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fr">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Comparaison des Référentiels OWASP</title>
+		{{ include('head.html.twig') }}
+		{% block stylesheets %}
+			{{ encore_entry_link_tags('owasp') }}
+		{% endblock %}
+		<style>
+			body
+			{
+				font-family: 'Open Sans', sans-serif;
+				background-color: #f4f4f4;
+				margin: 0;
+				padding: 0;
+			}
+			.comparison-table
+			{
+				width: 90%;
+				margin: 20px auto;
+				border-collapse: collapse;
+				background-color: #fff;
+				box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+				border-radius: 8px;
+				overflow: hidden;
+			}
+			.comparison-table th,
+			.comparison-table td
+			{
+				padding: 15px;
+				text-align: left;
+				border-bottom: 1px solid #ddd;
+			}
+			.comparison-table th
+			{
+				background-color: #0056b3;
+				color: white;
+				font-size: 1.1em;
+			}
+			.comparison-table tr:nth-child(even)
+			{
+				background-color: #f9f9f9;
+			}
+			.comparison-table tr:hover
+			{
+				background-color: #f1f1f1;
+			}
+			.category-title
+			{
+				font-weight: bold;
+				color: #fff;
+			}
+			.description
+			{
+				color: #333;
+			}
+			.owasp-2017-1
+			{
+				background-color: #e74c3c;
+			} /* Rouge */
+			.owasp-2017-2
+			{
+				background-color: #f39c12;
+			} /* Orange */
+			.owasp-2017-3
+			{
+				background-color: #f1c40f;
+			} /* Jaune */
+			.owasp-2017-4
+			{
+				background-color: #2ecc71;
+			} /* Vert */
+			.owasp-2017-5
+			{
+				background-color: #1abc9c;
+			} /* Turquoise */
+			.owasp-2017-6
+			{
+				background-color: #3498db;
+			} /* Bleu */
+			.owasp-2017-7
+			{
+				background-color: #9b59b6;
+			} /* Violet */
+			.owasp-2017-8
+			{
+				background-color: #34495e;
+			} /* Gris foncé */
+			.owasp-2017-9
+			{
+				background-color: #95a5a6;
+			} /* Gris clair */
+			.owasp-2017-10
+			{
+				background-color: #e67e22;
+			} /* Orange foncé */
+
+			.owasp-2021-1
+			{
+				background-color: #e74c3c;
+			} /* Rouge */
+			.owasp-2021-2
+			{
+				background-color: #f39c12;
+			} /* Orange */
+			.owasp-2021-3
+			{
+				background-color: #f1c40f;
+			} /* Jaune */
+			.owasp-2021-4
+			{
+				background-color: #2ecc71;
+			} /* Vert */
+			.owasp-2021-5
+			{
+				background-color: #1abc9c;
+			} /* Turquoise */
+			.owasp-2021-6
+			{
+				background-color: #3498db;
+			} /* Bleu */
+			.owasp-2021-7
+			{
+				background-color: #9b59b6;
+			} /* Violet */
+			.owasp-2021-8
+			{
+				background-color: #34495e;
+			} /* Gris foncé */
+			.owasp-2021-9
+			{
+				background-color: #95a5a6;
+			} /* Gris clair */
+			.owasp-2021-10
+			{
+				background-color: #e67e22;
+			} /* Orange foncé */
+		</style>
+	</head>
+	<body>
+		<table class="comparison-table">
+			<thead>
+				<tr>
+					<th>OWASP 2017</th>
+					<th>OWASP 2021</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for i in 0..9 %}
+					<tr>
+						<td class="owasp-2017-{{ i+1 }}">
+							{% if owasp2017[i] is defined %}
+								<div class="category-title">{{ owasp2017[i].category }}</div>
+								<div class="description">{{ owasp2017[i].description }}</div>
+								<div>Position:
+									{{ owasp2017[i].position }}</div>
+							{% endif %}
+						</td>
+						<td class="owasp-2021-{{ i+1 }}">
+							{% if owasp2021[i] is defined %}
+								<div class="category-title">{{ owasp2021[i].category }}</div>
+								<div class="description">{{ owasp2021[i].description }}</div>
+								<div>Position:
+									{{ owasp2021[i].position }}</div>
+							{% endif %}
+						</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		{% block javascripts %}
+			{{ encore_entry_script_tags('owasp') }}
+		{% endblock %}
+	</body>
+</html>
