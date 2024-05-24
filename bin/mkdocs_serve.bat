@@ -19,7 +19,7 @@ for %%d in (C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (
 @mode con: cols=160 lines=70
 @color 0f
 @CHCP 65001
-@set VERSION=2014-05-24 v1.3.0
+@set VERSION=2024-05-24 v1.1.0
 @title Laurent HADJADJ - version %VERSION%
 @cls
 @echo ".. __  __             __  __             _              _   _       "
@@ -32,36 +32,29 @@ for %%d in (C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (
 @echo    https://github.com/Laurent-hadjadj/ma-moulinette
 @echo    © 2024 - CC BY-SA-NC 4.0
 @echo:
-
-@rem  Laurent HADJADJ - 2023-02-13 v1.0.0
-@rem  Laurent HADJADJ - 2024-02-11 v1.1.0
-@rem  Laurent HADJADJ - 2024-05-13 v1.2.0 - Ajout du lecteur
-@rem  Laurent HADJADJ - 2024-05-24 v1.3.0 - tests du lecteur par défaut
+@rem Laurent HADJADJ - 2022-01-25 v1.0.0 - Création du script
+@rem Laurent HADJADJ - 2024-05-24 v1.1.0 - tests du lecteur par défaut
 
 @echo:
-@echo Env       	: dev
-@echo lecteur     : %LECTEUR%
-@echo version:    : %VERSION%
-@echo Symfony   	: 6.4.7
-@echo Symfony-cli : 5.8.2
-@echo Php       	: 8.3.0-NTS
-@echo nodejs    	: 18.17.1
+@echo Env           : dev
+@echo lecteur       : %LECTEUR%
+@echo version:      : %VERSION%
+@echo python        : 3.12.3
+
 @echo:
-
-@echo Génére le rapport de couverture des tests unitaires.
-@echo Le rapport se trouve dans le dossier ma-moulinette/reports
-
-@set app=%lecteur%\environnement
-@set php=%app%\0_toolz\php-8.3.0-NTS\
-@set nodejs=%app%\0_toolz\node-18.17.1\
+@set app=%LECTEUR%\environnement
+@set PYTHON_PATH=%app%\0_toolz\python-3.12.3-embed\
+@set PIP_PATH=%app%\0_toolz\python-3.12.3-embed\Scripts\
 
 @set HTTP_PROXY=
 @set HTTPS_PROXY=
 
-@set PATH=%app%\symfony-cli\current;%php%;%nodejs%;%PATH%
+@echo HTTP_PROXY : %HTTP_PROXY%
+@echo HTTPS_PROXY : %HTTPS_PROXY%
 
-@cd %app%\ma-moulinette
+@set PATH=%PYTHON_PATH%;%PIP_PATH%;%PATH%
 
-php -dxdebug.mode=coverage bin/phpunit --coverage-clover=reports/phpunit-coverage-result.xml --coverage-html=reports --log-junit=reports/phpunit-execution-result.xml
+@cd %app%\ma-moulinette\mkDocs
+@python -m mkdocs serve
 
 :exit
