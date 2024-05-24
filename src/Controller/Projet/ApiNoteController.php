@@ -137,7 +137,7 @@ class ApiNoteController extends AbstractController
         /** On construit un objet date */
         $date = new DateTime();
         $date->setTimezone(new DateTimeZone(static::$europeParis));
-        $tempoDate = $date->format(static::$dateFormat);
+        $dateEnregistrement = $date->format(static::$dateFormat);
 
         /** On supprime les notes pour la maven_key. */
         $map=['maven_key'=>$data->maven_key, 'type'=>$data->type];
@@ -153,7 +153,8 @@ class ApiNoteController extends AbstractController
 
         /** Enregistrement des nouvelles valeurs. */
         $note=$result['component']['measures'][0]['value'];
-        $map=['maven_key'=>$data->maven_key, 'type'=>$data->type, 'value'=>$note, 'date_enregistrement'=>$tempoDate];
+        $dateNote=$result['component']['measures'][0]['date'];
+        $map=['maven_key'=>$data->maven_key, 'type'=>$data->type, 'date'=> new \DateTime($dateNote), 'value'=>$note, 'date_enregistrement'=>$dateEnregistrement];
         $request=$notesEntity->InsertNotes($map);
 
         if ($data->type == 'reliability') {
