@@ -13,24 +13,29 @@
 
 namespace App\Service;
 
-/** Gestion du journal d'activité */
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
-
-/** Rotation des logs */
 use Cesargb\Log\Rotation;
 use Cesargb\Log\Exceptions\RotationFailed;
 
 /**
- * [Description IsValideMavenKey]
+ * [Description FileLogger]
  */
 class FileLogger
 {
+    private string $path;
+
+    public function __construct(private ParameterBagInterface $params)
+    {
+        $this->params = $params;
+        $this->path = $this->params->get('kernel.project_dir') . $this->params->get('path.audit');
+    }
+
+
     /**
      * [Description for logrotate]
      * Journalisation des demandes de traitements différés.
-     *
-     * @param string $path
      *
      * @return void
      *
@@ -38,13 +43,11 @@ class FileLogger
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function logrotate($path): void
+    public function logrotate(): void
     {
-        /* On initialise le journal des traces */
         $filesystem = new Filesystem();
-        /* Le dossier d'audit est présent */
-        if ($filesystem->exists($path)) {
-            /** Rotation des logs */
+
+        if ($filesystem->exists($this->path)) {
             $rotation = new Rotation([
                 'files' => 5,
                 'compress' => true,
@@ -54,22 +57,22 @@ class FileLogger
                 'catch' => function (RotationFailed $exception) {},
                 'finally' => function ($message, $filenameTarget) {},
             ]);
-        }
 
-        /** on récupère les logs */
-        $finder = new Finder();
-        $finder->files()->in($path)->depth(0)->sortByName();
-        foreach ($finder as $file) {
-            $rotation->rotate($file->getPathname());
+            $finder = new Finder();
+            $finder->files()->in($this->path)->depth(0)->sortByName();
+
+            foreach ($finder as $file) {
+                $rotation->rotate($file->getPathname());
+            }
         }
     }
 
     /**
-     * [Description for information]
+     * [Description for log]
      * Ajoute un journal de traitements différés pour un portefeuille.
      *
      * @param string $portefeuille
-     * @param mixed $log
+     * @param string $log
      *
      * @return void
      *
@@ -77,19 +80,18 @@ class FileLogger
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function information($path, $portefeuille, $log): int
+    public function log(string $portefeuille, string $log): int
     {
-        /* On initialise le journal des traces */
         $filesystem = new Filesystem();
-        /* Le dossier d'audit est présent */
-        if ($filesystem->exists($path)) {
+
+        if ($filesystem->exists($this->path)) {
             $name = preg_replace('/\s+/', '_', $portefeuille);
-            $fichier = "$path\manuel_{$name}.log";
-            $filesystem->appendToFile($fichier, $log, true);
+            $filePath = $this->path . "/manuel_{$name}.log";
+            $filesystem->appendToFile($filePath, $log);
+            return 200;
         } else {
             return 404;
         }
-        return 200;
     }
 
 }
