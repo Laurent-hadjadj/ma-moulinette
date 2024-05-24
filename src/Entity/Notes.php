@@ -41,14 +41,6 @@ class Notes
     private $type;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
-        nullable: false,
-        options: ['comment' => 'Date de la note']
-    )]
-    #[Assert\NotNull]
-    private $date;
-
-    #[ORM\Column(
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Valeur de la note']
@@ -92,19 +84,6 @@ class Notes
         return $this->type;
     }
 
-    /**
-     * [Description for getDate]
-     *
-     * @return \DateTimeInterface|null
-     *
-     * Created at: 02/01/2023, 18:04:48 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getDate(): ?\DateTimeInterface
-    {
-        return $this->date;
-    }
 
     /**
      * [Description for getValue]
@@ -173,18 +152,6 @@ class Notes
     public function setType($type)
     {
         $this->type = $type;
-
-        return $this;
-    }
-
-    /**
-     * Set the value of date
-     *
-     * @return  self
-     */
-    public function setDate($date)
-    {
-        $this->date = $date;
 
         return $this;
     }
