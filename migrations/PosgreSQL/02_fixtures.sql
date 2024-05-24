@@ -2,9 +2,11 @@
 ####################################################
 ##                                                ##
 ##         Données d'initialisation du projet     ##
-##               V1.0.0 - 14/05/2024              ##
+##               V1.0.1 - 22/05/2024              ##
 ##                                                ##
 ####################################################*/
+
+--- 2024-05-22 : Laurent HADJADJ - Modification du nom de l'équipe -> ["AUCUNE"] en AUCUNE
 
 BEGIN;
 
@@ -68,6 +70,6 @@ VALUES
 
 -- ## Ajout de l'équipe par défaut
 INSERT INTO equipe (titre, description, date_enregistrement)
-VALUES ('["AUCUNE"]', 'Personne ne m''aime !', '1980-01-01 00:00:00');
+VALUES ('AUCUNE', 'Personne ne m''aime !', '1980-01-01 00:00:00');
 
 COMMIT;

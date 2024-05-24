@@ -2,9 +2,11 @@
 ####################################################
 ##                                                ##
 ##         Création des tables et des objets      ##
-##               V1.2.0 - 14/05/2024              ##
+##               V1.2.1 - 22/05/2024              ##
 ##                                                ##
 ####################################################*/
+
+-- 22/05/2024 : Laurent HADJADJ - Suprresion des ", modification de la table notes (ajout du clé primaire unique et suppression de l'attribut date.
 
 -- Création du schema
 CREATE SCHEMA IF NOT EXISTS ma_moulinette;
@@ -59,7 +61,7 @@ CREATE TABLE anomalie (
 CREATE TABLE anomalie_details (
   id INTEGER NOT NULL, -- Identifiant unique pour les détails de l'anomalie
   maven_key varchar(255) NOT NULL, -- Clé Maven unique identifiant le projet
-  "name" varchar(128) NOT NULL, -- Nom de l'anomalie
+  name varchar(128) NOT NULL, -- Nom de l'anomalie
   bug_blocker INTEGER NOT NULL, -- Nombre de bugs bloquants
   bug_critical INTEGER NOT NULL, -- Nombre de bugs critiques
   bug_info INTEGER NOT NULL, -- Nombre de bugs d'information
@@ -126,7 +128,7 @@ CREATE TABLE equipe (
 
 CREATE TABLE historique (
   maven_key varchar(255) NOT NULL, -- Clé Maven unique identifiant le projet
-  "version" varchar(32) NOT NULL, -- Version du projet dans l'historique
+  version varchar(32) NOT NULL, -- Version du projet dans l'historique
   date_version varchar(128) NOT NULL, -- Date de la version du projet
   nom_projet varchar(128) NOT NULL, -- Nom du projet associé à cette version
   version_release INTEGER NOT NULL, -- Indicateur de release pour la version spécifique
@@ -186,7 +188,7 @@ CREATE TABLE historique (
 CREATE TABLE hotspot_details (
   id INTEGER NOT NULL, -- Identifiant unique pour chaque détail de hotspot
   maven_key varchar(255) NOT NULL, -- Clé Maven unique identifiant le projet
-  "version" varchar(32) NOT NULL, -- Version du détail de hotspot
+  version varchar(32) NOT NULL, -- Version du détail de hotspot
   date_version timestamp(0) NOT NULL, -- Date de la version du détail de hotspot
   severity varchar(8) NOT NULL, -- Sévérité du hotspot
   niveau INTEGER NOT NULL, -- Niveau de risque du hotspot
@@ -196,9 +198,9 @@ CREATE TABLE hotspot_details (
   autre INTEGER NOT NULL, -- Autres implémentations associées au hotspot
   file varchar(255) NOT NULL, -- Fichier associé au hotspot
   line INTEGER NOT NULL, -- Ligne du fichier où se situe le hotspot
-  "rule" varchar(255) NOT NULL, -- Règle associée au hotspot
+  rule varchar(255) NOT NULL, -- Règle associée au hotspot
   message varchar(255) NOT NULL, -- Message descriptif du hotspot
-  "key" varchar(32) NOT NULL, -- Clé unique du hotspot
+  key varchar(32) NOT NULL, -- Clé unique du hotspot
   date_enregistrement timestamp(0) NOT NULL, -- Date d'enregistrement du détail de hotspot
   CONSTRAINT hotspot_details_pkey PRIMARY KEY (id)
 );
@@ -208,7 +210,7 @@ CREATE TABLE hotspot_details (
 CREATE TABLE hotspot_owasp (
   id INTEGER NOT NULL, -- Identifiant unique pour chaque hotspot OWASP
   maven_key varchar(255) NOT NULL, -- Clé Maven du hotspot OWASP
-  "version" varchar(32) NOT NULL, -- Version du hotspot OWASP
+  version varchar(32) NOT NULL, -- Version du hotspot OWASP
   date_version timestamp(0) NOT NULL, -- Date de la version du hotspot OWASP
   menace varchar(8) NOT NULL, -- Menace évaluée du hotspot OWASP
   probability varchar(8) NOT NULL, -- Probabilité du hotspot OWASP
@@ -223,9 +225,9 @@ CREATE TABLE hotspot_owasp (
 CREATE TABLE hotspots (
   id INTEGER NOT NULL, -- Identifiant unique pour chaque hotspot
   maven_key varchar(255) NOT NULL, -- Clé Maven unique identifiant le projet
-  "version" varchar(32) NOT NULL, -- Version du hotspot
+  version varchar(32) NOT NULL, -- Version du hotspot
   date_version timestamp(0) NOT NULL, -- Date de la version du hotspot
-  "key" varchar(32) NOT NULL, -- Clé unique du hotspot
+  key varchar(32) NOT NULL, -- Clé unique du hotspot
   probability varchar(8) NOT NULL, -- Probabilité de risque du hotspot
   status varchar(16) NOT NULL, -- Statut du hotspot
   niveau INTEGER NOT NULL, -- Niveau de risque du hotspot
@@ -239,9 +241,9 @@ CREATE TABLE information_projet (
   id INTEGER NOT NULL, -- Identifiant unique pour chaque instance de InformationProjet
   maven_key varchar(255) NOT NULL, -- Clé Maven unique identifiant le projet
   analyse_key varchar(32) NOT NULL, -- Clé d'analyse du projet
-  "date" timestamp(0) NOT NULL, -- Date de l'analyse du projet
+  date timestamp(0) NOT NULL, -- Date de l'analyse du projet
   project_version varchar(32) NOT NULL, -- Version du projet lors de l'analyse
-  "type" varchar(32) NOT NULL, -- Type d'analyse effectuée
+  type varchar(32) NOT NULL, -- Type d'analyse effectuée
   date_enregistrement timestamp(0) NOT NULL, -- Date d'enregistrement de l'information du projet
   CONSTRAINT information_projet_pkey PRIMARY KEY (id)
 );
@@ -251,7 +253,7 @@ CREATE TABLE information_projet (
 CREATE TABLE liste_projet (
   id INTEGER NOT NULL, -- Identifiant unique pour chaque instance de ListeProjet
   maven_key varchar(255) NOT NULL, -- Clé Maven unique identifiant le projet
-  "name" varchar(128) NOT NULL, -- Nom du projet
+  name varchar(128) NOT NULL, -- Nom du projet
   tags json NOT NULL, -- Tags associés au projet sous forme de tableau JSON
   visibility varchar(8) NOT NULL, -- Visibilité du projet
   date_enregistrement timestamp(0) NOT NULL, -- Date d'enregistrement du projet
@@ -262,7 +264,7 @@ CREATE TABLE liste_projet (
 
 CREATE TABLE ma_moulinette (
   id INTEGER NOT NULL, -- Identifiant unique pour chaque instance de MaMoulinette
-  "version" varchar(16) NOT NULL, -- Numéro de version de Ma-Moulinette
+  version varchar(16) NOT NULL, -- Numéro de version de Ma-Moulinette
   date_version timestamp(0) NOT NULL, -- Date de la release
   date_enregistrement timestamp(0) NOT NULL, -- Date d'enregistrement de la version
   CONSTRAINT ma_moulinette_pkey PRIMARY KEY (id)
@@ -313,7 +315,7 @@ CREATE TABLE mesures (
 CREATE TABLE no_sonar (
   id INTEGER NOT NULL, -- Identifiant unique pour chaque entrée NoSonar
   maven_key varchar(255) NOT NULL, -- Clé Maven unique identifiant le projet
-  "rule" varchar(128) NOT NULL, -- Règle NoSonar appliquée
+  rule varchar(128) NOT NULL, -- Règle NoSonar appliquée
   component text NOT NULL, -- Composant auquel la règle est appliquée
   line INTEGER NOT NULL, -- Ligne où la règle NoSonar est appliquée
   date_enregistrement date NOT NULL, -- Date d'enregistrement de l'entrée NoSonar
@@ -323,12 +325,12 @@ CREATE TABLE no_sonar (
 -- Création de la table notes
 
 CREATE TABLE notes (
+  id INTEGER NOT NULL, -- Identifiant unique pour chaque entrée notes
   maven_key varchar(255) NOT NULL, -- Clé Maven unique identifiant le projet
-  "type" varchar(16) NOT NULL, -- Type de la note
-  "date" timestamp(0) NOT NULL, -- Date de la note
+  type varchar(16) NOT NULL, -- Type de la note
   value INTEGER NOT NULL, -- Valeur de la note
   date_enregistrement timestamp(0) NOT NULL, -- Date d'enregistrement de la note
-  CONSTRAINT notes_pkey PRIMARY KEY (maven_key, type, date)
+  CONSTRAINT notes_pkey PRIMARY KEY (id)
 );
 
 -- Création de la table owasp
@@ -336,7 +338,7 @@ CREATE TABLE notes (
 CREATE TABLE owasp (
   id INTEGER NOT NULL, -- Clé Maven unique
   maven_key varchar(255) NOT NULL, -- Clé Maven unique identifiant le projet
-  "version" varchar(32) NOT NULL, -- Version du projet
+  version varchar(32) NOT NULL, -- Version du projet
   date_version timestamp(0) NOT NULL, -- Date de la version du projet
   effort_total INTEGER NOT NULL, -- Total effort score for security issues
   a1 INTEGER NOT NULL, -- Score for OWASP Top 10 - A1: Injection vulnerabilities
@@ -419,8 +421,8 @@ CREATE TABLE portefeuille (
 
 CREATE TABLE profiles (
   id INTEGER NOT NULL, -- Identifiant unique pour chaque profil
-  "key" varchar(255) NOT NULL, -- Clé unique du profil
-  "name" varchar(128) NOT NULL, -- Nom du profil
+  key varchar(255) NOT NULL, -- Clé unique du profil
+  name varchar(128) NOT NULL, -- Nom du profil
   language_name varchar(64) NOT NULL, -- Nom du langage de programmation
   active_rule_count INTEGER NOT NULL, -- Nombre de règles actives associées au profil
   rules_update_at timestamp(0) NOT NULL, -- Date de la dernière mise à jour des règles
@@ -435,8 +437,8 @@ CREATE TABLE profiles_historique (
   id INTEGER NOT NULL, -- Identifiant unique pour chaque historique de profil
   date_courte timestamp(0) NOT NULL, -- Date courte associée à l’historique
   language varchar(16) NOT NULL, -- Langage de programmation associé
-  "date" timestamp(0) NOT NULL, -- Date complète de l’événement de l’historique
-  "action" varchar(16) NOT NULL, -- Action réalisée, par exemple "modification" ou "création"
+  date timestamp(0) NOT NULL, -- Date complète de l’événement de l’historique
+  action varchar(16) NOT NULL, -- Action réalisée, par exemple modification ou création
   auteur varchar(64) NOT NULL, -- Auteur de l’action dans l’historique
   regle varchar(128) NOT NULL, -- Règle ou norme concernée par l’historique
   description text NOT NULL, -- Description détaillée de l’événement historique
@@ -449,7 +451,7 @@ CREATE TABLE profiles_historique (
 
 CREATE TABLE properties (
   id INTEGER NOT NULL, -- Identifiant unique pour chaque propriété
-  "type" varchar(255) NOT NULL, -- Type de propriété
+  type varchar(255) NOT NULL, -- Type de propriété
   projet_bd INTEGER NOT NULL, -- Identifiant du projet dans la base de données
   projet_sonar INTEGER NOT NULL, -- Identifiant du projet dans Sonar
   profil_bd INTEGER NOT NULL, -- Identifiant du profil dans la base de données
@@ -465,9 +467,9 @@ CREATE TABLE properties (
 CREATE TABLE repartition (
   id INTEGER NOT NULL, -- ID unique pour chaque répartition
   maven_key varchar(128) NOT NULL, -- Clé Maven unique identifiant le projet
-  "name" varchar(128) NOT NULL, -- Nom de la répartition
+  name varchar(128) NOT NULL, -- Nom de la répartition
   component text NOT NULL, -- Détails du composant concerné par la répartition
-  "type" varchar(16) NOT NULL, -- Type de la répartition
+  type varchar(16) NOT NULL, -- Type de la répartition
   severity varchar(8) NOT NULL, -- Gravité de la répartition
   setup INTEGER NOT NULL, -- Paramètre de configuration pour la répartition
   date_enregistrement timestamp(0) NOT NULL, -- Date d'enregistrement de la répartition dans le système
@@ -479,7 +481,7 @@ CREATE TABLE repartition (
 CREATE TABLE todo (
   id INTEGER NOT NULL, -- ID unique pour chaque tâche
   maven_key varchar(255) NOT NULL, -- Clé Maven unique identifiant le projet
-  "rule" varchar(128) NOT NULL, -- Règle appliquée à la tâche
+  rule varchar(128) NOT NULL, -- Règle appliquée à la tâche
   component text NOT NULL, -- Détails du composant concerné par la tâche
   line INTEGER NOT NULL, -- Numéro de ligne du code associée à la tâche
   date_enregistrement timestamp(0) NOT NULL, -- Date d'enregistrement de la tâche dans le système
@@ -496,7 +498,7 @@ CREATE TABLE utilisateur (
   courriel varchar(320) NOT NULL, -- Adresse de courriel, clé unique
   roles json NULL, -- Liste des rôles
   equipe json NULL, -- Liste des équipes
-  "password" varchar(64) NOT NULL, -- Mot de passe de l'utilisateur
+  password varchar(64) NOT NULL, -- Mot de passe de l'utilisateur
   actif bool DEFAULT false NOT NULL, -- L'utilisateur est déseactivé
   preference json NOT NULL, -- Préférences de l'utilisateur
   init INTEGER NOT NULL, -- Indicateur de réinitilisation du mot de passe
@@ -567,7 +569,8 @@ CREATE SEQUENCE no_sonar_id_seq START WITH 1 INCREMENT BY 1;
 ALTER TABLE no_sonar ALTER COLUMN id SET DEFAULT nextval('no_sonar_id_seq');
 
 -- Notes
--- La table utilise une clé primaire composite, donc pas de séquence nécessaire ici.
+CREATE SEQUENCE notes_id_seq START WITH 1 INCREMENT BY 1;
+ALTER TABLE notes ALTER COLUMN id SET DEFAULT nextval('notes_id_seq');
 
 -- Owasp
 CREATE SEQUENCE owasp_id_seq START WITH 1 INCREMENT BY 1;
@@ -593,7 +596,7 @@ ALTER TABLE properties ALTER COLUMN id SET DEFAULT nextval('properties_id_seq');
 CREATE SEQUENCE repartition_id_seq START WITH 1 INCREMENT BY 1;
 ALTER TABLE repartition ALTER COLUMN id SET DEFAULT nextval('repartition_id_seq');
 
--- Todo
+-- To.do
 CREATE SEQUENCE todo_id_seq START WITH 1 INCREMENT BY 1;
 ALTER TABLE todo ALTER COLUMN id SET DEFAULT nextval('todo_id_seq');
 
@@ -626,7 +629,6 @@ CREATE UNIQUE INDEX uniq_1d1c63b344fb41c9 ON utilisateur USING btree (courriel);
 --messenger_messages
 CREATE TRIGGER notify_trigger AFTER INSERT OR UPDATE
 ON messenger_messages FOR EACH ROW EXECUTE FUNCTION notify_messenger_messages();
-
 
 --Commentaires :
 --activite
@@ -667,7 +669,7 @@ COMMENT ON COLUMN anomalie.date_enregistrement IS 'Date d''enregistrement de l''
 --anomalie_details
 COMMENT ON COLUMN anomalie_details.id IS 'Identifiant unique pour les détails de l''anomalie';
 COMMENT ON COLUMN anomalie_details.maven_key IS 'Clé Maven unique pour le projet';
-COMMENT ON COLUMN anomalie_details."name" IS 'Nom de l''anomalie';
+COMMENT ON COLUMN anomalie_details.name IS 'Nom de l''anomalie';
 COMMENT ON COLUMN anomalie_details.bug_blocker IS 'Nombre de bugs bloquants';
 COMMENT ON COLUMN anomalie_details.bug_critical IS 'Nombre de bugs critiques';
 COMMENT ON COLUMN anomalie_details.bug_info IS 'Nombre de bugs d''information';
@@ -718,7 +720,7 @@ COMMENT ON COLUMN equipe.date_enregistrement IS 'Date d''enregistrement de l''é
 
 --historique
 COMMENT ON COLUMN historique.maven_key IS 'Clé Maven pour l''historique des projets';
-COMMENT ON COLUMN historique."version" IS 'Version du projet dans l''historique';
+COMMENT ON COLUMN historique.version IS 'Version du projet dans l''historique';
 COMMENT ON COLUMN historique.date_version IS 'Date de la version du projet';
 COMMENT ON COLUMN historique.nom_projet IS 'Nom du projet associé à cette version';
 COMMENT ON COLUMN historique.version_release IS 'Indicateur de release pour la version spécifique';
@@ -774,7 +776,7 @@ COMMENT ON COLUMN historique.date_enregistrement IS 'Date d''enregistrement de l
 --hotspot_details
 COMMENT ON COLUMN hotspot_details.id IS 'Identifiant unique pour chaque détail de hotspot';
 COMMENT ON COLUMN hotspot_details.maven_key IS 'Clé Maven unique pour le projet';
-COMMENT ON COLUMN hotspot_details."version" IS 'Version du détail de hotspot';
+COMMENT ON COLUMN hotspot_details.version IS 'Version du détail de hotspot';
 COMMENT ON COLUMN hotspot_details.date_version IS 'Date de la version du détail de hotspot';
 COMMENT ON COLUMN hotspot_details.severity IS 'Sévérité du hotspot';
 COMMENT ON COLUMN hotspot_details.niveau IS 'Niveau de risque du hotspot';
@@ -784,15 +786,15 @@ COMMENT ON COLUMN hotspot_details.backend IS 'Hotspot associée au backend';
 COMMENT ON COLUMN hotspot_details.autre IS 'Hotspot autre';
 COMMENT ON COLUMN hotspot_details.file IS 'Fichier associé au hotspot';
 COMMENT ON COLUMN hotspot_details.line IS 'Ligne du fichier où se situe le hotspot';
-COMMENT ON COLUMN hotspot_details."rule" IS 'Règle associée au hotspot';
+COMMENT ON COLUMN hotspot_details.rule IS 'Règle associée au hotspot';
 COMMENT ON COLUMN hotspot_details.message IS 'Message descriptif du hotspot';
-COMMENT ON COLUMN hotspot_details."key" IS 'Clé unique du hotspot';
+COMMENT ON COLUMN hotspot_details.key IS 'Clé unique du hotspot';
 COMMENT ON COLUMN hotspot_details.date_enregistrement IS 'Date d''enregistrement du détail de hotspot';
 
 --hotspot_owasp
 COMMENT ON COLUMN hotspot_owasp.id IS 'Identifiant unique pour chaque hotspot OWASP';
 COMMENT ON COLUMN hotspot_owasp.maven_key IS 'Clé Maven unique pour le projet';
-COMMENT ON COLUMN hotspot_owasp."version" IS 'Version du hotspot OWASP';
+COMMENT ON COLUMN hotspot_owasp.version IS 'Version du hotspot OWASP';
 COMMENT ON COLUMN hotspot_owasp.date_version IS 'Date de la version du hotspot OWASP';
 COMMENT ON COLUMN hotspot_owasp.menace IS 'Menace évaluée du hotspot OWASP';
 COMMENT ON COLUMN hotspot_owasp.probability IS 'Probabilité du hotspot OWASP';
@@ -803,9 +805,9 @@ COMMENT ON COLUMN hotspot_owasp.date_enregistrement IS 'Date d''enregistrement d
 --hotspots
 COMMENT ON COLUMN hotspots.id IS 'Identifiant unique pour chaque hotspot';
 COMMENT ON COLUMN hotspots.maven_key IS 'Clé Maven unique pour le projet';
-COMMENT ON COLUMN hotspots."version" IS 'Version du hotspot';
+COMMENT ON COLUMN hotspots.version IS 'Version du hotspot';
 COMMENT ON COLUMN hotspots.date_version IS 'Date de la version du hotspot';
-COMMENT ON COLUMN hotspots."key" IS 'Clé unique du hotspot';
+COMMENT ON COLUMN hotspots.key IS 'Clé unique du hotspot';
 COMMENT ON COLUMN hotspots.probability IS 'Probabilité de risque du hotspot';
 COMMENT ON COLUMN hotspots.status IS 'Statut du hotspot';
 COMMENT ON COLUMN hotspots.niveau IS 'Niveau de risque du hotspot';
@@ -815,22 +817,22 @@ COMMENT ON COLUMN hotspots.date_enregistrement IS 'Date d''enregistrement du hot
 COMMENT ON COLUMN information_projet.id IS 'Identifiant unique pour chaque instance de InformationProjet';
 COMMENT ON COLUMN information_projet.maven_key IS 'Clé Maven unique pour le projet';
 COMMENT ON COLUMN information_projet.analyse_key IS 'Clé d''analyse du projet';
-COMMENT ON COLUMN information_projet."date" IS 'Date de l''analyse du projet';
+COMMENT ON COLUMN information_projet.date IS 'Date de l''analyse du projet';
 COMMENT ON COLUMN information_projet.project_version IS 'Version du projet lors de l''analyse';
-COMMENT ON COLUMN information_projet."type" IS 'Type d''analyse effectuée';
+COMMENT ON COLUMN information_projet.type IS 'Type d''analyse effectuée';
 COMMENT ON COLUMN information_projet.date_enregistrement IS 'Date d''enregistrement de l''information du projet';
 
 --liste_projet
 COMMENT ON COLUMN liste_projet.id IS 'Identifiant unique pour chaque instance de ListeProjet';
 COMMENT ON COLUMN liste_projet.maven_key IS 'Clé Maven unique pour le projet';
-COMMENT ON COLUMN liste_projet."name" IS 'Nom du projet';
+COMMENT ON COLUMN liste_projet.name IS 'Nom du projet';
 COMMENT ON COLUMN liste_projet.tags IS 'Tags associés au projet sous forme de tableau JSON';
 COMMENT ON COLUMN liste_projet.visibility IS 'Visibilité du projet';
 COMMENT ON COLUMN liste_projet.date_enregistrement IS 'Date d''enregistrement du projet';
 
 --ma_moulinette
 COMMENT ON COLUMN ma_moulinette.id IS 'Unique identifier for each MaMoulinette instance';
-COMMENT ON COLUMN ma_moulinette."version" IS 'Version number of the MaMoulinette';
+COMMENT ON COLUMN ma_moulinette.version IS 'Version number of the MaMoulinette';
 COMMENT ON COLUMN ma_moulinette.date_version IS 'Date when the version was created';
 COMMENT ON COLUMN ma_moulinette.date_enregistrement IS 'Date when this record was registered';
 
@@ -855,22 +857,22 @@ COMMENT ON COLUMN mesures.date_enregistrement IS 'Date d''enregistrement de la m
 --no_sonar
 COMMENT ON COLUMN no_sonar.id IS 'Identifiant unique pour chaque entrée NoSonar';
 COMMENT ON COLUMN no_sonar.maven_key IS 'Clé Maven unique pour le projet';
-COMMENT ON COLUMN no_sonar."rule" IS 'Règle NoSonar appliquée';
+COMMENT ON COLUMN no_sonar.rule IS 'Règle NoSonar appliquée';
 COMMENT ON COLUMN no_sonar.component IS 'Composant auquel la règle est appliquée';
 COMMENT ON COLUMN no_sonar.line IS 'Ligne où la règle NoSonar est appliquée';
 COMMENT ON COLUMN no_sonar.date_enregistrement IS 'Date d''enregistrement de l''entrée NoSonar';
 
 --notes
+COMMENT ON COLUMN notes.id IS 'Identifiant unique pour chaque entrée Notes';
 COMMENT ON COLUMN notes.maven_key IS 'Clé Maven unique pour le projet';
-COMMENT ON COLUMN notes."type" IS 'Type de la note';
-COMMENT ON COLUMN notes."date" IS 'Date de la note';
+COMMENT ON COLUMN notes.type IS 'Type de la note';
 COMMENT ON COLUMN notes.value IS 'Valeur de la note';
 COMMENT ON COLUMN notes.date_enregistrement IS 'Date d''enregistrement de la note';
 
 --owasp
 COMMENT ON COLUMN owasp.id IS 'Clé d''identification unique ';
 COMMENT ON COLUMN owasp.maven_key IS 'Clé Maven unique pour le projet';
-COMMENT ON COLUMN owasp."version" IS 'Version du projet';
+COMMENT ON COLUMN owasp.version IS 'Version du projet';
 COMMENT ON COLUMN owasp.date_version IS 'Date de release du projet';
 COMMENT ON COLUMN owasp.effort_total IS 'Effort total pour corriger les failles de sécurité';
 COMMENT ON COLUMN owasp.a1 IS 'Score OWASP Top 10 - A1';
@@ -945,8 +947,8 @@ COMMENT ON COLUMN portefeuille.date_enregistrement IS 'Date d''enregistrement du
 
 --profiles
 COMMENT ON COLUMN profiles.id IS 'Identifiant unique pour chaque profil';
-COMMENT ON COLUMN profiles."key" IS 'Clé unique du profil';
-COMMENT ON COLUMN profiles."name" IS 'Nom du profil';
+COMMENT ON COLUMN profiles.key IS 'Clé unique du profil';
+COMMENT ON COLUMN profiles.name IS 'Nom du profil';
 COMMENT ON COLUMN profiles.language_name IS 'Nom du langage de programmation';
 COMMENT ON COLUMN profiles.active_rule_count IS 'Nombre de règles actives associées au profil';
 COMMENT ON COLUMN profiles.rules_update_at IS 'Date de la dernière mise à jour des règles';
@@ -957,8 +959,8 @@ COMMENT ON COLUMN profiles.date_enregistrement IS 'Date d''enregistrement du pro
 COMMENT ON COLUMN profiles_historique.id IS 'Identifiant unique pour chaque historique de profil';
 COMMENT ON COLUMN profiles_historique.date_courte IS 'Date courte associée à l’historique';
 COMMENT ON COLUMN profiles_historique.language IS 'Langage de programmation associé';
-COMMENT ON COLUMN profiles_historique."date" IS 'Date complète de l’événement de l’historique';
-COMMENT ON COLUMN profiles_historique."action" IS 'Action réalisée, par exemple "modification" ou "création"';
+COMMENT ON COLUMN profiles_historique.date IS 'Date complète de l’événement de l’historique';
+COMMENT ON COLUMN profiles_historique.action IS 'Action réalisée, par exemple modification ou création';
 COMMENT ON COLUMN profiles_historique.auteur IS 'Auteur de l’action dans l’historique';
 COMMENT ON COLUMN profiles_historique.regle IS 'Règle ou norme concernée par l’historique';
 COMMENT ON COLUMN profiles_historique.description IS 'Description détaillée de l’événement historique';
@@ -967,7 +969,7 @@ COMMENT ON COLUMN profiles_historique.date_enregistrement IS 'Date d’enregistr
 
 --properties
 COMMENT ON COLUMN properties.id IS 'Identifiant unique pour chaque propriété';
-COMMENT ON COLUMN properties."type" IS 'Type de propriété';
+COMMENT ON COLUMN properties.type IS 'Type de propriété';
 COMMENT ON COLUMN properties.projet_bd IS 'Identifiant du projet dans la base de données';
 COMMENT ON COLUMN properties.projet_sonar IS 'Identifiant du projet dans Sonar';
 COMMENT ON COLUMN properties.profil_bd IS 'Identifiant du profil dans la base de données';
@@ -979,17 +981,17 @@ COMMENT ON COLUMN properties.date_modification_profil IS 'Date de la dernière m
 --repartition
 COMMENT ON COLUMN repartition.id IS 'ID unique pour chaque répartition';
 COMMENT ON COLUMN repartition.maven_key IS 'Clé Maven unique pour le projet';
-COMMENT ON COLUMN repartition."name" IS 'Nom de la répartition';
+COMMENT ON COLUMN repartition.name IS 'Nom de la répartition';
 COMMENT ON COLUMN repartition.component IS 'Détails du composant concerné par la répartition';
-COMMENT ON COLUMN repartition."type" IS 'Type de la répartition';
+COMMENT ON COLUMN repartition.type IS 'Type de la répartition';
 COMMENT ON COLUMN repartition.severity IS 'Gravité de la répartition';
 COMMENT ON COLUMN repartition.setup IS 'Paramètre de configuration pour la répartition';
 COMMENT ON COLUMN repartition.date_enregistrement IS 'Date d''enregistrement de la répartition dans le système';
 
---todo
+--to.do
 COMMENT ON COLUMN todo.id IS 'ID unique pour chaque tâche';
 COMMENT ON COLUMN todo.maven_key IS 'Clé Maven unique pour le projet';
-COMMENT ON COLUMN todo."rule" IS 'Règle appliquée à la tâche';
+COMMENT ON COLUMN todo.rule IS 'Règle appliquée à la tâche';
 COMMENT ON COLUMN todo.component IS 'Détails du composant concerné par la tâche';
 COMMENT ON COLUMN todo.line IS 'Numéro de ligne du code associée à la tâche';
 COMMENT ON COLUMN todo.date_enregistrement IS 'Date d''enregistrement de la tâche dans le système';
@@ -1002,7 +1004,7 @@ COMMENT ON COLUMN utilisateur.avatar IS 'Avatar de l''utilisateur';
 COMMENT ON COLUMN utilisateur.courriel IS 'Adresse de courriel, clé unique';
 COMMENT ON COLUMN utilisateur.roles IS 'Liste des rôles';
 COMMENT ON COLUMN utilisateur.equipe IS 'Liste des équipes';
-COMMENT ON COLUMN utilisateur."password" IS 'Mot de passe de l''utilisateur';
+COMMENT ON COLUMN utilisateur.password IS 'Mot de passe de l''utilisateur';
 COMMENT ON COLUMN utilisateur.actif IS 'L''utilisateur est déseactivé';
 COMMENT ON COLUMN utilisateur.preference IS 'Préférences de l''utilisateur';
 COMMENT ON COLUMN utilisateur.init IS 'Indicateur de réinitilisation du mot de passe';
