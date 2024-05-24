@@ -31,7 +31,7 @@ class NotesRepository extends ServiceEntityRepository
 
     /**
      * [Description for deleteNotesMavenKey]
-     * Supprime les notes de la version courrante (i.e. correspondant à la maven_key)
+     * Supprime les notes de la version courante (i.e. correspondant à la maven_key)
      *
      * @param array $map
      *
@@ -61,6 +61,7 @@ class NotesRepository extends ServiceEntityRepository
     /**
      * [Description for InsertNotes]
      * Ajoute les notes pour le projet
+     *
      * @param array $map
      *
      * @return array
@@ -73,8 +74,10 @@ class NotesRepository extends ServiceEntityRepository
     {
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-                $sql = "INSERT INTO notes (maven_key, type, value, date_enregistrement)
-                VALUES (:maven_key, :type, :value, :date_enregistrement)";
+                $sql = "INSERT INTO notes
+                            (maven_key, type, value, date_enregistrement)
+                        VALUES
+                            (:maven_key, :type, :value, :date_enregistrement)";
                     $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
                     $stmt->bindValue(':maven_key', $map['maven_key']);
                     $stmt->bindValue(':type', $map['type']);
