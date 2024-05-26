@@ -307,9 +307,11 @@ class InformationProjetRepository extends ServiceEntityRepository
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
                     $stmt->bindValue(':maven_key', $map['maven_key']);
                     $stmt->bindValue(':analyse_key', $map['analyse_key']);
+                    $stmt->bindValue(':date', $map['date']);
                     $stmt->bindValue(':project_version', $map['project_version']);
                     $stmt->bindValue(':type', $map['type']);
-                    $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']);
+                    /** on formate la date avant de l'enregistrer */
+                    $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:s'));
                     $stmt->executeStatement();
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
