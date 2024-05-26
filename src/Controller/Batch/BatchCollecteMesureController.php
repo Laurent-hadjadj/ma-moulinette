@@ -30,7 +30,6 @@ class BatchCollecteMesureController extends AbstractController
 {
     /** Définition des constantes */
     public static $sonarUrl = "sonar.url";
-    public static $europeParis = "Europe/Paris";
     public static $removeReturnline = "/\s+/u";
 
     /**
@@ -78,7 +77,7 @@ class BatchCollecteMesureController extends AbstractController
 
         /** Création de la date du jour */
         $date = new \DateTime();
-        $date->setTimezone(new \DateTimeZone(static::$europeParis));
+        $date->setTimezone(new \DateTimeZone("Europe/Paris"));
 
         /** Initialisation des mesures avec des valeurs par défaut */
         $lines = intval($result1['measures']['lines'] ?? 0);
