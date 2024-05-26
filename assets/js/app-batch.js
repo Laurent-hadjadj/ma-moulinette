@@ -167,7 +167,7 @@ const batchManuel = function(id, portefeuille){
   const collecteTexte='#collecte-texte';
   const collecteAnimation='#collecte-animation';
 
-  const data = { portefeuille, mode: 'null' };
+  const data = { portefeuille };
   const options = {
     url: `${serveur()}/traitement/manuel`, type: 'POST',
     dataType: 'json', data: JSON.stringify(data), contentType};
