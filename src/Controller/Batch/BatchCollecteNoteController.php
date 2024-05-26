@@ -30,7 +30,7 @@ class BatchCollecteNoteController extends AbstractController
 {
     /** Définition des constantes */
     public static $sonarUrl = "sonar.url";
-    public static $removeReturnline = "/\s+/u";
+    public static $request = "requête : ";
 
     /**
      * [Description for __construct]
@@ -64,18 +64,25 @@ class BatchCollecteNoteController extends AbstractController
         /** On instancie l'EntityRepository */
         $noteRepository = $this->em->getRepository(Notes::class);
 
-       /** On construit l'URL */
+        /** On construit l'URL */
         $tempoUrl = $this->getParameter(static::$sonarUrl);
-        $url = "$tempoUrl/api/measures/component?component=$mavenKey&metricKeys=$type"."_rating";
+        $mavenKey = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
+
+        /** Construit l'URL en utilisant http_build_query pour les paramètres de la requête */
+        $queryParams = [
+            'component' => $mavenKey,
+            'metricKeys' => $type."_rating",
+        ];
+        $queryString = http_build_query($queryParams);
 
         /** Appelle le client HTTP */
-        $result = $this->client->http(trim(preg_replace(static::$removeReturnline, " ", $url)));
+        $result = $this->client->http("$tempoUrl/api/measures/component?$queryString");
 
         /** On supprime les résultats pour la maven_key. */
         $map=['maven_key'=>$mavenKey, 'type'=>$type];
-        $request=$noteRepository->deleteNotesMavenKey($map);
-        if ($request['code']!=200) {
-            return ['code' => $request['code'], 'requête'=>'deleteNoteMavenKey'];
+        $delete=$noteRepository->deleteNotesMavenKey($map);
+        if ($delete['code']!=200) {
+            return ['code' => $delete['code'], static::$request=>'deleteNoteMavenKey'];
         }
 
         /** Création de la date du jour */
@@ -87,7 +94,7 @@ class BatchCollecteNoteController extends AbstractController
             $map=['maven_key' => $mavenKey, 'type' => $type, 'value' => intval($mesure['value']), 'date_enregistrement' => $date];
             $request=$noteRepository->insertNotes($map);
             if ($request['code']!=200) {
-                return ['code' => $request['code'], 'erreur' => $request['erreur'],'requête'=>'insertNote'];
+                return ['code' => $request['code'], 'erreur' => $request['erreur'],static::$request=>'insertNote'];
             }
         }
 

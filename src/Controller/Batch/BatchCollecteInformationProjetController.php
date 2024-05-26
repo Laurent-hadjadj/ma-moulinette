@@ -32,7 +32,7 @@ class BatchCollecteInformationProjetController extends AbstractController
     /** Définition des constantes */
     public static $sonarUrl = "sonar.url";
     public static $europeParis = "Europe/Paris";
-    public static $removeReturnline = "/\s+/u";
+    public static $request = "requête :";
 
     /**
      * [Description for __construct]
@@ -77,28 +77,28 @@ class BatchCollecteInformationProjetController extends AbstractController
         $map=['maven_key' => $maven_key];
         $toutesLesVersions=$informationProjetRepository->countInformationProjetAllType($map);
         if ($toutesLesVersions['code']!=200) {
-            return ['code' => $toutesLesVersions['code'], 'requête'=>'touteLesVersions'];
+            return ['code' => $toutesLesVersions['code'], static::$request=>'touteLesVersions'];
         }
 
         /** On compte les releases */
         $map=['maven_key'=>$maven_key, 'type'=>'RELEASE'];
         $release=$informationProjetRepository->countInformationProjetType($map);
         if ($release['code']!=200) {
-            return ['code' => $release['code'], 'requête'=>'releases'];
+            return ['code' => $release['code'], static::$request=>'releases'];
         }
 
         /** On compte les snapshots */
         $map=['maven_key'=>$maven_key, 'type'=>'SNAPSHOT'];
         $snapshot=$informationProjetRepository->countInformationProjetType($map);
         if ($snapshot['code']!=200) {
-            return ['code' => $snapshot['code'], 'requête'=>'snapshot'];
+            return ['code' => $snapshot['code'], static::$request=>'snapshot'];
         }
 
         /** On récupère la dernière version et sa date de publication */
         $map=['maven_key'=>$maven_key];
         $infoRelease=$informationProjetRepository->selectInformationProjetVersionLast($map);
         if ($infoRelease['code']!=200) {
-            return ['code' => $infoRelease['code'], 'requête'=>'infoRelease'];
+            return ['code' => $infoRelease['code'], static::$request=>'infoRelease'];
         }
 
         $toutesLesVersions = isset($toutesLesVersions['nombre'][0]['total']) ? $toutesLesVersions['nombre'][0]['total'] : 0;
@@ -131,12 +131,16 @@ class BatchCollecteInformationProjetController extends AbstractController
         /** On instancie l'EntityRepository */
         $informationProjetRepository = $this->em->getRepository(InformationProjet::class);
 
-        /** On forge la requête */
-        $url = $this->getParameter(static::$sonarUrl) .
-                "/api/project_analyses/search?project=" . $mavenKey;
+        /** On construit l'URL */
+        $tempoUrl = $this->getParameter(static::$sonarUrl);
+        $mavenKey = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
 
-        /** On appel le client http */
-        $result = $this->client->http(trim(preg_replace(static::$removeReturnline, " ", $url)));
+        /** Construit l'URL en utilisant http_build_query pour les paramètres de la requête */
+        $queryParams = [ 'project' => $mavenKey ];
+        $queryString = http_build_query($queryParams);
+
+        /** Appelle le client HTTP */
+        $result = $this->client->http("$tempoUrl/api/project_analyses/search?$queryString");
         /** On catch les erreurs HTTP 401 et 404, si possible :) */
         if (isset($result['code']) && in_array($result['code'], [401, 404])) {
             return ['code' => $result['code']];
@@ -148,9 +152,9 @@ class BatchCollecteInformationProjetController extends AbstractController
 
         /** On supprime les informations pour la maven_key. */
         $map=['maven_key'=>$mavenKey];
-        $request=$informationProjetRepository->deleteInformationProjetMavenKey($map);
-        if ($request['code']!=200) {
-            return ['code' => $request['code'], 'requête'=>'deleteInformationProjetMavenKey'];
+        $delete=$informationProjetRepository->deleteInformationProjetMavenKey($map);
+        if ($delete['code']!=200) {
+            return ['code' => $delete['code'], static::$request=>'deleteInformationProjetMavenKey'];
         }
 
         /** On ajoute les informations du projet dans la table information_projet. */
@@ -176,7 +180,7 @@ class BatchCollecteInformationProjetController extends AbstractController
 
             $insert=$informationProjetRepository->insertInformationProjet($map);
             if ($insert['code']!=200) {
-                return ['code' => $insert['code'], 'requête'=>'insertInformationProjetMavenKey'];
+                return ['code' => $insert['code'], static::$request=>'insertInformationProjetMavenKey'];
             }
         }
 
