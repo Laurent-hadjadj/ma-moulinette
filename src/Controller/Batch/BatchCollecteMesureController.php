@@ -75,6 +75,12 @@ class BatchCollecteMesureController extends AbstractController
             return ['code' => $result['code']];
         }
 
+        /** On supprime les résultats pour la maven_key. */
+        $map=['maven_key'=>$mavenKey];
+        $request=$mesuresRepository->deleteMesuresMavenKey($map);
+        if ($request['code']!=200) {
+            return ['code' => $request['code'], 'requête'=>'deleteMesureMavenKey'];
+        }
         /** Création de la date du jour */
         $date = new \DateTime();
         $date->setTimezone(new \DateTimeZone("Europe/Paris"));

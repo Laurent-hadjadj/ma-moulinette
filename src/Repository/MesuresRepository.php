@@ -100,4 +100,32 @@ class MesuresRepository extends ServiceEntityRepository
         }
         return ['code'=>200, 'erreur'=>''];
     }
+
+    /**
+     * [Description for deleteMesuresMavenKey]
+     * Supprime les mesures de la version courante (i.e. correspondant à la maven_key)
+     *
+     * @param array $map
+     *
+     * @return array
+     *
+     * Created at: 26/05/2024 10:51:36 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function deleteMesuresMavenKey($map):array
+    {
+        $sql = "DELETE
+                FROM mesures
+                WHERE maven_key=:maven_key";
+        $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+        $stmt->bindValue(':maven_key', $map['maven_key']);
+        try {
+                $stmt->executeQuery();
+        } catch (\Doctrine\DBAL\Exception $e) {
+            $this->getEntityManager()->rollback();
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
+        }
+        return ['code'=>200, 'erreur'=>''];
+    }
 }
