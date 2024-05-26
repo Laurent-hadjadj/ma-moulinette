@@ -52,7 +52,6 @@ class BatchCollecteMesureController extends AbstractController
     /**
      * [Description for BatchCollecteMesure]
      *
-     * @param Client $client
      * @param string $mavenKey
      *
      * @return array
