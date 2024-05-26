@@ -54,7 +54,7 @@ class HotspotsRepository extends ServiceEntityRepository
                     return ['code'=> 202, 'erreur'=>'TEST'];
                 #}
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['code'=>500, 'erreur'=> $e->getCode()];
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'erreur'=>''];
     }
@@ -85,7 +85,7 @@ class HotspotsRepository extends ServiceEntityRepository
                     return ['code'=> 202, 'erreur'=>'TEST'];
                 #}
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['code'=>500, 'erreur'=> $e->getCode()];
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'erreur'=>'', 'liste'=>$liste];
     }
@@ -117,7 +117,7 @@ class HotspotsRepository extends ServiceEntityRepository
                     return ['code'=> 202, 'erreur'=>'TEST'];
                 #}
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['code'=>500, 'erreur'=> $e->getCode()];
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'erreur'=>'', 'nombre'=>$nombre];
     }
@@ -150,7 +150,7 @@ class HotspotsRepository extends ServiceEntityRepository
                     return ['code'=> 202, 'erreur'=>'TEST'];
                 #}
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['code'=>500, 'erreur'=> $e->getCode()];
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'erreur'=>'', 'liste'=>$liste];
     }

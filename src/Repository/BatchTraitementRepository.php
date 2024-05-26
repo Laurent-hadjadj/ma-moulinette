@@ -48,20 +48,20 @@ class BatchTraitementRepository extends ServiceEntityRepository
                         FROM batch_traitement
                         WHERE demarrage='Automatique'
                         ORDER BY date_enregistrement DESC limit 1";
-                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-                $exec=$conn->executeQuery();
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $exec=$stmt->executeQuery();
                 $liste=$exec->fetchAllAssociative();
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            return ['code'=>500, 'erreur'=> $e->getCode()];
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
     }
 
     /**
      * [Description for selectBatchTraitementDateEnregistrementLast]
-     * On récupère la dernière date du batch executé
+     * On récupère la dernière date du batch exécuté
      *
      * @return array
      *
@@ -76,20 +76,20 @@ class BatchTraitementRepository extends ServiceEntityRepository
                 $sql = "SELECT date_enregistrement as date
                         FROM batch_traitement
                         ORDER BY date_enregistrement DESC limit 1";
-                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-                $exec=$conn->executeQuery();
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $exec=$stmt->executeQuery();
                 $liste=$exec->fetchAllAssociative();
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            return ['code'=>500, 'erreur'=> $e->getCode()];
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
     }
 
     /**
      * [Description for selectBatchTraitementLast]
-     * On récupere la liste des derniers traitements,
+     * On récupère la liste des derniers traitements,
      * groupé par titre et ordonné par responsable
      *
      * @param string $date
@@ -111,17 +111,47 @@ class BatchTraitementRepository extends ServiceEntityRepository
                         WHERE date_enregistrement like :dateLike
                         GROUP BY titre
                         ORDER BY responsable ASC, demarrage ASC";
-                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-                $conn->bindValue(':dateLike', $dateLike);
-                $exec=$conn->executeQuery();
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $stmt->bindValue(':dateLike', $dateLike);
+                $exec=$stmt->executeQuery();
                 $liste=$exec->fetchAllAssociative();
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            return ['code'=>500, 'erreur'=> $e->getCode()];
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
     }
 
+    /**
+     * [Description for updateBatchTraitement]
+     *
+     * @param array $map
+     *
+     * @return array
+     *
+     * Created at: 22/05/2024 17:56:41 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function updateBatchTraitement($map):array
+    {
+        try {
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "UPDATE batch_traitement
+                        SET debut_traitement = :debut, fin_traitement = :fin, resultat = true
+                        WHERE id = :id";
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $stmt->bindValue(':debut_traitement', $map['debut_traitement']);
+                    $stmt->bindValue(':fin_traitement', $map['fin_traitement']);
+                    $stmt->bindValue(':id', $map['id']);
+                    $stmt->executeStatement();
+            $this->getEntityManager()->getConnection()->commit();
+        } catch (\Doctrine\DBAL\Exception $e) {
+            $this->getEntityManager()->getConnection()->rollBack();
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
+        }
+        return ['code'=>200, 'erreur'=>''];
+    }
 
 }
