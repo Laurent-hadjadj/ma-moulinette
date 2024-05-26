@@ -53,7 +53,7 @@ class HotspotDetailsRepository extends ServiceEntityRepository
                 return ['code'=> 202, 'erreur'=>'TEST'];
             #}
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['code'=>500, 'erreur'=> $e->getCode()];
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'menaces'=>$nombre, 'erreur'=>''];
     }
@@ -83,7 +83,7 @@ class HotspotDetailsRepository extends ServiceEntityRepository
                     return ['code'=> 202, 'erreur'=>'TEST'];
                 #}
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['code'=>500, 'erreur'=> $e->getCode()];
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'erreur'=>''];
     }

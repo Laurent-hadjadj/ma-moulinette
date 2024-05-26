@@ -53,7 +53,7 @@ class HistoriqueRepository extends ServiceEntityRepository
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            return ['code'=> 500, 'erreur'=>$e->getCode()];
+            return ['code'=> 500, 'erreur'=>$e->getMessage()];
         }
         /** on prépare la réponse */
         return ['code'=>200, 'erreur'=>'', 'nombre'=>$request[0]['nombre']];
@@ -90,7 +90,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                 $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-                return ['code'=> 500, 'erreur'=>$e->getCode()];
+                return ['code'=> 500, 'erreur'=>$e->getMessage()];
         }
         /** on prépare la réponse */
         return ['code'=>200, 'erreur'=>'', 'request'=>$request];
@@ -121,7 +121,7 @@ class HistoriqueRepository extends ServiceEntityRepository
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            $response=['code'=> 500, 'erreur'=>$e->getCode()];
+            $response=['code'=> 500, 'erreur'=>$e->getMessage()];
         }
 
         /** On met ajour la version de reference pour le projet */
@@ -141,7 +141,7 @@ class HistoriqueRepository extends ServiceEntityRepository
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            $response=['code'=> 500, 'erreur'=>$e->getCode()];
+            $response=['code'=> 500, 'erreur'=>$e->getMessage()];
         }
         return $response;
     }
@@ -175,7 +175,7 @@ class HistoriqueRepository extends ServiceEntityRepository
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            $response=['code'=> 500, 'erreur'=>$e->getCode()];
+            $response=['code'=> 500, 'erreur'=>$e->getMessage()];
         }
         return $response;
     }
@@ -229,7 +229,7 @@ class HistoriqueRepository extends ServiceEntityRepository
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            return ['code'=> 500, 'erreur'=>$e->getCode()];
+            return ['code'=> 500, 'erreur'=>$e->getMessage()];
         }
         /** on prépare la réponse */
         return ['code'=>200, 'request'=>$suivi, 'erreur'=>''];
@@ -277,7 +277,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                 $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            return ['code'=> 500, 'erreur'=>$e->getCode()];
+            return ['code'=> 500, 'erreur'=>$e->getMessage()];
         }
         /** on prépare la réponse */
         return ['code'=>200, 'request'=>$liste, 'erreur'=>''];
@@ -333,7 +333,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                 $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            return ['code'=> 500, 'erreur'=>$e->getCode()];
+            return ['code'=> 500, 'erreur'=>$e->getMessage()];
         }
         /** on prépare la réponse */
         return ['code'=>200, 'request'=>$details, 'erreur'=>''];
@@ -366,7 +366,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                 $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            return ['code'=> 500, 'erreur'=>$e->getCode()];
+            return ['code'=> 500, 'erreur'=>$e->getMessage()];
         }
         /** on prépare la réponse */
         return ['code'=>200, 'request'=>$graph, 'erreur'=>''];
@@ -483,7 +483,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                 $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            return ['code'=> 500, 'erreur'=>$e->getCode()];
+            return ['code'=> 500, 'erreur'=>$e->getMessage()];
         }
         /** on prépare la réponse */
         return ['code'=>200, 'erreur'=>''];
@@ -516,7 +516,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                 $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            return ['code'=> 500, 'erreur'=>$e->getCode()];
+            return ['code'=> 500, 'erreur'=>$e->getMessage()];
         }
 
         /** on prépare la réponse */
@@ -554,7 +554,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                 $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            return ['code'=> 500, 'erreur'=>$e->getCode()];
+            return ['code'=> 500, 'erreur'=>$e->getMessage()];
         }
         /** on prépare la réponse */
         return ['code'=>200, 'infos'=>$infos, 'erreur'=>''];
@@ -590,7 +590,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                 $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            return ['code'=> 500, 'erreur'=>$e->getCode()];
+            return ['code'=> 500, 'erreur'=>$e->getMessage()];
         }
         /** on prépare la réponse */
         return ['code'=>200, 'reference'=>$liste, 'erreur'=>''];
@@ -628,7 +628,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                 $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            return ['code'=> 500, 'erreur'=>$e->getCode()];
+            return ['code'=> 500, 'erreur'=>$e->getMessage()];
         }
         /** on prépare la réponse */
         return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];

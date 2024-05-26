@@ -59,7 +59,7 @@ class ProfilesRepository extends ServiceEntityRepository
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            return ['code'=>500, 'erreur'=> $e->getCode()];
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['request'=>$request, 'code'=>200, 'erreur'=>''];
     }
@@ -99,7 +99,7 @@ class ProfilesRepository extends ServiceEntityRepository
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            return ['code'=>500, 'erreur'=> $e->getCode()];
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['liste'=>$liste, 'code'=>200, 'erreur'=>''];
     }
@@ -124,7 +124,7 @@ class ProfilesRepository extends ServiceEntityRepository
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            return ['code'=>500, 'erreur'=> $e->getCode()];
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'erreur'=>''];
     }
@@ -150,7 +150,7 @@ class ProfilesRepository extends ServiceEntityRepository
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            return ['code'=>500, 'erreur'=> $e->getCode()];
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'labels'=>$labels, 'erreur'=>''];
     }
@@ -177,7 +177,7 @@ class ProfilesRepository extends ServiceEntityRepository
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            return ['code'=>500, 'erreur'=> $e->getCode()];
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'data-set'=>$dataSets, 'erreur'=>''];
     }

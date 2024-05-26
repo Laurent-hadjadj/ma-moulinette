@@ -55,7 +55,7 @@ class PropertiesRepository extends ServiceEntityRepository
             return ['code' => 200, 'request' => $stmtequest, 'erreur' => ''];
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            return ['code' => 500, 'erreur' => $e->getCode()];
+            return ['code' => 500, 'erreur' => $e->getMessage()];
         }
     }
 
@@ -102,7 +102,7 @@ class PropertiesRepository extends ServiceEntityRepository
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            return ['code'=>500, 'erreur'=> $e->getCode()];
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'erreur'=>''];
     }
@@ -137,7 +137,7 @@ class PropertiesRepository extends ServiceEntityRepository
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            return ['code'=>500, 'erreur'=> $e->getCode()];
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'erreur'=>''];
     }
@@ -172,7 +172,7 @@ class PropertiesRepository extends ServiceEntityRepository
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            return ['code'=>500, 'erreur'=> $e->getCode()];
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'erreur'=>''];
     }

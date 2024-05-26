@@ -60,7 +60,7 @@ class InformationProjetRepository extends ServiceEntityRepository
             $this->getEntityManager()->getConnection()->commit();
             } catch (\Doctrine\DBAL\Exception $e) {
                 $this->getEntityManager()->getConnection()->rollBack();
-                return ['code'=>500, 'erreur'=> $e->getCode()];
+                return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'is_valide'=>$isValide, 'erreur'=>''];
     }
@@ -92,7 +92,7 @@ class InformationProjetRepository extends ServiceEntityRepository
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            return ['code'=>500, 'erreur'=> $e->getCode()];
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'nombre'=>$nombre, 'erreur'=>''];
     }
@@ -124,7 +124,7 @@ class InformationProjetRepository extends ServiceEntityRepository
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
                 $this->getEntityManager()->getConnection()->rollBack();
-            return ['code'=>500, 'erreur'=> $e->getCode()];
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'nombre'=>$nombre, 'erreur'=>''];
     }
@@ -155,7 +155,7 @@ class InformationProjetRepository extends ServiceEntityRepository
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            return ['code'=>500, 'erreur'=> $e->getCode()];
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
     }
@@ -187,7 +187,7 @@ class InformationProjetRepository extends ServiceEntityRepository
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            return ['code'=>500, 'erreur'=> $e->getCode()];
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'version'=>$liste, 'erreur'=>''];
     }
@@ -218,7 +218,7 @@ class InformationProjetRepository extends ServiceEntityRepository
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            return ['code'=>500, 'erreur'=> $e->getCode()];
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'versions'=>$liste, 'erreur'=>''];
     }
@@ -250,7 +250,7 @@ class InformationProjetRepository extends ServiceEntityRepository
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            return ['code'=>500, 'erreur'=> $e->getCode()];
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'info'=>$liste, 'erreur'=>''];
     }
@@ -280,7 +280,7 @@ class InformationProjetRepository extends ServiceEntityRepository
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            return ['code'=>500, 'erreur'=> $e->getCode()];
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'erreur'=>''];
     }
@@ -316,7 +316,7 @@ class InformationProjetRepository extends ServiceEntityRepository
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            return ['code'=>500, 'erreur'=> $e->getCode()];
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'erreur'=>''];
     }

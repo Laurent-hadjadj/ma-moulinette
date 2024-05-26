@@ -53,7 +53,7 @@ class NotesRepository extends ServiceEntityRepository
                 $stmt->executeQuery();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->rollback();
-            return ['code'=>500, 'erreur'=> $e->getCode()];
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'erreur'=>''];
     }
@@ -70,7 +70,7 @@ class NotesRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function InsertNotes($map):array
+    public function insertNotes($map):array
     {
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
@@ -78,16 +78,18 @@ class NotesRepository extends ServiceEntityRepository
                             (maven_key, type, value, date_enregistrement)
                         VALUES
                             (:maven_key, :type, :value, :date_enregistrement)";
+
                     $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
                     $stmt->bindValue(':maven_key', $map['maven_key']);
                     $stmt->bindValue(':type', $map['type']);
                     $stmt->bindValue(':value', $map['value']);
-                    $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']);
+                    /** on formate la date avant de l'enregistrer */
+                    $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:s'));
                     $stmt->executeStatement();
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            return ['code'=>500, 'erreur'=> $e->getCode()];
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'erreur'=>''];
     }
@@ -120,7 +122,7 @@ class NotesRepository extends ServiceEntityRepository
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            return ['code'=>500, 'erreur'=> $e->getCode()];
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
     }
