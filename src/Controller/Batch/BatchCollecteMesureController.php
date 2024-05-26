@@ -26,7 +26,7 @@ use App\Service\Client;
 /**
  * [Description BatchCollecteInformationProjetController]
  */
-class BatchCollecteNoSonarController extends AbstractController
+class BatchCollecteMesureController extends AbstractController
 {
     /** Définition des constantes */
     public static $sonarUrl = "sonar.url";
@@ -42,28 +42,42 @@ class BatchCollecteNoSonarController extends AbstractController
      */
     public function __construct(
         private EntityManagerInterface $em,
+        private Client $client,
     ) {
         $this->em = $em;
+        $this->client = $client;
     }
 
 
-    public function BatchCollecteMesure(Client $client, $mavenKey): array
+    /**
+     * [Description for BatchCollecteMesure]
+     *
+     * @param Client $client
+     * @param string $mavenKey
+     *
+     * @return array
+     *
+     * Created at: 21/05/2024 23:48:05 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function BatchCollecteMesure(string $mavenKey): array
     {
         /** On instancie l'EntityRepository */
-        $mesuresEntity = $this->em->getRepository(Mesures::class);
+        $mesuresRepository = $this->em->getRepository(Mesures::class);
 
-        /** On construit l'URL et on appel le WS */
+        /** On construit l'URL */
         $tempoUrl = $this->getParameter(static::$sonarUrl);
         $url1 = "$tempoUrl/api/components/app?component=$mavenKey";
 
-        /**  HTTP client */
-        $result1 = $client->http(trim(preg_replace(static::$removeReturnline, " ", $url1)));
+       /** Appelle le client HTTP */
+        $result1 = $this->client->http(trim(preg_replace(static::$removeReturnline, " ", $url1)));
         /** On catch les erreurs HTTP 401 et 404, si possible :) */
         if (isset($result['code']) && in_array($result['code'], [401, 404])) {
             return ['code' => $result['code']];
         }
 
-        /** On crée un objet date */
+        /** Création de la date du jour */
         $date = new \DateTime();
         $date->setTimezone(new \DateTimeZone(static::$europeParis));
 
@@ -74,21 +88,21 @@ class BatchCollecteNoSonarController extends AbstractController
         $tests = intval($result1['measures']['tests'] ?? 0);
         $issues = intval($result1['measures']['issues'] ?? 0);
 
-        /** API : Nombre de lignes de code */
+        /** Appelle le client HTTP */
         $url2 = "$tempoUrl/api/measures/component?component=$mavenKey&metricKeys=ncloc";
-        $result2 = $client->http($url2);
+        $result2 = $this->client->http($url2);
 
         /** Initialise ncloc avec une valeur par défaut */
         $ncloc = intval($result2['component']['measures'][0]['value'] ?? 0);
 
         /** On récupère le ratio de dette technique */
         $url3 = "$tempoUrl/api/measures/component?component=$mavenKey&metricKeys=sqale_debt_ratio";
-        $result3 = $client->http(preg_replace(static::$removeReturnline, " ", $url3));
+        $result3 = $this->client->http(preg_replace(static::$removeReturnline, " ", $url3));
         $sqaleRatio = intval($result3['component']['measures'][0]['value'] ?? -1);
 
          /** On enregistre les données */
         $mesureData = [
-            '$maven_key' => $mavenKey,
+            'maven_key' => $mavenKey,
             'project_name' => $result1['projectName'],
             'lines' => $lines,
             'ncloc' => $ncloc,
@@ -99,11 +113,11 @@ class BatchCollecteNoSonarController extends AbstractController
             'issues' => $issues,
             'date_enregistrement' => $date
         ];
-        $insert=$mesuresEntity->insertMesures($mesureData);
+        $insert=$mesuresRepository->insertMesures($mesureData);
         if ($insert['code'] !== 200) {
             return [
                 'code' => $insert['code'],
-                'method' => 'insertMesures'
+                'requête' => 'insertMesures'
             ];
         }
 
