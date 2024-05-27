@@ -16,6 +16,9 @@ namespace App\Controller\Owasp;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\DBAL\Connection;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
+
 
 class OwaspController extends AbstractController
 {
@@ -32,10 +35,10 @@ class OwaspController extends AbstractController
     public function index(Connection $connection)
     {
         // Récupérer les données de l'OWASP 2017
-        $owasp2017 = $connection->fetchAllAssociative('SELECT * FROM owasp_top10 WHERE year = 2017');
+        $owasp2017 = $connection->fetchAllAssociative('SELECT * FROM owasp_top10 WHERE year = 2017 ORDER BY id');
         
         // Récupérer les données de l'OWASP 2021
-        $owasp2021 = $connection->fetchAllAssociative('SELECT * FROM owasp_top10 WHERE year = 2021');
+        $owasp2021 = $connection->fetchAllAssociative('SELECT * FROM owasp_top10 WHERE year = 2021 ORDER BY id');
 
         return $this->render(
             'owasp/index.html.twig',
@@ -47,5 +50,19 @@ class OwaspController extends AbstractController
                 "owasp2021" => $owasp2021,
             ]
         );
+    }
+
+    #[Route('/details/{id}', name: 'owasp_details')]
+    public function details($id, Connection $connection): Response
+    {
+
+        $detail = $connection->fetchAssociative('SELECT * FROM owasp_top10 WHERE id = ?', [$id]);
+
+        return $this->render('owasp/details.html.twig', [
+            'id' => $id,
+            'detail' => $detail,
+            'version' => $this->getParameter("version"),
+            'dateCopyright' => \date("Y"),
+        ]);
     }
 }

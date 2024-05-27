@@ -1,0 +1,28 @@
+{# templates/details.html.twig #}
+
+{% set title = 'Détails OWASP' %}
+{% set description = 'Détails des vulnérabilités OWASP.' %}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <title>{{ title }}</title>
+    {{ include('head.html.twig') }}
+    {% block stylesheets %}
+        {{ encore_entry_link_tags('owasp') }}
+    {% endblock %}
+</head>
+<body>
+    {{ include('header.html.twig') }}
+
+    <div class="grid-container">
+        <h1>Détails OWASP - {{ detail.category }}</h1>
+        <p>{{ detail.detailed_description | raw }}</p>
+    </div>
+
+    {{ include('footer.html.twig') }}
+    {% block javascripts %}
+        {{ encore_entry_script_tags('owasp') }}
+    {% endblock %}
+</body>
+</html>

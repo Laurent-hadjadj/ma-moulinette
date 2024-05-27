@@ -10,170 +10,238 @@
  *
  */
 
-@media (width <= 20em) { /* vide */ }
+ @media (width <= 20em) { /* vide */ }
 
-@media (20.025em <= width <= 22em) { /* vide */ }
+ @media (20.025em <= width <= 22em) { /* vide */ }
+ 
+ @media (22.025em <= width <= 30em) { /* vide */ }
+ 
+ @media (30.025em <= width <= 40em) { /* vide */ }
+ 
+ @media (40.025em <= width <= 64em) { /* vide */ }
+ 
+ @media (64.025em <= width <= 90em) { /* vide */ }
+ 
+ @media (90.025em <= width <= 120em) { /* vide */ }
+ 
+ @media (120.025em <= width <= 160em) {
+   .voir-analyse-svg {
+     margin-bottom: -0.6rem;
+     width: 48px;
+     height: 48px;
+   }
+ 
+   .gomme-svg,
+   .analyse-svg,
+   .pdf-svg,
+   .graphique-svg {
+     margin-bottom: -0.2rem;
+     width: 48px;
+     height: 48px;
+   }
+ }
+ 
+ /*************************          Global     *********************************/
+ 
+ /** Suppression du style in line */
+ .owasp-padding-left { padding-left: 2rem; }
+ 
+ .owasp-padding-left-right {
+   padding-left: 1rem;
+   padding-right: 1rem;
+ }
+ 
+ /* Bouton SVG */
+ .voir-details-svg {
+   fill: #00445b;
+   cursor: pointer;
+   margin-bottom: -0.2rem;
+   width: 32px;
+   height: 32px;
+ }
+ 
+ .voir-details-svg:hover { fill: #c45d4e; }
+ 
+ /* Information bug, vulnérabilité et code_smell  */
+ .stat-list {
+   list-style-type: none;
+   clear: left;
+   margin: 0;
+   padding: 0;
+   text-align: center;
+   margin-bottom: 30px;
+ }
+ 
+ .stat-list-bleu {
+   color: #00445b;
+ }
+ 
+ .stat-list > li {
+   display: inline-block;
+   margin-right: 10px;
+   padding-right: 10px;
+   border-right: 1px solid #cacaca;
+   text-align: center;
+   font-size: 1.1em;
+   font-weight: bold;
+ }
+ 
+ .stat-list > li:last-child {
+   border: none;
+   margin: 0;
+   padding: 0;
+ }
+ 
+ .stat-list > li .stat-list-label {
+   display: block;
+   margin-top: 2px;
+   font-size: 1.2em;
+   font-weight: normal;
+ }
+ 
+ /* Styles pour la modal de comparaison */
+ .modal-header {
+   background-color: #067db4;
+   color: white;
+   padding: 10px;
+   text-align: center;
+   border-bottom: 2px solid #388E3C;
+ }
+ 
+ .modal-content {
+   padding: 20px;
+   background-color: #f9f9f9;
+ }
+ 
+ .modal-column {
+   background-color: #fff;
+   border: 1px solid #ddd;
+   padding: 15px;
+   margin-bottom: 10px;
+   box-shadow: 0 0 10px rgb(0 0 0 / 10%);
+ }
+ 
+ .modal-column h3 {
+   background-color: #f1f1f1;
+   padding: 10px;
+   margin: -15px -15px 15px;
+   border-bottom: 1px solid #ddd;
+   text-align: center;
+   font-size: 1.2em;
+ }
+ 
+ .modal-column ul {
+   list-style: none;
+   padding: 0;
+ }
 
-@media (22.025em <= width <= 30em) { /* vide */ }
-
-@media (30.025em <= width <= 40em) { /* vide */ }
-
-@media (40.025em <= width <= 64em) { /* vide */ }
-
-@media (64.025em <= width <= 90em) { /* vide */ }
-
-@media (90.025em <= width <= 120em) { /* vide */ }
-
-@media (120.025em <= width <= 160em) {
-  .voir-analyse-svg {
-    margin-bottom: -0.6rem;
-    width: 48px;
-    height: 48px;
-  }
-
-  .gomme-svg,
-  .analyse-svg,
-  .pdf-svg,
-  .graphique-svg {
-    margin-bottom: -0.2rem;
-    width: 48px;
-    height: 48px;
-  }
-}
-
-/*************************          Global     *********************************/
-
-/** Suppression du style in line */
-.owasp-padding-left { padding-left: 2rem; }
-
-.owasp-padding-left-right {
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
-
-/* Bouton SVG */
-.voir-details-svg {
-  fill: #00445b;
-  cursor: pointer;
-  margin-bottom: -0.2rem;
-  width: 32px;
-  height: 32px;
-}
-
-.voir-details-svg:hover { fill: #c45d4e; }
-
-/* Information bug, vulnérabilité et code_smell  */
-.stat-list {
-  list-style-type: none;
-  clear: left;
-  margin: 0;
-  padding: 0;
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-.stat-list-bleu {
-  color: #00445b;
-}
-
-.stat-list > li {
-  display: inline-block;
-  margin-right: 10px;
-  padding-right: 10px;
-  border-right: 1px solid #cacaca;
-  text-align: center;
-  font-size: 1.1em;
-  font-weight: bold;
-}
-
-.stat-list > li:last-child {
+ .modal-column li:last-child {
+   border-bottom: none;
+ }
+ 
+ .close-button {
+  background-color: #f44336;
+  color: white;
   border: none;
-  margin: 0;
-  padding: 0;
+  padding: 10px 20px;
+  cursor: pointer;
+  float: right;
+  border-radius: 4px;
+  font-size: 16px;
+  transition: background-color 0.3s, box-shadow 0.3s;
+  box-shadow: 0 4px 6px rgba(0 0 0 / 10%);
+}
+ 
+.close-button:hover {
+  background-color: #e31b0c;
+  box-shadow: 0 6px 8px rgba(0 0 0 / 20%);
 }
 
-.stat-list > li .stat-list-label {
-  display: block;
-  margin-top: 2px;
-  font-size: 1.2em;
-  font-weight: normal;
+.close-button:active {
+  background-color: #c62828;
+  box-shadow: 0 2px 4px rgba(0 0 0 / 20%);
 }
 
-/* Affiche les statisiques dans les modales */
-.stat-detail {
-  border-radius: 0.3rem;
-  text-align: center;
-  padding-left: 26px;
-  padding-right: 26px;
-  margin-bottom: 0.8rem;
+.close-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255 69 58 / 50%);
 }
-
-.resultat {
-  padding-left: 0.5rem;
-  color: #333;
-  flex: 1;
-  text-align: right;
-  white-space: nowrap;
-}
-
-.small { font-size: 1rem; }
-
-.ligne {
-  margin: 0.1rem;
-  display: flex;
-}
-
-.stat {
-  line-height: 0.9;
-  font-size: 2rem;
-}
-
-.stat-note { font-size: 1.5rem; }
-
-.stat-owasp {
-  line-height: 0.9;
-  font-size: 1.5rem;
-}
-
-.strong { font-weight: 700; }
-.light { font-weight: 300; }
-
-.box {
-  color: #fff;
-  border: solid 1px;
-  border-radius: 0.3rem;
-  padding-left: 30px;
-  padding-right: 30px;
-}
-
-/* Ajuste ka taille des badge */
-.badge { font-size: 1rem; }
-
-/* a supprimer dans la prochaine version */
-.badge-rouge { margin-bottom: -10px; }
-
-/* menu référentiel-owasp */
-.referentiel-owasp-menu {
-  background-color: white;
-  border-radius: 5px;
-  margin-top: 0.5rem;
-}
-
-.accordion-menu .is-accordion-submenu-parent:not(.has-submenu-toggle) > a::after {
-  border-color: #00445b;
-}
-
-.referentiel-owasp-titre {
-  color: #000;
-  font-weight: 700;
-}
-
-.referentiel-owasp-titre:hover {
-  color: #c45d4e;
-  font-weight: 800;
-}
-
-/* Liste des hotpost */
-.component {
-  word-break: break-all;
-}
+ 
+ /* Ajuste ka taille des badge */
+ .badge { font-size: 1rem; }
+ 
+ /* a supprimer dans la prochaine version */
+ .badge-rouge { margin-bottom: -10px; }
+ 
+ /* menu référentiel-owasp */
+ .referentiel-owasp-menu {
+   background-color: white;
+   border-radius: 5px;
+   margin-top: 0.5rem;
+ }
+ 
+ .accordion-menu .is-accordion-submenu-parent:not(.has-submenu-toggle) > a::after {
+   border-color: #00445b;
+ }
+ 
+ .referentiel-owasp-titre {
+   color: #000;
+   font-weight: 700;
+ }
+ 
+ .referentiel-owasp-titre:hover {
+   color: #c45d4e;
+   font-weight: 800;
+ }
+ 
+ /* Liste des hotpost */
+ .component {
+   word-break: break-all;
+ }
+ 
+ /* Affiche les statisiques dans les modales */
+ .stat-detail {
+   border-radius: 0.3rem;
+   text-align: center;
+   padding-left: 26px;
+   padding-right: 26px;
+   margin-bottom: 0.8rem;
+ }
+ 
+ .resultat {
+   padding-left: 0.5rem;
+   color: #333;
+   flex: 1;
+   text-align: right;
+   white-space: nowrap;
+ }
+ 
+ .small { font-size: 1rem; }
+ 
+ .ligne {
+   margin: 0.1rem;
+   display: flex;
+ }
+ 
+ .stat {
+   line-height: 0.9;
+   font-size: 2rem;
+ }
+ 
+ .stat-note { font-size: 1.5rem; }
+ 
+ .stat-owasp {
+   line-height: 0.9;
+   font-size: 1.5rem;
+ }
+ 
+ .strong { font-weight: 700; }
+ .light { font-weight: 300; }
+ 
+ .box {
+   color: #fff;
+   border: solid 1px;
+   border-radius: 0.3rem;
+   padding-left: 30px;
+   padding-right: 30px;
+ }

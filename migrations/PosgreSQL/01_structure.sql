@@ -511,7 +511,8 @@ CREATE TABLE owasp_top10 (
   id INTEGER NOT NULL DEFAULT nextval('owasp_top10_id_seq'), -- Identifiant unique
   year INT NOT NULL,
   category VARCHAR(255) NOT NULL, -- Codes comme a1, a2, etc.
-  description TEXT NOT NULL -- Description de la vulnérabilité
+  description TEXT NOT NULL, -- Description de la vulnérabilité
+  detailed_description text NULL -- Description détaillé
 );
 
 -- Création des sequences :

@@ -21,7 +21,6 @@
 		{% block stylesheets %}
 			{{ encore_entry_link_tags('owasp') }}
 		{% endblock %}
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 	</head>
 
 	<body>
@@ -39,7 +38,8 @@
 						<a href="/projet">Projet</a>
 					</li>
 					<li>
-						<span class="show-for-sr">Vous êtes ici:</span>Owasp</li>
+						<span class="show-for-sr">Vous êtes ici:</span>Owasp
+					</li>
 				</ul>
 			</nav>
 		</header>
@@ -307,7 +307,10 @@
 					<option value="2017">OWASP 2017</option>
 					<option value="2021">OWASP 2021</option>
 				</select>
-				<button id="compare-button" class="button">Comparer les deux référentiels</button>
+				<br><br>
+
+				<!-- Bouton pour comparer les référentiels -->
+				<button class="button" data-open="compare-owasp-modal">Comparer les deux référentiels</button>
 				<br><br>
 
 				<!-- OWASP 2017 -->
@@ -318,9 +321,8 @@
 								<a class="claire-hand referentiel-owasp-titre">{{ item.category }}</a>
 								<ul class="menu vertical owasp-padding-left-right">
 									<li>
-										<p class="open-sans text-justify">{{ item.description }}
-											<button class="button small owasp-button" data-id="owasp2017-{{ loop.index }}">Plus de détails</button>
-										</p>
+										<p class="open-sans text-justify">{{ item.description }}</p>
+										<button class="button" onclick="window.location.href='/details/{{ item.id }}'">Plus de détails</button>
 									</li>
 								</ul>
 							</li>
@@ -336,9 +338,8 @@
 								<a class="claire-hand referentiel-owasp-titre">{{ item.category }}</a>
 								<ul class="menu vertical owasp-padding-left-right">
 									<li>
-										<p class="open-sans text-justify">{{ item.description }}
-											<button class="button small owasp-button" data-id="owasp2021-{{ loop.index }}">Plus de détails</button>
-										</p>
+										<p class="open-sans text-justify">{{ item.description }}</p>
+										<button class="button" onclick="window.location.href='/details/{{ item.id }}'">Plus de détails</button>
 									</li>
 								</ul>
 							</li>
@@ -371,219 +372,41 @@
 			</button>
 		</div>
 
+		<!-- Modal de comparaison -->
+		<div class="reveal large" id="compare-owasp-modal" data-reveal>
+			<div class="modal-header">
+				<h2>OWASP 2017 VS OWASP 2021</h2>
+			</div>
+			<div class="modal-content grid-x grid-margin-x">
+				<div class="cell small-12 medium-6 modal-column">
+					<h3>OWASP 2017</h3>
+					<ul class="vertical menu accordion-menu" data-accordion-menu>
+						{% for item in owasp2017 %}
+							<li id="o{{ loop.index }}" class="referentiel-owasp-menu">
+								<a class="claire-hand referentiel-owasp-titre">{{ item.category }}</a>
+							</li>
+						{% endfor %}
+					</ul>
+				</div>
+				<div class="cell small-12 medium-6 modal-column">
+					<h3>OWASP 2021</h3>
+					<ul class="vertical menu accordion-menu" data-accordion-menu>
+						{% for item in owasp2021 %}
+							<li id="o{{ loop.index }}" class="referentiel-owasp-menu">
+								<a class="claire-hand referentiel-owasp-titre">{{ item.category }}</a>
+							</li>
+						{% endfor %}
+					</ul>
+				</div>
+			</div>
+			<button class="close-button" data-close aria-label="Close modal" type="button">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
 		<br><br>
-    <div id="chart-container" style="width: 100%; height: 600px; display: none;">
-    <canvas id="owaspChart"></canvas>
 		{{ include('footer.html.twig') }}
 		{% block javascripts %}
 			{{ encore_entry_script_tags('owasp') }}
-      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-			<script>
-				document.getElementById( 'owasp-select' ).addEventListener( 'change', function ()
-{
-const selectedValue = this.value;
-const owasp2017 = document.getElementById( 'owasp-2017' );
-const owasp2021 = document.getElementById( 'owasp-2021' );
-const chartContainer = document.getElementById('chart-container');
-
-if ( selectedValue === '2017' )
-{
-owasp2017.style.display = 'block';
-owasp2021.style.display = 'none';
-chartContainer.style.display = 'none';
-}
-else if ( selectedValue === '2021' )
-{
-owasp2017.style.display = 'none';
-owasp2021.style.display = 'block';
-chartContainer.style.display = 'block';
-renderOwaspChart();
-}
-} );
-function renderOwaspChart() {
-            const ctx = document.getElementById('owaspChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'pie',
-                data: {
-                    labels: [
-                        'Contrôles d\'accès défaillants',
-                        'Défaillances cryptographiques',
-                        'Injection',
-                        'Conception non sécurisée',
-                        'Mauvaise configuration de sécurité',
-                        'Composants vulnérables et obsolètes',
-                        'Identification et authentification de mauvaise qualité',
-                        'Manque d\'intégrité des données et du logiciel',
-                        'Carence des systèmes de contrôle et de journalisation',
-                        'Falsification de requête côté serveur (SSRF)'
-                    ],
-                    datasets: [{
-                        label: 'OWASP Top 10 - 2021',
-                        data: [20, 15, 10, 15, 10, 5, 5, 10, 5, 5],
-                        backgroundColor: [
-                            'rgba(255, 99, 132, 0.2)',
-                            'rgba(54, 162, 235, 0.2)',
-                            'rgba(255, 206, 86, 0.2)',
-                            'rgba(75, 192, 192, 0.2)',
-                            'rgba(153, 102, 255, 0.2)',
-                            'rgba(255, 159, 64, 0.2)',
-                            'rgba(99, 255, 132, 0.2)',
-                            'rgba(162, 54, 235, 0.2)',
-                            'rgba(206, 255, 86, 0.2)',
-                            'rgba(192, 75, 192, 0.2)'
-                        ],
-                        borderColor: [
-                            'rgba(255, 99, 132, 1)',
-                            'rgba(54, 162, 235, 1)',
-                            'rgba(255, 206, 86, 1)',
-                            'rgba(75, 192, 192, 1)',
-                            'rgba(153, 102, 255, 1)',
-                            'rgba(255, 159, 64, 1)',
-                            'rgba(99, 255, 132, 1)',
-                            'rgba(162, 54, 235, 1)',
-                            'rgba(206, 255, 86, 1)',
-                            'rgba(192, 75, 192, 1)'
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                        },
-                        title: {
-                            display: true,
-                            text: 'OWASP Top 10 - 2021'
-                        }
-                    }
-                }
-            });
-        }
-
-document.getElementById( 'compare-button' ).addEventListener( 'click', function ()
-{
-const owasp2017 = document.getElementById( 'owasp-2017' );
-const owasp2021 = document.getElementById( 'owasp-2021' );
-owasp2017.style.display = 'block';
-owasp2021.style.display = 'block';
-
-const compareWindow = window.open( '', '_blank', 'width=1200,height=800' );
-compareWindow.document.write( `
-                    <html lang="fr">
-                    <head>
-                        <meta charset="UTF-8">
-                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                        <title>Comparaison des Référentiels OWASP</title>
-                        <link rel="stylesheet" href="path_to_your_css_file.css">
-                        <style>
-                            .owasp-comparison-container {
-                                display: flex;
-                                justify-content: space-between;
-                                padding: 20px;
-                            }
-                            .owasp-content {
-                                width: 48%;
-                            }
-                        </style>
-                    </head>
-                    <body>
-                        <div class="owasp-comparison-container">
-                            <div id="owasp-2017" class="owasp-content">
-                                <h2>OWASP 2017</h2>
-                                ${
-document.getElementById( 'owasp-2017' ).innerHTML
-}
-                            </div>
-                            <div id="owasp-2021" class="owasp-content">
-                                <h2>OWASP 2021</h2>
-                                ${
-document.getElementById( 'owasp-2021' ).innerHTML
-}
-                            </div>
-                        </div>
-                    </body>
-                    </html>
-                ` );
-compareWindow.document.close();
-} );
-const customMessages = {
-        'owasp2017-1': `
-            <h2>Aperçu</h2>
-            <p>Précédemment à la cinquième place, 94 % des applications ont été testées pour une forme de contrôle d'accès défaillant avec un taux d'incidence moyen de 3,81 %. Cette catégorie a le plus d'occurrences dans l'ensemble de données contribué avec plus de 318 000. Les Common Weakness Enumerations (CWE) notables incluses sont CWE-200: Exposure of Sensitive Information to an Unauthorized Actor, CWE-201: Insertion of Sensitive Information Into Sent Data et CWE-352: Cross-Site Request Forgery.</p>
-            <h2>Description</h2>
-            <p>Le contrôle d'accès applique une stratégie telle que les utilisateurs ne peuvent pas agir en dehors de leurs autorisations prévues. Les défaillances entraînent généralement la divulgation, la modification ou la destruction d'informations non autorisées de toutes les données ou l'exécution d'une fonctionnalité métier en dehors des limites de l'utilisateur. Les vulnérabilités courantes du contrôle d'accès incluent :</p>
-            <ul>
-                <li>Violation du principe du moindre privilège ou de refus par défaut, où l'accès ne doit être accordé que pour des capacités, des rôles ou des utilisateurs particuliers, mais est accessible à tous.</li>
-                <li>Contourner les contrôles d'accès en modifiant l'URL (falsification de paramètres ou navigation forcée), l'état interne de l'application ou la page HTML, ou en utilisant un outil d'attaque modifiant les requêtes API.</li>
-                <li>Autoriser l'affichage ou la modification du compte de quelqu'un d'autre, en fournissant son identifiant unique (références directes d'objet non sécurisées).</li>
-                <li>Accès à l'API avec des contrôles d'accès manquants pour POST, PUT et DELETE.</li>
-                <li>Élévation de privilège. Agir en tant qu'utilisateur sans être connecté ou agir en tant qu'administrateur lorsqu'il est connecté en tant qu'utilisateur.</li>
-                <li>Manipulation de métadonnées, comme le rejeu ou la falsification de JSON Web Token (JWT), de cookies ou de champs cachés, afin d'élever les privilèges ou abuser de l'invalidation JWT.</li>
-                <li>La mauvaise configuration de CORS permettant l'accès à l'API à partir d'origines non autorisées/non approuvées.</li>
-                <li>Forcer la navigation vers des pages authentifiées en tant qu'utilisateur non authentifié ou vers des pages privilégiées en tant qu'utilisateur standard.</li>
-            </ul>
-            <h2>Comment s'en prémunir</h2>
-            <p>Le contrôle d'accès n'est efficace que dans le code de confiance côté serveur ou des API serverless, où l'attaquant ne peut pas modifier la vérification du contrôle d'accès ou les métadonnées.</p>
-            <ul>
-                <li>À l'exception des ressources publiques, tout doit être bloqué par défaut.</li>
-                <li>Centraliser l'implémentation des mécanismes de contrôle d'accès et les réutiliser dans l'ensemble de l'application. Cela comprend de minimiser l'utilisation de CORS.</li>
-                <li>Le modèle de contrôle d'accès doit imposer l'appartenance des enregistrements, plutôt que de permettre à l'utilisateur de créer, lire, modifier ou supprimer n'importe quel enregistrement.</li>
-                <li>Les exigences métier spécifiques de l'application doivent être appliquées par domaines.</li>
-                <li>Désactiver le listing de dossier sur le serveur web, et vérifier que les fichiers de métadonnées (ex : .git) et de sauvegardes ne se trouvent pas dans l'arborescence web.</li>
-                <li>Tracer les échecs de contrôles d'accès, alerter les administrateurs quand c'est approprié (ex : échecs répétés).</li>
-                <li>Limiter la fréquence d'accès aux API et aux contrôleurs d'accès, afin de minimiser les dégâts que causeraient des outils d'attaques automatisés.</li>
-                <li>Les identifiants de session avec état doivent être invalidés côté serveur après une déconnexion. Les JWT, sans état, doivent être à durée de vie relativement courte pour que la fenêtre d'opportunité d'un attaquant soit minimisée. Pour les JWT avec une durée de vie plus longue, il est fortement recommandé de suivre le standard OAuth de révocation d'accès.</li>
-                <li>Les développeurs et les testeurs qualité doivent procéder à des tests unitaires et d'intégration sur les fonctionnalités de contrôle d'accès.</li>
-            </ul>
-            <h2>Exemple de scénarios d'attaque</h2>
-            <p>Scenario 1 : L'application utilise des données non vérifiées dans une requête SQL qui accède à des informations d'un compte :</p>
-            <code>
-                pstmt.setString(1, request.getParameter("acct"));
-                ResultSet results = pstmt.executeQuery( );
-            </code>
-            <p>En modifiant simplement le paramètre 'acct' dans le navigateur, un attaquant peut envoyer le numéro de compte qu'il veut. Si ce numéro n'est pas vérifié, l'attaquant peut accéder à n'importe quel compte utilisateur.</p>
-            <code>https://example.com/app/accountInfo?acct=notmyacct</code>
-            <p>Scenario 2 : Un attaquant force le navigateur à visiter des URL arbitraires. Il faut imposer des droits pour accéder à une page d'administration.</p>
-            <code>
-                https://example.com/app/getappInfo<br>
-                https://example.com/app/admin_getappInfo
-            </code>
-            <p>Si un utilisateur non-authentifié peut accéder à l'une des pages, c'est une faille. Si un non-administrateur peut accéder à une page d'administration, c'est une faille.</p>
-        `
-    };
-
-    document.querySelectorAll('.owasp-button').forEach(button => {
-        button.addEventListener('click', function() {
-            const id = this.getAttribute('data-id');
-            const description = customMessages[id] || "Description non disponible.";
-            const content = `
-                <html lang="fr">
-                <head>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>Détails OWASP</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; padding: 20px; }
-                        .description { margin-bottom: 20px; }
-                    </style>
-                </head>
-                <body>
-                    <h2>Détails de la vulnérabilité OWASP</h2>
-                    <div class="description">${description}</div>
-                </body>
-                </html>
-            `;
-
-            const newWindow = window.open('', '_blank', 'width=600,height=400');
-            newWindow.document.write(content);
-            newWindow.document.close();
-        });
-    });
-			</script>
 		{% endblock %}
-
-</div>
 	</body>
 </html>
