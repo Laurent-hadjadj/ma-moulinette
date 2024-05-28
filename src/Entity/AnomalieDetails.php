@@ -19,6 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: AnomalieDetailsRepository::class)]
+#[ORM\Table(name: "anomalie_details", schema: "ma_moulinette")]
 class AnomalieDetails
 {
     #[ORM\Id]
@@ -26,7 +27,7 @@ class AnomalieDetails
     #[ORM\Column(
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Identifiant unique pour les détails de l\'anomalie']
+        options: ['comment' => 'Identifiant unique pour les détails de l’anomalie']
     )]
     private $id;
 
@@ -34,12 +35,12 @@ class AnomalieDetails
         type: Types::STRING,
         length: 255,
         nullable: false,
-        options: ['comment' => 'Clé Maven pour l\'anomalie']
+        options: ['comment' => 'Clé Maven du projet']
     )]
     #[Assert\NotBlank]
     #[Assert\Length(
         max: 255,
-        maxMessage: "La clé Maven ne doit pas dépasser 128 caractères."
+        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères."
     )]
     private $mavenKey;
 
@@ -47,7 +48,7 @@ class AnomalieDetails
         type: Types::STRING,
         length: 128,
         nullable: false,
-        options: ['comment' => 'Nom de l\'anomalie']
+        options: ['comment' => 'Nom de l’anomalie']
     )]
     #[Assert\NotBlank]
     #[Assert\Length(
@@ -75,7 +76,7 @@ class AnomalieDetails
     #[ORM\Column(
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Nombre de bugs d\'information']
+        options: ['comment' => 'Nombre de bugs d’information']
     )]
     #[Assert\NotNull]
     private $bugInfo;
@@ -115,7 +116,7 @@ class AnomalieDetails
     #[ORM\Column(
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Nombre de vulnérabilités d\'information']
+        options: ['comment' => 'Nombre de vulnérabilités d’information']
     )]
     #[Assert\NotNull]
     private $vulnerabilityInfo;
@@ -139,7 +140,7 @@ class AnomalieDetails
     #[ORM\Column(
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Nombre d\'odeurs de code bloquantes']
+        options: ['comment' => 'Nombre de mauvaises pratiques bloquantes']
     )]
     #[Assert\NotNull]
     private $codeSmellBlocker;
@@ -147,7 +148,7 @@ class AnomalieDetails
     #[ORM\Column(
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Nombre d\'odeurs de code critiques']
+        options: ['comment' => 'Nombre de mauvaises pratiques critiques']
     )]
     #[Assert\NotNull]
     private $codeSmellCritical;
@@ -155,7 +156,7 @@ class AnomalieDetails
     #[ORM\Column(
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Nombre d\'odeurs de code d\'information']
+        options: ['comment' => 'Nombre de mauvaises pratiques d’information']
     )]
     #[Assert\NotNull]
     private $codeSmellInfo;
@@ -163,7 +164,7 @@ class AnomalieDetails
     #[ORM\Column(
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Nombre d\'odeurs de code majeures']
+        options: ['comment' => 'Nombre de mauvaises pratiques majeures']
     )]
     #[Assert\NotNull]
     private $codeSmellMajor;
@@ -171,15 +172,15 @@ class AnomalieDetails
     #[ORM\Column(
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Nombre d\'odeurs de code mineures']
+        options: ['comment' => 'Nombre de mauvaises pratiques mineures']
     )]
     #[Assert\NotNull]
     private $codeSmellMinor;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
-        options: ['comment' => 'Date d\'enregistrement des détails de l\'anomalie']
+        options: ['comment' => 'Date d’enregistrement des détails de l’anomalie']
     )]
     #[Assert\NotNull]
     private $dateEnregistrement;

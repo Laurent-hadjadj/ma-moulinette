@@ -21,6 +21,7 @@ use App\Validator as AcmeAssert;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: EquipeRepository::class)]
+#[ORM\Table(name: "equipe", schema: "ma_moulinette")]
 class Equipe
 {
     #[ORM\Id]
@@ -28,7 +29,7 @@ class Equipe
     #[ORM\Column(
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Identifiant unique de l\'équipe']
+        options: ['comment' => 'Identifiant unique de l’équipe']
     )]
     private $id;
 
@@ -38,7 +39,7 @@ class Equipe
         length: 32,
         unique: true,
         nullable: false,
-        options: ['comment' => 'Titre de l\'équipe, unique']
+        options: ['comment' => 'Titre de l’équipe, unique']
     )]
     #[AcmeAssert\ContainsEquipeUnique]
     #[Assert\NotBlank]
@@ -52,7 +53,7 @@ class Equipe
         type: Types::STRING,
         length: 128,
         nullable: false,
-        options: ['comment' => 'Description de l\'équipe']
+        options: ['comment' => 'Description de l’équipe']
     )]
     #[Assert\NotBlank]
     #[Assert\Length(
@@ -62,17 +63,17 @@ class Equipe
     private $description;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_MUTABLE,
         nullable: true,
-        options: ['comment' => 'Date de la dernière modification de l\'équipe']
+        options: ['comment' => 'Date de la dernière modification de l’équipe']
     )]
     #[Assert\NotNull]
     private $dateModification;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
-        options: ['comment' => 'Date d\'enregistrement de l\'équipe']
+        options: ['comment' => 'Date d’enregistrement de l’équipe']
     )]
     #[Assert\NotNull]
     private $dateEnregistrement;

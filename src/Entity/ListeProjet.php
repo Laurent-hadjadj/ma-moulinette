@@ -19,6 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ListeProjetRepository::class)]
+#[ORM\Table(name: "liste_projet", schema: "ma_moulinette")]
 class ListeProjet
 {
     #[ORM\Id]
@@ -35,6 +36,10 @@ class ListeProjet
         length: 255,
         nullable: false,
         options: ['comment' => 'Clé Maven du projet']
+    )]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères."
     )]
     #[Assert\NotBlank]
     private $mavenKey;
@@ -66,9 +71,9 @@ class ListeProjet
     private $visibility;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
-        options: ['comment' => 'Date d\'enregistrement du projet']
+        options: ['comment' => 'Date d’enregistrement du projet']
     )]
     #[Assert\NotNull]
     private $dateEnregistrement;

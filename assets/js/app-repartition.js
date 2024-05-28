@@ -29,7 +29,7 @@ import { contentType, cent, mille, soixante } from './constante.js';
 
 /* Construction des callbox pour les messages utilisateurs */
 const callboxInformation='<div class="callout primary text-justify" data-closable="slide-out-right"><p style="color:#00445b;" class="open-sans" cell">Information ! ';
-const callboxError='<div class="callout alert text-justify" data-closable="slide-out-right"><p style="color:#00445b;" class="open-sans" cell">Ooups ! ';
+const callboxError='<div class="callout alert text-justify" data-closable="slide-out-right"><p style="color:#00445b;" class="open-sans" cell">Oups ! ';
 const callboxFermer='<button class="close-button" aria-label="Fermer la fenêtre" type="button" data-close><span aria-hidden="true">&times;</span></button></div>';
 
 /** On récupère la clé maven de la clé de l'application. */
@@ -400,13 +400,6 @@ const analyse=function(mavenKey, type, severity, css){
  * [Description for collecte]
  * On lance la collecte et on affiche la répartition
  *
- * @param mixed mavenKey
- * @param mixed type
- * @param mixed severity
- * @param mixed start
- * @param mixed stop
- * @param mixed counter
- * @param mixed timer
  * @param mavenKey
  * @param type
  * @param severity
@@ -414,7 +407,7 @@ const analyse=function(mavenKey, type, severity, css){
  * @param stop
  * @param counter
  * @param timer
- * @returns [type]
+ * @returns void
  *
  * Created at: 19/12/2022, 22:46:29 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -474,7 +467,7 @@ const collecte=function(mavenKey, type, severity, start, stop, counter, timer) {
   /** On récupère le setup par défaut de l'application */
   const setup=timestamp('collecte');
 
-  /** Déclaration des parametres de l'appel du service */
+  /** Déclaration des paramètres de l'appel du service */
   const data = { mavenKey, type, severity, setup, mode:'null' };
   const options = {
     url: `${serveur()}/api/projet/repartition/collecte`,
@@ -505,7 +498,7 @@ const collecte=function(mavenKey, type, severity, start, stop, counter, timer) {
 };
 
 /**
- * [Description for resultat]
+ * [Description for résultat]
  * On récupère le nombre d'anomalie par type
  *
  * @param mixed mavenKey
@@ -525,7 +518,7 @@ const resultat=function(mavenKey, type) {
     url: `${serveur()}/api/projet/repartition/details`, type: 'GET',
     dataType: 'json', data, contentType };
 
-  /** On va chercher les resutats. */
+  /** On va chercher les résultats. */
   return $.ajax(options).then(t => {
 
     if ( type==='BUG') {
@@ -705,7 +698,7 @@ $('#collecte-bug').on('click', ()=>{
   fnAsync();
 });
 
-/** On lance la collecte ppour les VULNERABILITY */
+/** On lance la collecte pour les VULNERABILITY */
 $('#collecte-vulnerabilite').on('click', ()=>{
 
   /** on récupère les résultats binder dans la page. */
@@ -723,7 +716,7 @@ $('#collecte-vulnerabilite').on('click', ()=>{
   const major=t5.dataset.nombreVulnerabiliteMajeur;
   const minor=t6.dataset.nombreVulnerabiliteMineur;
 
-  /** On initialise le timer pour les vulnerabilités */
+  /** On initialise le timer pour les vulnérabilités */
   const timer = document.getElementById('js-vulnerabilite-time');
   timer.dataset.timer=0;
 
@@ -796,7 +789,7 @@ $('#collecte-vulnerabilite').on('click', ()=>{
     $('#etape-2').css('color', '#c45d4e');
   }
 
-  /** On appelle la fonction de récupèration des sévérités pour les VULNERABILITY */
+  /** On appelle la fonction de récupération des sévérités pour les VULNERABILITY */
   fnAsync();
 });
 
@@ -818,7 +811,7 @@ $('#collecte-mauvaise-pratique').on('click', ()=>{
   const major=t5.dataset.nombreMauvaisePratiqueMajeur;
   const minor=t6.dataset.nombreMauvaisePratiqueMineur;
 
-  /** On initialise le timer pour les vulnerabilités */
+  /** On initialise le timer pour les vulnérabilités */
   const timer = document.getElementById('js-mauvaise-pratique-time');
   timer.dataset.timer=0;
 
@@ -904,12 +897,12 @@ $('.bouton-supprime-donnees').on('click', ()=>{
 
 $('.bouton-repartition-traitement-donnees').on('click', ()=>{
 
-  /** On lance la fonction asynchonne */
+  /** On lance la fonction asynchrone */
   async function fnAsync() {
 
     const tabTitre=`<tr>
     <th scope="col"></th>
-    <th scope="col" class="text-center"><strong>Application Présentaton</strong></th>
+    <th scope="col" class="text-center"><strong>Application Présentation</strong></th>
     <th scope="col" class="text-center"><strong>Application Métier</strong></th>
     <th scope="col" class="text-center"><strong>Autres</strong></th>
     <th scope="col" class="text-center"><strong>IdC</strong></th></tr>`;
@@ -943,7 +936,7 @@ $('.bouton-repartition-traitement-donnees').on('click', ()=>{
     await analyse(_mavenkey, 'CODE_SMELL', 'MINOR', 'texte-vert');
   }
 
-  /** On lance la fonction assynchrone */
+  /** On lance la fonction asynchrone */
   fnAsync();
 });
 
@@ -953,7 +946,7 @@ $('.bouton-repartition-traitement-donnees').on('click', ()=>{
  *
  */
 
-/** On va chercher les informations par type et par séverité */
+/** On va chercher les informations par type et par sévérité */
 resultat(_mavenkey, 'BUG' );
 resultat(_mavenkey, 'VULNERABILITY' );
 resultat(_mavenkey, 'CODE_SMELL' );

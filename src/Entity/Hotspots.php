@@ -19,6 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: HotspotsRepository::class)]
+#[ORM\Table(name: "hotspots", schema: "ma_moulinette")]
 class Hotspots
 {
     #[ORM\Id]
@@ -34,12 +35,12 @@ class Hotspots
         type: Types::STRING,
         length: 255,
         nullable: false,
-        options: ['comment' => 'Clé Maven du hotspot']
+        options: ['comment' => 'Clé Maven du projet']
     )]
     #[Assert\NotBlank]
     #[Assert\Length(
         max: 255,
-        maxMessage: "La clé Maven ne doit pas dépasser 128 caractères."
+        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères."
     )]
     private $mavenKey;
 
@@ -57,7 +58,7 @@ class Hotspots
     private $version;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
         options: ['comment' => 'Date de la version du hotspot']
     )]
@@ -112,9 +113,9 @@ class Hotspots
     private $niveau;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
-        options: ['comment' => 'Date d\'enregistrement du hotspot']
+        options: ['comment' => 'Date d’enregistrement du hotspot']
     )]
     #[Assert\NotNull]
     private $dateEnregistrement;

@@ -19,6 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: AnomalieRepository::class)]
+#[ORM\Table(name: "anomalie", schema: "ma_moulinette")]
 class Anomalie
 {
     #[ORM\Id]
@@ -26,7 +27,7 @@ class Anomalie
     #[ORM\Column(
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Identifiant unique de l\'anomalie']
+        options: ['comment' => 'Identifiant unique de l’anomalie']
     )]
     private $id;
 
@@ -34,12 +35,12 @@ class Anomalie
         type: Types::STRING,
         length: 255,
         nullable: false,
-        options: ['comment' => 'Clé Maven de l\'anomalie']
+        options: ['comment' => 'Clé Maven du projet']
     )]
     #[Assert\NotBlank]
     #[Assert\Length(
         max: 255,
-        maxMessage: "La clé Maven ne doit pas dépasser 128 caractères."
+        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères."
     )]
     private $mavenKey;
 
@@ -47,7 +48,7 @@ class Anomalie
         type: Types::STRING,
         length: 128,
         nullable: false,
-        options: ['comment' => 'Nom du projet associé à l\'anomalie']
+        options: ['comment' => 'Nom du projet associé à l’anomalie']
     )]
     #[Assert\NotBlank]
     #[Assert\Length(
@@ -59,7 +60,7 @@ class Anomalie
     #[ORM\Column(
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Nombre total d\'anomalies']
+        options: ['comment' => 'Nombre total d’anomalies']
     )]
     #[Assert\NotNull]
     private $anomalieTotal;
@@ -91,7 +92,7 @@ class Anomalie
     #[ORM\Column(
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Minutes de la dette de odeurs de code']
+        options: ['comment' => 'Minutes de la dette de mauvaises pratiques']
     )]
     #[Assert\NotNull]
     private $detteCodeSmellMinute;
@@ -127,7 +128,7 @@ class Anomalie
         type: Types::STRING,
         length: 32,
         nullable: false,
-        options: ['comment' => 'Dette des odeurs de code']
+        options: ['comment' => 'Dette des mauvaises pratiques']
     )]
     #[Assert\NotBlank]
     private $detteCodeSmell;
@@ -215,15 +216,15 @@ class Anomalie
     #[ORM\Column(
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Nombre total d\'odeurs de code']
+        options: ['comment' => 'Nombre total d’mauvaises pratiques']
     )]
     #[Assert\NotNull]
     private $codeSmell;
 
     #[ORM\Column(
-        type: Types::DATE_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
-        options: ['comment' => 'Date d\'enregistrement de l\'anomalie']
+        options: ['comment' => 'Date d’enregistrement de l’anomalie']
     )]
     #[Assert\NotNull]
     private $dateEnregistrement;

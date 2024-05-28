@@ -19,6 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ProfilesHistoriqueRepository::class)]
+#[ORM\Table(name: "portefeuille_historique", schema: "ma_moulinette")]
 class ProfilesHistorique
 {
     #[ORM\Id]
@@ -28,10 +29,10 @@ class ProfilesHistorique
         nullable: false,
         options: ['comment' => 'Identifiant unique pour chaque historique de profil']
     )]
-    private ?int $id = null;
+    private $id;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
         options: ['comment' => 'Date courte associée à l’historique']
     )]
@@ -49,7 +50,7 @@ class ProfilesHistorique
     private $language;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
         options: ['comment' => 'Date complète de l’événement de l’historique']
     )]
@@ -60,7 +61,7 @@ class ProfilesHistorique
         type: Types::STRING,
         length: 16,
         nullable: false,
-        options: ['comment' => 'Action réalisée, par exemple "modification" ou "création"']
+        options: ['comment' => 'Action réalisée, par exemple modification ou création']
     )]
     #[Assert\NotBlank]
     #[Assert\Length(max: 16)]
@@ -103,7 +104,7 @@ class ProfilesHistorique
     private $detail;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
         options: ['comment' => 'Date d’enregistrement de l’entrée historique dans la base de données']
     )]

@@ -158,7 +158,7 @@ class UtilisateurRepository extends ServiceEntityRepository
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            $response=['code'=>500, 'erreur'=> $e->getCode()];
+            $response=['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return $response;
     }
@@ -256,7 +256,7 @@ class UtilisateurRepository extends ServiceEntityRepository
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            $response=['code'=>500, 'erreur'=> $e->getCode()];
+            $response=['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return $response;
     }
@@ -316,7 +316,7 @@ class UtilisateurRepository extends ServiceEntityRepository
                         $stmt->executeStatement();
             } catch (\Doctrine\DBAL\Exception $e) {
                 $this->getEntityManager()->getConnection()->rollBack();
-                $response = ['code'=>500, 'statut'=>-1, 'erreur'=> $e->getCode()];
+                $response = ['code'=>500, 'statut'=>-1, 'erreur'=> $e->getMessage()];
             }
             $response = ['code'=> 200, 'statut'=>0, 'erreur'=>''];
         } else {
@@ -346,7 +346,7 @@ class UtilisateurRepository extends ServiceEntityRepository
 
             } catch (\Doctrine\DBAL\Exception $e) {
                 $this->getEntityManager()->getConnection()->rollBack();
-                $response = ['code'=>500, 'statut'=>-1, 'erreur'=> $e->getCode()];
+                $response = ['code'=>500, 'statut'=>-1, 'erreur'=> $e->getMessage()];
             }
             $response = ['code'=> 200, 'statut'=>1, 'erreur'=>''];
         }
@@ -379,7 +379,7 @@ class UtilisateurRepository extends ServiceEntityRepository
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            return ['code'=>500, 'statut'=>-1, 'erreur'=> $e->getCode()];
+            return ['code'=>500, 'statut'=>-1, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'erreur'=>''];
     }

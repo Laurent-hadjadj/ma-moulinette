@@ -19,6 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: HotspotOwaspRepository::class)]
+#[ORM\Table(name: "hotspot_owasp", schema: "ma_moulinette")]
 class HotspotOwasp
 {
     #[ORM\Id]
@@ -34,12 +35,12 @@ class HotspotOwasp
         type: Types::STRING,
         length: 255,
         nullable: false,
-        options: ['comment' => 'Clé Maven du hotspot OWASP']
+        options: ['comment' => 'Clé Maven du projet']
     )]
     #[Assert\NotBlank(message: "La clé Maven ne peut pas être vide.")]
     #[Assert\Length(
         max: 255,
-        maxMessage: "La clé Maven ne doit pas dépasser 128 caractères."
+        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères."
     )]
     private $mavenKey;
 
@@ -57,7 +58,7 @@ class HotspotOwasp
     private $version;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
         options: ['comment' => 'Date de la version du hotspot OWASP']
     )]
@@ -112,9 +113,9 @@ class HotspotOwasp
     private $niveau;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
-        options: ['comment' => 'Date d\'enregistrement du hotspot OWASP']
+        options: ['comment' => 'Date d’enregistrement du hotspot OWASP']
     )]
     #[Assert\NotNull(message: "La date d'enregistrement ne peut pas être nulle.")]
     private $dateEnregistrement;

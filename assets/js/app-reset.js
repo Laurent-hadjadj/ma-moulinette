@@ -51,7 +51,7 @@ const checkKoSvg = `<svg xmlns="http://www.w3.org/2000/svg" overflow="visible" x
 
 /** Nettoyage de formulaire */
 $('#reset_password_form_plainPassword_first').val('');
-$('#reset_passowrd_form_plainPassword_second').val('');
+$('#reset_password_form_plainPassword_second').val('');
 $('#message-erreur-valider').val('');
 
 /** Ajout du label pour le mot de passe. On ne fait pas de contrôle. */
@@ -121,10 +121,10 @@ $('#valider-formulaire-enregistrement').on('click', async ()=>{
   const passwordLength=$('#reset_password_form_plainPassword_first').val().length;
   const repasswordLength=$('#reset_password_form_plainPassword_second').val().length;
   const passwordValue=$('#reset_password_form_plainPassword_first').val();
-  const repassordValue=$('#reset_password_form_plainPassword_second').val();
+  const repasswordValue=$('#reset_password_form_plainPassword_second').val();
 
 if ( initialPasswordLength>0 && passwordLength>=8 && repasswordLength>=8 &&
-    passwordValue===repassordValue) {
+    passwordValue===repasswordValue) {
       $('#message-erreur-valider').html('');
       $('#valider-formulaire-enregistrement').attr('type', 'submit');
       const link = document.getElementById('valider-formulaire-enregistrement');
@@ -153,6 +153,6 @@ function changeType(x, type) {
   try {
     return x.prop('type', type); //Stupid IE security will not allow this
   } catch(e) {
-    console.log('Stupid IE security will not allow this')
+    sessionStorage.setItem('info','Stupid IE security will not allow this !!!')
   }
 }

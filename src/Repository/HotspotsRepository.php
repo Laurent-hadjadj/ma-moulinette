@@ -42,19 +42,17 @@ class HotspotsRepository extends ServiceEntityRepository
      */
     public function deleteHotspotsMavenKey($map):array
     {
-        $sql = "DELETE
-                FROM hotspots
-                WHERE maven_key=:maven_key";
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-        $conn->bindValue(':maven_key', $map['maven_key']);
+
         try {
-                #if ($mode !== 'TEST') {
+            $this->getEntityManager()->getConnection()->beginTransaction();
+            $sql = "DELETE
+                    FROM hotspots
+                    WHERE maven_key=:maven_key";
+            $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+            $conn->bindValue(':maven_key', $map['maven_key']);
                     $conn->executeQuery();
-                #} else {
-                    return ['code'=> 202, 'erreur'=>'TEST'];
-                #}
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['code'=>500, 'erreur'=> $e->getCode()];
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'erreur'=>''];
     }
@@ -72,20 +70,19 @@ class HotspotsRepository extends ServiceEntityRepository
      */
     public function selectHotspotsToReview($map):array
     {
-        $sql = "SELECT *
-                FROM hotspots
-                WHERE maven_key=:maven_key AND status='TO_REVIEW'
-                ORDER BY niveau";
-    $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-        $conn->bindValue(':maven_key', $map['maven_key']);
         try {
-                #if ($mode !== 'TEST') {
-                    $liste=$conn->executeQuery()->fetchAllAssociative();
-                #} else {
-                    return ['code'=> 202, 'erreur'=>'TEST'];
-                #}
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "SELECT *
+                        FROM hotspots
+                        WHERE maven_key=:maven_key AND status='TO_REVIEW'
+                        ORDER BY niveau";
+                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $conn->bindValue(':maven_key', $map['maven_key']);
+                $liste=$conn->executeQuery()->fetchAllAssociative();
+            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['code'=>500, 'erreur'=> $e->getCode()];
+            $this->getEntityManager()->getConnection()->rollBack();
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'erreur'=>'', 'liste'=>$liste];
     }
@@ -103,21 +100,20 @@ class HotspotsRepository extends ServiceEntityRepository
      */
     public function countHotspotsStatus($map):array
     {
-        $sql = "SELECT COUNT(*) as nombre
-                FROM hotspots
-                WHERE maven_key=:maven_key AND status=:status";
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-        $conn->bindValue(':maven_key', $map['maven_key']);
-        $conn->bindValue(':status', $map['status']);
         try {
-                #if ($mode !== 'TEST') {
-                    $exec=$conn->executeQuery();
-                    $nombre=$exec->fetchAllAssociative();
-                #} else {
-                    return ['code'=> 202, 'erreur'=>'TEST'];
-                #}
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "SELECT COUNT(*) as nombre
+                        FROM hotspots
+                        WHERE maven_key=:maven_key AND status=:status";
+                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $conn->bindValue(':maven_key', $map['maven_key']);
+                $conn->bindValue(':status', $map['status']);
+                $exec=$conn->executeQuery();
+                $nombre=$exec->fetchAllAssociative();
+            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['code'=>500, 'erreur'=> $e->getCode()];
+            $this->getEntityManager()->getConnection()->rollBack();
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'erreur'=>'', 'nombre'=>$nombre];
     }
@@ -135,22 +131,21 @@ class HotspotsRepository extends ServiceEntityRepository
      */
     public function selectHotspotsByNiveau($map):array
     {
-        $sql = "SELECT niveau, count(*) as hotspot
-                FROM hotspots
-                WHERE maven_key=:maven_key AND status=:status
-                GROUP BY niveau";
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-        $conn->bindValue(':maven_key', $map['maven_key']);
-        $conn->bindValue(':status', $map['status']);
         try {
-                #if ($mode !== 'TEST') {
-                    $exec=$conn->executeQuery();
-                    $liste=$exec->fetchAllAssociative();
-                #} else {
-                    return ['code'=> 202, 'erreur'=>'TEST'];
-                #}
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "SELECT niveau, count(*) as hotspot
+                        FROM hotspots
+                        WHERE maven_key=:maven_key AND status=:status
+                        GROUP BY niveau";
+                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $conn->bindValue(':maven_key', $map['maven_key']);
+                $conn->bindValue(':status', $map['status']);
+                $exec=$conn->executeQuery();
+                $liste=$exec->fetchAllAssociative();
+            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['code'=>500, 'erreur'=> $e->getCode()];
+            $this->getEntityManager()->getConnection()->rollBack();
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'erreur'=>'', 'liste'=>$liste];
     }

@@ -24,8 +24,8 @@ parameters:
     maj.profil: '%env(MAJ_PROFIL)%'
 
     # Traitement
-    csrf.salt: '%env(SALT)%'
-    path.audit: '%env(AUDIT)%'
+    csrf.salt: '%env(CSRF_SALT)%'
+    path.audit: '%env(PATH_AUDIT)%'
 
     # RGA
     rgaa: '%env(RGAA)%'

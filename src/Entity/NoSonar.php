@@ -19,6 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: NoSonarRepository::class)]
+#[ORM\Table(name: "no_sonar", schema: "ma_moulinette")]
 class NoSonar
 {
     #[ORM\Id]
@@ -37,7 +38,10 @@ class NoSonar
         options: ['comment' => 'Clé Maven identifiant le composant']
     )]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 255)]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères."
+    )]
     private $mavenKey;
 
     #[ORM\Column(
@@ -67,9 +71,9 @@ class NoSonar
     private $line;
 
     #[ORM\Column(
-        type: Types::DATE_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
-        options: ['comment' => 'Date d\'enregistrement de l\'entrée NoSonar']
+        options: ['comment' => 'Date d’enregistrement de l’entrée NoSonar']
     )]
     #[Assert\NotNull]
     private $dateEnregistrement;

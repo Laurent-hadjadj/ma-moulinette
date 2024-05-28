@@ -19,18 +19,30 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: NotesRepository::class)]
+#[ORM\Table(name: "notes", schema: "ma_moulinette")]
 class Notes
 {
     #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Identifiant unique pour chaque entrée Notes']
+    )]
+    private $id;
+
     #[ORM\Column(
         type: Types::STRING,
         length: 255,
         nullable: false,
-        options: ['comment' => 'Clé Maven unique identifiant la note']
+        options: ['comment' => 'Clé Maven unique du projet']
+    )]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères."
     )]
     private $mavenKey;
 
-    #[ORM\Id]
     #[ORM\Column(
         type: Types::STRING,
         length: 16,
@@ -41,14 +53,6 @@ class Notes
     private $type;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
-        nullable: false,
-        options: ['comment' => 'Date de la note']
-    )]
-    #[Assert\NotNull]
-    private $date;
-
-    #[ORM\Column(
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Valeur de la note']
@@ -57,12 +61,38 @@ class Notes
     private $value;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
-        options: ['comment' => 'Date d\'enregistrement de la note']
+        options: ['comment' => 'Date d’enregistrement de la note']
     )]
     #[Assert\NotNull]
     private $dateEnregistrement;
+
+    /**
+     * [Description for getId]
+     *
+     * @return int|null
+     *
+     * Created at: 02/01/2023, 18:04:21 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set the value of id
+     *
+     * @return  self
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
 
     /**
      * [Description for getMavenKey]
@@ -92,19 +122,6 @@ class Notes
         return $this->type;
     }
 
-    /**
-     * [Description for getDate]
-     *
-     * @return \DateTimeInterface|null
-     *
-     * Created at: 02/01/2023, 18:04:48 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getDate(): ?\DateTimeInterface
-    {
-        return $this->date;
-    }
 
     /**
      * [Description for getValue]
@@ -173,18 +190,6 @@ class Notes
     public function setType($type)
     {
         $this->type = $type;
-
-        return $this;
-    }
-
-    /**
-     * Set the value of date
-     *
-     * @return  self
-     */
-    public function setDate($date)
-    {
-        $this->date = $date;
 
         return $this;
     }

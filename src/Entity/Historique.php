@@ -20,17 +20,18 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 
 #[ORM\Entity(repositoryClass: HistoriqueRepository::class)]
+#[ORM\Table(name: "historique", schema: "ma_moulinette")]
 class Historique
 {
     #[ORM\Id]
     #[ORM\Column(
         type: Types::STRING,
         length: 255,
-        options: ['comment' => 'Clé Maven pour l\'historique des projets']
+        options: ['comment' => 'Clé Maven du projet']
     )]
     #[Assert\Length(
         max: 255,
-        maxMessage: "La clé Maven ne doit pas dépasser 128 caractères."
+        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères."
     )]
     private $mavenKey;
 
@@ -38,7 +39,7 @@ class Historique
     #[ORM\Column(
         type: Types::STRING,
         length: 32,
-        options: ['comment' => 'Version du projet dans l\'historique']
+        options: ['comment' => 'Version du projet dans l’historique']
     )]
     #[Assert\Length(
         max: 32,
@@ -95,14 +96,14 @@ class Historique
 
     #[ORM\Column(
         type: Types::INTEGER,
-        options: ['comment' => 'Compteur des suppressions d\'avertissements']
+        options: ['comment' => 'Compteur des suppressions d’avertissements']
     )]
     #[Assert\NotNull]
     private $suppressWarning;
 
     #[ORM\Column(
         type: Types::INTEGER,
-        options: ['comment' => 'Compteur de l\'utilisation de NoSonar']
+        options: ['comment' => 'Compteur de l’utilisation de NoSonar']
     )]
     #[Assert\NotNull]
     private $noSonar;
@@ -207,35 +208,35 @@ class Historique
 
     #[ORM\Column(
         type: Types::INTEGER,
-        options: ['comment' => 'Nombre d\'anomalies bloquantes']
+        options: ['comment' => 'Nombre d’anomalies bloquantes']
     )]
     #[Assert\NotNull]
     private $nombreAnomalieBloquant;
 
     #[ORM\Column(
         type: Types::INTEGER,
-        options: ['comment' => 'Nombre d\'anomalies critiques']
+        options: ['comment' => 'Nombre d’anomalies critiques']
     )]
     #[Assert\NotNull]
     private $nombreAnomalieCritique;
 
     #[ORM\Column(
         type: Types::INTEGER,
-        options: ['comment' => 'Nombre d\'anomalies d\'information']
+        options: ['comment' => 'Nombre d’anomalies d’information']
     )]
     #[Assert\NotNull]
     private $nombreAnomalieInfo;
 
     #[ORM\Column(
         type: Types::INTEGER,
-        options: ['comment' => 'Nombre d\'anomalies majeures']
+        options: ['comment' => 'Nombre d’anomalies majeures']
     )]
     #[Assert\NotNull]
     private $nombreAnomalieMajeur;
 
     #[ORM\Column(
         type: Types::INTEGER,
-        options: ['comment' => 'Nombre d\'anomalies mineures']
+        options: ['comment' => 'Nombre d’anomalies mineures']
     )]
     #[Assert\NotNull]
     private $nombreAnomalieMineur;
@@ -302,7 +303,7 @@ class Historique
 
     #[ORM\Column(
         type: Types::BOOLEAN,
-        options: ['comment' => 'Indique si c\'est l\'initialisation du projet']
+        options: ['comment' => 'Indique si c’est l’initialisation du projet']
     )]
     #[Assert\NotNull]
     private $initial;
@@ -337,7 +338,7 @@ class Historique
 
     #[ORM\Column(
         type: Types::INTEGER,
-        options: ['comment' => 'Nombre de bugs d\'information']
+        options: ['comment' => 'Nombre de bugs d’information']
     )]
     #[Assert\NotNull]
     private $bugInfo;
@@ -372,7 +373,7 @@ class Historique
 
     #[ORM\Column(
         type: Types::INTEGER,
-        options: ['comment' => 'Nombre de vulnérabilités d\'information']
+        options: ['comment' => 'Nombre de vulnérabilités d’information']
     )]
     #[Assert\NotNull]
     private $vulnerabilityInfo;
@@ -407,14 +408,14 @@ class Historique
 
     #[ORM\Column(
         type: Types::INTEGER,
-        options: ['comment' => 'Nombre de smells de code d\'information']
+        options: ['comment' => 'Nombre de smells de code d’information']
     )]
     #[Assert\NotNull]
     private $codeSmellInfo;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
-        options: ['comment' => 'Date d\'enregistrement de l\'historique']
+        type: Types::DATETIMETZ_IMMUTABLE,
+        options: ['comment' => 'Date d’enregistrement de l’historique']
     )]
     #[Assert\NotNull]
     private $dateEnregistrement;

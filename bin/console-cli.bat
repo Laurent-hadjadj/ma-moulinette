@@ -1,9 +1,25 @@
 @echo off
-@call lecteur.bat
+set filename=lecteur.bat
+set found=0
+for %%d in (C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (
+    if exist %%d:\environnement\%filename% (
+        set found=1
+        goto :found
+    )
+)
+
+:found
+@if %found%==0 (
+@echo Le fichier %filename% n'a pas été trouvé sur les disques disponibles.
+@goto :exit
+
+@call  %%d:\environnement\lecteur.bat
+)
+
 @mode con: cols=160 lines=70
 @color 0f
 @CHCP 65001
-@set VERSION=2014-05-15 v1.7.0
+@set VERSION=2024-05-24 v1.9.0
 @title Laurent HADJADJ - version %VERSION%
 @cls
 @echo ".. __  __             __  __             _              _   _       "
@@ -25,26 +41,32 @@
 @rem Laurent HADJADJ - 2023-09-18 v1.4.0
 @rem Laurent HADJADJ - 2024-04-12 v1.5.0 - Refactoring des différents scripts : normalisation des variables + maj des programmes
 @rem Laurent HADJADJ - 2024-04-13 v1.6.0 - Ajout du logo + call lecteur.bat
-@rem Laurent HADJADJ - 2024-04-13 v1.7.0 - Ajout de python et mkDocs
+@rem Laurent HADJADJ - 2024-05-15 v1.7.0 - Ajout de python
+@rem Laurent HADJADJ - 2024-05-23 v1.8.0 - Ajout dans le path des scripts tools
+@rem Laurent HADJADJ - 2024-05-24 v1.9.0 - tests du lecteur par défaut
 
 @echo:
 @echo Env         	: dev
-@echo Script      	: 1.6.0
+@echo lecteur         : %LECTEUR%
+@echo version:        : %VERSION%
 @echo Symfony     	: 6.4.7
 @echo Symfony-cli 	: 5.8.2
-@echo Php         	: 8.3.0-NTS
+@echo php         	: 8.3.0-NTS
 @echo nodejs      	: 18.17.1
-@echo Python   	    : 3.12.3
+@echo python   	: 3.12.3
 @echo maven       	: 3.8.8
 @echo jdk         	: 17
 @echo posgresql   	: 15.6
 @echo sonarqube   	: 9.9.4-LTS
 
 @echo:
-@set app=%lecteur%\environnement
+@set app=%LECTEUR%\environnement
+@set SCRIPT_PATH=%app%\ma-moulinette\bin\
+@set SYMFONY_PATH=%app%\0_toolz\symfony-cli\current\
 @set PHP_PATH=%app%\0_toolz\php-8.3.0-NTS\
 @set NODEJS_PATH=%app%\0_toolz\node-18.17.1\
 @set PYTHON_PATH=%app%\0_toolz\python-3.12.3-embed\
+@set PIP_PATH=%app%\0_toolz\python-3.12.3-embed\Scripts\
 @set JDK_PATH=%app%\0_toolz\jdk17
 @set MAVEN_PATH=%app%\0_toolz\apache-maven-3.8.8
 @set POSTGRESQL_PATH=%app%\0_toolz\postgresql-15.6-1\
@@ -58,6 +80,8 @@
 @set JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF8
 @set JAVA_HOME=%JDK_PATH%
 
-@set PATH=%app%\0_toolz\symfony-cli\current;%PHP_PATH%;%NODEJS_PATH%;%MAVEN_PATH%\bin;%JAVA_HOME%\bin;%POSTGRESQL_PATH%\bin;%PYTHON_PATH%;%PATH%
+@set PATH=%SCRIPT_PATH%;%SYMFONY_PATH%;%PHP_PATH%;%NODEJS_PATH%;%MAVEN_PATH%\bin;%JAVA_HOME%\bin;%POSTGRESQL_PATH%\bin;%PYTHON_PATH%;%PIP_PATH%;%PATH%
 
 @cd %app%\ma-moulinette
+
+:exit

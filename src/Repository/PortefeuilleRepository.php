@@ -57,7 +57,7 @@ class PortefeuilleRepository extends ServiceEntityRepository
                 $liste=$exec->fetchAllAssociative();
             $this->getEntityManager()->getConnection()->commit();
             } catch (\Doctrine\DBAL\Exception $e) {
-            return ['code'=>500, 'erreur'=> $e->getCode()];
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
     }

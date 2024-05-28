@@ -130,7 +130,7 @@ export const enregistrement=function(mavenKey) {
   const nombreAnomalieMajeur=t22.dataset.nombreAnomalieMajeur;
   const nombreAnomalieMineur=t23.dataset.nombreAnomalieMineur;
 
-  /** On récupère les notes sonarqube pour la version courante */
+  /** On récupère les notes SonarQube pour la version courante */
   const noteReliability=$('#note-reliability').text().trim();
   const noteSecurity=$('#note-security').text().trim();
   const noteSqale=$('#note-sqale').text().trim();
@@ -138,7 +138,7 @@ export const enregistrement=function(mavenKey) {
   /** On récupère les hotspots. */
   const noteHotspot=$('#note-hotspot').text().trim();
 
-  /** On récupère les hotspost par sévérité */
+  /** On récupère les hotspot par sévérité */
   const t24 = document.getElementById('hotspot-high');
   const t25 = document.getElementById('hotspot-medium');
   const t26 = document.getElementById('hotspot-low');

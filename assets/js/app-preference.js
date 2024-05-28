@@ -85,7 +85,7 @@ const bookmark=async function(){
       $('#js-modal-bookmark-nom').html(`<span>${ r.bookmark }</span>`);
     } else
     {
-      $('#js-modal-bookmark-nom').html(`<span>AUNCUN</span>`);
+      $('#js-modal-bookmark-nom').html(`<span>AUCUN</span>`);
     }
   }
   /** On ouvre la fenêtre modal */
@@ -144,7 +144,7 @@ const favori=async function(){
     const tempoId = $(e.currentTarget).attr('id');
     const id = tempoId.split("-");
     $(`#ligne-favori-${ id[2] }`).hide();
-    /** On appel le service de suppresion du favori */
+    /** On appel le service de suppression du favori */
     const mavenKey = $(`#mavenkey-favori-${ id[2] }`).text();
     const data_1 = { mode: 'null', mavenKey };
     const options_1 = {
@@ -237,7 +237,7 @@ const version=async function(){
 
     const data_1 = { mode, index, mavenKey, version };
     const options_1 = {
-      /** On appel le service de suppresion de la version favorite */
+      /** On appel le service de suppression de la version favorite */
       url: `${ serveur() }/api/preference/version/delete`, type: 'POST',
       dataType: 'json', data: JSON.stringify(data_1), contentType
     };
@@ -392,7 +392,7 @@ $('.js-preference-information').on('click', e=> {
       version();
     break;
     default:
-      console.log("Je n'ai pas trouvé la lumière.");
+      sessionStorage.setItem('info', "Je n'ai pas trouvé la lumière.");
   }
 
 });

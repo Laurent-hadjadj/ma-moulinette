@@ -1,0 +1,97 @@
+site_name: Documentation Ma-Moulinette
+
+extra:
+  generator: false
+
+copyright: Copyright &copy; 2015 - 2024 Lilmod & Lelamed
+
+nav:
+    - Accueil: index.md
+    - Architecture:
+        - Architecture technique: ma-moulinette/architecture/architecture-technique.md
+        - Architecture java: ma-moulinette/architecture/architecture-java.md
+        - Architecture organisation: ma-moulinette/architecture/architecture-organisation.md
+        - Base de données: ma-moulinette/architecture/architecture-base-de-donnees.md
+    - Développement:
+        - Environnement de développement: ma-moulinette/developpement/pour_bien_demarrer.md
+        - Gestion de la sécurité: ma-moulinette/developpement/securite.md
+        - Test Unitaires: ma-moulinette/developpement/test-unitaire.md
+        - Migration PostgreSQL: ma-moulinette/developpement/guide-migration.md
+        - MOM RabbitMQ: ma-moulinette/developpement/rabbitMQ.md
+        - Travailler à plusieurs: ma-moulinette/developpement/tuto-git.md
+        - Automatisation des tâches: ma-moulinette/developpement/gitlab-ci.md
+    - Gestion des erreurs:
+        - Erreurs HTTP: ma-moulinette/erreur/http-erreur.md
+        - Erreurs applicatives: ma-moulinette/erreur/erreurs.md
+    - Ma-Moulinette en image:
+        - Ouvrir l'application: ma-moulinette/application/ouvrir_ma_moulinette.md
+        - L'authentification :
+          - Inscription: ma-moulinette/authentification/inscription.md
+          - Connexion: ma-moulinette/authentification/authentification.md
+          - Bienvenue: ma-moulinette/authentification/bienvenue.md
+          - Changez sont mot de passe: ma-moulinette/authentification/mise_a_jour_du_mot_de_passe.md
+        - L'application:
+          - Accueil: ma-moulinette/application/accueil.md
+          - Profil: ma-moulinette/application/profil.md
+          - Profil-details: ma-moulinette/application/profil-details.md
+          - Projet: ma-moulinette/application/projet.md
+          - OWASP: ma-moulinette/application/owasp.md
+          - Suivi: ma-moulinette/application/suivi.md
+          - COSUI: ma-moulinette/application/cosui.md
+          - Répartition détaillée: ma-moulinette/application/repartition_details.md
+          - Préférences: ma-moulinette/application/preferences.md
+    - Backoffice de gestion:
+        - Dashboard: ma-moulinette/back-office/dashboard.md
+        - Utilisateur: ma-moulinette/back-office/utilisateur.md
+        - Équipe: ma-moulinette/back-office/equipe.md
+        - Portefeuille: ma-moulinette/back-office/portefeuille.md
+        - Traitement: ma-moulinette/back-office/batch.md
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      pygments_lang_class: true
+      use_pygments: true
+      linenums: true
+      linenums_style: pymdownx-inline
+  - pymdownx.superfences
+  - pymdownx.inlinehilite
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+theme:
+  name: material
+  language: fr
+  palette:
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+  font:
+    text: Roboto
+    code: Roboto Mono
+  features:
+    - search.suggest
+    - navigation.instant
+    - navigation.footer
+  favicon: assets/favicon/favicon.ico
+  logo: assets/logo/logo-96x96.png
+
+plugins:
+  - search
+  - offline

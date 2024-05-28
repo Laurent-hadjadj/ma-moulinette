@@ -42,7 +42,7 @@ import {http_200, http_202, http_400, http_403, contentType, paletteCouleur, mat
 const callboxInformation='<div id="js-message" class="callout alert-callout-border primary" data-closable="slide-out-right" role="alert"><p class="open-sans color-bleu padding-right-1"><span class="lead">Information ! </span>';
 const callboxSuccess='<div id="js-message" class="callout alert-callout-border success" data-closable="slide-out-right" role="alert"><span class="open-sans color-bleu padding-right-1"><span class="lead">Bravo ! </span> ';
 const callboxWarning='<div id="js-message" class="callout alert-callout-border warning" data-closable="slide-out-right" role="alert"><span class="open-sans padding-right-1 color-bleu">span class="lead">Attention ! </strong>';
-const callboxError='<div id="js-message" class="callout alert-callout-border alert" data-closable="slide-out-right"><span class="open-sans padding-right-1 color-bleu"><trong>Ooups ! </trong>';
+const callboxError='<div id="js-message" class="callout alert-callout-border alert" data-closable="slide-out-right"><span class="open-sans padding-right-1 color-bleu"><strong>Oups ! </strong>';
 const callboxFermer='</span><button class="close-button" aria-label="Fermer la fenêtre" type="button" data-close><span aria-hidden="true">&times;</span></button></div>';
 
 /**
@@ -92,7 +92,7 @@ const callboxFermer='</span><button class="close-button" aria-label="Fermer la f
   $('#js-container-langage').html('');
   const profils = t.listeProfil;
 
-  /** on recréé le cointainer */
+  /** on recréé le container */
     profils.forEach(profil =>
   {
     id=id+1;
@@ -146,7 +146,7 @@ const callboxFermer='</span><button class="close-button" aria-label="Fermer la f
 };
 
 const recupereProfilNonActif=async function(langage){
-  /** Construction de la requete */
+  /** Construction de la requête */
   const dataRefresh = { mode:'null', langage: langage};
   const optionsRefresh = {
         url: `${serveur()}/api/quality/off`, type: 'POST',
@@ -161,13 +161,13 @@ const recupereProfilNonActif=async function(langage){
   const nombreProfils = t.countProfil;
 
   /** Mise à jour du nombre de profil */
-  strNombreProfil = `Il y a ${ nombreProfils.request[0].total } profil diponible dans SonarQube`;
+  strNombreProfil = `Il y a ${ nombreProfils.request[0].total } profil disponible dans SonarQube`;
   if (nombreProfils.request[0].total > 1){
-    strNombreProfil= `Il y a ${ nombreProfils.request[0].total } profils diponibles dans SonarQube`;
+    strNombreProfil= `Il y a ${ nombreProfils.request[0].total } profils disponibles dans SonarQube`;
   }
   $('#js-nombre-profil').html(strNombreProfil);
 
-  /** Bloucle sur le profil pour construire le tableau */
+  /** Boucle sur le profil pour construire le tableau */
   profils.forEach(profil =>
     {
       str +=
@@ -195,7 +195,7 @@ $('.js-bouton-autre-profil').on('click', (e)=>{
   const elm = document.getElementById(target);
   /* On récupère le nom du langage. */
   const language=elm.dataset.language;
-  // Methode qui appel l'api et qui envoie le tableau qui ce trouveras dans la fenetre modal
+  // Méthode qui appel l'api et qui envoie le tableau qui ce trouveras dans la fenetre modal
   recupereProfilNonActif(language);
 });
 
@@ -310,7 +310,7 @@ $('.js-profil-graphique').on('click', async () => {
 });
 
 /**
- * Evenement
+ * Événement
  * Appel la fonction d'affichage de la liste des modifications du profil.
  */
 $('.js-profil-info').on('click', (e) => {
@@ -332,7 +332,7 @@ $('.js-profil-info').on('click', (e) => {
 });
 
 /**
- * Evenement
+ * Événement
  * Appel la fonction de mise à jour de la liste des référentiels
  */
 $('.js-profil-refresh').on('click', ()=>{

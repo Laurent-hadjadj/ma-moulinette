@@ -22,6 +22,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * [Description Owasp]
  */
 #[ORM\Entity(repositoryClass: OwaspRepository::class)]
+#[ORM\Table(name: "owasp", schema: "ma_moulinette")]
 class Owasp
 {
     #[ORM\Id]
@@ -29,17 +30,21 @@ class Owasp
     #[ORM\Column(
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Unique identifier for each OWASP record']
+        options: ['comment' => 'clé unique pour la table Owasp']
     )]
-    private ?int $id = null;
+    private int $id;
 
     #[ORM\Column(
         type: Types::STRING,
         length: 255,
         nullable: false,
-        options: ['comment' => 'Maven key identifying the project']
+        options: ['comment' => 'Clé maven du projet']
     )]
     #[Assert\NotBlank]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères."
+    )]
     private string $mavenKey;
 
     #[ORM\Column(
@@ -52,9 +57,9 @@ class Owasp
     private string $version;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
-        options: ['comment' => 'Date when the version was recorded']
+        options: ['comment' => "Date d'enregistrement de la version"]
     )]
     #[Assert\NotNull]
     private \DateTimeInterface $dateVersion;
@@ -62,7 +67,7 @@ class Owasp
     #[ORM\Column(
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Total effort score for security issues']
+        options: ['comment' => "Score total d'effort pour les questions de sécurité"]
     )]
     #[Assert\NotNull]
     private int $effortTotal;
@@ -70,7 +75,7 @@ class Owasp
     #[ORM\Column(
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Score for OWASP Top 10 - A1: Injection vulnerabilities']
+        options: ['comment' => 'OWASP Top 10 - A1']
     )]
     #[Assert\NotNull]
     private int $a1;
@@ -78,7 +83,7 @@ class Owasp
     #[ORM\Column(
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Score for OWASP Top 10 - A2: Broken Authentication']
+        options: ['comment' => 'OWASP Top 10 - A2']
     )]
     #[Assert\NotNull]
     private int $a2;
@@ -86,7 +91,7 @@ class Owasp
     #[ORM\Column(
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Score for OWASP Top 10 - A3: Sensitive Data Exposure']
+        options: ['comment' => 'OWASP Top 10 - A3']
     )]
     #[Assert\NotNull]
     private int $a3;
@@ -94,7 +99,7 @@ class Owasp
     #[ORM\Column(
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Score total pour A4']
+        options: ['comment' => 'OWASP Top 10 - A4']
     )]
     #[Assert\NotNull]
     private $a4;
@@ -102,7 +107,7 @@ class Owasp
     #[ORM\Column(
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Score total pour A5']
+        options: ['comment' => 'OWASP Top 10 - A5']
     )]
     #[Assert\NotNull]
     private $a5;
@@ -110,7 +115,7 @@ class Owasp
     #[ORM\Column(
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Score total pour A6']
+        options: ['comment' => 'OWASP Top 10 - A6']
     )]
     #[Assert\NotNull]
     private $a6;
@@ -118,7 +123,7 @@ class Owasp
     #[ORM\Column(
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Score total pour A7']
+        options: ['comment' => 'OWASP Top 10 - A7']
     )]
     #[Assert\NotNull]
     private $a7;
@@ -126,7 +131,7 @@ class Owasp
     #[ORM\Column(
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Score total pour A8']
+        options: ['comment' => 'OWASP Top 10 - A8']
     )]
     #[Assert\NotNull]
     private $a8;
@@ -134,7 +139,7 @@ class Owasp
     #[ORM\Column(
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Score total pour A9']
+        options: ['comment' => 'OWASP Top 10 - A9']
     )]
     #[Assert\NotNull]
     private $a9;
@@ -142,7 +147,7 @@ class Owasp
     #[ORM\Column(
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Score total pour A10']
+        options: ['comment' => 'OWASP Top 10 - A10']
     )]
     #[Assert\NotNull]
     private $a10;
@@ -150,7 +155,7 @@ class Owasp
     #[ORM\Column(
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Nombre de bloqueurs pour A1']
+        options: ['comment' => 'OWASP Top 10 - A1']
     )]
     #[Assert\NotNull]
     private $a1Blocker;
@@ -547,7 +552,7 @@ class Owasp
     private $a10Minor;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
         options: ['comment' => 'Date d’enregistrement des données']
     )]

@@ -1,0 +1,17 @@
+# Ignore MkDocs build directory
+/site/
+
+# Ignore Python virtual environment
+/venv/
+
+# Ignore compiled Python files
+*.pyc
+
+# Ignore macOS system files
+.DS_Store
+
+# Ignore Windows Thumbs.db file
+Thumbs.db
+
+# Ignore IntelliJ IDEA project files
+.idea/

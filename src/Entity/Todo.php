@@ -19,6 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: TodoRepository::class)]
+#[ORM\Table(name: "todo", schema: "ma_moulinette")]
 class Todo
 {
     #[ORM\Id]
@@ -34,9 +35,13 @@ class Todo
         type: Types::STRING,
         length: 255,
         nullable: false,
-        options: ['comment' => 'Clé Maven identifiant la tâche']
+        options: ['comment' => 'Clé Maven du projet']
         )]
     #[Assert\NotBlank]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères."
+    )]
     private $mavenKey;
 
     #[ORM\Column(
@@ -65,9 +70,9 @@ class Todo
     private $line;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
-        options: ['comment' => 'Date d\'enregistrement de la tâche dans le système']
+        options: ['comment' => 'Date d’enregistrement de la tâche dans le système']
         )]
     #[Assert\NotNull]
     private $dateEnregistrement;
