@@ -83,15 +83,11 @@ class ActiviteRepository extends ServiceEntityRepository
                     $format = $matches[1] . " " . $matches[2];
                     $started_at = new DateTime($format);
                     $started_at_formatted = $started_at->format('Y-m-d H:i:s');
-                } else {
-                    $started_at_formatted = null;
                 }
                 if (preg_match("/(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})/", $value['executedAt'], $matches)) {
                     $format = $matches[1] . " " . $matches[2];
                     $executed_at = new DateTime($format);
                     $executed_at_formatted = $executed_at->format('Y-m-d H:i:s');
-                } else {
-                    $executed_at_formatted = null;
                 }
                 $execution_time = (int) round($value['executionTimeMs'] / 1000)+1; // Conversion de l'input en ms en s
                 // Construction de la ligne pour la requête SQL
@@ -101,7 +97,6 @@ class ActiviteRepository extends ServiceEntityRepository
             }
             // Concaténation des lignes avec des virgules pour former la partie VALUES de la requête
             $sql .= implode(',', $rows) . ';';
-            dd($sql);
             $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
             $stmt->executeQuery();
             $this->getEntityManager()->getConnection()->commit();
