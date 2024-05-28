@@ -122,7 +122,7 @@ class BatchTraitement
     #[ORM\Column(
         type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
-        options: ['comment' => 'Date d\'enregistrement du traitement dans le système']
+        options: ['comment' => 'Date d’enregistrement du traitement dans le système']
     )]
     #[Assert\NotNull]
     private $dateEnregistrement;

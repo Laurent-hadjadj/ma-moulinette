@@ -35,12 +35,12 @@ class HotspotDetails
         type: Types::STRING,
         length: 255,
         nullable: false,
-        options: ['comment' => 'Clé Maven du détail de hotspot']
+        options: ['comment' => 'Clé Maven du projet']
     )]
     #[Assert\NotBlank]
     #[Assert\Length(
         max: 255,
-        maxMessage: "La clé Maven ne doit pas dépasser 128 caractères."
+        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères."
     )]
     private $mavenKey;
 
@@ -186,7 +186,7 @@ class HotspotDetails
     #[ORM\Column(
         type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
-        options: ['comment' => 'Date d\'enregistrement du détail de hotspot']
+        options: ['comment' => 'Date d’enregistrement du détail de hotspot']
     )]
     #[Assert\NotNull]
     private $dateEnregistrement;

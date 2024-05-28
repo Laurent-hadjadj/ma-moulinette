@@ -81,7 +81,7 @@ class Properties
     private $dateCreation;
 
     #[ORM\Column(
-        type: Types::DATETIMETZ_IMMUTABLE,
+        type: Types::DATETIMETZ_MUTABLE,
         nullable: true,
         options: ['comment' => 'Date de la dernière modification du projet']
     )]

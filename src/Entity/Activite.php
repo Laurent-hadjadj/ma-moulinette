@@ -27,7 +27,7 @@ class Activite
     #[ORM\Column(
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Identifiant unique de l\'activité']
+        options: ['comment' => 'Identifiant unique de l’activité']
     )]
     private ?int $id = null;
 
@@ -35,12 +35,12 @@ class Activite
         type: Types::STRING,
         length: 255,
         nullable: false,
-        options: ['comment' => 'Clé Maven de l\'activité']
+        options: ['comment' => 'Clé Maven du projet']
     )]
     #[Assert\NotBlank]
     #[Assert\Length(
         max: 255,
-        maxMessage: "La clé Maven ne doit pas dépasser 128 caractères."
+        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères."
     )]
     private ?string $mavenKey = null;
 
@@ -48,7 +48,7 @@ class Activite
         type: Types::STRING,
         length: 64,
         nullable: false,
-        options: ['comment' => 'Nom du projet associé à l\'activité']
+        options: ['comment' => 'Nom du projet associé à l’activité']
     )]
     #[Assert\NotBlank]
     #[Assert\Length(
@@ -61,7 +61,7 @@ class Activite
         type: Types::STRING,
         length: 26,
         nullable: false,
-        options: ['comment' => 'Identifiant de l\'analyse']
+        options: ['comment' => 'Identifiant de l’analyse']
     )]
     #[Assert\NotBlank]
     #[Assert\Length(
@@ -74,7 +74,7 @@ class Activite
         type: Types::STRING,
         length: 16,
         nullable: false,
-        options: ['comment' => 'Statut de l\'activité']
+        options: ['comment' => 'Statut de l’activité']
     )]
     #[Assert\NotBlank]
     #[Assert\Length(
@@ -87,7 +87,7 @@ class Activite
         type: Types::STRING,
         length: 32,
         nullable: false,
-        options: ['comment' => 'Login de l\'utilisateur soumettant l\'activité']
+        options: ['comment' => 'Login de l’utilisateur soumettant l’activité']
     )]
     #[Assert\NotBlank]
     #[Assert\Length(
@@ -99,7 +99,7 @@ class Activite
     #[ORM\Column(
         type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
-        options: ['comment' => 'Date et heure d\'exécution de l\'activité']
+        options: ['comment' => 'Date et heure d’exécution de l’activité']
     )]
     #[Assert\NotNull]
     private ?\DateTimeInterface $executedAt = null;

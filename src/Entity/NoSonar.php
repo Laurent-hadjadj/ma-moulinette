@@ -38,7 +38,10 @@ class NoSonar
         options: ['comment' => 'Clé Maven identifiant le composant']
     )]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 255)]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères."
+    )]
     private $mavenKey;
 
     #[ORM\Column(
@@ -70,7 +73,7 @@ class NoSonar
     #[ORM\Column(
         type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
-        options: ['comment' => 'Date d\'enregistrement de l\'entrée NoSonar']
+        options: ['comment' => 'Date d’enregistrement de l’entrée NoSonar']
     )]
     #[Assert\NotNull]
     private $dateEnregistrement;
