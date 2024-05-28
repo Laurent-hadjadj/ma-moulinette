@@ -19,6 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: AnomalieDetailsRepository::class)]
+#[ORM\Table(name: "anomalie_details", schema: "ma_moulinette")]
 class AnomalieDetails
 {
     #[ORM\Id]
@@ -177,7 +178,7 @@ class AnomalieDetails
     private $codeSmellMinor;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
         options: ['comment' => 'Date d\'enregistrement des détails de l\'anomalie']
     )]

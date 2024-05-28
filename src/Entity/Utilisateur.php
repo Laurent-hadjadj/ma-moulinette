@@ -22,6 +22,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UtilisateurRepository::class)]
+#[ORM\Table(name: "utilisateurs", schema: "ma_moulinette")]
 #[UniqueEntity(fields: ['courriel'], message: 'There is already an account with this courriel')]
 class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -121,7 +122,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private $init=0;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: true,
         options: ['comment' => "Date de modification"]
         )]
@@ -129,7 +130,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private $dateModification;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
         options: ['comment' => "Date de création"]
         )]

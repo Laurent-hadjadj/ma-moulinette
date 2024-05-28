@@ -19,6 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: HotspotsRepository::class)]
+#[ORM\Table(name: "hotspots", schema: "ma_moulinette")]
 class Hotspots
 {
     #[ORM\Id]
@@ -57,7 +58,7 @@ class Hotspots
     private $version;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
         options: ['comment' => 'Date de la version du hotspot']
     )]
@@ -112,7 +113,7 @@ class Hotspots
     private $niveau;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
         options: ['comment' => 'Date d\'enregistrement du hotspot']
     )]

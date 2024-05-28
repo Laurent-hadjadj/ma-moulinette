@@ -10,7 +10,6 @@
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
-
 namespace App\Entity;
 
 use App\Repository\BatchTraitementRepository;
@@ -19,6 +18,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: BatchTraitementRepository::class)]
+#[ORM\Table(name: "batch_traitement", schema: "ma_moulinette")]
 class BatchTraitement
 {
     #[ORM\Id]
@@ -104,7 +104,7 @@ class BatchTraitement
     private $responsable;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: true,
         options: ['comment' => 'Date et heure de début du traitement']
     )]
@@ -112,7 +112,7 @@ class BatchTraitement
     private $debutTraitement;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: true,
         options: ['comment' => 'Date et heure de fin du traitement']
     )]
@@ -120,7 +120,7 @@ class BatchTraitement
     private $finTraitement;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
         options: ['comment' => 'Date d\'enregistrement du traitement dans le système']
     )]

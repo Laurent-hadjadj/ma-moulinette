@@ -69,7 +69,7 @@ class Profiles
     private $activeRuleCount;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
         options: ['comment' => 'Date de la dernière mise à jour des règles']
     )]
@@ -85,7 +85,7 @@ class Profiles
     private $referentielDefault;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
         options: ['comment' => 'Date d\'enregistrement du profil']
     )]
