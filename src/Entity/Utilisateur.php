@@ -22,7 +22,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UtilisateurRepository::class)]
-#[ORM\Table(name: "utilisateurs", schema: "ma_moulinette")]
+#[ORM\Table(name: "utilisateur", schema: "ma_moulinette")]
 #[UniqueEntity(fields: ['courriel'], message: 'There is already an account with this courriel')]
 class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -99,7 +99,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(
         type: Types::BOOLEAN,
         nullable: false,
-        options: ['default' => 0, 'comment' => "L'utilisateur est déseactivé"]
+        options: ['default' => 0, 'comment' => "L'utilisateur est désactivé"]
         )]
         #[Assert\NotNull]
     private $actif;
@@ -116,7 +116,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => "Indicateur de réinitilisation du mot de passe"]
+        options: ['comment' => "Indicateur de réinitialisation du mot de passe"]
         )]
     #[Assert\NotNull]
     private $init=0;
