@@ -20,6 +20,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 
 #[ORM\Entity(repositoryClass: RepartitionRepository::class)]
+#[ORM\Table(name: "repartition", schema: "ma_moulinette")]
 class Repartition
 {
     #[ORM\Id]
@@ -84,7 +85,7 @@ class Repartition
     private int $setup;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
         options: ['comment' => 'Date d\'enregistrement de la répartition dans le système']
     )]

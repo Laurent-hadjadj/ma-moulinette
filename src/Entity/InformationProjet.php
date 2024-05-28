@@ -19,6 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: InformationProjetRepository::class)]
+#[ORM\Table(name: "information_projet", schema: "ma_moulinette")]
 class InformationProjet
 {
     #[ORM\Id]
@@ -57,7 +58,7 @@ class InformationProjet
     private $analyseKey;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
         options: ['comment' => 'Date de l\'analyse du projet']
     )]
@@ -91,7 +92,7 @@ class InformationProjet
     private $type;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
         options: ['comment' => 'Date d\'enregistrement de l\'information du projet']
     )]

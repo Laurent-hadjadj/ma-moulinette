@@ -21,6 +21,7 @@ use App\Validator as AcmeAssert;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: EquipeRepository::class)]
+#[ORM\Table(name: "equipe", schema: "ma_moulinette")]
 class Equipe
 {
     #[ORM\Id]
@@ -62,7 +63,7 @@ class Equipe
     private $description;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: true,
         options: ['comment' => 'Date de la dernière modification de l\'équipe']
     )]
@@ -70,7 +71,7 @@ class Equipe
     private $dateModification;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
         options: ['comment' => 'Date d\'enregistrement de l\'équipe']
     )]

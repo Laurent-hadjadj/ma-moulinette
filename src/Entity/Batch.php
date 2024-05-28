@@ -20,6 +20,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use App\Validator as AcmeAssert;
 
 #[ORM\Entity(repositoryClass: BatchRepository::class)]
+#[ORM\Table(name: "batch", schema: "ma_moulinette")]
 class Batch
 {
     #[ORM\Id]
@@ -115,7 +116,7 @@ class Batch
     private $execution;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: true,
         options: ['comment' => 'Date de la dernière modification du batch']
     )]
@@ -123,7 +124,7 @@ class Batch
     private $dateModification;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
         options: ['comment' => 'Date d\'enregistrement du batch']
     )]

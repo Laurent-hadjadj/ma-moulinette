@@ -19,6 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ActiviteRepository::class)]
+#[ORM\Table(name: "activite", schema: "ma_moulinette")]
 class Activite
 {
     #[ORM\Id]
@@ -96,7 +97,7 @@ class Activite
     private ?string $submitterLogin = null;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
         options: ['comment' => 'Date et heure d\'exécution de l\'activité']
     )]

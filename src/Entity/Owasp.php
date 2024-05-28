@@ -22,6 +22,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * [Description Owasp]
  */
 #[ORM\Entity(repositoryClass: OwaspRepository::class)]
+#[ORM\Table(name: "owasp", schema: "ma_moulinette")]
 class Owasp
 {
     #[ORM\Id]
@@ -52,7 +53,7 @@ class Owasp
     private string $version;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
         options: ['comment' => 'Date when the version was recorded']
     )]
@@ -547,7 +548,7 @@ class Owasp
     private $a10Minor;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
         options: ['comment' => 'Date d’enregistrement des données']
     )]

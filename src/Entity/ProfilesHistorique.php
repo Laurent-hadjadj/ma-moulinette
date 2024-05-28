@@ -19,6 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ProfilesHistoriqueRepository::class)]
+#[ORM\Table(name: "portefeuille_historique", schema: "ma_moulinette")]
 class ProfilesHistorique
 {
     #[ORM\Id]
@@ -31,7 +32,7 @@ class ProfilesHistorique
     private ?int $id = null;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
         options: ['comment' => 'Date courte associée à l’historique']
     )]
@@ -49,7 +50,7 @@ class ProfilesHistorique
     private $language;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
         options: ['comment' => 'Date complète de l’événement de l’historique']
     )]
@@ -103,7 +104,7 @@ class ProfilesHistorique
     private $detail;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
         options: ['comment' => 'Date d’enregistrement de l’entrée historique dans la base de données']
     )]

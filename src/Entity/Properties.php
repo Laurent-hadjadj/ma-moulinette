@@ -19,6 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PropertiesRepository::class)]
+#[ORM\Table(name: "properties", schema: "ma_moulinette")]
 class Properties
 {
     #[ORM\Id]
@@ -72,7 +73,7 @@ class Properties
     private $profilSonar;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
         options: ['comment' => 'Date de création de la propriété']
     )]
@@ -80,7 +81,7 @@ class Properties
     private $dateCreation;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: true,
         options: ['comment' => 'Date de la dernière modification du projet']
     )]
@@ -88,7 +89,7 @@ class Properties
     private $dateModificationProjet;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: true,
         options: ['comment' => 'Date de la dernière modification du profil']
     )]

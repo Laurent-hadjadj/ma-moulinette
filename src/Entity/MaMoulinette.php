@@ -19,6 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: MaMoulinetteRepository::class)]
+#[ORM\Table(name: "ma_moulinette", schema: "ma_moulinette")]
 class MaMoulinette
 {
     #[ORM\Id]
@@ -44,7 +45,7 @@ class MaMoulinette
     private $version;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
         options: ['comment' => 'Date when the version was created']
     )]
@@ -52,7 +53,7 @@ class MaMoulinette
     private $dateVersion;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
         options: ['comment' => 'Date when this record was registered']
     )]

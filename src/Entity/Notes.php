@@ -19,6 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: NotesRepository::class)]
+#[ORM\Table(name: "notes", schema: "ma_moulinette")]
 class Notes
 {
     #[ORM\Id]
@@ -49,7 +50,7 @@ class Notes
     private $value;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
         options: ['comment' => 'Date d\'enregistrement de la note']
     )]

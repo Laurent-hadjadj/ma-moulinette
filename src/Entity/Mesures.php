@@ -20,6 +20,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 
 #[ORM\Entity(repositoryClass: MesuresRepository::class)]
+#[ORM\Table(name: "mesures", schema: "ma_moulinette")]
 class Mesures
 {
     #[ORM\Id]
@@ -108,7 +109,7 @@ class Mesures
     private $issues;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
         options: ['comment' => 'Date d\'enregistrement de la mesure']
     )]

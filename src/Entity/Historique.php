@@ -20,6 +20,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 
 #[ORM\Entity(repositoryClass: HistoriqueRepository::class)]
+#[ORM\Table(name: "historique", schema: "ma_moulinette")]
 class Historique
 {
     #[ORM\Id]
@@ -413,7 +414,7 @@ class Historique
     private $codeSmellInfo;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         options: ['comment' => 'Date d\'enregistrement de l\'historique']
     )]
     #[Assert\NotNull]

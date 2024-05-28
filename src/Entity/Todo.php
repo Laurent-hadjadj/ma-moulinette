@@ -19,6 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: TodoRepository::class)]
+#[ORM\Table(name: "todo", schema: "ma_moulinette")]
 class Todo
 {
     #[ORM\Id]
@@ -65,7 +66,7 @@ class Todo
     private $line;
 
     #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
+        type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
         options: ['comment' => 'Date d\'enregistrement de la tâche dans le système']
         )]
