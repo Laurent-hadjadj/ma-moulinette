@@ -14,6 +14,7 @@ composer.lock
 /var/cache/*
 package-lock.json
 symfony.lock
+var/log/doctrine.log
 ###< symfony/framework-bundle ###
 
 ###> symfony/webpack-encore-bundle ###
@@ -87,9 +88,6 @@ RabbitMQ
 phpstan.neon
 ###< phpstan/phpstan ###
 
-###> mkDocs ###
-
-###< mkDocs ###
 
 ## Fichiers temporaires
 *.old
