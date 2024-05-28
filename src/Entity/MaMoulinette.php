@@ -27,7 +27,7 @@ class MaMoulinette
     #[ORM\Column(
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Unique identifier for each MaMoulinette instance']
+        options: ['comment' => 'Clé unique']
     )]
     private $id;
 
@@ -35,19 +35,19 @@ class MaMoulinette
         type: Types::STRING,
         length: 16,
         nullable: false,
-        options: ['comment' => 'Version number of the MaMoulinette']
+        options: ['comment' => "Numéro de la version de l'application MaMoulinette"]
     )]
     #[Assert\NotBlank]
     #[Assert\Length(
         max: 16,
-        maxMessage: "The version must not exceed 8 characters."
+        maxMessage: "La version ne doit pas dépasser 16 caractères."
     )]
     private $version;
 
     #[ORM\Column(
         type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
-        options: ['comment' => 'Date when the version was created']
+        options: ['comment' => 'Date de création']
     )]
     #[Assert\NotNull]
     private $dateVersion;
@@ -55,7 +55,7 @@ class MaMoulinette
     #[ORM\Column(
         type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
-        options: ['comment' => 'Date when this record was registered']
+        options: ['comment' => "Date d'enregistrement"]
     )]
     #[Assert\NotNull]
     private $dateEnregistrement;

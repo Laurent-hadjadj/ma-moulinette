@@ -35,7 +35,7 @@ class Batch
     #[ORM\Column(
         type: Types::BOOLEAN,
         nullable: false,
-        options: ['comment' => 'Statut d\'activité du batch']
+        options: ['comment' => 'Statut d’activité du batch']
     )]
     #[Assert\NotNull]
     #[Assert\Type(type: 'bool')]
@@ -73,7 +73,7 @@ class Batch
         type: Types::STRING,
         length: 128,
         nullable: false,
-        options: ['comment' => 'Nom de l\'utilisateur responsable']
+        options: ['comment' => 'Nom de l’utilisateur responsable']
     )]
     #[Assert\NotBlank]
     #[Assert\Length(
@@ -110,13 +110,13 @@ class Batch
         type: Types::STRING,
         length: 8,
         nullable: true,
-        options: ['comment' => 'État d\'exécution du batch']
+        options: ['comment' => 'État d’exécution du batch']
     )]
     #[Assert\NotBlank]
     private $execution;
 
     #[ORM\Column(
-        type: Types::DATETIMETZ_IMMUTABLE,
+        type: Types::DATETIMETZ_MUTABLE,
         nullable: true,
         options: ['comment' => 'Date de la dernière modification du batch']
     )]
@@ -126,7 +126,7 @@ class Batch
     #[ORM\Column(
         type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
-        options: ['comment' => 'Date d\'enregistrement du batch']
+        options: ['comment' => 'Date d’enregistrement du batch']
     )]
     #[Assert\NotNull]
     private $dateEnregistrement;

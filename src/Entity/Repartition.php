@@ -34,11 +34,15 @@ class Repartition
 
     #[ORM\Column(
         type: Types::STRING,
-        length: 128,
+        length: 255,
         nullable: false,
-        options: ['comment' => 'Clé Maven identifiant la répartition']
+        options: ['comment' => 'Clé Maven du projet']
     )]
     #[Assert\NotBlank]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères."
+    )]
     private string $mavenKey;
 
     #[ORM\Column(
@@ -87,7 +91,7 @@ class Repartition
     #[ORM\Column(
         type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
-        options: ['comment' => 'Date d\'enregistrement de la répartition dans le système']
+        options: ['comment' => 'Date d’enregistrement de la répartition dans le système']
     )]
     #[Assert\NotNull]
     private \DateTimeInterface $dateEnregistrement;

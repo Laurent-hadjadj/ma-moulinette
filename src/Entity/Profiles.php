@@ -34,11 +34,14 @@ class Profiles
         type: Types::STRING,
         length: 255,
         nullable: false,
-        options: ['comment' => 'Clé unique du profil']
+        options: ['comment' => 'Clé unique du projet']
     )]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 255)]
-    private $key;
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères."
+    )]
+    private $mavenKey;
 
     #[ORM\Column(
         type: Types::STRING,
@@ -87,7 +90,7 @@ class Profiles
     #[ORM\Column(
         type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
-        options: ['comment' => 'Date d\'enregistrement du profil']
+        options: ['comment' => 'Date d’enregistrement du profil']
     )]
     #[Assert\NotNull]
     private $dateEnregistrement;
@@ -115,9 +118,9 @@ class Profiles
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function getKey(): ?string
+    public function getMavenKey(): ?string
     {
-        return $this->key;
+        return $this->mavenKey;
     }
 
     /**
@@ -128,12 +131,12 @@ class Profiles
      * @return self
      *
      * Created at: 02/01/2023, 18:10:01 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setKey(string $key): self
+    public function setMavenKey(string $mavenKey): self
     {
-        $this->key = $key;
+        $this->mavenKey = $mavenKey;
 
         return $this;
     }

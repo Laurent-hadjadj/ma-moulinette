@@ -29,7 +29,7 @@ class ProfilesHistorique
         nullable: false,
         options: ['comment' => 'Identifiant unique pour chaque historique de profil']
     )]
-    private ?int $id = null;
+    private $id;
 
     #[ORM\Column(
         type: Types::DATETIMETZ_IMMUTABLE,
@@ -61,7 +61,7 @@ class ProfilesHistorique
         type: Types::STRING,
         length: 16,
         nullable: false,
-        options: ['comment' => 'Action réalisée, par exemple "modification" ou "création"']
+        options: ['comment' => 'Action réalisée, par exemple modification ou création']
     )]
     #[Assert\NotBlank]
     #[Assert\Length(max: 16)]

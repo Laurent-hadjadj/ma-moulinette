@@ -50,7 +50,7 @@ class Portefeuille
         type: Types::STRING,
         length: 32,
         nullable: false,
-        options: ['comment' => 'Nom de l\'équipe associée au portefeuille']
+        options: ['comment' => 'Nom de l’équipe associée au portefeuille']
     )]
     #[Assert\NotBlank]
     #[Assert\Length(max: 32)]
@@ -63,7 +63,7 @@ class Portefeuille
     private $liste = [];
 
     #[ORM\Column(
-        type: Types::DATETIMETZ_IMMUTABLE,
+        type: Types::DATETIMETZ_MUTABLE,
         nullable: true,
         options: ['comment' => 'Date de la dernière modification du portefeuille']
     )]
@@ -73,7 +73,7 @@ class Portefeuille
     #[ORM\Column(
         type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
-        options: ['comment' => 'Date d\'enregistrement du portefeuille']
+        options: ['comment' => 'Date d’enregistrement du portefeuille']
     )]
     #[Assert\NotNull]
     private $dateEnregistrement;

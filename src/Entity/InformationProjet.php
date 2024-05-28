@@ -40,7 +40,7 @@ class InformationProjet
     #[Assert\NotBlank(message: "La clé Maven ne peut pas être vide.")]
     #[Assert\Length(
         max: 255,
-        maxMessage: "La clé Maven ne doit pas dépasser 128 caractères."
+        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères."
     )]
     private $mavenKey;
 
@@ -48,7 +48,7 @@ class InformationProjet
         type: Types::STRING,
         length: 32,
         nullable: false,
-        options: ['comment' => 'Clé d\'analyse du projet']
+        options: ['comment' => 'Clé d’analyse du projet']
     )]
     #[Assert\NotBlank(message: "La clé d'analyse ne peut pas être vide.")]
     #[Assert\Length(
@@ -60,7 +60,7 @@ class InformationProjet
     #[ORM\Column(
         type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
-        options: ['comment' => 'Date de l\'analyse du projet']
+        options: ['comment' => 'Date de l’analyse du projet']
     )]
     #[Assert\NotNull(message: "La date de l'analyse ne peut pas être nulle.")]
     private $date;
@@ -69,7 +69,7 @@ class InformationProjet
         type: Types::STRING,
         length: 32,
         nullable: false,
-        options: ['comment' => 'Version du projet lors de l\'analyse']
+        options: ['comment' => 'Version du projet lors de l’analyse']
     )]
     #[Assert\NotBlank(message: "La version du projet ne peut pas être vide.")]
     #[Assert\Length(
@@ -82,7 +82,7 @@ class InformationProjet
         type: Types::STRING,
         length: 32,
         nullable: false,
-        options: ['comment' => 'Type d\'analyse effectuée']
+        options: ['comment' => 'Type d’analyse effectuée']
     )]
     #[Assert\NotBlank(message: "Le type d'analyse ne peut pas être vide.")]
     #[Assert\Length(
@@ -94,7 +94,7 @@ class InformationProjet
     #[ORM\Column(
         type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
-        options: ['comment' => 'Date d\'enregistrement de l\'information du projet']
+        options: ['comment' => 'Date d’enregistrement de l’information du projet']
     )]
     #[Assert\NotNull(message: "La date d'enregistrement ne peut pas être nulle.")]
     private $dateEnregistrement;

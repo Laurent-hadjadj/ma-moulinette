@@ -37,6 +37,10 @@ class ListeProjet
         nullable: false,
         options: ['comment' => 'Clé Maven du projet']
     )]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères."
+    )]
     #[Assert\NotBlank]
     private $mavenKey;
 
@@ -69,7 +73,7 @@ class ListeProjet
     #[ORM\Column(
         type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
-        options: ['comment' => 'Date d\'enregistrement du projet']
+        options: ['comment' => 'Date d’enregistrement du projet']
     )]
     #[Assert\NotNull]
     private $dateEnregistrement;
