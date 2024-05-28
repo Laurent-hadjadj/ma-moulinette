@@ -14,15 +14,103 @@
 namespace App\Repository;
 
 use App\Entity\Activite;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 class ActiviteRepository extends ServiceEntityRepository
 {
+    public static $removeReturnline = "/\s+/u";
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Activite::class);
     }
 
+    /**
+     * [Description for selectActivite]
+     * On recupere la liste de toute les activites
+     *
+     * @return array
+     *
+     * Created at: 21/05/2024 13:56:31 (Europe/Paris)
+     * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function selectActivite(): array
+    {
+        try {
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = " SELECT *
+                        FROM activite";
+                        $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $request=$stmt->executeQuery()->fetchAllAssociative();
+            $this->getEntityManager()->getConnection()->commit();
+        } catch (\Doctrine\DBAL\Exception $e) {
+            $this->getEntityManager()->getConnection()->rollBack();
+            return ['code'=>500, 'erreur'=> $e->getCode()];
+        }
+        return ['request'=>$request, 'code'=>200, 'erreur'=>''];
+    }
+
+    /**
+     * [Description for selectActivite]
+     * On inserer la liste de toute les activites qui sont envoyé
+     *
+     * @return array
+     *
+     * Created at: 21/05/2024 13:56:31 (Europe/Paris)
+     * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function insertActivites($data): array
+    {
+        // Gestion des erreurs
+        try {
+            $this->getEntityManager()->getConnection()->beginTransaction();
+            // Le début de la requête SQL qui ne change pas
+            $sql = "INSERT OR IGNORE INTO activite (maven_key, project_name, analyse_id, status, submitter_login, started_at, executed_at, execution_time) VALUES ";
+            // La variable rows sert à sauvegarder les lignes d'insertion
+            $rows = array();
+            foreach ($data as $value) {
+                $maven_key = $value['componentKey'];
+                $project_name = $value['componentName'];
+                $analyse_id = $value['analysisId'];
+                $status = $value['status'];
+                $submitter_login = $value['submitterLogin'];
+                // Formater les dates
+                if (preg_match("/(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})/", $value['startedAt'], $matches)) {
+                    $format = $matches[1] . " " . $matches[2];
+                    $started_at = new DateTime($format);
+                    $started_at_formatted = $started_at->format('Y-m-d H:i:s');
+                } else {
+                    $started_at_formatted = null;
+                }
+                if (preg_match("/(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})/", $value['executedAt'], $matches)) {
+                    $format = $matches[1] . " " . $matches[2];
+                    $executed_at = new DateTime($format);
+                    $executed_at_formatted = $executed_at->format('Y-m-d H:i:s');
+                } else {
+                    $executed_at_formatted = null;
+                }
+                $execution_time = (int) round($value['executionTimeMs'] / 1000)+1; // Conversion de l'input en ms en s
+                // Construction de la ligne pour la requête SQL
+                $row = "('$maven_key', '$project_name', '$analyse_id', '$status', '$submitter_login', '$started_at_formatted', '$executed_at_formatted', $execution_time)";
+                // Ajout de la ligne dans le tableau pour la concaténation
+                $rows[] = $row;
+            }
+            // Concaténation des lignes avec des virgules pour former la partie VALUES de la requête
+            $sql .= implode(',', $rows) . ';';
+            dd($sql);
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+            $stmt->executeQuery();
+            $this->getEntityManager()->getConnection()->commit();
+            return ['request' => [], 'code' => 200, 'erreur' => ''];
+        } catch (\Doctrine\DBAL\Exception $e) {
+            // Rollback de la transaction en cas d'erreur
+            $this->getEntityManager()->getConnection()->rollBack();
+            return ['code' => 500, 'erreur' => $e->getCode()];
+        }
+    }
 
 }

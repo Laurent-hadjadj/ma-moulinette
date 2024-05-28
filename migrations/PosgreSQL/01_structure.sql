@@ -20,9 +20,10 @@ CREATE TABLE activite (
   analyse_id varchar(26) NOT NULL, -- Identifiant de l'analyse
   status varchar(16) NOT NULL, -- Statut de l'activité
   submitter_login varchar(32) NOT NULL, -- Login de l'utilisateur soumettant l'activité
+  submitted_at timestamp(0) NOT NULL, -- Date et heure de la soumission de l'activité
   started_at timestamp(0) NOT NULL, -- Date et heure du debut de l'execution de l'activité
   executed_at timestamp(0) NOT NULL, -- Date et heure de fin d'exécution de l'activité
-  execution_time timestamp(0) NOT NULL, -- Temps d'execution de l'activité
+  execution_time INTEGER NOT NULL, -- Temps d'execution de l'activité
   CONSTRAINT activite_pkey PRIMARY KEY (id)
 );
 

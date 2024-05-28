@@ -38,7 +38,7 @@ INSERT INTO utilisateur
 (preference, init, courriel, roles, password, prenom, nom, date_enregistrement, actif, avatar, equipe)
 VALUES
 ('{"statut":{"projet":false,"favori":false,"version":false,"bookmark":false},
-"projet":[],"favori":[],"version":[],"bookmark":[]}', 0, 'aurelie.petit-coeur@ma-moulinette.fr', '["ROLE_GESTIONNAIRE"]',
+"projet":[],"favori":[],"version":[],"bookmark":[]}', 0, 'aurelie.petit-coeur@ma-moulinette.fr', '["ROLE_GESTIONNAIRE","ROLE_ACTIVITE"]',
 '$2y$13$HMk1rgFp5OiveduUd.dNXeaxq1y/HiActAv3hiMpAFCNsCjNHIFya', 'Aurélie', 'PETIT COEUR', NOW(), false, 'fille-1/05.png', '["AUCUNE"]');
 
 -- Insertion pour 'Emma VAN DE BERG'

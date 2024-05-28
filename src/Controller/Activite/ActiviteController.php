@@ -13,6 +13,9 @@
 
 namespace App\Controller\Activite;
 
+use App\Entity\Activite;
+use App\Service\Client;
+use App\Service\ClientActivite;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -23,6 +26,9 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class ActiviteController extends AbstractController
 {
+
+    public static $sonarUrl = "sonar.url";
+
     /**
      * [Description for __construct]
      *
@@ -45,11 +51,25 @@ class ActiviteController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/activite', name: 'activite', methods: 'GET')]
-    public function index(Request $request): Response
+    public function index(Request $request, ClientActivite $client): Response
     {
+        /** On instancie l'EntityRepository */
+        $activiteEntity = $this->em->getRepository(Activite::class);
+
+        $result=$activiteEntity->selectActivite();
+
+        for ($i = 0; $i < count($result['request']); $i++)
+        {
+            $result['request'][$i]['execution_time'] = static::formatDuréemax($result['request'][$i]['execution_time']);
+        }
 
         return $this->render('activite/index.html.twig', [
-            'version' => $this->getParameter('version'), 'dateCopyright' => \date("Y"),
+            'activites' => $result['request'],'version' => $this->getParameter('version'), 'dateCopyright' => \date("Y"),
             Response::HTTP_OK]);
+    }
+
+    public function formatDuréemax(int $data): String
+    {
+        return gmdate("H:i:s", $data);
     }
 }
