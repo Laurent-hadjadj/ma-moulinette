@@ -478,7 +478,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                     $stmt->bindValue(':hotspot_medium' , $map['hotspot_medium']);
                     $stmt->bindValue(':hotspot_low' , $map['hotspot_low']);
                     $stmt->bindValue(':initial', $map['initial']);
-                    $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']);
+                    $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
                     $stmt->executeStatement();
                 $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {

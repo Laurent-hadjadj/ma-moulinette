@@ -112,7 +112,7 @@ class NoSonarRepository extends ServiceEntityRepository
                         $stmt->bindValue(':rule', $map['rule']);
                         $stmt->bindValue(':component', $map['component']);
                         $stmt->bindValue(':line', $map['line']);
-                        $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']);
+                        $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
                         $stmt->executeStatement();
                 $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {

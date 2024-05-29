@@ -298,6 +298,7 @@ class InformationProjetRepository extends ServiceEntityRepository
      */
     public function insertInformationProjet($map):array
     {
+        dd($map);
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "INSERT INTO information_projet
@@ -311,13 +312,14 @@ class InformationProjetRepository extends ServiceEntityRepository
                     $stmt->bindValue(':project_version', $map['project_version']);
                     $stmt->bindValue(':type', $map['type']);
                     /** on formate la date avant de l'enregistrer */
-                    $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:s'));
+                    $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO')->format('Y-m-d H:i:sO'));
                     $stmt->executeStatement();
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
             return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
+
         return ['code'=>200, 'erreur'=>''];
     }
 
