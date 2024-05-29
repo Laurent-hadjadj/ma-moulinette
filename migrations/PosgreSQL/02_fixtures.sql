@@ -2,11 +2,14 @@
 ####################################################
 ##                                                ##
 ##         Données d'initialisation du projet     ##
-##               V1.0.1 - 22/05/2024              ##
+##               V1.1.0 - 28/05/2024              ##
 ##                                                ##
 ####################################################*/
 
+/* #### Le script doit être lancé avec l'utilisateur propriétaire de la base, ici db_user #### */
+
 --- 2024-05-22 : Laurent HADJADJ - Modification du nom de l'équipe -> ["AUCUNE"] en AUCUNE
+--- 2024-05-28 : Laurent HADJADJ - Remplacement de NOW() par '1980-01-01 00:00:00'
 
 BEGIN;
 
@@ -51,8 +54,7 @@ INSERT INTO utilisateur (preference, init, courriel, roles, password, prenom, no
 VALUES ('{"statut":{"projet":false,"favori":false,"version":false,"bookmark":false},
 "projet":[],"favori":[],"version":[],"bookmark":[]}', 0, 'josh.liberman@ma-moulinette.fr', '["ROLE_UTILISATEUR"]', '$2y$13$ON.wYv3nmwkB9N3eOSubt.HFA46NjBHgyvOo6PBs3PVcCPtRb5MSa', 'Josh', 'LIBERMAN', '1980-01-01 00:00:00', false, 'garcon-1/10.png', '["AUCUNE"]');
 
-
 -- ## Ajout de l'équipe par défaut
-INSERT INTO equipe (titre, description, date_enregistrement) VALUES ('AUCUNE', 'Personne ne m''aime !', '1980-01-01 00:00:00');
+INSERT INTO equipe (titre, description, date_enregistrement) VALUES ('AUCUNE', 'Personne ne m’aime !', '1980-01-01 00:00:00');
 
 COMMIT;

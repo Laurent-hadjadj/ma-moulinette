@@ -2,11 +2,15 @@
 ####################################################
 ##                                                ##
 ##         Création de la base de données         ##
-##               V1.1.1 - 22/05/2024              ##
+##               V1.2.0 - 28/05/2024              ##
 ##                                                ##
 ####################################################*/
 
+/* Le script doit être lancé avec l'utilisateur propriétaire de la base, ici postgres #### */
+
 --- 2024-05-22 : Laurent HADJADJ - mise à jour des attributs de création de la base de données.
+--- 2024-05-28 : Laurent HADJADJ - mise à jour complète du script.
+
 -- Suppression de la base, de l'utilisateur et du rôle s'ils existent
 DROP DATABASE IF EXISTS ma_moulinette WITH (FORCE);
 DROP USER IF EXISTS db_user;

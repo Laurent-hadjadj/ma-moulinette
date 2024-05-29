@@ -2,14 +2,15 @@
 ####################################################
 ##                                                ##
 ##         Creation des tables et des objets      ##
-##               V1.3.0 - 28/05/2024              ##
+##               V1.4.0 - 29/05/2024              ##
 ##                                                ##
 ####################################################*/
 
+/* #### Le script doit être lancé avec l'utilisateur propriétaire de la base, ici db_user #### */
+
 -- 22/05/2024 : Laurent HADJADJ - Surpression des ", modification de la table notes (ajout du cle primaire unique et suppression de l'attribut date.
 -- 28/05/2024 : Laurent HADJADJ - Mise à jour du script - réécriture complet
-
-/* ##### Le script doit être lancé avec l'utilisateur propriétaire de la base, ici db_user ##### */
+-- 29/05/2024 : Laurent HADJADJ - Mise à jour de la table Activite (Quentin)
 
 -- SCHEMA: ma_moulinette
 
@@ -22,26 +23,31 @@ COMMENT ON SCHEMA ma_moulinette IS 'Schéma de la base de données Ma-moulinette
 
 DROP TABLE ma_moulinette.activite;
 CREATE TABLE ma_moulinette.activite
-(
-  id SERIAL PRIMARY KEY,
+(id SERIAL PRIMARY KEY,
   maven_key character varying(255) NOT NULL,
   project_name character varying(64) NOT NULL,
   analyse_id character varying(26) NOT NULL,
   status character varying(16) NOT NULL,
   submitter_login character varying(32) NOT NULL,
-  executed_at TIMESTAMPTZ NOT NULL
+  submitted_at TIMESTAMPTZ NOT NULL,
+  started_at TIMESTAMPTZ NOT NULL,
+  executed_at TIMESTAMPTZ NOT NULL,
+  execution_time integer NOT NULL
 );
 
 ALTER TABLE ma_moulinette.activite OWNER to db_user;
 GRANT ALL ON TABLE ma_moulinette.activite TO db_user;
 
-COMMENT ON COLUMN ma_moulinette.activite.id IS 'Identifiant unique de l’activité';
+COMMENT ON COLUMN ma_moulinette.activite.id IS 'Identifiant unique de la table activité';
 COMMENT ON COLUMN ma_moulinette.activite.maven_key IS 'Clé Maven du projet';
-COMMENT ON COLUMN ma_moulinette.activite.project_name IS 'Nom du projet associé à l’activité';
-COMMENT ON COLUMN ma_moulinette.activite.analyse_id IS 'Identifiant de l’analyse';
-COMMENT ON COLUMN ma_moulinette.activite.status IS 'Statut de l’activité';
-COMMENT ON COLUMN ma_moulinette.activite.submitter_login IS 'Login de l’utilisateur soumettant l’activité';
-COMMENT ON COLUMN ma_moulinette.activite.executed_at IS 'Date et heure d’exécution de l’activité';
+COMMENT ON COLUMN ma_moulinette.activite.project_name IS 'Nom du projet associé à la clé maven';
+COMMENT ON COLUMN ma_moulinette.activite.analyse_id IS 'Identifiant de l’analyse du projet';
+COMMENT ON COLUMN ma_moulinette.activite.status IS 'Statut du traitement d’import';
+COMMENT ON COLUMN ma_moulinette.activite.submitter_login IS 'Utilisateur soumettant l’import';
+COMMENT ON COLUMN ma_moulinette.activite.submitted_at IS 'Date et heure de la soumission du traitement d’import des données';
+COMMENT ON COLUMN ma_moulinette.activite.started_at IS 'Date et heure du debut du traitement d’import des données';
+COMMENT ON COLUMN ma_moulinette.activite.executed_at IS ' Date et heure de fin du traitement d’import des données';
+COMMENT ON COLUMN ma_moulinette.activite.execution_time IS 'Temps d’execution du traitement d’import des données';
 
 -- Table: ma_moulinette.anomalie
 
