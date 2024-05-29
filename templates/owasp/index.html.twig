@@ -347,6 +347,11 @@
 					</ul>
 				</div>
 			</div>
+
+			<!-- Conteneur pour le diagramme circulaire -->
+				<div id="owasp-pie-chart-container" style="display:none;">
+            <canvas id="owasp-pie-chart"></canvas>
+        </div>
 		</div>
 		<br><br>
 
@@ -380,9 +385,9 @@
 			<div class="modal-content grid-x grid-margin-x">
 				<div class="cell small-12 medium-6 modal-column">
 					<h3>OWASP 2017</h3>
-					<ul class="vertical menu accordion-menu" data-accordion-menu>
+					<ul class="vertical menu accordion-menu owasp-2017" data-accordion-menu>
 						{% for item in owasp2017 %}
-							<li id="o{{ loop.index }}" class="referentiel-owasp-menu">
+							<li id="o{{ loop.index }}">
 								<a class="claire-hand referentiel-owasp-titre">{{ item.category }}</a>
 							</li>
 						{% endfor %}
@@ -392,12 +397,29 @@
 					<h3>OWASP 2021</h3>
 					<ul class="vertical menu accordion-menu" data-accordion-menu>
 						{% for item in owasp2021 %}
-							<li id="o{{ loop.index }}" class="referentiel-owasp-menu">
+							<li id="o{{ loop.index }}" class="owasp-item owasp2021-item-{{ loop.index }}">
 								<a class="claire-hand referentiel-owasp-titre">{{ item.category }}</a>
 							</li>
 						{% endfor %}
 					</ul>
 				</div>
+			</div>
+			<div class="modal-legend">
+				<h4>Code couleur :</h4>
+				<ul class="color-legend">
+					<li>
+						<span class="color-box" style="background-color: #008000;"></span>
+						Améliorations (montée dans le classement)</li>
+					<li>
+						<span class="color-box" style="background-color: #FF0000;"></span>
+						Dégradations (descente dans le classement)</li>
+					<li>
+						<span class="color-box" style="background-color: #FFFF00;"></span>
+						Positions stables</li>
+					<li>
+						<span class="color-box" style="background-color: #808080;"></span>
+						Nouveaux éléments en 2021</li>
+				</ul>
 			</div>
 			<button class="close-button" data-close aria-label="Close modal" type="button">
 				<span aria-hidden="true">&times;</span>

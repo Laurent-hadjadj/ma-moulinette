@@ -420,15 +420,16 @@ const projetRating=function(mavenKey, type) {
  * Created at: 19/12/2022, 22:16:16 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
-const projetOwasp=function(mavenKey) {
+const projetOwasp=function(mavenKey, referentielVersion) {
+
   const collecte = sessionStorage.getItem('collecte');
   if (!collecte || collecte!='Tout va bien!') {
     return;
   }
 
-  const data = { maven_key: mavenKey, mode: 'null'};
+  const data = { maven_key: mavenKey, referentiel_version: referentielVersion};
   const options = {
-    url: `${serveur()}/api/projet/issues/owasp`, type: 'POST',
+    url: `${serveur()}/api/projet/issues/owasp/${referentielVersion}`, type: 'POST',
           dataType: 'json', data: JSON.stringify(data), contentType };
 
   return new Promise(resolve => {
@@ -1054,7 +1055,9 @@ $('.js-analyse').on('click', function () {
     await projetRating(idProject, 'security');    /*(03)*/
     await projetRating(idProject, 'sqale');       /*(03)*/
 
-    await projetOwasp(idProject);                 /*(04)*/
+    await projetOwasp(idProject, '2017');                 /*(04)*/
+    await projetOwasp(idProject, '2021');                 /*(04)*/
+
     await projetHotspot(idProject);               /*(05)*/
 
     /* On récupère les infos sur les anomalies*/

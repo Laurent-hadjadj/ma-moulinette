@@ -22,6 +22,9 @@ import 'motion-ui';
 import './foundation.js';
 import './app-authentification-details.js';
 
+// chart
+import Chart from 'chart.js/auto';
+
 /** On importe les paramètres serveur */
 import {serveur} from './properties.js';
 
@@ -671,6 +674,109 @@ const remplissageHotspotListe=function(idMaven) {
             owasp2021.style.display = 'block';
         }
     });
+    
+// Données statiques pour les pourcentages de chaque type de vulnérabilité
+const data2017 = [12, 15, 10, 8, 5, 20, 10, 8, 6, 6]; // Exemple de pourcentages pour 2017
+const data2021 = [10, 18, 9, 12, 7, 15, 11, 8, 5, 5]; // Exemple de pourcentages pour 2021
+const labels = [
+    'Injection',
+    'Broken Authentication',
+    'Sensitive Data Exposure',
+    'XML External Entities (XXE)',
+    'Broken Access Control',
+    'Security Misconfiguration',
+    'Cross-Site Scripting (XSS)',
+    'Insecure Deserialization',
+    'Using Components with Known Vulnerabilities',
+    'Insufficient Logging & Monitoring'
+];
+
+const ctx = document.getElementById('owasp-pie-chart').getContext('2d');
+const owaspPieChart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+        labels: labels,
+        datasets: [
+            {
+                label: 'Répartition OWASP',
+                data: data2017, // Données par défaut
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)',
+                    'rgba(199, 199, 199, 0.2)',
+                    'rgba(83, 102, 255, 0.2)',
+                    'rgba(255, 203, 64, 0.2)',
+                    'rgba(93, 99, 199, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)',
+                    'rgba(199, 199, 199, 1)',
+                    'rgba(83, 102, 255, 1)',
+                    'rgba(255, 203, 64, 1)',
+                    'rgba(93, 99, 199, 1)'
+                ],
+                borderWidth: 1
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'top'
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        let label = context.label || '';
+                        if (label) {
+                            label += ': ';
+                        }
+                        if (context.parsed !== null) {
+                            label += context.parsed + '%';
+                        }
+                        return label;
+                    }
+                }
+            }
+        }
+    }
+});
+
+document.getElementById('owasp-select').addEventListener('change', function () {
+    const selectedValue = this.value;
+    const owasp2017 = document.getElementById('owasp-2017');
+    const owasp2021 = document.getElementById('owasp-2021');
+    const owaspPieChartContainer = document.getElementById('owasp-pie-chart-container');
+
+    if (selectedValue === '2017') {
+        owasp2017.style.display = 'block';
+        owasp2021.style.display = 'none';
+        owaspPieChart.data.datasets[0].data = data2017;
+        owaspPieChart.data.datasets[0].label = 'Répartition OWASP 2017';
+        owaspPieChart.update();
+        owaspPieChartContainer.style.display = 'block';
+    } else if (selectedValue === '2021') {
+        owasp2017.style.display = 'none';
+        owasp2021.style.display = 'block';
+        owaspPieChart.data.datasets[0].data = data2021;
+        owaspPieChart.data.datasets[0].label = 'Répartition OWASP 2021';
+        owaspPieChart.update();
+        owaspPieChartContainer.style.display = 'block';
+    } else {
+        owaspPieChartContainer.style.display = 'none';
+    }
+});
+
 
 /**
  * [Description for injectionHotspotDetails]

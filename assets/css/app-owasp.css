@@ -166,23 +166,109 @@
   outline: none;
   box-shadow: 0 0 0 3px rgba(255 69 58 / 50%);
 }
- 
+
+/* Styles spécifiques pour OWASP 2017 et OWASP 2021 */
+.owasp-2017 {
+  background-color: #ADD8E6;
+}
+
+/* Styles spécifiques pour les éléments <li> dans OWASP 2021 */
+.owasp2021-item-1 {
+  background-color: #04d404;
+}
+
+.owasp2021-item-2 {
+  background-color: #04d404;
+}
+
+.owasp2021-item-3 {
+  background-color: rgb(243, 77, 77);
+}
+
+/* Ajoutez autant de styles que nécessaire pour chaque élément de la liste OWASP 2021 */
+.owasp2021-item-4 {
+  background-color: #c1c0c0;
+}
+
+.owasp2021-item-5 {
+  background-color: #04d404;
+}
+
+.owasp2021-item-6 {
+  background-color: #04d404;
+}
+
+.owasp2021-item-7 {
+  background-color: rgb(243, 77, 77);
+}
+
+.owasp2021-item-8 {
+  background-color: #c1c0c0;
+}
+
+.owasp2021-item-9 {
+  background-color: #04d404;
+}
+
+.owasp2021-item-10 {
+  background-color: #c1c0c0;
+}
+
+/* Styles pour la légende des couleurs */
+.modal-legend {
+  padding: 10px;
+  background-color: #f1f1f1;
+  border-top: 1px solid #ddd;
+  margin-top: 20px;
+  text-align: left;
+}
+
+.color-legend {
+  list-style: none;
+  padding: 0;
+}
+
+.color-box {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  border: 1px solid #ddd;
+}
+
+/* Styles pour le diagramme circulaire */
+#owasp-pie-chart-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 10px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgb(0 0 0 / 10%);
+}
+
+#owasp-pie-chart {
+  width: 100% !important;
+  height: auto !important;
+}
+
+
  /* Ajuste ka taille des badge */
  .badge { font-size: 1rem; }
  
  /* a supprimer dans la prochaine version */
  .badge-rouge { margin-bottom: -10px; }
  
- /* menu référentiel-owasp */
- .referentiel-owasp-menu {
-   background-color: white;
-   border-radius: 5px;
-   margin-top: 0.5rem;
- }
- 
  .accordion-menu .is-accordion-submenu-parent:not(.has-submenu-toggle) > a::after {
    border-color: #00445b;
  }
+
+ /* menu référentiel-owasp */
+.referentiel-owasp-menu {
+  background-color: white;
+  border-radius: 5px;
+  margin-top: 0.5rem;
+}
  
  .referentiel-owasp-titre {
    color: #000;
