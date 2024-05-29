@@ -27,9 +27,9 @@ class Activite
     #[ORM\Column(
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Identifiant unique de l’activité']
+        options: ['comment' => 'Identifiant unique de la table activité']
     )]
-    private ?int $id = null;
+    private int $id;
 
     #[ORM\Column(
         type: Types::STRING,
@@ -42,26 +42,26 @@ class Activite
         max: 255,
         maxMessage: "La clé Maven ne doit pas dépasser 255 caractères."
     )]
-    private ?string $mavenKey = null;
+    private $mavenKey;
 
     #[ORM\Column(
         type: Types::STRING,
         length: 64,
         nullable: false,
-        options: ['comment' => 'Nom du projet associé à l’activité']
+        options: ['comment' => 'Nom du projet associé à la clé maven']
     )]
     #[Assert\NotBlank]
     #[Assert\Length(
         max: 64,
         maxMessage: "Le nom du projet ne doit pas dépasser 64 caractères."
     )]
-    private ?string $projectName = null;
+    private $projectName;
 
     #[ORM\Column(
         type: Types::STRING,
         length: 26,
         nullable: false,
-        options: ['comment' => 'Identifiant de l’analyse']
+        options: ['comment' => 'Identifiant de l’analyse du projet']
     )]
     #[Assert\NotBlank]
     #[Assert\Length(
@@ -74,93 +74,70 @@ class Activite
         type: Types::STRING,
         length: 16,
         nullable: false,
-        options: ['comment' => 'Statut de l’activité']
+        options: ['comment' => 'Statut du traitement d’import']
     )]
     #[Assert\NotBlank]
     #[Assert\Length(
         max: 16,
         maxMessage: "Le statut ne doit pas dépasser 16 caractères."
     )]
-    private ?string $status = null;
+    private $status;
 
     #[ORM\Column(
         type: Types::STRING,
         length: 32,
         nullable: false,
-        options: ['comment' => 'Login de l’utilisateur soumettant l’activité']
+        options: ['comment' => 'Utilisateur soumettant l’import']
     )]
     #[Assert\NotBlank]
     #[Assert\Length(
         max: 32,
         maxMessage: "Le login ne doit pas dépasser 32 caractères."
     )]
-    private ?string $submitterLogin = null;
+    private $submitterLogin;
 
     #[ORM\Column(
         type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
-        options: ['comment' => 'Date et heure d’exécution de l’activité']
+        options: ['comment' => 'Date et heure de la soumission du traitement d’import des données']
     )]
     #[Assert\NotNull]
-    private ?\DateTimeInterface $executedAt = null;
+    private $submittedAt;
 
-    /**
-     * [Description for getId]
-     *
-     * @return int|null
-     *
-     * Created at: 20/02/2024 17:10:03 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
+    #[ORM\Column(
+        type: Types::DATETIMETZ_IMMUTABLE,
+        nullable: false,
+        options: ['comment' => 'Date et heure du debut du traitement d’import des données']
+    )]
+    #[Assert\NotNull]
+    private ?\DateTimeInterface $startedAt = null;
+
+    #[ORM\Column(
+        type: Types::DATETIMETZ_IMMUTABLE,
+        nullable: false,
+        options: ['comment' => 'Date et heure de fin du traitement d’import des données']
+    )]
+    #[Assert\NotNull]
+    private $executedAt;
+
+    #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Date et heure de fin du traitement d’import des données']
+    )]
+    #[Assert\NotNull]
+    private $executionTime;
+
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * [Description for setId]
-     *
-     * @param int $id
-     *
-     * @return static
-     *
-     * Created at: 20/02/2024 17:10:05 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setId(int $id): static
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
-     * [Description for getMavenKey]
-     *
-     * @return string|null
-     *
-     * Created at: 20/02/2024 17:10:07 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getMavenKey(): ?string
     {
         return $this->mavenKey;
     }
 
-    /**
-     * [Description for setMavenKey]
-     *
-     * @param string $mavenKey
-     *
-     * @return static
-     *
-     * Created at: 20/02/2024 17:10:10 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function setMavenKey(string $mavenKey): static
     {
         $this->mavenKey = $mavenKey;
@@ -168,31 +145,11 @@ class Activite
         return $this;
     }
 
-    /**
-     * [Description for getProjectName]
-     *
-     * @return string|null
-     *
-     * Created at: 20/02/2024 17:10:12 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getProjectName(): ?string
     {
         return $this->projectName;
     }
 
-    /**
-     * [Description for setProjectName]
-     *
-     * @param string $projectName
-     *
-     * @return static
-     *
-     * Created at: 20/02/2024 17:10:14 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function setProjectName(string $projectName): static
     {
         $this->projectName = $projectName;
@@ -200,63 +157,23 @@ class Activite
         return $this;
     }
 
-    /**
-     * [Description for getAnalyseId]
-     *
-     * @return string|null
-     *
-     * Created at: 20/02/2024 17:10:20 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getAnalyseId(): ?string
     {
         return $this->analyseId;
     }
 
-    /**
-     * [Description for setString]
-     *
-     * @param string $analyseId
-     *
-     * @return static
-     *
-     * Created at: 20/02/2024 17:10:22 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setString(string $analyseId): static
+    public function setAnalyseId(string $analyseId): static
     {
         $this->analyseId = $analyseId;
 
         return $this;
     }
 
-    /**
-     * [Description for getStatus]
-     *
-     * @return string|null
-     *
-     * Created at: 20/02/2024 17:10:25 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getStatus(): ?string
     {
         return $this->status;
     }
 
-    /**
-     * [Description for setStatus]
-     *
-     * @param string $status
-     *
-     * @return static
-     *
-     * Created at: 20/02/2024 17:10:27 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function setStatus(string $status): static
     {
         $this->status = $status;
@@ -264,31 +181,11 @@ class Activite
         return $this;
     }
 
-    /**
-     * [Description for getSubmitterLogin]
-     *
-     * @return string|null
-     *
-     * Created at: 20/02/2024 17:10:29 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getSubmitterLogin(): ?string
     {
         return $this->submitterLogin;
     }
 
-    /**
-     * [Description for setSubmitterLogin]
-     *
-     * @param string $submitterLogin
-     *
-     * @return static
-     *
-     * Created at: 20/02/2024 17:10:32 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function setSubmitterLogin(string $submitterLogin): static
     {
         $this->submitterLogin = $submitterLogin;
@@ -296,35 +193,52 @@ class Activite
         return $this;
     }
 
-    /**
-     * [Description for getExecutedAt]
-     *
-     * @return \DateTimeInterface|null
-     *
-     * Created at: 20/02/2024 17:10:35 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getExecutedAt(): ?\DateTimeInterface
+    public function getSubmittedAt(): ?\DateTimeImmutable
+    {
+        return $this->submittedAt;
+    }
+
+    public function setSubmittedAt(\DateTimeImmutable $submittedAt): static
+    {
+        $this->submittedAt = $submittedAt;
+
+        return $this;
+    }
+
+    public function getStartedAt(): ?\DateTimeImmutable
+    {
+        return $this->startedAt;
+    }
+
+    public function setStartedAt(\DateTimeImmutable $startedAt): static
+    {
+        $this->startedAt = $startedAt;
+
+        return $this;
+    }
+
+    public function getExecutedAt(): ?\DateTimeImmutable
     {
         return $this->executedAt;
     }
 
-    /**
-     * [Description for setExecutedAt]
-     *
-     * @param \DateTimeInterface $executedAt
-     *
-     * @return static
-     *
-     * Created at: 20/02/2024 17:10:38 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setExecutedAt(\DateTimeInterface $executedAt): static
+    public function setExecutedAt(\DateTimeImmutable $executedAt): static
     {
         $this->executedAt = $executedAt;
 
         return $this;
     }
+
+    public function getExecutionTime(): ?int
+    {
+        return $this->executionTime;
+    }
+
+    public function setExecutionTime(int $executionTime): static
+    {
+        $this->executionTime = $executionTime;
+
+        return $this;
+    }
+
 }

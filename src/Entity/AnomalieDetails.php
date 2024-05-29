@@ -27,7 +27,7 @@ class AnomalieDetails
     #[ORM\Column(
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Identifiant unique pour les détails de l’anomalie']
+        options: ['comment' => 'Identifiant unique pour la table Anomalie Détails']
     )]
     private $id;
 
@@ -48,7 +48,7 @@ class AnomalieDetails
         type: Types::STRING,
         length: 128,
         nullable: false,
-        options: ['comment' => 'Nom de l’anomalie']
+        options: ['comment' => 'Nom ']
     )]
     #[Assert\NotBlank]
     #[Assert\Length(
@@ -185,605 +185,225 @@ class AnomalieDetails
     #[Assert\NotNull]
     private $dateEnregistrement;
 
-    /**
-     * [Description for getId]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:49:29 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * [Description for getMavenKey]
-     *
-     * @return string|null
-     *
-     * Created at: 02/01/2023, 17:49:32 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getMavenKey(): ?string
     {
         return $this->mavenKey;
     }
 
-    /**
-     * [Description for setMavenKey]
-     *
-     * @param string $mavenKey
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:49:33 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setMavenKey(string $mavenKey): self
+    public function setMavenKey(string $mavenKey): static
     {
         $this->mavenKey = $mavenKey;
 
         return $this;
     }
 
-    /**
-     * [Description for getName]
-     *
-     * @return string|null
-     *
-     * Created at: 02/01/2023, 17:49:38 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getName(): ?string
     {
         return $this->name;
     }
 
-    /**
-     * [Description for setName]
-     *
-     * @param string $name
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:49:40 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setName(string $name): self
+    public function setName(string $name): static
     {
         $this->name = $name;
 
         return $this;
     }
 
-    /**
-     * [Description for getBugBlocker]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:49:42 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getBugBlocker(): ?int
     {
         return $this->bugBlocker;
     }
 
-    /**
-     * [Description for setBugBlocker]
-     *
-     * @param int $bugBlocker
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:49:43 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setBugBlocker(int $bugBlocker): self
+    public function setBugBlocker(int $bugBlocker): static
     {
         $this->bugBlocker = $bugBlocker;
 
         return $this;
     }
 
-    /**
-     * [Description for getBugCritical]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:49:45 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getBugCritical(): ?int
     {
         return $this->bugCritical;
     }
 
-    /**
-     * [Description for setBugCritical]
-     *
-     * @param int $bugCritical
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:49:46 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setBugCritical(int $bugCritical): self
+    public function setBugCritical(int $bugCritical): static
     {
         $this->bugCritical = $bugCritical;
 
         return $this;
     }
 
-    /**
-     * [Description for getBugInfo]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:49:49 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getBugInfo(): ?int
     {
         return $this->bugInfo;
     }
 
-    /**
-     * [Description for setBugInfo]
-     *
-     * @param int $bugInfo
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:49:50 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setBugInfo(int $bugInfo): self
+    public function setBugInfo(int $bugInfo): static
     {
         $this->bugInfo = $bugInfo;
 
         return $this;
     }
 
-    /**
-     * [Description for getBugMajor]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:49:53 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getBugMajor(): ?int
     {
         return $this->bugMajor;
     }
 
-    /**
-     * [Description for setBugMajor]
-     *
-     * @param int $bugMajor
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:49:56 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setBugMajor(int $bugMajor): self
+    public function setBugMajor(int $bugMajor): static
     {
         $this->bugMajor = $bugMajor;
 
         return $this;
     }
 
-    /**
-     * [Description for getBugMinor]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:49:58 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getBugMinor(): ?int
     {
         return $this->bugMinor;
     }
 
-    /**
-     * [Description for setBugMinor]
-     *
-     * @param int $bugMinor
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:50:00 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setBugMinor(int $bugMinor): self
+    public function setBugMinor(int $bugMinor): static
     {
         $this->bugMinor = $bugMinor;
 
         return $this;
     }
 
-    /**
-     * [Description for getVulnerabilityBlocker]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:50:02 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getVulnerabilityBlocker(): ?int
     {
         return $this->vulnerabilityBlocker;
     }
 
-    /**
-     * [Description for setVulnerabilityBlocker]
-     *
-     * @param int $vulnerabilityBlocker
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:50:04 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setVulnerabilityBlocker(int $vulnerabilityBlocker): self
+    public function setVulnerabilityBlocker(int $vulnerabilityBlocker): static
     {
         $this->vulnerabilityBlocker = $vulnerabilityBlocker;
 
         return $this;
     }
 
-    /**
-     * [Description for getVulnerabilityCritical]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:50:06 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getVulnerabilityCritical(): ?int
     {
         return $this->vulnerabilityCritical;
     }
 
-    /**
-     * [Description for setVulnerabilityCritical]
-     *
-     * @param int $vulnerabilityCritical
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:50:08 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setVulnerabilityCritical(int $vulnerabilityCritical): self
+    public function setVulnerabilityCritical(int $vulnerabilityCritical): static
     {
         $this->vulnerabilityCritical = $vulnerabilityCritical;
 
         return $this;
     }
 
-    /**
-     * [Description for getVulnerabilityInfo]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:50:10 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getVulnerabilityInfo(): ?int
     {
         return $this->vulnerabilityInfo;
     }
 
-    /**
-     * [Description for setVulnerabilityInfo]
-     *
-     * @param int $vulnerabilityInfo
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:50:12 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setVulnerabilityInfo(int $vulnerabilityInfo): self
+    public function setVulnerabilityInfo(int $vulnerabilityInfo): static
     {
         $this->vulnerabilityInfo = $vulnerabilityInfo;
 
         return $this;
     }
 
-    /**
-     * [Description for getVulnerabilityMajor]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:50:14 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getVulnerabilityMajor(): ?int
     {
         return $this->vulnerabilityMajor;
     }
 
-    /**
-     * [Description for setVulnerabilityMajor]
-     *
-     * @param int $vulnerabilityMajor
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:50:15 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setVulnerabilityMajor(int $vulnerabilityMajor): self
+    public function setVulnerabilityMajor(int $vulnerabilityMajor): static
     {
         $this->vulnerabilityMajor = $vulnerabilityMajor;
 
         return $this;
     }
 
-    /**
-     * [Description for getVulnerabilityMinor]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:50:17 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getVulnerabilityMinor(): ?int
     {
         return $this->vulnerabilityMinor;
     }
 
-    /**
-     * [Description for setVulnerabilityMinor]
-     *
-     * @param int $vulnerabilityMinor
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:50:19 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setVulnerabilityMinor(int $vulnerabilityMinor): self
+    public function setVulnerabilityMinor(int $vulnerabilityMinor): static
     {
         $this->vulnerabilityMinor = $vulnerabilityMinor;
 
         return $this;
     }
 
-    /**
-     * [Description for getCodeSmellBlocker]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:50:21 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getCodeSmellBlocker(): ?int
     {
         return $this->codeSmellBlocker;
     }
 
-    /**
-     * [Description for setCodeSmellBlocker]
-     *
-     * @param int $codeSmellBlocker
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:50:26 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setCodeSmellBlocker(int $codeSmellBlocker): self
+    public function setCodeSmellBlocker(int $codeSmellBlocker): static
     {
         $this->codeSmellBlocker = $codeSmellBlocker;
 
         return $this;
     }
 
-    /**
-     * [Description for getCodeSmellCritical]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:50:29 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getCodeSmellCritical(): ?int
     {
         return $this->codeSmellCritical;
     }
 
-    /**
-     * [Description for setCodeSmellCritical]
-     *
-     * @param int $codeSmellCritical
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:50:31 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setCodeSmellCritical(int $codeSmellCritical): self
+    public function setCodeSmellCritical(int $codeSmellCritical): static
     {
         $this->codeSmellCritical = $codeSmellCritical;
 
         return $this;
     }
 
-    /**
-     * [Description for getCodeSmellInfo]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:50:33 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getCodeSmellInfo(): ?int
     {
         return $this->codeSmellInfo;
     }
 
-    /**
-     * [Description for setCodeSmellInfo]
-     *
-     * @param int $codeSmellInfo
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:50:35 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setCodeSmellInfo(int $codeSmellInfo): self
+    public function setCodeSmellInfo(int $codeSmellInfo): static
     {
         $this->codeSmellInfo = $codeSmellInfo;
 
         return $this;
     }
 
-    /**
-     * [Description for getCodeSmellMajor]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:50:36 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getCodeSmellMajor(): ?int
     {
         return $this->codeSmellMajor;
     }
 
-    /**
-     * [Description for setCodeSmellMajor]
-     *
-     * @param int $codeSmellMajor
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:50:38 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setCodeSmellMajor(int $codeSmellMajor): self
+    public function setCodeSmellMajor(int $codeSmellMajor): static
     {
         $this->codeSmellMajor = $codeSmellMajor;
 
         return $this;
     }
 
-    /**
-     * [Description for getCodeSmellMinor]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:50:40 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getCodeSmellMinor(): ?int
     {
         return $this->codeSmellMinor;
     }
 
-    /**
-     * [Description for setCodeSmellMinor]
-     *
-     * @param int $codeSmellMinor
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:50:41 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setCodeSmellMinor(int $codeSmellMinor): self
+    public function setCodeSmellMinor(int $codeSmellMinor): static
     {
         $this->codeSmellMinor = $codeSmellMinor;
 
         return $this;
     }
 
-    /**
-     * [Description for getDateEnregistrement]
-     *
-     * @return \DateTimeInterface|null
-     *
-     * Created at: 02/01/2023, 17:50:43 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getDateEnregistrement(): ?\DateTimeInterface
+    public function getDateEnregistrement(): ?\DateTimeImmutable
     {
         return $this->dateEnregistrement;
     }
 
-    /**
-     * [Description for setDateEnregistrement]
-     *
-     * @param \DateTimeInterface $dateEnregistrement
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:50:51 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setDateEnregistrement(\DateTimeInterface $dateEnregistrement): self
+    public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): static
     {
         $this->dateEnregistrement = $dateEnregistrement;
 
         return $this;
     }
 
-    /**
-     * Set the value of id
-     *
-     * @return  self
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-
-        return $this;
-    }
 }

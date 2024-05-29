@@ -120,286 +120,105 @@ class HotspotOwasp
     #[Assert\NotNull(message: "La date d'enregistrement ne peut pas être nulle.")]
     private $dateEnregistrement;
 
-    /**
-     * [Description for getId]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 18:01:11 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * [Description for getMavenKey]
-     *
-     * @return string|null
-     *
-     * Created at: 02/01/2023, 18:01:13 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getMavenKey(): ?string
     {
         return $this->mavenKey;
     }
 
-    /**
-     * [Description for setMavenKey]
-     *
-     * @param string $mavenKey
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 18:01:14 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setMavenKey(string $mavenKey): self
+    public function setMavenKey(string $mavenKey): static
     {
         $this->mavenKey = $mavenKey;
 
         return $this;
     }
 
-    /**
-     * [Description for getVersion]
-     *
-     * @return string|null
-     *
-     * Created at: 04/03/2024 10:37:35 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getVersion(): ?string
     {
         return $this->version;
     }
 
-    /**
-     * [Description for setVersion]
-     *
-     * @param string $version
-     *
-     * @return self
-     *
-     * Created at: 04/03/2024 10:37:40 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setVersion(string $version): self
+    public function setVersion(string $version): static
     {
         $this->version = $version;
 
         return $this;
     }
 
-    /**
-     * [Description for getDateVersion]
-     *
-     * @return \DateTimeInterface|null
-     *
-     * Created at: 04/03/2024 10:40:50 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getDateVersion(): ?\DateTimeInterface
+    public function getDateVersion(): ?\DateTimeImmutable
     {
         return $this->dateVersion;
     }
 
-    /**
-     * [Description for setDateVersion]
-     *
-     * @param \DateTimeInterface $dateVersion
-     *
-     * @return self
-     *
-     * Created at: 04/03/2024 10:40:47 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setDateVersion(\DateTimeInterface $dateVersion): self
+    public function setDateVersion(\DateTimeImmutable $dateVersion): static
     {
         $this->dateVersion = $dateVersion;
 
         return $this;
     }
 
-    /**
-     * [Description for getMenace]
-     *
-     * @return string|null
-     *
-     * Created at: 02/01/2023, 18:01:16 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getMenace(): ?string
     {
         return $this->menace;
     }
 
-    /**
-     * [Description for setMenace]
-     *
-     * @param string $menace
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 18:01:18 (Europe/Paris)
-     * @author   Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setMenace(string $menace): self
+    public function setMenace(string $menace): static
     {
         $this->menace = $menace;
 
         return $this;
     }
 
-    /**
-     * [Description for getProbability]
-     *
-     * @return string|null
-     *
-     * Created at: 02/01/2023, 18:01:19 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getProbability(): ?string
     {
         return $this->probability;
     }
 
-    /**
-     * [Description for setProbability]
-     *
-     * @param string $probability
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 18:01:21 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setProbability(string $probability): self
+    public function setProbability(string $probability): static
     {
         $this->probability = $probability;
 
         return $this;
     }
 
-    /**
-     * [Description for getStatus]
-     *
-     * @return string|null
-     *
-     * Created at: 02/01/2023, 18:01:24 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getStatus(): ?string
     {
         return $this->status;
     }
 
-    /**
-     * [Description for setStatus]
-     *
-     * @param string $status
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 18:01:25 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setStatus(string $status): self
+    public function setStatus(string $status): static
     {
         $this->status = $status;
 
         return $this;
     }
 
-    /**
-     * [Description for getNiveau]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 18:01:27 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getNiveau(): ?int
     {
         return $this->niveau;
     }
 
-    /**
-     * [Description for setNiveau]
-     *
-     * @param int $niveau
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 18:01:29 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setNiveau(int $niveau): self
+    public function setNiveau(int $niveau): static
     {
         $this->niveau = $niveau;
 
         return $this;
     }
 
-    /**
-     * [Description for getDateEnregistrement]
-     *
-     * @return \DateTimeInterface|null
-     *
-     * Created at: 02/01/2023, 18:01:32 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getDateEnregistrement(): ?\DateTimeInterface
+    public function getDateEnregistrement(): ?\DateTimeImmutable
     {
         return $this->dateEnregistrement;
     }
 
-    /**
-     * [Description for setDateEnregistrement]
-     *
-     * @param \DateTimeInterface $dateEnregistrement
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 18:01:33 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setDateEnregistrement(\DateTimeInterface $dateEnregistrement): self
+    public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): static
     {
         $this->dateEnregistrement = $dateEnregistrement;
 
         return $this;
     }
 
-
-    /**
-     * Set the value of id
-     *
-     * @return  self
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-
-        return $this;
-    }
 }

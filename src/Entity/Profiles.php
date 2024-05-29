@@ -95,256 +95,93 @@ class Profiles
     #[Assert\NotNull]
     private $dateEnregistrement;
 
-    /**
-     * [Description for getId]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 18:09:58 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * [Description for getKey]
-     *
-     * @return string|null
-     *
-     * Created at: 02/01/2023, 18:10:00 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getMavenKey(): ?string
     {
         return $this->mavenKey;
     }
 
-    /**
-     * [Description for setKey]
-     *
-     * @param string $key
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 18:10:01 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setMavenKey(string $mavenKey): self
+    public function setMavenKey(string $mavenKey): static
     {
         $this->mavenKey = $mavenKey;
 
         return $this;
     }
 
-    /**
-     * [Description for getName]
-     *
-     * @return string|null
-     *
-     * Created at: 02/01/2023, 18:10:02 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getName(): ?string
     {
         return $this->name;
     }
 
-    /**
-     * [Description for setName]
-     *
-     * @param string $name
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 18:10:03 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setName(string $name): self
+    public function setName(string $name): static
     {
         $this->name = $name;
 
         return $this;
     }
 
-    /**
-     * [Description for getLanguageName]
-     *
-     * @return string|null
-     *
-     * Created at: 02/01/2023, 18:10:06 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getLanguageName(): ?string
     {
         return $this->languageName;
     }
 
-    /**
-     * [Description for setLanguageName]
-     *
-     * @param string $languageName
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 18:10:07 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setLanguageName(string $languageName): self
+    public function setLanguageName(string $languageName): static
     {
         $this->languageName = $languageName;
 
         return $this;
     }
 
-    /**
-     * [Description for getActiveRuleCount]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 18:10:09 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getActiveRuleCount(): ?int
     {
         return $this->activeRuleCount;
     }
 
-    /**
-     * [Description for setActiveRuleCount]
-     *
-     * @param int $activeRuleCount
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 18:10:10 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setActiveRuleCount(int $activeRuleCount): self
+    public function setActiveRuleCount(int $activeRuleCount): static
     {
         $this->activeRuleCount = $activeRuleCount;
 
         return $this;
     }
 
-    /**
-     * [Description for getRulesUpdateAt]
-     *
-     * @return \DateTimeInterface|null
-     *
-     * Created at: 02/01/2023, 18:10:12 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getRulesUpdateAt(): ?\DateTimeInterface
+    public function getRulesUpdateAt(): ?\DateTimeImmutable
     {
         return $this->rulesUpdateAt;
     }
 
-
-    /**
-     * [Description for setRulesUpdateAt]
-     *
-     * @param \DateTimeInterface $rulesUpdateAt
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 18:10:16 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setRulesUpdateAt(\DateTimeInterface $rulesUpdateAt): self
+    public function setRulesUpdateAt(\DateTimeImmutable $rulesUpdateAt): static
     {
         $this->rulesUpdateAt = $rulesUpdateAt;
 
         return $this;
     }
 
-    /**
-     * [Description for isreferentielDefault]
-     *
-     * @return bool|null
-     *
-     * Created at: 02/01/2023, 18:10:18 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function isreferentielDefault(): ?bool
+    public function isReferentielDefault(): ?bool
     {
         return $this->referentielDefault;
     }
 
-    /**
-     * [Description for setReferentielDefault]
-     *
-     * @param bool $referentielDefault
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 18:10:20 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setReferentielDefault(bool $referentielDefault): self
+    public function setReferentielDefault(bool $referentielDefault): static
     {
         $this->referentielDefault = $referentielDefault;
 
         return $this;
     }
 
-
-    /**
-     * [Description for getDateEnregistrement]
-     *
-     * @return \DateTimeInterface|null
-     *
-     * Created at: 02/01/2023, 18:10:23 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getDateEnregistrement(): ?\DateTimeInterface
+    public function getDateEnregistrement(): ?\DateTimeImmutable
     {
         return $this->dateEnregistrement;
     }
 
-    /**
-     * [Description for setDateEnregistrement]
-     *
-     * @param \DateTimeInterface $dateEnregistrement
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 18:10:24 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setDateEnregistrement(\DateTimeInterface $dateEnregistrement): self
+    public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): static
     {
         $this->dateEnregistrement = $dateEnregistrement;
 
         return $this;
     }
 
-
-    /**
-     * Set the value of id
-     *
-     * @return  self
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-
-        return $this;
-    }
 }

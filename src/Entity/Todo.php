@@ -27,7 +27,7 @@ class Todo
     #[ORM\Column(
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'ID unique pour chaque tâche']
+        options: ['comment' => 'ID unique pour la table to.do']
         )]
     private $id;
 
@@ -77,199 +77,69 @@ class Todo
     #[Assert\NotNull]
     private $dateEnregistrement;
 
-    /**
-     * [Description for getId]
-     *
-     * @return int|null
-     *
-     * Created at: 10/04/2023, 14:47:31 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * [Description for getMavenKey]
-     *
-     * @return string|null
-     *
-     * Created at: 10/04/2023, 14:47:31 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getMavenKey(): ?string
     {
         return $this->mavenKey;
     }
 
-    /**
-     * [Description for setMavenKey]
-     *
-     * @param string $mavenKey
-     *
-     * @return self
-     *
-     * Created at: 10/04/2023, 14:47:31 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setMavenKey(string $mavenKey): self
+    public function setMavenKey(string $mavenKey): static
     {
         $this->mavenKey = $mavenKey;
 
         return $this;
     }
 
-
-    /**
-     * [Description for getRule]
-     *
-     * @return string|null
-     *
-     * Created at: 10/04/2023, 14:48:19 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getRule(): ?string
     {
         return $this->rule;
     }
 
-    /**
-     * [Description for setRule]
-     *
-     * @param string $rule
-     *
-     * @return self
-     *
-     * Created at: 10/04/2023, 14:47:31 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setRule(string $rule): self
+    public function setRule(string $rule): static
     {
         $this->rule = $rule;
 
         return $this;
     }
 
-
-    /**
-     * [Description for getComponent]
-     *
-     * @return string|null
-     *
-     * Created at: 10/04/2023, 14:48:41 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getComponent(): ?string
     {
         return $this->component;
     }
 
-    /**
-     * [Description for setComponent]
-     *
-     * @param string $component
-     *
-     * @return self
-     *
-     * Created at: 10/04/2023, 14:48:41 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setComponent(string $component): self
+    public function setComponent(string $component): static
     {
         $this->component = $component;
 
         return $this;
     }
 
-
-    /**
-     * [Description for getLine]
-     *
-     * @return int|null
-     *
-     * Created at: 10/04/2023, 14:49:00 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getLine(): ?int
     {
         return $this->line;
     }
 
-    /**
-     * [Description for setLine]
-     *
-     * @param int $line
-     *
-     * @return self
-     *
-     * Created at: 10/04/2023, 14:49:00 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setLine(int $line): self
+    public function setLine(int $line): static
     {
         $this->line = $line;
 
         return $this;
     }
 
-    /**
-     * [Description for getDateEnregistrement]
-     *
-     * @return \DateTimeInterface|null
-     *
-     * Created at: 02/01/2023, 18:04:34 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getDateEnregistrement(): ?\DateTimeInterface
+    public function getDateEnregistrement(): ?\DateTimeImmutable
     {
         return $this->dateEnregistrement;
     }
 
-
-    /**
-     * [Description for setDateEnregistrement]
-     *
-     * @param \DateTimeInterface $dateEnregistrement
-     *
-     * @return self
-     *
-     * Created at: 10/04/2023, 14:49:45 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setDateEnregistrement(\DateTimeInterface $dateEnregistrement): self
+    public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): static
     {
         $this->dateEnregistrement = $dateEnregistrement;
 
         return $this;
     }
 
-    /**
-     * [Description for setId]
-     *
-     * @param mixed $id
-     *
-     * @return [type]
-     *
-     * Created at: 10/04/2023, 14:50:05 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-
-        return $this;
-    }
 }
