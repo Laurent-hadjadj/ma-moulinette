@@ -122,7 +122,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private $init=0;
 
     #[ORM\Column(
-        type: Types::DATETIMETZ_MUTABLE,
+        type: Types::DATETIME_MUTABLE,
         nullable: true,
         options: ['comment' => "Date de modification"]
         )]

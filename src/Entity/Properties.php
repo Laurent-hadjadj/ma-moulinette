@@ -81,7 +81,7 @@ class Properties
     private $dateCreation;
 
     #[ORM\Column(
-        type: Types::DATETIMETZ_MUTABLE,
+        type: Types::DATETIME_MUTABLE,
         nullable: true,
         options: ['comment' => 'Date de la dernière modification du projet']
     )]
@@ -89,7 +89,7 @@ class Properties
     private $dateModificationProjet;
 
     #[ORM\Column(
-        type: Types::DATETIMETZ_MUTABLE,
+        type: Types::DATETIME_MUTABLE,
         nullable: true,
         options: ['comment' => 'Date de la dernière modification du profil']
     )]
