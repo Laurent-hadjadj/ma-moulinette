@@ -298,7 +298,6 @@ class InformationProjetRepository extends ServiceEntityRepository
      */
     public function insertInformationProjet($map):array
     {
-        dd($map);
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "INSERT INTO information_projet
