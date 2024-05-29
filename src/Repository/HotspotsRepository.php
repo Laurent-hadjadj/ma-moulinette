@@ -173,7 +173,7 @@ class HotspotsRepository extends ServiceEntityRepository
             $stmt->bindValue(':probability', $map['probability']);
             $stmt->bindValue(':status', $map['status']);
             $stmt->bindValue(':niveau', $map['niveau']);
-            $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO')->format('Y-m-d H:i:sO'));
+            $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
 
             $stmt->executeStatement();
 
@@ -200,18 +200,7 @@ class HotspotsRepository extends ServiceEntityRepository
                 $stmt->bindValue(':probability', $map['probability']);
                 $stmt->bindValue(':status', $map['status']);
                 $stmt->bindValue(':niveau', $map['niveau']);
-                $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO')->format('Y-m-d H:i:sO'));
-
-
-            /*$stmt->bindValue(':maven_key', 'ooo.merv:2048');
-            $stmt->bindValue(':version', '1.0-SNAPSHOT');
-            $stmt->bindValue(':date_version', '2024-05-26 13:59:01');
-            $stmt->bindValue(':key', 'NC');
-            $stmt->bindValue(':probability','NC');
-            $stmt->bindValue(':status', 'NC');
-            $stmt->bindValue(':niveau', -1);
-            $stmt->bindValue(':date_enregistrement', '2024-05-27 21:53:57');*/
-
+                $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
                 $stmt->executeStatement();
 
             return ['code' => 200, 'message' => 'Insert successful'];
