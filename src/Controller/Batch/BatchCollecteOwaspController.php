@@ -98,10 +98,10 @@ class BatchCollecteOwaspController extends AbstractController
         }
 
         /** On reconstruit des date au format dateTime */
-        $dateVersion = new \DateTime($select['info'][0]['date']);
+        $dateVersion = new \DateTimeImmutable($select['info'][0]['date']);
         $dateVersion->setTimezone(new \DateTimeZone(static::$europeParis));
 
-        $date = new \DateTime();
+        $date = new \DateTimeImmutable();
         $date->setTimezone(new \DateTimeZone(static::$europeParis));
 
         /** On initialise un tableau avec comme valeur 0 */

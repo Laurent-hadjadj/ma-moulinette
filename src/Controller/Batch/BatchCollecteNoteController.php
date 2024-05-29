@@ -86,7 +86,7 @@ class BatchCollecteNoteController extends AbstractController
         }
 
         /** Création de la date du jour */
-        $date = new \DateTime('now', new \DateTimeZone("Europe/Paris"));
+        $date = new \DateTimeImmutable('now', new \DateTimeZone("Europe/Paris"));
 
         /** Enregistrement des nouvelles valeurs */
         /** Attention la valeur de la note est en float dans SonarQube, on le converti en integer */
