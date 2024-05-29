@@ -311,7 +311,7 @@ class InformationProjetRepository extends ServiceEntityRepository
                     $stmt->bindValue(':project_version', $map['project_version']);
                     $stmt->bindValue(':type', $map['type']);
                     /** on formate la date avant de l'enregistrer */
-                    $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO')->format('Y-m-d H:i:sO'));
+                    $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
                     $stmt->executeStatement();
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
