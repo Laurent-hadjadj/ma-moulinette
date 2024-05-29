@@ -63,7 +63,7 @@ class Equipe
     private $description;
 
     #[ORM\Column(
-        type: Types::DATETIMETZ_MUTABLE,
+        type: Types::DATETIME_MUTABLE,
         nullable: true,
         options: ['comment' => 'Date de la dernière modification de l’équipe']
     )]

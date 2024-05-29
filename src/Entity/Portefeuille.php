@@ -63,7 +63,7 @@ class Portefeuille
     private $liste = [];
 
     #[ORM\Column(
-        type: Types::DATETIMETZ_MUTABLE,
+        type: Types::DATETIME_MUTABLE,
         nullable: true,
         options: ['comment' => 'Date de la dernière modification du portefeuille']
     )]
