@@ -85,7 +85,7 @@ class UtilisateurRepository extends ServiceEntityRepository
      */
     public function insertUtilisateurPreferenceFavori($preference, $map):array
     {
-        /** On récupére les préférences */
+        /** On récupère les préférences */
         $statut = $preference['statut'];
         $listeProjet = $preference['projet'];
         $listeFavori = $preference['favori'];
@@ -93,7 +93,7 @@ class UtilisateurRepository extends ServiceEntityRepository
         $bookmark = $preference['bookmark'];
 
         /**
-         * On recupère la valeur de l'index pour le projet en favori
+         * On récupère la valeur de l'index pour le projet en favori
          */
         $i=$index=-1;
         foreach($preference['version'] as $projet){
@@ -180,13 +180,13 @@ class UtilisateurRepository extends ServiceEntityRepository
 
         /**
          * On regarde d'abord si le projet à une version en favori
-         * ensuite on regarde conblen de version pour ce projet sont en favori
+         * ensuite on regarde combien de version pour ce projet sont en favori
          * si, il n'y a q'une version, on supprime la version et la clé de la liste de versions
          * et on supprimer aussi le projet de la liste des projets favoris
          * sinon, on supprime seulement la version favorite et on laisse le projet dans la liste de favoris.
         */
 
-        /** On récupére les préférences */
+        /** On récupère les préférences */
         $statut = $preference['statut'];
         $listeProjet = $preference['projet'];
         $listeFavori = $preference['favori'];
@@ -194,7 +194,7 @@ class UtilisateurRepository extends ServiceEntityRepository
         $bookmark = $preference['bookmark'];
 
         /**
-         * On recupère la valeur de l'index pour le projet en favori et
+         * On récupère la valeur de l'index pour le projet en favori et
          * on regarde si la version est unique.
          */
         $i=$index=-1;
@@ -283,7 +283,7 @@ class UtilisateurRepository extends ServiceEntityRepository
          * Sinon on l'ajoute
          */
 
-        /** On récupére les préférences */
+        /** On récupère les préférences */
         $statut = $preference['statut'];
         $listeProjet = $preference['projet'];
         $listeFavori = $preference['favori'];
@@ -373,7 +373,7 @@ class UtilisateurRepository extends ServiceEntityRepository
                         WHERE courriel=:courriel";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
                     $stmt->bindValue(':init', $map['init']);
-                    $stmt->bindValue(':date_modification', $map['date_modification']);
+                    $stmt->bindValue(':date_modification', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
                     $stmt->bindValue(':courriel', $map['courriel']);
                 $stmt->executeStatement();
             $this->getEntityManager()->getConnection()->commit();
