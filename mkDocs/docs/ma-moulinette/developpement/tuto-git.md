@@ -100,3 +100,7 @@ git merge [votre branche]
 Cette commande sert à voir l'historique des commits de tout le dépôt. Il y aura écrit HEAD pour vous signaler votre branche. Les branches avec le suffixe **origin/** sont les branches remote. Enfin, les branches avec seulement le nom sont les branches locales que vous avez.
 
 ![git](/assets/images/git/git-log.jpg)
+
+-**-- FIN --**-
+
+[Retour au menu principal](/index.html)
