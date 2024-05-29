@@ -31,7 +31,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => "clé unique de la table"]
+        options: ['comment' => "clé unique de la table utilisateur"]
         )]
     private $id;
 
