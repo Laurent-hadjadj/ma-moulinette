@@ -13,8 +13,10 @@
 
 namespace App\Controller\Activite;
 
+use DateTime;
+use DateTimeZone;
+
 use App\Entity\Activite;
-use App\Service\Client;
 use App\Service\ClientActivite;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
@@ -51,25 +53,62 @@ class ActiviteController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/activite', name: 'activite', methods: 'GET')]
-    public function index(Request $request, ClientActivite $client): Response
+    public function index(ClientActivite $client): Response
     {
         /** On instancie l'EntityRepository */
         $activiteEntity = $this->em->getRepository(Activite::class);
 
-        $result=$activiteEntity->selectActivite();
+        // On recupere l'anne actuelle
+        $date = new DateTime();
+        $date->setTimezone(new DateTimeZone('Europe/Paris'));
+        $anneeActuelle = $date->format('Y');
 
-        for ($i = 0; $i < count($result['request']); $i++)
-        {
-            $result['request'][$i]['execution_time'] = static::formatDuréemax($result['request'][$i]['execution_time']);
-        }
+        // On forme le tableau qui va etre envoyé dans la vue
+        // Le nombre de jour pour cette annee
+        $result=$activiteEntity->nombreJourAnneeDonnee($anneeActuelle);
+        $request[$anneeActuelle]['nb_jour'] = $result['request']['unique_days'];
+
+        // Le nombre d'analyse pour cette annee
+        $result = $activiteEntity->nombreAnalyse($anneeActuelle);
+        $request[$anneeActuelle]['nb_analyse'] = $result['request']['nb_analyse'];
+
+        // Le nombre d'analyse reussi ou en echec pour cette annee
+        // Reussi
+        $statusRechercher = 'SUCCESS';
+        $result = $activiteEntity->nombreStatus($anneeActuelle,$statusRechercher);
+        $request[$anneeActuelle]['nb_reussi'] = $result['request']['nb_status'];
+        // Echec
+        $statusRechercher = 'FAILED';
+        $result = $activiteEntity->nombreStatus($anneeActuelle,$statusRechercher);
+        $request[$anneeActuelle]['nb_echec'] = $result['request']['nb_status'];
+
+        // Le temps max d'execution pour cette annee
+        $result=$activiteEntity->tempsExecutionMax($anneeActuelle);
+        $request[$anneeActuelle]['max_temps']= static::formatDuréemax($result['request']['max_time']);
+
+        // La moyenne d'analyse par jour
+        $request[$anneeActuelle]['moyenne_analyse'] = static::calculAnalyseMoyenne($request[$anneeActuelle]['nb_jour'], $request[$anneeActuelle]['nb_analyse']);
+
+        // Taux d'analyse reussite en '%'
+        $request[$anneeActuelle]['taux_reussite'] = static::calculeTauxReussite($request[$anneeActuelle]['nb_analyse'], $request[$anneeActuelle]['nb_reussi']);
 
         return $this->render('activite/index.html.twig', [
-            'activites' => $result['request'],'version' => $this->getParameter('version'), 'dateCopyright' => \date("Y"),
+            'activites' => $request,'version' => $this->getParameter('version'), 'dateCopyright' => \date("Y"),
             Response::HTTP_OK]);
     }
 
     public function formatDuréemax(int $data): String
     {
         return gmdate("H:i:s", $data);
+    }
+
+    public function calculAnalyseMoyenne($nbJour,$nbAnalyse): int
+    {
+        return (int) $nbJour/$nbAnalyse;
+    }
+
+    public function calculeTauxReussite($nbAnalyseTotal,$nbAnalyseReussite): float
+    {
+        return $nbAnalyseTotal/$nbAnalyseReussite*100;
     }
 }

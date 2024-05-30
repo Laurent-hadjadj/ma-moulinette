@@ -40,14 +40,11 @@ class ActiviteRepository extends ServiceEntityRepository
     public function selectActivite(): array
     {
         try {
-            $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = " SELECT *
                         FROM activite";
                         $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
                 $request=$stmt->executeQuery()->fetchAllAssociative();
-            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
             return ['code'=>500, 'erreur'=> $e->getCode()];
         }
         return ['request'=>$request, 'code'=>200, 'erreur'=>''];
@@ -106,6 +103,115 @@ class ActiviteRepository extends ServiceEntityRepository
             $this->getEntityManager()->getConnection()->rollBack();
             return ['code' => 500, 'erreur' => $e->getCode()];
         }
+    }
+
+    /**
+     * [Description for selectActivite]
+     * On compte le nombre de jour pour une année donnée
+     *
+     * @return array
+     *
+     * Created at: 28/05/2024 13:56:31 (Europe/Paris)
+     * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function nombreJourAnneeDonnee($annee): array
+    {
+        try {
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "SELECT COUNT(DISTINCT started_at) AS unique_days
+                        FROM activite WHERE EXTRACT(YEAR FROM started_at) = :annee ";
+                        $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                        $stmt->bindValue("annee", $annee);
+                $request=$stmt->executeQuery()->fetchAllAssociative();
+            $this->getEntityManager()->getConnection()->commit();
+        } catch (\Doctrine\DBAL\Exception $e) {
+            $this->getEntityManager()->getConnection()->rollBack();
+            return ['code'=>500, 'erreur'=> $e->getCode()];
+        }
+        return ['request'=>$request[0], 'code'=>200, 'erreur'=>''];
+    }
+
+    /**
+     * [Description for selectActivite]
+     * On recherche du temps max d'execution pour une année donnée
+     *
+     * @return array
+     *
+     * Created at: 28/05/2024 13:56:31 (Europe/Paris)
+     * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function tempsExecutionMax($annee): array
+    {
+        try {
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "SELECT max(execution_time) AS max_time
+                        FROM activite WHERE EXTRACT(YEAR FROM started_at) = :annee ";
+                        $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                        $stmt->bindValue("annee", $annee);
+                $request=$stmt->executeQuery()->fetchAllAssociative();
+            $this->getEntityManager()->getConnection()->commit();
+        } catch (\Doctrine\DBAL\Exception $e) {
+            $this->getEntityManager()->getConnection()->rollBack();
+            return ['code'=>500, 'erreur'=> $e->getCode()];
+        }
+        return ['request'=>$request[0], 'code'=>200, 'erreur'=>''];
+    }
+
+    /**
+     * [Description for selectActivite]
+     * On compte le nombre de status (SUCCESS,FAILED) envoyer pour une année donnée
+     *
+     * @return array
+     *
+     * Created at: 28/05/2024 13:56:31 (Europe/Paris)
+     * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function nombreStatus($annee,$status): array
+    {
+        try {
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "SELECT COUNT(*) AS nb_status
+                        FROM activite WHERE EXTRACT(YEAR FROM started_at) = :annee and status like :status ";
+                        $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                        $stmt->bindValue("annee", $annee);
+                        $stmt->bindValue("status", $status);
+                $request=$stmt->executeQuery()->fetchAllAssociative();
+            $this->getEntityManager()->getConnection()->commit();
+        } catch (\Doctrine\DBAL\Exception $e) {
+            $this->getEntityManager()->getConnection()->rollBack();
+            return ['code'=>500, 'erreur'=> $e->getCode()];
+        }
+        return ['request'=>$request[0], 'code'=>200, 'erreur'=>''];
+    }
+
+    /**
+     * [Description for selectActivite]
+     * On compte le nombre d'analyse pour une année donnée
+     *
+     * @return array
+     *
+     * Created at: 28/05/2024 13:56:31 (Europe/Paris)
+     * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function nombreAnalyse($annee): array
+    {
+        try {
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "SELECT COUNT(*) AS nb_analyse
+                        FROM activite WHERE EXTRACT(YEAR FROM started_at) = :annee";
+                        $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                        $stmt->bindValue("annee", $annee);
+                $request=$stmt->executeQuery()->fetchAllAssociative();
+            $this->getEntityManager()->getConnection()->commit();
+        } catch (\Doctrine\DBAL\Exception $e) {
+            $this->getEntityManager()->getConnection()->rollBack();
+            return ['code'=>500, 'erreur'=> $e->getCode()];
+        }
+        return ['request'=>$request[0], 'code'=>200, 'erreur'=>''];
     }
 
 }
