@@ -84,7 +84,7 @@ class NotesRepository extends ServiceEntityRepository
                     $stmt->bindValue(':type', $map['type']);
                     $stmt->bindValue(':value', $map['value']);
                     /** on formate la date avant de l'enregistrer */
-                    $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:s'));
+                    $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
                     $stmt->executeStatement();
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {

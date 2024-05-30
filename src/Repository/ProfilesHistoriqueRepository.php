@@ -67,7 +67,7 @@ class ProfilesHistoriqueRepository extends ServiceEntityRepository
                         $stmt->bindValue(':regle', $map['regle']);
                         $stmt->bindValue(':description', $map['description']);
                         $stmt->bindValue(':detail', $map['detail']);
-                        $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']);
+                        $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
                         $stmt->executeStatement();
                 $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {

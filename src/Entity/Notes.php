@@ -27,7 +27,7 @@ class Notes
     #[ORM\Column(
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Identifiant unique pour chaque entrée Notes']
+        options: ['comment' => 'Identifiant unique la table Notes']
     )]
     private $id;
 
@@ -35,7 +35,7 @@ class Notes
         type: Types::STRING,
         length: 255,
         nullable: false,
-        options: ['comment' => 'Clé Maven unique du projet']
+        options: ['comment' => 'Clé Maven du projet']
     )]
     #[Assert\Length(
         max: 255,
@@ -68,129 +68,57 @@ class Notes
     #[Assert\NotNull]
     private $dateEnregistrement;
 
-    /**
-     * [Description for getId]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 18:04:21 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * Set the value of id
-     *
-     * @return  self
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
-     * [Description for getMavenKey]
-     *
-     * @return string|null
-     *
-     * Created at: 02/01/2023, 18:04:45 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getMavenKey(): ?string
     {
         return $this->mavenKey;
     }
 
-    /**
-     * [Description for getType]
-     *
-     * @return string|null
-     *
-     * Created at: 02/01/2023, 18:04:47 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getType(): ?string
-    {
-        return $this->type;
-    }
-
-
-    /**
-     * [Description for getValue]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 18:04:50 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getValue(): ?int
-    {
-        return $this->value;
-    }
-
-    /**
-     * [Description for setValue]
-     *
-     * @param int $value
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 18:04:51 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setValue(int $value): self
-    {
-        $this->value = $value;
-
-        return $this;
-    }
-
-
-    public function getDateEnregistrement(): ?\DateTimeInterface
-    {
-        return $this->dateEnregistrement;
-    }
-
-
-    public function setDateEnregistrement(\DateTimeInterface $dateEnregistrement): self
-    {
-        $this->dateEnregistrement = $dateEnregistrement;
-
-        return $this;
-    }
-
-
-    /**
-     * Set the value of mavenKey
-     *
-     * @return  self
-     */
-    public function setMavenKey($mavenKey)
+    public function setMavenKey(string $mavenKey): static
     {
         $this->mavenKey = $mavenKey;
 
         return $this;
     }
 
-    /**
-     * Set the value of type
-     *
-     * @return  self
-     */
-    public function setType($type)
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): static
     {
         $this->type = $type;
 
         return $this;
     }
+
+    public function getValue(): ?int
+    {
+        return $this->value;
+    }
+
+    public function setValue(int $value): static
+    {
+        $this->value = $value;
+
+        return $this;
+    }
+
+    public function getDateEnregistrement(): ?\DateTimeImmutable
+    {
+        return $this->dateEnregistrement;
+    }
+
+    public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): static
+    {
+        $this->dateEnregistrement = $dateEnregistrement;
+
+        return $this;
+    }
+
 }

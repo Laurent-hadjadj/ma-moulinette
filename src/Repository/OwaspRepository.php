@@ -133,8 +133,8 @@ class OwaspRepository extends ServiceEntityRepository
                     $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
 
                     foreach ($map as $key => $value) {
-                        if ($value instanceof \DateTime) {
-                            $stmt->bindValue(":$key", $value->format('Y-m-d H:i:s'));
+                        if ($value instanceof \DateTimeImmutable) {
+                            $stmt->bindValue(":$key", $value->format('Y-m-d H:i:sO'));
                         } else {
                             $stmt->bindValue(":$key", $value);
                         }

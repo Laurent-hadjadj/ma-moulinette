@@ -56,54 +56,42 @@ psql -h [adresse_serveur] -U [nom_utilisateur] -w -f /chemin/00_initialisation.s
 ### Création du schéma, des tables et indexes
 
 ```bash
-psql -h [adresse_serveur] -U [nom_utilisateur] -w -f /chemin/01_structure.sql
+psql -h [adresse_serveur] -U [nom_utilisateur] -w  -d [nom_base_de_données] -f /chemin/01_structure.sql
 ```
 
-**Note** : La connexion se fera avec l'utilisateur propriétaire de la bas de données. Ici, `db_user`.
+**Note** : La connexion se fera avec l'utilisateur propriétaire de la base de données. Ici, `db_user`.
 
-> psql -h localhost -U db_user -w -f /opt/ma-moulinette/migration/PostgreSQL/01_structure.sql
+> psql -h localhost -U db_user -w -d ma_moulinette -f /opt/ma-moulinette/migration/PostgreSQL/01_structure.sql
 
 ## Insertion des Données
 
 Après avoir créé les structures de la base de données, exécutez le script d'insertion des données :
 
 ```bash
-psql -h [adresse_serveur] -U [nom_utilisateur] -w -f /chemin/02_fixtures.sql
+psql -h [adresse_serveur] -U [nom_utilisateur] -w -d[nom_base_de_données] -f /chemin/02_fixtures.sql
 ```
 
 **Note** : La connexion se fera avec l'utilisateur propriétaire de la base de données. Ici, `db_user`.
 
-> psql -h localhost -U db_user -w -f /opt/ma-moulinette/migration/PostgreSQL/02_fixtures.sql
-
-### Attribution des Privilèges
-
-Ensuite, assurez-vous que le rôle a les privilèges nécessaires pour opérer sur la base de données :
-
-```bash
-psql -h [adresse_serveur] -U [nom_utilisateur] -w -f /chemin/03_grant_privileges.sql
-```
-
-**Note** : La connexion se fera avec l'utilisateur administrateur de la bas de données. Ici, `postgres`.
-
-> psql -h localhost -U db_user -w -f /opt/ma-moulinette/migration/PostgreSQL/03_grant_privileges.sql
+> psql -h localhost -U db_user -w -d ma_moulinette -f /opt/ma-moulinette/migration/PostgreSQL/02_fixtures.sql
 
 ## Vérification des Données
 
 Pour confirmer que tout a été correctement configuré :
 
 ```bash
-psql -h [adresse_serveur] -U [nom_utilisateur] -d [nom_base_de_données] -c "SELECT * FROM nom_base_de_données.ma_moulinette;"
+psql -h [adresse_serveur] -U [nom_utilisateur] -d [nom_base_de_données] -c "SELECT * FROM ma_moulinette;"
 ```
 
 - **[nom_base_de_données]**: Remplacez par le nom de votre base de données pour vérifier les résultats.
 
-## Mises à jour des Fichiers de Configuration Environnementale
+## Mises à jour des Fichiers de Configuration
 
-Après avoir effectué la migration de vos scripts SQL, il est également essentiel de mettre à jour vos fichiers de configuration environnementale pour adapter les changements au nouveau système de gestion de base de données PostgreSQL.
+Après avoir effectué la migration de vos scripts SQL, il est également essentiel de mettre à jour vos fichiers de configuration pour adapter les changements au nouveau système de gestion de base de données PostgreSQL.
 
-## Modification du .env et .env-prod
+## Modification du .env et .env-local
 
-Pour les environnements de développement et de production, modifiez vos fichiers `.env` et `.env-prod` comme suit :
+Pour les environnements de développement et de production, modifiez vos fichiers `.env` et `.env.local` comme suit :
 
 Commentez ou supprimez les anciennes configurations SQLite.
 
@@ -117,7 +105,7 @@ Commentez ou supprimez les anciennes configurations SQLite.
 
 Ajoutez la nouvelle configuration pour PostgreSQL
 
-Dans `.env` (pour le développement) et `.env-prod` (pour la production), ajoutez ou modifiez la configuration de la base de données :
+Dans `.env` et `.env.local`, ajoutez ou modifiez la configuration de la base de données :
 
 ```bash
 DATABASE_URL="postgresql://<username>:<password>@<hostname>:<port>/<database>?serverVersion=<server_version>&charset=utf8"

@@ -91,7 +91,7 @@ class MesuresRepository extends ServiceEntityRepository
                         $stmt->bindValue(':tests', $map['tests']);
                         $stmt->bindValue(':issues', $map['issues']);
                         /** on formate la date avant de l'enregistrer */
-                        $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:s'));
+                        $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
                         $stmt->executeStatement();
                 $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {

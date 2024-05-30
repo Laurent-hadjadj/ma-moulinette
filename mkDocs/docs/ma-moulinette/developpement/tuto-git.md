@@ -16,21 +16,21 @@ Lorsqu'on s'attaque à Git, il faut ne plus toucher au code et travailler unique
 
 Cette commande va nous servir à afficher tous les fichiers modifiés, ajoutés et supprimés.
 
-![git](/assets/images/git/git-status.jpg)
+![git](/mkDocs/docs/assets/images/git/git-status.jpg)
 
 Sur cet exemple, la commande affiche la modification d'un fichier.
 
-![git](/assets/images/git/git-status-modifier.jpg)
+![git](/mkDocs/docs/assets/images/git/git-status-modifier.jpg)
 
 Sur cet exemple, la commande affiche l'ajout d'un nouveau fichier.
 
-![git](/assets/images/git/git-status-fichier.jpg)
+![git](/mkDocs/docs/assets/images/git/git-status-fichier.jpg)
 
 >git add [nom du fichier]
 
 Cette commande va nous servir à ajouter les fichiers que l'on veut dans le commit. Lorsqu'on ajoute un fichier avec cette commande, le git status nous marque en vert le ou les fichiers ajoutés grâce à celle-ci. **On dira qu'on suit les fichiers.**
 
-![git](/assets/images/git/git-status-add.jpg)
+![git](/mkDocs/docs/assets/images/git/git-status-add.jpg)
 
 Si on ajoute un fichier par erreur, on peut l'enlever en utilisant `git restore [nom du fichier]`.
 
@@ -42,7 +42,7 @@ Après avoir ajouté tous les fichiers que vous vouliez, on peut passer à la co
 
 Cette commande va ajouter un commit à votre branche suivi du message que vous avez mis.
 
-![git](/assets/images/git/git-commit.jpg)
+![git](/mkDocs/docs/assets/images/git/git-commit.jpg)
 
 ### La mise en ligne de votre travail
 
@@ -50,7 +50,7 @@ Cette commande va ajouter un commit à votre branche suivi du message que vous a
 
 Cette commande va envoyer tous les commits passés sur le dépôt en ligne de votre GitHub.
 
-![git](/assets/images/git/git-push.jpg)
+![git](/mkDocs/docs/assets/images/git/git-push.jpg)
 
 ## La fusion des travaux communs
 
@@ -99,4 +99,8 @@ git merge [votre branche]
 
 Cette commande sert à voir l'historique des commits de tout le dépôt. Il y aura écrit HEAD pour vous signaler votre branche. Les branches avec le suffixe **origin/** sont les branches remote. Enfin, les branches avec seulement le nom sont les branches locales que vous avez.
 
-![git](/assets/images/git/git-log.jpg)
+![git](/mkDocs/docs/assets/images/git/git-log.jpg)
+
+-**-- FIN --**-
+
+[Retour au menu principal](/index.html)

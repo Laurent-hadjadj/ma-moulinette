@@ -145,11 +145,6 @@ class BatchCollecteInformationProjetController extends AbstractController
         if (isset($result['code']) && in_array($result['code'], [401, 404])) {
             return ['code' => $result['code']];
         }
-
-        /** On créé un objet date */
-        $date = new \DateTime();
-        $date->setTimezone(new \DateTimeZone(static::$europeParis));
-
         /** On supprime les informations pour la maven_key. */
         $map=['maven_key'=>$mavenKey];
         $delete=$informationProjetRepository->deleteInformationProjetMavenKey($map);
@@ -168,8 +163,9 @@ class BatchCollecteInformationProjetController extends AbstractController
             if (!isset($explode[1]) || empty($explode[1])) {
                 $explode[1] = 'N.C';
             }
-            $date = new \DateTime();
+            $date = new \DateTimeImmutable();
             $date->setTimezone(new \DateTimeZone(static::$europeParis));
+
             $map=['maven_key' => $mavenKey,
                     'analyse_key' => $information['key'],
                     'date' => $information['date'],
