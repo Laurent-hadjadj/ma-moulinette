@@ -141,8 +141,10 @@ class BatchCollecteHotspotController extends AbstractController
             'version' => $select['info'][0]['project_version'],
             'date_version' => $dateVersion,
             'key' => 'NC',
+            'security_category' => 'NC',
             'probability' => 'NC',
             'status' => 'NC',
+            'status' => '',
             'niveau' => $niveau,
             'date_enregistrement' => $date
         ];
@@ -159,8 +161,10 @@ class BatchCollecteHotspotController extends AbstractController
                     'version' => $select['info'][0]['project_version'],
                     'date_version' => $dateVersion,
                     'key' => $value['key'] ?? 'NC',
+                    'security_category' => $value['securityCategory'] ?? 'NC',
                     'probability' => $value['vulnerabilityProbability'],
                     'status' => $value['status'] ?? 'NC',
+                    'resolution' => $value['resolution'] ?? '',
                     'niveau' => $niveau,
                     'date_enregistrement' => $date
                 ];
@@ -172,7 +176,7 @@ class BatchCollecteHotspotController extends AbstractController
         if ($insert['code'] !== 200) {
             return [
                 'code' => $insert['code'],
-                static::$request => 'insertHotspost'
+                static::$request => 'insertHotspot'
             ];
         }
     return ['code' => 200, 'map' => $map[0]];
