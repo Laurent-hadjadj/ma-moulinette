@@ -58,11 +58,6 @@
               </tr>
             </thead>
             <tbody>
-              <script>
-                // Conversion de la variable Twig en JSON
-                const data = {{ activite|json_encode|raw }};
-                console.log('Données Twig:', data);
-              </script>
               {% for annee, activite in activites %}
                 <tr>
                   <td>{{ annee }}</td>
