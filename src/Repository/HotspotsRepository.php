@@ -159,16 +159,18 @@ class HotspotsRepository extends ServiceEntityRepository
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "INSERT INTO hotspots
-                            (maven_key, version, date_version, key, probability, status, niveau, date_enregistrement)
+                            (maven_key, version, date_version, key, security_category, probability, status, resolution, niveau, date_enregistrement)
                         VALUES
-                            (:maven_key, :version, :date_version, :key, :probability, :status, :niveau, :date_enregistrement)";
+                            (:maven_key, :version, :date_version, :key, :security_category, :probability, :status, :resolution, :niveau, :date_enregistrement)";
                 $stmt=$this->getEntityManager()->getConnection()->prepare($sql);
                     $stmt->bindValue(':maven_key', $map['maven_key']);
                     $stmt->bindValue(':version', $map['version']);
                     $stmt->bindValue(':date_version', $map['date_version']->format('Y-m-d H:i:sO'));
                     $stmt->bindValue(':key', $map['key']);
+                    $stmt->bindValue(':security_category', $map['security_category']);
                     $stmt->bindValue(':probability', $map['probability']);
                     $stmt->bindValue(':status', $map['status']);
+                    $stmt->bindValue(':resolution', $map['resolution']);
                     $stmt->bindValue(':niveau', $map['niveau']);
                     $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
                     $stmt->executeStatement();
