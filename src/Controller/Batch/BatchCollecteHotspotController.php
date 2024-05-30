@@ -114,10 +114,8 @@ class BatchCollecteHotspotController extends AbstractController
             'ps'=>500,
             'p'=>1
         ];
-        $queryString = http_build_query($queryParams);
-
         /** Appelle le client HTTP */
-        $result = $this->client->http("$tempoUrl/api/hotspots/search?$queryString");
+        $result = $this->client->http("$tempoUrl/api/hotspots/search?".http_build_query($queryParams));
         /** On catch les erreurs HTTP 401 et 404, si possible :) */
         if (isset($result['code']) && in_array($result['code'], [401, 404])) {
             return ['code' => $result['code']];
@@ -174,7 +172,7 @@ class BatchCollecteHotspotController extends AbstractController
         if ($insert['code'] !== 200) {
             return [
                 'code' => $insert['code'],
-                static::$request => 'insertMesures'
+                static::$request => 'insertHotspost'
             ];
         }
     return ['code' => 200, 'map' => $map[0]];
