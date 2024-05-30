@@ -17,10 +17,6 @@ namespace App\Controller\Home;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 
-/** Gestion du temps */
-use DateTime;
-use DateTimeZone;
-
 /** Accès aux tables SLQLite */
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\ListeProjet;
@@ -36,7 +32,6 @@ use Psr\Log\LoggerInterface;
 
 /** Client HTTP */
 use App\Service\Client;
-
 
 /**
  * [Description ApiHomeController]
@@ -114,7 +109,7 @@ class ApiHomeController extends AbstractController
         $listeProjetEntity = $this->em->getRepository(ListeProjet::class);
         $propertiesEntity = $this->em->getRepository(Properties::class);
 
-        /** On crée un objet de reponse JSON */
+        /** On crée un objet de response JSON */
         $response = new JsonResponse();
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
@@ -132,11 +127,10 @@ class ApiHomeController extends AbstractController
         $public = $private = $emptyTags = $nombre = 0;
 
         /** On créé un objet DateTime */
-        $date = new DateTime();
-        $timezone = new DateTimeZone(static::$europeParis);
-        $date->setTimezone($timezone);
+        $date = new \DateTimeImmutable();
+        $date->setTimezone(new \DateTimeZone(static::$europeParis));
 
-        /** On vérifie que sonarqube a au moins 1 projet */
+        /** On vérifie que SonarQube a au moins 1 projet */
         if (array_key_exists('total', $result)){
             if ($result['code']===404) {
                 return $response->setData([
@@ -145,7 +139,7 @@ class ApiHomeController extends AbstractController
                     'message'=>static::$erreur404, Response::HTTP_OK]);
             }
         }
-        
+
         /** On supprime les données de la table avant d'importer les données. */
         $request=$listeProjetEntity->deleteListeProjet();
         if ($request['code']!=200) {
@@ -189,7 +183,7 @@ class ApiHomeController extends AbstractController
             }
         }
 
-        /** On met à jour la table proprietes */
+        /** On met à jour la table propriétés */
         $map=[  'projet_bd'=>$nombre, 'projet_sonar'=>$nombre,
                 'date_modification_projet'=>$date->format(static::$dateFormatShort),
             ];
@@ -218,7 +212,7 @@ class ApiHomeController extends AbstractController
         /** On instancie l'EntityRepository */
         $listeProjetEntity = $this->em->getRepository(ListeProjet::class);
 
-        /** On crée un objet de reponse JSON */
+        /** On crée un objet de response JSON */
         $response = new JsonResponse();
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
