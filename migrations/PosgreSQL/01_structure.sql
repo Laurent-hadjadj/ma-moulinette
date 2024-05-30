@@ -11,6 +11,7 @@
 -- 22/05/2024 : Laurent HADJADJ - Surpression des ", modification de la table notes (ajout du cle primaire unique et suppression de l'attribut date.
 -- 28/05/2024 : Laurent HADJADJ - Mise à jour du script - réécriture complet
 -- 29/05/2024 : Laurent HADJADJ - Mise à jour de la table Activite (Quentin)
+-- 30/05/2024 : Laurent HADJADJ - Ajout des attributs revesion et securityCategory pour la table hotspot
 
 -- SCHEMA: ma_moulinette
 
@@ -440,9 +441,11 @@ CREATE TABLE ma_moulinette.hotspots
   version character varying(32) NOT NULL,
   date_version TIMESTAMPTZ NOT NULL,
   key character varying(32) NOT NULL,
+  security_category character varying(64) NOT NULL,
   probability character varying(8) NOT NULL,
   status character varying(16) NOT NULL,
   niveau integer NOT NULL,
+  resolution character varying(16),
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
@@ -453,10 +456,12 @@ COMMENT ON COLUMN ma_moulinette.hotspots.id IS 'Identifiant unique pour chaque h
 COMMENT ON COLUMN ma_moulinette.hotspots.maven_key IS 'Clé Maven du projet';
 COMMENT ON COLUMN ma_moulinette.hotspots.version IS 'Version du hotspot';
 COMMENT ON COLUMN ma_moulinette.hotspots.date_version IS 'Date de la version du hotspot';
-COMMENT ON COLUMN ma_moulinette.hotspots.key IS 'Clé de l’analyse du hotspot';
+COMMENT ON COLUMN ma_moulinette.hotspots.key IS 'Clé unique du hotspot';
+COMMENT ON COLUMN ma_moulinette.security.category IS 'Défini la catégorie de sécurité du hotspot';
 COMMENT ON COLUMN ma_moulinette.hotspots.probability IS 'Probabilité de risque du hotspot';
-COMMENT ON COLUMN ma_moulinette.hotspots.status IS 'Statut du hotspot';
+COMMENT ON COLUMN ma_moulinette.hotspots.status IS 'Statut du hotspot : TO_REVIEW, REVIEWED';
 COMMENT ON COLUMN ma_moulinette.hotspots.niveau IS 'Niveau de risque du hotspot';
+COMMENT ON COLUMN ma_moulinette.hotspots.resolution IS 'Donne pour un hotspot au statut REVIEWED son état : FIXED, SAFE, ACKNOWLEDGED';
 COMMENT ON COLUMN ma_moulinette.hotspots.date_enregistrement IS 'Date d’enregistrement du hotspot';
 
 -- Table: ma_moulinette.information_projet

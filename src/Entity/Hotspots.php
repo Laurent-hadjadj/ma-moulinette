@@ -80,6 +80,19 @@ class Hotspots
 
     #[ORM\Column(
         type: Types::STRING,
+        length: 64,
+        nullable: false,
+        options: ['comment' => 'Défini la catégorie de sécurité du hotspot']
+    )]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        max: 64,
+        maxMessage: "La catégorie de sécurité ne doit pas dépasser 64 caractères."
+    )]
+    private $securityCategory;
+
+    #[ORM\Column(
+        type: Types::STRING,
         length: 8,
         nullable: false,
         options: ['comment' => 'Probabilité de risque du hotspot']
@@ -95,7 +108,7 @@ class Hotspots
         type: Types::STRING,
         length: 16,
         nullable: false,
-        options: ['comment' => 'Statut du hotspot']
+        options: ['comment' => 'Statut du hotspot : TO_REVIEW, REVIEWED']
     )]
     #[Assert\NotBlank]
     #[Assert\Length(
@@ -103,6 +116,18 @@ class Hotspots
         maxMessage: "Le statut ne doit pas dépasser 16 caractères."
     )]
     private $status;
+
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 16,
+        nullable: true,
+        options: ['comment' => 'Donne pour un hotspot au statut REVIEWED son état : FIXED, SAFE, ACKNOWLEDGED']
+    )]
+    #[Assert\Length(
+        max: 16,
+        maxMessage: "Le statut ne doit pas dépasser 16 caractères."
+    )]
+    private ?string $revision=null;
 
     #[ORM\Column(
         type: Types::INTEGER,
@@ -217,6 +242,30 @@ class Hotspots
     public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): static
     {
         $this->dateEnregistrement = $dateEnregistrement;
+
+        return $this;
+    }
+
+    public function getSecurityCategory(): ?string
+    {
+        return $this->securityCategory;
+    }
+
+    public function setSecurityCategory(string $securityCategory): static
+    {
+        $this->securityCategory = $securityCategory;
+
+        return $this;
+    }
+
+    public function getRevision(): ?string
+    {
+        return $this->revision;
+    }
+
+    public function setRevision(?string $revision): static
+    {
+        $this->revision = $revision;
 
         return $this;
     }
