@@ -31,7 +31,7 @@ class HotspotsRepository extends ServiceEntityRepository
 
     /**
      * [Description for deleteHotspotsMavenKey]
-     * Supprime les hotspots pour la version courrante (i.e. correspondant à la maven_key)
+     * Supprime les hotspots pour la version courante (i.e. correspondant à la maven_key)
      * @param mixed $map
      *
      * @return array
@@ -45,13 +45,15 @@ class HotspotsRepository extends ServiceEntityRepository
 
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-            $sql = "DELETE
-                    FROM hotspots
-                    WHERE maven_key=:maven_key";
-            $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-            $conn->bindValue(':maven_key', $map['maven_key']);
-                    $conn->executeQuery();
+                $sql = "DELETE
+                        FROM hotspots
+                        WHERE maven_key=:maven_key";
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $stmt->bindValue(':maven_key', $map['maven_key']);
+                    $stmt->executeStatement();
+            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
+            $this->getEntityManager()->getConnection()->rollBack();
             return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'erreur'=>''];
@@ -152,59 +154,28 @@ class HotspotsRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function hinsertHotspots(array $map): array
-    {
-        $entityManager = $this->getEntityManager();
-        $connection = $entityManager->getConnection();
-
-        try {
-            $connection->beginTransaction();
-            $sql = "INSERT INTO hotspots
-                        (maven_key, version, date_version, key, probability, status, niveau, date_enregistrement)
-                    VALUES
-                        (:maven_key, :version, :date_version, :key, :probability, :status, :niveau, :date_enregistrement)";
-
-            $stmt = $connection->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-
-            $stmt->bindValue(':maven_key', $map['maven_key']);
-            $stmt->bindValue(':version', $map['version']);
-            $stmt->bindValue(':date_version', $map['date_version']->format('Y-m-d H:i:sO'));
-            $stmt->bindValue(':key', $map['key']);
-            $stmt->bindValue(':probability', $map['probability']);
-            $stmt->bindValue(':status', $map['status']);
-            $stmt->bindValue(':niveau', $map['niveau']);
-            $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
-
-            $stmt->executeStatement();
-
-            $connection->commit();
-            return ['code' => 200, 'message' => 'Insert successful'];
-        } catch (\Doctrine\DBAL\Exception $e) {
-            $connection->rollBack();
-            return ['code' => 500, 'error' => $e->getMessage()];
-        } catch (\Exception $e) {
-            $connection->rollBack();
-            return ['code' => 500, 'error' => 'Unexpected error: ' . $e->getMessage()];
-        }
-    }
-
     public function insertHotspots(array $map): array
     {
         try {
-            $sql = "INSERT INTO hotspots (maven_key, version, date_version, key, probability, status, niveau, date_enregistrement) VALUES (:maven_key, :version, :date_version, :key, :probability, :status, :niveau, :date_enregistrement)";
-            $stmt=$this->getEntityManager()->getConnection()->prepare($sql);
-                $stmt->bindValue(':maven_key', $map['maven_key']);
-                $stmt->bindValue(':version', $map['version']);
-                $stmt->bindValue(':date_version', $map['date_version']->format('Y-m-d H:i:sO'));
-                $stmt->bindValue(':key', $map['key']);
-                $stmt->bindValue(':probability', $map['probability']);
-                $stmt->bindValue(':status', $map['status']);
-                $stmt->bindValue(':niveau', $map['niveau']);
-                $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
-                $stmt->executeStatement();
-
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "INSERT INTO hotspots
+                            (maven_key, version, date_version, key, probability, status, niveau, date_enregistrement)
+                        VALUES
+                            (:maven_key, :version, :date_version, :key, :probability, :status, :niveau, :date_enregistrement)";
+                $stmt=$this->getEntityManager()->getConnection()->prepare($sql);
+                    $stmt->bindValue(':maven_key', $map['maven_key']);
+                    $stmt->bindValue(':version', $map['version']);
+                    $stmt->bindValue(':date_version', $map['date_version']->format('Y-m-d H:i:sO'));
+                    $stmt->bindValue(':key', $map['key']);
+                    $stmt->bindValue(':probability', $map['probability']);
+                    $stmt->bindValue(':status', $map['status']);
+                    $stmt->bindValue(':niveau', $map['niveau']);
+                    $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
+                    $stmt->executeStatement();
+                $this->getEntityManager()->getConnection()->commit();
             return ['code' => 200, 'message' => 'Insert successful'];
         } catch (\Doctrine\DBAL\Exception $e) {
+            $this->getEntityManager()->getConnection()->rollBack();
             return ['code' => 500, 'error' => $e->getMessage()];
         }
     }
