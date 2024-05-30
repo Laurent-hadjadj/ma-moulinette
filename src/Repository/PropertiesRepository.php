@@ -95,8 +95,9 @@ class PropertiesRepository extends ServiceEntityRepository
                     $stmt->bindValue(":projet_sonar", $map["projet_sonar"]);
                     $stmt->bindValue(":profil_bd", $map["profil_bd"]);
                     $stmt->bindValue(":profil_sonar", $map["profil_sonar"]);
-                    $stmt->bindValue(":date_modification_projet", $map["date_modification_projet"]->format('Y-m-d H:i:sO'));
-                    $stmt->bindValue(":date_modification_profil", $map["date_modification_profil"]->format('Y-m-d H:i:sO'));
+                    /** Les dates sont déjà en string */
+                    $stmt->bindValue(":date_modification_projet", $map["date_modification_projet"]);
+                    $stmt->bindValue(":date_modification_profil", $map["date_modification_profil"]);
                     $stmt->bindValue(":date_creation", $map["date_creation"]);
                     $stmt->executeStatement();
             $this->getEntityManager()->getConnection()->commit();
