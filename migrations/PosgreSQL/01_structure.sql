@@ -444,8 +444,8 @@ CREATE TABLE ma_moulinette.hotspots
   security_category character varying(64) NOT NULL,
   probability character varying(8) NOT NULL,
   status character varying(16) NOT NULL,
-  niveau integer NOT NULL,
   resolution character varying(16),
+  niveau integer NOT NULL,
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
@@ -460,8 +460,8 @@ COMMENT ON COLUMN ma_moulinette.hotspots.key IS 'Clé unique du hotspot';
 COMMENT ON COLUMN ma_moulinette.security.category IS 'Défini la catégorie de sécurité du hotspot';
 COMMENT ON COLUMN ma_moulinette.hotspots.probability IS 'Probabilité de risque du hotspot';
 COMMENT ON COLUMN ma_moulinette.hotspots.status IS 'Statut du hotspot : TO_REVIEW, REVIEWED';
-COMMENT ON COLUMN ma_moulinette.hotspots.niveau IS 'Niveau de risque du hotspot';
 COMMENT ON COLUMN ma_moulinette.hotspots.resolution IS 'Donne pour un hotspot au statut REVIEWED son état : FIXED, SAFE, ACKNOWLEDGED';
+COMMENT ON COLUMN ma_moulinette.hotspots.niveau IS 'Niveau de risque du hotspot';
 COMMENT ON COLUMN ma_moulinette.hotspots.date_enregistrement IS 'Date d’enregistrement du hotspot';
 
 -- Table: ma_moulinette.information_projet
