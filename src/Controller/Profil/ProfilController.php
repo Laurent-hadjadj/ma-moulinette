@@ -55,13 +55,13 @@ class ProfilController extends AbstractController
         $rq1=$profilesEntity->selectProfiles();
 
         if  ($rq1['code'] === 500) {
-            $this->addFlash('notice', ['type'=>'alert', 'titre'=> '[PROFIL-002]', 'message'=>"La liste des profils n'a pas été récupurée."]);
+            $this->addFlash('notice', ['type'=>'alert', 'titre'=> '[PROFIL-002]', 'message'=>"La liste des profils n'a pas été récupérée."]);
         }
 
         if (!$rq1['liste']){
             $this->addFlash('notice', ['type'=>'warning', 'titre'=> '[PROFIL-003]', 'message'=>"La liste des profils est vide. Vous devez la mettre à jour !"]);
         } else {
-            $this->addFlash('notice', ['type'=>'success', 'titre'=> '[PROFIL-001]', 'message'=>"La liste des profils a été récupurée."]);
+            $this->addFlash('notice', ['type'=>'success', 'titre'=> '[PROFIL-001]', 'message'=>"La liste des profils a été récupérée."]);
         }
 
         return $this->render('profil/index.html.twig', [
