@@ -71,18 +71,14 @@ class NoSonarRepository extends ServiceEntityRepository
     public function selectNoSonarRuleGroupByRule($map):array
     {
         try {
-                $this->getEntityManager()->getConnection()->beginTransaction();
-                    $sql = "SELECT rule, count(*) as total
-                            FROM no_sonar
-                            WHERE maven_key=:maven_key
-                            GROUP BY rule";
-                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-                        $stmt->bindValue(':maven_key', $map['maven_key']);
-                        $exec=$stmt->executeQuery();
-                        $liste=$exec->fetchAllAssociative();
-                $this->getEntityManager()->getConnection()->commit();
+                $sql = "SELECT rule, count(*) as total
+                        FROM no_sonar
+                        WHERE maven_key=:maven_key
+                        GROUP BY rule";
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $stmt->bindValue(':maven_key', $map['maven_key']);
+                    $liste=$stmt->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
             return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
@@ -90,7 +86,7 @@ class NoSonarRepository extends ServiceEntityRepository
 
     /**
      * [Description for insertNoSonar]
-     * Ajout d'un noSonar ou d'un supressWarning
+     * Ajout d'un noSonar ou d'un suppressWarning
      *
      * @param array $map
      *
@@ -102,18 +98,21 @@ class NoSonarRepository extends ServiceEntityRepository
      */
     public function insertNoSonar($map):array
     {
+        $sql = "INSERT INTO no_sonar
+                    (maven_key, rule, component, line, date_enregistrement)
+                VALUES
+                    (:maven_key, :rule, :component, :line, :date_enregistrement)";
         try {
                 $this->getEntityManager()->getConnection()->beginTransaction();
-                    $sql = "INSERT INTO no_sonar
-                                (maven_key, rule, component, line, date_enregistrement)
-                            VALUES (:maven_key, :rule, :component, :line, :date_enregistrement)";
-                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-                        $stmt->bindValue(':maven_key', $map['maven_key']);
-                        $stmt->bindValue(':rule', $map['rule']);
-                        $stmt->bindValue(':component', $map['component']);
-                        $stmt->bindValue(':line', $map['line']);
-                        $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
-                        $stmt->executeStatement();
+                    foreach($map as $item){
+                        $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                            $stmt->bindValue(':maven_key', $item['maven_key']);
+                            $stmt->bindValue(':rule', $item['rule']);
+                            $stmt->bindValue(':component', $item['component']);
+                            $stmt->bindValue(':line', $item['line']);
+                            $stmt->bindValue(':date_enregistrement', $item['date_enregistrement']->format('Y-m-d H:i:sO'));
+                            $stmt->executeStatement();
+                }
                 $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();

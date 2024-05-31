@@ -23,15 +23,16 @@ use App\Entity\NoSonar;
 /** Client HTTP */
 use App\Service\Client;
 
+
 /**
- * [Description BatchCollecteInformationProjetController]
+ * [Description BatchCollecteNoSonarController]
  */
 class BatchCollecteNoSonarController extends AbstractController
 {
     /** Définition des constantes */
     public static $sonarUrl = "sonar.url";
     public static $europeParis = "Europe/Paris";
-    public static $removeReturnline = "/\s+/u";
+    public static $request = "requête : ";
 
     /**
      * [Description for __construct]
@@ -42,15 +43,16 @@ class BatchCollecteNoSonarController extends AbstractController
      */
     public function __construct(
         private EntityManagerInterface $em,
+        private Client $client
     ) {
         $this->em = $em;
+        $this->client = $client;
     }
 
 
     /**
      * [Description for BatchCollecteNoSonar]
      *
-     * @param Client $client
      * @param string $mavenKey
      *
      * @return array
@@ -59,19 +61,23 @@ class BatchCollecteNoSonarController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function BatchCollecteNoSonar(Client $client, $mavenKey): array
+    public function BatchCollecteNoSonar(string $mavenKey): array
     {
         /** On instancie l'EntityRepository */
-        $noSonarEntity = $this->em->getRepository(NoSonar::class);
+        $noSonarRepository = $this->em->getRepository(NoSonar::class);
 
-        /** On construit l'URL et on appel le WS */
+        /** On créé un objet date. */
+        $date = new \DateTimeImmutable();
+        $date->setTimezone(new \DateTimeZone(static::$europeParis));
+
+        /** On construit l'URL */
         $tempoUrl = $this->getParameter(static::$sonarUrl);
-        $url = "$tempoUrl/api/issues/search?componentKeys=$mavenKey
-            &rules=java:S1309,java:NoSonar&ps=500&p=1";
+        $mavenKey = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
 
-        $result = $client->http(trim(preg_replace(static::$removeReturnline, " ", $url)));
-
-        /** On catch les erreurs HTTP 401 et 404, si possible :) */
+        /** Appelle le client HTTP */
+        $queryParams = ['componentKeys'=>$mavenKey, 'rules'=> 'java:S1309,java:NoSonar', 'p'=>1, 'ps'=>500 ];
+        $result = $this->client->http("$tempoUrl/api/issues/search?".http_build_query($queryParams));
+         /** On catch les erreurs HTTP 401 et 404, si possible :) */
         if (isset($result['code']) && in_array($result['code'], [401, 404])) {
             return ['code' => $result['code']];
         }
@@ -80,11 +86,11 @@ class BatchCollecteNoSonarController extends AbstractController
         $date = new \DateTime();
         $date->setTimezone(new \DateTimeZone(static::$europeParis));
 
-        /** On supprime les notes pour la maven_key. */
+        /** On supprime les résultats pour la maven_key. */
         $map=['maven_key'=>$mavenKey];
-        $request=$noSonarEntity->deleteNoSonarMavenKey($map);
-        if ($request['code']!=200) {
-            return ['code' => $request['code'], 'methode'=>'deleteNoSonarMavenKey'];
+        $delete=$noSonarRepository->deleteNoSonarMavenKey($map);
+        if ($delete['code']!=200) {
+            return ['code' => $delete['code'], static::$request=>'deleteNoSonarMavenKey'];
         }
 
         /**
@@ -93,36 +99,42 @@ class BatchCollecteNoSonarController extends AbstractController
          */
 
         $noSonar = $suppressWarning = 0;
+        $mapData=[];
         if ($result["paging"]["total"] !== 0) {
             foreach ($result["issues"] as $issue) {
-                if ($issue["rule"] === "java:S1309") {
-                    $suppressWarning++;
-                } elseif ($issue["rule"] === "java:NoSonar") {
-                    $noSonar++;
+                switch ($issue["rule"]) {
+                    case "java:S1309":
+                        $suppressWarning++;
+                        break;
+                    case "java:NoSonar":
+                        $noSonar++;
+                        break;
+                    default: break;
                 }
                 $component = str_replace("$mavenKey :", "", $issue["component"]);
                 $line = empty($issue["line"]) ? 0 : $issue["line"];
 
                 /** On créé la map */
-                $map = [
+                $mapData[] = [
                     'maven_key' => $mavenKey,
                     'rule' => $issue["rule"],
                     'component' => $component,
                     'line' => $line,
                     'date_enregistrement' => $date
                 ];
-                /* On enregistre */
-                $request=$noSonarEntity->insertNoSonar($map);
-                if ($request['code']!=200) {
-                    return ['code' => $request['code'], 'methode'=>'insertNoSonar'];
-                }
             }
         } else {
             /** Il n'y a pas de noSOnar ou de suppressWarning */
         }
 
+        /* On enregistre */
+        $request=$noSonarRepository->insertNoSonar($mapData);
+        if ($request['code']!=200) {
+            return ['code' => $request['code'],
+            'error'=>[$request['erreur']],static::$request=>'insertNoSonar'];
+        }
         /** On enregistre les données */
         $nosonar = ["suppress_warning" => $suppressWarning, "no_sonar" => $noSonar];
-        return ['code' => 200, "nosonar" => $nosonar];
+        return ['code' => 200, "message" => $nosonar];
     }
 }
