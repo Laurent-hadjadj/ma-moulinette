@@ -68,18 +68,17 @@ class HotspotDetailsRepository extends ServiceEntityRepository
      */
     public function deleteHotspotDetailsMavenKey($map):array
     {
-        $sql = "DELETE
-                FROM hotspot_details
-                WHERE maven_key=:maven_key";
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-        $conn->bindValue(':maven_key', $map['maven_key']);
         try {
-                #f ($mode !== 'TEST') {
-                    $conn->executeQuery();
-                #} else {
-                    return ['code'=> 202, 'erreur'=>'TEST'];
-                #}
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "DELETE
+                        FROM hotspot_details
+                        WHERE maven_key=:maven_key";
+                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $conn->bindValue(':maven_key', $map['maven_key']);
+                    $conn->executeStatement();
+            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
+            $this->getEntityManager()->getConnection()->rollBack();
             return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'erreur'=>''];
@@ -126,7 +125,6 @@ class HotspotDetailsRepository extends ServiceEntityRepository
                 }
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            dd($e->getMessage());
             $this->getEntityManager()->getConnection()->rollBack();
             return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
