@@ -32,7 +32,7 @@ class TodoRepository extends ServiceEntityRepository
 
   /**
    * [Description for deleteTodoMavenKey]
-   * Supprime les T_do pour la version courrante (i.e. correspondant à la maven_key)
+   * Supprime les T_do pour la version courante (i.e. correspondant à la maven_key)
    *
    * @param array $map
    *
@@ -75,7 +75,6 @@ class TodoRepository extends ServiceEntityRepository
   public function selectTodoRuleGroupByRule($map):array
   {
     try {
-      $this->getEntityManager()->getConnection()->beginTransaction();
         $sql = "SELECT rule, count(*) as total
                 FROM todo
                 WHERE maven_key=:maven_key
@@ -84,9 +83,7 @@ class TodoRepository extends ServiceEntityRepository
         $conn->bindValue(':maven_key', $map['maven_key']);
           $exec=$conn->executeQuery();
           $liste=$exec->fetchAllAssociative();
-      $this->getEntityManager()->getConnection()->commit();
     } catch (\Doctrine\DBAL\Exception $e) {
-      $this->getEntityManager()->getConnection()->rollBack();
       return ['code'=>500, 'erreur'=> $e->getMessage()];
     }
     return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
@@ -107,7 +104,6 @@ class TodoRepository extends ServiceEntityRepository
   public function selectTodoComponentOrderByRule($map):array
   {
     try {
-          $this->getEntityManager()->getConnection()->beginTransaction();
             $sql = "SELECT rule, component, line
                     FROM todo
                     WHERE maven_key=:maven_key
@@ -116,11 +112,45 @@ class TodoRepository extends ServiceEntityRepository
             $conn->bindValue(':maven_key', $map['maven_key']);
             $exec=$conn->executeQuery();
             $liste=$exec->fetchAllAssociative();
-          $this->getEntityManager()->getConnection()->commit();
     } catch (\Doctrine\DBAL\Exception $e) {
-      $this->getEntityManager()->getConnection()->rollBack();
       return ['code'=>500, 'erreur'=> $e->getMessage()];
     }
     return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
+  }
+
+  /**
+   * [Description for insertTodo]
+   *
+   * @param mixed $map
+   *
+   * @return array
+   *
+   * Created at: 31/05/2024 20:21:10 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function insertTodo($map):array
+  {
+      $sql = "INSERT INTO todo
+                  (maven_key, rule, component, line, date_enregistrement)
+              VALUES
+                  (:maven_key, :rule, :component, :line, :date_enregistrement)";
+      try {
+              $this->getEntityManager()->getConnection()->beginTransaction();
+                  foreach($map as $item){
+                      $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                          $stmt->bindValue(':maven_key', $item['maven_key']);
+                          $stmt->bindValue(':rule', $item['rule']);
+                          $stmt->bindValue(':component', $item['component']);
+                          $stmt->bindValue(':line', $item['line']);
+                          $stmt->bindValue(':date_enregistrement', $item['date_enregistrement']->format('Y-m-d H:i:sO'));
+                          $stmt->executeStatement();
+              }
+              $this->getEntityManager()->getConnection()->commit();
+      } catch (\Doctrine\DBAL\Exception $e) {
+          $this->getEntityManager()->getConnection()->rollBack();
+          return ['code'=>500, 'erreur'=> $e->getMessage()];
+      }
+      return ['code'=>200, 'erreur'=>''];
   }
 }
