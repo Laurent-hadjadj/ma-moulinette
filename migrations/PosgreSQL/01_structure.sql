@@ -357,12 +357,12 @@ COMMENT ON COLUMN ma_moulinette.historique.code_smell_critical IS 'Nombre de mau
 COMMENT ON COLUMN ma_moulinette.historique.code_smell_major IS 'Nombre de mauvaises pratiques majeurs';
 COMMENT ON COLUMN ma_moulinette.historique.code_smell_minor IS 'Nombre de mauvaises pratiques mineurs';
 COMMENT ON COLUMN ma_moulinette.historique.code_smell_info IS 'Nombre de mauvaises pratiques d’information';
-COMMENT ON COLUMN ma_moulinette.historique.date_enregistrement IS 'Date d’enregistrement de l’historique(DC2Type:datetimetz_immutable)';
+COMMENT ON COLUMN ma_moulinette.historique.date_enregistrement IS 'Date d’enregistrement de l’historique';
 
--- Table: ma_moulinette.hotspot_owasp_details
+-- Table: ma_moulinette.hotspot_details
 
-DROP TABLE ma_moulinette.hotspot_owasp_details;
-CREATE TABLE ma_moulinette.hotspot_owasp_details
+DROP TABLE ma_moulinette.hotspot_details;
+CREATE TABLE ma_moulinette.hotspot_details
 (
   id SERIAL PRIMARY KEY,
   maven_key character varying(255) NOT NULL,
@@ -382,25 +382,25 @@ CREATE TABLE ma_moulinette.hotspot_owasp_details
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
-ALTER TABLE ma_moulinette.hotspot_owasp_details OWNER to db_user;
-GRANT ALL ON TABLE ma_moulinette.hotspot_owasp_details TO db_user;
+ALTER TABLE ma_moulinette.hotspot_details OWNER to db_user;
+GRANT ALL ON TABLE ma_moulinette.hotspot_details TO db_user;
 
-COMMENT ON COLUMN ma_moulinette.hotspot_owasp_details.id IS 'Identifiant unique pour la table hotspot owasp details';
-COMMENT ON COLUMN ma_moulinette.hotspot_owasp_details.maven_key IS 'Clé Maven du projet';
-COMMENT ON COLUMN ma_moulinette.hotspot_owasp_details.version IS 'Version du projet';
-COMMENT ON COLUMN ma_moulinette.hotspot_owasp_details.date_version IS 'Date de la publication du projet';
-COMMENT ON COLUMN ma_moulinette.hotspot_owasp_details.severity IS 'Sévérité du hotspot';
-COMMENT ON COLUMN ma_moulinette.hotspot_owasp_details.niveau IS 'Niveau de risque du hotspot';
-COMMENT ON COLUMN ma_moulinette.hotspot_owasp_details.status IS 'Statut du hotspot TO_REVIEW, REVIEWED';
-COMMENT ON COLUMN ma_moulinette.hotspot_owasp_details.frontend IS 'Présent dans le frontend';
-COMMENT ON COLUMN ma_moulinette.hotspot_owasp_details.backend IS 'Présent dans le backend';
-COMMENT ON COLUMN ma_moulinette.hotspot_owasp_details.autre IS 'Présent dans les Autres modules';
-COMMENT ON COLUMN ma_moulinette.hotspot_owasp_details.file IS 'Fichier associé au hotspot';
-COMMENT ON COLUMN ma_moulinette.hotspot_owasp_details.line IS 'Ligne du fichier où se situe le hotspot';
-COMMENT ON COLUMN ma_moulinette.hotspot_owasp_details.rule IS 'Règle associée au hotspot';
-COMMENT ON COLUMN ma_moulinette.hotspot_owasp_details.message IS 'Message descriptif du hotspot';
-COMMENT ON COLUMN ma_moulinette.hotspot_owasp_details.key IS 'Clé unique du hotspot';
-COMMENT ON COLUMN ma_moulinette.hotspot_owasp_details.date_enregistrement IS 'Date d’enregistrement du détail de hotspot';
+COMMENT ON COLUMN ma_moulinette.hotspot_details.id IS 'Identifiant unique pour la table hotspot owasp details';
+COMMENT ON COLUMN ma_moulinette.hotspot_details.maven_key IS 'Clé Maven du projet';
+COMMENT ON COLUMN ma_moulinette.hotspot_details.version IS 'Version du projet';
+COMMENT ON COLUMN ma_moulinette.hotspot_details.date_version IS 'Date de la publication du projet';
+COMMENT ON COLUMN ma_moulinette.hotspot_details.severity IS 'Sévérité du hotspot';
+COMMENT ON COLUMN ma_moulinette.hotspot_details.niveau IS 'Niveau de risque du hotspot';
+COMMENT ON COLUMN ma_moulinette.hotspot_details.status IS 'Statut du hotspot TO_REVIEW, REVIEWED';
+COMMENT ON COLUMN ma_moulinette.hotspot_details.frontend IS 'Présent dans le frontend';
+COMMENT ON COLUMN ma_moulinette.hotspot_details.backend IS 'Présent dans le backend';
+COMMENT ON COLUMN ma_moulinette.hotspot_details.autre IS 'Présent dans les Autres modules';
+COMMENT ON COLUMN ma_moulinette.hotspot_details.file IS 'Fichier associé au hotspot';
+COMMENT ON COLUMN ma_moulinette.hotspot_details.line IS 'Ligne du fichier où se situe le hotspot';
+COMMENT ON COLUMN ma_moulinette.hotspot_details.rule IS 'Règle associée au hotspot';
+COMMENT ON COLUMN ma_moulinette.hotspot_details.message IS 'Message descriptif du hotspot';
+COMMENT ON COLUMN ma_moulinette.hotspot_details.key IS 'Clé unique du hotspot';
+COMMENT ON COLUMN ma_moulinette.hotspot_details.date_enregistrement IS 'Date d’enregistrement du détail de hotspot';
 
 -- Table: ma_moulinette.hotspot_owasp
 
