@@ -75,7 +75,6 @@ class AnomalieDetailsRepository extends ServiceEntityRepository
     public function selectAnomalieDetailsMavenKey($map):array
     {
         try {
-            $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "SELECT *
                         FROM anomalie_details
                         WHERE maven_key=:maven_key";
@@ -83,11 +82,10 @@ class AnomalieDetailsRepository extends ServiceEntityRepository
                 $conn->bindValue(':maven_key', $map['maven_key']);
                 $exec=$conn->executeQuery();
                 $liste=$exec->fetchAllAssociative();
-            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
             return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
     }
+
 }
