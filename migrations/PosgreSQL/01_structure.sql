@@ -368,15 +368,17 @@ CREATE TABLE ma_moulinette.hotspot_details
   maven_key character varying(255) NOT NULL,
   version character varying(32) NOT NULL,
   date_version TIMESTAMPTZ NOT NULL,
+  security_category character varying(64) NOT NULL,
+  rule character varying(255) NOT NULL,
   severity character varying(8) NOT NULL,
-  niveau integer NOT NULL,
   status character varying(16) NOT NULL,
+  resolution character varying(16),
+  niveau integer NOT NULL,
   frontend integer NOT NULL,
   backend integer NOT NULL,
   autre integer NOT NULL,
   file character varying(255) NOT NULL,
   line integer NOT NULL,
-  rule character varying(255) NOT NULL,
   message character varying(255) NOT NULL,
   key character varying(32) NOT NULL,
   date_enregistrement TIMESTAMPTZ NOT NULL
@@ -389,15 +391,17 @@ COMMENT ON COLUMN ma_moulinette.hotspot_details.id IS 'Identifiant unique pour l
 COMMENT ON COLUMN ma_moulinette.hotspot_details.maven_key IS 'Clé Maven du projet';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.version IS 'Version du projet';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.date_version IS 'Date de la publication du projet';
+COMMENT ON COLUMN ma_moulinette.hotspot_details.security.category IS 'Défini la catégorie de sécurité du hotspot';
+COMMENT ON COLUMN ma_moulinette.hotspot_details.rule IS 'Règle associée au hotspot';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.severity IS 'Sévérité du hotspot';
-COMMENT ON COLUMN ma_moulinette.hotspot_details.niveau IS 'Niveau de risque du hotspot';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.status IS 'Statut du hotspot TO_REVIEW, REVIEWED';
+COMMENT ON COLUMN ma_moulinette.hotspots_details.resolution IS 'Donne pour un hotspot au statut REVIEWED son état : FIXED, SAFE, ACKNOWLEDGED';
+COMMENT ON COLUMN ma_moulinette.hotspot_details.niveau IS 'Niveau de risque du hotspot';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.frontend IS 'Présent dans le frontend';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.backend IS 'Présent dans le backend';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.autre IS 'Présent dans les Autres modules';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.file IS 'Fichier associé au hotspot';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.line IS 'Ligne du fichier où se situe le hotspot';
-COMMENT ON COLUMN ma_moulinette.hotspot_details.rule IS 'Règle associée au hotspot';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.message IS 'Message descriptif du hotspot';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.key IS 'Clé unique du hotspot';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.date_enregistrement IS 'Date d’enregistrement du détail de hotspot';
@@ -431,11 +435,11 @@ COMMENT ON COLUMN ma_moulinette.hotspot_owasp.maven_key IS 'Clé Maven du projet
 COMMENT ON COLUMN ma_moulinette.hotspot_owasp.version IS 'Version du hotspot OWASP';
 COMMENT ON COLUMN ma_moulinette.hotspot_owasp.date_version IS 'Date de la version du hotspot OWASP';
 COMMENT ON COLUMN ma_moulinette.hotspot_owasp.menace IS 'Menace évaluée du hotspot OWASP';
-COMMENT ON COLUMN ma_moulinette.security.category IS 'Défini la catégorie de sécurité du hotspot';
+COMMENT ON COLUMN ma_moulinette.hotspot_owasp.security.category IS 'Défini la catégorie de sécurité du hotspot';
 COMMENT ON COLUMN ma_moulinette.rule.key IS 'Règle SonarQube';
 COMMENT ON COLUMN ma_moulinette.hotspot_owasp.probability IS 'Probabilité du hotspot OWASP';
 COMMENT ON COLUMN ma_moulinette.hotspot_owasp.status IS 'Statut du hotspot OWASP';
-COMMENT ON COLUMN ma_moulinette.hotspots.resolution IS 'Donne pour un hotspot au statut REVIEWED son état : FIXED, SAFE, ACKNOWLEDGED';
+COMMENT ON COLUMN ma_moulinette.hotspots_owasp.resolution IS 'Donne pour un hotspot au statut REVIEWED son état : FIXED, SAFE, ACKNOWLEDGED';
 COMMENT ON COLUMN ma_moulinette.hotspot_owasp.niveau IS 'Niveau de risque du hotspot OWASP';
 COMMENT ON COLUMN ma_moulinette.hotspot_owasp.date_enregistrement IS 'Date d’enregistrement du hotspot OWASP';
 
