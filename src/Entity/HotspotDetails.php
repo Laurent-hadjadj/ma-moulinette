@@ -13,14 +13,14 @@
 
 namespace App\Entity;
 
-use App\Repository\HotspotOwaspDetailsRepository;
+use App\Repository\HotspotDetailsRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: HotspotOwaspDetailsRepository::class)]
-#[ORM\Table(name: "hotspot_owasp_details", schema: "ma_moulinette")]
-class HotspotOwaspDetails
+#[ORM\Entity(repositoryClass: HotspotDetailsRepository::class)]
+#[ORM\Table(name: "hotspot_details", schema: "ma_moulinette")]
+class HotspotDetails
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]

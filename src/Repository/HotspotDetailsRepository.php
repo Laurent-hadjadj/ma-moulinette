@@ -13,22 +13,22 @@
 
 namespace App\Repository;
 
-use App\Entity\HotspotOwaspDetails;
+use App\Entity\HotspotDetails;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 
-class HotspotOwaspDetailsRepository extends ServiceEntityRepository
+class HotspotDetailsRepository extends ServiceEntityRepository
 {
     public static $removeReturnline = "/\s+/u";
 
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, HotspotOwaspDetails::class);
+        parent::__construct($registry, HotspotDetails::class);
     }
 
     /**
-     * [Description for selectHotspotOwaspDetailsByNiveau]
+     * [Description for selectHotspotDetailsByNiveau]
      * On récupère la liste des hotspots status de la table détails.
      * @param array $map
      *
@@ -38,10 +38,10 @@ class HotspotOwaspDetailsRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectHotspotOwaspDetailsByStatus($map):array
+    public function selectHotspotDetailsByStatus($map):array
     {
         $sql = "SELECT *
-                FROM hotspot_owasp_details
+                FROM hotspot__details
                 WHERE maven_key=:maven_key
                 ORDER BY status ASC";
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
@@ -59,7 +59,7 @@ class HotspotOwaspDetailsRepository extends ServiceEntityRepository
     }
 
     /**
-     * [Description for deleteHotspotOwaspDetailsMavenKey]
+     * [Description for deleteHotspotDetailsMavenKey]
      * On supprime le détails des hotspots  pour la version courante
      * @param array $map
      *
@@ -69,10 +69,10 @@ class HotspotOwaspDetailsRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function deleteHotspotOwaspDetailsMavenKey($map):array
+    public function deleteHotspotDetailsMavenKey($map):array
     {
         $sql = "DELETE
-                FROM hotspot_owasp_details
+                FROM hotspot__details
                 WHERE maven_key=:maven_key";
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         $conn->bindValue(':maven_key', $map['maven_key']);
