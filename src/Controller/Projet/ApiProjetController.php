@@ -21,7 +21,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /** Gestion de accès aux API */
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-/** Securité */
+/** Sécurité */
 use Symfony\Bundle\SecurityBundle\Security;
 
 use Doctrine\ORM\EntityManagerInterface;
