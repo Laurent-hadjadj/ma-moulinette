@@ -32,6 +32,14 @@ class HotspotOwasp
     private $id;
 
     #[ORM\Column(
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Référentiel OWASP 2017, 2021']
+    )]
+    #[Assert\NotNull(message: "Le référentiel ne peut pas être null")]
+    private ?int $referentiel_owasp=2017;
+
+    #[ORM\Column(
         type: Types::STRING,
         length: 255,
         nullable: false,
@@ -80,6 +88,32 @@ class HotspotOwasp
 
     #[ORM\Column(
         type: Types::STRING,
+        length: 64,
+        nullable: false,
+        options: ['comment' => 'Défini la catégorie de sécurité du hotspot']
+    )]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        max: 64,
+        maxMessage: "La catégorie de sécurité ne doit pas dépasser 64 caractères."
+    )]
+    private $securityCategory;
+
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 255,
+        nullable: false,
+        options: ['comment' => 'Règle SonarQube']
+    )]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "La catégorie de sécurité ne doit pas dépasser 255 caractères."
+    )]
+    private $ruleKey;
+
+    #[ORM\Column(
+        type: Types::STRING,
         length: 8,
         nullable: false,
         options: ['comment' => 'Probabilité du hotspot OWASP']
@@ -103,6 +137,18 @@ class HotspotOwasp
         maxMessage: "Le statut ne doit pas dépasser 16 caractères."
     )]
     private $status;
+
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 16,
+        nullable: true,
+        options: ['comment' => 'Donne pour un hotspot au statut REVIEWED son état : FIXED, SAFE, ACKNOWLEDGED']
+    )]
+    #[Assert\Length(
+        max: 16,
+        maxMessage: "Le statut ne doit pas dépasser 16 caractères."
+    )]
+    private ?string $resolution=null;
 
     #[ORM\Column(
         type: Types::INTEGER,
@@ -217,6 +263,54 @@ class HotspotOwasp
     public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): static
     {
         $this->dateEnregistrement = $dateEnregistrement;
+
+        return $this;
+    }
+
+    public function getSecurityCategory(): ?string
+    {
+        return $this->securityCategory;
+    }
+
+    public function setSecurityCategory(string $securityCategory): static
+    {
+        $this->securityCategory = $securityCategory;
+
+        return $this;
+    }
+
+    public function getRuleKey(): ?string
+    {
+        return $this->ruleKey;
+    }
+
+    public function setRuleKey(string $ruleKey): static
+    {
+        $this->ruleKey = $ruleKey;
+
+        return $this;
+    }
+
+    public function getResolution(): ?string
+    {
+        return $this->resolution;
+    }
+
+    public function setResolution(?string $resolution): static
+    {
+        $this->resolution = $resolution;
+
+        return $this;
+    }
+
+    public function getReferentielOwasp(): ?int
+    {
+        return $this->referentiel_owasp;
+    }
+
+    public function setReferentielOwasp(int $referentiel_owasp): static
+    {
+        $this->referentiel_owasp = $referentiel_owasp;
 
         return $this;
     }
