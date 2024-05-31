@@ -107,7 +107,7 @@ class ApiAnomalieController extends AbstractController
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On crée un objet de reponse JSON */
+        /** On crée un objet de response JSON */
         $response = new JsonResponse();
 
        /** On teste si la clé est valide */
@@ -162,7 +162,7 @@ class ApiAnomalieController extends AbstractController
             array_key_exists('code', $result4) ){
             if ($result1['code']===401||
                 $result2['code']===401||
-                $result3['code']===403||
+                $result3['code']===401||
                 $result4['code']===401) {
             return $response->setData([
                 'type'=>'warning',
