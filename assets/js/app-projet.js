@@ -439,10 +439,12 @@ const projetOwasp=function(mavenKey, referentielVersion) {
         sessionStorage.setItem('collecte', 'Erreur phase 04.');
         return;
       }
-      if (t.code===http_200 && t.owasp===0){
-          log(' - INFO : (04) Bravo aucune faille OWASP détectée.');
+      if (t.code === http_406) {
+        log(` - INFO : (04) Le référentiel ${referentielVersion} n'est pas supporté par la version actuelle de SonarQube.`);
+      } else if (t.code === http_200 && t.owasp === 0) {
+        log(` - INFO : (04) Bravo aucune faille OWASP détectée pour le référentiel ${referentielVersion}.`);
       } else {
-          log(` - WARN : (04) J'ai trouvé ${t.owasp} faille(s).`);
+        log(` - WARN : (04) J'ai trouvé ${t.owasp} faille(s) pour le référentiel ${referentielVersion}.`);
       }
       resolve();
     });
@@ -1046,52 +1048,54 @@ $('.js-analyse').on('click', function () {
   }
 
   async function fnAsync() {
-    /* Analyse du projet */
-    await projetInformation(idProject);           /*(01)*/
-    await projetMesure(idProject);                /*(02)*/
+  try {
+    // Analyse du projet
+    await projetInformation(idProject); // (01)
+    await projetMesure(idProject); // (02)
 
-    /* Analyse Sécurité et Owasp. */
-    await projetRating(idProject, 'reliability'); /*(03)*/
-    await projetRating(idProject, 'security');    /*(03)*/
-    await projetRating(idProject, 'sqale');       /*(03)*/
+    // Analyse Sécurité et Owasp
+    await projetRating(idProject, 'reliability'); // (03)
+    await projetRating(idProject, 'security'); // (03)
+    await projetRating(idProject, 'sqale'); // (03)
 
-    await projetOwasp(idProject, '2017');                 /*(04)*/
-    await projetOwasp(idProject, '2021');                 /*(04)*/
+    await projetOwasp(idProject, '2017'); // (04)
+    await projetOwasp(idProject, '2021'); // (04)
 
-    await projetHotspot(idProject);               /*(05)*/
+    await projetHotspot(idProject); // (05)
 
-    /* On récupère les infos sur les anomalies*/
-    await projetAnomalie(idProject);              /*(06)*/
+    // Infos sur les anomalies
+    await projetAnomalie(idProject); // (06)
+    await projetAnomalieDetails(idProject); // (07)
 
-    /* On récupère le détails sur les anomalies*/
-    await projetAnomalieDetails(idProject);       /*(07)*/
+    // Efface les traces :)
+    await projetHotspotOwasp(idProject, 'a0'); // (08)
+    // Enregistre les résultats
+    await projetHotspotOwasp(idProject, 'a1'); // (09)
+    await projetHotspotOwasp(idProject, 'a2'); // (09)
+    await projetHotspotOwasp(idProject, 'a3'); // (09)
+    await projetHotspotOwasp(idProject, 'a4'); // (09)
+    await projetHotspotOwasp(idProject, 'a5'); // (09)
+    await projetHotspotOwasp(idProject, 'a6'); // (09)
+    await projetHotspotOwasp(idProject, 'a7'); // (09)
+    await projetHotspotOwasp(idProject, 'a8'); // (09)
+    await projetHotspotOwasp(idProject, 'a9'); // (09)
+    await projetHotspotOwasp(idProject, 'a10'); // (09)
 
-    /* On efface les traces :)*/
-    await projetHotspotOwasp(idProject, 'a0');    /*(08)*/
-    /* On enregistre les résultats*/
-    await projetHotspotOwasp(idProject, 'a1');    /*(09)*/
-    await projetHotspotOwasp(idProject, 'a2');    /*(09)*/
-    await projetHotspotOwasp(idProject, 'a3');    /*(09)*/
-    await projetHotspotOwasp(idProject, 'a4');    /*(09)*/
-    await projetHotspotOwasp(idProject, 'a5');    /*(09)*/
-    await projetHotspotOwasp(idProject, 'a6');    /*(09)*/
-    await projetHotspotOwasp(idProject, 'a7');    /*(09)*/
-    await projetHotspotOwasp(idProject, 'a8');    /*(09)*/
-    await projetHotspotOwasp(idProject, 'a9');    /*(09)*/
-    await projetHotspotOwasp(idProject, 'a10');   /*(09)*/
+    // Enregistre le détails de chaque hotspot owasp.
+    await projetHotspotOwaspDetails(idProject); // (10)
 
-    /* On enregistre le détails de chaque hotspot owasp. */
-    await projetHotspotOwaspDetails(idProject);   /*(10)*/
+    // Signalements noSonar et SuppressWarning
+    await projetNoSonar(idProject); // (11)
 
-    /* Récupération des signalements noSonar et SuppressWarning. */
-    await projetNoSonar(idProject);               /*(11)*/
+    // Signalements To do (TS, JAVA, XML)
+    await projetTodo(idProject); // (12)
 
-    /* Récupération des signalements To do (TS, JAVA, XML). */
-    await projetTodo(idProject);                  /*(12)*/
-
-    /* Renvoie le statut de fin */
+    // Statut de fin
     finCollecte();
+  } catch (error) {
+    console.error('Erreur lors de la collecte des données :', error);
   }
+}
 
   /* On appelle la fonction de récupèration des sévérités pour les VULNERABILITY. */
   fnAsync();

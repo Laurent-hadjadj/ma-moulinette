@@ -17,6 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 /** Gestion de accès aux API */
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -41,6 +42,9 @@ use App\Service\Client;
  */
 class ApiOwaspController extends AbstractController
 {
+
+    private $sonarVersion;
+
     /** Définition des constantes */
     public static $sonarUrl = "sonar.url";
     public static $europeParis = "Europe/Paris";
@@ -51,6 +55,8 @@ class ApiOwaspController extends AbstractController
     public static $erreur401 = "Erreur d\'Authentification. La clé n\'est pas correcte (Erreur 401).";
     public static $erreur403 = "Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).";
     public static $erreur404 = "L'appel à l'API n'a pas abouti (Erreur 404).";
+    public static $erreur406 = "Votre version de SonarQube n'est pas compatible avec le référentiel 2021. Veuillez mettre à jour SonarQube.";
+
 
     /**
      * [Description for __construct]
@@ -61,10 +67,12 @@ class ApiOwaspController extends AbstractController
      */
     public function __construct(
         private LoggerInterface $logger,
-        private EntityManagerInterface $em
+        private EntityManagerInterface $em,
+        private ParameterBagInterface $params
     ) {
         $this->logger = $logger;
         $this->em = $em;
+        $this->sonarVersion = $this->params->get('sonar.version');
     }
 
     /**
@@ -402,7 +410,7 @@ class ApiOwaspController extends AbstractController
         }
 
         /** On supprime les informations sur le projet pour la dernière analyse. */
-        $map=['maven_key'=>$data->maven_key];
+        $map=['maven_key'=>$data->maven_key, 'referentiel_version'=>$data->referentiel_version];
         $delete=$owasp->deleteOwaspMavenKey($map);
         if ($delete['code']!=200) {
             return $response->setData(
@@ -486,12 +494,11 @@ class ApiOwaspController extends AbstractController
         $owaspTop10Ref2017->setA10Info($a10Info);
         $owaspTop10Ref2017->setA10Minor($a10Minor);
 
-        $owaspTop10Ref2017->setReferentielVersion('2017');
+        $owaspTop10Ref2017->setReferentielVersion($data->referentiel_version);
         $owaspTop10Ref2017->setDateEnregistrement($date);
 
         $this->em->persist($owaspTop10Ref2017);
         $this->em->flush();
-
 
         return $response->setData(['code' => 200, 'owasp' => $result2017["total"], Response::HTTP_OK]);
     }
@@ -500,6 +507,16 @@ class ApiOwaspController extends AbstractController
     #[Route('/api/projet/issues/owasp/2021', name: 'projet_issues_owasp_2021', methods: ['POST'])]
     public function projetIssuesOwasp2021(Request $request, Client $client): response
     {
+        /** On vérifie la version de SonarQube */
+        if ($this->sonarVersion < 9 ) {
+            return new JsonResponse([
+                'code' => 406,
+                'owasp' => 0,
+                'reference' => static::$reference,
+                'message' => static::$erreur406
+            ], Response::HTTP_OK);
+        }
+
         /** On instancie l'entityRepository */
         $informationProjet = $this->em->getRepository(InformationProjet::class);
         $owasp = $this->em->getRepository(Owasp::class);
@@ -817,7 +834,7 @@ class ApiOwaspController extends AbstractController
         }
 
         /** On supprime les informations sur le projet pour la dernière analyse. */
-        $map=['maven_key'=>$data->maven_key];
+        $map=['maven_key'=>$data->maven_key, 'referentiel_version'=>$data->referentiel_version];
         $delete=$owasp->deleteOwaspMavenKey($map);
         if ($delete['code']!=200) {
             return $response->setData(
@@ -901,8 +918,9 @@ class ApiOwaspController extends AbstractController
         $owaspTop10Ref2021->setA10Info($a10Info);
         $owaspTop10Ref2021->setA10Minor($a10Minor);
 
-        $owaspTop10Ref2021->setReferentielVersion('2021');
+        $owaspTop10Ref2021->setReferentielVersion($data->referentiel_version);
         $owaspTop10Ref2021->setDateEnregistrement($date);
+
 
         $this->em->persist($owaspTop10Ref2021);
         $this->em->flush();

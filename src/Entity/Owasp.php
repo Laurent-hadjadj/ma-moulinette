@@ -554,6 +554,15 @@ class Owasp
     #[Assert\NotNull]
     private $dateEnregistrement;
 
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 4,
+        nullable: false,
+        options: ['comment' => 'Referentiel version (2017 or 2021)']
+    )]
+    #[Assert\NotBlank]
+    private string $referentielVersion;
+
     /**
      * [Description for getId]
      *
@@ -2615,6 +2624,18 @@ class Owasp
     {
         $this->dateEnregistrement = $dateEnregistrement;
 
+        return $this;
+    }
+
+    /* [version du référentiel]*/
+    public function getReferentielVersion(): ?string
+    {
+        return $this->referentielVersion;
+    }
+
+    public function setReferentielVersion(string $referentielVersion): self
+    {
+        $this->referentielVersion = $referentielVersion;
         return $this;
     }
 

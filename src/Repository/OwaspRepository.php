@@ -47,13 +47,9 @@ class OwaspRepository extends ServiceEntityRepository
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         $conn->bindValue(':maven_key', $map['maven_key']);
         try {
-            #if ($mode !== 'TEST') {
                 $liste=$conn->executeQuery()->fetchAllAssociative();
-            #} else {
-                return ['code'=> 202, 'erreur'=>'TEST'];
-            #}
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['code'=>500, 'erreur'=> $e->getCode()];
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
     }
@@ -74,17 +70,14 @@ class OwaspRepository extends ServiceEntityRepository
     {
         $sql = "DELETE
                 FROM owasp
-                WHERE maven_key=:maven_key";
+                WHERE maven_key=:maven_key and referentiel_version=:referentiel_version";
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         $conn->bindValue(':maven_key', $map['maven_key']);
+        $conn->bindValue(':referentiel_version', $map['referentiel_version']);
         try {
-                #if ($mode !== 'TEST') {
                     $conn->executeQuery();
-                #} else {
-                    return ['code'=> 202, 'erreur'=>'TEST'];
-                #}
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['code'=>500, 'erreur'=> $e->getCode()];
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'erreur'=>''];
     }
