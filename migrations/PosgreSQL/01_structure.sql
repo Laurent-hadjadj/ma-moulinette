@@ -407,13 +407,17 @@ COMMENT ON COLUMN ma_moulinette.hotspot_details.date_enregistrement IS 'Date d�
 DROP TABLE ma_moulinette.hotspot_owasp;
 CREATE TABLE ma_moulinette.hotspot_owasp
 (
+  referentiel_owasp integer NOT NULL,
   id SERIAL PRIMARY KEY,
   maven_key character varying(255) NOT NULL,
   version character varying(32) NOT NULL,
   date_version TIMESTAMPTZ NOT NULL,
   menace character varying(8) NOT NULL,
+  security_category character varying(64) NOT NULL,
+  rule_key character varying(255) NOT NULL,
   probability character varying(8) NOT NULL,
   status character varying(16) NOT NULL,
+  resolution character varying(16),
   niveau integer NOT NULL,
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
@@ -422,12 +426,16 @@ ALTER TABLE ma_moulinette.hotspot_owasp OWNER to db_user;
 GRANT ALL ON TABLE ma_moulinette.hotspot_owasp TO db_user;
 
 COMMENT ON COLUMN ma_moulinette.hotspot_owasp.id IS 'Identifiant unique pour chaque hotspot OWASP';
+COMMENT ON COLUMN ma_moulinette.hotspot_owasp.referentiel.owasp IS 'Référentiel OWASP 2017, 2021';
 COMMENT ON COLUMN ma_moulinette.hotspot_owasp.maven_key IS 'Clé Maven du projet';
 COMMENT ON COLUMN ma_moulinette.hotspot_owasp.version IS 'Version du hotspot OWASP';
 COMMENT ON COLUMN ma_moulinette.hotspot_owasp.date_version IS 'Date de la version du hotspot OWASP';
 COMMENT ON COLUMN ma_moulinette.hotspot_owasp.menace IS 'Menace évaluée du hotspot OWASP';
+COMMENT ON COLUMN ma_moulinette.security.category IS 'Défini la catégorie de sécurité du hotspot';
+COMMENT ON COLUMN ma_moulinette.rule.key IS 'Règle SonarQube';
 COMMENT ON COLUMN ma_moulinette.hotspot_owasp.probability IS 'Probabilité du hotspot OWASP';
 COMMENT ON COLUMN ma_moulinette.hotspot_owasp.status IS 'Statut du hotspot OWASP';
+COMMENT ON COLUMN ma_moulinette.hotspots.resolution IS 'Donne pour un hotspot au statut REVIEWED son état : FIXED, SAFE, ACKNOWLEDGED';
 COMMENT ON COLUMN ma_moulinette.hotspot_owasp.niveau IS 'Niveau de risque du hotspot OWASP';
 COMMENT ON COLUMN ma_moulinette.hotspot_owasp.date_enregistrement IS 'Date d’enregistrement du hotspot OWASP';
 
@@ -442,6 +450,7 @@ CREATE TABLE ma_moulinette.hotspots
   date_version TIMESTAMPTZ NOT NULL,
   key character varying(32) NOT NULL,
   security_category character varying(64) NOT NULL,
+  rule_key character varying(255) NOT NULL,
   probability character varying(8) NOT NULL,
   status character varying(16) NOT NULL,
   resolution character varying(16),
@@ -458,6 +467,7 @@ COMMENT ON COLUMN ma_moulinette.hotspots.version IS 'Version du hotspot';
 COMMENT ON COLUMN ma_moulinette.hotspots.date_version IS 'Date de la version du hotspot';
 COMMENT ON COLUMN ma_moulinette.hotspots.key IS 'Clé unique du hotspot';
 COMMENT ON COLUMN ma_moulinette.security.category IS 'Défini la catégorie de sécurité du hotspot';
+COMMENT ON COLUMN ma_moulinette.rule.key IS 'Règle SonarQube';
 COMMENT ON COLUMN ma_moulinette.hotspots.probability IS 'Probabilité de risque du hotspot';
 COMMENT ON COLUMN ma_moulinette.hotspots.status IS 'Statut du hotspot : TO_REVIEW, REVIEWED';
 COMMENT ON COLUMN ma_moulinette.hotspots.resolution IS 'Donne pour un hotspot au statut REVIEWED son état : FIXED, SAFE, ACKNOWLEDGED';

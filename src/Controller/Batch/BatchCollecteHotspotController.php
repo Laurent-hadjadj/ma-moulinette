@@ -142,9 +142,10 @@ class BatchCollecteHotspotController extends AbstractController
             'date_version' => $dateVersion,
             'key' => 'NC',
             'security_category' => 'NC',
+            'rule_key' => 'NC',
             'probability' => 'NC',
             'status' => 'NC',
-            'status' => '',
+            'resolution' => '',
             'niveau' => $niveau,
             'date_enregistrement' => $date
         ];
@@ -162,6 +163,7 @@ class BatchCollecteHotspotController extends AbstractController
                     'date_version' => $dateVersion,
                     'key' => $value['key'] ?? 'NC',
                     'security_category' => $value['securityCategory'] ?? 'NC',
+                    'rule_key' => $value['ruleKey'] ?? 'NC',
                     'probability' => $value['vulnerabilityProbability'],
                     'status' => $value['status'] ?? 'NC',
                     'resolution' => $value['resolution'] ?? '',
