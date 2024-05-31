@@ -395,7 +395,7 @@ COMMENT ON COLUMN ma_moulinette.hotspot_details.version IS 'Version du projet';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.date_version IS 'Date de la publication du projet';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.security_category IS 'Défini la catégorie de sécurité du hotspot';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.rule_key IS 'Règle associée au hotspot';
-COMMENT ON COLUMN ma_moulinette.hotspot_details.rule_name IS 'Nom associée au hotspot';
+COMMENT ON COLUMN ma_moulinette.hotspots.rule_name IS 'Nom de la règle SonarQube';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.severity IS 'Sévérité du hotspot';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.status IS 'Statut du hotspot TO_REVIEW, REVIEWED';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.resolution IS 'Donne pour un hotspot au statut REVIEWED son état : FIXED, SAFE, ACKNOWLEDGED';
@@ -459,7 +459,6 @@ CREATE TABLE ma_moulinette.hotspots
   hotspot_key character varying(32) NOT NULL,
   security_category character varying(64) NOT NULL,
   rule_key character varying(128) NOT NULL,
-  rule_name character varying(255) NOT NULL,
   probability character varying(8) NOT NULL,
   status character varying(16) NOT NULL,
   resolution character varying(16),
@@ -477,7 +476,6 @@ COMMENT ON COLUMN ma_moulinette.hotspots.date_version IS 'Date de la version du 
 COMMENT ON COLUMN ma_moulinette.hotspots.hotspot_key IS 'Clé unique du hotspot';
 COMMENT ON COLUMN ma_moulinette.hotspots.security_category IS 'Défini la catégorie de sécurité du hotspot';
 COMMENT ON COLUMN ma_moulinette.hotspots.rule_key IS 'Clé de la règle SonarQube';
-COMMENT ON COLUMN ma_moulinette.hotspots.rule_name IS 'Nom de la règle SonarQube';
 COMMENT ON COLUMN ma_moulinette.hotspots.probability IS 'Probabilité de risque du hotspot';
 COMMENT ON COLUMN ma_moulinette.hotspots.status IS 'Statut du hotspot : TO_REVIEW, REVIEWED';
 COMMENT ON COLUMN ma_moulinette.hotspots.resolution IS 'Donne pour un hotspot au statut REVIEWED son état : FIXED, SAFE, ACKNOWLEDGED';
