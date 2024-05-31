@@ -112,6 +112,6 @@ class BatchCollecteNoteController extends AbstractController
         /** Vérifier si la dernière valeur de la note existe dans la carte, sinon définir une note par défaut.
         */
         $note = $noteMap[$latestNote] ?? 'Z';
-        return ['code' => 200, "note_$type" => ["value" => $note]];
+        return ['code' => 200, "message" => ["value" => $note]];
     }
 }

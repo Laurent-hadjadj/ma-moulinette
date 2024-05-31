@@ -206,6 +206,6 @@ class BatchCollecteAnomalieController extends AbstractController
                     static::$request => 'insertAnomalie'
                 ];
             }
-        return ['code' => 200, 'anomalie' => $map];
+        return ['code' => 200, 'message' => $map];
     }
 }

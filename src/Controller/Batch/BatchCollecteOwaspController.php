@@ -169,7 +169,7 @@ class BatchCollecteOwaspController extends AbstractController
         }
 
         return [
-            'code' => 200, 'owasp' => [
+            'code' => 200, 'message' => [
                 'nombre' => $nombre,
                 'effortTotal' => $effortTotal,
                 'issues' => $map,

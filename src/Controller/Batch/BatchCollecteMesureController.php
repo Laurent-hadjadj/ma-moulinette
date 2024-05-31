@@ -136,12 +136,9 @@ class BatchCollecteMesureController extends AbstractController
         ];
         $insert=$mesuresRepository->insertMesures($mesureData);
         if ($insert['code'] !== 200) {
-            return [
-                'code' => $insert['code'],
-                static::$request => 'insertMesures'
-            ];
+            return ['code' => $insert['code'], static::$request => 'insertMesures'];
         }
 
-        return ['code' => 200, 'mesure' => $mesureData];
+        return ['code' => 200, 'message' => $mesureData];
     }
 }
