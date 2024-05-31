@@ -93,6 +93,19 @@ class Hotspots
 
     #[ORM\Column(
         type: Types::STRING,
+        length: 255,
+        nullable: false,
+        options: ['comment' => 'Règle SonarQube']
+    )]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "La catégorie de sécurité ne doit pas dépasser 255 caractères."
+    )]
+    private $ruleKey;
+
+    #[ORM\Column(
+        type: Types::STRING,
         length: 8,
         nullable: false,
         options: ['comment' => 'Probabilité de risque du hotspot']
@@ -127,7 +140,7 @@ class Hotspots
         max: 16,
         maxMessage: "Le statut ne doit pas dépasser 16 caractères."
     )]
-    private ?string $revision=null;
+    private ?string $resolution=null;
 
     #[ORM\Column(
         type: Types::INTEGER,
@@ -258,14 +271,26 @@ class Hotspots
         return $this;
     }
 
-    public function getRevision(): ?string
+    public function getRuleKey(): ?string
     {
-        return $this->revision;
+        return $this->ruleKey;
     }
 
-    public function setRevision(?string $revision): static
+    public function setRuleKey(string $ruleKey): static
     {
-        $this->revision = $revision;
+        $this->ruleKey = $ruleKey;
+
+        return $this;
+    }
+
+    public function getResolution(): ?string
+    {
+        return $this->resolution;
+    }
+
+    public function setResolution(?string $resolution): static
+    {
+        $this->resolution = $resolution;
 
         return $this;
     }
