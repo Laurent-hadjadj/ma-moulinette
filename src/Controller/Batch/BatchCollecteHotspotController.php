@@ -116,7 +116,6 @@ class BatchCollecteHotspotController extends AbstractController
         if (isset($result['code']) && in_array($result['code'], [401, 404])) {
             return ['code' => $result['code']];
         }
-//dd($result['hotspots'][0]['ruleKey']);
        /** Création de la date du jour */
         $date = new \DateTimeImmutable();
         $date->setTimezone(new \DateTimeZone(static::$europeParis));
@@ -173,7 +172,7 @@ class BatchCollecteHotspotController extends AbstractController
         if ($insert['code'] !== 200) {
             return [
                 'code' => $insert['code'],
-                'error' => $insert['error'],
+                'error' => $insert['erreur'],
                 static::$request => 'insertHotspot'
             ];
         }

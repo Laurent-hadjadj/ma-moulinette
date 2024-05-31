@@ -100,8 +100,7 @@ class HotspotDetailsRepository extends ServiceEntityRepository
         $sql = "INSERT INTO hotspot_details
                     (maven_key, version, date_version, security_category, rule_key, rule_name, severity, status, resolution, niveau, frontend, backend, autre, file_name, file_path, line, message, hotspot_key, date_enregistrement)
                 VALUES
-                    (:maven_key, :version, :date_version, :security_category, :rule_key, :rule_name :severity, :status, :resolution, :niveau, :frontend, :backend, :autre, :file, :line_name, :file_path, :message, :hotspot_key, :date_enregistrement)";
-        dd($map);
+                    (:maven_key, :version, :date_version, :security_category, :rule_key, :rule_name, :severity, :status, :resolution, :niveau, :frontend, :backend, :autre, :file_name, :file_path, :line, :message, :hotspot_key, :date_enregistrement)";
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
                 foreach($map as $item){
@@ -125,6 +124,7 @@ class HotspotDetailsRepository extends ServiceEntityRepository
                         $stmt->bindValue(':message', $item['message']);
                         $stmt->bindValue(':hotspot_key', $item['hotspot_key']);
                         $stmt->bindValue(':date_enregistrement', $item['date_enregistrement']->format('Y-m-d H:i:sO'));
+                        $stmt->executeStatement();
                 }
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
