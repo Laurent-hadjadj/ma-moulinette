@@ -101,7 +101,7 @@ class BatchCollecteHotspotController extends AbstractController
         }
 
         /** On reconstruit la date de version au format dateTime */
-        $dateVersion = new \DateTime($select['info'][0]['date']);
+        $dateVersion = new \DateTimeImmutable($select['info'][0]['date']);
         $dateVersion->setTimezone(new \DateTimeZone(static::$europeParis));
 
         /** On construit l'URL */
@@ -109,18 +109,14 @@ class BatchCollecteHotspotController extends AbstractController
         $mavenKey = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
 
         /** Construit l'URL en utilisant http_build_query pour les paramètres de la requête */
-        $queryParams = [
-            'projectKey' => $mavenKey,
-            'ps'=>500,
-            'p'=>1
-        ];
+        $queryParams = ['projectKey' => $mavenKey, 'ps' => 500, 'p' => 1];
         /** Appelle le client HTTP */
         $result = $this->client->http("$tempoUrl/api/hotspots/search?".http_build_query($queryParams));
         /** On catch les erreurs HTTP 401 et 404, si possible :) */
         if (isset($result['code']) && in_array($result['code'], [401, 404])) {
             return ['code' => $result['code']];
         }
-
+//dd($result['hotspots'][0]['ruleKey']);
        /** Création de la date du jour */
         $date = new \DateTimeImmutable();
         $date->setTimezone(new \DateTimeZone(static::$europeParis));
@@ -133,35 +129,17 @@ class BatchCollecteHotspotController extends AbstractController
         }
 
         $map = [];
-        /** On a pas trouvé de hotspot, c'est une bonne chose */
-        $niveau = $this->vulnerabilityProbability('NC');
-        /** Ajout des hotspots à la liste à insérer */
-        $map[] = [
-            'maven_key' => $mavenKey,
-            'version' => $select['info'][0]['project_version'],
-            'date_version' => $dateVersion,
-            'key' => 'NC',
-            'security_category' => 'NC',
-            'rule_key' => 'NC',
-            'probability' => 'NC',
-            'status' => 'NC',
-            'resolution' => '',
-            'niveau' => $niveau,
-            'date_enregistrement' => $date
-        ];
-
         /** On traite les hotspots */
         if ($result['paging']['total'] !== 0) {
-            $hotspots = [];
             foreach ($result['hotspots'] as $value) {
                 // Traitement de la probabilité de vulnérabilité
                 $niveau = $this->vulnerabilityProbability($value['vulnerabilityProbability']);
                 /** Ajout des hotspots à la liste à insérer */
-                $hotspots[] = [
+                $map[] = [
                     'maven_key' => $mavenKey,
                     'version' => $select['info'][0]['project_version'],
                     'date_version' => $dateVersion,
-                    'key' => $value['key'] ?? 'NC',
+                    'hotspot_key' => $value['key'] ?? 'NC',
                     'security_category' => $value['securityCategory'] ?? 'NC',
                     'rule_key' => $value['ruleKey'] ?? 'NC',
                     'probability' => $value['vulnerabilityProbability'],
@@ -171,16 +149,34 @@ class BatchCollecteHotspotController extends AbstractController
                     'date_enregistrement' => $date
                 ];
             }
+        } else {
+            /** On a pas trouvé de hotspot, c'est une bonne chose */
+            $niveau = $this->vulnerabilityProbability('NC');
+            /** Ajout des hotspots à la liste à insérer */
+            $map[] = [
+                'maven_key' => $mavenKey,
+                'version' => $select['info'][0]['project_version'],
+                'date_version' => $dateVersion,
+                'hotspot_key' => 'NC',
+                'security_category' => 'NC',
+                'rule_key' => 'NC',
+                'probability' => 'NC',
+                'status' => 'NC',
+                'resolution' => '',
+                'niveau' => $niveau,
+                'date_enregistrement' => $date
+            ];
         }
 
          /** On enregistre les données */
-        $insert = $hotspotsRepository->insertHotspots($map[0]);
+        $insert = $hotspotsRepository->insertHotspots($map);
         if ($insert['code'] !== 200) {
             return [
                 'code' => $insert['code'],
+                'error' => $insert['error'],
                 static::$request => 'insertHotspot'
             ];
         }
-    return ['code' => 200, 'map' => $map[0]];
+    return ['code' => 200, 'message' => $map];
     }
 }

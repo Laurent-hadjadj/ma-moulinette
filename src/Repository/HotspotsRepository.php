@@ -158,9 +158,9 @@ class HotspotsRepository extends ServiceEntityRepository
     {
         /** Traitement de masse (bulk) */
         $sql = "INSERT INTO hotspots
-                (maven_key, version, date_version, rule_key, rule_name, security_category, hotspot_key, probability, status, resolution, niveau, date_enregistrement)
+                (maven_key, version, date_version, rule_key, security_category, hotspot_key, probability, status, resolution, niveau, date_enregistrement)
                 VALUES
-                    (:maven_key, :version, :date_version, :rule_key, :rule_name, :security_category, :hotspot_key, :probability, :status, :resolution, :niveau, :date_enregistrement)";
+                    (:maven_key, :version, :date_version, :rule_key, :security_category, :hotspot_key, :probability, :status, :resolution, :niveau, :date_enregistrement)";
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
                 foreach( $map as $item){
@@ -169,7 +169,6 @@ class HotspotsRepository extends ServiceEntityRepository
                         $stmt->bindValue(':version', $item['version']);
                         $stmt->bindValue(':date_version', $item['date_version']->format('Y-m-d H:i:sO'));
                         $stmt->bindValue(':rule_key', $item['rule_key']);
-                        $stmt->bindValue(':rule_name', $item['rule_name']);
                         $stmt->bindValue(':security_category', $item['security_category']);
                         $stmt->bindValue(':hotspot_key', $item['hotspot_key']);
                         $stmt->bindValue(':probability', $item['probability']);
