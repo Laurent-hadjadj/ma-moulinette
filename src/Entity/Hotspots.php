@@ -76,7 +76,7 @@ class Hotspots
         max: 32,
         maxMessage: "La clé ne doit pas dépasser 32 caractères."
     )]
-    private $key;
+    private $hotpostKey;
 
     #[ORM\Column(
         type: Types::STRING,
@@ -93,16 +93,29 @@ class Hotspots
 
     #[ORM\Column(
         type: Types::STRING,
-        length: 255,
+        length: 128,
         nullable: false,
         options: ['comment' => 'Règle SonarQube']
     )]
     #[Assert\NotBlank]
     #[Assert\Length(
-        max: 255,
-        maxMessage: "La catégorie de sécurité ne doit pas dépasser 255 caractères."
+        max: 128,
+        maxMessage: "La clé de la règle ne doit pas dépasser 128 caractères."
     )]
     private $ruleKey;
+
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 255,
+        nullable: false,
+        options: ['comment' => 'Nom de la règle SonarQube']
+    )]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "Le nom de la règle ne doit pas dépasser 255 caractères."
+    )]
+    private $ruleName;
 
     #[ORM\Column(
         type: Types::STRING,
@@ -199,18 +212,6 @@ class Hotspots
         return $this;
     }
 
-    public function getKey(): ?string
-    {
-        return $this->key;
-    }
-
-    public function setKey(string $key): static
-    {
-        $this->key = $key;
-
-        return $this;
-    }
-
     public function getProbability(): ?string
     {
         return $this->probability;
@@ -291,6 +292,30 @@ class Hotspots
     public function setResolution(?string $resolution): static
     {
         $this->resolution = $resolution;
+
+        return $this;
+    }
+
+    public function getRuleName(): ?string
+    {
+        return $this->ruleName;
+    }
+
+    public function setRuleName(string $ruleName): static
+    {
+        $this->ruleName = $ruleName;
+
+        return $this;
+    }
+
+    public function getHotpostKey(): ?string
+    {
+        return $this->hotpostKey;
+    }
+
+    public function setHotpostKey(string $hotpostKey): static
+    {
+        $this->hotpostKey = $hotpostKey;
 
         return $this;
     }

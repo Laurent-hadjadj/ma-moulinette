@@ -97,31 +97,34 @@ class HotspotDetailsRepository extends ServiceEntityRepository
      */
     public function insertHotspotDetails($map):array
     {
-        $sql = "INSERT INTO Hotspot_details
-                    (maven_key, version, date_version, security_category, rule, severity, status, resolution, niveau, frontend, backend, autre, file, line, message, key, date_enregistrement)
+        $sql = "INSERT INTO hotspot_details
+                    (maven_key, version, date_version, security_category, rule_key, rule_name, severity, status, resolution, niveau, frontend, backend, autre, file_name, file_path, line, message, hotspot_key, date_enregistrement)
                 VALUES
-                    (:maven_key, :version, :date_version, :security_category, :rule, :severity, :status, :resolution, :niveau, :frontend, :backend, :autre, :file, :line, :message, :key, :date_enregistrement)";
+                    (:maven_key, :version, :date_version, :security_category, :rule_key, :rule_name :severity, :status, :resolution, :niveau, :frontend, :backend, :autre, :file, :line_name, :file_path, :message, :hotspot_key, :date_enregistrement)";
+        dd($map);
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-                foreach ($map as $ref) {
+                foreach($map as $item){
                     $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-                        $stmt->bindValue(':maven_key', $ref['maven_key']);
-                        $stmt->bindValue(':version', $ref['version']);
-                        $stmt->bindValue(':date_version', $ref['date_version']->format('Y-m-d H:i:sO'));
-                        $stmt->bindValue(':security_category', $ref['security_category']);
-                        $stmt->bindValue(':rule', $ref['rule']);
-                        $stmt->bindValue(':severity', $ref['severity']);
-                        $stmt->bindValue(':status', $ref['status']);
-                        $stmt->bindValue(':resolution', $ref['resolution']);
-                        $stmt->bindValue(':niveau', $ref['niveau']);
-                        $stmt->bindValue(':frontend', $ref['frontend']);
-                        $stmt->bindValue(':backend', $ref['backend']);
-                        $stmt->bindValue(':autre', $ref['autre']);
-                        $stmt->bindValue(':file', $ref['file']);
-                        $stmt->bindValue(':line', $ref['line']);
-                        $stmt->bindValue(':message', $ref['message']);
-                        $stmt->bindValue(':key', $ref['key']);
-                        $stmt->bindValue(':date_enregistrement', $ref['date_enregistrement']->format('Y-m-d H:i:sO'));
+                        $stmt->bindValue(':maven_key', $item['maven_key']);
+                        $stmt->bindValue(':version', $item['version']);
+                        $stmt->bindValue(':date_version', $item['date_version']->format('Y-m-d H:i:sO'));
+                        $stmt->bindValue(':security_category', $item['security_category']);
+                        $stmt->bindValue(':rule_key', $item['rule_key']);
+                        $stmt->bindValue(':rule_name', $item['rule_name']);
+                        $stmt->bindValue(':severity', $item['severity']);
+                        $stmt->bindValue(':status', $item['status']);
+                        $stmt->bindValue(':resolution', $item['resolution']);
+                        $stmt->bindValue(':niveau', $item['niveau']);
+                        $stmt->bindValue(':frontend', $item['frontend']);
+                        $stmt->bindValue(':backend', $item['backend']);
+                        $stmt->bindValue(':autre', $item['autre']);
+                        $stmt->bindValue(':file_name', $item['file_name']);
+                        $stmt->bindValue(':file_path', $item['file_path']);
+                        $stmt->bindValue(':line', $item['line']);
+                        $stmt->bindValue(':message', $item['message']);
+                        $stmt->bindValue(':hotspot_key', $item['hotspot_key']);
+                        $stmt->bindValue(':date_enregistrement', $item['date_enregistrement']->format('Y-m-d H:i:sO'));
                 }
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
