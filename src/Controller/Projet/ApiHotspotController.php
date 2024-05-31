@@ -40,6 +40,7 @@ use App\Service\Client;
 
 /** Import des services */
 use App\Service\ExtractName;
+use DateTimeImmutable;
 
 class ApiHotspotController extends AbstractController
 {
@@ -176,7 +177,7 @@ class ApiHotspotController extends AbstractController
         }
 
         /** On créé un objet Date */
-        $date = new DateTime();
+        $date = new DateTimeImmutable();
         $date->setTimezone(new DateTimeZone(static::$europeParis));
         $niveau = 0;
 
@@ -332,12 +333,12 @@ class ApiHotspotController extends AbstractController
         }
 
         /** On créé un objet Date. */
-        $dateEnregistement = new DateTime();
+        $dateEnregistement = new DateTimeImmutable();
         $dateEnregistement->setTimezone(new DateTimeZone(static::$europeParis));
         $niveau = 0;
 
         /** On converti la date de la version en dateTime */
-        $dateVersion= new DateTime($liste['info'][0]['date']);
+        $dateVersion= new DateTimeImmutable($liste['info'][0]['date']);
         $dateVersion->setTimezone(new DateTimeZone(static::$europeParis));
 
         /** On fleche la vulnérabilité */
