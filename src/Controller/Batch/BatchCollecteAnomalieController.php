@@ -122,7 +122,7 @@ class BatchCollecteAnomalieController extends AbstractController
             $map=['maven_key'=>$mavenKey];
             $delete=$anomalieRepository->deleteAnomalieMavenKey($map);
             if ($delete['code']!=200) {
-                return ['code' => $delete['code'], static::$request=>'deleteMesureMavenKey'];
+                return ['code' => $delete['code'], static::$request=>'deleteAnomalieMavenKey'];
             }
 
             //** On récupère le nombre d'anomalie et la dette technique */
