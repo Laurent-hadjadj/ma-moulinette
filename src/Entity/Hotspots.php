@@ -106,19 +106,6 @@ class Hotspots
 
     #[ORM\Column(
         type: Types::STRING,
-        length: 255,
-        nullable: false,
-        options: ['comment' => 'Nom de la règle SonarQube']
-    )]
-    #[Assert\NotBlank]
-    #[Assert\Length(
-        max: 255,
-        maxMessage: "Le nom de la règle ne doit pas dépasser 255 caractères."
-    )]
-    private $ruleName;
-
-    #[ORM\Column(
-        type: Types::STRING,
         length: 8,
         nullable: false,
         options: ['comment' => 'Probabilité de risque du hotspot']
@@ -292,18 +279,6 @@ class Hotspots
     public function setResolution(?string $resolution): static
     {
         $this->resolution = $resolution;
-
-        return $this;
-    }
-
-    public function getRuleName(): ?string
-    {
-        return $this->ruleName;
-    }
-
-    public function setRuleName(string $ruleName): static
-    {
-        $this->ruleName = $ruleName;
 
         return $this;
     }
