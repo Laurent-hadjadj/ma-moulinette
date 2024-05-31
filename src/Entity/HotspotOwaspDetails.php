@@ -13,21 +13,21 @@
 
 namespace App\Entity;
 
-use App\Repository\HotspotDetailsRepository;
+use App\Repository\HotspotOwaspDetailsRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: HotspotDetailsRepository::class)]
-#[ORM\Table(name: "hotspot_details", schema: "ma_moulinette")]
-class HotspotDetails
+#[ORM\Entity(repositoryClass: HotspotOwaspDetailsRepository::class)]
+#[ORM\Table(name: "hotspot_owasp_details", schema: "ma_moulinette")]
+class HotspotOwaspDetails
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Identifiant unique pour la table du détail deq hotspots']
+        options: ['comment' => 'Identifiant unique pour la table']
     )]
     private $id;
 
@@ -48,7 +48,7 @@ class HotspotDetails
         type: Types::STRING,
         length: 32,
         nullable: false,
-        options: ['comment' => 'Version du détail de hotspot']
+        options: ['comment' => 'Version de du projet']
     )]
     #[Assert\NotBlank]
     #[Assert\Length(
@@ -60,7 +60,7 @@ class HotspotDetails
     #[ORM\Column(
         type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
-        options: ['comment' => 'Date de la version du détail de hotspot']
+        options: ['comment' => 'Date de publication du projet']
     )]
     #[Assert\NotNull]
     private $dateVersion;
@@ -90,7 +90,7 @@ class HotspotDetails
         type: Types::STRING,
         length: 16,
         nullable: false,
-        options: ['comment' => 'Statut du hotspot']
+        options: ['comment' => 'Statut du hotspot : TO_REVIEW, REVIEWED']
     )]
     #[Assert\NotBlank]
     #[Assert\Length(
@@ -102,7 +102,7 @@ class HotspotDetails
     #[ORM\Column(
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Implémentation frontend associée au hotspot']
+        options: ['comment' => 'Présent dans le module frontend']
     )]
     #[Assert\NotNull]
     private $frontend;
@@ -110,7 +110,7 @@ class HotspotDetails
     #[ORM\Column(
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Implémentation backend associée au hotspot']
+        options: ['comment' => 'Présent dans le module backend']
     )]
     #[Assert\NotNull]
     private $backend;
@@ -118,7 +118,7 @@ class HotspotDetails
     #[ORM\Column(
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Autres implémentations associées au hotspot']
+        options: ['comment' => 'Présent dans les modules Autres']
     )]
     #[Assert\NotNull]
     private $autre;
