@@ -156,31 +156,35 @@ class HotspotsRepository extends ServiceEntityRepository
      */
     public function insertHotspots(array $map): array
     {
+        /** Traitement de masse (bulk) */
+        $sql = "INSERT INTO hotspots
+                (maven_key, version, date_version, rule_key, rule_name, security_category, hotspot_key, probability, status, resolution, niveau, date_enregistrement)
+                VALUES
+                    (:maven_key, :version, :date_version, :rule_key, :rule_name, :security_category, :hotspot_key, :probability, :status, :resolution, :niveau, :date_enregistrement)";
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-                $sql = "INSERT INTO hotspots
-                            (maven_key, version, date_version, key, security_category, rule_key, probability, status, resolution, niveau, date_enregistrement)
-                        VALUES
-                            (:maven_key, :version, :date_version, :key, :security_category, :rule_key, :probability, :status, :resolution, :niveau, :date_enregistrement)";
-                $stmt=$this->getEntityManager()->getConnection()->prepare($sql);
-                    $stmt->bindValue(':maven_key', $map['maven_key']);
-                    $stmt->bindValue(':version', $map['version']);
-                    $stmt->bindValue(':date_version', $map['date_version']->format('Y-m-d H:i:sO'));
-                    $stmt->bindValue(':key', $map['key']);
-                    $stmt->bindValue(':security_category', $map['security_category']);
-                    $stmt->bindValue(':rule_key', $map['rule_key']);
-                    $stmt->bindValue(':probability', $map['probability']);
-                    $stmt->bindValue(':status', $map['status']);
-                    $stmt->bindValue(':resolution', $map['resolution']);
-                    $stmt->bindValue(':niveau', $map['niveau']);
-                    $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
-                    $stmt->executeStatement();
-                $this->getEntityManager()->getConnection()->commit();
-            return ['code' => 200, 'message' => 'Insert successful'];
+                foreach( $map as $item){
+                    $stmt=$this->getEntityManager()->getConnection()->prepare($sql);
+                        $stmt->bindValue(':maven_key', $item['maven_key']);
+                        $stmt->bindValue(':version', $item['version']);
+                        $stmt->bindValue(':date_version', $item['date_version']->format('Y-m-d H:i:sO'));
+                        $stmt->bindValue(':rule_key', $item['rule_key']);
+                        $stmt->bindValue(':rule_name', $item['rule_name']);
+                        $stmt->bindValue(':security_category', $item['security_category']);
+                        $stmt->bindValue(':hotspot_key', $item['hotspot_key']);
+                        $stmt->bindValue(':probability', $item['probability']);
+                        $stmt->bindValue(':status', $item['status']);
+                        $stmt->bindValue(':resolution', $item['resolution']);
+                        $stmt->bindValue(':niveau', $item['niveau']);
+                        $stmt->bindValue(':date_enregistrement', $item['date_enregistrement']->format('Y-m-d H:i:sO'));
+                        $stmt->executeStatement();
+                }
+            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
             return ['code' => 500, 'error' => $e->getMessage()];
         }
+        return ['code' => 200, 'message' => 'Insertion réussie'];
     }
 
 }

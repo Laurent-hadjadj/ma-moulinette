@@ -80,16 +80,30 @@ class HotspotDetails
 
     #[ORM\Column(
         type: Types::STRING,
+        length: 128,
+        nullable: false,
+        options: ['comment' => 'Règle SonarQube']
+    )]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        max: 128,
+        maxMessage: "La clé de la règle ne doit pas dépasser 128 caractères."
+    )]
+    private $ruleKey;
+
+    #[ORM\Column(
+        type: Types::STRING,
         length: 255,
         nullable: false,
-        options: ['comment' => 'Règle associée au hotspot']
+        options: ['comment' => 'Nom de la règle SonarQube']
     )]
     #[Assert\NotBlank]
     #[Assert\Length(
         max: 255,
-        maxMessage: "La règle ne doit pas dépasser 255 caractères."
+        maxMessage: "Le nom de la règle ne doit pas dépasser 255 caractères."
     )]
-    private $rule;
+    private $ruleName;
+
 
     #[ORM\Column(
         type: Types::STRING,
@@ -163,6 +177,19 @@ class HotspotDetails
 
     #[ORM\Column(
         type: Types::STRING,
+        length: 128,
+        nullable: false,
+        options: ['comment' => 'Fichier associé au hotspot']
+    )]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        max: 128,
+        maxMessage: "Le nom de fichier ne doit pas dépasser 128 caractères."
+    )]
+    private $fileName;
+
+    #[ORM\Column(
+        type: Types::STRING,
         length: 255,
         nullable: false,
         options: ['comment' => 'Fichier associé au hotspot']
@@ -172,7 +199,7 @@ class HotspotDetails
         max: 255,
         maxMessage: "Le nom de fichier ne doit pas dépasser 255 caractères."
     )]
-    private $file;
+    private $filePath;
 
     #[ORM\Column(
         type: Types::INTEGER,
@@ -329,17 +356,6 @@ class HotspotDetails
         return $this;
     }
 
-    public function getFile(): ?string
-    {
-        return $this->file;
-    }
-
-    public function setFile(string $file): static
-    {
-        $this->file = $file;
-
-        return $this;
-    }
 
     public function getLine(): ?int
     {
@@ -353,17 +369,6 @@ class HotspotDetails
         return $this;
     }
 
-    public function getRule(): ?string
-    {
-        return $this->rule;
-    }
-
-    public function setRule(string $rule): static
-    {
-        $this->rule = $rule;
-
-        return $this;
-    }
 
     public function getMessage(): ?string
     {
@@ -421,6 +426,54 @@ class HotspotDetails
     public function setResolution(?string $resolution): static
     {
         $this->resolution = $resolution;
+
+        return $this;
+    }
+
+    public function getRuleKey(): ?string
+    {
+        return $this->ruleKey;
+    }
+
+    public function setRuleKey(string $ruleKey): static
+    {
+        $this->ruleKey = $ruleKey;
+
+        return $this;
+    }
+
+    public function getRuleName(): ?string
+    {
+        return $this->ruleName;
+    }
+
+    public function setRuleName(string $ruleName): static
+    {
+        $this->ruleName = $ruleName;
+
+        return $this;
+    }
+
+    public function getFileName(): ?string
+    {
+        return $this->fileName;
+    }
+
+    public function setFileName(string $fileName): static
+    {
+        $this->fileName = $fileName;
+
+        return $this;
+    }
+
+    public function getFilePath(): ?string
+    {
+        return $this->filePath;
+    }
+
+    public function setFilePath(string $filePath): static
+    {
+        $this->filePath = $filePath;
 
         return $this;
     }
