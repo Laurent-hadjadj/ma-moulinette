@@ -59,9 +59,42 @@ class ActiviteController extends AbstractController
         $activiteEntity = $this->em->getRepository(Activite::class);
 
         // On recupere l'anne actuelle
-        $date = new DateTime();
-        $date->setTimezone(new DateTimeZone('Europe/Paris'));
-        $anneeActuelle = $date->format('Y');
+        $dateMoins1 = new DateTime();
+        $dateMoins1->setTimezone(new DateTimeZone('Europe/Paris'));
+        $anneeActuelle = $dateMoins1->format('Y');
+
+        $url = $this->getParameter(static::$sonarUrl)
+        . "/api/ce/activity";
+        $respond = $client->http($url);
+
+
+        if ($activiteEntity->selectActivite($anneeActuelle)['request'] == [] ){
+            $this->addFlash('notice', ['type'=>'alert', 'titre'=> '[ACTIVITE-003]', 'message'=>" Votre liste d'activité est vide. Veuillez rafraichir la liste"]);
+            $request[""] = [
+                'nb_jour' => "",
+                'nb_analyse' => "",
+                'nb_reussi' => "",
+                'nb_echec' => "",
+                'max_temps' => "",
+                'moyenne_analyse' => "",
+                'taux_reussite' => ""
+            ];
+            return $this->render('activite/index.html.twig', [
+                'activites' => $request,'version' => $this->getParameter('version'), 'dateCopyright' => \date("Y"),
+                Response::HTTP_OK]);
+        }
+
+        $dateBase = new DateTime($activiteEntity->dernierDate()['request']['date']);
+        $dateSonar = new DateTime($respond['tasks'][0]['executedAt']);
+
+        if($dateSonar > $dateBase){
+            // Ici on calcule l'interval de jour entre la base et sonar
+            $interval = $dateBase->diff(new DateTime($respond['tasks'][0]['executedAt']))->format('%d');
+            $this->addFlash('notice', ['type'=>'warning', 'titre'=> '[ACTIVITE-002]', 'message'=>"Vous pouvez mettre à jour votre liste d'activité. Il y a " .$interval. " jours de retard"]);
+        }
+        if($dateSonar == $dateBase){
+            $this->addFlash('notice', ['type'=>'default', 'titre'=> '[ACTIVITE-001]', 'message'=>" Votre liste d'activité est à jour"]);
+        }
 
         // On forme le tableau qui va etre envoyé dans la vue
         // Le nombre de jour pour cette annee

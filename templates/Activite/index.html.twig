@@ -40,45 +40,64 @@
 		</header>
 
 		{# Le bla bla #}
-    <main class="grid-container rid-x rid-padding-x">
-      <div class="cell grid-x small-12 medium-12 large-12">
-        <div class="cell small-12 medium-9 large-9">
-          <h1 class="h2 claire-hand">Liste des Activités</h1>
-          <table class="hover">
-            <thead>
-              <tr>
-                <th>Annee</th>
-                <th>Nombre de Jour</th>
-                <th>Project Nombre d'analyse</th>
-                <th>Nombre d'analyse Moyenne</th>
-                <th>Nombre de reussite</th>
-                <th>Nombre d'echec</th>
-                <th>Taux de reussite</th>
-                <th>Temps Max</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for annee, activite in activites %}
-                <tr>
-                  <td>{{ annee }}</td>
-                  <td>{{ activite.nb_jour }}</td>
-                  <td>{{ activite.nb_analyse }}</td>
-                  <td>{{ activite.moyenne_analyse }}</td>
-                  <td>{{ activite.nb_reussi }}</td>
-                  <td>{{ activite.nb_echec }}</td>
-                  <td>{{ activite.taux_reussite }}</td>
-                  <td>{{ activite.max_temps }}</td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-        <div class="cell small-12 medium-3 large-3">
-          <p>Testy</p>
-        </div>
-      </div>
-    </main>
 
+		<div class="grid-container grid-x" role="alert" aria-label="messages d'information">
+			{% for message in app.flashes('notice') %}
+				<div class="callout alert-callout-border js-message {{message.type}}" role="alert">
+					<span class="open-sans color-bleu">
+						<strong>{{message.titre}}</strong>
+						{{ message.message }}</span>
+				</div>
+			{% endfor %}
+		</div>
+
+		<main class="grid-container rid-x rid-padding-x">
+			<div class="cell grid-x small-12 medium-12 large-12 grid-padding-x">
+				<div class="cell small-12 medium-8 large-8">
+					<h1 class="h2 claire-hand">Liste des Activités</h1>
+					<table class="hover">
+						<thead>
+							<tr>
+								<th>Annee</th>
+								<th>Nombre de Jour</th>
+								<th>Project Nombre d'analyse</th>
+								<th>Nombre d'analyse Moyenne</th>
+								<th>Nombre de reussite</th>
+								<th>Nombre d'echec</th>
+								<th>Taux de reussite</th>
+								<th>Temps Max</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for annee, activite in activites %}
+								<tr>
+									<td>{{ annee }}</td>
+									<td>{{ activite.nb_jour }}</td>
+									<td>{{ activite.nb_analyse }}</td>
+									<td>{{ activite.moyenne_analyse }}</td>
+									<td>{{ activite.nb_reussi }}</td>
+									<td>{{ activite.nb_echec }}</td>
+									<td>{{ activite.taux_reussite }}</td>
+									<td>{{ activite.max_temps }}</td>
+								</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+				<div class="cell small-12 medium-2 large-2">
+					<p class="button expanded float-center bouton-profil-refresh js-profil-refresh">
+						<span class="show-for-medium open-sans color-blanc">Donnée du jour éphémère</span>
+						<span class="show-for-small-only open-sans color-blanc">Donnée du jour</span>
+					</p>
+				</div>
+				<div class="cell small-12 medium-2 large-2 ">
+					<p class="button expanded float-center bouton-profil-refresh js-profil-refresh">
+						<span class="show-for-medium open-sans color-blanc">Mise à jour de la liste</span>
+						<span class="show-for-small-only open-sans color-blanc">Mise à jour</span>
+					</p>
+				</div>
+			</div>
+		</main>
 
 
 		{# Chargement de la section footer #}

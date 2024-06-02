@@ -15,6 +15,7 @@ namespace App\Repository;
 
 use App\Entity\Activite;
 use DateTime;
+use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -37,12 +38,13 @@ class ActiviteRepository extends ServiceEntityRepository
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectActivite(): array
+    public function selectActivite($annee): array
     {
         try {
                 $sql = " SELECT *
-                        FROM activite";
+                        FROM activite WHERE EXTRACT(YEAR FROM started_at) = :annee ";
                         $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                        $stmt->bindValue("annee", $annee);
                 $request=$stmt->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
             return ['code'=>500, 'erreur'=> $e->getCode()];
@@ -78,13 +80,13 @@ class ActiviteRepository extends ServiceEntityRepository
                 // Formater les dates
                 if (preg_match("/(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})/", $value['startedAt'], $matches)) {
                     $format = $matches[1] . " " . $matches[2];
-                    $started_at = new DateTime($format);
-                    $started_at_formatted = $started_at->format('Y-m-d H:i:s');
+                    $started_at = new DateTimeImmutable($format);
+                    $started_at_formatted = $started_at->format('Y-m-d H:i:sO');
                 }
                 if (preg_match("/(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})/", $value['executedAt'], $matches)) {
                     $format = $matches[1] . " " . $matches[2];
-                    $executed_at = new DateTime($format);
-                    $executed_at_formatted = $executed_at->format('Y-m-d H:i:s');
+                    $executed_at = new DateTimeImmutable($format);
+                    $executed_at_formatted = $executed_at->format('Y-m-d H:i:sO');
                 }
                 $execution_time = (int) round($value['executionTimeMs'] / 1000)+1; // Conversion de l'input en ms en s
                 // Construction de la ligne pour la requête SQL
@@ -205,6 +207,41 @@ class ActiviteRepository extends ServiceEntityRepository
                         FROM activite WHERE EXTRACT(YEAR FROM started_at) = :annee";
                         $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
                         $stmt->bindValue("annee", $annee);
+                $request=$stmt->executeQuery()->fetchAllAssociative();
+            $this->getEntityManager()->getConnection()->commit();
+        } catch (\Doctrine\DBAL\Exception $e) {
+            $this->getEntityManager()->getConnection()->rollBack();
+            return ['code'=>500, 'erreur'=> $e->getCode()];
+        }
+        return ['request'=>$request[0], 'code'=>200, 'erreur'=>''];
+    }
+
+    /**
+     * [Description for selectActivite]
+     * On recupere la date la plus recente dans la table pour une année donnée
+     *
+     * @return array
+     *
+     * Created at: 28/05/2024 13:56:31 (Europe/Paris)
+     * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function dernierDate($annee = null): array
+    {
+        try {
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "SELECT executed_at as date
+                    FROM activite";
+                        if ($annee != null){
+                            $sql .=" WHERE EXTRACT(YEAR FROM started_at) = :annee
+                                    ORDER BY executed_at desc LIMIT 1";
+                            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                            $stmt->bindValue("annee", $annee);
+                                }
+                        else{
+                            $sql .= " ORDER BY executed_at desc LIMIT 1";
+                            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                        }
                 $request=$stmt->executeQuery()->fetchAllAssociative();
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
