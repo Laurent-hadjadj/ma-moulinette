@@ -28,6 +28,9 @@ class Client
     /** Définition des constantes */
     public static $strContentType = 'application/json';
     public static $regex = "/\s+/u";
+    public static $erreur400="Erreur 400 - L'URL n'est pas correcte.";
+    public static $erreur401="Erreur 401 - Erreur d'Authentification. La clé n'est pas correcte.";
+    public static $erreur404="Erreur 404 - Le service n'a pas trouvé les éléments.";
 
     public function __construct(
         private HttpClientInterface $client,
@@ -80,16 +83,16 @@ class Client
         /** catch les erreurs 400, 404 les erreurs 401 et eutres génére une erreur 500 */
         if (200 !== $response->getStatusCode()) {
             if ($response->getStatusCode() == 400) {
-                $this->logger->ERROR("Erreur 400 - L'URL n'est pas correcte.");
-                return ['code'=> 400];
+                $this->logger->ERROR(static::$erreur400);
+                return ['code'=> 400, 'erreur'=>static::$erreur400];
             }
             if ($response->getStatusCode() == 401) {
-                $this->logger->ERROR("Erreur 401 - Erreur d\'Authentification. La clé n\'est pas correcte.");
-                return ['code'=> 401];
+                $this->logger->ERROR(static::$erreur401);
+                return ['code'=> 401, 'erreur'=>static::$erreur401];
             }
             if ($response->getStatusCode() == 404) {
-                $this->logger->ERROR("Erreur 404 - Le service n'a pas trouvé les éléments.");
-                return ['code'=> 404];
+                $this->logger->ERROR(static::$erreur404);
+                return ['code'=> 404, 'erreur'=>static::$erreur404];
             }
         }
 
