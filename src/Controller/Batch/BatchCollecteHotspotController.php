@@ -76,14 +76,17 @@ class BatchCollecteHotspotController extends AbstractController
      * [Description for BatchCollecteHotspot]
      *
      * @param string $mavenKey
+     * @param string $modeCollecte
+     * @param string $utilisateurCollecte
      *
      * @return array
+     *
      *
      * Created at: 21/05/2024 22:25:12 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function BatchCollecteHotspot(string $mavenKey): array
+    public function BatchCollecteHotspot(string $mavenKey, string $modeCollecte, string $utilisateurCollecte): array
     {
         /** On instancie l'EntityRepository */
         $hotspotsRepository = $this->em->getRepository(Hotspots::class);
@@ -114,7 +117,7 @@ class BatchCollecteHotspotController extends AbstractController
         $result = $this->client->http("$tempoUrl/api/hotspots/search?".http_build_query($queryParams));
         /** On catch les erreurs HTTP 401 et 404, si possible :) */
         if (isset($result['code']) && in_array($result['code'], [401, 404])) {
-            return ['code' => $result['code']];
+            return ['code' => $result['code'],'error'=>$result['erreur']];
         }
        /** Création de la date du jour */
         $date = new \DateTimeImmutable();
@@ -124,7 +127,9 @@ class BatchCollecteHotspotController extends AbstractController
         $map=['maven_key'=>$mavenKey];
         $delete=$hotspotsRepository->deleteHotspotsMavenKey($map);
         if ($delete['code']!=200) {
-            return ['code' => $delete['code'], static::$request=>'deleteHotspotsMavenKey'];
+            return ['code' => $delete['code'],
+                    'error'=>[$delete['erreur'],
+                            static::$request=>'deleteHotspotsMavenKey']];
         }
 
         $map = [];
@@ -145,6 +150,8 @@ class BatchCollecteHotspotController extends AbstractController
                     'status' => $value['status'] ?? 'NC',
                     'resolution' => $value['resolution'] ?? '',
                     'niveau' => $niveau,
+                    'mode_collecte' => $modeCollecte,
+                    'utilisateur_collecte' =>$utilisateurCollecte,
                     'date_enregistrement' => $date
                 ];
             }
@@ -163,6 +170,8 @@ class BatchCollecteHotspotController extends AbstractController
                 'status' => 'NC',
                 'resolution' => '',
                 'niveau' => $niveau,
+                'mode_collecte' => $modeCollecte,
+                'utilisateur_collecte' => $utilisateurCollecte,
                 'date_enregistrement' => $date
             ];
         }
@@ -170,10 +179,9 @@ class BatchCollecteHotspotController extends AbstractController
          /** On enregistre les données */
         $insert = $hotspotsRepository->insertHotspots($map);
         if ($insert['code'] !== 200) {
-            return [
-                'code' => $insert['code'],
-                'error' => $insert['erreur'],
-                static::$request => 'insertHotspot'
+            return ['code' => $insert['code'],
+                    'error' => [$insert['erreur'],
+                    static::$request => 'insertHotspot']
             ];
         }
     return ['code' => 200, 'message' => $map];

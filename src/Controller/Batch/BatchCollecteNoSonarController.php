@@ -54,6 +54,8 @@ class BatchCollecteNoSonarController extends AbstractController
      * [Description for BatchCollecteNoSonar]
      *
      * @param string $mavenKey
+     * @param string $modeCollecte
+     * @param string $utilisateurCollecte
      *
      * @return array
      *
@@ -61,7 +63,7 @@ class BatchCollecteNoSonarController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function BatchCollecteNoSonar(string $mavenKey): array
+    public function BatchCollecteNoSonar(string $mavenKey, string $modeCollecte, string $utilisateurCollecte): array
     {
         /** On instancie l'EntityRepository */
         $noSonarRepository = $this->em->getRepository(NoSonar::class);
@@ -79,7 +81,7 @@ class BatchCollecteNoSonarController extends AbstractController
         $result = $this->client->http("$tempoUrl/api/issues/search?".http_build_query($queryParams));
          /** On catch les erreurs HTTP 401 et 404, si possible :) */
         if (isset($result['code']) && in_array($result['code'], [401, 404])) {
-            return ['code' => $result['code']];
+            return ['code' => $result['code'], 'error'=>[$result['erreur']]];
         }
 
         /** On crée un objet date */
@@ -90,7 +92,9 @@ class BatchCollecteNoSonarController extends AbstractController
         $map=['maven_key'=>$mavenKey];
         $delete=$noSonarRepository->deleteNoSonarMavenKey($map);
         if ($delete['code']!=200) {
-            return ['code' => $delete['code'], static::$request=>'deleteNoSonarMavenKey'];
+            return ['code' => $delete['code'],
+                    'error'=>[$delete['erreur'],            static::$request=>'deleteNoSonarMavenKey']
+                ];
         }
 
         /**
@@ -120,6 +124,8 @@ class BatchCollecteNoSonarController extends AbstractController
                     'rule' => $issue["rule"],
                     'component' => $component,
                     'line' => $line,
+                    'mode_collecte' => $modeCollecte,
+                    'utilisateur_collecte' => $utilisateurCollecte,
                     'date_enregistrement' => $date
                 ];
             }
@@ -131,7 +137,7 @@ class BatchCollecteNoSonarController extends AbstractController
         $request=$noSonarRepository->insertNoSonar($mapData);
         if ($request['code']!=200) {
             return ['code' => $request['code'],
-            'error'=>[$request['erreur']],static::$request=>'insertNoSonar'];
+            'error'=>[$request['erreur'],static::$request=>'insertNoSonar']];
         }
         /** On enregistre les données */
         $nosonar = ["suppress_warning" => $suppressWarning, "no_sonar" => $noSonar];

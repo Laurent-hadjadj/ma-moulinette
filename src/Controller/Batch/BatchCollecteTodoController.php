@@ -120,7 +120,8 @@ class BatchCollecteTodoController extends AbstractController
         $request=$todoRepository->insertTodo($mapData);
         if ($request['code']!=200) {
             return ['code' => $request['code'],
-            'error'=>[$request['erreur']],static::$request=>'insertTodo'];
+            'error'=>[$request['erreur']],
+            static::$request=>'insertTodo'];
         }
         /** On enregistre les données */
 

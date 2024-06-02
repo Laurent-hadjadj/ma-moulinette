@@ -71,7 +71,7 @@ class BatchCollecteAnomalieController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function BatchCollecteAnomalie(string $mavenKey): array
+    public function BatchCollecteAnomalie(string $mavenKey, string $modeCollecte, string $utilisateurCollecte): array
     {
         /** On instancie l'EntityRepository */
         $anomalieRepository = $this->em->getRepository(Anomalie::class);
@@ -92,7 +92,7 @@ class BatchCollecteAnomalieController extends AbstractController
             $queryString = http_build_query($queryParams);
             $result = $this->client->http("$tempoUrl/api/issues/search?$queryString");
             if (isset($result['code']) && in_array($result['code'], [401, 404])) {
-                return ['error' => $result['code']];
+                return ['error' => $result['code'], $result['erreur']];
             }
             return $result;
         };
@@ -113,16 +113,17 @@ class BatchCollecteAnomalieController extends AbstractController
         foreach ($queryParamsList as $key => $queryParams) {
             $results[$key] = $makeRequest($queryParams);
             if (isset($results[$key]['error'])) {
-                return ['code' => $results[$key]['error']];
+                return ['code' => $results[$key]['error'], 'error'=>$results['erreur']];
             }
         }
+
 
         if ($results['general']['paging']['total'] != 0) {
             /** On supprime les résultats pour la maven_key. */
             $map=['maven_key'=>$mavenKey];
             $delete=$anomalieRepository->deleteAnomalieMavenKey($map);
             if ($delete['code']!=200) {
-                return ['code' => $delete['code'], static::$request=>'deleteAnomalieMavenKey'];
+                return ['code' => $delete['code'],'error'=>[$delete['erreur'], static::$request=>'deleteAnomalieMavenKey']];
             }
 
             //** On récupère le nombre d'anomalie et la dette technique */
@@ -179,31 +180,34 @@ class BatchCollecteAnomalieController extends AbstractController
         $map = [
             'maven_key'=>$mavenKey,
             'project_name'=>$app,
-            'anomalie_total'=>$anomalieTotal,
-            'dette'=>$dette,
-            'dette_minute'=>$detteMinute,
-            'dette_reliability'=>$detteReliability,
-            'dette_reliability_minute'=>$detteReliabilityMinute, 'dette_vulnerability'=>$detteVulnerability, 'dette_vulnerability_minute'=>$detteVulnerabilityMinute,
-            'dette_code_smell'=>$detteCodeSmell,
-            'dette_code_smell_minute'=>$detteCodeSmellMinute,
-            'frontend'=>$modules['frontend'],
-            'backend'=>$modules['backend'],
-            'autre'=>$modules['autre'],
-            'blocker'=>$severities['BLOCKER'],
-            'critical'=>$severities['CRITICAL'],
-            'major'=>$severities['MAJOR'],
-            'info'=>$severities['INFO'],
-            'minor'=>$severities['MINOR'],
-            'bug'=>$types['BUG'],
-            'vulnerability'=>$types['VULNERABILITY'],
-            'code_smell'=>$types['CODE_SMELL'],
+            'anomalie_total'=>$anomalieTotal ?? 0,
+            'dette'=>$dette ?? 0,
+            'dette_minute'=>$detteMinute ?? 0,
+            'dette_reliability'=>$detteReliability ?? 0,
+            'dette_reliability_minute'=>$detteReliabilityMinute ?? 0, 'dette_vulnerability'=>$detteVulnerability ?? 0, 'dette_vulnerability_minute'=>$detteVulnerabilityMinute ?? 0,
+            'dette_code_smell'=>$detteCodeSmell ?? 0,
+            'dette_code_smell_minute'=>$detteCodeSmellMinute ?? 0,
+            'frontend'=>$modules['frontend'] ?? 0,
+            'backend'=>$modules['backend'] ?? 0,
+            'autre'=>$modules['autre'] ?? 0,
+            'blocker'=>$severities['BLOCKER'] ?? 0,
+            'critical'=>$severities['CRITICAL'] ?? 0,
+            'major'=>$severities['MAJOR'] ?? 0,
+            'info'=>$severities['INFO'] ?? 0,
+            'minor'=>$severities['MINOR'] ?? 0,
+            'bug'=>$types['BUG'] ?? 0,
+            'vulnerability'=>$types['VULNERABILITY'] ?? 0,
+            'code_smell'=>$types['CODE_SMELL'] ?? 0,
+            'mode_collecte'=>$modeCollecte,
+            'utilisateur_collecte'=>$utilisateurCollecte,
             'date_enregistrement'=>$date];
 
             $insert = $anomalieRepository->insertAnomalie($map);
             if ($insert['code'] !== 200) {
                 return [
                     'code' => $insert['code'],
-                    static::$request => 'insertAnomalie'
+                    'error'=>[$insert['erreur'],
+                    static::$request => 'insertAnomalie']
                 ];
             }
         return ['code' => 200, 'message' => $map];

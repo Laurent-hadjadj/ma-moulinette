@@ -25,7 +25,7 @@ use App\Entity\InformationProjet;
 use App\Service\Client;
 
 /**
- * [Description BatchCollecteInformationProjetController]
+ * [Description BatchCollecteOwaspController]
  */
 class BatchCollecteOwaspController extends AbstractController
 {
@@ -51,9 +51,11 @@ class BatchCollecteOwaspController extends AbstractController
     }
 
     /**
-     * [Description for BatchCollecteMesure]
+     * [Description for BatchCollecteOwasp]
      *
      * @param string $mavenKey
+     * @param string $modeCollecteur
+     * @param string $utilisateurCollecteur
      *
      * @return array
      *
@@ -61,7 +63,7 @@ class BatchCollecteOwaspController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function BatchCollecteOwasp(string $mavenKey): array
+    public function BatchCollecteOwasp(string $mavenKey, string $modeCollecte, string $utilisateurCollecte): array
     {
         /** On instancie l'EntityRepository */
         $informationProjet = $this->em->getRepository(InformationProjet::class);
@@ -83,7 +85,7 @@ class BatchCollecteOwaspController extends AbstractController
 
         /** On catch les erreurs HTTP 401 et 404, si possible :) */
         if (isset($result['code']) && in_array($result['code'], [401, 404])) {
-            return ['code' => $result['code']];
+            return ['code' => $result['code'], 'error'=>$result['erreur']];
         }
 
         /** On récupère dans la table information_projet la version et la date du projet la plus récente. */
@@ -139,7 +141,9 @@ class BatchCollecteOwaspController extends AbstractController
         $map=['maven_key'=>$mavenKey];
         $delete=$owaspRepository->deleteOwaspMavenKey($map);
         if ($delete['code']!=200) {
-            return ['code' => $delete['code'], static::$request=>'deleteOwaspMavenKey'];
+            return ['code' => $delete['code'],
+                    'error'=> [$delete['erreur'], static::$request=>'deleteOwaspMavenKey']
+            ];
         }
 
         /** préparation des données avant l'enregistrement. */
@@ -148,6 +152,8 @@ class BatchCollecteOwaspController extends AbstractController
             'version' => $select['info'][0]['project_version'],
             'date_version' => $dateVersion,
             'effort_total' => $effortTotal,
+            'mode_collecte' => $modeCollecte,
+            'utilisateur_collecte' => $utilisateurCollecte,
             'date_enregistrement' => $date
         ];
 
@@ -165,7 +171,9 @@ class BatchCollecteOwaspController extends AbstractController
         /** On on enregistre */
         $request=$owaspRepository->insertOwasp($map);
         if ($request['code']!=200) {
-            return ['code' => $request['code'], 'erreur' => $request['erreur'],static::$request=>'insertNote'];
+            return ['code' => $request['code'],
+                    'error' => [$request['erreur'],                            static::$request=>'insertNote']
+                    ];
         }
 
         return [

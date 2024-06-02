@@ -156,27 +156,31 @@ class BatchCollecteHotspotOwaspController extends AbstractController
                 'probability' => $data['vulnerabilityProbability'] ?? 'NC',
                 'status' => $data['status'] ?? 'NC',
                 'resolution' => $data['resolution'] ?? '',
-                'niveau' => $this->vulnerabilityProbability($data['vulnerabilityProbability']?? -1),
+                'niveau' => $this->vulnerabilityProbability($data['vulnerabilityProbability'] ?? -1),
                 'date_enregistrement' => $date
             ];
         };
 
         /** Pour chaque menace owasp on ajoute la menace dans la table */
         $hotspotDataList = [];
+        if (array_key_exists('hotspots', $owasp2017)) {
             foreach ($owasp2017['hotspots'] as $item) {
                 $hotspotDataList[] = $prepareHotspotData($item, 2017);
             }
+        }
+        if (array_key_exists('hotspots', $owasp2021)) {
             foreach ($owasp2021['hotspots'] as $item) {
                 $hotspotDataList[] = $prepareHotspotData($item, 2021);
             }
+        }
+        if ($hotspotDataList){
             $insert = $hotspotOwaspRepository->insertHotspotOwasp($hotspotDataList);
             if ($insert['code'] !== 200) {
-                return [
-                    'code' => $insert['code'],
-                    static::$request => 'insertHotspotOwasp'
-                ];
+                return ['code' => $insert['code'],
+                        static::$request => 'insertHotspotOwasp'
+                    ];
             }
-
+        }
         return ['code' => 200, 'message' => $hotspotDataList];
     }
 }
