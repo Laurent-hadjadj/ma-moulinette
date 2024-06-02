@@ -24,7 +24,7 @@ use App\Entity\Mesures;
 use App\Service\Client;
 
 /**
- * [Description BatchCollecteInformationProjetController]
+ * [Description BatchCollecteMesureController]
  */
 class BatchCollecteMesureController extends AbstractController
 {
@@ -59,7 +59,7 @@ class BatchCollecteMesureController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function BatchCollecteMesure(string $mavenKey): array
+    public function BatchCollecteMesure(string $mavenKey, string $modeCollecte, string $utilisateurCollecte): array
     {
         /** On instancie l'EntityRepository */
         $mesuresRepository = $this->em->getRepository(Mesures::class);
@@ -76,14 +76,14 @@ class BatchCollecteMesureController extends AbstractController
         $result = $this->client->http("$tempoUrl/api/components/app?$queryString");
         /** On catch les erreurs HTTP 401 et 404, si possible :) */
         if (isset($result['code']) && in_array($result['code'], [401, 404])) {
-            return ['code' => $result['code']];
+            return ['code' => $result['code'], 'error'=>[$result['erreur']]];
         }
 
         /** On supprime les résultats pour la maven_key. */
         $map=['maven_key'=>$mavenKey];
         $delete=$mesuresRepository->deleteMesuresMavenKey($map);
         if ($delete['code']!=200) {
-            return ['code' => $delete['code'], static::$request=>'deleteMesureMavenKey'];
+            return ['code' => $delete['code'], 'error'=>[$delete['erreur'], static::$request=>'deleteMesureMavenKey']];
         }
         /** Création de la date du jour */
         $date = new \DateTimeImmutable();
@@ -132,11 +132,15 @@ class BatchCollecteMesureController extends AbstractController
             'duplication_density' => $duplicationDensity,
             'tests' => $tests,
             'issues' => $issues,
+            'mode_collecte' => $modeCollecte,
+            'utilisateur_collecte' => $utilisateurCollecte,
             'date_enregistrement' => $date
         ];
         $insert=$mesuresRepository->insertMesures($mesureData);
         if ($insert['code'] !== 200) {
-            return ['code' => $insert['code'], static::$request => 'insertMesures'];
+            return ['code' => $insert['code'],
+                    'error'=>[$insert['erreur'],
+                    static::$request => 'insertMesures']];
         }
 
         return ['code' => 200, 'message' => $mesureData];

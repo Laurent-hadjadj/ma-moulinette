@@ -16,6 +16,7 @@ namespace App\Controller\Batch;
 /** Core */
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\SecurityBundle\Security;
 
 // Gestion de accès aux API
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -50,6 +51,7 @@ class BatchCollecteController extends AbstractController
     public static $timeFormat = "%H:%I:%S";
 
     public static $erreur400 = "La requête est incorrecte (Erreur 400).";
+    public static $erreur401 = "Vous devez avoir un compte utilisateur valide  (Erreur 401).";
     public static $erreur404 = "L'appel à l'API n'a pas abouti (Erreur 404).";
 
     /**
@@ -62,6 +64,7 @@ class BatchCollecteController extends AbstractController
      */
     public function __construct(
         private FileLogger $logger,
+        private Security $security,
         private BatchCollecteInformationProjetController $batchCollecteInformation,
         private BatchCollecteMesureController $batchCollecteMesure,
         private BatchCollecteNoteController $batchCollecteNote,
@@ -74,6 +77,7 @@ class BatchCollecteController extends AbstractController
         private BatchCollecteTodoController $batchCollecteTodo
     ) {
         $this->logger = $logger;
+        $this->security = $security;
         $this->batchCollecteInformation = $batchCollecteInformation;
         $this->batchCollecteMesure = $batchCollecteMesure;
         $this->batchCollecteNote = $batchCollecteNote;
@@ -86,100 +90,171 @@ class BatchCollecteController extends AbstractController
         $this->batchCollecteTodo = $batchCollecteTodo;
     }
 
-        //await projetTodo(idProject);                  /*(12)*/
     #[Route('/collecte', name: 'collecte', methods: ['POST'])]
     public function collecte(Request $request): Response
     {
         $response = new JsonResponse();
 
+        /** On initialise la log */
+        $collecte=[];
+
+        /** Si on a pas de POST OK ou de maven_key ou de mode de collecte alors on sort */
         $data = json_decode($request->getContent());
-        if ($data === null || !property_exists($data, 'maven_key')) {
+        if ($data === null ||
+            !property_exists($data, 'maven_key') ||
+            !property_exists($data, 'mode_collecte')) {
+                $collecte[]=["**** ERREUR : ".static::$erreur400." ****"];
             return $response->setData(
-                [ 'data' => $data, 'code' => 400, 'message' => static::$erreur400
-            ], Response::HTTP_BAD_REQUEST);
+                [ 'data' => $data, 'code' => 400, 'message' => static::$erreur400, "Collecte" => $collecte], Response::HTTP_BAD_REQUEST);
+        }
+
+        /** On nettoie les variables du POST */
+        $mavenKey = htmlspecialchars($data->maven_key, ENT_QUOTES, 'UTF-8');
+        $modeCollecte = htmlspecialchars($data->mode_collecte, ENT_QUOTES, 'UTF-8');
+
+
+        /** On contrôle le mode d'utilisation */
+        $utilisateurCollecte = $this->security->getUser()->getCourriel() ?? 'null';
+
+        if ($modeCollecte === 'MANUEL' && $utilisateurCollecte==='null') {
+            $collecte = [
+                "**** INFORMATION : Mode MANUEL détecté ****",
+                "** ERREUR : L'utilisateur n'est pas connu"
+            ];
+
+            return $response->setData([
+                'code' => 401,
+                'message' => static::$erreur401,
+                'collecte' => $collecte
+            ], Response::HTTP_UNAUTHORIZED);
         }
 
         /** On récupère les données du projet */
-        $collecte=[];
         /** Informations du projet (nom, type de version) */
-        $informationProjet=$this->batchCollecteInformation->batchCollecteInformation($data->maven_key);
+        $informationProjet=$this->batchCollecteInformation->batchCollecteInformation($mavenKey, $modeCollecte, $utilisateurCollecte);
         if ($informationProjet['code']===200){
             $collecte[]=['informationProjet'=>$informationProjet['message']];
-        } else { $collecte[]=["**** Erreur : INFORMATION PROJET ****" => [$informationProjet['code'], $informationProjet['message'] ?? $informationProjet['error']]]; }
-
+        } else {
+            $collecte[]=[
+                "**** ERREUR : INFORMATION PROJET ".$informationProjet['code']. "****",
+                $informationProjet['message'] ?? $informationProjet['error']
+            ];
+            return $response->setData(["Collecte" => $collecte]);
+        }
 
         /** Mesures du projet (ligne de code, couverture, dette, ...) */
-        $mesure=$this->batchCollecteMesure->batchCollecteMesure($data->maven_key);
+        $mesure=$this->batchCollecteMesure->batchCollecteMesure($mavenKey, $modeCollecte, $utilisateurCollecte);
         if ($mesure['code']===200){
             $collecte[]=["Mesures" => $mesure['message']];
-        } else { $collecte[]=["**** Erreur : MESURE ****" => [$mesure['code'], $mesure['message'] ?? $mesure['error']]]; }
-
+        } else {
+            $collecte[]=[
+                "**** ERREUR : MESURE ".$mesure['code']. "****",
+                $mesure['message'] ?? $mesure['error']
+            ];
+            return $response->setData(["Collecte" => $collecte]);
+        }
 
         /** Notes du projet  (fiabilité, sécurité, mauvaise pratique) */
-        $noteReliability=$this->batchCollecteNote->batchCollecteNote($data->maven_key, 'reliability');
+        $noteReliability=$this->batchCollecteNote->batchCollecteNote($mavenKey, $modeCollecte, $utilisateurCollecte, 'reliability');
         if ($noteReliability['code']===200){
             $collecte[]=["note_reliability" => $noteReliability];
-        } else { $collecte[]=["**** Erreur : NOTES ****" => [$noteReliability['code'], $noteReliability['message'] ?? $noteReliability['error']]]; }
+        } else { $collecte[]=[
+                "**** ERREUR : NOTES ".$noteReliability['code']." ****", $noteReliability['message'] ?? $noteReliability['error']
+            ];
+        }
 
-        $noteSecurity=$this->batchCollecteNote->batchCollecteNote($data->maven_key, 'security');
+        $noteSecurity=$this->batchCollecteNote->batchCollecteNote($mavenKey, $modeCollecte, $utilisateurCollecte, 'security');
         if ($noteSecurity['code']===200){
             $collecte[]=["note_security"=> $noteSecurity['message']];
-        } else { $collecte[]=["**** Erreur : NOTES ****" => [$noteSecurity['code'], $noteSecurity['message'] ?? $noteSecurity['error']]]; }
+        } else { $collecte[]=[
+                "**** ERREUR : NOTES ".$noteSecurity['code']." ****", $noteSecurity['message'] ?? $noteSecurity['error']
+            ];
+        }
 
-        $noteSqale=$this->batchCollecteNote->batchCollecteNote($data->maven_key, 'sqale');
+        $noteSqale=$this->batchCollecteNote->batchCollecteNote($mavenKey, $modeCollecte, $utilisateurCollecte, 'sqale');
         if ($noteSecurity['code']===200){
             $collecte[]=["note_sqale" => $noteSqale['message']];
-        } else { $collecte[]=["**** Erreur : NOTES ****" => [$noteSqale['code'], $noteSqale['message'] ?? $noteSqale['error']]]; }
+        } else {
+             $collecte[]=["**** ERREUR : NOTES ".$noteSqale['code']." ****", $noteSqale['message'] ?? $noteSqale['error']
+            ];
+        }
 
         /** Signalement Anomalies pour le projet  */
-        $anomalie=$this->batchCollecteAnomalie->batchCollecteAnomalie($data->maven_key);
+        $anomalie=$this->batchCollecteAnomalie->batchCollecteAnomalie($mavenKey, $modeCollecte, $utilisateurCollecte, $utilisateurCollecte);
         if ($anomalie['code']===200){
             $collecte[]=["Anomalie" => $anomalie['message']];
-        } else { $collecte[]=["**** Erreur : ANOMALIE ****" => [$anomalie['code'], $anomalie['message'] ?? $anomalie['error']]]; }
+        } else {
+                $collecte[]=["**** ERREUR : ANOMALIE ".$anomalie['code']." ****",
+                $anomalie['message'] ?? $anomalie['error']
+            ];
+        }
 
         /** Signalement Hotspots pour le projet  */
-        $hotspot=$this->batchCollecteHotspot->batchCollecteHotspot($data->maven_key);
+        $hotspot=$this->batchCollecteHotspot->batchCollecteHotspot($mavenKey, $modeCollecte, $utilisateurCollecte);
         if ($hotspot['code']===200){
             $collecte[]=["Hotspot" => $hotspot['message']];
-        } else { $collecte[]=["**** Erreur : HOTSPOT ****" => [$hotspot['code'], $hotspot['message'] ?? $hotspot['error']]]; }
+        } else {
+                $collecte[]=["**** ERREUR : HOTSPOT ".$hotspot['code']." ****",
+                $hotspot['message'] ?? $hotspot['error']
+            ];
+        }
 
         /** Signalement du détail des Hotspots pour le projet */
-        $hotspotDetails=$this->batchCollecteHotspotDetail->batchCollecteHotspotDetail($data->maven_key);
+        $hotspotDetails=$this->batchCollecteHotspotDetail->batchCollecteHotspotDetail($mavenKey, $modeCollecte, $utilisateurCollecte);
         if ($hotspotDetails['code']===200){
             $collecte[]=["Hotspot Détail" => $hotspotDetails['message']];
-        } else { $collecte[]=["**** Erreur : HOTSPOT DETAIL ****" => [$hotspotDetails['code'],$hotspotDetails['message'] ?? $hotspotDetails['error']]]; }
+        } else {
+            $collecte[]=[
+                "**** ERREUR : HOTSPOT DETAIL " .$hotspotDetails['code']." ****",
+                $hotspotDetails['message'] ?? $hotspotDetails['error']
+            ];
+        }
 
         /** Signalement OWASP et nombre d'issue par type pour le projet  */
-        $owasp=$this->batchCollecteOwasp->batchCollecteOwasp($data->maven_key);
+        $owasp=$this->batchCollecteOwasp->batchCollecteOwasp($mavenKey, $modeCollecte, $utilisateurCollecte);
         if ($owasp['code']===200){
             $collecte[]=["Owasp" => $owasp['message']];
-        } else { $collecte[]=["**** Erreur : OWASP ****" => [$owasp['code'], $owasp['message'] ?? $owasp['error']]]; }
+        } else {
+            $collecte[]=[
+                "**** ERREUR : OWASP ".$owasp['code']." ****",
+                $owasp['message'] ?? $owasp['error']
+            ];
+        }
 
         /** Signalement HotspotOwasp pour le projet */
         $owaspKeys = ['a0', 'a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7', 'a8', 'a9', 'a10'];
         foreach ($owaspKeys as $owaspKey) {
-            $hotspotOwasp = $this->batchCollecteHotspotOwasp->batchCollecteHotspotOwasp($data->maven_key, $owaspKey);
+            $hotspotOwasp = $this->batchCollecteHotspotOwasp->batchCollecteHotspotOwasp($mavenKey, $modeCollecte, $utilisateurCollecte, $owaspKey);
             if ($hotspotOwasp['code'] === 200) {
                 $collecte[] = ["Hotspot-Owasp " . strtoupper($owaspKey) => $hotspotOwasp['message']];
             } else {
-                $collecte[]=["**** Erreur : HOTSPOT OWASP **** " => [$hotspotOwasp['code'], $hotspotOwasp['message'] ?? $hotspotOwasp['error']]];
+                $collecte[]=[
+                    "**** ERREUR : HOTSPOT OWASP ".$hotspotOwasp['code']." ****",
+                    $hotspotOwasp['message'] ?? $hotspotOwasp['error']
+                ];
             }
         }
 
         /** Signalement NoSonar et suppressWarning pour les projets Java */
-        $noSonar=$this->batchCollecteNoSonar->batchCollecteNoSonar($data->maven_key);
+        $noSonar=$this->batchCollecteNoSonar->batchCollecteNoSonar($mavenKey, $modeCollecte, $utilisateurCollecte);
         if ($noSonar['code']===200){
             $collecte[]=["NoSonar" => $noSonar['message']];
         } else {
-            $collecte[]=["**** Erreur : NOSONAR **** " => [$noSonar['code'], $noSonar['message'] ?? $noSonar['error']]];
+            $collecte[]=[
+                    "**** ERREUR : NOSONAR ".$noSonar['code']." ****",
+                    $noSonar['message'] ?? $noSonar['error']
+                    ];
         }
 
         /** Signalement des to.do pour le projet */
-        $todo=$this->batchCollecteTodo->batchCollecteTodo($data->maven_key);
+        $todo=$this->batchCollecteTodo->batchCollecteTodo($mavenKey, $modeCollecte, $utilisateurCollecte);
         if ($todo['code']===200){
             $collecte[]=["Todo" => $todo['message']];
         } else {
-            $collecte[]=["**** Erreur : TODO **** " => [$todo['code'], $todo['message'] ?? $todo['error']]];
+            $collecte[]=[
+                    "**** ERREUR : TODO ".$todo['code']." ****",
+                    $todo['message'] ?? $todo['error']
+                ];
         }
 
         /** Rapport de collecte */

@@ -24,7 +24,7 @@ use App\Entity\Notes;
 use App\Service\Client;
 
 /**
- * [Description BatchCollecteInformationProjetController]
+ * [Description BatchCollecteNoteController]
  */
 class BatchCollecteNoteController extends AbstractController
 {
@@ -51,6 +51,8 @@ class BatchCollecteNoteController extends AbstractController
      * [Description for batchNote]
      *
      * @param string $mavenKey
+     * @param string $modeCollecte
+     * @param string $utilisateurCollecte
      * @param string $type
      *
      * @return array
@@ -59,7 +61,7 @@ class BatchCollecteNoteController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function batchCollecteNote(string $mavenKey, string $type): array
+    public function batchCollecteNote(string $mavenKey, string $modeCollecte, string $utilisateurCollecte, string $type): array
     {
         /** On instancie l'EntityRepository */
         $noteRepository = $this->em->getRepository(Notes::class);
@@ -82,7 +84,10 @@ class BatchCollecteNoteController extends AbstractController
         $map=['maven_key'=>$mavenKey, 'type'=>$type];
         $delete=$noteRepository->deleteNotesMavenKey($map);
         if ($delete['code']!=200) {
-            return ['code' => $delete['code'], static::$request=>'deleteNoteMavenKey'];
+            return ['code' => $delete['code'],
+                    'error'=>[$delete['erreur'],
+                            static::$request=>'deleteNoteMavenKey']
+                    ];
         }
 
         /** Création de la date du jour */
@@ -91,10 +96,19 @@ class BatchCollecteNoteController extends AbstractController
         /** Enregistrement des nouvelles valeurs */
         /** Attention la valeur de la note est en float dans SonarQube, on le converti en integer */
         foreach ($result['component']['measures'] as $mesure) {
-            $map=['maven_key' => $mavenKey, 'type' => $type, 'value' => intval($mesure['value']), 'date_enregistrement' => $date];
+            $map=[
+                'maven_key' => $mavenKey,
+                'type' => $type,
+                'value' => intval($mesure['value']),
+                'mode_collecte' => $modeCollecte,
+                'utilisateur_collecte' => $utilisateurCollecte,
+                'date_enregistrement' => $date];
             $request=$noteRepository->insertNotes($map);
             if ($request['code']!=200) {
-                return ['code' => $request['code'], 'erreur' => $request['erreur'],static::$request=>'insertNote'];
+                return ['code' => $request['code'],
+                        'error'=>[$request['erreur'],
+                        static::$request=>'insertNote']
+                ];
             }
         }
 
