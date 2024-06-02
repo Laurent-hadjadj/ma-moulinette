@@ -24,90 +24,59 @@ class ProfilesHistorique
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Identifiant unique pour chaque historique de profil']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Identifiant unique pour chaque historique de profil'])]
     private $id;
 
-    #[ORM\Column(
-        type: Types::DATETIMETZ_IMMUTABLE,
-        nullable: false,
-        options: ['comment' => 'Date courte associée à l’historique']
-    )]
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
+        options: ['comment' => 'Date courte associée à l’historique'])]
     #[Assert\NotNull]
     private $dateCourte;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 16,
-        nullable: false,
-        options: ['comment' => 'language de programmation associé']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 16, nullable: false,
+        options: ['comment' => 'language de programmation associé'])]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 16)]
+    #[Assert\Length(max: 16,
+        maxMessage: "Le langage ne peut pas dépasser 16 caractères.")]
     private $language;
 
-    #[ORM\Column(
-        type: Types::DATETIMETZ_IMMUTABLE,
-        nullable: false,
-        options: ['comment' => 'Date complète de l’événement de l’historique']
-    )]
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
+        options: ['comment' => 'Date complète de l’événement de l’historique'])]
     #[Assert\NotNull]
     private $date;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 16,
-        nullable: false,
-        options: ['comment' => 'Action réalisée, par exemple modification ou création']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 16, nullable: false,
+        options: ['comment' => 'Action réalisée, par exemple modification ou création'])]
     #[Assert\NotBlank]
     #[Assert\Length(max: 16)]
     private $action;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 64,
-        nullable: false,
-        options: ['comment' => 'Auteur de l’action dans l’historique']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 64, nullable: false,
+        options: ['comment' => 'Auteur de l’action dans l’historique'])]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 64)]
+    #[Assert\Length(max: 64,
+        maxMessage: "L'auteur ne peut pas dépasser 64 caractères.")]
     private $auteur;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 128,
-        nullable: false,
-        options: ['comment' => 'Règle ou norme concernée par l’historique']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 128, nullable: false,
+        options: ['comment' => 'Règle ou norme concernée par l’historique'])]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 128)]
+    #[Assert\Length(max: 128,
+        maxMessage: "La règle ne peut pas dépasser 32 caractères.")]
     private $regle;
 
-    #[ORM\Column(
-        type: Types::TEXT,
-        nullable: false,
-        options: ['comment' => 'Description détaillée de l’événement historique']
-    )]
+    #[ORM\Column(type: Types::TEXT, nullable: false,
+        options: ['comment' => 'Description détaillée de l’événement historique'])]
     #[Assert\NotBlank]
     private $description;
 
-    #[ORM\Column(
-        type: Types::BLOB,
-        nullable: false,
-        options: ['comment' => 'Détails supplémentaires ou données binaires associées à l’événement']
-    )]
+    #[ORM\Column(type: Types::BLOB, nullable: false,
+        options: ['comment' => 'Détails supplémentaires ou données binaires associées à l’événement'])]
     #[Assert\NotNull]
     private $detail;
 
-    #[ORM\Column(
-        type: Types::DATETIMETZ_IMMUTABLE,
-        nullable: false,
-        options: ['comment' => 'Date d’enregistrement de l’entrée historique dans la base de données']
-    )]
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
+        options: ['comment' => 'Date d’enregistrement de l’entrée historique'])]
     #[Assert\NotNull]
     private $dateEnregistrement;
 

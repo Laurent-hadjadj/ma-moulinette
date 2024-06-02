@@ -24,164 +24,113 @@ class AnomalieDetails
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Identifiant unique pour la table Anomalie Détails']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Identifiant unique pour la table Anomalie Détails'])]
     private $id;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 255,
-        nullable: false,
-        options: ['comment' => 'Clé Maven du projet']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: false,
+        options: ['comment' => 'Clé Maven du projet'])]
     #[Assert\NotBlank]
-    #[Assert\Length(
-        max: 255,
-        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères."
-    )]
+    #[Assert\Length(max: 255,
+        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères.")]
     private $mavenKey;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 128,
-        nullable: false,
-        options: ['comment' => 'Nom ']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 128, nullable: false,
+        options: ['comment' => 'Nom '])]
     #[Assert\NotBlank]
-    #[Assert\Length(
-        max: 128,
-        maxMessage: "Le nom ne doit pas dépasser 128 caractères."
-    )]
+    #[Assert\Length(max: 128,
+        maxMessage: "Le nom ne doit pas dépasser 128 caractères.")]
     private $name;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de bugs bloquants']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Nombre de bugs bloquants'])]
     #[Assert\NotNull]
     private $bugBlocker;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de bugs critiques']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Nombre de bugs critiques'])]
     #[Assert\NotNull]
     private $bugCritical;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de bugs d’information']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+            options: ['comment' => 'Nombre de bugs d’information'])]
     #[Assert\NotNull]
     private $bugInfo;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de bugs majeurs']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Nombre de bugs majeurs'])]
     #[Assert\NotNull]
     private $bugMajor;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de bugs mineurs']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Nombre de bugs mineurs'])]
     #[Assert\NotNull]
     private $bugMinor;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de vulnérabilités bloquantes']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Nombre de vulnérabilités bloquantes'])]
     #[Assert\NotNull]
     private $vulnerabilityBlocker;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de vulnérabilités critiques']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Nombre de vulnérabilités critiques'])]
     #[Assert\NotNull]
     private $vulnerabilityCritical;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de vulnérabilités d’information']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Nombre de vulnérabilités d’information'])]
     #[Assert\NotNull]
     private $vulnerabilityInfo;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de vulnérabilités majeures']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Nombre de vulnérabilités majeures'])]
     #[Assert\NotNull]
     private $vulnerabilityMajor;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de vulnérabilités mineures']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Nombre de vulnérabilités mineures'])]
     #[Assert\NotNull]
     private $vulnerabilityMinor;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de mauvaises pratiques bloquantes']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Nombre de mauvaises pratiques bloquantes'])]
     #[Assert\NotNull]
     private $codeSmellBlocker;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de mauvaises pratiques critiques']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Nombre de mauvaises pratiques critiques'])]
     #[Assert\NotNull]
     private $codeSmellCritical;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de mauvaises pratiques d’information']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Nombre de mauvaises pratiques d’information'])]
     #[Assert\NotNull]
     private $codeSmellInfo;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de mauvaises pratiques majeures']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Nombre de mauvaises pratiques majeures'])]
     #[Assert\NotNull]
     private $codeSmellMajor;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de mauvaises pratiques mineures']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Nombre de mauvaises pratiques mineures'])]
     #[Assert\NotNull]
     private $codeSmellMinor;
 
-    #[ORM\Column(
-        type: Types::DATETIMETZ_IMMUTABLE,
-        nullable: false,
-        options: ['comment' => 'Date d’enregistrement des détails de l’anomalie']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true,
+    options: ['comment' => 'Mode de collete : MANUEL | AUTOMATIQUE'])]
+    #[Assert\Length(max: 32,
+        maxMessage: "Le mode de collecte ne peut pas dépasser 32 caractères.")]
+    private ?string $modeCollecte=null;
+
+    #[ORM\Column(type: Types::STRING, length: 128, nullable: true,
+    options: ['comment' => "Nom de l'utilisateur qui a réalisé la collecte."])]
+    #[Assert\Length(max: 128,
+        maxMessage: "Le nom de l'utilisatzeur ne peut pas dépasser 128 caractères.")]
+    private ?string $utilisateurCollecte=null;
+
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
+        options: ['comment' => 'Date d’enregistrement des détails de l’anomalie'])]
     #[Assert\NotNull]
     private $dateEnregistrement;
 
@@ -402,6 +351,30 @@ class AnomalieDetails
     public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): static
     {
         $this->dateEnregistrement = $dateEnregistrement;
+
+        return $this;
+    }
+
+    public function getModeCollecte(): ?string
+    {
+        return $this->modeCollecte;
+    }
+
+    public function setModeCollecte(?string $modeCollecte): static
+    {
+        $this->modeCollecte = $modeCollecte;
+
+        return $this;
+    }
+
+    public function getUtilisateurCollecte(): ?string
+    {
+        return $this->utilisateurCollecte;
+    }
+
+    public function setUtilisateurCollecte(?string $utilisateurCollecte): static
+    {
+        $this->utilisateurCollecte = $utilisateurCollecte;
 
         return $this;
     }

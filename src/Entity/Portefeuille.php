@@ -26,47 +26,32 @@ class Portefeuille
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Identifiant unique pour chaque portefeuille']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Identifiant unique pour chaque portefeuille'])]
     private $id;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 32,
-        nullable: false,
-        unique: true,
-        options: ['comment' => 'Titre unique du portefeuille']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: false, unique: true,
+        options: ['comment' => 'Titre unique du portefeuille'])]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 32)]
+    #[Assert\Length(max: 32,
+        maxMessage: "Le titre ne peut pas dépasser 32 caractères.")]
     #[AcmeAssert\ContainsPortefeuilleUnique]
     //AcmeAssert\ContainsPortefeuilleUnique : Une validation personnalisée pour s'assurer que chaque titre de portefeuille est unique dans la base de données, prévenant les doublons.
     private $titre;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 32,
-        nullable: false,
-        options: ['comment' => 'Nom de l’équipe associée au portefeuille']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: false,
+        options: ['comment' => 'Nom de l’équipe associée au portefeuille'])]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 32)]
+    #[Assert\Length(max: 32,
+        maxMessage: "Le nom de l'équipe ne peut pas dépasser 32 caractères.")]
     private $equipe;
 
-    #[ORM\Column(
-        type: 'json',
-        options: ['comment' => 'Liste des éléments ou des activités du portefeuille']
-    )]
-    private $liste = [];
+    #[ORM\Column(type: 'json',
+        options: ['comment' => 'Liste des éléments ou des activités du portefeuille'])]
+    private ?array $liste = [];
 
-    #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
-        nullable: true,
-        options: ['comment' => 'Date de la dernière modification du portefeuille']
-    )]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true,
+        options: ['comment' => 'Date de la dernière modification du portefeuille'])]
     #[Assert\NotNull]
     private $dateModification;
 

@@ -99,9 +99,9 @@ class NoSonarRepository extends ServiceEntityRepository
     public function insertNoSonar($map):array
     {
         $sql = "INSERT INTO no_sonar
-                    (maven_key, rule, component, line, date_enregistrement)
+                    (maven_key, rule, component, line, mode_collecte, utilisateur_collecte, date_enregistrement)
                 VALUES
-                    (:maven_key, :rule, :component, :line, :date_enregistrement)";
+                    (:maven_key, :rule, :component, :line, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
         try {
                 $this->getEntityManager()->getConnection()->beginTransaction();
                     foreach($map as $item){
@@ -110,6 +110,8 @@ class NoSonarRepository extends ServiceEntityRepository
                             $stmt->bindValue(':rule', $item['rule']);
                             $stmt->bindValue(':component', $item['component']);
                             $stmt->bindValue(':line', $item['line']);
+                            $stmt->bindValue(':mode_collecte', $item['mode_collecte']);
+                            $stmt->bindValue(':utilisateur_collecte', $item['utilisateur_collecte']);
                             $stmt->bindValue(':date_enregistrement', $item['date_enregistrement']->format('Y-m-d H:i:sO'));
                             $stmt->executeStatement();
                 }

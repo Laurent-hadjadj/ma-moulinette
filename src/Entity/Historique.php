@@ -18,405 +18,294 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-
 #[ORM\Entity(repositoryClass: HistoriqueRepository::class)]
 #[ORM\Table(name: "historique", schema: "ma_moulinette")]
 class Historique
 {
     #[ORM\Id]
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 255,
-        options: ['comment' => 'Clé Maven du projet']
-    )]
-    #[Assert\Length(
-        max: 255,
-        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères."
-    )]
+    #[ORM\Column(type: Types::STRING, length: 255,
+        options: ['comment' => 'Clé Maven du projet'])]
+    #[Assert\Length(max: 255,
+        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères.")]
     private $mavenKey;
 
     #[ORM\Id]
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 32,
-        options: ['comment' => 'Version du projet dans l’historique']
-    )]
-    #[Assert\Length(
-        max: 32,
-        maxMessage: "La version du projet ne doit pas dépasser 32 caractères."
-    )]
+    #[ORM\Column(type: Types::STRING, length: 32,
+        options: ['comment' => 'Version du projet dans l’historique'])]
+    #[Assert\Length(max: 32,
+        maxMessage: "La version du projet ne doit pas dépasser 32 caractères.")]
     #[Assert\NotBlank]
     private $version;
 
     #[ORM\Id]
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 128,
-        options: ['comment' => 'Date de la version du projet']
-    )]
-    #[Assert\Length(
-        max: 128,
-        maxMessage: "La date de la version ne doit pas dépasser 128 caractères."
-    )]
+    #[ORM\Column(type: Types::STRING, length: 128,
+        options: ['comment' => 'Date de la version du projet'])]
+    #[Assert\Length(max: 128,
+        maxMessage: "La date de la version ne doit pas dépasser 128 caractères.")]
     #[Assert\NotBlank]
     private $dateVersion;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 128,
-        options: ['comment' => 'Nom du projet associé à cette version']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 128,
+        options: ['comment' => 'Nom du projet associé à cette version'])]
     #[Assert\NotBlank]
-    #[Assert\Length(
-        max: 128,
-        maxMessage: "Le nom du projet ne doit pas dépasser 128 caractères."
-    )]
+    #[Assert\Length(max: 128,
+        maxMessage: "Le nom du projet ne doit pas dépasser 128 caractères.")]
     private $nomProjet;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        options: ['comment' => 'Indicateur de release pour la version spécifique']
-    )]
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Indicateur de release pour la version spécifique'])]
     #[Assert\NotNull]
     private $versionRelease;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        options: ['comment' => 'Indicateur de snapshot pour la version spécifique']
-    )]
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Indicateur de snapshot pour la version spécifique'])]
     #[Assert\NotNull]
     private $versionSnapshot;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        options: ['comment' => 'Indicateur pour les autres types de versions']
-    )]
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Indicateur pour les autres types de versions'])]
     #[Assert\NotNull]
     private $versionAutre;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        options: ['comment' => 'Compteur des suppressions d’avertissements']
-    )]
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Compteur des suppressions d’avertissements'])]
     #[Assert\NotNull]
     private $suppressWarning;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        options: ['comment' => 'Compteur de l’utilisation de NoSonar']
-    )]
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Compteur de l’utilisation de NoSonar'])]
     #[Assert\NotNull]
     private $noSonar;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        options: ['comment' => 'Nombre total de lignes dans le projet']
-    )]
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Nombre total de lignes dans le projet'])]
     #[Assert\NotNull]
     private $nombreLigne;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        options: ['comment' => 'Nombre total de lignes de code dans le projet']
-    )]
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Nombre total de lignes de code dans le projet'])]
     #[Assert\NotNull]
     private $nombreLigneCode;
 
-    #[ORM\Column(
-        type: Types::FLOAT,
-        options: ['comment' => 'Pourcentage de couverture de code par les tests']
-    )]
+    #[ORM\Column(type: Types::FLOAT,
+        options: ['comment' => 'Pourcentage de couverture de code par les tests'])]
     #[Assert\NotNull]
     private $couverture;
 
-    #[ORM\Column(
-        type: Types::FLOAT,
-        options: ['comment' => 'Pourcentage de duplication dans le code']
-    )]
+    #[ORM\Column(type: Types::FLOAT,
+        options: ['comment' => 'Pourcentage de duplication dans le code'])]
     #[Assert\NotNull]
     private $duplication;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        options: ['comment' => 'Nombre de tests unitaires exécutés']
-    )]
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Nombre de tests unitaires exécutés'])]
     #[Assert\NotNull]
     private $testsUnitaires;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        options: ['comment' => 'Nombre total de défauts détectés']
-    )]
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Nombre total de défauts détectés'])]
     #[Assert\NotNull]
     private $nombreDefaut;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        options: ['comment' => 'Nombre total de bugs détectés']
-    )]
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Nombre total de bugs détectés'])]
     #[Assert\NotNull]
     private $nombreBug;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        options: ['comment' => 'Nombre total de vulnérabilités détectées']
-    )]
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Nombre total de vulnérabilités détectées'])]
     #[Assert\NotNull]
     private $nombreVulnerability;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        options: ['comment' => 'Nombre total de mauvaises prariques détectés']
-    )]
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Nombre total de mauvaises prariques détectés'])]
     #[Assert\NotNull]
     private $nombreCodeSmell;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        options: ['comment' => 'Développements spécifiques front-end']
-    )]
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Développements spécifiques front-end'])]
     #[Assert\NotNull]
     private $frontend;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        options: ['comment' => 'Développements spécifiques back-end']
-    )]
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Développements spécifiques back-end'])]
     #[Assert\NotNull]
     private $backend;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        options: ['comment' => 'Autres développements spécifiques']
-    )]
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Autres développements spécifiques'])]
     #[Assert\NotNull]
     private $autre;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        options: ['comment' => 'Somme de la dette technique accumulée']
-    )]
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Somme de la dette technique accumulée'])]
     #[Assert\NotNull]
     private $dette;
 
-    #[ORM\Column(
-        type: Types::FLOAT,
-        options: ['comment' => 'Ratio de la dette technique (SQALE)']
-    )]
+    #[ORM\Column(type: Types::FLOAT,
+        options: ['comment' => 'Ratio de la dette technique (SQALE)'])]
     #[Assert\NotNull]
     private $sqaleDebtRatio;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        options: ['comment' => 'Nombre d’anomalies bloquantes']
-    )]
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Nombre d’anomalies bloquantes'])]
     #[Assert\NotNull]
     private $nombreAnomalieBloquant;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        options: ['comment' => 'Nombre d’anomalies critiques']
-    )]
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Nombre d’anomalies critiques'])]
     #[Assert\NotNull]
     private $nombreAnomalieCritique;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        options: ['comment' => 'Nombre d’anomalies d’information']
-    )]
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Nombre d’anomalies d’information'])]
     #[Assert\NotNull]
     private $nombreAnomalieInfo;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        options: ['comment' => 'Nombre d’anomalies majeures']
-    )]
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Nombre d’anomalies majeures'])]
     #[Assert\NotNull]
     private $nombreAnomalieMajeur;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        options: ['comment' => 'Nombre d’anomalies mineures']
-    )]
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Nombre d’anomalies mineures'])]
     #[Assert\NotNull]
     private $nombreAnomalieMineur;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 16,
-        options: ['comment' => 'Note de fiabilité attribuée au projet']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 16,
+            options: ['comment' => 'Note de fiabilité attribuée au projet'])]
     #[Assert\NotBlank]
     private $noteReliability;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 16,
-        options: ['comment' => 'Note de sécurité attribuée au projet']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 16,
+        options: ['comment' => 'Note de sécurité attribuée au projet'])]
     #[Assert\NotBlank]
     private $noteSecurity;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 16,
-        options: ['comment' => 'Note SQALE attribuée au projet']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 16,
+        options: ['comment' => 'Note SQALE attribuée au projet'])]
     #[Assert\NotBlank]
     private $noteSqale;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 16,
-        options: ['comment' => 'Note pour les hotspots de sécurité']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 16,
+        options: ['comment' => 'Note pour les hotspots de sécurité'])]
     #[Assert\NotBlank]
     private $noteHotspot;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        options: ['comment' => 'Nombre de hotspots de sécurité de niveau élevé']
-    )]
+    #[ORM\Column(type: Types::INTEGER,
+            options: ['comment' => 'Nombre de hotspots de sécurité de niveau élevé'])]
     #[Assert\NotNull]
     private $hotspotHigh;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        options: ['comment' => 'Nombre de hotspots de sécurité de niveau moyen']
-    )]
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Nombre de hotspots de sécurité de niveau moyen'])]
     #[Assert\NotNull]
     private $hotspotMedium;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        options: ['comment' => 'Nombre de hotspots de sécurité de niveau faible']
-    )]
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Nombre de hotspots de sécurité de niveau faible'])]
     #[Assert\NotNull]
     private $hotspotLow;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        options: ['comment' => 'Nombre total de hotspots de sécurité']
-    )]
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Nombre total de hotspots de sécurité'])]
     #[Assert\NotNull]
     private $hotspotTotal;
 
-    #[ORM\Column(
-        type: Types::BOOLEAN,
-        options: ['comment' => 'Indique si c’est l’initialisation du projet']
-    )]
+    #[ORM\Column(type: Types::BOOLEAN,
+        options: ['comment' => 'Indique si c’est l’initialisation du projet'])]
     #[Assert\NotNull]
     private $initial;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        options: ['comment' => 'Nombre de bugs bloquants']
-    )]
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Nombre de bugs bloquants'])]
     #[Assert\NotNull]
     private $bugBlocker;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        options: ['comment' => 'Nombre de bugs critiques']
-    )]
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Nombre de bugs critiques'])]
     #[Assert\NotNull]
     private $bugCritical;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        options: ['comment' => 'Nombre de bugs majeurs']
-    )]
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Nombre de bugs majeurs'])]
     #[Assert\NotNull]
     private $bugMajor;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        options: ['comment' => 'Nombre de bugs mineurs']
-    )]
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Nombre de bugs mineurs'])]
     #[Assert\NotNull]
     private $bugMinor;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        options: ['comment' => 'Nombre de bugs d’information']
-    )]
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Nombre de bugs d’information'])]
     #[Assert\NotNull]
     private $bugInfo;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        options: ['comment' => 'Nombre de vulnérabilités bloquantes']
-    )]
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Nombre de vulnérabilités bloquantes'])]
     #[Assert\NotNull]
     private $vulnerabilityBlocker;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        options: ['comment' => 'Nombre de vulnérabilités critiques']
-    )]
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Nombre de vulnérabilités critiques'])]
     #[Assert\NotNull]
     private $vulnerabilityCritical;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        options: ['comment' => 'Nombre de vulnérabilités majeures']
-    )]
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Nombre de vulnérabilités majeures'])]
     #[Assert\NotNull]
     private $vulnerabilityMajor;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        options: ['comment' => 'Nombre de vulnérabilités mineures']
-    )]
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Nombre de vulnérabilités mineures'])]
     #[Assert\NotNull]
     private $vulnerabilityMinor;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        options: ['comment' => 'Nombre de vulnérabilités d’information']
-    )]
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Nombre de vulnérabilités d’information'])]
     #[Assert\NotNull]
     private $vulnerabilityInfo;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        options: ['comment' => 'Nombre de mauvaises prariques bloquants']
-    )]
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Nombre de mauvaises prariques bloquants'])]
     #[Assert\NotNull]
     private $codeSmellBlocker;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        options: ['comment' => 'Nombre de mauvaises prariques critiques']
-    )]
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Nombre de mauvaises prariques critiques'])]
     #[Assert\NotNull]
     private $codeSmellCritical;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        options: ['comment' => 'Nombre de mauvaises prariques majeurs']
-    )]
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Nombre de mauvaises prariques majeurs'])]
     #[Assert\NotNull]
     private $codeSmellMajor;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        options: ['comment' => 'Nombre de mauvaises prariques mineurs']
-    )]
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Nombre de mauvaises prariques mineurs'])]
     #[Assert\NotNull]
     private $codeSmellMinor;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        options: ['comment' => 'Nombre de mauvaises prariques d’information']
-    )]
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Nombre de mauvaises prariques d’information'])]
     #[Assert\NotNull]
     private $codeSmellInfo;
 
-    #[ORM\Column(
-        type: Types::DATETIMETZ_IMMUTABLE,
-        options: ['comment' => 'Date d’enregistrement de l’historique']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true,
+    options: ['comment' => 'Mode de collete : MANUEL | AUTOMATIQUE'])]
+    #[Assert\Length(max: 32,
+        maxMessage: "Le mode de collecte ne peut pas dépasser 32 caractères.")]
+    private ?string $modeCollecte=null;
+
+    #[ORM\Column(type: Types::STRING, length: 128, nullable: true,
+    options: ['comment' => "Nom de l'utilisateur qui a réalisé la collecte."])]
+    #[Assert\Length(max: 128,
+        maxMessage: "Le nom de l'utilisatzeur ne peut pas dépasser 128 caractères.")]
+    private ?string $utilisateurCollecte=null;
+
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE,
+        options: ['comment' => 'Date d’enregistrement de l’historique'])]
     #[Assert\NotNull]
     private $dateEnregistrement;
 
@@ -1074,6 +963,30 @@ class Historique
     public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): static
     {
         $this->dateEnregistrement = $dateEnregistrement;
+
+        return $this;
+    }
+
+    public function getModeCollecte(): ?string
+    {
+        return $this->modeCollecte;
+    }
+
+    public function setModeCollecte(?string $modeCollecte): static
+    {
+        $this->modeCollecte = $modeCollecte;
+
+        return $this;
+    }
+
+    public function getUtilisateurCollecte(): ?string
+    {
+        return $this->utilisateurCollecte;
+    }
+
+    public function setUtilisateurCollecte(?string $utilisateurCollecte): static
+    {
+        $this->utilisateurCollecte = $utilisateurCollecte;
 
         return $this;
     }

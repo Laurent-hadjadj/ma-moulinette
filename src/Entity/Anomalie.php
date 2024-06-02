@@ -24,208 +24,138 @@ class Anomalie
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Identifiant unique de l’anomalie']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Identifiant unique de l’anomalie'])]
     private $id;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 255,
-        nullable: false,
-        options: ['comment' => 'Clé Maven du projet']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: false,
+        options: ['comment' => 'Clé Maven du projet'])]
     #[Assert\NotBlank]
-    #[Assert\Length(
-        max: 255,
-        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères."
-    )]
+    #[Assert\Length( max: 255,
+        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères.")]
     private $mavenKey;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 128,
-        nullable: false,
-        options: ['comment' => 'Nom du projet associé à l’anomalie']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 128, nullable: false,
+        options: ['comment' => 'Nom du projet associé à l’anomalie'])]
     #[Assert\NotBlank]
-    #[Assert\Length(
-        max: 128,
-        maxMessage: "Le nom du projet ne doit pas dépasser 128 caractères."
-    )]
+    #[Assert\Length(max: 128,
+        maxMessage: "Le nom du projet ne doit pas dépasser 128 caractères.")]
     private $projectName;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre total d’anomalies']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Nombre total d’anomalies'])]
     #[Assert\NotNull]
     private $anomalieTotal;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Minutes totales de la dette technique']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Minutes totales de la dette technique'])]
     #[Assert\NotNull]
     private $detteMinute;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Minutes de la dette de fiabilité']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Minutes de la dette de fiabilité'])]
     #[Assert\NotNull]
     private $detteReliabilityMinute;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Minutes de la dette de vulnérabilité']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Minutes de la dette de vulnérabilité'])]
     #[Assert\NotNull]
     private $detteVulnerabilityMinute;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Minutes de la dette de mauvaises pratiques']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Minutes de la dette de mauvaises pratiques'])]
     #[Assert\NotNull]
     private $detteCodeSmellMinute;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 32,
-        nullable: false,
-        options: ['comment' => 'Dette de fiabilité']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: false,
+        options: ['comment' => 'Dette de fiabilité'])]
     #[Assert\NotBlank]
     private $detteReliability;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 32,
-        nullable: false,
-        options: ['comment' => 'Dette de vulnérabilité']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: false,
+        options: ['comment' => 'Dette de vulnérabilité'])]
     #[Assert\NotBlank]
     private $detteVulnerability;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 32,
-        nullable: false,
-        options: ['comment' => 'Dette générale']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: false,
+        options: ['comment' => 'Dette générale'])]
     #[Assert\NotBlank]
     private $dette;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 32,
-        nullable: false,
-        options: ['comment' => 'Dette des mauvaises pratiques']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: false,
+        options: ['comment' => 'Dette des mauvaises pratiques'])]
     #[Assert\NotBlank]
     private $detteCodeSmell;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Problèmes liés au frontend']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Problèmes liés au frontend'])]
     #[Assert\NotNull]
     private $frontend;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Problèmes liés au backend']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Problèmes liés au backend'])]
     #[Assert\NotNull]
     private $backend;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Autres problèmes techniques']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Autres problèmes techniques'])]
     #[Assert\NotNull]
     private $autre;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Problèmes bloquants']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Problèmes bloquants'])]
     #[Assert\NotNull]
     private $blocker;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Problèmes critiques']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Problèmes critiques'])]
     #[Assert\NotNull]
     private $critical;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Problèmes majeurs']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Problèmes majeurs'])]
     #[Assert\NotNull]
     private $major;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Informations sur les problèmes mineurs']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Informations sur les problèmes mineurs'])]
     #[Assert\NotNull]
     private $info;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Problèmes mineurs']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Problèmes mineurs'])]
     #[Assert\NotNull]
     private $minor;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre total de bugs']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Nombre total de bugs'])]
     #[Assert\NotNull]
     private $bug;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre total de vulnérabilités']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Nombre total de vulnérabilités'])]
     #[Assert\NotNull]
     private $vulnerability;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre total d’mauvaises pratiques']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Nombre total d’mauvaises pratiques'])]
     #[Assert\NotNull]
     private $codeSmell;
 
-    #[ORM\Column(
-        type: Types::DATETIMETZ_IMMUTABLE,
-        nullable: false,
-        options: ['comment' => 'Date d’enregistrement de l’anomalie']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true,
+    options: ['comment' => 'Mode de collete : MANUEL | AUTOMATIQUE'])]
+    #[Assert\Length(max: 32,
+        maxMessage: "Le mode de collecte ne peut pas dépasser 32 caractères.")]
+    private ?string $modeCollecte=null;
+
+    #[ORM\Column(type: Types::STRING, length: 128, nullable: true,
+    options: ['comment' => "Nom de l'utilisateur qui a réalisé la collecte."])]
+    #[Assert\Length(max: 128,
+        maxMessage: "Le nom de l'utilisatzeur ne peut pas dépasser 128 caractères.")]
+    private ?string $utilisateurCollecte=null;
+
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
+        options: ['comment' => 'Date d’enregistrement de l’anomalie'])]
     #[Assert\NotNull]
     private $dateEnregistrement;
 
@@ -506,6 +436,30 @@ class Anomalie
     public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): static
     {
         $this->dateEnregistrement = $dateEnregistrement;
+
+        return $this;
+    }
+
+    public function getModeCollecte(): ?string
+    {
+        return $this->modeCollecte;
+    }
+
+    public function setModeCollecte(?string $modeCollecte): static
+    {
+        $this->modeCollecte = $modeCollecte;
+
+        return $this;
+    }
+
+    public function getUtilisateurCollecte(): ?string
+    {
+        return $this->utilisateurCollecte;
+    }
+
+    public function setUtilisateurCollecte(?string $utilisateurCollecte): static
+    {
+        $this->utilisateurCollecte = $utilisateurCollecte;
 
         return $this;
     }

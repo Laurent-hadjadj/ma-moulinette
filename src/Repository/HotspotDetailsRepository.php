@@ -98,9 +98,13 @@ class HotspotDetailsRepository extends ServiceEntityRepository
     public function insertHotspotDetails($map):array
     {
         $sql = "INSERT INTO hotspot_details
-                    (maven_key, version, date_version, security_category, rule_key, rule_name, severity, status, resolution, niveau, frontend, backend, autre, file_name, file_path, line, message, hotspot_key, date_enregistrement)
+                    (maven_key, version, date_version, security_category, rule_key, rule_name, severity, status, resolution, niveau, frontend, backend, autre, file_name, file_path, line, message, hotspot_key,
+                    mode_collecte, utilisateur_collecte,
+                    date_enregistrement)
                 VALUES
-                    (:maven_key, :version, :date_version, :security_category, :rule_key, :rule_name, :severity, :status, :resolution, :niveau, :frontend, :backend, :autre, :file_name, :file_path, :line, :message, :hotspot_key, :date_enregistrement)";
+                    (:maven_key, :version, :date_version, :security_category, :rule_key, :rule_name, :severity, :status, :resolution, :niveau, :frontend, :backend, :autre, :file_name, :file_path, :line, :message, :hotspot_key,
+                    :mode_collecte, utilisateur_collecte,
+                    :date_enregistrement)";
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
                 foreach($map as $item){
@@ -123,6 +127,8 @@ class HotspotDetailsRepository extends ServiceEntityRepository
                         $stmt->bindValue(':line', $item['line']);
                         $stmt->bindValue(':message', $item['message']);
                         $stmt->bindValue(':hotspot_key', $item['hotspot_key']);
+                        $stmt->bindValue(':mode_collecte', $item['mode_collecte']);
+                        $stmt->bindValue(':utilisateur_collecte', $item['utilisateur_collecte']);
                         $stmt->bindValue(':date_enregistrement', $item['date_enregistrement']->format('Y-m-d H:i:sO'));
                         $stmt->executeStatement();
                 }

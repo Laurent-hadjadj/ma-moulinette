@@ -27,535 +27,345 @@ class Owasp
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'clé unique pour la table Owasp']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'clé unique pour la table Owasp'])]
     private int $id;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 255,
-        nullable: false,
-        options: ['comment' => 'Clé maven du projet']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: false,
+        options: ['comment' => 'Clé maven du projet'])]
     #[Assert\NotBlank]
-    #[Assert\Length(
-        max: 255,
-        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères."
-    )]
+    #[Assert\Length(max: 255,
+        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères.")]
     private string $mavenKey;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 32,
-        nullable: false,
-        options: ['comment' => 'Version of the project']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: false,
+        options: ['comment' => 'Version du projeyt'])]
     #[Assert\NotBlank]
     private string $version;
 
-    #[ORM\Column(
-        type: Types::DATETIMETZ_IMMUTABLE,
-        nullable: false,
-        options: ['comment' => "Date d'enregistrement de la version"]
-    )]
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
+        options: ['comment' => "Date de publication du projet"])]
     #[Assert\NotNull]
     private \DateTimeInterface $dateVersion;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => "Score total d'effort pour les questions de sécurité"]
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => "Score total d'effort pour les questions de sécurité"])]
     #[Assert\NotNull]
     private int $effortTotal;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'OWASP Top 10 - A1']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'OWASP Top 10 - A1'])]
     #[Assert\NotNull]
     private int $a1;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'OWASP Top 10 - A2']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'OWASP Top 10 - A2'])]
     #[Assert\NotNull]
     private int $a2;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'OWASP Top 10 - A3']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'OWASP Top 10 - A3'])]
     #[Assert\NotNull]
     private int $a3;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'OWASP Top 10 - A4']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'OWASP Top 10 - A4'])]
     #[Assert\NotNull]
     private $a4;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'OWASP Top 10 - A5']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'OWASP Top 10 - A5'])]
     #[Assert\NotNull]
     private $a5;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'OWASP Top 10 - A6']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'OWASP Top 10 - A6'])]
     #[Assert\NotNull]
     private $a6;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'OWASP Top 10 - A7']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'OWASP Top 10 - A7'])]
     #[Assert\NotNull]
     private $a7;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'OWASP Top 10 - A8']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'OWASP Top 10 - A8'])]
     #[Assert\NotNull]
     private $a8;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'OWASP Top 10 - A9']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'OWASP Top 10 - A9'])]
     #[Assert\NotNull]
     private $a9;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'OWASP Top 10 - A10']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'OWASP Top 10 - A10'])]
     #[Assert\NotNull]
     private $a10;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'OWASP Top 10 - A1']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Nombre de bloquantes pour A1'])]
     #[Assert\NotNull]
     private $a1Blocker;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de critiques pour A1']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre de critiques pour A1'])]
     #[Assert\NotNull]
     private $a1Critical;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de majeurs pour A1']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre de majeurs pour A1'])]
     #[Assert\NotNull]
     private $a1Major;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre d’informations pour A1']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre d’informations pour A1'])]
     #[Assert\NotNull]
     private $a1Info;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de mineurs pour A1']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre de mineurs pour A1'])]
     #[Assert\NotNull]
     private $a1Minor;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de bloqueurs pour A2']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre de bloqueurs pour A2'])]
     #[Assert\NotNull]
     private $a2Blocker;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de critiques pour A2']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre de critiques pour A2'])]
     #[Assert\NotNull]
     private $a2Critical;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de majeurs pour A2']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre de majeurs pour A2'])]
     #[Assert\NotNull]
     private $a2Major;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre d’informations pour A2']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre d’informations pour A2'])]
     #[Assert\NotNull]
     private $a2Info;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de mineurs pour A2']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre de mineurs pour A2'])]
     #[Assert\NotNull]
     private $a2Minor;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de bloqueurs pour A3']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre de bloqueurs pour A3'])]
     #[Assert\NotNull]
     private $a3Blocker;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de critiques pour A3']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre de critiques pour A3'])]
     #[Assert\NotNull]
     private $a3Critical;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de majeurs pour A3']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre de majeurs pour A3'])]
     #[Assert\NotNull]
     private $a3Major;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre d’informations pour A3']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre d’informations pour A3'])]
     #[Assert\NotNull]
     private $a3Info;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de mineurs pour A3']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre de mineurs pour A3'])]
     #[Assert\NotNull]
     private $a3Minor;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de bloqueurs pour A4']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre de bloqueurs pour A4'])]
     #[Assert\NotNull]
     private $a4Blocker;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de critiques pour A4']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre de critiques pour A4'])]
     #[Assert\NotNull]
     private $a4Critical;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de majeurs pour A4']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre de majeurs pour A4'])]
     #[Assert\NotNull]
     private $a4Major;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre d’informations pour A4']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre d’informations pour A4'])]
     #[Assert\NotNull]
     private $a4Info;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de mineurs pour A4']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre de mineurs pour A4'])]
     #[Assert\NotNull]
     private $a4Minor;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de bloqueurs pour A5']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre de bloqueurs pour A5'])]
     #[Assert\NotNull]
     private $a5Blocker;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de critiques pour A5']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre de critiques pour A5'])]
     #[Assert\NotNull]
     private $a5Critical;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de majeurs pour A5']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre de majeurs pour A5'])]
     #[Assert\NotNull]
     private $a5Major;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre d’informations pour A5']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre d’informations pour A5'])]
     #[Assert\NotNull]
     private $a5Info;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de mineurs pour A5']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre de mineurs pour A5'])]
     #[Assert\NotNull]
     private $a5Minor;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de bloqueurs pour A6']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre de bloqueurs pour A6'])]
     #[Assert\NotNull]
     private $a6Blocker;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de critiques pour A6']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre de critiques pour A6'])]
     #[Assert\NotNull]
     private $a6Critical;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de majeurs pour A6']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre de majeurs pour A6'])]
     #[Assert\NotNull]
     private $a6Major;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre d’informations pour A6']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre d’informations pour A6'])]
     #[Assert\NotNull]
     private $a6Info;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de mineurs pour A6']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre de mineurs pour A6'])]
     #[Assert\NotNull]
     private $a6Minor;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de bloqueurs pour A7']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre de bloqueurs pour A7'])]
     #[Assert\NotNull]
     private $a7Blocker;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de critiques pour A7']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre de critiques pour A7'])]
     #[Assert\NotNull]
     private $a7Critical;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de majeurs pour A7']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre de majeurs pour A7'])]
     #[Assert\NotNull]
     private $a7Major;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre d’informations pour A7']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre d’informations pour A7'])]
     #[Assert\NotNull]
     private $a7Info;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de mineurs pour A7']
-    )]#[Assert\NotNull]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre de mineurs pour A7'])]#[Assert\NotNull]
     private $a7Minor;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de bloqueurs pour A8']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre de bloqueurs pour A8'])]
     #[Assert\NotNull]
     private $a8Blocker;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de critiques pour A8']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre de critiques pour A8'])]
     #[Assert\NotNull]
     private $a8Critical;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de majeurs pour A8']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre de majeurs pour A8'])]
     #[Assert\NotNull]
     private $a8Major;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre d’informations pour A8']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre d’informations pour A8'])]
     #[Assert\NotNull]
     private $a8Info;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de mineurs pour A8']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre de mineurs pour A8'])]
     #[Assert\NotNull]
     private $a8Minor;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de bloqueurs pour A9']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre de bloqueurs pour A9'])]
     #[Assert\NotNull]
     private $a9Blocker;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de critiques pour A9']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre de critiques pour A9'])]
     #[Assert\NotNull]
     private $a9Critical;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de majeurs pour A9']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre de majeurs pour A9'])]
     #[Assert\NotNull]
     private $a9Major;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre d’informations pour A9']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre d’informations pour A9'])]
     #[Assert\NotNull]
     private $a9Info;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de mineurs pour A9']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre de mineurs pour A9'])]
     #[Assert\NotNull]
     private $a9Minor;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de bloqueurs pour A10']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre de bloqueurs pour A10'])]
     #[Assert\NotNull]
     private $a10Blocker;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de critiques pour A10']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre de critiques pour A10'])]
     #[Assert\NotNull]
     private $a10Critical;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de majeurs pour A10']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre de majeurs pour A10'])]
     #[Assert\NotNull]
     private $a10Major;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre d’informations pour A10']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre d’informations pour A10'])]
     #[Assert\NotNull]
     private $a10Info;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de mineurs pour A10']
-    )]
+    #[ORM\Column(type: Types::INTEGER,  nullable: false,
+        options: ['comment' => 'Nombre de mineurs pour A10'])]
     #[Assert\NotNull]
     private $a10Minor;
 
-    #[ORM\Column(
-        type: Types::DATETIMETZ_IMMUTABLE,
-        nullable: false,
-        options: ['comment' => 'Date d’enregistrement des données']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true,
+    options: ['comment' => 'Mode de collete : MANUEL | AUTOMATIQUE'])]
+    #[Assert\Length(max: 32,
+        maxMessage: "Le mode de collecte ne peut pas dépasser 32 caractères.")]
+    private ?string $modeCollecte=null;
+
+    #[ORM\Column(type: Types::STRING, length: 128, nullable: true,
+    options: ['comment' => "Nom de l'utilisateur qui a réalisé la collecte."])]
+    #[Assert\Length(max: 128,
+        maxMessage: "Le nom de l'utilisatzeur ne peut pas dépasser 128 caractères.")]
+    private ?string $utilisateurCollecte=null;
+
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
+        options: ['comment' => 'Date d’enregistrement des données'])]
     #[Assert\NotNull]
     private $dateEnregistrement;
 
@@ -1340,6 +1150,30 @@ class Owasp
     public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): static
     {
         $this->dateEnregistrement = $dateEnregistrement;
+
+        return $this;
+    }
+
+    public function getModeCollecte(): ?string
+    {
+        return $this->modeCollecte;
+    }
+
+    public function setModeCollecte(?string $modeCollecte): static
+    {
+        $this->modeCollecte = $modeCollecte;
+
+        return $this;
+    }
+
+    public function getUtilisateurCollecte(): ?string
+    {
+        return $this->utilisateurCollecte;
+    }
+
+    public function setUtilisateurCollecte(?string $utilisateurCollecte): static
+    {
+        $this->utilisateurCollecte = $utilisateurCollecte;
 
         return $this;
     }

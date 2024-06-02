@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##         Creation des tables et des objets      ##
-##               V1.4.0 - 29/05/2024              ##
+##               V1.5.0 - 02/06/2024              ##
 ##                                                ##
 ####################################################*/
 
@@ -12,18 +12,21 @@
 -- 28/05/2024 : Laurent HADJADJ - Mise à jour du script - réécriture complet
 -- 29/05/2024 : Laurent HADJADJ - Mise à jour de la table Activite (Quentin)
 -- 30/05/2024 : Laurent HADJADJ - Ajout des attributs revesion et securityCategory pour la table hotspot
+-- 02/06/2024 : Laurent HADJADJ - Ajout de l'attribut mode_collecte dans toutes les tables de collecte pour inssérer le type de collecte : [manuel], [auto]
+-- 02/06/2024 : Laurent HADJADJ - Ajout de l'attribut utilisateur_collecte dans toutes les tables de collecte pour inssérer l'identifiant de l'utilisateur : [batch] ou [prenom.nom]
+
 
 -- SCHEMA: ma_moulinette
 
-DROP SCHEMA ma_moulinette ;
+DROP SCHEMA IF EXISTS ma_moulinette CASCADE;
 
 CREATE SCHEMA ma_moulinette AUTHORIZATION db_user;
 COMMENT ON SCHEMA ma_moulinette IS 'Schéma de la base de données Ma-moulinette';
 
 -- Table: ma_moulinette.activite
 
-DROP TABLE ma_moulinette.activite;
-CREATE TABLE ma_moulinette.activite
+DROP TABLE IF EXISTS ma_moulinette.activite;
+CREATE TABLE IF NOT EXISTS ma_moulinette.activite
 (id SERIAL PRIMARY KEY,
   maven_key character varying(255) NOT NULL,
   project_name character varying(64) NOT NULL,
@@ -52,8 +55,8 @@ COMMENT ON COLUMN ma_moulinette.activite.execution_time IS 'Temps d’execution 
 
 -- Table: ma_moulinette.anomalie
 
-DROP TABLE ma_moulinette.anomalie;
-CREATE TABLE ma_moulinette.anomalie
+DROP TABLE IF EXISTS ma_moulinette.anomalie;
+CREATE TABLE IF NOT EXISTS ma_moulinette.anomalie
 (
   id SERIAL PRIMARY KEY,
   maven_key character varying(255) NOT NULL,
@@ -78,6 +81,8 @@ CREATE TABLE ma_moulinette.anomalie
   bug integer NOT NULL,
   vulnerability integer NOT NULL,
   code_smell integer NOT NULL,
+  mode_collecte character varying(32),
+  utilisateur_collecte character varying(128),
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
@@ -107,12 +112,14 @@ COMMENT ON COLUMN ma_moulinette.anomalie.minor IS 'Problèmes mineurs';
 COMMENT ON COLUMN ma_moulinette.anomalie.bug IS 'Nombre total de bugs';
 COMMENT ON COLUMN ma_moulinette.anomalie.vulnerability IS 'Nombre total de vulnérabilités';
 COMMENT ON COLUMN ma_moulinette.anomalie.code_smell IS 'Nombre total de mauvaises pratiques';
+COMMENT ON COLUMN ma_moulinette.anomalie.mode_collecte IS 'Mode de collecte : manuel ou automatique';
+COMMENT ON COLUMN ma_moulinette.anomalie.utilisateur_collecte IS 'Nom de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.anomalie.date_enregistrement IS 'Date d’enregistrement de l’anomalie';
 
 -- Table: ma_moulinette.anomalie_details
 
-DROP TABLE ma_moulinette.anomalie_details;
-CREATE TABLE ma_moulinette.anomalie_details
+DROP TABLE IF EXISTS ma_moulinette.anomalie_details;
+CREATE TABLE IF NOT EXISTS ma_moulinette.anomalie_details
 (
   id SERIAL PRIMARY KEY,
   maven_key character varying(255) NOT NULL,
@@ -132,6 +139,8 @@ CREATE TABLE ma_moulinette.anomalie_details
   code_smell_info integer NOT NULL,
   code_smell_major integer NOT NULL,
   code_smell_minor integer NOT NULL,
+  mode_collecte character varying(32),
+  utilisateur_collecte character varying(128),
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
@@ -156,12 +165,14 @@ COMMENT ON COLUMN ma_moulinette.anomalie_details.code_smell_critical IS 'Nombre 
 COMMENT ON COLUMN ma_moulinette.anomalie_details.code_smell_info IS 'Nombre de mauvaises pratiques d’information';
 COMMENT ON COLUMN ma_moulinette.anomalie_details.code_smell_major IS 'Nombre de mauvaises pratiques majeures';
 COMMENT ON COLUMN ma_moulinette.anomalie_details.code_smell_minor IS 'Nombre de mauvaises pratiques mineures';
+COMMENT ON COLUMN ma_moulinette.anomalie_details.mode_collecte IS 'Mode de collecte : manuel ou automatique';
+COMMENT ON COLUMN ma_moulinette.anomalie_details.utilisateur_collecte IS 'Nom de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.anomalie_details.date_enregistrement IS 'Date d’enregistrement des détails de l’anomalie';
 
 -- Table: ma_moulinette.batch
 
-DROP TABLE ma_moulinette.batch;
-CREATE TABLE ma_moulinette.batch
+DROP TABLE IF EXISTS ma_moulinette.batch;
+CREATE TABLE IF NOT EXISTS ma_moulinette.batch
 (
   id SERIAL PRIMARY KEY,
   statut boolean NOT NULL,
@@ -191,8 +202,8 @@ COMMENT ON COLUMN ma_moulinette.batch.date_enregistrement IS 'Date d’enregistr
 
 -- Table: ma_moulinette.batch_traitement
 
-DROP TABLE ma_moulinette.batch_traitement;
-CREATE TABLE ma_moulinette.batch_traitement
+DROP TABLE IF EXISTS ma_moulinette.batch_traitement;
+CREATE TABLE IF NOT EXISTS ma_moulinette.batch_traitement
 (
   id SERIAL PRIMARY KEY,
   demarrage character varying(16) NOT NULL,
@@ -222,8 +233,8 @@ COMMENT ON COLUMN ma_moulinette.batch_traitement.date_enregistrement IS 'Date d�
 
 -- Table: ma_moulinette.equipe
 
-DROP TABLE ma_moulinette.equipe;
-CREATE TABLE ma_moulinette.equipe
+DROP TABLE IF EXISTS ma_moulinette.equipe;
+CREATE TABLE IF NOT EXISTS ma_moulinette.equipe
 (
   id SERIAL PRIMARY KEY,
   titre character varying(32) NOT NULL,
@@ -243,8 +254,8 @@ COMMENT ON COLUMN ma_moulinette.equipe.date_enregistrement IS 'Date d’enregist
 
 -- Table: ma_moulinette.historique
 
-DROP TABLE ma_moulinette.historique;
-CREATE TABLE ma_moulinette.historique
+DROP TABLE IF EXISTS ma_moulinette.historique;
+CREATE TABLE IF NOT EXISTS ma_moulinette.historique
 (
   maven_key character varying(255) NOT NULL,
   version character varying(32) NOT NULL,
@@ -298,6 +309,8 @@ CREATE TABLE ma_moulinette.historique
   code_smell_major integer NOT NULL,
   code_smell_minor integer NOT NULL,
   code_smell_info integer NOT NULL,
+  mode_collecte character varying(32),
+  utilisateur_collecte character varying(128),
   date_enregistrement TIMESTAMPTZ NOT NULL,
   CONSTRAINT historique_pkey PRIMARY KEY (maven_key, version, date_version)
 );
@@ -357,12 +370,14 @@ COMMENT ON COLUMN ma_moulinette.historique.code_smell_critical IS 'Nombre de mau
 COMMENT ON COLUMN ma_moulinette.historique.code_smell_major IS 'Nombre de mauvaises pratiques majeurs';
 COMMENT ON COLUMN ma_moulinette.historique.code_smell_minor IS 'Nombre de mauvaises pratiques mineurs';
 COMMENT ON COLUMN ma_moulinette.historique.code_smell_info IS 'Nombre de mauvaises pratiques d’information';
+COMMENT ON COLUMN ma_moulinette.historique.mode_collecte IS 'Mode de collecte : manuel ou automatique';
+COMMENT ON COLUMN ma_moulinette.historique.utilisateur_collecte IS 'Nom de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.historique.date_enregistrement IS 'Date d’enregistrement de l’historique';
 
 -- Table: ma_moulinette.hotspot_details
 
-DROP TABLE ma_moulinette.hotspot_details;
-CREATE TABLE ma_moulinette.hotspot_details
+DROP TABLE IF EXISTS ma_moulinette.hotspot_details;
+CREATE TABLE IF NOT EXISTS ma_moulinette.hotspot_details
 (
   id SERIAL PRIMARY KEY,
   maven_key character varying(255) NOT NULL,
@@ -370,7 +385,6 @@ CREATE TABLE ma_moulinette.hotspot_details
   date_version TIMESTAMPTZ NOT NULL,
   security_category character varying(64) NOT NULL,
   rule_key character varying(128) NOT NULL,
-  rule_name character varying(255) NOT NULL,
   severity character varying(8) NOT NULL,
   status character varying(16) NOT NULL,
   resolution character varying(16),
@@ -383,6 +397,8 @@ CREATE TABLE ma_moulinette.hotspot_details
   line integer NOT NULL,
   message character varying(255) NOT NULL,
   hotspot_key character varying(32) NOT NULL,
+  mode_collecte character varying(32),
+  utilisateur_collecte character varying(128),
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
@@ -395,7 +411,6 @@ COMMENT ON COLUMN ma_moulinette.hotspot_details.version IS 'Version du projet';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.date_version IS 'Date de la publication du projet';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.security_category IS 'Défini la catégorie de sécurité du hotspot';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.rule_key IS 'Règle associée au hotspot';
-COMMENT ON COLUMN ma_moulinette.hotspots.rule_name IS 'Nom de la règle SonarQube';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.severity IS 'Sévérité du hotspot';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.status IS 'Statut du hotspot TO_REVIEW, REVIEWED';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.resolution IS 'Donne pour un hotspot au statut REVIEWED son état : FIXED, SAFE, ACKNOWLEDGED';
@@ -408,12 +423,14 @@ COMMENT ON COLUMN ma_moulinette.hotspot_details.file_path IS 'Chemin du Fichier 
 COMMENT ON COLUMN ma_moulinette.hotspot_details.line IS 'Ligne du fichier où se situe le hotspot';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.message IS 'Message descriptif du hotspot';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.hotspot_key IS 'Clé unique du hotspot';
+COMMENT ON COLUMN ma_moulinette.hotspot_details.mode_collecte IS 'Mode de collecte : manuel ou automatique';
+COMMENT ON COLUMN ma_moulinette.hotspot_details.utilisateur_collecte IS 'Nom de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.date_enregistrement IS 'Date d’enregistrement du détail de hotspot';
 
 -- Table: ma_moulinette.hotspot_owasp
 
-DROP TABLE ma_moulinette.hotspot_owasp;
-CREATE TABLE ma_moulinette.hotspot_owasp
+DROP TABLE IF EXISTS ma_moulinette.hotspot_owasp;
+CREATE TABLE IF NOT EXISTS ma_moulinette.hotspot_owasp
 (
   referentiel_owasp integer NOT NULL,
   id SERIAL PRIMARY KEY,
@@ -427,6 +444,8 @@ CREATE TABLE ma_moulinette.hotspot_owasp
   status character varying(16) NOT NULL,
   resolution character varying(16),
   niveau integer NOT NULL,
+  mode_collecte character varying(32),
+  utilisateur_collecte character varying(128),
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
@@ -445,12 +464,14 @@ COMMENT ON COLUMN ma_moulinette.hotspot_owasp.probability IS 'Probabilité du ho
 COMMENT ON COLUMN ma_moulinette.hotspot_owasp.status IS 'Statut du hotspot OWASP';
 COMMENT ON COLUMN ma_moulinette.hotspot_owasp.resolution IS 'Donne pour un hotspot au statut REVIEWED son état : FIXED, SAFE, ACKNOWLEDGED';
 COMMENT ON COLUMN ma_moulinette.hotspot_owasp.niveau IS 'Niveau de risque du hotspot OWASP';
+COMMENT ON COLUMN ma_moulinette.hotspot_owasp.mode_collecte IS 'Mode de collecte : manuel ou automatique';
+COMMENT ON COLUMN ma_moulinette.hotspot_owasp.utilisateur_collecte IS 'Nom de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.hotspot_owasp.date_enregistrement IS 'Date d’enregistrement du hotspot OWASP';
 
 -- Table: ma_moulinette.hotspots
 
-DROP TABLE ma_moulinette.hotspots;
-CREATE TABLE ma_moulinette.hotspots
+DROP TABLE IF EXISTS ma_moulinette.hotspots;
+CREATE TABLE IF NOT EXISTS ma_moulinette.hotspots
 (
   id SERIAL PRIMARY KEY,
   maven_key character varying(255) NOT NULL,
@@ -463,6 +484,8 @@ CREATE TABLE ma_moulinette.hotspots
   status character varying(16) NOT NULL,
   resolution character varying(16),
   niveau integer NOT NULL,
+  mode_collecte character varying(32),
+  utilisateur_collecte character varying(128),
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
@@ -480,12 +503,14 @@ COMMENT ON COLUMN ma_moulinette.hotspots.probability IS 'Probabilité de risque 
 COMMENT ON COLUMN ma_moulinette.hotspots.status IS 'Statut du hotspot : TO_REVIEW, REVIEWED';
 COMMENT ON COLUMN ma_moulinette.hotspots.resolution IS 'Donne pour un hotspot au statut REVIEWED son état : FIXED, SAFE, ACKNOWLEDGED';
 COMMENT ON COLUMN ma_moulinette.hotspots.niveau IS 'Niveau de risque du hotspot';
+COMMENT ON COLUMN ma_moulinette.hotspots.mode_collecte IS 'Mode de collecte : manuel ou automatique';
+COMMENT ON COLUMN ma_moulinette.hotspots.utilisateur_collecte IS 'Nom de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.hotspots.date_enregistrement IS 'Date d’enregistrement du hotspot';
 
 -- Table: ma_moulinette.information_projet
 
-DROP TABLE ma_moulinette.information_projet;
-CREATE TABLE ma_moulinette.information_projet
+DROP TABLE IF EXISTS ma_moulinette.information_projet;
+CREATE TABLE IF NOT EXISTS ma_moulinette.information_projet
 (
   id SERIAL PRIMARY KEY,
   maven_key character varying(255) NOT NULL,
@@ -493,6 +518,8 @@ CREATE TABLE ma_moulinette.information_projet
   date TIMESTAMPTZ NOT NULL,
   project_version character varying(32) NOT NULL,
   type character varying(32) NOT NULL,
+  mode_collecte character varying(32),
+  utilisateur_collecte character varying(128),
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
@@ -505,12 +532,14 @@ COMMENT ON COLUMN ma_moulinette.information_projet.analyse_key IS 'Clé d’anal
 COMMENT ON COLUMN ma_moulinette.information_projet.date IS 'Date de l’analyse du projet';
 COMMENT ON COLUMN ma_moulinette.information_projet.project_version IS 'Version du projet lors de l’analyse';
 COMMENT ON COLUMN ma_moulinette.information_projet.type IS 'Type d’analyse effectuée';
+COMMENT ON COLUMN ma_moulinette.information_projet.mode_collecte IS 'Mode de collecte : manuel ou automatique';
+COMMENT ON COLUMN ma_moulinette.information_projet.utilisateur_collecte IS 'Nom de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.information_projet.date_enregistrement IS 'Date d’enregistrement de l’information du projet';
 
 -- Table: ma_moulinette.liste_projet
 
-DROP TABLE ma_moulinette.liste_projet;
-CREATE TABLE ma_moulinette.liste_projet
+DROP TABLE IF EXISTS ma_moulinette.liste_projet;
+CREATE TABLE IF NOT EXISTS ma_moulinette.liste_projet
 (
   id SERIAL PRIMARY KEY,
   maven_key character varying(255) NOT NULL,
@@ -532,8 +561,8 @@ COMMENT ON COLUMN ma_moulinette.liste_projet.date_enregistrement IS 'Date d’en
 
 -- Table: ma_moulinette.ma_moulinette
 
-DROP TABLE ma_moulinette.ma_moulinette;
-CREATE TABLE ma_moulinette.ma_moulinette
+DROP TABLE IF EXISTS ma_moulinette.ma_moulinette;
+CREATE TABLE IF NOT EXISTS ma_moulinette.ma_moulinette
 (
   id SERIAL PRIMARY KEY,
   version character varying(16) NOT NULL,
@@ -551,8 +580,8 @@ COMMENT ON COLUMN ma_moulinette.ma_moulinette.date_enregistrement IS 'Date d’e
 
     -- Table: ma_moulinette.mesures
 
-DROP TABLE ma_moulinette.mesures;
-CREATE TABLE ma_moulinette.mesures
+DROP TABLE IF EXISTS ma_moulinette.mesures;
+CREATE TABLE IF NOT EXISTS ma_moulinette.mesures
 (
   id SERIAL PRIMARY KEY,
   maven_key character varying(255) NOT NULL,
@@ -564,6 +593,8 @@ CREATE TABLE ma_moulinette.mesures
   duplication_density double precision NOT NULL,
   tests integer NOT NULL,
   issues integer NOT NULL,
+  mode_collecte character varying(32),
+  utilisateur_collecte character varying(128),
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
@@ -580,18 +611,22 @@ COMMENT ON COLUMN ma_moulinette.mesures.sqale_debt_ratio IS 'Ratio de dette tech
 COMMENT ON COLUMN ma_moulinette.mesures.duplication_density IS 'Densité de duplication du code';
 COMMENT ON COLUMN ma_moulinette.mesures.tests IS 'Nombre total de tests';
 COMMENT ON COLUMN ma_moulinette.mesures.issues IS 'Nombre total de problèmes identifiés';
+COMMENT ON COLUMN ma_moulinette.mesures.mode_collecte IS 'Mode de collecte : manuel ou automatique';
+COMMENT ON COLUMN ma_moulinette.mesures.utilisateur_collecte IS 'Nom de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.mesures.date_enregistrement IS 'Date d’enregistrement de la mesure';
 
 -- Table: ma_moulinette.no_sonar
 
-DROP TABLE ma_moulinette.no_sonar;
-CREATE TABLE ma_moulinette.no_sonar
+DROP TABLE IF EXISTS ma_moulinette.no_sonar;
+CREATE TABLE IF NOT EXISTS ma_moulinette.no_sonar
 (
   id SERIAL PRIMARY KEY,
   maven_key character varying(255) NOT NULL,
   rule character varying(128) NOT NULL,
   component text NOT NULL,
   line integer NOT NULL,
+  mode_collecte character varying(32),
+  utilisateur_collecte character varying(128),
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
@@ -603,17 +638,21 @@ COMMENT ON COLUMN ma_moulinette.no_sonar.maven_key IS 'Clé Maven du projet';
 COMMENT ON COLUMN ma_moulinette.no_sonar.rule IS 'Règle NoSonar appliquée';
 COMMENT ON COLUMN ma_moulinette.no_sonar.component IS 'Composant auquel la règle est appliquée';
 COMMENT ON COLUMN ma_moulinette.no_sonar.line IS 'Ligne où la règle NoSonar est appliquée';
+COMMENT ON COLUMN ma_moulinette.no_sonar.mode_collecte IS 'Mode de collecte : manuel ou automatique';
+COMMENT ON COLUMN ma_moulinette.no_sonar.utilisateur_collecte IS 'Nom de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.no_sonar.date_enregistrement IS 'Date d’enregistrement de l’entrée NoSonar';
 
 -- Table: ma_moulinette.notes
 
-DROP TABLE ma_moulinette.notes;
-CREATE TABLE ma_moulinette.notes
+DROP TABLE IF EXISTS ma_moulinette.notes;
+CREATE TABLE IF NOT EXISTS ma_moulinette.notes
 (
   id SERIAL PRIMARY KEY,
   maven_key varchar(255) NOT NULL,
   type varchar(16) NOT NULL,
   value INTEGER NOT NULL,
+  mode_collecte character varying(32),
+  utilisateur_collecte character varying(128),
   date_enregistrement timestamp(0) NOT NULL
 );
 
@@ -623,12 +662,14 @@ GRANT ALL ON TABLE ma_moulinette.notes TO db_user;
 COMMENT ON COLUMN ma_moulinette.notes.maven_key IS 'Clé Maven unique identifiant la note';
 COMMENT ON COLUMN ma_moulinette.notes.type IS 'Type de la note';
 COMMENT ON COLUMN ma_moulinette.notes.value IS 'Valeur de la note';
+COMMENT ON COLUMN ma_moulinette.notes.mode_collecte IS 'Mode de collecte : manuel ou automatique';
+COMMENT ON COLUMN ma_moulinette.notes.utilisateur_collecte IS 'Nom de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.notes.date_enregistrement IS 'Date d’enregistrement de la note';
 
 -- Table: ma_moulinette.owasp
 
-DROP TABLE ma_moulinette.owasp;
-CREATE TABLE ma_moulinette.owasp
+DROP TABLE IF EXISTS ma_moulinette.owasp;
+CREATE TABLE IF NOT EXISTS ma_moulinette.owasp
 (
   id SERIAL PRIMARY KEY,
   maven_key character varying(255) NOT NULL,
@@ -695,6 +736,8 @@ CREATE TABLE ma_moulinette.owasp
   a10_major integer NOT NULL,
   a10_info integer NOT NULL,
   a10_minor integer NOT NULL,
+  mode_collecte character varying(32),
+  utilisateur_collecte character varying(128),
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
@@ -766,12 +809,15 @@ COMMENT ON COLUMN ma_moulinette.owasp.a10_critical IS 'Nombre d’anomalies crit
 COMMENT ON COLUMN ma_moulinette.owasp.a10_major IS 'Nombre d’anomalies majeures pour A10';
 COMMENT ON COLUMN ma_moulinette.owasp.a10_info IS 'Nombre d’informations pour A10';
 COMMENT ON COLUMN ma_moulinette.owasp.a10_minor IS 'Nombre d’anomalies mineures pour A10';
+COMMENT ON COLUMN ma_moulinette.owasp.mode_collecte IS 'Mode de collecte : manuel ou automatique';
+COMMENT ON COLUMN ma_moulinette.owasp.utilisateur_collecte IS 'Nom de l’utilisateur qui a réalisé la collecte';
+
 COMMENT ON COLUMN ma_moulinette.owasp.date_enregistrement IS 'Date d’enregistrement des données';
 
 -- Table: ma_moulinette.portefeuille
 
-DROP TABLE ma_moulinette.portefeuille;
-CREATE TABLE ma_moulinette.portefeuille
+DROP TABLE IF EXISTS ma_moulinette.portefeuille;
+CREATE TABLE IF NOT EXISTS ma_moulinette.portefeuille
 (
   id SERIAL PRIMARY KEY,
   titre character varying(32) NOT NULL,
@@ -793,8 +839,8 @@ COMMENT ON COLUMN ma_moulinette.portefeuille.date_enregistrement IS 'Date d’en
 
 -- Table: ma_moulinette.portefeuille_historique
 
-DROP TABLE ma_moulinette.portefeuille_historique;
-CREATE TABLE ma_moulinette.portefeuille_historique
+DROP TABLE IF EXISTS ma_moulinette.portefeuille_historique;
+CREATE TABLE IF NOT EXISTS ma_moulinette.portefeuille_historique
 (
   id SERIAL PRIMARY KEY,
   date_courte TIMESTAMPTZ NOT NULL,
@@ -824,8 +870,8 @@ COMMENT ON COLUMN ma_moulinette.portefeuille_historique.date_enregistrement IS '
 
 -- Table: ma_moulinette.profiles
 
-DROP TABLE ma_moulinette.profiles;
-CREATE TABLE ma_moulinette.profiles
+DROP TABLE IF EXISTS ma_moulinette.profiles;
+CREATE TABLE IF NOT EXISTS ma_moulinette.profiles
 (
   id SERIAL PRIMARY KEY,
   maven_key character varying(255) NOT NULL,
@@ -851,8 +897,8 @@ COMMENT ON COLUMN ma_moulinette.profiles.date_enregistrement IS 'Date d’enregi
 
 -- Table: ma_moulinette.properties
 
-DROP TABLE ma_moulinette.properties;
-CREATE TABLE ma_moulinette.properties
+DROP TABLE IF EXISTS ma_moulinette.properties;
+CREATE TABLE IF NOT EXISTS ma_moulinette.properties
 (
   id SERIAL PRIMARY KEY,
   type character varying(255) NOT NULL,
@@ -880,8 +926,8 @@ COMMENT ON COLUMN ma_moulinette.properties.date_modification_profil IS 'Date de 
 
 -- Table: ma_moulinette.repartition
 
-DROP TABLE ma_moulinette.repartition;
-CREATE TABLE ma_moulinette.repartition
+DROP TABLE IF EXISTS ma_moulinette.repartition;
+CREATE TABLE IF NOT EXISTS ma_moulinette.repartition
 (
   id SERIAL PRIMARY KEY,
   maven_key character varying(255) NOT NULL,
@@ -907,14 +953,16 @@ COMMENT ON COLUMN ma_moulinette.repartition.date_enregistrement IS 'Date d’enr
 
 -- Table: ma_moulinette.todo
 
-DROP TABLE ma_moulinette.todo;
-CREATE TABLE ma_moulinette.todo
+DROP TABLE IF EXISTS ma_moulinette.todo;
+CREATE TABLE IF NOT EXISTS ma_moulinette.todo
 (
   id SERIAL PRIMARY KEY,
   maven_key character varying(255) NOT NULL,
   rule character varying(128) NOT NULL,
   component text NOT NULL,
   line integer NOT NULL,
+  mode_collecte character varying(32),
+  utilisateur_collecte character varying(128),
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
@@ -926,12 +974,14 @@ COMMENT ON COLUMN ma_moulinette.todo.maven_key IS 'Clé Maven du projet';
 COMMENT ON COLUMN ma_moulinette.todo.rule IS 'Règle appliquée au Todo';
 COMMENT ON COLUMN ma_moulinette.todo.component IS 'Détails du composant concerné par le Todo';
 COMMENT ON COLUMN ma_moulinette.todo.line IS 'Numéro de ligne du code associée au Todo';
+COMMENT ON COLUMN ma_moulinette.todo.mode_collecte IS 'Mode de collecte : manuel ou automatique';
+COMMENT ON COLUMN ma_moulinette.todo.utilisateur_collecte IS 'Nom de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.todo.date_enregistrement IS 'Date d’enregistrement du Todo';
 
 -- Table: ma_moulinette.utilisateur
 
-DROP TABLE ma_moulinette.utilisateur;
-CREATE TABLE ma_moulinette.utilisateur
+DROP TABLE IF EXISTS ma_moulinette.utilisateur;
+CREATE TABLE IF NOT EXISTS ma_moulinette.utilisateur
 (
   id SERIAL PRIMARY KEY,
   prenom character varying(32) NOT NULL,

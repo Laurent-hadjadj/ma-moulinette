@@ -25,97 +25,70 @@ class Mesures
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Identifiant unique pour chaque mesure']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Identifiant unique pour chaque mesure'])]
     private $id;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 255,
-        nullable: false,
-        options: ['comment' => 'Clé Maven du projet']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: false,
+        options: ['comment' => 'Clé Maven du projet'])]
     #[Assert\NotBlank]
-    #[Assert\Length(
-        max: 255,
-        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères."
-    )]
+    #[Assert\Length(max: 255, maxMessage: "La clé Maven ne doit pas dépasser 255 caractères.")]
     private $mavenKey;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 128,
-        nullable: false,
-        options: ['comment' => 'Nom du projet']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 128, nullable: false,
+        options: ['comment' => 'Nom du projet'])]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 128)]
+    #[Assert\Length(max: 128, maxMessage: "Le nom du projet ne doit pas dépasser 128 caractères.")]
     private $projectName;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre total de lignes du projet']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Nombre total de lignes du projet'])]
     #[Assert\NotNull]
     private $lines;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Lignes de code non commentées']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Lignes de code non commentées'])]
     #[Assert\NotNull]
     private $ncloc;
 
-    #[ORM\Column(
-        type: Types::FLOAT,
-        nullable: false,
-        options: ['comment' => 'Pourcentage de couverture par les tests']
-    )]
+    #[ORM\Column(type: Types::FLOAT, nullable: false,
+        options: ['comment' => 'Pourcentage de couverture par les tests'])]
     #[Assert\NotNull]
     private $coverage;
 
-    #[ORM\Column(
-        type: Types::FLOAT,
-        nullable: false,
-        options: ['comment' => 'Ratio de dette technique (SQALE)']
-    )]
+    #[ORM\Column(type: Types::FLOAT, nullable: false,
+        options: ['comment' => 'Ratio de dette technique (SQALE)'])]
     #[Assert\NotNull]
     private $sqaleDebtRatio;
 
-    #[ORM\Column(
-        type: Types::FLOAT,
-        nullable: false,
-        options: ['comment' => 'Densité de duplication du code']
-    )]
+    #[ORM\Column(type: Types::FLOAT, nullable: false, options: ['comment' => 'Densité de duplication du code'])]
     #[Assert\NotNull]
     private $duplicationDensity;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre total de tests']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Nombre total de tests'])]
     #[Assert\NotNull]
     private $tests;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre total de problèmes identifiés']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Nombre total de problèmes identifiés'])]
     #[Assert\NotNull]
     private $issues;
 
-    #[ORM\Column(
-        type: Types::DATETIMETZ_IMMUTABLE,
-        nullable: false,
-        options: ['comment' => 'Date d’enregistrement de la mesure']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true,
+    options: ['comment' => 'Mode de collete : MANUEL | AUTOMATIQUE'])]
+    #[Assert\Length(max: 32,
+        maxMessage: "Le mode de collecte ne peut pas dépasser 32 caractères.")]
+    private ?string $modeCollecte=null;
+
+    #[ORM\Column(type: Types::STRING, length: 128, nullable: true,
+    options: ['comment' => "Nom de l'utilisateur qui a réalisé la collecte."])]
+    #[Assert\Length(max: 128,
+        maxMessage: "Le nom de l'utilisatzeur ne peut pas dépasser 128 caractères.")]
+    private ?string $utilisateurCollecte=null;
+
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
+        options: ['comment' => 'Date d’enregistrement de la mesure'])]
     #[Assert\NotNull]
     private $dateEnregistrement;
 
@@ -240,6 +213,30 @@ class Mesures
     public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): static
     {
         $this->dateEnregistrement = $dateEnregistrement;
+
+        return $this;
+    }
+
+    public function getModeCollecte(): ?string
+    {
+        return $this->modeCollecte;
+    }
+
+    public function setModeCollecte(?string $modeCollecte): static
+    {
+        $this->modeCollecte = $modeCollecte;
+
+        return $this;
+    }
+
+    public function getUtilisateurCollecte(): ?string
+    {
+        return $this->utilisateurCollecte;
+    }
+
+    public function setUtilisateurCollecte(?string $utilisateurCollecte): static
+    {
+        $this->utilisateurCollecte = $utilisateurCollecte;
 
         return $this;
     }
