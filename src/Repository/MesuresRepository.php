@@ -77,9 +77,9 @@ class MesuresRepository extends ServiceEntityRepository
         try {
                 $this->getEntityManager()->getConnection()->beginTransaction();
                     $sql = "INSERT INTO mesures
-                                (maven_key, project_name, lines, ncloc, sqale_debt_ratio, coverage, duplication_density, tests, issues, date_enregistrement)
+                                (maven_key, project_name, lines, ncloc, sqale_debt_ratio, coverage, duplication_density, tests, issues, mode_collecte, utilisateur_collecte, date_enregistrement)
                             VALUES
-                                (:maven_key, :project_name, :lines, :ncloc, :sqale_debt_ratio, :coverage, :duplication_density, :tests, :issues, :date_enregistrement)";
+                                (:maven_key, :project_name, :lines, :ncloc, :sqale_debt_ratio, :coverage, :duplication_density, :tests, :issues, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
                     $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
                         $stmt->bindValue(':maven_key', $map['maven_key']);
                         $stmt->bindValue(':project_name', $map['project_name']);
@@ -90,6 +90,8 @@ class MesuresRepository extends ServiceEntityRepository
                         $stmt->bindValue(':duplication_density', $map['duplication_density']);
                         $stmt->bindValue(':tests', $map['tests']);
                         $stmt->bindValue(':issues', $map['issues']);
+                        $stmt->bindValue(':mode_collecte', $map['mode_collecte']);
+                        $stmt->bindValue(':utilisateur_collecte', $map['utilisateur_collecte']);
                         /** on formate la date avant de l'enregistrer */
                         $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
                         $stmt->executeStatement();

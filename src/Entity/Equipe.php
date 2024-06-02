@@ -26,55 +26,31 @@ class Equipe
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Identifiant unique pour la table équipe']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Identifiant unique pour la table équipe'])]
     private $id;
 
-    #[ORM\Column(
-        name: 'titre',
-        type: Types::STRING,
-        length: 32,
-        unique: true,
-        nullable: false,
-        options: ['comment' => 'Titre de l’équipe, unique']
-    )]
+    #[ORM\Column(name: 'titre', type: Types::STRING, length: 32, unique: true, nullable: false,
+        options: ['comment' => 'Titre de l’équipe, unique'])]
     #[AcmeAssert\ContainsEquipeUnique]
     #[Assert\NotBlank]
-    #[Assert\Length(
-        max: 32,
-        maxMessage: "Le titre ne doit pas dépasser 32 caractères."
-    )]
+    #[Assert\Length(max: 32,
+        maxMessage: "Le titre ne doit pas dépasser 32 caractères.")]
     private $titre;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 128,
-        nullable: false,
-        options: ['comment' => 'Description de l’équipe']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 128, nullable: false,
+        options: ['comment' => 'Description de l’équipe'])]
     #[Assert\NotBlank]
-    #[Assert\Length(
-        max: 128,
-        maxMessage: "La description ne doit pas dépasser 128 caractères."
-    )]
+    #[Assert\Length(max: 128,
+        maxMessage: "La description ne doit pas dépasser 128 caractères.")]
     private $description;
 
-    #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
-        nullable: true,
-        options: ['comment' => 'Date de la dernière modification de l’équipe']
-    )]
-    #[Assert\NotNull]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true,
+        options: ['comment' => 'Date de la dernière modification de l’équipe'])]
     private $dateModification;
 
-    #[ORM\Column(
-        type: Types::DATETIMETZ_IMMUTABLE,
-        nullable: false,
-        options: ['comment' => 'Date d’enregistrement de l’équipe']
-    )]
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
+        options: ['comment' => 'Date d’enregistrement de l’équipe'])]
     #[Assert\NotNull]
     private $dateEnregistrement;
 

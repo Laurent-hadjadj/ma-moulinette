@@ -24,19 +24,15 @@ class Todo
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'ID unique pour la table to.do']
-        )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'ID unique pour la table to.do'])]
     private $id;
 
     #[ORM\Column(
         type: Types::STRING,
         length: 255,
         nullable: false,
-        options: ['comment' => 'Clé Maven du projet']
-        )]
+        options: ['comment' => 'Clé Maven du projet'])]
     #[Assert\NotBlank]
     #[Assert\Length(
         max: 255,
@@ -44,36 +40,35 @@ class Todo
     )]
     private $mavenKey;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 128,
-        nullable: false,
-        options: ['comment' => 'Règle appliquée à la tâche']
-        )]
+    #[ORM\Column(type: Types::STRING, length: 128, nullable: false,
+        options: ['comment' => 'Règle appliquée à la tâche'])]
     #[Assert\NotBlank]
     private $rule;
 
-    #[ORM\Column(
-        type: Types::TEXT,
-        nullable: false,
-        options: ['comment' => 'Détails du composant concerné par la tâche']
-        )]
+    #[ORM\Column(type: Types::TEXT, nullable: false,
+        options: ['comment' => 'Détails du composant concerné par la tâche'])]
     #[Assert\NotBlank]
     private $component;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Numéro de ligne du code associée à la tâche']
-        )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Numéro de ligne du code associée à la tâche'])]
     #[Assert\NotNull]
     private $line;
 
-    #[ORM\Column(
-        type: Types::DATETIMETZ_IMMUTABLE,
-        nullable: false,
-        options: ['comment' => 'Date d’enregistrement de la tâche dans le système']
-        )]
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true,
+    options: ['comment' => 'Mode de collete : MANUEL | AUTOMATIQUE'])]
+    #[Assert\Length(max: 32,
+        maxMessage: "Le mode de collecte ne peut pas dépasser 32 caractères.")]
+    private ?string $modeCollecte=null;
+
+    #[ORM\Column(type: Types::STRING, length: 128, nullable: true,
+    options: ['comment' => "Nom de l'utilisateur qui a réalisé la collecte."])]
+    #[Assert\Length(max: 128,
+        maxMessage: "Le nom de l'utilisatzeur ne peut pas dépasser 128 caractères.")]
+    private ?string $utilisateurCollecte=null;
+
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
+        options: ['comment' => 'Date d’enregistrement de la tâche dans le système'])]
     #[Assert\NotNull]
     private $dateEnregistrement;
 
@@ -138,6 +133,30 @@ class Todo
     public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): static
     {
         $this->dateEnregistrement = $dateEnregistrement;
+
+        return $this;
+    }
+
+    public function getModeCollecte(): ?string
+    {
+        return $this->modeCollecte;
+    }
+
+    public function setModeCollecte(?string $modeCollecte): static
+    {
+        $this->modeCollecte = $modeCollecte;
+
+        return $this;
+    }
+
+    public function getUtilisateurCollecte(): ?string
+    {
+        return $this->utilisateurCollecte;
+    }
+
+    public function setUtilisateurCollecte(?string $utilisateurCollecte): static
+    {
+        $this->utilisateurCollecte = $utilisateurCollecte;
 
         return $this;
     }

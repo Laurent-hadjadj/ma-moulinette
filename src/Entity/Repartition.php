@@ -18,81 +18,50 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-
 #[ORM\Entity(repositoryClass: RepartitionRepository::class)]
 #[ORM\Table(name: "repartition", schema: "ma_moulinette")]
 class Repartition
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'ID unique pour la table répartition']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'ID unique pour la table répartition'])]
     private $id;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 255,
-        nullable: false,
-        options: ['comment' => 'Clé Maven du projet']
-    )]
+    #[ORM\Column( type: Types::STRING, length: 255, nullable: false,
+        options: ['comment' => 'Clé Maven du projet'])]
     #[Assert\NotBlank]
-    #[Assert\Length(
-        max: 255,
-        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères."
-    )]
+    #[Assert\Length(max: 255,
+        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères.")]
     private $mavenKey;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 128,
-        nullable: false,
-        options: ['comment' => 'Nom de la répartition']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 128, nullable: false,
+        options: ['comment' => 'Nom de la répartition'])]
     #[Assert\NotBlank]
     private string $name;
 
-    #[ORM\Column(
-        type: Types::TEXT,
-        nullable: false,
-        options: ['comment' => 'Détails du composant concerné par la répartition']
-    )]
+    #[ORM\Column(type: Types::TEXT, nullable: false,
+        options: ['comment' => 'Détails du composant concerné par la répartition'])]
     #[Assert\NotBlank]
     private string $component;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 16,
-        nullable: false,
-        options: ['comment' => 'Type de la répartition']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 16, nullable: false,
+        options: ['comment' => 'Type de la répartition'])]
     #[Assert\NotBlank]
     private string $type;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 8,
-        nullable: false,
-        options: ['comment' => 'Gravité de la répartition']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 8, nullable: false,
+        options: ['comment' => 'Gravité de la répartition'])]
     #[Assert\NotBlank]
     private string $severity;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Paramètre de configuration pour la répartition']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Paramètre de configuration pour la répartition'])]
     #[Assert\NotNull]
     private int $setup;
 
-    #[ORM\Column(
-        type: Types::DATETIMETZ_IMMUTABLE,
-        nullable: false,
-        options: ['comment' => 'Date d’enregistrement de la répartition dans le système']
-    )]
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
+        options: ['comment' => 'Date d’enregistrement de la répartition dans le système'])]
     #[Assert\NotNull]
     private \DateTimeInterface $dateEnregistrement;
 

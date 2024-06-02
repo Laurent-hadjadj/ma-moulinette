@@ -75,14 +75,16 @@ class NotesRepository extends ServiceEntityRepository
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "INSERT INTO notes
-                            (maven_key, type, value, date_enregistrement)
+                            (maven_key, type, value, mode_collecte, utilisateur_collecte, date_enregistrement)
                         VALUES
-                            (:maven_key, :type, :value, :date_enregistrement)";
+                            (:maven_key, :type, :value, :mode_collecte, : utilisateur_collecte, :date_enregistrement)";
 
                     $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
                     $stmt->bindValue(':maven_key', $map['maven_key']);
                     $stmt->bindValue(':type', $map['type']);
                     $stmt->bindValue(':value', $map['value']);
+                    $stmt->bindValue(':mode_collecte', $map['mode_collecte']);
+                    $stmt->bindValue(':utilisateur_collecte', $map['utilisateur_collecte']);
                     /** on formate la date avant de l'enregistrer */
                     $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
                     $stmt->executeStatement();

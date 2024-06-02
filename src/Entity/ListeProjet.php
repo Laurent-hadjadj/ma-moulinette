@@ -24,57 +24,34 @@ class ListeProjet
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Identifiant unique pour chaque instance de ListeProjet']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Identifiant unique pour chaque instance de ListeProjet'])]
     private $id;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 255,
-        nullable: false,
-        options: ['comment' => 'Clé Maven du projet']
-    )]
-    #[Assert\Length(
-        max: 255,
-        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères."
-    )]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: false,
+        options: ['comment' => 'Clé Maven du projet'])]
+    #[Assert\Length(max: 255,
+        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères.")]
     #[Assert\NotBlank]
     private $mavenKey;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 128,
-        nullable: false,
-        options: ['comment' => 'Nom du projet']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 128, nullable: false,
+        options: ['comment' => 'Nom du projet'])]
     #[Assert\NotBlank]
     private $name;
 
-    #[ORM\Column(
-        type: Types::JSON,
-        nullable: false,
-        options: ['comment' => 'Tags associés au projet sous forme de tableau JSON']
-    )]
+    #[ORM\Column(type: Types::JSON, nullable: false,
+        options: ['comment' => 'Tags associés au projet sous forme de tableau JSON'])]
     #[Assert\NotNull]
-    private $tags = [];
+    private ?array $tags = [];
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 8,
-        nullable: false,
-        options: ['comment' => 'Visibilité du projet']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 8, nullable: false,
+        options: ['comment' => 'Visibilité du projet'])]
     #[Assert\NotBlank]
     private $visibility;
 
-    #[ORM\Column(
-        type: Types::DATETIMETZ_IMMUTABLE,
-        nullable: false,
-        options: ['comment' => 'Date d’enregistrement du projet']
-    )]
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
+        options: ['comment' => 'Date d’enregistrement du projet'])]
     #[Assert\NotNull]
     private $dateEnregistrement;
 

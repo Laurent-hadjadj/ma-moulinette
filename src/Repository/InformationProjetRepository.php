@@ -281,15 +281,17 @@ class InformationProjetRepository extends ServiceEntityRepository
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "INSERT INTO information_projet
-                            (maven_key, analyse_key, date, project_version, type, date_enregistrement)
+                            (maven_key, analyse_key, date, project_version, type, mode_collecte, utilisateur_collecte, date_enregistrement)
                         VALUES
-                            (:maven_key, :analyse_key, :date, :project_version, :type, :date_enregistrement)";
+                            (:maven_key, :analyse_key, :date, :project_version, :type, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
                     $stmt->bindValue(':maven_key', $map['maven_key']);
                     $stmt->bindValue(':analyse_key', $map['analyse_key']);
                     $stmt->bindValue(':date', $map['date']);
                     $stmt->bindValue(':project_version', $map['project_version']);
                     $stmt->bindValue(':type', $map['type']);
+                    $stmt->bindValue(':mode_collecte', $map['mode_collecte']);
+                    $stmt->bindValue(':utilisateur_collecte', $map['utilisateur_collecte']);
                     /** on formate la date avant de l'enregistrer */
                     $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
                     $stmt->executeStatement();

@@ -181,9 +181,10 @@ class HotspotOwaspRepository extends ServiceEntityRepository
     public function insertHotspotOwasp($map):array
     {
         $sql = "INSERT INTO hotspot_owasp
-                (referentiel_owasp, maven_key, version, date_version, menace, security_category, rule_key, probability, status, resolution, niveau, date_enregistrement)
+                (referentiel_owasp, maven_key, version, date_version, menace, security_category, rule_key, probability, status, resolution, niveau,
+                mode_collecte, utilisateur_collecte, date_enregistrement)
                 VALUES
-                (:referentiel_owasp, :maven_key, :version, :date_version, :menace, :security_category, :rule_key, :probability, :status, :resolution, :niveau, :date_enregistrement)";
+                (:referentiel_owasp, :maven_key, :version, :date_version, :menace, :security_category, :rule_key, :probability, :status, :resolution, :niveau, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
                 foreach ($map as $ref) {
@@ -199,6 +200,8 @@ class HotspotOwaspRepository extends ServiceEntityRepository
                         $stmt->bindValue(':status', $ref['status']);
                         $stmt->bindValue(':resolution', $ref['resolution']);
                         $stmt->bindValue(':niveau', $ref['niveau']);
+                        $stmt->bindValue(':mode_collecte', $ref['mode_collecte']);
+                        $stmt->bindValue(':utilisateur_collecte', $ref['utilisateur_collecte']);
                         $stmt->bindValue(':date_enregistrement', $ref['date_enregistrement']->format('Y-m-d H:i:sO'));
                         $stmt->executeStatement();
                 }

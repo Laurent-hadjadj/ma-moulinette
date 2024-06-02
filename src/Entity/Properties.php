@@ -24,75 +24,47 @@ class Properties
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Identifiant unique pour la table propriété']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Identifiant unique pour la table propriété'])]
     private $id;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 255,
-        nullable: false,
-        options: ['comment' => 'Type de propriété']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: false,
+        options: ['comment' => 'Type de propriété'])]
     #[Assert\NotBlank]
     private $type;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Identifiant du projet dans la base de données']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Identifiant du projet dans la base de données'])]
     #[Assert\NotNull]
     private $projetBd;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Identifiant du projet dans Sonar']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Identifiant du projet dans Sonar'])]
     #[Assert\NotNull]
     private $projetSonar;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Identifiant du profil dans la base de données']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Identifiant du profil dans la base de données'])]
     #[Assert\NotNull]
     private $profilBd;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Identifiant du profil dans Sonar']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Identifiant du profil dans Sonar'])]
     #[Assert\NotNull]
     private $profilSonar;
 
-    #[ORM\Column(
-        type: Types::DATETIMETZ_IMMUTABLE,
-        nullable: false,
-        options: ['comment' => 'Date de création de la propriété']
-    )]
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
+        options: ['comment' => 'Date de création de la propriété'])]
     #[Assert\NotBlank]
     private $dateCreation;
 
-    #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
-        nullable: true,
-        options: ['comment' => 'Date de la dernière modification du projet']
-    )]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true,
+        options: ['comment' => 'Date de la dernière modification du projet'])]
     #[Assert\NotNull]
     private $dateModificationProjet;
 
-    #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
-        nullable: true,
-        options: ['comment' => 'Date de la dernière modification du profil']
-    )]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true,
+        options: ['comment' => 'Date de la dernière modification du profil'])]
     #[Assert\NotNull]
     private $dateModificationProfil;
 

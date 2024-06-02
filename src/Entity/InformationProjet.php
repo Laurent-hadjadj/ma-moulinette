@@ -24,78 +24,57 @@ class InformationProjet
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Identifiant unique pour chaque instance de InformationProjet']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+            options: ['comment' => 'Identifiant unique pour chaque instance de InformationProjet'])]
     private $id;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 255,
-        nullable: false,
-        options: ['comment' => 'Clé Maven du projet']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: false,
+        options: ['comment' => 'Clé Maven du projet'])]
     #[Assert\NotBlank(message: "La clé Maven ne peut pas être vide.")]
-    #[Assert\Length(
-        max: 255,
-        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères."
-    )]
+    #[Assert\Length(max: 255,
+            maxMessage: "La clé Maven ne doit pas dépasser 255 caractères.")]
     private $mavenKey;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 32,
-        nullable: false,
-        options: ['comment' => 'Clé d’analyse du projet']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: false,
+        options: ['comment' => 'Clé d’analyse du projet'])]
     #[Assert\NotBlank(message: "La clé d'analyse ne peut pas être vide.")]
-    #[Assert\Length(
-        max: 32,
-        maxMessage: "La clé d'analyse ne doit pas dépasser 32 caractères."
-    )]
+    #[Assert\Length(max: 32,
+        maxMessage: "La clé d'analyse ne doit pas dépasser 32 caractères.")]
     private $analyseKey;
 
-    #[ORM\Column(
-        type: Types::DATETIMETZ_IMMUTABLE,
-        nullable: false,
-        options: ['comment' => 'Date de l’analyse du projet']
-    )]
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
+        options: ['comment' => 'Date de l’analyse du projet'])]
     #[Assert\NotNull(message: "La date de l'analyse ne peut pas être nulle.")]
     private $date;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 32,
-        nullable: false,
-        options: ['comment' => 'Version du projet lors de l’analyse']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: false,
+        options: ['comment' => 'Version du projet lors de l’analyse'])]
     #[Assert\NotBlank(message: "La version du projet ne peut pas être vide.")]
-    #[Assert\Length(
-        max: 32,
-        maxMessage: "La version du projet ne doit pas dépasser 32 caractères."
-    )]
+    #[Assert\Length(max: 32,
+        maxMessage: "La version du projet ne doit pas dépasser 32 caractères.")]
     private $projectVersion;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 32,
-        nullable: false,
-        options: ['comment' => 'Type d’analyse effectuée']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: false,
+        options: ['comment' => 'Type d’analyse effectuée'])]
     #[Assert\NotBlank(message: "Le type d'analyse ne peut pas être vide.")]
-    #[Assert\Length(
-        max: 32,
-        maxMessage: "Le type d'analyse ne doit pas dépasser 32 caractères."
-    )]
+    #[Assert\Length(max: 32,
+        maxMessage: "Le type d'analyse ne doit pas dépasser 32 caractères.")]
     private $type;
 
-    #[ORM\Column(
-        type: Types::DATETIMETZ_IMMUTABLE,
-        nullable: false,
-        options: ['comment' => 'Date d’enregistrement de l’information du projet']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true,
+    options: ['comment' => 'Mode de collete : MANUEL | AUTOMATIQUE'])]
+    #[Assert\Length(max: 32,
+        maxMessage: "Le mode de collecte ne peut pas dépasser 32 caractères.")]
+    private ?string $modeCollecte=null;
+
+    #[ORM\Column(type: Types::STRING, length: 128, nullable: true,
+    options: ['comment' => "Nom de l'utilisateur qui a réalisé la collecte."])]
+    #[Assert\Length(max: 128,
+        maxMessage: "Le nom de l'utilisatzeur ne peut pas dépasser 128 caractères.")]
+    private ?string $utilisateurCollecte=null;
+
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
+        options: ['comment' => 'Date d’enregistrement de l’information du projet'])]
     #[Assert\NotNull(message: "La date d'enregistrement ne peut pas être nulle.")]
     private $dateEnregistrement;
 
@@ -172,6 +151,30 @@ class InformationProjet
     public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): static
     {
         $this->dateEnregistrement = $dateEnregistrement;
+
+        return $this;
+    }
+
+    public function getModeCollecte(): ?string
+    {
+        return $this->modeCollecte;
+    }
+
+    public function setModeCollecte(?string $modeCollecte): static
+    {
+        $this->modeCollecte = $modeCollecte;
+
+        return $this;
+    }
+
+    public function getUtilisateurCollecte(): ?string
+    {
+        return $this->utilisateurCollecte;
+    }
+
+    public function setUtilisateurCollecte(?string $utilisateurCollecte): static
+    {
+        $this->utilisateurCollecte = $utilisateurCollecte;
 
         return $this;
     }

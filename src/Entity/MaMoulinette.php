@@ -24,39 +24,23 @@ class MaMoulinette
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Clé unique']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false, options: ['comment' => 'Clé unique'])]
     private $id;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 16,
-        nullable: false,
-        options: ['comment' => "Numéro de la version de l'application MaMoulinette"]
-    )]
+    #[ORM\Column(type: Types::STRING, length: 16, nullable: false,
+        options: ['comment' => "Numéro de la version de l'application MaMoulinette"])]
     #[Assert\NotBlank]
-    #[Assert\Length(
-        max: 16,
-        maxMessage: "La version ne doit pas dépasser 16 caractères."
-    )]
+    #[Assert\Length(max: 16,
+        maxMessage: "La version ne doit pas dépasser 16 caractères.")]
     private $version;
 
-    #[ORM\Column(
-        type: Types::DATETIMETZ_IMMUTABLE,
-        nullable: false,
-        options: ['comment' => 'Date de création']
-    )]
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
+        options: ['comment' => 'Date de création'])]
     #[Assert\NotNull]
     private $dateVersion;
 
-    #[ORM\Column(
-        type: Types::DATETIMETZ_IMMUTABLE,
-        nullable: false,
-        options: ['comment' => "Date d'enregistrement"]
-    )]
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
+        options: ['comment' => "Date d'enregistrement"])]
     #[Assert\NotNull]
     private $dateEnregistrement;
 
