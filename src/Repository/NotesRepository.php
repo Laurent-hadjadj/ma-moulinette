@@ -77,7 +77,8 @@ class NotesRepository extends ServiceEntityRepository
                 $sql = "INSERT INTO notes
                             (maven_key, type, value, mode_collecte, utilisateur_collecte, date_enregistrement)
                         VALUES
-                            (:maven_key, :type, :value, :mode_collecte, : utilisateur_collecte, :date_enregistrement)";
+                            (:maven_key, :type, :value, :mode_collecte,
+                            :utilisateur_collecte, :date_enregistrement)";
 
                     $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
                     $stmt->bindValue(':maven_key', $map['maven_key']);
