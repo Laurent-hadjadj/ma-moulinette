@@ -103,7 +103,7 @@ class BatchCollecteController extends AbstractController
         if ($data === null ||
             !property_exists($data, 'maven_key') ||
             !property_exists($data, 'mode_collecte')) {
-                $collecte[]=["**** ERREUR : ".static::$erreur400." ****"];
+                $collecte[]=["**** ERREUR : ".static::$erreur400];
             return $response->setData(
                 [ 'data' => $data, 'code' => 400, 'message' => static::$erreur400, "Collecte" => $collecte], Response::HTTP_BAD_REQUEST);
         }
@@ -133,7 +133,7 @@ class BatchCollecteController extends AbstractController
         /** Informations du projet (nom, type de version) */
         $informationProjet=$this->batchCollecteInformation->batchCollecteInformation($mavenKey, $modeCollecte, $utilisateurCollecte);
         if ($informationProjet['code']===200){
-            $collecte[]=['informationProjet'=>$informationProjet['message']];
+            $collecte[]=['01 - INFORMATION PROJET'=>$informationProjet['message']];
         } else {
             $collecte[]=[
                 "**** ERREUR : INFORMATION PROJET ".$informationProjet['code']. "****",
@@ -145,7 +145,7 @@ class BatchCollecteController extends AbstractController
         /** Mesures du projet (ligne de code, couverture, dette, ...) */
         $mesure=$this->batchCollecteMesure->batchCollecteMesure($mavenKey, $modeCollecte, $utilisateurCollecte);
         if ($mesure['code']===200){
-            $collecte[]=["Mesures" => $mesure['message']];
+            $collecte[]=["02 - MESURE" => $mesure['message']];
         } else {
             $collecte[]=[
                 "**** ERREUR : MESURE ".$mesure['code']. "****",
@@ -157,34 +157,34 @@ class BatchCollecteController extends AbstractController
         /** Notes du projet  (fiabilité, sécurité, mauvaise pratique) */
         $noteReliability=$this->batchCollecteNote->batchCollecteNote($mavenKey, $modeCollecte, $utilisateurCollecte, 'reliability');
         if ($noteReliability['code']===200){
-            $collecte[]=["note_reliability" => $noteReliability];
+            $collecte[]=["03 - NOTE RELIABILITY" => $noteReliability];
         } else { $collecte[]=[
-                "**** ERREUR : NOTES ".$noteReliability['code']." ****", $noteReliability['message'] ?? $noteReliability['error']
+                "**** ERREUR : NOTE RELIBILITY".$noteReliability['code'], $noteReliability['message'] ?? $noteReliability['error']
             ];
         }
 
         $noteSecurity=$this->batchCollecteNote->batchCollecteNote($mavenKey, $modeCollecte, $utilisateurCollecte, 'security');
         if ($noteSecurity['code']===200){
-            $collecte[]=["note_security"=> $noteSecurity['message']];
+            $collecte[]=["03 - NOTE SECURITY"=> $noteSecurity['message']];
         } else { $collecte[]=[
-                "**** ERREUR : NOTES ".$noteSecurity['code']." ****", $noteSecurity['message'] ?? $noteSecurity['error']
+                "**** ERREUR : NOTE SECURITY".$noteSecurity['code'], $noteSecurity['message'] ?? $noteSecurity['error']
             ];
         }
 
         $noteSqale=$this->batchCollecteNote->batchCollecteNote($mavenKey, $modeCollecte, $utilisateurCollecte, 'sqale');
         if ($noteSecurity['code']===200){
-            $collecte[]=["note_sqale" => $noteSqale['message']];
+            $collecte[]=["03 - NOTE SQALE" => $noteSqale['message']];
         } else {
-             $collecte[]=["**** ERREUR : NOTES ".$noteSqale['code']." ****", $noteSqale['message'] ?? $noteSqale['error']
+             $collecte[]=["**** ERREUR : NOTE SQALE".$noteSqale['code'], $noteSqale['message'] ?? $noteSqale['error']
             ];
         }
 
         /** Signalement Anomalies pour le projet  */
         $anomalie=$this->batchCollecteAnomalie->batchCollecteAnomalie($mavenKey, $modeCollecte, $utilisateurCollecte, $utilisateurCollecte);
         if ($anomalie['code']===200){
-            $collecte[]=["Anomalie" => $anomalie['message']];
+            $collecte[]=["04 - ANOMALIE" => $anomalie['message']];
         } else {
-                $collecte[]=["**** ERREUR : ANOMALIE ".$anomalie['code']." ****",
+                $collecte[]=["**** ERREUR : ANOMALIE ".$anomalie['code'],
                 $anomalie['message'] ?? $anomalie['error']
             ];
         }
@@ -192,9 +192,9 @@ class BatchCollecteController extends AbstractController
         /** Signalement Hotspots pour le projet  */
         $hotspot=$this->batchCollecteHotspot->batchCollecteHotspot($mavenKey, $modeCollecte, $utilisateurCollecte);
         if ($hotspot['code']===200){
-            $collecte[]=["Hotspot" => $hotspot['message']];
+            $collecte[]=["05 - HOTSPOT" => $hotspot['message']];
         } else {
-                $collecte[]=["**** ERREUR : HOTSPOT ".$hotspot['code']." ****",
+                $collecte[]=["**** ERREUR : HOTSPOT ".$hotspot['code'],
                 $hotspot['message'] ?? $hotspot['error']
             ];
         }
@@ -202,10 +202,10 @@ class BatchCollecteController extends AbstractController
         /** Signalement du détail des Hotspots pour le projet */
         $hotspotDetails=$this->batchCollecteHotspotDetail->batchCollecteHotspotDetail($mavenKey, $modeCollecte, $utilisateurCollecte);
         if ($hotspotDetails['code']===200){
-            $collecte[]=["Hotspot Détail" => $hotspotDetails['message']];
+            $collecte[]=["06 - HOTSPOT DETAIL" => $hotspotDetails['message']];
         } else {
             $collecte[]=[
-                "**** ERREUR : HOTSPOT DETAIL " .$hotspotDetails['code']." ****",
+                "**** ERREUR : HOTSPOT DETAIL " .$hotspotDetails['code'],
                 $hotspotDetails['message'] ?? $hotspotDetails['error']
             ];
         }
@@ -213,10 +213,10 @@ class BatchCollecteController extends AbstractController
         /** Signalement OWASP et nombre d'issue par type pour le projet  */
         $owasp=$this->batchCollecteOwasp->batchCollecteOwasp($mavenKey, $modeCollecte, $utilisateurCollecte);
         if ($owasp['code']===200){
-            $collecte[]=["Owasp" => $owasp['message']];
+            $collecte[]=["07 - OWASP" => $owasp['message']];
         } else {
             $collecte[]=[
-                "**** ERREUR : OWASP ".$owasp['code']." ****",
+                "**** ERREUR : OWASP ".$owasp['code'],
                 $owasp['message'] ?? $owasp['error']
             ];
         }
@@ -226,10 +226,10 @@ class BatchCollecteController extends AbstractController
         foreach ($owaspKeys as $owaspKey) {
             $hotspotOwasp = $this->batchCollecteHotspotOwasp->batchCollecteHotspotOwasp($mavenKey, $modeCollecte, $utilisateurCollecte, $owaspKey);
             if ($hotspotOwasp['code'] === 200) {
-                $collecte[] = ["Hotspot-Owasp " . strtoupper($owaspKey) => $hotspotOwasp['message']];
+                $collecte[] = ["08 - HOTSPOT OWASP" . strtoupper($owaspKey) => $hotspotOwasp['message']];
             } else {
                 $collecte[]=[
-                    "**** ERREUR : HOTSPOT OWASP ".$hotspotOwasp['code']." ****",
+                    "**** ERREUR : HOTSPOT OWASP ".$hotspotOwasp['code'],
                     $hotspotOwasp['message'] ?? $hotspotOwasp['error']
                 ];
             }
@@ -238,10 +238,10 @@ class BatchCollecteController extends AbstractController
         /** Signalement NoSonar et suppressWarning pour les projets Java */
         $noSonar=$this->batchCollecteNoSonar->batchCollecteNoSonar($mavenKey, $modeCollecte, $utilisateurCollecte);
         if ($noSonar['code']===200){
-            $collecte[]=["NoSonar" => $noSonar['message']];
+            $collecte[]=["09 - NOSONAR" => $noSonar['message']];
         } else {
             $collecte[]=[
-                    "**** ERREUR : NOSONAR ".$noSonar['code']." ****",
+                    "**** ERREUR : NOSONAR ".$noSonar['code'],
                     $noSonar['message'] ?? $noSonar['error']
                     ];
         }
@@ -249,10 +249,10 @@ class BatchCollecteController extends AbstractController
         /** Signalement des to.do pour le projet */
         $todo=$this->batchCollecteTodo->batchCollecteTodo($mavenKey, $modeCollecte, $utilisateurCollecte);
         if ($todo['code']===200){
-            $collecte[]=["Todo" => $todo['message']];
+            $collecte[]=["11 - TODO" => $todo['message']];
         } else {
             $collecte[]=[
-                    "**** ERREUR : TODO ".$todo['code']." ****",
+                    "**** ERREUR : TODO ".$todo['code'],
                     $todo['message'] ?? $todo['error']
                 ];
         }
