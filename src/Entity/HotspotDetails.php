@@ -68,7 +68,6 @@ class HotspotDetails
         maxMessage: "Le nom de la règle ne doit pas dépasser 255 caractères.")]
     private $ruleName;
 
-
     #[ORM\Column(type: Types::STRING, length: 8, nullable: false,
         options: ['comment' => 'Sévérité du hotspot'])]
     #[Assert\NotBlank]
