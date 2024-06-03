@@ -385,6 +385,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.hotspot_details
   date_version TIMESTAMPTZ NOT NULL,
   security_category character varying(64) NOT NULL,
   rule_key character varying(128) NOT NULL,
+  rule_name character varying(255) NOT NULL,
   severity character varying(8) NOT NULL,
   status character varying(16) NOT NULL,
   resolution character varying(16),
@@ -410,7 +411,8 @@ COMMENT ON COLUMN ma_moulinette.hotspot_details.maven_key IS 'Clé Maven du proj
 COMMENT ON COLUMN ma_moulinette.hotspot_details.version IS 'Version du projet';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.date_version IS 'Date de la publication du projet';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.security_category IS 'Défini la catégorie de sécurité du hotspot';
-COMMENT ON COLUMN ma_moulinette.hotspot_details.rule_key IS 'Règle associée au hotspot';
+COMMENT ON COLUMN ma_moulinette.hotspot_details.rule_key IS 'Règle SonarQube associée au hotspot';
+COMMENT ON COLUMN ma_moulinette.hotspot_details.rule_name IS 'Nom de la règle SonarQube';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.severity IS 'Sévérité du hotspot';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.status IS 'Statut du hotspot TO_REVIEW, REVIEWED';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.resolution IS 'Donne pour un hotspot au statut REVIEWED son état : FIXED, SAFE, ACKNOWLEDGED';
