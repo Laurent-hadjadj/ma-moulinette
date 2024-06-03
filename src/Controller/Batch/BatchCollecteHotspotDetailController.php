@@ -230,11 +230,16 @@ class BatchCollecteHotspotDetailController extends AbstractController
          * On envoie la clé du projet et la clé du hotspot.
          */
         $ligne = 0;
+        /** Initialisation des tableaux */
+        $mapDataGeneral = [];
+        $mapDataDetail = [];
+        $mapData = [];
+
         foreach ($liste['liste'] as $elt) {
             $ligne++;
-            $mapData[]= $this->hotspotDetail($mavenKey, $elt['hotspot_key']);
-            $mapData[]=[
-                'mode_collecteur' =>$modeCollecte,
+            $mapDataDetail= $this->hotspotDetail($mavenKey, $elt['hotspot_key']);
+            $mapDataGeneral=[
+                'mode_collecte' =>$modeCollecte,
                 'utilisateur_collecte' => $utilisateurCollecte,
                 'maven_key' => $mavenKey,
                 'version' => $information['info'][0]['project_version'],
@@ -242,6 +247,8 @@ class BatchCollecteHotspotDetailController extends AbstractController
                 'date_enregistrement'=>$date,
                 'hotspot_key'=>$elt['hotspot_key']
             ];
+            // Fusion des tableaux après la boucle
+            $mapData[] = array_merge($mapDataGeneral, $mapDataDetail);
         }
 
         /** On enregistre les données */
