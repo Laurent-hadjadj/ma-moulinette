@@ -23,7 +23,6 @@ use App\Entity\NoSonar;
 /** Client HTTP */
 use App\Service\Client;
 
-
 /**
  * [Description BatchCollecteNoSonarController]
  */
@@ -48,7 +47,6 @@ class BatchCollecteNoSonarController extends AbstractController
         $this->em = $em;
         $this->client = $client;
     }
-
 
     /**
      * [Description for BatchCollecteNoSonar]
@@ -83,10 +81,6 @@ class BatchCollecteNoSonarController extends AbstractController
         if (isset($result['code']) && in_array($result['code'], [401, 404])) {
             return ['code' => $result['code'], 'error'=>[$result['erreur']]];
         }
-
-        /** On crée un objet date */
-        $date = new \DateTime();
-        $date->setTimezone(new \DateTimeZone(static::$europeParis));
 
         /** On supprime les résultats pour la maven_key. */
         $map=['maven_key'=>$mavenKey];
