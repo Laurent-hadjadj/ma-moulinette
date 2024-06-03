@@ -102,8 +102,7 @@ class HotspotDetailsRepository extends ServiceEntityRepository
                     mode_collecte, utilisateur_collecte,
                     date_enregistrement)
                 VALUES
-                    (:maven_key, :version, :date_version, :security_category, :rule_key, :rule_name, :severity, :status, :resolution, :niveau, :frontend, :backend, :autre, :file_name, :file_path, :line, :message, :hotspot_key,
-                    :mode_collecte, utilisateur_collecte,
+                    (:maven_key, :version, :date_version, :security_category, :rule_key, :rule_name, :severity, :status, :resolution, :niveau, :frontend, :backend, :autre, :file_name, :file_path, :line, :message, :hotspot_key, :mode_collecte, :utilisateur_collecte,
                     :date_enregistrement)";
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
