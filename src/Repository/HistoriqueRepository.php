@@ -387,59 +387,61 @@ class HistoriqueRepository extends ServiceEntityRepository
         try {
                 $this->getEntityManager()->getConnection()->beginTransaction();
                     /** On prépare la requête */
-                    $sql = "INSERT OR IGNORE INTO historique
-                        (maven_key,version,date_version,
-                        nom_projet,version_release,version_snapshot,
-                        suppress_warning,no_sonar,nombre_ligne,
-                        nombre_ligne_code,couverture,
-                        duplication,tests_unitaires,nombre_defaut,dette,
-                        nombre_bug,nombre_vulnerability,nombre_code_smell,
-                        bug_blocker, bug_critical, bug_major, bug_minor, bug_info,
-                        vulnerability_blocker, vulnerability_critical, vulnerability_major,
-                        vulnerability_minor, vulnerability_info,
-                        code_smell_blocker, code_smell_critical, code_smell_major,
-                        code_smell_minor, code_smell_info,
-                        frontend,backend,autre,
-                        nombre_anomalie_bloquant,nombre_anomalie_critique,
-                        nombre_anomalie_majeur,
-                        nombre_anomalie_mineur,nombre_anomalie_info,
-                        note_reliability,note_security,
-                        note_sqale,note_hotspot,hotspot_total,
-                        hotspot_high,hotspot_medium,hotspot_low,
-                        initial,date_enregistrement)
-                    VALUES (
-                        :map->maven_key, :version, :date_version, :nom_projet,
-                        :version_release, :version_snapshot,
-                        :suppress_warning, :no_sonar, :nombre_ligne, :nombre_ligne_code,
-                        :couverture, :duplication, :tests_unitaires,
-                        :nombre_defaut' :map->nombre_defaut,
-                        :dette' :map->dette,
-                        :nombre_bug' :map->nombre_bug,
-                        :nombre_vulnerability' :map->nombre_vulnerability,
-                        :nombre_code_smell' :map->nombre_code_smell,
-                        :bug_blocker, :bug_critical, :bug_major, :bug_minor, :bug_info,
-                        :vulnerability_blocker, :vulnerability_critical, :vulnerability_major, :vulnerability_minor, :vulnerability_info,
-                        :code_smell_blocker, :code_smell_critical, :code_smell_major, :code_smell_minor,code_smell_info,
-                        :frontend, :backend, :autre,
-                        :nombre_anomalie_bloquant, :nombre_anomalie_critique, :nombre_anomalie_majeur,
-                        :nombre_anomalie_mineur, :nombre_anomalie_info,
-                        :note_reliability, :note_security, :note_sqale, :note_hotspot,
-                        :hotspot_total, :hotspot_high, :hotspot_medium, :hotspot_low,
-                        :initial, :date_enregistrement)";
+                    $sql = "INSERT INTO historique
+                    (maven_key, version, date_version,
+                    nom_projet, version_release, version_snapshot, version_autre,
+                    suppress_warning, no_sonar, todo, nombre_ligne,
+                    nombre_ligne_code, couverture,
+                    duplication_density, sqale_debt_ratio, tests_unitaires, nombre_defaut, dette,
+                    nombre_bug, nombre_vulnerability, nombre_code_smell,
+                    bug_blocker, bug_critical, bug_major, bug_minor, bug_info,
+                    vulnerability_blocker, vulnerability_critical, vulnerability_major,
+                    vulnerability_minor, vulnerability_info,
+                    code_smell_blocker, code_smell_critical, code_smell_major,
+                    code_smell_minor, code_smell_info,
+                    frontend, backend, autre,
+                    nombre_anomalie_bloquant, nombre_anomalie_critique,
+                    nombre_anomalie_majeur,
+                    nombre_anomalie_mineur, nombre_anomalie_info,
+                    note_reliability, note_security,
+                    note_sqale, note_hotspot, hotspot_total,
+                    hotspot_high, hotspot_medium, hotspot_low,
+                    initial, mode_collecte, utilisateur_collecte, date_enregistrement)
+                VALUES (
+                    :maven_key, :version, :date_version, :nom_projet,
+                    :version_release, :version_snapshot, :version_autre,
+                    :suppress_warning, :no_sonar, :todo, :nombre_ligne, :nombre_ligne_code,
+                    :couverture, :duplication_density, :sqale_debt_ratio, :tests_unitaires,
+                    :nombre_defaut, :dette, :nombre_bug, :nombre_vulnerability,
+                    :nombre_code_smell, :bug_blocker, :bug_critical, :bug_major,
+                    :bug_minor, :bug_info, :vulnerability_blocker, :vulnerability_critical,
+                    :vulnerability_major, :vulnerability_minor, :vulnerability_info,
+                    :code_smell_blocker, :code_smell_critical, :code_smell_major,
+                    :code_smell_minor, :code_smell_info, :frontend, :backend, :autre,
+                    :nombre_anomalie_bloquant, :nombre_anomalie_critique,
+                    :nombre_anomalie_majeur, :nombre_anomalie_mineur,
+                    :nombre_anomalie_info, :note_reliability, :note_security,
+                    :note_sqale, :note_hotspot, :hotspot_total,
+                    :hotspot_high, :hotspot_medium, :hotspot_low,
+                    :initial, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
 
                     $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+
                     $stmt->bindValue(':maven_key', $map['maven_key']);
                     $stmt->bindValue(':version', $map['version']);
                     $stmt->bindValue(':date_version', $map['date_version']);
                     $stmt->bindValue(':nom_projet', $map['nom_projet']);
                     $stmt->bindValue(':version_release', $map['version_release']);
                     $stmt->bindValue(':version_snapshot', $map['version_snapshot']);
+                    $stmt->bindValue(':version_autre', $map['version_autre']);
                     $stmt->bindValue(':suppress_warning', $map['suppress_warning']);
                     $stmt->bindValue(':no_sonar', $map['no_sonar']);
+                    $stmt->bindValue(':todo', $map['todo']);
                     $stmt->bindValue(':nombre_ligne', $map['nombre_ligne']);
                     $stmt->bindValue(':nombre_ligne_code', $map['nombre_ligne_code']);
                     $stmt->bindValue(':couverture', $map['couverture']);
-                    $stmt->bindValue(':duplication', $map['duplication']);
+                    $stmt->bindValue(':duplication_density', $map['duplication_density']);
+                    $stmt->bindValue(':sqale_debt_ratio', $map['sqale_debt_ratio']);
                     $stmt->bindValue(':tests_unitaires', $map['tests_unitaires']);
                     $stmt->bindValue(':nombre_defaut', $map['nombre_defaut']);
                     $stmt->bindValue(':dette', $map['dette']);
@@ -461,24 +463,27 @@ class HistoriqueRepository extends ServiceEntityRepository
                     $stmt->bindValue(':code_smell_major', $map['code_smell_major']);
                     $stmt->bindValue(':code_smell_minor', $map['code_smell_minor']);
                     $stmt->bindValue(':code_smell_info', $map['code_smell_info']);
-                    $stmt->bindValue(':frontend' , $map['frontend']);
-                    $stmt->bindValue(':backend' , $map['backend']);
-                    $stmt->bindValue(':autre' , $map['autre']);
-                    $stmt->bindValue(':nombre_anomalie_bloquant' , $map['nombre_anomalie_bloquant']);
-                    $stmt->bindValue(':nombre_anomalie_critique' , $map['nombre_anomalie_critique']);
-                    $stmt->bindValue(':nombre_anomalie_majeur' , $map['nombre_anomalie_majeur']);
-                    $stmt->bindValue(':nombre_anomalie_mineur' , $map['nombre_anomalie_mineu']);
-                    $stmt->bindValue(':nombre_anomalie_info' , $map['nombre_anomalie_info']);
+                    $stmt->bindValue(':frontend', $map['frontend']);
+                    $stmt->bindValue(':backend', $map['backend']);
+                    $stmt->bindValue(':autre', $map['autre']);
+                    $stmt->bindValue(':nombre_anomalie_bloquant', $map['nombre_anomalie_bloquant']);
+                    $stmt->bindValue(':nombre_anomalie_critique', $map['nombre_anomalie_critique']);
+                    $stmt->bindValue(':nombre_anomalie_majeur', $map['nombre_anomalie_majeur']);
+                    $stmt->bindValue(':nombre_anomalie_mineur', $map['nombre_anomalie_mineur']);
+                    $stmt->bindValue(':nombre_anomalie_info', $map['nombre_anomalie_info']);
                     $stmt->bindValue(':note_reliability', $map['note_reliability']);
                     $stmt->bindValue(':note_security', $map['note_security']);
                     $stmt->bindValue(':note_sqale', $map['note_sqale']);
                     $stmt->bindValue(':note_hotspot', $map['note_hotspot']);
                     $stmt->bindValue(':hotspot_total', $map['hotspot_total']);
-                    $stmt->bindValue(':hotspot_high' , $map['hotspot_high']);
-                    $stmt->bindValue(':hotspot_medium' , $map['hotspot_medium']);
-                    $stmt->bindValue(':hotspot_low' , $map['hotspot_low']);
+                    $stmt->bindValue(':hotspot_high', $map['hotspot_high']);
+                    $stmt->bindValue(':hotspot_medium', $map['hotspot_medium']);
+                    $stmt->bindValue(':hotspot_low', $map['hotspot_low']);
                     $stmt->bindValue(':initial', $map['initial']);
+                    $stmt->bindValue(':mode_collecte', $map['mode_collecte']);
+                    $stmt->bindValue(':utilisateur_collecte', $map['utilisateur_collecte']);
                     $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
+
                     $stmt->executeStatement();
                 $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
