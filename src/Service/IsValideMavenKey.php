@@ -29,6 +29,10 @@ class IsValideMavenKey
 
     /**
      * [Description for isValide]
+     * Vérifie si le projet est présent dans la base
+     * @http 200 : ok
+     * @http 404 : pas de projet trouvé
+     * @http 500 : problème dans la requête
      *
      * @param string $mavenKey
      *
@@ -41,12 +45,12 @@ class IsValideMavenKey
     public function isValide($mavenKey): array
     {
         /** On instancie l'entityRepository */
-        $informationProjetEntity = $this->em->getRepository(InformationProjet::class);
+        $informationProjetRepository = $this->em->getRepository(InformationProjet::class);
 
         /** On regarde si une analyse a été réalisée. */
         $map=['maven_key'=>$mavenKey];
-        $request=$informationProjetEntity->selectInformationProjetisValide($map);
+        $request=$informationProjetRepository->selectInformationProjetisValide($map);
 
-        return ['code' => $request['code']];
+        return ['code' => $request['code'], 'erreur'=>$request['erreur'], 'request'=>$request['is_valide']];
     }
 }
