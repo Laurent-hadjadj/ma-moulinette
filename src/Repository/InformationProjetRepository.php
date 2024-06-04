@@ -54,7 +54,7 @@ class InformationProjetRepository extends ServiceEntityRepository
             $isValide=$exec->fetchAllAssociative();
             /** j'ai pas trouvé de projet */
             if (!$isValide){
-                return ['code'=>404];
+                return ['code'=>404, 'erreur'=>"Je n'ai pas trouvé le projet dans la base de données."];
             }
             } catch (\Doctrine\DBAL\Exception $e) {
                 return ['code'=>500, 'erreur'=> $e->getMessage()];
