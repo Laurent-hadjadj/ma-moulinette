@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##         Creation des tables et des objets      ##
-##               V1.5.0 - 02/06/2024              ##
+##               V1.7.0 - 04/06/2024              ##
 ##                                                ##
 ####################################################*/
 
@@ -14,7 +14,8 @@
 -- 30/05/2024 : Laurent HADJADJ - Ajout des attributs revesion et securityCategory pour la table hotspot
 -- 02/06/2024 : Laurent HADJADJ - Ajout de l'attribut mode_collecte dans toutes les tables de collecte pour inssérer le type de collecte : [manuel], [auto]
 -- 02/06/2024 : Laurent HADJADJ - Ajout de l'attribut utilisateur_collecte dans toutes les tables de collecte pour inssérer l'identifiant de l'utilisateur : [batch] ou [prenom.nom]
-
+-- 03/06/2024 : Laurent HADJADJ - Renommage duplication en duplication_density dans la table historique
+-- 04/06/2024 : Laurent HADJADJ - Ajout de l'attribut todo dans la table historique.
 
 -- SCHEMA: ma_moulinette
 
@@ -266,10 +267,11 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.historique
   version_autre integer NOT NULL,
   suppress_warning integer NOT NULL,
   no_sonar integer NOT NULL,
+  todo integer NOT NULL,
   nombre_ligne integer NOT NULL,
   nombre_ligne_code integer NOT NULL,
   couverture double precision NOT NULL,
-  duplication double precision NOT NULL,
+  duplication_density double precision NOT NULL,
   tests_unitaires integer NOT NULL,
   nombre_defaut integer NOT NULL,
   nombre_bug integer NOT NULL,
@@ -327,10 +329,11 @@ COMMENT ON COLUMN ma_moulinette.historique.version_snapshot IS 'Indicateur de sn
 COMMENT ON COLUMN ma_moulinette.historique.version_autre IS 'Indicateur pour les autres types de versions';
 COMMENT ON COLUMN ma_moulinette.historique.suppress_warning IS 'Compteur des suppressions d’avertissements';
 COMMENT ON COLUMN ma_moulinette.historique.no_sonar IS 'Compteur de l’utilisation de NoSonar';
+COMMENT ON COLUMN ma_moulinette.historique.todo IS 'Compteur de l’utilisation de todo';
 COMMENT ON COLUMN ma_moulinette.historique.nombre_ligne IS 'Nombre total de lignes dans le projet';
 COMMENT ON COLUMN ma_moulinette.historique.nombre_ligne_code IS 'Nombre total de lignes de code dans le projet';
 COMMENT ON COLUMN ma_moulinette.historique.couverture IS 'Pourcentage de couverture de code par les tests';
-COMMENT ON COLUMN ma_moulinette.historique.duplication IS 'Pourcentage de duplication dans le code';
+COMMENT ON COLUMN ma_moulinette.historique.duplication_density IS 'Pourcentage de duplication dans le code';
 COMMENT ON COLUMN ma_moulinette.historique.tests_unitaires IS 'Nombre de tests unitaires exécutés';
 COMMENT ON COLUMN ma_moulinette.historique.nombre_defaut IS 'Nombre total de défauts détectés';
 COMMENT ON COLUMN ma_moulinette.historique.nombre_bug IS 'Nombre total de bugs détectés';
