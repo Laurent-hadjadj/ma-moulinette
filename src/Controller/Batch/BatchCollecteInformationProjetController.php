@@ -190,8 +190,15 @@ class BatchCollecteInformationProjetController extends AbstractController
         }
 
         /** On appel la méthode de traitement des données */
-        $versions = $this->batchInformationVersion($mavenKey);
-        return [ 'code'=>200, 'message' => $versions ];
+        $version = $this->batchInformationVersion($mavenKey);
+
+        /** On prépare les données pour l'historique */
+        $data=['version_release' => $version['release'],
+                'version_snapshot' => $version['snapshot'],
+                'version_autre' => $version['autre'],
+                'version' => $version['projet'],
+                'date_version' =>$version['date']];
+        return [ 'code'=>200, 'message' => $version, 'data'=>$data ];
     }
 
 }

@@ -19,6 +19,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 /** Accès aux tables */
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Notes;
+use App\Entity\Hotspots;
 
 /** Client HTTP */
 use App\Service\Client;
@@ -126,6 +127,70 @@ class BatchCollecteNoteController extends AbstractController
         /** Vérifier si la dernière valeur de la note existe dans la carte, sinon définir une note par défaut.
         */
         $note = $noteMap[$latestNote] ?? 'Z';
-        return ['code' => 200, "message" => ["value" => $note]];
+
+        /** On prépare les données pour l'historique */
+        $data=[ 'note_'.$type => $note];
+
+        return ['code' => 200, 'message' => ['value' => $note], 'data' => $data];
+    }
+
+    /**
+     * [Description for BatchCollecteNoteHotspot]
+     *
+     * @param mixed $mavenKey
+     *
+     * @return array
+     *
+     * Created at: 03/06/2024 19:15:03 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function BatchCollecteNoteHotspot($mavenKey): array
+    {
+        /** On instancie l'EntityRepository */
+        $hotspotsRepository = $this->em->getRepository(Hotspots::class);
+
+        // Première requête pour obtenir le nombre de hotspots à réviser
+        $map=['maven_key'=>$mavenKey, 'status'=> 'TO_REVIEW' ];
+        $toReview=$hotspotsRepository->countHotspotsStatus($map);
+        if ($toReview['code']!=200) {
+            return ['code' => $toReview['code'],
+                    'error'=>[$toReview['erreur'],
+                    static::$request=>'countHotspotsStatus']
+            ];
+        }
+        // Seconde requête pour obtenir le nombre de hotspots révisés
+        $map=['maven_key'=>$mavenKey, 'status'=> 'REVIEWED' ];
+        $reviewed=$hotspotsRepository->countHotspotsStatus($map);
+        if ($reviewed['code']!=200) {
+            return ['code' => $reviewed['code'],
+                    'error'=>[$reviewed['erreur'],
+                    static::$request=>'countHotspotsStatus']
+            ];
+        }
+
+        // Initialisation de la note
+        $note = "A";
+        if (!empty($toReview['to_review']) && $toReview['to_review'] > 0) {
+            // Calcul du ratio si 'to_review' n'est pas vide et supérieur à 0
+            $ratio = intval($reviewed['reviewed']) * 100 / intval($toReview['to_review']) + intval($reviewed['reviewed']);
+
+            // Détermination de la note en fonction du ratio
+            if ($ratio >= 80) {
+                $note = "A";
+            } elseif ($ratio >= 70) {
+                $note = "B";
+            } elseif ($ratio >= 50) {
+                $note = "C";
+            } elseif ($ratio >= 30) {
+                $note = "D";
+            } else {
+                $note = "E";
+            }
+        }
+        /** On prépare les données pour l'historique */
+        $data=[ 'note_hotspot' => $note];
+
+        return ['code' => 200, 'message' => ['note_hotspot' => $note], 'data' => $data];
     }
 }

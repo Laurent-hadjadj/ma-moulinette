@@ -133,8 +133,10 @@ class BatchCollecteNoSonarController extends AbstractController
             return ['code' => $request['code'],
             'error'=>[$request['erreur'],static::$request=>'insertNoSonar']];
         }
-        /** On enregistre les données */
-        $nosonar = ["suppress_warning" => $suppressWarning, "no_sonar" => $noSonar];
-        return ['code' => 200, "message" => $nosonar];
+
+        /** On prépare les données pour l'historique */
+        $data = ['suppress_warning' => $suppressWarning, 'no_sonar' => $noSonar];
+
+        return ['code' => 200, 'message' => $data, 'data'=>$data];
     }
 }

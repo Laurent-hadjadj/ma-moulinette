@@ -113,7 +113,7 @@ class BatchCollecteTodoController extends AbstractController
                 ];
             }
         } else {
-            /** Il n'y a pas de Todo */
+            /** Il n'y a pas de To.do */
         }
 
         /* On enregistre */
@@ -124,7 +124,6 @@ class BatchCollecteTodoController extends AbstractController
             static::$request=>'insertTodo'];
         }
         /** On enregistre les données */
-
-        return ['code' => 200, "message" =>['nombre'=>$todo,'Todo'=>$mapData]];
+        return ['code' => 200, "message" =>['nombre'=>$todo,'Todo'=>$mapData], 'data'=> ['todo'=>$todo]];
     }
 }

@@ -143,6 +143,20 @@ class BatchCollecteMesureController extends AbstractController
                     static::$request => 'insertMesures']];
         }
 
-        return ['code' => 200, 'message' => $mesureData];
+        /** On prépare les données pour l'historique */
+        $data=[
+            'nom_projet' => strtolower($result['projectName']),
+            'nombre_ligne' => $lines,
+            'nombre_ligne_code' => $ncloc,
+            'couverture'=> $coverage,
+            'sqale_debt_ratio' => $sqaleRatio,
+            'duplication_density' => $duplicationDensity,
+            'tests_unitaires' => $tests,
+            'issues' => $issues,
+        ];
+
+        return ['code' => 200, 'message' => $mesureData, 'data' => $data];
     }
+
+
 }
