@@ -133,11 +133,19 @@ class BatchCollecteHotspotController extends AbstractController
         }
 
         $map = [];
+        $high = $medium = $low = 0;
         /** On traite les hotspots */
         if ($result['paging']['total'] !== 0) {
             foreach ($result['hotspots'] as $value) {
                 // Traitement de la probabilité de vulnérabilité
                 $niveau = $this->vulnerabilityProbability($value['vulnerabilityProbability']);
+                /** On compte le nombre de hotspot par nvieau */
+                switch ($niveau) {
+                    case 1: $high++; break;
+                    case 2: $medium++; break;
+                    case 3: $low++; break;
+                    default: break;
+                }
                 /** Ajout des hotspots à la liste à insérer */
                 $map[] = [
                     'maven_key' => $mavenKey,
@@ -184,6 +192,13 @@ class BatchCollecteHotspotController extends AbstractController
                     static::$request => 'insertHotspot']
             ];
         }
-    return ['code' => 200, 'message' => $map];
+
+        /** On prépare les données pour l'historique */
+        $data=[
+            'hotspot_high' => $high, 'hotspot_medium' => $medium,
+            'hotspot_low' => $low, 'hotspot_total' => $high+$medium+$low];
+
+    return ['code' => 200, 'message' => $map, 'data' => $data];
     }
+
 }

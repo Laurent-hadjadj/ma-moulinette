@@ -28,7 +28,7 @@ use App\Service\DateTools;
 use App\Service\Client;
 
 /**
- * [Description BatchCollecteInformationProjetController]
+ * [Description BatchCollecteAnomalieController]
  */
 class BatchCollecteAnomalieController extends AbstractController
 {
@@ -61,9 +61,11 @@ class BatchCollecteAnomalieController extends AbstractController
 
 
     /**
-     * [Description for BatchCollecteMesure]
+     * [Description for BatchCollecteAnomalie]
      *
      * @param string $mavenKey
+     * @param string $modeColecte
+     * @param string $utilisateurCollecte
      *
      * @return array
      *
@@ -117,7 +119,6 @@ class BatchCollecteAnomalieController extends AbstractController
             }
         }
 
-
         if ($results['general']['paging']['total'] != 0) {
             /** On supprime les résultats pour la maven_key. */
             $map=['maven_key'=>$mavenKey];
@@ -139,7 +140,7 @@ class BatchCollecteAnomalieController extends AbstractController
             $detteCodeSmell = $this->serviceDateTools->minutesTo($results['CODE_SMELL']['effortTotal']);
             $detteCodeSmellMinute=$results['CODE_SMELL']['effortTotal'];
 
-            /* In initialise les indicateurs de sévérité, de type et de répartition */
+            /* On initialise les indicateurs de sévérité, de type et de répartition */
             $severities = ['BLOCKER' => 0, 'CRITICAL' => 0, 'MAJOR' => 0, 'INFO' => 0, 'MINOR' => 0];
             $types = ['BUG' => 0, 'VULNERABILITY' => 0, 'CODE_SMELL' => 0];
             $modules = ['frontend' => 0, 'backend' => 0, 'autre' => 0];
@@ -210,6 +211,25 @@ class BatchCollecteAnomalieController extends AbstractController
                     static::$request => 'insertAnomalie']
                 ];
             }
-        return ['code' => 200, 'message' => $map];
+
+        /** On prépare les données pour l'historique */
+        $data=[
+            'nombre_defaut' => $anomalieTotal,
+            'dette' => $detteMinute,
+            'nombre_bug' => $types['BUG'] ?? 0,
+            'nombre_vulnerability' => $types['VULNERABILITY'] ?? 0,
+            'nombre_code_smell' => $types['CODE_SMELL'] ?? 0,
+            'frontend' => $modules['frontend'] ?? 0,
+            'backend' => $modules['backend'] ?? 0,
+            'autre' => $modules['autre'] ?? 0,
+            'nombre_anomalie_bloquant' => $severities['BLOCKER'] ?? 0,
+            'nombre_anomalie_critique' =>$severities['CRITICAL'] ?? 0,
+            'nombre_anomalie_info' =>$severities['INFO'] ?? 0,
+            'nombre_anomalie_majeur' => $severities['MAJOR'] ?? 0,
+            'nombre_anomalie_mineur'=>$severities['MINOR'] ?? 0
+        ];
+
+
+        return ['code' => 200, 'message' => $map, 'data' => $data ];
     }
 }
