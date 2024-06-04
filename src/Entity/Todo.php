@@ -28,16 +28,11 @@ class Todo
         options: ['comment' => 'ID unique pour la table to.do'])]
     private $id;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 255,
-        nullable: false,
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: false,
         options: ['comment' => 'Clé Maven du projet'])]
     #[Assert\NotBlank]
-    #[Assert\Length(
-        max: 255,
-        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères."
-    )]
+    #[Assert\Length(max: 255,
+        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères.")]
     private $mavenKey;
 
     #[ORM\Column(type: Types::STRING, length: 128, nullable: false,
