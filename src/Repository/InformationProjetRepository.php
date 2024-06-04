@@ -59,7 +59,7 @@ class InformationProjetRepository extends ServiceEntityRepository
             } catch (\Doctrine\DBAL\Exception $e) {
                 return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
-        return ['code'=>200, 'is_valide'=>$isValide, 'erreur'=>''];
+        return ['code'=>200, 'is_valide'=>$isValide[0], 'erreur'=>''];
     }
 
     /**
