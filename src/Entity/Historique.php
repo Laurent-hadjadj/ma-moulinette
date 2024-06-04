@@ -77,6 +77,12 @@ class Historique
     #[Assert\NotNull]
     private $noSonar;
 
+
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Compteur de l’utilisation de Todo'])]
+    #[Assert\NotNull]
+    private $todo;
+
     #[ORM\Column(type: Types::INTEGER,
         options: ['comment' => 'Nombre total de lignes dans le projet'])]
     #[Assert\NotNull]
@@ -95,7 +101,7 @@ class Historique
     #[ORM\Column(type: Types::FLOAT,
         options: ['comment' => 'Pourcentage de duplication dans le code'])]
     #[Assert\NotNull]
-    private $duplication;
+    private $duplicationDensity;
 
     #[ORM\Column(type: Types::INTEGER,
         options: ['comment' => 'Nombre de tests unitaires exécutés'])]
@@ -471,18 +477,6 @@ class Historique
     public function setCouverture(float $couverture): static
     {
         $this->couverture = $couverture;
-
-        return $this;
-    }
-
-    public function getDuplication(): ?float
-    {
-        return $this->duplication;
-    }
-
-    public function setDuplication(float $duplication): static
-    {
-        $this->duplication = $duplication;
 
         return $this;
     }
@@ -987,6 +981,30 @@ class Historique
     public function setUtilisateurCollecte(?string $utilisateurCollecte): static
     {
         $this->utilisateurCollecte = $utilisateurCollecte;
+
+        return $this;
+    }
+
+    public function getDuplicationDensity(): ?float
+    {
+        return $this->duplicationDensity;
+    }
+
+    public function setDuplicationDensity(float $duplicationDensity): static
+    {
+        $this->duplicationDensity = $duplicationDensity;
+
+        return $this;
+    }
+
+    public function getTodo(): ?int
+    {
+        return $this->todo;
+    }
+
+    public function setTodo(int $todo): static
+    {
+        $this->todo = $todo;
 
         return $this;
     }
