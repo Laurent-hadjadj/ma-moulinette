@@ -23,6 +23,8 @@ class ActiviteRepository extends ServiceEntityRepository
 {
     public static $removeReturnline = "/\s+/u";
 
+    public static $formatDate = 'Y-m-d H:i:sO';
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Activite::class);
@@ -64,47 +66,28 @@ class ActiviteRepository extends ServiceEntityRepository
      */
     public function insertActivites($data): array
     {
-        // Gestion des erreurs
+        $sql = "INSERT INTO activite (maven_key, project_name, analyse_id, status, submitter_login, submitted_at, started_at, executed_at, execution_time) VALUES (:maven_key, :project_name, :analyse_id, :status, :submitter_login,:submitted_at, :started_at, :executed_at, :execution_time)";
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-            // Le début de la requête SQL qui ne change pas
-            $sql = "INSERT OR IGNORE INTO activite (maven_key, project_name, analyse_id, status, submitter_login, started_at, executed_at, execution_time) VALUES ";
-            // La variable rows sert à sauvegarder les lignes d'insertion
-            $rows = array();
-            foreach ($data as $value) {
-                $maven_key = $value['componentKey'];
-                $project_name = $value['componentName'];
-                $analyse_id = $value['analysisId'];
-                $status = $value['status'];
-                $submitter_login = $value['submitterLogin'];
-                // Formater les dates
-                if (preg_match("/(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})/", $value['startedAt'], $matches)) {
-                    $format = $matches[1] . " " . $matches[2];
-                    $started_at = new DateTimeImmutable($format);
-                    $started_at_formatted = $started_at->format('Y-m-d H:i:sO');
+                foreach ($data as $ref) {
+                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                        $stmt->bindValue(':maven_key', $ref['maven_key']);
+                        $stmt->bindValue(':project_name', $ref['project_name']);
+                        $stmt->bindValue(':analyse_id', $ref['analyse_id']);
+                        $stmt->bindValue(':status', $ref['status']);
+                        $stmt->bindValue(':submitter_login', $ref['submitter_login']);
+                        $stmt->bindValue(':submitted_at', $ref['submitted_at']->format('Y-m-d H:i:sO'));
+                        $stmt->bindValue(':started_at', $ref['started_at']->format('Y-m-d H:i:sO'));
+                        $stmt->bindValue(':executed_at', $ref['executed_at']->format('Y-m-d H:i:sO'));
+                        $stmt->bindValue(':execution_time', $ref['execution_time']);
+                        $stmt->executeStatement();
                 }
-                if (preg_match("/(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})/", $value['executedAt'], $matches)) {
-                    $format = $matches[1] . " " . $matches[2];
-                    $executed_at = new DateTimeImmutable($format);
-                    $executed_at_formatted = $executed_at->format('Y-m-d H:i:sO');
-                }
-                $execution_time = (int) round($value['executionTimeMs'] / 1000)+1; // Conversion de l'input en ms en s
-                // Construction de la ligne pour la requête SQL
-                $row = "('$maven_key', '$project_name', '$analyse_id', '$status', '$submitter_login', '$started_at_formatted', '$executed_at_formatted', $execution_time)";
-                // Ajout de la ligne dans le tableau pour la concaténation
-                $rows[] = $row;
-            }
-            // Concaténation des lignes avec des virgules pour former la partie VALUES de la requête
-            $sql .= implode(',', $rows) . ';';
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-            $stmt->executeQuery();
             $this->getEntityManager()->getConnection()->commit();
-            return ['request' => [], 'code' => 200, 'erreur' => ''];
         } catch (\Doctrine\DBAL\Exception $e) {
-            // Rollback de la transaction en cas d'erreur
             $this->getEntityManager()->getConnection()->rollBack();
-            return ['code' => 500, 'erreur' => $e->getCode()];
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
+        return ['code'=>200, 'erreur'=>''];
     }
 
     /**
@@ -231,7 +214,7 @@ class ActiviteRepository extends ServiceEntityRepository
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "SELECT executed_at as date
-                    FROM activite";
+                        FROM activite";
                         if ($annee != null){
                             $sql .=" WHERE EXTRACT(YEAR FROM started_at) = :annee
                                     ORDER BY executed_at desc LIMIT 1";

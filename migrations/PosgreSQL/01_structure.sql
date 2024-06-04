@@ -49,6 +49,29 @@ COMMENT ON COLUMN ma_moulinette.activite.started_at IS 'Date et heure du debut d
 COMMENT ON COLUMN ma_moulinette.activite.executed_at IS ' Date et heure de fin du traitement d’import des données';
 COMMENT ON COLUMN ma_moulinette.activite.execution_time IS 'Temps d’execution du traitement d’import des données';
 
+-- Table: ma_moulinette.historique_activite
+
+DROP TABLE ma_moulinette.historique_activite;
+CREATE TABLE ma_moulinette.historique_activite
+(id SERIAL PRIMARY KEY,
+  annee INT NOT NULL,
+  nb_jour INT NOT NULL,
+  nb_analyse INT NOT NULL,
+  moyenne_analyse FLOAT NOT NULL,
+  nb_reussi INT NOT NULL,
+  nb_echec INT NOT NULL,
+  taux_reussite INT NOT NULL,
+  max_temps timestamptz NOT NULL,
+  date_enregistrement timestamptz NOT NULL
+);
+
+ALTER TABLE ma_moulinette.historique_activite OWNER to db_user;
+GRANT ALL ON TABLE ma_moulinette.historique_activite TO db_user;
+
+COMMENT ON COLUMN ma_moulinette.historique_activite.id IS 'Identifiant unique de la table historique_activite';
+//to.do
+
+
 -- Table: ma_moulinette.anomalie
 
 DROP TABLE ma_moulinette.anomalie;

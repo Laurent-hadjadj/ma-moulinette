@@ -32,7 +32,13 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 /** Client HTTP */
-use App\Service\Client;
+use App\Service\ClientActivite;
+
+use App\Entity\Activite;
+use App\Entity\ActiviteHistorique;
+use DateTimeImmutable;
+
+
 
 
 /**
@@ -66,169 +72,120 @@ class ApiActiviteController extends AbstractController
     }
 
     /**
-     * [Description for sonarStatus]
-     * Vérifie si le serveur sonarqube est UP
-     * http://{url}}/api/status
-     *
-     * @return response
-     *
-     * Created at: 15/12/2022, 21:13:23 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    #[Route('/api/status', name: 'api_sonar_status', methods: ['POST'])]
-    public function apiSonarStatus(Request $request, Client $client): response
-    {
-        /** On crée un objet de reponse JSON */
-        $response = new JsonResponse();
-
-        $url = $this->getParameter(static::$sonarUrl) . "/api/system/status";
-
-        /** On appel le client http */
-        $result = $client->http($url);
-        return $response->setData([$result, Response::HTTP_OK]);
-    }
-
-    /**
      * [Description for projetListe]
      * Récupération de la liste des projets.
      * http://{url}}/api/components/search_projects?ps=500
      *
-     * @param Request $request
-     * @param Client $client
+     * @param ClientActivite $client
      * @return response
      *
      * Created at: 15/12/2022, 21:15:04 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/home/projet', name: 'home_projet_liste', methods: ['POST'])]
-    public function homeProjetListe(Request $request, Client $client): response
+    #[Route('/api/activite/sauvegarde', name: 'api_sauvegarde_historique', methods: ['POST'])]
+    public function apiSauvegardeHistorique(ClientActivite $client): response
     {
-        /** On instancie l'EntityRepository */
-        $listeProjetEntity = $this->em->getRepository(ListeProjet::class);
-        $propertiesEntity = $this->em->getRepository(Properties::class);
-
-        /** On crée un objet de reponse JSON */
         $response = new JsonResponse();
 
-        /** On vérifie si l'utilisateur à un rôle Collecte ? */
-        if (!$this->isGranted('ROLE_COLLECTE')) {
-            return $response->setData([
-                'type'=>'warning', 'code' => 403,
-                'reference' => static::$reference,
-                'message' => static::$erreur403, Response::HTTP_OK]);
-        }
+        /** On instancie l'EntityRepository */
+        $activiteEntity = $this->em->getRepository(Activite::class);
+        $historiqueActiviteEntity = $this->em->getRepository(ActiviteHistorique::class);
 
-        $url = $this->getParameter(static::$sonarUrl)."/api/components/search_projects?ps=500";
-        /** On appel le client http */
+
+
+        $url = $this->getParameter(static::$sonarUrl) . "/api/ce/activity";
         $result = $client->http($url);
-        /** On, initialiser les variables  */
-        $public = $private = $emptyTags = $nombre = 0;
+        $formatedData = static::organisationDonnée($result);
 
-        /** On créé un objet DateTime */
-        $date = new DateTime();
-        $timezone = new DateTimeZone(static::$europeParis);
-        $date->setTimezone($timezone);
+        $activiteEntity->insertActivites($formatedData);
 
-        /** On vérifie que sonarqube a au moins 1 projet */
-        if (array_key_exists('total', $result)){
-            if ($result['code']===404) {
-                return $response->setData([
-                    'type' => 'warning',
-                    'reference' => static::$reference, 'code' => 404,
-                    'message'=>static::$erreur404, Response::HTTP_OK]);
-            }
-        }
 
-        /** On supprime les données de la table avant d'importer les données. */
-        $request=$listeProjetEntity->deleteListeProjet();
-        if ($request['code']!=200) {
-            return $response->setData([
-                'type' => 'alert',
-                'reference' => static::$reference, 'code' => $request['code'],
-                'message'=>$request['erreur'], Response::HTTP_OK]);
-        }
+        // On recupere l'anne actuelle
+        $dateMoins1 = new DateTime();
+        $dateMoins1->setTimezone(new DateTimeZone('Europe/Paris'));
+        $anneeActuelle = $dateMoins1->format('Y');
 
-        /**
-         * Si la table est vide on insert les résultats et
-         * on revoie les résultats.
-         */
-        foreach ($result["components"] as $projet) {
-            /**
-             *  On exclue les projets archivés avec la particule "-SVN".
-             *  "project": "fr.domaine:mon-application-SVN"
-             */
-            $mystring = $projet["key"];
-            $findme = '-SVN';
-            if (!strpos($mystring, $findme)) {
-                $listeProjet = new ListeProjet();
-                $listeProjet->setMavenKey($projet["key"]);
-                $listeProjet->setName($projet["name"]);
-                $listeProjet->setTags($projet["tags"]);
-                $listeProjet->setVisibility($projet["visibility"]);
-                $listeProjet->setDateEnregistrement($date);
-                $this->em->persist($listeProjet);
-                $this->em->flush();
-                $nombre++;
-                /** On calcul le nombre de projet public et privé */
-                if ($projet["visibility"] == 'public') {
-                    $public++;
-                } else {
-                    $private++;
-                }
-                /** On calcul le nombre de projet sans tags */
-                if (empty($projet["tags"])) {
-                    $emptyTags++;
-                }
-            }
-        }
+        // On forme le tableau qui va etre envoyé dans la vue
+        // Le nombre de jour pour cette annee
+        $result=$activiteEntity->nombreJourAnneeDonnee($anneeActuelle);
+        $donneeTableau[$anneeActuelle]['nb_jour'] = $result['request']['unique_days'];
 
-        /** On met à jour la table proprietes */
-        $map=[  'projet_bd'=>$nombre, 'projet_sonar'=>$nombre,
-                'date_modification_projet'=>$date->format(static::$dateFormatShort),
-            ];
-        $r=$propertiesEntity->updatePropertiesProjet($map);
-        if ($r['code']!=200) {
-            return $response->setData([
-                'type' => 'alert',
-                'reference' => static::$reference, 'code' => $r['code'],
-                'message'=>$r['erreur'], Response::HTTP_OK]);
-        }
+        // Le nombre d'analyse pour cette annee
+        $result = $activiteEntity->nombreAnalyse($anneeActuelle);
+        $donneeTableau[$anneeActuelle]['nb_analyse'] = $result['request']['nb_analyse'];
 
-        /** on renvoie les résultats */
-        $message = "Mise à jour de la liste des projets effectuée.";
+        // Le nombre d'analyse reussi ou en echec pour cette annee
+        // Reussi
+        $statusRechercher = 'SUCCESS';
+        $result = $activiteEntity->nombreStatus($anneeActuelle,$statusRechercher);
+        $donneeTableau[$anneeActuelle]['nb_reussi'] = $result['request']['nb_status'];
+        // Echec
+        $statusRechercher = 'FAILED';
+        $result = $activiteEntity->nombreStatus($anneeActuelle,$statusRechercher);
+        $donneeTableau[$anneeActuelle]['nb_echec'] = $result['request']['nb_status'];
 
-        return $response->setData(
-            ['code' => 200,
-            'reference' => static::$reference, 'type' => 'success',
-            'message' => $message,'nombre' => $nombre,
-            'public' => $public, 'private' => $private,
-            'empty_tags' => $emptyTags, Response::HTTP_OK ]);
+        // Le temps max d'execution pour cette annee
+        $result=$activiteEntity->tempsExecutionMax($anneeActuelle);
+        $donneeTableau[$anneeActuelle]['max_temps']= static::formatDuréemax($result['request']['max_time']);
+
+        // La moyenne d'analyse par jour
+        $donneeTableau[$anneeActuelle]['moyenne_analyse'] = static::calculAnalyseMoyenne($donneeTableau[$anneeActuelle]['nb_jour'], $donneeTableau[$anneeActuelle]['nb_analyse']);
+
+        // Taux d'analyse reussite en '%'
+        $donneeTableau[$anneeActuelle]['taux_reussite'] = static::calculeTauxReussite($donneeTableau[$anneeActuelle]['nb_analyse'], $donneeTableau[$anneeActuelle]['nb_reussi']);
+
+        // Date d'enregistrement
+        $donneeTableau[$anneeActuelle]['date_enregistrement'] = new DateTimeImmutable();
+
+        $historiqueActiviteEntity->insertActivites($donneeTableau);
+        $tableHistoriqueActivite = $historiqueActiviteEntity->selectAllActivite();
+
+        return $response->setData(['code' => 200,'listeDonnee' => $tableHistoriqueActivite, Response::HTTP_OK]);
     }
 
-    #[Route('/api/home/tags', name: 'home_projet_tags', methods: ['POST'])]
-    public function homeProjetTags(Request $request, Client $client): response
+
+
+    private function formatDuréeMax($data): DateTimeImmutable
     {
-        /** On instancie l'EntityRepository */
-        $listeProjetEntity = $this->em->getRepository(ListeProjet::class);
-
-        /** On crée un objet de reponse JSON */
-        $response = new JsonResponse();
-
-        /** On vérifie si l'utilisateur à un rôle Collecte ? */
-        if (!$this->isGranted('ROLE_COLLECTE')) {
-            return $response->setData([
-                'type'=>'warning', 'code' => 403,
-                'reference' => static::$reference,
-                'message' => static::$erreur403, Response::HTTP_OK]);
-        }
-
-        $tag = $listeProjetEntity->countListeProjetTags();
-
-        return $response->setData(
-            ['code' => 200,
-            'nombre_tag' => $tag['nombre'][0]['tag'], Response::HTTP_OK ]);
+        return (new DateTimeImmutable())->setTimestamp($data);
     }
+
+    private function calculAnalyseMoyenne($nbJour,$nbAnalyse): int
+    {
+        return (int) $nbJour/$nbAnalyse;
+    }
+
+    private function calculeTauxReussite($nbAnalyseTotal,$nbAnalyseReussite): float
+    {
+        return $nbAnalyseTotal/$nbAnalyseReussite*100;
+    }
+
+    private function organisationDonnée($data): array
+    {
+        $tab = array();
+        $id= 0;
+        foreach($data['tasks'] as $value){
+        $tab[$id]['maven_key'] = $value['componentKey'];
+        $tab[$id]['project_name'] = $value['componentName'];
+        $tab[$id]['analyse_id'] = $value['analysisId'];
+        $tab[$id]['status'] = $value['status'];
+        $tab[$id]['submitter_login']= $value['submitterLogin'];
+        $tab[$id]['submitted_at'] =  new DateTimeImmutable($value['submittedAt']);
+        $tab[$id]['started_at'] = new DateTimeImmutable($value['startedAt']);
+        $tab[$id]['executed_at'] = new DateTimeImmutable($value['executedAt']);
+        $tab[$id]['execution_time'] = (int) round($value['executionTimeMs'] / 1000)+1; // Conversion de l'input en ms en s
+        $id++;
+        }
+        return $tab;
+    }
+
+    /*if (!$this->isGranted('ROLE_COLLECTE')) {
+        return $response->setData([
+            'type'=>'warning', 'code' => 403,
+            'reference' => static::$reference,
+            'message' => static::$erreur403, Response::HTTP_OK]);
+    }
+    */
 
 }

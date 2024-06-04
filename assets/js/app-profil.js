@@ -136,12 +136,10 @@ const callboxFermer='</span><button class="close-button" aria-label="Fermer la f
 		<div class="reveal" id="fenetre-modal" data-reveal></div>
   </div>`;
   total = total + profil.regle;
-  console.log(total);
   });
 
   /** Affiche le container */
   $('#js-container-langage').html(str);
-  console.log('total', total);
   $('.js-total').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(total));
 };
 
