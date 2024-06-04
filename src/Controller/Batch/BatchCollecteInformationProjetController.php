@@ -53,6 +53,65 @@ class BatchCollecteInformationProjetController extends AbstractController
     }
 
     /**
+     * [Description for controleVersionProjet]
+     *
+     * @param mixed $mavenKey
+     *
+     * @return array
+     *
+     * Created at: 04/06/2024 11:51:59 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function controleVersionProjet($mavenKey):array
+    {
+        /** On construit l'URL */
+        $tempoUrl = $this->getParameter(static::$sonarUrl);
+        $mavenKey = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
+
+        /** Construit l'URL en utilisant http_build_query pour les paramètres de la requête */
+        $queryParams = [ 'project' => $mavenKey ];
+        $queryString = http_build_query($queryParams);
+
+        /** Appelle le client HTTP */
+        $result = $this->client->http("$tempoUrl/api/project_analyses/search?$queryString");
+        /** On vérifie si le projet exsite en locale */
+        $request=$this->isValidMavenKey->isValide($mavenKey);
+
+        /* On vérifie le code erreur */
+        $isFound=isset($result['code']) ? false : true;
+        $inBase = ($request['code'] == 200) ? true : false;
+        $isNotInBase = ($request['code'] == 404) ? true : false;
+
+        if (isset($result['code'])){
+            $isNotAuthorize=($result['code'] == 401) ? true : false;
+            $isNotFound=($result['code'] == 404) ? true : false;
+        }
+
+        /** Le projet est présent en base et sur le serveur */
+        if ($isFound && $inBase){
+            return ['code'=>200, 'message'=>"Le projet est présent en base et sur le serveur", 'data-sonarqube'=>$result, 'data-base'=>$request['request']];
+        }
+
+        /** Le projet n'est pas présent en base et mais existe sur le serveur */
+        if ($isFound && $isNotInBase){
+            return ['code'=>202, 'message'=>"Le projet est présent en base et sur le serveur", 'data'=>$result];
+        }
+
+        /** Le projet n'est pas disponible sur Sonarqube */
+        if ($isNotFound){
+            return ['code'=>404, 'message'=>"Le projet n'existe pas sur le serveur SonarQube"];
+        }
+
+        /** L'utilisateur n'a pas les droits SonaQube nécessaires. */
+        if ($isNotAuthorize){
+            return ['code'=>401, 'message'=>"Le serveur SonarQube n'autorise pas l'utilisateur à se connecter à cette API."];
+        }
+
+        return ['code'=>500, 'message'=>"Une erreur inatendue est survenue !"];
+    }
+
+    /**
      * [Description for batchInformationVersion]
      *
      * @param string $mavenKey
@@ -62,16 +121,10 @@ class BatchCollecteInformationProjetController extends AbstractController
      * Created at: 09/12/2022, 17:13:32 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      */
-    ##[Route('/api/batch/information/version', name: 'batch_information_version', methods: ['POST'])]
     private function batchInformationVersion(string $mavenKey): array
     {
         /** On instancie l'entityRepository */
         $informationProjetRepository = $this->em->getRepository(InformationProjet::class);
-
-        $isValide=$this->isValidMavenKey->isValide($mavenKey);
-        if ($isValide===404) {
-            return ['code'=>404];
-        }
 
         /** On compte toutes les version de type (RELEASE, SNAPSHOT, AUTRE) */
         $map=['maven_key' => $mavenKey];
@@ -134,20 +187,35 @@ class BatchCollecteInformationProjetController extends AbstractController
         /** On instancie l'EntityRepository */
         $informationProjetRepository = $this->em->getRepository(InformationProjet::class);
 
-        /** On construit l'URL */
-        $tempoUrl = $this->getParameter(static::$sonarUrl);
-        $mavenKey = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
-
-        /** Construit l'URL en utilisant http_build_query pour les paramètres de la requête */
-        $queryParams = [ 'project' => $mavenKey ];
-        $queryString = http_build_query($queryParams);
-
-        /** Appelle le client HTTP */
-        $result = $this->client->http("$tempoUrl/api/project_analyses/search?$queryString");
-        /** On catch les erreurs HTTP 401 et 404, si possible :) */
-        if (isset($result['code']) && in_array($result['code'], [401, 404])) {
-            return ['code' => $result['code'], 'error'=>[$result['erreur']]];
+        /** On récupre les informations du projet */
+        $isValide=$this->controleVersionProjet($mavenKey);
+        if ($isValide['code']===404) {
+            return ['code'=>$isValide['code'], 'message'=>$isValide['message']];
         }
+
+        /** On vérifie si on doit mettre à jour la version ou pas */
+        /** 01 - Version Sonarqube */
+        $result=$isValide['data-sonarqube']['analyses'][0];
+        $versionSonarQube=$result['projectVersion'];
+        $keyAnalyseSonarQube=$result['key'];
+        $dateAnalyseSonarQube=$result['date'];
+
+        /** 02 - Version  Locale */
+        $request=$isValide['data-base'];
+        $versionLocale=$request['project_version'];
+        $dateAnalyseLocale=$request['date'];
+        $keyAnalyseLocale=$request['analyse_key'];
+
+        $versionMap=['sonarqube'=>['version'=>$versionSonarQube,
+            'key-analyse' => $keyAnalyseSonarQube, 'date-analyse'=>$dateAnalyseSonarQube],
+            'locale'=>['version'=>$versionLocale, 'key-analyse'=>$keyAnalyseLocale, 'date'=>$dateAnalyseLocale]
+        ];
+
+        /** Si le projet locale est à jour, pas la peine de lancer la collecte */
+        if ($keyAnalyseLocale===$keyAnalyseSonarQube) {
+            return ['code'=>100, 'message'=>"Le projet est à jour", 'data'=>$versionMap];
+        }
+
         /** On supprime les informations pour la maven_key. */
         $map=['maven_key'=>$mavenKey];
         $delete=$informationProjetRepository->deleteInformationProjetMavenKey($map);

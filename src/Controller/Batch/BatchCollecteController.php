@@ -102,9 +102,6 @@ class BatchCollecteController extends AbstractController
     #[Route('/collecte', name: 'collecte', methods: ['POST'])]
     public function collecte(Request $request): Response
     {
-        /** On instancie l'EntityRepository */
-        $historiqueRepository = $this->em->getRepository(Historique::class);
-
         $response = new JsonResponse();
 
         /** On initialise la log */
@@ -152,10 +149,19 @@ class BatchCollecteController extends AbstractController
 
         /** Informations du projet (nom, type de version) */
         $informationProjet=$this->batchCollecteInformation->batchCollecteInformation($mavenKey, $modeCollecte, $utilisateurCollecte);
+        /** Tout vas bien, on peut lancer la collecte */
         if ($informationProjet['code']===200){
             $collecte[]=['01 - INFORMATION PROJET'=>$informationProjet['message']];
             $mapMerged=array_merge($mapMerged, $informationProjet['data']);
-        } else {
+        }
+
+        /** Le projet existe déjà, il est à jour. On arrête la collecte */
+        if ($informationProjet['code']===100){
+            $collecte[]=['01 - INFORMATION PROJET'=>$informationProjet['message'], $informationProjet['data']];
+            return $response->setData(["Collecte" => $collecte]);
+        }
+        /** Pour les autres messages d'erreur */
+        if (!in_array($informationProjet['code'], ['200', '100'])) {
             $collecte[]=[
                 "**** ERREUR : INFORMATION PROJET ".$informationProjet['code']. "****",
                 $informationProjet['message'] ?? $informationProjet['error']
@@ -318,7 +324,9 @@ class BatchCollecteController extends AbstractController
             'date_enregistrement' => $date]);
         /** Enregistrement dans le table historique */
         $historique=$historiqueRepository->insertHistoriqueAjoutProjet($mapMerged);
-        if ($historique['code']!=200) {
+        if ($historique['code']===200){
+            $collecte[]=["13 - HISTORIQUE" => $mapMerged];
+        } else {
             $collecte[]=[
                 "**** ERREUR : HISTORIQUE ".$historique['code'],
                 $historique['message'] ?? $historique['erreur']
