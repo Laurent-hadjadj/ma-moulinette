@@ -40,7 +40,6 @@ use App\Controller\Batch\BatchCollecteHotspotDetailController;
 use App\Controller\Batch\BatchCollecteNoSonarController;
 use App\Controller\Batch\BatchCollecteTodoController;
 
-
 /**
  * [Description BatchController]
  */
@@ -92,7 +91,7 @@ class BatchCollecteController extends AbstractController
         $this->batchCollecteTodo = $batchCollecteTodo;
     }
 
-    #[Route('/collecte', name: 'collecte', methods: ['POST'])]
+    #[Route('/api/collectes', name: 'api_collectes', methods: ['POST'])]
     public function collecte(Request $request): Response
     {
         /** On instancie l'entityRepository */
@@ -145,6 +144,7 @@ class BatchCollecteController extends AbstractController
 
         /** Informations du projet (nom, type de version) */
         $informationProjet=$this->batchCollecteInformation->batchCollecteInformation($mavenKey, $modeCollecte, $utilisateurCollecte);
+
         /** Tout vas bien, on peut lancer la collecte */
         if ($informationProjet['code']===200){
             $collecte[]=['01 - INFORMATION PROJET'=>$informationProjet['message']];
