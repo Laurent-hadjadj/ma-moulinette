@@ -93,9 +93,9 @@ class BatchCollecteInformationProjetController extends AbstractController
             return ['code'=>200, 'message'=>"Le projet est présent en base et sur le serveur", 'data-sonarqube'=>$result, 'data-base'=>$request['request']];
         }
 
-        /** Le projet n'est pas présent en base et mais existe sur le serveur */
+        /** Le projet n'est pas présent en base mais existe sur le serveur */
         if ($isFound && $isNotInBase){
-            return ['code'=>202, 'message'=>"Le projet est présent en base et sur le serveur", 'data'=>$result];
+            return ['code'=>202, 'message'=>"Le projet est présent en base mais pas sur le serveur", 'data-sonarqube'=>$result, 'data-base'=>[]];
         }
 
         /** Le projet n'est pas disponible sur Sonarqube */
@@ -187,10 +187,10 @@ class BatchCollecteInformationProjetController extends AbstractController
         /** On instancie l'EntityRepository */
         $informationProjetRepository = $this->em->getRepository(InformationProjet::class);
 
-        /** On récupre les informations du projet */
+        /** On récupére les informations du projet */
         $isValide=$this->controleVersionProjet($mavenKey);
-        if ($isValide['code']===404) {
-            return ['code'=>$isValide['code'], 'message'=>$isValide['message']];
+        if (in_array($isValide['code'], [401, 404, 500])) {
+            return ['code'=>$isValide['code'], 'message'=>$isValide['message'] ];
         }
 
         /** On vérifie si on doit mettre à jour la version ou pas */
@@ -202,11 +202,11 @@ class BatchCollecteInformationProjetController extends AbstractController
 
         /** 02 - Version  Locale */
         $request=$isValide['data-base'];
-        $versionLocale=$request['project_version'];
-        $dateAnalyseLocale=$request['date'];
-        $keyAnalyseLocale=$request['analyse_key'];
+        $versionLocale=$request['project_version'] ?? 'VIDE';
+        $dateAnalyseLocale=$request['date'] ?? 'VIDE';
+        $keyAnalyseLocale=$request['analyse_key'] ?? 'VIDE';
 
-        $versionMap=['sonarqube'=>['version'=>$versionSonarQube,
+        $versionMap=['SonarQube'=>['version'=>$versionSonarQube,
             'key-analyse' => $keyAnalyseSonarQube, 'date-analyse'=>$dateAnalyseSonarQube],
             'locale'=>['version'=>$versionLocale, 'key-analyse'=>$keyAnalyseLocale, 'date'=>$dateAnalyseLocale]
         ];
@@ -226,35 +226,33 @@ class BatchCollecteInformationProjetController extends AbstractController
         }
 
         /** On ajoute les informations du projet dans la table information_projet. */
-        foreach ($result['analyses'] as $information) {
-            /**
-             *  La version du projet doit être xxx-release, xxx-snapshot ou xxx
-             *  Dans ce cas, le tableau renvoi toujours [0] pour la version et
-             *  [1] pour le type de version (release, snapshot ou null)
-             */
-            $explode = explode('-', $information['projectVersion']);
-            if (!isset($explode[1]) || empty($explode[1])) {
-                $explode[1] = 'N.C';
-            }
-            $date = new \DateTimeImmutable();
-            $date->setTimezone(new \DateTimeZone(static::$europeParis));
+        /**
+         *  La version du projet doit être xxx-release, xxx-snapshot ou xxx
+         *  Dans ce cas, le tableau renvoi toujours [0] pour la version et
+         *  [1] pour le type de version (release, snapshot ou null)
+         */
+        $explode = explode('-', $result['projectVersion']);
+        if (!isset($explode[1]) || empty($explode[1])) {
+            $explode[1] = 'N.C';
+        }
+        $date = new \DateTimeImmutable();
+        $date->setTimezone(new \DateTimeZone(static::$europeParis));
 
-            $map=['maven_key' => $mavenKey,
-                    'analyse_key' => $information['key'],
-                    'date' => $information['date'],
-                    'project_version' => $information['projectVersion'],
-                    'type' => strtoupper($explode[1]),
-                    'mode_collecte' => $modeCollecte,
-                    'utilisateur_collecte' => $utilisateurCollecte,
-                    'date_enregistrement' => $date
-            ];
+        $map=['maven_key' => $mavenKey,
+                'analyse_key' => $result['key'],
+                'date' => $result['date'],
+                'project_version' => $result['projectVersion'],
+                'type' => strtoupper($explode[1]),
+                'mode_collecte' => $modeCollecte,
+                'utilisateur_collecte' => $utilisateurCollecte,
+                'date_enregistrement' => $date
+        ];
 
-            $insert=$informationProjetRepository->insertInformationProjet($map);
-            if ($insert['code']!=200) {
-                return ['code' => $insert['code'],
-                'error'=>[$insert['erreur']],
-                static::$request=>'insertInformationProjetMavenKey'];
-            }
+        $insert=$informationProjetRepository->insertInformationProjet($map);
+        if ($insert['code']!=200) {
+            return ['code' => $insert['code'],
+            'error'=>[$insert['erreur']],
+            static::$request=>'insertInformationProjetMavenKey'];
         }
 
         /** On appel la méthode de traitement des données */
