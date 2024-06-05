@@ -23,10 +23,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-/** gestion du journal d'activité */
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Finder\Finder;
-
 /** Accès aux tables */
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Historique;
@@ -44,7 +40,6 @@ use App\Controller\Batch\BatchCollecteHotspotDetailController;
 use App\Controller\Batch\BatchCollecteNoSonarController;
 use App\Controller\Batch\BatchCollecteTodoController;
 
-use App\Service\FileLogger;
 
 /**
  * [Description BatchController]
@@ -68,7 +63,6 @@ class BatchCollecteController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function __construct(
-        private FileLogger $logger,
         private Security $security,
         private EntityManagerInterface $em,
         private BatchCollecteInformationProjetController $batchCollecteInformation,
@@ -83,7 +77,6 @@ class BatchCollecteController extends AbstractController
         private BatchCollecteNoSonarController $batchCollecteNoSonar,
         private BatchCollecteTodoController $batchCollecteTodo
     ) {
-        $this->logger = $logger;
         $this->security = $security;
         $this->em = $em;
         $this->batchCollecteInformation = $batchCollecteInformation;
@@ -102,6 +95,9 @@ class BatchCollecteController extends AbstractController
     #[Route('/collecte', name: 'collecte', methods: ['POST'])]
     public function collecte(Request $request): Response
     {
+        /** On instancie l'entityRepository */
+        $historiqueRepository = $this->em->getRepository(Historique::class);
+
         $response = new JsonResponse();
 
         /** On initialise la log */
@@ -121,6 +117,15 @@ class BatchCollecteController extends AbstractController
         $mavenKey = htmlspecialchars($data->maven_key, ENT_QUOTES, 'UTF-8');
         $modeCollecte = htmlspecialchars($data->mode_collecte, ENT_QUOTES, 'UTF-8');
 
+        /** On démarre la mesure du traitement */
+        $debutTraitement = new \DateTime();
+        $debutTraitement->setTimezone(new \DateTimeZone(static::$europeParis));
+        $collecte[]=[
+            "********************* DEBUT DU TRAITEMENT ********************",
+            "Projet : ".$mavenKey,
+            "Date :".$debutTraitement->format(static::$dateFormat)
+        ];
+
         /** On contrôle le mode d'utilisation */
         $utilisateurCollecte = $this->security->getUser()->getCourriel() ?? 'null';
 
@@ -134,15 +139,6 @@ class BatchCollecteController extends AbstractController
                 'message' => static::$erreur401, 'collecte' => $collecte
             ], Response::HTTP_UNAUTHORIZED);
         }
-
-        /** On démarre la mesure du traitement */
-        $debutTraitement = new \DateTime();
-        $debutTraitement->setTimezone(new \DateTimeZone(static::$europeParis));
-        $collecte[]=[
-            "************* DEBUT DU TRAITEMENT ***************",
-            "Projet : ".$mavenKey,
-            "Date :".$debutTraitement->format(static::$dateFormat)
-        ];
 
         /** On récupère les données du projet */
         $mapMerged=[];
@@ -346,7 +342,5 @@ class BatchCollecteController extends AbstractController
 
         /** Rapport de collecte */
         return $response->setData(["Collecte" => $collecte, Response::HTTP_OK]);
-
     }
-
 }
