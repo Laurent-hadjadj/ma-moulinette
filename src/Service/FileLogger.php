@@ -53,9 +53,9 @@ class FileLogger
                 'compress' => true,
                 'min-size' => 102400,
                 'truncate' => false,
-                'then' => function ($filenameTarget, $filenameRotated) {},
-                'catch' => function (RotationFailed $exception) {},
-                'finally' => function ($message, $filenameTarget) {},
+                //'then' => function ($filenameTarget, $filenameRotated) {},
+                //'catch' => function (RotationFailed $exception) {},
+                //'finally' => function ($message, $filenameTarget) {},
             ]);
 
             $finder = new Finder();
@@ -65,6 +65,51 @@ class FileLogger
                 $rotation->rotate($file->getPathname());
             }
         }
+    }
+
+    /**
+     * [Description for file]
+     *
+     * @param mixed $collecte
+     *
+     * @return [type]
+     *
+     * Created at: 05/06/2024 18:52:03 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function file($mavenKey, $collecte){
+        // Fonction pour formater les informations du tableau de manière récursive
+        function formatArray($json, $level = 1) {
+            // Retourner une chaîne vide si les données ne sont pas un tableau
+            if (!is_array($json)) {
+                return '';
+            }
+            $output = '';
+            // Déterminer la balise à utiliser (h1, h2, etc.)
+            $tag = 'h' . $level;
+
+            foreach ($json as $key => $value) {
+                if (is_array($value)) {
+                    // Si la clé est numérique, ne pas l'afficher
+                    if (!is_numeric($key)) {
+                        $output .= "<$tag>" . htmlspecialchars($key) . "</$tag>";
+                    }
+                    // Appel récursif avec un niveau d'indentation supérieur
+                    $output .= formatArray($value, $level + 1);
+                } else {
+                    // Si la clé est numérique, ne pas l'afficher
+                    if (is_numeric($key)) {
+                        $output .= '<p>' . htmlspecialchars($value) . '</p>';
+                    } else {
+                        $output .= "<p><strong>" . htmlspecialchars($key) . ":</strong> " . htmlspecialchars($value) . '</p>';
+                    }
+                }
+            }
+            return $output;
+        }
+
+        return static::log($mavenKey, formatArray($collecte));
     }
 
     /**
