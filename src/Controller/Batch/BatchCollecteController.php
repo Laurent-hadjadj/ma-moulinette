@@ -18,10 +18,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\SecurityBundle\Security;
 
-// Gestion de accès aux API
+/** Gestion de accès aux API */
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+
+/** Les services */
+use App\Service\FileLogger;
 
 /** Accès aux tables */
 use Doctrine\ORM\EntityManagerInterface;
@@ -64,6 +67,7 @@ class BatchCollecteController extends AbstractController
     public function __construct(
         private Security $security,
         private EntityManagerInterface $em,
+        private FileLogger $logger,
         private BatchCollecteInformationProjetController $batchCollecteInformation,
         private BatchCollecteMesureController $batchCollecteMesure,
         private BatchCollecteNoteController $batchCollecteNote,
@@ -78,6 +82,7 @@ class BatchCollecteController extends AbstractController
     ) {
         $this->security = $security;
         $this->em = $em;
+        $this->logger = $logger;
         $this->batchCollecteInformation = $batchCollecteInformation;
         $this->batchCollecteMesure = $batchCollecteMesure;
         $this->batchCollecteNote = $batchCollecteNote;
@@ -133,9 +138,10 @@ class BatchCollecteController extends AbstractController
                 "**** INFORMATION : Mode MANUEL détecté ****",
                 "** ERREUR : L'utilisateur n'est pas connu"
             ];
+            $trace=$this->logger->file($mavenKey,$collecte);
             /** L'utilisateur n'est pas autorisé */
             return $response->setData(['code' => 401,
-                'message' => static::$erreur401, 'collecte' => $collecte
+                'message' => static::$erreur401, 'collecte' => $collecte, 'trace'=>$trace
             ], Response::HTTP_UNAUTHORIZED);
         }
 
@@ -162,7 +168,8 @@ class BatchCollecteController extends AbstractController
                 "**** ERREUR : INFORMATION PROJET ".$informationProjet['code']. "****",
                 $informationProjet['message'] ?? $informationProjet['error']
             ];
-            return $response->setData(["Collecte" => $collecte]);
+            $trace=$this->logger->file($mavenKey, $collecte);
+            return $response->setData(["Collecte" => $collecte, 'trace'=>$trace]);
         }
 
         /** Mesures du projet (ligne de code, couverture, dette, ...) */
@@ -341,6 +348,8 @@ class BatchCollecteController extends AbstractController
         ];
 
         /** Rapport de collecte */
-        return $response->setData(["Collecte" => $collecte, Response::HTTP_OK]);
+        $trace=$this->logger->file($mavenKey, $collecte);
+        return $response->setData(["Collecte" => $collecte, 'trace'=>$trace, Response::HTTP_OK]);
     }
+
 }
