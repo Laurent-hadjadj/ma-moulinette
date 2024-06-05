@@ -50,7 +50,6 @@ class IsValideMavenKey
         /** On regarde si une analyse a été réalisée. */
         $map=['maven_key'=>$mavenKey];
         $request=$informationProjetRepository->selectInformationProjetisValide($map);
-
-        return ['code' => $request['code'], 'erreur'=>$request['erreur'], 'request'=>$request['is_valide']];
+        return ['code' => $request['code'], 'request'=>$request['is_valide'] ?? $request['erreur']];
     }
 }
