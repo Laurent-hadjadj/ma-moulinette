@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##         Création de la base de données         ##
-##               V1.2.0 - 28/05/2024              ##
+##               V1.3.0 - 06/06/2024              ##
 ##                                                ##
 ####################################################*/
 
@@ -10,6 +10,8 @@
 
 --- 2024-05-22 : Laurent HADJADJ - mise à jour des attributs de création de la base de données.
 --- 2024-05-28 : Laurent HADJADJ - mise à jour complète du script.
+--- 2024-06-06 : Laurent HADJADJ - ajout de l'extension pg_stat_statements.
+
 
 -- Suppression de la base, de l'utilisateur et du rôle s'ils existent
 DROP DATABASE IF EXISTS ma_moulinette WITH (FORCE);
@@ -32,9 +34,13 @@ ALTER DATABASE ma_moulinette SET search_path TO ma_moulinette;
 -- Droits sur la base de données
 GRANT TEMPORARY, CONNECT ON DATABASE ma_moulinette TO PUBLIC;
 GRANT ALL ON DATABASE ma_moulinette TO db_user;
+GRANT pg_monitor TO db_user;
 
 -- Configuration du search_path pour l'utilisateur spécifique
 --ALTER ROLE db_user SET search_path TO ma_moulinette;
 ALTER ROLE db_user IN DATABASE ma_moulinette SET search_path TO ma_moulinette;
 
 COMMENT ON ROLE db_user IS 'Utilisateur propriétaire de la base de données Ma-Moulinette.';
+
+-- Création de l'extension
+CREATE EXTENSION pg_stat_statements;
