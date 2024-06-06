@@ -22,9 +22,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-/** gestion du journal d'activité */
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Finder\Finder;
+/** Les services */
+use App\Service\FileLogger;
 
 /** Accès aux tables */
 use Doctrine\ORM\EntityManagerInterface;
@@ -32,8 +31,6 @@ use App\Entity\Historique;
 use App\Entity\Portefeuille;
 use App\Entity\Batch;
 use App\Entity\BatchTraitement;
-
-use App\Service\FileLogger;
 
 /** AMQP */
 use PhpAmqpLib\Connection\AMQPStreamConnection;
@@ -69,11 +66,11 @@ class BatchManuelController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function __construct(
-        private FileLogger $logger,
         private EntityManagerInterface $em,
+        private FileLogger $logger
     ) {
-        $this->logger = $logger;
         $this->em = $em;
+        $this->logger = $logger;
     }
 
     /**
@@ -137,35 +134,11 @@ class BatchManuelController extends AbstractController
 
         /** On récupère le job et le type (manuel ou automatique) */
         $data = json_decode($request->getContent());
-        $portefeuille = $data->portefeuille;
-        $type = $data->type;
 
-        /* On initialise le journal des traces */
-        $filesystem = new Filesystem();
-        $path = $this->getParameter('kernel.project_dir').'\var\audit';
+        //todo ajouter le test des paramètres du post
+        $journal=$this->logger->downloadContent($data->type, $data->portefeuille);
 
-        $recherche = "KO";
-        /* Le dossier d'audit est présent */
-        if ($filesystem->exists($path)) {
-            $name = preg_replace('/\s+/', '_', $portefeuille);
-            $fichier = "{$type}_$name.log";
-
-            /** on récupère la log */
-            $finder = new Finder();
-            $finder->files()->in($path);
-            $finder->name($fichier);
-
-            foreach ($finder as $file) {
-                $c = $file->getContents();
-            }
-            if (empty($c)) {
-                $c = 'Pas de journal disponible.';
-            } else {
-                $recherche = 'OK';
-            }
-        }
-
-        return $response->setData(["recherche" => $recherche, "journal" => $c, Response::HTTP_OK]);
+        return $response->setData(["recherche" => $journal['recherche'], 'journal' => $journal['c'], Response::HTTP_OK]);
     }
 
     /**
@@ -314,188 +287,14 @@ class BatchManuelController extends AbstractController
             ], Response::HTTP_BAD_REQUEST);
         }
 
-        $portefeuille = $data->portefeuille;
-        $dateLog = new \DateTime();
-        $dateLog->setTimezone(new \DateTimeZone(static::$europeParis));
-        $maxiDate = $dateLog->format(static::$dateFormat);
-
-        $this->initializeLog($portefeuille, $maxiDate);
+        //$portefeuille = $data->portefeuille;
 
         $results = [['id' => 0, 'portefeuille' => 'Portefeuille-2048', 'projet' => 1]];
         foreach ($results as $value) {
             $this->processPortefeuille($value);
         }
 
-        $debutBatch = $dateLog;
-        $finBatch = new \DateTime();
-        $finBatch->setTimezone(new \DateTimeZone(static::$europeParis));
-
-        return $response->setData(["execution" => "end", "temps" => $this->calculateExecutionTime($debutBatch, $finBatch)], Response::HTTP_OK);
-    }
-
-    /**
-     * [Description for initializeLog]
-     *
-     * @param string $portefeuille
-     * @param string $maxiDate
-     *
-     * @return void
-     *
-     * Created at: 22/05/2024 15:53:28 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    private function initializeLog(string $portefeuille, string $maxiDate): void
-    {
-        $log = "==============================================================\n";
-        $log .= "===                                                        ===\n";
-        $log .= "===  Initialisation du traitement le {$maxiDate}   ===\n";
-        $log .= "===                                                        ===\n";
-        $log .= "==============================================================\n\n";
-        $this->logger->log($portefeuille, $log);
-    }
-
-    /**
-     * [Description for processPortefeuille]
-     *
-     * @param Client $client
-     * @param array $value
-     *
-     * @return void
-     *
-     * Created at: 22/05/2024 15:53:34 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    private function processPortefeuille(array $value): void
-    {
-        $id = $value['id'];
-        $portefeuille = $value['portefeuille'];
-        $listeProjet = $this->listeProjet($portefeuille);
-
-        if (isset($listeProjet['message'])) {
-            $messageParts = explode(" ", $listeProjet['message']);
-            if ($messageParts[0] === "[TRAITEMENT-005]") {
-                $debutBatch = new \DateTime();
-                $debutBatch->setTimezone(new \DateTimeZone(static::$europeParis));
-                $this->startBatchLog($portefeuille, $debutBatch);
-
-                foreach ($listeProjet['liste'] as $mavenKey) {
-                    $this->processProjet($portefeuille, $mavenKey);
-                }
-
-                $finBatch = new \DateTime();
-                $finBatch->setTimezone(new \DateTimeZone(static::$europeParis));
-                $this->endBatchLog($portefeuille, $id, $debutBatch, $finBatch);
-            }
-        }
-    }
-
-    /**
-     * [Description for startBatchLog]
-     *
-     * @param string $portefeuille
-     * @param \DateTime $debutBatch
-     *
-     * @return void
-     *
-     * Created at: 22/05/2024 15:54:00 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    private function startBatchLog(string $portefeuille, \DateTime $debutBatch): void
-    {
-        $log = "INFO : Début de la collecte pour le portefeuille :\n -== {$portefeuille} ==-\n";
-        $this->logger->log($portefeuille, $log);
-    }
-
-    private function processProjet(string $portefeuille, string $mavenKey): void
-    {
-        $historiqueRepository=$this->em->getRepository(Historique::class);
-
-        $log = "INFO : Collecte des indicateurs pour le projet -== {$mavenKey} ==- \n\n";
-        $this->logger->log($portefeuille, $log);
-
-        $map=['maven_key' => $mavenKey];
-        $request=$historiqueRepository->countHistoriqueProjet($map);
-
-        if (empty($request)) {
-            $log = "INFO : Le projet n'existe pas dans la table historique ; je lance la collecte !\n";
-            $this->logger->log($portefeuille, $log);
-            //$this->api->batchNouvelleCollecte($mavenKey);
-        } else {
-            $this->updateProjet($portefeuille, $mavenKey);
-        }
-    }
-
-    /**
-     * [Description for updateProjet]
-     *
-     * @param string $portefeuille
-     * @param string $mavenKey
-     *
-     * @return void
-     *
-     * Created at: 22/05/2024 17:36:09 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    private function updateProjet(string $portefeuille, string $mavenKey): void
-    {
-        /** On instancie l'EntityRepository */
-        $historiqueRepository = $this->em->getRepository(Historique::class);
-
-        $batchInformation = $this->batchCollecteInformation->batchCollecteInformation($mavenKey);
-        if (isset($batchInformation['code']) && in_array($batchInformation['code'], [404, 500])) {
-            $log = "ERROR : Le projet n'existe pas dans la table historique !\n";
-            $this->logger->log($portefeuille, $log);
-            exit;
-        }
-
-        $laVersionSonar = $batchInformation["information"]["projet"];
-        $laDateSonar = $batchInformation["information"]["date"];
-
-        /** on regarde si le projet est présent dans la table historique */
-        $map=['maven_key' => $mavenKey];
-        $request=$historiqueRepository->countHistoriqueProjet($map);
-
-        if (!empty($request)) {
-            $laVersionMaMoulinette = $request[0]["version"];
-            $laDateMaMoulinette = $request[0]["date"];
-
-            if ($laVersionSonar === $laVersionMaMoulinette && $laDateSonar === $laDateMaMoulinette) {
-                $log = "INFO : Le projet existe dans la table historique ; il est à jour !\n";
-                $this->logger->log($portefeuille, $log);
-            } else {
-                $log = "INFO : Le projet existe dans la table historique ; il n'est pas à jour !\n";
-                $this->logger->log($portefeuille, $log);
-                //$this->api->batchAjouteCollecte($mavenKey);
-            }
-        }
-    }
-
-    private function endBatchLog(string $portefeuille, int $id, \DateTime $debutBatch, \DateTime $finBatch): void
-    {
-        $batchTraitementRepository=$this->em->getRepository(BatchTraitement::class);
-
-        $finBatchFormatted = $finBatch->format(static::$dateFormat);
-        $log =  "INFO : Fin de la collecte pour le projet.\n";
-        $log .= "          Fin du traitement le {$finBatchFormatted}\n";
-        $this->logger->log($portefeuille, $log);
-
-        $map=['debut_traitement' => $debutBatch->format(static::$dateFormat),
-                'fin_traitement' => $finBatchFormatted,
-                'id' => $id];
-        $request=$batchTraitementRepository->updateBatchTraitement($map);
-
-        $log = "INFO : Mise à jour de la table batch traitement.\n";
-        $this->logger->log($portefeuille, $log);
-    }
-
-    private function calculateExecutionTime(\DateTime $debutBatch, \DateTime $finBatch): string
-    {
-        $interval = $debutBatch->diff($finBatch);
-        return $interval->format(static::$timeFormat);
+        return $response->setData(["execution" => "end", "temps" => 'debutBatch, finBatch', Response::HTTP_OK]);
     }
 
 }

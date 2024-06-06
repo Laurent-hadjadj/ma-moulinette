@@ -32,6 +32,41 @@ class FileLogger
         $this->path = $this->params->get('kernel.project_dir') . $this->params->get('path.audit');
     }
 
+    /**
+     * [Description for downloadContent]
+     *
+     * @param mixed $file
+     *
+     * @return array
+     *
+     * Created at: 05/06/2024 20:08:30 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function downloadContent($portefeuille, $type){
+        /* On initialise le journal des traces */
+        $filesystem = new Filesystem();
+        $completPath = $this->path;
+
+        $recherche = "KO";
+        /* Le dossier d'audit est présent */
+        if ($filesystem->exists($completPath)) {
+            $name = preg_replace('/\s+/', '_', $portefeuille);
+            $fichier = "{$type}_$name.log";
+
+            /** on récupère la log */
+            $finder = new Finder();
+            $finder->files()->in($completPath);
+            $finder->name($fichier);
+
+            foreach ($finder as $file) {
+                $c = $file->getContents();
+            }
+
+            $recherche = (empty($c)) ? 'Pas de journal disponible.' : 'OK';
+        }
+        return ["recherche" => $recherche, 'journal' => $c];
+    }
 
     /**
      * [Description for logrotate]
@@ -72,7 +107,7 @@ class FileLogger
      *
      * @param mixed $collecte
      *
-     * @return [type]
+     * @return string
      *
      * Created at: 05/06/2024 18:52:03 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -119,7 +154,7 @@ class FileLogger
      * @param string $portefeuille
      * @param string $log
      *
-     * @return void
+     * @return integer
      *
      * Created at: 05/03/2023, 00:01:12 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
