@@ -185,7 +185,7 @@ class ApiHomeController extends AbstractController
 
         /** On met à jour la table propriétés */
         $map=[  'projet_bd'=>$nombre, 'projet_sonar'=>$nombre,
-                'date_modification_projet'=>$date->format(static::$dateFormatShort),
+                'date_modification_projet'=>$date,
             ];
         $r=$propertiesEntity->updatePropertiesProjet($map);
         if ($r['code']!=200) {
