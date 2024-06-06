@@ -72,22 +72,6 @@ class BatchCrudController extends AbstractCrudController
     }
 
     /**
-     * [Description for configureActions]
-     *
-     * @param Actions $actions
-     *
-     * @return Actions
-     *
-     * Created at: 02/01/2023, 18:32:55 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function configureActions(Actions $actions): Actions
-    {
-        return parent::configureActions($actions);
-    }
-
-    /**
      * [Description for configureFields]
      * Configuration et propriétés des champs
      *
@@ -215,11 +199,11 @@ class BatchCrudController extends AbstractCrudController
         /** On ajoute la date de modification  */
         $entityInstance->setdateModification(new \DateTimeImmutable());
 
-        //** On récupère le nombre de projet du portefeuille */
-        $sql = "SELECT liste FROM portefeuille ORDER BY titre ASC";
-        $l = $this->emm->getConnection()->prepare($sql)->executeQuery();
-        $r = $l->fetchAssociative();
-        $nombreProjet = count(json_decode($r['liste']));
+        /** On récupère le nombre de projet du portefeuille */
+        //"$sql = "SELECT liste FROM portefeuille ORDER BY titre ASC";
+        //"$l = $this->emm->getConnection()->prepare($sql)->executeQuery();
+        //"$r = $l->fetchAssociative();
+        //"$nombreProjet = count(json_decode($r['liste']));
         parent::updateEntity($em, $entityInstance);
     }
 
