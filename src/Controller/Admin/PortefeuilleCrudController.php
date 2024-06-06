@@ -1,5 +1,16 @@
 <?php
 
+/*
+*  Ma-Moulinette
+*  --------------
+*  Copyright (c) 2021-2024.
+*  Laurent HADJADJ <laurent_h@me.com>.
+*  Licensed Creative Common CC-BY-NC-SA 4.0.
+*  ---
+*  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+*  http://creativecommons.org/licenses/by-nc-sa/4.0/
+*/
+
 namespace App\Controller\Admin;
 
 use App\Entity\Portefeuille;
@@ -63,22 +74,6 @@ class PortefeuilleCrudController extends AbstractCrudController
         return $filters
             ->add('titre')
             ->add('equipe');
-    }
-
-    /**
-     * [Description for configureActions]
-     *
-     * @param Actions $actions
-     *
-     * @return Actions
-     *
-     * Created at: 02/01/2023, 18:36:23 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function configureActions(Actions $actions): Actions
-    {
-        return parent::configureActions($actions);
     }
 
     /**
