@@ -14,34 +14,29 @@
 namespace App\Controller\Admin;
 
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
+
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Utilisateur;
 use App\Entity\Equipe;
 use App\Entity\Portefeuille;
 use App\Entity\Batch;
-use PDO;
-
-use App\Service\Client;
-
-
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\JsonResponse;
 
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
-
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Config\UserMenu;
-
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
-use Symfony\Component\Security\Core\User\UserInterface;
-
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
+
+use App\Service\Client;
 
 /**
  * [Description DashboardController]
@@ -79,12 +74,12 @@ class DashboardController extends AbstractDashboardController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/health', name: 'sonar_health', methods: ['POST'])]
-    public function sonarHealth(Request $request, Client $client): response
+    public function sonarHealth(): response
     {
         $url = $this->getParameter(static::$sonarUrl) . "/api/system/health";
 
         /** On appel le client http */
-        $result = $client->http($url);
+        $result = $this->em->client->http($url);
         return new JsonResponse($result, Response::HTTP_OK);
     }
 
@@ -102,12 +97,12 @@ class DashboardController extends AbstractDashboardController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/system/info', name: 'information_systeme', methods: ['POST'])]
-    public function informationSysteme(Request $request, Client $client): response
+    public function informationSysteme(): response
     {
         $url = $this->getParameter(static::$sonarUrl) . "/api/system/info";
 
         /** On appel le client http */
-        $result = $client->http($url);
+        $result = $this->em->http($url);
         return new JsonResponse($result, Response::HTTP_OK);
     }
     /**
@@ -123,209 +118,174 @@ class DashboardController extends AbstractDashboardController
     #[Route('/admin', name: 'admin')]
     public function index(): Response
     {
-        /** Systeme **/
-        /** On récupère la version de symfony et de PHP. */
-        $symfonyVersion = \Symfony\Component\HttpKernel\Kernel::VERSION;
-        $phpVersion = PHP_VERSION;
-        $ram = round(memory_get_usage() / 1048576, 2);
-        /** On vérifie l'intégrité de la base */
-        $sql = "PRAGMA integrity_check;";
-        $s = $this->em->getConnection()->prepare($sql)->executeQuery();
-        $resultat = $s->fetchAllAssociative();
-        $integrity = $resultat[0]['integrity_check'];
+    /** Informations système **/
+    $symfonyVersion = \Symfony\Component\HttpKernel\Kernel::VERSION;
+    $phpVersion = PHP_VERSION;
+    $ram = round(memory_get_usage() / 1048576, 2);
 
-        /** On récupère le nombre d'utilisateur. */
-        $sql = "SELECT count() as total FROM utilisateur;";
-        $select = $this->em->getConnection()->prepare($sql)->executeQuery();
-        $resultat = $select->fetchAllAssociative();
-        if (empty($resultat)) {
-            $applicationUtilisateur = 0;
-        } else {
-            $applicationUtilisateur = $resultat[0]['total'];
+    $queries = [
+        // Connexion active
+        "pg_stat_activity" => "SELECT SUM(CASE WHEN state = 'idle' THEN 1 ELSE 0 END) AS idle_count, SUM(CASE WHEN state != 'idle' THEN 1 ELSE 0 END) AS not_idle_count FROM get_pg_stat_activity() WHERE datname = 'ma_moulinette';",
+
+        // Verrous actifs
+        "pg_locks" => "SELECT pid, locktype, relation::regclass AS table, page, tuple,  mode, granted FROM pg_locks WHERE granted = false AND pid IN (SELECT pid FROM pg_stat_activity WHERE datname = 'ma_moulinette')",
+
+        // Statistiques de la base de données
+        "pg_stat_database" => "WITH stats AS (SELECT datname,            numbackends, xact_commit, xact_rollback, blks_read, blks_hit, tup_returned, tup_fetched, tup_inserted, tup_updated, tup_deleted
+        FROM pg_stat_database WHERE datname = 'ma_moulinette')
+        SELECT datname, numbackends, xact_commit, xact_rollback, blks_read, blks_hit, tup_returned, tup_fetched, tup_inserted,
+        tup_updated, tup_deleted,
+        CASE WHEN (blks_hit + blks_read) = 0 THEN 0 ELSE ROUND(blks_hit::numeric / (blks_hit + blks_read), 4)
+        END AS cache_hit_ratio,
+        CASE WHEN (xact_commit + xact_rollback) = 0 THEN 0 ELSE ROUND(xact_rollback::numeric / (xact_commit + xact_rollback), 4) END AS transaction_rollback_ratio,
+        CASE WHEN tup_inserted = 0 THEN 0 ELSE ROUND(tup_fetched::numeric / tup_inserted::numeric, 2) END AS read_requests_per_inserted_tuple,
+        CASE WHEN tup_returned = 0 THEN 0 ELSE ROUND(tup_fetched::numeric / tup_returned::numeric, 4) END AS read_requests_ratio FROM stats",
+
+        // Statistiques des tables
+        "pg_stat_all_tables" => "SELECT schemaname, relname,seq_scan, seq_tup_read, idx_scan, idx_tup_fetch,
+        n_tup_ins, n_tup_upd, n_tup_del,
+        (CASE WHEN seq_tup_read != 0 THEN seq_scan::float / seq_tup_read ELSE 0 END) AS seq_scan_ratio,
+        (CASE WHEN idx_tup_fetch != 0 THEN idx_scan::float / idx_tup_fetch ELSE 0 END) AS idx_scan_ratio,
+        (CASE WHEN n_tup_ins != 0 THEN (n_tup_upd + n_tup_del)::float / n_tup_ins ELSE 0 END) AS transaction_per_insert FROM pg_stat_all_tables WHERE schemaname='ma_moulinette'",
+
+        // Statistiques des indexes
+        "pg_stat_all_indexes" => "SELECT schemaname, relname, indexrelname, idx_scan, idx_tup_read, idx_tup_fetch,
+        (CASE WHEN idx_tup_read != 0 THEN idx_scan::float / idx_tup_read ELSE 0 END) AS index_usage_ratio,
+        (CASE WHEN idx_scan != 0 THEN idx_tup_fetch::float / idx_scan ELSE 0 END) AS tuple_per_index_scan,
+        (CASE WHEN idx_tup_read != 0 THEN idx_tup_fetch::float / idx_tup_read ELSE 0 END) AS tuple_per_index_read
+        FROM pg_stat_all_indexes WHERE schemaname='ma_moulinette'",
+
+        // Statistiques SQL
+        "pg_stat_statements" => "SELECT  AVG(total_exec_time_seconds) AS avg_total_exec_time_seconds,
+            AVG(min_exec_time_seconds) AS avg_min_exec_time_seconds,
+            AVG(max_exec_time_seconds) AS avg_max_exec_time_seconds,
+            AVG(mean_exec_time_seconds) AS avg_mean_exec_time_seconds,
+            AVG(stddev_exec_time_seconds) AS avg_stddev_exec_time_seconds
+            FROM (SELECT
+            total_exec_time / 1000 AS total_exec_time_seconds,
+            min_exec_time / 1000 AS min_exec_time_seconds,
+            max_exec_time / 1000 AS max_exec_time_seconds,
+            mean_exec_time / 1000 AS mean_exec_time_seconds,
+            stddev_exec_time / 1000 AS stddev_exec_time_seconds
+        FROM pg_stat_statements ORDER BY total_exec_time DESC LIMIT 10) AS top_queries",
+
+        // Nombre d'utilisateurs
+        "utilisateur_count" => "SELECT count(*) as total FROM utilisateur",
+
+        // Version de PostgreSQL
+        "postgres_version" => "SELECT current_setting('server_version') AS version",
+
+        // Nombre de versions de ma-moulinette
+        "ma_moulinette_count" => "SELECT count(*) as total FROM ma_moulinette",
+
+        // Nombre de tables
+        "table_count" => "SELECT count(*) as total FROM pg_catalog.pg_tables WHERE schemaname = 'ma_moulinette';",
+
+        // Nombre de projets SonarQube
+        "projet_count" => "SELECT count(*) as total FROM liste_projet",
+
+        // Nombre de profils Sonar
+        "profile_count" => "SELECT count(*) as total FROM profiles",
+
+        // Nombre de règles
+        "rule_count" => "SELECT sum(active_rule_count) as total FROM profiles",
+
+        // Nombre de projets dans l'historique
+        "historique_count" => "SELECT count(*) as total FROM historique",
+
+        // Nombre d'anomalies
+        "anomalie_count" => "SELECT count(*) as total FROM anomalie",
+
+        // Nombre de signalements
+        "mesure_signalement" => "SELECT sum(anomalie_total) as total FROM anomalie",
+
+        // Nombre de bugs
+        "mesure_bug" => "SELECT sum(bug) as total FROM anomalie",
+
+        // Nombre de vulnérabilités
+        "mesure_vulnerability" => "SELECT sum(vulnerability) as total FROM anomalie",
+
+        // Nombre de code smells
+        "mesure_codesmell" => "SELECT sum(code_smell) as total FROM anomalie",
+
+        // Nombre de lignes de code analysées
+        "mesure_lines" => "SELECT count(DISTINCT project_name) as total FROM mesures"
+    ];
+
+    $conn = $this->em->getConnection();
+    $results = [];
+    foreach ($queries as $key => $sql) {
+        $stmt = $conn->prepare($sql);
+        $results[$key] = $stmt->executeQuery()->fetchAllAssociative();
+    }
+
+    // Calcul des lignes de code et des tests unitaires
+    $projetLines = 0;
+    $projetTests = 0;
+    $limit = $results['mesure_lines'][0]['total'] ?? 0;
+    if ($limit > 0) {
+        $sql = "SELECT DISTINCT project_name, lines, tests, date_enregistrement FROM mesures GROUP BY project_name, lines, tests, date_enregistrement ORDER BY date_enregistrement DESC LIMIT $limit";
+        $projets = $conn->prepare($sql)->executeQuery()->fetchAllAssociative();
+        foreach ($projets as $projet) {
+            $projetLines += $projet['lines'];
+            $projetTests += $projet['tests'];
         }
-        /** On récupère la version de la base de données. */
-        $dbh = new PDO('sqlite::memory:');
-        $versionSqlite = $dbh->query('select sqlite_version()')->fetch()[0];
-        $dbh = null;
+    }
 
-        /** Application */
-        /** On récupère le nombre de version de ma-moulinette */
-        $sql = "SELECT count() as total FROM ma_moulinette;";
-        $select = $this->em->getConnection()->prepare($sql)->executeQuery();
-        $resultat = $select->fetchAllAssociative();
-        if (empty($resultat)) {
-            $applicationNombreVersion = 0;
-        } else {
-            $applicationNombreVersion = $resultat[0]['total'];
-        }
+    $html = ['fichier' => 21, 'code' => 3389, 'comment' => 120, 'vide' => 196, 'total' => 3705];
+    $php = ['fichier' => 64, 'code' => 8255, 'comment' => 2123, 'vide' => 2173, 'total' => 12551];
+    $css = ['fichier' => 24, 'code' => 1998, 'comment' => 550, 'vide' => 475, 'total' => 3023];
+    $js = ['fichier' => 15, 'code' => 3229, 'comment' => 1001, 'vide' => 546, 'total' => 4776];
+    $md = ['fichier' => 20, 'code' => 1077, 'comment' => 0, 'vide' => 570, 'total' => 1647];
+    $updateSql = ['fichier' => 7, 'code' => 191, 'comment' => 66, 'vide' => 75, 'total' => 332];
+    $migration = ['fichier' => 2, 'code' => 881, 'comment' => 10, 'vide' => 14, 'total' => 112];
 
-        /** Statistiques sur le code. */
-        $html = ['fichier' => 21, 'code' => 3389, 'comment' => 120, 'vide' => 196, 'total' => 3705 ];
-        $php = ['fichier' => 64, 'code' => 8255, 'comment' => 2123, 'vide' => 2173, 'total' => 12551 ];
-        $css = ['fichier' => 24, 'code' => 1998, 'comment' => 550, 'vide' => 475, 'total' => 3023 ];
-        $js = ['fichier' => 15, 'code' => 3229, 'comment' => 1001, 'vide' => 546, 'total' => 4776 ];
-        $md = ['fichier' => 20, 'code' => 1077, 'comment' => 0, 'vide' => 570, 'total' => 1647 ];
-        $updateSql = ['fichier' => 7, 'code' => 191, 'comment' => 66, 'vide' => 75, 'total' => 332 ];
-        $migration = ['fichier' => 2, 'code' => 881, 'comment' => 10, 'vide' => 14, 'total' => 112 ];
+    /** La version de ma-moulinette */
+    $app=explode('-', $this->getParameter("version"));
 
-        /** On récupère le nombre de projet en base. */
-        $sql = "SELECT count() as total FROM sqlite_master WHERE type = 'table'";
-        $select = $this->em->getConnection()->prepare($sql)->executeQuery();
-        $resultat = $select->fetchAllAssociative();
-        if (empty($resultat)) {
-            $applicationTable = 0;
-        } else {
-            $applicationTable = $resultat[0]['total'];
-        }
-
-        /** On récupère le nombre de projet sonarqube en base. */
-        $sql = "SELECT count() as total FROM liste_projet;";
-        $select = $this->em->getConnection()->prepare($sql)->executeQuery();
-        $resultat = $select->fetchAllAssociative();
-        if (empty($resultat)) {
-            $projetNombre = 0;
-        } else {
-            $projetNombre = $resultat[0]['total'];
-        }
-
-        /** On récupère le nombre de profil sonar. */
-        $sql = "SELECT count() as total FROM profiles;";
-        $select = $this->em->getConnection()->prepare($sql)->executeQuery();
-        $resultat = $select->fetchAllAssociative();
-        if (empty($resultat)) {
-            $projetProfile = 0;
-        } else {
-            $projetProfile = $resultat[0]['total'];
-        }
-
-        /** On récupère le nombre de règle. */
-        $sql = "SELECT sum(active_rule_count) as total FROM profiles;";
-        $select = $this->em->getConnection()->prepare($sql)->executeQuery();
-        $resultat = $select->fetchAllAssociative();
-        if (empty($resultat)) {
-            $projetRegle = 0;
-        } else {
-            $projetRegle = $resultat[0]['total'];
-        }
-
-        /** On récupère le nombre de projet dans l'historique. */
-        $sql = "SELECT count() as total FROM anomalie;";
-        $select = $this->em->getConnection()->prepare($sql)->executeQuery();
-        $resultat = $select->fetchAllAssociative();
-        if (empty($resultat)) {
-            $projetAnomalie = 0;
-        } else {
-            $projetAnomalie = $resultat[0]['total'];
-        }
-
-        /** On récupère le nombre de projet dans l'historique. */
-        $sql = "SELECT count() as total FROM historique;";
-        $select = $this->em->getConnection()->prepare($sql)->executeQuery();
-        $resultat = $select->fetchAllAssociative();
-        if (empty($resultat)) {
-            $projetHistorique = 0;
-        } else {
-            $projetHistorique = $resultat[0]['total'];
-        }
-
-        /** On récupère le nombre de ligne de code analysé. */
-        $sql = "SELECT count(DISTINCT project_name) as total FROM mesures;";
-        $select = $this->em->getConnection()->prepare($sql)->executeQuery();
-        $resultat = $select->fetchAllAssociative();
-        if (empty($resultat)) {
-            $projetLines = 0;
-            $projetTests = 0;
-        } else {
-            /** On récupère le nombre de projet unique. */
-            $limit = $resultat[0]['total'];
-            /** On récupère les n premier projet. */
-            $sql = "SELECT DISTINCT project_name, lines, tests, date_enregistrement
-                    FROM mesures
-                    GROUP BY project_name, date_enregistrement
-                    ORDER BY date_enregistrement
-                    DESC LIMIT $limit;";
-            $select = $this->em->getConnection()->prepare($sql)->executeQuery();
-            $projets = $select->fetchAllAssociative();
-            /** On calcul la somme des nloc et des tests unitaires. */
-            $lines = 0;
-            $tests = 0;
-            foreach ($projets as $projet) {
-                $lines = $lines + $projet['lines'];
-                $tests = $tests + $projet['tests'];
-            }
-            $projetLines = $lines;
-            $projetTests = $tests;
-        }
-
-        /**  Mesures */
-        /** On récupère le nombre de signalement. */
-        $sql = "SELECT sum(anomalie_total) as total FROM anomalie;";
-        $select = $this->em->getConnection()->prepare($sql)->executeQuery();
-        $resultat = $select->fetchAllAssociative();
-        if (empty($resultat)) {
-            $mesureSignalement = 0;
-        } else {
-            $mesureSignalement = $resultat[0]['total'];
-        }
-        /** On récupère le nombre de bug. */
-        $sql = "SELECT sum(bug) as total FROM anomalie;";
-        $select = $this->em->getConnection()->prepare($sql)->executeQuery();
-        $resultat = $select->fetchAllAssociative();
-        if (empty($resultat)) {
-            $mesureBug = 0;
-        } else {
-            $mesureBug = $resultat[0]['total'];
-        }
-        /** On récupère le nombre de vulnérabilité. */
-        $sql = "SELECT sum(vulnerability) as total FROM anomalie;";
-        $select = $this->em->getConnection()->prepare($sql)->executeQuery();
-        $resultat = $select->fetchAllAssociative();
-        if (empty($resultat)) {
-            $mesureVulnerability = 0;
-        } else {
-            $mesureVulnerability = $resultat[0]['total'];
-        }
-
-        /** On récupère le nombre de signalement. */
-        $sql = "SELECT sum(code_smell) as total FROM anomalie;";
-        $select = $this->em->getConnection()->prepare($sql)->executeQuery();
-        $resultat = $select->fetchAllAssociative();
-        if (empty($resultat)) {
-            $mesureCodeSmell = 0;
-        } else {
-            $mesureCodeSmell = $resultat[0]['total'];
-        }
-
-
-        return $this->render(
-            'admin/index.html.twig',
-            [
-            'dateCopyright' => \date('Y'),
-            'date' => $this->getParameter("date"),
-            'version' => $this->getParameter("version"),
-            'php_version' => $phpVersion,
-            'symfony_version' => $symfonyVersion,
-            'sqlite_version' => $versionSqlite,
-            'application_utilisateur' => $applicationUtilisateur,
-            'ram' => $ram,
-            'integrity' => $integrity,
-            'html' => $html,'php' => $php,'css' => $css, 'js' => $js, 'md' => $md, 'sql' => $updateSql, 'migration' => $migration,
-            'application_nombre_version' => $applicationNombreVersion,
-            'application_local_version' => $this->getParameter('version'),
-            'application_table' => $applicationTable,
-            'projet_projet' => $projetNombre,
-            'projet_profile' => $projetProfile,
-            'projet_regle' => $projetRegle,
-            'projet_historique' => $projetHistorique,
-            'projet_anomalie' => $projetAnomalie,
-            'projet_line' => $projetLines,
-            'projet_test' => $projetTests,
-            'mesure_signalement' => $mesureSignalement,
-            'mesure_bug' => $mesureBug,
-            'mesure_vulnerability' => $mesureVulnerability,
-            'mesure_codesmell' => $mesureCodeSmell,
-        ]
-        );
+    return $this->render('admin/index.html.twig', [
+        'dateCopyright' => date('Y'),
+        'date' => $this->getParameter("date"),
+        'version' => $this->getParameter('version'),
+        'php_version' => $phpVersion,
+        'symfony_version' => $symfonyVersion,
+        'postgresql_version' => $results['postgres_version'][0]['version'] ?? '-',
+        'application_utilisateur' => $results['utilisateur_count'][0]['total'] ?? 0,
+        'ram' => $ram,
+        'integrity' => 'todo',
+        'pg_stat_activity_idle' => $results['pg_stat_activity'][0]['idle_count'],
+        'pg_stat_activity_not_idle' => $results['pg_stat_activity'][0]['not_idle_count'],
+        'pg_locks' => count($results['pg_locks']),
+        'cache_hit_ratio'=> $results['pg_stat_database'][0]['cache_hit_ratio'],
+        'transaction_rollback_ratio'=> $results['pg_stat_database'][0]['transaction_rollback_ratio'],
+        'read_requests_per_inserted_tuple'=> $results['pg_stat_database'][0]['read_requests_per_inserted_tuple'],
+        'read_requests_ratio' => $results['pg_stat_database'][0]['read_requests_ratio'],
+        'seq_scan_ratio' => $results['pg_stat_all_tables'][0]['seq_scan_ratio'],
+        'idx_scan_ratio' => $results['pg_stat_all_tables'][0]['idx_scan_ratio'],
+        'transaction_per_insert' => $results['pg_stat_all_tables'][0]['transaction_per_insert'],
+        'index_usage_ratio' => $results['pg_stat_all_indexes'][0]['index_usage_ratio'],
+        'tuple_per_index_scan' => $results['pg_stat_all_indexes'][0]['tuple_per_index_scan'],
+        'tuple_per_index_read' => $results['pg_stat_all_indexes'][0]['tuple_per_index_read'],
+        'avg_total_exec_time_seconds' => $results['pg_stat_statements'][0]['avg_total_exec_time_seconds'],
+        'avg_min_exec_time_seconds' => $results['pg_stat_statements'][0]['avg_min_exec_time_seconds'],
+        'avg_max_exec_time_seconds' => $results['pg_stat_statements'][0]['avg_max_exec_time_seconds'],
+        'avg_stddev_exec_time_seconds' => $results['pg_stat_statements'][0]['avg_stddev_exec_time_seconds'],
+        'html' => $html, 'php' => $php, 'css' => $css, 'js' => $js, 'md' => $md, 'sql' => $updateSql, 'migration' => $migration,
+        'application_nombre_version' => $results['ma_moulinette_count'][0]['total'] ?? 0,
+        'application_local_version' => $app[0],
+        'application_table' => $results['table_count'][0]['total'] ?? 0,
+        'projet_projet' => $results['projet_count'][0]['total'] ?? 0,
+        'projet_profile' => $results['profile_count'][0]['total'] ?? 0,
+        'projet_regle' => $results['rule_count'][0]['total'] ?? 0,
+        'projet_historique' => $results['historique_count'][0]['total'] ?? 0,
+        'projet_anomalie' => $results['anomalie_count'][0]['total'] ?? 0,
+        'projet_line' => $projetLines,
+        'projet_test' => $projetTests,
+        'mesure_signalement' => $results['mesure_signalement'][0]['total'] ?? 0,
+        'mesure_bug' => $results['mesure_bug'][0]['total'] ?? 0,
+        'mesure_vulnerability' => $results['mesure_vulnerability'][0]['total'] ?? 0,
+        'mesure_codesmell' => $results['mesure_codesmell'][0]['total'] ?? 0,
+    ]);
     }
 
     /**
