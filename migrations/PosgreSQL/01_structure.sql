@@ -16,6 +16,7 @@
 -- 02/06/2024 : Laurent HADJADJ - Ajout de l'attribut utilisateur_collecte dans toutes les tables de collecte pour inssérer l'identifiant de l'utilisateur : [batch] ou [prenom.nom]
 -- 03/06/2024 : Laurent HADJADJ - Renommage duplication en duplication_density dans la table historique
 -- 04/06/2024 : Laurent HADJADJ - Ajout de l'attribut todo dans la table historique.
+-- 06/06/2024 : Laurent HADJADJ - Ajout de la mesure du temps d'execution des requêtes.
 
 -- SCHEMA: ma_moulinette
 
@@ -23,6 +24,16 @@ DROP SCHEMA IF EXISTS ma_moulinette CASCADE;
 
 CREATE SCHEMA ma_moulinette AUTHORIZATION db_user;
 COMMENT ON SCHEMA ma_moulinette IS 'Schéma de la base de données Ma-moulinette';
+
+-- Création de la fonction sécurisé pg_stat_activity()
+
+CREATE FUNCTION get_pg_stat_activity() RETURNS SETOF pg_stat_activity AS $$
+BEGIN
+    RETURN QUERY SELECT * FROM pg_stat_activity;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+GRANT EXECUTE ON FUNCTION get_pg_stat_activity() TO db_user;
 
 -- Table: ma_moulinette.activite
 
