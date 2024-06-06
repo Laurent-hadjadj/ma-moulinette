@@ -27,11 +27,11 @@
     </div>
     <div class="col-sm-12 col-md-3 col-lg-2">
       <div class="card border-dark mb-3 card-fontsize">
-        <div class="card-header text-center tool-tip">SQLite
+        <div class="card-header text-center tool-tip">Postgresql
           <span class="tool-tip-text">Version de de la base de données.</span>
         </div>
         <div class="card-body">
-          <p class="card-text text-center card-text-fontsize">{{sqlite_version}}</p>
+          <p class="card-text text-center card-text-fontsize">{{postgresql_version}}</p>
         </div>
       </div>
     </div>
@@ -69,7 +69,6 @@
         </div>
       </div>
     </div>
-
     <div class="col-sm-12 col-md-3 col-lg-2">
       <div class="card border-dark mb-3 card-fontsize">
         <div class="card-header text-center tool-tip">Version
@@ -100,69 +99,296 @@
         </div>
       </div>
     </div>
+  </div>
 
-    <div class="table-responsive">
-      <table class="table align-middle table-bordered table-sm">
-        <caption>Données
-          {{version}}
-          du
-          {{date}}.</caption>
-        <thead class="table-light text-center">
-          <tr>
-            <th scope="col">Langage</th>
-            <th scope="col">Fichier</th>
-            <th scope="col">Code</th>
-            <th scope="col">Comment</th>
-            <th scope="col">Ligne Vide</th>
-            <th scope="col">Total</th>
-          </tr>
-        </thead>
-        <tbody class="text-center">
-          <tr>
-            <th scope="row">PHP</th>
-            {% for indicateur in php %}
-              <td>{{indicateur|number_format(0, '.', ' ')}}</td>
-            {% endfor %}
-          </tr>
-          <tr>
-            <th scope="row">HTML</th>
-            {% for indicateur in html %}
-              <td>{{indicateur|number_format(0, '.', ' ')}}</td>
-            {% endfor %}
-          </tr>
-          <tr>
-            <th scope="row">CSS</th>
-            {% for indicateur in css %}
-              <td>{{indicateur|number_format(0, '.', ' ')}}</td>
-            {% endfor %}
-          </tr>
-          <tr>
-            <th scope="row">JS</th>
-            {% for indicateur in js %}
-              <td>{{indicateur|number_format(0, '.', ' ')}}</td>
-            {% endfor %}
-          </tr>
-          <tr>
-            <th scope="row">Markdown</th>
-            {% for indicateur in md %}
-              <td>{{indicateur|number_format(0, '.', ' ')}}</td>
-            {% endfor %}
-          </tr>
-          <tr>
-            <th scope="row">SQL</th>
-            {% for indicateur in sql %}
-              <td>{{indicateur|number_format(0, '.', ' ')}}</td>
-            {% endfor %}
-          </tr>
-          <tr>
-            <th scope="row">Migration</th>
-            {% for indicateur in migration %}
-              <td>{{indicateur|number_format(0, '.', ' ')}}</td>
-            {% endfor %}
-          </tr>
-        </tbody>
-      </table>
+  <h2 class="h4 open-sans">Postgresql.</h2>
+  <div class="row">
+    <div class="col-sm-12 col-md-3 col-lg-3">
+      <div class="card border-dark mb-3 card-fontsize">
+        <div class="card-header text-center tool-tip">Proc Actif
+          <span class="tool-tip-text">Nombre de processus actif.</span>
+        </div>
+        <div class="card-body">
+          <p class="card-text text-center card-text-fontsize">{{pg_stat_activity_not_idle}}</p>
+        </div>
+      </div>
     </div>
+
+    <div class="col-sm-12 col-md-3 col-lg-3">
+      <div class="card border-dark mb-3 card-fontsize">
+        <div class="card-header text-center tool-tip">Proc Idle
+          <span class="tool-tip-text">Nombre de processus au repos.</span>
+        </div>
+        <div class="card-body">
+          <p class="card-text text-center card-text-fontsize">{{pg_stat_activity_idle}}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-12 col-md-3 col-lg-3">
+      <div class="card border-dark mb-3 card-fontsize">
+        <div class="card-header text-center tool-tip">Locks
+          <span class="tool-tip-text">Nombre de demande en attente.</span>
+        </div>
+        <div class="card-body">
+          <p class="card-text text-center card-text-fontsize">{{pg_locks}}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-12 col-md-3 col-lg-3">
+      <div class="card border-dark mb-3 card-fontsize">
+        <div class="card-header text-center tool-tip">Cache Hit
+          <span class="tool-tip-text">Taux de Cache Hit.</span>
+        </div>
+        <div class="card-body">
+          {% if cache_hit_ratio >= 0.9 %} {% set indicateur_cache = 'couleur-vert' %} {% endif %}
+          {% if cache_hit_ratio >= 0.6 and cache_hit_ratio < 0.9 %} {% set indicateur_cache = 'couleur-orange' %} {% endif %}
+          {% if cache_hit_ratio <= 0.5 %} {% set indicateur_cache = 'couleur-rouge' %} {% endif %}
+          <p class="card-text text-center card-text-fontsize {{indicateur_cache}}">{{cache_hit_ratio|format_number(style='percent')}}</p>
+        </div>
+      </div>
+    </div>
+    <h3 class="h5 open-sans">Database</h3>
+    <div class="col-sm-12 col-md-3 col-lg-3">
+      <div class="card border-dark mb-3 card-fontsize">
+        <div class="card-header text-center tool-tip">Rollback
+          <span class="tool-tip-text">Ratio de Rollback des Transactions.</span>
+        </div>
+        <div class="card-body">
+          {% if transaction_rollback_ratio <= 0.1 %} {% set indicateur_rollback = 'couleur-vert' %} {% endif %}
+          {% if transaction_rollback_ratio > 0.1 and transaction_rollback_ratio < 0.2 %} {% set indicateur_rollback = 'couleur-orange' %} {% endif %}
+          {% if transaction_rollback_ratio >=0.2  %} {% set indicateur_rollback = 'couleur-rouge' %} {% endif %}
+          <p class="card-text text-center card-text-fontsize {{indicateur_rollback}}">{{transaction_rollback_ratio|format_number(style='percent')}}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-12 col-md-3 col-lg-3">
+      <div class="card border-dark mb-3 card-fontsize">
+        <div class="card-header text-center tool-tip">Lecture/Copie
+          <span class="tool-tip-text">Ratio de Requête de Lecture par Ligne Insérée.</span>
+        </div>
+        <div class="card-body">
+          {% if read_requests_per_inserted_tuple <= 0.2 %} {% set indicateur_read_requests_per_inserted_tuple = 'couleur-vert' %} {% endif %}
+          {% if read_requests_per_inserted_tuple > 0.2 and read_requests_per_inserted_tuple < 0.4 %} {% set indicateur_read_requests_per_inserted_tuple = 'couleur-orange' %} {% endif %}
+          {% if read_requests_per_inserted_tuple >=0.5  %} {% set indicateur_read_requests_per_inserted_tuple = 'couleur-rouge' %} {% endif %}
+          <p class="card-text text-center card-text-fontsize {{indicateur_read_requests_per_inserted_tuple}}">{{read_requests_per_inserted_tuple}}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-12 col-md-3 col-lg-3">
+      <div class="card border-dark mb-3 card-fontsize">
+        <div class="card-header text-center tool-tip">Lecture
+          <span class="tool-tip-text">Ratio de Requête de Lecture par Ligne récupérée.</span>
+        </div>
+        <div class="card-body">
+          {% if read_requests_ratio >= 0.9 %} {% set indicateur_read_requests_ratio = 'couleur-vert' %} {% endif %}
+          {% if read_requests_ratio > 0.6 and read_requests_ratio < 0.9 %} {% set indicateur_read_requests_ratio = 'couleur-orange' %} {% endif %}
+          {% if read_requests_ratio <=0.5  %} {% set indicateur_read_requests_ratio = 'couleur-rouge' %} {% endif %}
+          <p class="card-text text-center card-text-fontsize {{indicateur_read_requests_ratio}}">{{read_requests_ratio|format_number(style='percent')}}</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="h5 open-sans">Tables</h3>
+    <div class="col-sm-12 col-md-3 col-lg-3">
+      <div class="card border-dark mb-3 card-fontsize">
+        <div class="card-header text-center tool-tip">Balayage seq.
+          <span class="tool-tip-text">Un ratio élevé peut indiquer une utilisation intensive des balayages séquentiels, ce qui peut être un signe que des index sont nécessaires.</span>
+        </div>
+        <div class="card-body">
+          {% if seq_scan_ratio <= 0.3 %} {% set indicateur_seq_scan_ratio = 'couleur-vert' %} {% endif %}
+          {% if seq_scan_ratio > 0.3 and seq_scan_ratio < 0.6 %} {% set indicateur_seq_scan_ratio = 'couleur-orange' %} {% endif %}
+          {% if seq_scan_ratio >=0.7  %} {% set indicateur_seq_scan_ratio = 'couleur-rouge' %} {% endif %}
+          <p class="card-text text-center card-text-fontsize {{indicateur_seq_scan_ratio}}">{{seq_scan_ratio|format_number(style='percent')}}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-12 col-md-3 col-lg-3">
+      <div class="card border-dark mb-3 card-fontsize">
+        <div class="card-header text-center tool-tip">Index
+          <span class="tool-tip-text">Un ratio élevé indique une bonne utilisation des index pour accéder aux données.</span>
+        </div>
+        <div class="card-body">
+          {% if idx_scan_ratio <= 0.3 %} {% set indicateur_idx_scan_ratio = 'couleur-vert' %} {% endif %}
+          {% if idx_scan_ratio > 0.3 and idx_scan_ratio < 0.6 %} {% set indicateur_idx_scan_ratio = 'couleur-orange' %} {% endif %}
+          {% if idx_scan_ratio >=0.7  %} {% set indicateur_idx_scan_ratio = 'couleur-rouge' %} {% endif %}
+          <p class="card-text text-center card-text-fontsize {{indicateur_idx_scan_ratio}}">{{idx_scan_ratio|format_number(style='percent')}}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-12 col-md-3 col-lg-3">
+      <div class="card border-dark mb-3 card-fontsize">
+        <div class="card-header text-center tool-tip">Changement
+          <span class="tool-tip-text">Ce ratio mesure le nombre de mises à jour et de suppressions par insertion.</span>
+        </div>
+        <div class="card-body">
+          {% if transaction_per_insert <= 0.6 %} {% set indicateur_transaction_per_insert = 'couleur-vert' %} {% endif %}
+          {% if transaction_per_insert > 0.7 and transaction_per_insert < 0.8 %} {% set indicateur_transaction_per_insert = 'couleur-orange' %} {% endif %}
+          {% if transaction_per_insert >= 0.9  %} {% set indicateur_transaction_per_insert = 'couleur-rouge' %} {% endif %}
+          <p class="card-text text-center card-text-fontsize {{indicateur_transaction_per_insert}}">{{transaction_per_insert|format_number(style='percent')}}</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="h5 open-sans">Indexes</h3>
+    <div class="col-sm-12 col-md-3 col-lg-3">
+      <div class="card border-dark mb-3 card-fontsize">
+        <div class="card-header text-center tool-tip">Utilisation.
+          <span class="tool-tip-text">Ce ratio montre combien de fois un index a été scanné par rapport à combien de fois il a été lu.</span>
+        </div>
+        <div class="card-body">
+          {% if index_usage_ratio >= 0.7 %} {% set indicateur_index_usage_ratio = 'couleur-vert' %} {% endif %}
+          {% if index_usage_ratio > 0.3 and idx_tup_read < 0.6 %} {% set indicateur_index_usage_ratio = 'couleur-orange' %} {% endif %}
+          {% if index_usage_ratio <=0.2  %} {% set indicateur_index_usage_ratio = 'couleur-rouge' %} {% endif %}
+          <p class="card-text text-center card-text-fontsize {{indicateur_index_usage_ratio}}">{{index_usage_ratio|format_number(style='percent')}}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-12 col-md-3 col-lg-3">
+      <div class="card border-dark mb-3 card-fontsize">
+        <div class="card-header text-center tool-tip">Index scan.
+          <span class="tool-tip-text">Ce ratio montre combien de tuples ont été récupérés par scan d'index.</span>
+        </div>
+        <div class="card-body">
+          {% if tuple_per_index_scan >= 0.7 %} {% set indicateur_tuple_per_index_scan = 'couleur-vert' %} {% endif %}
+          {% if tuple_per_index_scan > 0.3 and tuple_per_index_scan < 0.6 %} {% set indicateur_tuple_per_index_scan = 'couleur-orange' %} {% endif %}
+          {% if tuple_per_index_scan <=0.2  %} {% set indicateur_tuple_per_index_scan = 'couleur-rouge' %} {% endif %}
+          <p class="card-text text-center card-text-fontsize {{indicateur_tuple_per_index_scan}}">{{tuple_per_index_scan|format_number(style='percent')}}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-12 col-md-3 col-lg-3">
+      <div class="card border-dark mb-3 card-fontsize">
+        <div class="card-header text-center tool-tip">Index read.
+          <span class="tool-tip-text">Ce ratio montre combien de tuples ont été récupérés par scan d'index.</span>
+        </div>
+        <div class="card-body">
+          {% if tuple_per_index_read >= 0.7 %} {% set indicateur_tuple_per_index_read = 'couleur-vert' %} {% endif %}
+          {% if tuple_per_index_read > 0.3 and tuple_per_index_read < 0.6 %} {% set indicateur_tuple_per_index_read = 'couleur-orange' %} {% endif %}
+          {% if tuple_per_index_read <=0.2  %} {% set indicateur_tuple_per_index_read = 'couleur-rouge' %} {% endif %}
+          <p class="card-text text-center card-text-fontsize {{indicateur_tuple_per_index_read}}">{{tuple_per_index_read|format_number(style='percent')}}</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="h5 open-sans">Requêtes</h3>
+    <div class="col-sm-12 col-md-3 col-lg-3">
+      <div class="card border-dark mb-3 card-fontsize">
+        <div class="card-header text-center tool-tip">Durée totale.
+          <span class="tool-tip-text">Moyenne (10 requêtes) du temps total d'exécution de la requête en secondes.</span>
+        </div>
+        <div class="card-body">
+          {% if avg_total_exec_time_seconds <= 5 %} {% set indicateur_avg_total_exec_time_seconds = 'couleur-vert' %} {% endif %}
+          {% if avg_total_exec_time_seconds > 6 and avg_total_exec_time_seconds <= 10 %} {% set indicateur_avg_total_exec_time_seconds = 'couleur-orange' %} {% endif %}
+          {% if avg_total_exec_time_seconds >= 10  %} {% set indicateur_avg_total_exec_time_seconds = 'couleur-rouge' %} {% endif %}
+          <p class="card-text text-center card-text-fontsize {{indicateur_avg_total_exec_time_seconds}}">{{avg_total_exec_time_seconds|number_format(2, '.', ',')}} sec.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-12 col-md-3 col-lg-3">
+      <div class="card border-dark mb-3 card-fontsize">
+        <div class="card-header text-center tool-tip">Durée minimale.
+          <span class="tool-tip-text">Moyenne (10 requêtes) du temps minimal d'exécution de la requête en secondes.</span>
+        </div>
+        <div class="card-body">
+          {% if avg_min_exec_time_seconds <= 2 %} {% set indicateur_avg_min_exec_time_seconds = 'couleur-vert' %} {% endif %}
+          {% if avg_min_exec_time_seconds > 2 and avg_min_exec_time_seconds <= 5 %} {% set indicateur_avg_min_exec_time_seconds = 'couleur-orange' %} {% endif %}
+          {% if avg_min_exec_time_seconds >5  %} {% set indicateur_avg_min_exec_time_seconds = 'couleur-rouge' %} {% endif %}
+          <p class="card-text text-center card-text-fontsize {{indicateur_avg_min_exec_time_seconds}}">{{avg_min_exec_time_seconds|number_format(2, '.', ',')}} sec.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-12 col-md-3 col-lg-3">
+      <div class="card border-dark mb-3 card-fontsize">
+        <div class="card-header text-center tool-tip">Maximum.
+          <span class="tool-tip-text">Moyenne (10 requêtes) du temps minimum d'exécution de la requête en secondes.</span>
+        </div>
+        <div class="card-body">
+          {% if avg_max_exec_time_seconds <= 10 %} {% set indicateur_avg_max_exec_time_seconds = 'couleur-vert' %} {% endif %}
+          {% if avg_max_exec_time_seconds > 10 and avg_max_exec_time_seconds < 20 %} {% set indicateur_avg_max_exec_time_seconds = 'couleur-orange' %} {% endif %}
+          {% if avg_max_exec_time_seconds >= 20  %} {% set indicateur_avg_max_exec_time_seconds = 'couleur-rouge' %} {% endif %}
+          <p class="card-text text-center card-text-fontsize {{indicateur_avg_max_exec_time_seconds}}">{{avg_max_exec_time_seconds|number_format(2, '.', ',') }} sec.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-12 col-md-3 col-lg-3">
+      <div class="card border-dark mb-3 card-fontsize">
+        <div class="card-header text-center tool-tip">Durée écart-type.
+          <span class="tool-tip-text">Moyenne (10 requêtes) de l'écart type du temps d'exécution de la requête en secondes.</span>
+        </div>
+        <div class="card-body">
+          <p class="card-text text-center card-text-fontsize">{{avg_stddev_exec_time_seconds|number_format(2, '.', ',')}} sec.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="table-responsive">
+    <table class="table align-middle table-bordered table-sm">
+      <caption>Données
+        {{version}}
+        du
+        {{date}}.</caption>
+      <thead class="table-light text-center">
+        <tr>
+          <th scope="col">Langage</th>
+          <th scope="col">Fichier</th>
+          <th scope="col">Code</th>
+          <th scope="col">Comment</th>
+          <th scope="col">Ligne Vide</th>
+          <th scope="col">Total</th>
+        </tr>
+      </thead>
+      <tbody class="text-center">
+        <tr>
+          <th scope="row">PHP</th>
+          {% for indicateur in php %}
+            <td>{{indicateur|number_format(0, '.', ' ')}}</td>
+          {% endfor %}
+        </tr>
+        <tr>
+          <th scope="row">HTML</th>
+          {% for indicateur in html %}
+            <td>{{indicateur|number_format(0, '.', ' ')}}</td>
+          {% endfor %}
+        </tr>
+        <tr>
+          <th scope="row">CSS</th>
+          {% for indicateur in css %}
+            <td>{{indicateur|number_format(0, '.', ' ')}}</td>
+          {% endfor %}
+        </tr>
+        <tr>
+          <th scope="row">JS</th>
+          {% for indicateur in js %}
+            <td>{{indicateur|number_format(0, '.', ' ')}}</td>
+          {% endfor %}
+        </tr>
+        <tr>
+          <th scope="row">Markdown</th>
+          {% for indicateur in md %}
+            <td>{{indicateur|number_format(0, '.', ' ')}}</td>
+          {% endfor %}
+        </tr>
+        <tr>
+          <th scope="row">SQL</th>
+          {% for indicateur in sql %}
+            <td>{{indicateur|number_format(0, '.', ' ')}}</td>
+          {% endfor %}
+        </tr>
+        <tr>
+          <th scope="row">Migration</th>
+          {% for indicateur in migration %}
+            <td>{{indicateur|number_format(0, '.', ' ')}}</td>
+          {% endfor %}
+        </tr>
+      </tbody>
+    </table>
   </div>
 
   <h2 class="h4 open-sans">Mes projets.</h2>
@@ -294,7 +520,7 @@
       </div>
     </div>
   </div>
-  <div class="raw" role="presentation"><br><br><br></div>
+  <div class="raw" aria-hidden=true><br><br><br></div>
 {% endblock %}
 
 {% block configured_body_contents %}
