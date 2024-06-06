@@ -75,22 +75,6 @@ class EquipeCrudController extends AbstractCrudController
     }
 
     /**
-     * [Description for configureActions]
-     *
-     * @param Actions $actions
-     *
-     * @return Actions
-     *
-     * Created at: 02/01/2023, 18:35:37 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function configureActions(Actions $actions): Actions
-    {
-        return parent::configureActions($actions);
-    }
-
-    /**
      * [Description for configureFields]
      *
      * @param string $pageName
@@ -104,7 +88,7 @@ class EquipeCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         yield TextField::new('titre')
-        ->setHelp('Nom de l\'équipe. Attention, si vous voulez utiliser les tags de sonarqube, les caractères autorisés sont [a-z0-9-].');
+        ->setHelp('Nom de l\'équipe. Attention, si vous voulez utiliser les tags de SonarQube, les caractères autorisés sont [a-z0-9-].');
         yield TextField::new('description')
         ->setHelp('Description de l\'équipe.');
         yield DateTimeField::new('dateModification')
@@ -132,14 +116,13 @@ class EquipeCrudController extends AbstractCrudController
         if (!$entityInstance instanceof Equipe) {
             return;
         }
-
         $nom = $entityInstance->getTitre();
-        //$cleanNom=preg_replace("/[^a-zA-Z0-9\- ]+/", "", mb_strtoupper($nom));
-        $entityInstance->setTitre($nom);
+        $cleanNom=preg_replace("/[^a-zA-Z0-9\- ]+/", "-", mb_strtoupper($nom));
+        $entityInstance->setTitre($cleanNom);
         $entityInstance->setDateEnregistrement(new \DateTimeImmutable());
-        /** retourne 1 ou null */
-        $record = $this->emm->getRepository(Equipe::class)->findOneBy(['titre' => mb_strtoupper($nom)]);
 
+        /** retourne 1 ou null */
+        $record = $this->emm->getRepository(Equipe::class)->findOneBy(['titre' => mb_strtoupper($cleanNom)]);
         /** Si l'attribut 'titre' n'existe pas, on enregistre.*/
         if (!$record) {
             parent::persistEntity($em, $entityInstance);
