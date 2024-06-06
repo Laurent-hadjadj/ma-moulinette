@@ -17,29 +17,17 @@ namespace App\Controller\Batch;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\BatchTraitement;
 
-/** Gestion du journal d'activité */
-use Symfony\Component\Filesystem\Filesystem;
-use App\Service\FileLogger;
-use Symfony\Component\Finder\Finder;
-
-/** AMQP */
-use PhpAmqpLib\Connection\AMQPStreamConnection;
-use PhpAmqpLib\Exchange\AMQPExchangeType;
-use PhpAmqpLib\Message\AMQPMessage;
-
 /**
  * [Description BatchController]
  */
 class BatchController extends AbstractController
 {
-    public static $dateFormat = "Y-m-d H:i:s";
     public static $timeFormat = "%H:%I:%S";
     public static $europeParis = "Europe/Paris";
     public static $page = 'batch/index.html.twig';
@@ -56,102 +44,8 @@ class BatchController extends AbstractController
      */
     public function __construct(
         private EntityManagerInterface $em,
-        private FileLogger $fileLogger,
     ) {
         $this->em = $em;
-        $this->fileLogger = $fileLogger;
-    }
-
-    /**
-     * [Description for isEmpty]
-     *  Détermine si la queue est vide ou non
-     *
-     * @param mixed $queueName
-     *
-     * @return bool
-     *
-     * Created at: 08/04/2024 22:08:33 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function isEmpty($queue): bool
-    {
-        /** on bind les paramètres de connexion à RabbitMQ */
-        $host=$this->getParameter('rabbitmq.host');
-        $port=$this->getParameter('rabbitmq.port');
-        $user=$this->getParameter('rabbitmq.username');
-        $password=$this->getParameter('rabbitmq.password');
-        $vhost=$this->getParameter('rabbitmq.vhost');
-
-        /** on se connecte */
-        $connection = new AMQPStreamConnection($host, $port, $user, $password, $vhost);
-        $channel = $connection->channel();
-        /**
-         * queue - Queue names may be up to 255 bytes of UTF-8 characters
-         * passive - can use this to check whether an exchange exists without modifying the server state
-         * durable, make sure that RabbitMQ will never lose our queue if a crash occurs - the queue will survive a broker restart
-         * exclusive - used by only one connection and the queue will be deleted when that connection closes
-         * auto delete - queue is deleted when last consumer unsubscribes
-        */
-        list($messageCount) = $channel->queue_declare($queue,true,true,false,false);
-
-        $isEmpty=false;
-        if ($messageCount === 0) {
-            $isEmpty=true;
-        }
-        return $isEmpty;
-    }
-
-    /**
-     * [Description for lireInformation]
-     * Affiche le journal d'execution pour le portefeuille
-     *
-     * @param string $portefeuille
-     * @param string $type
-     *
-     * @return response
-     *
-     * Created at: 05/03/2023, 01:50:53 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    #[Route('/traitement/information', name: 'traitement_information', methods: ['POST'])]
-    public function lireInformation(Request $request): response
-    {
-        /** On créé on objet de response HTTP */
-        $response = new JsonResponse();
-
-        /** On récupère le job et le type (manuel ou automatique) */
-        $data = json_decode($request->getContent());
-        $portefeuille = $data->portefeuille;
-        $type = $data->type;
-
-        /* On initialise le journal des traces */
-        $filesystem = new Filesystem();
-        $path = $this->getParameter('kernel.project_dir').'\var\audit';
-
-        $recherche = "KO";
-        /* Le dossier d'audit est présent */
-        if ($filesystem->exists($path)) {
-            $name = preg_replace('/\s+/', '_', $portefeuille);
-            $fichier = "{$type}_$name.log";
-
-            /** on récupère la log */
-            $finder = new Finder();
-            $finder->files()->in($path);
-            $finder->name($fichier);
-
-            foreach ($finder as $file) {
-                $c = $file->getContents();
-            }
-            if (empty($c)) {
-                $c = 'Pas de journal disponible.';
-            } else {
-                $recherche = 'OK';
-            }
-        }
-
-        return $response->setData(["recherche" => $recherche, "journal" => $c, Response::HTTP_OK]);
     }
 
     /**
@@ -189,10 +83,6 @@ class BatchController extends AbstractController
             $this->addFlash('message', ['type'=>'alert', 'titre'=>static::$titre, 'message'=>static::$erreur403]);
             return $this->render('batch/index.html.twig', $render);
             }
-
-        /** On archive les logs */
-        $path=$this->getParameter('kernel.project_dir').$this->getParameter('path.audit');
-        $this->fileLogger->logrotate($path);
 
         /** On crée un objet date */
         $date = new \DateTime();
