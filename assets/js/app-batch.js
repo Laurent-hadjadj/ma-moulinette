@@ -25,13 +25,20 @@ import './foundation.js';
 import {serveur} from './properties.js';
 
 /** On importe les constatntes */
-import { contentType, trois, cinqCent, mille } from './constante';
+import { contentType, trois, cinqCent, mille, http_400, http_200 } from './constante';
 
 /** On gére l'affichage des jobs */
 const jsAutomatique = '.js-automatique';
 const automatique = '.automatique';
 const jsManuel = '.js-manuel';
 const manuel= '.manuel';
+
+const afficheMessage=function(t){
+  $('#callout-projet-message').removeClass('hide success alert warning primary secondary');
+  $('#callout-projet-message').addClass(t.type);
+  $('#js-reference-information').html(t.reference);
+  $('#js-message-information').html(t.message);
+}
 
 $(jsAutomatique).on('click', ()=> {
   if ($(jsAutomatique).hasClass('active')) {
@@ -116,7 +123,7 @@ $('.i-am-human-svg').on('click', function() {
     $(collecteAnimation).addClass('sp-volume');
     $(collecteTexte).html(`Démarrage du traitement...`);
 
-    const data = { portefeuille , mode:'null' };
+    const data = { portefeuille };
     const options = {
       url: `${serveur()}/traitement/pending`, type: 'GET',
       dataType: 'json', data, contentType};
@@ -153,7 +160,7 @@ $('.i-am-human-svg').on('click', function() {
  * Lance le batch manuel
  *
  * @param string id
- * @param string job
+ * @param string portefeuille
  *
  * @return [type]
  *
@@ -204,7 +211,8 @@ $('.js-affiche-information').on('click', function() {
   const type=$(`#${idTab[1]}`).data('type');
 
   /** On on récupère la log */
-  lireInformationManuel(job, type);
+  const retour=lireInformationManuel(job, type);
+  if (retour!=http_200) { return };
 
   /** On affiche le nom du projet */
   $('#js-nom-projet').html(job);
@@ -224,19 +232,23 @@ $('.js-affiche-information').on('click', function() {
 /**
  * [Description for lireInformationManuel]
  *
- * @return [type]
+ * @return void
  *
  * Created at: 05/03/2023, 15:29:19 (Europe/Paris)
  * @author    Laurent HADJADJ <laurent_h@me.com>
  * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
-const lireInformationManuel = function(job, type){
-  const data = { job, type };
+const lireInformationManuel = function(portefeuille, type){
+  const data = { portefeuille, type };
   const options = {
     url: `${serveur()}/traitement/information`, type: 'POST',
     dataType: 'json', data: JSON.stringify(data), contentType};
   return new Promise(resolve => {
     $.ajax(options).then( t => {
+      if (t.code === http_400 || t.code === http_500){
+        afficheMessage(t);
+        return t.code;
+      }
       if (t.recherche==='OK') {
           $('#js-journal').text(t.journal);
       }
