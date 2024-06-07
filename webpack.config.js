@@ -1,5 +1,6 @@
 // eslint-disable-next-line no-undef
 const Encore = require('@symfony/webpack-encore');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 if (!Encore.isRuntimeEnvironmentConfigured()) {
     // eslint-disable-next-line no-undef
@@ -87,7 +88,18 @@ Encore
         from: './assets/video',
         to: '[path][name].[ext]',
         context: './assets'
-    });
+    })
+    .addPlugin(new CopyWebpackPlugin({
+        patterns: [
+            { from: './node_modules/tinymce/skins', to: 'tinymce/skins' },
+            { from: './node_modules/tinymce/icons', to: 'tinymce/icons' },
+            { from: './node_modules/tinymce/themes', to: 'tinymce/themes' },
+            { from: './node_modules/tinymce/plugins', to: 'tinymce/plugins' },
+            { from: './node_modules/tinymce/models', to: 'tinymce/models' },
+            { from: './assets/tinymce/langs', to: 'tinymce/langs' }
+        ]
+    })
+    );
 
 // eslint-disable-next-line no-undef
 module.exports = Encore.getWebpackConfig();

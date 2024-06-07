@@ -37,7 +37,6 @@
     </header>
 
     <main class="grid-container">
-
       {# On affiche les messages #}
       {% for message in app.flashes('message') %}
         <div class="callout primary alert-callout-border {{message.type}}" data-closable>
@@ -196,15 +195,12 @@
       {% endif %}
       {# Fin du container #}
     </main>
-
     {# Affichage de la liste des traitements pour un job. #}
     <div id="modal-information" class="reveal" data-reveal data-close-on-click="true">
       <h1 class="h2 claire-hand">Journal d'Audit</h1>
       <h2 id="js-nom-projet" class="h3 claire-hand">&nbsp;</h2>
-
-      <textarea id="js-journal" name="textarea" realdonly rows="10" cols="30"></textarea>
-      <button id="js-go-end" class="go-end float-right button open-sans">Aller à la fin</button>
-
+      {# Editeur TinyMCE #}
+      <textarea id="js-journal" class="tinymce" name="textarea"></textarea>
       {# fermeture de la fenetre modale #}
       <button id="fermer-traitement-liste" class="expanded button open-sans" data-close aria-label="Close reveal" type="button">Fermer
       </button>
@@ -227,7 +223,7 @@
         <a id="js-non" class="button non">Non</a>
       </div>
       <br>
-      <h2 class="claire-hand h4 grid-x">
+      <h2 class="claire-hand h4 grid-x">&nbsp;
         <div id="collecte-animation" class="sp"></div>
         <span id="collecte-texte" class="spinner-titre"></span>
       </h2>
