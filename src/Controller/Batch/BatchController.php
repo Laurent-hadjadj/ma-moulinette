@@ -22,6 +22,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\BatchTraitement;
+use DateTime;
 
 /**
  * [Description BatchController]
@@ -61,126 +62,97 @@ class BatchController extends AbstractController
     #[Route('/traitement/suivi', name: 'traitement_suivi', methods:'GET')]
     public function traitementSuivi(Request $request): Response
     {
-        /** On instancie l'EntityRepository */
-        $batchTraitementEntity = $this->em->getRepository(BatchTraitement::class);
+      /** On instancie l'EntityRepository */
+        $batchTraitementRepository = $this->em->getRepository(BatchTraitement::class);
 
-        /** On initialise les information pour la bulle d'information */
-        $bulle = 'bulle-info-vide';
-        $infoNombre = 'x';
-        $infoTips = 'Aucun traitement.';
-        $render= [
+        // Initialisation des informations pour la bulle d'information
+        $render = [
             'salt' => $this->getParameter('csrf.salt'),
-            'infoNombre' => $infoNombre,
-            'infoTips' => $infoTips,
-            'bulle' => $bulle,
+            'infoNombre' => 'x',
+            'infoTips' => 'Aucun traitement.',
+            'bulle' => 'bulle-info-vide',
             'date' => '01/01/1980',
             'traitements' => [['processus' => 'vide']],
-            'version' => $this->getParameter('version'), 'dateCopyright' => \date('Y')
+            'version' => $this->getParameter('version'),
+            'dateCopyright' => \date('Y')
         ];
 
-        /** On vérifie si l'utilisateur à un rôle Collecte ? */
+        // Vérifier si l'utilisateur a le rôle 'ROLE_BATCH'.
         if (!$this->isGranted('ROLE_BATCH')) {
             $this->addFlash('message', ['type'=>'alert', 'titre'=>static::$titre, 'message'=>static::$erreur403]);
             return $this->render('batch/index.html.twig', $render);
-            }
+        }
 
-        /** On crée un objet date */
-        $date = new \DateTime();
+        // Créer un objet date avec le fuseau horaire Europe/Paris
+        $date = new \DateTimeImmutable();
         $date->setTimezone(new \DateTimeZone(static::$europeParis));
-        /**
-         * On récupère la date du dernier traitement automatique ou programmé
-         * Pour le 08/02/2023 : date" => "2023-02-08 08:57:53"
-         */
-        $r=$batchTraitementEntity->selectBatchTraitementDateEnregistrementLast();
-        if ($r['code']!=200) {
-            $message='Nous avons rencontré une erreur inattendue ['.$r['code'].']';
-            $this->addFlash('message', ['type'=>'alert', 'titre'=>static::$titre, 'message'=>$message]);
+
+        // Obtenir la date du dernier traitement automatique ou programmé
+        $r = $batchTraitementRepository->selectBatchTraitementDateEnregistrementLast();
+        if ($r['code'] != 200) {
+            $message = '1-Nous avons rencontré une erreur inattendue [' . $r['code'] . ']';
+            $this->addFlash('message', ['type' => 'alert', 'titre' => static::$titre, 'message' => $message, 'erreur' => $r['erreur']]);
             return $this->render(static::$page, $render);
         }
 
-        /** Si on a pas trouvé de traitements dans la table */
+        // Si aucun traitement n'a été trouvé
         if (empty($r['liste'])) {
             $message = "Aucun traitement trouvé pour aujourd'hui.";
-            $this->addFlash('message', ['type'=>'info', 'titre'=>static::$titre, 'message'=>$message]);
+            $this->addFlash('message', ['type' => 'info', 'titre' => static::$titre, 'message' => $message]);
             return $this->render(static::$page, $render);
         }
 
-        /**
-         * On récupère la liste des traitements planifiés pour la date du jour.
-         */
-        /** retourne la date de planification */
-        $dateDernierBatch = $r['liste'][0]['date'];
-        /** retourne la date au format 2023-02-08 */
-        $dateTab = explode(" ", $dateDernierBatch);
-        $dateLike = $dateTab[0].'%';
-        $listeAll=$batchTraitementEntity->selectBatchTraitementLast($dateLike);
-        if ($listeAll['code']!=200) {
-            $message=$listeAll['erreur'];
+        // Permet d'obtenir la liste des traitements programmés pour la journée en cours
+        $dateTimeDernierBatch = new \DateTime($r['liste'][0]['date']);
+        $listeAll = $batchTraitementRepository->selectBatchTraitementLast($dateTimeDernierBatch->format('Y-m-d'));
+        if ($listeAll['code'] != 200) {
+            $message = '2-Nous avons rencontré une erreur inattendue [' . $listeAll['code'] . ']';
+            $this->addFlash('message', ['type' => 'alert', 'titre' => static::$titre, 'message' => $message, 'erreur' => $listeAll['erreur']]);
+            return $this->render(static::$page, $render);
         }
 
-        /** On généré les données pour le tableau de suivi */
+        // Génère les données pour le tableau de suivi
         $traitements = [];
         foreach ($listeAll['liste'] as $traitement) {
-            /** Calcul de l'execution pour un traitement qui a démarré. */
             if (!empty($traitement['debut'])) {
                 $resultat = $traitement['resultat'];
 
-                /** on définit le message et la class css */
-                if ($resultat == 0) {
-                    $message = "Erreur";
-                    $css = "ko";
-                } else {
-                    $message = "Succès";
-                    $css = "ok";
-                }
-                $debut = new \dateTime($traitement['debut']);
-                $fin = new \dateTime($traitement['fin']);
+                // Définition du message et de la classe CSS
+                $message = ($resultat == 0) ? "Erreur" : "Succès";
+                $css = ($resultat == 0) ? "ko" : "ok";
+
+                $debut = new \DateTime($traitement['debut']);
+                $fin = new \DateTime($traitement['fin']);
                 $interval = $debut->diff($fin);
                 $execution = $interval->format(static::$timeFormat);
-            }
-
-            /** on définit le type */
-            if ($traitement['demarrage'] === "Auto") {
-                $type = "automatique";
             } else {
-                $type = "manuel";
-            }
-
-            /** On formate les données pour les batchs qui n'ont pas été lancé (i.e MANUEL) */
-            if (empty($traitement['debut'])) {
                 $message = "---";
                 $css = "oko";
                 $execution = "--:--:--";
             }
 
-            $tempo = ["processus" => "Tout va bien !",
-                        /** Auto ou Manuel */
-                        'demarrage' => $traitement['demarrage'],
-                        /** Succès, Erreur */
-                        'message' => $message,
-                        /** ok, ko */
-                        'css' => $css,
-                        /** automatique, manuel */
-                        'type' => $type,
-                        'job' => $traitement['titre'],
-                        'portefeuille' => $traitement['portefeuille'],
-                        'projet' => $traitement['projet'],
-                        'responsable' => $traitement['responsable'],
-                        'execution' => $execution];
-            array_push($traitements, $tempo);
+            $type = ($traitement['demarrage'] === "Auto") ? "automatique" : "manuel";
+
+            $traitements[] = [
+                'processus' => "Tout va bien !",
+                'demarrage' => $traitement['demarrage'],
+                'message' => $message,
+                'css' => $css,
+                'type' => $type,
+                'job' => $traitement['titre'],
+                'portefeuille' => $traitement['portefeuille'],
+                'projet' => $traitement['projet'],
+                'responsable' => $traitement['responsable'],
+                'execution' => $execution
+            ];
         }
 
         return $this->render(
             'batch/index.html.twig',
-            [
-                'salt' => $this->getParameter('csrf.salt'),
-                'date' => $dateDernierBatch,
-                'traitements' => $traitements,
-                'bulle' => $bulle,
-                'infoNombre' => $infoNombre,
-                'infoTips' => $infoTips,
-                'version' => $this->getParameter('version'), 'dateCopyright' => \date('Y')
-            ]
+            array_merge($render, [
+                'date' => $r['liste'][0]['date'],
+                'traitements' => $traitements
+            ])
         );
     }
 
