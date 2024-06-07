@@ -52,15 +52,10 @@ class Portefeuille
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true,
         options: ['comment' => 'Date de la dernière modification du portefeuille'])]
-    #[Assert\NotNull]
     private $dateModification;
 
-    #[ORM\Column(
-        type: Types::DATETIMETZ_IMMUTABLE,
-        nullable: false,
-        options: ['comment' => 'Date d’enregistrement du portefeuille']
-    )]
-    #[Assert\NotNull]
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE,  nullable: false,
+        options: ['comment' => 'Date d’enregistrement du portefeuille'])]
     private $dateEnregistrement;
 
     public function getId(): ?int
