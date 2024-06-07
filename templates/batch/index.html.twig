@@ -12,8 +12,7 @@
   https://github.com/Laurent-hadjadj/ma-moulinette
   © 2024 - CC BY-SA-NC 4.0
 -->
-<html
-  lang="fr">
+<html lang="fr">
   {# Chargement de la section HEAD #}
   <head>
     <title>{{ title }}</title>
@@ -43,17 +42,9 @@
       class="grid-container">
 
       {# On affiche les messages #}
-      {% for message in app.flashes('info') %}
-        <div class="callout primary alert-callout-border" data-closable>
-          <p class="open-sans text-justify callout-message">{{ message }}</p>
-          <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-      {% endfor %}
-      {% for message in app.flashes('alert') %}
-        <div class="callout alert alert-callout-border" data-closable>
-          <p class="open-sans text-justify callout-message">{{ message }}</p>
+      {% for message in app.flashes('message') %}
+        <div class="callout primary alert-callout-border {{message.type}}" data-closable>
+          <p class="open-sans text-justify callout-message"><strong>{{message.titre}}</strong> : {{ message.message }}<br>{{message.erreur|default('') }}</p>
           <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
             <span aria-hidden="true">&times;</span>
           </button>
