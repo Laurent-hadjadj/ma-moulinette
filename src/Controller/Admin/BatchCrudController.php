@@ -2,11 +2,9 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\Batch;
-
 use Doctrine\ORM\EntityManagerInterface;
-
-use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+use App\Entity\Batch;
+use App\Entity\BatchTraitement;
 
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
@@ -91,7 +89,8 @@ class BatchCrudController extends AbstractCrudController
         yield TextField::new('titre')
         ->setHelp('Nom du traitement de données.');
 
-        /** On récupère la liste des projets */
+        /** On récupère la liste des projets sans filtrage */
+        /** To.do : ajouter le filtrage en fonction du portefeuille de projets */
         $sql = "SELECT titre FROM portefeuille ORDER BY titre ASC";
         $l = $this->emm->getConnection()->prepare($sql)->executeQuery();
         $resultat = $l->fetchAllAssociative();
@@ -154,6 +153,9 @@ class BatchCrudController extends AbstractCrudController
         if (!$entityInstance instanceof Batch) {
             return;
         }
+
+        $batchTraitementRepository = $this->emm->getRepository(BatchTraitement::class);
+
         /** On récèpere le nom du batch */
         $titre = $entityInstance->getTitre();
 
@@ -169,13 +171,31 @@ class BatchCrudController extends AbstractCrudController
             $nombreProjet = count(json_decode($r['liste']));
         }
 
-        /** On enregistre les données que l'on veut modifier */
+        /**
+         * On enregistre les données que l'on veut modifier.
+         * attention, les attributs dans l'entity ne doivent pas être NotNull et NotBlank.
+        */
         $entityInstance->setTitre(mb_strtoupper($titre));
         $entityInstance->setResponsable($user->getPrenom().' '.$user->getNom());
         $entityInstance->setNombreProjet($nombreProjet);
         $entityInstance->setDateEnregistrement(new \DateTimeImmutable());
 
+        /** On prépare les données pour la table de suivi des traitements */
+        $map=[
+            'demarrage' => ($entityInstance->isStatut() === true)? 'Auto' : 'Manuel',
+            'resultat' => false,
+            'titre' => $entityInstance->getTitre(),
+            'portefeuille' => $entityInstance->getPortefeuille(),
+            'nombre_projet' => $entityInstance->getNombreProjet(),
+            'responsable' => $entityInstance->getResponsable(),
+            'date_enregistrement' => new \DateTimeImmutable()
+        ];
+
         parent::persistEntity($em, $entityInstance);
+
+        /** On programme le traitement dans la table BatchTraitement  */
+        $r=$batchTraitementRepository->insertBatchTraitement($map);
+    if ($r['code']!=200){ /* il y a une erreur !!! */ };
     }
 
     /**
