@@ -25,7 +25,7 @@ import './foundation.js';
 import {serveur} from './properties.js';
 
 /** On importe les constatntes */
-import { contentType, trois, cinqCent, mille, http_400, http_200 } from './constante';
+import { contentType, trois, cinqCent, mille, http_500, http_400, http_200 } from './constante';
 
 /** On gére l'affichage des jobs */
 const jsAutomatique = '.js-automatique';
@@ -207,26 +207,25 @@ $('.js-affiche-information').on('click', function() {
   const idTab = id.split('-');
 
   /** On récupère le job et le type */
-  const job=$(`#job-${idTab[1]}`).text();
+  const portefeuille=$(`#job-${idTab[1]}`).text();
   const type=$(`#${idTab[1]}`).data('type');
 
   /** On on récupère la log */
-  const retour=lireInformationManuel(job, type);
-  if (retour!=http_200) { return };
+  lireInformationManuel(portefeuille, type);
 
   /** On affiche le nom du projet */
-  $('#js-nom-projet').html(job);
+  //$('#js-nom-projet').html(portefeuille);
 
   /** On ouvre la fenêtre modal */
-  $('#modal-information').foundation('open');
+  //$('#modal-information').foundation('open');
 
   /** On va à la fin du fichier */
-  $('#js-go-end').on('click', ()=>{
-    const textarea = document.getElementById('js-journal');
-    const end = textarea.value.length;
-    textarea.setSelectionRange(end, end);
-    textarea.focus();
-  });
+  //$('#js-go-end').on('click', ()=>{
+  //  const textarea = document.getElementById('js-journal');
+  //  const end = textarea.value.length;
+  //  textarea.setSelectionRange(end, end);
+  //  textarea.focus();
+  //});
 });
 
 /**
@@ -249,11 +248,24 @@ const lireInformationManuel = function(portefeuille, type){
         afficheMessage(t);
         return t.code;
       }
-      if (t.recherche==='OK') {
+      if (t.recherche==='OK' || t.code===http_200) {
           $('#js-journal').text(t.journal);
       }
-      resolve();
+      /** On affiche le nom du projet */
+      $('#js-nom-projet').html(portefeuille);
+      console.log(portefeuille)
+      /** On ouvre la fenêtre modal */
+      $('#modal-information').foundation('open');
+
+      /** On va à la fin du fichier */
+      $('#js-go-end').on('click', ()=>{
+        const textarea = document.getElementById('js-journal');
+        const end = textarea.value.length;
+        textarea.setSelectionRange(end, end);
+        textarea.focus();
+      });
     })
+    resolve();
   })
 }
 
