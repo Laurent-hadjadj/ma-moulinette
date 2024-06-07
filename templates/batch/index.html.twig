@@ -29,17 +29,14 @@
     <header class="grid-container">
       <nav aria-label="vous êtes ici :">
         <ul class="claire-hand breadcrumbs">
-          <li>
-            <a href="/">Accueil</a>
-          </li>
+          <li><a href="/">Accueil</a></li>
           <li>
             <span class="show-for-sr">vous êtes ici :</span>Traitement</li>
         </ul>
       </nav>
     </header>
 
-    <div
-      class="grid-container">
+    <main class="grid-container">
 
       {# On affiche les messages #}
       {% for message in app.flashes('message') %}
@@ -50,6 +47,13 @@
           </button>
         </div>
       {% endfor %}
+      {# Message d'information #}
+        <div id="callout-projet-message" class="callout alert-callout-border hide">
+          <p class="open-sans text-justify js-message">
+            <span id="js-reference-information"></span>
+            <span id="js-message-information"></span>
+          </p>
+        </div>
 
       <div class="grid-x">
         <p class="open-sans small-10 medium-11 cell">Collecte du
@@ -191,12 +195,12 @@
         </div>
       {% endif %}
       {# Fin du container #}
-    </div>
+    </main>
 
     {# Affichage de la liste des traitements pour un job. #}
     <div id="modal-information" class="reveal" data-reveal data-close-on-click="true">
-      <h1 class="claire-hand h2">Journal d'Audit</h1>
-      <h2 id="js-nom-projet h3" class="claire-hand"></h2>
+      <h1 class="h2 claire-hand">Journal d'Audit</h1>
+      <h2 id="js-nom-projet" class="h3 claire-hand">&nbsp;</h2>
 
       <textarea id="js-journal" name="textarea" realdonly rows="10" cols="30"></textarea>
       <button id="js-go-end" class="go-end float-right button open-sans">Aller à la fin</button>

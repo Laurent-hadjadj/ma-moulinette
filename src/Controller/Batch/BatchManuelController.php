@@ -27,7 +27,6 @@ use App\Service\FileLogger;
 
 /** Accès aux tables */
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Historique;
 use App\Entity\Portefeuille;
 use App\Entity\Batch;
 use App\Entity\BatchTraitement;
@@ -134,11 +133,15 @@ class BatchManuelController extends AbstractController
 
         /** On récupère le job et le type (manuel ou automatique) */
         $data = json_decode($request->getContent());
+        if ($data === null || !property_exists($data, 'portefeuille') || !property_exists($data, 'type')) {
+            return $response->setData([
+                'code' => 400, 'type' => 'alert', 'reference' => static::$reference, 'message' => static::$erreur400
+            ], Response::HTTP_BAD_REQUEST);
+        }
 
-        //todo ajouter le test des paramètres du post
         $journal=$this->logger->downloadContent($data->type, $data->portefeuille);
 
-        return $response->setData(["recherche" => $journal['recherche'], 'journal' => $journal['c'], Response::HTTP_OK]);
+        return $response->setData(['code' => 200, 'recherche' => $journal['recherche'], 'journal' => $journal['content'], Response::HTTP_OK]);
     }
 
     /**

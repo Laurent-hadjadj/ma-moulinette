@@ -40,7 +40,7 @@ class FileLogger
      * @return array
      *
      * Created at: 05/06/2024 20:08:30 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author     Laurent HADJADJ <laurent_h@  me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function downloadContent($portefeuille, $type){
@@ -49,6 +49,8 @@ class FileLogger
         $completPath = $this->path;
 
         $recherche = "KO";
+        $content='Pas de contenu !!!';
+        $finder='';
         /* Le dossier d'audit est présent */
         if ($filesystem->exists($completPath)) {
             $name = preg_replace('/\s+/', '_', $portefeuille);
@@ -60,12 +62,11 @@ class FileLogger
             $finder->name($fichier);
 
             foreach ($finder as $file) {
-                $c = $file->getContents();
+                $content = $file->getContents();
             }
-
-            $recherche = (empty($c)) ? 'Pas de journal disponible.' : 'OK';
+            $recherche = (empty($content)) ? 'Pas de journal disponible.' : 'OK';
         }
-        return ["recherche" => $recherche, 'journal' => $c];
+        return ["recherche" => $recherche, 'content' => $content];
     }
 
     /**
