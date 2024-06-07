@@ -25,110 +25,60 @@ class Batch
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Identifiant unique de la table batch']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Identifiant unique de la table batch'])]
     private $id;
 
-    #[ORM\Column(
-        type: Types::BOOLEAN,
-        nullable: false,
-        options: ['comment' => 'Statut d’activité du batch']
-    )]
+    #[ORM\Column(type: Types::BOOLEAN, nullable: false,
+        options: ['comment' => 'Statut d’activité du batch'])]
     #[Assert\NotNull]
     #[Assert\Type(type: 'bool')]
     private $statut = false;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 32,
-        unique: true,
-        nullable: false,
-        options: ['comment' => 'Titre du batch, unique']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 32, unique: true, nullable: false,
+        options: ['comment' => 'Titre du batch, unique'])]
     #[AcmeAssert\ContainsBatchUnique()]
     #[Assert\NotBlank]
-    #[Assert\Length(
-        max: 32,
-        maxMessage: "Le titre ne doit pas dépasser 32 caractères."
-    )]
+    #[Assert\Length(max: 32,
+        maxMessage: "Le titre ne doit pas dépasser 32 caractères.")]
     private $titre;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 128,
-        nullable: false,
-        options: ['comment' => 'Description du batch']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 128, nullable: false,
+        options: ['comment' => 'Description du batch'])]
     #[Assert\NotBlank]
-    #[Assert\Length(
-        max: 128,
-        maxMessage: "La description ne doit pas dépasser 128 caractères."
-    )]
+    #[Assert\Length(max: 128,
+        maxMessage: "La description ne doit pas dépasser 128 caractères.")]
     private $description;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 128,
-        nullable: false,
-        options: ['comment' => 'Nom de l’utilisateur responsable']
-    )]
-    #[Assert\NotBlank]
-    #[Assert\Length(
-        max: 128,
-        maxMessage: "Le nom de l'utilisateur ne doit pas dépasser 128 caractères."
-    )]
+    #[ORM\Column(type: Types::STRING, length: 128, nullable: false,
+        options: ['comment' => 'Nom de l’utilisateur responsable'])]
+    #[Assert\Length(max: 128,
+        maxMessage: "Le nom de l'utilisateur ne doit pas dépasser 128 caractères.")]
     private $responsable;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 32,
-        unique: true,
-        nullable: false,
-        options: ['comment' => 'Portefeuille de projet, unique']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 32, unique: true, nullable: false,
+        options: ['comment' => 'Portefeuille de projet, unique'])]
     #[AcmeAssert\ContainsBatchUnique()]
     #[Assert\NotBlank]
-    #[Assert\Length(
-        max: 32,
-        maxMessage: "Le portefeuille ne doit pas dépasser 32 caractères."
-    )]
+    #[Assert\Length(max: 32,
+        maxMessage: "Le portefeuille ne doit pas dépasser 32 caractères.")]
     private $portefeuille = "Aucun";
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de projets dans le batch']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Nombre de projets dans le batch'])]
     #[Assert\Type(type: 'integer')]
-    #[Assert\NotNull]
-    private $nombreProjet = 0;
+    private ?int $nombreProjet = 0;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 8,
-        nullable: true,
-        options: ['comment' => 'État d’exécution du batch']
-    )]
-    #[Assert\NotBlank]
+    #[ORM\Column(type: Types::STRING, length: 8, nullable: true,
+        options: ['comment' => 'État d’exécution du batch'])]
     private $execution;
 
-    #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
-        nullable: true,
-        options: ['comment' => 'Date de la dernière modification du batch']
-    )]
-    #[Assert\NotNull]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true,
+        options: ['comment' => 'Date de la dernière modification du batch'])]
     private $dateModification;
 
-    #[ORM\Column(
-        type: Types::DATETIMETZ_IMMUTABLE,
-        nullable: false,
-        options: ['comment' => 'Date d’enregistrement du batch']
-    )]
-    #[Assert\NotNull]
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
+        options: ['comment' => 'Date d’enregistrement du batch'])]
     private $dateEnregistrement;
 
     public function getId(): ?int
