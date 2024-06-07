@@ -21,10 +21,6 @@ use Symfony\Component\Routing\Annotation\Route;
 /** Securité */
 use Symfony\Bundle\SecurityBundle\Security;
 
-/** Gestion du temps */
-use DateTime;
-use DateTimeZone;
-
 /** Logger */
 use Psr\Log\LoggerInterface;
 
@@ -42,6 +38,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 /** Client HTTP */
 use App\Service\Client;
+use DateTimeImmutable;
 
 class HomeController extends AbstractController
 {
@@ -199,8 +196,8 @@ class HomeController extends AbstractController
         $propertiesEntity = $this->em->getRepository(Properties::class);
 
         /** On met à jour la date de modification */
-        $date = new DateTime();
-        $date->setTimezone(new DateTimeZone(static::$europeParis));
+        $date = new DateTimeImmutable();
+        $date->setTimezone(new \DateTimeZone(static::$europeParis));
 
         $map=[  'projet_bd'=>$bd, 'projet_sonar'=>$sonar,
                 'profil_bd'=>$bd, 'profil_sonar'=>$sonar,
@@ -235,8 +232,8 @@ class HomeController extends AbstractController
         if (!$getProperties['request']) {
             $projetBd = $projetSonar = $profilBd = $profilSonar = 0;
 
-            $date = new DateTime();
-            $date->setTimezone(new DateTimeZone(static::$europeParis));
+            $date = new DateTimeImmutable();
+            $date->setTimezone(new \DateTimeZone(static::$europeParis));
             $dateCreationFormat = $date->format(static::$dateFormat);
             $dateModificationProjet = $date->format(static::$dateFormat);
             $dateModificationProfil = $date->format(static::$dateFormat);
@@ -444,8 +441,8 @@ class HomeController extends AbstractController
          *     properties.
          */
 
-        $date = new DateTime();
-        $date->setTimezone(new DateTimeZone(static::$europeParis));
+        $date = new DateTimeImmutable();
+        $date->setTimezone(new \DateTimeZone(static::$europeParis));
 
         /** On récupère les properties des projets et profils */
         $properties = static::getProperties();
@@ -458,10 +455,10 @@ class HomeController extends AbstractController
         $majProjet = '-'.$this->getParameter('maj.projet').' day';
         $majProfil = '-'.$this->getParameter('maj.profil').' day';
 
-        $dateModificationProjet = new DateTime($properties['date_modification_projet']);
+        $dateModificationProjet = new DateTimeImmutable($properties['date_modification_projet']);
         $dateModificationProjet->modify($majProjet);
 
-        $dateModificationProfil = new DateTime($properties['date_modification_profil']);
+        $dateModificationProfil = new DateTimeImmutable($properties['date_modification_profil']);
         $dateModificationProfil->modify($majProfil);
 
         /** ***** Date - Projet ***** */
