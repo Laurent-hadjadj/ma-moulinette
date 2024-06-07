@@ -100,7 +100,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectBatchTraitementLast($dateLike):array
+    public function selectBatchTraitementLast($dateShort):array
     {
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
@@ -108,11 +108,11 @@ class BatchTraitementRepository extends ServiceEntityRepository
                                 nombre_projet as projet, responsable,
                                 debut_traitement as debut, fin_traitement as fin
                         FROM batch_traitement
-                        WHERE date_enregistrement like :dateLike
-                        GROUP BY titre
+                        WHERE date(date_enregistrement)= :date_short
+                        GROUP BY demarrage, resultat, titre, portefeuille, nombre_projet, responsable, debut_traitement, fin_traitement
                         ORDER BY responsable ASC, demarrage ASC";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-                $stmt->bindValue(':dateLike', $dateLike);
+                    $stmt->bindValue(':date_short', '2024-06-07');
                 $exec=$stmt->executeQuery();
                 $liste=$exec->fetchAllAssociative();
             $this->getEntityManager()->getConnection()->commit();
@@ -154,4 +154,44 @@ class BatchTraitementRepository extends ServiceEntityRepository
         return ['code'=>200, 'erreur'=>''];
     }
 
+    /**
+     * [Description for insertBatchTraitement]
+     *
+     * @param mixed $map
+     *
+     * @return array
+     *
+     * Created at: 07/06/2024 11:54:14 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function insertBatchTraitement($map):array
+    {
+        $connection = $this->getEntityManager()->getConnection();
+        try {
+            $connection->beginTransaction();
+
+            $sql = "INSERT INTO batch_traitement
+                    (demarrage, resultat, titre, portefeuille, nombre_projet, responsable, date_enregistrement)
+                    VALUES (:demarrage, :resultat, :titre, :portefeuille, :nombre_projet, :responsable, :date_enregistrement)";
+
+            $stmt = $connection->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+
+            $stmt->bindValue(':demarrage', $map['demarrage']);
+            $stmt->bindValue(':resultat', $map['resultat']);
+            $stmt->bindValue(':titre', $map['titre']);
+            $stmt->bindValue(':portefeuille', $map['portefeuille']);
+            $stmt->bindValue(':nombre_projet', $map['nombre_projet']);
+            $stmt->bindValue(':responsable', $map['responsable']);
+            $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
+
+            $stmt->executeStatement();
+
+            $connection->commit();
+            return ['code' => 200, 'erreur' => ''];
+        } catch (\Doctrine\DBAL\Exception $e) {
+            $connection->rollBack();
+            return ['code' => 500, 'erreur' => $e->getMessage()];
+        }
+    }
 }
