@@ -139,7 +139,7 @@ class BatchManuelController extends AbstractController
             ], Response::HTTP_BAD_REQUEST);
         }
 
-        $journal=$this->logger->downloadContent($data->type, $data->portefeuille);
+        $journal=$this->logger->downloadContent($data->portefeuille, $data->type);
 
         return $response->setData(['code' => 200, 'recherche' => $journal['recherche'], 'journal' => $journal['content'], Response::HTTP_OK]);
     }
