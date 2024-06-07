@@ -21,13 +21,41 @@ import 'motion-ui';
 
 import './foundation.js';
 
+import tinymce from 'tinymce/tinymce';
+
+// Import TinyMCE plugins and themes as needed
+import 'tinymce/themes/silver';
+import 'tinymce/icons/default';
+import 'tinymce/plugins/link';
+import 'tinymce/plugins/table';
+import 'tinymce/plugins/image';
+import 'tinymce/plugins/code';
+
 /* On importe les paramètres serveur. */
 import {serveur} from './properties.js';
 
 /** On importe les constatntes */
 import { contentType, trois, cinqCent, mille, http_500, http_400, http_200 } from './constante';
 
-/** On gére l'affichage des jobs */
+
+// Initialize TinyMCE
+const useDarkMode = window.matchMedia('(prefers-color-scheme: default)').matches;
+tinymce.init({
+  selector: 'textarea.tinymce',
+  license_key: 'gpl',
+  language: 'fr_FR',
+  skin: 'oxide',
+  theme: 'silver',
+  editable_root: false,
+  plugins: 'preview',
+  menubar: false,
+  toolbar: " preview print copy",
+  skin: useDarkMode ? 'oxide-dark' : 'oxide',
+  content_css: useDarkMode ? 'dark' : 'default',
+  content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }',
+  base_url: '/build/tinymce' });
+
+  /** On gére l'affichage des jobs */
 const jsAutomatique = '.js-automatique';
 const automatique = '.automatique';
 const jsManuel = '.js-manuel';
@@ -249,13 +277,12 @@ const lireInformationManuel = function(portefeuille, type){
         return t.code;
       }
       if (t.recherche==='OK' || t.code===http_200) {
-          $('#js-journal').text(t.journal);
+        /** On affiche le nom du projet */
+        $('#js-nom-projet').html(portefeuille);
+        /** On ouvre la fenêtre modal */
+        $('#modal-information').foundation('open');
+        tinymce.get('js-journal').setContent(t.journal);
       }
-      /** On affiche le nom du projet */
-      $('#js-nom-projet').html(portefeuille);
-      console.log(portefeuille)
-      /** On ouvre la fenêtre modal */
-      $('#modal-information').foundation('open');
 
       /** On va à la fin du fichier */
       $('#js-go-end').on('click', ()=>{
