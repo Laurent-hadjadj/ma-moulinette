@@ -25,3 +25,33 @@
  @media (90.025em <= width <= 120em) { /* vide */ }
 
  @media (120.025em <= width <= 160em) { /* vide */ }
+
+.bouton-activite-refresh,
+.bouton-activite-dujour
+{
+  color: #fff;
+  background-color: #00445b;
+}
+
+.bouton-activite-refresh:hover,
+.bouton-activite-dujour:hover
+{
+  background-color: #006182;
+}
+
+.couleur-changement
+{
+  color: #c46e27;
+}
+
+.tooltip-icon {
+  cursor: pointer;
+  display: inline-block;
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+}
+
+th {
+  position: relative;
+}

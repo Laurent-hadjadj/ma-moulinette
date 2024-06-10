@@ -61,7 +61,7 @@ CREATE TABLE ma_moulinette.historique_activite
   nb_reussi INT NOT NULL,
   nb_echec INT NOT NULL,
   taux_reussite INT NOT NULL,
-  max_temps timestamptz NOT NULL,
+  max_temps VARCHAR NOT NULL,
   date_enregistrement timestamptz NOT NULL
 );
 

@@ -92,24 +92,46 @@ class ApiActiviteController extends AbstractController
         $activiteEntity = $this->em->getRepository(Activite::class);
         $historiqueActiviteEntity = $this->em->getRepository(ActiviteHistorique::class);
 
-
-
         $url = $this->getParameter(static::$sonarUrl) . "/api/ce/activity";
         $result = $client->http($url);
-        $formatedData = static::organisationDonnée($result);
+        // dateBase represente la date la plus recente dans la base de donnée
+        // On ne prend pas directement la donnee de date parce que la base peux ne peut pas avoir de donnée
+        $dateBase = $activiteEntity->dernierDate();
 
-        $activiteEntity->insertActivites($formatedData);
+        if (empty($dateBase['request'])){
+            // methode pour inserer si la base est vierge
+            $formatedData = static::organisationDonnee($result);
+            $activiteEntity->insertActivites($formatedData);
+        }else{
+            // Méthode pour insérer si la base n'est pas vierge.
+            // Cette méthode consiste à prendre toutes les analyse dans un intervalle de date représenter par dateMin et dateMax.
+            // Puis vas insérer ces analyses
+            $dateBase = (new DateTime($dateBase['request'][0]['date']))->modify('+1 days');
+            $dateActuelle = new DateTime();
+            $dateActuelleMoins1 = $dateActuelle->modify('-1 days');
+            $dateMin = clone $dateBase;
+            $dateMax = (clone $dateMin)->modify('+7 days');
+            while($dateMin < $dateActuelleMoins1){
+                $url = $this->getParameter(static::$sonarUrl) . "/api/ce/activity?minSubmittedAt=".$dateMin->format('Y-m-d')."&maxExecutedAt=".$dateMax->format('Y-m-d')."";
+                $result = $client->http($url);
+                $formatedData = static::organisationDonnee($result);
+                $activiteEntity->insertActivites($formatedData);
+                $dateMin = $dateMin->modify('+7 days');
+                $dateMax = $dateMax->modify('+7 days');
+            }
+        }
+
 
 
         // On recupere l'anne actuelle
-        $dateMoins1 = new DateTime();
-        $dateMoins1->setTimezone(new DateTimeZone('Europe/Paris'));
-        $anneeActuelle = $dateMoins1->format('Y');
+        $dateActuelle = new DateTime();
+        $dateActuelle->setTimezone(new DateTimeZone('Europe/Paris'));
+        $anneeActuelle = $dateActuelle->format('Y');
 
         // On forme le tableau qui va etre envoyé dans la vue
         // Le nombre de jour pour cette annee
-        $result=$activiteEntity->nombreJourAnneeDonnee($anneeActuelle);
-        $donneeTableau[$anneeActuelle]['nb_jour'] = $result['request']['unique_days'];
+        $result=$activiteEntity->premiereDate($anneeActuelle);
+        $donneeTableau[$anneeActuelle]['nb_jour'] = static::calculDifferenceDate(new DateTime ($result['request'][0]['date']),$dateActuelle);
 
         // Le nombre d'analyse pour cette annee
         $result = $activiteEntity->nombreAnalyse($anneeActuelle);
@@ -127,7 +149,7 @@ class ApiActiviteController extends AbstractController
 
         // Le temps max d'execution pour cette annee
         $result=$activiteEntity->tempsExecutionMax($anneeActuelle);
-        $donneeTableau[$anneeActuelle]['max_temps']= static::formatDuréemax($result['request']['max_time']);
+        $donneeTableau[$anneeActuelle]['max_temps']= static::formatDureemax($result['request']['max_time']);
 
         // La moyenne d'analyse par jour
         $donneeTableau[$anneeActuelle]['moyenne_analyse'] = static::calculAnalyseMoyenne($donneeTableau[$anneeActuelle]['nb_jour'], $donneeTableau[$anneeActuelle]['nb_analyse']);
@@ -138,17 +160,27 @@ class ApiActiviteController extends AbstractController
         // Date d'enregistrement
         $donneeTableau[$anneeActuelle]['date_enregistrement'] = new DateTimeImmutable();
 
-        $historiqueActiviteEntity->insertActivites($donneeTableau);
-        $tableHistoriqueActivite = $historiqueActiviteEntity->selectAllActivite();
+        $verifUpdateOuInsert = $historiqueActiviteEntity->selectActivite($anneeActuelle);
+        if (empty($verifUpdateOuInsert['request'])) { // Utilisation de empty() pour vérifier si le tableau est vide
+            $historiqueActiviteEntity->insertHistoriqueActivites($donneeTableau);
+        } else {
+            $historiqueActiviteEntity->updateHistoriqueActivites($donneeTableau);
+        }
+        $tableHistoriqueActivite = $historiqueActiviteEntity->selectActivite();
+        $tableHistoriqueActivite['request'][0]["date_enregistrement"] = (new DateTime($tableHistoriqueActivite['request'][0]["date_enregistrement"]))->format('d-m-Y H:i:s');
 
         return $response->setData(['code' => 200,'listeDonnee' => $tableHistoriqueActivite, Response::HTTP_OK]);
     }
 
-
-
-    private function formatDuréeMax($data): DateTimeImmutable
+    private function calculDifferenceDate(DateTime $premiereDate, DateTime $secondeDate) : int
     {
-        return (new DateTimeImmutable())->setTimestamp($data);
+        return (int) $premiereDate->diff($secondeDate)->format('%a');
+    }
+
+
+    private function formatDureeMax($data): string
+    {
+        return gmdate("H:i:s", $data);
     }
 
     private function calculAnalyseMoyenne($nbJour,$nbAnalyse): int
@@ -161,7 +193,7 @@ class ApiActiviteController extends AbstractController
         return $nbAnalyseTotal/$nbAnalyseReussite*100;
     }
 
-    private function organisationDonnée($data): array
+    private function organisationDonnee($data): array
     {
         $tab = array();
         $id= 0;

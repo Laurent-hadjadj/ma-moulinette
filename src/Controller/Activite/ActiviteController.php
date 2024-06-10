@@ -17,6 +17,7 @@ use DateTime;
 use DateTimeZone;
 
 use App\Entity\Activite;
+use App\Entity\ActiviteHistorique;
 use App\Service\ClientActivite;
 use DateTimeImmutable;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -72,45 +73,46 @@ class ActiviteController extends AbstractController
 
 
         if ($activiteEntity->selectActivite($anneeActuelle)['request'] == [] ){
-            $this->addFlash('notice', ['type'=>'alert', 'titre'=> '[ACTIVITE-003]', 'message'=>" Votre liste d'activité est vide. Veuillez rafraichir la liste"]);
-            $request[""] = [
-                'nb_jour' => "",
-                'nb_analyse' => "",
-                'nb_reussi' => "",
-                'nb_echec' => "",
-                'max_temps' => "",
-                'moyenne_analyse' => "",
-                'taux_reussite' => ""
+            $this->addFlash('notice', ['type'=>'alert', 'titre'=> '[ACTIVITE-003]', 'message'=>" Votre La liste des analyses sonarQube est vide. Veuillez rafraichir la liste"]);
+            $request["-"] = [
+                'annee' => "-",
+                'nb_jour' => "-",
+                'nb_analyse' => "-",
+                'nb_reussi' => "-",
+                'nb_echec' => "-",
+                'max_temps' => "-",
+                'moyenne_analyse' => "-",
+                'taux_reussite' => "-"
             ];
             return $this->render('activite/index.html.twig', [
-                'activites' => $request,'version' => $this->getParameter('version'), 'dateCopyright' => \date("Y"),
+                'data' => $request,'version' => $this->getParameter('version'), 'dateCopyright' => \date("Y"),
                 Response::HTTP_OK]);
         }
 
-        $dateBase = new DateTime($activiteEntity->dernierDate()['request']['date']);
+        $dateBase = new DateTime($activiteEntity->dernierDate()['request'][0]['date']);
         $dateSonar = new DateTime($respond['tasks'][0]['executedAt']);
 
         if($dateSonar > $dateBase){
             // Ici on calcule l'interval de jour entre la base et sonar
             $interval = $dateBase->diff(new DateTime($respond['tasks'][0]['executedAt']))->format('%d');
-            $this->addFlash('notice', ['type'=>'warning', 'titre'=> '[ACTIVITE-002]', 'message'=>"Vous pouvez mettre à jour votre liste d'activité. Il y a " .$interval. " jours de retard"]);
+            $this->addFlash('notice', ['type'=>'warning', 'titre'=> '[ACTIVITE-002]', 'message'=>"Vous pouvez mettre à jour  La liste des analyses sonarQube. Il y a " .$interval. " jours de retard"]);
         }
         if($dateSonar == $dateBase){
-            $this->addFlash('notice', ['type'=>'default', 'titre'=> '[ACTIVITE-001]', 'message'=>" Votre liste d'activité est à jour"]);
+            $this->addFlash('notice', ['type'=>'default', 'titre'=> '[ACTIVITE-001]', 'message'=>" La liste des analyses sonarQube est à jour."]);
         }
 
-        $request["-"] = [
-            'nb_jour' => "-",
-            'nb_analyse' => "-",
-            'nb_reussi' => "-",
-            'nb_echec' => "-",
-            'max_temps' => "-",
-            'moyenne_analyse' => "-",
-            'taux_reussite' => "-"
-        ];
+        $historiqueActiviteEntity = $this->em->getRepository(ActiviteHistorique::class);
+
+        $result = $historiqueActiviteEntity->selectActivite();
+        for ($i = 0; $i < count($result['request']); $i++){
+            $formatedDate = new DateTimeImmutable($result['request'][$i]['max_temps']);
+            $result['request'][$i]['max_temps'] = $formatedDate->format('H:i:s');
+        }
+
+        $result['request'][0]["date_enregistrement"] = (new DateTime($result['request'][0]["date_enregistrement"]))->format('d-m-Y H:i:s');
 
         return $this->render('activite/index.html.twig', [
-            'activites' => $request,'version' => $this->getParameter('version'), 'dateCopyright' => \date("Y"),
+            'data' => $result['request'],'version' => $this->getParameter('version'), 'dateCopyright' => \date("Y"),
             Response::HTTP_OK]);
     }
 

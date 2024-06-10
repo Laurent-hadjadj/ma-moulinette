@@ -21,6 +21,7 @@ use Doctrine\Persistence\ManagerRegistry;
 
 class ActiviteRepository extends ServiceEntityRepository
 {
+
     public static $removeReturnline = "/\s+/u";
 
     public static $formatDate = 'Y-m-d H:i:sO';
@@ -212,26 +213,48 @@ class ActiviteRepository extends ServiceEntityRepository
     public function dernierDate($annee = null): array
     {
         try {
-            $this->getEntityManager()->getConnection()->beginTransaction();
-                $sql = "SELECT executed_at as date
-                        FROM activite";
-                        if ($annee != null){
-                            $sql .=" WHERE EXTRACT(YEAR FROM started_at) = :annee
-                                    ORDER BY executed_at desc LIMIT 1";
-                            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-                            $stmt->bindValue("annee", $annee);
-                                }
-                        else{
-                            $sql .= " ORDER BY executed_at desc LIMIT 1";
-                            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-                        }
-                $request=$stmt->executeQuery()->fetchAllAssociative();
-            $this->getEntityManager()->getConnection()->commit();
+            $sql = "SELECT executed_at as date FROM activite";
+            if ($annee !== null) {
+                $sql .= " WHERE EXTRACT(YEAR FROM started_at) = :annee ORDER BY executed_at DESC LIMIT 1";
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $stmt->bindValue("annee", $annee);
+            } else {
+                $sql .= " ORDER BY executed_at DESC LIMIT 1";
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+            }
+            $request = $stmt->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
-            return ['code'=>500, 'erreur'=> $e->getCode()];
+            return ['code' => 500, 'erreur' => $e->getCode()];
         }
-        return ['request'=>$request[0], 'code'=>200, 'erreur'=>''];
+        return ['request' => $request, 'code' => 200, 'erreur' => ''];
     }
 
+    /**
+     * [Description for selectActivite]
+     * On recupere la date la plus recente dans la table pour une année donnée
+     *
+     * @return array
+     *
+     * Created at: 28/05/2024 13:56:31 (Europe/Paris)
+     * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function premiereDate($annee = null): array
+    {
+        try {
+            $sql = "SELECT executed_at as date FROM activite";
+            if ($annee !== null) {
+                $sql .= " WHERE EXTRACT(YEAR FROM started_at) = :annee ORDER BY executed_at ASC LIMIT 1";
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $stmt->bindValue("annee", $annee);
+            } else {
+                $sql .= " ORDER BY executed_at DESC LIMIT 1";
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+            }
+            $request = $stmt->executeQuery()->fetchAllAssociative();
+        } catch (\Doctrine\DBAL\Exception $e) {
+            return ['code' => 500, 'erreur' => $e->getCode()];
+        }
+        return ['request' => $request, 'code' => 200, 'erreur' => ''];
+    }
 }

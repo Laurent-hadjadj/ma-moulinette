@@ -35,6 +35,36 @@ const refreshActivite=async function() {
   /** On appel l'API */
   const t = await $.ajax(optionsRefresh);
 
+  let str ='';
+
+  /** On efface le container */
+  const stats = t.listeDonnee.request;
+  console.log(stats);
+  $('#js-date-enregistrement').html('');
+  str += `<p><strong>Derniere date d'enregistrement : </strong><span class="couleur-changement">${stats[0].date_enregistrement}</span></p>`;
+  $('#js-date-enregistrement').html(str);
+  $('#js-tableau-stats').html('');
+
+  str ='';
+
+  stats.forEach(stat =>{
+    str +=
+    `<tr>
+    <td>${ stat.annee }</td>
+    <td>${ stat.nb_jour }</td>
+    <td>${ stat.nb_analyse }</td>
+    <td>${ stat.moyenne_analyse }</td>
+    <td>${ stat.nb_reussi }</td>
+    <td>${ stat.nb_echec }</td>
+    <td>${ stat.taux_reussite } %</td>
+    <td>${ stat.max_temps }</td>
+  </tr>`;
+  })
+  console.log(str);
+  $('#js-tableau-stats').html(str);
+
+
+
 }
 
 $('.js-activite-refresh').on('click', ()=>{
