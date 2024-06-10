@@ -47,11 +47,8 @@ class HotspotDetailsRepository extends ServiceEntityRepository
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         $conn->bindValue(':maven_key', $map['maven_key']);
         try {
-            #if ($mode !== 'TEST') {
                 $nombre=$conn->executeQuery()->fetchAllAssociative();
-            #} else {
-                return ['code'=> 202, 'erreur'=>'TEST'];
-            #}
+            
         } catch (\Doctrine\DBAL\Exception $e) {
             return ['code'=>500, 'erreur'=> $e->getCode()];
         }
@@ -77,11 +74,7 @@ class HotspotDetailsRepository extends ServiceEntityRepository
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         $conn->bindValue(':maven_key', $map['maven_key']);
         try {
-                #f ($mode !== 'TEST') {
                     $conn->executeQuery();
-                #} else {
-                    return ['code'=> 202, 'erreur'=>'TEST'];
-                #}
         } catch (\Doctrine\DBAL\Exception $e) {
             return ['code'=>500, 'erreur'=> $e->getCode()];
         }

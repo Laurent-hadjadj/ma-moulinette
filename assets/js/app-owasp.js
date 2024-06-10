@@ -139,6 +139,7 @@ const videLeTableau = function() {
   $('#autre').html('');
 }
 
+
 /**
 * [Description for remplissageOwaspInfo]
 * Récupération des informations sur les vulnérabilités OWASP.
@@ -148,14 +149,13 @@ const videLeTableau = function() {
 * Created at: 19/12/2022, 21:32:27 (Europe/Paris)
 * @author     Laurent HADJADJ <laurent_h@me.com>
 */
-const remplissageOwaspInfo=function(idMaven) {
+const remplissageOwaspInfo=function(idMaven, referentielVersion) {
 
   /** si la clé maven n'est pas défini alors on sort */
-  if (idMaven === undefined) {
+  if (idMaven === undefined || referentielVersion === undefined) {
     return;
   }
-
-  const data={'maven_key': idMaven, 'mode': 'null' };
+  const data={'maven_key': idMaven, 'referentiel_version': referentielVersion};
   const options = {
     url: `${serveur()}/api/peinture/owasp/liste`, type: 'POST',
     dataType: 'json', data: JSON.stringify(data), contentType };
@@ -172,7 +172,7 @@ const remplissageOwaspInfo=function(idMaven) {
       return;
     }
     if (r.code===http_406) {
-      const message=`Le projet n'a pas été trouvé !`;
+      const message=`La version n'a pas été trouvé !`;
       $('#message').html(callboxWarning+message+callboxFermer);
       videLeTableau();
       return;
@@ -180,6 +180,9 @@ const remplissageOwaspInfo=function(idMaven) {
 
     /** On affiche la version et la date du projet dans sonarqube */
     $('#js-application-version').html(`<span class="color-noire open-sans">V${r.version}, (${r.date_version})</span>`);
+
+    /** On affiche la version du référentiely */
+    $('#owasp-version').html(`Référentiel OWASP Actuel : ${r.referentiel_version}`);
 
     /** On ajoute les valeurs pour les vulnérabilités */
     $('#nombre-faille-owasp').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.total));
@@ -441,14 +444,14 @@ const remplissageOwaspInfo=function(idMaven) {
  * Created at: 19/12/2022, 21:39:57 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
-const remplissageHotspotInfo=function(idMaven) {
+const remplissageHotspotInfo=function(idMaven, referentielVersion) {
 
   /** si la clé maven n'existe pas alors on sort */
-  if (idMaven === undefined) {
+  if (idMaven === undefined || referentielVersion === undefined) {
     return;
   }
 
-  const data={'maven_key': idMaven, 'mode': 'null' };
+  const data={'maven_key': idMaven, 'referentiel_version': referentielVersion};
   const options = {
     url: `${serveur()}/api/peinture/owasp/hotspot/info`, type: 'POST',
     dataType: 'json', data: JSON.stringify(data), contentType };
@@ -521,20 +524,20 @@ $(`#h${id}`).html(i);
 * Created at: 19/12/2022, 21:42:09 (Europe/Paris)
 * @author     Laurent HADJADJ <laurent_h@me.com>
 */
-const remplissageHotspotListe=function(idMaven) {
-  if (idMaven === undefined) {
+const remplissageHotspotListe=function(idMaven, referentielVersion) {
+  if (idMaven === undefined || referentielVersion === undefined) {
     return;
   }
 
 /**
  * On appel le l'API en charge de récupérer la liste des failles de type OWASP
  */
-  const data={'maven_key': idMaven, 'mode': 'null' };
+  const data={'maven_key': idMaven, 'referentiel_version': referentielVersion};
   const options = {
     url: `${serveur()}/api/peinture/owasp/hotspot/liste`, type: 'POST',
           dataType: 'json', data: JSON.stringify(data), contentType };
-
   $.ajax(options).then(r => {
+    console.log('résultat', r);
     if (r.code===http_400) {
       const message=`[Hotspot] La requête n'est pas conforme (Erreur 400) !`;
       $('#message').html(callboxError+message+callboxFermer);
@@ -547,7 +550,7 @@ const remplissageHotspotListe=function(idMaven) {
                               r.menaceA9+r.menaceA10,10);
 
   formatage=espace;
-
+  
   if ( hotspotTotal!==0 ){
     /* calcul A1 */
     leTaux = 1 - (parseInt(r.menaceA1,10)/hotspotTotal);
@@ -853,13 +856,13 @@ const injectionModule=function (module, total, taux, bc, zero){
  * Created at: 19/12/2022, 21:46:30 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
-const remplissageHotspotDetails=function(idMaven) {
+const remplissageHotspotDetails=function(idMaven, referentielVersion) {
   /** Si la clé maven n'est pas défini on ne fait rien */
-  if (idMaven === undefined) {
+  if (idMaven === undefined || referentielVersion === undefined) {
     return;
   }
 
-  const data={'maven_key': idMaven, 'mode': 'null'};
+  const data={'maven_key': idMaven, 'referentiel_version': referentielVersion};
   const options = {
     url: `${serveur()}/api/peinture/owasp/hotspot/details`, type: 'POST',
     dataType: 'json', data: JSON.stringify(data), contentType };
@@ -1015,7 +1018,7 @@ const remplissageDetailsHotspotOwasp=function(idMaven, menace, titre) {
     return;
   }
 
-  const data={'maven_key': idMaven, menace, 'mode': 'null' };
+  const data={'maven_key': idMaven, menace};
   const options = {
     url: `${serveur()}/api/peinture/owasp/hotspot/severity`, type: 'POST',
           dataType: 'json', data: JSON.stringify(data), contentType };
@@ -1026,7 +1029,6 @@ const remplissageDetailsHotspotOwasp=function(idMaven, menace, titre) {
       $('#message').html(callboxError+message+callboxFermer);
       return;
     }
-
     $('.details-titre').html(listeOwasp2017[titre]);
     $('#detail-haut').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.high.total));
     $('#detail-moyen').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.medium.total));
@@ -1078,7 +1080,37 @@ const projet=key.split(':');
 $('#js-application').html(projet[1]);
 
 /** On appel les fonctions de remplissage */
-remplissageOwaspInfo(key);
-remplissageHotspotInfo(key);
-remplissageHotspotListe(key);
-remplissageHotspotDetails(key);
+document.addEventListener('DOMContentLoaded', function() {
+  const button2017 = document.getElementById('version2017');
+  const button2021 = document.getElementById('version2021');
+
+  const key = sessionStorage.getItem('projet');
+  const projet = key.split(':');
+
+  /** On met à jour la page */
+  $('#js-application').html(projet[1]);
+
+  // Ajoute une classe active au bouton sélectionné et appelle les fonctions de remplissage
+  function selectVersion(referentielVersion) {
+    if (referentielVersion === '2017') {
+      button2017.classList.add('active');
+      button2021.classList.remove('active');
+    } else if (referentielVersion === '2021') {
+      button2017.classList.remove('active');
+      button2021.classList.add('active');
+    }
+    remplissageOwaspInfo(key, referentielVersion);
+    remplissageHotspotInfo(key, referentielVersion);
+    remplissageHotspotListe(key, referentielVersion);
+    remplissageHotspotDetails(key, referentielVersion);
+  }
+
+  // Événements de clic pour les boutons
+  button2017.addEventListener('click', function() {
+    selectVersion('2017');
+  });
+
+  button2021.addEventListener('click', function() {
+    selectVersion('2021');
+  });
+});

@@ -39,13 +39,15 @@ class OwaspRepository extends ServiceEntityRepository
      */
     public function selectOwaspOrderByDateEnregistrement($map):array
     {
+
         $sql = "SELECT *
-                FROM owasp
-                WHERE maven_key=:maven_key
-                ORDER BY date_enregistrement DESC LIMIT 1";
+        FROM owasp
+        WHERE maven_key=:maven_key AND referentiel_version=:referentiel_version
+        ORDER BY date_enregistrement DESC LIMIT 1";
 
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         $conn->bindValue(':maven_key', $map['maven_key']);
+        $conn->bindValue(':referentiel_version', $map['referentiel_version']);
         try {
                 $liste=$conn->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {

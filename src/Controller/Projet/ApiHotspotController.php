@@ -194,6 +194,8 @@ class ApiHotspotController extends AbstractController
 
         /** on traite les hotspots */
         $value['key']='NC';
+        $value['version']='NC';
+        $value['dateVersion']=new DateTime();
         $value['vulnerabilityProbability']=0;
         $value['status']='NC';
         $niveau=0;
@@ -206,6 +208,8 @@ class ApiHotspotController extends AbstractController
         /** On enregistre les données */
         $hotspot = new  Hotspots();
         $hotspot->setMavenKey($data->maven_key);
+        $hotspot->setVersion($value['version']);
+        $hotspot->setDateVersion($value['dateVersion']);
         $hotspot->setKey($value['key']);
         $hotspot->setProbability($value['vulnerabilityProbability']);
         $hotspot->setStatus($value['status']);

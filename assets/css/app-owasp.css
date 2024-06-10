@@ -331,3 +331,18 @@
    padding-left: 30px;
    padding-right: 30px;
  }
+
+ .version-button {
+  padding: 10px 20px;
+  margin: 5px;
+  cursor: pointer;
+  border: none;
+  background-color: #007BFF;
+  color: white;
+  border-radius: 5px;
+}
+
+.version-button.active {
+  background-color: #0056b3;
+}
+

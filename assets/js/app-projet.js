@@ -275,7 +275,6 @@ const afficheMessage=function(t){
  *
  * Phase 01
  *
- * {mode} = null, TEST
  * {mavenKey} = clé du projet
  *
  * @param string mavenKey
@@ -292,7 +291,7 @@ const projetInformation=function(mavenKey) {
     return;
   }
 
-  const data = { maven_key: mavenKey, mode: 'null' };
+  const data = { maven_key: mavenKey};
   const options = {
     url: `${serveur()}/api/projet/information`, type: 'POST',
           dataType: 'json', data: JSON.stringify(data), contentType,
@@ -320,7 +319,6 @@ const projetInformation=function(mavenKey) {
  *
  * Phase 02
  *
-* {mode} = null, TEST
 * {mavenKey} = clé du projet
 *
  * @param string mavenKey
@@ -337,7 +335,7 @@ const projetMesure=function(mavenKey) {
     return;
   }
 
-  const data = { maven_key: mavenKey, mode: 'null' };
+  const data = { maven_key: mavenKey};
   const options = {
     url: `${serveur()}/api/projet/mesure`, type: 'POST',
           dataType: 'json', data: JSON.stringify(data), contentType };
@@ -363,7 +361,6 @@ const projetMesure=function(mavenKey) {
   *
   * Phase 03
   *
-  * {mode} = null, TEST
   * {mavenKey} = clé du projet
   * {type} = reliability, security, sqale
   *
@@ -381,7 +378,7 @@ const projetRating=function(mavenKey, type) {
     return;
   }
 
-  const data = { maven_key: mavenKey, type, mode: 'null' };
+  const data = { maven_key: mavenKey, type};
   const options = {
     url: `${serveur()}/api/projet/note`, type: 'POST',
     dataType: 'json', data: JSON.stringify(data), contentType };
@@ -410,7 +407,6 @@ const projetRating=function(mavenKey, type) {
  *
  * Phase 04
  *
- * {mode} = null, TEST
  * {mavenKey} = clé du projet
  *
  * @param string mavenKey
@@ -460,7 +456,6 @@ const projetOwasp=function(mavenKey, referentielVersion) {
  *
  * Phase 05
  *
- * {mode} = null, TEST
  * {mavenKey} = clé du projet
  *
  * @param string mavenKey
@@ -470,14 +465,14 @@ const projetOwasp=function(mavenKey, referentielVersion) {
  * Created at: 19/12/2022, 22:17:17 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
-const projetHotspot=function(mavenKey) {
+const projetHotspot=function(mavenKey, referentielVersion) {
   /** On vérifie s'il n'y a pas d'erreur lors du traitement */
   const collecte = sessionStorage.getItem('collecte');
   if (!collecte || collecte!='Tout va bien!') {
     return;
   }
 
-  const data = { maven_key: mavenKey, mode: 'null'};
+  const data = { maven_key: mavenKey, referentiel_version: referentielVersion};
   const options = {
     url: `${serveur()}/api/projet/hotspot`, type: 'POST',
     dataType: 'json', data: JSON.stringify(data), contentType };
@@ -507,7 +502,6 @@ const projetHotspot=function(mavenKey) {
  *
  * Phase 06
  *
- * {mode} = null, TEST
  * {mavenKey} = clé du projet
  *
  * @param string mavenKey
@@ -517,14 +511,14 @@ const projetHotspot=function(mavenKey) {
  * Created at: 19/12/2022, 22:13:42 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
-const projetAnomalie=function(mavenKey) {
+const projetAnomalie=function(mavenKey, referentielVersion) {
   /** On vérifie s'il n'y a pas d'erreur lors du traitement */
   const collecte = sessionStorage.getItem('collecte');
   if (!collecte || collecte!='Tout va bien!') {
     return;
   }
 
-  const data = { maven_key: mavenKey, mode: 'null' };
+  const data = { maven_key: mavenKey, referentiel_version: referentielVersion};
   const options = {
     url: `${serveur()}/api/projet/anomalie`, type: 'POST',
           dataType: 'json', data: JSON.stringify(data), contentType };
@@ -551,7 +545,6 @@ const projetAnomalie=function(mavenKey) {
  *
  * Phase 07
  *
- * {mode} = null, TEST
  * {mavenKey} = clé du projet
  *
  * @param string mavenKey
@@ -568,7 +561,7 @@ const projetAnomalieDetails=function(mavenKey) {
     return;
   }
 
-  const data = { maven_key: mavenKey, mode: 'null' };
+  const data = { maven_key: mavenKey};
   const options = {
     url: `${serveur()}/api/projet/anomalie/details`, type: 'POST',
           dataType: 'json', data: JSON.stringify(data), contentType };
@@ -599,7 +592,6 @@ const projetAnomalieDetails=function(mavenKey) {
  *
  * Phase 8 et 9
  *
- * {mode} = null, TEST
  * {mavenKey} = clé du projet
  * {owasp} = type d'indicateur OWASP
  *
@@ -611,14 +603,14 @@ const projetAnomalieDetails=function(mavenKey) {
  * Created at: 19/12/2022, 22:18:07 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
-const projetHotspotOwasp=function(mavenKey, owasp) {
+const projetHotspotOwasp=function(mavenKey, owasp, referentielVersion) {
   /** On vérifie s'il n'y a pas d'erreur lors du traitement */
   const collecte = sessionStorage.getItem('collecte');
   if (!collecte || collecte!='Tout va bien!') {
     return;
   }
 
-  const data = { maven_key: mavenKey, mode: 'null', owasp };
+  const data = { maven_key: mavenKey, owasp, referentiel_version: referentielVersion };
   const options = {
     url: `${serveur()}/api/projet/hotspot/owasp`, type: 'POST',
           dataType: 'json', data: JSON.stringify(data), contentType };
@@ -651,7 +643,6 @@ const projetHotspotOwasp=function(mavenKey, owasp) {
  *
  * Phase 10
  *
- * {mode} = null, TEST
  * {mavenKey} = clé du projet
  *
  * @param string mavenKey
@@ -668,7 +659,7 @@ const projetHotspotOwaspDetails=function(mavenKey) {
     return;
   }
 
-  const data = { maven_key: mavenKey, mode: 'null' };
+  const data = { maven_key: mavenKey};
   const options = {
     url: `${serveur()}/api/projet/hotspot/details`, type: 'POST',
           dataType: 'json', data: JSON.stringify(data), contentType };
@@ -698,7 +689,6 @@ const projetHotspotOwaspDetails=function(mavenKey) {
  *
  * Phase 11
  *
- * {mode} = null, TEST
  * {mavenKey} = clé du projet
  *
  * @param string mavenKey
@@ -715,7 +705,7 @@ const projetNoSonar=function(mavenKey){
       return;
     }
 
-  const data = { maven_key: mavenKey, mode: 'null' };
+  const data = { maven_key: mavenKey};
   const options = {
     url: `${serveur()}/api/projet/nosonar`, type: 'POST',
           dataType: 'json', data: JSON.stringify(data), contentType };
@@ -744,7 +734,6 @@ const projetNoSonar=function(mavenKey){
  *
  * Phase 12
  *
- * {mode} = null, TEST
  * {mavenKey} = clé du projet
  *
  * @param string mavenKey
@@ -761,7 +750,7 @@ const projetTodo=function(mavenKey){
       return;
     }
 
-  const data = { maven_key: mavenKey, mode: 'null' };
+  const data = { maven_key: mavenKey};
   const options = {
     url: `${serveur()}/api/projet/todo`, type: 'POST',
           dataType: 'json', data: JSON.stringify(data), contentType };
@@ -1120,7 +1109,7 @@ $('select[name="projet"]').on('change', function () {
   sessionStorage.setItem('collecte', 'Tout va bien!');
 
   /* On regarde si le projet est en favori */
-  const data = { mavenKey: $('#select-result').text().trim(), 'mode': 'null' };
+  const data = { mavenKey: $('#select-result').text().trim()};
   const options = {
     url: `${serveur()}/api/favori/check`, type: 'POST',
           dataType: 'json', data: JSON.stringify(data), contentType };
@@ -1235,7 +1224,7 @@ $('.favori-svg').on('click', () => {
         $('.favori-svg').addClass('favori-svg-select');
       }
 
-    const data = { maven_key: $('#select-result').text().trim(), mode: 'null' };
+    const data = { maven_key: $('#select-result').text().trim()};
     const options = {
       url: `${serveur()}/api/favori`, type: 'POST',
       dataType: 'json',  data: JSON.stringify(data), contentType };
@@ -1333,7 +1322,7 @@ $('.js-enregistrement').on('click', () => {
 $('.js-tableau-suivi').on('click', () => {
   if ($('select[name="projet"]').val() !=='' && $('select[name="projet"]').val() !=='TheID'){
     const apiMaven = $('#select-result').text().trim();
-    window.location.href='/suivi?mavenKey='+apiMaven+'&mode=null';
+    window.location.href='/suivi?mavenKey='+apiMaven;
     } else {
     log(' - ERROR - Vous devez chosir un projet dans la liste !! !');
     }

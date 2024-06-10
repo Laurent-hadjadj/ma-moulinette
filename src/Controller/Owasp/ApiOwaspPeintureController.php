@@ -83,12 +83,15 @@ class ApiOwaspPeintureController extends AbstractController
                 'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
         }
 
+        /** Récupérer la version du référentiel ou utiliser une valeur par défaut si non spécifiée */
+        $referentielVersion = property_exists($data, 'referentiel_version') ? $data->referentiel_version : '2017';
+
         /** On récupère les failles owasp */
-        $map=['maven_key'=>$data->maven_key];
+        $map=['maven_key'=>$data->maven_key, 'referentiel_version' => $referentielVersion];
         $request=$owasp->selectOwaspOrderByDateEnregistrement($map);
         if ($request['code']!=200) {
             return $response->setData([
-                'maven_key' => $data->maven_key, 'code'=>$request['code'],
+                'maven_key' => $data->maven_key, 'referentiel_version' => $referentielVersion, 'code'=>$request['code'],
                 'erreur' => $request['erreur'], Response::HTTP_OK]);
         }
 
@@ -126,7 +129,8 @@ class ApiOwaspPeintureController extends AbstractController
         return $response->setData(
             [
                 'code' => 200,
-                'total' => $total, 'version' => $request['liste'][0]['version'], 'date_version' => $request['liste'][0]['date_version'],
+                'total' => $total,
+                'referentiel_version' => $request['liste'][0]['referentiel_version'], 'version' => $request['liste'][0]['version'], 'date_version' => $request['liste'][0]['date_version'],
                 'bloquant' => $bloquant, 'critique' => $critique, 'majeur' => $majeur, 'mineur' => $mineur,
                 'a1' => $request['liste'][0]['a1'], 'a2' => $request['liste'][0]['a2'], 'a3' => $request['liste'][0]['a3'],
                 'a4' => $request['liste'][0]['a4'], 'a5' => $request['liste'][0]['a5'], 'a6' => $request['liste'][0]['a6'],
@@ -188,31 +192,34 @@ class ApiOwaspPeintureController extends AbstractController
                 'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
         }
 
+        /** Récupérer la version du référentiel ou utiliser une valeur par défaut si non spécifiée */
+        $referentielVersion = property_exists($data, 'referentiel_version') ? $data->referentiel_version : '2017';
+
         /** On compte le nombre de hotspot REVIEWED */
-        $map=['maven_key'=>$data->maven_key, 'status'=>'REVIEWED'];
+        $map=['maven_key'=>$data->maven_key, 'referentiel_version' => $referentielVersion, 'status'=>'REVIEWED'];
         $reviewed=$hotspotOwasp->countHotspotOwaspStatus($map);
         if ($reviewed['code']!=200) {
             return $response->setData([
-                'maven_key' => $data->maven_key,
-                'code'=>$reviewed['code'], 'erreur' => $request['erreur'],
+                'maven_key' => $data->maven_key,'referentiel_version' => $referentielVersion,
+                'code'=>$reviewed['code'], 'erreur' => $reviewed['erreur'],
                 Response::HTTP_OK]);
         }
 
         /** On compte le nombre de hotspot TO_REVIEW */
-        $map=['maven_key'=>$data->maven_key, 'status'=>'TO_REVIEW'];
+        $map=['maven_key'=>$data->maven_key, 'referentiel_version' => $referentielVersion, 'status'=>'TO_REVIEW'];
         $toReview=$hotspotOwasp->countHotspotOwaspStatus($map);
         if ($toReview['code']!=200) {
             return $response->setData([
-                'maven_key' => $data->maven_key,'code'=>$toReview['code'],
+                'maven_key' => $data->maven_key,'referentiel_version' => $referentielVersion,'code'=>$toReview['code'],
                 'erreur' => $toReview['erreur'], Response::HTTP_OK]);
         }
 
         /** On récupère le nombre de hotspot owasp par niveau de sévérité potentiel. */
-        $map=['maven_key'=>$data->maven_key];
+        $map=['maven_key'=>$data->maven_key, 'referentiel_version' => $referentielVersion];
         $probability=$hotspotOwasp->countHotspotOwaspProbability($map);
         if ($probability['code']!=200) {
             return $response->setData([
-                'maven_key' => $data->maven_key, 'code'=>$probability['code'],
+                'maven_key' => $data->maven_key,'referentiel_version' => $referentielVersion, 'code'=>$probability['code'],
                 'erreur' => $probability['erreur'], Response::HTTP_OK]);
         }
 
@@ -272,12 +279,15 @@ class ApiOwaspPeintureController extends AbstractController
             'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
         }
 
+        /** Récupérer la version du référentiel ou utiliser une valeur par défaut si non spécifiée */
+        $referentielVersion = property_exists($data, 'referentiel_version') ? $data->referentiel_version : '2017';
+
         /** On compte le nombre de hotspot de type OWASP au statut TO_REVIEWED */
-        $map=['maven_key'=>$data->maven_key];
+        $map=['maven_key'=>$data->maven_key, 'referentiel_version' => $referentielVersion];
         $menaces=$hotspotOwasp->countHotspotOwaspMenaces($map);
         if ($menaces['code']!=200) {
             return $response->setData([
-                'maven_key' => $data->maven_key,
+                'maven_key' => $data->maven_key,'referentiel_version' => $referentielVersion,
                 'code'=>$menaces['code'], 'erreur' => $menaces['erreur'],
                 Response::HTTP_OK]);
         }
@@ -359,12 +369,15 @@ class ApiOwaspPeintureController extends AbstractController
                     'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
         }
 
+        /** Récupérer la version du référentiel ou utiliser une valeur par défaut si non spécifiée */
+        $referentielVersion = property_exists($data, 'referentiel_version') ? $data->referentiel_version : '2017';
+
         /** On récupère la liste des hotspots par status de la table détails. */
-        $map=['maven_key'=>$data->maven_key];
+        $map=['maven_key'=>$data->maven_key, 'referentiel_version' => $referentielVersion];
         $details=$hotspotDetails->selectHotspotDetailsByStatus($map);
         if ($details['code']!=200) {
             return $response->setData([
-                'maven_key' => $data->maven_key,
+                'maven_key' => $data->maven_key,'referentiel_version' => $referentielVersion,
                 'code'=>$details['code'], 'erreur' => $details['erreur'],
                 Response::HTTP_OK]);
         }
@@ -403,32 +416,36 @@ class ApiOwaspPeintureController extends AbstractController
                     'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
         }
 
+        /** Récupérer la version du référentiel ou utiliser une valeur par défaut si non spécifiée */
+        $referentielVersion = property_exists($data, 'referentiel_version') ? $data->referentiel_version : '2017';
+
         /** On compte le nombre de faille OWASP au statut HIGH */
-        $map=['maven_key'=>$data->maven_key, 'menace'=>$data->menace, 'status'=>'HIGH'];
+        $map=['maven_key'=>$data->maven_key, 'referentiel_version' => $referentielVersion, 'menace'=>$data->menace, 'status'=>'HIGH'];
         $high=$hotspotOwasp->countHotspotOwaspMenaceByStatus($map);
+        dd($high);
         if ($high['code']!=200) {
             return $response->setData([
-                'maven_key' => $data->maven_key,
+                'maven_key' => $data->maven_key,'referentiel_version' => $referentielVersion,
                 'code'=>$high['code'], 'erreur' => $high['erreur'],
                 Response::HTTP_OK]);
         }
 
         /** On compte le nombre de faille OWASP au statut MEDIUM */
-        $map=['maven_key'=>$data->maven_key, 'menace'=>$data->menace, 'status'=>'MEDIUM'];
+        $map=['maven_key'=>$data->maven_key, 'referentiel_version' => $referentielVersion, 'menace'=>$data->menace, 'status'=>'MEDIUM'];
         $medium=$hotspotOwasp->countHotspotOwaspMenaceByStatus($map);
         if ($high['code']!=200) {
             return $response->setData([
-                'maven_key' => $data->maven_key,
+                'maven_key' => $data->maven_key,'referentiel_version' => $referentielVersion,
                 'code'=>$medium['code'], 'erreur' => $medium['erreur'],
                 Response::HTTP_OK]);
         }
 
         /**  On compte le nombre de faille OWASP au statut LOW */
-        $map=['maven_key'=>$data->maven_key, 'menace'=>$data->menace, 'status'=>'LOW'];
+        $map=['maven_key'=>$data->maven_key, 'referentiel_version' => $referentielVersion, 'menace'=>$data->menace, 'status'=>'LOW'];
         $low=$hotspotOwasp->countHotspotOwaspMenaceByStatus($map);
         if ($high['code']!=200) {
             return $response->setData([
-                'maven_key' => $data->maven_key,
+                'maven_key' => $data->maven_key,'referentiel_version' => $referentielVersion,
                 'code'=>$low['code'], 'erreur' => $low['erreur'], Response::HTTP_OK]);
         }
 

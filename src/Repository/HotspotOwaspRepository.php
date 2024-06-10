@@ -37,25 +37,22 @@ class HotspotOwaspRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function countHotspotOwaspStatus($map):array
-    {
-        $sql = "SELECT count(*) AS nombre
-                FROM hotspot_owasp
-                WHERE maven_key=:maven_key AND status=:status";
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-        $conn->bindValue(':maven_key', $map['maven_key']);
-        $conn->bindValue(':status', $map['status']);
-        try {
-            #if ($mode !== 'TEST') {
-                $nombre=$conn->executeQuery()->fetchAllAssociative();
-            #} else {
-                return ['code'=> 202, 'erreur'=>'TEST'];
-            #}
-        } catch (\Doctrine\DBAL\Exception $e) {
-            return ['code'=>500, 'erreur'=> $e->getCode()];
-        }
-        return ['code'=>200, 'request'=>$nombre, 'erreur'=>''];
+    public function countHotspotOwaspStatus($map): array
+{
+    $sql = "SELECT count(*) AS nombre
+            FROM hotspot_owasp
+            WHERE maven_key=:maven_key AND status=:status";
+    $conn = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+    $conn->bindValue(':maven_key', $map['maven_key']);
+    $conn->bindValue(':status', $map['status']);
+    try {
+        $nombre = $conn->executeQuery()->fetchAllAssociative();
+        return ['code' => 200, 'request' => $nombre, 'erreur' => ''];
+    } catch (\Doctrine\DBAL\Exception $e) {
+        return ['code' => 500, 'erreur' => $e->getMessage()];
     }
+}
+
 
     /**
      * [Description for countOwaspStatus]
@@ -68,24 +65,21 @@ class HotspotOwaspRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function countHotspotOwaspProbability($map):array
-    {
-        $sql = "SELECT probability, count(*) as total
-                FROM hotspot_owasp
-                WHERE maven_key=:maven_key AND status='TO_REVIEW' GROUP BY probability";
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-        $conn->bindValue(':maven_key', $map['maven_key']);
-        try {
-            #if ($mode !== 'TEST') {
-                $nombre=$conn->executeQuery()->fetchAllAssociative();
-            #} else {
-                return ['code'=> 202, 'erreur'=>'TEST'];
-            #}
-        } catch (\Doctrine\DBAL\Exception $e) {
-            return ['code'=>500, 'erreur'=> $e->getCode()];
-        }
-        return ['code'=>200, 'nombre'=>$nombre, 'erreur'=>''];
+    public function countHotspotOwaspProbability($map): array
+{
+    $sql = "SELECT probability, count(*) as total
+            FROM hotspot_owasp
+            WHERE maven_key=:maven_key AND status='TO_REVIEW' GROUP BY probability";
+    $conn = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+    $conn->bindValue(':maven_key', $map['maven_key']);
+    try {
+        $nombre = $conn->executeQuery()->fetchAllAssociative();
+        return ['code' => 200, 'nombre' => $nombre, 'erreur' => ''];
+    } catch (\Doctrine\DBAL\Exception $e) {
+        return ['code' => 500, 'erreur' => $e->getMessage()];
     }
+}
+
 
     /**
      * [Description for countHotspotOwaspMenaces]
