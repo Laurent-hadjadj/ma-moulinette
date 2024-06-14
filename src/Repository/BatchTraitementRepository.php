@@ -124,6 +124,36 @@ class BatchTraitementRepository extends ServiceEntityRepository
     }
 
     /**
+     * [Description for selectBatchTraitement]
+     *
+     * @param mixed $map
+     *
+     * @return array
+     *
+     * Created at: 09/06/2024 21:55:58 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function selectBatchTraitement($map):array
+    {
+        try {
+            $this->getEntityManager()->getConnection()->beginTransaction();
+                $sql = "SELECT id, demarrage, titre, portefeuille, nombre_projet as projet
+                        FROM batch_traitement
+                        WHERE titre = :titre";
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $stmt->bindValue(':titre', $map['portefeuille']);
+                $exec=$stmt->executeQuery();
+                $liste=$exec->fetchAllAssociative();
+            $this->getEntityManager()->getConnection()->commit();
+        } catch (\Doctrine\DBAL\Exception $e) {
+            $this->getEntityManager()->getConnection()->rollBack();
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
+        }
+        return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
+    }
+
+    /**
      * [Description for updateBatchTraitement]
      *
      * @param array $map
