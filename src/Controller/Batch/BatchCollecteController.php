@@ -96,19 +96,26 @@ class BatchCollecteController extends AbstractController
         $this->batchCollecteTodo = $batchCollecteTodo;
     }
 
-    #[Route('/api/collectes', name: 'api_collectes', methods: ['POST'])]
+    #[Route('/api/collectes', name: 'api_collectes', methods: ['POST', 'GET'])]
     public function collecte(Request $request): Response
     {
         /** On instancie l'entityRepository */
         $historiqueRepository = $this->em->getRepository(Historique::class);
 
-        $response = new JsonResponse();
-
-        /** On initialise la log */
-        $collecte=[];
-
+        // récupérer les données transmises
+        $maven_key = $request->request->get('maven_key');
+        $mode_collecte = $request->request->get('mode_collecte');
         /** Si on a pas de POST OK ou de maven_key ou de mode de collecte alors on sort */
         $data = json_decode($request->getContent());
+
+        if ($data !== null) {
+            // écraser les données transmises dans l'URL de la requête avec les données transmises dans le corps de la requête HTTP
+            $maven_key = $data->maven_key ?? $maven_key;
+            $mode_collecte = $data->mode_collecte ?? $mode_collecte;
+        }
+
+        $response = new JsonResponse();
+
         if ($data === null ||
             !property_exists($data, 'maven_key') ||
             !property_exists($data, 'mode_collecte')) {
@@ -116,6 +123,9 @@ class BatchCollecteController extends AbstractController
             return $response->setData(
                 [ 'data' => $data, 'code' => 400, 'message' => static::$erreur400, "Collecte" => $collecte], Response::HTTP_BAD_REQUEST);
         }
+        dd('ok');
+        /** On initialise la log */
+        $collecte=[];
 
         /** On nettoie les variables du POST */
         $mavenKey = htmlspecialchars($data->maven_key, ENT_QUOTES, 'UTF-8');

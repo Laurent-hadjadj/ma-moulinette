@@ -16,6 +16,7 @@ namespace App\Controller\Batch;
 /** Core */
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\SecurityBundle\Security;
 
 // Gestion de accès aux API
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -31,6 +32,8 @@ use App\Entity\Portefeuille;
 use App\Entity\Batch;
 use App\Entity\BatchTraitement;
 
+use App\Controller\Batch\CollecteController;
+
 /** AMQP */
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Exchange\AMQPExchangeType;
@@ -45,15 +48,13 @@ class BatchManuelController extends AbstractController
     public static $dateFormatMini = "Y-m-d";
     public static $timeFormat = "%H:%I:%S";
     public static $europeParis = "Europe/Paris";
+    public static $request = "requête : ";
 
-    private static $batch001 = "[TRAITEMENT-001] Le traitement a déjà été mis à jour.";
-    private static $batch002 = "[TRAITEMENT-002] Aucun batch trouvé.";
-    private static $batch003 = "[TRAITEMENT-003] La liste des traitements a été mis à jour.";
-    private static $batch004 = "[TRAITEMENT-004] Le portefeuille de projets est vide !";
-    private static $batch005 = "[TRAITEMENT-005] Récupération de la liste de projets.";
+    private static $batch001 = "[TRAITEMENT-001] Le portefeuille de projets est vide !";
+    private static $batch002 = "[TRAITEMENT-002] Récupération de la liste de projets.";
     public static $reference = "<strong>[TRAITEMENT]</strong>";
     public static $erreur400 = "La requête est incorrecte (Erreur 400).";
-    public static $erreur403 = "Vous devez avoir le rôle BATCH pour gérer les traitements (Erreur 403).";
+    public static $erreur401 = "Vous devez avoir un compte utilisateur valide  (Erreur 401).";
     public static $erreur404 = "L'appel à l'API n'a pas abouti (Erreur 404).";
 
     /**
@@ -66,10 +67,14 @@ class BatchManuelController extends AbstractController
      */
     public function __construct(
         private EntityManagerInterface $em,
-        private FileLogger $logger
+        private FileLogger $logger,
+        private CollecteController $collecte,
+        private Security $security
     ) {
         $this->em = $em;
         $this->logger = $logger;
+        $this->collecte = $collecte;
+        $this->security = $security;
     }
 
     /**
@@ -145,82 +150,6 @@ class BatchManuelController extends AbstractController
     }
 
     /**
-     * [Description for initialisationBatch]
-     * Permet de créer la liste des job a exécuter
-     *
-     * @return array
-     *
-     * Created at: 04/12/2022, 08:48:52 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function initialisationBatch(): array
-    {
-         /*** On instancie l'entityRepository */
-        $batchRepository=$this->em->getRepository(Batch::class);
-        $portefeuilleRepository=$this->em->getRepository(Portefeuille::class);
-        /** On démarre la session de traitement de collecte des informations SonarQube :
-          * 1) On récupère la liste de batch dont le statut est true (1) ;
-          * 2) Pour chaque portefeuille, on programme dans la table batch_historique le traitement.
-          */
-
-        /** On crée un objet date pour marquer le job */
-        $date = new \DateTimeImmutable();
-        $date->setTimezone(new \DateTimeZone(static::$europeParis));
-
-        /** 0 - On récupère la date du dernière traitement automatique
-         *      Si on a déjà lancé un traitement Automatique aujourd'hui on sort
-         */
-        if (!empty($r)) {
-            $dateDuJour = $date->format(static::$dateFormatMini);
-            $dateBatch = new \DateTimeImmutable($r[0]['date']);
-            $dateBatch->format(static::$dateFormatMini);
-            if ($dateDuJour == $dateBatch) {
-                $this->logger->INFO("[BATCH-001] Le traitement a déjà été mis à jour.");
-                return ["message" => static::$batch001, "date" => $r[0]['date']];
-            }
-        }
-
-        /** 0 - On regarde si la liste des traitements automatiques est vide ? */
-        if (!static::isEmpty('queue.traitement')) {
-            $this->logger->INFO("[BATCH-001] Le traitement a déjà été mis à jour.");
-            return ["message" => static::$batch001 ];
-            }
-
-        /** 1 - on regarde si on a des batchs */
-        $request=$batchRepository->selectBatchByStatut();
-        if (empty($request)) {
-            $this->logger->INFO("[BATCH-002] Aucun batch trouvé.");
-            return ["message" => static::$batch002];
-        }
-
-        /** 2 - si on a des batch et que le traitement n'a pas été lancé on créé la liste */
-        foreach ($request as $traitement) {
-            /** on crée un objet BatchTraitement */
-            $batch = new BatchTraitement();
-            if ($traitement["statut"] == "0") {
-                $demarrage = "Manuel";
-            } else {
-                $demarrage = "Auto";
-            }
-
-            $batch->setDemarrage($demarrage);
-            $batch->setResultat(0);
-            $batch->setTitre($traitement["titre"]);
-            $batch->setPortefeuille($traitement["portefeuille"]);
-            $batch->setNombreProjet($traitement["nombre"]);
-            $batch->setResponsable($traitement["responsable"]);
-            $batch->setDateEnregistrement($date);
-
-            /** On en enregistre */
-            $this->em->persist($batch);
-            $this->em->flush();
-        }
-        $this->logger->INFO("[BATCH-003] La liste des traitements a été mis à jour.");
-        return ["message" => static::$batch003, "date" => $date];
-    }
-
-    /**
      * [Description for listeProjet]
      * Récupère la liste des projets depuis un portefeuille de projets.
      *
@@ -236,27 +165,31 @@ class BatchManuelController extends AbstractController
     {
         /*** On instancie l'entityRepository */
         $portefeuilleRepository=$this->em->getRepository(Portefeuille::class);
+        $batchTraitementRepository = $this->em->getRepository(BatchTraitement::class);
 
         $map=[ 'portefeuille'=> $portefeuille ];
+
+        /** On vérifie que le portefeuille n'est pas vide */
+        $portefeuille=$batchTraitementRepository->SelectBatchTraitement($map);
+        if ($portefeuille['code']!=200) {
+            return ['code' => $portefeuille['code'],static::$request=>'selectBatchTraitement'];
+        }
+        if (!isset($portefeuille['liste']) || count($portefeuille['liste'])===0)
+        {
+            return ['code' => 404, 'type' => 'alert', 'reference' => static::$reference, 'message' => static::$erreur404];
+        }
+
         $result=$portefeuilleRepository->selectPortefeuille($map);
         if ($result['code'] != 200) {
-            $this->logger->log($portefeuille, "*** Erreur :" . $result['code'] . " selectPortefeuille\n");
             return ['code' => $result['code'], 'requête' => 'selectPortefeuille'];
         }
 
-        if (empty($result['liste'])) {
-            $this->logger->log($portefeuille, "[Traitement-004] Le portefeuille est vide !\n");
-            return ['message' => static::$batch004];
-        }
-
-        /** Décodage de la liste JSON des projets et préparation de la liste */
+        if (empty($result['liste'])) { return ['code'=>404]; }
         $liste = [];
         foreach (json_decode($result['liste'][0]['liste']) as $value) {
-            $liste[] = $value;
+            array_push($liste, $value);
         }
-        /** récupération réussie de la liste de projets */
-        $this->logger->log($portefeuille, "[BATCH-005] Récupération de la liste de projets.\n");
-        return ['message' => static::$batch005, 'liste' => $liste];
+        return ['code' => 200, $liste];
     }
 
     /**
@@ -275,29 +208,39 @@ class BatchManuelController extends AbstractController
     #[Route('/traitement/manuel', name: 'traitement_manuel', methods: ['POST'])]
     public function traitementManuel(Request $request): Response
     {
+
         $this->denyAccessUnlessGranted("ROLE_BATCH", null, "L'utilisateur essaye d’accéder à la page sans avoir le rôle ROLE_BATCH");
 
+        /** On récupère les données du POST */
+        $data = json_decode($request->getContent());
         $response = new JsonResponse();
 
-        $data = json_decode($request->getContent());
-        if ($data === null || !property_exists($data, 'portefeuille')) {
-            return $response->setData([
-                'data' => $data,
-                'code' => 400,
-                'type' => 'alert',
-                'reference' => static::$reference,
-                'message' => static::$erreur400
-            ], Response::HTTP_BAD_REQUEST);
+        if ($data === null ||
+            !property_exists($data, 'portefeuille')) {
+            return $response->setData(['data' => $data, 'code' => 400, 'type' => 'alert', 'reference' => static::$reference, 'message' => static::$erreur400], Response::HTTP_BAD_REQUEST);
         }
 
-        //$portefeuille = $data->portefeuille;
-
-        $results = [['id' => 0, 'portefeuille' => 'Portefeuille-2048', 'projet' => 1]];
-        foreach ($results as $value) {
-            $this->processPortefeuille($value);
+        // On extrait la liste des projets pour le portefeuille
+        $les_projets=$this->listeProjet($data->portefeuille);
+        if ($les_projets['code']===404){
+            return $response->setData(['code' => 404, 'type' => 'alert',
+            'reference' => static::$reference, 'message' => static::$erreur404], Response::HTTP_NOT_FOUND );
         }
 
-        return $response->setData(["execution" => "end", "temps" => 'debutBatch, finBatch', Response::HTTP_OK]);
+        /** On contrôle le mode d'utilisation */
+        $utilisateur_collecte = $this->security->getUser()->getCourriel() ?? 'null';
+
+        if ($utilisateur_collecte==='null') {
+            /** L'utilisateur n'est pas autorisé */
+            return $response->setData(['code' => 401, 'message' => static::$erreur401], Response::HTTP_UNAUTHORIZED);
+            }
+
+        /** On lance la collecte */
+        foreach ($les_projets[0] as $le_projet){
+            $collecte=$this->collecte->collecte($le_projet, 'Manuel', $utilisateur_collecte);
+        }
+
+        return $response->setData(['execution' => 'end', Response::HTTP_OK]);
     }
 
 }
