@@ -44,7 +44,7 @@ tinymce.init({
   selector: 'textarea.tinymce',
   license_key: 'gpl',
   language: 'fr_FR',
-  skin: 'oxide',
+  //skin: 'oxide',
   theme: 'silver',
   editable_root: false,
   plugins: 'preview',
@@ -68,6 +68,7 @@ const afficheMessage=function(t){
   $('#js-message-information').html(t.message);
 }
 
+/** On affche la liste des traitements automatiques */
 $(jsAutomatique).on('click', ()=> {
   if ($(jsAutomatique).hasClass('active')) {
     $(jsAutomatique).removeClass('active').addClass('bouton-automatique');
@@ -84,6 +85,7 @@ $(jsAutomatique).on('click', ()=> {
   }
 });
 
+/** On affiche la liste des traitements manuels */
 $(jsManuel).on('click', function() {
   /**
    * si on click et que le bouton a le statut actif
@@ -114,7 +116,7 @@ $('.i-am-human-svg').on('click', function() {
   /** literals  */
   const collecteAnimation='#collecte-animation';
   const collecteTexte='#collecte-texte';
-  const infoBulle='#info-bulle';
+  //const infoBulle='#info-bulle';
 
   /** On desactive le spinner et on reset les messages */
   $(collecteAnimation).removeClass('sp-volume');
@@ -134,7 +136,7 @@ $('.i-am-human-svg').on('click', function() {
   /** On ouvre la fenêtre modal */
   $('#modal-traitement-manuel').foundation('open');
 
-  /** on sort si on clique sur non */
+  /** On sort si on clique sur non */
   $('#js-non').on('click', function(){
     /** si le spinner tourne on desactive le bouton non */
     if (!$(collecteAnimation).hasClass('sp-volume')) {
@@ -143,45 +145,19 @@ $('.i-am-human-svg').on('click', function() {
     }
   });
 
+  /** Si on clique OUI */
   $('#js-oui').on('click', function(){
-    /** On dsactive le bouton non */
+    /** On désactive le bouton non */
     $('#js-non').addClass('disable');
     /** clignote */
     $(`#${id}`).addClass('blink');
     $(collecteAnimation).addClass('sp-volume');
     $(collecteTexte).html(`Démarrage du traitement...`);
-
-    const data = { portefeuille };
-    const options = {
-      url: `${serveur()}/traitement/pending`, type: 'GET',
-      dataType: 'json', data, contentType};
-
-    /** On vérifie que le traitement n'est pas en start le traitement */
-    return new Promise(resolve => {
-      $.ajax(options).then( t => {
-        /** On met à jour la bulle info */
-        if (t.execution==='start') {
-          $(infoBulle).removeClass('bulle-info-vide').addClass('bulle-info-start');
-          $(infoBulle).html('1');
-          $('#info-bulle-tips').html('Traitement en cours');
-          setTimeout(function(){
-            $(collecteTexte).html('Collecte en cours, cours...');
-          }, mille);
-        }
-        if (t.execution==='pending') {
-          setTimeout(function(){
-          $(collecteTexte).html('Il y a déjà un traitement en cours !');
-          $(`#${id}`).removeClass('blink');
-        }, mille);
-      }
-      /* on lance le traitement */
-      batchManuel(idTab[trois], portefeuille);
-      resolve();
-      });
-    });
+    /** On appel la fonction de démarrage des traitements en manuel */
+    // idTab = l'id de la ligne, portefeuille = liste des projets
+    batchManuel(idTab[trois], portefeuille);
   });
 });
-
 
 /**
  * [Description for batchManuel]
@@ -190,7 +166,7 @@ $('.i-am-human-svg').on('click', function() {
  * @param string id
  * @param string portefeuille
  *
- * @return [type]
+ * @return void
  *
  * Created at: 07/02/2023, 15:05:56 (Europe/Paris)
  * @author    Laurent HADJADJ <laurent_h@me.com>
@@ -241,20 +217,13 @@ $('.js-affiche-information').on('click', function() {
   /** On on récupère la log */
   lireInformationManuel(portefeuille, type);
 
-  /** On affiche le nom du projet */
-  //$('#js-nom-projet').html(portefeuille);
-
-  /** On ouvre la fenêtre modal */
-  //$('#modal-information').foundation('open');
-
   /** On va à la fin du fichier */
   //$('#js-go-end').on('click', ()=>{
   //  const textarea = document.getElementById('js-journal');
   //  const end = textarea.value.length;
   //  textarea.setSelectionRange(end, end);
   //  textarea.focus();
-  //});
-});
+  });
 
 /**
  * [Description for lireInformationManuel]
