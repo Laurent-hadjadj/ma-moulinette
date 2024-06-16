@@ -92,12 +92,19 @@
 
 /*************************          Global     *********************************/
 
-/** Supression du style inline */
+/** Suppression du style inline */
 .callout-message { padding-right: 1rem; }
 
 tbody tr:nth-child(even) {
   border-bottom: 0;
   background-color: #ddd;
+}
+
+/** Fixe du footer */
+
+.footer {
+    position: fixed;
+    bottom: 0;
 }
 
 /** couleur pour le résultat */
