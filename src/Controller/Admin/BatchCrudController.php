@@ -16,6 +16,8 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
+use App\Service\RabbitMQService;
+
 /**
  * [Description BatchCrudController]
  */
@@ -28,12 +30,18 @@ class BatchCrudController extends AbstractCrudController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
+    private $rabbitMQService;
+    private $emm;
+    private $token;
+
     public function __construct(
-        private EntityManagerInterface $emm,
-        private TokenStorageInterface $token
+        EntityManagerInterface $emm,
+        TokenStorageInterface $token,
+        RabbitMQService $rabbitMQService
     ) {
         $this->emm = $emm;
         $this->token = $token;
+        $this->rabbitMQService = $rabbitMQService;
     }
 
     /**
@@ -156,13 +164,13 @@ class BatchCrudController extends AbstractCrudController
 
         $batchTraitementRepository = $this->emm->getRepository(BatchTraitement::class);
 
-        /** On récèpere le nom du batch */
+        /** On récupère le nom du batch */
         $titre = $entityInstance->getTitre();
 
         /** On récupère l'objet user */
         $user = $this->token->getToken()->getUser();
 
-        //** On récupère le nombre de projet du portefeuille */
+        /** On récupère le nombre de projet du portefeuille */
         $sql = "SELECT liste FROM portefeuille ORDER BY titre ASC";
         $l = $this->emm->getConnection()->prepare($sql)->executeQuery();
         $r = $l->fetchAssociative();
@@ -183,7 +191,7 @@ class BatchCrudController extends AbstractCrudController
         /** On prépare les données pour la table de suivi des traitements */
         $map=[
             'demarrage' => ($entityInstance->isStatut() === true)? 'Auto' : 'Manuel',
-            'resultat' => false,
+            'resultat' => 1,
             'titre' => $entityInstance->getTitre(),
             'portefeuille' => $entityInstance->getPortefeuille(),
             'nombre_projet' => $entityInstance->getNombreProjet(),
@@ -195,7 +203,22 @@ class BatchCrudController extends AbstractCrudController
 
         /** On programme le traitement dans la table BatchTraitement  */
         $r=$batchTraitementRepository->insertBatchTraitement($map);
-    if ($r['code']!=200){ /* il y a une erreur !!! */ };
+        if ($r['code']!=200){
+            throw new \RuntimeException('Erreur : '.$r['code'].' '.$r['erreur']);
+        }
+
+        /** On créé les queue RabbitMQ si elle n'existe pas encore */
+        try {
+            $queues = ['traitement_manuel', 'traitement_automatique'];
+
+            foreach ($queues as $queue) {
+                $this->rabbitMQService->createQueueIfNotExists($queue);
+            }
+        } catch (\Exception $e) {
+            throw new \RuntimeException('Déclaration de la queue en erreur : ' . $queue, 0, $e);
+        } finally {
+            $this->rabbitMQService->close();
+        }
     }
 
     /**
