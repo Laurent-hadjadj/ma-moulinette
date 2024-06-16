@@ -81,7 +81,7 @@ phpunit.xml.dist
 ###< Traces batch ###
 
 ###> rabbitMQ ###
-RabbitMQ
+/RabbitMQ
 ###< rabbitMQ ###
 
 ###> phpstan/phpstan ###
