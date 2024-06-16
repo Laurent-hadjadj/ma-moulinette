@@ -186,7 +186,8 @@ Trois files d'attente sont utilisées.
 
 - [x] **traitement_manuel_queue** est une file d'attente créée automatiquement ;
 - [x] **traitement_automatique_queue** est une file d'attente créée automatiquement ;
-- [ ] **webhooks_queue** est une file d'attente à créer manuellement depuis l'interface graphique ;
+- [x] **traitement_manuel_notifications_queue** est la file de notification ;
+- [ ] **traitement_manuel_notification_queue** est la file de notification ;
 
 ![rabbitMQ](/assets/images/rabbitmq/rabitMQ-002.jpg)
 
@@ -231,27 +232,46 @@ Les droits possibles sont :
 
 `rabbitmqctl.bat clear_permissions -p <vhost> <utilisateur>`
 
-> Ajouter la file d'attente webhooks de type fanout
+> Ajouter les files d'attente pour les notifications
+
+Deux files d'attente doivent être ajoutées :
+- [x] traitement_manuel_notifications_queue ;
+- [x] traitement_automatique_notifications_queue 
 
 ```bash
-rabbitmqadmin declare queue name=webhooks durable=true auto_delete=false arguments='{"x-dead-letter-exchange":"","x-dead-letter-routing-key":"","x-message-ttl":0,"x-expires":0,"x-max-length":0,"x-max-length-bytes":0,"x-overflow":"reject-publish"}' --vhost=/
+rabbitmqadmin declare queue name=traitement_manuel_notifications_queue durable=true auto_delete=false arguments='{"x-dead-letter-exchange":"","x-dead-letter-routing-key":"","x-message-ttl":0,"x-expires":0,"x-max-length":0,"x-max-length-bytes":0,"x-overflow":"reject-publish"}' --vhost=/
 ```
 
-Cette commande utilise l'outil **rabbitmqadmin** pour déclarer une file d'attente nommée "webhooks" avec les options suivantes :
+```bash
+rabbitmqadmin declare queue name=traitement_automatique_notifications_queue durable=true auto_delete=false arguments='{"x-dead-letter-exchange":"","x-dead-letter-routing-key":"","x-message-ttl":0,"x-expires":0,"x-max-length":0,"x-max-length-bytes":0,"x-overflow":"reject-publish"}' --vhost=/
+```
 
-- durable=true : la file d'attente est persistante et survit à un redémarrage du serveur RabbitMQ.
-- auto_delete=false : la file d'attente n'est pas supprimée automatiquement lorsque tous les consommateurs se déconnectent.
-- arguments : cette option permet de définir des arguments supplémentaires pour la file d'attente.
-- --vhost=/ : cette option permet de spécifier le vhost sur lequel la file d'attente doit être créée. Dans cet exemple, la file d'attente est créée sur le vhost par défaut de RabbitMQ (/).
+Cette commande utilise l'outil **rabbitmqadmin** pour déclarer une file d'attente nommée "traitement_manuel_notifications_queue" avec les options suivantes :
+
+- **durable**=true : la file d'attente est persistante et survit à un redémarrage du serveur RabbitMQ.
+- **auto_delete**=false : la file d'attente n'est pas supprimée automatiquement lorsque tous les consommateurs se déconnectent.
+- **arguments** : cette option permet de définir des arguments supplémentaires pour la file d'attente.
+- **--vhost**=/ : cette option permet de spécifier le vhost sur lequel la file d'attente doit être créée. Dans cet exemple, la file d'attente est créée sur le vhost par défaut de RabbitMQ (/).
 
 Une fois la file d'attente créée, vous pouvez la lier à un échange de type "fanout" pour recevoir tous les messages envoyés par les webhooks. Pour cela, vous pouvez utiliser la commande suivante :
 
 ```bash
-rabbitmqadmin declare exchange name=webhooks type=fanout --vhost=/
-rabbitmqadmin declare binding source=webhooks destination_type=queue destination=webhooks routing_key= --vhost=/
+rabbitmqadmin declare exchange name=traitement_manuel_notifications_exchange type=fanout --vhost=/
+rabbitmqadmin declare binding source=traitement_manuel_notifications_exchange destination_type=queue destination=traitement_manuel_notifications_queue routing_key= --vhost=/
+```
+
+```bash
+rabbitmqadmin declare exchange name=traitement_automatique_notifications_exchange type=fanout --vhost=/
+rabbitmqadmin declare binding source=traitement_automatique_notifications_exchange destination_type=queue destination=traitement_manuel_notifications_queue routing_key= --vhost=/
 ```
 
 Si vous utilisez RabbitMQ sur Windows et que vous n'avez pas la commande **rabbitmqadmin**, vous pouvez utiliser l'interface de gestion web de RabbitMQ pour créer une file d'attente et la lier à un échange.
+
+Créez un webhook pour votre file d'attente "traitement_manuel_queue" :
+
+```bash
+rabbitmqadmin declare web_hook name=traitement_manuel_webhook queue=traitement_manuel_queue exchange=traitement_manuel_notifications url=<VOTRE_URL_WEBHOOK> method=POST
+```
 
 Pour accéder à l'interface de gestion web de RabbitMQ, ouvrez un navigateur web et accédez à l'URL suivante :
 
