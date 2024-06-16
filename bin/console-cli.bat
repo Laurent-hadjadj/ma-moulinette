@@ -19,7 +19,7 @@ for %%d in (C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (
 @mode con: cols=160 lines=70
 @color 0f
 @CHCP 65001
-@set VERSION=2024-05-24 v1.9.0
+@set VERSION=2024-06-16 v1.10.0
 @title Laurent HADJADJ - version %VERSION%
 @cls
 @echo ".. __  __             __  __             _              _   _       "
@@ -44,6 +44,7 @@ for %%d in (C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (
 @rem Laurent HADJADJ - 2024-05-15 v1.7.0 - Ajout de python
 @rem Laurent HADJADJ - 2024-05-23 v1.8.0 - Ajout dans le path des scripts tools
 @rem Laurent HADJADJ - 2024-05-24 v1.9.0 - tests du lecteur par défaut
+@rem Laurent HADJADJ - 2024-06-16 v1.10.0 - Ajout du path pour rabbitMQ
 
 @echo:
 @echo Env         	: dev
@@ -63,13 +64,14 @@ for %%d in (C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (
 @set app=%LECTEUR%\environnement
 @set SCRIPT_PATH=%app%\ma-moulinette\bin\
 @set SYMFONY_PATH=%app%\0_toolz\symfony-cli\current\
-@set PHP_PATH=%app%\0_toolz\php-8.3.0-NTS\
-@set NODEJS_PATH=%app%\0_toolz\node-18.17.1\
-@set PYTHON_PATH=%app%\0_toolz\python-3.12.3-embed\
-@set PIP_PATH=%app%\0_toolz\python-3.12.3-embed\Scripts\
+@set PHP_PATH=%app%\0_toolz\php-8.3.0-NTS
+@set NODEJS_PATH=%app%\0_toolz\node-18.17.1
+@set PYTHON_PATH=%app%\0_toolz\python-3.12.3-embed
+@set PIP_PATH=%app%\0_toolz\python-3.12.3-embed\Scripts
 @set JDK_PATH=%app%\0_toolz\jdk17
 @set MAVEN_PATH=%app%\0_toolz\apache-maven-3.8.8
-@set POSTGRESQL_PATH=%app%\0_toolz\postgresql-15.6-1\
+@set POSTGRESQL_PATH=%app%\0_toolz\postgresql-15.6-1
+@set RABBITMQ_PATH=%app%\0_toolz\rabbitmq-3.13.1
 
 @set HTTP_PROXY=
 @set HTTPS_PROXY=
@@ -80,7 +82,7 @@ for %%d in (C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (
 @set JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF8
 @set JAVA_HOME=%JDK_PATH%
 
-@set PATH=%SCRIPT_PATH%;%SYMFONY_PATH%;%PHP_PATH%;%NODEJS_PATH%;%MAVEN_PATH%\bin;%JAVA_HOME%\bin;%POSTGRESQL_PATH%\bin;%PYTHON_PATH%;%PIP_PATH%;%PATH%
+@set PATH=%SCRIPT_PATH%;%SYMFONY_PATH%;%PHP_PATH%;%NODEJS_PATH%;%MAVEN_PATH%\bin;%JAVA_HOME%\bin;%POSTGRESQL_PATH%\bin;%PYTHON_PATH%;%PIP_PATH%;%RABBITMQ_PATH%/sbin;%PATH%
 
 @cd %app%\ma-moulinette
 
