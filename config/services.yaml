@@ -7,7 +7,7 @@
 imports:
     - { resource: ma-moulinette.yaml }
 parameters:
-    # Sonarqube
+    # SonarQube
     sonar.url: '%env(SONAR_URL)%'
     sonar.token: '%env(SONAR_TOKEN)%'
     sonar.user: '%env(SONAR_USER)%'
@@ -39,14 +39,6 @@ parameters:
     cgu.source.scm: '%env(CGU_SOURCE_SCM)%'
     cgu.hebergement: '%env(CGU_HEBERGEMENT)%'
 
-    # RabbitMQ
-    rabbitmq.host: '%env(RABBITMQ_HOST)%'
-    rabbitmq.host6: '%env(RABBITMQ_HOST6)%'
-    rabbitmq.vhost: '%env(RABBITMQ_VHOST)%'
-    rabbitmq.port: '%env(RABBITMQ_PORT)%'
-    rabbitmq.username: '%env(RABBITMQ_USERNAME)%'
-    rabbitmq.password: '%env(RABBITMQ_PASSWORD)%'
-
 services:
     # default configuration for services in *this* file
     _defaults:
@@ -59,6 +51,12 @@ services:
         resource: '../src/*'
         exclude: '../src/{DependencyInjection,Entity,Migrations,Tests,Kernel.php}'
 
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
+    # Services explicites
+    App\Service\RabbitMQService:
+        arguments:
+            $host: '%env(RABBITMQ_HOST)%'
+            $port: '%env(int:RABBITMQ_PORT)%'
+            $user: '%env(RABBITMQ_USER)%'
+            $password: '%env(RABBITMQ_PASSWORD)%'
+            $vhost: '%env(RABBITMQ_VHOST)%'
 ...
