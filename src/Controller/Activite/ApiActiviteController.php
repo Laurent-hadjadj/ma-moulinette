@@ -31,6 +31,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
+/** Securité */
+use Symfony\Bundle\SecurityBundle\Security;
+
 /** Client HTTP */
 use App\Service\ClientActivite;
 
@@ -53,7 +56,7 @@ class ApiActiviteController extends AbstractController
     public static $europeParis = "Europe/Paris";
     public static $reference = '<strong>[Accueil]</strong>';
     public static $erreur400 = "La requête est incorrecte (Erreur 400).";
-    public static $erreur403 = "Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).";
+    public static $erreur403 = "Vous devez avoir le rôle ACTIVITE pour réaliser cette action (Erreur 403).";
     public static $erreur404 = "Je n'ai pas trouvé de projets sur le serveur sonarqube (Erreur 404).";
 
     /**
@@ -61,7 +64,7 @@ class ApiActiviteController extends AbstractController
      *
      * @param mixed
      *
-     * Created at: 15/12/2022, 21:12:55 (Europe/Paris)
+     * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
@@ -79,15 +82,19 @@ class ApiActiviteController extends AbstractController
      * @param ClientActivite $client
      * @return response
      *
-     * Created at: 15/12/2022, 21:15:04 (Europe/Paris)
+     * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/activite/sauvegarde', name: 'api_sauvegarde_historique', methods: ['POST'])]
-    public function apiSauvegardeHistorique(ClientActivite $client): response
+    public function apiSauvegardeHistorique(ClientActivite $client, Security $security): response
     {
         $response = new JsonResponse();
 
+        /** si on est pas GESTIONNAIRE on ne fait rien. */
+        if (!$security->isGranted('ROLE_ACTIVITE')){
+            return $response->setData(['code' => 403, Response::HTTP_OK]);
+        }
         /** On instancie l'EntityRepository */
         $activiteEntity = $this->em->getRepository(Activite::class);
         $historiqueActiviteEntity = $this->em->getRepository(ActiviteHistorique::class);
@@ -172,6 +179,59 @@ class ApiActiviteController extends AbstractController
         return $response->setData(['code' => 200,'listeDonnee' => $tableHistoriqueActivite, Response::HTTP_OK]);
     }
 
+    /**
+     * [Description for projetListe]
+     * Récupération de la liste des projets.
+     * http://{url}}/api/components/search_projects?ps=500
+     *
+     * @param ClientActivite $client
+     * @return response
+     *
+     * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
+     * @author    Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    #[Route('/api/activite/dessin', name: 'api_dessin', methods: ['POST'])]
+    public function apiRecupereDonnee(Request $request): response
+    {
+        /**On recupere la date actuelle */
+        $dateActuelle = new DateTime();
+
+        /** On instancie la classe */
+        $activiteEntity = $this->em->getRepository(Activite::class);
+
+        /** On décode le body */
+        $data = json_decode($request->getContent());
+
+        /** On instancie une nouvelle response */
+        $response = new JsonResponse();
+
+      /** On teste si la clé est valide */
+        if ($data === null || !property_exists($data, 'source')) {
+            return $response->setData(
+                ['data'=>$data,'code'=>400, Response::HTTP_BAD_REQUEST]);
+        }
+
+        /**On récupère les données demandés */
+
+        $source = $data->source;
+        switch ($source) {
+            case 'analyse':
+                $response = $activiteEntity->listeAnalyseJour($dateActuelle->format('Y'));
+                break;
+            case 'projet':
+                $response = $activiteEntity->listeProjectAnalyse($dateActuelle->format('Y'));
+                break;
+            case 'projet_analyse':
+                $response = $response = $activiteEntity->listeAnalyseProjet($dateActuelle->format('Y'));
+                break;
+            default:
+            //to.do gestion des insertions de donnée des utilisateurs
+                break;
+        }
+        return new JsonResponse(['code' => 200, 'listeDonnee' => $response], Response::HTTP_OK);
+    }
+
     private function calculDifferenceDate(DateTime $premiereDate, DateTime $secondeDate) : int
     {
         return (int) $premiereDate->diff($secondeDate)->format('%a');
@@ -211,13 +271,5 @@ class ApiActiviteController extends AbstractController
         }
         return $tab;
     }
-
-    /*if (!$this->isGranted('ROLE_COLLECTE')) {
-        return $response->setData([
-            'type'=>'warning', 'code' => 403,
-            'reference' => static::$reference,
-            'message' => static::$erreur403, Response::HTTP_OK]);
-    }
-    */
 
 }

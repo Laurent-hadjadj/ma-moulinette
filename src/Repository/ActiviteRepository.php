@@ -37,7 +37,7 @@ class ActiviteRepository extends ServiceEntityRepository
      *
      * @return array
      *
-     * Created at: 21/05/2024 13:56:31 (Europe/Paris)
+     * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
@@ -61,7 +61,7 @@ class ActiviteRepository extends ServiceEntityRepository
      *
      * @return array
      *
-     * Created at: 21/05/2024 13:56:31 (Europe/Paris)
+     * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
@@ -97,7 +97,7 @@ class ActiviteRepository extends ServiceEntityRepository
      *
      * @return array
      *
-     * Created at: 28/05/2024 13:56:31 (Europe/Paris)
+     * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
@@ -124,7 +124,7 @@ class ActiviteRepository extends ServiceEntityRepository
      *
      * @return array
      *
-     * Created at: 28/05/2024 13:56:31 (Europe/Paris)
+     * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
@@ -151,7 +151,7 @@ class ActiviteRepository extends ServiceEntityRepository
      *
      * @return array
      *
-     * Created at: 28/05/2024 13:56:31 (Europe/Paris)
+     * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
@@ -179,7 +179,7 @@ class ActiviteRepository extends ServiceEntityRepository
      *
      * @return array
      *
-     * Created at: 28/05/2024 13:56:31 (Europe/Paris)
+     * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
@@ -206,7 +206,7 @@ class ActiviteRepository extends ServiceEntityRepository
      *
      * @return array
      *
-     * Created at: 28/05/2024 13:56:31 (Europe/Paris)
+     * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
@@ -235,7 +235,7 @@ class ActiviteRepository extends ServiceEntityRepository
      *
      * @return array
      *
-     * Created at: 28/05/2024 13:56:31 (Europe/Paris)
+     * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
@@ -249,6 +249,102 @@ class ActiviteRepository extends ServiceEntityRepository
                 $stmt->bindValue("annee", $annee);
             } else {
                 $sql .= " ORDER BY executed_at DESC LIMIT 1";
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+            }
+            $request = $stmt->executeQuery()->fetchAllAssociative();
+        } catch (\Doctrine\DBAL\Exception $e) {
+            return ['code' => 500, 'erreur' => $e->getCode()];
+        }
+        return ['request' => $request, 'code' => 200, 'erreur' => ''];
+    }
+
+    /**
+     * [Description for selectActivite]
+     * On recupere la date la plus recente dans la table pour une année donnée
+     *
+     * @return array
+     *
+     * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
+     * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function listeProjectAnalyse($annee = null): array
+    {
+        try {
+            $sql = "SELECT DATE(executed_at) AS day, COUNT(DISTINCT project_name) AS count FROM activite ";
+            if ($annee !== null) {
+                $sql.= "WHERE EXTRACT(YEAR FROM executed_at) = :annee
+                GROUP BY DATE(executed_at)
+                ORDER BY day ASC";
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $stmt->bindValue("annee", $annee);
+            } else {
+                $sql .= "GROUP BY DATE(executed_at)
+                ORDER BY day DESC";
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+            }
+            $request = $stmt->executeQuery()->fetchAllAssociative();
+        } catch (\Doctrine\DBAL\Exception $e) {
+            return ['code' => 500, 'erreur' => $e->getCode()];
+        }
+        return ['request' => $request, 'code' => 200, 'erreur' => ''];
+    }
+
+    /**
+     * [Description for selectActivite]
+     * On recupere la date la plus recente dans la table pour une année donnée
+     *
+     * @return array
+     *
+     * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
+     * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function listeAnalyseJour($annee = null): array
+    {
+        try {
+            $sql = "SELECT DATE(executed_at) AS day, COUNT(*) AS count FROM activite ";
+            if ($annee !== null) {
+                $sql.= "WHERE EXTRACT(YEAR FROM executed_at) = :annee
+                GROUP BY DATE(executed_at)
+                ORDER BY day ASC";
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $stmt->bindValue("annee", $annee);
+            } else {
+                $sql .= "GROUP BY DATE(executed_at)
+                ORDER BY day DESC";
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+            }
+            $request = $stmt->executeQuery()->fetchAllAssociative();
+        } catch (\Doctrine\DBAL\Exception $e) {
+            return ['code' => 500, 'erreur' => $e->getCode()];
+        }
+        return ['request' => $request, 'code' => 200, 'erreur' => ''];
+    }
+
+    /**
+     * [Description for selectActivite]
+     * On recupere la date la plus recente dans la table pour une année donnée
+     *
+     * @return array
+     *
+     * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
+     * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function listeAnalyseProjet($annee = null): array
+    {
+        try {
+            $sql = "SELECT DATE(executed_at) AS day, COUNT(*) AS analyse, COUNT(DISTINCT project_name) AS projet FROM activite ";
+            if ($annee !== null) {
+                $sql.= "WHERE EXTRACT(YEAR FROM executed_at) = :annee
+                GROUP BY DATE(executed_at)
+                ORDER BY day ASC";
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $stmt->bindValue("annee", $annee);
+            } else {
+                $sql .= "GROUP BY DATE(executed_at)
+                ORDER BY day DESC";
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
             }
             $request = $stmt->executeQuery()->fetchAllAssociative();

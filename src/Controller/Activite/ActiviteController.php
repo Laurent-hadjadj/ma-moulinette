@@ -36,7 +36,7 @@ class ActiviteController extends AbstractController
     /**
      * [Description for __construct]
      *
-     * Created at: 15/12/2022, 22:14:50 (Europe/Paris)
+     * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
@@ -50,7 +50,7 @@ class ActiviteController extends AbstractController
      *
      * @return Response
      *
-     * Created at: 15/12/2022, 22:14:55 (Europe/Paris)
+     * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */

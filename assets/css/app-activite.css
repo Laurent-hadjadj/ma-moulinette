@@ -27,6 +27,7 @@
  @media (120.025em <= width <= 160em) { /* vide */ }
 
 .bouton-activite-refresh,
+.bouton-activite-graph,
 .bouton-activite-dujour
 {
   color: #fff;
@@ -34,6 +35,7 @@
 }
 
 .bouton-activite-refresh:hover,
+.bouton-activite-graph:hover,
 .bouton-activite-dujour:hover
 {
   background-color: #006182;

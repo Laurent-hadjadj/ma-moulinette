@@ -41,7 +41,7 @@ import {http_200, http_202, http_400, http_403, contentType, paletteCouleur, mat
 /* Construction des callbox de type success */
 const callboxInformation='<div id="js-message" class="callout alert-callout-border primary" data-closable="slide-out-right" role="alert"><p class="open-sans color-bleu padding-right-1"><span class="lead">Information ! </span>';
 const callboxSuccess='<div id="js-message" class="callout alert-callout-border success" data-closable="slide-out-right" role="alert"><span class="open-sans color-bleu padding-right-1"><span class="lead">Bravo ! </span> ';
-const callboxWarning='<div id="js-message" class="callout alert-callout-border warning" data-closable="slide-out-right" role="alert"><span class="open-sans padding-right-1 color-bleu">span class="lead">Attention ! </strong>';
+const callboxWarning='<div id="js-message" class="callout alert-callout-border warning" data-closable="slide-out-right" role="alert"><span class="open-sans padding-right-1 color-bleu"><span class="lead">Attention ! </strong>';
 const callboxError='<div id="js-message" class="callout alert-callout-border alert" data-closable="slide-out-right"><span class="open-sans padding-right-1 color-bleu"><strong>Oups ! </strong>';
 const callboxFermer='</span><button class="close-button" aria-label="Fermer la fenêtre" type="button" data-close><span aria-hidden="true">&times;</span></button></div>';
 
@@ -145,7 +145,7 @@ const callboxFermer='</span><button class="close-button" aria-label="Fermer la f
 
 const recupereProfilNonActif=async function(langage){
   /** Construction de la requête */
-  const dataRefresh = { mode:'null', langage: langage};
+  const dataRefresh = {langage: langage};
   const optionsRefresh = {
         url: `${serveur()}/api/quality/off`, type: 'POST',
         dataType: 'json', data: JSON.stringify(dataRefresh), contentType };

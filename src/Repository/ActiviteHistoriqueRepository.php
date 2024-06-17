@@ -36,7 +36,7 @@ class ActiviteHistoriqueRepository extends ServiceEntityRepository
      *
      * @return array
      *
-     * Created at: 21/05/2024 13:56:31 (Europe/Paris)
+     * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
@@ -73,7 +73,7 @@ class ActiviteHistoriqueRepository extends ServiceEntityRepository
      *
      * @return array
      *
-     * Created at: 21/05/2024 13:56:31 (Europe/Paris)
+     * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
@@ -120,7 +120,7 @@ class ActiviteHistoriqueRepository extends ServiceEntityRepository
      *
      * @return array
      *
-     * Created at: 21/05/2024 13:56:31 (Europe/Paris)
+     * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
