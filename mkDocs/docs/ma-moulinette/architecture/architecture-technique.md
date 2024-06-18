@@ -1,6 +1,6 @@
 # Architecture technique
 
-![Ma-Moulinette](/assets/images/home/home-000.jpg)
+![Ma-Moulinette](../../assets/images/home/home-000.jpg)
 
 ## Infrastructure et environnement
 
@@ -17,7 +17,6 @@ Ci-dessous une représentation technique de l'environnement de développement et
 Ci-dessous une représentation technique des couches logicielles.
 
 ![Ma-Moulinette](/assets/images/architecture/architcture-technique-002.png)
-
 
 ### En production
 
@@ -56,7 +55,7 @@ Les principes de développement retenus pour développer **ma-moulinette** s'app
 * Un serveur rabbitMQ pour les gérer les files de message ;
 * Accès aux API SonarQube sur un serveur local ou distant via Token ou Login/Mot de passe ;
 
-![Ma-Moulinette](/assets/images/architecture/architecture-fonctionelle.jpg)
+![Ma-Moulinette](/assets/images/architecture/architecture-fonctionnelle.jpg)
 
 -**-- FIN --**-
 
