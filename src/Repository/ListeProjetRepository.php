@@ -88,7 +88,7 @@ class ListeProjetRepository extends ServiceEntityRepository
 
     /**
      * [Description for countListeProjetTags]
-     * On retourne le nombre de projet récupéré du serveu sonarqube et
+     * On retourne le nombre de projet récupéré du serveur SonarQube et
      * le nombre de tag disponible
      *
      * @return array
@@ -101,7 +101,9 @@ class ListeProjetRepository extends ServiceEntityRepository
     {
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-                $sql = "SELECT count(tags) as tag FROM liste_projet where tags->'[]' IS NOT NULL;";
+                $sql = "SELECT COUNT(*) AS tag
+                        FROM liste_projet
+                        WHERE tags IS NOT NULL AND jsonb_array_length(tags::jsonb) > 0";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
                 $nombre=$stmt->executeQuery()->fetchAllAssociative();
             $this->getEntityManager()->getConnection()->commit();
