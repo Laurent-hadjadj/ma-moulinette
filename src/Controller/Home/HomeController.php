@@ -549,7 +549,6 @@ class HomeController extends AbstractController
         /** ***************** 5 - Tags *****************************  */
         /** Renvoi le nombre de projet et le nombre de tags */
         $tag = $listeProjetRepository->countListeProjetTags();
-        dd($tag);
 
         /** ***************** VERSION *** ************************* */
         /** On récupère le numero de version en base */
