@@ -22,7 +22,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\BatchTraitement;
-use DateTime;
 
 /**
  * [Description BatchController]
@@ -103,6 +102,7 @@ class BatchController extends AbstractController
         }
 
         // Permet d'obtenir la liste des traitements programmés pour la journée en cours
+        // 2024-06-14 17:00:11+02
         $dateTimeDernierBatch = new \DateTime($r['liste'][0]['date']);
         $listeAll = $batchTraitementRepository->selectBatchTraitementLast($dateTimeDernierBatch->format('Y-m-d'));
         if ($listeAll['code'] != 200) {
