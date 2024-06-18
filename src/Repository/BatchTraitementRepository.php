@@ -112,7 +112,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
                         GROUP BY demarrage, resultat, titre, portefeuille, nombre_projet, responsable, debut_traitement, fin_traitement
                         ORDER BY responsable ASC, demarrage ASC";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-                    $stmt->bindValue(':date_short', '2024-06-07');
+                    $stmt->bindValue(':date_short', $dateShort);
                 $exec=$stmt->executeQuery();
                 $liste=$exec->fetchAllAssociative();
             $this->getEntityManager()->getConnection()->commit();
