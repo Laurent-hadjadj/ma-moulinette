@@ -639,4 +639,38 @@ class HistoriqueRepository extends ServiceEntityRepository
         return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
     }
 
+    /**
+     * [Description for selectHistoriqueIsValide]
+     *
+     * @param mixed $map
+     *
+     * @return array
+     *
+     * Created at: 18/06/2024 21:12:26 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function selectHistoriqueIsValide($map):array {
+        try {
+                $this->getEntityManager()->getConnection()->beginTransaction();
+                    /** On prépare la requête */
+                    $sql = "SELECT version, nom_projet AS name, date_version
+                            FROM historique
+                            WHERE maven_key=:maven_key
+                            ORDER BY date_version DESC LIMIT 1";
+                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                        $stmt->bindValue(':maven_key', $map['maven_key']);
+                    $isValide=$stmt->executeQuery()->fetchAllAssociative();
+                     /** j'ai pas trouvé de projet */
+                    if (!$isValide){
+                        return ['code'=>404, 'erreur'=>"Je n'ai pas trouvé le projet dans la base de données."];
+                    }
+                $this->getEntityManager()->getConnection()->commit();
+        } catch (\Doctrine\DBAL\Exception $e) {
+            $this->getEntityManager()->getConnection()->rollBack();
+            return ['code'=> 500, 'erreur'=>$e->getMessage()];
+        }
+        /** on prépare la réponse */
+        return ['code'=>200, 'is_valide'=>$isValide[0], 'erreur'=>''];
+    }
 }
