@@ -59,7 +59,7 @@ class BatchCollecteTodoController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function BatchCollecteTodo(string $mavenKey): array
+    public function BatchCollecteTodo(string $mavenKey, string $modeCollecte, string $utilisateurCollecte): array
     {
         /** On instancie l'EntityRepository */
         $todoRepository = $this->em->getRepository(Todo::class);
@@ -109,6 +109,8 @@ class BatchCollecteTodoController extends AbstractController
                     'rule' => $issue["rule"],
                     'component' => $component,
                     'line' => $line,
+                    'mode_collecte' => $modeCollecte,
+                    'utilisateur_collecte' => $utilisateurCollecte,
                     'date_enregistrement' => $date
                 ];
             }
