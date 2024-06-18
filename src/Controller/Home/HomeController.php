@@ -18,7 +18,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-/** Securité */
+/** Sécurité */
 use Symfony\Bundle\SecurityBundle\Security;
 
 /** Logger */
@@ -152,7 +152,7 @@ class HomeController extends AbstractController
 
     /**
      * [Description for countProfilSonar]
-     * Récupère le nombre de profil disponible sur sonarqube
+     * Récupère le nombre de profil disponible sur SonarQube
      *
      * @return int
      *
@@ -277,7 +277,7 @@ class HomeController extends AbstractController
       /** On instancie l'entityRepository */
         $maMoulinetteEntity = $this->em->getRepository(MaMoulinette::class);
 
-      /** On récupère le numéro de la dernère version en base */
+      /** On récupère le numéro de la dernière version en base */
         $getmaMoulinetteVersion = $maMoulinetteEntity->getMaMoulinetteVersion();
         return $getmaMoulinetteVersion['request'][0]['version'];
     }
@@ -301,7 +301,7 @@ class HomeController extends AbstractController
         /** On instancie l'entityRepository */
         $historiqueEntity = $this->em->getRepository(Historique::class);
 
-        /** On crée un objet de reponse JSON */
+        /** On crée un objet de response JSON */
         $response = new JsonResponse();
 
         /** On récupère le nombre de favori que l'on souhaite afficher au max (10) */
@@ -432,11 +432,11 @@ class HomeController extends AbstractController
         /**
          * Description du processus :
          * 1 - On regarde si la base locale a déjà été mise à jour, i.e.
-         *     si la base locale a été mise à jour dans la journée alors les propriétées
-         *     sont à jour. Alors on renvoit les valeurs de la tables properties, sinon
-         * 2 - On récupère le nombre de projet et le nombre de profil diponible sur le serveur
-         *     sonarqube. Si les valeurs sont identiques, on renvoit les valeurs récupérés et on
-         *     met à jour la date de la table de propriétées. Sinon,
+         *     si la base locale a été mise à jour dans la journée alors les propriétés
+         *     sont à jour. Alors on renvoi les valeurs de la tables properties, sinon
+         * 2 - On récupère le nombre de projet et le nombre de profil disponible sur le serveur
+         *     SonarQube. Si les valeurs sont identiques, on renvoi les valeurs récupérés et on
+         *     met à jour la date de la table de propriétés. Sinon,
          * 3 - On met à jour la table liste_projet et/ou profiles et on met à jour la table
          *     properties.
          */
@@ -496,11 +496,11 @@ class HomeController extends AbstractController
 
         /** ***************** 2 - Projet *****************************  */
         if ($dateVerificationProjet == "true") {
-            /** Si le referentiel local est différent de celui sur le serveur. */
+            /** Si le référentiel local est différent de celui sur le serveur. */
             if ($projetSonar !== $projetBd) {
                 /**
                  * Si le nombre de projetSonar est différent de projetBD
-                 * alors on envoit un message à l'utilisateur pour qu'il mette à jour.
+                 * alors on envoi un message à l'utilisateur pour qu'il mette à jour.
                  */
                 $titre = '[ACCUEIL]';
                 $message = 'Vous devez mettre à jour le référentiel local pour les';
@@ -509,7 +509,7 @@ class HomeController extends AbstractController
             }
 
             /**
-             * Si le referentiel sonar est égale de celui sur le serveur et que la table
+             * Si le référentiel sonar est égale de celui sur le serveur et que la table
              * de properties n'est pas à jour, on met à jour la table.
              */
             if ($projetSonar == $projetBd  && $projetSonar !== $properties['projet_sonar']) {
@@ -523,7 +523,7 @@ class HomeController extends AbstractController
             if ($profilSonar !== $profilBd) {
                 /**
                  * Si le nombre de projetSonar est différent de projetBD
-                 * alors on envoit un message à l'utilisateur pour qu'il mette à jour.
+                 * alors on envoi un message à l'utilisateur pour qu'il mette à jour.
                  */
                 $titre = '[ACCUEIL]';
                 $message = 'Vous devez mettre à jour le référentiel local pour les';
