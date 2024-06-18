@@ -209,7 +209,7 @@ class BatchCrudController extends AbstractCrudController
 
         /** On créé les queue RabbitMQ si elle n'existe pas encore */
         try {
-            $queues = ['traitement_manuel', 'traitement_automatique'];
+            $queues = ['traitement_manuel_queue', 'traitement_automatique_queue'];
 
             foreach ($queues as $queue) {
                 $this->rabbitMQService->createQueueIfNotExists($queue);
