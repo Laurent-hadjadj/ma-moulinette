@@ -36,7 +36,7 @@ La version 2.0.0 est en cours de développement. Elle contient les fonctionalit�
 - [x] La gestion des utilisateurs ;
 - [x] La gestion des équipes ;
 - [x] La Gestion des portefeuille de projets ;
-- [x] La Gestion des traitements asynchronnes de collecte ;
+- [x] La Gestion des traitements asynchrones de collecte ;
 - [x] Un processus de collecte des indicateurs SonarQube ;
 - [x] Un processus d'historisation des résultats en base de données ;
 - [x] Des tableaux de suivi des indicateurs de qualité ;
