@@ -43,6 +43,12 @@ psql -h [adresse_serveur] -U [nom_utilisateur] -w -d [nom_database] -f [chemin_c
 - **[nom_database]** : Le nom de la base de données.
 - **[chemin_complet_du_script]**: Indiquez le chemin complet où se trouve votre script SQL.
 
+> Attention sous windows il faut ajouter le paramètre suivant pour que l'encodage UTF-8 soit bien pris en compte :
+
+```bash
+set PGCLIENTENCODING=UTF8
+```
+
 ### Création de la base de données
 
 ```bash
