@@ -33,7 +33,7 @@ Par défaut, nous avons défini deux points de contrôle **TRUST_HOST1** et **TR
 Il est nécessaire de définir dans le fichier **.env** la valeur de ces deux paramètres :
 
 ```yaml
-TRUST_HOST1="^ma-petite-entrprise\.fr$"
+TRUST_HOST1="^ma-petite-entreprise\.fr$"
 TRUST_HOST2="10.0.0.1"
 ```
 
@@ -44,7 +44,7 @@ Le fichier `security.yml` contient le paramétrage de la sécurité et de l'auth
 ```yaml
   # On active le mécanisme d'authentification
     enable_authenticator_manager: true
-    # On léve une exception si l'utilisateur n'existe pas
+    # On lève une exception si l'utilisateur n'existe pas
     hide_user_not_found: false
 ```
 
@@ -83,7 +83,7 @@ password_hashers:
 
 Le firewall dans Symfony permet de sécuriser, par le biais de rôles, l'accès aux pages de l'application.
 
-Il existe deux rôles par défaut auquel nous avons ajouté **trois** rôles fonctionnels.
+Il existe deux rôles par défaut auquel nous avons ajouté **trois** (3) rôles fonctionnels.
 
 - [x] **PUBLIC_ACCESS**, permet à l'accès aux pages publiques.
 - [ ] **ROLE_USER**, permet dans Symfony l'accès à des pages privés.
@@ -139,7 +139,7 @@ Dans les contrôleurs par l'ajout d'un attribut ou par l'utilisation de la méth
 ```
 
 ```php
-$this->denyAccessUnlessGranted('ROLE_GESTIONNAIRE', null, 'L\'utilisateur essaye d\'accèder à la page sans avoir le rôle ROLE_GESTIONNAIRE');
+$this->denyAccessUnlessGranted('ROLE_GESTIONNAIRE', null, "L'utilisateur essaye d’accéder à la page sans avoir le rôle ROLE_GESTIONNAIRE");
 ```
 
 -**-- FIN --**-
