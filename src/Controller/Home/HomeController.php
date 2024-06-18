@@ -77,10 +77,10 @@ class HomeController extends AbstractController
     private function countProjetBD(): int
     {
         /** On instancie l'entityRepository */
-        $listeProjetEntity = $this->em->getRepository(ListeProjet::class);
+        $listeProjetRepository = $this->em->getRepository(ListeProjet::class);
 
         /* On récupère le nombre de projet depuis la table liste_projet */
-        $nombre = $listeProjetEntity->countListeProjet();
+        $nombre = $listeProjetRepository->countListeProjet();
 
         $projet = 0;
         if ($nombre['code'] === 200){
@@ -427,7 +427,7 @@ class HomeController extends AbstractController
     public function index(Client $client, Security $security, Request $request): Response
     {
         /** On instancie l'entityRepository */
-        $listeProjetEntity = $this->em->getRepository(ListeProjet::class);
+        $listeProjetRepository = $this->em->getRepository(ListeProjet::class);
 
         /**
          * Description du processus :
@@ -540,15 +540,16 @@ class HomeController extends AbstractController
         }
 
         /** ***************** 4 - Visibility *****************************  */
-        $t1 = $listeProjetEntity->countListeProjetVisibility('public');
-        $t2 = $listeProjetEntity->countListeProjetVisibility('private');
+        $t1 = $listeProjetRepository->countListeProjetVisibility('public');
+        $t2 = $listeProjetRepository->countListeProjetVisibility('private');
 
         $public = $t1['request'][0]['visibility'];
         $private = $t2['request'][0]['visibility'];
 
         /** ***************** 5 - Tags *****************************  */
         /** Renvoi le nombre de projet et le nombre de tags */
-        $tag = $listeProjetEntity->countListeProjetTags();
+        $tag = $listeProjetRepository->countListeProjetTags();
+        dd($tag);
 
         /** ***************** VERSION *** ************************* */
         /** On récupère le numero de version en base */
