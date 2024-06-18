@@ -13,8 +13,9 @@
 
 namespace App\Service;
 
-use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Historique;
 use App\Entity\InformationProjet;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * [Description IsValideMavenKey]
@@ -42,14 +43,25 @@ class IsValideMavenKey
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function isValide($mavenKey): array
+    public function isValideInformation($mavenKey): array
     {
         /** On instancie l'entityRepository */
         $informationProjetRepository = $this->em->getRepository(InformationProjet::class);
 
         /** On regarde si une analyse a été réalisée. */
         $map=['maven_key'=>$mavenKey];
-        $request=$informationProjetRepository->selectInformationProjetisValide($map);
+        $request=$informationProjetRepository->selectInformationProjetIsValide($map);
+        return ['code' => $request['code'], 'request'=>$request['is_valide'] ?? $request['erreur']];
+    }
+
+    public function isValideHistorique($mavenKey): array
+    {
+        /** On instancie l'entityRepository */
+        $historiqueRepository = $this->em->getRepository(Historique::class);
+
+        /** On regarde si une analyse a été réalisée. */
+        $map=['maven_key'=>$mavenKey];
+        $request=$historiqueRepository->selectHistoriqueIsValide($map);
         return ['code' => $request['code'], 'request'=>$request['is_valide'] ?? $request['erreur']];
     }
 }
