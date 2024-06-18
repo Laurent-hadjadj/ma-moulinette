@@ -31,7 +31,7 @@ class InformationProjetRepository extends ServiceEntityRepository
     }
 
     /**
-     * [Description for selectInformationProjetisValide]
+     * [Description for selectInformationProjetIsValide]
      * Vérifie si le projet existe.
      *
      * @param array $map
@@ -42,7 +42,7 @@ class InformationProjetRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectInformationProjetisValide($map):array
+    public function selectInformationProjetIsValide($map):array
     {
         try {
             $sql = "SELECT *
