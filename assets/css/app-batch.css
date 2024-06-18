@@ -101,7 +101,6 @@ tbody tr:nth-child(even) {
 }
 
 /** Fixe du footer */
-
 .footer {
     position: fixed;
     bottom: 0;
@@ -130,7 +129,7 @@ tbody tr:nth-child(even) {
 }
 
 /* Bouton information SVG */
-.information-svg {
+.information-svg, .poubelle-svg {
   fill: #00445b;
   cursor: pointer;
   margin-bottom: -0.2rem;
@@ -139,33 +138,21 @@ tbody tr:nth-child(even) {
 }
 
 /* hover sur l'icône information */
-.information-svg:hover { fill: #ed7d20; }
+.information-svg:hover, .poubelle-svg:hover {
+  fill: #ed7d20;
+}
 
 /* disable */
 .disable { cursor: not-allowed; }
 
 /* bouton fermer */
-#fermer-traitement-liste,
-#fermer-traitement-manuel {
+#fermer-traitement-liste {
   color: #fff;
   background-color: #00445b;
 }
 
-#fermer-traitement-liste:hover,
-#fermer-traitement-manuel:hover { background-color: #006182; }
+#fermer-traitement-liste:hover { background-color: #006182; }
 
-/** Ajout du bouton oui et non
- * pour la fenêtre modal lancer un job manuel
- */
-.oui,
-.non {
-  color: #fff;
-  font-size: 1.2rem;
-}
-.oui { background-color: #187e3d; }
-.non { background-color: #971c09; }
-.oui:hover { background-color: #105b2c; }
-.non:hover { background-color: #6b1204; }
 
 /** Ajout d'un spinner lors du traitement  */
 .spinner-titre {
