@@ -13,11 +13,11 @@
 
 namespace App\Service;
 
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Finder\Finder;
 use Cesargb\Log\Rotation;
-use Cesargb\Log\Exceptions\RotationFailed;
+use Symfony\Component\Finder\Finder;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 /**
  * [Description FileLogger]
@@ -53,7 +53,7 @@ class FileLogger
         $finder='';
         /* Le dossier d'audit est présent */
         if ($filesystem->exists($completPath)) {
-            $name = preg_replace('/\s+/', '_', $portefeuille);
+            $name = preg_replace("/[ :.]/", "_", $portefeuille);
             $fichier = "{$type}_$name.log";
 
             /** on récupère la log */
@@ -114,7 +114,7 @@ class FileLogger
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function file($mavenKey, $collecte){
+    public function file($portefeuille, $collecte){
         // Fonction pour formater les informations du tableau de manière récursive
         function formatArray($json, $level = 1) {
             // Retourner une chaîne vide si les données ne sont pas un tableau
@@ -134,18 +134,22 @@ class FileLogger
                     // Appel récursif avec un niveau d'indentation supérieur
                     $output .= formatArray($value, $level + 1);
                 } else {
+                    // Vérifie si la valeur est un objet DateTimeImmutable et la convertir en chaîne si nécessaire
+                    if ($value instanceof \DateTimeImmutable || $value instanceof \DateTime) {
+                        $value = $value->format('Y-m-d H:i:s');
+                    }
                     // Si la clé est numérique, ne pas l'afficher
                     if (is_numeric($key)) {
                         $output .= '<p>' . htmlspecialchars($value) . '</p>';
                     } else {
-                        $output .= "<p><strong>" . htmlspecialchars($key) . ":</strong> " . htmlspecialchars($value) . '</p>';
+                        $output .= '<p><strong>' . htmlspecialchars($key) . ' : </strong> ' . htmlspecialchars($value) . '</p>';
                     }
                 }
             }
             return $output;
         }
 
-        return static::log($mavenKey, formatArray($collecte));
+        return static::log($portefeuille, formatArray($collecte), 'append');
     }
 
     /**
@@ -154,6 +158,7 @@ class FileLogger
      *
      * @param string $portefeuille
      * @param string $log
+     * @param string $type
      *
      * @return integer
      *
@@ -161,14 +166,23 @@ class FileLogger
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function log(string $portefeuille, string $log): int
+    public function log(string $portefeuille, string $log, string $type): int
     {
         $filesystem = new Filesystem();
 
         if ($filesystem->exists($this->path)) {
-            $name = preg_replace('/\s+/', '_', $portefeuille);
+            $name = preg_replace("/[ :.]/", "_", $portefeuille);
             $filePath = $this->path . "/manuel_{$name}.log";
-            $filesystem->appendToFile($filePath, $log);
+            if ($type==='append') {
+                    $filesystem->appendToFile($filePath, $log);
+            } else {
+                try {
+                    $filesystem->remove($filePath);
+                } catch (FileException $e) {
+                    // Une erreur s'est produite lors de la suppression du fichier
+                    return $filesystem->getError();
+                }
+            }
             return 200;
         } else {
             return 404;
