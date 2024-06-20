@@ -669,7 +669,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.notes
   value INTEGER NOT NULL,
   mode_collecte character varying(32),
   utilisateur_collecte character varying(128),
-  date_enregistrement timestamp(0) NOT NULL
+  date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
 ALTER TABLE ma_moulinette.notes OWNER to db_user;
