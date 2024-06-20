@@ -148,9 +148,9 @@ class BatchCollecteMesureController extends AbstractController
             'nom_projet' => strtolower($result['projectName']),
             'nombre_ligne' => $lines,
             'nombre_ligne_code' => $ncloc,
-            'couverture'=> $coverage,
+            'couverture'=> (float)$coverage,
             'sqale_debt_ratio' => $sqaleRatio,
-            'duplication_density' => $duplicationDensity,
+            'duplication_density' => (float)$duplicationDensity,
             'tests_unitaires' => $tests,
             'issues' => $issues,
         ];
