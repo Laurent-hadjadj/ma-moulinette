@@ -6,7 +6,7 @@
 ##                                                ##
 ####################################################*/
 
-/* Le script doit être lancé avec l'utilisateur propriétaire de la base, ici postgres #### */
+/* Le script doit être lancé avec l'utilisateur propriétaire de la base, ici Postgres #### */
 
 --- 2024-05-22 : Laurent HADJADJ - mise à jour des attributs de création de la base de données.
 --- 2024-05-28 : Laurent HADJADJ - mise à jour complète du script.
