@@ -114,7 +114,7 @@ class NoSonarRepository extends ServiceEntityRepository
                             $stmt->bindValue(':utilisateur_collecte', $item['utilisateur_collecte']);
                             $stmt->bindValue(':date_enregistrement', $item['date_enregistrement']->format('Y-m-d H:i:sO'));
                             $stmt->executeStatement();
-                }
+                    }
                 $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();

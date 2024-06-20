@@ -43,14 +43,16 @@ class NotesRepository extends ServiceEntityRepository
      */
     public function deleteNotesMavenKey($map):array
     {
-        $sql = "DELETE
-                FROM notes
-                WHERE maven_key=:maven_key and type=:type";
-        $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-        $stmt->bindValue(':maven_key', $map['maven_key']);
-        $stmt->bindValue(':type', $map['type']);
         try {
-                $stmt->executeQuery();
+                $this->getEntityManager()->getConnection()->beginTransaction();
+                    $sql = "DELETE
+                            FROM notes
+                            WHERE maven_key=:maven_key and type=:type";
+                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $stmt->bindValue(':maven_key', $map['maven_key']);
+                    $stmt->bindValue(':type', $map['type']);
+                    $stmt->executeStatement();
+                $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->rollback();
             return ['code'=>500, 'erreur'=> $e->getMessage()];
@@ -112,7 +114,6 @@ class NotesRepository extends ServiceEntityRepository
     public function selectNotesMavenType($map):array
     {
         try {
-            $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "SELECT type, value, date_enregistrement
                         FROM notes
                         WHERE maven_key=:maven_key AND type=:type
@@ -122,9 +123,7 @@ class NotesRepository extends ServiceEntityRepository
                 $stmt->bindValue(':type', $map['type']);
                 $exec=$stmt->executeQuery();
                 $liste=$exec->fetchAllAssociative();
-            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
             return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];

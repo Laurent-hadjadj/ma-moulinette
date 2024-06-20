@@ -13,9 +13,12 @@
 
 namespace App\Repository;
 
+use PDO;
+use PDOException;
+use DateTimeImmutable;
 use App\Entity\Historique;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * [Description HistoriqueRepository]
@@ -43,16 +46,13 @@ class HistoriqueRepository extends ServiceEntityRepository
      */
     public function countHistoriqueProjet($map):array {
         try {
-            $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "SELECT count(*) AS nombre
                         FROM historique
                         WHERE maven_key=:maven_key";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
                     $stmt->bindValue(':maven_key', $map['maven_key']);
                 $request=$stmt->executeQuery()->fetchAllAssociative();
-            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
             return ['code'=> 500, 'erreur'=>$e->getMessage()];
         }
         /** on prépare la réponse */
@@ -73,7 +73,6 @@ class HistoriqueRepository extends ServiceEntityRepository
     public function getProjetFavori($where): array
     {
         try {
-            $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "SELECT DISTINCT
                             maven_key as mavenkey, nom_projet as nom,
                             version, date_version as date, note_reliability as fiabilite,
@@ -87,9 +86,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
                     $stmt->bindValue(":where", $where);
                         $request=$stmt->executeQuery()->fetchAllAssociative();
-                $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
                 return ['code'=> 500, 'erreur'=>$e->getMessage()];
         }
         /** on prépare la réponse */
@@ -193,7 +190,6 @@ class HistoriqueRepository extends ServiceEntityRepository
      */
     public function selectUnionHistoriqueProjet($map):array {
         try {
-            $this->getEntityManager()->getConnection()->beginTransaction();
                 /** On prépare la requête */
                 $sql = "SELECT * FROM
                 (SELECT nom_projet AS nom, date_version AS date, version,
@@ -226,9 +222,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                     $stmt->bindValue(':initial_false', 1);
                     $stmt->bindValue(':limit', $map['limit']);
                         $suivi=$stmt->executeQuery()->fetchAllAssociative();
-            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
             return ['code'=> 500, 'erreur'=>$e->getMessage()];
         }
         /** on prépare la réponse */
@@ -248,35 +242,32 @@ class HistoriqueRepository extends ServiceEntityRepository
      */
     public function selectUnionHistoriqueAnomalie($map):array {
         try {
-                $this->getEntityManager()->getConnection()->beginTransaction();
-                    /** On prépare la requête */
-                        $sql = "SELECT * FROM
-                        (SELECT date_version AS date,
-                                nombre_anomalie_bloquant AS bloquant,
-                                nombre_anomalie_critique AS critique,
-                                nombre_anomalie_majeur AS majeur,
-                                nombre_anomalie_mineur AS mineur
-                        FROM historique
-                        WHERE maven_key=:maven_key AND initial=:initial_true)
-                        UNION SELECT * FROM
-                        (SELECT date_version AS date,
-                                nombre_anomalie_bloquant AS bloquant,
-                                nombre_anomalie_critique as critique,
-                                nombre_anomalie_majeur as majeur,
-                                nombre_anomalie_mineur as mineur
-                        FROM historique
-                        WHERE maven_key=:maven_key AND initial=:initial_false
-                        ORDER BY date_version DESC LIMIT :limit)";
-                        $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-                            $stmt->bindValue(':maven_key', $map['maven_key']);
-                            $stmt->bindValue(':initial_true', 0);
-                            $stmt->bindValue(':initial_false', 1);
-                            $stmt->bindValue(':limit', $map['limit']);
-                        $exec=$stmt->executeQuery();
-                        $liste=$exec->fetchAllAssociative();
-                $this->getEntityManager()->getConnection()->commit();
+            /** On prépare la requête */
+            $sql = "SELECT * FROM
+            (SELECT date_version AS date,
+                    nombre_anomalie_bloquant AS bloquant,
+                    nombre_anomalie_critique AS critique,
+                    nombre_anomalie_majeur AS majeur,
+                    nombre_anomalie_mineur AS mineur
+            FROM historique
+            WHERE maven_key=:maven_key AND initial=:initial_true)
+            UNION SELECT * FROM
+            (SELECT date_version AS date,
+                    nombre_anomalie_bloquant AS bloquant,
+                    nombre_anomalie_critique as critique,
+                    nombre_anomalie_majeur as majeur,
+                    nombre_anomalie_mineur as mineur
+            FROM historique
+            WHERE maven_key=:maven_key AND initial=:initial_false
+            ORDER BY date_version DESC LIMIT :limit)";
+            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $stmt->bindValue(':maven_key', $map['maven_key']);
+                $stmt->bindValue(':initial_true', 0);
+                $stmt->bindValue(':initial_false', 1);
+                $stmt->bindValue(':limit', $map['limit']);
+            $exec=$stmt->executeQuery();
+            $liste=$exec->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
             return ['code'=> 500, 'erreur'=>$e->getMessage()];
         }
         /** on prépare la réponse */
@@ -296,43 +287,40 @@ class HistoriqueRepository extends ServiceEntityRepository
      */
     public function selectUnionHistoriqueDetails($map):array {
         try {
-                $this->getEntityManager()->getConnection()->beginTransaction();
-                    /** On prépare la requête */
-                    $sql = "SELECT * FROM
-                    (SELECT date_version AS date, version,
-                            bug_blocker, bug_critical, bug_major,
-                            bug_minor, bug_info,
-                            vulnerability_blocker, vulnerability_critical,
-                            vulnerability_major, vulnerability_minor,
-                            vulnerability_info,
-                            code_smell_blocker, code_smell_critical,
-                            code_smell_major, code_smell_minor,
-                            code_smell_info, initial
-                    FROM historique
-                    WHERE maven_key=:maven_key AND initial=:initial_true)
-                    UNION SELECT * FROM
-                    (SELECT date_version AS date, version,
-                            bug_blocker, bug_critical, bug_major,
-                            bug_minor, bug_info,
-                            vulnerability_blocker, vulnerability_critical,
-                            vulnerability_major, vulnerability_minor,
-                            vulnerability_info,
-                            code_smell_blocker, code_smell_critical,
-                            code_smell_major, code_smell_minor,
-                            code_smell_info, initial
-                    FROM historique
-                    WHERE maven_key=:maven_key AND initial=:initial_false
-                    ORDER BY date_version DESC LIMIT :limit)";
+                /** On prépare la requête */
+                $sql = "SELECT * FROM
+                (SELECT date_version AS date, version,
+                        bug_blocker, bug_critical, bug_major,
+                        bug_minor, bug_info,
+                        vulnerability_blocker, vulnerability_critical,
+                        vulnerability_major, vulnerability_minor,
+                        vulnerability_info,
+                        code_smell_blocker, code_smell_critical,
+                        code_smell_major, code_smell_minor,
+                        code_smell_info, initial
+                FROM historique
+                WHERE maven_key=:maven_key AND initial=:initial_true)
+                UNION SELECT * FROM
+                (SELECT date_version AS date, version,
+                        bug_blocker, bug_critical, bug_major,
+                        bug_minor, bug_info,
+                        vulnerability_blocker, vulnerability_critical,
+                        vulnerability_major, vulnerability_minor,
+                        vulnerability_info,
+                        code_smell_blocker, code_smell_critical,
+                        code_smell_major, code_smell_minor,
+                        code_smell_info, initial
+                FROM historique
+                WHERE maven_key=:maven_key AND initial=:initial_false
+                ORDER BY date_version DESC LIMIT :limit)";
 
-                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-                        $stmt->bindValue(':maven_key', $map['maven_key']);
-                        $stmt->bindValue(':initial_true', 0);
-                        $stmt->bindValue(':initial_false', 1);
-                        $stmt->bindValue(':limit', $map['limit']);
-                    $details=$stmt->executeQuery()->fetchAllAssociative();
-                $this->getEntityManager()->getConnection()->commit();
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $stmt->bindValue(':maven_key', $map['maven_key']);
+                    $stmt->bindValue(':initial_true', 0);
+                    $stmt->bindValue(':initial_false', 1);
+                    $stmt->bindValue(':limit', $map['limit']);
+                $details=$stmt->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
             return ['code'=> 500, 'erreur'=>$e->getMessage()];
         }
         /** on prépare la réponse */
@@ -352,20 +340,17 @@ class HistoriqueRepository extends ServiceEntityRepository
      */
     public function selectHistoriqueAnomalieGraphique($map):array {
         try {
-                $this->getEntityManager()->getConnection()->beginTransaction();
-                    /** On prépare la requête */
-                    $sql = "SELECT  nombre_bug AS bug, nombre_vulnerability
-                                    AS secu, nombre_code_smell AS code_smell, date_version AS date
-                            FROM historique
-                            WHERE maven_key=:maven_key
-                            GROUP BY date_version
-                            ORDER BY date_version ASC";
-                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-                    $stmt->bindValue(':maven_key', $map['maven_key']);
-                    $graph=$stmt->executeQuery()->fetchAllAssociative();
-                $this->getEntityManager()->getConnection()->commit();
+                /** On prépare la requête */
+                $sql = "SELECT  nombre_bug AS bug, nombre_vulnerability
+                                AS secu, nombre_code_smell AS code_smell, date_version AS date
+                        FROM historique
+                        WHERE maven_key=:maven_key
+                        GROUP BY date_version
+                        ORDER BY date_version ASC";
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $stmt->bindValue(':maven_key', $map['maven_key']);
+                $graph=$stmt->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
             return ['code'=> 500, 'erreur'=>$e->getMessage()];
         }
         /** on prépare la réponse */
@@ -384,6 +369,10 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function insertHistoriqueAjoutProjet($map):array {
+        $date = new \DateTimeImmutable();
+        $date->setTimezone(new \DateTimeZone("Europe/Paris"));
+        $initial = filter_var($map['initial'], FILTER_VALIDATE_BOOLEAN); // conversion en booléen
+
         try {
                 $this->getEntityManager()->getConnection()->beginTransaction();
                     /** On prépare la requête */
@@ -406,7 +395,8 @@ class HistoriqueRepository extends ServiceEntityRepository
                     note_reliability, note_security,
                     note_sqale, note_hotspot, hotspot_total,
                     hotspot_high, hotspot_medium, hotspot_low,
-                    initial, mode_collecte, utilisateur_collecte, date_enregistrement)
+                    initial,
+                    mode_collecte, utilisateur_collecte, date_enregistrement)
                 VALUES (
                     :maven_key, :version, :date_version, :nom_projet,
                     :version_release, :version_snapshot, :version_autre,
@@ -423,7 +413,8 @@ class HistoriqueRepository extends ServiceEntityRepository
                     :nombre_anomalie_info, :note_reliability, :note_security,
                     :note_sqale, :note_hotspot, :hotspot_total,
                     :hotspot_high, :hotspot_medium, :hotspot_low,
-                    :initial, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
+                    :initial,
+                    :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
 
                     $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
 
@@ -479,11 +470,12 @@ class HistoriqueRepository extends ServiceEntityRepository
                     $stmt->bindValue(':hotspot_high', $map['hotspot_high']);
                     $stmt->bindValue(':hotspot_medium', $map['hotspot_medium']);
                     $stmt->bindValue(':hotspot_low', $map['hotspot_low']);
-                    $stmt->bindValue(':initial', $map['initial']);
+                    /** On ne peut pas binder la valeur d'un boolean en true/false
+                     * car le type est toujours string/number ou dateTime */
+                    $stmt->bindValue(':initial', $initial, PDO::PARAM_BOOL);
                     $stmt->bindValue(':mode_collecte', $map['mode_collecte']);
                     $stmt->bindValue(':utilisateur_collecte', $map['utilisateur_collecte']);
-                    $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
-
+                    $stmt->bindValue(':date_enregistrement',$date->format('Y-m-d H:i:sO'));
                     $stmt->executeStatement();
                 $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
@@ -542,27 +534,24 @@ class HistoriqueRepository extends ServiceEntityRepository
      */
     public function selectHistoriqueProjetLast($map):array {
         try {
-                $this->getEntityManager()->getConnection()->beginTransaction();
-                    /** On prépare la requête */
-                    $sql =  "SELECT version, nom_projet AS name, date_version,
-                                    note_reliability, note_security, note_hotspot,note_sqale,
-                                    bug_blocker, bug_critical, bug_major,
-                                    vulnerability_blocker, vulnerability_critical, vulnerability_major,
-                                    code_smell_blocker, code_smell_critical, code_smell_major,
-                                    hotspot_total, couverture, sqale_debt_ratio
-                            FROM historique
-                            WHERE maven_key=:maven_key
-                            ORDER BY date_version DESC LIMIT 1";
-                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-                    $stmt->bindValue(':maven_key', $map['maven_key']);
-                        $infos=$stmt->executeQuery()->fetchAllAssociative();
-                $this->getEntityManager()->getConnection()->commit();
+                /** On prépare la requête */
+                $sql =  "SELECT version, nom_projet AS name, date_version,
+                                note_reliability, note_security, note_hotspot,note_sqale,
+                                bug_blocker, bug_critical, bug_major,
+                                vulnerability_blocker, vulnerability_critical, vulnerability_major,
+                                code_smell_blocker, code_smell_critical, code_smell_major,
+                                hotspot_total, couverture, sqale_debt_ratio
+                        FROM historique
+                        WHERE maven_key=:maven_key
+                        ORDER BY date_version DESC LIMIT 1";
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $stmt->bindValue(':maven_key', $map['maven_key']);
+                    $infos=$stmt->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
             return ['code'=> 500, 'erreur'=>$e->getMessage()];
         }
-        /** on prépare la réponse */
-        return ['code'=>200, 'infos'=>$infos, 'erreur'=>''];
+            /** on prépare la réponse */
+            return ['code'=>200, 'infos'=>$infos, 'erreur'=>''];
     }
 
     /**
@@ -578,23 +567,20 @@ class HistoriqueRepository extends ServiceEntityRepository
      */
     public function selectHistoriqueProjetReference($map):array {
         try {
-                $this->getEntityManager()->getConnection()->beginTransaction();
-                    /** On prépare la requête */
-                    $sql = "SELECT version, date_version,
-                                    note_reliability, note_security, note_hotspot, note_sqale,
-                                    bug_blocker, bug_critical, bug_major,
-                                    vulnerability_blocker, vulnerability_critical, vulnerability_major,
-                                    code_smell_blocker, code_smell_critical, code_smell_major,
-                                    hotspot_total, couverture, sqale_debt_ratio
-                            FROM historique
-                            WHERE maven_key=:maven_key AND initial=1";
-                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-                        $stmt->bindValue(':maven_key', $map['maven_key']);
-                    $exec=$stmt->executeQuery();
-                    $liste=$exec->fetchAllAssociative();
-                $this->getEntityManager()->getConnection()->commit();
+                /** On prépare la requête */
+                $sql = "SELECT version, date_version,
+                                note_reliability, note_security, note_hotspot, note_sqale,
+                                bug_blocker, bug_critical, bug_major,
+                                vulnerability_blocker, vulnerability_critical, vulnerability_major,
+                                code_smell_blocker, code_smell_critical, code_smell_major,
+                                hotspot_total, couverture, sqale_debt_ratio
+                        FROM historique
+                        WHERE maven_key=:maven_key AND initial=1";
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $stmt->bindValue(':maven_key', $map['maven_key']);
+                $exec=$stmt->executeQuery();
+                $liste=$exec->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
             return ['code'=> 500, 'erreur'=>$e->getMessage()];
         }
         /** on prépare la réponse */
@@ -614,25 +600,22 @@ class HistoriqueRepository extends ServiceEntityRepository
      */
     public function selectHistoriqueProjetFavori($map):array {
         try {
-                $this->getEntityManager()->getConnection()->beginTransaction();
-                    /** On prépare la requête */
-                    $sql = "SELECT DISTINCT maven_key as mavenkey, nom_projet as nom,
-                                            version, date_version as date,
-                                            note_reliability as fiabilite,
-                                            note_security as securite, note_hotspot as hotspot,
-                                            note_sqale as sqale, nombre_bug as bug,
-                                            nombre_vulnerability as vulnerability,
-                                            nombre_code_smell as code_smell,
-                                            hotspot_total as hotspots
-                            FROM historique
-                            WHERE ".$map['clause_where'].
-                            " GROUP BY maven_key LIMIT ".$map['nombre_projet_favori'];
-                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-                            $exec=$stmt->executeQuery();
-                            $liste=$exec->fetchAllAssociative();
-                $this->getEntityManager()->getConnection()->commit();
+                /** On prépare la requête */
+                $sql = "SELECT DISTINCT maven_key as mavenkey, nom_projet as nom,
+                                        version, date_version as date,
+                                        note_reliability as fiabilite,
+                                        note_security as securite, note_hotspot as hotspot,
+                                        note_sqale as sqale, nombre_bug as bug,
+                                        nombre_vulnerability as vulnerability,
+                                        nombre_code_smell as code_smell,
+                                        hotspot_total as hotspots
+                        FROM historique
+                        WHERE ".$map['clause_where'].
+                        " GROUP BY maven_key LIMIT ".$map['nombre_projet_favori'];
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                        $exec=$stmt->executeQuery();
+                        $liste=$exec->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
             return ['code'=> 500, 'erreur'=>$e->getMessage()];
         }
         /** on prépare la réponse */
@@ -652,22 +635,19 @@ class HistoriqueRepository extends ServiceEntityRepository
      */
     public function selectHistoriqueIsValide($map):array {
         try {
-                $this->getEntityManager()->getConnection()->beginTransaction();
-                    /** On prépare la requête */
-                    $sql = "SELECT version, nom_projet AS name, date_version
-                            FROM historique
-                            WHERE maven_key=:maven_key
-                            ORDER BY date_version DESC LIMIT 1";
-                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-                        $stmt->bindValue(':maven_key', $map['maven_key']);
-                    $isValide=$stmt->executeQuery()->fetchAllAssociative();
-                     /** j'ai pas trouvé de projet */
-                    if (!$isValide){
-                        return ['code'=>404, 'erreur'=>"Je n'ai pas trouvé le projet dans la base de données."];
-                    }
-                $this->getEntityManager()->getConnection()->commit();
+                /** On prépare la requête */
+                $sql = "SELECT version, nom_projet AS name, date_version
+                        FROM historique
+                        WHERE maven_key=:maven_key
+                        ORDER BY date_version DESC LIMIT 1";
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $stmt->bindValue(':maven_key', $map['maven_key']);
+                $isValide=$stmt->executeQuery()->fetchAllAssociative();
+                    /** j'ai pas trouvé de projet */
+                if (!$isValide){
+                    return ['code'=>404, 'erreur'=>"Je n'ai pas trouvé le projet dans la base de données."];
+                }
         } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
             return ['code'=> 500, 'erreur'=>$e->getMessage()];
         }
         /** on prépare la réponse */

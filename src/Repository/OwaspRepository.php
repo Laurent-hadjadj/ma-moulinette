@@ -39,19 +39,15 @@ class OwaspRepository extends ServiceEntityRepository
      */
     public function selectOwaspOrderByDateEnregistrement($map):array
     {
-        $sql = "SELECT *
-                FROM owasp
-                WHERE maven_key=:maven_key
-                ORDER BY date_enregistrement DESC LIMIT 1";
-
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-        $conn->bindValue(':maven_key', $map['maven_key']);
         try {
-            #if ($mode !== 'TEST') {
-                $liste=$conn->executeQuery()->fetchAllAssociative();
-            #} else {
-                return ['code'=> 202, 'erreur'=>'TEST'];
-            #}
+                $sql = "SELECT *
+                        FROM owasp
+                        WHERE maven_key=:maven_key
+                        ORDER BY date_enregistrement DESC LIMIT 1";
+
+                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $conn->bindValue(':maven_key', $map['maven_key']);
+                        $liste=$conn->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
             return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
@@ -78,8 +74,8 @@ class OwaspRepository extends ServiceEntityRepository
                         FROM owasp
                         WHERE maven_key=:maven_key";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-                $stmt->bindValue(':maven_key', $map['maven_key']);
-                $stmt->executeStatement();
+                    $stmt->bindValue(':maven_key', $map['maven_key']);
+                    $stmt->executeStatement();
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();

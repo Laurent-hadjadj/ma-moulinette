@@ -42,7 +42,6 @@ class BatchRepository extends ServiceEntityRepository
     public function selectBatchByStatut():array
     {
         try {
-            $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "SELECT statut, titre, responsable, portefeuille,
                                 nombre_projet as nombre
                         FROM batch
@@ -50,9 +49,7 @@ class BatchRepository extends ServiceEntityRepository
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
                 $exec=$stmt->executeQuery();
                 $liste=$exec->fetchAllAssociative();
-            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
             return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];

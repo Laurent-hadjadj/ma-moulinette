@@ -92,7 +92,6 @@ class ProfilesHistoriqueRepository extends ServiceEntityRepository
     public function selectProfilesHistoriqueAction($map):array
     {
         try {
-            $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "SELECT COUNT() AS 'nombre'
                         FROM profiles_historique
                         WHERE action=:action AND language=:language";
@@ -100,9 +99,7 @@ class ProfilesHistoriqueRepository extends ServiceEntityRepository
                     $stmt->bindValue(':action', $map['action']);
                     $stmt->bindValue(static::$phLanguage, $map['language']);
                 $request=$stmt->executeQuery()->fetchAllAssociative();
-            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
             return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'request'=>$request, 'erreur'=>''];

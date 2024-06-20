@@ -207,7 +207,6 @@ class HotspotOwaspRepository extends ServiceEntityRepository
                 }
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            dd($e->getMessage());
             $this->getEntityManager()->getConnection()->rollBack();
             return ['code'=>500, 'erreur'=> $e->getMessage()];
         }

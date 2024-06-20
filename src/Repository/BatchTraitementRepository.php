@@ -43,7 +43,6 @@ class BatchTraitementRepository extends ServiceEntityRepository
     public function selectBatchTraitementDateEnregistrementAutomatiqueLast():array
     {
         try {
-            $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "SELECT date_enregistrement as date
                         FROM batch_traitement
                         WHERE demarrage='Automatique'
@@ -51,9 +50,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
                 $exec=$stmt->executeQuery();
                 $liste=$exec->fetchAllAssociative();
-            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
             return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
