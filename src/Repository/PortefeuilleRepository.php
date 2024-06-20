@@ -44,7 +44,6 @@ class PortefeuilleRepository extends ServiceEntityRepository
     public function selectPortefeuille($map):array
     {
         try {
-            $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "SELECT liste
                         FROM portefeuille
                         WHERE titre=:portefeuille";
@@ -55,7 +54,6 @@ class PortefeuilleRepository extends ServiceEntityRepository
                     $conn->bindValue(':portefeuille', $map['portefeuille']);
                 $exec=$conn->executeQuery();
                 $liste=$exec->fetchAllAssociative();
-            $this->getEntityManager()->getConnection()->commit();
             } catch (\Doctrine\DBAL\Exception $e) {
             return ['code'=>500, 'erreur'=> $e->getMessage()];
         }

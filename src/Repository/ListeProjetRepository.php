@@ -44,16 +44,13 @@ class ListeProjetRepository extends ServiceEntityRepository
     public function countListeProjetVisibility($type): array
     {
         try {
-            $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "SELECT count(*) as visibility
                         FROM liste_projet
                         WHERE visibility=:visibility";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
                     $stmt->bindValue(":visibility", $type);
                 $request=$stmt->executeQuery()->fetchAllAssociative();
-            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
             return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'request'=>$request, 'erreur'=>''];
@@ -72,15 +69,12 @@ class ListeProjetRepository extends ServiceEntityRepository
     public function countListeProjet(): array
     {
         try {
-            $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "SELECT COUNT(*) AS total
                         FROM liste_projet";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
                 $exec=$stmt->executeQuery();
                 $nombre=$exec->fetchAllAssociative();
-            $this->getEntityManager()->getConnection()->commit();
             } catch (\Doctrine\DBAL\Exception $e) {
-                $this->getEntityManager()->getConnection()->rollBack();
                 return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'request'=>$nombre, 'erreur'=>''];
@@ -100,15 +94,12 @@ class ListeProjetRepository extends ServiceEntityRepository
     public function countListeProjetTags(): array
     {
         try {
-            $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "SELECT COUNT(*) AS tag
                         FROM liste_projet
                         WHERE tags IS NOT NULL AND jsonb_array_length(tags::jsonb) > 0";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
                 $nombre=$stmt->executeQuery()->fetchAllAssociative();
-            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
             return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'nombre'=>$nombre, 'erreur'=>''];
@@ -129,16 +120,13 @@ class ListeProjetRepository extends ServiceEntityRepository
     public function selectListeProjetByEquipe($map): array
     {
         try {
-            $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "SELECT DISTINCT liste_projet.maven_key AS id, liste_projet.name AS text
                         FROM ma_moulinette.liste_projet, jsonb_array_elements_text(liste_projet.tags::jsonb) AS tag
                         WHERE ".$map['clause_where'];
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
                 $exec=$stmt->executeQuery();
                 $liste=$exec->fetchAllAssociative();
-            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
             return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];

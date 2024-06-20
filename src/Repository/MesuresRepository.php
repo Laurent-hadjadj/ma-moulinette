@@ -44,7 +44,6 @@ class MesuresRepository extends ServiceEntityRepository
     public function selectMesuresVersionLast($map):array
     {
         try {
-            $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "SELECT project_name as name, ncloc, lines, coverage, sqale_debt_ratio,
                 duplication_density as duplication, tests, issues
                         FROM mesures
@@ -53,9 +52,7 @@ class MesuresRepository extends ServiceEntityRepository
                 $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
                     $conn->bindValue(':maven_key', $map['maven_key']);
                 $mesures=$conn->executeQuery()->fetchAllAssociative();
-            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
             return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'mesures'=>$mesures, 'erreur'=>''];
@@ -117,13 +114,16 @@ class MesuresRepository extends ServiceEntityRepository
      */
     public function deleteMesuresMavenKey($map):array
     {
-        $sql = "DELETE
-                FROM mesures
-                WHERE maven_key=:maven_key";
-        $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-        $stmt->bindValue(':maven_key', $map['maven_key']);
         try {
-                $stmt->executeQuery();
+                $this->getEntityManager()->getConnection()->beginTransaction();
+                    $sql = "DELETE
+                            FROM mesures
+                            WHERE maven_key=:maven_key";
+
+                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                        $stmt->bindValue(':maven_key', $map['maven_key']);
+                        $stmt->executeStatement();
+                $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->rollback();
             return ['code'=>500, 'erreur'=> $e->getMessage()];

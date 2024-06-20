@@ -41,15 +41,12 @@ class MaMoulinetteRepository extends ServiceEntityRepository
     public function getMaMoulinetteVersion(): array
     {
         try {
-            $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "SELECT version
                         FROM ma_moulinette
                         ORDER BY date_version DESC LIMIT 1";
                 $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
                 $request=$conn->executeQuery()->fetchAllAssociative();
-            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
             return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'request'=>$request, 'erreur'=>''];

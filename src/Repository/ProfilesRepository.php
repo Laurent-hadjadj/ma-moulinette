@@ -42,23 +42,20 @@ class ProfilesRepository extends ServiceEntityRepository
     public function countProfiles($referentielDefault="true", $langage = null): array
     {
         try {
-            $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = " SELECT COUNT(*) AS total
                         FROM profiles
                         WHERE referentiel_default = :referencielDefault";
-                        if ($langage !== null ){
-                            $sql .= " AND language_name LIKE :langage ";
-                            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-                            $stmt->bindValue("referencielDefault", $referentielDefault);
-                            $stmt->bindValue("langage", $langage);
-                        }else{
-                            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-                            $stmt->bindValue("referencielDefault", $referentielDefault);
-                        }
+                if ($langage !== null ){
+                    $sql .= " AND language_name LIKE :langage ";
+                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $stmt->bindValue("referencielDefault", $referentielDefault);
+                    $stmt->bindValue("langage", $langage);
+                }else{
+                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $stmt->bindValue("referencielDefault", $referentielDefault);
+                }
                 $request=$stmt->executeQuery()->fetchAllAssociative();
-            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
             return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['request'=>$request, 'code'=>200, 'erreur'=>''];
@@ -66,7 +63,7 @@ class ProfilesRepository extends ServiceEntityRepository
 
     /**
      * [Description for selectProfiles]
-     * On récupre la liste des profils (par default on recupere les profils actifs)
+     * On récupère la liste des profils (par default on récupère les profils actifs)
      *
      * @return array
      *
@@ -77,7 +74,6 @@ class ProfilesRepository extends ServiceEntityRepository
     public function selectProfiles($referentielDefault="true" ,$langage = null):array
     {
         try {
-            $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "SELECT name as profil,
                         language_name as langage,
                         active_rule_count as regle,
@@ -96,9 +92,7 @@ class ProfilesRepository extends ServiceEntityRepository
                 }
                 $exec=$stmt->executeQuery();
                 $liste=$exec->fetchAllAssociative();
-            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
             return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['liste'=>$liste, 'code'=>200, 'erreur'=>''];
@@ -141,15 +135,12 @@ class ProfilesRepository extends ServiceEntityRepository
     public function selectProfilesLanguage():array
     {
         try {
-            $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "SELECT language_name AS profile
                         FROM profiles
                         WHERE referentiel_default = true";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
                 $labels=$stmt->executeQuery()->fetchAllAssociative();
-            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
             return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'labels'=>$labels, 'erreur'=>''];
@@ -157,7 +148,7 @@ class ProfilesRepository extends ServiceEntityRepository
 
     /**
      * [Description for selectProfilesRuleCount]
-     * Remonte le nombre de règle avtive pour un profil
+     * Remonte le nombre de règle active pour un profil
      *
      * @return array
      *
@@ -168,15 +159,12 @@ class ProfilesRepository extends ServiceEntityRepository
     public function selectProfilesRuleCount():array
     {
         try {
-            $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "SELECT active_rule_count AS total
                         FROM profiles
                         WHERE referentiel_default = true";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
                 $dataSets=$stmt->executeQuery()->fetchAllAssociative();
-            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
             return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'data-set'=>$dataSets, 'erreur'=>''];
