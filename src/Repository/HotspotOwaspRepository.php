@@ -101,11 +101,7 @@ class HotspotOwaspRepository extends ServiceEntityRepository
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         $conn->bindValue(':maven_key', $map['maven_key']);
         try {
-            #if ($mode !== 'TEST') {
                 $nombre=$conn->executeQuery()->fetchAllAssociative();
-            #} else {
-                return ['code'=> 202, 'erreur'=>'TEST'];
-            #}
         } catch (\Doctrine\DBAL\Exception $e) {
             return ['code'=>500, 'erreur'=> $e->getCode()];
         }
@@ -137,11 +133,7 @@ class HotspotOwaspRepository extends ServiceEntityRepository
         $conn->bindValue(':menace', $map['menace']);
         $conn->bindValue(':probability', $map['probability']);
         try {
-            #if ($mode !== 'TEST') {
                 $nombre=$conn->executeQuery()->fetchAllAssociative();
-            #} else {
-                return ['code'=> 202, 'erreur'=>'TEST'];
-            #}
         } catch (\Doctrine\DBAL\Exception $e) {
             return ['code'=>500, 'erreur'=> $e->getCode()];
         }
@@ -167,11 +159,7 @@ class HotspotOwaspRepository extends ServiceEntityRepository
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         $conn->bindValue(':maven_key', $map['maven_key']);
         try {
-                #if ($mode !== 'TEST') {
                     $conn->executeQuery();
-                #} else {
-                    return ['code'=> 202, 'erreur'=>'TEST'];
-                #}
         } catch (\Doctrine\DBAL\Exception $e) {
             return ['code'=>500, 'erreur'=> $e->getCode()];
         }

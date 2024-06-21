@@ -508,7 +508,7 @@ CREATE TABLE utilisateur (
 -- Création de la table Owasp_Top10
 
 CREATE TABLE owasp_top10 (
-  id INTEGER NOT NULL DEFAULT nextval('owasp_top10_id_seq'), -- Identifiant unique
+  id INTEGER NOT NULL, -- Identifiant unique
   year INT NOT NULL,
   category VARCHAR(255) NOT NULL, -- Codes comme a1, a2, etc.
   description TEXT NOT NULL, -- Description de la vulnérabilité
@@ -610,6 +610,10 @@ ALTER TABLE todo ALTER COLUMN id SET DEFAULT nextval('todo_id_seq');
 -- Utilisateur
 CREATE SEQUENCE utilisateur_id_seq START WITH 1 INCREMENT BY 1;
 ALTER TABLE utilisateur ALTER COLUMN id SET DEFAULT nextval('utilisateur_id_seq');
+
+-- owasp_top10
+CREATE SEQUENCE owasp_top10_id_seq START WITH 1 INCREMENT BY 1;
+ALTER TABLE owasp_top10 ALTER COLUMN id SET DEFAULT nextval('owasp_top10_id_seq');
 
 -- Création des indexes, triggers et les commentaires
 --Indexes :

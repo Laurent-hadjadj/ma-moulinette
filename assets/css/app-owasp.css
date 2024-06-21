@@ -169,49 +169,27 @@
 
 /* Styles spécifiques pour OWASP 2017 et OWASP 2021 */
 .owasp-2017 {
-  background-color: #ADD8E6;
+  background-color: rgba(0 123 255 / 50%);
 }
 
 /* Styles spécifiques pour les éléments <li> dans OWASP 2021 */
-.owasp2021-item-1 {
-  background-color: #04d404;
-}
-
-.owasp2021-item-2 {
-  background-color: #04d404;
-}
-
-.owasp2021-item-3 {
-  background-color: rgb(243, 77, 77);
-}
-
-/* Ajoutez autant de styles que nécessaire pour chaque élément de la liste OWASP 2021 */
-.owasp2021-item-4 {
-  background-color: #c1c0c0;
-}
-
-.owasp2021-item-5 {
-  background-color: #04d404;
-}
-
-.owasp2021-item-6 {
-  background-color: #04d404;
-}
-
-.owasp2021-item-7 {
-  background-color: rgb(243, 77, 77);
-}
-
-.owasp2021-item-8 {
-  background-color: #c1c0c0;
-}
-
+.owasp2021-item-1,
+.owasp2021-item-2,
+.owasp2021-item-5,
+.owasp2021-item-6,
 .owasp2021-item-9 {
-  background-color: #04d404;
+  background-color: rgba(4 212 4 / 50%); /* Vert avec transparence */
 }
 
+.owasp2021-item-3,
+.owasp2021-item-7 {
+  background-color: rgba(243 77 77 / 50%); /* Rouge avec transparence */
+}
+
+.owasp2021-item-4,
+.owasp2021-item-8,
 .owasp2021-item-10 {
-  background-color: #c1c0c0;
+  background-color: rgba(193 192 192 / 50%); /* Gris avec transparence */
 }
 
 /* Styles pour la légende des couleurs */
@@ -235,6 +213,23 @@
   margin-right: 10px;
   border: 1px solid #ddd;
 }
+
+.color-legend li:nth-child(1) .color-box {
+  background-color: rgba(4 212 4 / 50%); /* Vert avec transparence */
+}
+
+.color-legend li:nth-child(2) .color-box {
+  background-color: rgba(243 77 77 / 50%); /* Rouge avec transparence */
+}
+
+.color-legend li:nth-child(3) .color-box {
+  background-color: rgba(255 255 0 / 50%); /* Jaune avec transparence */
+}
+
+.color-legend li:nth-child(4) .color-box {
+  background-color: rgba(193 192 192 / 50%); /* Gris avec transparence */
+}
+
 
 /* Styles pour le diagramme circulaire */
 #owasp-pie-chart-container {
@@ -345,4 +340,3 @@
 .version-button.active {
   background-color: #0056b3;
 }
-

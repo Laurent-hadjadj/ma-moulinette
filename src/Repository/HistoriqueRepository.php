@@ -67,11 +67,7 @@ class HistoriqueRepository extends ServiceEntityRepository
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         $conn->bindValue(':maven_key', $map['maven_key']);
         try {
-            #if ($mode !== 'TEST') {
                 $request=$conn->executeQuery()->fetchAllAssociative();
-            #} else {
-                return ['code'=> 202, 'erreur'=>'TEST'];
-            #}
         } catch (\Doctrine\DBAL\Exception $e) {
             return ['code'=> 500, 'erreur'=>$e->getCode()];
         }
@@ -129,11 +125,7 @@ class HistoriqueRepository extends ServiceEntityRepository
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         $conn->bindValue(':maven_key', $map['maven_key']);
         try {
-            #if ($mode !== 'TEST') {
                 $conn->executeQuery();
-            #} else {
-                $response=['code'=> 202, 'erreur'=>'TEST'];
-            #}
         } catch (\Doctrine\DBAL\Exception $e) {
             $response=['code'=> 500, 'erreur'=>$e->getCode()];
         }
@@ -150,11 +142,7 @@ class HistoriqueRepository extends ServiceEntityRepository
         $conn->bindValue(':version', $map['version']);
         $conn->bindValue(':date_version', $map['date_version']);
         try {
-            #if ($mode !== 'TEST') {
                 $conn->executeQuery();
-            #} else {
-                $response=['code'=> 202, 'erreur'=>'TEST'];
-            #}
         } catch (\Doctrine\DBAL\Exception $e) {
             $response=['code'=> 500, 'erreur'=>$e->getCode()];
         }
@@ -187,11 +175,7 @@ class HistoriqueRepository extends ServiceEntityRepository
         $conn->bindValue(':version', $map['version']);
         $conn->bindValue(':date_version', $map['date_version']);
         try {
-            #if ($mode !== 'TEST') {
                 $conn->executeQuery();
-            #} else {
-                $response=['code'=> 202, 'erreur'=>'TEST'];
-            #}
         } catch (\Doctrine\DBAL\Exception $e) {
             $response=['code'=> 500, 'erreur'=>$e->getCode()];
         }
@@ -243,11 +227,7 @@ class HistoriqueRepository extends ServiceEntityRepository
         $conn->bindValue(':initial_false', 1);
         $conn->bindValue(':limit', $map['limit']);
         try {
-            #if ($mode !== 'TEST') {
                 $suivi=$conn->executeQuery()->fetchAllAssociative();
-            #} else {
-                return ['code'=> 202, 'erreur'=>'TEST'];
-            #}
         } catch (\Doctrine\DBAL\Exception $e) {
             return ['code'=> 500, 'erreur'=>$e->getCode()];
         }
@@ -291,11 +271,7 @@ class HistoriqueRepository extends ServiceEntityRepository
         $conn->bindValue(':initial_false', 1);
         $conn->bindValue(':limit', $map['limit']);
         try {
-            #if ($mode !== 'TEST') {
                 $severite=$conn->executeQuery()->fetchAllAssociative();
-            #} else {
-                return ['code'=> 202, 'erreur'=>'TEST'];
-            #}
         } catch (\Doctrine\DBAL\Exception $e) {
             return ['code'=> 500, 'erreur'=>$e->getCode()];
         }
@@ -348,11 +324,7 @@ class HistoriqueRepository extends ServiceEntityRepository
         $conn->bindValue(':initial_false', 1);
         $conn->bindValue(':limit', $map['limit']);
         try {
-            #if ($mode !== 'TEST') {
                 $details=$conn->executeQuery()->fetchAllAssociative();
-            #} else {
-                return ['code'=> 202, 'erreur'=>'TEST'];
-            #}
         } catch (\Doctrine\DBAL\Exception $e) {
             return ['code'=> 500, 'erreur'=>$e->getCode()];
         }
@@ -382,11 +354,7 @@ class HistoriqueRepository extends ServiceEntityRepository
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         $conn->bindValue(':maven_key', $map['maven_key']);
         try {
-            #if ($mode !== 'TEST') {
                 $graph=$conn->executeQuery()->fetchAllAssociative();
-            #} else {
-                return ['code'=> 202, 'erreur'=>'TEST'];
-            #}
         } catch (\Doctrine\DBAL\Exception $e) {
             return ['code'=> 500, 'erreur'=>$e->getCode()];
         }
@@ -500,11 +468,7 @@ class HistoriqueRepository extends ServiceEntityRepository
         $conn->bindValue(':initial', $map['initial']);
         $conn->bindValue(':date_enregistrement', $map['date_enregistrement']);
         try {
-            #if ($mode !== 'TEST') {
                 $conn->executeQuery();
-            #} else {
-                return ['code'=> 202, 'erreur'=>'TEST'];
-            #}
         } catch (\Doctrine\DBAL\Exception $e) {
             return ['code'=> 500, 'erreur'=>$e->getCode()];
         }
@@ -517,7 +481,6 @@ class HistoriqueRepository extends ServiceEntityRepository
      * [Description for selectHistoriqueProjetByDate]
      * Retourne ma liste des projet par date décroissant
      *
-     * @param string $mode
      * @param array $map
      *
      * @return array
@@ -537,11 +500,7 @@ class HistoriqueRepository extends ServiceEntityRepository
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         $conn->bindValue(':maven_key', $map['maven_key']);
         try {
-            #if ($mode !== 'TEST') {
                 $version=$conn->executeQuery()->fetchAllAssociative();
-            #} else {
-                return ['code'=> 202, 'erreur'=>'TEST'];
-            #}
         } catch (\Doctrine\DBAL\Exception $e) {
             return ['code'=> 500, 'erreur'=>$e->getCode()];
         }
@@ -576,11 +535,7 @@ class HistoriqueRepository extends ServiceEntityRepository
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         $conn->bindValue(':maven_key', $map['maven_key']);
         try {
-            #if ($mode !== 'TEST') {
                 $infos=$conn->executeQuery()->fetchAllAssociative();
-            #} else {
-                return ['code'=> 202, 'erreur'=>'TEST'];
-            #}
         } catch (\Doctrine\DBAL\Exception $e) {
             return ['code'=> 500, 'erreur'=>$e->getCode()];
         }
@@ -613,11 +568,7 @@ class HistoriqueRepository extends ServiceEntityRepository
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         $conn->bindValue(':maven_key', $map['maven_key']);
         try {
-            #if ($mode !== 'TEST') {
                 $reference=$conn->executeQuery()->fetchAllAssociative();
-            #} else {
-                return ['code'=> 202, 'erreur'=>'TEST'];
-            #}
         } catch (\Doctrine\DBAL\Exception $e) {
             return ['code'=> 500, 'erreur'=>$e->getCode()];
         }
@@ -651,12 +602,8 @@ class HistoriqueRepository extends ServiceEntityRepository
                 " GROUP BY maven_key LIMIT ".$map['nombre_projet_favori'];
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
         try {
-            #if ($mode !== 'TEST') {
                 $exec=$conn->executeQuery();
                 $liste=$exec->fetchAllAssociative();
-            #} else {
-                return ['code'=> 202, 'erreur'=>'TEST'];
-            #}
         } catch (\Doctrine\DBAL\Exception $e) {
             return ['code'=> 500, 'erreur'=>$e->getCode()];
         }
