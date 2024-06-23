@@ -109,4 +109,48 @@ class Client
         return json_decode($responseJson, true, 512, JSON_THROW_ON_ERROR);
     }
 
+    public function httpActuator($url, $user, $password): array
+    {
+        /** Fix problème Error:141A318A:SSL routines:tls_process_ske_dhe:dh key too small */
+        $ciphers = "DEFAULT:!DH";
+        $response = $this->client->request('GET', $url,
+            [
+                'ciphers' => trim(preg_replace(static::$regex, " ", $ciphers)),
+                'auth_basic' => [$user, $password], 'timeout' => 45,
+                'headers' => [
+                    'Accept' => static::$strContentType,
+                    'Content-Type' => static::$strContentType,
+                    "verify_peer" => 0, "verify_host" => 0
+                ]
+            ]
+        );
+        /** catch les erreurs 400, 404 les erreurs 401 et eutres génére une erreur 500 */
+        if (200 !== $response->getStatusCode()) {
+            if ($response->getStatusCode() == 400) {
+                $this->logger->ERROR(static::$erreur400);
+                return ['code'=> 400, 'erreur'=>static::$erreur400];
+            }
+            if ($response->getStatusCode() == 401) {
+                $this->logger->ERROR(static::$erreur401);
+                return ['code'=> 401, 'erreur'=>static::$erreur401];
+            }
+            if ($response->getStatusCode() == 404) {
+                $this->logger->ERROR(static::$erreur404);
+                return ['code'=> 404, 'erreur'=>static::$erreur404];
+            }
+        }
+
+
+        /** Si tous va bien on ajoute une trace dans les log */
+        $message="[".$response->getInfo('http_method')."] - ".
+                    $response->getInfo('http_code')." - ".
+                    $response->getInfo('total_time')." - ".
+                    $response->getInfo('url');
+        $this->logger->INFO($message);
+
+        /** On retourne la réponse. */
+        $responseJson = $response->getContent();
+        return json_decode($responseJson, true, 512, JSON_THROW_ON_ERROR);
+    }
+
 }
