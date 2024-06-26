@@ -35,7 +35,7 @@ La création de la base de données PostgreSQL est repose sur l’exécution de 
 Pour exécuter les scripts SQL, utilisez la commande suivante, en adaptant les paramètres à votre environnement :
 
 ```bash
-psql -h [adresse_serveur] -U [nom_utilisateur] -w -d [nom_database] -f [chemin_complet_du_script]
+psql -h [adresse_serveur] -U [nom_utilisateur] -d [nom_database] -f [chemin_complet_du_script]
 ```
 
 - **[adresse_serveur]**: Remplacez par l'adresse de votre serveur de base de données, comme `localhost` ou une adresse IP.
@@ -52,34 +52,34 @@ set PGCLIENTENCODING=UTF8
 ### Création de la base de données
 
 ```bash
-psql -h [adresse_serveur] -U [nom_utilisateur] -w -f /chemin/00_initialisation.sql
+psql -h [adresse_serveur] -U [nom_utilisateur] -f /chemin/00_initialisation.sql
 ```
 
 **Note** : L’utilisateur doit avoir les droits suffisants pour créer la base de données.
 
-> psql -h localhost -U postgres -w -f /opt/ma-moulinette/migration/PostgreSQL/00_initialisation.sql
+> psql -h localhost -U postgres -f /opt/ma-moulinette/migration/PostgreSQL/00_initialisation.sql
 
 ### Création du schéma, des tables et indexes
 
 ```bash
-psql -h [adresse_serveur] -U [nom_utilisateur] -w  -d [nom_base_de_données] -f /chemin/01_structure.sql
+psql -h [adresse_serveur] -U [nom_utilisateur] -d [nom_base_de_données] -f /chemin/01_structure.sql
 ```
 
 **Note** : La connexion se fera avec l'utilisateur propriétaire de la base de données. Ici, `db_user`.
 
-> psql -h localhost -U db_user -w -d ma_moulinette -f /opt/ma-moulinette/migration/PostgreSQL/01_structure.sql
+> psql -h localhost -U db_user -d ma_moulinette -f /opt/ma-moulinette/migration/PostgreSQL/01_structure.sql
 
 ## Insertion des Données
 
 Après avoir créé les structures de la base de données, exécutez le script d'insertion des données :
 
 ```bash
-psql -h [adresse_serveur] -U [nom_utilisateur] -w -d[nom_base_de_données] -f /chemin/02_fixtures.sql
+psql -h [adresse_serveur] -U [nom_utilisateur] -d [nom_base_de_données] -f /chemin/02_fixtures.sql
 ```
 
 **Note** : La connexion se fera avec l'utilisateur propriétaire de la base de données. Ici, `db_user`.
 
-> psql -h localhost -U db_user -w -d ma_moulinette -f /opt/ma-moulinette/migration/PostgreSQL/02_fixtures.sql
+> psql -h localhost -U db_user -d ma_moulinette -f /opt/ma-moulinette/migration/PostgreSQL/02_fixtures.sql
 
 ## Vérification des Données
 
