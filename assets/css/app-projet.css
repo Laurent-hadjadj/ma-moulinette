@@ -29,7 +29,7 @@
   color: #000;
 }
 
-/* Chagnement de la couleur WCAG */
+/* Changement de la couleur WCAG */
 textarea[readonly] {
   background-color: #fff;
   cursor: not-allowed;
@@ -74,7 +74,7 @@ textarea[readonly] {
   height: 28px;
 }
 
-/* Bouton danger, gestion-de-projetn checklist et information SVG */
+/* Bouton danger, gestion-de-projet checklist et information SVG */
 .danger-svg,
 .gestion-de-projet-svg,
 .checklist-svg,
@@ -206,7 +206,7 @@ textarea[readonly] {
   color: #99b4bd;
 }
 
-/* taille de la barre de selcetion */
+/* taille de la barre de sélection */
 .select2-container--default .select2-selection--single,
 .select2-container--default .selection .select2-selection--single {
   height: 2.4375rem;
@@ -214,7 +214,7 @@ textarea[readonly] {
   padding: 0.4rem;
 }
 
-/* taille de la Flêche */
+/* taille de la Flèche */
 .select2-container--default .select2-selection--single .select2-selection__arrow,
 .select2-container--default .selection .select2-selection--single .select2-selection__arrow {
   height: 2.4375rem;
@@ -224,7 +224,7 @@ textarea[readonly] {
   width: 20px;
 }
 
-/* Couleir de ma Flêche */
+/* Couleur de ma Flèche */
 .select2-container--default .select2-selection--single .select2-selection__arrow b,
 .select2-container--default .selection .select2-selection--single .select2-selection__arrow b {
   border-color: #333 transparent transparent;
@@ -245,7 +245,7 @@ textarea[readonly] {
   color: #fff;
 }
 
-/*  Couleur des options dans le selecteur */
+/*  Couleur des options dans le sélecteur */
 .select2-results__option { color: #00445b; }
 
 /* Information bug, vulnérabilité et code_smell  */
@@ -265,7 +265,7 @@ textarea[readonly] {
 .stats-list-rouge-claire { color: #b33926; }
 .stats-list-bleu { color: #3b89a3; }
 
-/* propriété du selecteur */
+/* propriété du sélecteur */
 .stats-list > li {
   display: inline-block;
   margin-right: 10px;
