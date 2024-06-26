@@ -22,7 +22,7 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class PortefeuilleRepository extends ServiceEntityRepository
 {
-    public static $removeReturnline = "/\s+/u";
+    public static $removeReturnLine = "/\s+/u";
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -47,10 +47,10 @@ class PortefeuilleRepository extends ServiceEntityRepository
                 $sql = "SELECT liste
                         FROM portefeuille
                         WHERE titre=:portefeuille";
-                /** On escape les ' : normalement on en a pas bedoin */
+                /** On escape les ' : normalement on en a pas besoin */
                 //"$reEncode = str_replace("'", "''", $map['portefeuille']);
 
-                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $conn->bindValue(':portefeuille', $map['portefeuille']);
                 $exec=$conn->executeQuery();
                 $liste=$exec->fetchAllAssociative();
