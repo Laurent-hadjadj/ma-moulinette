@@ -18,7 +18,6 @@ use App\Entity\Equipe;
 use Doctrine\ORM\EntityManagerInterface;
 
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
