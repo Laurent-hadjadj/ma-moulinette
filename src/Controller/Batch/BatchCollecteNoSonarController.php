@@ -87,7 +87,7 @@ class BatchCollecteNoSonarController extends AbstractController
         $delete=$noSonarRepository->deleteNoSonarMavenKey($map);
         if ($delete['code']!=200) {
             return ['code' => $delete['code'],
-                    'error'=>[$delete['erreur'],            static::$request=>'deleteNoSonarMavenKey']
+                    'error'=>[$delete['erreur'],static::$request=>'deleteNoSonarMavenKey']
                 ];
         }
 
