@@ -17,7 +17,7 @@ namespace App\Controller\Home;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 
-/** Accès aux tables SLQLite */
+/** Accès aux tables */
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\ListeProjet;
 use App\Entity\Properties;
@@ -43,7 +43,7 @@ class ApiHomeController extends AbstractController
     public static $dateFormatShort = "Y-m-d";
     public static $dateFormat = "Y-m-d H:i:s";
     public static $europeParis = "Europe/Paris";
-    public static $reference = '<strong>[Accueil]</strong>';
+    public static $reference = '<strong>Accueil</strong>';
     public static $erreur400 = "La requête est incorrecte (Erreur 400).";
     public static $erreur403 = "Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).";
     public static $erreur404 = "Je n'ai pas trouvé de projets sur le serveur sonarqube (Erreur 404).";
@@ -106,8 +106,8 @@ class ApiHomeController extends AbstractController
     public function homeProjetListe(Request $request, Client $client): response
     {
         /** On instancie l'EntityRepository */
-        $listeProjetEntity = $this->em->getRepository(ListeProjet::class);
-        $propertiesEntity = $this->em->getRepository(Properties::class);
+        $listeProjetRepository = $this->em->getRepository(ListeProjet::class);
+        $propertiesRepository = $this->em->getRepository(Properties::class);
 
         /** On crée un objet de response JSON */
         $response = new JsonResponse();
@@ -141,7 +141,7 @@ class ApiHomeController extends AbstractController
         }
 
         /** On supprime les données de la table avant d'importer les données. */
-        $request=$listeProjetEntity->deleteListeProjet();
+        $request=$listeProjetRepository->deleteListeProjet();
         if ($request['code']!=200) {
             return $response->setData([
                 'type' => 'alert',
@@ -187,7 +187,7 @@ class ApiHomeController extends AbstractController
         $map=[  'projet_bd'=>$nombre, 'projet_sonar'=>$nombre,
                 'date_modification_projet'=>$date,
             ];
-        $r=$propertiesEntity->updatePropertiesProjet($map);
+        $r=$propertiesRepository->updatePropertiesProjet($map);
         if ($r['code']!=200) {
             return $response->setData([
                 'type' => 'alert',
@@ -210,7 +210,7 @@ class ApiHomeController extends AbstractController
     public function homeProjetTags(Request $request, Client $client): response
     {
         /** On instancie l'EntityRepository */
-        $listeProjetEntity = $this->em->getRepository(ListeProjet::class);
+        $listeProjetRepository = $this->em->getRepository(ListeProjet::class);
 
         /** On crée un objet de response JSON */
         $response = new JsonResponse();
@@ -223,7 +223,7 @@ class ApiHomeController extends AbstractController
                 'message' => static::$erreur403, Response::HTTP_OK]);
         }
 
-        $tag = $listeProjetEntity->countListeProjetTags();
+        $tag = $listeProjetRepository->countListeProjetTags();
 
         return $response->setData(
             ['code' => 200,
