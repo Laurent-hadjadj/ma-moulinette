@@ -123,6 +123,7 @@ class ApiHomeController extends AbstractController
         $url = $this->getParameter(static::$sonarUrl)."/api/components/search_projects?ps=500";
         /** On appel le client http */
         $result = $client->http($url);
+
         /** On, initialiser les variables  */
         $public = $private = $emptyTags = $nombre = 0;
 
@@ -141,12 +142,12 @@ class ApiHomeController extends AbstractController
         }
 
         /** On supprime les données de la table avant d'importer les données. */
-        $request=$listeProjetRepository->deleteListeProjet();
-        if ($request['code']!=200) {
+        $delete=$listeProjetRepository->deleteListeProjet();
+        if ($delete['code']!=200) {
             return $response->setData([
                 'type' => 'alert',
-                'reference' => static::$reference, 'code' => $request['code'],
-                'message'=>$request['erreur'], Response::HTTP_OK]);
+                'reference' => static::$reference, 'code' => $delete['code'],
+                'message'=>$delete['erreur'], Response::HTTP_OK]);
         }
 
         /**
@@ -158,7 +159,7 @@ class ApiHomeController extends AbstractController
              *  On exclue les projets archivés avec la particule "-SVN".
              *  "project": "fr.domaine:mon-application-SVN"
              */
-            $mystring = $projet["key"];
+            $mystring = $projet['key'];
             $findme = '-SVN';
             if (!strpos($mystring, $findme)) {
                 $listeProjet = new ListeProjet();
@@ -170,6 +171,7 @@ class ApiHomeController extends AbstractController
                 $this->em->persist($listeProjet);
                 $this->em->flush();
                 $nombre++;
+
                 /** On calcul le nombre de projet public et privé */
                 if ($projet["visibility"] == 'public') {
                     $public++;
