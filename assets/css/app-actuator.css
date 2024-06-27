@@ -1,0 +1,90 @@
+/**
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2021-2022.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ */
+
+/* Media SMALL  */
+@media (width <= 20em) {
+ /* vide */
+}
+
+/* Media SMALL  */
+@media (20.025em <= width <= 22em) {
+ /* vide */
+}
+
+/* Media SMALL  */
+@media (22.025em <= width <= 30em) {
+ /* vide */
+}
+
+@media (30.025em <= width <= 40em) {
+ /* vide */
+}
+
+/* Media MEDIUM  */
+@media (40.025em <= width <= 64em) {
+ /* vide */
+}
+
+/* Media LARGE  */
+@media (64.025em <= width <= 90em) {
+/* vide */
+}
+
+/* Media LARGE  */
+@media (90.025em <= width <= 120em) {
+/* vide */
+}
+
+/* Media Extra-large  */
+@media (120.025em <= width <= 160em) {
+ /* vide */
+}
+
+/*************************          Global     *********************************/
+
+/** callout-custom pour afficher les informations **/
+.callout-custom {
+  border-left: 0.5rem solid #00445b;
+  box-shadow: 2px 2px 5px #444;
+  border-radius: 0.4rem;
+  font-size: 1.3rem;
+}
+
+.a-z-svg,
+.z-a-svg,
+.sort-svg {
+  cursor: pointer;
+  width: 26px;
+  height: 26px;
+}
+
+.a-z-svg,
+.z-a-svg { fill: #e7552c; }
+.sort-svg { fill: #00445b; }
+
+.a-z-svg:hover,
+.z-a-svg:hover,
+.sort-svg:hover { fill: #e7552c; }
+
+.desc,
+.asc,
+.sortable {
+  cursor: pointer;
+  color: #00445b;
+}
+
+.desc:hover,
+.asc:hover,
+.sortable:hover { color: #e7552c; }
+
+.pagination .current { background: #00445b; }
+.pagination-next a::after { color: #00445b; }
