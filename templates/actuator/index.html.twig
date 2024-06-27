@@ -1,0 +1,97 @@
+{% set title = "mes outils" %}
+{% set description = "Ma Moulinette, actuator" %}
+{% set bottom="footer-fixed" %}
+<!DOCTYPE html>
+<!--
+.. __  __             __  __             _ _            _   _
+  |  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
+  | |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
+  | |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
+  |_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
+
+  Laurent HADJADJ
+  https://github.com/Laurent-hadjadj/ma-moulinette
+  © 2024 - CC BY-SA-NC 4.0
+-->
+<html lang="fr">
+
+  {# Chargement de la section HEAD #}
+  <head>
+    <title>{{ title }}</title>
+    {{ include('head.html.twig') }}
+    {% block stylesheets %}
+      {{ encore_entry_link_tags('actuator') }}
+    {% endblock %}
+    {% if pagination is not empty %}
+      {{ knp_pagination_rel_links(pagination) }}
+    {% endif %}
+  </head>
+
+  <body dir="ltr">
+    {# Chargement de la section header #}
+    {{ include('header.html.twig') }}
+    <br>
+
+    <header class="grid-container">
+      <nav id="fil-ariane" aria-label="vous êtes ici :">
+        <ol class="claire-hand breadcrumbs">
+          <li><a href="/">Accueil</a></li>
+          <li><span class="show-for-sr">vous êtes ici :</span>Actuator</li>
+        </ol>
+      </nav>
+    </header>
+
+    <main class="grid-container">
+      {# Messages flash #}
+      {% for message in app.flashes('notice') %}
+        <div class="callout {{message.type}} alert-callout-border" data-closable>
+          <p class="open-sans text-justify callout-message"><strong>{{message.titre}}</strong> {{ message.message }}</p>
+          <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      {% endfor %}
+
+      <h1 class="h4 claire-hand">Actuator</h1>
+      <div class="small-12 cell">
+        <div class="callout">
+          <h2 class="h5 claire-hand">Filtres d'affichage.</h2>
+          {% if pagination is not empty %}
+            {{ knp_pagination_sortable(pagination, 'Application', 'nom_application', {}, {}, '/actuator/_zf6_fa_sortable_link.html.twig') }}
+            {{ knp_pagination_sortable(pagination, 'URL','url', {}, {}, '/actuator/_zf6_fa_sortable_link.html.twig') }}
+            {{ knp_pagination_sortable(pagination, 'Personne', 'personne', {}, {}, '/actuator/_zf6_fa_sortable_link.html.twig') }}
+            {{ knp_pagination_sortable(pagination, 'Date', 'date_modification', {}, {}, '/actuator/_zf6_fa_sortable_link.html.twig') }}
+          {% endif %}
+          <span class="float-right open-sans">Nombre Total : <span class="stat">{{ pagination.getTotalItemCount }}</span></span>
+        </div>
+
+        {% if pagination is not empty %}
+        {% for actuator in pagination %}
+        <div class="callout callout-custom">
+          <p class="open-sans">
+          <strong>Application</strong> : <span>{{ actuator.nom_application }}</span> <br>
+          <strong>Point d'accès Actuator</strong> : <span>{{ actuator.url }}</span><br>
+          <strong>Responsable</strong> : <span>{{ actuator.personne }}</span><br>
+          <strong>Date de modification</strong> : <span>{{ actuator.date_modification ? actuator.date_modification|date('Y-m-d H:i:s') : '-' }}</span>.
+          <span class="show-for-small-only"><br></span>
+          <strong>Date de création</strong> :  <span>{{ actuator.date_enregistrement|date('Y-m-d H:i:s') }}</span></p>
+        </div>
+        {% endfor %}
+        {% else %}
+          <p class="open-sans text-center color-rouge"><strong>Aucun résultat trouvé</strong.</p>
+        {% endif %}
+
+    {# display navigation #}
+    {% if pagination is not empty %}
+      {{ knp_pagination_render(pagination, '/actuator/_zf6_pagination.html.twig') }}
+    {% endif %}
+    </main>
+
+    {# Chargement de la section footer #}
+    {{ include('footer.html.twig') }}
+    {# Chargement du code javascript #}
+    {% block javascripts %}
+      {{ encore_entry_script_tags('actuator') }}
+    {% endblock %}
+  </body>
+</html>
