@@ -16,6 +16,8 @@ namespace App\Service;
 /** Gestion de accès aux API */
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 /** Logger */
 use Psr\Log\LoggerInterface;
@@ -30,7 +32,9 @@ class Client
     public static $regex = "/\s+/u";
     public static $erreur400="Erreur 400 - L'URL n'est pas correcte.";
     public static $erreur401="Erreur 401 - Erreur d'Authentification. La clé n'est pas correcte.";
+    public static $erreur403="Erreur 403 - Vous n’êtes pas autorisé à vous connecter.";
     public static $erreur404="Erreur 404 - Le service n'a pas trouvé les éléments.";
+    public static $erreur500="Erreur 500 - Le fichier JSON n'est pas valide.";
 
     public function __construct(
         private HttpClientInterface $client,
@@ -54,7 +58,7 @@ class Client
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function http($url): array
+    public function http(string $url): array
     {
         if (empty($this->params->get('sonar.token')) && empty($this->params->get('sonar.user'))){
             return ['code'=> 401];
@@ -96,7 +100,6 @@ class Client
             }
         }
 
-
         /** Si tous va bien on ajoute une trace dans les log */
         $message="[".$response->getInfo('http_method')."] - ".
                     $response->getInfo('http_code')." - ".
@@ -109,48 +112,74 @@ class Client
         return json_decode($responseJson, true, 512, JSON_THROW_ON_ERROR);
     }
 
-    public function httpActuator($url, $user, $password): array
+    /**
+     * [Description for httpActuator]
+     *
+     * @param string $url
+     * @param string $user
+     * @param string $password
+     *
+     * @return Response
+     *
+     * Created at: 27/06/2024 21:02:25 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function httpActuator(string $url, string $user, string $password): Response
     {
+        $jsonResponse = new JsonResponse();
         /** Fix problème Error:141A318A:SSL routines:tls_process_ske_dhe:dh key too small */
         $ciphers = "DEFAULT:!DH";
-        $response = $this->client->request('GET', $url,
-            [
-                'ciphers' => trim(preg_replace(static::$regex, " ", $ciphers)),
-                'auth_basic' => [$user, $password], 'timeout' => 45,
-                'headers' => [
-                    'Accept' => static::$strContentType,
-                    'Content-Type' => static::$strContentType,
-                    "verify_peer" => 0, "verify_host" => 0
-                ]
+
+        /** Options sans Auth_http_basic */
+        $options=[
+            'ciphers' => trim(preg_replace(static::$regex, " ", $ciphers)),
+            'timeout' => 45,
+            'headers' => [
+                'Accept' => static::$strContentType,
+                'Content-Type' => static::$strContentType,
+                "verify_peer" => 0, "verify_host" => 0
             ]
-        );
-        /** catch les erreurs 400, 404 les erreurs 401 et eutres génére une erreur 500 */
+        ];
+
+        /** Si on a un login/password défini avec actuator */
+        $authHttpBasic=['auth_basic' => [$user, $password]];
+
+        /** on ajout Auth_http_basic si $user&&$password != null */
+        if($user!=null && $password!=null) {
+            $options=array_merge($options, $authHttpBasic);
+        }
+
+        $response = $this->client->request('GET', $url, $options);
+        /** catch les erreurs 400, 404, les erreurs 401 et les autres génère une erreur 500 */
         if (200 !== $response->getStatusCode()) {
             if ($response->getStatusCode() == 400) {
                 $this->logger->ERROR(static::$erreur400);
-                return ['code'=> 400, 'erreur'=>static::$erreur400];
+                return $jsonResponse->setData(['code'=> 400, 'erreur'=>static::$erreur400], Response::HTTP_OK);
             }
             if ($response->getStatusCode() == 401) {
                 $this->logger->ERROR(static::$erreur401);
-                return ['code'=> 401, 'erreur'=>static::$erreur401];
+                return $jsonResponse->setData(['code'=> 401, 'erreur'=>static::$erreur401], Response::HTTP_OK);
+            }
+            if ($response->getStatusCode() == 403) {
+                $this->logger->ERROR(static::$erreur403);
+                return $jsonResponse->setData(['code'=> 403, 'erreur'=>static::$erreur403], Response::HTTP_OK);
             }
             if ($response->getStatusCode() == 404) {
                 $this->logger->ERROR(static::$erreur404);
-                return ['code'=> 404, 'erreur'=>static::$erreur404];
+                return $jsonResponse->setData(['code'=> 404, 'erreur'=>static::$erreur404], Response::HTTP_OK);
             }
         }
 
-
         /** Si tous va bien on ajoute une trace dans les log */
-        $message="[".$response->getInfo('http_method')."] - ".
+        $message = "[".$response->getInfo('http_method')."] - ".
                     $response->getInfo('http_code')." - ".
                     $response->getInfo('total_time')." - ".
                     $response->getInfo('url');
         $this->logger->INFO($message);
 
         /** On retourne la réponse. */
-        $responseJson = $response->getContent();
-        return json_decode($responseJson, true, 512, JSON_THROW_ON_ERROR);
+        return $jsonResponse->setData(json_decode($response->getContent(), JSON_THROW_ON_ERROR), Response::HTTP_OK);
     }
 
 }
