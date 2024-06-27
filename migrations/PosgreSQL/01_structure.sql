@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##         Creation des tables et des objets      ##
-##               V1.7.0 - 04/06/2024              ##
+##               V1.10.0 - 27/06/2024             ##
 ##                                                ##
 ####################################################*/
 
@@ -11,12 +11,16 @@
 -- 22/05/2024 : Laurent HADJADJ - Surpression des ", modification de la table notes (ajout du cle primaire unique et suppression de l'attribut date.
 -- 28/05/2024 : Laurent HADJADJ - Mise à jour du script - réécriture complet
 -- 29/05/2024 : Laurent HADJADJ - Mise à jour de la table Activite (Quentin)
--- 30/05/2024 : Laurent HADJADJ - Ajout des attributs revesion et securityCategory pour la table hotspot
--- 02/06/2024 : Laurent HADJADJ - Ajout de l'attribut mode_collecte dans toutes les tables de collecte pour inssérer le type de collecte : [manuel], [auto]
--- 02/06/2024 : Laurent HADJADJ - Ajout de l'attribut utilisateur_collecte dans toutes les tables de collecte pour inssérer l'identifiant de l'utilisateur : [batch] ou [prenom.nom]
+-- 30/05/2024 : Laurent HADJADJ - Ajout des attributs resolution et securityCategory pour la table hotspot
+-- 02/06/2024 : Laurent HADJADJ - Ajout de l'attribut mode_collecte dans toutes les tables de collecte pour insérer le type de collecte : [manuel], [auto]
+-- 02/06/2024 : Laurent HADJADJ - Ajout de l'attribut utilisateur_collecte dans toutes les tables de collecte pour insérer l'identifiant de l'utilisateur : [batch] ou [prenom.nom]
 -- 03/06/2024 : Laurent HADJADJ - Renommage duplication en duplication_density dans la table historique
 -- 04/06/2024 : Laurent HADJADJ - Ajout de l'attribut todo dans la table historique.
 -- 06/06/2024 : Laurent HADJADJ - Ajout de la mesure du temps d'execution des requêtes.
+-- 21/06/2024 : Laurent HADJADJ - Ajout des tables actuator et actuator_info.
+-- 23/06/2024 : Laurent HADJADJ - Correction du code pour la création des tables actuator et actuator_info (ajout des contraintes et de la clé étrangère).
+-- 23/06/2024 : Laurent HADJADJ - Ajout d'un indexe sur l'attribut maven_key.
+-- 27/06/2024 : Laurent HADJADJ - Ajout de l'attribut analyse_key dans la table historique.
 
 -- SCHEMA: ma_moulinette
 
@@ -64,6 +68,56 @@ COMMENT ON COLUMN ma_moulinette.activite.submitted_at IS 'Date et heure de la so
 COMMENT ON COLUMN ma_moulinette.activite.started_at IS 'Date et heure du debut du traitement d’import des données';
 COMMENT ON COLUMN ma_moulinette.activite.executed_at IS ' Date et heure de fin du traitement d’import des données';
 COMMENT ON COLUMN ma_moulinette.activite.execution_time IS 'Temps d’execution du traitement d’import des données';
+
+-- Table: ma_moulinette.actuator
+
+DROP TABLE IF EXISTS ma_moulinette.actuator;
+CREATE TABLE IF NOT EXISTS ma_moulinette.actuator
+(
+    id SERIAL PRIMARY KEY,
+    maven_key character varying(255) NOT NULL,
+    nom_application character varying(128) NOT NULL,
+    url character varying(255) NOT NULL UNIQUE,
+    actuator_user character varying(128),
+    actuator_password character varying(128),
+    personne character varying(128) NOT NULL,
+    date_modification TIMESTAMP DEFAULT NULL::timestamp without time zone,
+    date_enregistrement TIMESTAMPTZ NOT NULL,
+    CONSTRAINT uq_actuator_url UNIQUE (url)
+);
+
+ALTER TABLE IF EXISTS ma_moulinette.actuator OWNER to db_user;
+GRANT ALL ON TABLE ma_moulinette.actuator TO db_user;
+
+COMMENT ON COLUMN ma_moulinette.actuator.id IS 'Identifiant unique de la table';
+COMMENT ON COLUMN ma_moulinette.actuator.maven_key IS 'Clé Maven du projet';
+COMMENT ON COLUMN ma_moulinette.actuator.nom_application IS 'Nom de l''application.';
+COMMENT ON COLUMN ma_moulinette.actuator.url IS 'URL de base du serveur.';
+COMMENT ON COLUMN ma_moulinette.actuator.actuator_user IS 'Nom de l''utilisateur Actuator';
+COMMENT ON COLUMN ma_moulinette.actuator.actuator_password IS 'Mot de passe de l''utilisateur Actuator';
+COMMENT ON COLUMN ma_moulinette.actuator.personne IS 'prénom et nom de l''utilisateur';
+COMMENT ON COLUMN ma_moulinette.actuator.date_modification IS 'Date de la dernière modification.';
+COMMENT ON COLUMN ma_moulinette.actuator.date_enregistrement IS 'Date d’enregistrement.';
+
+-- Table: ma_moulinette.actuator_info
+
+DROP TABLE IF EXISTS ma_moulinette.actuator_info;
+CREATE TABLE IF NOT EXISTS ma_moulinette.actuator_info
+(
+    id SERIAL PRIMARY KEY,
+    actuator_info_description character varying(255) DEFAULT NULL::character varying,
+    actuator_info_value character varying(128) DEFAULT NULL::character varying,
+    actuator_id INTEGER NOT NULL,
+    -- autres colonnes
+    CONSTRAINT fk_actuator_info_actuator FOREIGN KEY (actuator_id) REFERENCES ma_moulinette.actuator (id) ON DELETE CASCADE
+);
+
+ALTER TABLE IF EXISTS ma_moulinette.actuator_info OWNER to db_user;
+GRANT ALL ON TABLE ma_moulinette.actuator_info TO db_user;
+
+COMMENT ON COLUMN ma_moulinette.actuator_info.id IS 'Identifiant unique de la table';
+COMMENT ON COLUMN ma_moulinette.actuator_info.actuator_info_description IS 'Description courte.';
+COMMENT ON COLUMN ma_moulinette.actuator_info.actuator_info_value IS 'Valeur de la clé actuator.';
 
 -- Table: ma_moulinette.anomalie
 
@@ -272,6 +326,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.historique
   maven_key character varying(255) NOT NULL,
   version character varying(32) NOT NULL,
   date_version character varying(128) NOT NULL,
+  analyse_key character varying(32) NOT NULL,
   nom_projet character varying(128) NOT NULL,
   version_release integer NOT NULL,
   version_snapshot integer NOT NULL,
@@ -324,6 +379,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.historique
   code_smell_info integer NOT NULL,
   mode_collecte character varying(32),
   utilisateur_collecte character varying(128),
+  actuator_info json default null,
   date_enregistrement TIMESTAMPTZ NOT NULL,
   CONSTRAINT historique_pkey PRIMARY KEY (maven_key, version, date_version)
 );
@@ -335,6 +391,7 @@ COMMENT ON COLUMN ma_moulinette.historique.maven_key IS 'Clé Maven du projet';
 COMMENT ON COLUMN ma_moulinette.historique.version IS 'Version du projet dans l’historique';
 COMMENT ON COLUMN ma_moulinette.historique.date_version IS 'Date de la version du projet';
 COMMENT ON COLUMN ma_moulinette.historique.nom_projet IS 'Nom du projet associé à cette version';
+COMMENT ON COLUMN ma_moulinette.historique.analyse_key IS 'Clé d’analyse du projet';
 COMMENT ON COLUMN ma_moulinette.historique.version_release IS 'Indicateur de release pour la version spécifique';
 COMMENT ON COLUMN ma_moulinette.historique.version_snapshot IS 'Indicateur de snapshot pour la version spécifique';
 COMMENT ON COLUMN ma_moulinette.historique.version_autre IS 'Indicateur pour les autres types de versions';
@@ -386,6 +443,7 @@ COMMENT ON COLUMN ma_moulinette.historique.code_smell_minor IS 'Nombre de mauvai
 COMMENT ON COLUMN ma_moulinette.historique.code_smell_info IS 'Nombre de mauvaises pratiques d’information';
 COMMENT ON COLUMN ma_moulinette.historique.mode_collecte IS 'Mode de collecte : manuel ou automatique';
 COMMENT ON COLUMN ma_moulinette.historique.utilisateur_collecte IS 'Nom de l’utilisateur qui a réalisé la collecte';
+COMMENT ON COLUMN ma_moulinette.historique.actuator_info IS 'Infomation Actuator du projet';
 COMMENT ON COLUMN ma_moulinette.historique.date_enregistrement IS 'Date d’enregistrement de l’historique';
 
 -- Table: ma_moulinette.hotspot_details
@@ -448,8 +506,8 @@ COMMENT ON COLUMN ma_moulinette.hotspot_details.date_enregistrement IS 'Date d�
 DROP TABLE IF EXISTS ma_moulinette.hotspot_owasp;
 CREATE TABLE IF NOT EXISTS ma_moulinette.hotspot_owasp
 (
-  referentiel_owasp integer NOT NULL,
   id SERIAL PRIMARY KEY,
+  referentiel_owasp integer NOT NULL,
   maven_key character varying(255) NOT NULL,
   version character varying(32) NOT NULL,
   date_version TIMESTAMPTZ NOT NULL,
@@ -1030,3 +1088,21 @@ COMMENT ON COLUMN ma_moulinette.utilisateur.preference IS 'Préférences de l’
 COMMENT ON COLUMN ma_moulinette.utilisateur.init IS 'Indicateur de réinitialisation du mot de passe';
 COMMENT ON COLUMN ma_moulinette.utilisateur.date_modification IS 'Date de modification';
 COMMENT ON COLUMN ma_moulinette.utilisateur.date_enregistrement IS 'Date de création';
+
+--- Ajout des indexes sur toutes tables ayant un attribut maven_key
+
+DO
+$$
+DECLARE
+  tbl_name text;
+  column_exists boolean;
+BEGIN
+  FOR tbl_name IN (SELECT table_name FROM information_schema.tables WHERE table_schema = 'ma_moulinette')
+  LOOP
+      EXECUTE format('SELECT COUNT(*) > 0 FROM information_schema.columns WHERE table_name = %L AND column_name = %L', tbl_name, 'maven_key') INTO column_exists;
+      IF column_exists THEN
+        EXECUTE format('CREATE INDEX idx_%I_maven_key ON %I.%I (maven_key)', tbl_name, 'ma_moulinette', tbl_name);
+      END IF;
+  END LOOP;
+END
+$$;
