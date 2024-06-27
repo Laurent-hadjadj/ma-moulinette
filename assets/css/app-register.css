@@ -242,7 +242,7 @@
   color: #e7552c;
 }
 
-/* on desactive le focus quand on change de champ */
+/* on désactive le focus quand on change de champ */
 :focus { outline: none; }
 
 #registration_form_nom { margin-top: 0.2rem; }
@@ -262,11 +262,11 @@
   margin-top: 0.1rem;
 }
 
-/* Supression style inline */
+/* Suppression style inline */
 .ajouter-mon-avatar-container { display: inline-flex; }
 #ajouter-mon-avatar { margin-left: 0.6rem; }
 
-/** Supression style inline */
+/* Suppression style inline */
 .avatar-chiffre,
 .avatar-emoticone,
 .avatar-fille1,
@@ -281,7 +281,7 @@
 
 /* Formulaires */
 
-/* desactivaton du bouton inscription */
+/* désactivation du bouton inscription */
 .disabled-custom {
   cursor: not-allowed;
   opacity: 0.70;
