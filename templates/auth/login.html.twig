@@ -13,8 +13,7 @@
   https://github.com/Laurent-hadjadj/ma-moulinette
   © 2024 - CC BY-SA-NC 4.0
 -->
-<html
-  lang="fr">
+<html lang="fr">
   {# Chargement de la section HEAD #}
   <head>
     <title>{{ title }}</title>
@@ -71,8 +70,8 @@
                 <input
                 type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
               {# {% if app.user %}
-                                                                    {{ path('register') }}
-                                                                  {% endif %}#}
+                {{ path('register') }}
+              {% endif %}#}
               </form>
               {% if error %}
                 <div class="label alert" role="alert">{{ error.messageKey|trans(error.messageData, 'security') }}
