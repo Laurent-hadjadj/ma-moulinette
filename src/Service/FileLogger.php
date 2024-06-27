@@ -35,7 +35,8 @@ class FileLogger
     /**
      * [Description for downloadContent]
      *
-     * @param mixed $file
+     * @param string $portefeuille
+     * @param string $type
      *
      * @return array
      *
@@ -43,22 +44,21 @@ class FileLogger
      * @author     Laurent HADJADJ <laurent_h@  me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function downloadContent($portefeuille, $type){
+    public function downloadContent(string $portefeuille, string $type){
         /* On initialise le journal des traces */
         $filesystem = new Filesystem();
-        $completPath = $this->path;
-
         $recherche = "KO";
         $content='Pas de contenu !!!';
         $finder='';
+
         /* Le dossier d'audit est présent */
-        if ($filesystem->exists($completPath)) {
+        if ($filesystem->exists($this->path)) {
             $name = preg_replace("/[ :.]/", "_", $portefeuille);
             $fichier = "{$type}_$name.log";
 
             /** on récupère la log */
             $finder = new Finder();
-            $finder->files()->in($completPath);
+            $finder->files()->in($this->path);
             $finder->name($fichier);
 
             foreach ($finder as $file) {
@@ -137,6 +137,8 @@ class FileLogger
                     // Vérifie si la valeur est un objet DateTimeImmutable et la convertir en chaîne si nécessaire
                     if ($value instanceof \DateTimeImmutable || $value instanceof \DateTime) {
                         $value = $value->format('Y-m-d H:i:s');
+                    }
+                    if (is_object($value)){ $value=print_r($value, true);
                     }
                     // Si la clé est numérique, ne pas l'afficher
                     if (is_numeric($key)) {
