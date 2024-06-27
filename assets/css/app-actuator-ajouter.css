@@ -1,0 +1,100 @@
+/**
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2021-2022.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ */
+
+/* Media SMALL  */
+@media (width <= 20em) {
+ /* vide */
+}
+
+/* Media SMALL  */
+@media (20.025em <= width <= 22em) {
+ /* vide */
+}
+
+/* Media SMALL  */
+@media (22.025em <= width <= 30em) {
+ /* vide */
+}
+
+@media (30.025em <= width <= 40em) {
+ /* vide */
+}
+
+/* Media MEDIUM  */
+@media (40.025em <= width <= 64em) {
+  .margin-left-05 { margin-left: 0.5rem; }
+}
+
+/* Media LARGE  */
+@media (64.025em <= width <= 90em) {
+  .margin-left-05 { margin-left: 0.5rem; }
+}
+
+/* Media LARGE  */
+@media (90.025em <= width <= 120em) {
+  .margin-left-05 { margin-left: 0.5rem; }
+}
+
+/* Media Extra-large  */
+@media (120.025em <= width <= 160em) {
+  .margin-left-05 { margin-left: 0.5rem }
+}
+
+/*************************          Global     *********************************/
+.font-size-08 { font-size: 0.8rem; }
+
+#valider-formulaire-enregistrement {
+  color: #fff;
+  background-color: #00445b;
+}
+
+/* hover des boutons */
+#valider-formulaire-enregistrement:hover {
+  background-color: #006182;
+}
+
+.bouton-ajouter, .bouton-supprimer {
+  border: 1px solid #00445b;
+  border-radius: 4px;
+  background-color: #00445b;
+  cursor: pointer;
+  color: white;
+  padding: 0.4rem;
+  margin-left: -0.2rem;
+}
+
+.bouton-ajouter:hover, .bouton-supprimer:hover {
+  border: 1px solid #00445b;
+  background-color: #eee;
+  color: #e7552c;
+}
+
+/* stylelint-disable-next-line selector-class-pattern */
+.form_erreur, #message-erreur-valider { color: #761f11; }
+
+/* stylelint-disable-next-line selector-class-pattern */
+.form_erreur ul {
+  margin-left: 0;
+  margin-top: -1rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.8rem;
+  list-style-type: none;
+}
+
+#message-erreur-valider ul {
+  margin-left: 0;
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  font-size: 0.8rem;
+  list-style-type: none;
+}
+
