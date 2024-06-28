@@ -22,7 +22,7 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class InformationProjetRepository extends ServiceEntityRepository
 {
-    public static $removeReturnline = "/\s+/u";
+    public static $removeReturnLine = "/\s+/u";
     public static $phMavenKey = ':maven_key';
 
     public function __construct(ManagerRegistry $registry)
@@ -48,7 +48,7 @@ class InformationProjetRepository extends ServiceEntityRepository
             $sql = "SELECT *
                     FROM information_projet
                     WHERE maven_key=:maven_key LIMIT 1";
-            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $stmt->bindValue(static::$phMavenKey, $map['maven_key']);
             $exec=$stmt->executeQuery();
             $isValide=$exec->fetchAllAssociative();
@@ -80,7 +80,7 @@ class InformationProjetRepository extends ServiceEntityRepository
             $sql = "SELECT COUNT(type) AS total
                     FROM information_projet
                     WHERE maven_key=:maven_key";
-            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $stmt->bindValue(static::$phMavenKey, $map['maven_key']);
 
             $exec=$stmt->executeQuery();
@@ -109,7 +109,7 @@ class InformationProjetRepository extends ServiceEntityRepository
             $sql = "SELECT type, COUNT(*) AS total
                     FROM information_projet
                     WHERE maven_key=:maven_key AND type=:type GROUP BY type";
-            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $stmt->bindValue(static::$phMavenKey, $map['maven_key']);
                 $stmt->bindValue(':type', $map['type']);
             $exec=$stmt->executeQuery();
@@ -138,7 +138,7 @@ class InformationProjetRepository extends ServiceEntityRepository
                         FROM information_projet
                         WHERE maven_key=:maven_key
                         GROUP BY type";
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(static::$phMavenKey, $map['maven_key']);
                 $exec=$stmt->executeQuery();
                 $liste=$exec->fetchAllAssociativeIndexed();
@@ -167,7 +167,7 @@ class InformationProjetRepository extends ServiceEntityRepository
                     FROM information_projet
                     WHERE maven_key=:maven_key
                     ORDER BY date DESC LIMIT 1";
-            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $stmt->bindValue(static::$phMavenKey, $map['maven_key']);
             $exec=$stmt->executeQuery();
             $liste=$exec->fetchAllAssociative();
@@ -195,7 +195,7 @@ class InformationProjetRepository extends ServiceEntityRepository
                 $sql = "SELECT maven_key, project_version as version, date
                         FROM information_projet
                         WHERE maven_key=:maven_key";
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(static::$phMavenKey, $map['maven_key']);
                 $exec=$stmt->executeQuery();
                 $liste=$exec->fetchAllAssociative();
@@ -225,7 +225,7 @@ class InformationProjetRepository extends ServiceEntityRepository
                     FROM information_projet
                     WHERE maven_key=:maven_key
                     ORDER by date DESC LIMIT 1";
-            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $stmt->bindValue(static::$phMavenKey, $map['maven_key']);
             $exec=$stmt->executeQuery();
             $liste=$exec->fetchAllAssociative();
@@ -254,7 +254,7 @@ class InformationProjetRepository extends ServiceEntityRepository
                 $sql = "DELETE
                         FROM information_projet
                         WHERE maven_key=:maven_key";
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(static::$phMavenKey, $map['maven_key']);
                     $stmt->executeStatement();
             $this->getEntityManager()->getConnection()->commit();
@@ -284,7 +284,7 @@ class InformationProjetRepository extends ServiceEntityRepository
                             (maven_key, analyse_key, date, project_version, type, mode_collecte, utilisateur_collecte, date_enregistrement)
                         VALUES
                             (:maven_key, :analyse_key, :date, :project_version, :type, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(':maven_key', $map['maven_key']);
                     $stmt->bindValue(':analyse_key', $map['analyse_key']);
                     $stmt->bindValue(':date', $map['date']);
