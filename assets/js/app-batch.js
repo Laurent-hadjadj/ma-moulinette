@@ -34,11 +34,10 @@ import 'tinymce/plugins/code';
 /* On importe les paramètres serveur. */
 import {serveur} from './properties.js';
 
-/** On importe les constatntes */
-import { contentType, trois, cinqCent, mille, http_500, http_400, http_200 } from './constante';
+/** On importe les constantes */
+import { contentType, un, trois, cinqCent, mille, http_500, http_400, http_200, http_202 } from './constante';
 
-
-// Initialize TinyMCE
+/** Initialize TinyMCE */
 const useDarkMode = window.matchMedia('(prefers-color-scheme: default)').matches;
 tinymce.init({
   selector: 'textarea.tinymce',
@@ -55,20 +54,67 @@ tinymce.init({
   content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }',
   base_url: '/build/tinymce' });
 
-  /** On gére l'affichage des jobs */
+  /** On gère l'affichage des jobs */
 const jsAutomatique = '.js-automatique';
 const automatique = '.automatique';
 const jsManuel = '.js-manuel';
 const manuel= '.manuel';
+const infoBulle='#info-bulle';
 
 const afficheMessage=function(t){
+  $('#js-reference-information').html('');
+  $('#js-message-information').html('');
+  $('#js-message-complement').html('');
+
   $('#callout-projet-message').removeClass('hide success alert warning primary secondary');
   $('#callout-projet-message').addClass(t.type);
+
   $('#js-reference-information').html(t.reference);
   $('#js-message-information').html(t.message);
+  $('#js-message-complement').html(t.complement);
 }
 
-/** On affche la liste des traitements automatiques */
+/** Si on clique sur la croix on masque la boite d'information */
+$('.js-close-button').on('click', ()=>{
+  $('#callout-projet-message').addClass('hide');
+});
+
+/**
+ * [Description for nombreProjetRabbitMQ]
+ * On met à jour la liste des jobs manuels
+ *
+ * @return int
+ *
+ * Created at: 14/06/2024 16:23:54 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ */
+const nombreProjetRabbitMQ = function()
+{
+  const options = {
+    url: `${serveur()}/messages/count/traitement_manuel`,
+    type: 'GET',
+    dataType: 'json',
+    contentType
+  };
+  return new Promise(resolve => {
+    $.ajax(options).then(t => {
+      if (t.nombre > 0){
+        $(infoBulle).removeClass('bulle-info-vide', 'bulle-info-start', 'bulle-info-end').addClass('bulle-info-start');
+        $('#info-bulle-tips').html('Nombre de projet planifié');
+        $(infoBulle).html(t.nombre);
+      }
+      if (t.nombre===0){
+        $(infoBulle).removeClass('bulle-info-vide', 'bulle-info-start', 'bulle-info-end').addClass('bulle-info-end');
+        $('#info-bulle-tips').html('Aucun projet planifié');
+        $(infoBulle).html(t.nombre);
+      }
+        resolve();
+      });
+    });
+  }
+
+/** On affiche la liste des traitements automatiques */
 $(jsAutomatique).on('click', ()=> {
   if ($(jsAutomatique).hasClass('active')) {
     $(jsAutomatique).removeClass('active').addClass('bouton-automatique');
@@ -111,57 +157,26 @@ $(jsManuel).on('click', function() {
   }
 });
 
-/** On lance un job manuel - oui Monsieur !!! */
+/** On lance un traitement manuel - oui Monsieur !!! */
 $('.i-am-human-svg').on('click', function() {
-  /** literals  */
-  const collecteAnimation='#collecte-animation';
-  const collecteTexte='#collecte-texte';
-  //const infoBulle='#info-bulle';
-
-  /** On desactive le spinner et on reset les messages */
-  $(collecteAnimation).removeClass('sp-volume');
-  $(collecteTexte).html('');
-  $('#js-nom-job').html('');
-  $('#js-non').removeClass('disable');
-
-  /** On récupère l'élement cliqué depuis le DOM */
+  /** On récupère l’élément cliqué depuis le DOM */
   //i-am-human-10
   const id=$(this).attr('id');
   const idTab = id.split('-');
+  /** clignote */
+  $(`#${id}`).addClass('blink');
 
-  /** On récupère le nom du Job */
-  const portefeuille=$(`#job-${idTab[trois]}`).text();
-  $('#js-nom-job').html(portefeuille);
+  /** On récupère le titre du portefeuille (ie. la liste des projets) et le portefeuille */
+  const element=document.getElementById(`portefeuille-${idTab[trois]}`);
+  const titrePortefeuille = element.getAttribute('data-titre');
+  const portefeuille=$(`#portefeuille-${idTab[trois]}`).text();
 
-  /** On ouvre la fenêtre modal */
-  $('#modal-traitement-manuel').foundation('open');
-
-  /** On sort si on clique sur non */
-  $('#js-non').on('click', function(){
-    /** si le spinner tourne on desactive le bouton non */
-    if (!$(collecteAnimation).hasClass('sp-volume')) {
-      $(`#${id}`).removeClass('blink');
-      $('#modal-traitement-manuel').foundation('close');
-    }
-  });
-
-  /** Si on clique OUI */
-  $('#js-oui').on('click', function(){
-    /** On désactive le bouton non */
-    $('#js-non').addClass('disable');
-    /** clignote */
-    $(`#${id}`).addClass('blink');
-    $(collecteAnimation).addClass('sp-volume');
-    $(collecteTexte).html(`Démarrage du traitement...`);
-    /** On appel la fonction de démarrage des traitements en manuel */
-    // idTab = l'id de la ligne, portefeuille = liste des projets
-    batchManuel(idTab[trois], portefeuille);
-  });
+  traitementManuel(idTab[trois], titrePortefeuille, portefeuille);
 });
 
 /**
- * [Description for batchManuel]
- * Lance le batch manuel
+ * [Description for traitementManuel]
+ * Lance le traitement manuel
  *
  * @param string id
  * @param string portefeuille
@@ -172,57 +187,41 @@ $('.i-am-human-svg').on('click', function() {
  * @author    Laurent HADJADJ <laurent_h@me.com>
  * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
-const batchManuel = function(id, portefeuille){
+const traitementManuel = function(id, titrePortefeuille, portefeuille){
   /** On lance le processus */
-  const infoBulle='#info-bulle';
-  const collecteTexte='#collecte-texte';
-  const collecteAnimation='#collecte-animation';
-
-  const data = { portefeuille };
+  const data = { 'titre_portefeuille': titrePortefeuille, portefeuille };
   const options = {
     url: `${serveur()}/traitement/manuel`, type: 'POST',
     dataType: 'json', data: JSON.stringify(data), contentType};
   return new Promise(resolve => {
     $.ajax(options).then( t => {
-      /** On met à jour la bulle info */
-      if (t.execution==='end') {
-          $(infoBulle).removeClass('bulle-info-start').addClass('bulle-info-end');
-          $(infoBulle).html('1');
-          $('#info-bulle-tips').html('Collecte terminée');
-          $(`#i-am-human-${id}`).removeClass('blink');
-          const resultat=`<span class="show-for-small-only"><strong>OK</strong></span>
-                          <span class="show-for-medium"><strong>Succès</strong></span>`;
-          $(`#resultat-${id}`).html(resultat);
-          $(`#temps-execution-${id}`).html(t.temps);
-          setTimeout(function(){
-            $(collecteTexte).html('Collecte terminée...');
-          }, mille);
-        }
-        $(collecteAnimation).removeClass('sp-volume');
+      if (t.code!=http_200){
+        afficheMessage(t);
+        $(`#i-am-human-${id}`).removeClass('blink');
+        return;
+      }
+      t.type="default";
+      t.reference='<strong>Traitement</strong>';
+      t.message=`La collecte pour les projets de ${portefeuille} est terminée.`;
+      t.complement='Vous pouvez consulter le journal des traitements.';
+      afficheMessage(t);
+      $(`#i-am-human-${id}`).removeClass('blink');
       resolve();
     });
   });
 };
 
-/** On affiche la log pour le job sélectonné */
-$('.js-affiche-information').on('click', function() {
+/** On affiche la log pour le job sélectionné */
+$('.js-outil-lire').on('click', function() {
   /** On récupère l'ID */
   const id=$(this).attr('id');
   const idTab = id.split('-');
-
   /** On récupère le job et le type */
-  const portefeuille=$(`#job-${idTab[1]}`).text();
-  const type=$(`#${idTab[1]}`).data('type');
+  const portefeuille=$(`#portefeuille-${idTab[un]}`).text();
+  const type=$(`#${idTab[un]}`).data('type');
+  /** On récupère la log */
+  lireJournal(portefeuille, type);
 
-  /** On on récupère la log */
-  lireInformationManuel(portefeuille, type);
-
-  /** On va à la fin du fichier */
-  //$('#js-go-end').on('click', ()=>{
-  //  const textarea = document.getElementById('js-journal');
-  //  const end = textarea.value.length;
-  //  textarea.setSelectionRange(end, end);
-  //  textarea.focus();
   });
 
 /**
@@ -234,10 +233,10 @@ $('.js-affiche-information').on('click', function() {
  * @author    Laurent HADJADJ <laurent_h@me.com>
  * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
-const lireInformationManuel = function(portefeuille, type){
+const lireJournal = function(portefeuille, type){
   const data = { portefeuille, type };
   const options = {
-    url: `${serveur()}/traitement/information`, type: 'POST',
+    url: `${serveur()}/traitement/journal/lire`, type: 'POST',
     dataType: 'json', data: JSON.stringify(data), contentType};
   return new Promise(resolve => {
     $.ajax(options).then( t => {
@@ -245,29 +244,64 @@ const lireInformationManuel = function(portefeuille, type){
         afficheMessage(t);
         return t.code;
       }
+      tinymce.get('js-journal').setContent('');
       if (t.recherche==='OK' || t.code===http_200) {
         /** On affiche le nom du projet */
         $('#js-nom-projet').html(portefeuille);
         /** On ouvre la fenêtre modal */
-        $('#modal-information').foundation('open');
         tinymce.get('js-journal').setContent(t.journal);
+        $('#modal-information').foundation('open');
       }
-
-      /** On va à la fin du fichier */
-      $('#js-go-end').on('click', ()=>{
-        const textarea = document.getElementById('js-journal');
-        const end = textarea.value.length;
-        textarea.setSelectionRange(end, end);
-        textarea.focus();
-      });
     })
     resolve();
   })
 }
 
+/** On affiche la log pour le job sélectionné */
+$('.js-outil-efface').on('click', function() {
+  /** On récupère l'ID */
+  const id=$(this).attr('id');
+  const idTab = id.split('-');
+
+  /** On récupère le job et le type */
+   /** On récupère le job et le type */
+  const portefeuille=$(`#portefeuille-${idTab[un]}`).text();
+  const type=$(`#${idTab[1]}`).data('type');
+
+  /** On efface la log */
+  effaceJournal(portefeuille, type);
+
+  });
+
+  const effaceJournal = function(portefeuille, type){
+    const data = { portefeuille, type };
+    const options = {
+      url: `${serveur()}/traitement/journal/efface`,
+      type: 'DELETE',
+      dataType: 'json',
+      data: JSON.stringify(data),
+      contentType
+    };
+
+    return new Promise(resolve => {
+      $.ajax(options).then(t => {
+        if (t.code === http_400 || t.code === http_500){
+          afficheMessage(t);
+          return t.code;
+        }
+        t.type="success";
+        t.reference='<strong>Traitement :</strong>';
+        t.message=`Le journal pour le portefeuille ${portefeuille} a été supprimé.`;
+        t.complement='';
+        afficheMessage(t);
+        resolve();
+      });
+    });
+  }
+
 /**
  * [Description for traitementAuto]
- * Démmarrage du traitement automatique.
+ * Démarrage du traitement automatique.
  *
  * @return void
  *
@@ -295,3 +329,17 @@ const traitementAuto=function(){
 $('.batch-processing-svg').on('click', ()=>{
   traitementAuto();
 });
+
+/*** Main */
+/* On met à jour le nombre de projet dans la queue liste_projet_manuel */
+nombreProjetRabbitMQ();
+
+//todo
+/** On met à jour la bulle info */
+      //$(infoBulle).removeClass('bulle-info-start').addClass('bulle-info-end');
+      //$('#info-bulle-tips').html('Collecte terminée');
+      //const resultat=`<span class="show-for-small-only"><strong>OK</strong></span>
+      //                <span class="show-for-medium"><strong>Succès</strong></span>`;
+      //$(`#resultat-${id}`).html(resultat);
+      //$(`#temps-execution-${id}`).html(t.temps);
+        //$(collecteAnimation).removeClass('sp-volume');

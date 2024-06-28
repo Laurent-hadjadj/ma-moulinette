@@ -30,8 +30,7 @@
       <nav aria-label="vous êtes ici :">
         <ul class="claire-hand breadcrumbs">
           <li><a href="/">Accueil</a></li>
-          <li>
-            <span class="show-for-sr">vous êtes ici :</span>Traitement</li>
+          <li><span class="show-for-sr">vous êtes ici :</span>Traitement</li>
         </ul>
       </nav>
     </header>
@@ -47,12 +46,15 @@
         </div>
       {% endfor %}
       {# Message d'information #}
-        <div id="callout-projet-message" class="callout alert-callout-border hide">
+        <div id="callout-projet-message" class="callout alert-callout-border hide" data-closable>
           <p class="open-sans text-justify js-message">
             <span id="js-reference-information"></span>
             <span id="js-message-information"></span><br>
             <span id="js-message-complement"></span>
           </p>
+          <button class="close-button js-close-button" aria-label="Dismiss alert" type="button">
+            <span aria-hidden="true">&times;</span>
+          </button>
         </div>
 
       <div class="grid-x">
@@ -85,7 +87,6 @@
               <th colspan="1" scope="col" class="show-for-small-only text-center">Statut</th>
               <th colspan="1" scope="col" class="show-for-medium text-center">Responsable</th>
               <th colspan="1" scope="col" class="show-for-small-only text-center">Auteur</th>
-              <th colspan="1" scope="col" class="text-center">Job</th>
               <th colspan="1" scope="col" class="show-for-medium text-center">Portefeuille</th>
               <th colspan="1" scope="col" class="show-for-small-only text-center">Liste</th>
               <th colspan="1" scope="col" class="show-for-medium text-center">Projet</th>
@@ -100,8 +101,7 @@
               {% set i = i + 1 %}
               {% if traitement.processus != "vide" %}
                 <tr id="{{i}}" class="open-sans {{traitement.type}}" data-type="{{traitement.type}}">
-                  <td
-                    id="execution-{{i}}" class="text-center">
+                  <td id="execution-{{i}}" class="text-center">
                     {# I am a Robot Happy #}
                     {% if traitement.css == "ok" and traitement.demarrage == "Auto" %}
                       <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="i-am-robot-svg">
@@ -145,8 +145,7 @@
                     </span>
                   </td>
                   <td id="responsable-{{i}}" class="text-left">{{traitement.responsable}}</td>
-                  <td id="job-{{i}}" class="text-left">{{traitement.job}}</td>
-                  <td id="portefeuille-{{i}}" class="text-left">{{traitement.portefeuille}}</td>
+                  <td id="portefeuille-{{i}}" class="text-left" data-titre="{{traitement.titre}}">{{traitement.portefeuille}}</td>
                   <td id="projet-{{i}}" class="text-center">{{traitement.projet}}</td>
                   <td id="temps-execution-{{i}}" class="text-center">
                     {% if traitement.execution != "--:--:--" %}
@@ -173,7 +172,6 @@
                   <td id="Nexecution-{{i}}">--</td>
                   <td id="Nresultat-{{i}}">--</td>
                   <td id="Nresponsable-{{i}}">--</td>
-                  <td id="Njob-{{i}}">--</td>
                   <td id="Nportefeuille-{{i}}">--</td>
                   <td id="Nprojet-{{i}}">--</td>
                   <td id="Nduree-{{i}}">--</td>
