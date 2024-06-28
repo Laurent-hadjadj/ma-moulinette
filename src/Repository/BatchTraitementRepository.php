@@ -22,7 +22,7 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class BatchTraitementRepository extends ServiceEntityRepository
 {
-    public static $removeReturnline = "/\s+/u";
+    public static $removeReturnLine = "/\s+/u";
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -47,7 +47,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
                         FROM batch_traitement
                         WHERE demarrage='Automatique'
                         ORDER BY date_enregistrement DESC limit 1";
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $exec=$stmt->executeQuery();
                 $liste=$exec->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
@@ -69,16 +69,13 @@ class BatchTraitementRepository extends ServiceEntityRepository
     public function selectBatchTraitementDateEnregistrementLast():array
     {
         try {
-            $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "SELECT date_enregistrement as date
                         FROM batch_traitement
                         ORDER BY date_enregistrement DESC limit 1";
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $exec=$stmt->executeQuery();
                 $liste=$exec->fetchAllAssociative();
-            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
             return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
@@ -100,7 +97,6 @@ class BatchTraitementRepository extends ServiceEntityRepository
     public function selectBatchTraitementLast($dateShort):array
     {
         try {
-            $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "SELECT  demarrage, resultat, titre, portefeuille,
                                 nombre_projet as projet, responsable,
                                 debut_traitement as debut, fin_traitement as fin
@@ -108,13 +104,11 @@ class BatchTraitementRepository extends ServiceEntityRepository
                         WHERE date(date_enregistrement)= :date_short
                         GROUP BY demarrage, resultat, titre, portefeuille, nombre_projet, responsable, debut_traitement, fin_traitement
                         ORDER BY responsable ASC, demarrage ASC";
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(':date_short', $dateShort);
                 $exec=$stmt->executeQuery();
                 $liste=$exec->fetchAllAssociative();
-            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
             return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
@@ -123,7 +117,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
     /**
      * [Description for selectBatchTraitement]
      *
-     * @param mixed $map
+     * @param array $map
      *
      * @return array
      *
@@ -134,17 +128,14 @@ class BatchTraitementRepository extends ServiceEntityRepository
     public function selectBatchTraitement($map):array
     {
         try {
-            $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "SELECT id, demarrage, titre, portefeuille, nombre_projet as projet
                         FROM batch_traitement
                         WHERE titre = :titre";
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-                    $stmt->bindValue(':titre', $map['portefeuille']);
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+                    $stmt->bindValue(':titre', $map['titre_portefeuille']);
                 $exec=$stmt->executeQuery();
                 $liste=$exec->fetchAllAssociative();
-            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
             return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
@@ -168,7 +159,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
                 $sql = "UPDATE batch_traitement
                         SET debut_traitement = :debut, fin_traitement = :fin, resultat = true
                         WHERE id = :id";
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(':debut_traitement', $map['debut_traitement']);
                     $stmt->bindValue(':fin_traitement', $map['fin_traitement']);
                     $stmt->bindValue(':id', $map['id']);
@@ -202,7 +193,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
                     (demarrage, resultat, titre, portefeuille, nombre_projet, responsable, date_enregistrement)
                     VALUES (:demarrage, :resultat, :titre, :portefeuille, :nombre_projet, :responsable, :date_enregistrement)";
 
-            $stmt = $connection->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+            $stmt = $connection->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
 
             $stmt->bindValue(':demarrage', $map['demarrage']);
             $stmt->bindValue(':resultat', $map['resultat']);
