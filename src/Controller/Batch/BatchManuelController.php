@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
 *  Ma-Moulinette
 *  --------------
 *  Copyright (c) 2021-2024.
@@ -13,31 +13,23 @@
 
 namespace App\Controller\Batch;
 
-/** Core */
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\SecurityBundle\Security;
-
-// Gestion de accès aux API
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-
-/** Les services */
 use App\Service\FileLogger;
-
-/** Accès aux tables */
-use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Portefeuille;
-use App\Entity\Batch;
 use App\Entity\BatchTraitement;
+use App\Service\RabbitMQService;
 
+use Doctrine\ORM\EntityManagerInterface;
+
+use Symfony\Bundle\SecurityBundle\Security;
 use App\Controller\Batch\CollecteController;
 
-/** AMQP */
-use PhpAmqpLib\Connection\AMQPStreamConnection;
-use PhpAmqpLib\Exchange\AMQPExchangeType;
-use PhpAmqpLib\Message\AMQPMessage;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+
 
 /**
  * [Description BatchController]
@@ -50,9 +42,7 @@ class BatchManuelController extends AbstractController
     public static $europeParis = "Europe/Paris";
     public static $request = "requête : ";
 
-    private static $batch001 = "[TRAITEMENT-001] Le portefeuille de projets est vide !";
-    private static $batch002 = "[TRAITEMENT-002] Récupération de la liste de projets.";
-    public static $reference = "<strong>[TRAITEMENT]</strong>";
+    public static $reference = "<strong>TRAITEMENT</strong>";
     public static $erreur400 = "La requête est incorrecte (Erreur 400).";
     public static $erreur401 = "Vous devez avoir un compte utilisateur valide  (Erreur 401).";
     public static $erreur404 = "L'appel à l'API n'a pas abouti (Erreur 404).";
@@ -65,60 +55,64 @@ class BatchManuelController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
+        private $em;
+        private $logger;
+        private $collecte;
+        private $security;
+        private $rabbitMQService;
+
     public function __construct(
-        private EntityManagerInterface $em,
-        private FileLogger $logger,
-        private CollecteController $collecte,
-        private Security $security
+        EntityManagerInterface $em,
+        FileLogger $logger,
+        CollecteController $collecte,
+        Security $security,
+        RabbitMQService $rabbitMQService,
     ) {
         $this->em = $em;
         $this->logger = $logger;
         $this->collecte = $collecte;
         $this->security = $security;
+        $this->rabbitMQService = $rabbitMQService;
     }
 
     /**
-     * [Description for isEmpty]
-     *  Détermine si la queue est vide ou non
+     * [Description for getMessageCount]
+     * Compte le nombre de message dans une queue RabbitMQ
      *
-     * @param mixed $queueName
+     * @param string $queueName
      *
-     * @return bool
+     * @return Response
      *
-     * Created at: 08/04/2024 22:08:33 (Europe/Paris)
+     * Created at: 14/06/2024 18:01:59 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function isEmpty($queue): bool
+    #[Route('/messages/count/{queueName}', name: 'messages_count_queue', methods: ['GET'])]
+    public function getMessageCount(string $queueName): response
     {
-        /** on bind les paramètres de connexion à RabbitMQ */
-        $host=$this->getParameter('rabbitmq.host');
-        $port=$this->getParameter('rabbitmq.port');
-        $user=$this->getParameter('rabbitmq.username');
-        $password=$this->getParameter('rabbitmq.password');
-        $vhost=$this->getParameter('rabbitmq.vhost');
+         /** On créé on objet de response HTTP */
+        $response = new JsonResponse();
+        $messageCount = $this->rabbitMQService->getMessageCount($queueName.'_queue');
+        return $response->setData(['nombre' => $messageCount], Response::HTTP_OK);
+    }
 
-        /** on se connecte */
-        $connection = new AMQPStreamConnection($host, $port, $user, $password, $vhost);
-        $channel = $connection->channel();
-        /**
-         * queue - Queue names may be up to 255 bytes of UTF-8 characters
-         * passive - can use this to check whether an exchange exists without modifying the server state
-         * durable, make sure that RabbitMQ will never lose our queue if a crash occurs - the queue will survive a broker restart
-         * exclusive - used by only one connection and the queue will be deleted when that connection closes
-         * auto delete - queue is deleted when last consumer unsubscribes
-        */
-        list($messageCount) = $channel->queue_declare($queue,true,true,false,false);
 
-        $isEmpty=false;
-        if ($messageCount === 0) {
-            $isEmpty=true;
-        }
-        return $isEmpty;
+    #[Route('/message/send', name: 'send_message', methods: ['GET'])]
+    public function sendMessage($queueName): Response
+    {
+        $message = 'Hello, RabbitMQ!';
+
+        // Envoyer un message à la queue
+        $this->rabbitMQService->sendMessage($queueName, $message);
+
+        // Fermer la connexion
+        $this->rabbitMQService->close();
+
+        return new Response('Message sent to RabbitMQ!');
     }
 
     /**
-     * [Description for lireInformation]
+     * [Description for lireJournal]
      * Affiche le journal d'execution pour le portefeuille
      *
      * @param string $portefeuille
@@ -130,10 +124,28 @@ class BatchManuelController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/traitement/information', name: 'traitement_information', methods: ['POST'])]
-    public function lireInformation(Request $request): response
+    #[Route('/traitement/journal/lire', name: 'traitement_journal_lire', methods: ['POST'])]
+    public function lireJournal(Request $request): response
     {
-        /** On créé on objet de reponse HTTP */
+        /** On créé on objet de response HTTP */
+        $response = new JsonResponse();
+
+        /** On récupère le job et le type (manuel ou automatique) */
+        $data = json_decode($request->getContent());
+        if ($data === null || !property_exists($data, 'portefeuille') || !property_exists($data, 'type')) {
+            return $response->setData([
+                'code' => 400, 'type' => 'alert', 'reference' => static::$reference,
+                'message' => static::$erreur400], Response::HTTP_BAD_REQUEST);
+        }
+
+        $journal=$this->logger->downloadContent($data->portefeuille, $data->type);
+        return $response->setData(['code' => 200, 'recherche' => $journal['recherche'], 'journal' => $journal['content'], Response::HTTP_OK]);
+    }
+
+    #[Route('/traitement/journal/efface', name: 'journal_efface', methods: ['DELETE'])]
+    public function effaceJournal(Request $request): response
+    {
+        /** On créé on objet de response HTTP */
         $response = new JsonResponse();
 
         /** On récupère le job et le type (manuel ou automatique) */
@@ -144,9 +156,9 @@ class BatchManuelController extends AbstractController
             ], Response::HTTP_BAD_REQUEST);
         }
 
-        $journal=$this->logger->downloadContent($data->portefeuille, $data->type);
+        $this->logger->log($data->portefeuille, $data->type, 'delete');
 
-        return $response->setData(['code' => 200, 'recherche' => $journal['recherche'], 'journal' => $journal['content'], Response::HTTP_OK]);
+        return $response->setData(['code' => 200, Response::HTTP_OK]);
     }
 
     /**
@@ -161,22 +173,25 @@ class BatchManuelController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function listeProjet(string $portefeuille): array
+    public function listeProjet(string $titrePortefeuille, string $portefeuille): array
     {
         /*** On instancie l'entityRepository */
         $portefeuilleRepository=$this->em->getRepository(Portefeuille::class);
         $batchTraitementRepository = $this->em->getRepository(BatchTraitement::class);
 
-        $map=[ 'portefeuille'=> $portefeuille ];
+        /** On envoi le titre du portefeuille et le nom du portefeuille */
+        $map=[ 'titre_portefeuille' => $titrePortefeuille, 'portefeuille' => $portefeuille ];
 
         /** On vérifie que le portefeuille n'est pas vide */
-        $portefeuille=$batchTraitementRepository->SelectBatchTraitement($map);
-        if ($portefeuille['code']!=200) {
-            return ['code' => $portefeuille['code'],static::$request=>'selectBatchTraitement'];
+        $listeProjets=$batchTraitementRepository->SelectBatchTraitement($map);
+        //debug : dd($portefeuille, $listeProjets, $map);
+        if ($listeProjets['code']!=200) {
+            return ['code' => $listeProjets['code'],static::$request=>'selectBatchTraitement'];
         }
-        if (!isset($portefeuille['liste']) || count($portefeuille['liste'])===0)
+
+        if (!isset($listeProjets['liste']) || count($listeProjets['liste'])===0)
         {
-            return ['code' => 404, 'type' => 'alert', 'reference' => static::$reference, 'message' => static::$erreur404];
+            return ['code' => 404, 'complement' => 'La liste des traitements ne contient pas votre projet !'];
         }
 
         $result=$portefeuilleRepository->selectPortefeuille($map);
@@ -184,7 +199,10 @@ class BatchManuelController extends AbstractController
             return ['code' => $result['code'], 'requête' => 'selectPortefeuille'];
         }
 
-        if (empty($result['liste'])) { return ['code'=>404]; }
+        if (empty($result['liste'])) {
+            return ['code' => 404, 'complement' => 'Votre portefeuille ne contient pas ce projet !'];
+        }
+
         $liste = [];
         foreach (json_decode($result['liste'][0]['liste']) as $value) {
             array_push($liste, $value);
@@ -196,7 +214,6 @@ class BatchManuelController extends AbstractController
      * [Description for traitementManuel]
      * Lance le traitement des projets en manuel
      *
-     * @param Client $client
      * @param Request $request
      *
      * @return Response
@@ -208,7 +225,6 @@ class BatchManuelController extends AbstractController
     #[Route('/traitement/manuel', name: 'traitement_manuel', methods: ['POST'])]
     public function traitementManuel(Request $request): Response
     {
-
         $this->denyAccessUnlessGranted("ROLE_BATCH", null, "L'utilisateur essaye d’accéder à la page sans avoir le rôle ROLE_BATCH");
 
         /** On récupère les données du POST */
@@ -216,15 +232,16 @@ class BatchManuelController extends AbstractController
         $response = new JsonResponse();
 
         if ($data === null ||
-            !property_exists($data, 'portefeuille')) {
+                !property_exists($data, 'titre_portefeuille') ||
+                !property_exists($data, 'portefeuille')) {
             return $response->setData(['data' => $data, 'code' => 400, 'type' => 'alert', 'reference' => static::$reference, 'message' => static::$erreur400], Response::HTTP_BAD_REQUEST);
         }
 
         // On extrait la liste des projets pour le portefeuille
-        $les_projets=$this->listeProjet($data->portefeuille);
+        $les_projets=$this->listeProjet($data->titre_portefeuille, $data->portefeuille);
         if ($les_projets['code']===404){
             return $response->setData(['code' => 404, 'type' => 'alert',
-            'reference' => static::$reference, 'message' => static::$erreur404], Response::HTTP_NOT_FOUND );
+            'reference' => static::$reference, 'message' => static::$erreur404, 'complement' => $les_projets['complement']], Response::HTTP_NOT_FOUND );
         }
 
         /** On contrôle le mode d'utilisation */
@@ -237,10 +254,18 @@ class BatchManuelController extends AbstractController
 
         /** On lance la collecte */
         foreach ($les_projets[0] as $le_projet){
-            $collecte=$this->collecte->collecte($le_projet, 'Manuel', $utilisateur_collecte);
+            $resultat=$this->collecte->collecte($data->portefeuille, $le_projet, 'Manuel', $utilisateur_collecte);
+            if ($resultat['code']===500){
+                $code=$resultat['code'];
+                $type="warning";
+                $reference='<strong>Traitement</strong>';
+                $message="La collecte du projet <b>$le_projet</b> n'a pas abouti.";
+                $complement="Consulter le journal d'execution pour avoir plus d'information.";
+                return $response->setData(compact('code', 'type', 'reference', 'message', 'complement'),
+                Response::HTTP_OK);
+            }
         }
-
-        return $response->setData(['execution' => 'end', Response::HTTP_OK]);
+        return $response->setData(['code' => 200, Response::HTTP_OK]);
     }
 
 }
