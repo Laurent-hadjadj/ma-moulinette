@@ -64,7 +64,7 @@ class BatchCollecteAnomalieController extends AbstractController
      * [Description for BatchCollecteAnomalie]
      *
      * @param string $mavenKey
-     * @param string $modeColecte
+     * @param string $modeCollecte
      * @param string $utilisateurCollecte
      *
      * @return array
