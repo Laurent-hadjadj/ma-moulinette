@@ -17,7 +17,6 @@ use App\Entity\Portefeuille;
 
 use Doctrine\ORM\EntityManagerInterface;
 
-use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
@@ -165,7 +164,7 @@ class PortefeuilleCrudController extends AbstractCrudController
         if (!$entityInstance instanceof Portefeuille) {
             return;
         }
-        /** On récèpere le titre du portefeuille */
+        /** On récupère le titre du portefeuille */
         $titre = $entityInstance->getTitre();
 
         /** On enregistre le données que l'on veut modifier */
@@ -198,21 +197,11 @@ class PortefeuilleCrudController extends AbstractCrudController
         if (!$entityInstance instanceof Portefeuille) {
             return;
         }
-        /** On récèpere le titre du portefeuille */
-        $titre = $entityInstance->getTitre();
 
         /** On ajoute la date de modification  */
-        $entityInstance->setdateModification(new \DateTimeImmutable());
+        $entityInstance->setDateModification(new \DateTime());
 
-        /** retourne 1 ou null */
-        $record = $this->emm->getRepository(Portefeuille::class)->findOneBy(['titre' => mb_strtoupper($titre)]);
-
-        /** Si la valeur de l'attribut 'titre' n'existe pas, on enregistre.*/
-        if (is_null($record)) {
-            parent::persistEntity($em, $entityInstance);
-        } else {
-            $entityInstance->setId(0);
-        }
+        parent::persistEntity($em, $entityInstance);
     }
 
 }

@@ -35,8 +35,6 @@ class Portefeuille
     #[Assert\NotBlank]
     #[Assert\Length(max: 32,
         maxMessage: "Le titre ne peut pas dépasser 32 caractères.")]
-    #[AcmeAssert\ContainsPortefeuilleUnique]
-    //AcmeAssert\ContainsPortefeuilleUnique : Une validation personnalisée pour s'assurer que chaque titre de portefeuille est unique dans la base de données, prévenant les doublons.
     private $titre;
 
     #[ORM\Column(type: Types::STRING, length: 32, nullable: false,
