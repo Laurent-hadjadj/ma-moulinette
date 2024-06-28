@@ -160,10 +160,10 @@ class InformationProjetRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectInformationProjetVersionLast($map):array
+    public function selectInformationProjetVersionLast(array $map):array
     {
         try {
-            $sql = "SELECT project_version as projet, date
+            $sql = "SELECT project_version as projet, date, analyse_key
                     FROM information_projet
                     WHERE maven_key=:maven_key
                     ORDER BY date DESC LIMIT 1";
@@ -178,7 +178,7 @@ class InformationProjetRepository extends ServiceEntityRepository
     }
 
     /**
-     * [Description for selectInformationProjetversion]
+     * [Description for selectInformationProjetVersion]
      * Retourne la liste des versions pour un projet.
      *
      * @param array $map
