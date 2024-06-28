@@ -373,7 +373,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                 $this->getEntityManager()->getConnection()->beginTransaction();
                     /** On prépare la requête */
                     $sql = "INSERT INTO historique
-                    (maven_key, version, date_version,
+                    (maven_key, analyse_key, version, date_version,
                     nom_projet, version_release, version_snapshot, version_autre,
                     suppress_warning, no_sonar, todo, nombre_ligne,
                     nombre_ligne_code, couverture,
@@ -396,7 +396,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                     actuator_info,
                     date_enregistrement)
                 VALUES (
-                    :maven_key, :version, :date_version, :nom_projet,
+                    :maven_key, :analyse_key, :version, :date_version, :nom_projet,
                     :version_release, :version_snapshot, :version_autre,
                     :suppress_warning, :no_sonar, :todo, :nombre_ligne, :nombre_ligne_code,
                     :couverture, :duplication_density, :sqale_debt_ratio, :tests_unitaires,
@@ -417,6 +417,7 @@ class HistoriqueRepository extends ServiceEntityRepository
 
                     $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(':maven_key', $map['maven_key']);
+                    $stmt->bindValue(':analyse_key', $map['analyse_key']);
                     $stmt->bindValue(':version', $map['version']);
                     $stmt->bindValue(':date_version', $map['date_version']);
                     $stmt->bindValue(':nom_projet', $map['nom_projet']);
