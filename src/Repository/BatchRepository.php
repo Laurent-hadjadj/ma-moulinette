@@ -23,7 +23,7 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class BatchRepository extends ServiceEntityRepository
 {
-    public static $removeReturnline = "/\s+/u";
+    public static $removeReturnLine = "/\s+/u";
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -46,7 +46,7 @@ class BatchRepository extends ServiceEntityRepository
                                 nombre_projet as nombre
                         FROM batch
                         ORDER BY statut ASC";
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $exec=$stmt->executeQuery();
                 $liste=$exec->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
