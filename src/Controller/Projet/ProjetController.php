@@ -34,7 +34,6 @@ class ProjetController extends AbstractController
      * Affiche la page projet
      *
      * @param Security $security
-     * @param Request $request
      *
      * @return Response
      *
@@ -43,7 +42,7 @@ class ProjetController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/projet', name: 'projet', methods: 'GET')]
-    public function index(Security $security, Request $request): Response
+    public function index(Security $security): Response
     {
         /** On récupère l'objet User du contexte de sécurité */
         $preference = $security->getUser()->getPreference();
