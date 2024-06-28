@@ -240,13 +240,8 @@ class BatchCrudController extends AbstractCrudController
             return;
         }
         /** On ajoute la date de modification  */
-        $entityInstance->setdateModification(new \DateTimeImmutable());
+        $entityInstance->setDateModification(new \DateTime());
 
-        /** On récupère le nombre de projet du portefeuille */
-        //"$sql = "SELECT liste FROM portefeuille ORDER BY titre ASC";
-        //"$l = $this->emm->getConnection()->prepare($sql)->executeQuery();
-        //"$r = $l->fetchAssociative();
-        //"$nombreProjet = count(json_decode($r['liste']));
         parent::updateEntity($em, $entityInstance);
     }
 
