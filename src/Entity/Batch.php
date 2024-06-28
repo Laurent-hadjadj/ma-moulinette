@@ -17,7 +17,6 @@ use App\Repository\BatchRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use App\Validator as AcmeAssert;
 
 #[ORM\Entity(repositoryClass: BatchRepository::class)]
 #[ORM\Table(name: "batch", schema: "ma_moulinette")]
@@ -37,7 +36,6 @@ class Batch
 
     #[ORM\Column(type: Types::STRING, length: 32, unique: true, nullable: false,
         options: ['comment' => 'Titre du batch, unique'])]
-    #[AcmeAssert\ContainsBatchUnique()]
     #[Assert\NotBlank]
     #[Assert\Length(max: 32,
         maxMessage: "Le titre ne doit pas dépasser 32 caractères.")]
@@ -58,7 +56,6 @@ class Batch
 
     #[ORM\Column(type: Types::STRING, length: 32, unique: true, nullable: false,
         options: ['comment' => 'Portefeuille de projet, unique'])]
-    #[AcmeAssert\ContainsBatchUnique()]
     #[Assert\NotBlank]
     #[Assert\Length(max: 32,
         maxMessage: "Le portefeuille ne doit pas dépasser 32 caractères.")]
