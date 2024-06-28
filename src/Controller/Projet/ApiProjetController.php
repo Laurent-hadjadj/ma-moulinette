@@ -38,7 +38,7 @@ class ApiProjetController extends AbstractController
     public static $erreur400 = "La requête est incorrecte (Erreur 400).";
     public static $erreur404 = "Vous devez être rattaché à une équipe (erreur 404).";
     public static $erreur406 = "Je n'ai pas trouvé de projets pour ton équipe. ".
-    "Vérifiez le nom du tag utilisé dans sonarqube (erreur 406).";
+    "Vérifiez le nom du tag utilisé dans SonarQube (erreur 406).";
 
     /**
      * [Description for __construct]
@@ -75,7 +75,7 @@ class ApiProjetController extends AbstractController
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On crée un objet de reponse JSON */
+        /** On crée un objet de response JSON */
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
@@ -118,7 +118,7 @@ class ApiProjetController extends AbstractController
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On crée un objet de reponse JSON */
+        /** On crée un objet de response JSON */
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
@@ -158,7 +158,7 @@ class ApiProjetController extends AbstractController
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On crée un objet de reponse JSON */
+        /** On crée un objet de response JSON */
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
