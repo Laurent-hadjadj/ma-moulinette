@@ -1,3 +1,7 @@
+###                                                                                                 ###
+### Atention le fichier doit être encodé en UTF-8 avec une séquence de fin de ligne Windows (CRLF). ###
+###                                                                                                 ###
+
 @echo off
 set filename=lecteur.bat
 set found=0

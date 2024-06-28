@@ -1,3 +1,7 @@
+###                                                                                                 ###
+### Atention le fichier doit être encodé en UTF-8 avec une séquence de fin de ligne Windows (CRLF). ###
+###                                                                                                 ###
+
 @echo off
 set filename=lecteur.bat
 set found=0
@@ -10,10 +14,10 @@ for %%d in (C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (
 
 :found
 @if %found%==0 (
-@echo Le fichier %filename% n'a pas été trouvé sur les disques disponibles.
-@goto :exit
-
-@call  %%d:\environnement\lecteur.bat
+    echo Le fichier %filename% n'a pas été trouvé sur les disques disponibles.
+    goto :exit
+) else (
+    call  %%d:\environnement\lecteur.bat
 )
 
 @mode con: cols=160 lines=70
