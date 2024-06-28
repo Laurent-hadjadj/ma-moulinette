@@ -67,7 +67,7 @@ class ApiHomeController extends AbstractController
 
     /**
      * [Description for sonarStatus]
-     * Vérifie si le serveur sonarqube est UP
+     * Vérifie si le serveur SonarQube est UP
      * http://{url}}/api/status
      *
      * @return response
@@ -79,7 +79,7 @@ class ApiHomeController extends AbstractController
     #[Route('/api/status', name: 'api_sonar_status', methods: ['POST'])]
     public function apiSonarStatus(Request $request, Client $client): response
     {
-        /** On crée un objet de reponse JSON */
+        /** On crée un objet de response JSON */
         $response = new JsonResponse();
 
         $url = $this->getParameter(static::$sonarUrl) . "/api/system/status";
