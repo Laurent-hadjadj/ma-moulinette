@@ -14,14 +14,15 @@
 namespace App\Controller\Batch;
 
 /** Core */
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
-
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use App\Entity\Historique;
+use App\Entity\BatchTraitement;
 
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\BatchTraitement;
+use Symfony\Component\HttpFoundation\Request;
+
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
  * [Description BatchController]
@@ -139,7 +140,7 @@ class BatchController extends AbstractController
                 'message' => $message,
                 'css' => $css,
                 'type' => $type,
-                'job' => $traitement['titre'],
+                'titre' => $traitement['titre'],
                 'portefeuille' => $traitement['portefeuille'],
                 'projet' => $traitement['projet'],
                 'responsable' => $traitement['responsable'],
