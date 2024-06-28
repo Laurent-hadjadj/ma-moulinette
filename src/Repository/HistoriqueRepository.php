@@ -635,7 +635,7 @@ class HistoriqueRepository extends ServiceEntityRepository
     public function selectHistoriqueIsValide($map):array {
         try {
                 /** On prépare la requête */
-                $sql = "SELECT version, nom_projet AS name, date_version
+                $sql = "SELECT version, nom_projet AS name, date_version, analyse_key
                         FROM historique
                         WHERE maven_key=:maven_key
                         ORDER BY date_version DESC LIMIT 1";
@@ -647,6 +647,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                     return ['code'=>404, 'erreur'=>"Je n'ai pas trouvé le projet dans la base de données."];
                 }
         } catch (\Doctrine\DBAL\Exception $e) {
+            dd($e->getMessage());
             return ['code'=> 500, 'erreur'=>$e->getMessage()];
         }
         /** on prépare la réponse */
