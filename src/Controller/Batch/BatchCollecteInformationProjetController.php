@@ -80,12 +80,15 @@ class BatchCollecteInformationProjetController extends AbstractController
         $requestHistorique=$this->isValidMavenKey->isValideHistorique($mavenKey);
 
         /* On vérifie le code erreur */
+        //SonarQube
         $isFound=isset($result['code']) ? false : true;
         $inBase = ($requestInformation['code'] == 200 &&
                     $requestHistorique['code'] == 200) ? true : false;
         $isNotInBase = ($requestInformation['code'] == 404 ||
                         $requestHistorique['code'] == 404) ? true : false;
 
+        $isNotFound=false;
+        $isNotAuthorize=false;
         if (isset($result['code'])){
             $isNotAuthorize=($result['code'] == 401) ? true : false;
             $isNotFound=($result['code'] == 404) ? true : false;
@@ -103,7 +106,7 @@ class BatchCollecteInformationProjetController extends AbstractController
 
         /** Le projet n'est pas présent en base mais existe sur le serveur */
         if ($isFound && $isNotInBase){
-            return ['code'=>202, 'message'=>"Le projet est présent en base mais pas sur le serveur", 'data-sonarqube'=>$result, 'data-base'=>[]];
+            return ['code'=>202, 'message'=>"Le projet est présent en base mais pas sur le serveur", 'data-sonarqube'=>$result, 'data-baseInformation'=>[], 'data-baseHistorique'=>[]];
         }
 
         /** Le projet n'est pas disponible sur SonarQube */
@@ -170,11 +173,11 @@ class BatchCollecteInformationProjetController extends AbstractController
         $lesAutres = $toutesLesVersions - $release - $snapshot;
 
         return [
-                'release' => $release, 'snapshot' => $snapshot,
-                'autre' => $lesAutres,
+                'analyse_key' => $infoRelease['version'][0]['analyse_key'],
+                'release' => $release, 'snapshot' => $snapshot, 'autre' => $lesAutres,
                 'projet' => $infoRelease['version'][0]['projet'],
                 'date' => $infoRelease['version'][0]['date'],
-        ];
+                ];
     }
 
     /**
@@ -205,23 +208,34 @@ class BatchCollecteInformationProjetController extends AbstractController
         /** 01 - Version SonarQube */
         $result=$isValide['data-sonarqube']['analyses'][0];
         $versionSonarQube=$result['projectVersion'];
-        $keyAnalyseSonarQube=$result['key'];
         $dateAnalyseSonarQube=$result['date'];
+        $keyAnalyseSonarQube=$result['key'];
 
-        /** 02 - Version  Locale */
-        $request=$isValide['data-base'];
-        $versionLocale=$request['project_version'] ?? 'VIDE';
-        $dateAnalyseLocale=$request['date'] ?? 'VIDE';
-        $keyAnalyseLocale=$request['analyse_key'] ?? 'VIDE';
+        /** 02 - Version  Locale, on prend la version historique par défaut */
+        if ($isValide['code']!=202){
+            $local=$isValide['data-baseHistorique'] ?? $isValide['data-baseInformation'];
+            $versionLocale=$local['version'] ?? $local['projectVersion'] ?? 'VIDE';
+            $dateAnalyseLocale=$local['date_version'] ?? $local['date'] ?? 'VIDE';
+            $keyAnalyseLocale=$local['analyse_key'] ?? $local['analyse_key'] ?? 'VIDE';
+            $nameAnalyseLocale=$local['name'] ?? $local['maven_key'] ?? 'VIDE';
 
-        $versionMap=['SonarQube'=>['version'=>$versionSonarQube,
-            'key-analyse' => $keyAnalyseSonarQube, 'date-analyse'=>$dateAnalyseSonarQube],
-            'locale'=>['version'=>$versionLocale, 'key-analyse'=>$keyAnalyseLocale, 'date'=>$dateAnalyseLocale]
-        ];
-
-        /** Si le projet locale est à jour, pas la peine de lancer la collecte */
-        if ($keyAnalyseLocale===$keyAnalyseSonarQube) {
-            return ['code'=>100, 'message'=>"Le projet est à jour", 'data'=>$versionMap];
+            $versionMap=[
+                'Sonarqube'=>[
+                        'key-analyse' => $keyAnalyseSonarQube,
+                        'version' => $versionSonarQube,
+                        'date-analyse'=> $dateAnalyseSonarQube],
+                'locale'=>[
+                        'name' => $nameAnalyseLocale,
+                        'key-analyse' => $keyAnalyseLocale,
+                        'version' => $versionLocale,
+                        'date-analyse' => $dateAnalyseLocale
+                        ]
+            ];
+            //dd($keyAnalyseSonarQube,$keyAnalyseLocale );
+            /** Si le projet locale est à jour, pas la peine de lancer la collecte */
+            if ($keyAnalyseSonarQube===$keyAnalyseLocale) {
+                return ['code'=>100, 'message'=>'Le projet est à jour', 'data'=>$versionMap];
+            }
         }
 
         /** On supprime les informations pour la maven_key. */
@@ -246,7 +260,8 @@ class BatchCollecteInformationProjetController extends AbstractController
         $date = new \DateTimeImmutable();
         $date->setTimezone(new \DateTimeZone(static::$europeParis));
 
-        $map=['maven_key' => $mavenKey,
+        $map=[
+                'maven_key' => $mavenKey,
                 'analyse_key' => $result['key'],
                 'date' => $result['date'],
                 'project_version' => $result['projectVersion'],
@@ -254,7 +269,7 @@ class BatchCollecteInformationProjetController extends AbstractController
                 'mode_collecte' => $modeCollecte,
                 'utilisateur_collecte' => $utilisateurCollecte,
                 'date_enregistrement' => $date
-        ];
+            ];
 
         $insert=$informationProjetRepository->insertInformationProjet($map);
         if ($insert['code']!=200) {
@@ -267,7 +282,8 @@ class BatchCollecteInformationProjetController extends AbstractController
         $version = $this->batchInformationVersion($mavenKey);
 
         /** On prépare les données pour l'historique */
-        $data=['version_release' => $version['release'],
+        $data=[ 'analyse_key' => $version['analyse_key'],
+                'version_release' => $version['release'],
                 'version_snapshot' => $version['snapshot'],
                 'version_autre' => $version['autre'],
                 'version' => $version['projet'],
