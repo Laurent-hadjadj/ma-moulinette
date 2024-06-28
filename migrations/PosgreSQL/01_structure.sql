@@ -324,9 +324,9 @@ DROP TABLE IF EXISTS ma_moulinette.historique;
 CREATE TABLE IF NOT EXISTS ma_moulinette.historique
 (
   maven_key character varying(255) NOT NULL,
+  analyse_key character varying(32) NOT NULL,
   version character varying(32) NOT NULL,
   date_version character varying(128) NOT NULL,
-  analyse_key character varying(32) NOT NULL,
   nom_projet character varying(128) NOT NULL,
   version_release integer NOT NULL,
   version_snapshot integer NOT NULL,
