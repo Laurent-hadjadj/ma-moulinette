@@ -15,10 +15,11 @@ namespace App\Controller\Batch;
 
 /** Core */
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
 
 /** Gestion de accès aux API */
 use Symfony\Component\HttpFoundation\Request;
+
+
 
 /** Les services */
 use App\Service\FileLogger;
@@ -39,6 +40,7 @@ use App\Controller\Batch\BatchCollecteHotspotOwaspController;
 use App\Controller\Batch\BatchCollecteHotspotDetailController;
 use App\Controller\Batch\BatchCollecteNoSonarController;
 use App\Controller\Batch\BatchCollecteTodoController;
+use App\Controller\Batch\BatchCollecteActuatorController;
 
 /**
  * [Description Controller]
@@ -73,7 +75,8 @@ class CollecteController extends AbstractController
         private BatchCollecteHotspotOwaspController $batchCollecteHotspotOwasp,
         private BatchCollecteHotspotDetailController $batchCollecteHotspotDetail,
         private BatchCollecteNoSonarController $batchCollecteNoSonar,
-        private BatchCollecteTodoController $batchCollecteTodo
+        private BatchCollecteTodoController $batchCollecteTodo,
+        private BatchCollecteActuatorController $batchCollecteActuator
     ) {
         $this->em = $em;
         $this->logger = $logger;
@@ -88,9 +91,9 @@ class CollecteController extends AbstractController
         $this->batchCollecteHotspotDetail = $batchCollecteHotspotDetail;
         $this->batchCollecteNoSonar = $batchCollecteNoSonar;
         $this->batchCollecteTodo = $batchCollecteTodo;
+        $this->batchCollecteActuator = $batchCollecteActuator;
     }
 
-    #[Route('collecte', name: 'collecte', methods: ['GET'])]
     /**
      * [Description for collecte]
      *
@@ -102,7 +105,7 @@ class CollecteController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function collecte($maven_key, $mode_collecte, $utilisateur_collecte): array
+    public function collecte($portefeuille, $maven_key, $mode_collecte, $utilisateur_collecte): array
     {
         /** On instancie l'entityRepository */
         $historiqueRepository = $this->em->getRepository(Historique::class);
@@ -119,6 +122,7 @@ class CollecteController extends AbstractController
         $debutTraitement->setTimezone(new \DateTimeZone(static::$europeParis));
         $collecte[]=[
             "********************* DEBUT DU TRAITEMENT ********************",
+            "Portefeuille : ".$portefeuille,
             "Projet : ".$maven_key,
             "Date :".$debutTraitement->format(static::$dateFormat)
         ];
@@ -137,16 +141,23 @@ class CollecteController extends AbstractController
 
         /** Le projet existe déjà, il est à jour. On arrête la collecte */
         if ($informationProjet['code']===100){
-            $collecte[]=['01 - INFORMATION PROJET'=>$informationProjet['message'], $informationProjet['data']];
-            return ['code'=>500, 'Collecte' => $collecte];
+            $collecte[]=[
+                '01 - INFORMATION PROJET'=>$informationProjet['message'],
+                $informationProjet['data'],
+                "~************* FIN DU TRAITEMENT ***************~"];
+
+            $this->logger->file($portefeuille, $collecte);
+            return ['code'=>202, 'Collecte' => $collecte];
         }
+
         /** Pour les autres messages d'erreur */
         if (!in_array($informationProjet['code'], ['200', '100'])) {
             $collecte[]=[
                 "**** ERREUR : INFORMATION PROJET ".$informationProjet['code']. "****",
-                $informationProjet['message'] ?? $informationProjet['error']
-            ];
-            $this->logger->file($maven_key, $collecte);
+                $informationProjet['message'] ?? $informationProjet['error'],
+                "~************* FIN DU TRAITEMENT ***************~"];
+
+            $this->logger->file($portefeuille, $collecte);
             return ['code'=>500, 'Collecte' => $collecte];
         }
 
@@ -157,7 +168,7 @@ class CollecteController extends AbstractController
             $mapMerged=array_merge($mapMerged, $mesure['data']);
         } else {
             $collecte[]=[
-                "**** ERREUR : MESURE ".$mesure['code']. "****",
+                "**** ERREUR : MESURE ".$mesure['code']."****",
                 $mesure['message'] ?? $mesure['error']
             ];
             return ['code'=>500, 'Collecte' => $collecte];
@@ -169,7 +180,7 @@ class CollecteController extends AbstractController
             $collecte[]=["03 - NOTE RELIABILITY" => $noteReliability];
             $mapMerged=array_merge($mapMerged, $noteReliability['data']);
         } else { $collecte[]=[
-                "**** ERREUR : NOTE RELIBILITY".$noteReliability['code'], $noteReliability['message'] ?? $noteReliability['error']
+                "**** ERREUR : NOTE RELIABILITY".$noteReliability['code'], $noteReliability['message'] ?? $noteReliability['error']
             ];
         }
 
@@ -203,7 +214,7 @@ class CollecteController extends AbstractController
         }
 
         /** Signalement du détails des Anomalies pour le projet  */
-        $anomalieDetail=$this->batchCollecteAnomalieDetail->BatchCollecteAnomalieDetail($maven_key, $mode_collecte, $utilisateur_collecte, $utilisateur_collecte);
+        $anomalieDetail=$this->batchCollecteAnomalieDetail->BatchCollecteAnomalieDetail($maven_key, $mode_collecte, $utilisateur_collecte);
         if ($anomalieDetail['code']===200){
             $collecte[]=["05 - ANOMALIE DETAIL" => $anomalieDetail['message']];
             $mapMerged=array_merge($mapMerged, $anomalieDetail['data']);
@@ -224,7 +235,7 @@ class CollecteController extends AbstractController
         }
 
         /** On calcule la note pour les hotspot */
-        $noteHotspot=$this->batchCollecteNote->batchCollecteNoteHotspot($maven_key);
+        $noteHotspot=$this->batchCollecteNote->batchCollecteNoteHotspot($maven_key, $mode_collecte, $utilisateur_collecte);
         if ($hotspot['code']===200){
                 $collecte[]=["07 - NOTE HOTSPOT" => $noteHotspot['message']];
                 $mapMerged=array_merge($mapMerged, $noteHotspot['data']);
@@ -293,20 +304,34 @@ class CollecteController extends AbstractController
                 ];
         }
 
-        /** On créé un objet date. */
-        $date = new \DateTimeImmutable();
-        $date->setTimezone(new \DateTimeZone(static::$europeParis));
+        /** Actuator Info du projet (java spring-boot) */
+        $actuatorInfo=$this->batchCollecteActuator->BatchCollecteActuatorInfo($maven_key, $mode_collecte, $utilisateur_collecte);
+        if ($actuatorInfo['code']===200 || $actuatorInfo['code']===404){
+            $collecte[]=["013 - Actuator" => $actuatorInfo['message']];
+            $json=$actuatorInfo['message']['json'] ?? '{}';
+        } else {
+            $collecte[]=[
+                "**** ERREUR : Actuator INFO ".$actuatorInfo['code']."****",
+                $actuatorInfo['message'] ?? $actuatorInfo['error']
+            ];
+            $this->logger->file($portefeuille, $collecte);
+            return ['code'=>500, 'Collecte' => $collecte];
+        }
+
+        /** Création de la date du jour */
+        $dateHistorique = new \DateTimeImmutable('now', new \DateTimeZone("Europe/Paris"));
 
         /** Consolidation des données */
         $mapMerged=array_merge($mapMerged, [
             'maven_key' => $maven_key,
-            'initial' => 0,
-            'mode_collecte'=>$mode_collecte, 'utilisateur_collecte'=>$utilisateur_collecte,
-            'date_enregistrement' => $date]);
+            'initial' => false,
+            'mode_collecte' => $mode_collecte,
+            'utilisateur_collecte' => $utilisateur_collecte,
+            'date_enregistrement' => $dateHistorique]);
         /** Enregistrement dans le table historique */
-        $historique=$historiqueRepository->insertHistoriqueAjoutProjet($mapMerged);
+        $historique=$historiqueRepository->insertHistoriqueAjoutProjet($mapMerged, $json);
         if ($historique['code']===200){
-            $collecte[]=["13 - HISTORIQUE" => $mapMerged];
+            $collecte[]=["14 - HISTORIQUE" => $mapMerged];
         } else {
             $collecte[]=[
                 "**** ERREUR : HISTORIQUE ".$historique['code'],
@@ -323,10 +348,11 @@ class CollecteController extends AbstractController
             "************* FIN DU TRAITEMENT ***************",
             "Date : ".$finTraitement->format(static::$dateFormat),
             "Temps d'exécution : ".$temps,
+            ".",
         ];
 
         /** Rapport de collecte */
-        $this->logger->file($maven_key, $collecte);
+        $this->logger->file($portefeuille, $collecte);
         return ['code'=>200, 'Collecte' => $collecte];
     }
 
