@@ -425,7 +425,6 @@ const projetOwasp=function(mavenKey) {
 
   return new Promise(resolve => {
     $.ajax(options).then(t=> {
-      console.log(t);
       if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
         afficheMessage(t)
         sessionStorage.setItem('collecte', 'Erreur phase 04.');
@@ -435,7 +434,7 @@ const projetOwasp=function(mavenKey) {
           log(' - INFO : (04) Bravo aucune faille OWASP détectée.');
       } else {
         let s='';
-        if(parseInt(t.message.nombre,10)>9){ s='s' ;}
+        if(parseInt(t.nombre,10)>9){ s='s' ;}
           log(` - WARN : (04) J'ai trouvé ${t.nombre} faille${s}.`);
       }
       resolve();
@@ -479,10 +478,13 @@ const projetHotspot=function(mavenKey) {
         sessionStorage.setItem('collecte', 'Erreur phase 05.');
         return;
       }
+
       if (t.code===http_200 && t.nombre===0){
           log(' - INFO : (05) Bravo aucune faille potentielle détectée.');
       } else {
-          log(` - WARN : (05) J'ai trouvé ${t.hotspots} faille(s) potentielle(s).`);
+          let s='';
+          if(parseInt(t.nombre,10)>9){ s='s' ;}
+          log(` - WARN : (05) J'ai trouvé ${t.nombre} faille${s} potentielle(s).`);
       }
     resolve();
     });
@@ -588,8 +590,6 @@ const projetAnomalieDetails=function(mavenKey) {
  * http://{url}/api/projet/hotspot/owasp
  *
  * Phase 8 et 9
- *
- * {mode} = null, TEST
  * {mavenKey} = clé du projet
  * {owasp} = type d'indicateur OWASP
  *
@@ -1047,9 +1047,8 @@ $('.js-analyse').on('click', function () {
     await projetRating(idProject, 'security');    /*(03)*/
 
     await projetOwasp(idProject);                 /*(04)*/
-    return;
     await projetHotspot(idProject);               /*(05)*/
-
+    return;
     /* On récupère les infos sur les anomalies*/
     await projetAnomalie(idProject);              /*(06)*/
 
