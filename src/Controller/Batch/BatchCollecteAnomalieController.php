@@ -229,7 +229,7 @@ class BatchCollecteAnomalieController extends AbstractController
             'nombre_anomalie_mineur'=>$severities['MINOR'] ?? 0
         ];
 
-
-        return ['code' => 200, 'message' => $map, 'data' => $data ];
+        $info="Nombre d'anomalie : $anomalieTotal";
+        return ['code' => 200, 'info'=>$info, 'message' => $map, 'data' => $data ];
     }
 }

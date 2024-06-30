@@ -434,7 +434,7 @@ const projetOwasp=function(mavenKey) {
           log(' - INFO : (04) Bravo aucune faille OWASP détectée.');
       } else {
         let s='';
-        if(parseInt(t.nombre,10)>9){ s='s' ;}
+        if(parseInt(t.nombre,10)>1){ s='s' ;}
           log(` - WARN : (04) J'ai trouvé ${t.nombre} faille${s}.`);
       }
       resolve();
@@ -483,8 +483,8 @@ const projetHotspot=function(mavenKey) {
           log(' - INFO : (05) Bravo aucune faille potentielle détectée.');
       } else {
           let s='';
-          if(parseInt(t.nombre,10)>9){ s='s' ;}
-          log(` - WARN : (05) J'ai trouvé ${t.nombre} faille${s} potentielle(s).`);
+          if(parseInt(t.nombre,10)>1){ s='s' ;}
+          log(` - WARN : (05) J'ai trouvé ${t.nombre} faille${s} potentielle${s}.`);
       }
     resolve();
     });
@@ -495,11 +495,9 @@ const projetHotspot=function(mavenKey) {
  * [Description for projetAnomalie]
  * On récupère le nombre total des défauts (BUG, VULNERABILITY, CODE_SMELL),
  * la répartition par dossier la répartition par severity et la dette technique total.
- * http://{url}/api/projet/anomalie
+ * http://{url}/collecte/anomalie
  *
  * Phase 06
- *
- * {mode} = null, TEST
  * {mavenKey} = clé du projet
  *
  * @param string mavenKey
@@ -516,9 +514,9 @@ const projetAnomalie=function(mavenKey) {
     return;
   }
 
-  const data = { maven_key: mavenKey, mode: 'null' };
+  const data = { maven_key: mavenKey };
   const options = {
-    url: `${serveur()}/api/projet/anomalie`, type: 'POST',
+    url: `${serveur()}/api/collecte/anomalie`, type: 'POST',
           dataType: 'json', data: JSON.stringify(data), contentType };
 
   return new Promise(resolve => {
@@ -1048,9 +1046,10 @@ $('.js-analyse').on('click', function () {
 
     await projetOwasp(idProject);                 /*(04)*/
     await projetHotspot(idProject);               /*(05)*/
-    return;
+
     /* On récupère les infos sur les anomalies*/
     await projetAnomalie(idProject);              /*(06)*/
+    return;
 
     /* On récupère le détails sur les anomalies*/
     await projetAnomalieDetails(idProject);       /*(07)*/
