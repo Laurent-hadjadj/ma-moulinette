@@ -271,11 +271,9 @@ const afficheMessage=function(t){
 /**
  * [Description for projetAnalyse]
  * Collecte les informations du projet (projet, version, date)
- * http://{url}/api/projet/information
+ * http://{url}/api/collecte/information
  *
  * Phase 01
- *
- * {mode} = null, TEST
  * {mavenKey} = clé du projet
  *
  * @param string mavenKey
@@ -292,21 +290,24 @@ const projetInformation=function(mavenKey) {
     return;
   }
 
-  const data = { maven_key: mavenKey, mode: 'null' };
+  const data = { maven_key: mavenKey };
   const options = {
-    url: `${serveur()}/api/projet/information`, type: 'POST',
+    url: `${serveur()}/api/collecte/information`, type: 'POST',
           dataType: 'json', data: JSON.stringify(data), contentType,
   };
 
   return new Promise(resolve => {
     $.ajax(options).then(t => {
+      console.log(t);
       if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
         afficheMessage(t)
         sessionStorage.setItem('collecte', 'Erreur phase 01');
         return;
       }
       if (t.code===http_200){
-        log(` - INFO : (01) Nombre de version disponible : ${t.nombreVersion}`);
+        log(` - INFO : (01) Collecte des informations pour la version : ${t.message.projet}`);
+        const nombre=parseInt(t.message.release)+parseInt(t.message.snapshot)+parseInt(t.message.autre)
+        log(` - INFO : (01) Nombre de version disponible : ${nombre}`);
       }
       resolve();
       });
@@ -1047,6 +1048,7 @@ $('.js-analyse').on('click', function () {
   async function fnAsync() {
     /* Analyse du projet */
     await projetInformation(idProject);           /*(01)*/
+    return;
     await projetMesure(idProject);                /*(02)*/
 
     /* Analyse Sécurité et Owasp. */
