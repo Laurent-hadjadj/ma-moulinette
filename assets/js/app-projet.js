@@ -483,7 +483,7 @@ const projetHotspot=function(mavenKey) {
           log(' - INFO : (05) Bravo aucune faille potentielle détectée.');
       } else {
           let s='';
-          if(parseInt(t.nombre,10)>1){ s='s' ;}
+          if(parseInt(t.nombre,10)>1){ s='s'; }
           log(` - WARN : (05) J'ai trouvé ${t.nombre} faille${s} potentielle${s}.`);
       }
     resolve();
@@ -563,7 +563,6 @@ const projetAnomalieDetails=function(mavenKey) {
 
   return new Promise(resolve => {
     $.ajax(options).then(t => {
-      console.log(t);
       if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
         afficheMessage(t)
         sessionStorage.setItem('collecte', 'Erreur phase 07');
@@ -582,32 +581,33 @@ const projetAnomalieDetails=function(mavenKey) {
 /**
  * [Description for projetHotspotOwasp]
  * Traitement des hotspot de type owasp pour SonarQube 8.9 et >
- * Pour chaque faille OWASP on récupère les information. Il est possible d'avoir des doublons
+ * Pour chaque faille OWASP on récupère les informations.
+ * Il est possible d'avoir des doublons
  * (i.e. a cause des tags).
- * http://{url}/api/projet/hotspot/owasp
+ * http://{url}/collecte/hotspot/owasp
  *
  * Phase 8 et 9
  * {mavenKey} = clé du projet
  * {owasp} = type d'indicateur OWASP
  *
  * @param string mavenKey
- * @param string owasp
+ * @param string menace
  *
  * @return response
  *
  * Created at: 19/12/2022, 22:18:07 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
-const projetHotspotOwasp=function(mavenKey, owasp) {
+const projetHotspotOwasp=function(mavenKey, menace) {
   /** On vérifie s'il n'y a pas d'erreur lors du traitement */
   const collecte = sessionStorage.getItem('collecte');
   if (!collecte || collecte!='Tout va bien!') {
     return;
   }
 
-  const data = { maven_key: mavenKey, mode: 'null', owasp };
+  const data = { maven_key: mavenKey, menace };
   const options = {
-    url: `${serveur()}/api/projet/hotspot/owasp`, type: 'POST',
+    url: `${serveur()}/api/collecte/hotspot/owasp`, type: 'POST',
           dataType: 'json', data: JSON.stringify(data), contentType };
 
   return new Promise(resolve => {
@@ -617,14 +617,30 @@ const projetHotspotOwasp=function(mavenKey, owasp) {
         sessionStorage.setItem('collecte', 'Erreur phase 08-09.');
         return;
       }
+
       if (t.code===http_200 && t.info==='effacement'){
         log(' - INFO : (08) Les enregistrements ont été supprimé de la table hostspot_owasp.');
       }
-      if (t.code===http_200 && t.hotspots === 0 && t.info==='enregistrement') {
-        log(` - INFO : (09) Bravo aucune faille OWASP ${owasp} potentielle détectée.`);
+
+      if (t.code===http_200 && t.owasp2017 === 0 && t.info==='enregistrement') {
+        log(` - INFO : (09) Bravo aucune faille OWASP2017 ${menace} potentielle détectée.`);
       }
-      if (t.code===http_200 && t.hotspots !== 0 && t.info==='enregistrement') {
-        log(` - WARN : (09) J'ai trouvé ${t.hotspots} faille(s) OWASP ${owasp} potentielle(s).`);
+      if (t.code===http_200 && t.owasp2021 === 0 && t.info==='enregistrement') {
+        log(` - INFO : (09) Bravo aucune faille OWASP2021 ${menace} potentielle détectée.`);
+      }
+      if (t.code===http_200 && t.owasp2021 === 'NC' && t.info==='enregistrement') {
+        log(` - INFO : (09) Le référentiel OWASP2021 n'est pas supporté par votre serveur SonarQube.`);
+      }
+
+      if (t.code===http_200 && t.owasp2017 !== 0 && t.info==='enregistrement') {
+        let s='';
+        if(parseInt(t.owasp2017,10)>1){ s='s' ;}
+        log(` - WARN : (09) J'ai trouvé ${t.owasp2017} faille${s} OWASP ${menace} potentielle${s}.`);
+      }
+      if (t.code===http_200 && t.owasp2021 !== 0 && t.owasp2021 !== 'NC' && t.info==='enregistrement') {
+        let s='';
+        if(parseInt(t.owasp2021,10)>1){ s='s' ;}
+        log(` - WARN : (09) J'ai trouvé ${t.owasp2021} faille${s} OWASP ${menace} potentielle${s}.`);
       }
       resolve();
     });
@@ -1054,6 +1070,7 @@ $('.js-analyse').on('click', function () {
 
     /* On efface les traces :)*/
     await projetHotspotOwasp(idProject, 'a0');    /*(08)*/
+
     /* On enregistre les résultats*/
     await projetHotspotOwasp(idProject, 'a1');    /*(09)*/
     await projetHotspotOwasp(idProject, 'a2');    /*(09)*/

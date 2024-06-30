@@ -85,11 +85,11 @@ class BatchCollecteHotspotOwaspController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function batchCollecteHotspotOwasp(string $mavenKey, string $menace): array
+    public function batchCollecteHotspotOwasp(string $mavenKey, string $mode_collecte, string $utilisateur_collecte, string $menace): array
     {
         /** On instancie l'EntityRepository */
         $hotspotOwaspRepository = $this->em->getRepository(HotspotOwasp::class);
-        $informationProjet = $this->em->getRepository(InformationProjet::class);
+        $informationProjetRepository = $this->em->getRepository(InformationProjet::class);
 
         /** On contrôle la variable mavenKey */
         $mavenKey = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
@@ -102,12 +102,12 @@ class BatchCollecteHotspotOwaspController extends AbstractController
                 return ['code' => $delete['code'], static::$request=>'deleteHotspotOwaspMavenKey'];
             }
             $message='A0 : Effacement des données de la table hotspotOwasp pour le projet.';
-            return ['code' => 200, 'message' => $message];
+            return ['code' => 200, 'info'=>'effacement', 'message' => $message];
         }
 
         /** On récupère dans la table information_projet la version et la date du projet la plus récente. */
         $map=['maven_key'=>$mavenKey];
-        $information=$informationProjet->selectInformationProjetProjectVersion($map);
+        $information=$informationProjetRepository->selectInformationProjetProjectVersion($map);
         if ($information['code']!=200) {
             return ['code' => $information['code'], 'message'=>$information['erreur']];
         }
@@ -116,7 +116,7 @@ class BatchCollecteHotspotOwaspController extends AbstractController
             return ['code' => 404, 'message' => static::$erreur404];
         }
 
-        /** /** On reconstruit les dates au format dateTimeImmutable */
+        /** On reconstruit les dates au format dateTimeImmutable */
         $date = new \DateTimeImmutable();
         $date->setTimezone(new \DateTimeZone(static::$europeParis));
         $dateVersion = new \DateTimeImmutable($information['info'][0]['date']);
@@ -144,7 +144,7 @@ class BatchCollecteHotspotOwaspController extends AbstractController
         }
 
         /** On prépare les données */
-        $prepareHotspotData = function($data, $ref) use ($mavenKey, $information, $dateVersion, $date, $menace) {
+        $prepareHotspotData = function($data, $ref) use ($mavenKey, $information, $dateVersion, $date, $menace, $mode_collecte, $utilisateur_collecte) {
             return [
                 'referentiel_owasp' => $ref,
                 'maven_key' => $mavenKey,
@@ -157,6 +157,8 @@ class BatchCollecteHotspotOwaspController extends AbstractController
                 'status' => $data['status'] ?? 'NC',
                 'resolution' => $data['resolution'] ?? '',
                 'niveau' => $this->vulnerabilityProbability($data['vulnerabilityProbability'] ?? -1),
+                'mode_collecte' => $mode_collecte,
+                'utilisateur_collecte' => $utilisateur_collecte,
                 'date_enregistrement' => $date
             ];
         };
@@ -181,6 +183,11 @@ class BatchCollecteHotspotOwaspController extends AbstractController
                     ];
             }
         }
-        return ['code' => 200, 'message' => $hotspotDataList];
+
+        return ['code' => 200, 'info' => 'enregistrement',
+                'owasp_2017' => $owasp2017['paging']['total'],
+                'owasp_2021' => $owasp2021['paging']['total'] ?? 'NC',
+                'message' => '',
+                'data' => $hotspotDataList];
     }
 }
