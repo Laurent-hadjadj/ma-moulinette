@@ -431,12 +431,12 @@ const projetOwasp=function(mavenKey) {
         sessionStorage.setItem('collecte', 'Erreur phase 04.');
         return;
       }
-      if (t.code===http_200 && t.message.nombre===0){
+      if (t.code===http_200 && t.nombre===0){
           log(' - INFO : (04) Bravo aucune faille OWASP détectée.');
       } else {
         let s='';
         if(parseInt(t.message.nombre,10)>9){ s='s' ;}
-          log(` - WARN : (04) J'ai trouvé ${t.message.nombre} faille${s}.`);
+          log(` - WARN : (04) J'ai trouvé ${t.nombre} faille${s}.`);
       }
       resolve();
     });
@@ -448,11 +448,9 @@ const projetOwasp=function(mavenKey) {
  * Traitement des hotspots de type owasp pour SonarQube 8.9 et >
  * On récupère les Hotspot a examiner. Les clés sont uniques
  * (i.e. on ne se base pas sur les tags).
- * http://{url}/api/projet/hotspot
+ * http://{url}/api/collecte/hotspot
  *
  * Phase 05
- *
- * {mode} = null, TEST
  * {mavenKey} = clé du projet
  *
  * @param string mavenKey
@@ -469,9 +467,9 @@ const projetHotspot=function(mavenKey) {
     return;
   }
 
-  const data = { maven_key: mavenKey, mode: 'null'};
+  const data = { maven_key: mavenKey};
   const options = {
-    url: `${serveur()}/api/projet/hotspot`, type: 'POST',
+    url: `${serveur()}/api/collecte/hotspot`, type: 'POST',
     dataType: 'json', data: JSON.stringify(data), contentType };
 
   return new Promise(resolve => {
@@ -481,7 +479,7 @@ const projetHotspot=function(mavenKey) {
         sessionStorage.setItem('collecte', 'Erreur phase 05.');
         return;
       }
-      if (t.code===http_200 && t.hotspots===0){
+      if (t.code===http_200 && t.nombre===0){
           log(' - INFO : (05) Bravo aucune faille potentielle détectée.');
       } else {
           log(` - WARN : (05) J'ai trouvé ${t.hotspots} faille(s) potentielle(s).`);

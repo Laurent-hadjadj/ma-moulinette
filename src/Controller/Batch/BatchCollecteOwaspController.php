@@ -177,6 +177,6 @@ class BatchCollecteOwaspController extends AbstractController
                     'error' => [$request['erreur'],                            static::$request=>'insertNote']];
         }
 
-        return ['code' => 200, 'message' => ['total' => $total], 'data' => $map];
+        return ['code' => 200, 'nombre' => $total, 'message' => ['nombre' => $total], 'data' => $map];
     }
 }
