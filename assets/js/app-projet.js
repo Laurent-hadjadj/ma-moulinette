@@ -376,9 +376,9 @@ const projetRating=function(mavenKey, type) {
     return;
   }
 
-  const data = { maven_key: mavenKey, type, mode: 'null' };
+  const data = { maven_key: mavenKey, type };
   const options = {
-    url: `${serveur()}/api/projet/note`, type: 'POST',
+    url: `${serveur()}/api/collecte/note`, type: 'POST',
     dataType: 'json', data: JSON.stringify(data), contentType };
 
   return new Promise(resolve => {
@@ -390,6 +390,7 @@ const projetRating=function(mavenKey, type) {
       }
       if (t.code===http_200){
         log(` - INFO : (03) Collecte de la note pour le type : ${t.type}`);
+        log(`               La note est : ${t.message.note}`);
       }
         resolve();
     });
@@ -1043,12 +1044,12 @@ $('.js-analyse').on('click', function () {
     /* Analyse du projet */
     await projetInformation(idProject);           /*(01)*/
     await projetMesure(idProject);                /*(02)*/
-    return;
 
     /* Analyse Sécurité et Owasp. */
     await projetRating(idProject, 'reliability'); /*(03)*/
     await projetRating(idProject, 'security');    /*(03)*/
     await projetRating(idProject, 'sqale');       /*(03)*/
+    return;
 
     await projetOwasp(idProject);                 /*(04)*/
     await projetHotspot(idProject);               /*(05)*/

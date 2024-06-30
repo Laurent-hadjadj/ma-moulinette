@@ -80,6 +80,9 @@ class BatchCollecteNoteController extends AbstractController
 
         /** Appelle le client HTTP */
         $result = $this->client->http("$tempoUrl/api/measures/component?$queryString");
+        if (isset($result['code']) && in_array($result['code'], [401, 404])) {
+            return ['code' => $result['code'], 'error'=>[$result['erreur']]];
+        }
 
         /** On supprime les résultats pour la maven_key. */
         $map=['maven_key'=>$mavenKey, 'type'=>$type];
@@ -87,7 +90,7 @@ class BatchCollecteNoteController extends AbstractController
         if ($delete['code']!=200) {
             return ['code' => $delete['code'],
                     'error'=>[$delete['erreur'],
-                            static::$request=>'deleteNoteMavenKey']
+                    static::$request=>'deleteNoteMavenKey']
                     ];
         }
 
