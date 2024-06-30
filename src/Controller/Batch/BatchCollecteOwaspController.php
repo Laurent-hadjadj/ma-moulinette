@@ -112,9 +112,11 @@ class BatchCollecteOwaspController extends AbstractController
         $effortTotal = $result['effortTotal'];
 
         /** Pour chaque signalement OWASP a1, a2, a3,... */
-        foreach ($result["facets"][0]["values"] as $value) {
-            $index = substr($value["val"], 1);
-            $nombre[$index] = $value["count"];
+        $total=0;
+        foreach ($result['facets'][0]['values'] as $value) {
+            $index = substr($value['val'], 1);
+            $nombre[$index] = $value['count'];
+            $total=$value['count']++;
         }
 
         /** On remplie le tableau pour les signalement a1 à a10 pour les clés de sévérité */
@@ -172,16 +174,9 @@ class BatchCollecteOwaspController extends AbstractController
         $request=$owaspRepository->insertOwasp($map);
         if ($request['code']!=200) {
             return ['code' => $request['code'],
-                    'error' => [$request['erreur'],                            static::$request=>'insertNote']
-                    ];
+                    'error' => [$request['erreur'],                            static::$request=>'insertNote']];
         }
 
-        return [
-            'code' => 200, 'message' => [
-                'nombre' => $nombre,
-                'effortTotal' => $effortTotal,
-                'issues' => $map,
-            ]
-        ];
+        return ['code' => 200, 'message' => ['total' => $total], 'data' => $map];
     }
 }

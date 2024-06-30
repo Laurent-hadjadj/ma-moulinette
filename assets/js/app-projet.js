@@ -400,11 +400,9 @@ const projetRating=function(mavenKey, type) {
  * Récupère le top 10 OWASP et construit la vue
  * Attention une faille peut être comptée deux fois ou plus, cela dépend du tag. Donc il est
  * possible d'avoir pour la clé une faille de type OWASP-A3 et OWASP-A10
- * http://{url}/api/projet/issues/owasp
+ * http://{url}/api/collecte/owasp
  *
  * Phase 04
- *
- * {mode} = null, TEST
  * {mavenKey} = clé du projet
  *
  * @param string mavenKey
@@ -420,22 +418,25 @@ const projetOwasp=function(mavenKey) {
     return;
   }
 
-  const data = { maven_key: mavenKey, mode: 'null'};
+  const data = { maven_key: mavenKey };
   const options = {
-    url: `${serveur()}/api/projet/issues/owasp`, type: 'POST',
+    url: `${serveur()}/api/collecte/owasp`, type: 'POST',
           dataType: 'json', data: JSON.stringify(data), contentType };
 
   return new Promise(resolve => {
     $.ajax(options).then(t=> {
+      console.log(t);
       if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
         afficheMessage(t)
         sessionStorage.setItem('collecte', 'Erreur phase 04.');
         return;
       }
-      if (t.code===http_200 && t.owasp===0){
+      if (t.code===http_200 && t.message.nombre===0){
           log(' - INFO : (04) Bravo aucune faille OWASP détectée.');
       } else {
-          log(` - WARN : (04) J'ai trouvé ${t.owasp} faille(s).`);
+        let s='';
+        if(parseInt(t.message.nombre,10)>9){ s='s' ;}
+          log(` - WARN : (04) J'ai trouvé ${t.message.nombre} faille${s}.`);
       }
       resolve();
     });
@@ -1046,10 +1047,9 @@ $('.js-analyse').on('click', function () {
     /* Analyse Sécurité et Owasp. */
     await projetRating(idProject, 'reliability'); /*(03)*/
     await projetRating(idProject, 'security');    /*(03)*/
-    await projetRating(idProject, 'sqale');       /*(03)*/
-    return;
 
     await projetOwasp(idProject);                 /*(04)*/
+    return;
     await projetHotspot(idProject);               /*(05)*/
 
     /* On récupère les infos sur les anomalies*/
