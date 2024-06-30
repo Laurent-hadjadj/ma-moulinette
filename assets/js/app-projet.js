@@ -222,10 +222,8 @@ const match=function(params, data) {
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const selectProjet=async function() {
-  const data = { mode: 'null' };
   const options = {
-    url: `${serveur()}/api/projet/liste`, type: 'POST',
-          dataType: 'json', data: JSON.stringify(data), contentType };
+    url: `${serveur()}/api/projet/liste`, type: 'POST', dataType: 'json', contentType };
   const async = await $.ajax(options).then(t => {
     if (t.code===http_400 || t.code===http_406 || t.code===http_500){
       afficheMessage(t)
@@ -277,7 +275,6 @@ const afficheMessage=function(t){
  * {mavenKey} = clé du projet
  *
  * @param string mavenKey
- *
  * @return
  *
  * Created at: 19/12/2022, 22:12:44 (Europe/Paris)
@@ -298,7 +295,6 @@ const projetInformation=function(mavenKey) {
 
   return new Promise(resolve => {
     $.ajax(options).then(t => {
-      console.log(t);
       if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
         afficheMessage(t)
         sessionStorage.setItem('collecte', 'Erreur phase 01');
@@ -307,7 +303,7 @@ const projetInformation=function(mavenKey) {
       if (t.code===http_200){
         log(` - INFO : (01) Collecte des informations pour la version : ${t.message.projet}`);
         const nombre=parseInt(t.message.release)+parseInt(t.message.snapshot)+parseInt(t.message.autre)
-        log(` - INFO : (01) Nombre de version disponible : ${nombre}`);
+        log(`               Nombre de version disponible : ${nombre}`);
       }
       resolve();
       });
@@ -317,15 +313,12 @@ const projetInformation=function(mavenKey) {
 /**
  * [Description for projetMesure]
  * Collecte des mesures clés du projet (lignes, couvertures, duplication, défauts).
- * http://{url}/api/projet/mesure
+ * http://{url}/api/collecte/mesure
  *
  * Phase 02
+ * {mavenKey} = clé du projet
  *
-* {mode} = null, TEST
-* {mavenKey} = clé du projet
-*
  * @param string mavenKey
- *
  * @return response
  *
  * Created at: 19/12/2022, 22:13:13 (Europe/Paris)
@@ -338,9 +331,9 @@ const projetMesure=function(mavenKey) {
     return;
   }
 
-  const data = { maven_key: mavenKey, mode: 'null' };
+  const data = { maven_key: mavenKey };
   const options = {
-    url: `${serveur()}/api/projet/mesure`, type: 'POST',
+    url: `${serveur()}/api/collecte/mesure`, type: 'POST',
           dataType: 'json', data: JSON.stringify(data), contentType };
   return new Promise(resolve => {
     $.ajax(options).then(t => {
@@ -350,7 +343,8 @@ const projetMesure=function(mavenKey) {
         return;
       }
       if (t.code===http_200){
-          log(' - INFO : (02) Ajout des mesures.');
+          log(' - INFO : (02) Collete des mesures globales.');
+          log(`               ${t.message.issues} problème(s) trouvé(s).`);
       }
         resolve();
     });
@@ -1048,8 +1042,8 @@ $('.js-analyse').on('click', function () {
   async function fnAsync() {
     /* Analyse du projet */
     await projetInformation(idProject);           /*(01)*/
-    return;
     await projetMesure(idProject);                /*(02)*/
+    return;
 
     /* Analyse Sécurité et Owasp. */
     await projetRating(idProject, 'reliability'); /*(03)*/

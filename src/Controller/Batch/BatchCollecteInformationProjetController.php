@@ -212,7 +212,7 @@ class BatchCollecteInformationProjetController extends AbstractController
         $keyAnalyseSonarQube=$result['key'];
 
         /** 02 - Version  Locale, on prend la version historique par défaut */
-        if ($isValide['code']!=202){
+        if ($isValide['code']!=202 && $modeCollecte!='UTILISATEUR'){
             $local=$isValide['data-baseHistorique'] ?? $isValide['data-baseInformation'];
             $versionLocale=$local['version'] ?? $local['projectVersion'] ?? 'VIDE';
             $dateAnalyseLocale=$local['date_version'] ?? $local['date'] ?? 'VIDE';
@@ -231,7 +231,7 @@ class BatchCollecteInformationProjetController extends AbstractController
                         'date-analyse' => $dateAnalyseLocale
                         ]
             ];
-            //dd($keyAnalyseSonarQube,$keyAnalyseLocale );
+
             /** Si le projet locale est à jour, pas la peine de lancer la collecte */
             if ($keyAnalyseSonarQube===$keyAnalyseLocale) {
                 return ['code'=>100, 'message'=>'Le projet est à jour', 'data'=>$versionMap];
