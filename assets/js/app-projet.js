@@ -354,11 +354,9 @@ const projetMesure=function(mavenKey) {
 /**
   * [Description for projetRating]
   * Récupère la note pour la fiabilité, la sécurité et les mauvaises pratiques.
-  * http://{url}'/api/projet/note
+  * http://{url}'/api/Collecte/note
   *
   * Phase 03
-  *
-  * {mode} = null, TEST
   * {mavenKey} = clé du projet
   * {type} = reliability, security, sqale
   *
