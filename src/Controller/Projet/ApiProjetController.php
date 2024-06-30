@@ -153,19 +153,10 @@ class ApiProjetController extends AbstractController
     public function liste_projet(Security $security, Request $request): response
     {
         /** On instancie l'entityRepository */
-        $listeProjetEntity = $this->em->getRepository(ListeProjet::class);
-
-        /** On décode le body */
-        $data = json_decode($request->getContent());
+        $listeProjetRepository = $this->em->getRepository(ListeProjet::class);
 
         /** On crée un objet de response JSON */
         $response = new JsonResponse();
-
-        /** On teste si la clé est valide */
-        if ($data === null) {
-            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert',
-            'reference'=> static::$reference, 'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
-        }
 
         /* On bind les informations utilisateur */
         $equipes = $security->getUser()->getEquipe();
@@ -193,12 +184,12 @@ class ApiProjetController extends AbstractController
 
         /** On construit la requête de selection des projets en fonction de(s) (l')équipes */
         $map=['clause_where'=>$inTrim];
-        $request = $listeProjetEntity->selectListeProjetByEquipe($map);
-        if ($request['code']!=200) {
-            return $response->setData(['code' => $request['code'], Response::HTTP_OK]);
+        $requestListe = $listeProjetRepository->selectListeProjetByEquipe($map);
+        if ($requestListe['code']!=200) {
+            return $response->setData(['code' => $requestListe['code'], Response::HTTP_OK]);
         }
 
-        $projets = $request['liste'];
+        $projets = $requestListe['liste'];
 
         /** j'ai pas trouvé de projet pour cette équipe. */
         if (empty($projets)) {
