@@ -537,11 +537,9 @@ const projetAnomalie=function(mavenKey) {
 /**
  * [Description for projetAnomalieDetails]
  * On récupère pour chaque type (Bug, Vulnerability et Code Smell)
- * http://{url}/api/projet/anomalie/details
+ * http://{url}/collecte/anomalie/detail
  *
  * Phase 07
- *
- * {mode} = null, TEST
  * {mavenKey} = clé du projet
  *
  * @param string mavenKey
@@ -558,13 +556,14 @@ const projetAnomalieDetails=function(mavenKey) {
     return;
   }
 
-  const data = { maven_key: mavenKey, mode: 'null' };
+  const data = { maven_key: mavenKey };
   const options = {
-    url: `${serveur()}/api/projet/anomalie/details`, type: 'POST',
+    url: `${serveur()}/api/collecte/anomalie/detail`, type: 'POST',
           dataType: 'json', data: JSON.stringify(data), contentType };
 
   return new Promise(resolve => {
     $.ajax(options).then(t => {
+      console.log(t);
       if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
         afficheMessage(t)
         sessionStorage.setItem('collecte', 'Erreur phase 07');
@@ -1049,7 +1048,6 @@ $('.js-analyse').on('click', function () {
 
     /* On récupère les infos sur les anomalies*/
     await projetAnomalie(idProject);              /*(06)*/
-    return;
 
     /* On récupère le détails sur les anomalies*/
     await projetAnomalieDetails(idProject);       /*(07)*/
@@ -1067,7 +1065,7 @@ $('.js-analyse').on('click', function () {
     await projetHotspotOwasp(idProject, 'a8');    /*(09)*/
     await projetHotspotOwasp(idProject, 'a9');    /*(09)*/
     await projetHotspotOwasp(idProject, 'a10');   /*(09)*/
-
+    return;
     /* On enregistre le détails de chaque hotspot owasp. */
     await projetHotspotOwaspDetails(idProject);   /*(10)*/
 
