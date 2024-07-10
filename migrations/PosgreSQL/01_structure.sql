@@ -649,7 +649,6 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.logger
 (
   id SERIAL PRIMARY KEY,
   maven_key character varying(255) NOT NULL,
-  name character varying(128) NOT NULL,
   logger_info integer NOT NULL,
   logger_warn integer NOT NULL,
   logger_error integer NOT NULL,
