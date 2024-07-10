@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##         Creation des tables et des objets      ##
-##               V1.10.0 - 27/06/2024             ##
+##               V1.11.0 - 10/07/2024             ##
 ##                                                ##
 ####################################################*/
 
@@ -21,6 +21,7 @@
 -- 23/06/2024 : Laurent HADJADJ - Correction du code pour la création des tables actuator et actuator_info (ajout des contraintes et de la clé étrangère).
 -- 23/06/2024 : Laurent HADJADJ - Ajout d'un indexe sur l'attribut maven_key.
 -- 27/06/2024 : Laurent HADJADJ - Ajout de l'attribut analyse_key dans la table historique.
+-- 10/07/2024 : Laurent HADJADJ - Ajout de la table logger.
 
 -- SCHEMA: ma_moulinette
 
@@ -380,6 +381,10 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.historique
   mode_collecte character varying(32),
   utilisateur_collecte character varying(128),
   actuator_info json default null,
+  logger_info integer NOT NULL,
+  logger_warn integer NOT NULL,
+  logger_error integer NOT NULL,
+  logger_debug integer NOT NULL,
   date_enregistrement TIMESTAMPTZ NOT NULL,
   CONSTRAINT historique_pkey PRIMARY KEY (maven_key, version, date_version)
 );
@@ -441,6 +446,10 @@ COMMENT ON COLUMN ma_moulinette.historique.code_smell_critical IS 'Nombre de mau
 COMMENT ON COLUMN ma_moulinette.historique.code_smell_major IS 'Nombre de mauvaises pratiques majeurs';
 COMMENT ON COLUMN ma_moulinette.historique.code_smell_minor IS 'Nombre de mauvaises pratiques mineurs';
 COMMENT ON COLUMN ma_moulinette.historique.code_smell_info IS 'Nombre de mauvaises pratiques d’information';
+COMMENT ON COLUMN ma_moulinette.historique.logger_info IS 'Nombre de méthode Info invoqué';
+COMMENT ON COLUMN ma_moulinette.historique.logger_warn IS 'Nombre de méthode Info invoqué';
+COMMENT ON COLUMN ma_moulinette.historique.logger_error IS 'Nombre de méthode Info invoqué';
+COMMENT ON COLUMN ma_moulinette.historique.logger_debug IS 'Nombre de méthode Info invoqué';
 COMMENT ON COLUMN ma_moulinette.historique.mode_collecte IS 'Mode de collecte : manuel ou automatique';
 COMMENT ON COLUMN ma_moulinette.historique.utilisateur_collecte IS 'Nom de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.historique.actuator_info IS 'Infomation Actuator du projet';
@@ -632,6 +641,36 @@ COMMENT ON COLUMN ma_moulinette.liste_projet.name IS 'Nom du projet';
 COMMENT ON COLUMN ma_moulinette.liste_projet.tags IS 'Tags associés au projet sous forme de tableau JSON';
 COMMENT ON COLUMN ma_moulinette.liste_projet.visibility IS 'Visibilité du projet';
 COMMENT ON COLUMN ma_moulinette.liste_projet.date_enregistrement IS 'Date d’enregistrement du projet';
+
+-- Table: ma_moulinette.logger
+
+DROP TABLE IF EXISTS ma_moulinette.logger;
+CREATE TABLE IF NOT EXISTS ma_moulinette.logger
+(
+  id SERIAL PRIMARY KEY,
+  maven_key character varying(255) NOT NULL,
+  name character varying(128) NOT NULL,
+  logger_info integer NOT NULL,
+  logger_warn integer NOT NULL,
+  logger_error integer NOT NULL,
+  logger_debug integer NOT NULL,
+  mode_collecte character varying(32),
+  utilisateur_collecte character varying(128),
+  date_enregistrement TIMESTAMPTZ NOT NULL
+);
+
+ALTER TABLE ma_moulinette.logger OWNER to db_user;
+GRANT ALL ON TABLE ma_moulinette.logger TO db_user;
+
+COMMENT ON COLUMN ma_moulinette.logger.id IS 'Identifiant unique pour chaque instance de ListeProjet';
+COMMENT ON COLUMN ma_moulinette.logger.maven_key IS 'Clé Maven du projet';
+COMMENT ON COLUMN ma_moulinette.logger.logger_info IS 'Nombre de méthode Info invoqué';
+COMMENT ON COLUMN ma_moulinette.logger.logger_warn IS 'Nombre de méthode Info invoqué';
+COMMENT ON COLUMN ma_moulinette.logger.logger_error IS 'Nombre de méthode Info invoqué';
+COMMENT ON COLUMN ma_moulinette.logger.logger_debug IS 'Nombre de méthode Info invoqué';
+COMMENT ON COLUMN ma_moulinette.logger.mode_collecte IS 'Mode de collecte : manuel ou automatique';
+COMMENT ON COLUMN ma_moulinette.logger.utilisateur_collecte IS 'Nom de l’utilisateur qui a réalisé la collecte';
+COMMENT ON COLUMN ma_moulinette.logger.date_enregistrement IS 'Date d’enregistrement du projet';
 
 -- Table: ma_moulinette.ma_moulinette
 
