@@ -94,6 +94,9 @@ class BatchCollecteHotspotOwaspController extends AbstractController
         /** On contrôle la variable mavenKey */
         $mavenKey = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
 
+        /** On récupère la version du serveur SonarQube */
+        $sonarVersion = $this->getParameter('sonar.version');
+
         /** On supprime les hotspots pour la maven_key. */
         if ($menace === 'a0') {
             $map=['maven_key'=>$mavenKey];
@@ -101,8 +104,11 @@ class BatchCollecteHotspotOwaspController extends AbstractController
             if ($delete['code']!=200) {
                 return ['code' => $delete['code'], static::$request=>'deleteHotspotOwaspMavenKey'];
             }
+
             $message='A0 : Effacement des données de la table hotspotOwasp pour le projet.';
-            return ['code' => 200, 'info'=>'effacement', 'message' => $message];
+            /** si on est en version 8, on envoi pas de tableau owasp2021 */
+            return ($sonarVersion==8) ?
+                ['code' => 200, 'info'=>'effacement', 'message' => $message] : ['code' => 200, 'owasp_2021'=> [], 'info'=>'effacement', 'message' => $message];
         }
 
         /** On récupère dans la table information_projet la version et la date du projet la plus récente. */
@@ -136,11 +142,14 @@ class BatchCollecteHotspotOwaspController extends AbstractController
         if (isset($owasp2017['code']) && in_array($owasp2017['code'], [401, 404])) {
             return ['error' => $owasp2017['code']];
         }
+
         /** On execute si la version de SonarQube est >= 9 */
-        //Todo ajouter le tests dans la prochaine version.
-        $owasp2021 = $this->client->http("$tempoUrl/api/hotspots/search?".http_build_query($queryParamsList['owasp2021']));
-        if (isset($owasp2021['code']) && in_array($owasp2021['code'], [401, 404])) {
+        $owasp2021=['NC'];
+        if ($sonarVersion>8){
+            $owasp2021 = $this->client->http("$tempoUrl/api/hotspots/search?".http_build_query($queryParamsList['owasp2021']));
+            if (isset($owasp2021['code']) && in_array($owasp2021['code'], [401, 404])) {
             return ['error' => $owasp2021['code']];
+            }
         }
 
         /** On prépare les données */
