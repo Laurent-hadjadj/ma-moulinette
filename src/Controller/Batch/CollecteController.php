@@ -76,7 +76,8 @@ class CollecteController extends AbstractController
         private BatchCollecteHotspotDetailController $batchCollecteHotspotDetail,
         private BatchCollecteNoSonarController $batchCollecteNoSonar,
         private BatchCollecteTodoController $batchCollecteTodo,
-        private BatchCollecteActuatorController $batchCollecteActuator
+        private BatchCollecteActuatorController $batchCollecteActuator,
+        private BatchCollecteLoggerController $batchCollecteLogger
     ) {
         $this->em = $em;
         $this->logger = $logger;
@@ -92,6 +93,7 @@ class CollecteController extends AbstractController
         $this->batchCollecteNoSonar = $batchCollecteNoSonar;
         $this->batchCollecteTodo = $batchCollecteTodo;
         $this->batchCollecteActuator = $batchCollecteActuator;
+        $this->batchCollecteLogger = $batchCollecteLogger;
     }
 
     /**
@@ -313,6 +315,20 @@ class CollecteController extends AbstractController
             $collecte[]=[
                 "**** ERREUR : Actuator INFO ".$actuatorInfo['code']."****",
                 $actuatorInfo['message'] ?? $actuatorInfo['error']
+            ];
+            $this->logger->file($portefeuille, $collecte);
+            return ['code'=>500, 'Collecte' => $collecte];
+        }
+
+        /** Logger dans le projet (info, warn, error, debug) */
+        $logger=$this->batchCollecteLogger->BatchCollecteLogger($maven_key,$mode_collecte, $utilisateur_collecte);
+        if ($logger['code']===200 || $logger['code']===404){
+            $collecte[]=["014 - LoggerActuator" => $logger['message']];
+            $mapMerged=array_merge($mapMerged, $logger['message']['data'] ?? []);
+        } else {
+            $collecte[]=[
+                "**** ERREUR : Logger ".$logger['code']."****",
+                $logger['message'] ?? $logger['error']
             ];
             $this->logger->file($portefeuille, $collecte);
             return ['code'=>500, 'Collecte' => $collecte];
