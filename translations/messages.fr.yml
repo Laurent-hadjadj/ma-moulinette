@@ -44,4 +44,16 @@ Liste: Liste
 Batch: Traitement
 Statut: Programmé
 Nombre Projet: Projets
+
+# Actuator
+label.actuator.url: URL du serveur
+label.actuator.user: Nom de l'utilisateur
+label.actuator.password: Mot de passe de l'utilisateur
+placeholder.actuator.url: http://ma-moulinette.fr
+placeholder.actuator.user: actuator
+placeholder.actuator.password: change-me
+label.actuator.info.description: Description courte
+label.actuator.info.value: Valeur de la clé
+placeholder.actuator.info.description: Valeur de la clé dans le JSON [app][version][jdk]
+placeholder.actuator.info.value: app.version.jdk
 ...
