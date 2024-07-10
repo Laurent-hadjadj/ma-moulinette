@@ -126,6 +126,6 @@ class BatchCollecteTodoController extends AbstractController
             static::$request=>'insertTodo'];
         }
         /** On enregistre les données */
-        return ['code' => 200, "message" =>['nombre'=>$todo,'Todo'=>$mapData], 'data'=> ['todo'=>$todo]];
+        return ['code' => 200, 'nombre'=>$todo, 'message' =>['todo'=>$mapData], 'data'=> ['todo'=>$todo]];
     }
 }
