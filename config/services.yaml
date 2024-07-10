@@ -8,6 +8,7 @@ imports:
     - { resource: ma-moulinette.yaml }
 parameters:
     # SonarQube
+    sonar.version: '%env(SONAR_VERSION)%'
     sonar.url: '%env(SONAR_URL)%'
     sonar.token: '%env(SONAR_TOKEN)%'
     sonar.user: '%env(SONAR_USER)%'
@@ -15,6 +16,9 @@ parameters:
     sonar.profiles: '%env(SONAR_PROFILES)%'
     sonar.organization: '%env(SONAR_ORGANIZATION)%'
     nombre.favori: '%env(NOMBRE_FAVORI)%'
+
+    # Plugin SonarQube (optionnel)
+    track.logger.method: '%env(TRACK_LOGGER_METHOD)%'
 
     # Gestion des projets et profils
     maj.projet: '%env(MAJ_PROJET)%'
