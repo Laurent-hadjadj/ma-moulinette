@@ -383,11 +383,9 @@ class HistoriqueRepository extends ServiceEntityRepository
                     code_smell_blocker, code_smell_critical, code_smell_major,
                     code_smell_minor, code_smell_info,
                     frontend, backend, autre,
-                    nombre_anomalie_bloquant, nombre_anomalie_critique,
-                    nombre_anomalie_majeur,
+                    nombre_anomalie_bloquant, nombre_anomalie_critique, nombre_anomalie_majeur,
                     nombre_anomalie_mineur, nombre_anomalie_info,
-                    note_reliability, note_security,
-                    note_sqale, note_hotspot, hotspot_total,
+                    note_reliability, note_security, note_sqale, note_hotspot, hotspot_total,
                     hotspot_high, hotspot_medium, hotspot_low,
                     initial,
                     mode_collecte, utilisateur_collecte,
@@ -396,7 +394,9 @@ class HistoriqueRepository extends ServiceEntityRepository
                 VALUES (
                     :maven_key, :analyse_key, :version, :date_version, :nom_projet,
                     :version_release, :version_snapshot, :version_autre,
-                    :suppress_warning, :no_sonar, :todo, :nombre_ligne, :nombre_ligne_code,
+                    :suppress_warning, :no_sonar, :todo,
+                    :logger_info, :logger_warn, :logger_error, :logger_debug,
+                    :nombre_ligne, :nombre_ligne_code,
                     :couverture, :duplication_density, :sqale_debt_ratio, :tests_unitaires,
                     :nombre_defaut, :dette, :nombre_bug, :nombre_vulnerability,
                     :nombre_code_smell, :bug_blocker, :bug_critical, :bug_major,
@@ -414,70 +414,76 @@ class HistoriqueRepository extends ServiceEntityRepository
                     :date_enregistrement)";
 
                     $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(':maven_key', $map['maven_key']);
-                    $stmt->bindValue(':analyse_key', $map['analyse_key']);
-                    $stmt->bindValue(':version', $map['version']);
-                    $stmt->bindValue(':date_version', $map['date_version']);
-                    $stmt->bindValue(':nom_projet', $map['nom_projet']);
-                    $stmt->bindValue(':version_release', $map['version_release']);
-                    $stmt->bindValue(':version_snapshot', $map['version_snapshot']);
-                    $stmt->bindValue(':version_autre', $map['version_autre']);
-                    $stmt->bindValue(':suppress_warning', $map['suppress_warning']);
-                    $stmt->bindValue(':no_sonar', $map['no_sonar']);
-                    $stmt->bindValue(':todo', $map['todo']);
-                    $stmt->bindValue(':nombre_ligne', $map['nombre_ligne']);
-                    $stmt->bindValue(':nombre_ligne_code', $map['nombre_ligne_code']);
-                    $stmt->bindValue(':couverture', $map['couverture']);
-                    $stmt->bindValue(':duplication_density', $map['duplication_density']);
-                    $stmt->bindValue(':sqale_debt_ratio', $map['sqale_debt_ratio']);
-                    $stmt->bindValue(':tests_unitaires', $map['tests_unitaires']);
-                    $stmt->bindValue(':nombre_defaut', $map['nombre_defaut']);
-                    $stmt->bindValue(':dette', $map['dette']);
-                    $stmt->bindValue(':nombre_bug', $map['nombre_bug']);
-                    $stmt->bindValue(':nombre_vulnerability', $map['nombre_vulnerability']);
-                    $stmt->bindValue(':nombre_code_smell', $map['nombre_code_smell']);
-                    $stmt->bindValue(':bug_blocker', $map['bug_blocker']);
-                    $stmt->bindValue(':bug_critical', $map['bug_critical']);
-                    $stmt->bindValue(':bug_major', $map['bug_major']);
-                    $stmt->bindValue(':bug_minor', $map['bug_minor']);
-                    $stmt->bindValue(':bug_info', $map['bug_info']);
-                    $stmt->bindValue(':vulnerability_blocker', $map['vulnerability_blocker']);
-                    $stmt->bindValue(':vulnerability_critical', $map['vulnerability_critical']);
-                    $stmt->bindValue(':vulnerability_major', $map['vulnerability_major']);
-                    $stmt->bindValue(':vulnerability_minor', $map['vulnerability_minor']);
-                    $stmt->bindValue(':vulnerability_info', $map['vulnerability_info']);
-                    $stmt->bindValue(':code_smell_blocker', $map['code_smell_blocker']);
-                    $stmt->bindValue(':code_smell_critical', $map['code_smell_critical']);
-                    $stmt->bindValue(':code_smell_major', $map['code_smell_major']);
-                    $stmt->bindValue(':code_smell_minor', $map['code_smell_minor']);
-                    $stmt->bindValue(':code_smell_info', $map['code_smell_info']);
-                    $stmt->bindValue(':frontend', $map['frontend']);
-                    $stmt->bindValue(':backend', $map['backend']);
-                    $stmt->bindValue(':autre', $map['autre']);
-                    $stmt->bindValue(':nombre_anomalie_bloquant', $map['nombre_anomalie_bloquant']);
-                    $stmt->bindValue(':nombre_anomalie_critique', $map['nombre_anomalie_critique']);
-                    $stmt->bindValue(':nombre_anomalie_majeur', $map['nombre_anomalie_majeur']);
-                    $stmt->bindValue(':nombre_anomalie_mineur', $map['nombre_anomalie_mineur']);
-                    $stmt->bindValue(':nombre_anomalie_info', $map['nombre_anomalie_info']);
-                    $stmt->bindValue(':note_reliability', $map['note_reliability']);
-                    $stmt->bindValue(':note_security', $map['note_security']);
-                    $stmt->bindValue(':note_sqale', $map['note_sqale']);
-                    $stmt->bindValue(':note_hotspot', $map['note_hotspot']);
-                    $stmt->bindValue(':hotspot_total', $map['hotspot_total']);
-                    $stmt->bindValue(':hotspot_high', $map['hotspot_high']);
-                    $stmt->bindValue(':hotspot_medium', $map['hotspot_medium']);
-                    $stmt->bindValue(':hotspot_low', $map['hotspot_low']);
-                    /** On ne peut pas binder la valeur d'un boolean en true/false
-                     * car le type est toujours string/number ou dateTime */
-                    $stmt->bindValue(':initial', 'false');
-                    $stmt->bindValue(':mode_collecte', $map['mode_collecte']);
-                    $stmt->bindValue(':utilisateur_collecte', $map['utilisateur_collecte']);
-                    $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
-                    $stmt->executeStatement();
+                        $stmt->bindValue(':maven_key', $map['maven_key']);
+                        $stmt->bindValue(':analyse_key', $map['analyse_key']);
+                        $stmt->bindValue(':version', $map['version']);
+                        $stmt->bindValue(':date_version', $map['date_version']);
+                        $stmt->bindValue(':nom_projet', $map['nom_projet']);
+                        $stmt->bindValue(':version_release', $map['version_release']);
+                        $stmt->bindValue(':version_snapshot', $map['version_snapshot']);
+                        $stmt->bindValue(':version_autre', $map['version_autre']);
+                        $stmt->bindValue(':suppress_warning', $map['suppress_warning']);
+                        $stmt->bindValue(':no_sonar', $map['no_sonar']);
+                        $stmt->bindValue(':todo', $map['todo']);
+                        $stmt->bindValue(':logger_info', $map['logger_info']);
+                        $stmt->bindValue(':logger_warn', $map['logger_warn']);
+                        $stmt->bindValue(':logger_error', $map['logger_error']);
+                        $stmt->bindValue(':logger_debug', $map['logger_debug']);
+                        $stmt->bindValue(':nombre_ligne', $map['nombre_ligne']);
+                        $stmt->bindValue(':nombre_ligne_code', $map['nombre_ligne_code']);
+                        $stmt->bindValue(':couverture', $map['couverture']);
+                        $stmt->bindValue(':duplication_density', $map['duplication_density']);
+                        $stmt->bindValue(':sqale_debt_ratio', $map['sqale_debt_ratio']);
+                        $stmt->bindValue(':tests_unitaires', $map['tests_unitaires']);
+                        $stmt->bindValue(':nombre_defaut', $map['nombre_defaut']);
+                        $stmt->bindValue(':dette', $map['dette']);
+                        $stmt->bindValue(':nombre_bug', $map['nombre_bug']);
+                        $stmt->bindValue(':nombre_vulnerability', $map['nombre_vulnerability']);
+                        $stmt->bindValue(':nombre_code_smell', $map['nombre_code_smell']);
+                        $stmt->bindValue(':bug_blocker', $map['bug_blocker']);
+                        $stmt->bindValue(':bug_critical', $map['bug_critical']);
+                        $stmt->bindValue(':bug_major', $map['bug_major']);
+                        $stmt->bindValue(':bug_minor', $map['bug_minor']);
+                        $stmt->bindValue(':bug_info', $map['bug_info']);
+                        $stmt->bindValue(':vulnerability_blocker', $map['vulnerability_blocker']);
+                        $stmt->bindValue(':vulnerability_critical', $map['vulnerability_critical']);
+                        $stmt->bindValue(':vulnerability_major', $map['vulnerability_major']);
+                        $stmt->bindValue(':vulnerability_minor', $map['vulnerability_minor']);
+                        $stmt->bindValue(':vulnerability_info', $map['vulnerability_info']);
+                        $stmt->bindValue(':code_smell_blocker', $map['code_smell_blocker']);
+                        $stmt->bindValue(':code_smell_critical', $map['code_smell_critical']);
+                        $stmt->bindValue(':code_smell_major', $map['code_smell_major']);
+                        $stmt->bindValue(':code_smell_minor', $map['code_smell_minor']);
+                        $stmt->bindValue(':code_smell_info', $map['code_smell_info']);
+                        $stmt->bindValue(':frontend', $map['frontend']);
+                        $stmt->bindValue(':backend', $map['backend']);
+                        $stmt->bindValue(':autre', $map['autre']);
+                        $stmt->bindValue(':nombre_anomalie_bloquant', $map['nombre_anomalie_bloquant']);
+                        $stmt->bindValue(':nombre_anomalie_critique', $map['nombre_anomalie_critique']);
+                        $stmt->bindValue(':nombre_anomalie_majeur', $map['nombre_anomalie_majeur']);
+                        $stmt->bindValue(':nombre_anomalie_mineur', $map['nombre_anomalie_mineur']);
+                        $stmt->bindValue(':nombre_anomalie_info', $map['nombre_anomalie_info']);
+                        $stmt->bindValue(':note_reliability', $map['note_reliability']);
+                        $stmt->bindValue(':note_security', $map['note_security']);
+                        $stmt->bindValue(':note_sqale', $map['note_sqale']);
+                        $stmt->bindValue(':note_hotspot', $map['note_hotspot']);
+                        $stmt->bindValue(':hotspot_total', $map['hotspot_total']);
+                        $stmt->bindValue(':hotspot_high', $map['hotspot_high']);
+                        $stmt->bindValue(':hotspot_medium', $map['hotspot_medium']);
+                        $stmt->bindValue(':hotspot_low', $map['hotspot_low']);
+                        /** On ne peut pas binder la valeur d'un boolean en true/false
+                         * car le type est toujours string/number ou dateTime */
+                        $stmt->bindValue(':initial', 'false');
+                        $stmt->bindValue(':mode_collecte', $map['mode_collecte']);
+                        $stmt->bindValue(':utilisateur_collecte', $map['utilisateur_collecte']);
+                        $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
+                        $stmt->executeStatement();
                 $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            dd($e->getMessage());
+            if ($e->getSqlState()=='23505'){
+                return ['code'=>23505, 'erreur'=>'les informations existent déjà.'];
+            }
             return ['code'=> 500, 'erreur'=>$e->getMessage()];
         }
         /** on prépare la réponse */
