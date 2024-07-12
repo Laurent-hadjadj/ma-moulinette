@@ -76,7 +76,6 @@ export const remplissage=function(mavenKey) {
     /** On affiche les informations du projet */
     const nom = mavenKey.split(':');
     $('#nom-projet').html(nom[1]);
-    console.log(t);
     $('#key-analyse').html(t.analyse_key);
     $('#clef-projet').html(mavenKey);
     $('#version-release').html(t.release);
