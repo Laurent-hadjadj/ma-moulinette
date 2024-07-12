@@ -12,7 +12,7 @@
 -- 28/05/2024 : Laurent HADJADJ - Mise à jour du script - réécriture complet
 -- 29/05/2024 : Laurent HADJADJ - Mise à jour de la table Activite (Quentin)
 -- 30/05/2024 : Laurent HADJADJ - Ajout des attributs resolution et securityCategory pour la table hotspot
--- 02/06/2024 : Laurent HADJADJ - Ajout de l'attribut mode_collecte dans toutes les tables de collecte pour insérer le type de collecte : [manuel], [auto]
+-- 02/06/2024 : Laurent HADJADJ - Ajout de l'attribut mode_collecte dans toutes les tables de collecte pour insérer le type de collecte : [COLLECTE], [TRAITREMENT MANUEL], [TRAITEMENT AUTOMATIQUE]
 -- 02/06/2024 : Laurent HADJADJ - Ajout de l'attribut utilisateur_collecte dans toutes les tables de collecte pour insérer l'identifiant de l'utilisateur : [batch] ou [prenom.nom]
 -- 03/06/2024 : Laurent HADJADJ - Renommage duplication en duplication_density dans la table historique
 -- 04/06/2024 : Laurent HADJADJ - Ajout de l'attribut todo dans la table historique.
@@ -179,7 +179,7 @@ COMMENT ON COLUMN ma_moulinette.anomalie.minor IS 'Problèmes mineurs';
 COMMENT ON COLUMN ma_moulinette.anomalie.bug IS 'Nombre total de bugs';
 COMMENT ON COLUMN ma_moulinette.anomalie.vulnerability IS 'Nombre total de vulnérabilités';
 COMMENT ON COLUMN ma_moulinette.anomalie.code_smell IS 'Nombre total de mauvaises pratiques';
-COMMENT ON COLUMN ma_moulinette.anomalie.mode_collecte IS 'Mode de collecte : manuel ou automatique';
+COMMENT ON COLUMN ma_moulinette.anomalie.mode_collecte IS 'Mode de collecte : collecte, taitrement manuel ou traitement automatique';
 COMMENT ON COLUMN ma_moulinette.anomalie.utilisateur_collecte IS 'Nom de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.anomalie.date_enregistrement IS 'Date d’enregistrement de l’anomalie';
 
@@ -232,7 +232,7 @@ COMMENT ON COLUMN ma_moulinette.anomalie_details.code_smell_critical IS 'Nombre 
 COMMENT ON COLUMN ma_moulinette.anomalie_details.code_smell_info IS 'Nombre de mauvaises pratiques d’information';
 COMMENT ON COLUMN ma_moulinette.anomalie_details.code_smell_major IS 'Nombre de mauvaises pratiques majeures';
 COMMENT ON COLUMN ma_moulinette.anomalie_details.code_smell_minor IS 'Nombre de mauvaises pratiques mineures';
-COMMENT ON COLUMN ma_moulinette.anomalie_details.mode_collecte IS 'Mode de collecte : manuel ou automatique';
+COMMENT ON COLUMN ma_moulinette.anomalie_details.mode_collecte IS 'Mode de collecte : collecte, taitrement manuel ou traitement automatique';
 COMMENT ON COLUMN ma_moulinette.anomalie_details.utilisateur_collecte IS 'Nom de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.anomalie_details.date_enregistrement IS 'Date d’enregistrement des détails de l’anomalie';
 
@@ -450,7 +450,7 @@ COMMENT ON COLUMN ma_moulinette.historique.logger_info IS 'Nombre de méthode In
 COMMENT ON COLUMN ma_moulinette.historique.logger_warn IS 'Nombre de méthode Info invoqué';
 COMMENT ON COLUMN ma_moulinette.historique.logger_error IS 'Nombre de méthode Info invoqué';
 COMMENT ON COLUMN ma_moulinette.historique.logger_debug IS 'Nombre de méthode Info invoqué';
-COMMENT ON COLUMN ma_moulinette.historique.mode_collecte IS 'Mode de collecte : manuel ou automatique';
+COMMENT ON COLUMN ma_moulinette.historique.mode_collecte IS 'Mode de collecte : collecte, taitrement manuel ou traitement automatique';
 COMMENT ON COLUMN ma_moulinette.historique.utilisateur_collecte IS 'Nom de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.historique.actuator_info IS 'Infomation Actuator du projet';
 COMMENT ON COLUMN ma_moulinette.historique.date_enregistrement IS 'Date d’enregistrement de l’historique';
@@ -506,7 +506,7 @@ COMMENT ON COLUMN ma_moulinette.hotspot_details.file_path IS 'Chemin du Fichier 
 COMMENT ON COLUMN ma_moulinette.hotspot_details.line IS 'Ligne du fichier où se situe le hotspot';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.message IS 'Message descriptif du hotspot';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.hotspot_key IS 'Clé unique du hotspot';
-COMMENT ON COLUMN ma_moulinette.hotspot_details.mode_collecte IS 'Mode de collecte : manuel ou automatique';
+COMMENT ON COLUMN ma_moulinette.hotspot_details.mode_collecte IS 'Mode de collecte : collecte, taitrement manuel ou traitement automatique';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.utilisateur_collecte IS 'Nom de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.date_enregistrement IS 'Date d’enregistrement du détail de hotspot';
 
@@ -547,7 +547,7 @@ COMMENT ON COLUMN ma_moulinette.hotspot_owasp.probability IS 'Probabilité du ho
 COMMENT ON COLUMN ma_moulinette.hotspot_owasp.status IS 'Statut du hotspot OWASP';
 COMMENT ON COLUMN ma_moulinette.hotspot_owasp.resolution IS 'Donne pour un hotspot au statut REVIEWED son état : FIXED, SAFE, ACKNOWLEDGED';
 COMMENT ON COLUMN ma_moulinette.hotspot_owasp.niveau IS 'Niveau de risque du hotspot OWASP';
-COMMENT ON COLUMN ma_moulinette.hotspot_owasp.mode_collecte IS 'Mode de collecte : manuel ou automatique';
+COMMENT ON COLUMN ma_moulinette.hotspot_owasp.mode_collecte IS 'Mode de collecte : collecte, taitrement manuel ou traitement automatique';
 COMMENT ON COLUMN ma_moulinette.hotspot_owasp.utilisateur_collecte IS 'Nom de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.hotspot_owasp.date_enregistrement IS 'Date d’enregistrement du hotspot OWASP';
 
@@ -586,7 +586,7 @@ COMMENT ON COLUMN ma_moulinette.hotspots.probability IS 'Probabilité de risque 
 COMMENT ON COLUMN ma_moulinette.hotspots.status IS 'Statut du hotspot : TO_REVIEW, REVIEWED';
 COMMENT ON COLUMN ma_moulinette.hotspots.resolution IS 'Donne pour un hotspot au statut REVIEWED son état : FIXED, SAFE, ACKNOWLEDGED';
 COMMENT ON COLUMN ma_moulinette.hotspots.niveau IS 'Niveau de risque du hotspot';
-COMMENT ON COLUMN ma_moulinette.hotspots.mode_collecte IS 'Mode de collecte : manuel ou automatique';
+COMMENT ON COLUMN ma_moulinette.hotspots.mode_collecte IS 'Mode de collecte : collecte, taitrement manuel ou traitement automatique';
 COMMENT ON COLUMN ma_moulinette.hotspots.utilisateur_collecte IS 'Nom de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.hotspots.date_enregistrement IS 'Date d’enregistrement du hotspot';
 
@@ -615,7 +615,7 @@ COMMENT ON COLUMN ma_moulinette.information_projet.analyse_key IS 'Clé d’anal
 COMMENT ON COLUMN ma_moulinette.information_projet.date IS 'Date de l’analyse du projet';
 COMMENT ON COLUMN ma_moulinette.information_projet.project_version IS 'Version du projet lors de l’analyse';
 COMMENT ON COLUMN ma_moulinette.information_projet.type IS 'Type d’analyse effectuée';
-COMMENT ON COLUMN ma_moulinette.information_projet.mode_collecte IS 'Mode de collecte : manuel ou automatique';
+COMMENT ON COLUMN ma_moulinette.information_projet.mode_collecte IS 'Mode de collecte : collecte, taitrement manuel ou traitement automatique';
 COMMENT ON COLUMN ma_moulinette.information_projet.utilisateur_collecte IS 'Nom de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.information_projet.date_enregistrement IS 'Date d’enregistrement de l’information du projet';
 
@@ -667,7 +667,7 @@ COMMENT ON COLUMN ma_moulinette.logger.logger_info IS 'Nombre de méthode Info i
 COMMENT ON COLUMN ma_moulinette.logger.logger_warn IS 'Nombre de méthode Info invoqué';
 COMMENT ON COLUMN ma_moulinette.logger.logger_error IS 'Nombre de méthode Info invoqué';
 COMMENT ON COLUMN ma_moulinette.logger.logger_debug IS 'Nombre de méthode Info invoqué';
-COMMENT ON COLUMN ma_moulinette.logger.mode_collecte IS 'Mode de collecte : manuel ou automatique';
+COMMENT ON COLUMN ma_moulinette.logger.mode_collecte IS 'Mode de collecte : collecte, taitrement manuel ou traitement automatique';
 COMMENT ON COLUMN ma_moulinette.logger.utilisateur_collecte IS 'Nom de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.logger.date_enregistrement IS 'Date d’enregistrement du projet';
 
@@ -723,7 +723,7 @@ COMMENT ON COLUMN ma_moulinette.mesures.sqale_debt_ratio IS 'Ratio de dette tech
 COMMENT ON COLUMN ma_moulinette.mesures.duplication_density IS 'Densité de duplication du code';
 COMMENT ON COLUMN ma_moulinette.mesures.tests IS 'Nombre total de tests';
 COMMENT ON COLUMN ma_moulinette.mesures.issues IS 'Nombre total de problèmes identifiés';
-COMMENT ON COLUMN ma_moulinette.mesures.mode_collecte IS 'Mode de collecte : manuel ou automatique';
+COMMENT ON COLUMN ma_moulinette.mesures.mode_collecte IS 'Mode de collecte : collecte, taitrement manuel ou traitement automatique';
 COMMENT ON COLUMN ma_moulinette.mesures.utilisateur_collecte IS 'Nom de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.mesures.date_enregistrement IS 'Date d’enregistrement de la mesure';
 
@@ -750,7 +750,7 @@ COMMENT ON COLUMN ma_moulinette.no_sonar.maven_key IS 'Clé Maven du projet';
 COMMENT ON COLUMN ma_moulinette.no_sonar.rule IS 'Règle NoSonar appliquée';
 COMMENT ON COLUMN ma_moulinette.no_sonar.component IS 'Composant auquel la règle est appliquée';
 COMMENT ON COLUMN ma_moulinette.no_sonar.line IS 'Ligne où la règle NoSonar est appliquée';
-COMMENT ON COLUMN ma_moulinette.no_sonar.mode_collecte IS 'Mode de collecte : manuel ou automatique';
+COMMENT ON COLUMN ma_moulinette.no_sonar.mode_collecte IS 'Mode de collecte : collecte, taitrement manuel ou traitement automatique';
 COMMENT ON COLUMN ma_moulinette.no_sonar.utilisateur_collecte IS 'Nom de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.no_sonar.date_enregistrement IS 'Date d’enregistrement de l’entrée NoSonar';
 
@@ -774,7 +774,7 @@ GRANT ALL ON TABLE ma_moulinette.notes TO db_user;
 COMMENT ON COLUMN ma_moulinette.notes.maven_key IS 'Clé Maven unique identifiant la note';
 COMMENT ON COLUMN ma_moulinette.notes.type IS 'Type de la note';
 COMMENT ON COLUMN ma_moulinette.notes.value IS 'Valeur de la note';
-COMMENT ON COLUMN ma_moulinette.notes.mode_collecte IS 'Mode de collecte : manuel ou automatique';
+COMMENT ON COLUMN ma_moulinette.notes.mode_collecte IS 'Mode de collecte : collecte, taitrement manuel ou traitement automatique';
 COMMENT ON COLUMN ma_moulinette.notes.utilisateur_collecte IS 'Nom de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.notes.date_enregistrement IS 'Date d’enregistrement de la note';
 
@@ -921,7 +921,7 @@ COMMENT ON COLUMN ma_moulinette.owasp.a10_critical IS 'Nombre d’anomalies crit
 COMMENT ON COLUMN ma_moulinette.owasp.a10_major IS 'Nombre d’anomalies majeures pour A10';
 COMMENT ON COLUMN ma_moulinette.owasp.a10_info IS 'Nombre d’informations pour A10';
 COMMENT ON COLUMN ma_moulinette.owasp.a10_minor IS 'Nombre d’anomalies mineures pour A10';
-COMMENT ON COLUMN ma_moulinette.owasp.mode_collecte IS 'Mode de collecte : manuel ou automatique';
+COMMENT ON COLUMN ma_moulinette.owasp.mode_collecte IS 'Mode de collecte : collecte, taitrement manuel ou traitement automatique';
 COMMENT ON COLUMN ma_moulinette.owasp.utilisateur_collecte IS 'Nom de l’utilisateur qui a réalisé la collecte';
 
 COMMENT ON COLUMN ma_moulinette.owasp.date_enregistrement IS 'Date d’enregistrement des données';
