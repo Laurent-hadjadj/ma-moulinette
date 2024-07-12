@@ -280,9 +280,10 @@ class ApiPeintureController extends AbstractController
             [
                 'code'=>200,
                 'release' => $release, 'snapshot' => $snapshot,  'autre' => $lesAutres,
-                'label' => $label,
-                'dataset' => $dataset, 'projet' => $infoRelease['version'][0]['projet'],
+                'label' => $label, 'dataset' => $dataset,
+                'projet' => $infoRelease['version'][0]['projet'],
                 'date' => $infoRelease['version'][0]['date'],
+                'analyse_key' => $infoRelease['version'][0]['analyse_key'],
                 Response::HTTP_OK]
         );
     }
