@@ -17,6 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\SecurityBundle\Security;
 
 /** Gestion de accès aux API */
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -43,10 +44,15 @@ class ApiEnregistrementController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
+    private $security;
+    private $em;
+
     public function __construct(
-        private EntityManagerInterface $em
+        EntityManagerInterface $em,
+        Security $security
     ) {
         $this->em = $em;
+        $this->security = $security;
     }
 
     /**
@@ -64,138 +70,59 @@ class ApiEnregistrementController extends AbstractController
     #[Route('/api/enregistrement', name: 'enregistrement', methods: ['PUT'])]
     public function enregistrement(Request $request): response
     {
+        /** On instancie l'entityRepository */
+        $historiqueRepository = $this->em->getRepository(Historique::class);
+
         /** On décode le body. */
         $data = json_decode($request->getContent());
         /** On créé un objet response pour le retour JSON. */
         $response = new JsonResponse();
 
-        /** On créé un objet date, avec la date courante. */
-        $date = new DateTime();
-        $date->setTimezone(new DateTimeZone(static::$europeParis));
+        /** todo : vérifier les droits et que les data != null */
 
-        /** Enregistrement */
-        $save = new Historique();
+        /** On créé un objet date Immutable, avec la date courante. */
+        $dateEnregistrement = new \DateTimeImmutable();
+        $dateEnregistrement->setTimezone(new DateTimeZone(static::$europeParis));
 
-        /** Informations version. */
-        $save->setMavenKey($data->mavenKey);
-        $save->setNomProjet($data->nomProjet);
-        if(property_exists($data, 'versionRelease')){
-            $save->setVersionRelease($data->versionRelease);
+        /** On contrôle le mode d'utilisation */
+        $utilisateur_collecte = $this->security->getUser()->getCourriel();
+        $json='{}';
+        $map=['maven_key'=>$data->maven_key, 'analyse_key'=>$data->analyse_key,
+            'version'=>$data->version, 'date_version'=>$data->version,
+            'nom_projet'=>$data->nom_projet, 'version_release'=>$data->version_release, 'version_snapshot'=>$data->version_snapshot, 'version_autre'=>$data->version_autre,
+            'suppress_warning'=>$data->suppress_warning, 'no_sonar'=>$data->no_sonar,
+            'todo'=>$data->todo,
+            'logger_info'=>$data->logger_info, 'logger_warn'=>$data->logger_warn, 'logger_error'=>$data->logger_error, 'logger_debug'=>$data->logger_debug,
+            'nombre_ligne'=>$data->nombre_ligne, 'nombre_ligne_code'=>$data->nombre_ligne_code, 'couverture'=>$data->couverture, 'duplication_density'=>$data->duplication_density, 'sqale_debt_ratio'=>$data->sqale_debt_ratio, 'tests_unitaires'=>$data->tests_unitaires, 'nombre_defaut'=>$data->nombre_defaut, 'dette'=>$data->dette,
+            'nombre_bug'=>$data->nombre_bug, 'nombre_vulnerability'=>$data->nombre_vulnerability, 'nombre_code_smell'=>$data->nombre_code_smell,
+            'bug_blocker'=>$data->bug_blocker, 'bug_critical'=>$data->bug_critical,
+            'bug_major'=>$data->bug_major, 'bug_minor'=>$data->bug_minor, 'bug_info'=>$data->bug_info,
+            'vulnerability_blocker'=>$data->vulnerability_blocker, 'vulnerability_critical'=>$data->vulnerability_critical, 'vulnerability_major'=>$data->vulnerability_major,
+            'vulnerability_minor'=>$data->vulnerability_minor, 'vulnerability_info'=>$data->vulnerability_info,
+            'code_smell_blocker'=>$data->code_smell_blocker, 'code_smell_critical'=>$data->code_smell_critical, 'code_smell_major'=>$data->code_smell_major,
+            'code_smell_minor'=>$data->code_smell_minor, 'code_smell_info'=>$data->code_smell_info,
+            'frontend'=>$data->frontend, 'backend'=>$data->backend, 'autre'=>$data->autre,
+            'nombre_anomalie_bloquant'=>$data->nombre_anomalie_bloquant, 'nombre_anomalie_critique'=>$data->nombre_anomalie_critique,
+            'nombre_anomalie_majeur'=>$data->nombre_anomalie_majeur,
+            'nombre_anomalie_mineur'=>$data->nombre_anomalie_mineur, 'nombre_anomalie_info'=>$data->nombre_anomalie_info,
+            'note_reliability'=>$data->note_reliability, 'note_security'=>$data->note_security,
+            'note_sqale'=>$data->note_sqale, 'note_hotspot'=>$data->note_hotspot, 'hotspot_total'=>$data->hotspot_total,
+            'hotspot_high'=>$data->hotspot_high, 'hotspot_medium'=>$data->hotspot_medium, 'hotspot_low'=>$data->hotspot_low,
+            'initial'=> $data->initial,
+            'mode_collecte'=>'COLLECTE', 'utilisateur_collecte'=>$utilisateur_collecte,
+            'date_enregistrement'=>$dateEnregistrement
+        ];
+       /** Enregistrement dans le table historique */
+        $historique=$historiqueRepository->insertHistoriqueAjoutProjet($map,$json);
+        if ($historique['code']!=200 && $historique['code']!=23505) {
+            return ['code' => $historique['code'], 'error'=>[$historique['erreur']],
+            'rq'=>'insertTodo'];
         }
-        if(property_exists($data, 'versionSnapshot')){
-            $save->setVersionSnapshot($data->versionSnapshot);
-        }
-        if(property_exists($data, 'versionAutre')){
-            $save->setVersionAutre($data->versionAutre);
-        }
-        if(property_exists($data, 'version')){
-            $save->setVersion($data->version);
-        }
-        if (property_exists($data, 'dateVersion')) {
-            $dateVersion = new DateTime($data->dateVersion);
-            $dateVersion->setTimezone(new DateTimeZone(static::$europeParis));
-            $save->setDateVersion($dateVersion->format('Y-m-d H:i:s'));
-        } else {
-            $save->setDateVersion($date->format('Y-m-d H:i:s'));
-        }
-
-        /** Informations sur les exceptions. */
-        $save->setSuppressWarning($data->suppressWarning);
-        $save->setNoSonar($data->noSonar);
-
-        /** Informations projet. */
-        $save->setNombreLigne($data->nombreLigne);
-        $save->setNombreLigneCode($data->nombreLigneDeCode);
-        $save->setCouverture($data->couverture);
-        $save->setSqaleDebtRatio($data->sqaleDebtRatio);
-        $save->setDuplication($data->duplication);
-        $save->setTestsUnitaires($data->testsUnitaires);
-        $save->setNombreDefaut($data->nombreDefaut);
-
-        /** Dette technique. */
-        $save->setDette($data->dette);
-
-        /** Nombre de défaut. */
-        $save->setNombreBug($data->nombreBug);
-        $save->setNombreVulnerability($data->nombreVulnerability);
-        $save->setNombreCodeSmell($data->nombreCodeSmell);
-
-        /** répartition par module (Java). */
-        $save->setFrontend($data->frontend);
-        $save->setBackend($data->backend);
-        $save->setAutre($data->autre);
-
-        /** Répartition par type. */
-        $save->setNombreAnomalieBloquant($data->nombreAnomalieBloquant);
-        $save->setNombreAnomalieCritique($data->nombreAnomalieCritique);
-        $save->setNombreAnomalieInfo($data->nombreAnomalieInfo);
-        $save->setNombreAnomalieMajeur($data->nombreAnomalieMajeur);
-        $save->setNombreAnomalieMineur($data->nombreAnomalieMineur);
-
-        /** Notes Fiabilité, sécurité, hotspots et mauvaises pratique. */
-        $save->setNoteReliability($data->noteReliability);
-        $save->setNoteSecurity($data->noteSecurity);
-        $save->setNoteSqale($data->noteSqale);
-        $save->setNoteHotspot($data->noteHotspot);
-
-        /** Répartition des hotspots. */
-        if (property_exists($data, 'hotspotHigh')) {
-            $save->setHotspotHigh(intval($data->hotspotHigh));
-        }
-        if (property_exists($data, 'hotspotMedium')) {
-            $save->setHotspotMedium(intval($data->hotspotMedium));
-        }
-        if (property_exists($data, 'hotspotLow')) {
-            $save->setHotspotLow(intval($data->hotspotLow));
-        }
-        if (property_exists($data, 'hotspotTotal')) {
-            $save->setHotspotTotal(intval($data->hotspotTotal));
+        if ($historique['code']===23505){
+            return $response->setData(["code" => 202, Response::HTTP_OK]);
         }
 
-        /** Je suis une verion initiale ?  0 (false) and 1 (true). */
-        /** On récupère 0 ou 1 et non FALSE et TRUE */
-        $save->setInitial($data->initial);
-
-        /** Nombre de défaut par sévérité. */
-        /** Les BUG. */
-        $save->setBugBlocker($data->bugBlocker);
-        $save->setBugCritical($data->bugCritical);
-        $save->setBugMajor($data->bugMajor);
-        $save->setBugMinor($data->bugMinor);
-        $save->setBugInfo($data->bugInfo);
-
-        /** Les VULNERABILITY. */
-        $save->setVulnerabilityBlocker($data->vulnerabilityBlocker);
-        $save->setVulnerabilityCritical($data->vulnerabilityCritical);
-        $save->setVulnerabilityMajor($data->vulnerabilityMajor);
-        $save->setVulnerabilityMinor($data->vulnerabilityMinor);
-        $save->setVulnerabilityInfo($data->vulnerabilityInfo);
-
-        /** Les CODE SMELL. */
-        $save->setCodeSmellBlocker($data->codeSmellBlocker);
-        $save->setCodeSmellCritical($data->codeSmellCritical);
-        $save->setCodeSmellMajor($data->codeSmellMajor);
-        $save->setCodeSmellMinor($data->codeSmellMinor);
-        $save->setCodeSmellInfo($data->codeSmellInfo);
-
-        /** On ajoute la date et on enregistre. */
-        $save->setDateEnregistrement($date);
-        $this->em->persist($save);
-
-        // On catch l'erreur sur la clé composite : maven_key, version, date_version
-        try {
-            $this->em->flush();
-        } catch (\Doctrine\DBAL\Exception\UniqueConstraintViolationException $e) {
-            /** General error: 5 database is locked" */
-            /** General error: 19 violation de clé */
-            if ($e->getCode() === 19) {
-                $code = 19;
-            } else {
-                $code = $e;
-            }
-            return $response->setData(["code" => $code, Response::HTTP_OK]);
-        }
     /** Tout va bien ! */
-    return $response->setData(["code" => "OK", Response::HTTP_OK]);
+    return $response->setData(["code" => 200, Response::HTTP_OK]);
     }
 }
