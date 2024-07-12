@@ -181,7 +181,6 @@ export const remplissage=function(mavenKey) {
   t56.dataset.listeFichier=(t.details);
   });
 
-
     /***
    * On récupère les logger
    */
@@ -221,10 +220,10 @@ export const remplissage=function(mavenKey) {
       const logger3 = document.getElementById('js-logger-error');
       const logger4 = document.getElementById('js-logger-debug');
 
-      logger1.dataset.nombreLigne=(t.logger_info);
-      logger2.dataset.nombreLigneDeCode=(t.logger_warn);
-      logger3.dataset.coverage=(t.logger_error);
-      logger4.dataset.sqaleDebtRatio=(t.logger_debug);
+      logger1.dataset.loggerInfo=(t.logger_info);
+      logger2.dataset.loggerWarn=(t.logger_warn);
+      logger3.dataset.loggerError=(t.logger_error);
+      logger4.dataset.loggerDebug=(t.logger_debug);
 
     });
 
