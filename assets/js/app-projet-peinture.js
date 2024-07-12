@@ -50,7 +50,7 @@ const afficheMessage=function(t){
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 export const remplissage=function(mavenKey) {
-  const data = { maven_key: mavenKey, mode: 'null' };
+  const data = { maven_key: mavenKey };
 
   /**
    * On récupère les informations sur les versions, et le dernier audit.
@@ -76,6 +76,8 @@ export const remplissage=function(mavenKey) {
     /** On affiche les informations du projet */
     const nom = mavenKey.split(':');
     $('#nom-projet').html(nom[1]);
+    console.log(t);
+    $('#key-analyse').html(t.analyse_key);
     $('#clef-projet').html(mavenKey);
     $('#version-release').html(t.release);
     $('#version-snapshot').html(t.snapshot);
@@ -88,10 +90,12 @@ export const remplissage=function(mavenKey) {
     $('#date-version').html(new Intl.DateTimeFormat('default', dateOptions).format(new Date(t.date)));
 
     /** Historique */
+    const t0 = document.getElementById('key-analyse');
     const t1 = document.getElementById('version-release');
     const t2 = document.getElementById('version-snapshot');
     const t3 = document.getElementById('version-autre');
     const t4 = document.getElementById('date-version');
+    t0.dataset.analyseKey=(t.analyse_key);
     t1.dataset.release=(t.release);
     t2.dataset.snapshot=(t.snapshot);
     t3.dataset.autre=(t.autre);
@@ -632,7 +636,7 @@ export const remplissage=function(mavenKey) {
  */
 export const afficheHotspotDetails=function (mavenKey){
   /* On récupère la répartition des hotspot. */
-  const data = { maven_key: mavenKey, mode: 'null' };
+  const data = { maven_key: mavenKey };
   const options = {
     url: `${serveur()}/api/peinture/projet/hotspots/details`, type: 'POST',
           dataType: 'json', data: JSON.stringify(data), contentType };
