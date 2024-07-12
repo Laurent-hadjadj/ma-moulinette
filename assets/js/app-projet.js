@@ -140,7 +140,7 @@ const dessineMoiUnMouton=function(label, dataset) {
   const ctx = document.getElementById('graphique-autre-version').getContext('2d');
   const charts = new Chart(ctx, { type: 'doughnut', data, options });
   if (charts===null){
-    console.info('Pour éviter une erreur sonar !!!');
+    sessionStorage.setItem('info','Pour éviter une erreur sonar !!!');
   }
 };
 
@@ -231,7 +231,7 @@ const selectProjet=async function() {
       return;
     }
     if (t.code===http_200){
-      log(' - INFO : Je construit la liste des projets autorisées.');
+      log(' - INFO   : Je construit la liste des projets autorisées.');
       $('.js-projet').select2({
         matcher: match,
         placeholder: 'Cliquez pour ouvrir la liste',
@@ -301,7 +301,7 @@ const projetInformation=function(mavenKey) {
         return;
       }
       if (t.code===http_200){
-        log(` - INFO : (01) Collecte des informations pour la version : ${t.message.projet}`);
+        log(` - INFO   : (01) Collecte des informations pour la version : ${t.message.projet}`);
         const nombre=parseInt(t.message.release)+parseInt(t.message.snapshot)+parseInt(t.message.autre)
         log(`               Nombre de version disponible : ${nombre}`);
       }
@@ -343,7 +343,7 @@ const projetMesure=function(mavenKey) {
         return;
       }
       if (t.code===http_200){
-          log(' - INFO : (02) Collete des mesures globales.');
+          log(' - INFO   : (02) Collete des mesures globales.');
           log(`               ${t.message.issues} problème(s) trouvé(s).`);
       }
         resolve();
@@ -354,7 +354,7 @@ const projetMesure=function(mavenKey) {
 /**
   * [Description for projetRating]
   * Récupère la note pour la fiabilité, la sécurité et les mauvaises pratiques.
-  * http://{url}'/api/Collecte/note
+  * http://{url}'/api/collecte/note
   *
   * Phase 03
   * {mavenKey} = clé du projet
@@ -387,7 +387,7 @@ const projetRating=function(mavenKey, type) {
         return;
       }
       if (t.code===http_200){
-        log(` - INFO : (03) Collecte de la note pour le type : ${t.type}`);
+        log(` - INFO   : (03) Collecte de la note pour le type : ${t.type}`);
         log(`               La note est : ${t.message.note}`);
       }
         resolve();
@@ -431,7 +431,7 @@ const projetOwasp=function(mavenKey) {
         return;
       }
       if (t.code===http_200 && t.nombre===0){
-          log(' - INFO : (04) Bravo aucune faille OWASP détectée.');
+          log(' - INFO   : (04) Bravo aucune faille OWASP détectée.');
       } else {
         let s='';
         if(parseInt(t.nombre,10)>1){ s='s' ;}
@@ -480,7 +480,7 @@ const projetHotspot=function(mavenKey) {
       }
 
       if (t.code===http_200 && t.nombre===0){
-          log(' - INFO : (05) Bravo aucune faille potentielle détectée.');
+          log(' - INFO   : (05) Bravo aucune faille potentielle détectée.');
       } else {
           let s='';
           if(parseInt(t.nombre,10)>1){ s='s'; }
@@ -527,7 +527,7 @@ const projetAnomalie=function(mavenKey) {
         return;
       }
       if (t.code===http_200){
-          log(` - INFO : (06) ${t.info}`);
+          log(` - INFO   : (06) ${t.info}`);
       }
     resolve();
     });
@@ -569,7 +569,7 @@ const projetAnomalieDetails=function(mavenKey) {
         return;
       }
       if (t.code===http_200){
-          log(' - INFO : (07) La fréquence des sévérités par type a été collectée.');
+          log(' - INFO   : (07) La fréquence des sévérités par type a été collectée.');
       } else {
           log(` - ERROR : (07) Je n'ai pas réussi à collecter les données (${t.erreur}).`);
       }
@@ -617,30 +617,29 @@ const projetHotspotOwasp=function(mavenKey, menace) {
         sessionStorage.setItem('collecte', 'Erreur phase 08-09.');
         return;
       }
-
       if (t.code===http_200 && t.info==='effacement'){
-        log(' - INFO : (08) Les enregistrements ont été supprimé de la table hostspot_owasp.');
+        log(' - INFO   : (08) Les enregistrements ont été supprimé de la table hostspot_owasp.');
+        if (t.owasp2021 === 'nc') {
+        log(` - INFO   : (09) Le référentiel OWASP2021 n'est pas supporté par votre serveur SonarQube.`);
+        }
       }
 
       if (t.code===http_200 && t.owasp2017 === 0 && t.info==='enregistrement') {
-        log(` - INFO : (09) Bravo aucune faille OWASP2017 ${menace} potentielle détectée.`);
+        log(`               Bravo aucune faille OWASP2017 ${menace} potentielle détectée.`);
       }
       if (t.code===http_200 && t.owasp2021 === 0 && t.info==='enregistrement') {
-        log(` - INFO : (09) Bravo aucune faille OWASP2021 ${menace} potentielle détectée.`);
-      }
-      if (t.code===http_200 && t.owasp2021 === 'NC' && t.info==='enregistrement') {
-        log(` - INFO : (09) Le référentiel OWASP2021 n'est pas supporté par votre serveur SonarQube.`);
+        log(`               Bravo aucune faille OWASP2021 ${menace} potentielle détectée.`);
       }
 
       if (t.code===http_200 && t.owasp2017 !== 0 && t.info==='enregistrement') {
         let s='';
         if(parseInt(t.owasp2017,10)>1){ s='s' ;}
-        log(` - WARN : (09) J'ai trouvé ${t.owasp2017} faille${s} OWASP ${menace} potentielle${s}.`);
+        log(`                J'ai trouvé ${t.owasp2017} faille${s} OWASP ${menace} potentielle${s}.`);
       }
-      if (t.code===http_200 && t.owasp2021 !== 0 && t.owasp2021 !== 'NC' && t.info==='enregistrement') {
+      if (t.code===http_200 && t.owasp2021 !== 0 && t.owasp2021 !== 'nc' && t.info==='enregistrement') {
         let s='';
         if(parseInt(t.owasp2021,10)>1){ s='s' ;}
-        log(` - WARN : (09) J'ai trouvé ${t.owasp2021} faille${s} OWASP ${menace} potentielle${s}.`);
+        log(`                J'ai trouvé ${t.owasp2021} faille${s} OWASP ${menace} potentielle${s}.`);
       }
       resolve();
     });
@@ -650,11 +649,9 @@ const projetHotspotOwasp=function(mavenKey, menace) {
 /**
  * [Description for projetHotspotOwaspDetails]
  * On enregistre le détails des hotspot owasp
- * http://{url}/api/projet/hotspot/details
+ * http://{url}/api/collecte/hotspot/detail
  *
  * Phase 10
- *
- * {mode} = null, TEST
  * {mavenKey} = clé du projet
  *
  * @param string mavenKey
@@ -671,9 +668,9 @@ const projetHotspotOwaspDetails=function(mavenKey) {
     return;
   }
 
-  const data = { maven_key: mavenKey, mode: 'null' };
+  const data = { maven_key: mavenKey };
   const options = {
-    url: `${serveur()}/api/projet/hotspot/details`, type: 'POST',
+    url: `${serveur()}/api/collecte/hotspot/detail`, type: 'POST',
           dataType: 'json', data: JSON.stringify(data), contentType };
 
   return new Promise(resolve => {
@@ -684,10 +681,12 @@ const projetHotspotOwaspDetails=function(mavenKey) {
         return;
       }
       if (t.code===http_200) {
-        log(` - INFO : (10) On a trouvé ${t.ligne} descriptions.`);
+        let s='';
+        if (parseInt(t.nombre,10) > 1){ s='s'; }
+        log(` - INFO   : (10) On a trouvé ${t.nombre} description${s}.`);
       }
       if (t.code===http_406){
-        log(` - INFO : (10) Aucun détails n'est disponible pour les hotspots.`);
+        log(` - INFO   : (10) Aucun détail n'est disponible pour les hotspots.`);
       }
       resolve();
     });
@@ -697,11 +696,9 @@ const projetHotspotOwaspDetails=function(mavenKey) {
 /**
  * [Description for projetNoSonar]
  * On récupére la liste des exclusions de code
- * http://{url}/api/projet/nosonar
+ * http://{url}/api/collete/nosonar
  *
  * Phase 11
- *
- * {mode} = null, TEST
  * {mavenKey} = clé du projet
  *
  * @param string mavenKey
@@ -718,9 +715,9 @@ const projetNoSonar=function(mavenKey){
       return;
     }
 
-  const data = { maven_key: mavenKey, mode: 'null' };
+  const data = { maven_key: mavenKey };
   const options = {
-    url: `${serveur()}/api/projet/nosonar`, type: 'POST',
+    url: `${serveur()}/api/collecte/nosonar`, type: 'POST',
           dataType: 'json', data: JSON.stringify(data), contentType };
 
   return new Promise(resolve => {
@@ -730,10 +727,14 @@ const projetNoSonar=function(mavenKey){
         sessionStorage.setItem('collecte', 'Erreur phase 11.');
         return;
       }
-      if (t.code===http_200 && t.nosonar !== 0) {
-        log(` - WARM : (11) J'ai trouvé ${t.nosonar} exclusion(s) NoSonar.`);
+      if (t.code===http_200 && t.nombre !== 0) {
+        let s='';
+        if (t.nombre>1) { s='s'; }
+        log(` - WARN : (11) J'ai trouvé ${t.nombre} exclusion${s} NoSonar.`);
+        log(`               NoSonar : ${t.message.no_sonar}`);
+        log(`               Suppress Warning : ${t.message.suppress_warning}`);
       } else {
-        log(` - INFO : (11) Bravo !!! ${t.nosonar} exclusion NoSonar trouvée.`);
+        log(` - INFO   : (11) Bravo !!! ${t.nombre} exclusion NoSonar trouvée.`);
       }
       resolve();
     });
@@ -743,11 +744,9 @@ const projetNoSonar=function(mavenKey){
 /**
  * [Description for projetTodo]
  * On récupére la liste des t_odo
- * http://{url}/api/projet/to do
+ * http://{url}/api/collecte/t_odo
  *
  * Phase 12
- *
- * {mode} = null, TEST
  * {mavenKey} = clé du projet
  *
  * @param string mavenKey
@@ -764,9 +763,9 @@ const projetTodo=function(mavenKey){
       return;
     }
 
-  const data = { maven_key: mavenKey, mode: 'null' };
+  const data = { maven_key: mavenKey };
   const options = {
-    url: `${serveur()}/api/projet/todo`, type: 'POST',
+    url: `${serveur()}/api/collecte/todo`, type: 'POST',
           dataType: 'json', data: JSON.stringify(data), contentType };
 
   return new Promise(resolve => {
@@ -776,15 +775,71 @@ const projetTodo=function(mavenKey){
         sessionStorage.setItem('collecte', 'Erreur phase 12');
         return;
       }
-      if (t.code===http_200 && t.todo !== 0) {
-          log(` - WARM : (12) J'ai trouvé ${t.todo} ToDo(s) à vérifier.`);
+      if (t.code===http_200 && t.nombre !== 0) {
+        let s='';
+        if (t.nombre>1){ s = 's'; }
+          log(` - WARN : (12) J'ai trouvé ${t.nombre} ToDo${s} à vérifier.`);
         } else {
-          log(` - INFO : (12) Bravo !!! ${t.todo} ToDo trouvé.`);
+          log(` - INFO   : (12) Bravo !!! ${t.nombre} ToDo trouvé.`);
         }
       resolve();
     });
   });
 };
+
+/**
+ * [Description for projetLogger]
+ * On récupére la liste des Logger
+ * http://{url}/api/collecte/logger
+ *
+ * Phase 13
+ * {mavenKey} = clé du projet
+ *
+ * @param string mavenKey
+ *
+ * @return response
+ *
+ * Created at: 11/07/2024, 21:40:10 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ */
+const projetLogger=function(mavenKey){
+  /** On vérifie s'il n'y a pas d'erreur lors du traitement */
+  const collecte = sessionStorage.getItem('collecte');
+  if (!collecte || collecte!='Tout va bien!') {
+    return;
+  }
+
+const data = { maven_key: mavenKey };
+const options = {
+  url: `${serveur()}/api/collecte/logger`, type: 'POST',
+        dataType: 'json', data: JSON.stringify(data), contentType };
+
+return new Promise(resolve => {
+  $.ajax(options).then(t=> {
+    if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
+      afficheMessage(t)
+      sessionStorage.setItem('collecte', 'Erreur phase 13');
+      return;
+    }
+    const nombre =
+      parseInt(t.message.logger_info,10) +
+      parseInt(t.message.logger_warn,10) +
+      parseInt(t.message.logger_error,10) +
+      parseInt(t.message.logger_debug,10);
+
+
+    if (t.code===http_200 && nombre !== 0) {
+      let s='';
+      if (t.nombre>1){ s = 's'; }
+        log(` - INFO : (13) J'ai trouvé ${nombre} Logger${s}.`);
+      } else {
+        log(` - INFO : (13) Je n'ai pas trouvé de Logger.`);
+      }
+    resolve();
+  });
+});
+};
+
 
 /**
  * [Description for finCollecte]
@@ -797,7 +852,7 @@ const projetTodo=function(mavenKey){
  */
 const finCollecte=function(){
   setTimeout(function(){
-    log(` - INFO : (13) La collecte des données est terminée.`), troisMille});
+    log(` - INFO   : (14) La collecte des données est terminée.`), troisMille});
     /** On vérifie s'il n'y a pas d'erreur lors du traitement */
     const collecte = sessionStorage.getItem('collecte');
     if (!collecte || collecte!='Tout va bien!') {
@@ -937,7 +992,7 @@ const afficheMesProjets=function() {
           /* On clique sur le bouton afficher les résultats */
           $('.js-affiche-resultat').trigger('click');
           setTimeout(function(){
-            $('.information-texte').html('[02] - L\'affichage des résultats est terminé.');
+            $('.information-texte').html(`[02] - L'affichage des résultats est terminé.`);
           }, cinqMille);
         });
 
@@ -1038,7 +1093,7 @@ $('.js-analyse').on('click', function () {
     return;
   }
 
-  log(' - INFO : On lance la collecte...');
+  log(' - INFO   : On lance la collecte...');
   /* on bloque le bouton afficher les résultats. */
   $('.js-affiche-resultat').removeClass('affiche-resultat-enabled');
   $('.js-affiche-resultat').addClass('affiche-resultat-disabled');
@@ -1082,7 +1137,6 @@ $('.js-analyse').on('click', function () {
     await projetHotspotOwasp(idProject, 'a8');    /*(09)*/
     await projetHotspotOwasp(idProject, 'a9');    /*(09)*/
     await projetHotspotOwasp(idProject, 'a10');   /*(09)*/
-    return;
     /* On enregistre le détails de chaque hotspot owasp. */
     await projetHotspotOwaspDetails(idProject);   /*(10)*/
 
@@ -1091,6 +1145,9 @@ $('.js-analyse').on('click', function () {
 
     /* Récupération des signalements To do (TS, JAVA, XML). */
     await projetTodo(idProject);                  /*(12)*/
+
+    /* Récupération des signalements To do (TS, JAVA, XML). */
+    await projetLogger(idProject);                 /*(13)*/
 
     /* Renvoie le statut de fin */
     finCollecte();
@@ -1222,6 +1279,15 @@ $('.js-affiche-todo').on('click', function () {
 
 /**
  * description
+ * On affiche la liste des logger par méthode
+ */
+$('.js-affiche-logger').on('click', function () {
+  $('#modal-liste-logger').foundation('open');
+});
+
+
+/**
+ * description
  * Événement : on marque le projet comme favori.
  */
 $('.favori-svg').on('click', () => {
@@ -1246,10 +1312,10 @@ $('.favori-svg').on('click', () => {
         }
         /*SQLite : 0 (false) and 1 (true). */
         if (t.code===http_200 && t.statut===0) {
-          log(' - INFO : Suppression du projet à la liste des favoris.');
+          log(' - INFO   : Suppression du projet à la liste des favoris.');
         }
         if (t.code===http_200 && t.statut===1) {
-          log(' - INFO : Ajout du projet à la liste des favoris.');
+          log(' - INFO   : Ajout du projet à la liste des favoris.');
         }
       });
   }
