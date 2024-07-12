@@ -96,7 +96,6 @@ class BatchManuelController extends AbstractController
         return $response->setData(['nombre' => $messageCount], Response::HTTP_OK);
     }
 
-
     #[Route('/message/send', name: 'send_message', methods: ['GET'])]
     public function sendMessage($queueName): Response
     {
@@ -165,6 +164,7 @@ class BatchManuelController extends AbstractController
      * [Description for listeProjet]
      * Récupère la liste des projets depuis un portefeuille de projets.
      *
+     * @param string $itrePortefeuille
      * @param string $portefeuille
      *
      * @return array
@@ -254,7 +254,7 @@ class BatchManuelController extends AbstractController
 
         /** On lance la collecte */
         foreach ($les_projets[0] as $le_projet){
-            $resultat=$this->collecte->collecte($data->portefeuille, $le_projet, 'Manuel', $utilisateur_collecte);
+            $resultat=$this->collecte->collecte($data->portefeuille, $le_projet, 'TRAITEMENT MANUEL', $utilisateur_collecte);
             if ($resultat['code']===500){
                 $code=$resultat['code'];
                 $type="warning";
