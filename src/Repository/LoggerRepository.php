@@ -61,6 +61,33 @@ class LoggerRepository extends ServiceEntityRepository
   }
 
   /**
+   * [Description for selectLogger]
+   *
+   * @param mixed $map
+   *
+   * @return array
+   *
+   * Created at: 12/07/2024 08:18:20 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function selectLogger($map):array
+  {
+      try {
+              $sql = "SELECT *
+                      FROM logger
+                      WHERE maven_key=:maven_key";
+              $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                  $stmt->bindValue(':maven_key', $map['maven_key']);
+                  $liste=$stmt->executeQuery()->fetchAllAssociative();
+      } catch (\Doctrine\DBAL\Exception $e) {
+          return ['code'=>500, 'erreur'=> $e->getMessage()];
+      }
+      return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
+  }
+
+
+  /**
    * [Description for insertLogger]
    *
    * @param mixed $map
