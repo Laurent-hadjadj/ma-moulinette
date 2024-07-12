@@ -147,6 +147,7 @@ textarea[readonly] {
 .enregistrement-enabled,
 #fermer-liste-projet,
 #fermer-liste-hotspot,
+#fermer-liste-logger,
 #fermer-autre-version,
 #fermer-dette-technique,
 #fermer-liste-severite,
@@ -167,6 +168,7 @@ textarea[readonly] {
 #fermer-liste-projet:hover,
 #fermer-autre-version:hover,
 #fermer-liste-hotspot:hover,
+#fermer-liste-logger:hover,
 #fermer-dette-technique:hover,
 #fermer-liste-severite:hover { background-color: #006182; }
 
