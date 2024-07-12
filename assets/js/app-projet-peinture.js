@@ -127,7 +127,6 @@ export const remplissage=function(mavenKey) {
     t6.dataset.nosonar=(t.nosonar);
   });
 
-
   /** On récupère les to.do tags */
   const optionsTodo = {
     url: `${serveur()}/api/peinture/projet/todo`, type: 'POST',
@@ -181,6 +180,54 @@ export const remplissage=function(mavenKey) {
   t55.dataset.xml=(t.xml);
   t56.dataset.listeFichier=(t.details);
   });
+
+
+    /***
+   * On récupère les logger
+   */
+    const optionsLogger = {
+      url: `${serveur()}/api/peinture/projet/logger`, type: 'POST',
+      dataType: 'json', data: JSON.stringify(data), contentType };
+
+    $.ajax(optionsLogger).then(t=> {
+    /** La requête ajax a babaser */
+    if (t.code === http_400){
+      afficheMessage(t);
+      sessionStorage.setItem('peinture', 'Erreur - récupération Logger.');
+      return;
+    }
+
+    /* Le projet n'a pas été trouvé dans la babase. */
+    if (t.code === http_406 || t.code === http_500){
+        afficheMessage(t);
+        return;
+      }
+      /** Il n'y a pas de logger pour ce projet, i.e ce n'est peut être pas un projet java */
+      if (t.total < 0) {
+        $('#logger-liste').html("N.C");
+        return;
+      }
+
+      $('#logger-liste').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.total));
+      $('#js-logger-total').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.total));
+      $('#js-logger-info').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.logger_info));
+      $('#js-logger-warn').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.logger_warn));
+      $('#js-logger-error').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.logger_error));
+      $('#js-logger-debug').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.logger_debug));
+
+      //Historique
+      const logger1 = document.getElementById('js-logger-info');
+      const logger2 = document.getElementById('js-logger-warn');
+      const logger3 = document.getElementById('js-logger-error');
+      const logger4 = document.getElementById('js-logger-debug');
+
+      logger1.dataset.nombreLigne=(t.logger_info);
+      logger2.dataset.nombreLigneDeCode=(t.logger_warn);
+      logger3.dataset.coverage=(t.logger_error);
+      logger4.dataset.sqaleDebtRatio=(t.logger_debug);
+
+    });
+
 
   /**
    * On récupère les mesures :
