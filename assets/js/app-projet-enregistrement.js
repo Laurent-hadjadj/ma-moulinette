@@ -17,7 +17,7 @@ import $ from 'jquery';
 import {serveur} from './properties.js';
 
 /** On importe les constantes */
-import {dateOptions, contentType} from './constante.js';
+import {dateOptions, contentType, http_200, http_202} from './constante.js';
 
 /**
  * [Description for log]
@@ -56,9 +56,11 @@ export const enregistrement=function(mavenKey) {
    * On n'utilise jquery pour la gestion du data Attribute car ce n'est pas fiable.
    * On utilise à la place l'appel JS standard.
    */
+  const t0 = document.getElementById('key-analyse');
   const t1 = document.getElementById('version-release');
   const t2a = document.getElementById('version-snapshot');
   const t2b = document.getElementById('version-autre');
+  const analyseKey=t0.dataset.analyseKey;
   const versionRelease=t1.dataset.release;
   const versionSnapshot=t2a.dataset.snapshot;
   const versionAutre=t2b.dataset.autre;
@@ -73,9 +75,19 @@ export const enregistrement=function(mavenKey) {
   const suppressWarning=t4.dataset.s1309;
   const noSonar=t5.dataset.nosonar;
 
-  /** On récupère le nombre des todo */
-  const t4a = document.getElementById('todo-liste');
-  const todo=t4a.dataset.todo;
+  /** On récupère le nombre des to..do */
+  const t5a = document.getElementById('todo-liste');
+  const todo=t5a.dataset.todo;
+
+  /** On récupère le nombre de Logger */
+  const jsLoggerInfo = document.getElementById('js-logger-info');
+  const loggerInfo=jsLoggerInfo.dataset.loggerInfo;
+  const jsLoggerWarn = document.getElementById('js-logger-warn');
+  const loggerWarn=jsLoggerWarn.dataset.loggerWarn;
+  const jsLoggerError = document.getElementById('js-logger-error');
+  const loggerError=jsLoggerError.dataset.loggerError;
+  const jsLoggerdebug = document.getElementById('js-logger-debug');
+  const loggerDebug=jsLoggerdebug.dataset.loggerDebug;
 
   /**
    * On récupère les informations du projet :
@@ -182,32 +194,40 @@ export const enregistrement=function(mavenKey) {
 
   const data =
   {
-    mavenKey, nomProjet,
-    versionRelease, versionSnapshot, versionAutre, version,
-    dateVersion, suppressWarning, noSonar, todo,
-    nombreLigneDeCode, nombreLigne, couverture, duplication,
-    sqaleDebtRatio, testsUnitaires, nombreDefaut,
-    dette,
-    nombreBug, nombreVulnerability, nombreCodeSmell,
+    'maven_key': mavenKey, 'nom_projet': nomProjet, 'analyse_key': analyseKey,
+    'version_release': versionRelease, 'version_snapshot': versionSnapshot,
+    'version_autre': versionAutre, version, 'date_version': dateVersion,
+    'suppress_warning': suppressWarning, 'no_sonar': noSonar, todo,
+    'logger_info': loggerInfo, 'logger_warn': loggerWarn, 'logger_error': loggerError,
+    'logger_debug': loggerDebug,
+    'nombre_ligne_code': nombreLigneDeCode, 'nombre_ligne': nombreLigne, couverture, 'duplication_density':duplication,
+    'sqale_debt_ratio': sqaleDebtRatio, 'tests_unitaires': testsUnitaires,
+    'nombre_defaut': nombreDefaut, dette,
+    'nombre_bug': nombreBug, 'nombre_vulnerability':nombreVulnerability,
+    'nombre_code_smell': nombreCodeSmell,
     frontend,backend, autre,
-    nombreAnomalieBloquant, nombreAnomalieCritique,
-    nombreAnomalieInfo, nombreAnomalieMajeur,
-    nombreAnomalieMineur,
-    noteReliability, noteSecurity,
-    noteSqale, noteHotspot, hotspotHigh,
-    hotspotMedium, hotspotLow, hotspotTotal,
-    bugBlocker, bugCritical, bugMajor, bugMinor, bugInfo,
-    vulnerabilityBlocker, vulnerabilityCritical,
-    vulnerabilityMajor, vulnerabilityMinor, vulnerabilityInfo,
-    codeSmellBlocker, codeSmellCritical, codeSmellMajor,
-    codeSmellMinor, codeSmellInfo,
-    initial:0, mode:'null' };
+    'nombre_anomalie_bloquant': nombreAnomalieBloquant, 'nombre_anomalie_critique': nombreAnomalieCritique,
+    'nombre_anomalie_info': nombreAnomalieInfo,
+    'nombre_anomalie_majeur': nombreAnomalieMajeur,
+    'nombre_anomalie_mineur': nombreAnomalieMineur,
+    'note_reliability': noteReliability, 'note_security':  noteSecurity,
+    'note_sqale': noteSqale, 'note_hotspot': noteHotspot, 'hotspot_high':  hotspotHigh,
+    'hotspot_medium': hotspotMedium, 'hotspot_low': hotspotLow, 'hotspot_total': hotspotTotal,
+    'bug_blocker': bugBlocker, 'bug_critical': bugCritical, 'bug_major': bugMajor,
+    'bug_minor': bugMinor, 'bug_info': bugInfo,
+    'vulnerability_blocker': vulnerabilityBlocker, 'vulnerability_critical':  vulnerabilityCritical,
+    'vulnerability_major': vulnerabilityMajor, 'vulnerability_minor': vulnerabilityMinor,
+    'vulnerability_info': vulnerabilityInfo,
+    'code_smell_blocker': codeSmellBlocker, 'code_smell_critical': codeSmellCritical,
+    'code_smell_major': codeSmellMajor,
+    'code_smell_minor': codeSmellMinor, 'code_smell_info': codeSmellInfo,
+    initial: 0 };
 
-const options = {
+  const options = {
     url: `${serveur()}/api/enregistrement`, type: 'PUT',
     dataType: 'json', data: JSON.stringify(data), contentType };
     $.ajax(options).then(t=> {
-      if (t.code === 'OK') {
+      if (t.code === http_200) {
         const message='Enregistrement des informations effectué.';
         log(` - INFO : ${message}`);
         const callbox=`<div class="callout alert-callout-border success text-justify" data-closable="slide-out-right">
@@ -215,14 +235,17 @@ const options = {
                         <button class="close-button" aria-label="Fermer la fenêtre" type="button" data-close>
                         <span aria-hidden="true">&times;</span></button></div>`;
         $('#message').html(callbox);
-      } else {
-        const message='Cette version existe déjà dans l\'historique.';
-        log(` - ERROR (${t.code}) : ${message}`);
+      }
+
+      if (t.code === http_202) {
+        const message=`Cette version existe déjà dans l'historique.`;
         const callbox=`<div class="callout alert-callout-border warning text-justify" data-closable="slide-out-right">
                       <p class="open-sans cell"><strong>Ooups !</strong> ${message}</p>
                       <button class="close-button" aria-label="Fermer la fenêtre" type="button" data-close>
                       <span aria-hidden="true">&times;</span></button></div>`;
         $('#message').html(callbox);
+      } else {
+        log(` - ERROR (${t.code}) : ${message}`);
       }
     });
 };
