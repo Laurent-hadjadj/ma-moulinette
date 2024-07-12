@@ -13,9 +13,6 @@
 
 namespace App\Repository;
 
-use PDO;
-use PDOException;
-use DateTimeImmutable;
 use App\Entity\Historique;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -375,8 +372,9 @@ class HistoriqueRepository extends ServiceEntityRepository
                     $sql = "INSERT INTO historique
                     (maven_key, analyse_key, version, date_version,
                     nom_projet, version_release, version_snapshot, version_autre,
-                    suppress_warning, no_sonar, todo, nombre_ligne,
-                    nombre_ligne_code, couverture,
+                    suppress_warning, no_sonar, todo,
+                    logger_info, logger_warn, logger_error, logger_debug,
+                    nombre_ligne, nombre_ligne_code, couverture,
                     duplication_density, sqale_debt_ratio, tests_unitaires, nombre_defaut, dette,
                     nombre_bug, nombre_vulnerability, nombre_code_smell,
                     bug_blocker, bug_critical, bug_major, bug_minor, bug_info,
