@@ -74,7 +74,7 @@ class LoggerRepository extends ServiceEntityRepository
   public function selectLogger($map):array
   {
       try {
-              $sql = "SELECT *
+              $sql = "SELECT logger_info, logger_warn, logger_error, logger_debug
                       FROM logger
                       WHERE maven_key=:maven_key";
               $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
