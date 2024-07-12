@@ -64,6 +64,11 @@ class BatchCollecteLoggerController extends AbstractController
         /** On instancie l'EntityRepository */
         $loggerRepository = $this->em->getRepository(Logger::class);
 
+        /** On regarde si le plugin Track-Logger-Method est  activé */
+        $loggerPlugin = $this->getParameter('track.logger.method');
+        if ((boolean)$loggerPlugin){
+            return ['code' => 404, 'message' => "La collecte des LOGGERS n'a pas été lancée.  (TRACK_LOGGER_METHOD=false).", 'data' => ''];
+        }
         /** On construit l'URL */
         $tempoUrl = $this->getParameter(static::$sonarUrl);
         $mavenKey = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
@@ -138,6 +143,5 @@ class BatchCollecteLoggerController extends AbstractController
 
         return ['code' => 200, 'message' => $loggerData, 'data' => $data];
     }
-
 
 }
