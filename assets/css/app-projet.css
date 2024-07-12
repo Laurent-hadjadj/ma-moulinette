@@ -79,7 +79,8 @@ textarea[readonly] {
 .gestion-de-projet-svg,
 .checklist-svg,
 .information-svg,
-.todo-svg {
+.todo-svg,
+.logger-svg {
   fill: #00445b;
   cursor: none;
   margin-bottom: -0.2rem;
