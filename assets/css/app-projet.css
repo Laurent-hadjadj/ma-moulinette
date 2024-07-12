@@ -363,7 +363,7 @@ textarea[readonly] {
   border: solid 1px #00445b;
   border-radius: 0.2rem;
   padding-left: 19px;
-  padding-right: 20px;
+  padding-right: 19px;
 }
 
 /* Couleur pour la note E */
@@ -373,7 +373,7 @@ textarea[readonly] {
   border: solid 1px #00445b;
   border-radius: 0.2rem;
   padding-left: 21px;
-  padding-right: 20px;
+  padding-right: 22px;
 }
 
 /* **** couleur severite **** */
