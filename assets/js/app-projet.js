@@ -816,30 +816,34 @@ const options = {
 
 return new Promise(resolve => {
   $.ajax(options).then(t=> {
-    if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
+    if (t.code===http_400 || t.code===http_401 || t.code===http_403){
       afficheMessage(t)
       sessionStorage.setItem('collecte', 'Erreur phase 13');
       return;
     }
-    const nombre =
-      parseInt(t.message.logger_info,10) +
-      parseInt(t.message.logger_warn,10) +
-      parseInt(t.message.logger_error,10) +
-      parseInt(t.message.logger_debug,10);
 
+    if (t.code == http_404){
+      log(` - INFO   : (13) La collecte des LOGGERS n'a pas été activée.`);
+    }
 
-    if (t.code===http_200 && nombre !== 0) {
+    if (t.code == http_200) {
+      const a = parseInt(t.message.logger_info,10);
+      const b = parseInt(t.message.logger_warn,10);
+      const c = parseInt(t.message.logger_error,10);
+      const d = parseInt(t.message.logger_debug,10);
+      const nombre = a+b+c+d;
       let s='';
-      if (t.nombre>1){ s = 's'; }
-        log(` - INFO : (13) J'ai trouvé ${nombre} Logger${s}.`);
+      if (t.nombre>1){
+          s = 's';
+          log(` - INFO  : (13) J'ai trouvé ${nombre} Logger${s}.`);
       } else {
-        log(` - INFO : (13) Je n'ai pas trouvé de Logger.`);
+        log(` - INFO   : (13) Je n'ai pas trouvé de Logger.`);
       }
+    }
     resolve();
   });
 });
 };
-
 
 /**
  * [Description for finCollecte]
@@ -851,8 +855,7 @@ return new Promise(resolve => {
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const finCollecte=function(){
-  setTimeout(function(){
-    log(` - INFO   : (14) La collecte des données est terminée.`), troisMille});
+    log(` - INFO   : (14) La collecte des données est terminée.`);
     /** On vérifie s'il n'y a pas d'erreur lors du traitement */
     const collecte = sessionStorage.getItem('collecte');
     if (!collecte || collecte!='Tout va bien!') {
@@ -1147,7 +1150,7 @@ $('.js-analyse').on('click', function () {
     await projetTodo(idProject);                  /*(12)*/
 
     /* Récupération des signalements To do (TS, JAVA, XML). */
-    await projetLogger(idProject);                 /*(13)*/
+    await projetLogger(idProject);                /*(13)*/
 
     /* Renvoie le statut de fin */
     finCollecte();
