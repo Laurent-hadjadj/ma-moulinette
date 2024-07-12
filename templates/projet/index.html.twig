@@ -43,11 +43,8 @@
     <header class="grid-container">
       <nav id="fil-ariane" aria-label="vous êtes ici :">
         <ol class="claire-hand breadcrumbs">
-          <li>
-            <a href="/">Accueil</a>
-          </li>
-          <li>
-            <span class="show-for-sr">vous êtes ici :</span>Mon projet</li>
+          <li><a href="/">Accueil</a></li>
+          <li><span class="show-for-sr">vous êtes ici :</span>Mon projet</li>
         </ol>
       </nav>
     </header>
@@ -92,8 +89,7 @@
         </span>.
       </p>
       <div id="message"></div>
-      <div
-        class="grid-x cell">
+      <div class="grid-x cell">
         {# Analyse #}
         <div class="small-12 medium-4 large-4 bouton-analyse-right cell">
           <p class="button expanded float-center js-analyse lance-analyse-disabled">
@@ -111,7 +107,6 @@
               Collecte</span>
           </p>
         </div>
-
         {# Résultats #}
         <div class="small-12 medium-4 large-4 cell">
           <p class="button expanded float-center js-affiche-resultat affiche-resultat-disabled">
@@ -125,7 +120,6 @@
             <span class="show-for-small-only open-sans color-blanc">Résultats</span>
           </p>
         </div>
-
         {# Ma Liste #}
         {# Liste #}
         <div class="small-12 medium-4 large-4 bouton-afficher-left cell">
@@ -214,6 +208,29 @@
                 <path d="M84.1 49.6c-16.9 4.5-30.1 18-34.6 35.1-2.2 8.5-2.2 110.1 0 118.6 4.5 17.3 17.8 30.7 35 35.2 8.8 2.2 110.2 2.2 119 0 17.2-4.5 30.5-17.9 35-35.2 2.2-8.5 2.2-110.1 0-118.6-4.5-17.3-17.8-30.7-35-35.2-8.5-2.2-111.2-2.1-119.4.1zM308.1 49.6c-16.9 4.5-30.1 18-34.6 35.1-2.2 8.5-2.2 110.1 0 118.6 4.5 17.3 17.8 30.7 35 35.2 8.8 2.2 110.2 2.2 119 0 17.2-4.5 30.5-17.9 35-35.2 2.2-8.5 2.2-110.1 0-118.6-4.5-17.3-17.8-30.7-35-35.2-8.5-2.2-111.2-2.1-119.4.1zM84.1 273.6c-16.9 4.5-30.1 18-34.6 35.1-2.2 8.5-2.2 110.1 0 118.6 4.5 17.3 17.8 30.7 35 35.2 8.8 2.2 110.2 2.2 119 0 17.2-4.5 30.5-17.9 35-35.2 2.2-8.5 2.2-110.1 0-118.6-4.5-17.3-17.8-30.7-35-35.2-8.5-2.2-111.2-2.1-119.4.1zM351.3 273.5c-20.1 3.6-38.3 13.4-52.4 28.3-35.9 37.5-35.7 95.6.5 133 16.9 17.6 39.3 27.6 64.1 28.9 45.5 2.3 85.3-27.3 97.7-72.6 3.1-11 3.1-35.2 0-46.2-10.3-37.7-39.7-64.9-76.9-71.4-10.2-1.8-23.2-1.8-33 0z"/>
               </svg>&nbsp;:<span id="todo-liste" class="stat resultat"></span>
             </p>
+
+            {# Logger #}
+            <h2 class="h4 claire-hand text-center">
+              <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="logger-svg" style="shape-rendering:geometricPrecision;text-rendering:geometricPrecision;image-rendering:optimizeQuality;fill-rule:evenodd;clip-rule:evenodd">
+                <path style="opacity:.912" d="M47.5 25.5c106.334-.167 212.667 0 319 .5l1.5 1.5 1 123A2715.33 2715.33 0 0 1 431.5 89c2.135-.635 4.135-.301 6 1l26.5 26.5c2 3 2 6 0 9l-95 95c-.5 24.664-.667 49.331-.5 74 39.109 3.797 66.943 23.464 83.5 59 13.559 37.532 7.559 71.532-18 102-29.759 29.146-64.592 37.313-104.5 24.5-37.093-15.987-57.76-44.154-62-84.5-73.334.167-146.667 0-220-.5l-1.5-1.5c-.667-122-.667-244 0-366 .717-.544 1.217-1.21 1.5-2Zm9 10h301c.167 42.335 0 84.668-.5 127L315.5 204l-135 1c-4.425 2.549-5.092 5.882-2 10l125 1-16 16-108 1c-3.985 3.381-3.985 6.714 0 10 32.998.5 65.998.667 99 .5a2376.839 2376.839 0 0 1-11 37.5c-.031 3.808 1.802 5.641 5.5 5.5a546.437 546.437 0 0 0 43.5-13.5l40.5-40.5c.5 20.664.667 41.331.5 62-11.8.95-23.133 3.783-34 8.5-48.417.009-96.75.676-145 2-2.667 3-2.667 6 0 9l126 1a117.182 117.182 0 0 0-16 15.5 5947.155 5947.155 0 0 1-109 1.5c-3.985 3.381-3.985 6.714 0 10l101 1c-7.433 12.468-11.767 25.968-13 40.5-70.33 1-140.664 1.333-211 1v-349Zm47 54h44v44h-44v-44Zm329 13a173.063 173.063 0 0 1 20 18.5l-143 143a329.04 329.04 0 0 1-28 8 613.345 613.345 0 0 0 8.5-26.5 28836.825 28836.825 0 0 0 142.5-143Zm-329 86h44v44h-44v-44Zm0 99h44v44h-44v-44Zm251 18c40.82-1.349 69.987 16.318 87.5 53 12.921 38.823 4.088 71.657-26.5 98.5-34.133 23.911-68.467 24.245-103 1-30.931-26.136-40.431-58.636-28.5-97.5 13.587-31.192 37.087-49.526 70.5-55Z"/>
+                <path style="opacity:.913" d="M94.5 78.5c20.669-.167 41.336 0 62 .5l1.5 1.5a930.035 930.035 0 0 1 0 61 4.457 4.457 0 0 1-1.5 2 648.651 648.651 0 0 1-62 .5l-1.5-1.5a961.202 961.202 0 0 1 0-62c.717-.544 1.217-1.21 1.5-2Zm9 11v44h44v-44h-44Z"/>
+                <path style="opacity:.895" d="M178.5 78.5c24.002-.167 48.002 0 72 .5 3.169 4.669 2.169 8.002-3 10-22.333.667-44.667.667-67 0-4.482-2.722-5.149-6.222-2-10.5Z"/>
+                <path style="opacity:.861" d="M133.5 98.5c7.003-.827 9.503 2.173 7.5 9L125.5 123c-2.667 2-5.333 2-8 0a57.217 57.217 0 0 1-8.5-9.5c-.877-4.245.79-6.912 5-8a19.003 19.003 0 0 1 7.5 5 102.101 102.101 0 0 0 12-12Z"/>
+                <path style="opacity:.902" d="M180.5 105.5c48.001-.167 96.001 0 144 .5 4.477 2.944 4.811 6.277 1 10-49 .667-98 .667-147 0-3.04-4.264-2.374-7.764 2-10.5ZM179.5 133.5c48.668-.167 97.334 0 146 .5 4 3.333 4 6.667 0 10-48.667.667-97.333.667-146 0-3.935-3.496-3.935-6.996 0-10.5Z"/>
+                <path style="opacity:.913" d="M94.5 177.5c20.669-.167 41.336 0 62 .5l1.5 1.5a930.035 930.035 0 0 1 0 61 4.457 4.457 0 0 1-1.5 2 648.651 648.651 0 0 1-62 .5l-1.5-1.5a961.202 961.202 0 0 1 0-62c.717-.544 1.217-1.211 1.5-2Zm9 11v44h44v-44h-44Z"/>
+                <path style="opacity:.893" d="M178.5 177.5c24.002-.167 48.002 0 72 .5 3.16 4.2 2.494 7.533-2 10-22.667.667-45.333.667-68 0-4.482-2.722-5.149-6.222-2-10.5Z"/>
+                <path style="opacity:.913" d="M94.5 276.5a985.248 985.248 0 0 1 62.5 1 263.921 263.921 0 0 1 1.5 32c8.908 31.258-2.258 42.258-33.5 33l-30.5-.5-1.5-1.5a961.202 961.202 0 0 1 0-62c.717-.544 1.217-1.211 1.5-2Zm9 11v44h44v-44h-44Z"/>
+                <path style="opacity:.893" d="M178.5 276.5c24.002-.167 48.002 0 72 .5 3.16 4.2 2.494 7.533-2 10-22.667.667-45.333.667-68 0-4.482-2.722-5.149-6.222-2-10.5Z"/>
+                <path style="opacity:.903" d="M360.5 340.5c2.865-.445 5.365.222 7.5 2 .667 17 .667 34 0 51l-1.5 1.5a552.224 552.224 0 0 1-47 0c-4.066-3.745-3.733-7.078 1-10 12.329-.5 24.662-.667 37-.5-.167-13.337 0-26.671.5-40a16.58 16.58 0 0 1 2.5-4Z"/>
+              </svg>
+              <span>Logger</span>
+            </h2>
+            <p id="js-logger" class="ligne">Logger info
+              <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="js-affiche-logger details-svg">
+                <path d="M84.1 49.6c-16.9 4.5-30.1 18-34.6 35.1-2.2 8.5-2.2 110.1 0 118.6 4.5 17.3 17.8 30.7 35 35.2 8.8 2.2 110.2 2.2 119 0 17.2-4.5 30.5-17.9 35-35.2 2.2-8.5 2.2-110.1 0-118.6-4.5-17.3-17.8-30.7-35-35.2-8.5-2.2-111.2-2.1-119.4.1zM308.1 49.6c-16.9 4.5-30.1 18-34.6 35.1-2.2 8.5-2.2 110.1 0 118.6 4.5 17.3 17.8 30.7 35 35.2 8.8 2.2 110.2 2.2 119 0 17.2-4.5 30.5-17.9 35-35.2 2.2-8.5 2.2-110.1 0-118.6-4.5-17.3-17.8-30.7-35-35.2-8.5-2.2-111.2-2.1-119.4.1zM84.1 273.6c-16.9 4.5-30.1 18-34.6 35.1-2.2 8.5-2.2 110.1 0 118.6 4.5 17.3 17.8 30.7 35 35.2 8.8 2.2 110.2 2.2 119 0 17.2-4.5 30.5-17.9 35-35.2 2.2-8.5 2.2-110.1 0-118.6-4.5-17.3-17.8-30.7-35-35.2-8.5-2.2-111.2-2.1-119.4.1zM351.3 273.5c-20.1 3.6-38.3 13.4-52.4 28.3-35.9 37.5-35.7 95.6.5 133 16.9 17.6 39.3 27.6 64.1 28.9 45.5 2.3 85.3-27.3 97.7-72.6 3.1-11 3.1-35.2 0-46.2-10.3-37.7-39.7-64.9-76.9-71.4-10.2-1.8-23.2-1.8-33 0z"/>
+              </svg>&nbsp;:<span id="logger-liste" class="stat resultat"></span>
+            </p>
+
           </div>
         </div>
         <div>&nbsp;</div>
@@ -359,8 +376,7 @@
         </div>
       </div>
 
-      <div
-        class="grid-x cell">
+      <div class="grid-x cell">
         {# Page OWASP #}
         <div class="button expanded float-center js-analyse-owasp analyse-owasp-disabled">
           <div class="cell">
@@ -450,9 +466,8 @@
             <th scope="col" class="open-sans text-center" colspan="6">Actions</th>
           </tr>
         </thead>
-        <tbody
-          id="tableau-liste-projet" class="open-sans">
-          {# On cré une pseudo ligne pour éviter une erreur HTML sur le tbody vide ! #}
+        <tbody id="tableau-liste-projet" class="open-sans">
+          {# On crée une pseudo ligne pour éviter une erreur HTML sur le tbody vide ! #}
           <tr>
             <td>--</td>
             <td>--</td>
@@ -498,7 +513,13 @@
             <th scope="col" class="open-sans text-center note-jaune">LOW</th>
           </tr>
         </thead>
-        <tbody id="tableau-liste-hotspot" class="open-sans"></tbody>
+        <tbody id="tableau-liste-hotspot" class="open-sans">
+          <tr>
+            <td>--</td>
+            <td>--</td>
+            <td>--</td>
+          </tr>
+        </tbody>
       </table>
       <br>
       {# fermeture de la fenetre modale #}
@@ -617,33 +638,23 @@
         </thead>
         <tbody id="tableau-liste-todo" class="open-sans">
           <tr>
-            <td>
-              <strong>JAVA</strong>
-            </td>
+            <td><strong>JAVA</strong></td>
             <td id="js-java" class="text-center stat"></td>
           </tr>
           <tr>
-            <td>
-              <strong>JavaScript</strong>
-            </td>
+            <td><strong>JavaScript</strong></td>
             <td id="js-javascript" class="text-center stat"></td>
           </tr>
           <tr>
-            <td>
-              <strong>TypeScript</strong>
-            </td>
+            <td><strong>TypeScript</strong></td>
             <td id="js-typescript" class="text-center stat"></td>
           </tr>
           <tr>
-            <td>
-              <strong>HTML</strong>
-            </td>
+            <td><strong>HTML</strong></td>
             <td id="js-html" class="text-center stat"></td>
           </tr>
           <tr>
-            <td>
-              <strong>XML</strong>
-            </td>
+            <td><strong>XML</strong></td>
             <td id="js-xml" class="text-center stat"></td>
           </tr>
         </tbody>
@@ -666,6 +677,45 @@
       <button id="fermer-liste-todo" class="expanded button open-sans" data-close aria-label="Close reveal" type="button">Fermer</button>
       <a class="close-button" data-close aria-label="Close reveal">&#215;</a>
     </div>
+
+    {# Affichage de la répartition des loggers  #}
+    <div id="modal-liste-logger" class="reveal" data-reveal data-close-on-click="true" data-animation-in="fade-in" data-animation-out="fade-out">
+      <h1 class="h2 claire-hand">Loggers.</h1>
+      <h2 class="h4 claire-hand">
+        <span id="js-logger-total">N.C </span>Logger Java trouvé(s).</h2>
+      <table>
+        <caption class="claire-hand">Répartition des Loggers par méthode.</caption>
+        <thead>
+          <tr>
+            <th scope="col" class="open-sans text-center">Méthode</th>
+            <th scope="col" class="open-sans text-center">Nombre</th>
+          </tr>
+        </thead>
+        <tbody id="tableau-liste-logger" class="open-sans">
+          <tr>
+            <td><strong>info</strong></td>
+            <td id="js-logger-info" class="text-right stat">--</td>
+          </tr>
+          <tr>
+            <td><strong>warn</strong></td>
+            <td id="js-logger-warn" class="text-right stat">--</td>
+          </tr>
+          <tr>
+            <td><strong>error</strong></td>
+            <td id="js-logger-error" class="text-right stat">--</td>
+          </tr>
+          <tr>
+            <td><strong>debug</strong></td>
+            <td id="js-logger-debug" class="text-right stat">--</td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      {# fermeture de la fenetre modale #}
+      <button id="fermer-liste-logger" class="expanded button open-sans" data-close aria-label="Close reveal" type="button">Fermer</button>
+      <a class="close-button" data-close aria-label="Close reveal">&#215;</a>
+    </div>
+
 
     <br><br>
     {# Chargement de la section footer #}
