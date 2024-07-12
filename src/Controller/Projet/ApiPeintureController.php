@@ -34,6 +34,7 @@ use App\Entity\NoSonar;
 use App\Entity\Hotspots;
 use App\Entity\Notes;
 use App\Entity\Todo;
+use App\Entity\Logger;
 
 /** Les services */
 use App\Service\IsValideMavenKey;
@@ -206,7 +207,7 @@ class ApiPeintureController extends AbstractController
         }
 
         /** On regarde si le projet existe */
-        $isValide= $this->isValidMavenKey->isValide($data->maven_key);
+        $isValide= $this->isValidMavenKey->isValideInformation($data->maven_key);
 
         if ($isValide['code'] === 404) {
             return $response->setData([
@@ -319,7 +320,7 @@ class ApiPeintureController extends AbstractController
         }
 
         /** On regarde si le projet existe */
-        $isValide= $this->isValidMavenKey->isValide($data->maven_key);
+        $isValide= $this->isValidMavenKey->isValideInformation($data->maven_key);
         if ($isValide['code'] === 404) {
             return $response->setData([
                 'code'=>404, 'type'=> 'secondary', 'reference'=> static::$reference,
@@ -380,7 +381,7 @@ class ApiPeintureController extends AbstractController
         }
 
         /** On regarde si le projet existe */
-        $isValide= $this->isValidMavenKey->isValide($data->maven_key);
+        $isValide= $this->isValidMavenKey->isValideInformation($data->maven_key);
         if ($isValide['code'] === 404) {
             return $response->setData([
                 'code'=>404, 'type'=> 'secondary', 'reference'=> static::$reference,
@@ -504,7 +505,7 @@ class ApiPeintureController extends AbstractController
         }
 
         /** On regarde si le projet existe */
-        $isValide= $this->isValidMavenKey->isValide($data->maven_key);
+        $isValide= $this->isValidMavenKey->isValideInformation($data->maven_key);
         if ($isValide['code'] === 404) {
             return $response->setData([
                 'code'=>404, 'type'=> 'secondary', 'reference'=> static::$reference,
@@ -589,7 +590,7 @@ class ApiPeintureController extends AbstractController
         }
 
         /** On regarde si le projet existe */
-        $isValide= $this->isValidMavenKey->isValide($data->maven_key);
+        $isValide= $this->isValidMavenKey->isValideInformation($data->maven_key);
         if ($isValide['code'] === 404) {
             return $response->setData([
                 'code'=>404, 'type'=> 'secondary', 'reference'=> static::$reference,
@@ -651,7 +652,7 @@ class ApiPeintureController extends AbstractController
                 'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
         }
         /** On regarde si le projet existe */
-        $isValide= $this->isValidMavenKey->isValide($data->maven_key);
+        $isValide= $this->isValidMavenKey->isValideInformation($data->maven_key);
         if ($isValide['code'] === 404) {
             return $response->setData([
                 'code'=>404, 'type'=> 'secondary', 'reference'=> static::$reference,
@@ -715,7 +716,7 @@ class ApiPeintureController extends AbstractController
         }
 
         /** On regarde si le projet existe */
-        $isValide= $this->isValidMavenKey->isValide($data->maven_key);
+        $isValide= $this->isValidMavenKey->isValideInformation($data->maven_key);
         if ($isValide['code'] === 404) {
             return $response->setData([
                 'code'=>404, 'type'=> 'secondary', 'reference'=> static::$reference,
@@ -778,7 +779,7 @@ class ApiPeintureController extends AbstractController
         }
 
         /** On regarde si le projet existe */
-        $isValide= $this->isValidMavenKey->isValide($data->maven_key);
+        $isValide= $this->isValidMavenKey->isValideInformation($data->maven_key);
         if ($isValide['code'] === 404) {
             return $response->setData([
                 'code'=>404, 'type'=> 'secondary', 'reference'=> static::$reference,
@@ -826,6 +827,62 @@ class ApiPeintureController extends AbstractController
         return $response->setData(
             ['code'=>200, 'todo' => $todo, 'java' => $java, 'javascript' => $javascript,
                 'typescript' => $typescript, 'html' => $html, 'xml' => $xml, "details" => $details, Response::HTTP_OK]
+        );
+    }
+
+    #[Route('/api/peinture/projet/logger', name: 'peinture_projet_logger', methods: ['POST'])]
+    public function peintureProjetLogger(Request $request): response
+    {
+        /** On instancie l'entityRepository */
+        $loggerRepository = $this->em->getRepository(Logger::class);
+
+        /** On décode le body */
+        $data = json_decode($request->getContent());
+
+        /** On crée un objet de reponse JSON */
+        $response = new JsonResponse();
+
+        /** On teste si la clé est valide */
+        if ($data === null) {
+            return $response->setData(['data'=>$data, 'code'=>400, 'type'=>'alert','reference'=> static::$reference, 'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+        }
+
+        /** On regarde si le projet existe */
+        $isValide= $this->isValidMavenKey->isValideInformation($data->maven_key);
+        if ($isValide['code'] === 404) {
+            return $response->setData([
+                'code'=>404, 'type'=> 'secondary', 'reference'=> static::$reference,
+                'message' => static::$erreur404, Response::HTTP_NOT_FOUND]);
+        }
+        /** On récupère la liste des règles et leur nombre pour un projet. */
+        $map=['maven_key'=>$data->maven_key];
+        $logger=$loggerRepository->selectLogger($map);
+        if ($logger['code']!=200) {
+            return $response->setData(['code' => $logger['code'], Response::HTTP_OK]);
+        }
+        /** Il n'y a pas de logger  */
+        $loggerInfo = $loggerWarn = $loggerError = $loggerDebug = $total = -1;
+
+        if (!empty($logger['liste'])) {
+            $loggerInfo = $logger['liste'][0]['logger_info'];
+            $loggerWarn = $logger['liste'][0]['logger_warn'];
+            $loggerError = $logger['liste'][0]['logger_error'];
+            $loggerDebug = $logger['liste'][0]['logger_debug'];
+
+        /** Calcul la somme des loggers */
+        $total = intval($loggerInfo, 10) +
+                    intval($loggerWarn, 10) +
+                    intval($loggerError, 10) +
+                    intval($loggerDebug, 10);
+        }
+
+        return $response->setData(
+            ['code'=>200, 'total' => $total,
+                'logger_info' => $loggerInfo,
+                'logger_warn' => $loggerWarn,
+                'logger_error' => $loggerError,
+                'logger_debug' => $loggerDebug,
+                Response::HTTP_OK]
         );
     }
 
