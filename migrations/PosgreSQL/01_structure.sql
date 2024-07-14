@@ -701,6 +701,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.mesures
   project_name character varying(128) NOT NULL,
   lines integer NOT NULL,
   ncloc integer NOT NULL,
+  language_distribution JSON[] NOT NULL,
   coverage double precision NOT NULL,
   sqale_debt_ratio double precision NOT NULL,
   duplication_density double precision NOT NULL,
@@ -719,6 +720,7 @@ COMMENT ON COLUMN ma_moulinette.mesures.maven_key IS 'Clé Maven du projet';
 COMMENT ON COLUMN ma_moulinette.mesures.project_name IS 'Nom du projet';
 COMMENT ON COLUMN ma_moulinette.mesures.lines IS 'Nombre total de lignes du projet';
 COMMENT ON COLUMN ma_moulinette.mesures.ncloc IS 'Lignes de code non commentées';
+COMMENT ON COLUMN ma_moulinette.mesures.language_distribution IS 'Distribution des langages de programmation';
 COMMENT ON COLUMN ma_moulinette.mesures.coverage IS 'Pourcentage de couverture par les tests';
 COMMENT ON COLUMN ma_moulinette.mesures.sqale_debt_ratio IS 'Ratio de dette technique (SQALE)';
 COMMENT ON COLUMN ma_moulinette.mesures.duplication_density IS 'Densité de duplication du code';
