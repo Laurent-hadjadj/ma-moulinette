@@ -293,7 +293,7 @@ textarea[readonly] {
 }
 
 /* Définit la taille de la carte */
-.callout-information {
+.callout-information, .callout-information-generale {
   box-shadow: 2px 2px 5px #444;
   border-radius: 1.2rem;
 }
@@ -404,7 +404,7 @@ textarea[readonly] {
 /* Validation */
 .V { color: #187e3d; }
 
-/* Restitution, Suivi, COSUI, Owasp, Répartition-Module */
+/* Restitution, Suivi, COSUI, OWASP, Répartition-Module */
 .R,
 .S,
 .C,
