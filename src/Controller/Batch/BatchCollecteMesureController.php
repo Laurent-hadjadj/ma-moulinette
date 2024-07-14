@@ -99,16 +99,28 @@ class BatchCollecteMesureController extends AbstractController
         /** Appelle le client HTTP */
         $queryParams = [
         'component' => $mavenKey,
-        'metricKeys' => 'ncloc'
+        'metricKeys' => 'ncloc,ncloc_language_distribution'
         ];
         $queryString = http_build_query($queryParams);
-
         /** Appelle le client HTTP */
         $result2 = $this->client->http("$tempoUrl/api/measures/component?$queryString");
 
 
         /** Initialise ncloc avec une valeur par défaut */
-        $ncloc = intval($result2['component']['measures'][0]['value'] ?? 0);
+        foreach($result2['component']['measures'] as $mesure){
+            if ($mesure['metric']==='ncloc'){
+                $ncloc = $mesure['value'] ? intval($mesure['value']) : 0 ;
+            }
+            if ($mesure['metric']==='ncloc_language_distribution'){
+                $distribution = [];
+                $asArr = explode(';', $mesure['value']);
+                foreach ($asArr as $language) {
+                    $tmp = explode('=', $language);
+                    $distribution[$tmp[0]] = $tmp[1];
+                }
+                arsort($distribution);
+            }
+        }
 
         /** On récupère le ratio de dette technique */
         $queryParams = [
@@ -127,6 +139,7 @@ class BatchCollecteMesureController extends AbstractController
             'project_name' => $result['projectName'],
             'lines' => $lines,
             'ncloc' => $ncloc,
+            'language_distribution' => $distribution,
             'sqale_debt_ratio' => $sqaleRatio,
             'coverage' => $coverage,
             'duplication_density' => $duplicationDensity,
@@ -148,6 +161,7 @@ class BatchCollecteMesureController extends AbstractController
             'nom_projet' => strtolower($result['projectName']),
             'nombre_ligne' => $lines,
             'nombre_ligne_code' => $ncloc,
+            'language_distribution' => $distribution,
             'couverture'=> (float)$coverage,
             'sqale_debt_ratio' => $sqaleRatio,
             'duplication_density' => (float)$duplicationDensity,
