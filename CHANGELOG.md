@@ -1,14 +1,375 @@
 # Liste des évolutions et défauts corrigés
 
-## V0.0.1 : 24/01/2022
+## v2.0.0 - 01/09/2023 - WiP
 
-### Création du projet sous symfony
+### Framework
 
-* Reprise du projet développé eb HTML/CSS, Javascript + DexieJS ;
-* Migration sous symfony 5.4, php 8.1.0 ;
-* Migration dexieJs vers SQLite 4 ;
-* Migration du code en HTML/JS vers PHP, Twig ;
-* Migration vers webpack ;
+* Migration PHP 8.3.0 NTS ;
+* Migration symfony/core 6.4 (6.4.8) ;
+* Migration de la base SQLite vers PostgreSQL ;
+* Mise à jour Twig 3 (3.10.3) ;
+* Mise à jour doctrine/dbal 4 (4.0.4) ;
+* Mise à jour doctrine/orm 3 (3.2.0) ;
+* Mise à jour easycorp/easyadmin-bundle 4 (4.10.2) ;
+* Mise à jour de twig/twig 3.10 (3.10.3) ;
+* Mise à jour de phpstan/phpstan 1.11 (1.11.5) ;
+* Mise à jour de phpunit/phpunit 9.6 (9.6.19) ;
+* Intégration de php-amqplib/php-amqplib 3.6 (3.6.2) ;
+* Intégration de knplabs/knp-paginator-bundle 6.4 (6.4.0) ;
+
+### Transverse
+
+* Décommissionnement de SQLite ;
+* Décommissionnement du "mode" Test. Utilisation d'une base de données pour les tests ;
+* Migration : La documentation au format markdown utilise mkDocs pour la consultation ;
+* Refactor : mises à jour des commentaires ;
+* Refactor : regroupement des classes dans des packages ;
+* Refactor : réécritures des processus de Collecte. Suppression de la duplication de code. Processus commun pour les batch et la collecte utilisateur ;
+* Refactor : Catch et traitement des erreurs (HTTP et SQL) ;
+* Refactor : Externalisation des constantes JS ;
+* Refactor : réduction de la complexité des classes PHP et JS ;
+* Refactor : Déplacement et des requêtes présentent dans les contrôleurs PHP vers les EntityRepository ;
+* Refactor : Bind et cast des paramètres avant injection dans les requêtes ;
+* Refactor : Mise en place du rollback sur les requêtes de type INSERT, DELETE et UPDATE ;
+* Refactor : Ajout de traces lors des appel HTTP 200, 400, 401 et 404.
+* Refactor : Définition de la timezone [Europe/Paris] pour la gestion des dates ;
+* Refactor : Utilisation de DATETIME_IMMUTABLE à la place de DATETIME ;
+
+* Code Clean W3C & SonarQube ;
+
+### Composants
+
+> Docker
+
+* [Docker] Ajout du fichier docker-compose.yml ;
+
+> Base de données ;
+
+* [BD] Suppression de la table `tags` ;
+* [BD] Ajout des "tags" et de la "visibilité" dans la table `liste_projet` ;
+* [BD] Ajout de de la table Actuator ;
+* [BD] Ajout des informations `mode_collecte` et `utilisateur_collecte` sur toutes tables (en fin presque) ;
+
+> Gestion des accès et des rôles.
+
+* [Security] Ajout du ROLE_COLLECTE pour autoriser la collecte manuelle ;
+* [Security] Ajout du ROLE_BATCH pour gérer les traitements manuels ou automatiques ;
+* [Security] Ajout du ROLE_ACTUATOR pour gérer les applications JAVA utilisant Actuator ;
+* [Security] Ajout du ROLE_SUPER_ADMIN pour l'accès aux données de gestion SonarQube ;
+
+> Gestion BackOffice
+
+* [EasyAdmin] Ajout d'un **listener** pour afficher les messages utilisateurs pour les événements des class **equipe**, **portefeuille** et **batch** ;
+* [EasyAdmin] ~~Ajout d'un **Validator** pour la contrainte d'unicité sur l'attribut `titre`~~ ;
+* [EasyAdmin] Ajout d'un controller CRUD pour gérer les **équipes** ;
+* [EasyAdmin] Ajout d'un controller CRUD pour gérer les **portefeuilles** de projets ;
+* [EasyAdmin] Ajout d'un controller CRUD pour gérer les **batch** ;
+
+* [Page_Portefeuille] Initialise la liste des projets à "Aucun projet" quand la table des projets est vide ;
+* [Page_Traitement] Ajout de la page de suivi des traitements automatique ;
+* [Page_Traitement] Ajout d'un processus automatique et manuel pour la collecte des indicateurs SonarQube ;
+* [Page_Traitement] Ajout d'un bouton d'affichage du journal d'execution du batch ;
+
+* [Page_Préférence] Ajout du support des versions de projet en favoris ;
+* [Page_Préférence] Ajout du support de la version des projets favoris ou des versions du projet favoris ;
+
+> Templates
+
+* [Header] Ajout d'un lien pour l'accès à la page de suivi des batch ;
+* [Footer] Refonte du footer pour prendre en compte les liens |Plan du site | accessibilité | Mentions légales | Données personnelles.
+
+> Page d'accueil
+
+* [Page_Home] Correction de l'affichage NaN pour les projets de type privé quand la table est vide ;
+* [Page_Home] Ajout de la vue **Projet** pour l'affichage des projets favoris, de la vue **Version** pour l'affichage des versions favorites et de vue **Vide** utilisée quand l'utilisateur a désactivé l'affichage des favoris ;
+* [Page_Home] Ajout du nombre de projet avec un tag et sans tags ;
+* [Page_Home] Vérification des droits pour mettre à jour la table des projets et celles des profils qualités.
+* [Page_Home] Affiche par défaut la version la plus récente du projet favori ;
+* [Page_Home] Ajout d'une page pour les différentes versions d'un projet favori ;
+
+* [Composant_Menu] Ajout du nom de l'utilisateur ;
+* [Composant_Menu] Ajout des informations utiles de l'utilisateur ;
+
+* [Page_Profil] Prise en compte du rôle `Gestionnaire` pour mettre à jour la liste des référentiels ;
+* [Page_Profil] Refonte de la page (Quentin). Affichage des profils actifs et ceux disponibles ;
+* [Page_Profil] Consultation des changements par profil ;
+* [Page_Profil_Details] Affichage des changements sur les règles des profils qualités ;
+
+* [Page_Activité] Ajout de la page de suivi de l'activité SonarQube (Quentin) ;
+
+> Page Projet
+
+* [Page_Projet] Ajout du nombre de version de type "autre" ;
+* [Page_Projet] Suppression de l'icône animée lors de la collecte ;
+* [Page_Projet] Correction alignement de la colone type du tableau de présentation de la dette technique ;
+* [Page_Projet] Ajout du projet par défaut dans localStorage en marque page ;
+* [Page_Projet] Limite la liste des projets affichés aux seuls projets d'une équipe ;
+* [Page_Projet] Collecte des TODO ;
+* [Page_Projet] Collecte des résultats Actuator (pour JAVA SpringBoot) ;
+* [Page_Projet] Collecte de la répartition des appels au LOGGER JAVA ;
+* [Page_Projet] Collecte de la répartition par langage ;
+
+> Authentification
+
+* [Page_Inscription] Renforcement de la sécurité. Ajout de la propriété hash_property_path.
+* [Page_Inscription] Ajout du contrôle de la saisie du mot de passe.
+* [Page_Inscription] Ajout de l'indicateur de qualité du mot de passe.
+
+* [Page_Login] Ajout de l'option voir mon mot de passe ;
+* [Page_Login] Ajout, je veux changer mon mot de passe ;
+* [Page_Login] Force le changement du mot de passe pour la première connexion avec l'utilisateur **admin** ;
+* [Page_Login] TODO : Ajout, j'ai oublié mon mot de passe, aider-moi :)
+
+> Page gestion du Projet
+
+* [Page_Projet] Lors de la collecte des données, le ratio de dette technique est récupéré (table mesure) ;
+* [Page_Suivi] Lors de l'intégration d'une version dans l'historique, le ratio de dette technique est récupéré depuis le serveur ;
+* [Page_Projet] Lors de la collecte des données, les données de la version courante est conservée.
+* [Page_Projet] refactoring des traitements de collecte (message, catch des erreurs).
+* [Page_Projet] Si une erreur est détectée lors de la collecte, on arrête la collecte (i.e on ne lance pas les autres traitements).
+* [Page_Projet] Lors de la collecte, on récupère les données actuator et les données du Logger Java ;
+
+> Page de suivi des indicateurs
+
+* [Page_Suivi_Modification] Une seule version de référence pour un projet.
+* [Page_Suivi_Modification] Changer la version de référence nécessite le role GESTIONNAIRE (i.e. impact sur les calcul).
+* [Page_Suivi_Modification] Un utilisateur peut avoir une ou plusieurs versions du même projet en favori (impact Accueil)
+
+> Page OWASP
+
+* [Page_OWASP] Refonte de la page (Zakaria).
+* [Page_OWASP] Support des référentiels 2017 et 2021 ;
+* [Page_OWASP] Affichage des informations concernant une menace OWASP ;
+* [Page_OWASP] Affichage d'un tableau comparatif concernant les menaces 2017 et 2021 ;
+
+> Tests Unitaires
+
+* [TU] Mise à jour des TU (Entity, EntityRepository).
+* [TU] OK (251 tests, 2865 assertions) ;
+
+## v1.6.0 - 30/11/2022 - Release
+
+* [CSS] Utilisation du référentiel des couleurs SonarQube pour afficher les notes. Pages concernées : [home], [projet], [owasp], [suivi] et [cosui].
+* [Page_COSUI] Ajout d'une page de synthèse de type Comité de Suivi (i.e COSUI) ;
+* [CSS] La variation des indicateurs utilise maintenant la class [down] pour marquer une amélioration c'est-à-dire une baisse des signalements, la flèche est verte et pointe vers le bas et [up] pour marquer une augmentation des défauts. La flèche pointe vers le haut sa couleur est rouge ;
+* [Page_Projet] Ajout du bouton COSUI ;
+* [CSS] Refactorisation des class js- et -enabled pour la page [PROJET] ;
+* [Page_Projet] Renommage de la page anomalie.details.html.twig en details.html.twig ;
+* [Page_Home] Ajout d'un raccourci pour ouvrir directement la page de suivi ;
+* [Page_Suivi] Amélioration de l'information utilisateur de la fenêtre modale d'ajout d'une version ;
+* [Page_Suivi] Refactorisation de la page pour prendre en compte le référentiel des couleurs sonar ;
+* [Page_Home] Ajout des indicateurs de visibilités ;
+* [Page_Suivi] Amélioration de la gestion des codes HTTP (404) ;
+* [Page_Dashbord] Ajout du contrôle d'intégrité de la base de données ;
+* Mise à jour symfony 6.1.8 ;
+
+## v1.5.0 - 12/10/2022 - RELEASE
+
+* [Page_Home] : Gestion des versions ;
+  * On vérifie si la version de l'application est dans la table [ma_moulinette] ;
+  * On affiche un message  à l'utilisateur si la version de la base est plus ancienne que la version de l'application ;
+* [Docker] : Mise à jour de la configuration pour la stack docker ;
+* [Symfony] Migration 5.4.4 vers 6.1.4 ;
+* [PHP] Migration 8.1.10 ;
+* [Securité] Ajout d'un cipher de type legacy pour les accès depuis un serveur NGINX ;
+* [Configuration] Remplacement des chemins absolus par des chemins relatifs pour la BD ;
+* [Sécurité] Filtrage des connexions par type d'HOST (domaine, IP, RegEx) ;
+* [Authentification] Gestion des utilisateurs.
+  * Ajout de la table [utilisateur] ;
+  * Ajout d'un formulaire de connexion [login] ;
+  * Ajout d'un formulaire d'inscription [register];
+  * Ajout d'un formulaire de bienvenue [welcome], une fois l'inscription réalisée ;
+  * Ajout de l'option **remember-me** ;
+  * Ajout d'un firewall et des rôles [USER], [GESTIONNAIRE] et [PUBLIC_ACCESS] ;
+  * Ajout des icônes **logout** et **dashboard** et **utilisateurs** dans le haut de page ;
+* Ajout du module EasyAdmin :
+  * Personnalisation des pages, du menu et des contrôleurs CRUD ;
+  * Ajout des indicateurs et des statistiques globales sur la page Dashboard ;
+  * Ajout de la page de gestion des comptes utilisateurs [ROLE_GESTIONNAIRE] ;
+  * Ajout d'un lien vers la page [HOME] ;
+* Activation et optimisation du cache opCahe (pour la prod uniquement);
+* Refactoring complet de la documentation ;
+* [Projet] Ajout de l'événement **Collecte** sur le bouton `C` du menu rapide ;
+* [Erreurs] Personnalisation des erreurs HTTP (en production) ;
+* [Utilisateur] Ajout du compte admin ;
+* [Home] refactoring de la page :
+  * Suppression du code JS et HTML pour les composants nécessitant un droits Admin dans SonarQube ;
+  * Suppression des appels Asynchrone JS pour afficher le nombre de projet et de profil ;
+  * Ajout de la table properties, contenant la nombre de projet, de profil en base et sur le serveur et leur date de modification ;
+  * Ajout dans le contrôleur du processus de gestion des projets et des profils (anciennement en JS) ;
+  * Amélioration de l'affichage des messages d'alerte. Suppression du statut pour des callout ;
+  * Affichage du nombre de projet et de profil en plus/moins ;
+  * Correction SonarQube ;
+* [Profil] Correction de l'affichage du statut Actif lors du rechargement de la liste ;
+* [Paramétrage] Choix de la fréquence de mise à jour. Par défaut 1 jour ;
+
+## v1.4.0 - 06/07/2022 - RELEASE
+
+* [Page Projet] : Modification du pictogramme (SVG) pour le bouton répartition ;
+* Modification des appels de web-service Asynchrones (11). Utilisation de la méthode Promise + Callback (await) ;
+* [Page Projet] : Modification de la fenêtre modale 'liste des projets'. Ajout des actions suivantes :
+  * [V] Sélectionner un projet de la liste et déverrouiller tous les boutons ;
+  * [S] Supprimer le projet de la liste des projets déjà analysés ;
+  * [C] Lance la collecte des indicateurs SonarQube et le calcul des agrégats ;
+  * [R] Lance la restitution des données calculés ;
+  * [I] Ouvre la page de suivi des indicateurs ;
+  * [O] Ouvre la page du rapport OWASP ;
+  * [RM] Ouvre la page de suivi de la répartition par module ;
+* [Page Projet] : Ajout de l'attribut "liste" de type boolean à la table "Anomalie" pour gérer l'affichage ou non, du projet, dans la liste des projets déjà analysés.
+
+## v1.3.0 - 03/07/2022 - RELEASE
+
+* [Page Suivi] : Correction de l'affichage du tableau de suivi des anomalies par type et sévérité ;
+* [Page Projet] : Correction - le bouton analyse Owasp est bloqué tant que l'utilisateur n'a pas choisi un projet ;
+* [Page Répartition] Correction - "Impossible to access a key ("setup") on a string variable ("NaN")." ;
+* [Page Suivi] : Remplacement des valeurs "null" par -1 au lieu de 0 ;
+* [Page Suivi] : Amélioration de l'affichage du tableau de suivi par type d'anomalies (i.e. mise en couleur des types) ;
+* [Page Suivi] : Prise en compte de la version de référence pour le tableau de suivi des anomalies par type et sévérité ;
+* [Page Répartition] : Ajout du tableau de bord par répartition : frontend, backend, autre ;
+* [Page Répartition] : Ajout de l'Indice de Confiance ;
+* [Page Répartition] : Masquage des tableaux vides (Fiabilité, sécurité et maintenabilité) ;
+* [Page Répartition] : Ajout de la notion de set-up pour la gestion des versions collectées dans la table temp_repartition ;
+* [Architecture] :Séparation des EntityProviders : **default** pour la base des données agrégées et **secondary** pour la base des données d'analyse ;
+* [Architecture] : Reworking des requêtes pour la base temp. Suppression des requêtes avec EntityManager (SQL), ajout des requêtes en utilisant le ManagerRegistry (findBy,etc...) ;
+* [Page Répartition] : Amélioration de l'affichage du tableau des sévérités par type de la page "Repartition". Utilisation d'un accordéon pour réduire la taille de la page ;
+
+## v1.2.6 - 02/06/2022 - Release
+
+* [Suivi des indicateurs] : Correction de la méthode de suppression d'une version dans la fenêtre modale "Modifier les paramètres" ;
+
+```plaintext
+Uncaught PHP Exception Doctrine\DBAL\Exception\SyntaxErrorException:
+"An exception occurred while executing a query: SQLSTATE[HY000]:
+General error: 1 near "4.1": syntax error"
+```
+
+* [Suivi des indicateurs] : Amélioration de l'affichage du graphique (mode responsive) ;
+* [Suivi des indicateurs] : Correction des labels tronqués en haut du graphique ;
+* [Suivi des indicateurs] : Modification de la méthode d'injection des données pour le graphique ;
+
+## v1.2.5 - 24/05/2022 - Release
+
+* Corrections de l'affichage de la note pour les vulnérabilités et du nombre de mauvaises pratiques, du tableau de la fenêtre modale "ajouter une analyse" (BoardController.php et app-dash.sj) ;
+* Correction de l'enregistrement des données collectées lors de l'ajout d'une analyse historisée. Ajout des attributs obligatoires dans la requête (facultatifs en version 1.2.0).
+* Formatage et nettoyage de toutes les requêtes complexes SQL : `trim(preg_replace("/\s+/u", " ", $sql))` ;
+* Remplacement dans la page de suivi des indicateurs des valeurs null enregistrées avec la valeur "-1" par un tiret "-" ;
+* Ajout du rechargement de la page de suivi des indicateurs quand on clique sur le bouton "fermer" de la fenêtre "ajouter une analyse" ;
+* Correction du problème des valeurs "null" pour les hotsposts (valeurs non calculés sur les anciennes version de SonarQube) ;
+* Correction de la date dans le tableau de suivi quand on ajoute une version depuis l'historique (date du jour au lieu de la date de la version) ;
+
+## v1.2.4 - 17/05/2022 - Release
+
+* Ajout de nouvelles exceptions sur les modules Backend et Autre ;
+* Mise à de la documentation
+* Correction du tri sur le tableau des hotspots (page OWASP / Détails).
+* Ajout de l'attribut "niveau" à la table hotpspot_details pour gérer le tri ;
+* Remplacement du mot "Batch" par "Autre" pour prendre en compte les modules de type "Batch" ou les Autres ;
+* Modification des tables : Anomalie, Historique et HotspotDetails pour prendre en compte le changement de l'attribut "batch" par "autre" ;
+
+## v1.2.3 - 12/05/2022 - Release
+
+* Correction du traitement et de l'affichage de failles par module.
+
+## v1.2.2 - 11/05/2022 - Release
+
+* Ajout d'une base vierge pour démarrer ;
+* ApiProjectController : Warning: Undefined array key "date_enregistrement" (ligne 1461) ;
+* Correction du format de la date : date("m/d/Y) à date("d/m/Y) pour la page dash, profil et home ;
+* Correction de l'ordre des colonnes pour le tableau de suivi des sévérités par type ;
+* Correction des hotspots corrigés et toujours en base ;
+* Correction "Warning: Undefined array key [line]", suppression de l'affectation en double ;
+* Correction de la page OWASP (erreurs typographiques lors de refactoring) ;
+
+## v1.2.1 - 08/05/2022 - Release
+
+* Erreur : "Cannot instantiate interface Psr\Log\LoggerInterface". On n'utilise plus l'instanciation (new LoggerInterface) mais l'injection de dépendance ;
+* Erreur de syntaxe dans l'utilisation de littérales dans le contrôleur ApiProjetContrôleur ;
+* Suppression des dépendances inutiles dans HomeControleur et ProfilControleur ;
+* Correction des fautes et erreur de typographie dans le fichier readme.md ;
+
+## v1.2.0 - 05/05/2022 - Release
+
+* Corrections SonarQube ;
+* Ajustement du niveau de log (debug-->info) ;
+
+## v1.1.0 - 24/04/2022 - Release
+
+* Mise à jour du modèle de base de données ;
+* Collecte des sévérités par type lors de la collecte, enregistrement dans la table historique, attention le modèle de la table est changé, il faut ajouter les nouveaux attributs (cf. readme);
+* Suppression de la table temp_anomalie et réutilisation de la table anomalie, pour enregistrer le détail des sévérités par type ;
+* Ajout dans la page du suivi des indicateurs, d'un tableau permettant d'afficher par version, le type d'anomalie par sévérité des trois dernières versions ;
+* Correction du problème d'affichage des favoris et de la valeur de référence ;
+* Ajout de la date de la version pour les tableaux de suivi ;
+
+## v1.0.0 - 10/04/2022 - Release
+
+* Ajout d'un exemple d'édition pour la page suivi des indicateurs ;
+* Amélioration de la page et indication de la sévérité en rouge ou vert en fonction de la tendance.
+
+## v0.0.11 - 07/04/2022
+
+* Mise en place du socle de génération de rapport PDF ;
+* Ajout dans le tableau de suivi des violations par sévérité mineure ;
+* Correction de la couleur pour indiquer la version de référence (rouge) ;
+
+## v0.0.10 - 02/04/2022
+
+* Correction de l'affichage des notes lorsque l'on importe une version manuellement depuis la fenêtre d'ajout de la page de suivi ;
+* Blocage des boutons quand le projet n'est pas choisi dans la page projet ;
+
+## v0.0.9 - 31/03/2022
+
+* Remplacement des favicons et du logo ;
+* Correction de l'affichage de la version de référence et des favoris (problème de Boxing du Boolean initial et favori );
+* Ajout d'un lien "modification" sur la page de suivi des mesures.
+  * Permet de supprimer une version ;
+  * Active ou désactive, pour une version, le statut favori ;
+  * Active ou désactive, pour une version, le statut référence ;
+* Reworking des favoris dans la page home ;
+* Correction de l'affichage quand le nombre de violations est >20000 (20k) ;
+
+## v0.0.8 - 29/03/2022
+
+* Corrections et amélioration ;
+  * Ajout de la note Z pour les applications n'ayant de hotposts ;
+  * Correction typographique ;
+
+## v0.0.7 - 28/03/2022
+
+* Version de recette ;
+* Mise à jour de la documentation ;
+* Mise à jour de la procédure de démarrage et d'arrêt ;
+
+## v0.0.6 - 18/03/2022
+
+* Corrections Sonarqube ;
+* Amélioration de la page de suivi des indicateurs (Dash) ;
+  * Affichage de la version de référence ;
+  * Affichage des 9 dernières versions ;
+* Ajout d'un formulaire d'ajout d'une version à partir des données Sonarqube disponible dans l'historique ;
+* Refactoring de la sauvegarde ;
+* Refactoring de la méthode d'ajout manuel d'une version ;
+* Corrections des bugs ;
+
+## v0.0.5 - 13/03/2022
+
+* Ajout de la page dash, pour afficher des tableaux de suivi ;
+* Ajout du tableau de suivi des versions analysées ;
+* Ajout de graphique pour suivre l'évolution des violations par type ;
+* Ajout du tableau de suivi des violations par modules (webapp - front, api - back et batch) ;
+* Ajout du tableau de suivi les violations par sévérité (bloquant, critique et majeur) ;
+
+## v0.0.4 - 01/03/2022
+
+* Refactoring de la page projet, création d'une page détails ;
+* Mise en place d'un système de sauvegarde pour les données calculées ;
+* Correction des bugs ;
+
+## v0.0.3: 25/02/2022
+
+* Correction de bug ;
+* Tests de reprise de plusieurs gros projets à plus de 10000 défauts ;
+* Migration de la page security en OWASP ;
 
 ## v0.0.2: 24/02/2022
 
@@ -71,295 +432,11 @@
 5. Ajouter une timeline pour suivre les projets dans le temps et afficher les modifications ;
 6. Ajouter les rapports PDF avec les éléments détaillés nécessaires pour les développeurs ;
 
-## v0.0.3: 25/02/2022
+## V0.0.1 : 24/01/2022
 
-* Correction de bug ;
-* Tests de reprise de plusieurs gros projets à plus de 10000 défauts ;
-* Migration de la page security en OWASP ;
-
-## v0.0.4 - 01/03/2022
-
-* Refactoring de la page projet, création d'une page détails ;
-* Mise en place d'un système de sauvegarde pour les données calculées ;
-* Correction des bugs ;
-
-## v0.0.5 - 13/03/2022
-
-* Ajout de la page dash, pour afficher des tableaux de suivi ;
-* Ajout du tableau de suivi des versions analysées ;
-* Ajout de graphique pour suivre l'évolution des violations par type ;
-* Ajout du tableau de suivi des violations par modules (webapp - front, api - back et batch) ;
-* Ajout du tableau de suivi les violations par sévérité (bloquant, critique et majeur) ;
-
-## v0.0.6 - 18/03/2022
-
-* Corrections Sonarqube ;
-* Amélioration de la page de suivi des indicateurs (Dash) ;
-  * Affichage de la version de référence ;
-  * Affichage des 9 dernières versions ;
-* Ajout d'un formulaire d'ajout d'une version à partir des données Sonarqube disponible dans l'historique ;
-* Refactoring de la sauvegarde ;
-* Refactoring de la méthode d'ajout manuel d'une version ;
-* Corrections des bugs ;
-
-## v0.0.7 - 28/03/2022
-
-* Version de recette ;
-* Mise à jour de la documentation ;
-* Mise à jour de la procédure de démarrage et d'arrêt ;
-
-## v0.0.8 - 29/03/2022
-
-* Corrections et amélioration ;
-  * Ajout de la note Z pour les applications n'ayant de hotposts ;
-  * Correction typographique ;
-
-## v0.0.9 - 31/03/2022
-
-* Remplacement des favicons et du logo ;
-* Correction de l'affichage de la version de référence et des favoris (problème de Boxing du Boolean initial et favori );
-* Ajout d'un lien "modification" sur la page de suivi des mesures.
-  * Permet de supprimer une version ;
-  * Active ou désactive, pour une version, le statut favori ;
-  * Active ou désactive, pour une version, le statut référence ;
-* Reworking des favoris dans la page home ;
-* Correction de l'affichage quand le nombre de violations est >20000 (20k) ;
-
-## v0.0.10 - 02/04/2022
-
-* Correction de l'affichage des notes lorsque l'on importe une version manuellement depuis la fenêtre d'ajout de la page de suivi ;
-* Blocage des boutons quand le projet n'est pas choisi dans la page projet ;
-
-## v0.0.11 - 07/04/2022
-
-* Mise en place du socle de génération de rapport PDF ;
-* Ajout dans le tableau de suivi des violations par sévérité mineure ;
-* Correction de la couleur pour indiquer la version de référence (rouge) ;
-
-## v1.0.0 - 10/04/2022 - Release
-
-* Ajout d'un exemple d'édition pour la page suivi des indicateurs ;
-* Amélioration de la page et indication de la sévérité en rouge ou vert en fonction de la tendance.
-
-## v1.1.0 - 24/04/2022 - Release
-
-* Mise à jour du modèle de base de données ;
-* Collecte des sévérités par type lors de la collecte, enregistrement dans la table historique, attention le modèle de la table est changé, il faut ajouter les nouveaux attributs (cf. readme);
-* Suppression de la table temp_anomalie et réutilisation de la table anomalie, pour enregistrer le détail des sévérités par type ;
-* Ajout dans la page du suivi des indicateurs, d'un tableau permettant d'afficher par version, le type d'anomalie par sévérité des trois dernières versions ;
-* Correction du problème d'affichage des favoris et de la valeur de référence ;
-* Ajout de la date de la version pour les tableaux de suivi ;
-
-## v1.2.0 - 05/05/2022 - Release
-
-* Corrections Sonarqube ;
-* Ajustement du niveau de log (debug-->info) ;
-
-## v1.2.1 - 08/05/2022 - Release
-
-* Erreur : "Cannot instantiate interface Psr\Log\LoggerInterface". On n'utilise plus l'instanciation (new LoggerInterface) mais l'injection de dépendance ;
-* Erreur de syntaxe dans l'utilisation de littérales dans le contrôleur ApiProjetContrôleur ;
-* Suppression des dépendances inutiles dans HomeControleur et ProfilControleur ;
-* Correction des fautes et erreur de typographie dans le fichier readme.md ;
-
-## v1.2.2 - 11/05/2022 - Release
-
-* Ajout d'une base vierge pour démarrer ;
-* ApiProjectController : Warning: Undefined array key "date_enregistrement" (ligne 1461) ;
-* Correction du format de la date : date("m/d/Y) à date("d/m/Y) pour la page dash, profil et home ;
-* Correction de l'ordre des colonnes pour le tableau de suivi des sévérités par type ;
-* Correction des hotspots corrigés et toujours en base ;
-* Correction "Warning: Undefined array key [line]", suppression de l'affectation en double ;
-* Correction de la page OWASP (erreurs typographiques lors de refactoring) ;
-
-## v1.2.3 - 12/05/2022 - Release
-
-* Correction du traitement et de l'affichage de failles par module.
-
-## v1.2.4 - 17/05/2022 - Release
-
-* Ajout de nouvelles exceptions sur les modules Backend et Autre ;
-* Mise à de la documentation
-* Correction du tri sur le tableau des hotspots (page OWASP / Détails).
-* Ajout de l'attribut "niveau" à la table hotpsot_details pour gérer le tri ;
-* Remplacement du mot "Batch" par "Autre" pour prendre en compte les modules de type "Batch" ou les Autres ;
-* Modification des tables : Anomalie, Historique et HotspotDetails pour prendre en compte le changement de l'attribut "batch" par "autre" ;
-
-## v1.2.5 - 24/05/2022 - Release
-
-* Corrections de l'affichage de la note pour les vulnérabilités et du nombre de mauvaises pratiques, du tableau de la fenêtre modale "ajouter une analyse" (BoardController.php et app-dash.sj) ;
-* Correction de l'enregistrement des données collectées lors de l'ajout d'une analyse historisée. Ajout des attributs obligatoires dans la requête (facultatifs en version 1.2.0).
-* Formatage et nettoyage de toutes les requêtes complexes SQL : `trim(preg_replace("/\s+/u", " ", $sql))` ;
-* Remplacement dans la page de suivi des indicateurs des valeurs null enregistrées avec la valeur "-1" par un tiret "-" ;
-* Ajout du rechargement de la page de suivi des indicateurs quand on clique sur le bouton "fermer" de la fenêtre "ajouter une analyse" ;
-* Correction du problème des valeurs "null" pour les hotsposts (valeurs non calculés sur les anciennes version de sonarqube) ;
-* Correction de la date dans le tableau de suivi quand on ajoute une version depuis l'historique (date du jour au lieu de la date de la version) ;
-
-## v1.2.6 - 02/06/2022 - Release
-
-* [Suivi des indicateurs] : Correction de la méthode de suppression d'une version dans la fenêtre modale "Modifier les paramètres" ;
-
-```plaintext
-Uncaught PHP Exception Doctrine\DBAL\Exception\SyntaxErrorException:
-"An exception occurred while executing a query: SQLSTATE[HY000]:
-General error: 1 near "4.1": syntax error"
-```
-
-* [Suivi des indicateurs] : Amélioration de l'affichage du graphique (mode responsive) ;
-* [Suivi des indicateurs] : Correction des labels tronqués en haut du graphique ;
-* [Suivi des indicateurs] : Modification de la méthode d'injection des données pour le graphique ;
-
-## v1.3.0 - 03/07/2022 - RELEASE
-
-* [Page Suivi] : Correction de l'affichage du tableau de suivi des anomalies par type et sévérité ;
-* [Page Projet] : Correction - le bouton analyse Owasp est bloqué tant que l'utilisateur n'a pas choisi un projet ;
-* [Page Répartition] Correction - "Impossible to access a key ("setup") on a string variable ("NaN")." ;
-* [Page Suivi] : Remplacement des valeurs "null" par -1 au lieu de 0 ;
-* [Page Suivi] : Amélioration de l'affichage du tableau de suivi par type d'anomalies (i.e. mise en couleur des types) ;
-* [Page Suivi] : Prise en compte de la version de référence pour le tableau de suivi des anomalies par type et sévérité ;
-* [Page Répartition] : Ajout du tableau de bord par répartition : frontend, backend, autre ;
-* [Page Répartition] : Ajout de l'Indice de Confiance ;
-* [Page Répartition] : Masquage des tableaux vides (Fiabilité, sécurité et maintenabilité) ;
-* [Page Répartition] : Ajout de la notion de set-up pour la gestion des versions collectées dans la table temp_repartition ;
-* [Architecture] :Séparation des EntityProviders : **default** pour la base des données agrégées et **secondary** pour la base des données d'analyse ;
-* [Architecture] : Reworking des requêtes pour la base temp. Suppression des requêtes avec EntityManager (SQL), ajout des requêtes en utilisant le ManagerRegistry (findBy,etc...) ;
-* [Page Répartition] : Amélioration de l'affichage du tableau des sévérités par type de la page "Repartition". Utilisation d'un accordéon pour réduire la taille de la page ;
-
-## v1.4.0 - 06/07/2022 - RELEASE
-
-* [Page Projet] : Modification du pictogramme (SVG) pour le bouton répartition ;
-* Modification des appels de web-service Asynchrones (11). Utilisation de la méthode Promise + Callback (await) ;
-* [Page Projet] : Modification de la fenêtre modale 'liste des projets'. Ajout des actions suivantes :
-  * [V] Sélectionner un projet de la liste et déverrouiller tous les boutons ;
-  * [S] Supprimer le projet de la liste des projets déjà analysés ;
-  * [C] Lance la collecte des indicateurs sonarqube et le calcul des agrégats ;
-  * [R] Lance la restitution des données calculés ;
-  * [I] Ouvre la page de suivi des indicateurs ;
-  * [O] Ouvre la page du rapport OWASP ;
-  * [RM] Ouvre la page de suivi de la répartition par module ;
-* [Page Projet] : Ajout de l'attribut "liste" de type boolean à la table "Anomalie" pour gérer l'affichage ou non, du projet, dans la liste des projets déjà analysés.
-
-## v1.5.0 - 12/10/2022 - RELEASE
-
-* [Page_Home] : Gestion des versions ;
-  * On vérifie si la version de l'application est dans la table [ma_moulinette] ;
-  * On affiche un message  à l'utilisateur si la version de la base est plus ancienne que la version de l'application ;
-* [Docker] : Mise à jour de la configuration pour la stack docker ;
-* [Symfony] Migration 5.4.4 vers 6.1.4 ;
-* [PHP] Migration 8.1.10 ;
-* [Securité] Ajout d'un cipher de type legacy pour les accès depuis un serveur NGINX ;
-* [Configuration] Remplacement des chemins absolus par des chemins relatifs pour la BD ;
-* [Sécurité] Filtrage des connexions par type d'HOST (domaine, IP, RegEx) ;
-* [Authentification] Gestion des utilisateurs.
-  * Ajout de la table [utilisateur] ;
-  * Ajout d'un formulaire de connexion [login] ;
-  * Ajout d'un formulaire d'inscription [register];
-  * Aout d'un formulaire de bienvenue [welcome], une fois l'inscription réalisée ;
-  * Ajout de l'option **remember-me** ;
-  * Ajout d'un firewall et des rôles [USER], [GESTIONNAIRE] et [PUBLIC_ACCESS] ;
-  * Ajout des icônes **logout** et **dashboard** et **utilisateurs** dans le haut de page ;
-* Ajout du module EasyAdmin :
-  * Personalisation des pages, du menu et des contrôleurs CRUD ;
-  * Ajout des indicateurs et des statistiques globales sur la page Dashboard ;
-  * Ajout de la page de gestion des comptes utilsiateurs [ROLE_GESTIONNAIRE] ;
-  * Ajout d'un lien vers la page [HOME] ;
-* Activation et optimisation du cache opCahe (pour la prod uniquement);
-* Refactoring complet de la documentation ;
-* [Projet] Ajout de l'événement **Collecte** sur le bouton `C` du menu rapide ;
-* [Erreurs] Personnalisation des erreurs HTTP (en production) ;
-* [Utilisateur] Ajout du compte admin ;
-* [Home] refactoring de la page :
-  * Suppression du code JS et HTML pour les composants nécessitant un droits Admin dans sonarqube ;
-  * Suppression des appels Asynchronne JS pour afficher le nombre de projet et de profil ;
-  * Ajout de la table properties, contenant la nombre de projet, de profil en base et sur le serveur et leur date de modification ;
-  * Ajout dans le contôleur du processus de gestion des projets et des profils (anciennenent en JS) ;
-  * Amélioration de l'affichage des messages d'alerte. Suppression du statut pour des callout ;
-  * Affichage du nombre de projet et de profil en plus/moins ;
-  * Correction Sonarqube ;
-* [Profil] Correction de l'affichage du statut Actif lors du rechargement de la liste ;
-* [Paramétrage] Choix de la fréquence de mise à jour. Par défaut 1 jour ;
-
-## v1.6.0 - 30/11/2022 - Release
-
-* [CSS] Utilisation du référentiel des couleurs Sonarqube pour afficher les notes. Pages concernées : [home], [projet], [owasp], [suivi] et [cosui].
-* [Page_COSUI] Ajout d'une page de synthèse de type Comité de Suivi (i.e COSUI) ;
-* [CSS] La variation des indicateurs utilise maintenant la class [down] pour marquer une amélioration c'est-à-dire une baisse des signalements, la flèche est verte et pointe vers le bas et [up] pour marquer une augmentation des défauts. La flèche pointe vers le haut sa couleur est rouge ;
-* [Page_Projet] Ajout du bouton COSUI ;
-* [CSS] Refactorisation des class js- et -enabled pour la page [PROJET] ;
-* [Page_Projet] Renommage de la page anomalie.details.html.twig en details.html.twig ;
-* [Page_Home] Ajout d'un raccourci pour ouvrir directement la page de suivi ;
-* [Page_Suivi] Amélioration de l'information utilisateur de la fenêtre modale d'ajout d'une version ;
-* [Page_Suivi] Refactorisation de la page pour prendre en compte le référentiel des couleurs sonar ;
-* [Page_Home] Ajout des indicateurs de visibilités ;
-* [Page_Suivi] Amélioration de la gestion des codes HTTP (404) ;
-* [Page_Dashbord] Ajout du contrôle d'intégrité de la base de données ;
-* Mise à jour symfony 6.1.8 ;
-
-## v2.0.0 - 01/01/2023 - RC1
-
-* Mise à jour webpack-5.75.0 et webpack-encore 4.1.2 ;
-* Migration symfony 6.4.10 ;
-* Fix: Ajout de traces lors des appel HTTP 200, 400, 401 et 404. Catch et traitement des erreurs 400 et 404 ;
-* Fix : Définition de la timezone [Europe/Paris] pour la gestion des dates ;
-* Fix : Correction type attribut hotspot_high varchar(4)-->integer ;
-* Fix : Ajustement de la taille des bulles utilisées pour les notes ;
-* Fix : Correction des deux hotspots -> remplacement de Math.random() par chance() ;
-* Fix : Affichage du nombre de règles à la place du language dans le tableau profil ;
-* Refactor: mises à jour des commentaires ;
-* Refactor: regroupement des classes dans des packages ;
-* CC : Externalisation des constantes JS ;
-* Code Clean W3C & sonarqube ;
-* [Docker] Ajout du fichier docker-compose.yml ;
-* [BD] Ajout aux scripts SQLite, des scripts PostgreSQL ;
-* [BD] Suppression de la table `tags` ;
-* [BD] Ajout des "tags" et de la "visibilité" dans la table `liste_projet` ;
-* [TU] Ajout d'une base sqlite "in memory" pour les tests unitaires.
-* [Page_Home] Correction de l'affichage NaN pour les projets de type privé quand la table est vide ;
-* [Page_Home] Ajout de la vue **Projet** pour l'affichage des projets favoris, de la vue **Version** pour l'affichage des versions favorites et de vue **Vide** utiliée quand l'utilisateur a désactivé l'affichage des favoris ;
-* [Page_Portefeuille] Initialise la liste des projets à "Aucun projet" quand la table des projets est vide ;
-* [EasyAdmin] Ajout d'un **listner** pour afficher les messages utilisateurs pour les évenements des class **equipe**, **portefeuille** et **batch** ;
-* [EasyAdmin] Ajout d'un **Validator** pour la contrainte d'unicité sur l'attribut `titre` ;
-* [EasyAdmin] Ajout d'un controller CRUD pour gérer les **équipes** ;
-* [EasyAdmin] Ajout d'un controller CRUD pour gérer les **portefeuilles** de projets ;
-* [EasyAdmin] Ajout d'un controller CRUD pour gérer les **batch** ;
-* [Header] Ajout d'un lien pour l'accès à la page de suivi des batch ;
-* [Security] Ajout du ROLE_BATCH avec héritage du ROLE_COLLECTE et ROLE_UTILISATEUR ;
-* [Security] Ajout du ROLE_COLLECTE avec héritage du ROLE_UTILISATEUR ;
-* [Page_Projet] Ajout du nombre de version de type "autre" ;
-* [Page_Projet] Suppression de l'icône animée lors de la collecte ;
-* [Page_Projet] Correction alignement de la colone type du tableau de présentation de la dette technique ;
-* [Page_Projet] Ajout du projet par défaut dans localStorage en marque page ;
-* [Page_Projet] Collecte des TODO ;
-* [Page_Projet] Limiter la liste des projets aux projets d'une équipe ;
-* [Page_Traitement] Ajout de la page de suivi des traitements automatique ;
-* [Traitement] Ajout d'un processus automatique et manuel pour la collecte des indicateurs sonarqube ;
-* [Page_Traitement] Ajout d'un bouton d'affichage du journal d'execution du batch ;
-* [Tests_Unitaires] OK (251 tests, 2865 assertions) ;
-* [Page_Profil] Amélioration de la page profil pour mobile ;
-* [Page_Profil] Consultation des changements par profil ;
-* [Page_Profil] Suppression du bouton de rafraichissement de la liste des profils ;
-* [Page_Profil_Details] Affichage des changements sur les règles des profils qualités ;
-* [Page_Profil] Prise en compte du rôle `Gestionnaire` pour mettre à jour la liste des référentiels ;
-* [Page_Suivi_Activité] Ajout de la page de suivi de l'activité Sonarqube ;
-* [Page_Inscription] Renforcement de la sécurité. Ajout de la propriété hash_property_path.
-* [Page_Inscription] Ajout du controle de la saisie du mot de passe.
-* [Page_Inscription] Ajout de l'indicateur de qualité du mot de passe.
-* [Page_Footer] Refonte du footer pour prendre en compte les liens |Plan du site | accéssibilité | Mentions légales | Données personnelles.
-* [Page_Home] Vérification des droits pour mettre à jour la table des projets et celles des profils qualités.
-* [Page_Login] Ajout de l'option voir mon mot de passe ;
-* [Page_Login] Ajout, je veux changer mon mot de passe ;
-* [Page_Login] TODO : Ajout, j'ai oublié mon mot de passe, aider-moi :)
-* [Composant_Menu] Ajout du nom de l'utilisateur ;
-* [Composant_Menu] Ajout des informations utilisateurs utiles ;
-* [Page_Suivi_Modification] Une seule version de référence pour un projet.
-* [Page_Suivi_Modification] Changer la version de référence nécessite le role GESTIONNAIRE (i.e. impact sur les calcul).
-* [Page_Suivi_Modification] Un utilisateur peut avoir une ou plusieurs versions du même projet en favori (impact Acceuil)
-* [Page_Home] Afficher par défaut la version la plus récente du projet favoris ;
-* [Page_Home] Ajouter une page pour afficher les différentes version d'un projet favori (i.e. modification des préférences de l'utilisateur) ;
-* [Page_Préference] Ajout du support des versions de projet en favoris ;
-* [Page_Préference] Ajout du support de la version des projets favoris ou des versions du projet favoris ;
-* [Page_Projet] Lors de la collecte des données, le ratio de dette technique est récupéré (table mesure) ;
-* [Page_Suivi] Lors de l'intégration d'une version dans l'historique, le ratio de dette technique est récupéré depuis le serveur ;
-* [Page_Projet] Lors de la collecte des données, les données de la version courante est conservée.
-* [Page_Projet] refactoring des traitements de collecte (message, catch des erreurs).
-* [Page_Projet] Si une erreur est détectée lors de la collecte, on arrête la collecte (i.e on ne lance pas les autres traitements).
+* Création du projet sous Symfony
+* Reprise du projet développé eb HTML/CSS, Javascript + DexieJS ;
+* Migration sous Symfony 5.4, php 8.1.0 ;
+* Migration dexieJs vers SQLite 4 ;
+* Migration du code en HTML/JS vers PHP, Twig ;
+* Migration vers webpack ;
