@@ -17,7 +17,7 @@
 /* ***** Gestion des logs ****** */
 .label-log { padding-left: 1rem; }
 
-/* Cotainer de logs */
+/* Container de logs */
 .log-container {
   padding-left: 1rem;
   padding-right: 1rem;
@@ -110,7 +110,7 @@ textarea[readonly] {
 /* Suppression du style inline */
 .graphique-autre-version-container { width: 54vw; }
 
-/* Taille est couleur des images SVG dans les boutons */
+/* Taille et couleurs des images SVG dans les boutons */
 .liste-svg,
 .analyse-svg,
 .affiche-resultat-svg,
@@ -128,7 +128,7 @@ textarea[readonly] {
   height: 32px;
 }
 
-/* Taille est couleur des images SVG dans les boutons */
+/* Taille et couleur des images SVG dans les boutons */
 .owasp-svg {
   fill: #fff;
   cursor: pointer;
@@ -172,7 +172,7 @@ textarea[readonly] {
 #fermer-dette-technique:hover,
 #fermer-liste-severite:hover { background-color: #006182; }
 
-/* Gestion des boutons desactivés */
+/* Gestion des boutons désactivés */
 .lance-analyse-disabled,
 .affiche-resultat-disabled,
 .analyse-owasp-disabled,
@@ -194,7 +194,7 @@ textarea[readonly] {
 
 /* select2 custom
  *  placehoder
- *  Ici on surchage les class de l'api select2
+ *  Ici on surcharge les class de l'api select2
  */
 
 /* Couleur du container */
@@ -298,7 +298,7 @@ textarea[readonly] {
   border-radius: 1.2rem;
 }
 
-/* Positionnenment et couleur des résultat dans une carte */
+/* Positionnement et couleurs des résultats dans une carte */
 .resultat {
   padding-left: 0.5rem;
   color: #333;
@@ -317,7 +317,7 @@ textarea[readonly] {
   align-items: center;
 }
 
-/* Taille de pour les stats */
+/* Taille pour les stats */
 .stat {
   line-height: 0.9;
   font-size: 2rem;
@@ -376,7 +376,7 @@ textarea[readonly] {
   padding-right: 22px;
 }
 
-/* **** couleur severite **** */
+/* **** couleur sévérité **** */
 
 /* High */
 .rouge { color: #d4333f; }
@@ -388,9 +388,7 @@ textarea[readonly] {
 .bleu { color: #00445b; }
 
 /* bouton actions pour la liste des projets */
-.capsule {
-  padding-left: 0.1rem;
-}
+.capsule { padding-left: 0.1rem; }
 
 .capsule-bulle {
   cursor: pointer;
