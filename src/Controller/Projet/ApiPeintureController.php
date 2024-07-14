@@ -21,7 +21,7 @@ use Symfony\Component\Routing\Annotation\Route;
 // Gestion de accès aux API
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-/** Securité */
+/** Sécurité */
 use Symfony\Bundle\SecurityBundle\Security;
 
 // Accès aux tables
@@ -62,15 +62,14 @@ class ApiPeintureController extends AbstractController
         }
 
     /** Définition des constantes */
-    public static $removeReturnline = "/\s+/u";
     public static $reference = "<strong>[Peinture]</strong> ";
     public static $erreur400 = "La requête est incorrecte (Erreur 400).";
     public static $erreur404 = "Je n'ai pas trouvé les données. Vous devez lancer une collecte (Erreur 404)";
     public static $erreur500 = "Je n'ai pas trouvé d'analyse. (Erreur 500).";
 
     /**
-     * [Description for calculNoteHospot]
-     * retourne la note A, B, C, D ou E en fonction du ratio sonarqube.
+     * [Description for calculNoteHotspot]
+     * retourne la note A, B, C, D ou E en fonction du ratio SonarQube.
      *
      * @param int $toReview
      * @param int $reviewed
@@ -81,7 +80,7 @@ class ApiPeintureController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function calculNoteHospot($toReview, $reviewed): string
+    private function calculNoteHotspot($toReview, $reviewed): string
     {
         $ratio = intval($reviewed) * 100 / intval($toReview) + intval($reviewed);
         if ($ratio >= 80) {
@@ -116,12 +115,12 @@ class ApiPeintureController extends AbstractController
     public function projetMesApplicationsListe(Request $request, Security $security): response
     {
         /** On instancie l'entityRepository */
-        $anomalieEntity = $this->em->getRepository(Anomalie::class);
+        $anomalieRepository = $this->em->getRepository(Anomalie::class);
 
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On crée un objet de reponse JSON */
+        /** On crée un objet de response JSON */
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
@@ -133,10 +132,10 @@ class ApiPeintureController extends AbstractController
 
         /**
          * On récupère la liste des projets ayant déjà fait l'objet d'une analyse.
-         * On n'utilise plus le critère liste=TRUE/FALSE car on utilise les préferences
+         * On n'utilise plus le critère liste=TRUE/FALSE car on utilise les préférences
          * de l'utilisateur
          */
-        $request = $anomalieEntity->selectAnomalieByProjectName();
+        $request = $anomalieRepository->selectAnomalieByProjectName();
         if ($request['code']!=200) {
             return $response->setData(['code' => $request['code'], Response::HTTP_OK]);
         }
@@ -153,7 +152,7 @@ class ApiPeintureController extends AbstractController
         $preference = $security->getUser()->getPreference();
 
         /**
-         * Pour chaque projet de la liste de préference,
+         * Pour chaque projet de la liste de préférence,
          * on regarde si le projet a déjà fait l'objet d'une analyse
          * et si le projet est en favori.
          */
@@ -172,7 +171,6 @@ class ApiPeintureController extends AbstractController
             'projets' => $projets,
             Response::HTTP_OK]);
     }
-
 
     /**
      * [Description for peintureProjetVersion]
@@ -196,7 +194,7 @@ class ApiPeintureController extends AbstractController
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On crée un objet de reponse JSON */
+        /** On crée un objet de response JSON */
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
@@ -244,7 +242,7 @@ class ApiPeintureController extends AbstractController
         $toutesLesVersionsCount = isset($toutesLesVersions['nombre'][0]['total']) ? $toutesLesVersions['nombre'][0]['total'] : 0;
         $lesAutres = $toutesLesVersionsCount - $releaseCount - $snapshotCount;
 
-        /** On récupére le nombre de version par type pour le graphique */
+        /** On récupère le nombre de version par type pour le graphique */
         $map=['maven_key'=>$data->maven_key];
         $infoVersion=$informationProjetEntity->selectInformationProjetTypeIndexed($map);
         if ($snapshot['code']!=200) {
@@ -305,12 +303,12 @@ class ApiPeintureController extends AbstractController
     public function peintureProjetMesures(Request $request): response
     {
         /** On instancie l'entityRepository */
-        $mesuresEntity = $this->em->getRepository(Mesures::class);
+        $mesuresRepository = $this->em->getRepository(Mesures::class);
 
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On crée un objet de reponse JSON */
+        /** On crée un objet de response JSON */
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
@@ -330,7 +328,7 @@ class ApiPeintureController extends AbstractController
 
         /** On récupère la dernière version et sa date de publication */
         $map=['maven_key'=>$data->maven_key];
-        $request=$mesuresEntity->selectMesuresVersionLast($map);
+        $request=$mesuresRepository->selectMesuresVersionLast($map);
         if ($request['code']!=200) {
             return $response->setData([
                 'code' => $request['code'], Response::HTTP_OK]);
@@ -338,7 +336,9 @@ class ApiPeintureController extends AbstractController
 
         return $response->setData([
             'code'=>200,
-            'name' => $request['mesures'][0]['name'], 'ncloc' => $request['mesures'][0]['ncloc'],
+            'name' => $request['mesures'][0]['name'],
+            'ncloc' => $request['mesures'][0]['ncloc'],
+            'languages' => $request['mesures'][0]['language_distribution'],
             'lines' => $request['mesures'][0]['lines'],
             'coverage' => $request['mesures'][0]['coverage'],
             'sqaleDebtRatio' => $request['mesures'][0]['sqale_debt_ratio'],
@@ -351,7 +351,7 @@ class ApiPeintureController extends AbstractController
 
     /**
      * [Description for peintureProjetAnomalie]
-     * Récupère les informations sur la dette technique et les anamalies
+     * Récupère les informations sur la dette technique et les anomalies
      *
      * @param Request $request
      *
@@ -365,13 +365,13 @@ class ApiPeintureController extends AbstractController
     public function peintureProjetAnomalie(Request $request): response
     {
         /** On instancie l'entityRepository */
-        $anomalieEntity = $this->em->getRepository(Anomalie::class);
-        $notesEntity = $this->em->getRepository(Notes::class);
+        $anomalieRepository = $this->em->getRepository(Anomalie::class);
+        $notesRepository = $this->em->getRepository(Notes::class);
 
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On crée un objet de reponse JSON */
+        /** On crée un objet de response JSON */
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
@@ -391,7 +391,7 @@ class ApiPeintureController extends AbstractController
 
         /** On récupère la dernière version et sa date de publication */
         $map=['maven_key'=>$data->maven_key];
-        $anomalie=$anomalieEntity->selectAnomalie($map);
+        $anomalie=$anomalieRepository->selectAnomalie($map);
         if ($anomalie['code']!=200) {
             return $response->setData(['code' => $anomalie['code'], Response::HTTP_OK]);
         }
@@ -433,7 +433,7 @@ class ApiPeintureController extends AbstractController
 
         foreach ($types as $type) {
             $map=['maven_key'=>$data->maven_key, 'type'=>$type];
-            $note=$notesEntity->selectNotesMavenType($map);
+            $note=$notesRepository->selectNotesMavenType($map);
             if ($note['code']!=200) {
                 return $response->setData([
                     'code' => $note['code'],
@@ -490,12 +490,12 @@ class ApiPeintureController extends AbstractController
     public function peintureProjetAnomalieDetails(Request $request): response
     {
         /** On instancie l'entityRepository */
-        $anomalieDetailsEntity = $this->em->getRepository(AnomalieDetails::class);
+        $anomalieDetailsRepository = $this->em->getRepository(AnomalieDetails::class);
 
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On crée un objet de reponse JSON */
+        /** On crée un objet de response JSON */
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
@@ -515,7 +515,7 @@ class ApiPeintureController extends AbstractController
 
         /** On récupère les données pour le projet */
         $map=['maven_key'=>$data->maven_key];
-        $details=$anomalieDetailsEntity->selectAnomalieDetailsMavenKey($map);
+        $details=$anomalieDetailsRepository->selectAnomalieDetailsMavenKey($map);
         if ($details['code']!=200) {
             return $response->setData([
                 'code' => $details['code'], Response::HTTP_OK]);
@@ -576,12 +576,12 @@ class ApiPeintureController extends AbstractController
     public function peintureProjetHotspots(Request $request): response
     {
         /** On instancie l'entityRepository */
-        $hotspotsEntity = $this->em->getRepository(Hotspots::class);
+        $hotspotsRepository = $this->em->getRepository(Hotspots::class);
 
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On crée un objet de reponse JSON */
+        /** On crée un objet de response JSON */
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
@@ -600,23 +600,23 @@ class ApiPeintureController extends AbstractController
 
         /** On compte le nombre de hotspot au statut TO_REVIEW */
         $map=['maven_key'=>$data->maven_key, 'status'=>'TO_REVIEW'];
-        $toReview=$hotspotsEntity->countHotspotsStatus($map);
+        $toReview=$hotspotsRepository->countHotspotsStatus($map);
         if ($toReview['code']!=200) {
             return $response->setData(['code' => $toReview['code'], Response::HTTP_OK]);
         }
 
         /** On compte le nombre de hotspot au statut REVIEWED */
         $map=['maven_key'=>$data->maven_key, 'status'=>'REVIEWED'];
-        $reviewed=$hotspotsEntity->countHotspotsStatus($map);
+        $reviewed=$hotspotsRepository->countHotspotsStatus($map);
         if ($reviewed['code']!=200) {
             return $response->setData(['code' => $reviewed['code'], Response::HTTP_OK]);
         }
 
-        /** On calul la note sonar */
+        /** On calcul la note sonar */
         if (empty($toReview['nombre'][0]['to_review'])) {
             $note = "A";
         } else {
-            $note=static::calculNoteHospot($toReview['nombre'][0]['to_review'], $reviewed['nombre'][0]['reviewed']);
+            $note=static::calculNoteHotspot($toReview['nombre'][0]['to_review'], $reviewed['nombre'][0]['reviewed']);
         }
 
         return $response->setData(['code'=>200, 'note' => $note, Response::HTTP_OK]);
@@ -638,12 +638,12 @@ class ApiPeintureController extends AbstractController
     public function peintureProjetHotspotsDetails(Request $request): response
     {
         /** On instancie l'entityRepository */
-        $hotspotsEntity = $this->em->getRepository(Hotspots::class);
+        $hotspotsRepository = $this->em->getRepository(Hotspots::class);
 
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On crée un objet de reponse JSON */
+        /** On crée un objet de response JSON */
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
@@ -663,7 +663,7 @@ class ApiPeintureController extends AbstractController
         $total = $high = $medium = $low = 0;
         /** On récupère la dernière version et sa date de publication. */
         $map=['maven_key'=>$data->maven_key, 'status'=>'REVIEWED'];
-        $niveaux=$hotspotsEntity->selectHotspotsByNiveau($map);
+        $niveaux=$hotspotsRepository->selectHotspotsByNiveau($map);
         if ($niveaux['code']!=200) {
             return $response->setData(['code' => $niveaux['code'], Response::HTTP_OK]);
         }
@@ -703,12 +703,12 @@ class ApiPeintureController extends AbstractController
     public function peintureProjetNosonarDetails(Request $request): response
     {
         /** On instancie l'entityRepository */
-        $noSonarEntity = $this->em->getRepository(NoSonar::class);
+        $noSonarRepository = $this->em->getRepository(NoSonar::class);
 
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On crée un objet de reponse JSON */
+        /** On crée un objet de response JSON */
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
@@ -725,7 +725,7 @@ class ApiPeintureController extends AbstractController
         }
         /** On récupère la liste des règles et leur nombre pour un projet. */
         $map=['maven_key'=>$data->maven_key];
-        $rules=$noSonarEntity->selectNoSonarRuleGroupByRule($map);
+        $rules=$noSonarRepository->selectNoSonarRuleGroupByRule($map);
         if ($rules['code']!=200) {
             return $response->setData(['code' => $rules['code'], Response::HTTP_OK]);
         }
@@ -764,12 +764,12 @@ class ApiPeintureController extends AbstractController
     public function peintureProjetTodo(Request $request): response
     {
         /** On instancie l'entityRepository */
-        $todoEntity = $this->em->getRepository(Todo::class);
+        $todoRepository = $this->em->getRepository(Todo::class);
 
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On crée un objet de reponse JSON */
+        /** On crée un objet de response JSON */
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
@@ -789,7 +789,7 @@ class ApiPeintureController extends AbstractController
 
         /** On récupère la liste des to do pour le projet. */
         $map=['maven_key'=>$data->maven_key];
-        $rules=$todoEntity->selectTodoRuleGroupByRule($map);
+        $rules=$todoRepository->selectTodoRuleGroupByRule($map);
         if ($rules['code']!=200) {
             return $response->setData(['code' => $rules['code'], Response::HTTP_OK]);
         }
@@ -820,7 +820,7 @@ class ApiPeintureController extends AbstractController
 
         /** On récupère la liste détaillée. */
         $map=['maven_key'=>$data->maven_key];
-        $details=$todoEntity->selectTodoComponentOrderByRule($map);
+        $details=$todoRepository->selectTodoComponentOrderByRule($map);
         if ($details['code']!=200) {
             return $response->setData(['code' => $details['code'], Response::HTTP_OK]);
         }
@@ -840,7 +840,7 @@ class ApiPeintureController extends AbstractController
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On crée un objet de reponse JSON */
+        /** On crée un objet de response JSON */
         $response = new JsonResponse();
 
         /** On teste si la clé est valide */
