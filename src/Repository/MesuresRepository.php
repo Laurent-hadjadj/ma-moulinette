@@ -22,7 +22,7 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class MesuresRepository extends ServiceEntityRepository
 {
-    public static $removeReturnline = "/\s+/u";
+    public static $removeReturnLine = "/\s+/u";
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -49,7 +49,7 @@ class MesuresRepository extends ServiceEntityRepository
                         FROM mesures
                         WHERE maven_key=:maven_key
                         ORDER BY date_enregistrement DESC LIMIT 1";
-                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $conn->bindValue(':maven_key', $map['maven_key']);
                 $mesures=$conn->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
@@ -77,7 +77,7 @@ class MesuresRepository extends ServiceEntityRepository
                                 (maven_key, project_name, lines, ncloc, sqale_debt_ratio, coverage, duplication_density, tests, issues, mode_collecte, utilisateur_collecte, date_enregistrement)
                             VALUES
                                 (:maven_key, :project_name, :lines, :ncloc, :sqale_debt_ratio, :coverage, :duplication_density, :tests, :issues, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
-                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                         $stmt->bindValue(':maven_key', $map['maven_key']);
                         $stmt->bindValue(':project_name', $map['project_name']);
                         $stmt->bindValue(':lines', $map['lines']);
@@ -120,7 +120,7 @@ class MesuresRepository extends ServiceEntityRepository
                             FROM mesures
                             WHERE maven_key=:maven_key";
 
-                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                         $stmt->bindValue(':maven_key', $map['maven_key']);
                         $stmt->executeStatement();
                 $this->getEntityManager()->getConnection()->commit();
