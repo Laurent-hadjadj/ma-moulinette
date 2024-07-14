@@ -18,7 +18,6 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-
 #[ORM\Entity(repositoryClass: MesuresRepository::class)]
 #[ORM\Table(name: "mesures", schema: "ma_moulinette")]
 class Mesures
@@ -51,6 +50,11 @@ class Mesures
     #[Assert\NotNull]
     private $ncloc;
 
+    #[ORM\Column(type: Types::JSON, nullable: false,
+        options: ['comment' => 'Distribution des langages de programmation'])]
+    #[Assert\NotNull]
+    private $languageDistribution;
+
     #[ORM\Column(type: Types::FLOAT, nullable: false,
         options: ['comment' => 'Pourcentage de couverture par les tests'])]
     #[Assert\NotNull]
@@ -76,7 +80,7 @@ class Mesures
     private $issues;
 
     #[ORM\Column(type: Types::STRING, length: 32, nullable: true,
-    options: ['comment' => 'Mode de collete : MANUEL | AUTOMATIQUE'])]
+    options: ['comment' => 'Mode de collecte : COLLECTE | TRAITEMENT MANUEL | TRAITEMENT AUTOMATIQUE'])]
     #[Assert\Length(max: 32,
         maxMessage: "Le mode de collecte ne peut pas dépasser 32 caractères.")]
     private ?string $modeCollecte=null;
@@ -84,7 +88,7 @@ class Mesures
     #[ORM\Column(type: Types::STRING, length: 128, nullable: true,
     options: ['comment' => "Nom de l'utilisateur qui a réalisé la collecte."])]
     #[Assert\Length(max: 128,
-        maxMessage: "Le nom de l'utilisatzeur ne peut pas dépasser 128 caractères.")]
+        maxMessage: "Le nom de l’utilisateur ne peut pas dépasser 128 caractères.")]
     private ?string $utilisateurCollecte=null;
 
     #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
@@ -237,6 +241,18 @@ class Mesures
     public function setUtilisateurCollecte(?string $utilisateurCollecte): static
     {
         $this->utilisateurCollecte = $utilisateurCollecte;
+
+        return $this;
+    }
+
+    public function getLanguageDistribution(): array
+    {
+        return $this->languageDistribution;
+    }
+
+    public function setLanguageDistribution(array $languageDistribution): static
+    {
+        $this->languageDistribution = $languageDistribution;
 
         return $this;
     }
