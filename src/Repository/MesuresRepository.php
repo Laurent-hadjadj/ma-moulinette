@@ -44,8 +44,9 @@ class MesuresRepository extends ServiceEntityRepository
     public function selectMesuresVersionLast($map):array
     {
         try {
-                $sql = "SELECT project_name as name, ncloc, lines, coverage, sqale_debt_ratio,
-                duplication_density as duplication, tests, issues
+                $sql = "SELECT project_name as name, ncloc, language_distribution,
+                            lines, coverage, sqale_debt_ratio,
+                            duplication_density as duplication, tests, issues
                         FROM mesures
                         WHERE maven_key=:maven_key
                         ORDER BY date_enregistrement DESC LIMIT 1";
