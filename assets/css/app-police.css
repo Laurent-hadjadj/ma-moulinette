@@ -86,6 +86,18 @@
   font-style: normal;
 }
 
+/** Ajout de la police nasalization-rg */
+@font-face {
+  font-family: "Nasalization Rg";
+  src: url("../fonts/nasalization-rg-webfont.eot");
+  src:
+    url("../fonts/nasalization-rg-webfont.eot#iefix") format("embedded-opentype"),
+    url("../fonts/nasalization-rg-webfont.woff2") format("woff2"),
+    url("../fonts/nasalization-rg-webfont.woff") format("woff"),
+    url("../fonts/nasalization-rg-webfont.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
 .open-sans { font-family: "Open Sans", sans-serif; }
 
 .open-sans-light { font-family: "Open Sans Light", sans-serif; }
@@ -93,5 +105,7 @@
 .open-sans-bold { font-family: "Open Sans Bold", sans-serif; }
 
 .claire-hand { font-family: "Claire Hand", sans-serif; }
+
+.nasa { font-family: "Nasalization Rg", sans-serif; }
 
 /*********************************** Fin de l"initialisation ***********************************/
