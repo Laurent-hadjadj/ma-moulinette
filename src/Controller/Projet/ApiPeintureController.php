@@ -333,12 +333,13 @@ class ApiPeintureController extends AbstractController
             return $response->setData([
                 'code' => $request['code'], Response::HTTP_OK]);
         }
+        $languageDistribution=json_decode($request['mesures'][0]['language_distribution'], true);
 
         return $response->setData([
             'code'=>200,
             'name' => $request['mesures'][0]['name'],
             'ncloc' => $request['mesures'][0]['ncloc'],
-            'languages' => $request['mesures'][0]['language_distribution'],
+            'languages' => $languageDistribution[0] ?? [],
             'lines' => $request['mesures'][0]['lines'],
             'coverage' => $request['mesures'][0]['coverage'],
             'sqaleDebtRatio' => $request['mesures'][0]['sqale_debt_ratio'],
