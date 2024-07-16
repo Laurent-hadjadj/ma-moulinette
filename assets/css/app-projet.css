@@ -307,6 +307,12 @@ textarea[readonly] {
   white-space: nowrap;
 }
 
+.resultat-projet {
+  color: #333;
+  overflow-wrap: break-word; /* Permet de couper les mots */
+  word-break: break-all; /* Coupe les mots qui dépassent */
+}
+
 /* Taille de la police en small */
 .small { font-size: 1rem; }
 
@@ -316,6 +322,8 @@ textarea[readonly] {
   display: flex;
   align-items: center;
 }
+
+.ligne-projet { margin: 0.1rem; }
 
 /* Taille pour les stats */
 .stat {
@@ -448,16 +456,59 @@ textarea[readonly] {
 
 .modifier-liste-projet-svg:hover { fill: #e7552c; }
 
-/** Affichage des langages du projet */
+/** Information projet et statut */
+.information-statut { font-size: 1.2rem; }
+.information-texte { color: #38761d; }
 
+/** Affichage des langages du projet */
 .label-langage {
-  font-size: 1.2rem;
   border: solid 1px #00445b;
   background-color: #00445b;
   color: #fff;
-  padding-right: 0.5rem;
-  padding-left: 0.5rem;
-  margin-right: 0.5rem;
+  padding-right: 0.1rem;
+  padding-left: 0.6rem;
+  margin-right: 0.4rem;
+}
+
+/** Ajout d'un tooltip CSS */
+.tool-tip-langage { position: relative; }
+
+/* Propriété du texte qui sera affiché dans le tooltip */
+.tool-tip-langage .tool-tip-text-langage {
+  visibility: hidden;
+  width: 140px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  padding: 0.5rem;
+  border-radius: 6px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -70px;
+  opacity: 0;
+  transition: opacity 0.5s;
+  font-size: 0.8rem;
+  hyphens: auto;
+}
+
+/* Action après le survol du tooltip */
+.tool-tip-langage .tool-tip-text-langage::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent;
+}
+
+/* Action au moment du survol du tooltip */
+.tool-tip-langage:hover .tool-tip-text-langage {
+  visibility: visible;
+  opacity: 1;
 }
 
 /**
@@ -467,28 +518,33 @@ textarea[readonly] {
 
 /* Media Small */
 @media (width <= 20em) {
+  .label-langage { font-size: 1rem; }
   .log { font-size: 0.75rem; }
   .callout-information { width: 21rem; }
 }
 
 /* Media Small */
 @media (20.025em <= width <= 22em) {
+  .label-langage { font-size: 1rem; }
   .log { font-size: 0.8rem; }
   .callout-information { width: 21rem; }
 }
 
 /* Media Small */
 @media (22.025em <= width <= 30em) {
+  .label-langage { font-size: 1rem; }
   .callout-information { width: 22rem; }
 }
 
 /* Media Small */
 @media (30.025em <= width <= 40em) {
+  .label-langage { font-size: 1rem; }
   .callout-information { width: 22rem; }
 }
 
 /* Media Medium */
 @media (40.025em <= width <= 64em) {
+  .label-langage { font-size: 1.1rem; }
   .bouton-analyse-right { padding-right: 1rem; }
   .bouton-afficher-left { padding-left: 1rem; }
   .callout-information { width: 22rem; }
@@ -496,6 +552,7 @@ textarea[readonly] {
 
 /* Media Large */
 @media (64.025em <= width <= 90em) {
+  .label-langage { font-size: 1.2rem; }
   .bouton-analyse-right { padding-right: 1rem; }
   .bouton-afficher-left { padding-left: 1rem; }
   .callout-information { width: 24.1rem; }
@@ -503,6 +560,7 @@ textarea[readonly] {
 
 /* Media Large */
 @media (90.025em <= width <= 120em) {
+  .label-langage { font-size: 1.2rem; }
   .bouton-analyse-right { padding-right: 1rem; }
   .bouton-afficher-left { padding-left: 1rem; }
   .callout-information { width: 24.1rem; }
@@ -510,6 +568,8 @@ textarea[readonly] {
 
 /* Media Extra-Large */
 @media (120.025em <= width <= 160em) {
+  .label-langage { font-size: 1.2rem; }
+
   .voir-analyse-svg {
     margin-bottom: -0.6rem;
     width: 48px;
@@ -543,7 +603,3 @@ textarea[readonly] {
   .bouton-afficher-left { padding-left: 1rem; }
   .callout-information { width: 24.1rem; }
 }
-
-/** Information projet et statut */
-.information-statut { font-size: 1.2rem; }
-.information-texte { color: #38761d; }
