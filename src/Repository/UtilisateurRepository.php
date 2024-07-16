@@ -22,7 +22,7 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class UtilisateurRepository extends ServiceEntityRepository
 {
-    public static $removeReturnline = "/\s+/u";
+    public static $removeReturnLine = "/\s+/u";
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -151,7 +151,7 @@ class UtilisateurRepository extends ServiceEntityRepository
                 $sql = "UPDATE utilisateur
                     SET preference=:preference
                     WHERE courriel=:courriel";
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $stmt->bindValue(':courriel', $map['courriel']);
                 $stmt->bindValue(':preference', $jsonArray);
                 $stmt->executeStatement();
@@ -248,7 +248,7 @@ class UtilisateurRepository extends ServiceEntityRepository
                         SET preference=:preference
                         WHERE courriel=:courriel";
 
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $stmt->bindValue(':courriel', $map['courriel']);
                 $stmt->bindValue(':preference', $jsonArray);
 
@@ -311,7 +311,7 @@ class UtilisateurRepository extends ServiceEntityRepository
                         $sql = "UPDATE utilisateur
                                 SET preference = '$jarray'
                                 WHERE courriel=:courriel";
-                        $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                        $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                         $stmt->bindValue(':courriel', $map['courriel']);
                         $stmt->executeStatement();
             } catch (\Doctrine\DBAL\Exception $e) {
@@ -339,7 +339,7 @@ class UtilisateurRepository extends ServiceEntityRepository
                     $sql = "UPDATE utilisateur
                         SET preference = '$jarray'
                         WHERE courriel=:courriel";
-                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(':courriel', $map['courriel']);
                     $stmt->executeStatement();
                 $this->getEntityManager()->getConnection()->commit();
@@ -371,7 +371,7 @@ class UtilisateurRepository extends ServiceEntityRepository
                 $sql = "UPDATE utilisateur
                         SET init = :init, date_modification=:date_modification
                         WHERE courriel=:courriel";
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(':init', $map['init']);
                     $stmt->bindValue(':date_modification', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
                     $stmt->bindValue(':courriel', $map['courriel']);
