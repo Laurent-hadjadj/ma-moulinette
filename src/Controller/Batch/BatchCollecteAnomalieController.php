@@ -214,8 +214,8 @@ class BatchCollecteAnomalieController extends AbstractController
 
         /** On prépare les données pour l'historique */
         $data=[
-            'nombre_defaut' => $anomalieTotal,
-            'dette' => $detteMinute,
+            'nombre_defaut' => $anomalieTotal ?? 0,
+            'dette' => $detteMinute ?? 0,
             'nombre_bug' => $types['BUG'] ?? 0,
             'nombre_vulnerability' => $types['VULNERABILITY'] ?? 0,
             'nombre_code_smell' => $types['CODE_SMELL'] ?? 0,
@@ -229,7 +229,8 @@ class BatchCollecteAnomalieController extends AbstractController
             'nombre_anomalie_mineur'=>$severities['MINOR'] ?? 0
         ];
 
-        $info="Nombre d'anomalie : $anomalieTotal";
+        $total = $anomalieTotal ?? 0;
+        $info="Nombre d'anomalie : $total";
         return ['code' => 200, 'info'=>$info, 'message' => $map, 'data' => $data ];
     }
 }
