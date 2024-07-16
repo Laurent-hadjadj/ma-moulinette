@@ -97,18 +97,6 @@
 
 * [Page_Activité] Ajout de la page de suivi de l'activité SonarQube (Quentin) ;
 
-> Page Projet
-
-* [Page_Projet] Ajout du nombre de version de type "autre" ;
-* [Page_Projet] Suppression de l'icône animée lors de la collecte ;
-* [Page_Projet] Correction alignement de la colone type du tableau de présentation de la dette technique ;
-* [Page_Projet] Ajout du projet par défaut dans localStorage en marque page ;
-* [Page_Projet] Limite la liste des projets affichés aux seuls projets d'une équipe ;
-* [Page_Projet] Collecte des TODO ;
-* [Page_Projet] Collecte des résultats Actuator (pour JAVA SpringBoot) ;
-* [Page_Projet] Collecte de la répartition des appels au LOGGER JAVA ;
-* [Page_Projet] Collecte de la répartition par langage ;
-
 > Authentification
 
 * [Page_Inscription] Renforcement de la sécurité. Ajout de la propriété hash_property_path.
@@ -118,16 +106,27 @@
 * [Page_Login] Ajout de l'option voir mon mot de passe ;
 * [Page_Login] Ajout, je veux changer mon mot de passe ;
 * [Page_Login] Force le changement du mot de passe pour la première connexion avec l'utilisateur **admin** ;
-* [Page_Login] TODO : Ajout, j'ai oublié mon mot de passe, aider-moi :)
+* [Page_Login] TODO : Ajout, j'ai oublié mon mot de passe, aidez-moi :)
 
-> Page gestion du Projet
+> Page Projet
 
 * [Page_Projet] Lors de la collecte des données, le ratio de dette technique est récupéré (table mesure) ;
 * [Page_Suivi] Lors de l'intégration d'une version dans l'historique, le ratio de dette technique est récupéré depuis le serveur ;
 * [Page_Projet] Lors de la collecte des données, les données de la version courante est conservée.
-* [Page_Projet] refactoring des traitements de collecte (message, catch des erreurs).
+* [Page_Projet] Refactoring des traitements de collecte (message, catch des erreurs).
 * [Page_Projet] Si une erreur est détectée lors de la collecte, on arrête la collecte (i.e on ne lance pas les autres traitements).
 * [Page_Projet] Lors de la collecte, on récupère les données actuator et les données du Logger Java ;
+* * [Page_projet] Réorganisation de la page avec un bloc centrale horizontal et trois colonnes
+* [Page_Projet] Ajout du nombre de version de type "autre" ;
+* [Page_Projet] Suppression de l'icône animée lors de la collecte ;
+* [Page_Projet] Correction alignement de la colone type du tableau de présentation de la dette technique ;
+* [Page_Projet] Ajout du projet par défaut dans localStorage en marque page ;
+* [Page_Projet] Limite la liste des projets affichés aux seuls projets d'une équipe ;
+* [Page_Projet] Collecte des TODO ;
+* [Page_Projet] Collecte des résultats Actuator (pour JAVA SpringBoot) ;
+* [Page_Projet] Collecte de la répartition des appels au LOGGER JAVA ;
+* [Page_Projet] Collecte de la répartition par langage ;
+* [Page_Projet] Ajout d'un tool-tip sur les langage avec ne nombre de ligne et la part en %.
 
 > Page de suivi des indicateurs
 
