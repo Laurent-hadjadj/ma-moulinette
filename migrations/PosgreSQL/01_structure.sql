@@ -23,6 +23,7 @@
 -- 27/06/2024 : Laurent HADJADJ - Ajout de l'attribut analyse_key dans la table historique.
 -- 10/07/2024 : Laurent HADJADJ - Ajout de la table logger.
 -- 14/07/2024 : Laurent HADJADJ - Ajout de la colonne  language_distribution dans la table mesure ;
+-- 16/07/2024 : Laurent HADJADJ - Correction du type JSON[] en JSON pour l'attribut language_distribution ;
 
 -- SCHEMA: ma_moulinette
 
@@ -701,7 +702,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.mesures
   project_name character varying(128) NOT NULL,
   lines integer NOT NULL,
   ncloc integer NOT NULL,
-  language_distribution JSON[] NOT NULL,
+  language_distribution JSON NOT NULL,
   coverage double precision NOT NULL,
   sqale_debt_ratio double precision NOT NULL,
   duplication_density double precision NOT NULL,
