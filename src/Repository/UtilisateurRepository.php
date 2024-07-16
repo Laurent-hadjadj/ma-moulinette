@@ -373,7 +373,7 @@ class UtilisateurRepository extends ServiceEntityRepository
                         WHERE courriel=:courriel";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(':init', $map['init']);
-                    $stmt->bindValue(':date_modification', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
+                    $stmt->bindValue(':date_modification', $map['date_modification']);
                     $stmt->bindValue(':courriel', $map['courriel']);
                 $stmt->executeStatement();
             $this->getEntityManager()->getConnection()->commit();
