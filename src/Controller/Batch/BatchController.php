@@ -80,7 +80,7 @@ class BatchController extends AbstractController
         // Vérifier si l'utilisateur a le rôle 'ROLE_BATCH'.
         if (!$this->isGranted('ROLE_BATCH')) {
             $this->addFlash('message', ['type'=>'alert', 'titre'=>static::$titre, 'message'=>static::$erreur403]);
-            return $this->render('batch/index.html.twig', $render);
+            return $this->render(static::$page, $render);
         }
 
         // Créer un objet date avec le fuseau horaire Europe/Paris
@@ -149,7 +149,7 @@ class BatchController extends AbstractController
         }
 
         return $this->render(
-            'batch/index.html.twig',
+            static::$page,
             array_merge($render, [
                 'date' => $r['liste'][0]['date'],
                 'traitements' => $traitements
