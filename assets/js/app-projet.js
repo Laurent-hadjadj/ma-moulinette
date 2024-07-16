@@ -1400,7 +1400,7 @@ $('.js-enregistrement').on('click', () => {
 $('.js-tableau-suivi').on('click', () => {
   if ($('select[name="projet"]').val() !=='' && $('select[name="projet"]').val() !=='TheID'){
     const apiMaven = $('#select-result').text().trim();
-    window.location.href=`/suivi?mavenKey=${apiMaven}`;
+    window.location.href=`/suivi/set?mavenKey=${apiMaven}`;
     } else {
     log(' - ERROR - Vous devez choisir un projet dans la liste !! !');
     }
