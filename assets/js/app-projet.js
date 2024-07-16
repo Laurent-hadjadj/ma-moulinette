@@ -878,10 +878,9 @@ const finCollecte=function(){
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const afficheMesProjets=function() {
-  const data = { mode: 'null' };
   const options = {
     url: `${serveur()}/api/projet/mes-applications/liste`, type: 'POST',
-    dataType: 'json', data: JSON.stringify(data), contentType  };
+    dataType: 'json', contentType  };
 
   return new Promise(resolve => {
     $.ajax(options).then(t=> {
@@ -1179,7 +1178,7 @@ $('select[name="projet"]').on('change', function () {
   sessionStorage.setItem('collecte', 'Tout va bien!');
 
   /* On regarde si le projet est en favori */
-  const data = { mavenKey: $('#select-result').text().trim(), 'mode': 'null' };
+  const data = { mavenKey: $('#select-result').text().trim() };
   const options = {
     url: `${serveur()}/api/favori/check`, type: 'POST',
           dataType: 'json', data: JSON.stringify(data), contentType };
@@ -1303,7 +1302,7 @@ $('.favori-svg').on('click', () => {
         $('.favori-svg').addClass('favori-svg-select');
       }
 
-    const data = { maven_key: $('#select-result').text().trim(), mode: 'null' };
+    const data = { maven_key: $('#select-result').text().trim() };
     const options = {
       url: `${serveur()}/api/favori`, type: 'POST',
       dataType: 'json',  data: JSON.stringify(data), contentType };
@@ -1401,7 +1400,7 @@ $('.js-enregistrement').on('click', () => {
 $('.js-tableau-suivi').on('click', () => {
   if ($('select[name="projet"]').val() !=='' && $('select[name="projet"]').val() !=='TheID'){
     const apiMaven = $('#select-result').text().trim();
-    window.location.href='/suivi?mavenKey='+apiMaven+'&mode=null';
+    window.location.href='/suivi?mavenKey='+apiMaven;
     } else {
     log(' - ERROR - Vous devez choisir un projet dans la liste !! !');
     }
