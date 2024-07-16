@@ -46,7 +46,7 @@ import {enregistrement} from './app-projet-enregistrement.js';
 /** On importe les constantes */
 import {contentType, http_200, http_400, http_401, http_403, http_404, http_406, dateOptions,
         matrice, paletteCouleur,
-        deuxMille, troisMille, cinqMille, http_500} from './constante.js';
+        deuxMille, cinqMille, http_500} from './constante.js';
 
 /**
  * [Description for shuffle]
@@ -343,7 +343,7 @@ const projetMesure=function(mavenKey) {
         return;
       }
       if (t.code===http_200){
-          log(' - INFO   : (02) Collete des mesures globales.');
+          log(' - INFO   : (02) Collecte des mesures globales.');
           log(`               ${t.message.issues} problème(s) trouvé(s).`);
       }
         resolve();
@@ -695,7 +695,7 @@ const projetHotspotOwaspDetails=function(mavenKey) {
 
 /**
  * [Description for projetNoSonar]
- * On récupére la liste des exclusions de code
+ * On récupère la liste des exclusions de code
  * http://{url}/api/collete/nosonar
  *
  * Phase 11
@@ -743,7 +743,7 @@ const projetNoSonar=function(mavenKey){
 
 /**
  * [Description for projetTodo]
- * On récupére la liste des t_odo
+ * On récupère la liste des t_odo
  * http://{url}/api/collecte/t_odo
  *
  * Phase 12
@@ -789,7 +789,7 @@ const projetTodo=function(mavenKey){
 
 /**
  * [Description for projetLogger]
- * On récupére la liste des Logger
+ * On récupère la liste des Logger
  * http://{url}/api/collecte/logger
  *
  * Phase 13
@@ -955,7 +955,7 @@ const afficheMesProjets=function() {
         /* On met à jour le nombre des projets collectés. */
         $('#affiche-total-projet').html(`<span id="nombre-projet" class="stat">${i}</span>`);
 
-        /* On gére le click sur le bouton V (Valider) */
+        /* On gère le click sur le bouton V (Valider) */
         $('.js-liste-valider').on('click', e => {
           /* On récupère la valeur de l'ID. */
           const id = e.currentTarget.id;
@@ -977,7 +977,7 @@ const afficheMesProjets=function() {
           }, deuxMille);
         });
 
-        /* On gére le click sur le bouton R (afficher les Résulats) */
+        /* On gère le click sur le bouton R (afficher les Résultats) */
         $('.js-liste-afficher-resultat').on('click', e => {
 
           /* On récupère la valeur de l'ID */
@@ -999,7 +999,7 @@ const afficheMesProjets=function() {
           }, cinqMille);
         });
 
-        /* On gére le click sur le bouton S (afficher le tableau de suivi) */
+        /* On gère le click sur le bouton S (afficher le tableau de suivi) */
         $('.js-liste-afficher-indicateur').on('click', e => {
 
           /* On récupère la valeur de l'ID. */
@@ -1032,7 +1032,7 @@ const afficheMesProjets=function() {
           $('.js-cosui').trigger('click');
         });
 
-        /* On gére le click sur le bouton O (afficher le rapport OWASP) */
+        /* On gère le click sur le bouton O (afficher le rapport OWASP) */
         $('.js-liste-owasp').on('click', e => {
 
           /* On récupère la valeur de l'ID */
