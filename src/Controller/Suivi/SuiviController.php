@@ -53,6 +53,9 @@ class SuiviController extends AbstractController
     public static $dateFormat = "Y-m-d H:i:s";
     public static $sonarUrl = "sonar.url";
     public static $europeParis = "Europe/Paris";
+    public static $route= "suivi/index.html.twig";
+    public static $reference = "SUIVI";
+    public static $erreur400 = "La requête est incorrecte (Erreur 400).";
 
     /**
      * [Description for __construct]
@@ -95,7 +98,7 @@ class SuiviController extends AbstractController
     #[Route('/suivi', name: 'suivi', methods: ['GET'])]
     public function suivi(Request $request): response
     {
-        $session = $request->getSession();
+        //$session = $request->getSession();
 
         /** On instancie l'entityRepository */
         $historique = $this->em->getRepository(Historique::class);
@@ -115,22 +118,16 @@ class SuiviController extends AbstractController
             'version' => $this->getParameter('version'), 'dateCopyright' => \date('Y'),
             Response::HTTP_OK
         ];
-
-        /**
-         * On teste si la clé et/ou le mode est valide :
-         * */
-        if (isEmpty($mavenKey)===false || is_null($mavenKey)===false) {
+        /** On teste si la clé n'est pas valide ou null */
+        if (isEmpty($mavenKey) || is_null($mavenKey)) {
             /** On prepare un message flash */
-            $this->addFlash('alert', sprintf(
-                '%s : %s', "[Erreur 001]","La clé maven est incorrecte."
-            ));
-
-            return $this->redirectToRoute('suivi/index.html.twig', $render);
+            $this->addFlash('notice', ['type' => 'alert', 'reference' => static::$reference, 'message' => static::$erreur400]);
+            return $this->render(static::$route, $render);
         }
 
         /**On vérifie que le projet est bien dans l'historique */
         $map=['maven_key'=>$mavenKey];
-        $request=$historique->countHistoriqueProjet($mode, $map);
+        $request=$historique->countHistoriqueProjet($map);
         if ($request['code']!=200 || $request['nombre']===0) {
             /** On prepare un message flash */
             $this->addFlash('alert', sprintf(
