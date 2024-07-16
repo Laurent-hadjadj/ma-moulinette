@@ -255,6 +255,32 @@ export const remplissage=function(mavenKey) {
 
     $('#nombre-ligne').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.lines));
     $('#nombre-ligne-de-code').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.ncloc));
+
+    /** On affiche les langages supportés */
+    const jsonObject=t.languages;
+    let i=0;
+    let total=0;
+
+    /** Calcule la somme des valeurs */
+    for (const key in jsonObject) {
+      if (jsonObject.hasOwnProperty(key)) {
+          total += parseFloat(jsonObject[key]);
+      }
+    }
+
+    for (const key in jsonObject) {
+      if (jsonObject.hasOwnProperty(key)) {
+          i++;
+          const value = parseFloat(jsonObject[key]);
+          const percentage = (value / total) * 100;
+          const ligne = new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(jsonObject[key])
+          const item=`<span tabindex="${i}" class="nasa label-langage tool-tip-langage">
+                      ${key}&nbsp;
+                      <span class="tool-tip-text-langage">${ligne} (${percentage.toFixed(2)}%)</span>
+                      </span>`;
+          $('#distribution-langage').append(item);
+      }
+    }
     $('#couverture').html(new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(parseInt(t.coverage,10)/cent));
     $('#ratio-dette-technique').html(new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(parseInt(t.sqaleDebtRatio,10)/cent));
     /** On colorise le résultat */
