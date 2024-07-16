@@ -5,7 +5,7 @@
   border-bottom: 1px dotted black;
 }
 
-/* Propriété du texte qui sera affiché dans le tooltype */
+/* Propriété du texte qui sera affiché dans le tooltip */
 .tool-tip .tool-tip-text {
   visibility: hidden;
   width: 180px;
@@ -25,7 +25,7 @@
   hyphens: auto;
 }
 
-/* Action après le survol du tooltype */
+/* Action après le survol du tooltip */
 .tool-tip .tool-tip-text::after {
   content: "";
   position: absolute;
@@ -37,7 +37,7 @@
   border-color: #555 transparent transparent;
 }
 
-/* Action au moment du survol du tooltype */
+/* Action au moment du survol du tooltip */
 .tool-tip:hover .tool-tip-text {
   visibility: visible;
   opacity: 1;
