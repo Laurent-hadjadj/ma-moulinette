@@ -69,37 +69,45 @@ class MesuresRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function insertMesures($map):array
+    public function insertMesures($map): array
     {
         try {
-                $this->getEntityManager()->getConnection()->beginTransaction();
-                    $sql = "INSERT INTO mesures
-                                (maven_key, project_name, lines, ncloc, language_distribution, sqale_debt_ratio, coverage, duplication_density, tests, issues, mode_collecte, utilisateur_collecte, date_enregistrement)
-                            VALUES
-                                (:maven_key, :project_name, :lines, :ncloc, :language_distribution, :sqale_debt_ratio, :coverage, :duplication_density, :tests, :issues, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
-                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                        $stmt->bindValue(':maven_key', $map['maven_key']);
-                        $stmt->bindValue(':project_name', $map['project_name']);
-                        $stmt->bindValue(':lines', $map['lines']);
-                        $stmt->bindValue(':ncloc', $map['ncloc']);
-                        $stmt->bindValue(':language_distribution', $map['language_distribution']);
-                        $stmt->bindValue(':sqale_debt_ratio', $map['sqale_debt_ratio']);
-                        $stmt->bindValue(':coverage', $map['coverage']);
-                        $stmt->bindValue(':duplication_density', $map['duplication_density']);
-                        $stmt->bindValue(':tests', $map['tests']);
-                        $stmt->bindValue(':issues', $map['issues']);
-                        $stmt->bindValue(':mode_collecte', $map['mode_collecte']);
-                        $stmt->bindValue(':utilisateur_collecte', $map['utilisateur_collecte']);
-                        /** on formate la date avant de l'enregistrer */
-                        $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
-                        $stmt->executeStatement();
-                $this->getEntityManager()->getConnection()->commit();
+            $this->getEntityManager()->getConnection()->beginTransaction();
+
+            $sql = "INSERT INTO mesures
+                        (maven_key, project_name, lines, ncloc, language_distribution, sqale_debt_ratio, coverage, duplication_density, tests, issues, mode_collecte, utilisateur_collecte, date_enregistrement)
+                    VALUES
+                        (:maven_key, :project_name, :lines, :ncloc, :language_distribution::json, :sqale_debt_ratio, :coverage, :duplication_density, :tests, :issues, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
+
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt->bindValue(':maven_key', $map['maven_key']);
+            $stmt->bindValue(':project_name', $map['project_name']);
+            $stmt->bindValue(':lines', $map['lines']);
+            $stmt->bindValue(':ncloc', $map['ncloc']);
+            // Encode le tableau en JSON et l'encapsule dans un tableau PostgreSQL
+            $language_distribution_json = json_encode([$map['language_distribution']]);
+            $stmt->bindValue(':language_distribution', $language_distribution_json);
+            $stmt->bindValue(':sqale_debt_ratio', $map['sqale_debt_ratio']);
+            $stmt->bindValue(':coverage', $map['coverage']);
+            $stmt->bindValue(':duplication_density', $map['duplication_density']);
+            $stmt->bindValue(':tests', $map['tests']);
+            $stmt->bindValue(':issues', $map['issues']);
+            $stmt->bindValue(':mode_collecte', $map['mode_collecte']);
+            $stmt->bindValue(':utilisateur_collecte', $map['utilisateur_collecte']);
+
+            // Formate la date avant de l'enregistrer
+            $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
+
+            $stmt->executeStatement();
+            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            return ['code'=>500, 'erreur'=> $e->getMessage()];
+            return ['code' => 500, 'erreur' => $e->getMessage()];
         }
-        return ['code'=>200, 'erreur'=>''];
+
+        return ['code' => 200, 'erreur' => ''];
     }
+
 
     /**
      * [Description for deleteMesuresMavenKey]
