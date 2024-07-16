@@ -14,7 +14,6 @@
 namespace App\Controller\Batch;
 
 /** Core */
-use App\Entity\Historique;
 use App\Entity\BatchTraitement;
 
 use Doctrine\ORM\EntityManagerInterface;
