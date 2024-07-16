@@ -193,7 +193,7 @@ textarea[readonly] {
 .enregistrement-disabled:hover { background-color: #006182; }
 
 /* select2 custom
- *  placehoder
+ *  placeholder
  *  Ici on surcharge les class de l'api select2
  */
 
@@ -447,6 +447,18 @@ textarea[readonly] {
 }
 
 .modifier-liste-projet-svg:hover { fill: #e7552c; }
+
+/** Affichage des langages du projet */
+
+.label-langage {
+  font-size: 1.2rem;
+  border: solid 1px #00445b;
+  background-color: #00445b;
+  color: #fff;
+  padding-right: 0.5rem;
+  padding-left: 0.5rem;
+  margin-right: 0.5rem;
+}
 
 /**
   * Propriétés pour les class en fonction des medias type
