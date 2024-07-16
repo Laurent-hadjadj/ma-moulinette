@@ -15,34 +15,34 @@ namespace App\Controller\Suivi;
 
 /** Core */
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
-
-/** Securité */
-use Symfony\Bundle\SecurityBundle\Security;
-
-/** Gestion du temps */
 use DateTime;
 use DateTimeZone;
+use App\Service\Client;
+use App\Entity\Historique;
+
+/** Sécurité */
+use App\Entity\Utilisateur;
+
+/** Gestion du temps */
+use Psr\Log\LoggerInterface;
+use App\Entity\InformationProjet;
 
 /** Gestion de accès aux API */
-use Symfony\Component\HttpFoundation\JsonResponse;
+use function PHPUnit\Framework\isEmpty;
 
 /** Accès aux tables SLQLite */
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Utilisateur;
-use App\Entity\Historique;
-use App\Entity\InformationProjet;
+use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /** Logger */
-use Psr\Log\LoggerInterface;
+use Symfony\Component\Routing\Annotation\Route;
 
 /** Client HTTP */
-use App\Service\Client;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
-use function PHPUnit\Framework\isEmpty;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
  * [Description SuiviController]
@@ -53,7 +53,6 @@ class SuiviController extends AbstractController
     public static $dateFormat = "Y-m-d H:i:s";
     public static $sonarUrl = "sonar.url";
     public static $europeParis = "Europe/Paris";
-    public static $removeReturnline = "/\s+/u";
 
     /**
      * [Description for __construct]
@@ -68,6 +67,17 @@ class SuiviController extends AbstractController
     ) {
         $this->em = $em;
         $this->logger = $logger;
+    }
+
+    #[Route('/suivi/set', name: 'suivi_set', methods: ['GET'])]
+    public function setSession(Request $request)
+    {
+        $mavenKey = $request->get('mavenKey');
+        // Stocker des données dans la session via l'objet Request
+        $session = $request->getSession();
+        $session->set('mavenKey', $mavenKey);
+        // Rediriger vers la route sans les paramètres dans l'URL
+        return $this->redirectToRoute('suivi');
     }
 
     /**
@@ -85,19 +95,19 @@ class SuiviController extends AbstractController
     #[Route('/suivi', name: 'suivi', methods: ['GET'])]
     public function suivi(Request $request): response
     {
+        $session = $request->getSession();
+
         /** On instancie l'entityRepository */
         $historique = $this->em->getRepository(Historique::class);
 
-        /** On crée un objet de reponse JSON */
+        /** On crée un objet de response JSON */
         $response = new JsonResponse();
 
         /** On récupère la clé du projet */
         $mavenKey = $request->get('mavenKey');
-        $mode = $request->get('mode');
 
         /** On prépare une réponse par défaut */
         $render = [
-            'mode' => $mode,
             'suivi' => [], 'severite' => [], 'details' => [],
             'nom' => 'N.C', 'mavenKey' => '',
             'data1' =>0, 'data2' => 0,
@@ -108,16 +118,14 @@ class SuiviController extends AbstractController
 
         /**
          * On teste si la clé et/ou le mode est valide :
-         *  la clé ou le mode peuvent $etre vide
-         *  la clé ou le mode peuvent $etre null
          * */
-        if (isEmpty($mavenKey)===true || is_null($mavenKey)===true || isEmpty($mode)===true || is_null($mode)===true) {
+        if (isEmpty($mavenKey)===false || is_null($mavenKey)===false) {
             /** On prepare un message flash */
             $this->addFlash('alert', sprintf(
                 '%s : %s', "[Erreur 001]","La clé maven est incorrecte."
             ));
 
-            return $this->render('suivi/index.html.twig', $render);
+            return $this->redirectToRoute('suivi/index.html.twig', $render);
         }
 
         /**On vérifie que le projet est bien dans l'historique */
