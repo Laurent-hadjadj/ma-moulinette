@@ -779,7 +779,7 @@ input:checked ~ .switch-paddle-identifiant { background-color: #00445b; }
 .couleur-vert { color: #048404 !important; }
 .couleur-orange { color: #c75e08 !important; }
 .couleur-rouge { color: #bf0815 !important; }
-.couleur-bordeau { color: #771404 !important; }
+.couleur-bordeaux { color: #771404 !important; }
 
 
 /* dégradation */

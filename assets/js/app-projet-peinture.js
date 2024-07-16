@@ -178,7 +178,7 @@ export const remplissage=function(mavenKey) {
   t50.dataset.todo=(t.todo);
   t51.dataset.java=(t.java);
   t52.dataset.javascript=(t.javascript);
-  t53.dataset.typescrypt=(t.typescript);
+  t53.dataset.typescript=(t.typescript);
   t54.dataset.html=(t.html);
   t55.dataset.xml=(t.xml);
   t56.dataset.listeFichier=(t.details);
@@ -272,7 +272,7 @@ export const remplissage=function(mavenKey) {
     }
     if (t.sqaleDebtRatio>60 && t.sqaleDebtRatio>100){
       /** l'application est mauvaise, le ration est > à 100% */
-      $('#ratio-dette-technique').addClass('couleur-bordeau');
+      $('#ratio-dette-technique').addClass('couleur-bordeaux');
     }
 
     $('#duplication').html(new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(parseInt(t.duplication,10)/cent));
@@ -305,7 +305,7 @@ export const remplissage=function(mavenKey) {
           dataType: 'json', data: JSON.stringify(data), contentType };
 
     $.ajax(optionsAnomalie).then(t=> {
-      /** La requête ajax a babasé */
+      /** La requête ajax a babaser */
       if (t.code === http_400){
         afficheMessage(t);
         sessionStorage.setItem('peinture', 'Erreur - récupération des anomalies.');
@@ -514,7 +514,7 @@ export const remplissage=function(mavenKey) {
     $.ajax(optionsHotspots).then(t=> {
       let couleur='';
 
-      /** La requête ajax a babasé */
+      /** La requête ajax a babaser */
       if (t.code === http_400){
         afficheMessage(t);
         sessionStorage.setItem('peinture', 'Erreur - récupération des hotspots.');
@@ -641,7 +641,7 @@ export const afficheHotspotDetails=function (mavenKey){
           dataType: 'json', data: JSON.stringify(data), contentType };
 
   $.ajax(options).then(t=> {
-    /** La requête ajax a babasé */
+    /** La requête ajax a babaser */
     if (t.code === http_400){
     afficheMessage(t);
     sessionStorage.setItem('peinture', 'Erreur - récupération du détail des hotspots.');
