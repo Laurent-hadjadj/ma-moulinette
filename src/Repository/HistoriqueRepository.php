@@ -188,31 +188,33 @@ class HistoriqueRepository extends ServiceEntityRepository
     public function selectUnionHistoriqueProjet($map):array {
         try {
                 /** On prépare la requête */
-                $sql = "SELECT * FROM
-                (SELECT nom_projet AS nom, date_version AS date, version,
-                    suppress_warning, no_sonar, nombre_bug AS bug,
-                    nombre_vulnerability AS faille,
-                    nombre_code_smell AS mauvaise_pratique,
-                    hotspot_total AS nombre_hotspot,
-                    frontend AS presentation, backend as metier, autre,
-                    note_reliability AS fiabilite,
-                    note_security AS securite, note_hotspot,
-                    note_sqale AS maintenabilite, initial
-                FROM historique
-                WHERE maven_key=:maven_key AND initial=:initial_true)
-                UNION SELECT * FROM
-                (SELECT nom_projet as nom, date_version as date,
-                    version, suppress_warning, no_sonar, nombre_bug as bug,
-                    nombre_vulnerability as faille,
-                    nombre_code_smell as mauvaise_pratique,
-                    hotspot_total as nombre_hotspot,
-                    frontend as presentation, backend as metier,
-                    autre, note_reliability as fiabilite,
-                    note_security as securite, note_hotspot,
-                    note_sqale as maintenabilite, initial
-                FROM historique
-                WHERE maven_key=:maven_key AND initial=:initial_false
-                ORDER BY date_version DESC LIMIT :limit)";
+                $sql = "SELECT * FROM (
+                            SELECT nom_projet AS nom, date_version AS date, version,
+                                suppress_warning, no_sonar, nombre_bug AS bug,
+                                nombre_vulnerability AS faille,
+                                nombre_code_smell AS mauvaise_pratique,
+                                hotspot_total AS nombre_hotspot,
+                                frontend AS presentation, backend AS metier, autre,
+                                note_reliability AS reliability,
+                                note_security AS security, note_hotspot,
+                                note_sqale AS maintainability, initial
+                            FROM historique
+                            WHERE maven_key = :maven_key AND initial = :initial_true
+                            ) AS initial_data
+                        UNION ALL
+                            SELECT nom_projet AS nom, date_version AS date, version,
+                                suppress_warning, no_sonar, nombre_bug AS bug,
+                                nombre_vulnerability AS faille,
+                                nombre_code_smell AS mauvaise_pratique,
+                                hotspot_total AS nombre_hotspot,
+                                frontend AS presentation, backend AS metier, autre,
+                                note_reliability AS reliability,
+                                note_security AS security, note_hotspot,
+                                note_sqale AS maintainability, initial
+                            FROM historique
+                            WHERE maven_key = :maven_key AND initial = :initial_false
+                            ORDER BY date DESC
+                            LIMIT :limit";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(':maven_key', $map['maven_key']);
                     $stmt->bindValue(':initial_true', 0);
