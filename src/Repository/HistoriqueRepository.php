@@ -258,7 +258,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                     nombre_anomalie_mineur as mineur
             FROM historique
             WHERE maven_key=:maven_key AND initial=:initial_false
-            ORDER BY date_version DESC LIMIT :limit)";
+            ORDER BY date DESC LIMIT :limit)";
             $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $stmt->bindValue(':maven_key', $map['maven_key']);
                 $stmt->bindValue(':initial_true', 0);
@@ -311,7 +311,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                         code_smell_info, initial
                 FROM historique
                 WHERE maven_key=:maven_key AND initial=:initial_false
-                ORDER BY date_version DESC LIMIT :limit)";
+                ORDER BY date DESC LIMIT :limit)";
 
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(':maven_key', $map['maven_key']);
@@ -341,7 +341,7 @@ class HistoriqueRepository extends ServiceEntityRepository
         try {
                 /** On prépare la requête */
                 $sql = "SELECT  nombre_bug AS bug, nombre_vulnerability
-                                AS secu, nombre_code_smell AS code_smell, date_version AS date
+                                AS sec, nombre_code_smell AS code_smell, date_version AS date
                         FROM historique
                         WHERE maven_key=:maven_key
                         GROUP BY date_version
