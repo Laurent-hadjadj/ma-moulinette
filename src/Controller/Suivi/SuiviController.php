@@ -56,6 +56,7 @@ class SuiviController extends AbstractController
     public static $europeParis = "Europe/Paris";
     public static $route= "suivi/index.html.twig";
     public static $reference = "SUIVI";
+    public static $erreur = "Une erreur s'est produite (erreur ";
     public static $erreur400 = "La requête est incorrecte (Erreur 400).";
     public static $erreur404 = "Vous devez être rattaché à une équipe (erreur 404).";
     public static $erreur406 = "Je n'ai pas trouvé de projets pour ton équipe. ".
@@ -160,133 +161,163 @@ class SuiviController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/suivi', name: 'suivi', methods: ['GET'])]
-    public function suivi(Request $request, Security $security): response
+    public function suivi(Request $request, Security $security): Response
     {
         $session = $request->getSession();
 
-        /** On instancie l'entityRepository */
+        // Instanciation des repositories
         $historiqueRepository = $this->em->getRepository(Historique::class);
 
-        /** On crée un objet de response JSON */
-        $response = new JsonResponse();
-
-        /** On récupère la clé du projet */
+        // Initialisation des variables
         $mavenKey = $session->get('mavenKey');
-        /** On prépare une réponse par défaut */
-        $render = [
-            'suivi' => [], 'severite' => [], 'details' => [],
-            'nom' => 'N.C', 'mavenKey' => '',
-            'data1' =>0, 'data2' => 0,
-            'data3' => 0, 'labels' => 0,
-            'version' => $this->getParameter('version'), 'dateCopyright' => \date('Y'),
-            Response::HTTP_OK
-        ];
-        /** On teste si la clé n'est pas valide ou null */
-        if (isEmpty($mavenKey)===true || is_null($mavenKey)===true) {
-            /** On prepare un message flash */
-            $this->addFlash('notice', ['type' => 'alert', 'reference' => static::$reference, 'message' => static::$erreur400]);
-            return $this->render(static::$route, $render);
-        }
-
-        /** On vérifie que le projet est disponible pour l'utilisateur */
-
-        /* On bind les informations utilisateur */
         $teams = $security->getUser()->getEquipe();
-        /** Si l'utilisateur n'est pas rattaché à une équipe */
+        $render = $this->getDefaultRender($mavenKey);
+
+        // Vérifications initiales
+        if (empty($mavenKey)) {
+            return $this->addFlashAndRender('alert', static::$erreur400, $render);
+        }
+
         if (empty($teams)) {
-            /** On envoi un message à l'utilisateur */
-            $this->addFlash('notice', ['type' => 'warning', 'reference' => static::$reference, 'message' => static::$erreur404]);
-            return $this->render(static::$route, $render);
+            return $this->addFlashAndRender('warning', static::$erreur404, $render);
         }
 
-        $listeProjet=self::listeProjet($mavenKey, $teams);
-        if ($listeProjet['code']===406){
-            /** On envoi un message à l'utilisateur */
-            $this->addFlash('notice', ['type' => 'warning', 'reference' => static::$reference, 'message' => $listeProjet['message']]);
-            return $this->render(static::$route, $render);
+        // Vérification du projet
+        $listeProjet = self::listeProjet($mavenKey, $teams);
+        if ($listeProjet['code'] === 406) {
+            return $this->addFlashAndRender('warning', $listeProjet['message'], $render);
         }
 
-        /**On vérifie que le projet est bien dans l'historique */
-        $map=['maven_key'=>$mavenKey];
-        $liste=$historiqueRepository->countHistoriqueProjet($map);
-        if ($liste['code']!=200 || $liste['nombre']===0) {
-            /** On prepare un message flash */
-            $message="Le projet n'a pas été sauvegardé dans l'historique.";
-            $this->addFlash('notice', ['type' => 'warning', 'reference' => static::$reference, 'message' => $message]);
-            return $this->render(static::$route, $render);
-        }
-        dd($liste);
-        /** On construit le tableau des données pour les requêtes */
-        $map=['maven_key'=>$mavenKey, 'limit'=>$this->getParameter('nombre.favori')];
-
-        /** Tableau de suivi principal */
-        $suivi=$historiqueRepository-> selectUnionHistoriqueProjet($map);
-        if ($request['code']!=200) {
-            /** On prepare un message flash */
-            $code="[Erreur ".$request['code'];
-            $message="Une erreur s'est produite (".$request['erreur'].").";
-            $this->addFlash('alert', sprintf('%s : %s', $code,$message));
+        // Vérification dans l'historique
+        $map = ['maven_key' => $mavenKey];
+        $liste = $historiqueRepository->countHistoriqueProjet($map);
+        if ($liste['code'] != 200 || $liste['nombre'] === 0) {
+            return $this->addFlashAndRender('warning', "Le projet n'a pas été sauvegardé dans l'historique.", $render);
         }
 
-        /** On récupère les anomalies par sévérité */
-        $severite=$historiqueRepository-> selectUnionHistoriqueAnomalie($map);
-        if ($request['code']!=200) {
-            /** On prepare un message flash */
-            $code="[Erreur ".$request['code'];
-            $message="Une erreur s'est produite (".$request['erreur'].").";
-            $this->addFlash('alert', sprintf('%s : %s', $code,$message));
-        }
+        // Construction du tableau des données pour les requêtes
+        $map['limit'] = $this->getParameter('nombre.favori');
 
-        /** On récupère les anomalies par type et sévérité. */
-        $details=$historiqueRepository-> selectUnionHistoriqueDetails($map);
-        if ($request['code']!=200) {
-            /** On prepare un message flash */
-            $code="[Erreur ".$request['code'];
-            $message="Une erreur s'est produite (".$request['erreur'].").";
-            $this->addFlash('alert', sprintf('%s : %s', $code,$message));
-        }
+        // Récupération des données
+        $suivi = $this->fetchData($historiqueRepository, 'selectUnionHistoriqueProjet', $map, $render);
+        $severity = $this->fetchData($historiqueRepository, 'selectUnionHistoriqueAnomalie', $map, $render);
+        $details = $this->fetchData($historiqueRepository, 'selectUnionHistoriqueDetails', $map, $render);
+        $graph = $this->fetchData($historiqueRepository, 'selectHistoriqueAnomalieGraphique', $map, $render);
 
-        /** Graphique */
-        $graph=$historiqueRepository->selectHistoriqueAnomalieGraphique($map);
-        if ($request['code']!=200) {
-            /** On prepare un message flash */
-            $code="[Erreur ".$request['code'];
-            $message="Une erreur s'est produite (".$request['erreur'].").";
-            $this->addFlash('alert', sprintf('%s : %s', $code,$message));
-        }
+        // Traitement des données graphiques
+        $graphData = $this->processGraphData($graph['request']);
 
-        /** On compte le nombre de résultat */
-        $nl = count((array)$graph['request']);
-        for ($i = 0; $i < $nl; $i++) {
-            $bug[$i] = $graph['request'][$i]["bug"];
-            $secu[$i] = $graph['request'][$i]["secu"];
-            $codeSmell[$i] = $graph['request'][$i]["code_smell"];
-            $date[$i] = $graph['request'][$i]["date"];
-        }
+        // Mise à jour du rendu
+        $render = array_merge($render, [
+            'suivi' => $suivi['request'],
+            'severity' => $severity['request'],
+            'details' => $details['request'],
+            'nom' => $suivi['request'][0]["nom"],
+            'data1' => json_encode($graphData['bug']),
+            'data2' => json_encode($graphData['sec']),
+            'data3' => json_encode($graphData['codeSmell']),
+            'labels' => json_encode($graphData['date'])
+        ]);
 
-        /** On ajoute une valeur null a la fin de chaque série. */
-        $bug[$nl + 1] = 0;
-        $secu[$nl + 1] = 0;
-        $codeSmell[$nl + 1] = 0;
-        $dd = new DateTime($graph['request'][$nl - 1]["date"]);
-        $dd->modify('+1 day');
-        $ddd = $dd->format('Y-m-d');
-        $date[$nl + 1] = $ddd;
+        $this->addFlash('notice', ['type' => 'success', 'reference' => static::$reference, 'message' => "Les données ont été correctement récupérées."]);
+        return $this->render(static::$route, $render);
+    }
 
-        $render = [
-            'suivi' => $suivi['request'], 'severite' => $severite['request'], 'details' => $details['request'],
-            'nom' => $suivi['request'][0]["nom"], 'mavenKey' => $mavenKey,
-            'data1' => json_encode($bug), 'data2' => json_encode($secu),
-            'data3' => json_encode($codeSmell), 'labels' => json_encode($date),
-            'version' => $this->getParameter('version'), 'dateCopyright' => \date('Y'),
+    /**
+     * [Description for getDefaultRender]
+     *
+     * @param mixed $mavenKey
+     *
+     * @return array
+     *
+     * Created at: 17/07/2024 08:58:11 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function getDefaultRender($mavenKey): array
+    {
+        return [
+            'suivi' => [], 'severity' => [], 'details' => [],
+            'nom' => 'N.C', 'mavenKey' => $mavenKey ?? '',
+            'data1' => 0, 'data2' => 0, 'data3' => 0, 'labels' => 0,
+            'version' => $this->getParameter('version'), 'dateCopyright' => date('Y'),
             Response::HTTP_OK
         ];
+    }
 
-        $this->addFlash('success', sprintf(
-            '%s : %s', "[Information]","Les données ont été correctement récupérées."
-        ));
-
+    /**
+     * [Description for addFlashAndRender]
+     *
+     * @param string $type
+     * @param string $message
+     * @param array $render
+     *
+     * @return Response
+     *
+     * Created at: 17/07/2024 08:58:24 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function addFlashAndRender(string $type, string $message, array $render): Response
+    {
+        $this->addFlash('notice', ['type' => $type, 'reference' => static::$reference, 'message' => $message]);
         return $this->render(static::$route, $render);
+    }
+
+    /**
+     * [Description for fetchData]
+     *
+     * @param mixed $repository
+     * @param string $method
+     * @param array $map
+     * @param array $render
+     *
+     * @return [type]
+     *
+     * Created at: 17/07/2024 08:58:29 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function fetchData($repository, string $method, array $map, array &$render)
+    {
+        $data = $repository->$method($map);
+        if ($data['code'] != 200) {
+            $message = static::$erreur . $data['code'] . ', ' . $method . ')';
+            $this->addFlash('notice', ['type' => 'alert', 'reference' => static::$reference, 'message' => $message]);
+        }
+        return $data;
+    }
+
+    /**
+     * [Description for processGraphData]
+     *
+     * @param array $graphRequest
+     *
+     * @return array
+     *
+     * Created at: 17/07/2024 08:58:34 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function processGraphData(array $graphRequest): array
+    {
+        $nl = count($graphRequest);
+        $bug = $sec = $codeSmell = $date = [];
+
+        for ($i = 0; $i < $nl; $i++) {
+            $bug[$i] = $graphRequest[$i]["bug"];
+            $sec[$i] = $graphRequest[$i]["sec"];
+            $codeSmell[$i] = $graphRequest[$i]["code_smell"];
+            $date[$i] = $graphRequest[$i]["date"];
+        }
+
+        // Ajout d'une valeur null à la fin de chaque série
+        $bug[$nl] = $sec[$nl] = $codeSmell[$nl] = 0;
+        $dd = new DateTime($graphRequest[$nl - 1]["date"]);
+        $dd->modify('+1 day');
+        $date[$nl] = $dd->format('Y-m-d');
+
+        return ['bug' => $bug, 'sec' => $sec, 'codeSmell' => $codeSmell, 'date' => $date];
     }
 
     /**
@@ -311,7 +342,7 @@ class SuiviController extends AbstractController
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On crée un objet de reponse JSON */
+        /** On crée un objet de response JSON */
         $response = new JsonResponse();
 
         // on regarde si $Data est null
