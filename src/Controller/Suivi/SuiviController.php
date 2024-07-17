@@ -21,27 +21,28 @@ use App\Service\Client;
 use App\Entity\Historique;
 
 /** Sécurité */
-use App\Entity\Utilisateur;
+use App\Entity\ListeProjet;
 
 /** Gestion du temps */
+use App\Entity\Utilisateur;
 use Psr\Log\LoggerInterface;
-use App\Entity\InformationProjet;
 
 /** Gestion de accès aux API */
-use function PHPUnit\Framework\isEmpty;
+use App\Entity\InformationProjet;
 
 /** Accès aux tables SLQLite */
+use function PHPUnit\Framework\isEmpty;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 /** Logger */
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Response;
 
 /** Client HTTP */
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Routing\Annotation\Route;
 
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
@@ -56,6 +57,9 @@ class SuiviController extends AbstractController
     public static $route= "suivi/index.html.twig";
     public static $reference = "SUIVI";
     public static $erreur400 = "La requête est incorrecte (Erreur 400).";
+    public static $erreur404 = "Vous devez être rattaché à une équipe (erreur 404).";
+    public static $erreur406 = "Je n'ai pas trouvé de projets pour ton équipe. ".
+    "Vérifiez le nom du tag utilisé dans SonarQube (erreur 406).";
 
     /**
      * [Description for __construct]
@@ -70,6 +74,66 @@ class SuiviController extends AbstractController
     ) {
         $this->em = $em;
         $this->logger = $logger;
+    }
+
+    /**
+     * [Description for listeProjet]
+     *
+     * @param $mavenKey array
+     * @param $teams array
+     *
+     * @return array
+     *
+     * Created at: 16/07/2024 20:05:52 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function listeProjet($mavenKey, $teams): array
+    {
+        /** On instancie l'entityRepository */
+        $listeProjetRepository = $this->em->getRepository(ListeProjet::class);
+
+        /** On recherche les projets pour les équipes rattaché à l'utilisateur */
+        $in = '';
+        foreach ($teams as $team) {
+            if ($team !== 'null') {
+                /** On met en minuscule */
+                $minus = trim(strtolower($team));
+                /** On construit la clause in et on remplace les espaces par des tirets  */
+                $in = $in." tag LIKE '".preg_replace('/\s+/', '-', $minus)."%' OR ";
+            }
+        }
+
+        /** On supprime le dernier OR */
+        $inTrim = rtrim($in, " OR ");
+
+        /** On construit la requête de selection des projets en fonction de(s) (l')équipes */
+        $map=['clause_where'=>$inTrim];
+        $requestListe = $listeProjetRepository->selectListeProjetByEquipe($map);
+        if ($requestListe['code']!=200) {
+            return ['code' => $requestListe['code']];
+        }
+
+        $projets = $requestListe['liste'];
+
+        /** j'ai pas trouvé de projet pour cette équipe. */
+        if (empty($projets)) {
+            return ['code'=>406, 'message' => static::$erreur406];
+        }
+
+        $searchId = $mavenKey;
+        $idFound = false;
+
+        foreach ($projets as $item) {
+            if (isset($item['id']) && $item['id'] === $searchId) {
+                $idFound = true;
+                break;
+            }
+        }
+        if ($idFound===false) {
+            return ['code'=>406, 'message' => "Le projet n'est pas présent dans la liste de projets de l'utilisateur."];
+        }
+        return ['code'=>200];
     }
 
     #[Route('/suivi/set', name: 'suivi_set', methods: ['GET'])]
@@ -96,19 +160,18 @@ class SuiviController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/suivi', name: 'suivi', methods: ['GET'])]
-    public function suivi(Request $request): response
+    public function suivi(Request $request, Security $security): response
     {
-        //$session = $request->getSession();
+        $session = $request->getSession();
 
         /** On instancie l'entityRepository */
-        $historique = $this->em->getRepository(Historique::class);
+        $historiqueRepository = $this->em->getRepository(Historique::class);
 
         /** On crée un objet de response JSON */
         $response = new JsonResponse();
 
         /** On récupère la clé du projet */
-        $mavenKey = $request->get('mavenKey');
-
+        $mavenKey = $session->get('mavenKey');
         /** On prépare une réponse par défaut */
         $render = [
             'suivi' => [], 'severite' => [], 'details' => [],
@@ -119,31 +182,45 @@ class SuiviController extends AbstractController
             Response::HTTP_OK
         ];
         /** On teste si la clé n'est pas valide ou null */
-        if (isEmpty($mavenKey) || is_null($mavenKey)) {
+        if (isEmpty($mavenKey)===true || is_null($mavenKey)===true) {
             /** On prepare un message flash */
             $this->addFlash('notice', ['type' => 'alert', 'reference' => static::$reference, 'message' => static::$erreur400]);
             return $this->render(static::$route, $render);
         }
 
-        /**On vérifie que le projet est bien dans l'historique */
-        $map=['maven_key'=>$mavenKey];
-        $request=$historique->countHistoriqueProjet($map);
-        if ($request['code']!=200 || $request['nombre']===0) {
-            /** On prepare un message flash */
-            $this->addFlash('alert', sprintf(
-                '%s : %s', "[Erreur 002]","Le projet n'a pas été sauvegardé dans l'historique."
-            ));
-            return $this->render('suivi/index.html.twig', $render);
+        /** On vérifie que le projet est disponible pour l'utilisateur */
+
+        /* On bind les informations utilisateur */
+        $teams = $security->getUser()->getEquipe();
+        /** Si l'utilisateur n'est pas rattaché à une équipe */
+        if (empty($teams)) {
+            /** On envoi un message à l'utilisateur */
+            $this->addFlash('notice', ['type' => 'warning', 'reference' => static::$reference, 'message' => static::$erreur404]);
+            return $this->render(static::$route, $render);
         }
 
-        /** On vérifie que le projet est disponible pour l'utilisateur */
-        // TODO
+        $listeProjet=self::listeProjet($mavenKey, $teams);
+        if ($listeProjet['code']===406){
+            /** On envoi un message à l'utilisateur */
+            $this->addFlash('notice', ['type' => 'warning', 'reference' => static::$reference, 'message' => $listeProjet['message']]);
+            return $this->render(static::$route, $render);
+        }
 
-        /** on construit le tableau des données pour les requêtes */
-        $map=['mode'=>$mode, 'maven_key'=>$mavenKey, 'limit'=>$this->getParameter('nombre.favori')];
+        /**On vérifie que le projet est bien dans l'historique */
+        $map=['maven_key'=>$mavenKey];
+        $liste=$historiqueRepository->countHistoriqueProjet($map);
+        if ($liste['code']!=200 || $liste['nombre']===0) {
+            /** On prepare un message flash */
+            $message="Le projet n'a pas été sauvegardé dans l'historique.";
+            $this->addFlash('notice', ['type' => 'warning', 'reference' => static::$reference, 'message' => $message]);
+            return $this->render(static::$route, $render);
+        }
+        dd($liste);
+        /** On construit le tableau des données pour les requêtes */
+        $map=['maven_key'=>$mavenKey, 'limit'=>$this->getParameter('nombre.favori')];
 
         /** Tableau de suivi principal */
-        $suivi=$historique-> selectUnionHistoriqueProjet($mode, $map);
+        $suivi=$historiqueRepository-> selectUnionHistoriqueProjet($map);
         if ($request['code']!=200) {
             /** On prepare un message flash */
             $code="[Erreur ".$request['code'];
@@ -152,7 +229,7 @@ class SuiviController extends AbstractController
         }
 
         /** On récupère les anomalies par sévérité */
-        $severite=$historique-> selectUnionHistoriqueAnomalie($mode, $map);
+        $severite=$historiqueRepository-> selectUnionHistoriqueAnomalie($map);
         if ($request['code']!=200) {
             /** On prepare un message flash */
             $code="[Erreur ".$request['code'];
@@ -161,7 +238,7 @@ class SuiviController extends AbstractController
         }
 
         /** On récupère les anomalies par type et sévérité. */
-        $details=$historique-> selectUnionHistoriqueDetails($mode, $map);
+        $details=$historiqueRepository-> selectUnionHistoriqueDetails($map);
         if ($request['code']!=200) {
             /** On prepare un message flash */
             $code="[Erreur ".$request['code'];
@@ -170,7 +247,7 @@ class SuiviController extends AbstractController
         }
 
         /** Graphique */
-        $graph=$historique->selectHistoriqueAnomalieGraphique($mode, $map);
+        $graph=$historiqueRepository->selectHistoriqueAnomalieGraphique($map);
         if ($request['code']!=200) {
             /** On prepare un message flash */
             $code="[Erreur ".$request['code'];
@@ -205,20 +282,16 @@ class SuiviController extends AbstractController
             Response::HTTP_OK
         ];
 
-        if ($mode === "TEST") {
-            return $response->setData($render);
-        }
-
-        $this->addFlash('sucsess', sprintf(
+        $this->addFlash('success', sprintf(
             '%s : %s', "[Information]","Les données ont été correctement récupérées."
         ));
 
-        return $this->render('suivi/index.html.twig', $render);
+        return $this->render(static::$route, $render);
     }
 
     /**
      * [Description for listeVersion]
-     * On récupère la liste des projets nom + clé pour le selecteur de projet.
+     * On récupère la liste des projets nom + clé pour le sélecteur de projet.
      * http://{url}}/api/liste/version
      *
      * @param Request $request
