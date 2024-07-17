@@ -13,37 +13,22 @@
 
 namespace App\Controller\Suivi;
 
-/** Core */
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\SecurityBundle\Security;
 
-use DateTime;
-use DateTimeZone;
+use Doctrine\ORM\EntityManagerInterface;
 use App\Service\Client;
 use App\Entity\Historique;
-
-/** Sécurité */
 use App\Entity\ListeProjet;
-
-/** Gestion du temps */
 use App\Entity\Utilisateur;
-use Psr\Log\LoggerInterface;
-
-/** Gestion de accès aux API */
 use App\Entity\InformationProjet;
 
-/** Accès aux tables SLQLite */
-use function PHPUnit\Framework\isEmpty;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
-
-/** Logger */
 use Symfony\Component\HttpFoundation\Response;
-
-/** Client HTTP */
-use Symfony\Component\Routing\Annotation\Route;
-
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+
+use App\Exception\FetchDataException;
 
 /**
  * [Description SuiviController]
@@ -69,12 +54,15 @@ class SuiviController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
+    private $client;
+    private $em;
+
     public function __construct(
-        private EntityManagerInterface $em,
-        private LoggerInterface $logger
+        EntityManagerInterface $em,
+        Client $client
     ) {
         $this->em = $em;
-        $this->logger = $logger;
+        $this->client = $client;
     }
 
     /**
@@ -198,29 +186,34 @@ class SuiviController extends AbstractController
         // Construction du tableau des données pour les requêtes
         $map['limit'] = $this->getParameter('nombre.favori');
 
-        // Récupération des données
-        $suivi = $this->fetchData($historiqueRepository, 'selectUnionHistoriqueProjet', $map, $render);
-        $severity = $this->fetchData($historiqueRepository, 'selectUnionHistoriqueAnomalie', $map, $render);
-        $details = $this->fetchData($historiqueRepository, 'selectUnionHistoriqueDetails', $map, $render);
-        $graph = $this->fetchData($historiqueRepository, 'selectHistoriqueAnomalieGraphique', $map, $render);
+        try {
+            // Récupération des données
+            $suivi = $this->fetchData($historiqueRepository, 'selectUnionHistoriqueProjet', $map);
+            dd("stop");
+            $severity = $this->fetchData($historiqueRepository, 'selectUnionHistoriqueAnomalie', $map);
+            $details = $this->fetchData($historiqueRepository, 'selectUnionHistoriqueDetails', $map);
+            $graph = $this->fetchData($historiqueRepository, 'selectHistoriqueAnomalieGraphique', $map);
 
-        // Traitement des données graphiques
-        $graphData = $this->processGraphData($graph['request']);
+            // Traitement des données graphiques
+            $graphData = $this->processGraphData($graph);
 
-        // Mise à jour du rendu
-        $render = array_merge($render, [
-            'suivi' => $suivi['request'],
-            'severity' => $severity['request'],
-            'details' => $details['request'],
-            'nom' => $suivi['request'][0]["nom"],
-            'data1' => json_encode($graphData['bug']),
-            'data2' => json_encode($graphData['sec']),
-            'data3' => json_encode($graphData['codeSmell']),
-            'labels' => json_encode($graphData['date'])
-        ]);
+            // Mise à jour du rendu
+            $render = array_merge($render, [
+                'suivi' => $suivi['request'],
+                'severity' => $severity['request'],
+                'details' => $details['request'],
+                'nom' => $suivi['request'][0]["nom"],
+                'data1' => json_encode($graphData['bug']),
+                'data2' => json_encode($graphData['sec']),
+                'data3' => json_encode($graphData['codeSmell']),
+                'labels' => json_encode($graphData['date'])
+            ]);
 
-        $this->addFlash('notice', ['type' => 'success', 'reference' => static::$reference, 'message' => "Les données ont été correctement récupérées."]);
-        return $this->render(static::$route, $render);
+            $this->addFlash('notice', ['type' => 'success', 'reference' => static::$reference, 'message' => "Les données ont été correctement récupérées."]);
+            return $this->render(static::$route, $render);
+        } catch (FetchDataException $e) {
+            return $this->addFlashAndRender('alert', $e->getMessage(), $e->getRender());
+        }
     }
 
     /**
@@ -278,12 +271,14 @@ class SuiviController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function fetchData($repository, string $method, array $map, array &$render)
+    private function fetchData($repository, string $method, array $map)
     {
         $data = $repository->$method($map);
         if ($data['code'] != 200) {
+
+            $render = $this->getDefaultRender($map['maven_key']);
             $message = static::$erreur . $data['code'] . ', ' . $method . ')';
-            $this->addFlash('notice', ['type' => 'alert', 'reference' => static::$reference, 'message' => $message]);
+            throw new FetchDataException($message, $this->getDefaultRender($map['maven_key']));
         }
         return $data;
     }
@@ -313,7 +308,7 @@ class SuiviController extends AbstractController
 
         // Ajout d'une valeur null à la fin de chaque série
         $bug[$nl] = $sec[$nl] = $codeSmell[$nl] = 0;
-        $dd = new DateTime($graphRequest[$nl - 1]["date"]);
+        $dd = new \DateTime($graphRequest[$nl - 1]["date"]);
         $dd->modify('+1 day');
         $date[$nl] = $dd->format('Y-m-d');
 
@@ -367,7 +362,7 @@ class SuiviController extends AbstractController
         $id = 0;
         /** objet = { id: clé, text: "blablabla" }; */
         foreach ($request['versions'] as $version) {
-            $ts = new DateTime($version['date'], new DateTimeZone(static::$europeParis));
+            $ts = new \DateTime($version['date'], new \DateTimeZone(static::$europeParis));
             $cc = $ts->format("d-m-Y H:i:sO");
             $objet = [
                 'id' => $id,
@@ -376,14 +371,7 @@ class SuiviController extends AbstractController
             $id++;
         }
 
-        if ($data->mode === "TEST") {
-            $httpResponse = $response->setData(
-                ['mode' => 'TEST','versions' => $request['versions'], 'liste' => $liste, Response::HTTP_OK]);
-        } else {
-            $httpResponse = $response->setData(["liste" => $liste, Response::HTTP_OK]);
-        }
-
-        return $httpResponse;
+        return $response->setData(["liste" => $liste, Response::HTTP_OK]);
     }
 
     /**
@@ -406,7 +394,7 @@ class SuiviController extends AbstractController
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On crée un objet de reponse JSON */
+        /** On crée un objet de response JSON */
         $response = new JsonResponse();
 
         /** On teste si $data est valide */
@@ -414,62 +402,32 @@ class SuiviController extends AbstractController
             return $response->setData(['data' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
         if (!property_exists($data, 'maven_key')) {
             return $response->setData(['maven_key' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'mode')) {
-            return $response->setData(['mode' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
 
         /**  On modifie la date de 11-02-2022 16:02:06 à 2022-02-11 16:02:06 */
-        if ($data->mode === 'TEST') {
-            $d = new Datetime("11-02-2022 16:02:06");
-        } else {
-            $d = new Datetime($data->date);
-        }
+        $d = new \Datetime($data->date);
 
         $dd = $d->format('Y-m-d\TH:i:sO');
         $urlencodeDate = urlencode($dd);
-        $urlStatic = $this->getParameter(static::$sonarUrl);
+        $url = $this->getParameter(static::$sonarUrl);
+        /** Appelle le client HTTP */
+        $coverage='coverage,tests,skipped_tests,test_errors,test_failures,test_success_density,duplicated_lines_density';
+        $size='classes,comment_lines,comment_lines_density,files,lines,ncloc,ncloc_language_distribution,functions';
+        $issues='issues';
+        $maintainability='code_smells,sqale_index,sqale_debt_ratio,sqale_rating';
+        $reliability='bugs,reliability_rating';
+        $security='vulnerabilities,security_rating,security_hotspots,security_review_rating';
 
-        $url = "$urlStatic/api/measures/search_history?component=
-                $data->maven_key&metrics=reliability_rating,
-                security_rating,sqale_rating,bugs,
-                vulnerabilities,code_smells,security_hotspots,
-                security_review_rating,lines,ncloc,coverage,
-                tests,sqale_index,duplicated_lines_density,
-                sqale_debt_ratio
-                &from=$urlencodeDate&to=$urlencodeDate";
-
-        /** On appel le client http */
-        if ($data->mode != "TEST") {
-            $result = $client->http(trim(preg_replace(static::$removeReturnline, " ", $url)));
+        $queryParams = [
+            'componentKeys'=>$data->maven_key,
+            'metrics'=> $coverage.$issues.$maintainability.$reliability.$security.$size,
+            'from'=>$urlencodeDate,
+            'to'=>$urlencodeDate];
+        $result = $this->client->http("$url/api/measures/search_history?".http_build_query($queryParams));
+        /** On catch les erreurs HTTP 401 et 404, si possible :) */
+        if (isset($result['code']) && in_array($result['code'], [401, 404])) {
+            return $response->setData(['code' => $result['code'], 'error'=>[$result['erreur']]], response::HTTP_OK);
         }
-
-        if ($data->mode === "TEST") {
-            $result = ["measures" => [
-                ["metric" => "lines", "history" => [["date" => "2022-04-10T00:00:01+0200", "value" => 20984]]],
-                ["metric" => "duplicated_lines_density", "history" => [
-                    ["date" => "2022-04-10T00:00:01+0200","value" => 2.6]]],
-                ["metric" => "vulnerabilities", "history" => [["date" => "2022-04-10T00:00:02+0200","value" => 0]]],
-                ["metric" => "sqale_index","history" => [["date" => "2022-04-10T00:00:03+0200","value" => 15596]]],
-                ["metric" => "reliability_rating","history" => [["date" => "2022-04-10T00:00:04+0200","value" => 3.0]]] ,
-                ["metric" => "code_smells","history" => [["date" => "2022-04-10T00:00:05+0200","value" => 3080]]],
-                ["metric" => "bugs","history" => [["date" => "2022-04-10T00:00:06+0200", "value" => 43]]],
-                ["metric" => "ncloc", "history" => [[ "date" => "2022-04-10T00:07:00+0200", "value" => 17312]]],
-                ["metric" => "security_hotspots", "history" => [["date" => "2022-04-10T00:00:08+0200", "value" => 2]]],
-                ["metric" => "sqale_rating", "history" => [["date" => "2022-04-10T00:00:09+0200","value" => 3.0]]],
-                ["metric" => "security_rating","history" => [["date" => "2022-04-10T00:00:10+0200","value" => 1.0]]],
-                ["metric" => "tests", "history" => [["date" => "2022-04-10T00:00:11+0200", "value" => 134]]],
-                ["metric" => "coverage", "history" => [["date" => "2022-04-10T00:00:12+0200","value" => 50]]],
-                ["metric" => "security_review_rating", "history" => [
-                ["date" => "2022-04-10T00:00:13+0200","value" => 5.0]]],
-            ]
-            ];
-        }
-
-
-        /** Si on récupère un message alors on a un problème. */
-        if (array_key_exists('code', $result) && $result["code"]===404) {
-            return $response->setData(['mode' => $data->mode, 'maven_key'=>$data->maven_key, 'code'=>404, Response::HTTP_NOT_FOUND]);
-        }
-
+        dd(http_build_query($queryParams), $result);
         $data = $result["measures"];
         for ($i = 0; $i < 14; $i++) {
             if ($data[$i]["metric"] === "reliability_rating") {
@@ -482,8 +440,8 @@ class SuiviController extends AbstractController
                 $noteSqale = intval($data[$i]["history"][0]["value"], 10);
             }
 
-            /** Sur les versions plus anciennes de sonarqube, il n'y avait pas de hostpots. */
-            /** La valeur 6 corsespond à pas de note  (Z) */
+            /** Sur les versions plus anciennes de SonarQube, il n'y avait pas de hotspots. */
+            /** La valeur 6 correspond à pas de note  (Z) */
             if ($data[$i]["metric"] === "security_review_rating" &&
                 array_key_exists("value", $data[$i]["history"][0])) {
                 $noteHotspotsReview = intval($data[$i]["history"][0]["value"], 10);
@@ -504,7 +462,7 @@ class SuiviController extends AbstractController
                 $codeSmell = intval($data[$i]["history"][0]["value"], 10);
             }
 
-            /**  Sur les versions plus anciennes de sonarqube, il n'y avait pas de hostpots */
+            /**  Sur les versions plus anciennes de SonarQube, il n'y avait pas de hotspots */
             if ($data[$i]["metric"] === "security_hotspots" &&
                 array_key_exists("value", $data[$i]["history"][0])) {
                 $hotspotsReview = intval($data[$i]["history"][0]["value"], 10);

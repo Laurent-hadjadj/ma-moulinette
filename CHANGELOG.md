@@ -127,6 +127,9 @@
 * [Page_Projet] Collecte de la répartition des appels au LOGGER JAVA ;
 * [Page_Projet] Collecte de la répartition par langage ;
 * [Page_Projet] Ajout d'un tool-tip sur les langage avec ne nombre de ligne et la part en %.
+* [Page_Projet] Coverage -> Ajout des indicateurs suivants : skipped_tests,test_errors,test_failures,test_success_density;
+* [Page_Projet] Size -> Ajout des indicateurs suivants : classes,comment_lines comment_lines_density,files,functions;
+
 
 > Page de suivi des indicateurs
 
