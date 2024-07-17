@@ -152,7 +152,7 @@ const dessineMoiUnMouton= function( labels, data1, data2, data3) {
   }
 };
 
-/* On récupère les datatset */
+/* On récupère les dataset */
 const dataAttribut1 = document.getElementById('graphique-anomalie-data1');
 const dataAttribut2 = document.getElementById('graphique-anomalie-data2');
 const dataAttribut3 = document.getElementById('graphique-anomalie-data3');
@@ -182,7 +182,7 @@ dessineMoiUnMouton(
 * @author     Laurent HADJADJ <laurent_h@me.com>
 */
 const selectVersion=async function(mavenKey) {
-  const data={ maven_key: mavenKey, mode: 'null' };
+  const data={ maven_key: mavenKey };
   const options = {
     url: `${serveur()}/api/liste/version`, type: 'POST',
     dataType: 'json', data: JSON.stringify(data), contentType };
@@ -262,7 +262,7 @@ $('select[name="version"]').on('change', function () {
   /**
    *  On appel l'API de récupération des versions
   */
-  const data = { maven_key: $('#key-maven').text().trim(), date:d2[0], mode: 'null' };
+  const data = { maven_key: $('#key-maven').text().trim(), date:d2[0] };
   const options = {
     url: `${serveur()}/api/get/version`, type: 'POST',
     dataType: 'json', data: JSON.stringify(data), contentType };
@@ -505,7 +505,7 @@ $('.js-modifier-analyse').on('click', function () {
     </svg>`;
 
   /* On récupère la clé maven */
-  const data = { maven_key: $('#js-nom').data('maven'), mode: 'null' };
+  const data = { maven_key: $('#js-nom').data('maven') };
 
   const options = {
     url: `${serveur()}/api/suivi/version/liste`, type: 'POST',
