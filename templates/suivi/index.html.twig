@@ -40,7 +40,7 @@
     {% for message in app.flashes('notice') %}
       <div class="callout {{message.type}} alert-callout-border" data-closable>
         <p class="open-sans text-justify callout-message"><strong>{{message.reference}}</strong> {{ message.message }}</p>
-        {% if app.environment == 'dev' %}
+        {% if app.environment == 'dev' and message.debug is defined %}
           <p class"open-sans">{{message.debug}}</p>
         {% endif %}
         <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
