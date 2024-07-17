@@ -26,13 +26,13 @@
 @media (40.025em <= width <= 64em) { .pleine-page { margin: 1rem; } }
 
 /* desktop */
-@media (64.025em <= width <= 90em) { .pleine-page { margin: 1rem; } }
+@media (64.025em <= width <= 90em) { .pleine-page { margin: 2rem; } }
 
 /* desktop */
-@media (90.025em <= width <= 120em) { .pleine-page { margin: 1rem; } }
+@media (90.025em <= width <= 120em) { .pleine-page { margin: 2rem; } }
 
 /* desktop */
-@media (120.025em <= width <= 160em) { .pleine-page { margin: 1rem; } }
+@media (120.025em <= width <= 160em) { .pleine-page { margin: 2rem; } }
 
 /*************************          Global     *********************************/
 
@@ -58,7 +58,7 @@
   padding-right: 20px;
 }
 
-/* couleur severite */
+/* couleur sévérité */
 .text-rouge { color: #971c09; }   /* Bloquant */
 .text-orange { color: #e69500; }  /* Critique */
 .text-jaune { color: #b3b300; }   /* Majeur */
