@@ -243,22 +243,28 @@ class HistoriqueRepository extends ServiceEntityRepository
         try {
             /** On prépare la requête */
             $sql = "SELECT * FROM
-            (SELECT date_version AS date,
-                    nombre_anomalie_bloquant AS bloquant,
-                    nombre_anomalie_critique AS critique,
-                    nombre_anomalie_majeur AS majeur,
-                    nombre_anomalie_mineur AS mineur
-            FROM historique
-            WHERE maven_key=:maven_key AND initial=:initial_true)
-            UNION SELECT * FROM
-            (SELECT date_version AS date,
-                    nombre_anomalie_bloquant AS bloquant,
-                    nombre_anomalie_critique as critique,
-                    nombre_anomalie_majeur as majeur,
-                    nombre_anomalie_mineur as mineur
-            FROM historique
-            WHERE maven_key=:maven_key AND initial=:initial_false
-            ORDER BY date DESC LIMIT :limit)";
+                    (
+                        SELECT date_version AS date,
+                            nombre_anomalie_bloquant AS bloquant,
+                            nombre_anomalie_critique AS critique,
+                            nombre_anomalie_majeur AS majeur,
+                            nombre_anomalie_mineur AS mineur
+                        FROM historique
+                        WHERE maven_key = :maven_key AND initial = :initial_true
+                    ) AS initial_data
+                    UNION ALL
+                    SELECT * FROM
+                    (
+                        SELECT date_version AS date,
+                            nombre_anomalie_bloquant AS bloquant,
+                            nombre_anomalie_critique AS critique,
+                            nombre_anomalie_majeur AS majeur,
+                            nombre_anomalie_mineur AS mineur
+                        FROM historique
+                        WHERE maven_key = :maven_key AND initial = :initial_false
+                        LIMIT :limit
+                    ) AS non_initial_data
+                    ORDER BY date DESC;";
             $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $stmt->bindValue(':maven_key', $map['maven_key']);
                 $stmt->bindValue(':initial_true', 0);
@@ -288,30 +294,34 @@ class HistoriqueRepository extends ServiceEntityRepository
         try {
                 /** On prépare la requête */
                 $sql = "SELECT * FROM
-                (SELECT date_version AS date, version,
-                        bug_blocker, bug_critical, bug_major,
-                        bug_minor, bug_info,
-                        vulnerability_blocker, vulnerability_critical,
-                        vulnerability_major, vulnerability_minor,
-                        vulnerability_info,
-                        code_smell_blocker, code_smell_critical,
-                        code_smell_major, code_smell_minor,
-                        code_smell_info, initial
-                FROM historique
-                WHERE maven_key=:maven_key AND initial=:initial_true)
-                UNION SELECT * FROM
-                (SELECT date_version AS date, version,
-                        bug_blocker, bug_critical, bug_major,
-                        bug_minor, bug_info,
-                        vulnerability_blocker, vulnerability_critical,
-                        vulnerability_major, vulnerability_minor,
-                        vulnerability_info,
-                        code_smell_blocker, code_smell_critical,
-                        code_smell_major, code_smell_minor,
-                        code_smell_info, initial
-                FROM historique
-                WHERE maven_key=:maven_key AND initial=:initial_false
-                ORDER BY date DESC LIMIT :limit)";
+                        (
+                            SELECT date_version AS date, version,
+                                bug_blocker, bug_critical, bug_major,
+                                bug_minor, bug_info,
+                                vulnerability_blocker, vulnerability_critical,
+                                vulnerability_major, vulnerability_minor,
+                                vulnerability_info,
+                                code_smell_blocker, code_smell_critical,
+                                code_smell_major, code_smell_minor,
+                                code_smell_info, initial
+                            FROM historique
+                            WHERE maven_key=:maven_key AND initial=:initial_true
+                        ) AS initial_data
+                            UNION SELECT * FROM
+                        (
+                            SELECT date_version AS date, version,
+                                bug_blocker, bug_critical, bug_major,
+                                bug_minor, bug_info,
+                                vulnerability_blocker, vulnerability_critical,
+                                vulnerability_major, vulnerability_minor,
+                                vulnerability_info,
+                                code_smell_blocker, code_smell_critical,
+                                code_smell_major, code_smell_minor,
+                                code_smell_info, initial
+                            FROM historique
+                            WHERE maven_key=:maven_key AND initial=:initial_false
+                        ) AS non_initial_data
+                        ORDER BY date DESC LIMIT :limit";
 
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(':maven_key', $map['maven_key']);
@@ -340,12 +350,14 @@ class HistoriqueRepository extends ServiceEntityRepository
     public function selectHistoriqueAnomalieGraphique($map):array {
         try {
                 /** On prépare la requête */
-                $sql = "SELECT  nombre_bug AS bug, nombre_vulnerability
-                                AS sec, nombre_code_smell AS code_smell, date_version AS date
+                $sql = "SELECT nombre_bug AS bug,
+                                nombre_vulnerability AS sec,
+                                nombre_code_smell AS code_smell,
+                                date_version AS date
                         FROM historique
-                        WHERE maven_key=:maven_key
-                        GROUP BY date_version
-                        ORDER BY date_version ASC";
+                        WHERE maven_key = :maven_key
+                        GROUP BY nombre_bug, nombre_vulnerability, nombre_code_smell, date_version
+                        ORDER BY date ASC";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $stmt->bindValue(':maven_key', $map['maven_key']);
                 $graph=$stmt->executeQuery()->fetchAllAssociative();
