@@ -141,7 +141,6 @@ class ApiProjetController extends AbstractController
      * http://{url}}/api/projet/liste
      *
      * @param Security $security
-     * @param Request $request
      *
      * @return response
      *
@@ -150,7 +149,7 @@ class ApiProjetController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/projet/liste', name: 'projet_liste', methods: ['POST'])]
-    public function liste_projet(Security $security, Request $request): response
+    public function liste_projet(Security $security): response
     {
         /** On instancie l'entityRepository */
         $listeProjetRepository = $this->em->getRepository(ListeProjet::class);
