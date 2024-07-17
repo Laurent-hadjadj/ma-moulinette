@@ -19,8 +19,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 /** Gestion de accès aux API */
 use Symfony\Component\HttpFoundation\Request;
 
-
-
 /** Les services */
 use App\Service\FileLogger;
 
