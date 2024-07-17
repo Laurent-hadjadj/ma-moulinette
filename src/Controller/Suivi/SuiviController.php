@@ -160,27 +160,28 @@ class SuiviController extends AbstractController
         $mavenKey = $session->get('mavenKey');
         $teams = $security->getUser()->getEquipe();
         $render = $this->getDefaultRender($mavenKey);
+        $debug='';
 
         // Vérifications initiales
         if (empty($mavenKey)) {
-            return $this->addFlashAndRender('alert', static::$erreur400, $render);
+            return $this->addFlashAndRender('alert', static::$erreur400, $debug, $render);
         }
 
         if (empty($teams)) {
-            return $this->addFlashAndRender('warning', static::$erreur404, $render);
+            return $this->addFlashAndRender('warning', static::$erreur404, $debug, $render);
         }
 
         // Vérification du projet
         $listeProjet = self::listeProjet($mavenKey, $teams);
         if ($listeProjet['code'] === 406) {
-            return $this->addFlashAndRender('warning', $listeProjet['message'], $render);
+            return $this->addFlashAndRender('warning', $listeProjet['message'], $debug, $render);
         }
 
         // Vérification dans l'historique
         $map = ['maven_key' => $mavenKey];
         $liste = $historiqueRepository->countHistoriqueProjet($map);
         if ($liste['code'] != 200 || $liste['nombre'] === 0) {
-            return $this->addFlashAndRender('warning', "Le projet n'a pas été sauvegardé dans l'historique.", $render);
+            return $this->addFlashAndRender('warning', "Le projet n'a pas été sauvegardé dans l'historique.", $debug, $render);
         }
 
         // Construction du tableau des données pour les requêtes
@@ -189,7 +190,6 @@ class SuiviController extends AbstractController
         try {
             // Récupération des données
             $suivi = $this->fetchData($historiqueRepository, 'selectUnionHistoriqueProjet', $map);
-            dd("stop");
             $severity = $this->fetchData($historiqueRepository, 'selectUnionHistoriqueAnomalie', $map);
             $details = $this->fetchData($historiqueRepository, 'selectUnionHistoriqueDetails', $map);
             $graph = $this->fetchData($historiqueRepository, 'selectHistoriqueAnomalieGraphique', $map);
@@ -212,7 +212,7 @@ class SuiviController extends AbstractController
             $this->addFlash('notice', ['type' => 'success', 'reference' => static::$reference, 'message' => "Les données ont été correctement récupérées."]);
             return $this->render(static::$route, $render);
         } catch (FetchDataException $e) {
-            return $this->addFlashAndRender('alert', $e->getMessage(), $e->getRender());
+            return $this->addFlashAndRender('alert', $e->getMessage(), $e->getDebug(), $e->getRender());
         }
     }
 
@@ -251,9 +251,9 @@ class SuiviController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function addFlashAndRender(string $type, string $message, array $render): Response
+    private function addFlashAndRender(string $type, string $message, string $debug, array $render): Response
     {
-        $this->addFlash('notice', ['type' => $type, 'reference' => static::$reference, 'message' => $message]);
+        $this->addFlash('notice', ['type' => $type, 'reference' => static::$reference, 'message' => $message, 'debug'=>$debug] );
         return $this->render(static::$route, $render);
     }
 
@@ -275,10 +275,9 @@ class SuiviController extends AbstractController
     {
         $data = $repository->$method($map);
         if ($data['code'] != 200) {
-
-            $render = $this->getDefaultRender($map['maven_key']);
-            $message = static::$erreur . $data['code'] . ', ' . $method . ')';
-            throw new FetchDataException($message, $this->getDefaultRender($map['maven_key']));
+            $message = static::$erreur . $data['code'] . ').';
+            $debug = $data['erreur'];
+            throw new FetchDataException($message, $debug, $this->getDefaultRender($map['maven_key']));
         }
         return $data;
     }
