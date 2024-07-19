@@ -189,7 +189,7 @@ const selectVersion=async function(mavenKey) {
 
   const r = await $.ajax(options);
   if (r.code===http_400) {
-    const message=`Une erreur s'est produite lors de l'analyse des données !`;
+    const message=`La requête est incorrecte (Erreur 400).`;
     $('#message-ajout-projet').html(callboxError+message+callboxFermer);
     return;
   }
@@ -212,7 +212,7 @@ const selectVersion=async function(mavenKey) {
 $('.js-ajouter-analyse').on('click', function () {
   const mavenKey=$('#js-nom').data('maven');
 
-  /** Si la clé mavenkey n'est pas défini on ouvre pas la fenêtre modale */
+  /** Si la clé mavenKey n'est pas défini on ouvre pas la fenêtre modale */
   if (mavenKey===null || mavenKey==='') {
     return;
   }
@@ -274,18 +274,13 @@ $('select[name="version"]').on('change', function () {
      * si <> 200 et 404, exception symfony
     */
     if (t.code===http_400 && t.data===null || t.code===http_400 && t.maven_key===null) {
-      const message=`La clé maven n'est pas correcte !`;
+      const message=`La requête est incorrecte (erreur 400).`;
       $('#message-ajout-projet').html(callboxError+message+callboxFermer);
-      return;
-    }
-    if (t.code===http_400 && t.mode===null) {
-      const message=`Le mode n'est pas défini !`;
-      $('#message-ajout-projet').html(callboxWarning+message+callboxFermer);
       return;
     }
 
     if (t.code===http_404) {
-      const message=`Le projet n'existe plus sur le serveur SonarQube !`;
+      const message=`Le projet n'existe plus sur le serveur SonarQube ! (erreur 406)`;
       $('#message-ajout-projet').html(callboxError+message+callboxFermer);
       return;
     }
@@ -298,15 +293,15 @@ $('select[name="version"]').on('change', function () {
 
     const tNotes1 = ['', 'a', 'b', 'c', 'd', 'e', 'z'];
     const tNotes2 = ['', 'A', 'B', 'C', 'D', 'E', 'Z'];
-    const couleurReliability = tNotes1[parseInt(t.noteReliability,10)];
-    const couleurSecurity = tNotes1[parseInt(t.noteSecurity,10)];
-    const couleurSqale = tNotes1[parseInt(t.noteSqale,10)];
-    const couleurHotspotsReview = tNotes1[parseInt(t.noteHotspotsReview,10)];
+    const couleurReliability = tNotes1[parseInt(t.data.reliability_rating,10)];
+    const couleurSecurity = tNotes1[parseInt(t.data.security_rating,10)];
+    const couleurSqale = tNotes1[parseInt(t.data.sqale_rating,10)];
+    const couleurHotspotsReview = tNotes1[parseInt(t.data.security_review_rating,10)];
 
-    const noteReliability = tNotes2[parseInt(t.noteReliability,10)];
-    const noteSecurity = tNotes2[parseInt(t.noteSecurity,10)];
-    const noteSqale = tNotes2[parseInt(t.noteSqale,10)];
-    const noteHotspotsReview = tNotes2[parseInt(t.noteHotspotsReview,10)];
+    const noteReliability = tNotes2[parseInt(t.data.reliability_rating,10)];
+    const noteSecurity = tNotes2[parseInt(t.data.security_rating,10)];
+    const noteSqale = tNotes2[parseInt(t.data.sqale_rating,10)];
+    const noteHotspotsReview = tNotes2[parseInt(t.data.security_review_rating,10)];
 
     /*  On affiche les notes */
     $('#note-reliability').html(`<span class="note note-${couleurReliability}">${noteReliability}</span>`);
@@ -325,10 +320,11 @@ $('select[name="version"]').on('change', function () {
     t4.dataset.noteHotspotsReview=(noteHotspotsReview);
 
     /* On affiche le nombre de bugs, de vulnérabilités et de mauvaises pratiques. */
-    $('#bug').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.bug));
-    $('#vulnerabilities').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.vulnerabilities));
-    $('#code-smell').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.codeSmell));
-    const verifyHotspotsReview=t.hotspotsReview;
+    $('#violation').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.violations));
+    $('#bug').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.bugs));
+    $('#vulnerabilities').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.vulnerabilities));
+    $('#code-smell').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.code_smells));
+    const verifyHotspotsReview=t.data.security_hotspots;
     if (verifyHotspotsReview !== -1) {
       $('#hotspots-review').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(verifyHotspotsReview));
     } else {
@@ -336,37 +332,104 @@ $('select[name="version"]').on('change', function () {
     }
 
     /* historique */
+    const tViolation = document.getElementById('violation');
     const t5 = document.getElementById('bug');
     const t6 = document.getElementById('vulnerabilities');
     const t7 = document.getElementById('code-smell');
     const t8 = document.getElementById('hotspots-review');
-    t5.dataset.bug=(t.bug);
-    t6.dataset.vulnerabilities=(t.vulnerabilities);
-    t7.dataset.codeSmell=(t.codeSmell);
-    t8.dataset.hotspotsReview=(t.hotspotsReview);
+    t5.dataset.bug=(t.data.bugs);
+    t6.dataset.vulnerabilities=(t.data.vulnerabilities);
+    t7.dataset.codeSmell=(t.data.code_smells);
+    t8.dataset.hotspotsReview=(t.data.security_hotspots);
+    tViolation.dataset.violation=(t.data.violations);
 
     /* On affiche les autres métriques */
-    $('#ncloc').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.ncloc));
-    $('#lines').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.lines));
-    $('#dette').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.dette/soixante/soixante));
+    const liste=t.data.ncloc_language_distribution;
+    // Étape 1 : Diviser la chaîne en paires clé=valeur
+    const pairs = liste.split(';');
 
-    $('#duplication').html(new Intl.NumberFormat('fr-FR', { style: 'percent',maximumFractionDigits: 2 }).format(t.duplication/cent));
-    $('#coverage').html(new Intl.NumberFormat('fr-FR', { style: 'percent',maximumFractionDigits: 2 }).format(t.coverage/cent));
-    $('#tests').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.tests));
+    // Étape 2 : Extraire les clés (noms des langages) de chaque paire
+    const langages = pairs.map(pair => pair.split('=')[0]);
+
+    // Étape 3 : Créer un <span> pour chaque langage et l'ajouter au conteneur #affiche
+    let ponctuation=',';
+    const nombreLangage=langages.length;
+    let i=0;
+    langages.forEach(language => {
+      i++;
+      if (nombreLangage === i) { ponctuation='.' }
+      const span = `<span class="nasa">${language}</span>${ponctuation}&nbsp;`;
+      $('#ncloc-language-distribution').append(span);
+    });
+    $('#files').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.files));
+    $('#classes').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.classes));
+    $('#functions').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.functions));
+
+    $('#ncloc').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.ncloc));
+    $('#lines').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.lines));
+
+    $('#comment-lines').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.comment_lines));
+    $('#comment-lines-density').html(new Intl.NumberFormat('fr-FR', { style: 'percent',maximumFractionDigits: 2 }).format(t.data.comment_lines_density/cent));
+
+    $('#dette').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.sqale_index/soixante/soixante));
+    $('#sqale-debt-ratio').html(new Intl.NumberFormat('fr-FR', { style: 'percent',maximumFractionDigits: 2 }).format(t.data.sqale_debt_ratio/cent));
+
+    $('#coverage').html(new Intl.NumberFormat('fr-FR', { style: 'percent',maximumFractionDigits: 2 }).format(t.data.coverage/cent));
+    $('#duplication').html(new Intl.NumberFormat('fr-FR', { style: 'percent',maximumFractionDigits: 2 }).format(t.data.duplicated_lines_density/cent));
+
+    $('#tests').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.tests));
+    $('#test-success-density').html(new Intl.NumberFormat('fr-FR', { style: 'percent',maximumFractionDigits: 2 }).format(t.data.test_success_density/cent));
+    $('#skipped-tests').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.skipped_tests));
+    $('#test-errors').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.test_errors));
+    $('#test-failures').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.test_failures));
 
     /* historique */
-    const t9 = document.getElementById('ncloc');
-    const t10 = document.getElementById('lines');
-    const t11 = document.getElementById('coverage');
-    const t12 = document.getElementById('tests');
-    const t13 = document.getElementById('dette');
-    const t14 = document.getElementById('duplication');
-    t9.dataset.ncloc=(t.ncloc);
-    t10.dataset.lines=(t.lines);
-    t11.dataset.coverage=(t.coverage);
-    t12.dataset.tests=(t.tests);
-    t13.dataset.dette=(t.dette);
-    t14.dataset.duplication=(t.duplication);
+    const t9 = document.getElementById('ncloc-language-distribution');
+
+    const t10 = document.getElementById('files');
+    const t11 = document.getElementById('classes');
+    const t12 = document.getElementById('functions');
+
+    const t13 = document.getElementById('ncloc');
+    const t14 = document.getElementById('lines');
+
+    const t15 = document.getElementById('comment-lines');
+    const t16 = document.getElementById('comment-lines-density');
+
+    const t17 = document.getElementById('coverage');
+    const t18 = document.getElementById('duplication');
+
+    const t19 = document.getElementById('dette');
+    const t20 = document.getElementById('sqale-debt-ratio');
+
+    const t21 = document.getElementById('tests');
+    const t22 = document.getElementById('test-success-density');
+    const t23 = document.getElementById('skipped-tests');
+    const t24 = document.getElementById('test-errors');
+    const t25 = document.getElementById('test-failures');
+
+    t9.dataset.nclocLanguageDistribution=(t.data.ncloc_language_distribution);
+    t10.dataset.files=(t.data.files);
+    t11.dataset.classes=(t.data.classes);
+    t12.dataset.functions=(t.data.functions);
+
+    t13.dataset.ncloc=(t.data.ncloc);
+    t14.dataset.lines=(t.data.lines);
+
+    t14.dataset.commentLines=(t.data.comment_lines);
+    t14.dataset.commentLinesDensity=(t.data.comment_lines_density);
+
+    t17.dataset.coverage=(t.data.coverage);
+    t18.dataset.duplication=(t.data.duplicated_lines_density);
+
+    t19.dataset.dette=(t.data.sqale_index);
+    t20.dataset.sqaleDebtRatio=(t.data.sqale_debt_ratio);
+
+    t21.dataset.tests=(t.data.tests);
+    t22.dataset.testSuccessDensity=(t.data.test_success_density);
+    t23.dataset.skippedTests=(t.data.skipped_tests);
+    t24.dataset.testErrors=(t.data.test_errors);
+    t25.dataset.testFailures=(t.data.test_failures);
   });
 });
 
