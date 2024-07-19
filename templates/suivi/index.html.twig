@@ -884,7 +884,7 @@
               <span id="bug" class="resultat"></span>
               <span id="note-reliability" class="resultat-note"></span>
             </p>
-            <p class="open-sans ligne text-noir">Securité :
+            <p class="open-sans ligne text-noir">Sécurité :
               <span id="vulnerabilities" class="resultat"></span>
               <span id="note-security" class="resultat-note"></span>
             </p>
@@ -913,6 +913,19 @@
             <p class="open-sans ligne">Dette (j/h):
               <span id="dette" class="resultat"></span>
             </p>
+            <p class="open-sans ligne">Tests :
+              <span id="tests" class="resultat"></span>
+            </p>
+            <p class="open-sans ligne">Tests non exécutés :
+              <span id="skipped-tests" class="resultat"></span>
+            </p>
+            <p class="open-sans ligne">Tests en échec :
+              <span id="test-failures" class="resultat"></span>
+            </p>
+            <p class="open-sans ligne">Tests en erreur :
+              <span id="test-errors" class="resultat"></span>
+            </p>
+
           </div>
           <div class="small-12 medium-6 large-6 cell">
             <p class="open-sans ligne">Duplication :
@@ -921,10 +934,14 @@
             <p class="open-sans ligne">Couverture :
               <span id="coverage" class="resultat"></span>
             </p>
-            <p class="open-sans ligne">Tests :
-              <span id="tests" class="resultat"></span>
+            <p class="open-sans ligne">
+              <span class="resultat">&nbsp;</span>
+            </p>
+            <p class="open-sans ligne">% de succès :
+              <span id="test-success-density" class="resultat"></span>
             </p>
           </div>
+
         </div>
       </div>
 
@@ -940,7 +957,7 @@
         </div>
       </div>
       <br>
-      {# fermeture de la fenetre modale #}
+      {# fermeture de la fenêtre modale #}
       <button id="fermer-choisir-analyse" class="expanded button open-sans" data-close aria-label="Close reveal" type="button">Fermer</button>
       <a class="close-button" data-close aria-label="Close reveal">&#215;</a>
     </div>
@@ -989,7 +1006,7 @@
         </table>
       </div>
       <br>
-      {# fermeture de la fenetre modale #}
+      {# fermeture de la fenêtre modale #}
       <button id="fermer-modifier-analyse" class="expanded button open-sans" data-close aria-label="Close reveal" type="button">Fermer</button>
       <a class="close-button" data-close aria-label="Close reveal">&#215;</a>
     </div>
