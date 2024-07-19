@@ -415,8 +415,8 @@ $('select[name="version"]').on('change', function () {
     t13.dataset.ncloc=(t.data.ncloc);
     t14.dataset.lines=(t.data.lines);
 
-    t14.dataset.commentLines=(t.data.comment_lines);
-    t14.dataset.commentLinesDensity=(t.data.comment_lines_density);
+    t15.dataset.commentLines=(t.data.comment_lines);
+    t16.dataset.commentLinesDensity=(t.data.comment_lines_density);
 
     t17.dataset.coverage=(t.data.coverage);
     t18.dataset.duplication=(t.data.duplicated_lines_density);
