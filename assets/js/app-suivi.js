@@ -9,7 +9,6 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
-
 import '../css/suivi.css';
 
 /* Intégration de jquery */
@@ -337,11 +336,11 @@ $('select[name="version"]').on('change', function () {
     const t6 = document.getElementById('vulnerabilities');
     const t7 = document.getElementById('code-smell');
     const t8 = document.getElementById('hotspots-review');
-    t5.dataset.bug=(t.data.bugs);
+    t5.dataset.bugs=(t.data.bugs);
     t6.dataset.vulnerabilities=(t.data.vulnerabilities);
-    t7.dataset.codeSmell=(t.data.code_smells);
-    t8.dataset.hotspotsReview=(t.data.security_hotspots);
-    tViolation.dataset.violation=(t.data.violations);
+    t7.dataset.codeSmells=(t.data.code_smells);
+    t8.dataset.securityHotspots=(t.data.security_hotspots);
+    tViolation.dataset.violations=(t.data.violations);
 
     /* On affiche les autres métriques */
     const liste=t.data.ncloc_language_distribution;
@@ -461,45 +460,86 @@ $('.js-enregistrer-analyse').on('click', ()=>{
   const t2 = document.getElementById('note-security');
   const t3 = document.getElementById('note-sqale');
   const t4 = document.getElementById('note-hotspots-review');
-  const noteReliability=t1.dataset.noteReliability;
-  const noteSecurity=t2.dataset.noteSecurity;
-  const noteSqale=t3.dataset.noteSqale;
-  const noteHotspotsReview=t4.dataset.noteHotspotsReview;
+  const t5 = document.getElementById('violation');
+  const t6 = document.getElementById('bug');
+  const t7 = document.getElementById('vulnerabilities');
+  const t8 = document.getElementById('code-smell');
+  const t9 = document.getElementById('hotspots-review');
+  const t10 = document.getElementById('ncloc-language-distribution');
+  const t11 = document.getElementById('files');
+  const t12 = document.getElementById('classes');
+  const t13 = document.getElementById('functions');
+  const t14 = document.getElementById('ncloc');
+  const t15 = document.getElementById('lines');
+  const t16 = document.getElementById('comment-lines');
+  const t17 = document.getElementById('comment-lines-density');
+  const t18 = document.getElementById('coverage');
+  const t19 = document.getElementById('duplication');
+  const t20 = document.getElementById('dette');
+  const t21 = document.getElementById('sqale-debt-ratio');
+  const t22 = document.getElementById('tests');
+  const t23 = document.getElementById('test-success-density');
+  const t24 = document.getElementById('skipped-tests');
+  const t25 = document.getElementById('test-errors');
+  const t26 = document.getElementById('test-failures');
 
-  const t5 = document.getElementById('bug');
-  const t6 = document.getElementById('vulnerabilities');
-  const t7 = document.getElementById('code-smell');
-  const t8 = document.getElementById('hotspots-review');
-  const bug=t5.dataset.bug;
-  const vulnerabilities=t6.dataset.vulnerabilities;
-  const codeSmell=t7.dataset.codeSmell;
-  const hotspotsReview=t8.dataset.hotspotsReview;
-  const defauts=parseInt(bug,10)+parseInt(vulnerabilities,10)+parseInt(codeSmell,10);
-
-  const t9 = document.getElementById('ncloc');
-  const t10 = document.getElementById('lines');
-  const t11 = document.getElementById('coverage');
-  const t12 = document.getElementById('duplication');
-  const t13 = document.getElementById('tests');
-  const t14 = document.getElementById('dette');
-  const ncloc=t9.dataset.ncloc;
-  const lines=t10.dataset.lines;
-  const coverage=t11.dataset.coverage;
-  const duplication=t12.dataset.duplication;
-  const tests=t13.dataset.tests;
-  const dette=t14.dataset.dette;
-
+  const note_reliability=t1.dataset.noteReliability;
+  const note_security=t2.dataset.noteSecurity;
+  const note_sqale=t3.dataset.noteSqale;
+  const note_hotspots_review=t4.dataset.noteHotspotsReview;
+  const violation=t5.violation;
+  const bugs=t6.bugs;
+  const vulnerabilities=t7.vulnerabilities;
+  const code_smells=t8.codeSmell;
+  const hotspots_review=t9.hotspotsReview;
+  const ncloc_language_distribution=t10.nclocLanguageDistribution;
+  const files=t11.files;
+  const classes=t12.classes;
+  const functions=t13.functions;
+  const ncloc=t14.ncloc;
+  const lines=t15.lines;
+  const comment_lines=t16.commentLines;
+  const comment_lines_density=t17.commentLinesDensity;
+  const coverage=t18.coverage;
+  const duplication=t19.duplication;
+  const dette=t20.dette;
+  const sqale_debt_ratio=t21.sqaleDebtRatio;
+  const tests=t22.tests;
+  const test_success_density=t23.testSuccessDensity;
+  const skipped_tests=t24.skippedTests;
+  const test_errors=t25.testErrors;
+  const test_failures=t26.testFailures;
   const initial=0;
-  const data={'maven_key':mavenKey, 'version':version, 'date_version':dateVersion,
-              'nom_projet':nom, 'nombre_ligne':lines,
-              'nombre_ligne_code':ncloc, 'couverture':coverage,
-              'duplication':duplication, 'tests_unitaires':tests,
-              'nombre_defaut':defauts, 'dette':dette,
-              'nombre_bug':bug, 'nombre_vulnerability':vulnerabilities,
-              'nombre_code_smell':codeSmell,
-              'note_reliability':noteReliability, 'note_security':noteSecurity,
-              'note_sqale':noteSqale, 'note_hotspot':noteHotspotsReview,
-              'hotspot_total':hotspotsReview, 'initial':initial, mode:'null'};
+  const data={
+    'note_reliability':note_reliability,
+    'note_security':note_security,
+    'note_sqale':note_sqale,
+    'note_hotspots_review':note_hotspots_review,
+    'violation':violation,
+    'bugs':bugs,
+    'vulnerabilities':vulnerabilities,
+    'code_smells':code_smells,
+    'hotspots_review':hotspots_review,
+    'ncloc_language_distribution':ncloc_language_distribution,
+    'files':files,
+    'classes':classes,
+    'functions':functions,
+    'ncloc':ncloc,
+    'lines':lines,
+    'comment_lines':comment_lines,
+    'comment_lines_density':comment_lines_density,
+    'coverage':coverage,
+    'duplication':duplication,
+    'dette':dette,
+    'sqale_debt_ratio':sqale_debt_ratio,
+    'tests':tests,
+    'test_success_density':test_success_density,
+    'skipped_tests':skipped_tests,
+    'test_errors':test_errors,
+    'test_failures':test_failures,
+    'initial':initial};
+    console.log(data);
+    return;
     /**
      * On lance l'API de mise à jour
      */
