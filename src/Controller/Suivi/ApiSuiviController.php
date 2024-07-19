@@ -28,7 +28,7 @@ class ApiSuiviController extends AbstractController
     public static $dateFormatTimezone = "Y-m-d\TH:i:sO";
     public static $sonarUrl = "sonar.url";
     public static $reference = "SUIVI";
-    public static $erreur400 = "La requête est incorrecte (Erreur 400).";
+    public static $erreur400 = "La requête est incorrecte (erreur 400).";
     public static $erreur404 = "Vous devez être rattaché à une équipe (erreur 404).";
     public static $erreur406 = "Je n'ai pas trouvé de projets pour ton équipe. ".
     "Vérifiez le nom du tag utilisé dans SonarQube (erreur 406).";
@@ -156,20 +156,20 @@ class ApiSuiviController extends AbstractController
             'maintainability' => [
                 'component' => $data->maven_key,
                 'metrics' => 'code_smells,sqale_index,sqale_debt_ratio,sqale_rating',
-                'from' => $dateConvert->format('Y-m-d\TH:i:sO'),
-                'to' => $dateConvert->format('Y-m-d\TH:i:sO')
+                'from' => $dateConvert->format(static::$dateFormatTimezone),
+                'to' => $dateConvert->format(static::$dateFormatTimezone)
             ],
             'reliability' => [
                 'component' => $data->maven_key,
-                'metrics' => 'code_smells,sqale_index,sqale_debt_ratio,sqale_rating',
-                'from' => $dateConvert->format('Y-m-d\TH:i:sO'),
-                'to' => $dateConvert->format('Y-m-d\TH:i:sO')
+                'metrics' => 'bugs,reliability_rating',
+                'from' => $dateConvert->format(static::$dateFormatTimezone),
+                'to' => $dateConvert->format(static::$dateFormatTimezone)
             ],
             'security' => [
                 'component' => $data->maven_key,
                 'metrics' => 'vulnerabilities,security_rating,security_hotspots,security_review_rating',
-                'from' => $dateConvert->format('Y-m-d\TH:i:sO'),
-                'to' => $dateConvert->format('Y-m-d\TH:i:sO')
+                'from' => $dateConvert->format(static::$dateFormatTimezone),
+                'to' => $dateConvert->format(static::$dateFormatTimezone)
             ]
         ];
 
@@ -179,12 +179,6 @@ class ApiSuiviController extends AbstractController
             $results[$key] = $request;
         }
 
-        //COVERAGE        > "tests": "55", "test_errors": "0", "skipped_tests": "0", "test_failures": "0",   "test_success_density": "100.0", "coverage": "50.1", "duplicated_lines_density": "0.2"
-        //ISSUES          > "violation"! "295"
-        //SIZE            > "comment_lines_density": "29.9", "lines": "17049", "ncloc": "8928","ncloc_language_distribution": "css=1467;java=1793;ts=3790;web=795;xml=1083", "classes": "132", "files": "203", "functions": "522", "comment_lines": "3801"
-        //MAINTAINABILITY > "code_smells": "198", "sqale_index": "2987", "sqale_rating": "1.0","sqale_debt_ratio": "1.1"
-        //RELIABILITY       > "code_smells": "198", "sqale_index": "2987", "sqale_rating": "1.0", "sqale_debt_ratio": "1.1"
-        //SECURITY          > "vulnerabilities": "9", "security_hotspots": "5", "security_rating": "4.0", "security_review_rating": "5.0"
         $keys=['coverage', 'issues', 'size', 'maintainability', 'reliability', 'security'];
         foreach ($keys as $key){
             $metricsData[$key] = [];
@@ -209,7 +203,7 @@ class ApiSuiviController extends AbstractController
         ];
 
         $metricTypesIssues = [
-            'violation' => 'intval',
+            'violations' => 'intval',
         ];
 
         $metricTypesSize = [
@@ -231,10 +225,8 @@ class ApiSuiviController extends AbstractController
         ];
 
         $metricTypesReliability = [
-            'code_smells' => 'intval',
-            'sqale_index' => 'intval',
-            'sqale_debt_ratio' => 'floatval',
-            'sqale_rating' => 'floatval'
+            'bugs' => 'intval',
+            'reliability_rating' => 'floatval'
         ];
 
         $metricTypesSecurity = [
@@ -268,9 +260,7 @@ class ApiSuiviController extends AbstractController
         extractMetrics($data, $metricsData, 'reliability', $metricTypesReliability);
         extractMetrics($data, $metricsData, 'security', $metricTypesSecurity);
 
-        return $response->setData([
-            'code' => 200, 'data'=>$data
-            ], Response::HTTP_OK);
+        return $response->setData(['code' => 200, 'data'=>$data], Response::HTTP_OK);
     }
 
     /**
