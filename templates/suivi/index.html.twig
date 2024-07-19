@@ -862,37 +862,37 @@
       <div class="fieldset cell">
         <div class="grid-x">
           <div class="small-12 medium-7 large-7 cell">
-            <p class="open-sans ligne text-noir">Clé maven :
+            <p class="open-sans ligne">Clé maven :
               <span id="key-maven" class="resultat"></span>
             </p>
-            <p class="open-sans ligne text-noir">nom :
+            <p class="open-sans ligne">nom :
               <span id="nom" class="resultat"></span>
             </p>
-            <p class="open-sans ligne text-noir">Version :
+            <p class="open-sans ligne">Version :
               <span id="version" class="resultat"></span>
             </p>
-            <p class="open-sans ligne text-noir">Date :
+            <p class="open-sans ligne">Date :
               <span id="date" class="resultat"></span>
             </p>
           </div>
           <div class="small-12 medium-5 large-5 cell">
-            <p class="open-sans ligne text-noir">Violation :
+            <p class="open-sans ligne">Violation :
               <span id="violation" class="resultat"></span>
               <span class="resultat-note"></span>
             </p>
-            <p class="open-sans ligne text-noir">Fiabilité :
+            <p class="open-sans ligne">Fiabilité :
               <span id="bug" class="resultat"></span>
               <span id="note-reliability" class="resultat-note"></span>
             </p>
-            <p class="open-sans ligne text-noir">Sécurité :
+            <p class="open-sans ligne">Sécurité :
               <span id="vulnerabilities" class="resultat"></span>
               <span id="note-security" class="resultat-note"></span>
             </p>
-            <p class="open-sans ligne text-noir">Hotspot :
+            <p class="open-sans ligne">Hotspot :
               <span id="hotspots-review" class="resultat"></span>
               <span id="note-hotspots-review" class="resultat-note"></span>
             </p>
-            <p class="open-sans ligne text-noir">Maintenabilité :
+            <p class="open-sans ligne">Maintenabilité :
               <span id="code-smell" class="resultat"></span>
               <span id="note-sqale" class="resultat-note"></span>
             </p>
@@ -903,45 +903,87 @@
       {# Tableau des indicateurs du Projet #}
       <div class="fieldset cell">
         <div class="grid-x">
+          {# Colonne gauche #}
           <div class="small-12 medium-6 large-6 cell">
+            <p class="open-sans ligne">Langages de programmation :
+              <span id="ncloc_language_distribution" class="resultat"></span>
+            </p>
+            <p class="open-sans ligne">Fichier :
+              <span id="files" class="resultat"></span>
+            </p>
+            <p class="open-sans ligne">Classe :
+              <span id="classes" class="resultat"></span>
+            </p>
+            <p class="open-sans ligne">Fonction/méthode :
+              <span id="functions" class="resultat"></span>
+            </p>
+          </div>
+          {# Colonne droite #}
+          <div class="small-12 medium-6 large-6 cell">
+            <p class="open-sans ligne">&nbsp;</p>
             <p class="open-sans ligne">Ligne :
               <span id="lines" class="resultat"></span>
             </p>
             <p class="open-sans ligne">NcLoc :
               <span id="ncloc" class="resultat"></span>
             </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="fieldset cell">
+        <div class="grid-x">
+          {# Colonne gauche #}
+          <div class="small-12 medium-6 large-6 cell">
+            <p class="open-sans ligne">Commentaire :
+              <span id="comment-lines" class="resultat"></span>
+            </p>
+            <p class="open-sans ligne">% Duplication :
+              <span id="duplication" class="resultat"></span>
+            </p>
             <p class="open-sans ligne">Dette (j/h):
               <span id="dette" class="resultat"></span>
             </p>
+          </div>
+          {# Colonne droite #}
+          <div class="small-12 medium-6 large-6 cell">
+            <p class="open-sans ligne">% Commentaire :
+              <span id="comment-lines-density" class="resultat"></span>
+            </p>
+            <p class="open-sans ligne">% Couverture :
+              <span id="coverage" class="resultat"></span>
+            </p>
+            <p class="open-sans ligne">Ratio de dette technique :
+              <span id="sqale-debt-ratio" class="resultat"></span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="fieldset cell">
+        <div class="grid-x">
+          {# Colonne gauche #}
+          <div class="small-12 medium-6 large-6 cell">
             <p class="open-sans ligne">Tests :
               <span id="tests" class="resultat"></span>
             </p>
             <p class="open-sans ligne">Tests non exécutés :
               <span id="skipped-tests" class="resultat"></span>
             </p>
-            <p class="open-sans ligne">Tests en échec :
-              <span id="test-failures" class="resultat"></span>
-            </p>
             <p class="open-sans ligne">Tests en erreur :
               <span id="test-errors" class="resultat"></span>
             </p>
-
           </div>
+          {# Colonne droite #}
           <div class="small-12 medium-6 large-6 cell">
-            <p class="open-sans ligne">Duplication :
-              <span id="duplication" class="resultat"></span>
-            </p>
-            <p class="open-sans ligne">Couverture :
-              <span id="coverage" class="resultat"></span>
-            </p>
-            <p class="open-sans ligne">
-              <span class="resultat">&nbsp;</span>
+            <p class="open-sans ligne">&nbsp;</p>
+            <p class="open-sans ligne">Tests en échec :
+              <span id="test-failures" class="resultat"></span>
             </p>
             <p class="open-sans ligne">% de succès :
               <span id="test-success-density" class="resultat"></span>
             </p>
           </div>
-
         </div>
       </div>
 
