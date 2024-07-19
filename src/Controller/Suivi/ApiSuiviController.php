@@ -120,7 +120,7 @@ class ApiSuiviController extends AbstractController
         $response = new JsonResponse();
 
 
-        /** On récupère le job et le type (manuel ou automatique) */
+        /** On récupère la maven_Key */
         $data = json_decode($request->getContent());
         if ($data === null || !property_exists($data, 'maven_key') ||
             !property_exists($data, 'date')) {
@@ -129,9 +129,7 @@ class ApiSuiviController extends AbstractController
                 'message' => static::$erreur400], Response::HTTP_BAD_REQUEST);
         }
 
-        /**  On modifie la date de 11-02-2022 16:02:06 à 2022-02-11 16:02:06.0 UTC (+00:00)
-         * 2024-06-28 14:49:06+02
-        */
+        /**  On modifie la date de 11-02-2022 16:02:06 à 2022-02-11  */
         $dateConvert = new \Datetime($data->date);
         $url = $this->getParameter(static::$sonarUrl);
 
