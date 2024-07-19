@@ -278,19 +278,18 @@ class ApiSuiviController extends AbstractController
     public function suiviMiseAJour(Request $request): Response
     {
         /** On instancie l'entityRepository */
-        $historique = $this->em->getRepository(Historique::class);
-
-        /** On décode le body */
-        $data = json_decode($request->getContent());
+        $historiqueRepository = $this->em->getRepository(Historique::class);
 
         /** On crée un objet de response JSON */
         $response = new JsonResponse();
 
-        /** On teste si $data est valide */
-        if ($data === null) {
-            return $response->setData(['data' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'mode')) {
-            return $response->setData(['mode' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
+        /** On décode le body */
+        $data = json_decode($request->getContent());
+        if ($data === null || !property_exists($data, 'maven_key')) {
+            return $response->setData([
+                'code' => 400, 'type' => 'alert', 'reference' => static::$reference,
+                'message' => static::$erreur400], Response::HTTP_BAD_REQUEST);
+        }
 
         /** On créé objet date */
         $dateEnregistrement = new \DateTimeImmutable();
@@ -325,12 +324,12 @@ class ApiSuiviController extends AbstractController
         ];
 
         /** On enregistre */
-        $request=$historique->countHistoriqueProjet($data->mode, $map);
+        $request=$historiqueRepository->countHistoriqueProjet($data->mode, $map);
         if ($request['code']!=200) {
-            return $response->setData(["mode" => $data->mode, "code" => $request['code'], 'message'=>$request['erreur'],Response::HTTP_OK]);
+            return $response->setData(['code' => $request['code'], 'message'=>$request['erreur'],Response::HTTP_OK]);
         }
 
-        return $response->setData(["mode" => $data->mode, "code" => 200, Response::HTTP_OK]);
+        return $response->setData(['code' => 200, Response::HTTP_OK]);
     }
 
     /**
