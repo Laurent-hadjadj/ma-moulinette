@@ -433,33 +433,27 @@ class ApiSuiviController extends AbstractController
     public function suiviVersionListe(Request $request): Response
     {
         /** On instancie l'entityRepository */
-        $historique = $this->em->getRepository(Historique::class);
-
-        /** On décode le body */
-        $data = json_decode($request->getContent());
+        $historiqueRepository = $this->em->getRepository(Historique::class);
 
         /** On crée un objet de response JSON */
         $response = new JsonResponse();
 
-        // on regarde si $Data est null
-        if ($data === null) {
-            return $response->setData(['data' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'mode')) {
-            return $response->setData(['mode' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'maven_key')) {
-            return $response->setData(['maven_key' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
+        /** On décode le body */
+        $data = json_decode($request->getContent());
+        if ($data === null || !property_exists($data, 'maven_key')) {
+            return $response->setData([
+                'code' => 400, 'type' => 'alert', 'reference' => static::$reference,
+                'message' => static::$erreur400], Response::HTTP_BAD_REQUEST);
+        }
 
         /**  On récupère les versions et la date pour la clé du projet. */
         $map=['maven_key'=>$data->maven_key];
-        $request=$historique->selectHistoriqueProjetByDate($data->mode, $map);
+        $request=$historiqueRepository->selectHistoriqueProjetByDate($map);
         if ($request['code']!=200) {
-            return $response->setData([
-                'mode' => $data->mode, 'maven_key' => $data->maven_key,
-                'code'=>$request['code'], 'erreur' => $request['erreur'],
-                Response::HTTP_OK]);
+            return $response->setData(['code' => $request['code'], 'message'=>$request['erreur'],Response::HTTP_OK]);
         }
 
-        return $response->setData(["code" => 200, "versions" => $request['version'], Response::HTTP_OK]);
+        return $response->setData(['code' => 200, 'versions' => $request['version'], Response::HTTP_OK]);
     }
 
     /**
