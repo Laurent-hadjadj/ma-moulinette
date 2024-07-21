@@ -1,0 +1,180 @@
+{# Tableau des anomalies par sévérité #}
+<div class="table-scroll">
+  <table class="hover">
+    <caption class="claire-hand">Tableau des anomalies par sévérité.</caption>
+    <thead>
+      <tr>
+        <th scope="col"></th>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            {# 0 = FALSE, 1 = TRUE  #}
+            {% if suivi[i]["initial"]==1 %}
+              {% set reference="reference" %}
+            {% else %}
+              {% set reference="null" %}
+            {% endif %}
+            <th scope="col" class="open-sans text-right {{reference}}">{{suivi[i]["version"]}}</th>
+          {% endfor %}
+        {% endif %}
+      </tr>
+    </thead>
+    <tbody id="tableau-anomalie-severite" class="open-sans">
+      <tr class="open-sans">
+        <td class="text-left text-noir">Date</td>
+        {% if severity is not empty %}
+          {% for i in 0..severity|length-1 %}
+            <td class="text-right">
+              <span>{{severity[i]["date"]|date("d/m/Y", "Europe/Paris")}}</span>
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+      <tr>
+        <td class="text-left text-rouge">Bloquant</td>
+        {% if severity is not empty %}
+          {% for i in 0..severity|length-1 %}
+            {% set lookup="" %}
+            {% set text = "" %}
+            {% if i >0 %}
+              {% if severity[i]["bloquant"]>severity[i-1]["bloquant"]
+              and severity[i]["bloquant"]!=severity[i-1]["bloquant"] %}
+                {% set lookup = "down" %}
+                {% set text = "text-down" %}
+              {% else %}
+                {% set lookup = "up" %}
+                {% set text = "text-up" %}
+              {% endif %}
+              {% if severity[i]["bloquant"] == 0
+            or severity[i]["bloquant"] == severity[i-1]["bloquant"] %}
+                {% set lookup = "equal" %}
+                {% set text = "" %}
+              {% endif %}
+              {% if severity[i]["bloquant"] == -1 %}
+                {% set lookup = "" %}
+                {% set text = "" %}
+              {% endif %}
+            {% endif %}
+            <td class="text-right {{text}}">
+              {% if severity is not empty %}
+                {% if severity[i]["bloquant"]!=-1 %}
+                  <span>{{severity[i]["bloquant"]|format_number(locale='fr')}}</span>
+                {% else %}
+                  <span>&nbsp;-&nbsp;</span>
+                {% endif %}
+                <span class="{{lookup}}"></span>
+              {% endif %}
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+      <tr>
+        <td class="text-left text-orange">Critique</td>
+        {% if severity is not empty %}
+          {% for i in 0..severity|length-1 %}
+            {% set lookup = "" %}
+            {% set text = "" %}
+            {% if i >0 %}
+              {% if severity[i]["critique"] > severity[i-1]["critique"]
+              and severity[i]["critique"] != severity[i-1]["critique"] %}
+                {% set lookup = "down" %}
+                {% set text = "text-down" %}
+              {% else %}
+                {% set lookup = "up" %}
+                {% set text = "text-up" %}
+              {% endif %}
+              {% if severity[i]["critique"] ==0
+              or severity[i]["critique"] == severity[i-1]["critique"] %}
+                {% set lookup = "equal" %}
+                {% set text = "" %}
+              {% endif %}
+              {% if severity[i]["critique"] == -1 %}
+                {% set lookup = "" %}
+                {% set text = "" %}
+              {% endif %}
+            {% endif %}
+            <td class="text-right {{text}}">
+              {% if severity[i]["critique"]!=-1 %}
+                <span>{{severity[i]["critique"]|format_number(locale='fr')}}</span>
+              {% else %}
+                <span>&nbsp;-&nbsp;</span>
+              {% endif %}
+              <span class="{{lookup}}"></span>
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+      <tr>
+        <td class="text-left text-jaune">Majeur</td>
+        {% if severity is not empty %}
+          {% for i in 0..severity|length-1 %}
+            {% set lookup="" %}
+            {% set text = "" %}
+            {% if i >0 %}
+              {% if severity[i]["majeur"] > severity[i-1]["majeur"]
+              and severity[i]["majeur"] != severity[i-1]["majeur"] %}
+                {% set lookup = "down" %}
+                {% set text = "text-down" %}
+              {% else %}
+                {% set lookup = "up" %}
+                {% set text = "text-up" %}
+              {% endif %}
+              {% if severity[i]["majeur"] ==0
+              or severity[i]["majeur"] == severity[i-1]["majeur"] %}
+                {% set lookup = "equal" %}
+                {% set text = "" %}
+              {% endif %}
+              {% if severity[i]["majeur"] == -1 %}
+                {% set lookup = "" %}
+                {% set text = "" %}
+              {% endif %}
+            {% endif %}
+            <td class="text-right {{text}}">
+              {% if severity[i]["majeur"]!=-1 %}
+                <span>{{severity[i]["majeur"]|format_number(locale='fr')}}</span>
+              {% else %}
+                <span>&nbsp;-&nbsp;</span>
+              {% endif %}
+              <span class="{{lookup}}"></span>
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+      <tr>
+        <td class="text-left text-vert">Mineur</td>
+        {% if severity is not empty %}
+          {% for i in 0..severity|length-1 %}
+            {% set lookup="" %}
+            {% set text = "" %}
+            {% if i >0 %}
+              {% if severity[i]["mineur"] > severity[i-1]["mineur"]
+              and severity[i]["mineur"] != severity[i-1]["mineur"] %}
+                {% set lookup = "down" %}
+                {% set text = "text-down" %}
+              {% else %}
+                {% set lookup = "up" %}
+                {% set text = "text-up" %}
+              {% endif %}
+              {% if severity[i]["mineur"] ==0
+              or severity[i]["mineur"] == severity[i-1]["mineur"] %}
+                {% set lookup = "equal" %}
+                {% set text = "" %}
+              {% endif %}
+              {% if severity[i]["mineur"] == -1 %}
+                {% set lookup = "" %}
+                {% set text = "" %}
+              {% endif %}
+            {% endif %}
+            <td class="text-right {{text}}">
+              {% if severity[i]["mineur"]!=-1 %}
+                <span>{{severity[i]["mineur"]|format_number(locale='fr')}}</span>
+              {% else %}
+                <span>&nbsp;-&nbsp;</span>
+              {% endif %}
+              <span class="{{lookup}}"></span>
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+    </tbody>
+  </table>
+</div>

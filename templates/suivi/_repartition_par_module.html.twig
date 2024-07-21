@@ -1,0 +1,78 @@
+{# Répartition par par module #}
+<div class="table-scroll">
+  <table>
+    <caption class="claire-hand">Répartition par module.</caption>
+    <thead>
+      <tr>
+        <th scope="col"></th>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            {# 0 = FALSE, 1 = TRUE  #}
+            {% if suivi[i]["initial"]==1 %}
+              {% set reference="reference" %}
+            {% else %}
+              {% set reference="null" %}
+            {% endif %}
+            <th scope="col" class="open-sans text-center {{reference}}">
+              {{suivi[i]["version"]}}
+            </th>
+          {% endfor %}
+        {% endif %}
+      </tr>
+    </thead>
+    <tbody id="tableau-module" class="open-sans">
+      <tr class="open-sans">
+        <td class="text-left text-noir">Date</td>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            <td class="text-center">
+              <span>{{suivi[i]["date"]|date("d/m/Y", "Europe/Paris")}}</span>
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+      <tr>
+        <td class="text-left text-noir">Présentation</td>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            <td class="text-center">
+              {% if suivi[i]["presentation"]!=-1 %}
+                <span>{{suivi[i]["presentation"]|format_number(locale='fr')}}</span>
+              {% else %}
+                <span>&nbsp;-&nbsp;</span>
+              {% endif %}
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+      <tr>
+        <td class="text-left text-noir">Métier</td>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            <td class="text-center">
+              {% if suivi[i]["metier"]!=-1 %}
+                <span>{{suivi[i]["metier"]|format_number(locale='fr')}}</span>
+              {% else %}
+                <span>&nbsp;-&nbsp;</span>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <td class="text-left text-noir">Autres</td>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            <td class="text-center">
+              {% if suivi[i]["autre"] != -1 %}
+                <span>{{suivi[i]["autre"]|format_number(locale='fr')}}</span>
+              {% else %}
+                <span>&nbsp;-&nbsp;</span>
+              {% endif %}
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+    </tbody>
+  </table>
+</div>

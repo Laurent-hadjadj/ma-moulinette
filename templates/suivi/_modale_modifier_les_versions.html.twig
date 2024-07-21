@@ -1,0 +1,48 @@
+{# Formulaire - Modifier les versions #}
+<div id="modal-modifier-analyse" class="reveal large" data-reveal data-close-on-click="true" data-animation-in="fade-in" data-animation-out="fade-out" aria-modal="true">
+  <h1 class="h2 claire-hand">Modifier la configuration.</h1>
+  <br>
+  <div class="grid-x cell">
+    <div class="small-12 medium-12 large-12 cell">
+      <h2 class="h3 claire-hand">Liste des versions disponibles.</h2>
+      <div id="message"></div>
+    </div>
+  </div>
+  <div class="table-scroll">
+    <table class="hover ">
+      <caption class="claire-hand">Modifier les propriétés d'une version.</caption>
+      <thead>
+        <tr class="open-sans text-center">
+          <th id="action" scope="col">Action</th>
+          <th id="date" scope="col">Date</th>
+          <th id="version" scope="col">Version</th>
+          <th id="favori" scope="col">Favori</th>
+          <th id="reference" scope="col">Référence</th>
+        </tr>
+      </thead>
+      <tbody
+        id="tableau-liste-version" class="open-sans">
+        {# On ajoute des lignes vides pour éviter d'avoir une erreur W3C #}
+        <tr>
+          <td headers0="action"></td>
+        </tr>
+        <tr>
+          <td headers1="date"></td>
+        </tr>
+        <tr>
+          <td headers2="version"></td>
+        </tr>
+        <tr>
+          <td headers3="favori"></td>
+        </tr>
+        <tr>
+          <td headers4="reference"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <br>
+  {# fermeture de la fenêtre modale #}
+  <button id="fermer-modifier-analyse" class="expanded button open-sans" data-close aria-label="Close reveal" type="button">Fermer</button>
+  <a class="close-button" data-close aria-label="Close reveal">&#215;</a>
+</div>
