@@ -173,3 +173,10 @@ input:checked ~ .switch-paddle { background-color: #00445b; }
   background-color: #006a8e;
   color: #fff;
 }
+
+/** modale : modifier les paramètres */
+.custom-switch-favori,
+.custom-switch-reference {
+  margin-bottom: 0.1rem;
+  margin-top: 0.3rem;
+}

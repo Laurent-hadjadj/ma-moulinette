@@ -637,14 +637,14 @@ $('.js-modifier-analyse').on('click', function () {
     t.versions.forEach(version => {
       ligne++;
       /* On défini le switch pour le favori */
-      switchFavori='<div class="siwtch js-switch-favori">';
+      switchFavori='<div class="siwtch custom-switch-favori js-switch-favori">';
       switchFavori+=`<input class="switch-input" id="switch-favori-${ligne}" type="checkbox" name="switch-favori-${ligne}">`;
       switchFavori+=`<label class="switch-paddle" for="switch-favori-${ligne}">`;
       switchFavori+='<span class="show-for-sr">Projet favori</span>';
       switchFavori+='</label></div>';
 
       /* On défini le switch pour la référence */
-      switchReference='<div class="switch js-switch-reference">';
+      switchReference='<div class="switch custom-switch-reference js-switch-reference">';
       switchReference+=`<input class="switch-input" id="switch-reference-${ligne}" type="radio" name="switch-reference">`;
       switchReference+=`<label class="switch-paddle" for="switch-reference-${ligne}">`;
       switchReference+='<span class="show-for-sr">Projet de référence</span>';
