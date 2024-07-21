@@ -631,9 +631,7 @@ $('.js-modifier-analyse').on('click', function () {
 
     /* On boucle pour construire le tableau */
     let ligne=0, html='', switchFavori='', switchReference='';
-
     $('#tableau-liste-version').html(html);
-    console.log(t);
     t.versions.forEach(version => {
       ligne++;
       /* On défini le switch pour le favori */
@@ -664,6 +662,7 @@ $('.js-modifier-analyse').on('click', function () {
 
       /**
         * Favori|reference enable
+        * Il faut que l'utilisateur ait activé les favoris dans ces préférences.
         */
       if (version.favori===true) {
         $(`#switch-favori-${ligne}`).trigger('click');
@@ -673,9 +672,15 @@ $('.js-modifier-analyse').on('click', function () {
         $(`#switch-reference-${ligne}`).trigger('click');
       }
     });
-
+    console.log(t.preference_favori);
     /* On gère le changement de favori */
     $('[id^=switch-favori-]').on('click', e =>{
+      if (t.preference_favori===false) {
+        const message=`Vous n'avez pas activé les favoris dans vos préférences.`;
+        $('#message').html(callboxWarning+message+callboxFermer);
+        return;
+      }
+
       /** on récupère la version et la date */
       const id=$(e.currentTarget).attr('id');
       const l=id.split('-');
@@ -695,7 +700,7 @@ $('.js-modifier-analyse').on('click', function () {
           return;
         }
 
-        const dataFavori = { maven_key: mavenKey, favori, version, date_version: date, mode:'null' };
+        const dataFavori = { maven_key: mavenKey, favori, version, date_version: date };
         const optionsFavori = {
           url: `${serveur()}/api/suivi/version/favori`, type: 'PUT',
           dataType: 'json', data: JSON.stringify(dataFavori), contentType };
