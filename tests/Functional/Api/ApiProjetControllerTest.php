@@ -1107,7 +1107,7 @@ class ApiProjetControllerTest extends ApiTestCase
       'codeSmellCritical'=>"133", 'codeSmellInfo'=>"2", 'codeSmellMajor'=>"1087",
       'codeSmellMinor'=>"656", 'coverage'=>"0", 'dateVersion'=>"2022-11-30 00:00:00",
       'dette'=>"19586",'duplication'=>"5.1",'favori'=>1, 'frontend'=>"1945",
-      'hotspotHigh'=>"0", 'hotspotLow'=>"0", 'hotspotMedium'=>"2",'hotspotTotal'=>"2",
+      'hotspotHigh'=>"0", 'hotspotLow'=>"0", 'hotspotMedium'=>"2",'nombreHotspot'=>"2",
       'initial'=>0, 'mavenKey'=>"fr.ma-moulinette:ma-moulinette", 'noSonar'=>"0",
       'nomProjet'=>"ma-moulinette", 'nombreAnomalieBloquant'=>"17",   'nombreAnomalieCritique'=>"133", 'nombreAnomalieInfo'=>"2",
       'nombreAnomalieMajeur'=>"1118", 'nombreAnomalieMineur'=>"686",

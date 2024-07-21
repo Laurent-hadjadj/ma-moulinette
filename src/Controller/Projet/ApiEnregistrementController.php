@@ -106,7 +106,7 @@ class ApiEnregistrementController extends AbstractController
             'nombre_anomalie_majeur'=>$data->nombre_anomalie_majeur,
             'nombre_anomalie_mineur'=>$data->nombre_anomalie_mineur, 'nombre_anomalie_info'=>$data->nombre_anomalie_info,
             'note_reliability'=>$data->note_reliability, 'note_security'=>$data->note_security,
-            'note_sqale'=>$data->note_sqale, 'note_hotspot'=>$data->note_hotspot, 'hotspot_total'=>$data->hotspot_total,
+            'note_sqale'=>$data->note_sqale, 'note_hotspot'=>$data->note_hotspot, 'nombre_hotspot'=>$data->nombre_hotspot,
             'hotspot_high'=>$data->hotspot_high, 'hotspot_medium'=>$data->hotspot_medium, 'hotspot_low'=>$data->hotspot_low,
             'initial'=> $data->initial,
             'mode_collecte'=>'COLLECTE', 'utilisateur_collecte'=>$utilisateur_collecte,

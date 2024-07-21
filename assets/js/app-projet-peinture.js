@@ -694,6 +694,6 @@ export const afficheHotspotDetails=function (mavenKey){
     $('#hotspot-total').html(`<span class="stat">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.total)}</span>`);
 
     const t1 = document.getElementById('hotspot-total');
-    t1.dataset.hotspotTotal=(t.total);
+    t1.dataset.nombreHotspot=(t.total);
   });
 };

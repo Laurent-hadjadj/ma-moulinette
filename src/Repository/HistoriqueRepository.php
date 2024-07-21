@@ -76,7 +76,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                             note_security as securite, note_hotspot as hotspot,
                             note_sqale as sqale, nombre_bug as bug,
                             nombre_vulnerability as vulnerability,
-                            nombre_code_smell as code_smell, hotspot_total as hotspots
+                            nombre_code_smell as code_smell, nombre_hotspot as hotspots
                         FROM historique
                         WHERE :where
                         ORDER BY date_version DESC limit 4";
@@ -198,7 +198,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                         nombre_bug AS bug,
                         nombre_vulnerability AS faille,
                         nombre_code_smell AS mauvaise_pratique,
-                        hotspot_total AS nombre_hotspot,
+                        nombre_hotspot,
                         frontend AS presentation,
                         backend as metier,
                         autre,
@@ -221,7 +221,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                         nombre_bug as bug,
                         nombre_vulnerability as faille,
                         nombre_code_smell as mauvaise_pratique,
-                        hotspot_total as nombre_hotspot,
+                        nombre_hotspot,
                         frontend as presentation,
                         backend as metier,
                         autre,
@@ -419,7 +419,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                     frontend, backend, autre,
                     nombre_anomalie_bloquant, nombre_anomalie_critique, nombre_anomalie_majeur,
                     nombre_anomalie_mineur, nombre_anomalie_info,
-                    note_reliability, note_security, note_sqale, note_hotspot, hotspot_total,
+                    note_reliability, note_security, note_sqale, note_hotspot, nombre_hotspot,
                     hotspot_high, hotspot_medium, hotspot_low,
                     initial,
                     mode_collecte, utilisateur_collecte,
@@ -441,7 +441,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                     :nombre_anomalie_bloquant, :nombre_anomalie_critique,
                     :nombre_anomalie_majeur, :nombre_anomalie_mineur,
                     :nombre_anomalie_info, :note_reliability, :note_security,
-                    :note_sqale, :note_hotspot, :hotspot_total,
+                    :note_sqale, :note_hotspot, :nombre_hotspot,
                     :hotspot_high, :hotspot_medium, :hotspot_low,
                     :initial,
                     :mode_collecte, :utilisateur_collecte, '".json_encode($json)."',
@@ -501,7 +501,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                         $stmt->bindValue(':note_security', $map['note_security']);
                         $stmt->bindValue(':note_sqale', $map['note_sqale']);
                         $stmt->bindValue(':note_hotspot', $map['note_hotspot']);
-                        $stmt->bindValue(':hotspot_total', $map['hotspot_total']);
+                        $stmt->bindValue(':nombre_hotspot', $map['nombre_hotspot']);
                         $stmt->bindValue(':hotspot_high', $map['hotspot_high']);
                         $stmt->bindValue(':hotspot_medium', $map['hotspot_medium']);
                         $stmt->bindValue(':hotspot_low', $map['hotspot_low']);
@@ -578,7 +578,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                                 bug_blocker, bug_critical, bug_major,
                                 vulnerability_blocker, vulnerability_critical, vulnerability_major,
                                 code_smell_blocker, code_smell_critical, code_smell_major,
-                                hotspot_total, coverage, sqale_debt_ratio
+                                nombre_hotspot, coverage, sqale_debt_ratio
                         FROM historique
                         WHERE maven_key=:maven_key
                         ORDER BY date_version DESC LIMIT 1";
@@ -611,7 +611,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                                 bug_blocker, bug_critical, bug_major,
                                 vulnerability_blocker, vulnerability_critical, vulnerability_major,
                                 code_smell_blocker, code_smell_critical, code_smell_major,
-                                hotspot_total, coverage, sqale_debt_ratio
+                                nombre_hotspot, coverage, sqale_debt_ratio
                         FROM historique
                         WHERE maven_key=:maven_key AND initial=1";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
@@ -646,7 +646,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                                         note_sqale as sqale, nombre_bug as bug,
                                         nombre_vulnerability as vulnerability,
                                         nombre_code_smell as code_smell,
-                                        hotspot_total as hotspots
+                                        nombre_hotspot as hotspots
                         FROM historique
                         WHERE ".$map['clause_where'].
                         " GROUP BY maven_key LIMIT ".$map['nombre_projet_favori'];

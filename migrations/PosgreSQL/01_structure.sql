@@ -363,7 +363,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.historique
   hotspot_high integer NOT NULL,
   hotspot_medium integer NOT NULL,
   hotspot_low integer NOT NULL,
-  hotspot_total integer NOT NULL,
+  nombre_hotspot integer NOT NULL,
   initial boolean NOT NULL,
   bug_blocker integer NOT NULL,
   bug_critical integer NOT NULL,
@@ -431,7 +431,7 @@ COMMENT ON COLUMN ma_moulinette.historique.note_hotspot IS 'Note pour les hotspo
 COMMENT ON COLUMN ma_moulinette.historique.hotspot_high IS 'Nombre de hotspots de sécurité de niveau élevé';
 COMMENT ON COLUMN ma_moulinette.historique.hotspot_medium IS 'Nombre de hotspots de sécurité de niveau moyen';
 COMMENT ON COLUMN ma_moulinette.historique.hotspot_low IS 'Nombre de hotspots de sécurité de niveau faible';
-COMMENT ON COLUMN ma_moulinette.historique.hotspot_total IS 'Nombre total de hotspots de sécurité';
+COMMENT ON COLUMN ma_moulinette.historique.nombre_hotspot IS 'Nombre total de hotspots de sécurité';
 COMMENT ON COLUMN ma_moulinette.historique.initial IS 'Indique si c’est la version de référence';
 COMMENT ON COLUMN ma_moulinette.historique.bug_blocker IS 'Nombre de bugs bloquants';
 COMMENT ON COLUMN ma_moulinette.historique.bug_critical IS 'Nombre de bugs critiques';

@@ -217,7 +217,7 @@ class Historique
     #[ORM\Column(type: Types::INTEGER,
         options: ['comment' => 'Nombre total de hotspots de sécurité'])]
     #[Assert\NotNull]
-    private $hotspotTotal;
+    private $nombreHotspot;
 
     #[ORM\Column(type: Types::BOOLEAN,
         options: ['comment' => 'Indique si c\'est l\'initialisation du projet'])]
@@ -1453,7 +1453,7 @@ class Historique
     }
 
     /**
-     * [Description for getHotspotTotal]
+     * [Description for getNombreHotspot]
      *
      * @return int|null
      *
@@ -1461,15 +1461,15 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function getHotspotTotal(): ?int
+    public function getNombreHotspot(): ?int
     {
-        return $this->hotspotTotal;
+        return $this->nombreHotspot;
     }
 
     /**
      * [Description for setHotspotTotal]
      *
-     * @param int $hotspotTotal
+     * @param int $nombreHotspot
      *
      * @return self
      *
@@ -1477,9 +1477,9 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setHotspotTotal(int $hotspotTotal): self
+    public function setNombreHotspot(int $nombreHotspot): self
     {
-        $this->hotspotTotal = $hotspotTotal;
+        $this->nombreHotspot = $nombreHotspot;
 
         return $this;
     }

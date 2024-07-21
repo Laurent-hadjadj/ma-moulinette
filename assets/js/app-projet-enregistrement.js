@@ -158,7 +158,7 @@ export const enregistrement=function(mavenKey) {
   const hotspotHigh=t24.dataset.hotspotHigh;
   const hotspotMedium=t25.dataset.hotspotMedium;
   const hotspotLow=t26.dataset.hotspotLow;
-  const hotspotTotal=t27.dataset.hotspotTotal;
+  const nombreHotspot=t27.dataset.nombreHotspot;
 
   const t28 = document.getElementById('js-bug-blocker');
   const t29 = document.getElementById('js-bug-critical');
@@ -212,7 +212,7 @@ export const enregistrement=function(mavenKey) {
     'nombre_anomalie_mineur': nombreAnomalieMineur,
     'note_reliability': noteReliability, 'note_security':  noteSecurity,
     'note_sqale': noteSqale, 'note_hotspot': noteHotspot, 'hotspot_high':  hotspotHigh,
-    'hotspot_medium': hotspotMedium, 'hotspot_low': hotspotLow, 'hotspot_total': hotspotTotal,
+    'hotspot_medium': hotspotMedium, 'hotspot_low': hotspotLow, 'nombre_hotspot': nombreHotspot,
     'bug_blocker': bugBlocker, 'bug_critical': bugCritical, 'bug_major': bugMajor,
     'bug_minor': bugMinor, 'bug_info': bugInfo,
     'vulnerability_blocker': vulnerabilityBlocker, 'vulnerability_critical':  vulnerabilityCritical,

@@ -167,7 +167,7 @@ class CosuiController extends AbstractController
                 'code_smell_blocker' => $request['infos'][0]['code_smell_blocker'],
                 'code_smell_critical' => $request['infos'][0]['code_smell_critical'],
                 'code_smell_major' => $request['infos'][0]['code_smell_major'],
-                'hotspot_total' => $request['infos'][0]['hotspot_total'],
+                'nombre_hotspot' => $request['infos'][0]['nombre_hotspot'],
                 'coverage' => $request['infos'][0]['coverage'],
                 'sqale_debt_ratio' => $request['infos'][0]['sqale_debt_ratio']
             ];
@@ -220,7 +220,7 @@ class CosuiController extends AbstractController
                 'initial_code_smell_blocker' => $request['reference'][0]['code_smell_blocker'],
                 'initial_code_smell_critical' => $request['reference'][0]['code_smell_critical'],
                 'initial_code_smell_major' => $request['reference'][0]['code_smell_major'],
-                'initial_hotspot_total' => $request['reference'][0]['hotspot_total'],
+                'initial_nombre_hotspot' => $request['reference'][0]['nombre_hotspot'],
                 'initial_coverage' => $request['reference'][0]['coverage'],
                 'initial_sqale_debt_ratio' => $request['reference'][0]['sqale_debt_ratio']
 
@@ -431,7 +431,7 @@ class CosuiController extends AbstractController
             $codeSmellBlocker = $n['code_smell_blocker'];
             $codeSmellCritical = $n['code_smell_critical'];
             $codeSmellMajor = $n['code_smell_major'];
-            $hotspot = $n['hotspot_total'];
+            $hotspot = $n['nombre_hotspot'];
             $coverage = $n['coverage'];
             $sqaleDebtRatio = $n['sqale_debt_ratio'];
         }
@@ -466,7 +466,7 @@ class CosuiController extends AbstractController
             $initialCodeSmellBlocker = $nn['initial_code_smell_blocker'];
             $initialCodeSmellCritical = $nn['initial_code_smell_critical'];
             $initialCodeSmellMajor = $nn['initial_code_smell_major'];
-            $initialHotspot = $nn['initial_hotspot_total'];
+            $initialHotspot = $nn['initial_nombre_hotspot'];
             $initialCoverage = $nn['initial_coverage'];
             $initialSqaleDebtRatio = $nn['initial_sqale_debt_ratio'];
         }
@@ -504,7 +504,7 @@ class CosuiController extends AbstractController
         $nombrePresentationVulnerabilityMajor = $vulnerabilite03['frontend'];
         $nombreMetierVulnerabilityMajor = $vulnerabilite03['backend'];
 
-        /** Maintenabilité Bloqant*/
+        /** Maintenabilité Bloquant*/
         $codeSmell01 = self::traitement($mavenKey, $setup, 'CODE_SMELL', 'BLOCKER');
         $nombrePresentationCodeSmellBlocker = $codeSmell01['frontend'];
         $nombreMetierCodeSmellBlocker = $codeSmell01['backend'];
@@ -541,7 +541,7 @@ class CosuiController extends AbstractController
         $evolutionBugCritical = self::variation($initialBugCritical, $bugCritical);
         $evolutionBugMajor = self::variation($initialBugMajor, $bugMajor);
 
-        /** serie pour la version de référence et la version courrante */
+        /** série pour la version de référence et la version courante */
         // ['Fiabilité','Vulnérabilité','Hotspot','Maintenabilité','Couverture','Dette']
         // >100, 70, 50 30 10
 
@@ -603,7 +603,8 @@ class CosuiController extends AbstractController
             'initial_date_application' => $initialDateApplication,
             'initial_note_code_smell' => $initialNoteCodeSmell, 'initial_note_reliability' => $initialNoteReliability,
             'initial_note_security' => $initialNoteSecurity, 'initial_note_hotspot' => $initialNoteHotspot,
-            'initial_bug_blocker' => $initialBugBlocker, 'initial_bug_critical' => $initialBugCritical,
+            'initial_bug_blocker' => $initialBugBlocker,
+            'initial_bug_critical' => $initialBugCritical,
             'initial_bug_major' => $initialBugMajor, 'initial_vulnerability_blocker' => $initialVulnerabilityBlocker,
             'initial_vulnerability_critical' => $initialVulnerabilityCritical,
             'initial_vulnerability_major' => $initialVulnerabilityMajor,

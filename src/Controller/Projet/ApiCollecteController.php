@@ -343,12 +343,12 @@ class ApiCollecteController extends AbstractController
         }
 
         return $response->setData([
-                'code' => 200, 'nombre'=>$hotspot['data']['hotspot_total'],
+                'code' => 200, 'nombre'=>$hotspot['data']['nombre_hotspot'],
                 'message'=>[
                     'hotspot_high' => $hotspot['data']['hotspot_high'],
                     'hotspot_medium' => $hotspot['data']['hotspot_medium'],
                     'hotspot_low' => $hotspot['data']['hotspot_low'],
-                    'hotspot_total' => $hotspot['data']['hotspot_total']],
+                    'nombre_hotspot' => $hotspot['data']['nombre_hotspot']],
             Response::HTTP_OK]);
     }
 

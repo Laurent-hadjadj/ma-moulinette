@@ -466,14 +466,14 @@ const remplissageHotspotInfo=function(idMaven) {
 
   /** On affiche le nombre de hotspot OWASP et par la répartition */
     $('#hotspot-total').html(r.total);
-    const hotspotTotal=r.total;
+    const nombreHotspot=r.total;
     $('#nombre-hotspot-high').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.high));
     $('#nombre-hotspot-medium').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.medium));
     $('#nombre-hotspot-low').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.low));
 
     let leTaux=1, laNote=['a', 'A'];
-    if ( hotspotTotal !==0 ) {
-      leTaux = 1 - (parseInt(hotspotToReview,10) / hotspotTotal);
+    if ( nombreHotspot !==0 ) {
+      leTaux = 1 - (parseInt(hotspotToReview,10) / nombreHotspot);
       laNote = calculNoteHotspot(leTaux);
     }
 
@@ -539,15 +539,15 @@ const remplissageHotspotListe=function(idMaven) {
       return;
     }
   let leTaux=1, laNote=['a','A'], formatage;
-  const hotspotTotal=parseInt(r.menaceA1+r.menaceA2+r.menaceA3+r.menaceA4+
+  const nombreHotspot=parseInt(r.menaceA1+r.menaceA2+r.menaceA3+r.menaceA4+
                               r.menaceA5+r.menaceA6+r.menaceA7+r.menaceA8+
                               r.menaceA9+r.menaceA10,10);
 
   formatage=espace;
 
-  if ( hotspotTotal!==0 ){
+  if ( nombreHotspot!==0 ){
     /* calcul A1 */
-    leTaux = 1 - (parseInt(r.menaceA1,10)/hotspotTotal);
+    leTaux = 1 - (parseInt(r.menaceA1,10)/nombreHotspot);
     laNote = calculNoteHotspot(leTaux);
     if ( (leTaux*cent)>dix && (leTaux*cent)<cent) {
       formatage=espace+espace+espace;
@@ -557,7 +557,7 @@ const remplissageHotspotListe=function(idMaven) {
     injectionHotspotListe(un, formatage, r.menaceA1, leTaux, laNote[0], laNote[1]);
 
     /* calcul A2*/
-    leTaux = 1 - (parseInt(r.menaceA2,10)/ hotspotTotal);
+    leTaux = 1 - (parseInt(r.menaceA2,10)/ nombreHotspot);
     laNote = calculNoteHotspot(leTaux);
     if ( (leTaux*cent)>dix && (leTaux*cent)<cent) {
       formatage=espace+espace+espace;
@@ -567,7 +567,7 @@ const remplissageHotspotListe=function(idMaven) {
     injectionHotspotListe(deux, formatage, r.menaceA2, leTaux, laNote[0], laNote[1]);
 
     /* calcul A3 */
-    leTaux = 1 - (r.menaceA3/ hotspotTotal);
+    leTaux = 1 - (r.menaceA3/ nombreHotspot);
     laNote = calculNoteHotspot(leTaux);
     if ( (leTaux*cent)>dix && (leTaux*cent)<cent) {
       formatage=espace+espace+espace;
@@ -577,7 +577,7 @@ const remplissageHotspotListe=function(idMaven) {
     injectionHotspotListe(trois, formatage, r.menaceA3, leTaux, laNote[0], laNote[1]);
 
     /* Calcul A4 */
-    leTaux = 1 - (r.menaceA4/ hotspotTotal);
+    leTaux = 1 - (r.menaceA4/nombreHotspot);
     laNote = calculNoteHotspot(leTaux);
     if ( (leTaux*cent)>dix && (leTaux*cent)<cent) {
       formatage=espace+espace+espace;
@@ -587,7 +587,7 @@ const remplissageHotspotListe=function(idMaven) {
     injectionHotspotListe(quatre, formatage, r.menaceA4, leTaux, laNote[0], laNote[1]);
 
     /* calcul A5 */
-    leTaux = 1 - (r.menaceA5/ hotspotTotal);
+    leTaux = 1 - (r.menaceA5/nombreHotspot);
     laNote = calculNoteHotspot(leTaux);
     if ( (leTaux*cent)>dix && (leTaux*cent)<cent) {
       formatage=espace+espace+espace;
@@ -597,7 +597,7 @@ const remplissageHotspotListe=function(idMaven) {
     injectionHotspotListe(cinq, formatage, r.menaceA5, leTaux, laNote[0], laNote[1]);
 
     /* Calcul A6 */
-    leTaux = 1 - (r.menaceA6/ hotspotTotal);
+    leTaux = 1 - (r.menaceA6/nombreHotspot);
     laNote = calculNoteHotspot(leTaux);
     if ( (leTaux*cent)>dix && (leTaux*cent)<cent) {
       formatage=espace+espace+espace;
@@ -607,7 +607,7 @@ const remplissageHotspotListe=function(idMaven) {
     injectionHotspotListe(six, formatage, r.menaceA6, leTaux, laNote[0], laNote[1]);
 
     /* Calcul A7 */
-    leTaux = 1 - (r.menaceA7 / hotspotTotal);
+    leTaux = 1 - (r.menaceA7 /nombreHotspot);
     laNote = calculNoteHotspot(leTaux);
     if ( (leTaux*cent)>dix && (leTaux*cent)<cent) {
       formatage=espace+espace+espace;
@@ -617,7 +617,7 @@ const remplissageHotspotListe=function(idMaven) {
     injectionHotspotListe(sept, formatage, r.menaceA7, leTaux, laNote[0], laNote[1]);
 
     /* Calcul A8 */
-    leTaux = 1 - (r.menaceA8/ hotspotTotal);
+    leTaux = 1 - (r.menaceA8/nombreHotspot);
     laNote = calculNoteHotspot(leTaux);
     if ((leTaux*cent)>dix && (leTaux*cent)<cent) {
       formatage=espace+espace+espace;
@@ -627,7 +627,7 @@ const remplissageHotspotListe=function(idMaven) {
     injectionHotspotListe(huit, formatage, r.menaceA8, leTaux, laNote[0], laNote[1]);
 
     /* calcul A9 */
-    leTaux = 1 - (r.menaceA9/ hotspotTotal);
+    leTaux = 1 - (r.menaceA9/nombreHotspot);
     laNote = calculNoteHotspot(leTaux);
     if ((leTaux*cent)>dix && (leTaux*cent)<cent) {
       formatage=espace+espace+espace;
@@ -637,7 +637,7 @@ const remplissageHotspotListe=function(idMaven) {
     injectionHotspotListe(neuf, formatage, r.menaceA9, leTaux, laNote[0], laNote[1]);
 
     /* Calcul A10 */
-    leTaux = 1 - (r.menaceA10/ hotspotTotal);
+    leTaux = 1 - (r.menaceA10/nombreHotspot);
     laNote = calculNoteHotspot(leTaux);
     if ((leTaux*cent)>dix && (leTaux*cent)<cent) {
       formatage=espace+espace+espace;

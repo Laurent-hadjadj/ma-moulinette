@@ -196,7 +196,7 @@ class BatchCollecteHotspotController extends AbstractController
         /** On prépare les données pour l'historique */
         $data=[
             'hotspot_high' => $high, 'hotspot_medium' => $medium,
-            'hotspot_low' => $low, 'hotspot_total' => $high+$medium+$low];
+            'hotspot_low' => $low, 'nombre_hotspot' => $high+$medium+$low];
 
     return ['code' => 200, 'message' => $map, 'data' => $data];
     }
