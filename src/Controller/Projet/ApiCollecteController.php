@@ -401,7 +401,7 @@ class ApiCollecteController extends AbstractController
         }
 
         return $response->setData(['code' => 200, 'info'=>$anomalie['info'],'message'=>[
-            'nombre_defaut' => $anomalie['data']['nombre_defaut'],
+            'violations' => $anomalie['data']['violations'],
             'nombre_bug' => $anomalie['data']['nombre_bug'],
             'nombre_vulnerability' => $anomalie['data']['nombre_vulnerability'],
             'nombre_code_smell' => $anomalie['data']['nombre_code_smell']],

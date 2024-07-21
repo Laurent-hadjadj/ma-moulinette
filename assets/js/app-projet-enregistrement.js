@@ -202,7 +202,7 @@ export const enregistrement=function(mavenKey) {
     'logger_debug': loggerDebug,
     'nombre_ligne_code': nombreLigneDeCode, 'nombre_ligne': nombreLigne, couverture, 'duplication_density':duplication,
     'sqale_debt_ratio': sqaleDebtRatio, 'tests': testsUnitaires,
-    'nombre_defaut': nombreDefaut, dette,
+    'violations': violations, dette,
     'nombre_bug': nombreBug, 'nombre_vulnerability':nombreVulnerability,
     'nombre_code_smell': nombreCodeSmell,
     frontend,backend, autre,

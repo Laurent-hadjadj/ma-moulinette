@@ -214,7 +214,7 @@ class BatchCollecteAnomalieController extends AbstractController
 
         /** On prépare les données pour l'historique */
         $data=[
-            'nombre_defaut' => $anomalieTotal ?? 0,
+            'violations' => $anomalieTotal ?? 0,
             'dette' => $detteMinute ?? 0,
             'nombre_bug' => $types['BUG'] ?? 0,
             'nombre_vulnerability' => $types['VULNERABILITY'] ?? 0,
