@@ -374,7 +374,7 @@ $('select[name="version"]').on('change', function () {
     $('#sqale-debt-ratio').html(new Intl.NumberFormat('fr-FR', { style: 'percent',maximumFractionDigits: 2 }).format(t.data.sqale_debt_ratio/cent));
 
     $('#coverage').html(new Intl.NumberFormat('fr-FR', { style: 'percent',maximumFractionDigits: 2 }).format(t.data.coverage/cent));
-    $('#duplication-density').html(new Intl.NumberFormat('fr-FR', { style: 'percent',maximumFractionDigits: 2 }).format(t.data.duplication_density/cent));
+    $('#duplicated-lines-density').html(new Intl.NumberFormat('fr-FR', { style: 'percent',maximumFractionDigits: 2 }).format(t.data.duplicated_lines_density/cent));
 
     $('#tests').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.tests));
     $('#test-success-density').html(new Intl.NumberFormat('fr-FR', { style: 'percent',maximumFractionDigits: 2 }).format(t.data.test_success_density/cent));
@@ -396,7 +396,7 @@ $('select[name="version"]').on('change', function () {
     const t16 = document.getElementById('comment-lines-density');
 
     const t17 = document.getElementById('coverage');
-    const t18 = document.getElementById('duplication-density');
+    const t18 = document.getElementById('duplicated-lines-density');
 
     const t19 = document.getElementById('dette');
     const t20 = document.getElementById('sqale-debt-ratio');
@@ -419,7 +419,7 @@ $('select[name="version"]').on('change', function () {
     t16.dataset.commentLinesDensity=(t.data.comment_lines_density);
 
     t17.dataset.coverage=(t.data.coverage);
-    t18.dataset.duplication_density=(t.data.duplication_density);
+    t18.dataset.duplicatedLinesDensity=(t.data.duplicated_lines_density);
 
     t19.dataset.dette=(t.data.sqale_index);
     t20.dataset.sqaleDebtRatio=(t.data.sqale_debt_ratio);
@@ -473,7 +473,7 @@ $('.js-enregistrer-analyse').on('click', ()=>{
   const t17 = document.getElementById('comment-lines');
   const t18 = document.getElementById('comment-lines-density');
   const t19 = document.getElementById('coverage');
-  const t20 = document.getElementById('duplication-density');
+  const t20 = document.getElementById('duplicated-lines-density');
   const t21 = document.getElementById('dette');
   const t22 = document.getElementById('sqale-debt-ratio');
   const t23 = document.getElementById('tests');
@@ -502,7 +502,7 @@ $('.js-enregistrer-analyse').on('click', ()=>{
   const comment_lines=t17.dataset.commentLines;
   const comment_lines_density=t18.dataset.commentLinesDensity;
   const coverage=t19.dataset.coverage;
-  const duplication_density=t20.dataset.duplicationDensity;
+  const duplicated_lines_density=t20.dataset.duplicatedLinesDensity;
   const dette=t21.dataset.dette;
   const sqale_debt_ratio=t22.dataset.sqaleDebtRatio;
   const tests=t23.dataset.tests;
@@ -535,7 +535,7 @@ $('.js-enregistrer-analyse').on('click', ()=>{
     'comment_lines':comment_lines,
     'comment_lines_density':comment_lines_density,
     'coverage':coverage,
-    'duplication_density':duplication_density,
+    'duplicated_lines_density':duplicated_lines_density,
     'dette':dette,
     'sqale_debt_ratio':sqale_debt_ratio,
     'tests':tests,
@@ -544,7 +544,6 @@ $('.js-enregistrer-analyse').on('click', ()=>{
     'test_errors':test_errors,
     'test_failures':test_failures,
     'initial':initial};
-
     /**
      * On lance l'API de mise à jour
      */
