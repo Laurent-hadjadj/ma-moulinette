@@ -162,7 +162,7 @@ class BatchCollecteMesureController extends AbstractController
             'nombre_ligne' => $lines,
             'nombre_ligne_code' => $ncloc,
             'language_distribution' => $distribution,
-            'couverture'=> (float)$coverage,
+            'coverage'=> (float)$coverage,
             'sqale_debt_ratio' => $sqaleRatio,
             'duplication_density' => (float)$duplicationDensity,
             'tests' => $tests,

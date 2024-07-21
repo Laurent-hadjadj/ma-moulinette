@@ -187,7 +187,7 @@ class ApiCollecteController extends AbstractController
         /** On contrôle le mode d'utilisation */
         $utilisateur_collecte = $this->security->getUser()->getCourriel() ?? 'null';
 
-        /** Mesures du projet (ligne de code, couverture, dette, ...) */
+        /** Mesures du projet (ligne de code, coverage, dette, ...) */
         $mesure=$this->batchCollecteMesure->batchCollecteMesure($data->maven_key, 'UTILISATEUR', $utilisateur_collecte);
         if ($mesure['code']!=200){
             return $response->setData([

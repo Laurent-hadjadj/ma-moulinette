@@ -97,7 +97,7 @@ class Historique
     #[ORM\Column(type: Types::FLOAT,
         options: ['comment' => 'Pourcentage de couverture de code par les tests'])]
     #[Assert\NotNull]
-    private $couverture;
+    private $coverage;
 
     #[ORM\Column(type: Types::FLOAT,
         options: ['comment' => 'Pourcentage de duplication dans le code'])]
@@ -107,12 +107,12 @@ class Historique
     #[ORM\Column(type: Types::INTEGER,
         options: ['comment' => 'Nombre de tests unitaires exécutés'])]
     #[Assert\NotNull]
-    private $testsUnitaires;
+    private $tests;
 
     #[ORM\Column(type: Types::INTEGER,
         options: ['comment' => 'Nombre total de défauts détectés'])]
     #[Assert\NotNull]
-    private $nombreDefaut;
+    private $violations;
 
     #[ORM\Column(type: Types::INTEGER,
         options: ['comment' => 'Nombre total de bugs détectés'])]
@@ -695,13 +695,13 @@ class Historique
      */
     public function getCouverture(): ?float
     {
-        return $this->couverture;
+        return $this->coverage;
     }
 
     /**
-     * [Description for setCouverture]
+     * [Description for setCoverage]
      *
-     * @param float $couverture
+     * @param float $coverage
      *
      * @return self
      *
@@ -709,9 +709,9 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setCouverture(float $couverture): self
+    public function setCoverage(float $coverage): self
     {
-        $this->couverture = $couverture;
+        $this->coverage = $coverage;
 
         return $this;
     }
@@ -749,7 +749,7 @@ class Historique
     }
 
     /**
-     * [Description for getTestsUnitaires]
+     * [Description for getTests]
      *
      * @return int|null
      *
@@ -757,15 +757,15 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function getTestsUnitaires(): ?int
+    public function getTests(): ?int
     {
-        return $this->testsUnitaires;
+        return $this->tests;
     }
 
     /**
-     * [Description for setTestsUnitaires]
+     * [Description for setTests]
      *
-     * @param int $testsUnitaires
+     * @param int $tests
      *
      * @return self
      *
@@ -773,15 +773,15 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setTestsUnitaires(int $testsUnitaires): self
+    public function setTests(int $tests): self
     {
-        $this->testsUnitaires = $testsUnitaires;
+        $this->tests = $tests;
 
         return $this;
     }
 
     /**
-     * [Description for getNombreDefaut]
+     * [Description for getViolations]
      *
      * @return int|null
      *
@@ -789,15 +789,15 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function getNombreDefaut(): ?int
+    public function getViolations(): ?int
     {
-        return $this->nombreDefaut;
+        return $this->violations;
     }
 
     /**
-     * [Description for setNombreDefaut]
+     * [Description for setViolations]
      *
-     * @param int $nombreDefaut
+     * @param int $violations
      *
      * @return self
      *
@@ -805,9 +805,9 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setNombreDefaut(int $nombreDefaut): self
+    public function setViolations(int $violations): self
     {
-        $this->nombreDefaut = $nombreDefaut;
+        $this->violations = $violations;
 
         return $this;
     }

@@ -168,7 +168,7 @@ class CosuiController extends AbstractController
                 'code_smell_critical' => $request['infos'][0]['code_smell_critical'],
                 'code_smell_major' => $request['infos'][0]['code_smell_major'],
                 'hotspot_total' => $request['infos'][0]['hotspot_total'],
-                'couverture' => $request['infos'][0]['couverture'],
+                'coverage' => $request['infos'][0]['coverage'],
                 'sqale_debt_ratio' => $request['infos'][0]['sqale_debt_ratio']
             ];
     }
@@ -221,7 +221,7 @@ class CosuiController extends AbstractController
                 'initial_code_smell_critical' => $request['reference'][0]['code_smell_critical'],
                 'initial_code_smell_major' => $request['reference'][0]['code_smell_major'],
                 'initial_hotspot_total' => $request['reference'][0]['hotspot_total'],
-                'initial_couverture' => $request['reference'][0]['couverture'],
+                'initial_coverage' => $request['reference'][0]['coverage'],
                 'initial_sqale_debt_ratio' => $request['reference'][0]['sqale_debt_ratio']
 
             ];
@@ -401,7 +401,7 @@ class CosuiController extends AbstractController
             $bugBlocker = $bugCritical = $bugMajor = 0;
             $vulnerabilityBlocker = $vulnerabilityCritical = $vulnerabilityMajor = 0;
             $codeSmellBlocker = $codeSmellCritical = $codeSmellMajor = 0;
-            $hotspot = $couverture = $sqaleDebtRatio = 0;
+            $hotspot = $coverage = $sqaleDebtRatio = 0;
 
             $nombrePresentationReliabilityBlocker = $nombrePresentationReliabilityCritical = 0;
             $nombrePresentationReliabilityMajor = 0;
@@ -432,7 +432,7 @@ class CosuiController extends AbstractController
             $codeSmellCritical = $n['code_smell_critical'];
             $codeSmellMajor = $n['code_smell_major'];
             $hotspot = $n['hotspot_total'];
-            $couverture = $n['couverture'];
+            $coverage = $n['coverage'];
             $sqaleDebtRatio = $n['sqale_debt_ratio'];
         }
 
@@ -467,7 +467,7 @@ class CosuiController extends AbstractController
             $initialCodeSmellCritical = $nn['initial_code_smell_critical'];
             $initialCodeSmellMajor = $nn['initial_code_smell_major'];
             $initialHotspot = $nn['initial_hotspot_total'];
-            $initialCouverture = $nn['initial_couverture'];
+            $initialCoverage = $nn['initial_coverage'];
             $initialSqaleDebtRatio = $nn['initial_sqale_debt_ratio'];
         }
         /** on récupère le dernier setup pour le projet */
@@ -570,7 +570,7 @@ class CosuiController extends AbstractController
         $data2=static::note2point($noteSecurity);
         $data3=static::note2point($noteHotspot);
         $data4=static::note2point($noteCodeSmell);
-        $data5=$couverture;
+        $data5=$coverage;
 
         /** On inverse la courbe, plus le résultat est proche de 100 et plus la dette est petite */
         $data6=100-$sqaleDebtRatio;

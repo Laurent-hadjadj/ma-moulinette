@@ -408,7 +408,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                     nom_projet, version_release, version_snapshot, version_autre,
                     suppress_warning, no_sonar, todo,
                     logger_info, logger_warn, logger_error, logger_debug,
-                    nombre_ligne, nombre_ligne_code, couverture,
+                    nombre_ligne, nombre_ligne_code, coverage,
                     duplication_density, sqale_debt_ratio, tests, violations, dette,
                     nombre_bug, nombre_vulnerability, nombre_code_smell,
                     bug_blocker, bug_critical, bug_major, bug_minor, bug_info,
@@ -431,7 +431,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                     :suppress_warning, :no_sonar, :todo,
                     :logger_info, :logger_warn, :logger_error, :logger_debug,
                     :nombre_ligne, :nombre_ligne_code,
-                    :couverture, :duplication_density, :sqale_debt_ratio, :tests,
+                    :coverage, :duplication_density, :sqale_debt_ratio, :tests,
                     :violations, :dette, :nombre_bug, :nombre_vulnerability,
                     :nombre_code_smell, :bug_blocker, :bug_critical, :bug_major,
                     :bug_minor, :bug_info, :vulnerability_blocker, :vulnerability_critical,
@@ -465,7 +465,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                         $stmt->bindValue(':logger_debug', $map['logger_debug']);
                         $stmt->bindValue(':nombre_ligne', $map['nombre_ligne']);
                         $stmt->bindValue(':nombre_ligne_code', $map['nombre_ligne_code']);
-                        $stmt->bindValue(':couverture', $map['couverture']);
+                        $stmt->bindValue(':coverage', $map['coverage']);
                         $stmt->bindValue(':duplication_density', $map['duplication_density']);
                         $stmt->bindValue(':sqale_debt_ratio', $map['sqale_debt_ratio']);
                         $stmt->bindValue(':tests', $map['tests']);
@@ -578,7 +578,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                                 bug_blocker, bug_critical, bug_major,
                                 vulnerability_blocker, vulnerability_critical, vulnerability_major,
                                 code_smell_blocker, code_smell_critical, code_smell_major,
-                                hotspot_total, couverture, sqale_debt_ratio
+                                hotspot_total, coverage, sqale_debt_ratio
                         FROM historique
                         WHERE maven_key=:maven_key
                         ORDER BY date_version DESC LIMIT 1";
@@ -611,7 +611,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                                 bug_blocker, bug_critical, bug_major,
                                 vulnerability_blocker, vulnerability_critical, vulnerability_major,
                                 code_smell_blocker, code_smell_critical, code_smell_major,
-                                hotspot_total, couverture, sqale_debt_ratio
+                                hotspot_total, coverage, sqale_debt_ratio
                         FROM historique
                         WHERE maven_key=:maven_key AND initial=1";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));

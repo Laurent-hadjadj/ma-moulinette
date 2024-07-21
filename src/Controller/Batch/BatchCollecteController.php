@@ -182,7 +182,7 @@ class BatchCollecteController extends AbstractController
             return $response->setData(["Collecte" => $collecte, 'trace'=>$trace]);
         }
 
-        /** Mesures du projet (ligne de code, couverture, dette, ...) */
+        /** Mesures du projet (ligne de code, coverage, dette, ...) */
         $mesure=$this->batchCollecteMesure->batchCollecteMesure($mavenKey, $modeCollecte, $utilisateurCollecte);
         if ($mesure['code']===200){
             $collecte[]=["02 - MESURE" => $mesure['message']];

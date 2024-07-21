@@ -1105,16 +1105,16 @@ class ApiProjetControllerTest extends ApiTestCase
       ['autre'=>"0",  'backend'=>"0", 'bugBlocker'=>"0", 'bugCritical'=> "0",
       'bugInfo'=>"0", 'bugMajor'=>"31", 'bugMinor'=>"30", 'codeSmellBlocker'=>"17",
       'codeSmellCritical'=>"133", 'codeSmellInfo'=>"2", 'codeSmellMajor'=>"1087",
-      'codeSmellMinor'=>"656", 'couverture'=>"0", 'dateVersion'=>"2022-11-30 00:00:00",
+      'codeSmellMinor'=>"656", 'coverage'=>"0", 'dateVersion'=>"2022-11-30 00:00:00",
       'dette'=>"19586",'duplication'=>"5.1",'favori'=>1, 'frontend'=>"1945",
       'hotspotHigh'=>"0", 'hotspotLow'=>"0", 'hotspotMedium'=>"2",'hotspotTotal'=>"2",
       'initial'=>0, 'mavenKey'=>"fr.ma-moulinette:ma-moulinette", 'noSonar'=>"0",
       'nomProjet'=>"ma-moulinette", 'nombreAnomalieBloquant'=>"17",   'nombreAnomalieCritique'=>"133", 'nombreAnomalieInfo'=>"2",
       'nombreAnomalieMajeur'=>"1118", 'nombreAnomalieMineur'=>"686",
-      'nombreBug'=>"61", 'nombreCodeSmell'=>"1895", 'nombreDefaut'=>"1956",
+      'nombreBug'=>"61", 'nombreCodeSmell'=>"1895", 'violations'=>"1956",
       'nombreLigne'=>"24471", 'nombreLigneDeCode'=>"17301", 'nombreVulnerability'=>"0",
       'noteHotspot'=>"E", 'noteReliability'=>"C", 'noteSecurity'=>"A",
-      'noteSqale'=>"C", 'suppressWarning'=>"0", 'testsUnitaires'=>"0", 'version'=>"1.6.0-RELEASE", 'versionAutre'=>"0", 'versionRelease'=>"8", 'versionSnapshot'=>"0",
+      'noteSqale'=>"C", 'suppressWarning'=>"0", 'tests'=>"0", 'version'=>"1.6.0-RELEASE", 'versionAutre'=>"0", 'versionRelease'=>"8", 'versionSnapshot'=>"0",
       'vulnerabilityBlocker'=>"0", 'vulnerabilityCritical'=>"0", 'vulnerabilityInfo'=>"0",'vulnerabilityMajor'=>"0", 'vulnerabilityMinor'=>"0"];
 
     $client->request('PUT', '/api/enregistrement', ['json'=>$data]);

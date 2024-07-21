@@ -339,7 +339,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.historique
   todo integer NOT NULL,
   nombre_ligne integer NOT NULL,
   nombre_ligne_code integer NOT NULL,
-  couverture double precision NOT NULL,
+  coverage double precision NOT NULL,
   duplication_density double precision NOT NULL,
   tests integer NOT NULL,
   violations integer NOT NULL,
@@ -407,7 +407,7 @@ COMMENT ON COLUMN ma_moulinette.historique.no_sonar IS 'Compteur de l’utilisat
 COMMENT ON COLUMN ma_moulinette.historique.todo IS 'Compteur de l’utilisation de todo';
 COMMENT ON COLUMN ma_moulinette.historique.nombre_ligne IS 'Nombre total de lignes dans le projet';
 COMMENT ON COLUMN ma_moulinette.historique.nombre_ligne_code IS 'Nombre total de lignes de code dans le projet';
-COMMENT ON COLUMN ma_moulinette.historique.couverture IS 'Pourcentage de couverture de code par les tests';
+COMMENT ON COLUMN ma_moulinette.historique.coverage IS 'Pourcentage de couverture de code par les tests';
 COMMENT ON COLUMN ma_moulinette.historique.duplication_density IS 'Pourcentage de duplication dans le code';
 COMMENT ON COLUMN ma_moulinette.historique.tests IS 'Nombre de tests unitaires exécutés';
 COMMENT ON COLUMN ma_moulinette.historique.violations IS 'Nombre total de défauts détectés';

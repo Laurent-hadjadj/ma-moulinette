@@ -233,7 +233,7 @@ export const remplissage=function(mavenKey) {
 
   /**
    * On récupère les mesures :
-   * lignes, couverture fonctionnelle, ration de dette technique, duplication, tests unitaires et le nombre de défaut.
+   * lignes, coverage fonctionnelle, ration de dette technique, duplication, tests unitaires et le nombre de défaut.
    */
   const optionsMesures = {
     url: `${serveur()}/api/peinture/projet/mesures`, type: 'POST',
@@ -281,7 +281,7 @@ export const remplissage=function(mavenKey) {
           $('#distribution-langage').append(item);
       }
     }
-    $('#couverture').html(new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(parseInt(t.coverage,10)/cent));
+    $('#coverage').html(new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(parseInt(t.coverage,10)/cent));
     $('#ratio-dette-technique').html(new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(parseInt(t.sqaleDebtRatio,10)/cent));
     /** On colorise le résultat */
     if (t.sqaleDebtRatio<=30){
@@ -302,25 +302,25 @@ export const remplissage=function(mavenKey) {
     }
 
     $('#duplication').html(new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(parseInt(t.duplication,10)/cent));
-    $('#tests-unitaires').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.tests));
-    $('#nombre-defaut').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.issues));
+    $('#tests').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.tests));
+    $('#violations').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.issues));
 
     //Historique
     const t7 = document.getElementById('nombre-ligne');
     const t8 = document.getElementById('nombre-ligne-de-code');
-    const t9 = document.getElementById('couverture');
+    const t9 = document.getElementById('coverage');
     const t9a = document.getElementById('ratio-dette-technique');
     const t10 = document.getElementById('duplication');
     const t11 = document.getElementById('tests-unitaires');
-    const t12 = document.getElementById('nombre-defaut');
+    const t12 = document.getElementById('violations');
 
     t7.dataset.nombreLigne=(t.lines);
     t8.dataset.nombreLigneDeCode=(t.ncloc);
     t9.dataset.coverage=(t.coverage);
     t9a.dataset.sqaleDebtRatio=(t.sqaleDebtRatio);
     t10.dataset.duplication=(t.duplication);
-    t11.dataset.testsUnitaires=(t.tests);
-    t12.dataset.nombreDefaut=(t.issues);
+    t11.dataset.tests=(t.tests);
+    t12.dataset.violations=(t.issues);
   });
 
   /**

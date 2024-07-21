@@ -312,7 +312,7 @@ const projetInformation=function(mavenKey) {
 
 /**
  * [Description for projetMesure]
- * Collecte des mesures clés du projet (lignes, couvertures, duplication, défauts).
+ * Collecte des mesures clés du projet (lignes, coverage, duplication, défauts).
  * http://{url}/api/collecte/mesure
  *
  * Phase 02

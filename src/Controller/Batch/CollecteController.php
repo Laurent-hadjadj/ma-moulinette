@@ -161,7 +161,7 @@ class CollecteController extends AbstractController
             return ['code'=>500, 'Collecte' => $collecte];
         }
 
-        /** Mesures du projet (ligne de code, couverture, dette, ...) */
+        /** Mesures du projet (ligne de code, coverage, dette, ...) */
         $mesure=$this->batchCollecteMesure->batchCollecteMesure($maven_key, $mode_collecte, $utilisateur_collecte);
         if ($mesure['code']===200){
             $collecte[]=["02 - MESURE" => $mesure['message']];

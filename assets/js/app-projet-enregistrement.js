@@ -91,23 +91,23 @@ export const enregistrement=function(mavenKey) {
 
   /**
    * On récupère les informations du projet :
-   * lignes, couverture fonctionnelle, duplication, tests unitaires et
+   * lignes, coverage fonctionnelle, duplication, tests unitaires et
    * le nombre de défaut.
     */
   const t6 = document.getElementById('nombre-ligne');
   const t7 = document.getElementById('nombre-ligne-de-code');
-  const t8 = document.getElementById('couverture');
+  const t8 = document.getElementById('coverage');
   const t8a = document.getElementById('ratio-dette-technique');
   const t9 = document.getElementById('duplication');
-  const t10 = document.getElementById('tests-unitaires');
-  const t11 = document.getElementById('nombre-defaut');
+  const t10 = document.getElementById('tests');
+  const t11 = document.getElementById('violations');
   const nombreLigne=t6.dataset.nombreLigne;
   const nombreLigneDeCode=t7.dataset.nombreLigneDeCode;
-  const couverture=t8.dataset.coverage;
+  const coverage=t8.dataset.coverage;
   const sqaleDebtRatio=t8a.dataset.sqaleDebtRatio;
   const duplication=t9.dataset.duplication;
-  const testsUnitaires=t10.dataset.testsUnitaires;
-  const nombreDefaut=t11.dataset.nombreDefaut;
+  const tests=t10.dataset.tests;
+  const violations=t11.dataset.violations;
 
   /** On récupère les informations sur la dette technique et les anomalies. */
   /* Dette technique */
@@ -200,8 +200,8 @@ export const enregistrement=function(mavenKey) {
     'suppress_warning': suppressWarning, 'no_sonar': noSonar, todo,
     'logger_info': loggerInfo, 'logger_warn': loggerWarn, 'logger_error': loggerError,
     'logger_debug': loggerDebug,
-    'nombre_ligne_code': nombreLigneDeCode, 'nombre_ligne': nombreLigne, couverture, 'duplication_density':duplication,
-    'sqale_debt_ratio': sqaleDebtRatio, 'tests': testsUnitaires,
+    'nombre_ligne_code': nombreLigneDeCode, 'nombre_ligne': nombreLigne, coverage, 'duplication_density':duplication,
+    'sqale_debt_ratio': sqaleDebtRatio, 'tests': tests,
     'violations': violations, dette,
     'nombre_bug': nombreBug, 'nombre_vulnerability':nombreVulnerability,
     'nombre_code_smell': nombreCodeSmell,
