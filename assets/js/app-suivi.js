@@ -297,45 +297,45 @@ $('select[name="version"]').on('change', function () {
     const couleurSqale = tNotes1[parseInt(t.data.sqale_rating,10)];
     const couleurHotspotsReview = tNotes1[parseInt(t.data.security_review_rating,10)];
 
-    const noteReliability = tNotes2[parseInt(t.data.reliability_rating,10)];
-    const noteSecurity = tNotes2[parseInt(t.data.security_rating,10)];
-    const noteSqale = tNotes2[parseInt(t.data.sqale_rating,10)];
-    const noteHotspotsReview = tNotes2[parseInt(t.data.security_review_rating,10)];
+    const reliability_rating = tNotes2[parseInt(t.data.reliability_rating,10)];
+    const security_rating = tNotes2[parseInt(t.data.security_rating,10)];
+    const sqale_rating = tNotes2[parseInt(t.data.sqale_rating,10)];
+    const security_review_rating = tNotes2[parseInt(t.data.security_review_rating,10)];
 
     /*  On affiche les notes */
-    $('#note-reliability').html(`<span class="note note-${couleurReliability}">${noteReliability}</span>`);
-    $('#note-security').html(`<span class="note note-${couleurSecurity}">${noteSecurity}</span>`);
-    $('#note-sqale').html(`<span class="note note-${couleurSqale}">${noteSqale}</span>`);
-    $('#note-hotspots-review').html(`<span class="note note-${couleurHotspotsReview}">${noteHotspotsReview}</span>`);
+    $('#reliability-rating').html(`<span class="note note-${couleurReliability}">${reliability_rating}</span>`);
+    $('#security-rating').html(`<span class="note note-${couleurSecurity}">${security_rating}</span>`);
+    $('#sqale-rating').html(`<span class="note note-${couleurSqale}">${sqale_rating}</span>`);
+    $('#security-review-rating').html(`<span class="note note-${couleurHotspotsReview}">${security_review_rating}</span>`);
 
     /* Historique*/
-    const t1 = document.getElementById('note-reliability');
-    const t2 = document.getElementById('note-security');
-    const t3 = document.getElementById('note-sqale');
-    const t4 = document.getElementById('note-hotspots-review');
-    t1.dataset.noteReliability=(noteReliability);
-    t2.dataset.noteSecurity=(noteSecurity);
-    t3.dataset.noteSqale=(noteSqale);
-    t4.dataset.noteHotspotsReview=(noteHotspotsReview);
+    const t1 = document.getElementById('reliability-rating');
+    const t2 = document.getElementById('security-rating');
+    const t3 = document.getElementById('sqale-rating');
+    const t4 = document.getElementById('security-review-rating');
+    t1.dataset.reliabilityRating=(reliability_rating);
+    t2.dataset.securityRating=(security_rating);
+    t3.dataset.sqaleRating=(sqale_rating);
+    t4.dataset.securityReviewRating=(security_review_rating);
 
     /* On affiche le nombre de bugs, de vulnérabilités et de mauvaises pratiques. */
-    $('#violation').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.violations));
-    $('#bug').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.bugs));
+    $('#violations').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.violations));
+    $('#bugs').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.bugs));
     $('#vulnerabilities').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.vulnerabilities));
-    $('#code-smell').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.code_smells));
+    $('#code-smells').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.code_smells));
     const verifyHotspotsReview=t.data.security_hotspots;
     if (verifyHotspotsReview !== -1) {
-      $('#hotspots-review').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(verifyHotspotsReview));
+      $('#security-hotspots').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(verifyHotspotsReview));
     } else {
-      $('#hotspots-review').html('-');
+      $('#security-hotspots').html('-');
     }
 
     /* historique */
-    const tViolation = document.getElementById('violation');
-    const t5 = document.getElementById('bug');
+    const tViolation = document.getElementById('violations');
+    const t5 = document.getElementById('bugs');
     const t6 = document.getElementById('vulnerabilities');
-    const t7 = document.getElementById('code-smell');
-    const t8 = document.getElementById('hotspots-review');
+    const t7 = document.getElementById('code-smells');
+    const t8 = document.getElementById('security-hotspots');
     t5.dataset.bugs=(t.data.bugs);
     t6.dataset.vulnerabilities=(t.data.vulnerabilities);
     t7.dataset.codeSmells=(t.data.code_smells);
@@ -450,20 +450,20 @@ $('.js-enregistrer-analyse').on('click', ()=>{
     return;
   }
 
-  const mavenKey=$('#js-nom').data('maven').trim();
+  const maven_key=$('#js-nom').data('maven').trim();
   const nom=$('#js-nom').text().trim();
   const version=$('#version').text().trim();
   const t0 = document.getElementById('date');
-  const dateVersion=t0.dataset.date;
+  const date_version=t0.dataset.date;
 
-  const t1 = document.getElementById('note-reliability');
-  const t2 = document.getElementById('note-security');
-  const t3 = document.getElementById('note-sqale');
-  const t4 = document.getElementById('note-hotspots-review');
-  const t5 = document.getElementById('violation');
-  const t6 = document.getElementById('bug');
+  const t1 = document.getElementById('reliability-rating');
+  const t2 = document.getElementById('security-rating');
+  const t3 = document.getElementById('sqale-rating');
+  const t4 = document.getElementById('securit-review-rating');
+  const t5 = document.getElementById('violations');
+  const t6 = document.getElementById('bugs');
   const t7 = document.getElementById('vulnerabilities');
-  const t8 = document.getElementById('code-smell');
+  const t8 = document.getElementById('code-smells');
   const t9 = document.getElementById('hotspots-review');
   const t10 = document.getElementById('ncloc-language-distribution');
   const t11 = document.getElementById('files');
@@ -510,7 +510,12 @@ $('.js-enregistrer-analyse').on('click', ()=>{
   const test_errors=t25.testErrors;
   const test_failures=t26.testFailures;
   const initial=0;
+
   const data={
+    'maven_key':maven_key,
+    'nom':nom,
+    'version':version,
+    'date_version':date_version,
     'note_reliability':note_reliability,
     'note_security':note_security,
     'note_sqale':note_sqale,
