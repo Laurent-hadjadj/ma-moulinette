@@ -48,11 +48,14 @@ class SuiviController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     private $em;
+    private $security;
 
     public function __construct(
         EntityManagerInterface $em,
+        Security $security
     ) {
         $this->em = $em;
+        $this->security = $security;
     }
 
     /**
@@ -140,7 +143,7 @@ class SuiviController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/suivi', name: 'suivi', methods: ['GET'])]
-    public function suivi(Request $request, Security $security): Response
+    public function suivi(Request $request): Response
     {
         $session = $request->getSession();
 
@@ -149,7 +152,7 @@ class SuiviController extends AbstractController
 
         // Initialisation des variables
         $mavenKey = $session->get('mavenKey');
-        $teams = $security->getUser()->getEquipe();
+        $teams = $this->security->getUser()->getEquipe();
         $render = $this->getDefaultRender($mavenKey);
         $debug='';
 
