@@ -409,7 +409,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                     suppress_warning, no_sonar, todo,
                     logger_info, logger_warn, logger_error, logger_debug,
                     nombre_ligne, nombre_ligne_code, couverture,
-                    duplication_density, sqale_debt_ratio, tests_unitaires, nombre_defaut, dette,
+                    duplication_density, sqale_debt_ratio, tests, nombre_defaut, dette,
                     nombre_bug, nombre_vulnerability, nombre_code_smell,
                     bug_blocker, bug_critical, bug_major, bug_minor, bug_info,
                     vulnerability_blocker, vulnerability_critical, vulnerability_major,
@@ -431,7 +431,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                     :suppress_warning, :no_sonar, :todo,
                     :logger_info, :logger_warn, :logger_error, :logger_debug,
                     :nombre_ligne, :nombre_ligne_code,
-                    :couverture, :duplication_density, :sqale_debt_ratio, :tests_unitaires,
+                    :couverture, :duplication_density, :sqale_debt_ratio, :tests,
                     :nombre_defaut, :dette, :nombre_bug, :nombre_vulnerability,
                     :nombre_code_smell, :bug_blocker, :bug_critical, :bug_major,
                     :bug_minor, :bug_info, :vulnerability_blocker, :vulnerability_critical,
@@ -468,7 +468,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                         $stmt->bindValue(':couverture', $map['couverture']);
                         $stmt->bindValue(':duplication_density', $map['duplication_density']);
                         $stmt->bindValue(':sqale_debt_ratio', $map['sqale_debt_ratio']);
-                        $stmt->bindValue(':tests_unitaires', $map['tests_unitaires']);
+                        $stmt->bindValue(':tests', $map['tests']);
                         $stmt->bindValue(':nombre_defaut', $map['nombre_defaut']);
                         $stmt->bindValue(':dette', $map['dette']);
                         $stmt->bindValue(':nombre_bug', $map['nombre_bug']);

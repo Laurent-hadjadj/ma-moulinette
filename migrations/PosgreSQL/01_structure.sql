@@ -341,7 +341,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.historique
   nombre_ligne_code integer NOT NULL,
   couverture double precision NOT NULL,
   duplication_density double precision NOT NULL,
-  tests_unitaires integer NOT NULL,
+  tests integer NOT NULL,
   nombre_defaut integer NOT NULL,
   nombre_bug integer NOT NULL,
   nombre_vulnerability integer NOT NULL,
@@ -409,7 +409,7 @@ COMMENT ON COLUMN ma_moulinette.historique.nombre_ligne IS 'Nombre total de lign
 COMMENT ON COLUMN ma_moulinette.historique.nombre_ligne_code IS 'Nombre total de lignes de code dans le projet';
 COMMENT ON COLUMN ma_moulinette.historique.couverture IS 'Pourcentage de couverture de code par les tests';
 COMMENT ON COLUMN ma_moulinette.historique.duplication_density IS 'Pourcentage de duplication dans le code';
-COMMENT ON COLUMN ma_moulinette.historique.tests_unitaires IS 'Nombre de tests unitaires exécutés';
+COMMENT ON COLUMN ma_moulinette.historique.tests IS 'Nombre de tests unitaires exécutés';
 COMMENT ON COLUMN ma_moulinette.historique.nombre_defaut IS 'Nombre total de défauts détectés';
 COMMENT ON COLUMN ma_moulinette.historique.nombre_bug IS 'Nombre total de bugs détectés';
 COMMENT ON COLUMN ma_moulinette.historique.nombre_vulnerability IS 'Nombre total de vulnérabilités détectées';

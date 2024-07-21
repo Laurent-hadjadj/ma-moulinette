@@ -165,7 +165,7 @@ class BatchCollecteMesureController extends AbstractController
             'couverture'=> (float)$coverage,
             'sqale_debt_ratio' => $sqaleRatio,
             'duplication_density' => (float)$duplicationDensity,
-            'tests_unitaires' => $tests,
+            'tests' => $tests,
             'issues' => $issues,
         ];
 
