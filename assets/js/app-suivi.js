@@ -630,10 +630,10 @@ $('.js-modifier-analyse').on('click', function () {
     }
 
     /* On boucle pour construire le tableau */
-    let ligne=0, html='', switchFavori='', switchReference='', favori='FALSE', reference='FALSE';
+    let ligne=0, html='', switchFavori='', switchReference='';
 
     $('#tableau-liste-version').html(html);
-
+    console.log(t);
     t.versions.forEach(version => {
       ligne++;
       /* On défini le switch pour le favori */
@@ -664,13 +664,12 @@ $('.js-modifier-analyse').on('click', function () {
 
       /**
         * Favori|reference enable
-        * SQLite : 0 (false) and 1 (true).
         */
-      if (version.favori===un) {
+      if (version.favori===true) {
         $(`#switch-favori-${ligne}`).trigger('click');
       }
 
-      if (version.initial===un) {
+      if (version.initial===true) {
         $(`#switch-reference-${ligne}`).trigger('click');
       }
     });

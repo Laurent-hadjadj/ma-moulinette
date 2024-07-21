@@ -418,7 +418,7 @@ class ApiSuiviController extends AbstractController
 
     /**
      * [Description for suiviVersionListe]
-     * récupère la liste des projets nom + clé
+     * récupère la liste des projets nom + clé + favori + reference
      * http://{url}}/api/suivi/liste/version
      *
      * @param Request $request
@@ -450,11 +450,41 @@ class ApiSuiviController extends AbstractController
         $map=['maven_key'=>$data->maven_key];
         $request=$historiqueRepository->selectHistoriqueProjetByDate($map);
         if ($request['code']!=200) {
-            return $response->setData(['code' => $request['code'], 'message'=>$request['erreur'],Response::HTTP_OK]);
+            return $response->setData(['code' => $request['code'], 'message'=>$request['erreur']],Response::HTTP_OK);
         }
 
-        return $response->setData(['code' => 200, 'versions' => $request['version'], Response::HTTP_OK]);
+        /** On récupère les préférences de l'utilisateur */
+        $preference = $this->getUser()->getPreference();
+        /* ? l'utilisateur a activer la gestion des favori */
+        $preferenceFavori=$preference['status']['favori'] ?? false;
+        $preferenceVersion=$preference['version'] ?? false;
+        // Récupérer les versions favorites pour la maven_key
+        $favoriVersions = static::getFavoriVersions($preferenceVersion, $data->maven_key);
+
+        // Ajouter la clé 'favori' aux versions correspondantes dans la liste des version
+        foreach ($request['version'] as &$version) {
+            if ($version['maven_key'] === $data->maven_key && in_array($version['version'], $favoriVersions)) {
+                $version['favori'] = true;
+            } else {
+                $version['favori'] = false;
+            }
+        }
+
+        return $response->setData([
+            'code' => 200, 'versions' => $request['version'],
+            'preference_favori' => $preferenceFavori
+            ], Response::HTTP_OK);
     }
+
+    // Fonction pour récupérer les versions d'une application spécifique
+    public function getFavoriVersions($version, $appKey) {
+    foreach ($version as $entry) {
+        if (isset($entry[$appKey])) {
+            return $entry[$appKey];
+        }
+    }
+    return [];
+}
 
     /**
      * [Description for suiviVersionFavori]
@@ -473,7 +503,7 @@ class ApiSuiviController extends AbstractController
     public function suiviVersionFavori(Request $request): response
     {
         /** On instancie l'entityRepository */
-        $utilisateur = $this->em->getRepository(Utilisateur::class);
+        $utilisateurRepository = $this->em->getRepository(Utilisateur::class);
 
         /** on décode le body */
         $data = json_decode($request->getContent());
@@ -488,14 +518,13 @@ class ApiSuiviController extends AbstractController
         $map=['favori'=>$data->favori, 'courriel'=> $courriel, 'maven_key'=>$data->maven_key, 'version'=>$data->version, 'date_version'=>$data->date_version];
         /** si le favori a été supprimé favori=0 */
         if ($data->favori===0) {
-            $request=$utilisateur->deleteUtilisateurPreferenceFavori($preference, $map);
+            $request=$utilisateurRepository->deleteUtilisateurPreferenceFavori($preference, $map);
             return $response->setData(['code' => 201, Response::HTTP_OK]);
         }
 
-        $request=$utilisateur->insertUtilisateurPreferenceFavori($preference, $map);
+        $request=$utilisateurRepository->insertUtilisateurPreferenceFavori($preference, $map);
         if ($request['code']!=200) {
             return $response->setData([
-                'maven_key' => $data->maven_key,
                 'code'=>$request['code'], 'erreur' => $request['erreur'],
                 Response::HTTP_OK]);
         }
