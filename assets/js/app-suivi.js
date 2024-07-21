@@ -553,20 +553,19 @@ $('.js-enregistrer-analyse').on('click', ()=>{
 
   $.ajax(options).then(t => {
     let message='';
-    switch (t.code) {
-      case http_200 :
-        message=`Enregistrement des informations effectué.`;
-        $('#message-ajout-projet').html(callboxSuccess+message+callboxFermer);
-        break;
-      case http_202:
-        message=`Mode Test activé`;
-        $('#message-ajout-projet').html(callboxError+message+` (${t.erreur}).`+callboxFermer);
-      break;
-      default:
-        message=`Erreur lors de la mise à jour (${t.erreur}).`;
-        $('#message-ajout-projet').html(callboxError+message+`(${t.erreur}).`+callboxFermer);
+    if (t.code===http_200){
+      message=`Enregistrement des informations effectué.`;
+      $('#message-ajout-projet').html(callboxSuccess+message+callboxFermer);
     }
-    });
+    if (t.code===23505){
+      $('#message-ajout-projet').html(callboxWarning+t.message+callboxFermer);
+    }
+    if (t.code!==http_200 && t.code!==23505) {
+        message=`Erreur lors de la mise à jour (${t.code}).`;
+        $('#message-ajout-projet').html(callboxError+message);
+        $('#message-ajout-projet').append(t.erreur+callboxFermer);
+    }
+  });
 });
 
 
