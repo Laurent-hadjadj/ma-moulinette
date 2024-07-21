@@ -166,3 +166,10 @@ input:checked ~ .switch-paddle { background-color: #00445b; }
 
 /* Ajoute une séparation à gauche */
 .separation-gauche { border-right: 1px solid black; }
+
+/* select2 : Affichage de : Proposition trouvé */
+/* stylelint-disable-next-line selector-class-pattern */
+.select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+  background-color: #006a8e;
+  color: #fff;
+}
