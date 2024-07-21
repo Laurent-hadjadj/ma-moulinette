@@ -331,16 +331,16 @@ $('select[name="version"]').on('change', function () {
     }
 
     /* historique */
-    const tViolation = document.getElementById('violations');
-    const t5 = document.getElementById('bugs');
+    const t5 = document.getElementById('violations');
+    const t5a = document.getElementById('bugs');
     const t6 = document.getElementById('vulnerabilities');
     const t7 = document.getElementById('code-smells');
     const t8 = document.getElementById('security-hotspots');
-    t5.dataset.bugs=(t.data.bugs);
+    t5.dataset.violations=(t.data.violations);
+    t5a.dataset.bugs=(t.data.bugs);
     t6.dataset.vulnerabilities=(t.data.vulnerabilities);
     t7.dataset.codeSmells=(t.data.code_smells);
     t8.dataset.securityHotspots=(t.data.security_hotspots);
-    tViolation.dataset.violations=(t.data.violations);
 
     /* On affiche les autres métriques */
     const liste=t.data.ncloc_language_distribution;
@@ -374,7 +374,7 @@ $('select[name="version"]').on('change', function () {
     $('#sqale-debt-ratio').html(new Intl.NumberFormat('fr-FR', { style: 'percent',maximumFractionDigits: 2 }).format(t.data.sqale_debt_ratio/cent));
 
     $('#coverage').html(new Intl.NumberFormat('fr-FR', { style: 'percent',maximumFractionDigits: 2 }).format(t.data.coverage/cent));
-    $('#duplication').html(new Intl.NumberFormat('fr-FR', { style: 'percent',maximumFractionDigits: 2 }).format(t.data.duplicated_lines_density/cent));
+    $('#duplication-density').html(new Intl.NumberFormat('fr-FR', { style: 'percent',maximumFractionDigits: 2 }).format(t.data.duplication_density/cent));
 
     $('#tests').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.tests));
     $('#test-success-density').html(new Intl.NumberFormat('fr-FR', { style: 'percent',maximumFractionDigits: 2 }).format(t.data.test_success_density/cent));
@@ -396,7 +396,7 @@ $('select[name="version"]').on('change', function () {
     const t16 = document.getElementById('comment-lines-density');
 
     const t17 = document.getElementById('coverage');
-    const t18 = document.getElementById('duplication');
+    const t18 = document.getElementById('duplication-density');
 
     const t19 = document.getElementById('dette');
     const t20 = document.getElementById('sqale-debt-ratio');
@@ -419,7 +419,7 @@ $('select[name="version"]').on('change', function () {
     t16.dataset.commentLinesDensity=(t.data.comment_lines_density);
 
     t17.dataset.coverage=(t.data.coverage);
-    t18.dataset.duplication=(t.data.duplicated_lines_density);
+    t18.dataset.duplication_density=(t.data.duplication_density);
 
     t19.dataset.dette=(t.data.sqale_index);
     t20.dataset.sqaleDebtRatio=(t.data.sqale_debt_ratio);
@@ -453,78 +453,79 @@ $('.js-enregistrer-analyse').on('click', ()=>{
   const maven_key=$('#js-nom').data('maven').trim();
   const nom=$('#js-nom').text().trim();
   const version=$('#version').text().trim();
-  const t0 = document.getElementById('date');
-  const date_version=t0.dataset.date;
 
-  const t1 = document.getElementById('reliability-rating');
-  const t2 = document.getElementById('security-rating');
-  const t3 = document.getElementById('sqale-rating');
-  const t4 = document.getElementById('securit-review-rating');
-  const t5 = document.getElementById('violations');
-  const t6 = document.getElementById('bugs');
-  const t7 = document.getElementById('vulnerabilities');
-  const t8 = document.getElementById('code-smells');
-  const t9 = document.getElementById('hotspots-review');
-  const t10 = document.getElementById('ncloc-language-distribution');
-  const t11 = document.getElementById('files');
-  const t12 = document.getElementById('classes');
-  const t13 = document.getElementById('functions');
-  const t14 = document.getElementById('ncloc');
-  const t15 = document.getElementById('lines');
-  const t16 = document.getElementById('comment-lines');
-  const t17 = document.getElementById('comment-lines-density');
-  const t18 = document.getElementById('coverage');
-  const t19 = document.getElementById('duplication');
-  const t20 = document.getElementById('dette');
-  const t21 = document.getElementById('sqale-debt-ratio');
-  const t22 = document.getElementById('tests');
-  const t23 = document.getElementById('test-success-density');
-  const t24 = document.getElementById('skipped-tests');
-  const t25 = document.getElementById('test-errors');
-  const t26 = document.getElementById('test-failures');
+  const t1 = document.getElementById('date');
+  const t2 = document.getElementById('reliability-rating');
+  const t3 = document.getElementById('security-rating');
+  const t4 = document.getElementById('sqale-rating');
+  const t5 = document.getElementById('security-review-rating');
+  const t6 = document.getElementById('violations');
+  const t7 = document.getElementById('bugs');
+  const t8 = document.getElementById('vulnerabilities');
+  const t9 = document.getElementById('code-smells');
+  const t10 = document.getElementById('security-hotspots');
+  const t11 = document.getElementById('ncloc-language-distribution');
+  const t12 = document.getElementById('files');
+  const t13 = document.getElementById('classes');
+  const t14 = document.getElementById('functions');
+  const t15 = document.getElementById('ncloc');
+  const t16 = document.getElementById('lines');
+  const t17 = document.getElementById('comment-lines');
+  const t18 = document.getElementById('comment-lines-density');
+  const t19 = document.getElementById('coverage');
+  const t20 = document.getElementById('duplication-density');
+  const t21 = document.getElementById('dette');
+  const t22 = document.getElementById('sqale-debt-ratio');
+  const t23 = document.getElementById('tests');
+  const t24 = document.getElementById('test-success-density');
+  const t25 = document.getElementById('skipped-tests');
+  const t26 = document.getElementById('test-errors');
+  const t27 = document.getElementById('test-failures');
 
-  const note_reliability=t1.dataset.noteReliability;
-  const note_security=t2.dataset.noteSecurity;
-  const note_sqale=t3.dataset.noteSqale;
-  const note_hotspots_review=t4.dataset.noteHotspotsReview;
-  const violation=t5.violation;
-  const bugs=t6.bugs;
-  const vulnerabilities=t7.vulnerabilities;
-  const code_smells=t8.codeSmell;
-  const hotspots_review=t9.hotspotsReview;
-  const ncloc_language_distribution=t10.nclocLanguageDistribution;
-  const files=t11.files;
-  const classes=t12.classes;
-  const functions=t13.functions;
-  const ncloc=t14.ncloc;
-  const lines=t15.lines;
-  const comment_lines=t16.commentLines;
-  const comment_lines_density=t17.commentLinesDensity;
-  const coverage=t18.coverage;
-  const duplication=t19.duplication;
-  const dette=t20.dette;
-  const sqale_debt_ratio=t21.sqaleDebtRatio;
-  const tests=t22.tests;
-  const test_success_density=t23.testSuccessDensity;
-  const skipped_tests=t24.skippedTests;
-  const test_errors=t25.testErrors;
-  const test_failures=t26.testFailures;
+  const nom_projet=nom;
+  const date_version=t1.dataset.date;
+  const reliability_rating=t2.dataset.reliabilityRating;
+  const security_rating=t3.dataset.securityRating;
+  const sqale_rating=t4.dataset.sqaleRating;
+  const security_review_rating=t5.dataset.securityReviewRating;
+  const violations=t6.dataset.violations;
+  const bugs=t7.dataset.bugs;
+  const vulnerabilities=t8.dataset.vulnerabilities;
+  const code_smells=t9.dataset.codeSmells;
+  const security_hotspots=t10.dataset.securityHotspots;
+  const ncloc_language_distribution=t11.dataset.nclocLanguageDistribution;
+  const files=t12.dataset.files;
+  const classes=t13.dataset.classes;
+  const functions=t14.dataset.functions;
+  const ncloc=t15.dataset.ncloc;
+  const lines=t16.dataset.lines;
+  const comment_lines=t17.dataset.commentLines;
+  const comment_lines_density=t18.dataset.commentLinesDensity;
+  const coverage=t19.dataset.coverage;
+  const duplication_density=t20.dataset.duplicationDensity;
+  const dette=t21.dataset.dette;
+  const sqale_debt_ratio=t22.dataset.sqaleDebtRatio;
+  const tests=t23.dataset.tests;
+  const test_success_density=t24.dataset.testSuccessDensity;
+  const skipped_tests=t25.dataset.skippedTests;
+  const test_errors=t26.dataset.testErrors;
+  const test_failures=t27.dataset.testFailures;
   const initial=0;
 
   const data={
     'maven_key':maven_key,
-    'nom':nom,
+    'nom_projet':nom_projet,
     'version':version,
     'date_version':date_version,
-    'note_reliability':note_reliability,
-    'note_security':note_security,
-    'note_sqale':note_sqale,
-    'note_hotspots_review':note_hotspots_review,
-    'violation':violation,
+    'reliability_rating':reliability_rating,
+    'security_rating':security_rating,
+    'sqale_rating':sqale_rating,
+    'security_review_rating':security_review_rating,
+    'violations':violations,
     'bugs':bugs,
     'vulnerabilities':vulnerabilities,
     'code_smells':code_smells,
-    'hotspots_review':hotspots_review,
+    'security_hotspots':security_hotspots,
     'ncloc_language_distribution':ncloc_language_distribution,
     'files':files,
     'classes':classes,
@@ -534,7 +535,7 @@ $('.js-enregistrer-analyse').on('click', ()=>{
     'comment_lines':comment_lines,
     'comment_lines_density':comment_lines_density,
     'coverage':coverage,
-    'duplication':duplication,
+    'duplication_density':duplication_density,
     'dette':dette,
     'sqale_debt_ratio':sqale_debt_ratio,
     'tests':tests,
@@ -543,8 +544,7 @@ $('.js-enregistrer-analyse').on('click', ()=>{
     'test_errors':test_errors,
     'test_failures':test_failures,
     'initial':initial};
-    console.log(data);
-    return;
+
     /**
      * On lance l'API de mise à jour
      */
@@ -778,7 +778,7 @@ $('.js-modifier-analyse').on('click', function () {
       }
 
       /**
-       * On l'API de suppresion de la version dans l'historique
+       * On l'API de suppression de la version dans l'historique
        */
       const dataPoubelle = { 'maven_key': mavenKey, version, 'date_version':date, 'mode': 'null' };
       const optionsPoubelle = {

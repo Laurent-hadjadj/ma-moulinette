@@ -46,7 +46,7 @@ class MesuresValidatorTest extends KernelTestCase
       ->setSqaleDebtRatio(static::$sqaleDebtRatio)
       ->setIssues(static::$issues)
       ->setTests(static::$tests)
-      ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
+      ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
   }
 
   public function assertHasErrors(Mesures $entity, int $number = 0): void

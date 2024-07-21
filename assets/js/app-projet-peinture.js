@@ -301,7 +301,7 @@ export const remplissage=function(mavenKey) {
       $('#ratio-dette-technique').addClass('couleur-bordeaux');
     }
 
-    $('#duplication').html(new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(parseInt(t.duplication,10)/cent));
+    $('#duplication-density').html(new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(parseInt(t.duplication_density,10)/cent));
     $('#tests').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.tests));
     $('#violations').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.issues));
 
@@ -310,7 +310,7 @@ export const remplissage=function(mavenKey) {
     const t8 = document.getElementById('nombre-ligne-de-code');
     const t9 = document.getElementById('coverage');
     const t9a = document.getElementById('ratio-dette-technique');
-    const t10 = document.getElementById('duplication');
+    const t10 = document.getElementById('duplication-density');
     const t11 = document.getElementById('tests-unitaires');
     const t12 = document.getElementById('violations');
 
@@ -318,7 +318,7 @@ export const remplissage=function(mavenKey) {
     t8.dataset.nombreLigneDeCode=(t.ncloc);
     t9.dataset.coverage=(t.coverage);
     t9a.dataset.sqaleDebtRatio=(t.sqaleDebtRatio);
-    t10.dataset.duplication=(t.duplication);
+    t10.dataset.duplicationDensity=(t.duplicationDensity);
     t11.dataset.tests=(t.tests);
     t12.dataset.violations=(t.issues);
   });

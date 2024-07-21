@@ -36,7 +36,7 @@ class MesuresFixtures extends Fixture
           ->setSqaleDebtRatio(static::$sqaleDebtRatio)
           ->setIssues(static::$issues)
           ->setTests(static::$tests)
-          ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
+          ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
       $manager->persist($mesures);
 
       /** Enregistrement des données dans la base de tests */

@@ -27,7 +27,7 @@ class ApiSuiviController extends AbstractController
     public static $europeParis = "Europe/Paris";
     public static $dateFormatTimezone = "Y-m-d\TH:i:sO";
     public static $sonarUrl = "sonar.url";
-    public static $reference = "SUIVI";
+    public static $reference = "[SUIVI]";
     public static $erreur400 = "La requête est incorrecte (erreur 400).";
     public static $erreur404 = "Vous devez être rattaché à une équipe (erreur 404).";
     public static $erreur406 = "Je n'ai pas trouvé de projets pour ton équipe. ".
@@ -35,13 +35,16 @@ class ApiSuiviController extends AbstractController
 
     private $em;
     private $client;
+    private $security;
 
     public function __construct(
         EntityManagerInterface $em,
-        Client $client
+        Client $client,
+        Security $security
     ) {
         $this->em = $em;
         $this->client = $client;
+        $this->security = $security;
     }
 
     /**
@@ -294,37 +297,119 @@ class ApiSuiviController extends AbstractController
         /** On créé objet date */
         $dateEnregistrement = new \DateTimeImmutable();
         $dateEnregistrement->setTimezone(new \DateTimeZone(static::$europeParis));
-        $dateVersion = new \DateTimeImmutable($data->date_version);
 
         /** On bind chaque valeur dans une map. */
-        $map=[
-            'maven_key' => $data->maven_key, 'version' => $data->version,
-            'date_version' => $dateVersion->format(static::$dateFormatTimezone),
-            'nom_projet' => $data->nom_projet, 'version_release' => -1, 'version_snapshot' => -1,
-            'suppress_warning' => -1,'no_sonar' => -1, 'nombre_ligne' => $data->nombre_ligne,
-            'nombre_ligne_code' => $data->nombre_ligne_code, 'couverture' => $data->couverture,
-            'duplication' => $data->duplication, 'tests_unitaires' => $data->tests_unitaires,
-            'nombre_defaut' => $data->nombre_defaut, 'dette' => $data->dette,
-            'nombre_bug' => $data->nombre_bug, 'nombre_vulnerability' => $data->nombre_vulnerability,
-            'nombre_code_smell' => $data->nombre_code_smell, 'bug_blocker'=> -1,
-            'bug_critical'=> -1, 'bug_major'=> -1, 'bug_minor'=> -1, 'bug_info'=> -1,
-            'vulnerability_blocker'=>-1, 'vulnerability_critical'=>-1,
-            'vulnerability_major'=> -1, 'vulnerability_minor'=> -1, 'vulnerability_info'=> -1,
-            'code_smell_blocker'=> -1, 'code_smell_critical'=> -1,
-            'code_smell_major'=> -1, 'code_smell_minor'=> -1,
-            'code_smell_info'=> -1, 'frontend' => -1,
-            'backend' => -1, 'autre' => -1, 'nombre_anomalie_bloquant' => -1,
-            'nombre_anomalie_critique' => -1, 'nombre_anomalie_majeur' => -1,
-            'nombre_anomalie_mineur' => -1, 'nombre_anomalie_info' =>-1,
-            'note_reliability' => $data->note_reliability, 'note_security' => $data->note_security,
-            'note_sqale' => $data->note_sqale, 'note_hotspot' => $data->note_hotspot,
-            'hotspot_total' => $data->hotspot_total, 'hotspot_high' => -1,
-            'hotspot_medium' => -1, 'hotspot_low' => -1, 'initial' => $data->initial,
+        $info = [
+            'maven_key' => $data->maven_key,
+            'analyse_key' => '-',
+            'version' => $data->version,
+            'date_version' => $data->date_version,
+            'nom_projet' => $data->nom_projet,
+            'initial' => $data->initial
+        ];
+        $version = [
+            'version_release' => -1,
+            'version_snapshot'=> -1,
+            'version_autre' => -1
+        ];
+        $nosonar = [
+            'suppress_warning' =>-1,
+            'no_sonar' => -1
+        ];
+        $todo = [
+            'todo' => -1
+        ];
+        $logger = [
+            'logger_info' => -1,
+            'logger_warn' => -1,
+            'logger_error' => -1,
+            'logger_debug' => -1
+        ];
+        $repartition=[
+            'frontend'=> -1,
+            'backend'=> -1,
+            'autre'=> -1,
+        ];
+        $coverage = [
+            'coverage' =>$data->coverage,
+            'duplication_density' =>$data->duplication_density,
+            'tests' =>$data->tests,
+            'skipped_tests' => $data->skipped_tests,
+            'test_errors' => $data->test_errors,
+            'test_failures' => $data->test_failures,
+        ];
+        $issues = [
+            'violations'=>$data->violations
+        ];
+        $size = [
+            'classes' => $data->classes,
+            'comment_lines' => $data->comment_lines,
+            'comment_lines_density' => $data->comment_lines_density,
+            'files' => $data->files,
+            'nombre_ligne' => $data->lines,
+            'nombre_ligne_code' => $data->ncloc,
+            'ncloc_language_distribution' =>$data->ncloc_language_distribution,
+            'functions' => $data->functions,
+        ];
+        // dette = squale_index
+        $dette=[
+            'sqale_debt_ratio'=>$data->sqale_debt_ratio,
+            'dette'=>$data->dette,
+        ];
+        $maintainability = [
+            'note_sqale'=>$data->sqale_rating,
+            'nombre_code_smell'=>$data->code_smells,
+            'sqale_debt_ratio'=>$data->sqale_debt_ratio,
+        ];
+        $reliability = [
+            'nombre_bug' =>$data->bugs,
+            'note_reliability' =>$data->reliability_rating
+        ];
+        $security = [
+            'nombre_vulnerability'=>$data->vulnerabilities,
+            'note_security'=>$data->security_rating,
+            'note_hotspot'=>$data->security_review_rating,
+            'nombre_hotspot'=>$data->security_hotspots
+        ];
+        $severity = [
+            'bug_blocker'=> -1,
+            'bug_critical'=> -1,
+            'bug_major'=> -1,
+            'bug_minor'=> -1,
+            'bug_info'=> -1,
+            'vulnerability_blocker'=>-1,
+            'vulnerability_critical'=>-1,
+            'vulnerability_major'=> -1,
+            'vulnerability_minor'=> -1,
+            'vulnerability_info'=> -1,
+            'code_smell_blocker'=> -1,
+            'code_smell_critical'=> -1,
+            'code_smell_major'=> -1,
+            'code_smell_minor'=> -1,
+            'code_smell_info'=> -1,
+            'nombre_anomalie_bloquant' => -1,
+            'nombre_anomalie_critique' => -1,
+            'nombre_anomalie_majeur' => -1,
+            'nombre_anomalie_mineur' => -1,
+            'nombre_anomalie_info' =>-1
+        ];
+        $hotspot=[
+                'hotspot_high' => -1,
+                'hotspot_medium' => -1,
+                'hotspot_low' => -1,
+                'date_enregistrement' => $dateEnregistrement
+            ];
+        $autre=[
+            'actuator_info' => '{}',
+            'mode_collecte' =>'COLLECTE',
+            'utilisateur_collecte' => $this->security->getCourriel() ?? 'null',
             'date_enregistrement' => $dateEnregistrement
         ];
 
+        $map=$info+$version+$nosonar+$todo+$logger+$repartition+$coverage+$issues+$size+$dette+$maintainability+$reliability+$security+$severity+$hotspot+$autre;
+        dd($map);
         /** On enregistre */
-        $request=$historiqueRepository->countHistoriqueProjet($data->mode, $map);
+        $request=$historiqueRepository->countHistoriqueProjet($map);
         if ($request['code']!=200) {
             return $response->setData(['code' => $request['code'], 'message'=>$request['erreur'],Response::HTTP_OK]);
         }
@@ -432,7 +517,6 @@ class ApiSuiviController extends AbstractController
      * http://{url}}/api/suivi/version/reference
      *
      * @param Request $request
-     * @param Security $security
      *
      * @return response
      *
@@ -441,7 +525,7 @@ class ApiSuiviController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/suivi/version/reference', name: 'suivi_version_reference', methods: ['PUT'])]
-    public function suiviVersionReference(Request $request, Security $security): response
+    public function suiviVersionReference(Request $request): response
     {
         /** On instancie l'entityRepository */
         $historique = $this->em->getRepository(Historique::class);
@@ -455,8 +539,6 @@ class ApiSuiviController extends AbstractController
         /** On regarde si $data est valide */
         if ($data === null) {
             return $response->setData(['data' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'mode')) {
-            return $response->setData(['mode' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
         if (!property_exists($data, 'maven_key')) {
             return $response->setData(['maven_key' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
         if (!property_exists($data, 'version')) {
@@ -487,7 +569,6 @@ class ApiSuiviController extends AbstractController
      * http://{url}}/api/suivi/version/poubelle
      *
      * @param Request $request
-     * @param Security $security
      *
      * @return [type]
      *
@@ -496,7 +577,7 @@ class ApiSuiviController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/suivi/version/poubelle', name: 'suivi_version_poubelle', methods: ['PUT'])]
-    public function suiviVersionPoubelle(Request $request, Security $security): response
+    public function suiviVersionPoubelle(Request $request): response
     {
         /** On instancie l'entityRepository */
         $historique = $this->em->getRepository(Historique::class);
@@ -521,7 +602,7 @@ class ApiSuiviController extends AbstractController
             return $response->setData(['date_version' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
 
         /** si on est pas GESTIONNAIRE on ne fait rien. */
-        if (!$security->isGranted('ROLE_GESTIONNAIRE')){
+        if (!$this->security->isGranted('ROLE_GESTIONNAIRE')){
             return $response->setData(['mode' => $data->mode, 'code' => 403, Response::HTTP_OK]);
         }
 

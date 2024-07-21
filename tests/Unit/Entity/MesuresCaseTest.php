@@ -46,7 +46,7 @@ class MesuresCaseTest extends TestCase
         ->setSqaleDebtRatio(static::$sqaleDebtRatio)
         ->setIssues(static::$issues)
         ->setTests(static::$tests)
-        ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
+        ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
     }
 
     protected function setUp(): void
