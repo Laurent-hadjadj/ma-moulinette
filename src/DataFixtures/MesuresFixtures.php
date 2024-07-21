@@ -17,7 +17,7 @@ class MesuresFixtures extends Fixture
   private static $lines = 22015;
   private static $ncloc = 10043;
   private static $coverage = 10.3;
-  private static $duplicationDensity = 5.1;
+  private static $duplicatedLinesDensity = 5.1;
   private static $sqaleDebtRatio = 26.0;
   private static $issues = 200;
   private static $tests = 123;
@@ -32,7 +32,7 @@ class MesuresFixtures extends Fixture
           ->setLines(static::$lines)
           ->setNcloc(static::$ncloc)
           ->setCoverage(static::$coverage)
-          ->setDuplicationDensity(static::$duplicationDensity)
+          ->setDuplicationDensity(static::$duplicatedLinesDensity)
           ->setSqaleDebtRatio(static::$sqaleDebtRatio)
           ->setIssues(static::$issues)
           ->setTests(static::$tests)

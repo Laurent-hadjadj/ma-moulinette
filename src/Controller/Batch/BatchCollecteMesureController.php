@@ -92,7 +92,7 @@ class BatchCollecteMesureController extends AbstractController
         /** Initialisation des mesures avec des valeurs par défaut */
         $lines = intval($result['measures']['lines'] ?? 0);
         $coverage = $result['measures']['coverage'] ?? 0;
-        $duplicationDensity = $result['measures']['duplicationDensity'] ?? 0;
+        $duplicatedLinesDensity = $result['measures']['duplicated_lines_density'] ?? 0;
         $tests = intval($result['measures']['tests'] ?? 0);
         $issues = intval($result['measures']['issues'] ?? 0);
 
@@ -142,7 +142,7 @@ class BatchCollecteMesureController extends AbstractController
             'language_distribution' => $distribution,
             'sqale_debt_ratio' => $sqaleRatio,
             'coverage' => $coverage,
-            'duplication_density' => $duplicationDensity,
+            'duplicated_lines_density' => $duplicatedLinesDensity,
             'tests' => $tests,
             'issues' => $issues,
             'mode_collecte' => $modeCollecte,
@@ -164,7 +164,7 @@ class BatchCollecteMesureController extends AbstractController
             'language_distribution' => $distribution,
             'coverage'=> (float)$coverage,
             'sqale_debt_ratio' => $sqaleRatio,
-            'duplication_density' => (float)$duplicationDensity,
+            'duplicated_lines_density' => (float)$duplicatedLinesDensity,
             'tests' => $tests,
             'issues' => $issues,
         ];

@@ -343,7 +343,7 @@ class ApiPeintureController extends AbstractController
             'lines' => $request['mesures'][0]['lines'],
             'coverage' => $request['mesures'][0]['coverage'],
             'sqaleDebtRatio' => $request['mesures'][0]['sqale_debt_ratio'],
-            'duplication_density' => $request['mesures'][0]['duplication_density'],
+            'duplicated_lines_density' => $request['mesures'][0]['duplicated_lines_density'],
             'tests' => $request['mesures'][0]['tests'],
             'issues' => $request['mesures'][0]['issues'],
             Response::HTTP_OK

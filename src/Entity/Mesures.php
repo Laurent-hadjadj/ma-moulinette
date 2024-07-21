@@ -67,7 +67,7 @@ class Mesures
 
     #[ORM\Column(type: Types::FLOAT, nullable: false, options: ['comment' => 'Densité de duplication du code'])]
     #[Assert\NotNull]
-    private $duplicationDensity;
+    private $duplicatedLinesDensity;
 
     #[ORM\Column(type: Types::INTEGER, nullable: false,
         options: ['comment' => 'Nombre total de tests'])]
@@ -173,14 +173,14 @@ class Mesures
         return $this;
     }
 
-    public function getDuplicationDensity(): ?float
+    public function getDuplicatedLinesDensity(): ?float
     {
-        return $this->duplicationDensity;
+        return $this->duplicatedLinesDensity;
     }
 
-    public function setDuplicationDensity(float $duplicationDensity): static
+    public function setDuplicationDensity(float $duplicatedLinesDensity): static
     {
-        $this->duplicationDensity = $duplicationDensity;
+        $this->duplicatedLinesDensity = $duplicatedLinesDensity;
 
         return $this;
     }

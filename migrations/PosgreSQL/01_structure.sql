@@ -340,7 +340,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.historique
   nombre_ligne integer NOT NULL,
   nombre_ligne_code integer NOT NULL,
   coverage double precision NOT NULL,
-  duplication_density double precision NOT NULL,
+  duplicated_lines_density double precision NOT NULL,
   tests integer NOT NULL,
   violations integer NOT NULL,
   nombre_bug integer NOT NULL,
@@ -408,7 +408,7 @@ COMMENT ON COLUMN ma_moulinette.historique.todo IS 'Compteur de l’utilisation 
 COMMENT ON COLUMN ma_moulinette.historique.nombre_ligne IS 'Nombre total de lignes dans le projet';
 COMMENT ON COLUMN ma_moulinette.historique.nombre_ligne_code IS 'Nombre total de lignes de code dans le projet';
 COMMENT ON COLUMN ma_moulinette.historique.coverage IS 'Pourcentage de couverture de code par les tests';
-COMMENT ON COLUMN ma_moulinette.historique.duplication_density IS 'Pourcentage de duplication dans le code';
+COMMENT ON COLUMN ma_moulinette.historique.duplicated_lines_density IS 'Pourcentage de duplication dans le code';
 COMMENT ON COLUMN ma_moulinette.historique.tests IS 'Nombre de tests unitaires exécutés';
 COMMENT ON COLUMN ma_moulinette.historique.violations IS 'Nombre total de défauts détectés';
 COMMENT ON COLUMN ma_moulinette.historique.nombre_bug IS 'Nombre total de bugs détectés';
@@ -705,7 +705,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.mesures
   language_distribution JSON NOT NULL,
   coverage double precision NOT NULL,
   sqale_debt_ratio double precision NOT NULL,
-  duplication_density double precision NOT NULL,
+  duplicated_lines_density double precision NOT NULL,
   tests integer NOT NULL,
   issues integer NOT NULL,
   mode_collecte character varying(32),
@@ -724,7 +724,7 @@ COMMENT ON COLUMN ma_moulinette.mesures.ncloc IS 'Lignes de code non commentées
 COMMENT ON COLUMN ma_moulinette.mesures.language_distribution IS 'Distribution des langages de programmation';
 COMMENT ON COLUMN ma_moulinette.mesures.coverage IS 'Pourcentage de couverture par les tests';
 COMMENT ON COLUMN ma_moulinette.mesures.sqale_debt_ratio IS 'Ratio de dette technique (SQALE)';
-COMMENT ON COLUMN ma_moulinette.mesures.duplication_density IS 'Densité de duplication du code';
+COMMENT ON COLUMN ma_moulinette.mesures.duplicated_lines_density IS 'Densité de duplication du code';
 COMMENT ON COLUMN ma_moulinette.mesures.tests IS 'Nombre total de tests';
 COMMENT ON COLUMN ma_moulinette.mesures.issues IS 'Nombre total de problèmes identifiés';
 COMMENT ON COLUMN ma_moulinette.mesures.mode_collecte IS 'Mode de collecte : collecte, traitement manuel ou traitement automatique';

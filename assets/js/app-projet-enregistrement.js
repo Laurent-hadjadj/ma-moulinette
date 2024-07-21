@@ -98,14 +98,14 @@ export const enregistrement=function(mavenKey) {
   const t7 = document.getElementById('nombre-ligne-de-code');
   const t8 = document.getElementById('coverage');
   const t8a = document.getElementById('ratio-dette-technique');
-  const t9 = document.getElementById('duplication-density');
+  const t9 = document.getElementById('duplicated-lines-density');
   const t10 = document.getElementById('tests');
   const t11 = document.getElementById('violations');
   const nombreLigne=t6.dataset.nombreLigne;
   const nombreLigneDeCode=t7.dataset.nombreLigneDeCode;
   const coverage=t8.dataset.coverage;
   const sqaleDebtRatio=t8a.dataset.sqaleDebtRatio;
-  const duplication_density=t9.dataset.duplicationDensity;
+  const duplicated_lines_density=t9.dataset.duplicatedLinesDensity;
   const tests=t10.dataset.tests;
   const violations=t11.dataset.violations;
 
@@ -200,7 +200,7 @@ export const enregistrement=function(mavenKey) {
     'suppress_warning': suppressWarning, 'no_sonar': noSonar, todo,
     'logger_info': loggerInfo, 'logger_warn': loggerWarn, 'logger_error': loggerError,
     'logger_debug': loggerDebug,
-    'nombre_ligne_code': nombreLigneDeCode, 'nombre_ligne': nombreLigne, coverage, 'duplication_density':duplication_density,
+    'nombre_ligne_code': nombreLigneDeCode, 'nombre_ligne': nombreLigne, coverage, 'duplicated_lines_density':duplicated_lines_density,
     'sqale_debt_ratio': sqaleDebtRatio, 'tests': tests,
     'violations': violations, dette,
     'nombre_bug': nombreBug, 'nombre_vulnerability':nombreVulnerability,

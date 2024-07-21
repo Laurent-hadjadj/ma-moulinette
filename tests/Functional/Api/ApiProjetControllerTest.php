@@ -207,7 +207,7 @@ class ApiProjetControllerTest extends ApiTestCase
     $this->assertArrayHasKey('mesures', $decode);
     $this->assertEquals(5, count($decode['mesures']));
     $this->assertGreaterThanOrEqual(0, $decode['mesures']['coverage']);
-    $this->assertGreaterThanOrEqual(0, $decode['mesures']['duplication_density']);
+    $this->assertGreaterThanOrEqual(0, $decode['mesures']['duplicated_lines_density']);
     $this->assertGreaterThanOrEqual(0, $decode['mesures']['tests']);
     $this->assertGreaterThanOrEqual(0, $decode['mesures']['issues']);
     $this->assertGreaterThanOrEqual(0, $decode['mesures']['ncloc']);
@@ -1106,7 +1106,7 @@ class ApiProjetControllerTest extends ApiTestCase
       'bugInfo'=>"0", 'bugMajor'=>"31", 'bugMinor'=>"30", 'codeSmellBlocker'=>"17",
       'codeSmellCritical'=>"133", 'codeSmellInfo'=>"2", 'codeSmellMajor'=>"1087",
       'codeSmellMinor'=>"656", 'coverage'=>"0", 'dateVersion'=>"2022-11-30 00:00:00",
-      'dette'=>"19586",'duplication_density'=>"5.1",'favori'=>1, 'frontend'=>"1945",
+      'dette'=>"19586",'duplicated_lines_density'=>"5.1",'favori'=>1, 'frontend'=>"1945",
       'hotspotHigh'=>"0", 'hotspotLow'=>"0", 'hotspotMedium'=>"2",'nombreHotspot'=>"2",
       'initial'=>0, 'mavenKey'=>"fr.ma-moulinette:ma-moulinette", 'noSonar'=>"0",
       'nomProjet'=>"ma-moulinette", 'nombreAnomalieBloquant'=>"17",   'nombreAnomalieCritique'=>"133", 'nombreAnomalieInfo'=>"2",

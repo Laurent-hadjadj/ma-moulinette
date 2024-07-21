@@ -409,7 +409,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                     suppress_warning, no_sonar, todo,
                     logger_info, logger_warn, logger_error, logger_debug,
                     nombre_ligne, nombre_ligne_code, coverage,
-                    duplication_density, sqale_debt_ratio, tests, violations, dette,
+                    duplicated_lines_density, sqale_debt_ratio, tests, violations, dette,
                     nombre_bug, nombre_vulnerability, nombre_code_smell,
                     bug_blocker, bug_critical, bug_major, bug_minor, bug_info,
                     vulnerability_blocker, vulnerability_critical, vulnerability_major,
@@ -431,7 +431,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                     :suppress_warning, :no_sonar, :todo,
                     :logger_info, :logger_warn, :logger_error, :logger_debug,
                     :nombre_ligne, :nombre_ligne_code,
-                    :coverage, :duplication_density, :sqale_debt_ratio, :tests,
+                    :coverage, :duplicated_lines_density, :sqale_debt_ratio, :tests,
                     :violations, :dette, :nombre_bug, :nombre_vulnerability,
                     :nombre_code_smell, :bug_blocker, :bug_critical, :bug_major,
                     :bug_minor, :bug_info, :vulnerability_blocker, :vulnerability_critical,
@@ -466,7 +466,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                         $stmt->bindValue(':nombre_ligne', $map['nombre_ligne']);
                         $stmt->bindValue(':nombre_ligne_code', $map['nombre_ligne_code']);
                         $stmt->bindValue(':coverage', $map['coverage']);
-                        $stmt->bindValue(':duplication_density', $map['duplication_density']);
+                        $stmt->bindValue(':duplicated_lines_density', $map['duplicated_lines_density']);
                         $stmt->bindValue(':sqale_debt_ratio', $map['sqale_debt_ratio']);
                         $stmt->bindValue(':tests', $map['tests']);
                         $stmt->bindValue(':violations', $map['violations']);

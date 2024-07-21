@@ -93,7 +93,7 @@ class ApiEnregistrementController extends AbstractController
             'suppress_warning'=>$data->suppress_warning, 'no_sonar'=>$data->no_sonar,
             'todo'=>$data->todo,
             'logger_info'=>$data->logger_info, 'logger_warn'=>$data->logger_warn, 'logger_error'=>$data->logger_error, 'logger_debug'=>$data->logger_debug,
-            'nombre_ligne'=>$data->nombre_ligne, 'nombre_ligne_code'=>$data->nombre_ligne_code, 'coverage'=>$data->coverage, 'duplication_density'=>$data->duplication_density, 'sqale_debt_ratio'=>$data->sqale_debt_ratio, 'tests'=>$data->tests, 'violations'=>$data->violations, 'dette'=>$data->dette,
+            'nombre_ligne'=>$data->nombre_ligne, 'nombre_ligne_code'=>$data->nombre_ligne_code, 'coverage'=>$data->coverage, 'duplicated_lines_density'=>$data->duplicated_lines_density, 'sqale_debt_ratio'=>$data->sqale_debt_ratio, 'tests'=>$data->tests, 'violations'=>$data->violations, 'dette'=>$data->dette,
             'nombre_bug'=>$data->nombre_bug, 'nombre_vulnerability'=>$data->nombre_vulnerability, 'nombre_code_smell'=>$data->nombre_code_smell,
             'bug_blocker'=>$data->bug_blocker, 'bug_critical'=>$data->bug_critical,
             'bug_major'=>$data->bug_major, 'bug_minor'=>$data->bug_minor, 'bug_info'=>$data->bug_info,

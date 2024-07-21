@@ -311,7 +311,7 @@ class SuiviControllerTest extends ApiTestCase
     $this->assertNotEquals(-1,$decode['hotspotsReview']);
     $this->assertEquals(20984,$decode['lines']);
     $this->assertEquals(17312,$decode['ncloc']);
-    $this->assertEquals(2.6,$decode['duplication']);
+    $this->assertEquals(2.6,$decode['duplicated_lines_density']);
     $this->assertEquals(50,$decode['coverage']);
     $this->assertNotEquals(0,$decode['coverage']);
     $this->assertEquals(134,$decode['tests']);
@@ -521,7 +521,7 @@ class SuiviControllerTest extends ApiTestCase
     $testUser = $userRepository->findOneByCourriel(static::$userTest);
     $client->loginUser($testUser);
 
-    $data=['mavenKey'=>'TEST', 'mode'=>'TEST', 'version'=>'1.6.0-RELEASE', 'date'=>'2022-11-30 00:00:00', 'bug'=> 61, 'date'=> "30-11-2022 00:00:00", 'mavenKey'=> "fr.ma-moulinette:ma-moulinette", 'nom'=> "ma-moulinette", 'version'=> "1.6.0-RELEASE", 'noteReliability'=> "C", 'codeSmell'=>1895, 'coverage'=> 0.0, 'defauts'=> 1956, 'dette'=> 19501, 'duplication'=> 5.1, 'hotspotsReview'=> 2, 'initial'=> 0, 'lines'=> 24471, 'ncloc'=> 17301, 'noteHotspotsReview'=> "E", 'noteReliability'=> "C", 'noteSecurity'=> "A", 'noteSqale'=> "C", 'tests'=> 0, 'vulnerabilities'=> 0];
+    $data=['mavenKey'=>'TEST', 'mode'=>'TEST', 'version'=>'1.6.0-RELEASE', 'date'=>'2022-11-30 00:00:00', 'bug'=> 61, 'date'=> "30-11-2022 00:00:00", 'mavenKey'=> "fr.ma-moulinette:ma-moulinette", 'nom'=> "ma-moulinette", 'version'=> "1.6.0-RELEASE", 'noteReliability'=> "C", 'codeSmell'=>1895, 'coverage'=> 0.0, 'defauts'=> 1956, 'dette'=> 19501, 'duplicated_lines_density'=> 5.1, 'hotspotsReview'=> 2, 'initial'=> 0, 'lines'=> 24471, 'ncloc'=> 17301, 'noteHotspotsReview'=> "E", 'noteReliability'=> "C", 'noteSecurity'=> "A", 'noteSqale'=> "C", 'tests'=> 0, 'vulnerabilities'=> 0];
 
     $client->request('PUT', '/api/suivi/mise-a-jour', ['json'=>$data] );
     $response = $client->getResponse()->getContent();

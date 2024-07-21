@@ -46,7 +46,7 @@ class MesuresRepository extends ServiceEntityRepository
         try {
                 $sql = "SELECT project_name as name, ncloc, language_distribution,
                             lines, coverage, sqale_debt_ratio,
-                            duplication_density as duplication, tests, issues
+                            duplicated_lines_density as duplication, tests, issues
                         FROM mesures
                         WHERE maven_key=:maven_key
                         ORDER BY date_enregistrement DESC LIMIT 1";
@@ -76,9 +76,9 @@ class MesuresRepository extends ServiceEntityRepository
             $this->getEntityManager()->getConnection()->beginTransaction();
 
             $sql = "INSERT INTO mesures
-                        (maven_key, project_name, lines, ncloc, language_distribution, sqale_debt_ratio, coverage, duplication_density, tests, issues, mode_collecte, utilisateur_collecte, date_enregistrement)
+                        (maven_key, project_name, lines, ncloc, language_distribution, sqale_debt_ratio, coverage, duplicated_lines_density, tests, issues, mode_collecte, utilisateur_collecte, date_enregistrement)
                     VALUES
-                        (:maven_key, :project_name, :lines, :ncloc, :language_distribution::json, :sqale_debt_ratio, :coverage, :duplication_density, :tests, :issues, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
+                        (:maven_key, :project_name, :lines, :ncloc, :language_distribution::json, :sqale_debt_ratio, :coverage, :duplicated_lines_density, :tests, :issues, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
 
             $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $stmt->bindValue(':maven_key', $map['maven_key']);
@@ -90,7 +90,7 @@ class MesuresRepository extends ServiceEntityRepository
             $stmt->bindValue(':language_distribution', $language_distribution_json);
             $stmt->bindValue(':sqale_debt_ratio', $map['sqale_debt_ratio']);
             $stmt->bindValue(':coverage', $map['coverage']);
-            $stmt->bindValue(':duplication_density', $map['duplication_density']);
+            $stmt->bindValue(':duplicated_lines_density', $map['duplicated_lines_density']);
             $stmt->bindValue(':tests', $map['tests']);
             $stmt->bindValue(':issues', $map['issues']);
             $stmt->bindValue(':mode_collecte', $map['mode_collecte']);

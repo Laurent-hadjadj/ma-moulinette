@@ -247,7 +247,7 @@ class ApiProjetPeintureControllerTest extends ApiTestCase
     $this->assertArrayHasKey('ncloc', $decode);
     $this->assertArrayHasKey('lines', $decode);
     $this->assertArrayHasKey('coverage', $decode);
-    $this->assertArrayHasKey('duplication_density', $decode);
+    $this->assertArrayHasKey('duplicated_lines_density', $decode);
     $this->assertArrayHasKey('tests', $decode);
     $this->assertArrayHasKey('issues', $decode);
     $this->assertEquals("Ma-Moulinette", $decode['name']);
@@ -258,8 +258,8 @@ class ApiProjetPeintureControllerTest extends ApiTestCase
     $this->assertIsInt($decode['lines']);
     $this->assertEquals(0, $decode['coverage']);
     $this->assertIsInt($decode['coverage']);
-    $this->assertEquals(5.1, $decode['duplication_density']);
-    $this->assertIsFloat($decode['duplication_density']);
+    $this->assertEquals(5.1, $decode['duplicated_lines_density']);
+    $this->assertIsFloat($decode['duplicated_lines_density']);
     $this->assertEquals(0, $decode['tests']);
     $this->assertIsInt($decode['tests']);
     $this->assertEquals(1956, $decode['issues']);

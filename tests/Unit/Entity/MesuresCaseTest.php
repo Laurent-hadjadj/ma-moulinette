@@ -28,7 +28,7 @@ class MesuresCaseTest extends TestCase
     private static $lines = 22015;
     private static $ncloc = 10043;
     private static $coverage = 10.3;
-    private static $duplicationDensity = 5.1;
+    private static $duplicatedLinesDensity = 5.1;
     private static $sqaleDebtRatio = 26.0;
     private static $issues = 200;
     private static $tests = 123;
@@ -42,7 +42,7 @@ class MesuresCaseTest extends TestCase
         ->setLines(static::$lines)
         ->setNcloc(static::$ncloc)
         ->setCoverage(static::$coverage)
-        ->setDuplicationDensity(static::$duplicationDensity)
+        ->setDuplicatedLinesDensity(static::$duplicatedLinesDensity)
         ->setSqaleDebtRatio(static::$sqaleDebtRatio)
         ->setIssues(static::$issues)
         ->setTests(static::$tests)
@@ -87,8 +87,8 @@ class MesuresCaseTest extends TestCase
 
     public function testSettingAndGettingDuplicationDensity(): void
     {
-        $this->mesures->setDuplicationDensity(static::$duplicationDensity);
-        $this->assertEquals(static::$duplicationDensity, $this->mesures->getDuplicationDensity());
+        $this->mesures->setDuplicationDensity(static::$duplicatedLinesDensity);
+        $this->assertEquals(static::$duplicatedLinesDensity, $this->mesures->getDuplicationDensity());
     }
 
     public function testSettingAndGettingSqaleDebtRatio(): void

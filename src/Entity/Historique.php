@@ -102,7 +102,7 @@ class Historique
     #[ORM\Column(type: Types::FLOAT,
         options: ['comment' => 'Pourcentage de duplication dans le code'])]
     #[Assert\NotNull]
-    private $duplicationDensity;
+    private $duplicatedLinesDensity;
 
     #[ORM\Column(type: Types::INTEGER,
         options: ['comment' => 'Nombre de tests unitaires exécutés'])]
@@ -717,7 +717,7 @@ class Historique
     }
 
     /**
-     * [Description for getDuplicationDensity]
+     * [Description for getDuplicatedLinesDensity]
      *
      * @return float|null
      *
@@ -725,15 +725,15 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function getDuplicationDensity(): ?float
+    public function getDuplicatedLinesDensity(): ?float
     {
-        return $this->duplicationDensity;
+        return $this->duplicatedLinesDensity;
     }
 
     /**
-     * [Description for setDuplicationDensity]
+     * [Description for setDuplicatedLinesDensity]
      *
-     * @param float $duplicationDensity
+     * @param float $duplicatedLinesDensity
      *
      * @return self
      *
@@ -741,9 +741,9 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setDuplicationDensity(float $duplicationDensity): self
+    public function setDuplicatedLinesDensity(float $duplicatedLinesDensity): self
     {
-        $this->duplicationDensity = $duplicationDensity;
+        $this->duplicatedLinesDensity = $duplicatedLinesDensity;
 
         return $this;
     }
