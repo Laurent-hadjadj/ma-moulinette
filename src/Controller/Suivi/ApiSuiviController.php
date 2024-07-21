@@ -332,7 +332,7 @@ class ApiSuiviController extends AbstractController
         ];
         $coverage = [
             'coverage' =>$data->coverage,
-            'duplication_density' =>$data->duplication_density,
+            'duplicated_lines_density' =>$data->duplicated_lines_density,
             'tests' =>$data->tests,
             'skipped_tests' => $data->skipped_tests,
             'test_errors' => $data->test_errors,
@@ -400,16 +400,15 @@ class ApiSuiviController extends AbstractController
                 'date_enregistrement' => $dateEnregistrement
             ];
         $autre=[
-            'actuator_info' => '{}',
             'mode_collecte' =>'COLLECTE',
-            'utilisateur_collecte' => $this->security->getCourriel() ?? 'null',
+            'utilisateur_collecte' => $this->security->getUser()->getCourriel() ?? 'null',
             'date_enregistrement' => $dateEnregistrement
         ];
 
         $map=$info+$version+$nosonar+$todo+$logger+$repartition+$coverage+$issues+$size+$dette+$maintainability+$reliability+$security+$severity+$hotspot+$autre;
-        dd($map);
+        $json='{}';
         /** On enregistre */
-        $request=$historiqueRepository->countHistoriqueProjet($map);
+        $request=$historiqueRepository->insertHistoriqueAjoutProjet($map,$json);
         if ($request['code']!=200) {
             return $response->setData(['code' => $request['code'], 'message'=>$request['erreur'],Response::HTTP_OK]);
         }
@@ -545,7 +544,7 @@ class ApiSuiviController extends AbstractController
             return $response->setData(['version' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
 
         /** si on est pas GESTIONNAIRE on ne fait rien. */
-        if (!$security->isGranted('ROLE_GESTIONNAIRE')){
+        if (!$this->security->isGranted('ROLE_GESTIONNAIRE')){
             return $response->setData(["mode" => $data->mode, "code" => 403, Response::HTTP_OK]);
         }
 
@@ -617,7 +616,7 @@ class ApiSuiviController extends AbstractController
         }
 
         /** On récupère l'objet User du contexte de sécurité */
-        $preference = $security->getUser()->getPreference();
+        $preference = $this->security->getUser()->getPreference();
 
         /**
          * On regarde si le le projet est un favori ?
@@ -625,7 +624,7 @@ class ApiSuiviController extends AbstractController
          * */
         $message='';
         if  (str_contains(\serialize($preference['version']), $data->maven_key)){
-            $courriel = $security->getUser()->getCourriel();
+            $courriel = $this->security->getUser()->getCourriel();
             $map=['courriel'=>$courriel, 'maven_key'=>$data->maven_key, 'version'=>$data->version, 'date_version'=>$data->date_version];
             $request=$utilisateur->deleteUtilisateurPreferenceFavori($preference, $map);
             $message='Le projet a été également supprimé de vos préférences.';
