@@ -40,12 +40,10 @@ Chart.register(ChartDataLabels);
 
 
 /* Initialisation de moments */
-const a= moment().toString();
-/* Pour éviter d'avoir une erreur sonar */
-console.info(a);
+moment().toString();
 
 /** On importe les constantes */
-import { contentType, http_200, http_201, http_202, http_400, http_404, chartColors, zero, un, deux, soixante, cent } from './constante.js';
+import { contentType, http_200, http_201, http_400, http_404, chartColors, zero, un, deux, soixante, cent } from './constante.js';
 
 /* Construction des callbox de type success */
 const callboxInformation='<div id="js-message" class="callout alert-callout-border primary" data-closable="slide-out-right" role="alert"><p class="open-sans color-bleu padding-right-1"><span class="lead"></span>Information ! </strong>';
