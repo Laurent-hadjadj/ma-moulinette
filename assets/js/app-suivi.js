@@ -145,7 +145,7 @@ const dessineMoiUnMouton= function( labels, data1, data2, data3) {
   const ctx = document.getElementById('graphique-anomalie').getContext('2d');
   const charts = new Chart(ctx, { type: 'line', data, options });
   if (charts === null) {
-    console.info('null');
+    sessionStorage.set('info', 'chartJs is null');
   }
 };
 
