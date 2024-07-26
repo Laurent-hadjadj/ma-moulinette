@@ -194,17 +194,20 @@ class UtilisateurRepository extends ServiceEntityRepository
         /**
          * On récupère la valeur de l'index pour le projet en favori et
          * on regarde si la version est unique.
+         *  item = "fr.monapplication:ma-moulinette" => [ 0 => "4.2.0-RELEASE", 1 => "4.2.1-RC1"]
          */
         $i=$index=-1;
         $nombreVersion=0;
         foreach($preference['version'] as $item){
             $i++;
+
             if (array_key_exists($map['maven_key'],$item)){
                 $index=$i;
-                $nombreVersion=count($item);
+                // nombre de version pour le projet
+                $nombreVersion=count($item[$map['maven_key']]);
             }
         }
-        dd($index,$nombreVersion, $listeFavori);
+
         /** On supprime le projet en favori car il n'y a qu'une version en favori*/
         if (in_array($map['maven_key'], $listeFavori) && $nombreVersion===1){
             $listeFavori=array_diff($listeFavori, [$map['maven_key']]);
