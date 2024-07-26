@@ -33,7 +33,7 @@ class SuiviController extends AbstractController
 {
     /** Définition des constantes */
     public static $route= "suivi/index.html.twig";
-    public static $reference = "SUIVI";
+    public static $reference = "[SUIVI]";
     public static $erreur = "Une erreur s'est produite (erreur ";
     public static $erreur400 = "La requête est incorrecte (Erreur 400).";
     public static $erreur404 = "Vous devez être rattaché à une équipe (erreur 404).";
