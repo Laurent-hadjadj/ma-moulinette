@@ -105,9 +105,10 @@ class HistoriqueRepository extends ServiceEntityRepository
         /** on prépare la réponse */
         $response=['code'=>200, 'erreur'=>''];
         try {
+            /** On désactive toutes les versions */
             $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "UPDATE historique
-                        SET initial=0
+                        SET initial=false
                         WHERE maven_key=:maven_key";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(':maven_key', $map['maven_key']);

@@ -29,6 +29,7 @@ class ApiSuiviController extends AbstractController
     public static $sonarUrl = "sonar.url";
     public static $reference = "[SUIVI]";
     public static $erreur400 = "La requête est incorrecte (erreur 400).";
+    public static $erreur403 = "Vous devez avoir le rôle GESTIONNAIRE pour réaliser cette action (Erreur 403).";
     public static $erreur404 = "Vous devez être rattaché à une équipe (erreur 404).";
     public static $erreur406 = "Je n'ai pas trouvé de projets pour ton équipe. ".
     "Vérifiez le nom du tag utilisé dans SonarQube (erreur 406).";
@@ -569,39 +570,41 @@ class ApiSuiviController extends AbstractController
     public function suiviVersionReference(Request $request): response
     {
         /** On instancie l'entityRepository */
-        $historique = $this->em->getRepository(Historique::class);
-
-        /** On décode le body */
-        $data = json_decode($request->getContent());
+        $historiqueRepository = $this->em->getRepository(Historique::class);
 
         /** On créé un nouvel objet Json */
         $response = new JsonResponse();
 
-        /** On regarde si $data est valide */
-        if ($data === null) {
-            return $response->setData(['data' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'maven_key')) {
-            return $response->setData(['maven_key' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
-        if (!property_exists($data, 'version')) {
-            return $response->setData(['version' => null, 'code'=>400, Response::HTTP_BAD_REQUEST]); }
+        /** On décode le body */
+        $data = json_decode($request->getContent());
+        if ($data === null ||
+            !property_exists($data, 'maven_key') ||
+            !property_exists($data, 'initial') ||
+            !property_exists($data, 'version') ||
+            !property_exists($data, 'date_version')) {
+            return $response->setData([
+                'code' => 400, 'type' => 'alert', 'reference' => static::$reference,
+                'message' => static::$erreur400, Response::HTTP_BAD_REQUEST]);
+        }
 
-        /** si on est pas GESTIONNAIRE on ne fait rien. */
+         /** si on est pas GESTIONNAIRE on ne fait rien. */
         if (!$this->security->isGranted('ROLE_GESTIONNAIRE')){
-            return $response->setData(["mode" => $data->mode, "code" => 403, Response::HTTP_OK]);
+            return $response->setData(
+                ['type'=>'warning', 'code' => 403, 'reference' => static::$reference,
+                'message' => static::$erreur403], Response::HTTP_OK);
         }
 
         /** On créé la map pour la requête de mise à jour */
         $map=[ 'initial'=>$data->initial, 'maven_key'=>$data->maven_key, 'version'=>$data->version, 'date_version'=>$data->date_version];
-        $request=$historique->updateHistoriqueReference($data->mode, $map);
+        $request=$historiqueRepository->updateHistoriqueReference($map);
         if ($request['code']!=200) {
             return $response->setData([
-                'mode' => $data->mode, 'maven-Key' => $data->maven_key,
-                'code'=>$request['code'], 'erreur' => $request['erreur'],
-                Response::HTTP_OK]);
+                'maven-Key' => $data->maven_key,
+                'code'=>$request['code'], 'erreur' => $request['erreur']],Response::HTTP_OK);
         }
 
         /** Tout c'est bien passé */
-        return $response->setData(['code' => 200, 'mode' => $data->mode, Response::HTTP_OK]);
+        return $response->setData(['code' => 200], Response::HTTP_OK);
     }
 
     /**
