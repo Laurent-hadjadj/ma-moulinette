@@ -456,7 +456,8 @@ class ApiSuiviController extends AbstractController
         /** On récupère les préférences de l'utilisateur */
         $preference = $this->getUser()->getPreference();
         /* ? l'utilisateur a activer la gestion des favori */
-        $preferenceFavori=$preference['status']['favori'] ?? false;
+
+        $preferenceFavori=$preference['statut']['favori'] ?? false;
         $preferenceVersion=$preference['version'] ?? false;
         // Récupérer les versions favorites pour la maven_key
         $favoriVersions = static::getFavoriVersions($preferenceVersion, $data->maven_key);
@@ -476,7 +477,18 @@ class ApiSuiviController extends AbstractController
             ], Response::HTTP_OK);
     }
 
-    // Fonction pour récupérer les versions d'une application spécifique
+    /**
+     * [Description for getFavoriVersions]
+     * Fonction pour récupérer les versions d'une application spécifique
+     * @param mixed $version
+     * @param mixed $appKey
+     *
+     * @return [type]
+     *
+     * Created at: 26/07/2024 11:34:08 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function getFavoriVersions($version, $appKey) {
     foreach ($version as $entry) {
         if (isset($entry[$appKey])) {
@@ -515,8 +527,15 @@ class ApiSuiviController extends AbstractController
         $preference = $this->getUser()->getPreference();
         $courriel = $this->getUser()->getCourriel();
 
-        $map=['favori'=>$data->favori, 'courriel'=> $courriel, 'maven_key'=>$data->maven_key, 'version'=>$data->version, 'date_version'=>$data->date_version];
-        /** si le favori a été supprimé favori=0 */
+        $map=[
+            'favori'=>$data->favori,
+            'courriel'=> $courriel,
+            'maven_key'=>$data->maven_key,
+            'version'=>$data->version,
+            'date_version'=>$data->date_version
+        ];
+
+        /** si le favori a été supprimé favori=0=false */
         if ($data->favori===0) {
             $request=$utilisateurRepository->deleteUtilisateurPreferenceFavori($preference, $map);
             return $response->setData(['code' => 201, Response::HTTP_OK]);
@@ -584,6 +603,7 @@ class ApiSuiviController extends AbstractController
         /** Tout c'est bien passé */
         return $response->setData(['code' => 200, 'mode' => $data->mode, Response::HTTP_OK]);
     }
+
     /**
      * [Description for suiviVersionPoubelle]
      * On supprime la version de historique
