@@ -109,7 +109,7 @@ class UtilisateurRepository extends ServiceEntityRepository
             array_push($preference['favori'], $map['maven_key']);
         }
 
-        /** On ajoute la version du projet en favori si il n'existe pas */
+        /** On ajoute la version du projet en favori s'il n'existe pas */
         if (!str_contains(\serialize($preference['version']), $map['maven_key'])){
             /** On ajoute à la liste la version */
             array_push($preference['version'],[$map['maven_key'] => [$map['version']]]);
@@ -119,14 +119,12 @@ class UtilisateurRepository extends ServiceEntityRepository
             /**
              * On parse le json, pour trouver la version ($index)
              * et on ajoute une nouvelle version, si la version n'existe pas dans la liste
-             * liste = [ "fr.ma-moulinette:monapplication" => [ 0 => "4.1.0-RELEASE"] ]
+             * liste = [ "fr.ma-moulinette:monapplication" => [ 0 => "4.1.0-RELEASE", 1 => "4.2.1-RC1"] ]
              */
             foreach ($preference['version'] as $key => $liste) {
                 /** On récupère chaque liste de version et on cherche si la version existe ou non pour la clé*/
-                if ($key === $index) {
-                    if (!in_array($map['version'],$liste[$map['maven_key']])) {
-                        array_push($preference['version'][$index][$map['maven_key']],$map['version']);
-                    }
+                if ($key === $index && !in_array($map['version'],$liste[$map['maven_key']])) {
+                    array_push($preference['version'][$index][$map['maven_key']],$map['version']);
                 }
                 if ($key !== $index) {
                     array_push($listeVersion, $preference['version'][$key]);
@@ -206,7 +204,7 @@ class UtilisateurRepository extends ServiceEntityRepository
                 $nombreVersion=count($item);
             }
         }
-
+        dd($index,$nombreVersion, $listeFavori);
         /** On supprime le projet en favori car il n'y a qu'une version en favori*/
         if (in_array($map['maven_key'], $listeFavori) && $nombreVersion===1){
             $listeFavori=array_diff($listeFavori, [$map['maven_key']]);
