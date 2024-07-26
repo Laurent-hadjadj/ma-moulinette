@@ -91,11 +91,11 @@ class ApiProjetController extends AbstractController
         $map=['maven_key'=>$data->maven_key, 'courriel'=>$courriel];
         $request = $utilisateurEntity->updateUtilisateurPreferenceFavori($preference, $map);
         if ($request['code']!=200) {
-            return $response->setData(['code' => $request['code'], Response::HTTP_OK]);
+            return $response->setData(['code' => $request['code']], Response::HTTP_OK);
         }
 
         return $response->setData(
-            ['code'=>200, 'statut' => $request['statut'], Response::HTTP_OK]);
+            ['code'=>200, 'statut' => $request['statut']], Response::HTTP_OK);
     }
 
     /**
@@ -132,7 +132,7 @@ class ApiProjetController extends AbstractController
         $preference = $security->getUser()->getPreference();
 
         $favori = in_array($data->mavenKey, $preference['favori']);
-        return $response->setData(['favori' => $favori, Response::HTTP_OK]);
+        return $response->setData(['favori' => $favori], Response::HTTP_OK);
     }
 
     /**
@@ -164,7 +164,7 @@ class ApiProjetController extends AbstractController
             /** On envoi un message à l'utilisateur */
             return $response->setData([
                 'code'=>404, 'reference' => static::$reference,
-                'message' => static::$erreur404, 'type' => 'alert', Response::HTTP_OK]);
+                'message' => static::$erreur404, 'type' => 'alert'], Response::HTTP_OK);
         }
 
         /** On recherche les projets pour les équipes rattaché à l'utilisateur */
@@ -185,7 +185,7 @@ class ApiProjetController extends AbstractController
         $map=['clause_where'=>$inTrim];
         $requestListe = $listeProjetRepository->selectListeProjetByEquipe($map);
         if ($requestListe['code']!=200) {
-            return $response->setData(['code' => $requestListe['code'], Response::HTTP_OK]);
+            return $response->setData(['code' => $requestListe['code']], Response::HTTP_OK);
         }
 
         $projets = $requestListe['liste'];
@@ -195,10 +195,10 @@ class ApiProjetController extends AbstractController
             $type = 'warning';
             return $response->setData(
                 ['code'=>406, 'reference' =>  static::$reference,
-                'message' => static::$erreur406, 'type' => $type, Response::HTTP_OK]);
+                'message' => static::$erreur406, 'type' => $type], Response::HTTP_OK);
         }
 
-        return $response->setData(['code'=>200, 'projet' => $projets, Response::HTTP_OK]);
+        return $response->setData(['code'=>200, 'projet' => $projets], Response::HTTP_OK);
     }
 
 }

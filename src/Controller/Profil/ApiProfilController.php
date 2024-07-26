@@ -82,10 +82,10 @@ class ApiProfilController extends AbstractController
 
         /** si on est pas GESTIONNAIRE on ne fait rien. */
         if (!$security->isGranted('ROLE_GESTIONNAIRE')){
-            return $response->setData(['code' => 403, Response::HTTP_OK]);
+            return $response->setData(['code' => 403], Response::HTTP_OK);
         }
 
-        /** On définit l'URL et on ajoute le nom des profils sonarqube*/
+        /** On définit l'URL et on ajoute le nom des profils SonarQube*/
         $url = $this->getParameter(static::$sonarUrl)
             . "/api/qualityprofiles/search";
 
@@ -94,7 +94,7 @@ class ApiProfilController extends AbstractController
 
         /** On Vérifie qu'il existe au moins un profil */
         if (empty($httpReturn['profiles'])) {
-            return $response->setData(['code' => 202, Response::HTTP_OK]);
+            return $response->setData(['code' => 202], Response::HTTP_OK);
         }
 
         /*** Super on a récupéré la liste des profils par langage */
@@ -105,7 +105,7 @@ class ApiProfilController extends AbstractController
         /** On supprime les données de la table avant d'importer les données;*/
         $rq1=$profilesEntity->deleteProfiles();
         if ($rq1['code']===500) {
-            return $response->setData(['code' => 500, 'erreur'=>$rq1['erreur'], Response::HTTP_OK]);
+            return $response->setData(['code' => 500, 'erreur'=>$rq1['erreur']], Response::HTTP_OK);
         }
 
         /** On insert les profils dans la table profiles. */
@@ -133,7 +133,7 @@ class ApiProfilController extends AbstractController
         $propertiesEntity->updatePropertiesProfiles($map);
 
         return $response->setData([
-            'code' => 200, "listeProfil" => $rq2['liste'], Response::HTTP_OK]);
+            'code' => 200, "listeProfil" => $rq2['liste']], Response::HTTP_OK);
     }
 
     /**
@@ -176,7 +176,7 @@ class ApiProfilController extends AbstractController
         }
 
         return $response->setData(
-            ['label' => $listeLabel, 'dataset' => $listeDataset, Response::HTTP_OK]);
+            ['label' => $listeLabel, 'dataset' => $listeDataset], Response::HTTP_OK);
     }
 
     /**
@@ -214,7 +214,7 @@ class ApiProfilController extends AbstractController
             "opened" =>0, "closed" => 0, "updated" => 0, "totalRegle" => null,
             "first" => null, "last"=> null, "dateGroupe" => null, "nbGroupe" => null, "liste" => null, "badge" => null,
             "version" => $this->getParameter("version"),
-            "dateCopyright" => \date("Y"), Response::HTTP_OK];
+            "dateCopyright" => \date("Y")];
         /** si le mode n'est pas défini ou si le tableau ne contient pas trois clé alors */
         if (count($exxplode) !=3) {
              /** On prepare un message flash */
@@ -341,7 +341,7 @@ class ApiProfilController extends AbstractController
             "first" => $first['request'][0], "last" => $last['request'][0],
             "dateGroupe" => $tempoDateGroupe, "nbGroupe" => $i, "liste" => $liste, "badge" => $badge,
             "version" => $this->getParameter("version"),
-            "dateCopyright" => \date("Y"), Response::HTTP_OK];
+            "dateCopyright" => \date("Y")];
 
         return $this->render('profil/details.html.twig', $render);
     }
@@ -381,6 +381,6 @@ class ApiProfilController extends AbstractController
         $request=$profilesEntity->selectProfiles($referentielDefault,$langage);
         $compte=$profilesEntity->countProfiles($referentielDefault,$langage);
         return $response->setData([
-            'code' => 200, 'listeProfil' => $request['liste'], 'countProfil' =>$compte, Response::HTTP_OK]);
+            'code' => 200, 'listeProfil' => $request['liste'], 'countProfil' =>$compte], Response::HTTP_OK);
     }
 }

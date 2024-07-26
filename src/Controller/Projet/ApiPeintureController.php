@@ -137,7 +137,7 @@ class ApiPeintureController extends AbstractController
          */
         $request = $anomalieRepository->selectAnomalieByProjectName();
         if ($request['code']!=200) {
-            return $response->setData(['code' => $request['code'], Response::HTTP_OK]);
+            return $response->setData(['code' => $request['code']], Response::HTTP_OK);
         }
 
         /** Si on a pas trouvé d'application. */
@@ -145,7 +145,7 @@ class ApiPeintureController extends AbstractController
             $type = 'primary';
             $reference = static::$reference;
             $message = static::$erreur404;
-            return $response->setData(['code'=>406, 'type' => $type, 'reference' => $reference, 'message' => $message, Response::HTTP_OK]);
+            return $response->setData(['code'=>406, 'type' => $type, 'reference' => $reference, 'message' => $message], Response::HTTP_OK);
         }
 
         /** On récupère l'objet User du contexte de sécurité */
@@ -168,8 +168,8 @@ class ApiPeintureController extends AbstractController
 
         return $response->setData([
             'code' => 200,
-            'projets' => $projets,
-            Response::HTTP_OK]);
+            'projets' => $projets],
+            Response::HTTP_OK);
     }
 
     /**
@@ -219,7 +219,7 @@ class ApiPeintureController extends AbstractController
         if ($toutesLesVersions['code']!=200) {
             return $response->setData([
                 'code' => $toutesLesVersions['code'], 'type'=>'alert',
-                'reference'=> static::$reference, 'message'=> static::$erreur500, Response::HTTP_OK]);
+                'reference'=> static::$reference, 'message'=> static::$erreur500], Response::HTTP_OK);
         }
 
         /** Les releases */
@@ -227,7 +227,7 @@ class ApiPeintureController extends AbstractController
         $release=$informationProjetEntity->countInformationProjetType($map);
         $releaseCount = isset($release['nombre'][0]['total']) ? $release['nombre'][0]['total'] : 0;
         if ($release['code']!=200) {
-            return $response->setData(['code' => $release['code'], Response::HTTP_OK]);
+            return $response->setData(['code' => $release['code']], Response::HTTP_OK);
         }
 
         /** Les snapshots */
@@ -235,7 +235,7 @@ class ApiPeintureController extends AbstractController
         $snapshot=$informationProjetEntity->countInformationProjetType($map);
         $snapshotCount = isset($snapshot['nombre'][0]['total']) ? $snapshot['nombre'][0]['total'] : 0;
         if ($snapshot['code']!=200) {
-            return $response->setData([ 'code' => $snapshot['code'], Response::HTTP_OK]);
+            return $response->setData([ 'code' => $snapshot['code']], Response::HTTP_OK);
         }
 
         /** On calcul la valeur pour les autres types de version */
@@ -246,7 +246,7 @@ class ApiPeintureController extends AbstractController
         $map=['maven_key'=>$data->maven_key];
         $infoVersion=$informationProjetEntity->selectInformationProjetTypeIndexed($map);
         if ($snapshot['code']!=200) {
-            return $response->setData(['code' => $snapshot['code'], Response::HTTP_OK]);
+            return $response->setData(['code' => $snapshot['code']], Response::HTTP_OK);
         }
 
         $label = [];
@@ -260,7 +260,7 @@ class ApiPeintureController extends AbstractController
         $map=['maven_key'=>$data->maven_key];
         $infoRelease=$informationProjetEntity->selectInformationProjetVersionLast($map);
         if ($infoRelease['code']!=200) {
-            return $response->setData(['code' => $infoRelease['code'], Response::HTTP_OK]);
+            return $response->setData(['code' => $infoRelease['code']], Response::HTTP_OK);
         }
 
         /** Contrôle de la valeur des versions release, snapshot et release */
@@ -281,8 +281,7 @@ class ApiPeintureController extends AbstractController
                 'label' => $label, 'dataset' => $dataset,
                 'projet' => $infoRelease['version'][0]['projet'],
                 'date' => $infoRelease['version'][0]['date'],
-                'analyse_key' => $infoRelease['version'][0]['analyse_key'],
-                Response::HTTP_OK]
+                'analyse_key' => $infoRelease['version'][0]['analyse_key']], Response::HTTP_OK
         );
     }
 
@@ -331,7 +330,7 @@ class ApiPeintureController extends AbstractController
         $request=$mesuresRepository->selectMesuresVersionLast($map);
         if ($request['code']!=200) {
             return $response->setData([
-                'code' => $request['code'], Response::HTTP_OK]);
+                'code' => $request['code']], Response::HTTP_OK);
         }
         $languageDistribution=json_decode($request['mesures'][0]['language_distribution'], true);
 
@@ -394,7 +393,7 @@ class ApiPeintureController extends AbstractController
         $map=['maven_key'=>$data->maven_key];
         $anomalie=$anomalieRepository->selectAnomalie($map);
         if ($anomalie['code']!=200) {
-            return $response->setData(['code' => $anomalie['code'], Response::HTTP_OK]);
+            return $response->setData(['code' => $anomalie['code']], Response::HTTP_OK);
         }
 
         /**
@@ -437,8 +436,8 @@ class ApiPeintureController extends AbstractController
             $note=$notesRepository->selectNotesMavenType($map);
             if ($note['code']!=200) {
                 return $response->setData([
-                    'code' => $note['code'],
-                    Response::HTTP_OK]);
+                    'code' => $note['code']],
+                    Response::HTTP_OK);
             }
 
             if (isset($note['liste'][0]['value'])) {
@@ -519,7 +518,7 @@ class ApiPeintureController extends AbstractController
         $details=$anomalieDetailsRepository->selectAnomalieDetailsMavenKey($map);
         if ($details['code']!=200) {
             return $response->setData([
-                'code' => $details['code'], Response::HTTP_OK]);
+                'code' => $details['code']], Response::HTTP_OK);
         }
 
         $bugBlocker = $details['liste'][0]['bug_blocker'];
@@ -603,14 +602,14 @@ class ApiPeintureController extends AbstractController
         $map=['maven_key'=>$data->maven_key, 'status'=>'TO_REVIEW'];
         $toReview=$hotspotsRepository->countHotspotsStatus($map);
         if ($toReview['code']!=200) {
-            return $response->setData(['code' => $toReview['code'], Response::HTTP_OK]);
+            return $response->setData(['code' => $toReview['code']], Response::HTTP_OK);
         }
 
         /** On compte le nombre de hotspot au statut REVIEWED */
         $map=['maven_key'=>$data->maven_key, 'status'=>'REVIEWED'];
         $reviewed=$hotspotsRepository->countHotspotsStatus($map);
         if ($reviewed['code']!=200) {
-            return $response->setData(['code' => $reviewed['code'], Response::HTTP_OK]);
+            return $response->setData(['code' => $reviewed['code']], Response::HTTP_OK);
         }
 
         /** On calcul la note sonar */
@@ -620,7 +619,7 @@ class ApiPeintureController extends AbstractController
             $note=static::calculNoteHotspot($toReview['nombre'][0]['to_review'], $reviewed['nombre'][0]['reviewed']);
         }
 
-        return $response->setData(['code'=>200, 'note' => $note, Response::HTTP_OK]);
+        return $response->setData(['code'=>200, 'note' => $note], Response::HTTP_OK);
     }
 
     /**
@@ -666,7 +665,7 @@ class ApiPeintureController extends AbstractController
         $map=['maven_key'=>$data->maven_key, 'status'=>'REVIEWED'];
         $niveaux=$hotspotsRepository->selectHotspotsByNiveau($map);
         if ($niveaux['code']!=200) {
-            return $response->setData(['code' => $niveaux['code'], Response::HTTP_OK]);
+            return $response->setData(['code' => $niveaux['code']], Response::HTTP_OK);
         }
         if (!$niveaux){
             foreach ($niveaux as $niveau) {
@@ -684,7 +683,7 @@ class ApiPeintureController extends AbstractController
         }
         return $response->setData(
             ['code' => 200, 'total' => $total, 'high' => $high,
-            'medium' => $medium, 'low' => $low, Response::HTTP_OK]
+            'medium' => $medium, 'low' => $low], Response::HTTP_OK
         );
     }
 
@@ -728,7 +727,7 @@ class ApiPeintureController extends AbstractController
         $map=['maven_key'=>$data->maven_key];
         $rules=$noSonarRepository->selectNoSonarRuleGroupByRule($map);
         if ($rules['code']!=200) {
-            return $response->setData(['code' => $rules['code'], Response::HTTP_OK]);
+            return $response->setData(['code' => $rules['code']], Response::HTTP_OK);
         }
 
         $sonar1309 = $nosonar = $total = 0;
@@ -745,7 +744,7 @@ class ApiPeintureController extends AbstractController
         }
 
         return $response->setData(
-            ['code'=>200, 'total' => $total, 's1309' => $sonar1309, 'nosonar' => $nosonar, Response::HTTP_OK]
+            ['code'=>200, 'total' => $total, 's1309' => $sonar1309, 'nosonar' => $nosonar], Response::HTTP_OK
         );
     }
 
@@ -792,7 +791,7 @@ class ApiPeintureController extends AbstractController
         $map=['maven_key'=>$data->maven_key];
         $rules=$todoRepository->selectTodoRuleGroupByRule($map);
         if ($rules['code']!=200) {
-            return $response->setData(['code' => $rules['code'], Response::HTTP_OK]);
+            return $response->setData(['code' => $rules['code']], Response::HTTP_OK);
         }
 
         $todo = $java = $javascript = $typescript = $html = $xml = 0;
@@ -823,12 +822,12 @@ class ApiPeintureController extends AbstractController
         $map=['maven_key'=>$data->maven_key];
         $details=$todoRepository->selectTodoComponentOrderByRule($map);
         if ($details['code']!=200) {
-            return $response->setData(['code' => $details['code'], Response::HTTP_OK]);
+            return $response->setData(['code' => $details['code']], Response::HTTP_OK);
         }
 
         return $response->setData(
             ['code'=>200, 'todo' => $todo, 'java' => $java, 'javascript' => $javascript,
-                'typescript' => $typescript, 'html' => $html, 'xml' => $xml, "details" => $details, Response::HTTP_OK]
+                'typescript' => $typescript, 'html' => $html, 'xml' => $xml, "details" => $details], Response::HTTP_OK
         );
     }
 
@@ -860,7 +859,7 @@ class ApiPeintureController extends AbstractController
         $map=['maven_key'=>$data->maven_key];
         $logger=$loggerRepository->selectLogger($map);
         if ($logger['code']!=200) {
-            return $response->setData(['code' => $logger['code'], Response::HTTP_OK]);
+            return $response->setData(['code' => $logger['code']], Response::HTTP_OK);
         }
         /** Il n'y a pas de logger  */
         $loggerInfo = $loggerWarn = $loggerError = $loggerDebug = $total = -1;
@@ -883,8 +882,7 @@ class ApiPeintureController extends AbstractController
                 'logger_info' => $loggerInfo,
                 'logger_warn' => $loggerWarn,
                 'logger_error' => $loggerError,
-                'logger_debug' => $loggerDebug,
-                Response::HTTP_OK]
+                'logger_debug' => $loggerDebug], Response::HTTP_OK
         );
     }
 

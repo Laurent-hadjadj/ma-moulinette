@@ -89,12 +89,12 @@ class ApiOwaspPeintureController extends AbstractController
         if ($request['code']!=200) {
             return $response->setData([
                 'maven_key' => $data->maven_key, 'code'=>$request['code'],
-                'erreur' => $request['erreur'], Response::HTTP_OK]);
+                'erreur' => $request['erreur']], Response::HTTP_OK);
         }
 
         /** si on ne trouve pas la liste on retourne une erreur HTTP 406 */
         if (empty($request['liste'])) {
-            return $response->setData(['code' => 406, 'liste' => $request['liste'], Response::HTTP_OK]);
+            return $response->setData(['code' => 406, 'liste' => $request['liste']], Response::HTTP_OK);
         }
 
         /** Informations */
@@ -151,10 +151,8 @@ class ApiOwaspPeintureController extends AbstractController
                 'a3Minor' => $request['liste'][0]['a3_minor'], 'a4Minor' => $request['liste'][0]['a4_minor'],
                 'a5Minor' => $request['liste'][0]['a5_minor'], 'a6Minor' => $request['liste'][0]['a6_minor'],
                 'a7Minor' => $request['liste'][0]['a7_minor'], 'a8Minor' => $request['liste'][0]['a8_minor'],
-                'a9Minor' => $request['liste'][0]['a9_minor'], 'a10Minor' => $request['liste'][0]['a10_minor'],
-                Response::HTTP_OK
-            ]
-        );
+                'a9Minor' => $request['liste'][0]['a9_minor'], 'a10Minor' => $request['liste'][0]['a10_minor']],
+                Response::HTTP_OK);
     }
 
     /**
@@ -194,8 +192,8 @@ class ApiOwaspPeintureController extends AbstractController
         if ($reviewed['code']!=200) {
             return $response->setData([
                 'maven_key' => $data->maven_key,
-                'code'=>$reviewed['code'], 'erreur' => $request['erreur'],
-                Response::HTTP_OK]);
+                'code'=>$reviewed['code'], 'erreur' => $request['erreur']],
+                Response::HTTP_OK);
         }
 
         /** On compte le nombre de hotspot TO_REVIEW */
@@ -204,7 +202,7 @@ class ApiOwaspPeintureController extends AbstractController
         if ($toReview['code']!=200) {
             return $response->setData([
                 'maven_key' => $data->maven_key,'code'=>$toReview['code'],
-                'erreur' => $toReview['erreur'], Response::HTTP_OK]);
+                'erreur' => $toReview['erreur']], Response::HTTP_OK);
         }
 
         /** On récupère le nombre de hotspot owasp par niveau de sévérité potentiel. */
@@ -213,7 +211,7 @@ class ApiOwaspPeintureController extends AbstractController
         if ($probability['code']!=200) {
             return $response->setData([
                 'maven_key' => $data->maven_key, 'code'=>$probability['code'],
-                'erreur' => $probability['erreur'], Response::HTTP_OK]);
+                'erreur' => $probability['erreur']], Response::HTTP_OK);
         }
 
         $high = 0;
@@ -278,8 +276,8 @@ class ApiOwaspPeintureController extends AbstractController
         if ($menaces['code']!=200) {
             return $response->setData([
                 'maven_key' => $data->maven_key,
-                'code'=>$menaces['code'], 'erreur' => $menaces['erreur'],
-                Response::HTTP_OK]);
+                'code'=>$menaces['code'], 'erreur' => $menaces['erreur']],
+                Response::HTTP_OK);
         }
 
         $menaceA1 = $menaceA2 = $menaceA3 = $menaceA4 = $menaceA5 = $menaceA6 = $menaceA7 = $menaceA8 = $menaceA9 = $menaceA10 = 0;
@@ -365,11 +363,11 @@ class ApiOwaspPeintureController extends AbstractController
         if ($details['code']!=200) {
             return $response->setData([
                 'maven_key' => $data->maven_key,
-                'code'=>$details['code'], 'erreur' => $details['erreur'],
-                Response::HTTP_OK]);
+                'code'=>$details['code'], 'erreur' => $details['erreur']],
+                Response::HTTP_OK);
         }
 
-        return $response->setData(['details' => $details, Response::HTTP_OK]);
+        return $response->setData(['details' => $details], Response::HTTP_OK);
     }
 
     /**
@@ -409,8 +407,8 @@ class ApiOwaspPeintureController extends AbstractController
         if ($high['code']!=200) {
             return $response->setData([
                 'maven_key' => $data->maven_key,
-                'code'=>$high['code'], 'erreur' => $high['erreur'],
-                Response::HTTP_OK]);
+                'code'=>$high['code'], 'erreur' => $high['erreur']],
+                Response::HTTP_OK);
         }
 
         /** On compte le nombre de faille OWASP au statut MEDIUM */
@@ -419,8 +417,8 @@ class ApiOwaspPeintureController extends AbstractController
         if ($high['code']!=200) {
             return $response->setData([
                 'maven_key' => $data->maven_key,
-                'code'=>$medium['code'], 'erreur' => $medium['erreur'],
-                Response::HTTP_OK]);
+                'code'=>$medium['code'], 'erreur' => $medium['erreur']],
+                Response::HTTP_OK);
         }
 
         /**  On compte le nombre de faille OWASP au statut LOW */
@@ -429,12 +427,12 @@ class ApiOwaspPeintureController extends AbstractController
         if ($high['code']!=200) {
             return $response->setData([
                 'maven_key' => $data->maven_key,
-                'code'=>$low['code'], 'erreur' => $low['erreur'], Response::HTTP_OK]);
+                'code'=>$low['code'], 'erreur' => $low['erreur']], Response::HTTP_OK);
         }
 
 
         /**
-         * On vérifie la valeur des vulnerabilité de type HIGH, MEDIUMet LOW
+         * On vérifie la valeur des vulnérabilité de type HIGH, MEDIUMet LOW
          * Si la valeur est null alors on initialise à 0
          */
         if (empty($hhigh)) {
@@ -456,8 +454,7 @@ class ApiOwaspPeintureController extends AbstractController
         }
 
         return $response->setData(
-            ['high' => $high, 'medium' => $medium, 'low' => $low, Response::HTTP_OK]
-        );
+            ['high' => $high, 'medium' => $medium, 'low' => $low], Response::HTTP_OK);
     }
 
 }

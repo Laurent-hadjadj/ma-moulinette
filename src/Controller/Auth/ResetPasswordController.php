@@ -192,7 +192,7 @@ class ResetPasswordController extends AbstractController
         /** on récupère l'adresse mél de l'utilisateur qui fait la demande */
         $courriel = $this->getUser()->getCourriel();
 
-        /** On met à jour la table proprietes */
+        /** On met à jour la table propriétés */
         $map=[ 'init'=>$init, 'date_modification'=>$dateModification,
                 'courriel'=>$courriel ];
         $r=$utilisateurEntity->updateUtilisateurResetPassword($map);
@@ -200,9 +200,9 @@ class ResetPasswordController extends AbstractController
             return $response->setData([
                 'type' => 'alert',
                 'reference' => static::$reference, 'code' => $r['code'],
-                'message'=>$r['erreur'], Response::HTTP_OK]);
+                'message'=>$r['erreur']], Response::HTTP_OK);
         }
 
-        return $response->setData(['code'=>200 , Response::HTTP_OK]);
+        return $response->setData(['code'=>200], Response::HTTP_OK);
     }
 }

@@ -228,9 +228,8 @@ class ApiRepartitionController extends AbstractController
             "critical" => $critical,
             "major" => $major,
             "minor" => $minor,
-            "info" => $info,
-            Response::HTTP_OK]
-        );
+            "info" => $info],
+            Response::HTTP_OK);
     }
 
     /**
@@ -298,9 +297,8 @@ class ApiRepartitionController extends AbstractController
             "type" => $type,
             "severity" => $severity,
             "setup" => $setup,
-            "temps" => abs($date1 - $date2) + 2,
-            Response::HTTP_OK]
-        );
+            "temps" => abs($date1 - $date2) + 2],
+            Response::HTTP_OK);
     }
 
     /**
@@ -329,7 +327,7 @@ class ApiRepartitionController extends AbstractController
         /** On surprime de la table historique le projet */
         $sql = "DELETE FROM repartition WHERE maven_key='$mavenKey'";
         $this->em->getConnection()->prepare($sql)->executeStatement();
-        return $response->setData(["code" => "OK", Response::HTTP_OK]);
+        return $response->setData(["code" => "OK"], Response::HTTP_OK);
     }
 
     /**
@@ -338,7 +336,7 @@ class ApiRepartitionController extends AbstractController
      * @param Request $request
      *
      * @return Response
-     * ["code" => "OK", "repartition"=>$result, Response::HTTP_OK]
+     * ["code" => "OK", "repartition"=>$result], Response::HTTP_OK
      *
      * Created at: 04/12/2022, 09:05:20 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
@@ -374,7 +372,7 @@ class ApiRepartitionController extends AbstractController
             );
         /** on appelle le service d'analyse */
         $result = $this->batch_analyse($liste, $mavenKey);
-        return $response->setData(["code" => "OK", "repartition" => $result, Response::HTTP_OK]);
+        return $response->setData(["code" => "OK", "repartition" => $result], Response::HTTP_OK);
     }
 
 }

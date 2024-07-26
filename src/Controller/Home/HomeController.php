@@ -330,8 +330,8 @@ class HomeController extends AbstractController
 
         $data = [
                     'statut' => $statutFavori, 'listeFavori' => $liste,
-                    'nombreProjet' => count($listeFavori), Response::HTTP_OK];
-        return $response->setData($data);
+                    'nombreProjet' => count($listeFavori)];
+        return $response->setData($data, Response::HTTP_OK);
     }
 
     /**
@@ -384,7 +384,7 @@ class HomeController extends AbstractController
         /** On instancie l'entityRepository */
         $historiqueEntity = $this->em->getRepository(Historique::class);
 
-        /** On crée un objet de reponse JSON */
+        /** On crée un objet de response JSON */
         $response = new JsonResponse();
 
         /** On récupère l'objet User du contexte de sécurité */
@@ -407,8 +407,8 @@ class HomeController extends AbstractController
 
         $data = [
             'statut' => $statutVersion, 'listeVersion' => $liste,
-            'nombreProjet' => count($listeVersion), Response::HTTP_OK];
-        return $response->setData($data);
+            'nombreProjet' => count($listeVersion)];
+        return $response->setData($data, Response::HTTP_OK);
     }
 
     /**
@@ -600,8 +600,7 @@ class HomeController extends AbstractController
             'public' => $public, 'private' => $private,
             'nombre_projet' => $projetBd,
             'nombre_tag' => $tag['nombre'][0]['tag'],
-            'version' => $versionApp, 'dateCopyright' => \date('Y'),
-            Response::HTTP_OK];
+            'version' => $versionApp, 'dateCopyright' => \date('Y')];
 
             return $this->render('home/index.html.twig', $render);
     }

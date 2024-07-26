@@ -119,10 +119,10 @@ class ApiEnregistrementController extends AbstractController
             'rq'=>'insertTodo'];
         }
         if ($historique['code']===23505){
-            return $response->setData(["code" => 202, Response::HTTP_OK]);
+            return $response->setData(["code" => 202], Response::HTTP_OK);
         }
 
     /** Tout va bien ! */
-    return $response->setData(["code" => 200, Response::HTTP_OK]);
+    return $response->setData(["code" => 200], Response::HTTP_OK);
     }
 }

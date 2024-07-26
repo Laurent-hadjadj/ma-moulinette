@@ -66,7 +66,6 @@ class ProfilController extends AbstractController
 
         return $this->render('profil/index.html.twig', [
             'liste' => $rq1['liste'],
-            'version' => $this->getParameter('version'), 'dateCopyright' => \date("Y"),
-            Response::HTTP_OK]);
+            'version' => $this->getParameter('version'), 'dateCopyright' => \date("Y")]);
     }
 }

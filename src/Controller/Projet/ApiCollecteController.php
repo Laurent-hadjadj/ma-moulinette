@@ -125,8 +125,8 @@ class ApiCollecteController extends AbstractController
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return $response->setData(
                 ['type'=>'warning', 'code' => 403, 'reference' => static::$reference,
-                'message' => static::$erreur403,
-                Response::HTTP_OK]);
+                'message' => static::$erreur403],
+                Response::HTTP_OK);
         }
 
         /** On contrôle le mode d'utilisation */
@@ -138,15 +138,15 @@ class ApiCollecteController extends AbstractController
             return $response->setData([
                 'type' => 'error', 'code' => $information['code'],
                 'reference' => static::$reference,
-                'message' => $information['message'] ?? $information['error'],
-                Response::HTTP_OK]);
+                'message' => $information['message'] ?? $information['error']],
+                Response::HTTP_OK);
         }
         return $response->setData(['code' => 200, 'message' => [
             'projet'=>$information['message']['projet'],
             'release'=>$information['message']['release'],
             'snapshot'=>$information['message']['snapshot'],
-            'autre'=>$information['message']['autre']],
-            Response::HTTP_OK]);
+            'autre'=>$information['message']['autre']]],
+            Response::HTTP_OK);
     }
 
     /**
@@ -173,15 +173,16 @@ class ApiCollecteController extends AbstractController
         if ($data === null || !property_exists($data, 'maven_key') ) {
             return $response->setData(
                 ['data'=>$data,'code'=>400, 'type'=>'alert',
-                'reference'=> static::$reference, 'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+                'reference'=> static::$reference, 'message'=> static::$erreur400,
+                Response::HTTP_BAD_REQUEST]);
         }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return $response->setData(
                 ['type'=>'warning', 'code' => 403, 'reference' => static::$reference,
-                'message' => static::$erreur403,
-                Response::HTTP_OK]);
+                'message' => static::$erreur403],
+                Response::HTTP_OK);
         }
 
         /** On contrôle le mode d'utilisation */
@@ -193,11 +194,11 @@ class ApiCollecteController extends AbstractController
             return $response->setData([
                 'type' => 'error', 'code' => $mesure['code'],
                 'reference' => static::$reference,
-                'message' => $mesure['message'] ?? $mesure['error'],
-                Response::HTTP_OK]);
+                'message' => $mesure['message'] ?? $mesure['error']],
+                Response::HTTP_OK);
         }
 
-        return $response->setData(['code' => 200, 'message'=>['issues'=>$mesure['message']['issues']], Response::HTTP_OK]);
+        return $response->setData(['code' => 200, 'message'=>['issues'=>$mesure['message']['issues']]], Response::HTTP_OK);
     }
 
     /**
@@ -233,8 +234,8 @@ class ApiCollecteController extends AbstractController
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return $response->setData(
                 ['type'=>'warning', 'code' => 403, 'reference' => static::$reference,
-                'message' => static::$erreur403,
-                Response::HTTP_OK]);
+                'message' => static::$erreur403],
+                Response::HTTP_OK);
         }
 
         /** On contrôle le mode d'utilisation */
@@ -246,11 +247,11 @@ class ApiCollecteController extends AbstractController
             return $response->setData([
                 'type' => 'error', 'code' => $note['code'],
                 'reference' => static::$reference,
-                'message' => $note['message'] ?? $note['error'],
-                Response::HTTP_OK]);
+                'message' => $note['message'] ?? $note['error']],
+                Response::HTTP_OK);
         }
         return $response->setData(['code' => 200, 'type' => $data->type,
-        'message'=> ['note' => $note['message']['value']], Response::HTTP_OK]);
+        'message'=> ['note' => $note['message']['value']]], Response::HTTP_OK);
     }
 
     #[Route('/api/collecte/owasp', name: 'api_collecte_owasp', methods: ['POST'])]
@@ -273,8 +274,8 @@ class ApiCollecteController extends AbstractController
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return $response->setData(
                 ['type'=>'warning', 'code' => 403, 'reference' => static::$reference,
-                'message' => static::$erreur403,
-                Response::HTTP_OK]);
+                'message' => static::$erreur403],
+                Response::HTTP_OK);
         }
 
         /** On contrôle le mode d'utilisation */
@@ -286,12 +287,12 @@ class ApiCollecteController extends AbstractController
             return $response->setData([
                 'type' => 'error', 'code' => $owasp['code'],
                 'reference' => static::$reference,
-                'message' => $owasp['message'] ?? $owasp['error'],
-                Response::HTTP_OK]);
+                'message' => $owasp['message'] ?? $owasp['error']],
+                Response::HTTP_OK);
         }
 
-        return $response->setData(['code' => 200, 'nombre' => $owasp['nombre'], 'message'=>['Nombre de faille OWASP : ' => $owasp['nombre']],
-        Response::HTTP_OK]);
+        return $response->setData(['code' => 200, 'nombre' => $owasp['nombre'], 'message'=>['Nombre de faille OWASP : ' => $owasp['nombre']]],
+        Response::HTTP_OK);
     }
 
     /**
@@ -325,8 +326,8 @@ class ApiCollecteController extends AbstractController
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return $response->setData(
                 ['type'=>'warning', 'code' => 403, 'reference' => static::$reference,
-                'message' => static::$erreur403,
-                Response::HTTP_OK]);
+                'message' => static::$erreur403],
+                Response::HTTP_OK);
         }
 
         /** On contrôle le mode d'utilisation */
@@ -338,8 +339,7 @@ class ApiCollecteController extends AbstractController
             return $response->setData([
                 'type' => 'error', 'code' => $hotspot['code'],
                 'reference' => static::$reference,
-                'message' => $hotspot['message'] ?? $hotspot['error'],
-                Response::HTTP_OK]);
+                'message' => $hotspot['message'] ?? $hotspot['error']], Response::HTTP_OK);
         }
 
         return $response->setData([
@@ -348,8 +348,8 @@ class ApiCollecteController extends AbstractController
                     'hotspot_high' => $hotspot['data']['hotspot_high'],
                     'hotspot_medium' => $hotspot['data']['hotspot_medium'],
                     'hotspot_low' => $hotspot['data']['hotspot_low'],
-                    'nombre_hotspot' => $hotspot['data']['nombre_hotspot']],
-            Response::HTTP_OK]);
+                    'nombre_hotspot' => $hotspot['data']['nombre_hotspot']]],
+            Response::HTTP_OK);
     }
 
     /**
@@ -383,8 +383,7 @@ class ApiCollecteController extends AbstractController
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return $response->setData(
                 ['type'=>'warning', 'code' => 403, 'reference' => static::$reference,
-                'message' => static::$erreur403,
-                Response::HTTP_OK]);
+                'message' => static::$erreur403], Response::HTTP_OK);
         }
 
         /** On contrôle le mode d'utilisation */
@@ -396,16 +395,15 @@ class ApiCollecteController extends AbstractController
             return $response->setData([
                 'type' => 'error', 'code' => $anomalie['code'],
                 'reference' => static::$reference,
-                'message' => $anomalie['message'] ?? $anomalie['error'],
-                Response::HTTP_OK]);
+                'message' => $anomalie['message'] ?? $anomalie['error']], Response::HTTP_OK);
         }
 
         return $response->setData(['code' => 200, 'info'=>$anomalie['info'],'message'=>[
             'violations' => $anomalie['data']['violations'],
             'nombre_bug' => $anomalie['data']['nombre_bug'],
             'nombre_vulnerability' => $anomalie['data']['nombre_vulnerability'],
-            'nombre_code_smell' => $anomalie['data']['nombre_code_smell']],
-            Response::HTTP_OK]);
+            'nombre_code_smell' => $anomalie['data']['nombre_code_smell']]],
+            Response::HTTP_OK);
     }
 
     /**
@@ -439,8 +437,7 @@ class ApiCollecteController extends AbstractController
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return $response->setData(
                 ['type'=>'warning', 'code' => 403, 'reference' => static::$reference,
-                'message' => static::$erreur403,
-                Response::HTTP_OK]);
+                'message' => static::$erreur403], Response::HTTP_OK);
         }
 
         /** On contrôle le mode d'utilisation */
@@ -452,11 +449,10 @@ class ApiCollecteController extends AbstractController
             return $response->setData([
                 'type' => 'error', 'code' => $anomalieDetail['code'],
                 'reference' => static::$reference,
-                'message' => $anomalieDetail['message'] ?? $anomalieDetail['error'],
-                Response::HTTP_OK]);
+                'message' => $anomalieDetail['message'] ?? $anomalieDetail['error']], Response::HTTP_OK);
         }
 
-        return $response->setData(['code' => 200, 'message'=>['chargement des anomalies details'], Response::HTTP_OK]);
+        return $response->setData(['code' => 200, 'message'=>['chargement des anomalies details']], Response::HTTP_OK);
     }
 
     /**
@@ -492,8 +488,7 @@ class ApiCollecteController extends AbstractController
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return $response->setData(
                 ['type'=>'warning', 'code' => 403, 'reference' => static::$reference,
-                'message' => static::$erreur403,
-                Response::HTTP_OK]);
+                'message' => static::$erreur403], Response::HTTP_OK);
         }
 
         /** On contrôle le mode d'utilisation */
@@ -505,14 +500,13 @@ class ApiCollecteController extends AbstractController
             return $response->setData([
                 'type' => 'error', 'code' => $hotspotOwasp['code'],
                 'reference' => static::$reference,
-                'message' => $hotspotOwasp['message'] ?? $hotspotOwasp['error'],
-                Response::HTTP_OK]);
+                'message' => $hotspotOwasp['message'] ?? $hotspotOwasp['error']], Response::HTTP_OK);
         }
 
         return $response->setData(['code' => 200, 'info' => $hotspotOwasp['info'],
         'owasp2017'=>$hotspotOwasp['owasp_2017'] ?? 'nc',
         'owasp2021'=>$hotspotOwasp['owasp_2021'] ?? 'nc',
-        'message'=>$hotspotOwasp['message'], Response::HTTP_OK]);
+        'message'=>$hotspotOwasp['message']], Response::HTTP_OK);
     }
 
     /**
@@ -546,8 +540,7 @@ class ApiCollecteController extends AbstractController
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return $response->setData(
                 ['type'=>'warning', 'code' => 403, 'reference' => static::$reference,
-                'message' => static::$erreur403,
-                Response::HTTP_OK]);
+                'message' => static::$erreur403], Response::HTTP_OK);
         }
 
         /** On contrôle le mode d'utilisation */
@@ -559,11 +552,10 @@ class ApiCollecteController extends AbstractController
             return $response->setData([
                 'type' => 'error', 'code' => $hotspotDetail['code'],
                 'reference' => static::$reference,
-                'message' => $hotspotDetail['message'] ?? $hotspotDetail['error'],
-                Response::HTTP_OK]);
+                'message' => $hotspotDetail['message'] ?? $hotspotDetail['error']], Response::HTTP_OK);
         }
 
-        return $response->setData(['code' => 200, 'nombre'=>count($hotspotDetail),'message'=>'', Response::HTTP_OK]);
+        return $response->setData(['code' => 200, 'nombre'=>count($hotspotDetail),'message'=>''], Response::HTTP_OK);
     }
 
     /**
@@ -597,8 +589,7 @@ class ApiCollecteController extends AbstractController
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return $response->setData(
                 ['type'=>'warning', 'code' => 403, 'reference' => static::$reference,
-                'message' => static::$erreur403,
-                Response::HTTP_OK]);
+                'message' => static::$erreur403], Response::HTTP_OK);
         }
 
         /** On contrôle le mode d'utilisation */
@@ -610,14 +601,13 @@ class ApiCollecteController extends AbstractController
             return $response->setData([
                 'type' => 'error', 'code' => $noSonar['code'],
                 'reference' => static::$reference,
-                'message' => $noSonar['message'] ?? $noSonar['error'],
-                Response::HTTP_OK]);
+                'message' => $noSonar['message'] ?? $noSonar['error']], Response::HTTP_OK);
         }
 
         $nombre=$noSonar['message']['suppress_warning']??0 + $noSonar['message']['no_sonar']??0;
         return $response->setData(['code' => 200, 'nombre' => $nombre, 'message'=>[
             'suppress_warning' => $noSonar['message']['suppress_warning']??0,
-            'no_sonar' => $noSonar['message']['no_sonar']??0], Response::HTTP_OK]);
+            'no_sonar' => $noSonar['message']['no_sonar']??0]], Response::HTTP_OK);
     }
 
     /**
@@ -651,8 +641,7 @@ class ApiCollecteController extends AbstractController
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return $response->setData(
                 ['type'=>'warning', 'code' => 403, 'reference' => static::$reference,
-                'message' => static::$erreur403,
-                Response::HTTP_OK]);
+                'message' => static::$erreur403], Response::HTTP_OK);
         }
 
         /** On contrôle le mode d'utilisation */
@@ -664,10 +653,9 @@ class ApiCollecteController extends AbstractController
             return $response->setData([
                 'type' => 'error', 'code' => $todo['code'],
                 'reference' => static::$reference,
-                'message' => $todo['message'] ?? $todo['error'],
-                Response::HTTP_OK]);
+                'message' => $todo['message'] ?? $todo['error']], Response::HTTP_OK);
         }
-        return $response->setData(['code' => 200, 'nombre' => $todo['nombre'], 'message'=>'', Response::HTTP_OK]);
+        return $response->setData(['code' => 200, 'nombre' => $todo['nombre'], 'message'=>''], Response::HTTP_OK);
     }
 
     /**
@@ -702,8 +690,7 @@ class ApiCollecteController extends AbstractController
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return $response->setData(
                 ['type'=>'warning', 'code' => 403, 'reference' => static::$reference,
-                'message' => static::$erreur403,
-                Response::HTTP_OK]);
+                'message' => static::$erreur403], Response::HTTP_OK);
         }
 
         /** On contrôle le mode d'utilisation */
@@ -715,11 +702,10 @@ class ApiCollecteController extends AbstractController
             return $response->setData([
                 'type' => 'error', 'code' => $actuatorInfo['code'],
                 'reference' => static::$reference,
-                'message' => $actuatorInfo['message'] ?? $actuatorInfo['error'],
-                Response::HTTP_OK]);
+                'message' => $actuatorInfo['message'] ?? $actuatorInfo['error']], Response::HTTP_OK);
         }
         return $response->setData(['code' => 200, 'message'=>[
-            'json' => $actuatorInfo['json']], Response::HTTP_OK]);
+            'json' => $actuatorInfo['json']]], Response::HTTP_OK);
     }
 
     /**
@@ -754,8 +740,7 @@ class ApiCollecteController extends AbstractController
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return $response->setData(
                 ['type'=>'warning', 'code' => 403, 'reference' => static::$reference,
-                'message' => static::$erreur403,
-                Response::HTTP_OK]);
+                'message' => static::$erreur403], Response::HTTP_OK);
         }
 
         /** On contrôle le mode d'utilisation */
@@ -767,9 +752,8 @@ class ApiCollecteController extends AbstractController
             return $response->setData([
                 'type' => 'error', 'code' => $logger['code'],
                 'reference' => static::$reference,
-                'message' => $logger['message'] ?? $logger['error'],
-                Response::HTTP_OK]);
+                'message' => $logger['message'] ?? $logger['error']], Response::HTTP_OK);
         }
-        return $response->setData(['code' => 200, 'message'=>$logger['data'], Response::HTTP_OK]);
+        return $response->setData(['code' => 200, 'message'=>$logger['data']], Response::HTTP_OK);
     }
 }

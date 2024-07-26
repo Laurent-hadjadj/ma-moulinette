@@ -359,7 +359,7 @@ class BatchCollecteController extends AbstractController
 
         /** Rapport de collecte */
         $trace=$this->logger->file($mavenKey, $collecte);
-        return $response->setData(["Collecte" => $collecte, 'trace'=>$trace, Response::HTTP_OK]);
+        return $response->setData(['Collecte' => $collecte, 'trace'=>$trace], Response::HTTP_OK);
     }
 
 }

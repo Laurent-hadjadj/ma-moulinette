@@ -105,8 +105,8 @@ class PreferenceController extends AbstractController
         $exec->fetchAllAssociative();
 
 
-        $data = ['statut' => $statut, 'categorie' => $categorie,Response::HTTP_OK];
-        return $response->setData($data);
+        $data = ['statut' => $statut, 'categorie' => $categorie];
+        return $response->setData($data,Response::HTTP_OK);
     }
 
     /**
@@ -161,11 +161,11 @@ class PreferenceController extends AbstractController
         $exec->fetchAllAssociative();
 
 
-        /** On crée un objet de reponse JSON */
+        /** On crée un objet de response JSON */
         $response = new JsonResponse();
 
-        $data = [Response::HTTP_OK];
-        return $response->setData($data);
+        $data = ['200'];
+        return $response->setData($data, Response::HTTP_OK);
     }
 
     /**
@@ -237,10 +237,10 @@ class PreferenceController extends AbstractController
         $this->em->getConnection()->prepare($trim)->executeStatement();
  
 
-        /** On crée un objet de reponse JSON 'o'=>$object,'n'=>$nouvelleListeVersion,'t'=>$trim */
+        /** On crée un objet de response JSON 'o'=>$object,'n'=>$nouvelleListeVersion,'t'=>$trim */
         $response = new JsonResponse();
-        $data = [Response::HTTP_OK];
-        return $response->setData($data);
+        $data = [200];
+        return $response->setData($data,Response::HTTP_OK);
     }
 
     /**
@@ -266,12 +266,12 @@ class PreferenceController extends AbstractController
         /** On récupère l'objet User du contexte de sécurité */
         $preference = $security->getUser()->getPreference();
 
-        /** On crée un objet de reponse JSON */
+        /** On crée un objet de response JSON */
         $response = new JsonResponse();
 
         $data = [
-                'statut' => $preference['statut'], $categorie => $preference[$categorie], Response::HTTP_OK];
-        return $response->setData($data);
+                'statut' => $preference['statut'], $categorie => $preference[$categorie]];
+        return $response->setData($data, Response::HTTP_OK);
     }
 
     /**
@@ -325,8 +325,7 @@ class PreferenceController extends AbstractController
             'prenom' => $prenom, 'nom' => $nom, 'avatar' => $avatar, 'courriel' => $courriel,
             'roles' => $roles, 'equipes' => $equipes,
             'preferences' => $mesPreferences,
-            'version' => $versionAPP, 'dateCopyright' => \date('Y'),
-            Response::HTTP_OK];
+            'version' => $versionAPP, 'dateCopyright' => \date('Y')];
 
         return $this->render('preference/index.html.twig', $render);
     }

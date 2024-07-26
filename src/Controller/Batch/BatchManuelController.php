@@ -138,7 +138,7 @@ class BatchManuelController extends AbstractController
         }
 
         $journal=$this->logger->downloadContent($data->portefeuille, $data->type);
-        return $response->setData(['code' => 200, 'recherche' => $journal['recherche'], 'journal' => $journal['content'], Response::HTTP_OK]);
+        return $response->setData(['code' => 200, 'recherche' => $journal['recherche'], 'journal' => $journal['content']], Response::HTTP_OK);
     }
 
     #[Route('/traitement/journal/efface', name: 'journal_efface', methods: ['DELETE'])]
@@ -157,14 +157,14 @@ class BatchManuelController extends AbstractController
 
         $this->logger->log($data->portefeuille, $data->type, 'delete');
 
-        return $response->setData(['code' => 200, Response::HTTP_OK]);
+        return $response->setData(['code' => 200], Response::HTTP_OK);
     }
 
     /**
      * [Description for listeProjet]
      * Récupère la liste des projets depuis un portefeuille de projets.
      *
-     * @param string $itrePortefeuille
+     * @param string $titrePortefeuille
      * @param string $portefeuille
      *
      * @return array
@@ -265,7 +265,7 @@ class BatchManuelController extends AbstractController
                 Response::HTTP_OK);
             }
         }
-        return $response->setData(['code' => 200, Response::HTTP_OK]);
+        return $response->setData(['code' => 200], Response::HTTP_OK);
     }
 
 }

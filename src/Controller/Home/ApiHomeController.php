@@ -86,7 +86,7 @@ class ApiHomeController extends AbstractController
 
         /** On appel le client http */
         $result = $client->http($url);
-        return $response->setData([$result, Response::HTTP_OK]);
+        return $response->setData([$result], Response::HTTP_OK);
     }
 
     /**
@@ -117,7 +117,7 @@ class ApiHomeController extends AbstractController
             return $response->setData([
                 'type'=>'warning', 'code' => 403,
                 'reference' => static::$reference,
-                'message' => static::$erreur403, Response::HTTP_OK]);
+                'message' => static::$erreur403], Response::HTTP_OK);
         }
 
         $url = $this->getParameter(static::$sonarUrl)."/api/components/search_projects?ps=500";
@@ -137,7 +137,7 @@ class ApiHomeController extends AbstractController
                 return $response->setData([
                     'type' => 'warning',
                     'reference' => static::$reference, 'code' => 404,
-                    'message'=>static::$erreur404, Response::HTTP_OK]);
+                    'message'=>static::$erreur404], Response::HTTP_OK);
             }
         }
 
@@ -147,7 +147,7 @@ class ApiHomeController extends AbstractController
             return $response->setData([
                 'type' => 'alert',
                 'reference' => static::$reference, 'code' => $delete['code'],
-                'message'=>$delete['erreur'], Response::HTTP_OK]);
+                'message'=>$delete['erreur']], Response::HTTP_OK);
         }
 
         /**
@@ -194,7 +194,7 @@ class ApiHomeController extends AbstractController
             return $response->setData([
                 'type' => 'alert',
                 'reference' => static::$reference, 'code' => $r['code'],
-                'message'=>$r['erreur'], Response::HTTP_OK]);
+                'message'=>$r['erreur']], Response::HTTP_OK);
         }
 
         /** on renvoie les résultats */
@@ -205,7 +205,7 @@ class ApiHomeController extends AbstractController
             'reference' => static::$reference, 'type' => 'success',
             'message' => $message,'nombre' => $nombre,
             'public' => $public, 'private' => $private,
-            'empty_tags' => $emptyTags, Response::HTTP_OK ]);
+            'empty_tags' => $emptyTags], Response::HTTP_OK);
     }
 
     #[Route('/api/home/tags', name: 'home_projet_tags', methods: ['POST'])]
@@ -222,14 +222,14 @@ class ApiHomeController extends AbstractController
             return $response->setData([
                 'type'=>'warning', 'code' => 403,
                 'reference' => static::$reference,
-                'message' => static::$erreur403, Response::HTTP_OK]);
+                'message' => static::$erreur403], Response::HTTP_OK);
         }
 
         $tag = $listeProjetRepository->countListeProjetTags();
 
         return $response->setData(
             ['code' => 200,
-            'nombre_tag' => $tag['nombre'][0]['tag'], Response::HTTP_OK ]);
+            'nombre_tag' => $tag['nombre'][0]['tag']], Response::HTTP_OK);
     }
 
 }

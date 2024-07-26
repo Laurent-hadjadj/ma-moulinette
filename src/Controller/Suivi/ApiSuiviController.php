@@ -84,8 +84,7 @@ class ApiSuiviController extends AbstractController
         if ($request['code']!=200) {
             return $response->setData([
                 'maven_key' => $data->maven_key,
-                'code'=>$request['code'], 'erreur' => $request['erreur'],
-                Response::HTTP_OK]);
+                'code'=>$request['code'], 'erreur' => $request['erreur']], Response::HTTP_OK);
         }
 
         $liste = [];
@@ -101,7 +100,7 @@ class ApiSuiviController extends AbstractController
             $id++;
         }
 
-        return $response->setData(["liste" => $liste, Response::HTTP_OK]);
+        return $response->setData(["liste" => $liste], Response::HTTP_OK);
     }
 
     /**
@@ -411,10 +410,10 @@ class ApiSuiviController extends AbstractController
         /** On enregistre */
         $request=$historiqueRepository->insertHistoriqueAjoutProjet($map,$json);
         if ($request['code']!=200) {
-            return $response->setData(['code' => $request['code'], 'message'=>$request['erreur'],Response::HTTP_OK]);
+            return $response->setData(['code' => $request['code'], 'message'=>$request['erreur']],Response::HTTP_OK);
         }
 
-        return $response->setData(['code' => 200, Response::HTTP_OK]);
+        return $response->setData(['code' => 200], Response::HTTP_OK);
     }
 
     /**
@@ -539,18 +538,17 @@ class ApiSuiviController extends AbstractController
         /** si le favori a été supprimé favori=0=false */
         if ($data->favori===0) {
             $request=$utilisateurRepository->deleteUtilisateurPreferenceFavori($preference, $map);
-            return $response->setData(['code' => 201, Response::HTTP_OK]);
+            return $response->setData(['code' => 201], Response::HTTP_OK);
         }
 
         $request=$utilisateurRepository->insertUtilisateurPreferenceFavori($preference, $map);
         if ($request['code']!=200) {
             return $response->setData([
-                'code'=>$request['code'], 'erreur' => $request['erreur'],
-                Response::HTTP_OK]);
+                'code'=>$request['code'], 'erreur' => $request['erreur']], Response::HTTP_OK);
         }
 
         /** Tout c'est bien passé */
-        return $response->setData(['code' => 200, Response::HTTP_OK]);
+        return $response->setData(['code' => 200], Response::HTTP_OK);
     }
 
     /**
@@ -648,7 +646,7 @@ class ApiSuiviController extends AbstractController
 
         /** si on est pas GESTIONNAIRE on ne fait rien. */
         if (!$this->security->isGranted('ROLE_GESTIONNAIRE')){
-            return $response->setData(['mode' => $data->mode, 'code' => 403, Response::HTTP_OK]);
+            return $response->setData(['mode' => $data->mode, 'code' => 403], Response::HTTP_OK);
         }
 
         /** On supprime la version du projet */
@@ -657,8 +655,7 @@ class ApiSuiviController extends AbstractController
         if ($request['code']!=200) {
             return $response->setData([
                 'mode' => $data->mode, 'maven_key' => $data->maven_key,
-                'code'=>$request['code'], 'erreur' => $request['erreur'],
-                Response::HTTP_OK]);
+                'code'=>$request['code'], 'erreur' => $request['erreur']], Response::HTTP_OK);
         }
 
         /** On récupère l'objet User du contexte de sécurité */
@@ -677,6 +674,6 @@ class ApiSuiviController extends AbstractController
         }
 
         /** Tout c'est bien passé */
-        return $response->setData(['code' => 200, 'message'=>$message, 'mode' => $data->mode, Response::HTTP_OK]);
+        return $response->setData(['code' => 200, 'message'=>$message, 'mode' => $data->mode], Response::HTTP_OK);
     }
 }
