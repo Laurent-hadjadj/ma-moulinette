@@ -381,6 +381,14 @@ class HistoriqueRepository extends ServiceEntityRepository
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $stmt->bindValue(':maven_key', $map['maven_key']);
                 $graph=$stmt->executeQuery()->fetchAllAssociative();
+                // Conversion des dates en format ISO 8601
+                foreach ($graph as &$row) {
+                    // Crée un objet DateTime à partir de la chaîne de date
+                    $date = new \DateTime($row['date']);
+
+                    // Formatage de la date en ISO 8601
+                    $row['date'] = $date->format(\DateTime::ATOM);
+                }
         } catch (\Doctrine\DBAL\Exception $e) {
             return ['code'=> 500, 'erreur'=>$e->getMessage()];
         }
