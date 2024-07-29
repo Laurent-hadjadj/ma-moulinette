@@ -36,6 +36,9 @@ GRANT TEMPORARY, CONNECT ON DATABASE ma_moulinette TO PUBLIC;
 GRANT ALL ON DATABASE ma_moulinette TO db_user;
 GRANT pg_monitor TO db_user;
 
+-- Ajout à l'utilisateur le droit de créer la base de tests
+ALTER ROLE db_user CREATEDB;
+
 -- Configuration du search_path pour l'utilisateur spécifique
 --ALTER ROLE db_user SET search_path TO ma_moulinette;
 ALTER ROLE db_user IN DATABASE ma_moulinette SET search_path TO ma_moulinette;
