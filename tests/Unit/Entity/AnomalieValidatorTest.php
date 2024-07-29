@@ -42,6 +42,7 @@ class AnomalieValidatorTest extends KernelTestCase
   private static $bug = 0;
   private static $vulnerability = 0;
   private static $codeSmell = 801;
+  private static $utilisateurCollecte ='laurent.hadjadj@ma-petite-entreprise.fr';
   private static $dateEnregistrement = '2024-03-25 12:26:58';
 
   private function getEntity(): Anomalie
@@ -69,8 +70,9 @@ class AnomalieValidatorTest extends KernelTestCase
       ->setBug(static::$bug)
       ->setVulnerability(static::$vulnerability)
       ->setCodeSmell(static::$codeSmell)
-      ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
-}
+      ->setUtilisateurCollecte(static::$utilisateurCollecte)
+      ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+  }
 
   public function assertHasErrors(Anomalie $entity, int $number = 0): void
   {
@@ -98,6 +100,8 @@ class AnomalieValidatorTest extends KernelTestCase
     $this->assertHasErrors($this->getEntity()->setDetteReliability(''), 1);
     $this->assertHasErrors($this->getEntity()->setDetteVulnerability(''), 1);
     $this->assertHasErrors($this->getEntity()->setDetteCodeSmell(''), 1);
+    $this->assertHasErrors($this->getEntity()->setModeCollecte(''), 0);
+    $this->assertHasErrors($this->getEntity()->setUtilisateurCollecte(''), 0);
   }
 
   public function testValidIntegerEntity(): void
@@ -123,6 +127,6 @@ class AnomalieValidatorTest extends KernelTestCase
       $entity = $this->getEntity();
       $reflectionClass = new \ReflectionClass($entity);
       $nbAttributs = count($reflectionClass->getProperties());
-      $this->assertEquals($nbAttributs, 24);
+      $this->assertEquals($nbAttributs, 26);
   }
 }

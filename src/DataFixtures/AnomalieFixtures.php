@@ -11,7 +11,6 @@ use Doctrine\Persistence\ObjectManager;
  */
 class AnomalieFixtures extends Fixture
 {
-
   private static $mavenKey = 'fr.map-petite-entreprise:ma-moulinette';
   private static $projectName = 'ma-moulinette';
   private static $anomalieTotal = 1956;
@@ -34,7 +33,8 @@ class AnomalieFixtures extends Fixture
   private static $bug = 0;
   private static $vulnerability = 0;
   private static $codeSmell = 801;
-  private static $dateEnregistrement = '2024-03-25 12:26:58';
+  private static $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
+  private static $dateEnregistrement = '2024-06-28 17:55:45+02';
 
   /**
    * [Description for load]
@@ -49,34 +49,39 @@ class AnomalieFixtures extends Fixture
    */
   public function load(ObjectManager $manager): void
     {
-      $anomalie=(new Anomalie())
-          ->setMavenKey(static::$mavenKey)
-          ->setProjectName(static::$projectName)
-          ->setAnomalieTotal(static::$anomalieTotal)
-          ->setDetteMinute(static::$detteMinute)
-          ->setDetteReliabilityMinute(static::$detteReliabilityMinute)
-          ->setDetteVulnerabilityMinute(static::$detteVulnerabilityMinute)
-          ->setDetteCodeSmellMinute(static::$detteCodeSmellMinute)
-          ->setDetteReliability(static::$detteReliability)
-          ->setDetteVulnerability(static::$detteVulnerability)
-          ->setDetteCodeSmell(static::$detteCodeSmell)
-          ->setDette(static::$dette)
-          ->setFrontend(static::$frontend)
-          ->setBackend(static::$backend)
-          ->setAutre(static::$autre)
-          ->setBlocker(static::$blocker)
-          ->setCritical(static::$critical)
-          ->setMajor(static::$major)
-          ->setInfo(static::$info)
-          ->setMinor(static::$minor)
-          ->setBug(static::$bug)
-          ->setVulnerability(static::$vulnerability)
-          ->setCodeSmell(static::$codeSmell)
-          ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
-      $manager->persist($anomalie);
+      $modeCollecte=['COLLECTE', 'TRAITEMENT MANUEL', 'TRAITEMENT AUTOMATIQUE'];
 
+      foreach($modeCollecte as $mode){
+        $anomalie=(new Anomalie())
+            ->setMavenKey(static::$mavenKey)
+            ->setProjectName(static::$projectName)
+            ->setAnomalieTotal(static::$anomalieTotal)
+            ->setDetteMinute(static::$detteMinute)
+            ->setDetteReliabilityMinute(static::$detteReliabilityMinute)
+            ->setDetteVulnerabilityMinute(static::$detteVulnerabilityMinute)
+            ->setDetteCodeSmellMinute(static::$detteCodeSmellMinute)
+            ->setDetteReliability(static::$detteReliability)
+            ->setDetteVulnerability(static::$detteVulnerability)
+            ->setDetteCodeSmell(static::$detteCodeSmell)
+            ->setDette(static::$dette)
+            ->setFrontend(static::$frontend)
+            ->setBackend(static::$backend)
+            ->setAutre(static::$autre)
+            ->setBlocker(static::$blocker)
+            ->setCritical(static::$critical)
+            ->setMajor(static::$major)
+            ->setInfo(static::$info)
+            ->setMinor(static::$minor)
+            ->setBug(static::$bug)
+            ->setVulnerability(static::$vulnerability)
+            ->setCodeSmell(static::$codeSmell)
+            ->setUtilisateurCollecte(static::$utilisateurCollecte)
+            ->setModeCollecte($mode)
+            ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+            $manager->persist($anomalie);
+        }
 
-      /** Enregistrement des données dans la base de tests */
+        /** Enregistrement des données dans la base de tests */
         $manager->flush();
     }
   }

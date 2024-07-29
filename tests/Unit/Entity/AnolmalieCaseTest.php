@@ -45,7 +45,9 @@ class AnomalieCaseTest extends TestCase
     private static $bug = 0;
     private static $vulnerability = 0;
     private static $codeSmell = 801;
-    private static $dateEnregistrement = '2024-03-25 12:26:58';
+    private static $modeCollecte = 'TRAITEMENT MANUEL';
+    private static $utilisateurCollecte = 'laurent_h@me.com';
+    private static $dateEnregistrement = '2024-06-28 17:55:45+02';
 
     private function getEntity(): Anomalie
     {
@@ -72,7 +74,9 @@ class AnomalieCaseTest extends TestCase
         ->setBug(static::$bug)
         ->setVulnerability(static::$vulnerability)
         ->setCodeSmell(static::$codeSmell)
-        ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
+        ->setModeCollecte(static::$modeCollecte)
+        ->setUtilisateurCollecte(static::$utilisateurCollecte)
+        ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
     }
 
     protected function setUp(): void
@@ -183,10 +187,30 @@ class AnomalieCaseTest extends TestCase
         $this->anomalie->setBug(static::$bug);
         $this->assertEquals(static::$bug, $this->anomalie->getBug());
     }
+    public function testSettingAndGettingVulnerability(): void
+    {
+        $this->anomalie->setVulnerability(static::$vulnerability);
+        $this->assertEquals(static::$vulnerability, $this->anomalie->getVulnerability());
+    }
+    public function testSettingAndGettingCodeSmell(): void
+    {
+        $this->anomalie->setCodeSmell(static::$codeSmell);
+        $this->assertEquals(static::$codeSmell, $this->anomalie->getCodeSmell());
+    }
+    public function testSettingAndGettingModeCollecte(): void
+    {
+        $this->anomalie->setModeCollecte(static::$modeCollecte);
+        $this->assertEquals(static::$modeCollecte, $this->anomalie->getModeCollecte());
+    }
+    public function testSettingAndGettingUtilisateurCollecte(): void
+    {
+        $this->anomalie->setUtilisateurCollecte(static::$utilisateurCollecte);
+        $this->assertEquals(static::$utilisateurCollecte, $this->anomalie->getUtilisateurCollecte());
+    }
 
     public function testSettingAndGettingDateEnregistrement(): void
     {
-        $newDate=new \DateTime(static::$dateEnregistrement);
+        $newDate=new \DateTimeImmutable(static::$dateEnregistrement);
         $this->anomalie->setDateEnregistrement($newDate);
         $this->assertEquals($newDate, $this->anomalie->getDateEnregistrement());
     }
