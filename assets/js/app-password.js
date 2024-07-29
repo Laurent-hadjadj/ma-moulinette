@@ -386,7 +386,7 @@
         resultat['DateAnnee']=-resultatDateAnnee.length;
       }
 
-    /** Rechecher une potentielle date sans séparateur
+    /** Rechercher une potentielle date sans séparateur
      * La date à une longueur de 4 (1124) à 8 (10122024)
     */
     resultat['DateSansSepareteur']=0
@@ -412,7 +412,7 @@
           }
     }
 
-    /*  Sequence differentes de lettres (3+)++ -(n*3)*/
+    /*  Sequence différentes de lettres (3+)++ -(n*3)*/
     resultat['SuiteLettreSequentielle']=0;
     if (NombreCaractere>=options.minimumLength && lettre.test(password)) {
       let croissant, decroissant, sequence=0;
@@ -428,7 +428,7 @@
       }
     }
 
-    /*  Sequence differentes de chiffres (3+)++ -(n*3) */
+    /*  Sequence différentes de chiffres (3+)++ -(n*3) */
     resultat['SuiteChiffreSequentielle']=0;
     if (NombreCaractere>=options.minimumLength && chiffre.test(password)) {
       let croissant, decroissant, sequence=0, groupe=0;
