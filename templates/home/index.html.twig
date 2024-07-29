@@ -61,7 +61,7 @@
         <legend class="open-sans">Référentiel local.</legend>
         <div
           class="grid-x cell">
-          <!-- Mise à jour de référentiel des projets sonarqube -->
+          <!-- Mise à jour de référentiel des projets SonarQube -->
           <div class="small-8 medium-10 large-10 referentiel-bouton cell">
             {% if refreshBD is same as(true) %}
               {% set statut="" %}
@@ -217,7 +217,7 @@
       </div>
     </main>
 
-    {# On chosi le composant en fonction des préférences #}
+    {# On choisi le composant en fonction des préférences #}
     {% if composant == "projet" %}
       {{ include('/home/_projet.html.twig') }}
     {% elseif composant == "version" %}
@@ -244,7 +244,7 @@
           </p>
         </div>
       <br>
-      {# fermeture de la fenetre modale #}
+      {# fermeture de la fenêtre modale #}
       <button id="fermer-info-tag" class="expanded button open-sans" data-close aria-label="Ferme modale" type="button">Fermer</button>
       <a class="close-button" data-close aria-label="Ferme modale">&#215;</a>
     </div>
