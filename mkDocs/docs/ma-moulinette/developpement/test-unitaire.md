@@ -66,10 +66,12 @@ Les tests unitaires sont exécutés sur une base de données SQLite.
 
 La création de la base de données de tests est relativement facile à mettre en place. Il suffit de taper la commande suivante depuis le dossier du projet :
 
-- `php bin/console --env=test doctrine:database:drop --force || true`
-- `php bin/console --env=test doctrine:database:create`
+- `php bin/console --env=test doctrine:database:drop --force`
+- `php bin/console --env=test doctrine:database:create --if-not-exists`
 - `php bin/console --env=test doctrine:schema:update --force`
 - `php bin/console --env=test doctrine:migrations:migrate -n`
+
+`note :` Il faut que l'utilisateur ait les droits de création. Vous pouvez ajouter le droit CREATDB à l'utilisateur db_user (`ALTER ROLE db_user CREATEDB;`).
 
 ### Execution des tests unitaires
 
