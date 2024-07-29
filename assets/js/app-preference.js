@@ -312,7 +312,7 @@ const projet=async function(){
   $('#modal-projet').foundation('open');
 }
 
-/*************** EVENEMENT *************/
+/*************** ÉVÉNEMENT *************/
 /**
  * Description
  * On active ou pas le bookmark
