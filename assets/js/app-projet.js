@@ -185,7 +185,7 @@ $('.gomme-svg').on('click', function () {
 
 /**
  * [Description for match]
- * Propriétés du selecteur de recherche.
+ * Propriétés du sélecteur de recherche.
  *
  * @param mixed params
  * @param mixed data
