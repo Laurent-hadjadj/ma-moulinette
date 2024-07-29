@@ -103,7 +103,7 @@ const injectionOwaspInfo=function(id, menace, badge, laNote) {
  */
 const videLeTableau = function() {
   /** réinitialise les valeurs. */
-  /** version et la date du projet dans sonarqube */
+  /** version et la date du projet dans SonarQube */
   $('#js-application-version').html('');
 
   /** les vulnérabilités */
@@ -175,7 +175,7 @@ const remplissageOwaspInfo=function(idMaven) {
       return;
     }
 
-    /** On affiche la version et la date du projet dans sonarqube */
+    /** On affiche la version et la date du projet dans SonarQube */
     $('#js-application-version').html(`<span class="color-noire open-sans">V${r.version}, (${r.date_version})</span>`);
 
     /** On ajoute les valeurs pour les vulnérabilités */
