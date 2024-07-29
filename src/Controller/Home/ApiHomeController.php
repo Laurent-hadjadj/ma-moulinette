@@ -43,10 +43,10 @@ class ApiHomeController extends AbstractController
     public static $dateFormatShort = "Y-m-d";
     public static $dateFormat = "Y-m-d H:i:s";
     public static $europeParis = "Europe/Paris";
-    public static $reference = '<strong>Accueil</strong>';
+    public static $reference = '[Accueil]';
     public static $erreur400 = "La requête est incorrecte (Erreur 400).";
     public static $erreur403 = "Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).";
-    public static $erreur404 = "Je n'ai pas trouvé de projets sur le serveur sonarqube (Erreur 404).";
+    public static $erreur404 = "Je n'ai pas trouvé de projets sur le serveur SonarQube (Erreur 404).";
 
     /**
      * [Description for __construct]
@@ -77,7 +77,7 @@ class ApiHomeController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/status', name: 'api_sonar_status', methods: ['POST'])]
-    public function apiSonarStatus(Request $request, Client $client): response
+    public function apiSonarStatus(Client $client): response
     {
         /** On crée un objet de response JSON */
         $response = new JsonResponse();
@@ -94,7 +94,6 @@ class ApiHomeController extends AbstractController
      * Récupération de la liste des projets.
      * http://{url}}/api/components/search_projects?ps=500
      *
-     * @param Request $request
      * @param Client $client
      * @return response
      *
@@ -103,7 +102,7 @@ class ApiHomeController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/home/projet', name: 'home_projet_liste', methods: ['POST'])]
-    public function homeProjetListe(Request $request, Client $client): response
+    public function homeProjetListe(Client $client): response
     {
         /** On instancie l'EntityRepository */
         $listeProjetRepository = $this->em->getRepository(ListeProjet::class);
@@ -154,7 +153,7 @@ class ApiHomeController extends AbstractController
          * Si la table est vide on insert les résultats et
          * on revoie les résultats.
          */
-        foreach ($result["components"] as $projet) {
+        foreach ($result['components'] as $projet) {
             /**
              *  On exclue les projets archivés avec la particule "-SVN".
              *  "project": "fr.domaine:mon-application-SVN"
@@ -208,8 +207,17 @@ class ApiHomeController extends AbstractController
             'empty_tags' => $emptyTags], Response::HTTP_OK);
     }
 
+    /**
+     * [Description for homeProjetTags]
+     *
+     * @return response
+     *
+     * Created at: 29/07/2024 20:51:02 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     #[Route('/api/home/tags', name: 'home_projet_tags', methods: ['POST'])]
-    public function homeProjetTags(Request $request, Client $client): response
+    public function homeProjetTags(): response
     {
         /** On instancie l'EntityRepository */
         $listeProjetRepository = $this->em->getRepository(ListeProjet::class);
@@ -228,8 +236,7 @@ class ApiHomeController extends AbstractController
         $tag = $listeProjetRepository->countListeProjetTags();
 
         return $response->setData(
-            ['code' => 200,
-            'nombre_tag' => $tag['nombre'][0]['tag']], Response::HTTP_OK);
+            ['code' => 200, 'nombre_tag' => $tag['nombre'][0]['tag']], Response::HTTP_OK);
     }
 
 }
