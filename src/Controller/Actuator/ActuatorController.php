@@ -31,6 +31,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class ActuatorController extends AbstractController
 {
+    public static $index = 'actuator/index.html.twig';
     public static $europeParis = "Europe/Paris";
     public static $request = "requête : ";
     public static $titre = 'Traitement';
@@ -69,7 +70,7 @@ class ActuatorController extends AbstractController
         /** Vérifier si l'utilisateur a le rôle 'ROLE_ACTUATOR'. */
         if (!$this->isGranted('ROLE_ACTUATOR')) {
             $this->addFlash('notice', ['type'=>'alert', 'titre'=>static::$titre, 'message'=>static::$erreur403]);
-            return $this->render('actuator/index.html.twig', $render);
+            return $this->render(static::$index, $render);
         }
 
         if ($sortColumn==='date_enregistrement' || $sortColumn==='date_modification' ) {
@@ -79,7 +80,7 @@ class ActuatorController extends AbstractController
         }
         if ($paginatorQuery['code']!=200) {
             $this->addFlash('notice', ['type'=>'warning', 'titre'=>static::$titre, 'message'=>$paginatorQuery['erreur']]);
-            return $this->render('actuator/index.html.twig', $render);
+            return $this->render(static::$index, $render);
         }
 
         $pagination = $this->paginator->paginate(
@@ -88,10 +89,8 @@ class ActuatorController extends AbstractController
             9                                   /*limit par page*/
         );
 
-        return $this->render('actuator/index.html.twig',
-            array_merge($render, [
-                'pagination' => $pagination,
-            ])
+        return $this->render(static::$index, array_merge($render, [
+                'pagination' => $pagination ])
         );
     }
     #[Route('/actuator/info', name: 'actuator_info', methods:'GET')]
@@ -161,5 +160,3 @@ class ActuatorController extends AbstractController
     }
 
 }
-
-
