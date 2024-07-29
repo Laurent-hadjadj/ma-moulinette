@@ -99,7 +99,7 @@ class CosuiController extends AbstractController
      */
     private function setup($mavenKey): string
     {
-        /** On se connecte à la base pour connaitre la version du dernier setup pour le projet. */
+        /** On se connecte à la base pour connaître la version du dernier setup pour le projet. */
         $reponse = $this->mr->getRepository(Repartition::class)
                     ->findBy(['mavenKey' => $mavenKey], ['setup' => 'DESC'], 1);
 
@@ -144,7 +144,7 @@ class CosuiController extends AbstractController
 
         /**
          * On sépare la version du type de version
-         * On considére que la version est version-type
+         * On considère que la version est version-type
          * Par exemple : 1.0.0-Release
          */
         $tempo = explode("-", $request['infos'][0]['version']);
