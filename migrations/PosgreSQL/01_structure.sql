@@ -24,6 +24,7 @@
 -- 10/07/2024 : Laurent HADJADJ - Ajout de la table logger.
 -- 14/07/2024 : Laurent HADJADJ - Ajout de la colonne  language_distribution dans la table mesure ;
 -- 16/07/2024 : Laurent HADJADJ - Correction du type JSON[] en JSON pour l'attribut language_distribution ;
+-- 29/07/2024 : Laurent HADJADJ - Correction du commentaire de l'attribut modeCollecte et utilisateurCollecte, correction de la longueur du champ pour utilisateurCollecte ;
 
 -- SCHEMA: ma_moulinette
 
@@ -151,7 +152,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.anomalie
   vulnerability integer NOT NULL,
   code_smell integer NOT NULL,
   mode_collecte character varying(32),
-  utilisateur_collecte character varying(128),
+  utilisateur_collecte character varying(320),
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
@@ -182,7 +183,7 @@ COMMENT ON COLUMN ma_moulinette.anomalie.bug IS 'Nombre total de bugs';
 COMMENT ON COLUMN ma_moulinette.anomalie.vulnerability IS 'Nombre total de vulnérabilités';
 COMMENT ON COLUMN ma_moulinette.anomalie.code_smell IS 'Nombre total de mauvaises pratiques';
 COMMENT ON COLUMN ma_moulinette.anomalie.mode_collecte IS 'Mode de collecte : collecte, traitement manuel ou traitement automatique';
-COMMENT ON COLUMN ma_moulinette.anomalie.utilisateur_collecte IS 'Nom de l’utilisateur qui a réalisé la collecte';
+COMMENT ON COLUMN ma_moulinette.anomalie.utilisateur_collecte IS 'Compte de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.anomalie.date_enregistrement IS 'Date d’enregistrement de l’anomalie';
 
 -- Table: ma_moulinette.anomalie_details
@@ -209,7 +210,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.anomalie_details
   code_smell_major integer NOT NULL,
   code_smell_minor integer NOT NULL,
   mode_collecte character varying(32),
-  utilisateur_collecte character varying(128),
+  utilisateur_collecte character varying(320),
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
@@ -235,7 +236,7 @@ COMMENT ON COLUMN ma_moulinette.anomalie_details.code_smell_info IS 'Nombre de m
 COMMENT ON COLUMN ma_moulinette.anomalie_details.code_smell_major IS 'Nombre de mauvaises pratiques majeures';
 COMMENT ON COLUMN ma_moulinette.anomalie_details.code_smell_minor IS 'Nombre de mauvaises pratiques mineures';
 COMMENT ON COLUMN ma_moulinette.anomalie_details.mode_collecte IS 'Mode de collecte : collecte, traitement manuel ou traitement automatique';
-COMMENT ON COLUMN ma_moulinette.anomalie_details.utilisateur_collecte IS 'Nom de l’utilisateur qui a réalisé la collecte';
+COMMENT ON COLUMN ma_moulinette.anomalie_details.utilisateur_collecte IS 'Compte de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.anomalie_details.date_enregistrement IS 'Date d’enregistrement des détails de l’anomalie';
 
 -- Table: ma_moulinette.batch
@@ -381,7 +382,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.historique
   code_smell_minor integer NOT NULL,
   code_smell_info integer NOT NULL,
   mode_collecte character varying(32),
-  utilisateur_collecte character varying(128),
+  utilisateur_collecte character varying(320),
   actuator_info json default null,
   logger_info integer NOT NULL,
   logger_warn integer NOT NULL,
@@ -453,7 +454,7 @@ COMMENT ON COLUMN ma_moulinette.historique.logger_warn IS 'Nombre de méthode In
 COMMENT ON COLUMN ma_moulinette.historique.logger_error IS 'Nombre de méthode Info invoqué';
 COMMENT ON COLUMN ma_moulinette.historique.logger_debug IS 'Nombre de méthode Info invoqué';
 COMMENT ON COLUMN ma_moulinette.historique.mode_collecte IS 'Mode de collecte : collecte, traitement manuel ou traitement automatique';
-COMMENT ON COLUMN ma_moulinette.historique.utilisateur_collecte IS 'Nom de l’utilisateur qui a réalisé la collecte';
+COMMENT ON COLUMN ma_moulinette.historique.utilisateur_collecte IS 'Cpmpte de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.historique.actuator_info IS 'Information Actuator du projet';
 COMMENT ON COLUMN ma_moulinette.historique.date_enregistrement IS 'Date d’enregistrement de l’historique';
 
@@ -482,7 +483,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.hotspot_details
   message character varying(255) NOT NULL,
   hotspot_key character varying(32) NOT NULL,
   mode_collecte character varying(32),
-  utilisateur_collecte character varying(128),
+  utilisateur_collecte character varying(320),
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
@@ -509,7 +510,7 @@ COMMENT ON COLUMN ma_moulinette.hotspot_details.line IS 'Ligne du fichier où se
 COMMENT ON COLUMN ma_moulinette.hotspot_details.message IS 'Message descriptif du hotspot';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.hotspot_key IS 'Clé unique du hotspot';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.mode_collecte IS 'Mode de collecte : collecte, traitement manuel ou traitement automatique';
-COMMENT ON COLUMN ma_moulinette.hotspot_details.utilisateur_collecte IS 'Nom de l’utilisateur qui a réalisé la collecte';
+COMMENT ON COLUMN ma_moulinette.hotspot_details.utilisateur_collecte IS 'Compte de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.date_enregistrement IS 'Date d’enregistrement du détail de hotspot';
 
 -- Table: ma_moulinette.hotspot_owasp
@@ -530,7 +531,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.hotspot_owasp
   resolution character varying(16),
   niveau integer NOT NULL,
   mode_collecte character varying(32),
-  utilisateur_collecte character varying(128),
+  utilisateur_collecte character varying(320),
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
@@ -550,7 +551,7 @@ COMMENT ON COLUMN ma_moulinette.hotspot_owasp.status IS 'Statut du hotspot OWASP
 COMMENT ON COLUMN ma_moulinette.hotspot_owasp.resolution IS 'Donne pour un hotspot au statut REVIEWED son état : FIXED, SAFE, ACKNOWLEDGED';
 COMMENT ON COLUMN ma_moulinette.hotspot_owasp.niveau IS 'Niveau de risque du hotspot OWASP';
 COMMENT ON COLUMN ma_moulinette.hotspot_owasp.mode_collecte IS 'Mode de collecte : collecte, traitement manuel ou traitement automatique';
-COMMENT ON COLUMN ma_moulinette.hotspot_owasp.utilisateur_collecte IS 'Nom de l’utilisateur qui a réalisé la collecte';
+COMMENT ON COLUMN ma_moulinette.hotspot_owasp.utilisateur_collecte IS 'Compte de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.hotspot_owasp.date_enregistrement IS 'Date d’enregistrement du hotspot OWASP';
 
 -- Table: ma_moulinette.hotspots
@@ -570,7 +571,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.hotspots
   resolution character varying(16),
   niveau integer NOT NULL,
   mode_collecte character varying(32),
-  utilisateur_collecte character varying(128),
+  utilisateur_collecte character varying(320),
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
@@ -589,7 +590,7 @@ COMMENT ON COLUMN ma_moulinette.hotspots.status IS 'Statut du hotspot : TO_REVIE
 COMMENT ON COLUMN ma_moulinette.hotspots.resolution IS 'Donne pour un hotspot au statut REVIEWED son état : FIXED, SAFE, ACKNOWLEDGED';
 COMMENT ON COLUMN ma_moulinette.hotspots.niveau IS 'Niveau de risque du hotspot';
 COMMENT ON COLUMN ma_moulinette.hotspots.mode_collecte IS 'Mode de collecte : collecte, traitement manuel ou traitement automatique';
-COMMENT ON COLUMN ma_moulinette.hotspots.utilisateur_collecte IS 'Nom de l’utilisateur qui a réalisé la collecte';
+COMMENT ON COLUMN ma_moulinette.hotspots.utilisateur_collecte IS 'Compte de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.hotspots.date_enregistrement IS 'Date d’enregistrement du hotspot';
 
 -- Table: ma_moulinette.information_projet
@@ -604,7 +605,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.information_projet
   project_version character varying(32) NOT NULL,
   type character varying(32) NOT NULL,
   mode_collecte character varying(32),
-  utilisateur_collecte character varying(128),
+  utilisateur_collecte character varying(320),
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
@@ -618,7 +619,7 @@ COMMENT ON COLUMN ma_moulinette.information_projet.date IS 'Date de l’analyse 
 COMMENT ON COLUMN ma_moulinette.information_projet.project_version IS 'Version du projet lors de l’analyse';
 COMMENT ON COLUMN ma_moulinette.information_projet.type IS 'Type d’analyse effectuée';
 COMMENT ON COLUMN ma_moulinette.information_projet.mode_collecte IS 'Mode de collecte : collecte, traitement manuel ou traitement automatique';
-COMMENT ON COLUMN ma_moulinette.information_projet.utilisateur_collecte IS 'Nom de l’utilisateur qui a réalisé la collecte';
+COMMENT ON COLUMN ma_moulinette.information_projet.utilisateur_collecte IS 'Compte de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.information_projet.date_enregistrement IS 'Date d’enregistrement de l’information du projet';
 
 -- Table: ma_moulinette.liste_projet
@@ -656,7 +657,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.logger
   logger_error integer NOT NULL,
   logger_debug integer NOT NULL,
   mode_collecte character varying(32),
-  utilisateur_collecte character varying(128),
+  utilisateur_collecte character varying(320),
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
@@ -670,7 +671,7 @@ COMMENT ON COLUMN ma_moulinette.logger.logger_warn IS 'Nombre de méthode Info i
 COMMENT ON COLUMN ma_moulinette.logger.logger_error IS 'Nombre de méthode Info invoqué';
 COMMENT ON COLUMN ma_moulinette.logger.logger_debug IS 'Nombre de méthode Info invoqué';
 COMMENT ON COLUMN ma_moulinette.logger.mode_collecte IS 'Mode de collecte : collecte, traitement manuel ou traitement automatique';
-COMMENT ON COLUMN ma_moulinette.logger.utilisateur_collecte IS 'Nom de l’utilisateur qui a réalisé la collecte';
+COMMENT ON COLUMN ma_moulinette.logger.utilisateur_collecte IS 'Compte de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.logger.date_enregistrement IS 'Date d’enregistrement du projet';
 
 -- Table: ma_moulinette.ma_moulinette
@@ -709,7 +710,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.mesures
   tests integer NOT NULL,
   issues integer NOT NULL,
   mode_collecte character varying(32),
-  utilisateur_collecte character varying(128),
+  utilisateur_collecte character varying(320),
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
@@ -728,7 +729,7 @@ COMMENT ON COLUMN ma_moulinette.mesures.duplicated_lines_density IS 'Densité de
 COMMENT ON COLUMN ma_moulinette.mesures.tests IS 'Nombre total de tests';
 COMMENT ON COLUMN ma_moulinette.mesures.issues IS 'Nombre total de problèmes identifiés';
 COMMENT ON COLUMN ma_moulinette.mesures.mode_collecte IS 'Mode de collecte : collecte, traitement manuel ou traitement automatique';
-COMMENT ON COLUMN ma_moulinette.mesures.utilisateur_collecte IS 'Nom de l’utilisateur qui a réalisé la collecte';
+COMMENT ON COLUMN ma_moulinette.mesures.utilisateur_collecte IS 'Compte de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.mesures.date_enregistrement IS 'Date d’enregistrement de la mesure';
 
 -- Table: ma_moulinette.no_sonar
@@ -742,7 +743,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.no_sonar
   component text NOT NULL,
   line integer NOT NULL,
   mode_collecte character varying(32),
-  utilisateur_collecte character varying(128),
+  utilisateur_collecte character varying(320),
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
@@ -755,7 +756,7 @@ COMMENT ON COLUMN ma_moulinette.no_sonar.rule IS 'Règle NoSonar appliquée';
 COMMENT ON COLUMN ma_moulinette.no_sonar.component IS 'Composant auquel la règle est appliquée';
 COMMENT ON COLUMN ma_moulinette.no_sonar.line IS 'Ligne où la règle NoSonar est appliquée';
 COMMENT ON COLUMN ma_moulinette.no_sonar.mode_collecte IS 'Mode de collecte : collecte, traitement manuel ou traitement automatique';
-COMMENT ON COLUMN ma_moulinette.no_sonar.utilisateur_collecte IS 'Nom de l’utilisateur qui a réalisé la collecte';
+COMMENT ON COLUMN ma_moulinette.no_sonar.utilisateur_collecte IS 'Compte de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.no_sonar.date_enregistrement IS 'Date d’enregistrement de l’entrée NoSonar';
 
 -- Table: ma_moulinette.notes
@@ -768,7 +769,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.notes
   type varchar(16) NOT NULL,
   value INTEGER NOT NULL,
   mode_collecte character varying(32),
-  utilisateur_collecte character varying(128),
+  utilisateur_collecte character varying(320),
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
@@ -779,7 +780,7 @@ COMMENT ON COLUMN ma_moulinette.notes.maven_key IS 'Clé Maven unique identifian
 COMMENT ON COLUMN ma_moulinette.notes.type IS 'Type de la note';
 COMMENT ON COLUMN ma_moulinette.notes.value IS 'Valeur de la note';
 COMMENT ON COLUMN ma_moulinette.notes.mode_collecte IS 'Mode de collecte : collecte, traitement manuel ou traitement automatique';
-COMMENT ON COLUMN ma_moulinette.notes.utilisateur_collecte IS 'Nom de l’utilisateur qui a réalisé la collecte';
+COMMENT ON COLUMN ma_moulinette.notes.utilisateur_collecte IS 'Compte de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.notes.date_enregistrement IS 'Date d’enregistrement de la note';
 
 -- Table: ma_moulinette.owasp
@@ -853,7 +854,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.owasp
   a10_info integer NOT NULL,
   a10_minor integer NOT NULL,
   mode_collecte character varying(32),
-  utilisateur_collecte character varying(128),
+  utilisateur_collecte character varying(320),
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
@@ -926,7 +927,7 @@ COMMENT ON COLUMN ma_moulinette.owasp.a10_major IS 'Nombre d’anomalies majeure
 COMMENT ON COLUMN ma_moulinette.owasp.a10_info IS 'Nombre d’informations pour A10';
 COMMENT ON COLUMN ma_moulinette.owasp.a10_minor IS 'Nombre d’anomalies mineures pour A10';
 COMMENT ON COLUMN ma_moulinette.owasp.mode_collecte IS 'Mode de collecte : collecte, traitement manuel ou traitement automatique';
-COMMENT ON COLUMN ma_moulinette.owasp.utilisateur_collecte IS 'Nom de l’utilisateur qui a réalisé la collecte';
+COMMENT ON COLUMN ma_moulinette.owasp.utilisateur_collecte IS 'Compte de l’utilisateur qui a réalisé la collecte';
 
 COMMENT ON COLUMN ma_moulinette.owasp.date_enregistrement IS 'Date d’enregistrement des données';
 
@@ -1078,7 +1079,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.todo
   component text NOT NULL,
   line integer NOT NULL,
   mode_collecte character varying(32),
-  utilisateur_collecte character varying(128),
+  utilisateur_collecte character varying(320),
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
@@ -1091,7 +1092,7 @@ COMMENT ON COLUMN ma_moulinette.todo.rule IS 'Règle appliquée au Todo';
 COMMENT ON COLUMN ma_moulinette.todo.component IS 'Détails du composant concerné par le Todo';
 COMMENT ON COLUMN ma_moulinette.todo.line IS 'Numéro de ligne du code associée au Todo';
 COMMENT ON COLUMN ma_moulinette.todo.mode_collecte IS 'Mode de collecte : collecte, traitement manuel ou traitement automatique';
-COMMENT ON COLUMN ma_moulinette.todo.utilisateur_collecte IS 'Nom de l’utilisateur qui a réalisé la collecte';
+COMMENT ON COLUMN ma_moulinette.todo.utilisateur_collecte IS 'Compte de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.todo.date_enregistrement IS 'Date d’enregistrement du Todo';
 
 -- Table: ma_moulinette.utilisateur
