@@ -176,9 +176,9 @@ $('.js-preference-ajouter-favoris-enable').on('click', ()=> {
 /*************** Main du programme **************/
 /** On efface la liste */
 $('.js-preference-effacer').on('click', ()=> {
-  /** On éfface le nom de la liste */
+  /** On efface le nom de la liste */
   $('#nom-liste').val('');
-  /** On éfface la liste de projet */
+  /** On efface la liste de projet */
   $('.js-projet').val(null).trigger('change');
 });
 
