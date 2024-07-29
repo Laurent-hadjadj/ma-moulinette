@@ -162,7 +162,7 @@ const dessineMoiUnRadar=function dessineMoiUnRadar(dataset1, dataset2, label1, l
 
 /**
  * description
- * On affiche/desactive les indicateurs de variation
+ * On affiche/désactive les indicateurs de variation
  * Faux positif : sonarLint(javascript:S1192)
  * @constant
  * @name ouiNon
@@ -173,7 +173,7 @@ $(ouiNon).on('click', function () {
     $(upDownEqual).removeClass('hide');
   }
 
-  /** On en fait deux pour être certain de capter l'evenenent */
+  /** On en fait deux pour être certain de capter l’événement */
   if ( $(ouiNon).is(':checked') === false && $(upDownEqual).hasClass('hide') === false ) {
       $(upDownEqual).addClass('hide');
     }
