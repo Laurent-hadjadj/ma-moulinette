@@ -24,7 +24,7 @@ use Symfony\Bundle\SecurityBundle\Security;
 /** Logger */
 use Psr\Log\LoggerInterface;
 
-/** Accès aux tables SLQLite*/
+/** Accès aux tables */
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\ListeProjet;
 use App\Entity\Profiles;
@@ -49,6 +49,10 @@ class HomeController extends AbstractController
     public static $reference = "<strong>[HOME]</strong>";
     public static $erreur400 = "La requête est incorrecte (Erreur 400).";
 
+    private $client;
+    private $logger;
+    private $em;
+
     /**
      * [Description for __construct]
      *
@@ -57,11 +61,13 @@ class HomeController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function __construct(
-        private LoggerInterface $logger,
-        private EntityManagerInterface $em,
+        LoggerInterface $logger,
+        EntityManagerInterface $em,
+        Client $client
     ) {
         $this->logger = $logger;
         $this->em = $em;
+        $this->client = $client;
     }
 
     /**
@@ -91,7 +97,7 @@ class HomeController extends AbstractController
 
     /**
      * [Description for countProjetSonar]
-     * Récupère le nombre de projet disponible sur le serveur sonarqube
+     * Récupère le nombre de projet disponible sur le serveur SonarQube
      *
      * @return int
      *
@@ -99,13 +105,15 @@ class HomeController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function countProjetSonar(Client $client): int
+    private function countProjetSonar(): int
     {
-        /** On récupère le nombre de projet et on filtre */
-        $url = $this->getParameter(static::$sonarUrl) . "/api/components/search?qualifiers=TRK&ps=500&p=1";
+        /** On construit l'URL */
+        $tempoUrl = $this->getParameter(static::$sonarUrl);
 
-        /** On appel le client http */
-        $result = $client->http($url);
+        /** Appelle le client HTTP */
+        $queryParams = ['qualifiers'=>'TRK', 'p'=>1, 'ps'=>500 ];
+        $result = $this->client->http("$tempoUrl/api/components/search?".http_build_query($queryParams));
+
         /**
          * On compte le nombre de projet si la table n'est pas vide.
          */
@@ -139,10 +147,10 @@ class HomeController extends AbstractController
     private function countProfilBD(): int
     {
         /** On instancie l'entityRepository */
-        $profilesEntity = $this->em->getRepository(Profiles::class);
+        $profilesRepository = $this->em->getRepository(Profiles::class);
 
         /** On récupère le nombre de profil depuis la table profils */
-        $nombre = $profilesEntity->countProfiles();
+        $nombre = $profilesRepository->countProfiles();
         $profil = 0;
         if ($nombre['request']) {
             $profil = $nombre['request'][0]['total'];
@@ -160,13 +168,14 @@ class HomeController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function countProfilSonar(Client $client): int
+    private function countProfilSonar(): int
     {
-        $url = $this->getParameter(static::$sonarUrl)
-        . "/api/qualityprofiles/search?defaults=true";
+        /** On construit l'URL */
+        $tempoUrl = $this->getParameter(static::$sonarUrl);
 
-        /** On appel le client http */
-        $result = $client->http($url);
+        /** Appelle le client HTTP */
+        $queryParams = ['defaults'=>true, 'p'=>1, 'ps'=>500 ];
+        $result = $this->client->http("$tempoUrl/api/qualityprofiles/search?".http_build_query($queryParams));
 
         /** Si les profils custom n'existent pas on envoi 0 */
         $count=0;
@@ -180,9 +189,9 @@ class HomeController extends AbstractController
      * [Description for majProperties]
      * On met à jour la table de référence
      *
-     * @param mixed $type
-     * @param mixed $bd
-     * @param mixed $sonar
+     * @param string $type
+     * @param int $bd
+     * @param int $sonar
      *
      * @return [type]
      *
@@ -190,10 +199,10 @@ class HomeController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function majProperties($type, $bd, $sonar)
+    private function majProperties(string $type, int $bd, int $sonar)
     {
         /** On instancie l'entityRepository */
-        $propertiesEntity = $this->em->getRepository(Properties::class);
+        $propertiesRepository = $this->em->getRepository(Properties::class);
 
         /** On met à jour la date de modification */
         $date = new DateTimeImmutable();
@@ -205,9 +214,9 @@ class HomeController extends AbstractController
                 'date_modification_profil'=>$date->format(static::$dateFormat)];
 
         if ($type === 'projet') {
-            $propertiesEntity->updatePropertiesProjet($map);
+            $propertiesRepository->updatePropertiesProjet($map);
         } else {
-            $propertiesEntity->updatePropertiesProfiles($map);
+            $propertiesRepository->updatePropertiesProfiles($map);
         }
     }
 
@@ -223,10 +232,10 @@ class HomeController extends AbstractController
      */
     private function getProperties(): array
     {
-        $propertiesEntity = $this->em->getRepository(Properties::class);
+        $propertiesRepository = $this->em->getRepository(Properties::class);
 
         /** On récupère le nombre de projet et de profil */
-        $getProperties = $propertiesEntity->getProperties('properties');
+        $getProperties = $propertiesRepository->getProperties('properties');
 
         /** La table est vide. On initialise les valeurs */
         if (!$getProperties['request']) {
@@ -244,7 +253,7 @@ class HomeController extends AbstractController
                 'date_modification_projet'=>$dateModificationProjet,
                 'date_modification_profil'=>$dateModificationProfil];
 
-            $propertiesEntity->insertProperties($map);
+            $propertiesRepository->insertProperties($map);
         } else {
             $projetBd = $getProperties['request'][0]['projet_bd'];
             $projetSonar = $getProperties['request'][0]['projet_sonar'];
@@ -287,7 +296,7 @@ class HomeController extends AbstractController
      * Récupère la liste des projets favoris.
      *
      * @param Request $request
-     * @param Client $client
+     * @param Security $security
      *
      * @return response
      *
@@ -299,7 +308,7 @@ class HomeController extends AbstractController
     private function getListeFavori(Security $security): response
     {
         /** On instancie l'entityRepository */
-        $historiqueEntity = $this->em->getRepository(Historique::class);
+        $historiqueRepository = $this->em->getRepository(Historique::class);
 
         /** On crée un objet de response JSON */
         $response = new JsonResponse();
@@ -314,7 +323,8 @@ class HomeController extends AbstractController
         $listeFavori = $preference['favori'];
 
         /** On regarde si l'utilisateur a activé l'affichage des favoris. */
-        if ($statutFavori === false || count($listeFavori) === 0 || $statutVersion === true) {
+        if ($statutFavori === false || count($listeFavori) === 0 ||
+            $statutVersion === true) {
             $liste = false;
         } else {
             $condition = '';
@@ -325,7 +335,7 @@ class HomeController extends AbstractController
             /** On supprime le dernier OR */
             $clauseWhere = rtrim($condition, " OR ");
             $map=['clause_where'=>$clauseWhere, 'nombre_projet_favori'=>$nombreProjetFavori];
-            $liste = $historiqueEntity->selectHistoriqueProjetfavori($map);
+            $liste = $historiqueRepository->selectHistoriqueProjetfavori($map);
         }
 
         $data = [
@@ -337,17 +347,17 @@ class HomeController extends AbstractController
     /**
      * [Description for contruitMaRequete]
      *
-     * @param mixed $liste
-     * @param mixed $mavenkey
-     * @param mixed $index
+     * @param array $liste
+     * @param array $mavenkey
+     * @param integer $index
      *
-     * @return [type]
+     * @return string
      *
      * Created at: 14/06/2023, 16:06:05 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function contruitMaRequete($liste, $mavenkey, $index)
+    public function contruitMaRequete(array $liste, array $mavenkey, int $index): string
     {
         $m = $mavenkey[0];
         $l = "";
@@ -382,7 +392,7 @@ class HomeController extends AbstractController
     private function getListeVersion(Security $security): response
     {
         /** On instancie l'entityRepository */
-        $historiqueEntity = $this->em->getRepository(Historique::class);
+        $historiqueRepository = $this->em->getRepository(Historique::class);
 
         /** On crée un objet de response JSON */
         $response = new JsonResponse();
@@ -400,7 +410,7 @@ class HomeController extends AbstractController
             $liste = [];
             for ($i = 0; $i < count($keys); $i++) {
                 $where = static::contruitMaRequete($keys, array_keys($keys[$i]), $i);
-                $favori = $historiqueEntity->getProjetFavori($where);
+                $favori = $historiqueRepository->getProjetFavori($where);
                 array_push($liste, $favori);
             }
         }
@@ -415,7 +425,6 @@ class HomeController extends AbstractController
      * [Description for index]
      * Affiche ma page d'accueil
      *
-     * @param Client $client
      * @param Request $request
      * @param Security $security
      *
@@ -424,7 +433,7 @@ class HomeController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/home', name: 'home', methods:'GET')]
-    public function index(Client $client, Security $security, Request $request): Response
+    public function index(Security $security, Request $request): Response
     {
         /** On instancie l'entityRepository */
         $listeProjetRepository = $this->em->getRepository(ListeProjet::class);
@@ -466,7 +475,7 @@ class HomeController extends AbstractController
         if (date_diff($dateModificationProjet, $date)->format('%a') >=
         $this->getParameter('maj.projet')) {
             /** On récupère le nombre de projet depuis le serveur sonar */
-            $projetSonar = static::countProjetSonar($client);
+            $projetSonar = static::countProjetSonar();
             /** On récupère le nombre de projet en base */
             $projetBd = static::countProjetBD();
 
@@ -486,7 +495,7 @@ class HomeController extends AbstractController
             /** On récupère le nombre de profil en base. */
             $profilBd = static::countProfilBD();
             /** On récupère le nombre de projet depuis le serveur sonar */
-            $profilSonar = static::countProfilSonar($client);
+            $profilSonar = static::countProfilSonar();
             $dateVerificationProfil = "true";
         } else {
             /** Sinon, on récupère les valeurs de la table de properties */
@@ -495,7 +504,7 @@ class HomeController extends AbstractController
         }
 
         /** ***************** 2 - Projet *****************************  */
-        if ($dateVerificationProjet == "true") {
+        if ($dateVerificationProjet == 'true') {
             /** Si le référentiel local est différent de celui sur le serveur. */
             if ($projetSonar !== $projetBd) {
                 /**
