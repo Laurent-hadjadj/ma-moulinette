@@ -30,5 +30,5 @@ const newItem = (e) => {
   collectionHolder.data("index", collectionHolder.data("index") + 1);
 };
 
-$(".js-boutton-supprimer").on("click", (e) => $(e.currentTarget).closest(".small-4").remove());
-$(".js-boutton-ajouter").on("click", newItem);
+$(".js-bouton-supprimer").on("click", (e) => $(e.currentTarget).closest(".small-4").remove());
+$(".js-bouton-ajouter").on("click", newItem);
