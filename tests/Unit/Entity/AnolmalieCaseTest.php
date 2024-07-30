@@ -46,7 +46,7 @@ class AnomalieCaseTest extends TestCase
     private static $vulnerability = 0;
     private static $codeSmell = 801;
     private static $modeCollecte = 'TRAITEMENT MANUEL';
-    private static $utilisateurCollecte = 'laurent_h@me.com';
+    private static $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
     private static $dateEnregistrement = '2024-06-28 17:55:45+02';
 
     private function getEntity(): Anomalie
