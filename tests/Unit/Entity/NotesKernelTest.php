@@ -25,6 +25,8 @@ use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 class NotesKernelTest extends KernelTestCase
 {
 
+    private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+
     protected function setUp(): void
     {
         self::bootKernel();
@@ -51,4 +53,18 @@ class NotesKernelTest extends KernelTestCase
         $this->assertCount(1, [$security], 'SECURITY: Aucune réponse trouvée');
         $this->assertCount(1, [$sqale], 'SQALE: Aucune réponse trouvée');
     }
+
+    public function testNotesCount(): void
+    {
+        /* On se connecte à la base de tests */
+        $container = static::getContainer();
+        $entityManager = $container->get('doctrine')->getManager();
+
+        $notesRepository = $entityManager->getRepository(Notes::class);
+        $response = $notesRepository->findBy(['mavenKey' => static::$mavenKey]);
+
+        $this->assertNotNull($response, 'Aucune entité a été trouvée');
+        $this->assertCount(9, $response, 'MAVENKEY: Aucune réponse trouvée');
+    }
+
 }

@@ -26,7 +26,9 @@ class NotesValidatorTest extends KernelTestCase
   private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
   private static $type = 'reliability';
   private static $value = 3;
-  private static $dateEnregistrement = '2024-03-26 14:46:38';
+  private static $modeCollecte = 'TRAITEMENT MANUEL';
+  private static $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
+  private static $dateEnregistrement = '2024-03-26 14:46:38+01';
 
   private function getEntity(): Notes
   {
@@ -34,7 +36,9 @@ class NotesValidatorTest extends KernelTestCase
       ->setMavenKey(static::$mavenKey)
       ->setType(static::$type)
       ->setValue(static::$value)
-      ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
+      ->setModeCollecte(static::$modeCollecte)
+      ->setUtilisateurCollecte(static::$utilisateurCollecte)
+      ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
   }
 
   public function assertHasErrors(Notes $entity, int $number = 0): void
@@ -50,7 +54,6 @@ class NotesValidatorTest extends KernelTestCase
     $this->assertCount($number, $errors, implode(', ', $messages));
   }
 
-
   public function testValidEntity(): void
   {
     $this->assertHasErrors($this->getEntity(), 0);
@@ -58,8 +61,10 @@ class NotesValidatorTest extends KernelTestCase
 
   public function testInvalidBlankEntity(): void
   {
-    $this->assertHasErrors($this->getEntity()->setMavenKey(''), 1);
+    $this->assertHasErrors($this->getEntity()->setMavenKey(''), 0);
     $this->assertHasErrors($this->getEntity()->setType(''), 1);
+    $this->assertHasErrors($this->getEntity()->setModeCollecte(''), 0);
+    $this->assertHasErrors($this->getEntity()->setUtilisateurCollecte(''), 0);
   }
 
   public function testValidIntegerEntity(): void
@@ -72,6 +77,6 @@ class NotesValidatorTest extends KernelTestCase
       $entity = $this->getEntity();
       $reflectionClass = new \ReflectionClass($entity);
       $nbAttributs = count($reflectionClass->getProperties());
-      $this->assertEquals($nbAttributs, 5);
+      $this->assertEquals($nbAttributs, 7);
   }
 }
