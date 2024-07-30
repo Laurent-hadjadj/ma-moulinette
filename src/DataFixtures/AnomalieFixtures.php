@@ -11,7 +11,7 @@ use Doctrine\Persistence\ObjectManager;
  */
 class AnomalieFixtures extends Fixture
 {
-  private static $mavenKey = 'fr.map-petite-entreprise:ma-moulinette';
+  private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
   private static $projectName = 'ma-moulinette';
   private static $anomalieTotal = 1956;
   private static $detteMinute = 19586;

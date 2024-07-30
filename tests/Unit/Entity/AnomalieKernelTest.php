@@ -25,7 +25,7 @@ use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 class AnomalieKernelTest extends KernelTestCase
 {
 
-    private static $mavenKey = 'fr.map-petite-entreprise:ma-moulinette';
+    private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
 
     protected function setUp(): void
     {
