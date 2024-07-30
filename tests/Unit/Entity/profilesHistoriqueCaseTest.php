@@ -31,20 +31,20 @@ class ProfilesHistoriqueCaseTest extends TestCase
     private static $regle = 'java:S5679';
     private static $description = 'OpenSAML2 should be configured to prevent authentication bypass';
     private static $detail = '{"severity":"MAJOR"}';
-    private static $dateEnregistrement = '2024-04-12 16:23:11';
+    private static $dateEnregistrement = '2024-04-12 16:23:11+01';
 
     private function getEntity(): ProfilesHistorique
     {
         return (new profilesHistorique())
-        ->setDateCourte(new \DateTime(static::$dateCourte))
+        ->setDateCourte(new \DateTimeImmutable(static::$dateCourte))
         ->setLanguage(static::$language)
-        ->setDate(new \DateTime(static::$date))
+        ->setDate(new \DateTimeImmutable(static::$date))
         ->setAction(static::$action)
         ->setAuteur(static::$auteur)
         ->setRegle(static::$regle)
         ->setDescription(static::$description)
         ->setDetail(static::$detail)
-        ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
+        ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
     }
 
     protected function setUp(): void
@@ -55,7 +55,7 @@ class ProfilesHistoriqueCaseTest extends TestCase
 
     public function testSettingAndGettingDateCourte(): void
     {
-        $newDate=new \DateTime(static::$dateCourte);
+        $newDate=new \DateTimeImmutable(static::$dateCourte);
         $this->profilesHistorique->setDateCourte($newDate);
         $this->assertEquals($newDate, $this->profilesHistorique->getDateCourte());
     }
@@ -68,7 +68,7 @@ class ProfilesHistoriqueCaseTest extends TestCase
 
     public function testSettingAndGettingDate(): void
     {
-        $newDate=new \DateTime(static::$date);
+        $newDate=new \DateTimeImmutable(static::$date);
         $this->profilesHistorique->setDate($newDate);
         $this->assertEquals($newDate, $this->profilesHistorique->getDate());
     }
@@ -105,7 +105,7 @@ class ProfilesHistoriqueCaseTest extends TestCase
 
     public function testSettingAndGettingDateEnregistrement(): void
     {
-        $newDate=new \DateTime(static::$dateEnregistrement);
+        $newDate=new \DateTimeImmutable(static::$dateEnregistrement);
         $this->profilesHistorique->setDateEnregistrement($newDate);
         $this->assertEquals($newDate, $this->profilesHistorique->getDateEnregistrement());
     }

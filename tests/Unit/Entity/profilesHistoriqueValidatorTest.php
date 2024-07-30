@@ -31,20 +31,20 @@ class ProfilesHistoriqueValidatorTest extends KernelTestCase
   private static $regle = 'java:S5679';
   private static $description = 'OpenSAML2 should be configured to prevent authentication bypass';
   private static $detail = '{"severity":"MAJOR"}';
-  private static $dateEnregistrement = '2024-04-12 16:23:11';
+  private static $dateEnregistrement = '2024-04-12 16:23:11+01';
 
   private function getEntity(): ProfilesHistorique
   {
       return (new profilesHistorique())
-      ->setDateCourte(new \DateTime(static::$dateCourte))
+      ->setDateCourte(new \DateTimeImmutable(static::$dateCourte))
       ->setLanguage(static::$language)
-      ->setDate(new \DateTime(static::$date))
+      ->setDate(new \DateTimeImmutable(static::$date))
       ->setAction(static::$action)
       ->setAuteur(static::$auteur)
       ->setRegle(static::$regle)
       ->setDescription(static::$description)
       ->setDetail(static::$detail)
-      ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
+      ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
   }
 
   public function assertHasErrors(ProfilesHistorique $entity, int $number = 0): void

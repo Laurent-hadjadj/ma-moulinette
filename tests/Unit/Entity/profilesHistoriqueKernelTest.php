@@ -47,6 +47,6 @@ class ProfilesHistoriqueKernelTest extends KernelTestCase
         $response = $informationProjetRepository->findOneBy(['language' => static::$language]);
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée');
-        $this->assertCount(1, [$response], 'MAVENKEY: Aucune réponse trouvée');
+        $this->assertCount(1, [$response], 'LANGUAGE: Aucune réponse trouvée');
     }
 }
