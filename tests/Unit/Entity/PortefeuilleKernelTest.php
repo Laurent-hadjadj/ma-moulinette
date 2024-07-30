@@ -20,7 +20,7 @@ use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 
 /**
- * [Description EquipeKernelTest]
+ * [Description PortefeuilleKernelTest]
  */
 class PortefeuilleKernelTest extends KernelTestCase
 {

@@ -26,8 +26,8 @@ class PortefeuilleCaseTest extends TestCase
     private static $titre = 'MES PROJETS';
     private static $equipe = 'MA PETITE ENTREPRISE';
     private static $liste =  ['fr.ma-petite-entreprise:ma-moulinette'];
-    private static $dateModification = '2024-03-26 14:46:38';
-    private static $dateEnregistrement = '2024-03-25 12:26:58';
+    private static $dateModification = '2024-03-26 14:46:38+01';
+    private static $dateEnregistrement = '2024-03-25 12:26:58+01';
 
     private function getEntity(): Portefeuille
     {
@@ -36,7 +36,7 @@ class PortefeuilleCaseTest extends TestCase
         ->setEquipe(static::$equipe)
         ->setListe(static::$liste)
         ->setDateModification(new \DateTime(static::$dateModification))
-        ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
+        ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
     }
 
     protected function setUp(): void
@@ -72,7 +72,7 @@ class PortefeuilleCaseTest extends TestCase
 
     public function testSettingAndGettingDateEnregistrement(): void
     {
-        $newDate=new \DateTime(static::$dateEnregistrement);
+        $newDate=new \DateTimeImmutable(static::$dateEnregistrement);
         $this->portefeuille->setDateEnregistrement($newDate);
         $this->assertEquals($newDate, $this->portefeuille->getDateEnregistrement());
     }

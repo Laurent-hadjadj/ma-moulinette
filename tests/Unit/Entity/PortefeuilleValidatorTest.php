@@ -23,8 +23,8 @@ class PortefeuilleValidatorTest extends KernelTestCase
   private static $titre = 'MES PROJETS';
   private static $equipe = 'MA PETITE ENTREPRISE';
   private static $liste =  ['fr.ma-petite-entreprise:ma-moulinette'];
-  private static $dateModification = '2024-03-26 14:46:38';
-  private static $dateEnregistrement = '2024-03-25 12:26:58';
+  private static $dateModification = '2024-03-26 14:46:38+01';
+  private static $dateEnregistrement = '2024-03-25 12:26:58+01';
 
   private function getEntity(): Portefeuille
   {
@@ -33,7 +33,7 @@ class PortefeuilleValidatorTest extends KernelTestCase
       ->setEquipe(static::$equipe)
       ->setListe(static::$liste)
       ->setDateModification(new \DateTime(static::$dateModification))
-      ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
+      ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
 }
 
   public function assertHasErrors(Portefeuille $entity, int $number = 0): void
