@@ -43,10 +43,24 @@ class NoSonarKernelTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $nosonarRepository = $entityManager->getRepository(NoSonar::class);
-        $response = $nosonarRepository->findOneBy(['mavenKey' => static::$mavenKey]);
+        $noSonarRepository = $entityManager->getRepository(NoSonar::class);
+        $response = $noSonarRepository->findOneBy(['mavenKey' => static::$mavenKey]);
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée');
         $this->assertCount(1, [$response], 'MAVENKEY: Aucune réponse trouvée');
-  }
+    }
+
+    public function testNoSonarCount(): void
+    {
+        /* On se connecte à la base de tests */
+        $container = static::getContainer();
+        $entityManager = $container->get('doctrine')->getManager();
+
+        $noSonarRepository = $entityManager->getRepository(Nosonar::class);
+        $response = $noSonarRepository->findBy(['mavenKey' => static::$mavenKey]);
+
+        $this->assertNotNull($response, 'Aucune entité a été trouvée');
+        $this->assertCount(3, $response, 'MAVENKEY: Aucune réponse trouvée');
+    }
+
 }

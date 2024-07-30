@@ -28,7 +28,9 @@ class NoSonarCaseTest extends TestCase
     private static $component = 'fr.ma-petite-entreprise:mo-moulinette:
     ma-moulinette-service/src/main/java/fr/ma-petite-entreprise/ma-moulinette/service/ClamAvService.java';
     private static $line = 118;
-    private static $dateEnregistrement = '2024-03-26 14:46:38';
+    private static $modeCollecte = 'TRAITEMENT MANUEL';
+    private static $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
+    private static $dateEnregistrement = '2024-03-26 14:46:38+01';
 
     private function getEntity(): NoSonar
     {
@@ -37,7 +39,9 @@ class NoSonarCaseTest extends TestCase
         ->setRule(static::$rule)
         ->setComponent(static::$component)
         ->setLine(static::$line)
-        ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
+        ->setModeCollecte(static::$modeCollecte)
+        ->setUtilisateurCollecte(static::$utilisateurCollecte)
+        ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
     }
 
     protected function setUp(): void
@@ -70,9 +74,20 @@ class NoSonarCaseTest extends TestCase
         $this->assertEquals(static::$line, $this->nosonar->getLine());
     }
 
+    public function testSettingAndGettingModeCollecte(): void
+    {
+        $this->nosonar->setModeCollecte(static::$modeCollecte);
+        $this->assertEquals(static::$modeCollecte, $this->nosonar->getModeCollecte());
+    }
+    public function testSettingAndGettingUtilisateurCollecte(): void
+    {
+        $this->nosonar->setUtilisateurCollecte(static::$utilisateurCollecte);
+        $this->assertEquals(static::$utilisateurCollecte, $this->nosonar->getUtilisateurCollecte());
+    }
+
     public function testSettingAndGettingDateEnregistrement(): void
     {
-        $newDate=new \DateTime(static::$dateEnregistrement);
+        $newDate=new \DateTimeImmutable(static::$dateEnregistrement);
         $this->nosonar->setDateEnregistrement($newDate);
         $this->assertEquals($newDate, $this->nosonar->getDateEnregistrement());
     }
