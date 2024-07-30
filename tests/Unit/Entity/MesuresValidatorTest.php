@@ -27,11 +27,14 @@ class MesuresValidatorTest extends KernelTestCase
   private static $projectName = 'Ma-Moulinette';
   private static $lines = 22015;
   private static $ncloc = 10043;
+  private static $languageDistribution = ['java'=>4278, 'ts'=>18690];
   private static $coverage = 10.3;
   private static $duplicatedLinesDensity = 5.1;
   private static $sqaleDebtRatio = 26.0;
   private static $issues = 200;
   private static $tests = 123;
+  private static $modeCollecte = 'TRAITEMENT MANUEL';
+  private static $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
   private static $dateEnregistrement = '2024-04-12 16:23:11';
 
   private function getEntity(): Mesures
@@ -41,11 +44,14 @@ class MesuresValidatorTest extends KernelTestCase
       ->setProjectName(static::$projectName)
       ->setLines(static::$lines)
       ->setNcloc(static::$ncloc)
+      ->setLanguageDistribution(static::$languageDistribution)
       ->setCoverage(static::$coverage)
-      ->setDuplicationDensity(static::$duplicatedLinesDensity)
+      ->setDuplicatedLinesDensity(static::$duplicatedLinesDensity)
       ->setSqaleDebtRatio(static::$sqaleDebtRatio)
       ->setIssues(static::$issues)
       ->setTests(static::$tests)
+      ->setModeCollecte(static::$modeCollecte)
+      ->setUtilisateurCollecte(static::$utilisateurCollecte)
       ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
   }
 
@@ -71,6 +77,8 @@ class MesuresValidatorTest extends KernelTestCase
   {
     $this->assertHasErrors($this->getEntity()->setMavenKey(''), 1);
     $this->assertHasErrors($this->getEntity()->setProjectName(''), 1);
+    $this->assertHasErrors($this->getEntity()->setModeCollecte(''), 0);
+    $this->assertHasErrors($this->getEntity()->setUtilisateurCollecte(''), 0);
   }
 
   public function testValidIntegerEntity(): void
@@ -84,7 +92,7 @@ class MesuresValidatorTest extends KernelTestCase
   public function testValidFloatEntity(): void
   {
     $this->assertHasErrors($this->getEntity()->setCoverage(-1.0), 0);
-    $this->assertHasErrors($this->getEntity()->setDuplicationDensity(-1.0), 0);
+    $this->assertHasErrors($this->getEntity()->setDuplicatedLinesDensity(-1.0), 0);
     $this->assertHasErrors($this->getEntity()->setSqaleDebtRatio(-1.0), 0);
   }
 
@@ -93,6 +101,6 @@ class MesuresValidatorTest extends KernelTestCase
       $entity = $this->getEntity();
       $reflectionClass = new \ReflectionClass($entity);
       $nbAttributs = count($reflectionClass->getProperties());
-      $this->assertEquals($nbAttributs, 11);
+      $this->assertEquals($nbAttributs, 14);
   }
 }

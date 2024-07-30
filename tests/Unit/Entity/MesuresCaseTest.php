@@ -27,11 +27,14 @@ class MesuresCaseTest extends TestCase
     private static $projectName = 'Ma-Moulinette';
     private static $lines = 22015;
     private static $ncloc = 10043;
+    private static $languageDistribution = ['java'=>4278, 'ts'=>18690];
     private static $coverage = 10.3;
     private static $duplicatedLinesDensity = 5.1;
     private static $sqaleDebtRatio = 26.0;
     private static $issues = 200;
     private static $tests = 123;
+    private static $modeCollecte = 'TRAITEMENT MANUEL';
+    private static $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
     private static $dateEnregistrement = '2024-04-12 16:23:11';
 
     private function getEntity(): Mesures
@@ -41,11 +44,14 @@ class MesuresCaseTest extends TestCase
         ->setProjectName(static::$projectName)
         ->setLines(static::$lines)
         ->setNcloc(static::$ncloc)
+        ->setLanguageDistribution(static::$languageDistribution)
         ->setCoverage(static::$coverage)
         ->setDuplicatedLinesDensity(static::$duplicatedLinesDensity)
         ->setSqaleDebtRatio(static::$sqaleDebtRatio)
         ->setIssues(static::$issues)
         ->setTests(static::$tests)
+        ->setModeCollecte(static::$modeCollecte)
+        ->setUtilisateurCollecte(static::$utilisateurCollecte)
         ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
     }
 
@@ -85,10 +91,10 @@ class MesuresCaseTest extends TestCase
         $this->assertEquals(static::$coverage, $this->mesures->getCoverage());
     }
 
-    public function testSettingAndGettingDuplicationDensity(): void
+    public function testSettingAndGettingDuplicatedLinesDensity(): void
     {
-        $this->mesures->setDuplicationDensity(static::$duplicatedLinesDensity);
-        $this->assertEquals(static::$duplicatedLinesDensity, $this->mesures->getDuplicationDensity());
+        $this->mesures->setDuplicatedLinesDensity(static::$duplicatedLinesDensity);
+        $this->assertEquals(static::$duplicatedLinesDensity, $this->mesures->getDuplicatedLinesDensity());
     }
 
     public function testSettingAndGettingSqaleDebtRatio(): void
@@ -109,9 +115,20 @@ class MesuresCaseTest extends TestCase
         $this->assertEquals(static::$tests, $this->mesures->getTests());
     }
 
+    public function testSettingAndGettingModeCollecte(): void
+    {
+        $this->mesures->setModeCollecte(static::$modeCollecte);
+        $this->assertEquals(static::$modeCollecte, $this->mesures->getModeCollecte());
+    }
+    public function testSettingAndGettingUtilisateurCollecte(): void
+    {
+        $this->mesures->setUtilisateurCollecte(static::$utilisateurCollecte);
+        $this->assertEquals(static::$utilisateurCollecte, $this->mesures->getUtilisateurCollecte());
+    }
+
     public function testSettingAndGettingDateEnregistrement(): void
     {
-        $newDate=new \DateTime(static::$dateEnregistrement);
+        $newDate=new \DateTimeImmutable(static::$dateEnregistrement);
         $this->mesures->setDateEnregistrement($newDate);
         $this->assertEquals($newDate, $this->mesures->getDateEnregistrement());
     }
