@@ -28,9 +28,9 @@ class PropertiesValidatorTest extends KernelTestCase
     private static $projetSonar = 12;
     private static $profilBd = 12;
     private static $profilSonar = 18;
-    private static $dateCreation = '2024-03-26 14:46:38';
-    private static $dateModificationProjet = '2024-03-27 10:26:31';
-    private static $dateModificationProfil = '2024-04-12 16:23:11';
+    private static $dateCreation = '2024-03-26 14:46:38+01';
+    private static $dateModificationProjet = '2024-03-27 10:26:31+01';
+    private static $dateModificationProfil = '2024-04-12 16:23:11+01';
 
   private function getEntity(): Properties
   {
@@ -40,7 +40,7 @@ class PropertiesValidatorTest extends KernelTestCase
     ->setProjetSonar(static::$projetSonar)
     ->setProfilBd(static::$profilBd)
     ->setProfilSonar(static::$profilSonar)
-    ->setDateCreation(new \DateTime(static::$dateCreation))
+    ->setDateCreation(new \DateTimeImmutable(static::$dateCreation))
     ->setDateModificationProjet(new \DateTime(static::$dateModificationProjet))
     ->setDateModificationProfil(new \DateTime(static::$dateModificationProfil));
   }
