@@ -22,7 +22,6 @@ use App\Entity\Utilisateur;
 class UtilisateurCaseTest extends TestCase
 {
 
-  public static $id = 1;
   public static $init = 1;
   public static $avatar = 'chiffre/01.png';
   public static $prenom = 'admin';
@@ -41,7 +40,6 @@ class UtilisateurCaseTest extends TestCase
   public function getEntity(): Utilisateur
   {
     return (new utilisateur())
-      ->setId(static::$id)
       ->setInit(static::$init)
       ->setAvatar(static::$avatar)
       ->setPrenom(static::$prenom)
@@ -90,7 +88,6 @@ class UtilisateurCaseTest extends TestCase
     $entity = $this->getEntity();
 
     // Définition des valeurs
-    $entity->setId(static::$id);
     $entity->setInit(static::$init);
     $entity->setAvatar(static::$avatar);
     $entity->setPrenom(static::$prenom);
@@ -105,7 +102,6 @@ class UtilisateurCaseTest extends TestCase
     $entity->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
 
     // Vérification des valeurs
-    $this->assertEquals(static::$id, $entity->getId(), "Erreur ID");
     $this->assertEquals(static::$init, $entity->getInit(), "Erreur INIT");
     $this->assertEquals(static::$avatar, $entity->getAvatar(), "Erreur AVATAR");
     $this->assertEquals(static::$prenom, $entity->getPrenom(), "Erreur PRENOM");
@@ -120,6 +116,6 @@ class UtilisateurCaseTest extends TestCase
     $this->assertEquals(static::$equipe, $entity->getEquipe(), "Erreur EQUIPE");
     $this->assertEquals(static::$preference, $entity->getPreference(),"Erreur PREFERENCE");
     $this->assertEquals(new \DateTime(static::$dateModification), $entity->getDateModification(), "Erreur DATEModification");
-    $this->assertEquals(new \DateTime(static::$dateEnregistrement), $entity->getDateEnregistrement(), "Erreur DATEEnregistrement");
+    $this->assertEquals(new \DateTimeImmutable(static::$dateEnregistrement), $entity->getDateEnregistrement(), "Erreur DATEEnregistrement");
   }
 }

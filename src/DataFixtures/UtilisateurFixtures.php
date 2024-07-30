@@ -14,7 +14,7 @@ class UtilisateurFixtures extends Fixture
   public static $preference = ['{
     "statut":{"projet":false,"favori":false,"version":false,"bookmark":false},
     "projet":[],"favori":[],"version":[],"bookmark":[]}'];
-  public static $dateEnregistrement = '1980-01-01 00:00:00';
+  public static $dateEnregistrement = '1980-01-01 00:00:00+01';
 
   public function load(ObjectManager $manager): void
     {
@@ -30,7 +30,7 @@ class UtilisateurFixtures extends Fixture
         ->setRoles(["ROLE_GESTIONNAIRE"])
         ->setEquipe([])
         ->setPreference(static::$preference)
-        ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
+        ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
         $manager->persist($admin);
 
         /** Création de l'utilisateur AURELIE */
@@ -45,7 +45,7 @@ class UtilisateurFixtures extends Fixture
         ->setRoles(["ROLE_GESTIONNAIRE"])
         ->setEquipe([])
         ->setPreference(static::$preference)
-        ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
+        ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
         $manager->persist($aurelie);
 
         /** Création de l'utilisateur EMMA */
@@ -60,7 +60,7 @@ class UtilisateurFixtures extends Fixture
         ->setRoles(["ROLE_BATCH"])
         ->setEquipe([])
         ->setPreference(static::$preference)
-        ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
+        ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
         $manager->persist($emma);
 
         /** Création de l'utilisateur NATHAN */
@@ -75,7 +75,7 @@ class UtilisateurFixtures extends Fixture
         ->setRoles(["ROLE_COLLECTE"])
         ->setEquipe([])
         ->setPreference(static::$preference)
-        ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
+        ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
         $manager->persist($nathan);
 
         /** Création de l'utilisateur JOSH */
@@ -90,7 +90,7 @@ class UtilisateurFixtures extends Fixture
         ->setRoles(["ROLE_UTILISATEUR"])
         ->setEquipe([])
         ->setPreference(static::$preference)
-        ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
+        ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
         $manager->persist($josh);
 
         /** Enregistrement des données dans la base de tests */

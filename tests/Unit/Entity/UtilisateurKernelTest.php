@@ -20,7 +20,7 @@ use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 
 /**
- * [Description UtilisateurKernalTest]
+ * [Description UtilisateurKernelTest]
  */
 class UtilisateurKernelTest extends KernelTestCase
 {
@@ -52,7 +52,7 @@ class UtilisateurKernelTest extends KernelTestCase
       ->setRoles(static::$roles)
       ->setEquipe(static::$equipe)
       ->setPreference(static::$preference)
-      ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
+      ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
   }
 
     protected function setUp(): void
