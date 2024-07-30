@@ -85,10 +85,10 @@ class Mesures
         maxMessage: "Le mode de collecte ne peut pas dépasser 32 caractères.")]
     private ?string $modeCollecte=null;
 
-    #[ORM\Column(type: Types::STRING, length: 128, nullable: true,
-    options: ['comment' => "Nom de l'utilisateur qui a réalisé la collecte."])]
-    #[Assert\Length(max: 128,
-        maxMessage: "Le nom de l’utilisateur ne peut pas dépasser 128 caractères.")]
+    #[ORM\Column(type: Types::STRING, length: 320, nullable: true,
+    options: ['comment' => "Compte de l'utilisateur qui a réalisé la collecte."])]
+    #[Assert\Length(max: 320,
+        maxMessage: "Le compte de l’utilisateur ne peut pas dépasser 320 caractères.")]
     private ?string $utilisateurCollecte=null;
 
     #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
@@ -178,7 +178,7 @@ class Mesures
         return $this->duplicatedLinesDensity;
     }
 
-    public function setDuplicationDensity(float $duplicatedLinesDensity): static
+    public function setDuplicatedLinesDensity(float $duplicatedLinesDensity): static
     {
         $this->duplicatedLinesDensity = $duplicatedLinesDensity;
 
