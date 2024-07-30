@@ -25,17 +25,19 @@ class InformationProjetValidatorTest extends KernelTestCase
   private static $date = '2024-04-12 16:23:11';
   private static $projectVersion = '2.0.0-RELEASE';
   private static $type = 'RELEASE';
-  private static $dateEnregistrement = '2024-04-12 16:23:11';
+  private static $modeCollecte = 'TRAITEMENT MANUEL';
+  private static $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
+  private static $dateEnregistrement = '2024-04-12 16:23:11+01';
 
   private function getEntity(): InformationProjet
   {
       return (new informationProjet())
       ->setMavenKey(static::$mavenKey)
       ->setAnalyseKey(static::$analyseKey)
-      ->setDate(new \DateTime(static::$date))
+      ->setDate(new \DateTimeImmutable(static::$date))
       ->setProjectVersion(static::$projectVersion)
       ->setType(static::$type)
-      ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
+      ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
 }
 
   public function assertHasErrors(InformationProjet $entity, int $number = 0): void
@@ -62,6 +64,9 @@ class InformationProjetValidatorTest extends KernelTestCase
     $this->assertHasErrors($this->getEntity()->setAnalyseKey(''), 1);
     $this->assertHasErrors($this->getEntity()->setProjectVersion(''), 1);
     $this->assertHasErrors($this->getEntity()->setType(''), 1);
+    $this->assertHasErrors($this->getEntity()->setModeCollecte(''), 0);
+    $this->assertHasErrors($this->getEntity()->setUtilisateurCollecte(''), 0);
+
   }
 
   public function testCountAttribut(): void
@@ -69,6 +74,6 @@ class InformationProjetValidatorTest extends KernelTestCase
       $entity = $this->getEntity();
       $reflectionClass = new \ReflectionClass($entity);
       $nbAttributs = count($reflectionClass->getProperties());
-      $this->assertEquals($nbAttributs, 7);
+      $this->assertEquals($nbAttributs, 9);
   }
 }

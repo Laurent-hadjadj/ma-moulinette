@@ -28,17 +28,19 @@ class InformationProjetCaseTest extends TestCase
     private static $date = '2024-04-12 16:23:11';
     private static $projectVersion = '2.0.0-RELEASE';
     private static $type = 'RELEASE';
-    private static $dateEnregistrement = '2024-04-12 16:23:11';
+    private static $modeCollecte = 'TRAITEMENT MANUEL';
+    private static $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
+    private static $dateEnregistrement = '2024-04-12 16:23:11+01';
 
     private function getEntity(): InformationProjet
     {
         return (new informationProjet())
         ->setMavenKey(static::$mavenKey)
         ->setAnalyseKey(static::$analyseKey)
-        ->setDate(new \DateTime(static::$date))
+        ->setDate(new \DateTimeImmutable(static::$date))
         ->setProjectVersion(static::$projectVersion)
         ->setType(static::$type)
-        ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
+        ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
     }
 
     protected function setUp(): void
@@ -61,7 +63,7 @@ class InformationProjetCaseTest extends TestCase
 
     public function testSettingAndGettingDate(): void
     {
-        $newDate=new \DateTime(static::$date);
+        $newDate=new \DateTimeImmutable(static::$date);
         $this->informationProjet->setDate($newDate);
         $this->assertEquals($newDate, $this->informationProjet->getDate());
     }
@@ -78,9 +80,20 @@ class InformationProjetCaseTest extends TestCase
         $this->assertEquals(static::$type, $this->informationProjet->getType());
     }
 
+    public function testSettingAndGettingModeCollecte(): void
+    {
+        $this->informationProjet->setModeCollecte(static::$modeCollecte);
+        $this->assertEquals(static::$modeCollecte, $this->informationProjet->getModeCollecte());
+    }
+    public function testSettingAndGettingUtilisateurCollecte(): void
+    {
+        $this->informationProjet->setUtilisateurCollecte(static::$utilisateurCollecte);
+        $this->assertEquals(static::$utilisateurCollecte, $this->informationProjet->getUtilisateurCollecte());
+    }
+
     public function testSettingAndGettingDateEnregistrement(): void
     {
-        $newDate=new \DateTime(static::$dateEnregistrement);
+        $newDate=new \DateTimeImmutable(static::$dateEnregistrement);
         $this->informationProjet->setDateEnregistrement($newDate);
         $this->assertEquals($newDate, $this->informationProjet->getDateEnregistrement());
     }

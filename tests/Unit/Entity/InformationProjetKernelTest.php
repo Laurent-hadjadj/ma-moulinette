@@ -46,4 +46,18 @@ class InformationProjetKernelTest extends KernelTestCase
         $this->assertNotNull($response, 'Aucune entité a été trouvée');
         $this->assertCount(1, [$response], 'MAVENKEY: Aucune réponse trouvée');
     }
+
+    public function testInformationProjetCount(): void
+    {
+        /* On se connecte à la base de tests */
+        $container = static::getContainer();
+        $entityManager = $container->get('doctrine')->getManager();
+
+        $informationProjetRepository = $entityManager->getRepository(InformationProjet::class);
+        $response = $informationProjetRepository->findBy(['mavenKey' => static::$mavenKey]);
+
+        $this->assertNotNull($response, 'Aucune entité a été trouvée');
+        $this->assertCount(3, $response, 'MAVENKEY: Aucune réponse trouvée');
+    }
+
 }
