@@ -69,7 +69,7 @@ class InformationProjet
 
     #[ORM\Column(type: Types::STRING, length: 320, nullable: true,
     options: ['comment' => "Compte de l'utilisateur qui a réalisé la collecte."])]
-    #[Assert\Length(max: 128,
+    #[Assert\Length(max: 320,
         maxMessage: "Le compte de l’utilisateur ne peut pas dépasser 320 caractères.")]
     private ?string $utilisateurCollecte=null;
 
