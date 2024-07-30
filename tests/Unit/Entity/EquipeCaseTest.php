@@ -24,7 +24,7 @@ class EquipeCaseTest extends TestCase
     private $equipe;
 
     private static $titre = 'MA PETITE ENTREPRISE';
-    private static $description = "Equipe de Développement de l'application Ma-Moulinette";
+    private static $description = "Équipe de Développement de l'application Ma-Moulinette";
     private static $dateModification = '2024-03-26 14:46:38+02';
     private static $dateEnregistrement = '2024-03-25 12:26:58+02';
 
