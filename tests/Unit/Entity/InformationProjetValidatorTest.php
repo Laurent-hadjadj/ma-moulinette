@@ -37,6 +37,8 @@ class InformationProjetValidatorTest extends KernelTestCase
       ->setDate(new \DateTimeImmutable(static::$date))
       ->setProjectVersion(static::$projectVersion)
       ->setType(static::$type)
+      ->setModeCollecte(static::$modeCollecte)
+      ->setUtilisateurCollecte(static::$utilisateurCollecte)
       ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
 }
 
