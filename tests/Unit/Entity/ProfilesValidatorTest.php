@@ -27,9 +27,9 @@ class ProfilesValidatorTest extends KernelTestCase
   private static $name = 'Ma-Petite-Entreprise v1.0.0 (2024)';
   private static $languageName = 'CSS';
   private static $activeRuleCount = 31;
-  private static $rulesUpdateAt = '2024-04-13 12:10:51';
+  private static $rulesUpdateAt = '2024-04-13 12:10:51+01';
   private static $referentielDefault = true;
-  private static $dateEnregistrement = '2024-04-12 16:23:11';
+  private static $dateEnregistrement = '2024-04-12 16:23:11+01';
 
   private function getEntity(): Profiles
   {
@@ -38,9 +38,9 @@ class ProfilesValidatorTest extends KernelTestCase
       ->setName(static::$name)
       ->setLanguageName(static::$languageName)
       ->setActiveRuleCount(static::$activeRuleCount)
-      ->setRulesUpdateAt(new \DateTime(static::$rulesUpdateAt))
+      ->setRulesUpdateAt(new \DateTimeImmutable(static::$rulesUpdateAt))
       ->setReferentielDefault(static::$referentielDefault)
-      ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
+      ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
   }
 
   public function assertHasErrors(Profiles $entity, int $number = 0): void

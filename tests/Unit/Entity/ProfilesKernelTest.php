@@ -20,11 +20,10 @@ use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 
 /**
- * [Description ProfilesKernalTest]
+ * [Description ProfilesKernelTest]
  */
 class ProfilesKernelTest extends KernelTestCase
 {
-
     protected function setUp(): void
     {
         self::bootKernel();
