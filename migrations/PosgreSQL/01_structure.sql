@@ -991,7 +991,7 @@ DROP TABLE IF EXISTS ma_moulinette.profiles;
 CREATE TABLE IF NOT EXISTS ma_moulinette.profiles
 (
   id SERIAL PRIMARY KEY,
-  maven_key character varying(255) NOT NULL,
+  key character varying(32) NOT NULL,
   name character varying(128) NOT NULL,
   language_name character varying(64) NOT NULL,
   active_rule_count integer NOT NULL,
@@ -1004,7 +1004,7 @@ ALTER TABLE ma_moulinette.profiles OWNER to db_user;
 GRANT ALL ON TABLE ma_moulinette.profiles TO db_user;
 
 COMMENT ON COLUMN ma_moulinette.profiles.id IS 'Identifiant unique pour chaque profil';
-COMMENT ON COLUMN ma_moulinette.profiles.maven_key IS 'Clé unique du projet';
+COMMENT ON COLUMN ma_moulinette.profiles.key IS 'Clé unique du profil';
 COMMENT ON COLUMN ma_moulinette.profiles.name IS 'Nom du profil';
 COMMENT ON COLUMN ma_moulinette.profiles.language_name IS 'Nom du langage de programmation';
 COMMENT ON COLUMN ma_moulinette.profiles.active_rule_count IS 'Nombre de règles actives associées au profil';

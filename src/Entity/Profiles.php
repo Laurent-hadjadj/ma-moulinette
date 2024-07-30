@@ -16,7 +16,6 @@ namespace App\Entity;
 use App\Repository\ProfilesRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use phpDocumentor\Reflection\Types\Boolean;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ProfilesRepository::class)]
@@ -28,12 +27,12 @@ class Profiles
         options: ['comment' => 'Identifiant unique pour chaque profil'])]
     private $id;
 
-    #[ORM\Column(type: Types::STRING, length: 255, nullable: false,
-        options: ['comment' => 'Clé unique du projet'])]
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: false,
+        options: ['comment' => 'Clé unique du profil'])]
     #[Assert\NotBlank]
     #[Assert\Length(max: 255,
-        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères.")]
-    private $mavenKey;
+        maxMessage: "La clé du profil ne doit pas dépasser 32 caractères.")]
+    private $key;
 
     #[ORM\Column(type: Types::STRING, length: 128, nullable: false,
         options: ['comment' => 'Nom du profil'])]
@@ -74,14 +73,14 @@ class Profiles
         return $this->id;
     }
 
-    public function getMavenKey(): ?string
+    public function getKey(): ?string
     {
-        return $this->mavenKey;
+        return $this->key;
     }
 
-    public function setMavenKey(string $mavenKey): static
+    public function setKey(string $key): static
     {
-        $this->mavenKey = $mavenKey;
+        $this->key = $key;
 
         return $this;
     }
