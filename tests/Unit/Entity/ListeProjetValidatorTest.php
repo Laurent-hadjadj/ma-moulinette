@@ -36,7 +36,7 @@ class ListeProjetValidatorTest extends KernelTestCase
       ->setName(static::$name)
       ->setTags(static::$tags)
       ->setVisibility(static::$visibility)
-      ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
+      ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
   }
 
   public function assertHasErrors(ListeProjet $entity, int $number = 0): void

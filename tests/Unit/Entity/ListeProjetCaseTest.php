@@ -27,7 +27,7 @@ class ListeProjetCaseTest extends TestCase
     private static $name = 'Ma-Moulinette';
     private static $tags = ['ma-moulinette', '2048'];
     private static $visibility = 'private';
-    private static $dateEnregistrement = '2024-04-12 16:23:11';
+    private static $dateEnregistrement = '2024-04-12 16:23:11+01';
 
     private function getEntity(): ListeProjet
     {
@@ -36,7 +36,7 @@ class ListeProjetCaseTest extends TestCase
         ->setName(static::$name)
         ->setTags(static::$tags)
         ->setVisibility(static::$visibility)
-        ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
+        ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
     }
 
     protected function setUp(): void
@@ -71,7 +71,7 @@ class ListeProjetCaseTest extends TestCase
 
     public function testSettingAndGettingDateEnregistrement(): void
     {
-        $newDate=new \DateTime(static::$dateEnregistrement);
+        $newDate=new \DateTimeImmutable(static::$dateEnregistrement);
         $this->listeProjet->setDateEnregistrement($newDate);
         $this->assertEquals($newDate, $this->listeProjet->getDateEnregistrement());
     }
