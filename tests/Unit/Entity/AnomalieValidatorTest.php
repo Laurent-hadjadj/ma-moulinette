@@ -42,8 +42,9 @@ class AnomalieValidatorTest extends KernelTestCase
   private static $bug = 0;
   private static $vulnerability = 0;
   private static $codeSmell = 801;
+  private static $modeCollecte = "TRAITEMENT AUTOMATIQUE";
   private static $utilisateurCollecte ='laurent.hadjadj@ma-petite-entreprise.fr';
-  private static $dateEnregistrement = '2024-03-25 12:26:58';
+  private static $dateEnregistrement = '2024-03-25 12:26:58+02';
 
   private function getEntity(): Anomalie
   {
@@ -70,6 +71,7 @@ class AnomalieValidatorTest extends KernelTestCase
       ->setBug(static::$bug)
       ->setVulnerability(static::$vulnerability)
       ->setCodeSmell(static::$codeSmell)
+      ->setModeCollecte(static::$modeCollecte)
       ->setUtilisateurCollecte(static::$utilisateurCollecte)
       ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
   }
