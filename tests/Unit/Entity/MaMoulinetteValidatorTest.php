@@ -24,15 +24,15 @@ class MaMoulinetteValidatorTest extends KernelTestCase
 {
 
   private static $version = '2.0.0';
-  private static $dateVersion = '2024-04-12 16:23:11';
-  private static $dateEnregistrement = '2024-04-12 16:23:11';
+  private static $dateVersion = '2024-04-12 16:23:11+01';
+  private static $dateEnregistrement = '2024-04-12 16:23:11+01';
 
   private function getEntity(): MaMoulinette
   {
       return (new MaMoulinette())
       ->setVersion(static::$version)
-      ->setDateVersion(new \DateTime(static::$dateVersion))
-      ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
+      ->setDateVersion(new \DateTimeImmutable(static::$dateVersion))
+      ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
 }
 
   public function assertHasErrors(MaMoulinette $entity, int $number = 0): void

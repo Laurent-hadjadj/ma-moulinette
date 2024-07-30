@@ -24,15 +24,15 @@ class MaMoulinetteCaseTest extends TestCase
     private $maMoulinette;
 
     private static $version = '2.0.0';
-    private static $dateVersion = '2024-04-12 16:23:11';
-    private static $dateEnregistrement = '2024-04-12 16:23:11';
+    private static $dateVersion = '2024-04-12 16:23:11+01';
+    private static $dateEnregistrement = '2024-04-12 16:23:11+01';
 
     private function getEntity(): MaMoulinette
     {
         return (new MaMoulinette())
         ->setVersion(static::$version)
-        ->setDateVersion(new \DateTime(static::$dateVersion))
-        ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
+        ->setDateVersion(new \DateTimeImmutable(static::$dateVersion))
+        ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
     }
 
     protected function setUp(): void
@@ -49,14 +49,14 @@ class MaMoulinetteCaseTest extends TestCase
 
     public function testSettingAndGettingDateVersion(): void
     {
-        $newDateVersion=new \DateTime(static::$dateVersion);
+        $newDateVersion=new \DateTimeImmutable(static::$dateVersion);
         $this->maMoulinette->setDateVersion($newDateVersion);
         $this->assertEquals($newDateVersion, $this->maMoulinette->getDateVersion());
     }
 
     public function testSettingAndGettingDateEnregistrement(): void
     {
-        $newDate=new \DateTime(static::$dateEnregistrement);
+        $newDate=new \DateTimeImmutable(static::$dateEnregistrement);
         $this->maMoulinette->setDateEnregistrement($newDate);
         $this->assertEquals($newDate, $this->maMoulinette->getDateEnregistrement());
     }

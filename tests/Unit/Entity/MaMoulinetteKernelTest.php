@@ -48,5 +48,5 @@ class MaMoulinetteKernelTest extends KernelTestCase
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée');
         $this->assertCount(1, [$response], 'VERSION: Aucune réponse trouvée');
-  }
+    }
 }
