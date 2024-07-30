@@ -13,9 +13,9 @@ class EquipeFixtures extends Fixture
 {
 
   private static $titre = 'MA PETITE ENTREPRISE';
-  private static $description = "Equipe de Développement de l'application Ma-Moulinette";
-  private static $dateModification = '2024-03-26 14:46:38';
-  private static $dateEnregistrement = '2024-03-25 12:26:58';
+  private static $description = "Équipe de Développement de l'application Ma-Moulinette";
+  private static $dateModification = '2024-03-26 14:46:38+02';
+  private static $dateEnregistrement = '2024-03-25 12:26:58+02';
 
   /**
    * [Description for load]
@@ -35,9 +35,8 @@ class EquipeFixtures extends Fixture
           ->setTitre(static::$titre)
           ->setDescription(static::$description)
           ->setDateModification(new \DateTime(static::$dateModification))
-          ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
+          ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
       $manager->persist($equipe);
-
 
       /** Enregistrement des données dans la base de tests */
         $manager->flush();

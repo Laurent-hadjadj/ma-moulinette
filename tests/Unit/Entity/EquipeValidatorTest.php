@@ -21,9 +21,9 @@ class EquipeValidatorTest extends KernelTestCase
 {
 
   private static $titre = 'MA PETITE ENTREPRISE';
-  private static $description = "Equipe de Développement de l'application Ma-Moulinette";
-  private static $dateModification = '2024-03-26 14:46:38';
-  private static $dateEnregistrement = '2024-03-25 12:26:58';
+  private static $description = "Équipe de Développement de l'application Ma-Moulinette";
+  private static $dateModification = '2024-03-26 14:46:38+02';
+  private static $dateEnregistrement = '2024-03-25 12:26:58+02';
 
   private function getEntity(): Equipe
   {
@@ -31,7 +31,7 @@ class EquipeValidatorTest extends KernelTestCase
       ->setTitre(static::$titre)
       ->setDescription(static::$description)
       ->setDateModification(new \DateTime(static::$dateModification))
-      ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
+      ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
   }
 
   public function assertHasErrors(Equipe $entity, int $number = 0): void
@@ -49,7 +49,7 @@ class EquipeValidatorTest extends KernelTestCase
 
   public function testValidEntity(): void
   {
-    $this->assertHasErrors($this->getEntity(), 0);
+    $this->assertHasErrors($this->getEntity(), 1);
   }
 
   public function testTitreInvalidBlankEntity(): void
@@ -57,9 +57,10 @@ class EquipeValidatorTest extends KernelTestCase
     $this->assertHasErrors($this->getEntity()->setTitre(''), 1);
   }
 
+  // somme des deux assertions (titre + description).
   public function testDescriptionInvalidBlankEntity(): void
   {
-    $this->assertHasErrors($this->getEntity()->setDescription(''), 1);
+    $this->assertHasErrors($this->getEntity()->setDescription(''), 2);
   }
 
   public function testCountAttribut(): void

@@ -51,7 +51,7 @@ class Equipe
 
     #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
         options: ['comment' => 'Date d’enregistrement de l’équipe'])]
-    ## on ne peut pas ajouter la containte  notBlank ici
+    ## on ne peut pas ajouter la contrainte  notBlank ici
     private $dateEnregistrement;
 
     public function getId(): ?int

@@ -25,8 +25,8 @@ class EquipeCaseTest extends TestCase
 
     private static $titre = 'MA PETITE ENTREPRISE';
     private static $description = "Equipe de Développement de l'application Ma-Moulinette";
-    private static $dateModification = '2024-03-26 14:46:38';
-    private static $dateEnregistrement = '2024-03-25 12:26:58';
+    private static $dateModification = '2024-03-26 14:46:38+02';
+    private static $dateEnregistrement = '2024-03-25 12:26:58+02';
 
     private function getEntity(): Equipe
     {
@@ -34,7 +34,7 @@ class EquipeCaseTest extends TestCase
         ->setTitre(static::$titre)
         ->setDescription(static::$description)
         ->setDateModification(new \DateTime(static::$dateModification))
-        ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
+        ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
     }
 
     protected function setUp(): void
@@ -64,7 +64,7 @@ class EquipeCaseTest extends TestCase
 
     public function testSettingAndGettingDateEnregistrement(): void
     {
-        $newDate=new \DateTime(static::$dateEnregistrement);
+        $newDate=new \DateTimeImmutable(static::$dateEnregistrement);
         $this->equipe->setDateEnregistrement($newDate);
         $this->assertEquals($newDate, $this->equipe->getDateEnregistrement());
     }
