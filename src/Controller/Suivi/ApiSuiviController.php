@@ -122,7 +122,6 @@ class ApiSuiviController extends AbstractController
         /** On crée un objet de response JSON */
         $response = new JsonResponse();
 
-
         /** On récupère la maven_Key */
         $data = json_decode($request->getContent());
         if ($data === null || !property_exists($data, 'maven_key') ||
