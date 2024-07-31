@@ -24,82 +24,52 @@ class ActiviteHistorique
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Identifiant unique de la table historique activité']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Identifiant unique de la table historique activité'])]
     private int $id;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Année']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Année'])]
     #[Assert\NotNull]
     private int $annee;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de jours']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Nombre de jours'])]
     #[Assert\NotNull]
     private int $nbJour;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre d\'analyses']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => "Nombre d'analyses"])]
     #[Assert\NotNull]
     private int $nbAnalyse;
 
-    #[ORM\Column(
-        type: Types::FLOAT,
-        nullable: false,
-        options: ['comment' => 'Moyenne des analyses']
-    )]
+    #[ORM\Column(type: Types::FLOAT, nullable: false,
+        options: ['comment' => 'Moyenne des analyses'])]
     #[Assert\NotNull]
-    private int $moyenneAnalyse;
+    private float $moyenneAnalyse;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de réussites']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Nombre de réussites'])]
     #[Assert\NotNull]
     private int $nbReussi;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre d\'échecs']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => "Nombre d'échecs"])]
     #[Assert\NotNull]
     private int $nbEchec;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Taux de réussite']
-    )]
+    #[ORM\Column(type: Types::FLOAT, nullable: false,
+        options: ['comment' => 'Taux de réussite'])]
     #[Assert\NotNull]
     private float $tauxReussite;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Temps maximal']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Temps maximal'])]
     #[Assert\NotNull]
     private int $maxTemps;
 
-    #[ORM\Column(
-        type: Types::DATETIMETZ_IMMUTABLE,
-        nullable: false,
-        options: ['comment' => 'Date et heure d\'enregistrement']
-    )]
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
+        options: ['comment' => "Date et heure d'enregistrement"])]
     #[Assert\NotNull]
     private \DateTimeImmutable $dateEnregistrement;
 
@@ -141,12 +111,12 @@ class ActiviteHistorique
         return $this;
     }
 
-    public function getMoyenneAnalyse(): ?int
+    public function getMoyenneAnalyse(): ?float
     {
         return $this->moyenneAnalyse;
     }
 
-    public function setMoyenneAnalyse(int $moyenneAnalyse): static
+    public function setMoyenneAnalyse(float $moyenneAnalyse): static
     {
         $this->moyenneAnalyse = $moyenneAnalyse;
         return $this;
