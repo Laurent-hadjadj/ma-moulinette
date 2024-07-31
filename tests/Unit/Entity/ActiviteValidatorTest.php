@@ -28,7 +28,7 @@ class ActiviteValidatorTest extends KernelTestCase
   private static $submittedAt = '2024-07-31 12:26:58+02';
   private static $startedAt = '2024-07-31 12:27:05+02';
   private static $executedAt = '2024-07-31 12:27:47+02';
-  private static $executionTime = "42";
+  private static $executionTime = 42;
 
   private function getEntity(): Activite
   {
