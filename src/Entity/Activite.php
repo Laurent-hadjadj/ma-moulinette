@@ -24,32 +24,20 @@ class Activite
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Identifiant unique de la table activité']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Identifiant unique de la table activité'])]
     private int $id;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 255,
-        nullable: false,
-        options: ['comment' => 'Clé Maven du projet']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: false,
+        options: ['comment' => 'Clé Maven du projet'])]
     #[Assert\NotBlank]
     #[Assert\Length(
         max: 255,
-        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères."
-    )]
+        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères.")]
     private $mavenKey;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 64,
-        nullable: false,
-        options: ['comment' => 'Nom du projet associé à la clé maven']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 64, nullable: false,
+        options: ['comment' => 'Nom du projet associé à la clé maven'])]
     #[Assert\NotBlank]
     #[Assert\Length(
         max: 64,
@@ -57,12 +45,8 @@ class Activite
     )]
     private $projectName;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 26,
-        nullable: false,
-        options: ['comment' => 'Identifiant de l’analyse du projet']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 26, nullable: false,
+        options: ['comment' => 'Identifiant de l’analyse du projet'])]
     #[Assert\NotBlank]
     #[Assert\Length(
         max: 26,
@@ -70,12 +54,8 @@ class Activite
     )]
     private ?string $analyseId = null;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 16,
-        nullable: false,
-        options: ['comment' => 'Statut du traitement d’import']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 16, nullable: false,
+        options: ['comment' => 'Statut du traitement d’import'])]
     #[Assert\NotBlank]
     #[Assert\Length(
         max: 16,
@@ -83,12 +63,8 @@ class Activite
     )]
     private $status;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 32,
-        nullable: false,
-        options: ['comment' => 'Utilisateur soumettant l’import']
-    )]
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: false,
+        options: ['comment' => 'Utilisateur soumettant l’import'])]
     #[Assert\NotBlank]
     #[Assert\Length(
         max: 32,
@@ -96,35 +72,24 @@ class Activite
     )]
     private $submitterLogin;
 
-    #[ORM\Column(
-        type: Types::DATETIMETZ_IMMUTABLE,
-        nullable: false,
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
         options: ['comment' => 'Date et heure de la soumission du traitement d’import des données']
     )]
     #[Assert\NotNull]
     private $submittedAt;
 
-    #[ORM\Column(
-        type: Types::DATETIMETZ_IMMUTABLE,
-        nullable: false,
-        options: ['comment' => 'Date et heure du debut du traitement d’import des données']
-    )]
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
+        options: ['comment' => 'Date et heure du debut du traitement d’import des données'])]
     #[Assert\NotNull]
     private ?\DateTimeInterface $startedAt = null;
 
-    #[ORM\Column(
-        type: Types::DATETIMETZ_IMMUTABLE,
-        nullable: false,
-        options: ['comment' => 'Date et heure de fin du traitement d’import des données']
-    )]
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
+        options: ['comment' => 'Date et heure de fin du traitement d’import des données'])]
     #[Assert\NotNull]
     private $executedAt;
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Date et heure de fin du traitement d’import des données']
-    )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Date et heure de fin du traitement d’import des données'])]
     #[Assert\NotNull]
     private $executionTime;
 
