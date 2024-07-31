@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##         Creation des tables et des objets      ##
-##               V1.11.0 - 10/07/2024             ##
+##               V1.20.0 - 31/07/2024             ##
 ##                                                ##
 ####################################################*/
 
@@ -25,6 +25,7 @@
 -- 14/07/2024 : Laurent HADJADJ - Ajout de la colonne  language_distribution dans la table mesure ;
 -- 16/07/2024 : Laurent HADJADJ - Correction du type JSON[] en JSON pour l'attribut language_distribution ;
 -- 29/07/2024 : Laurent HADJADJ - Correction du commentaire de l'attribut modeCollecte et utilisateurCollecte, correction de la longueur du champ pour utilisateurCollecte ;
+-- 31/07/2024 : Laurent HADJADJ - Ajout de la table activite_historique (Quentin) ;
 
 -- SCHEMA: ma_moulinette
 
@@ -72,6 +73,35 @@ COMMENT ON COLUMN ma_moulinette.activite.submitted_at IS 'Date et heure de la so
 COMMENT ON COLUMN ma_moulinette.activite.started_at IS 'Date et heure du debut du traitement d’import des données';
 COMMENT ON COLUMN ma_moulinette.activite.executed_at IS ' Date et heure de fin du traitement d’import des données';
 COMMENT ON COLUMN ma_moulinette.activite.execution_time IS 'Temps d’execution du traitement d’import des données';
+
+-- Table: ma_moulinette.historique_activite
+
+DROP TABLE ma_moulinette.historique_activite;
+CREATE TABLE IF NOT EXISTS ma_moulinette.historique_activite
+(id SERIAL PRIMARY KEY,
+  annee INT NOT NULL,
+  nb_jour INT NOT NULL,
+  nb_analyse INT NOT NULL,
+  moyenne_analyse FLOAT NOT NULL,
+  nb_reussi INT NOT NULL,
+  nb_echec INT NOT NULL,
+  taux_reussite INT NOT NULL,
+  max_temps VARCHAR NOT NULL,
+  date_enregistrement timestamptz NOT NULL
+);
+
+ALTER TABLE ma_moulinette.historique_activite OWNER to db_user;
+GRANT ALL ON TABLE ma_moulinette.historique_activite TO db_user;
+
+COMMENT ON COLUMN ma_moulinette.historique_activite.id IS 'Identifiant unique de la table historique_activite.';
+COMMENT ON COLUMN ma_moulinette.historique_activite.nb_jour IS 'Nombre jour d’activité.';
+COMMENT ON COLUMN ma_moulinette.historique_activite.nb_analyse IS 'Nombre d’analyse.';
+COMMENT ON COLUMN ma_moulinette.historique_activite.moyenne IS 'Moyenne des analyses.';
+COMMENT ON COLUMN ma_moulinette.historique_activite.nb_reussi IS 'Nombre d’analyse réussi.';
+COMMENT ON COLUMN ma_moulinette.historique_activite.nb_echec IS 'Nombre d’analyse en échec.';
+COMMENT ON COLUMN ma_moulinette.historique_activite.taux_reussite IS 'Taux de réussite.';
+COMMENT ON COLUMN ma_moulinette.historique_activite.max_temps IS 'Temps maximum d’une analyse.';
+COMMENT ON COLUMN ma_moulinette.historique_activite.date_enregistrement IS 'Date de l’enregistrement';
 
 -- Table: ma_moulinette.actuator
 
