@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##         Creation des tables et des objets      ##
-##               V1.21.0 - 31/07/2024             ##
+##               V1.21.1 - 31/07/2024             ##
 ##                                                ##
 ####################################################*/
 
@@ -27,6 +27,7 @@
 -- 29/07/2024 : Laurent HADJADJ - Correction du commentaire de l'attribut modeCollecte et utilisateurCollecte, correction de la longueur du champ pour utilisateurCollecte ;
 -- 31/07/2024 : Laurent HADJADJ - Ajout de la table activite_historique (Quentin) ;
 -- 31/07/2024 : Laurent HADJADJ - Correction du commentaire moyenne_analyse.
+-- 31/07/2024 : Laurent HADJADJ - Correction Taux_reussite en FLOAT
 
 -- SCHEMA: ma_moulinette
 
@@ -86,7 +87,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.historique_activite
   moyenne_analyse FLOAT NOT NULL,
   nb_reussi INT NOT NULL,
   nb_echec INT NOT NULL,
-  taux_reussite INT NOT NULL,
+  taux_reussite FLOAT NOT NULL,
   max_temps VARCHAR NOT NULL,
   date_enregistrement timestamptz NOT NULL
 );
