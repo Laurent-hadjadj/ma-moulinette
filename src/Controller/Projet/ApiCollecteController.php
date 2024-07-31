@@ -43,7 +43,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class ApiCollecteController extends AbstractController
 {
     /** Définition des constantes */
-    public static $reference = "<strong>PROJET</strong>";
+    public static $reference = "[PROJET]";
     public static $erreur400 = "La requête est incorrecte (Erreur 400).";
     public static $erreur403 = "Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).";
 
