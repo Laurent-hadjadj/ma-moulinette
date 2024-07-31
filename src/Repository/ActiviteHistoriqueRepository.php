@@ -14,15 +14,12 @@
 namespace App\Repository;
 
 use App\Entity\ActiviteHistorique;
-use DateTime;
-use DateTimeImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 class ActiviteHistoriqueRepository extends ServiceEntityRepository
 {
     public static $removeReturnline = "/\s+/u";
-
     public static $formatDate = 'Y-m-d H:i:sO';
 
     public function __construct(ManagerRegistry $registry)
