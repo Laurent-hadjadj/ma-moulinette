@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##         Creation des tables et des objets      ##
-##               V1.20.0 - 31/07/2024             ##
+##               V1.21.0 - 31/07/2024             ##
 ##                                                ##
 ####################################################*/
 
@@ -26,6 +26,7 @@
 -- 16/07/2024 : Laurent HADJADJ - Correction du type JSON[] en JSON pour l'attribut language_distribution ;
 -- 29/07/2024 : Laurent HADJADJ - Correction du commentaire de l'attribut modeCollecte et utilisateurCollecte, correction de la longueur du champ pour utilisateurCollecte ;
 -- 31/07/2024 : Laurent HADJADJ - Ajout de la table activite_historique (Quentin) ;
+-- 31/07/2024 : Laurent HADJADJ - Correction du commentaire moyenne_analyse.
 
 -- SCHEMA: ma_moulinette
 
@@ -96,7 +97,7 @@ GRANT ALL ON TABLE ma_moulinette.historique_activite TO db_user;
 COMMENT ON COLUMN ma_moulinette.historique_activite.id IS 'Identifiant unique de la table historique_activite.';
 COMMENT ON COLUMN ma_moulinette.historique_activite.nb_jour IS 'Nombre jour d’activité.';
 COMMENT ON COLUMN ma_moulinette.historique_activite.nb_analyse IS 'Nombre d’analyse.';
-COMMENT ON COLUMN ma_moulinette.historique_activite.moyenne IS 'Moyenne des analyses.';
+COMMENT ON COLUMN ma_moulinette.historique_activite.moyenne_analyse IS 'Moyenne des analyses.';
 COMMENT ON COLUMN ma_moulinette.historique_activite.nb_reussi IS 'Nombre d’analyse réussi.';
 COMMENT ON COLUMN ma_moulinette.historique_activite.nb_echec IS 'Nombre d’analyse en échec.';
 COMMENT ON COLUMN ma_moulinette.historique_activite.taux_reussite IS 'Taux de réussite.';
