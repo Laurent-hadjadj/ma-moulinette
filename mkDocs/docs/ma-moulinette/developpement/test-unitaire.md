@@ -71,7 +71,23 @@ La création de la base de données de tests est relativement facile à mettre e
 - `php bin/console --env=test doctrine:schema:update --force`
 - `php bin/console --env=test doctrine:migrations:migrate -n`
 
-`note :` Il faut que l'utilisateur ait les droits de création. Vous pouvez ajouter le droit CREATDB à l'utilisateur db_user (`ALTER ROLE db_user CREATEDB;`).
+```dos
+c:\environnement\ma-moulinette>php bin/console --env=test doctrine:database:drop --force
+Dropped database "ma_moulinette_test" for connection named default
+
+c:\environnement\ma-moulinette>php bin/console --env=test doctrine:database:create --if-not-exists
+Created database "ma_moulinette_test" for connection named default
+
+c:\environnement\ma-moulinette>php bin/console --env=test doctrine:schema:update --force
+ Updating database schema...
+
+     433 queries were executed
+
+
+ [OK] Database schema updated successfully!
+```
+
+`note :` Il faut que l'utilisateur ait les droits de création. Vous pouvez ajouter le droit CREATEDB à l'utilisateur db_user (`ALTER ROLE db_user CREATEDB;`).
 
 ### Execution des tests unitaires
 
