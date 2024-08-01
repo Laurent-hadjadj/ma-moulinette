@@ -33,6 +33,21 @@ class ActuatorKernelTest extends KernelTestCase
         self::bootKernel();
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
+
+        // Réinitialiser la séquence
+        $connection = $entityManager->getConnection();
+        $platform = $connection->getDatabasePlatform();
+
+        if ($platform instanceof \Doctrine\DBAL\Platforms\PostgreSqlPlatform) {
+            $sequences = [
+                'ma_moulinette.actuator_id_seq',
+            ];
+
+            foreach ($sequences as $sequence) {
+                $connection->executeQuery("SELECT setval('$sequence', 1, false);");
+            }
+        }
+
         $purger = new ORMPurger($entityManager);
         $executor = new ORMExecutor($entityManager, $purger);
         $executor->execute([new ActuatorFixtures()]);
