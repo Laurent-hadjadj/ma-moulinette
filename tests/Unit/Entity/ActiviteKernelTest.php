@@ -43,8 +43,8 @@ class ActiviteKernelTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $anomalieRepository = $entityManager->getRepository(Activite::class);
-        $response = $anomalieRepository->findOneBy(['mavenKey' => static::$mavenKey]);
+        $activiteRepository = $entityManager->getRepository(Activite::class);
+        $response = $activiteRepository->findOneBy(['mavenKey' => static::$mavenKey]);
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée');
         $this->assertCount(1, [$response], 'MAVENKEY: Aucune réponse trouvée');
