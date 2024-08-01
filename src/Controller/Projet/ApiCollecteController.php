@@ -133,7 +133,7 @@ class ApiCollecteController extends AbstractController
         $utilisateur_collecte = $this->security->getUser()->getCourriel() ?? 'null';
 
         /** Information générales sur le projet */
-        $information=$this->batchCollecteInformation->batchCollecteInformation($data->maven_key, 'UTILISATEUR', $utilisateur_collecte);
+        $information=$this->batchCollecteInformation->batchCollecteInformation($data->maven_key, 'COLLECTE', $utilisateur_collecte);
         if ($information['code']!=200){
             return $response->setData([
                 'type' => 'error', 'code' => $information['code'],
@@ -189,7 +189,7 @@ class ApiCollecteController extends AbstractController
         $utilisateur_collecte = $this->security->getUser()->getCourriel() ?? 'null';
 
         /** Mesures du projet (ligne de code, coverage, dette, ...) */
-        $mesure=$this->batchCollecteMesure->batchCollecteMesure($data->maven_key, 'UTILISATEUR', $utilisateur_collecte);
+        $mesure=$this->batchCollecteMesure->batchCollecteMesure($data->maven_key, 'COLLECTE', $utilisateur_collecte);
         if ($mesure['code']!=200){
             return $response->setData([
                 'type' => 'error', 'code' => $mesure['code'],
@@ -242,7 +242,7 @@ class ApiCollecteController extends AbstractController
         $utilisateur_collecte = $this->security->getUser()->getCourriel() ?? 'null';
 
         /** Notes du projet  (fiabilité, sécurité, mauvaise pratique) */
-        $note=$this->batchCollecteNote->batchCollecteNote($data->maven_key, 'UTILISATEUR', $utilisateur_collecte, $data->type);
+        $note=$this->batchCollecteNote->batchCollecteNote($data->maven_key, 'COLLECTE', $utilisateur_collecte, $data->type);
         if ($note['code']!=200){
             return $response->setData([
                 'type' => 'error', 'code' => $note['code'],
@@ -282,7 +282,7 @@ class ApiCollecteController extends AbstractController
         $utilisateur_collecte = $this->security->getUser()->getCourriel() ?? 'null';
 
         /** Signalement des Anomalies pour le projet */
-        $owasp=$this->batchCollecteOwasp->batchCollecteOwasp($data->maven_key, 'UTILISATEUR', $utilisateur_collecte);
+        $owasp=$this->batchCollecteOwasp->batchCollecteOwasp($data->maven_key, 'COLLECTE', $utilisateur_collecte);
         if ($owasp['code']!=200){
             return $response->setData([
                 'type' => 'error', 'code' => $owasp['code'],
@@ -334,7 +334,7 @@ class ApiCollecteController extends AbstractController
         $utilisateur_collecte = $this->security->getUser()->getCourriel() ?? 'null';
 
         /** Signalement Hotspots pour le projet */
-        $hotspot=$this->batchCollecteHotspot->batchCollecteHotspot($data->maven_key, 'UTILISATEUR', $utilisateur_collecte);
+        $hotspot=$this->batchCollecteHotspot->batchCollecteHotspot($data->maven_key, 'COLLECTE', $utilisateur_collecte);
         if ($hotspot['code']!=200){
             return $response->setData([
                 'type' => 'error', 'code' => $hotspot['code'],
@@ -390,7 +390,7 @@ class ApiCollecteController extends AbstractController
         $utilisateur_collecte = $this->security->getUser()->getCourriel() ?? 'null';
 
         /** Signalement des Anomalies pour le projet */
-        $anomalie=$this->batchCollecteAnomalie->BatchCollecteAnomalie($data->maven_key, 'UTILISATEUR', $utilisateur_collecte);
+        $anomalie=$this->batchCollecteAnomalie->BatchCollecteAnomalie($data->maven_key, 'COLLECTE', $utilisateur_collecte);
         if ($anomalie['code']!=200){
             return $response->setData([
                 'type' => 'error', 'code' => $anomalie['code'],
@@ -444,7 +444,7 @@ class ApiCollecteController extends AbstractController
         $utilisateur_collecte = $this->security->getUser()->getCourriel() ?? 'null';
 
         /** collecte des signalements du détail des Anomalies pour le projet */
-        $anomalieDetail=$this->batchCollecteAnomalieDetail->BatchCollecteAnomalieDetail($data->maven_key, 'UTILISATEUR', $utilisateur_collecte);
+        $anomalieDetail=$this->batchCollecteAnomalieDetail->BatchCollecteAnomalieDetail($data->maven_key, 'COLLECTE', $utilisateur_collecte);
         if ($anomalieDetail['code']!=200){
             return $response->setData([
                 'type' => 'error', 'code' => $anomalieDetail['code'],
@@ -494,7 +494,7 @@ class ApiCollecteController extends AbstractController
         /** On contrôle le mode d'utilisation */
         $utilisateur_collecte = $this->security->getUser()->getCourriel() ?? 'null';
 
-        $hotspotOwasp=$this->batchCollecteHotspotOwasp->BatchCollecteHotspotOwasp($data->maven_key, 'UTILISATEUR', $utilisateur_collecte, $data->menace);
+        $hotspotOwasp=$this->batchCollecteHotspotOwasp->BatchCollecteHotspotOwasp($data->maven_key, 'COLLECTE', $utilisateur_collecte, $data->menace);
 
         if ($hotspotOwasp['code']!=200){
             return $response->setData([
@@ -547,7 +547,7 @@ class ApiCollecteController extends AbstractController
         $utilisateur_collecte = $this->security->getUser()->getCourriel() ?? 'null';
 
         /** collecte du détail des hotspots pour le projet */
-        $hotspotDetail=$this->batchCollecteHotspotDetail->BatchCollecteHotspotDetail($data->maven_key, 'UTILISATEUR', $utilisateur_collecte);
+        $hotspotDetail=$this->batchCollecteHotspotDetail->BatchCollecteHotspotDetail($data->maven_key, 'COLLECTE', $utilisateur_collecte);
         if ($hotspotDetail['code']!=200){
             return $response->setData([
                 'type' => 'error', 'code' => $hotspotDetail['code'],
@@ -596,7 +596,7 @@ class ApiCollecteController extends AbstractController
         $utilisateur_collecte = $this->security->getUser()->getCourriel() ?? 'null';
 
         /** collecte des suppressWarning et noSonar du projet */
-        $noSonar=$this->batchCollecteNoSonar->BatchCollecteNoSonar($data->maven_key, 'UTILISATEUR', $utilisateur_collecte);
+        $noSonar=$this->batchCollecteNoSonar->BatchCollecteNoSonar($data->maven_key, 'COLLECTE', $utilisateur_collecte);
         if ($noSonar['code']!=200){
             return $response->setData([
                 'type' => 'error', 'code' => $noSonar['code'],
@@ -648,7 +648,7 @@ class ApiCollecteController extends AbstractController
         $utilisateur_collecte = $this->security->getUser()->getCourriel() ?? 'null';
 
         /** collecte des to.do présent dans le projet */
-        $todo=$this->batchCollecteTodo->BatchCollecteTodo($data->maven_key, 'UTILISATEUR', $utilisateur_collecte);
+        $todo=$this->batchCollecteTodo->BatchCollecteTodo($data->maven_key, 'COLLECTE', $utilisateur_collecte);
         if ($todo['code']!=200){
             return $response->setData([
                 'type' => 'error', 'code' => $todo['code'],
@@ -697,7 +697,7 @@ class ApiCollecteController extends AbstractController
         $utilisateur_collecte = $this->security->getUser()->getCourriel() ?? 'null';
 
         /** collecte des to.do présent dans le projet */
-        $actuatorInfo=$this->batchCollecteActuator->BatchCollecteActuatorInfo($data->maven_key, 'UTILISATEUR', $utilisateur_collecte);
+        $actuatorInfo=$this->batchCollecteActuator->BatchCollecteActuatorInfo($data->maven_key, 'COLLECTE', $utilisateur_collecte);
         if ($actuatorInfo['code']!=200){
             return $response->setData([
                 'type' => 'error', 'code' => $actuatorInfo['code'],
@@ -747,7 +747,7 @@ class ApiCollecteController extends AbstractController
         $utilisateur_collecte = $this->security->getUser()->getCourriel() ?? 'null';
 
         /** collecte des Logger présent dans le projet */
-        $logger=$this->batchCollecteLogger->BatchCollecteLogger($data->maven_key, 'UTILISATEUR', $utilisateur_collecte);
+        $logger=$this->batchCollecteLogger->BatchCollecteLogger($data->maven_key, 'COLLECTE', $utilisateur_collecte);
         if ($logger['code']!=200){
             return $response->setData([
                 'type' => 'error', 'code' => $logger['code'],
