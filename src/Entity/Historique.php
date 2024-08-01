@@ -86,6 +86,27 @@ class Historique
     private $noSonar;
 
     #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Compteur de l’utilisation de Todo'])]
+    #[Assert\NotNull]
+    private $todo;
+
+    #[ORM\Column(type: Types::INTEGER, nullable: true,
+    options: ['comment' => 'Logger JAVA de type INFO'])]
+    private ?int $loggerInfo = null;
+
+    #[ORM\Column(type: Types::INTEGER, nullable: true,
+    options: ['comment' => 'Logger JAVA de type WARN'])]
+    private ?int $loggerWarn = null;
+
+    #[ORM\Column(type: Types::INTEGER, nullable: true,
+    options: ['comment' => 'Logger JAVA de type ERROR'])]
+    private ?int $loggerError = null;
+
+    #[ORM\Column(type: Types::INTEGER, nullable: true,
+    options: ['comment' => 'Logger JAVA de type DEBUG'])]
+    private ?int $loggerDebug = null;
+
+    #[ORM\Column(type: Types::INTEGER,
         options: ['comment' => 'Nombre total de lignes dans le projet'])]
     #[Assert\NotNull]
     private $nombreLigne;
@@ -300,7 +321,19 @@ class Historique
     #[Assert\NotNull]
     private $codeSmellInfo;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE,
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: true,
+    options: ['comment' => 'Mode de collecte : COLLECTE | TRAITEMENT MANUEL | TRAITEMENT AUTOMATIQUE'])]
+    #[Assert\Length(max: 32,
+        maxMessage: "Le mode de collecte ne peut pas dépasser 32 caractères.")]
+    private ?string $modeCollecte=null;
+
+    #[ORM\Column(type: Types::STRING, length: 320, nullable: true,
+    options: ['comment' => "Compte de l'utilisateur qui a réalisé la collecte."])]
+    #[Assert\Length(max: 320,
+        maxMessage: "Le compte de l'utilisateur ne peut pas dépasser 128 caractères.")]
+    private ?string $utilisateurCollecte=null;
+
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
         options: ['comment' => "Date d'enregistrement de l'historique"])]
     #[Assert\NotNull]
     private $dateEnregistrement;
@@ -311,7 +344,7 @@ class Historique
     }
 
     /*
-     * Le généarteur d'entity ne génére pas le setter pour une clé multiple
+     * Le générateur d'entity ne génère pas le setter pour une clé multiple
         public function setMavenKey(string $mavenKey): self
         {
             $this->mavenKey = $mavenKey;
@@ -320,7 +353,7 @@ class Historique
     */
 
     /*
-     * Le généarteur d'entity ne génére pas le setter pour une clé multiple
+     * Le générateur d'entity ne génère pas le setter pour une clé multiple
         public function setVersion(string $version): self
         {
             $this->version = $version;
@@ -329,7 +362,7 @@ class Historique
     */
 
     /*
-     * Le généarteur d'entity ne génére pas le setter pour une clé multiple
+     * Le générateur d'entity ne génère pas le setter pour une clé multiple
         public function setDateVersion(string $dateVersion): self
         {
             $this->dateVersion = $dateVersion;
@@ -2028,4 +2061,94 @@ class Historique
 
         return $this;
     }
+
+    public function getTodo(): ?int
+    {
+        return $this->todo;
+    }
+
+    public function setTodo(int $todo): static
+    {
+        $this->todo = $todo;
+
+        return $this;
+    }
+
+    public function getLoggerInfo(): ?int
+    {
+        return $this->loggerInfo;
+    }
+
+    public function setLoggerInfo(?int $loggerInfo): static
+    {
+        $this->loggerInfo = $loggerInfo;
+
+        return $this;
+    }
+
+    public function getLoggerWarn(): ?int
+    {
+        return $this->loggerWarn;
+    }
+
+    public function setLoggerWarn(?int $loggerWarn): static
+    {
+        $this->loggerWarn = $loggerWarn;
+
+        return $this;
+    }
+
+    public function getLoggerError(): ?int
+    {
+        return $this->loggerError;
+    }
+
+    public function setLoggerError(?int $loggerError): static
+    {
+        $this->loggerError = $loggerError;
+
+        return $this;
+    }
+
+    public function getLoggerDebug(): ?int
+    {
+        return $this->loggerDebug;
+    }
+
+    public function setLoggerDebug(?int $loggerDebug): static
+    {
+        $this->loggerDebug = $loggerDebug;
+
+        return $this;
+    }
+
+    public function getCoverage(): ?float
+    {
+        return $this->coverage;
+    }
+
+    public function getModeCollecte(): ?string
+    {
+        return $this->modeCollecte;
+    }
+
+    public function setModeCollecte(?string $modeCollecte): static
+    {
+        $this->modeCollecte = $modeCollecte;
+
+        return $this;
+    }
+
+    public function getUtilisateurCollecte(): ?string
+    {
+        return $this->utilisateurCollecte;
+    }
+
+    public function setUtilisateurCollecte(?string $utilisateurCollecte): static
+    {
+        $this->utilisateurCollecte = $utilisateurCollecte;
+
+        return $this;
+    }
+
 }
