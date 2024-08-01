@@ -20,6 +20,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 
 #[ORM\Entity(repositoryClass: HistoriqueRepository::class)]
+#[ORM\Table(name: "historique", schema: "ma_moulinette")]
 class Historique
 {
     #[ORM\Id]
