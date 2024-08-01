@@ -32,6 +32,16 @@ class ActiviteHistoriqueKernelTest extends KernelTestCase
         self::bootKernel();
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
+
+        // Réinitialiser la séquence
+        $connection = $entityManager->getConnection();
+        $platform = $connection->getDatabasePlatform();
+
+        if ($platform instanceof \Doctrine\DBAL\Platforms\PostgreSqlPlatform) {
+            $sequence = 'ma_moulinette.activite_historique_id_seq';
+            $connection->executeQuery("SELECT setval('$sequence', 1, false);");
+        }
+
         $purger = new ORMPurger($entityManager);
         $executor = new ORMExecutor($entityManager, $purger);
         $executor->execute([new ActiviteHistoriqueFixtures()]);

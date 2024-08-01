@@ -38,13 +38,8 @@ class ActiviteKernelTest extends KernelTestCase
         $platform = $connection->getDatabasePlatform();
 
         if ($platform instanceof \Doctrine\DBAL\Platforms\PostgreSqlPlatform) {
-            $sequences = [
-                'ma_moulinette.activite_id_seq',
-            ];
-
-            foreach ($sequences as $sequence) {
-                $connection->executeQuery("SELECT setval('$sequence', 1, false);");
-            }
+            $sequence = 'ma_moulinette.activite_id_seq';
+            $connection->executeQuery("SELECT setval('$sequence', 1, false);");
         }
 
         $purger = new ORMPurger($entityManager);
