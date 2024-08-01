@@ -1,6 +1,7 @@
-###                                                                                                 ###
-### Atention le fichier doit être encodé en UTF-8 avec une séquence de fin de ligne Windows (CRLF). ###
-###                                                                                                 ###
+###                                                                           ###
+### Atention le fichier doit être encodé en UTF-8 avec une séquence de fin de ###
+### ligne Windows (CRLF).                                                     ###
+###                                                                           ###
 
 @echo off
 set filename=lecteur.bat
@@ -23,7 +24,7 @@ for %%d in (C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (
 @mode con: cols=160 lines=70
 @color 0f
 @CHCP 65001
-@set VERSION=2024-06-16 v1.10.0
+@set VERSION=2024-06-16 v1.10.1
 @title Laurent HADJADJ - version %VERSION%
 @cls
 @echo ".. __  __             __  __             _              _   _       "
@@ -49,6 +50,7 @@ for %%d in (C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (
 @rem Laurent HADJADJ - 2024-05-23 v1.8.0 - Ajout dans le path des scripts tools
 @rem Laurent HADJADJ - 2024-05-24 v1.9.0 - tests du lecteur par défaut
 @rem Laurent HADJADJ - 2024-06-16 v1.10.0 - Ajout du path pour rabbitMQ
+@rem Laurent HADJADJ - 2024-08-01 v1.10.1 - Correction de l'en-tête sur 80 colonnes
 
 @echo:
 @echo Env         	: dev
