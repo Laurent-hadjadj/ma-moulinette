@@ -1,9 +1,14 @@
-###                                                                           ###
-### Atention le fichier doit être encodé en UTF-8 avec une séquence de fin de ###
-### ligne Windows (CRLF).                                                     ###
-###                                                                           ###
-
 @echo off
+@mode con: cols=160 lines=70
+@color 0f
+@CHCP 65001
+@cls
+@echo ###                                                                           ###
+@echo ### Atention le fichier doit être encodé en UTF-8 avec une séquence de fin de ###
+@echo ### ligne Windows (CRLF).                                                     ###
+@echo ###                                                                           ###
+echo:
+
 set filename=lecteur.bat
 set found=0
 for %%d in (C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (
@@ -21,9 +26,6 @@ for %%d in (C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (
 @call  %%d:\environnement\lecteur.bat
 )
 
-@mode con: cols=160 lines=70
-@color 0f
-@CHCP 65001
 @set VERSION=2024-05-24 v1.3.1
 @title Laurent HADJADJ - version %VERSION%
 @cls

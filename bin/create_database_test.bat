@@ -1,9 +1,14 @@
-###                                                                           ###
-### Atention le fichier doit être encodé en UTF-8 avec une séquence de fin de ###
-### ligne Windows (CRLF).                                                     ###
-###                                                                           ###
-
 @echo off
+@mode con: cols=160 lines=70
+@color 0f
+@CHCP 65001
+@cls
+@echo ###                                                                           ###
+@echo ### Atention le fichier doit être encodé en UTF-8 avec une séquence de fin de ###
+@echo ### ligne Windows (CRLF).                                                     ###
+@echo ###                                                                           ###
+echo:
+
 set filename=lecteur.bat
 set found=0
 for %%d in (C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (
@@ -21,12 +26,8 @@ for %%d in (C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (
     call  %%d:\environnement\lecteur.bat
 )
 
-@mode con: cols=160 lines=70
-@color 0f
-@CHCP 65001
-@set VERSION=2024-08-01 v1.0.0
+@set VERSION=2024-08-01 v1.1.0
 @title Laurent HADJADJ - version %VERSION%
-@cls
 @echo ".. __  __             __  __             _              _   _       "
 @echo "  |  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___ "
 @echo "  | |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \"
@@ -38,11 +39,12 @@ for %%d in (C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (
 @echo    © 2024 - CC BY-SA-NC 4.0
 @echo:
 @rem  Laurent HADJADJ - 2024-08-25 v1.0.0 - création du script
+@rem  Laurent HADJADJ - 2024-08-25 v1.1.0 - Corrections de l'affichage de l'en-tête.
 
 @echo:
 @echo Env         	: dev
-@echo lecteur     : %LECTEUR%
-@echo version:    : %VERSION%
+@echo lecteur         : %LECTEUR%
+@echo version:        : %VERSION%
 @echo symfony     	: 6.4
 @echo symfony-cli 	: 5.8.2
 @echo php         	: 8.3.0-NTS
