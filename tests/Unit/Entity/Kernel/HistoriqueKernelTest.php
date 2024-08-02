@@ -38,7 +38,7 @@ class HistoriqueKernelTest extends KernelTestCase
         $platform = $connection->getDatabasePlatform();
 
         if ($platform instanceof \Doctrine\DBAL\Platforms\PostgreSqlPlatform) {
-            $sequence = 'ma_moulinette.no_sonar_id_seq';
+            $sequence = 'ma_moulinette.historique_id_seq';
             $connection->executeQuery("SELECT setval('$sequence', 1, false);");
         }
 

@@ -38,7 +38,7 @@ class EquipeKernelTest extends KernelTestCase
         $platform = $connection->getDatabasePlatform();
 
         if ($platform instanceof \Doctrine\DBAL\Platforms\PostgreSqlPlatform) {
-            $sequence = 'ma_moulinette.activite_historique_id_seq';
+            $sequence = 'ma_moulinette.equipe_id_seq';
             $connection->executeQuery("SELECT setval('$sequence', 1, false);");
         }
 
