@@ -17,11 +17,7 @@ namespace App\Controller\Activite;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 
-/** Gestion du temps */
-use DateTime;
-use DateTimeZone;
-
-/** Accès aux tables SLQLite */
+/** Accès aux tables */
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\ListeProjet;
 use App\Entity\Properties;
@@ -31,7 +27,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-/** Securité */
+/** Sécurité */
 use Symfony\Bundle\SecurityBundle\Security;
 
 /** Client HTTP */
@@ -39,10 +35,6 @@ use App\Service\ClientActivite;
 
 use App\Entity\Activite;
 use App\Entity\ActiviteHistorique;
-use DateTimeImmutable;
-
-
-
 
 /**
  * [Description ApiHomeController]
@@ -56,8 +48,8 @@ class ApiActiviteController extends AbstractController
     public static $europeParis = "Europe/Paris";
     public static $reference = '<strong>[Accueil]</strong>';
     public static $erreur400 = "La requête est incorrecte (Erreur 400).";
-    public static $erreur403 = "Vous devez avoir le rôle ACTIVITE pour réaliser cette action (Erreur 403).";
-    public static $erreur404 = "Je n'ai pas trouvé de projets sur le serveur sonarqube (Erreur 404).";
+    public static $erreur403 = "Vous devez avoir le rôle [ACTIVITE] pour réaliser cette action (Erreur 403).";
+    public static $erreur404 = "Je n'ai pas trouvé de projets sur le serveur SonarQube (Erreur 404).";
 
     /**
      * [Description for __construct]
@@ -101,20 +93,20 @@ class ApiActiviteController extends AbstractController
 
         $url = $this->getParameter(static::$sonarUrl) . "/api/ce/activity";
         $result = $client->http($url);
-        // dateBase represente la date la plus recente dans la base de donnée
+        // dateBase représente la date la plus récente dans la base de donnée
         // On ne prend pas directement la donnee de date parce que la base peux ne peut pas avoir de donnée
         $dateBase = $activiteEntity->dernierDate();
 
         if (empty($dateBase['request'])){
-            // methode pour inserer si la base est vierge
+            // méthode pour insérer si la base est vierge
             $formatedData = static::organisationDonnee($result);
             $activiteEntity->insertActivites($formatedData);
-        }else{
+        } else {
             // Méthode pour insérer si la base n'est pas vierge.
             // Cette méthode consiste à prendre toutes les analyse dans un intervalle de date représenter par dateMin et dateMax.
             // Puis vas insérer ces analyses
-            $dateBase = (new DateTime($dateBase['request'][0]['date']))->modify('+1 days');
-            $dateActuelle = new DateTime();
+            $dateBase = (new \DateTime($dateBase['request'][0]['date']))->modify('+1 days');
+            $dateActuelle = new \DateTime();
             $dateActuelleMoins1 = $dateActuelle->modify('-1 days');
             $dateMin = clone $dateBase;
             $dateMax = (clone $dateMin)->modify('+7 days');
@@ -131,25 +123,25 @@ class ApiActiviteController extends AbstractController
 
 
         // On recupere l'anne actuelle
-        $dateActuelle = new DateTime();
-        $dateActuelle->setTimezone(new DateTimeZone('Europe/Paris'));
+        $dateActuelle = new \DateTime();
+        $dateActuelle->setTimezone(new \DateTimeZone('Europe/Paris'));
         $anneeActuelle = $dateActuelle->format('Y');
 
-        // On forme le tableau qui va etre envoyé dans la vue
+        // On forme le tableau qui va être envoyé dans la vue
         // Le nombre de jour pour cette annee
         $result=$activiteEntity->premiereDate($anneeActuelle);
-        $donneeTableau[$anneeActuelle]['nb_jour'] = static::calculDifferenceDate(new DateTime ($result['request'][0]['date']),$dateActuelle);
+        $donneeTableau[$anneeActuelle]['nb_jour'] = static::calculDifferenceDate(new \DateTime($result['request'][0]['date']), $dateActuelle);
 
         // Le nombre d'analyse pour cette annee
         $result = $activiteEntity->nombreAnalyse($anneeActuelle);
         $donneeTableau[$anneeActuelle]['nb_analyse'] = $result['request']['nb_analyse'];
 
-        // Le nombre d'analyse reussi ou en echec pour cette annee
-        // Reussi
+        // Le nombre d'analyse réussi ou en échec pour cette annee
+        // Réussi
         $statusRechercher = 'SUCCESS';
         $result = $activiteEntity->nombreStatus($anneeActuelle,$statusRechercher);
         $donneeTableau[$anneeActuelle]['nb_reussi'] = $result['request']['nb_status'];
-        // Echec
+        // Échec
         $statusRechercher = 'FAILED';
         $result = $activiteEntity->nombreStatus($anneeActuelle,$statusRechercher);
         $donneeTableau[$anneeActuelle]['nb_echec'] = $result['request']['nb_status'];
@@ -161,20 +153,21 @@ class ApiActiviteController extends AbstractController
         // La moyenne d'analyse par jour
         $donneeTableau[$anneeActuelle]['moyenne_analyse'] = static::calculAnalyseMoyenne($donneeTableau[$anneeActuelle]['nb_jour'], $donneeTableau[$anneeActuelle]['nb_analyse']);
 
-        // Taux d'analyse reussite en '%'
+        // Taux d'analyse réussite en '%'
         $donneeTableau[$anneeActuelle]['taux_reussite'] = static::calculeTauxReussite($donneeTableau[$anneeActuelle]['nb_analyse'], $donneeTableau[$anneeActuelle]['nb_reussi']);
 
         // Date d'enregistrement
-        $donneeTableau[$anneeActuelle]['date_enregistrement'] = new DateTimeImmutable();
+        $donneeTableau[$anneeActuelle]['date_enregistrement'] = new \DateTimeImmutable();
 
         $verifUpdateOuInsert = $historiqueActiviteEntity->selectActivite($anneeActuelle);
-        if (empty($verifUpdateOuInsert['request'])) { // Utilisation de empty() pour vérifier si le tableau est vide
+        if (empty($verifUpdateOuInsert['request'])) {
+            // Utilisation de empty() pour vérifier si le tableau est vide
             $historiqueActiviteEntity->insertHistoriqueActivites($donneeTableau);
         } else {
             $historiqueActiviteEntity->updateHistoriqueActivites($donneeTableau);
         }
         $tableHistoriqueActivite = $historiqueActiviteEntity->selectActivite();
-        $tableHistoriqueActivite['request'][0]["date_enregistrement"] = (new DateTime($tableHistoriqueActivite['request'][0]["date_enregistrement"]))->format('d-m-Y H:i:s');
+        $tableHistoriqueActivite['request'][0]["date_enregistrement"] = (new \DateTime($tableHistoriqueActivite['request'][0]["date_enregistrement"]))->format('d-m-Y H:i:s');
 
         return $response->setData(['code' => 200,'listeDonnee' => $tableHistoriqueActivite, Response::HTTP_OK]);
     }
@@ -195,7 +188,7 @@ class ApiActiviteController extends AbstractController
     public function apiRecupereDonnee(Request $request): response
     {
         /**On recupere la date actuelle */
-        $dateActuelle = new DateTime();
+        $dateActuelle = new \DateTime();
 
         /** On instancie la classe */
         $activiteEntity = $this->em->getRepository(Activite::class);
@@ -232,11 +225,10 @@ class ApiActiviteController extends AbstractController
         return new JsonResponse(['code' => 200, 'listeDonnee' => $response], Response::HTTP_OK);
     }
 
-    private function calculDifferenceDate(DateTime $premiereDate, DateTime $secondeDate) : int
+    private function calculDifferenceDate(\DateTime $premiereDate, \DateTime $secondeDate) : int
     {
         return (int) $premiereDate->diff($secondeDate)->format('%a');
     }
-
 
     private function formatDureeMax($data): string
     {
@@ -263,9 +255,9 @@ class ApiActiviteController extends AbstractController
         $tab[$id]['analyse_id'] = $value['analysisId'];
         $tab[$id]['status'] = $value['status'];
         $tab[$id]['submitter_login']= $value['submitterLogin'];
-        $tab[$id]['submitted_at'] =  new DateTimeImmutable($value['submittedAt']);
-        $tab[$id]['started_at'] = new DateTimeImmutable($value['startedAt']);
-        $tab[$id]['executed_at'] = new DateTimeImmutable($value['executedAt']);
+        $tab[$id]['submitted_at'] =  new \DateTimeImmutable($value['submittedAt']);
+        $tab[$id]['started_at'] = new \DateTimeImmutable($value['startedAt']);
+        $tab[$id]['executed_at'] = new \DateTimeImmutable($value['executedAt']);
         $tab[$id]['execution_time'] = (int) round($value['executionTimeMs'] / 1000)+1; // Conversion de l'input en ms en s
         $id++;
         }
