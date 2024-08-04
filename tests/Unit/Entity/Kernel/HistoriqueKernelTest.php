@@ -33,14 +33,7 @@ class HistoriqueKernelTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        // Réinitialiser la séquence
-        $connection = $entityManager->getConnection();
-        $platform = $connection->getDatabasePlatform();
-
-        if ($platform instanceof \Doctrine\DBAL\Platforms\PostgreSqlPlatform) {
-            $sequence = 'ma_moulinette.historique_id_seq';
-            $connection->executeQuery("SELECT setval('$sequence', 1, false);");
-        }
+        // Il n'y a pas de séquence pour cette table car on utilise une clé composite
 
         $purger = new ORMPurger($entityManager);
         $executor = new ORMExecutor($entityManager, $purger);
