@@ -33,7 +33,6 @@ class ActuatorFixtures extends Fixture
             ->setActuatorUser('user1')
             ->setActuatorPassword('password1')
             ->setPersonne('John Doe');
-            //->setDateModification(new \DateTimeImmutable(static::$date));
         $manager->persist($actuator01);
 
         $actuator02=(new Actuator())
@@ -43,7 +42,6 @@ class ActuatorFixtures extends Fixture
             ->setActuatorUser('user2')
             ->setActuatorPassword('password2')
             ->setPersonne('Jane Smith');
-            //->setDateModification(new \DateTimeImmutable(static::$date));
         $manager->persist($actuator02);
 
         $actuator03=(new Actuator())
@@ -53,7 +51,6 @@ class ActuatorFixtures extends Fixture
             ->setActuatorUser('user3')
             ->setActuatorPassword('password3')
             ->setPersonne('Bob Johnson');
-            //->setDateModification(new \DateTimeImmutable(static::$date));
         $manager->persist($actuator03);
 
         $actuator04=(new Actuator())
@@ -63,7 +60,6 @@ class ActuatorFixtures extends Fixture
             ->setActuatorUser('user4')
             ->setActuatorPassword('password4')
             ->setPersonne('Elsa Davis');
-            //->setDateModification(new \DateTimeImmutable(static::$date));
         $manager->persist($actuator04);
 
         /** Enregistrement des données dans la base de tests */
