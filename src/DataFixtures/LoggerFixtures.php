@@ -25,7 +25,7 @@ class LoggerFixtures extends Fixture
       $modeCollecte=['COLLECTE', 'TRAITEMENT MANUEL', 'TRAITEMENT AUTOMATIQUE'];
 
       foreach($modeCollecte as $mode){
-        $reliability=(new Logger())
+        $logger=(new Logger())
             ->setMavenKey(static::$mavenKey)
             ->setLoggerInfo(static::$loggerInfo)
             ->setLoggerWarn(static::$loggerWarn)
@@ -34,7 +34,7 @@ class LoggerFixtures extends Fixture
             ->setModeCollecte($mode)
             ->setUtilisateurCollecte(static::$utilisateurCollecte)
             ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
-        $manager->persist($reliability);
+        $manager->persist($logger);
       }
       /** Enregistrement des données dans la base de tests */
         $manager->flush();

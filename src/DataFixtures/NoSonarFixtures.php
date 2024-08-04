@@ -25,7 +25,7 @@ class NoSonarFixtures extends Fixture
       $modeCollecte=['COLLECTE', 'TRAITEMENT MANUEL', 'TRAITEMENT AUTOMATIQUE'];
 
       foreach($modeCollecte as $mode){
-        $reliability=(new NoSonar())
+        $nosonar=(new NoSonar())
             ->setMavenKey(static::$mavenKey)
             ->setRule(static::$rule)
             ->setComponent(static::$component)
@@ -33,7 +33,7 @@ class NoSonarFixtures extends Fixture
             ->setModeCollecte($mode)
             ->setUtilisateurCollecte(static::$utilisateurCollecte)
             ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
-        $manager->persist($reliability);
+        $manager->persist($nosonar);
       }
       /** Enregistrement des données dans la base de tests */
         $manager->flush();

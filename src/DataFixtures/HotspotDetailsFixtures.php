@@ -38,7 +38,7 @@ class HotspotDetailsFixtures extends Fixture
       $modeCollecte=['COLLECTE', 'TRAITEMENT MANUEL', 'TRAITEMENT AUTOMATIQUE'];
 
       foreach($modeCollecte as $mode){
-        $reliability=(new HotspotDetails())
+        $hotspotDetails=(new HotspotDetails())
           ->setMavenKey(static::$mavenKey)
           ->setVersion(static::$version)
           ->setDateVersion(new \DateTimeImmutable(static::$dateVersion))
@@ -60,7 +60,7 @@ class HotspotDetailsFixtures extends Fixture
           ->setModeCollecte($mode)
           ->setUtilisateurCollecte(static::$utilisateurCollecte)
           ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
-        $manager->persist($reliability);
+        $manager->persist($hotspotDetails);
       }
       /** Enregistrement des données dans la base de tests */
         $manager->flush();
