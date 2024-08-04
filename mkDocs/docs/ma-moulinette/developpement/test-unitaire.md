@@ -83,11 +83,18 @@ c:\environnement\ma-moulinette>php bin/console --env=test doctrine:schema:update
 
      433 queries were executed
 
-
  [OK] Database schema updated successfully!
 ```
 
 `note :` Il faut que l'utilisateur ait les droits de création. Vous pouvez ajouter le droit CREATEDB à l'utilisateur db_user (`ALTER ROLE db_user CREATEDB;`).
+
+### Chargement des fixtures
+
+Pour charger les fixtures dans la base de données de TESTs, il suffit d’exécuter cette commande :
+
+```bash
+symfony console doctrine:fixtures:load --env=test
+```
 
 ### Execution des tests unitaires
 
