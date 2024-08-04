@@ -19,7 +19,7 @@ use Doctrine\Persistence\ManagerRegistry;
 
 class ActiviteHistoriqueRepository extends ServiceEntityRepository
 {
-    public static $removeReturnline = "/\s+/u";
+    public static $removeReturnLine = "/\s+/u";
     public static $formatDate = 'Y-m-d H:i:sO';
 
     public function __construct(ManagerRegistry $registry)
@@ -44,7 +44,7 @@ class ActiviteHistoriqueRepository extends ServiceEntityRepository
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
                 foreach ($data as $annee => $valeur) {
-                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(':annee', $annee);
                     $stmt->bindValue(':nb_hour', $valeur['nb_jour']);
                     $stmt->bindValue(':nb_analyse', $valeur['nb_analyse']);
@@ -89,7 +89,7 @@ class ActiviteHistoriqueRepository extends ServiceEntityRepository
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
             foreach ($data as $annee => $valeur) {
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $stmt->bindValue(':annee', $annee);
                 $stmt->bindValue(':nb_jour', $valeur['nb_jour']);
                 $stmt->bindValue(':nb_analyse', $valeur['nb_analyse']);
@@ -128,10 +128,10 @@ class ActiviteHistoriqueRepository extends ServiceEntityRepository
                         FROM historique_activite";
                         if ($annee !== null){
                             $sql .= " WHERE annee = :annee";
-                            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                             $stmt->bindValue(':annee', $annee);
                         }else{
-                            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                         }
                         $request=$stmt->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
