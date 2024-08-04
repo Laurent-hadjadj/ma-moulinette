@@ -25,9 +25,6 @@ use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 class ActuatorInfoKernelTest extends KernelTestCase
 {
 
-    private static $actuatorInfoDescription = '[SOCLE][ARCHETYPE]';
-    private static $actuatorInfoValue = 'socle.archetype';
-  
     protected function setUp(): void
     {
         self::bootKernel();
