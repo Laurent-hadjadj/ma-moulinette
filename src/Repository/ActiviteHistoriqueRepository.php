@@ -29,7 +29,7 @@ class ActiviteHistoriqueRepository extends ServiceEntityRepository
 
     /**
      * [Description for selectActivite]
-     * On inserer la liste de toute les activites qui sont envoyé
+     * On insère la liste de toutes les activités qui sont envoyé
      *
      * @return array
      *
@@ -37,10 +37,12 @@ class ActiviteHistoriqueRepository extends ServiceEntityRepository
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    //to.do
     public function insertHistoriqueActivites($data): array
     {
-        $sql = "INSERT INTO historique_activite (annee, nb_jour, nb_analyse, moyenne_analyse, nb_reussi, nb_echec, taux_reussite, max_temps, date_enregistrement) VALUES (:annee, :nb_hour, :nb_analyse, :moyenne_analyse, :nb_reussi,:nb_echec, :taux_reussite, :max_temps, :date_enregistrement)";
+        $sql = "INSERT INTO ma_moulinette.activite_historique (
+                    annee, nb_jour, nb_analyse, moyenne_analyse,                     nb_reussi, nb_echec, taux_reussite, max_temps,                     date_enregistrement)
+                VALUES (:annee, :nb_hour, :nb_analyse, :moyenne_analyse,
+                        :nb_reussi, :nb_echec, :taux_reussite, :max_temps, :date_enregistrement)";
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
                 foreach ($data as $annee => $valeur) {
@@ -66,7 +68,7 @@ class ActiviteHistoriqueRepository extends ServiceEntityRepository
 
     /**
      * [Description for selectActivite]
-     * On inserer la liste de toute les activites qui sont envoyé
+     * On insérer la liste de toute les activities qui sont envoyé
      *
      * @return array
      *
@@ -76,7 +78,7 @@ class ActiviteHistoriqueRepository extends ServiceEntityRepository
      */
     public function updateHistoriqueActivites($data): array
     {
-        $sql = "UPDATE historique_activite
+        $sql = "UPDATE ma_moulinette.activite_historique
                 SET nb_jour = :nb_jour,
                     nb_analyse = :nb_analyse,
                     moyenne_analyse = :moyenne_analyse,
@@ -90,16 +92,16 @@ class ActiviteHistoriqueRepository extends ServiceEntityRepository
             $this->getEntityManager()->getConnection()->beginTransaction();
             foreach ($data as $annee => $valeur) {
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(':annee', $annee);
-                $stmt->bindValue(':nb_jour', $valeur['nb_jour']);
-                $stmt->bindValue(':nb_analyse', $valeur['nb_analyse']);
-                $stmt->bindValue(':moyenne_analyse', $valeur['moyenne_analyse']);
-                $stmt->bindValue(':nb_reussi', $valeur['nb_reussi']);
-                $stmt->bindValue(':nb_echec', $valeur['nb_echec']);
-                $stmt->bindValue(':taux_reussite', $valeur['taux_reussite']);
-                $stmt->bindValue(':max_temps', $valeur['max_temps']);
-                $stmt->bindValue(':date_enregistrement', $valeur['date_enregistrement']->format('Y-m-d H:i:sO'));
-                $stmt->executeStatement();
+                    $stmt->bindValue(':annee', $annee);
+                    $stmt->bindValue(':nb_jour', $valeur['nb_jour']);
+                    $stmt->bindValue(':nb_analyse', $valeur['nb_analyse']);
+                    $stmt->bindValue(':moyenne_analyse', $valeur['moyenne_analyse']);
+                    $stmt->bindValue(':nb_reussi', $valeur['nb_reussi']);
+                    $stmt->bindValue(':nb_echec', $valeur['nb_echec']);
+                    $stmt->bindValue(':taux_reussite', $valeur['taux_reussite']);
+                    $stmt->bindValue(':max_temps', $valeur['max_temps']);
+                    $stmt->bindValue(':date_enregistrement', $valeur['date_enregistrement']->format('Y-m-d H:i:sO'));
+                    $stmt->executeStatement();
             }
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
@@ -110,10 +112,9 @@ class ActiviteHistoriqueRepository extends ServiceEntityRepository
         return ['code' => 200, 'erreur' => ''];
     }
 
-
     /**
      * [Description for selectActivite]
-     * On recupere la liste de toute les activites
+     * On récupère la liste de toute les activities
      *
      * @return array
      *
@@ -124,8 +125,8 @@ class ActiviteHistoriqueRepository extends ServiceEntityRepository
     public function selectActivite($annee = null): array
     {
         try {
-                $sql = " SELECT *
-                        FROM historique_activite";
+                $sql = "SELECT *
+                        FROM ma_moulinette.activite_historique";
                         if ($annee !== null){
                             $sql .= " WHERE annee = :annee";
                             $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
