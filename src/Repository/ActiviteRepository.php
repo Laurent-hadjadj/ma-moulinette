@@ -65,9 +65,13 @@ class ActiviteRepository extends ServiceEntityRepository
     public function insertActivites($data): array
     {
         $sql = "INSERT INTO ma_moulinette.activite (
-                    maven_key, project_name, analyse_id, status, submitter_login, submitted_at, started_at, executed_at, execution_time)
+                    maven_key, project_name, analyse_id,
+                    status, submitter_login, submitted_at,
+                    started_at, executed_at, execution_time)
                 VALUES (
-                    :maven_key, :project_name, :analyse_id, :status, :submitter_login,:submitted_at, :started_at, :executed_at, :execution_time)";
+                    :maven_key, :project_name, :analyse_id,
+                    :status, :submitter_login,:submitted_at,
+                    :started_at, :executed_at, :execution_time)";
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
                 foreach ($data as $ref) {
@@ -85,6 +89,7 @@ class ActiviteRepository extends ServiceEntityRepository
                 }
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
+        dd($e);
             $this->getEntityManager()->getConnection()->rollBack();
             return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
@@ -135,9 +140,7 @@ class ActiviteRepository extends ServiceEntityRepository
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue("annee", $annee);
                 $request=$stmt->executeQuery()->fetchAllAssociative();
-            $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
             return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['request'=>$request[0], 'code'=>200, 'erreur'=>''];
@@ -209,14 +212,14 @@ class ActiviteRepository extends ServiceEntityRepository
      */
     public function dernierDate($annee = null): array
     {
-        $sql = "SELECT executed_at as date FROM ma_moulinette.activite";
+        $sql = "SELECT executed_at as date FROM ma_moulinette.activite ";
         try {
             if ($annee !== null) {
-                $sql .= " WHERE EXTRACT(YEAR FROM started_at) = :annee ORDER BY executed_at DESC LIMIT 1";
+                $sql .= "WHERE EXTRACT(YEAR FROM started_at) = :annee ORDER BY executed_at DESC LIMIT 1";
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $stmt->bindValue(':annee', $annee);
             } else {
-                $sql .= " ORDER BY executed_at DESC LIMIT 1";
+                $sql .= "ORDER BY executed_at DESC LIMIT 1";
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             }
             $request = $stmt->executeQuery()->fetchAllAssociative();
@@ -238,15 +241,15 @@ class ActiviteRepository extends ServiceEntityRepository
      */
     public function premiereDate($annee = null): array
     {
-        $sql = "SELECT executed_at as date FROM ma_moulinette.activite";
+        $sql = "SELECT executed_at as date FROM ma_moulinette.activite ";
 
         try {
             if ($annee !== null) {
-                $sql .= " WHERE EXTRACT(YEAR FROM started_at) = :annee ORDER BY executed_at ASC LIMIT 1";
+                $sql .= "WHERE EXTRACT(YEAR FROM started_at) = :annee ORDER BY executed_at ASC LIMIT 1";
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $stmt->bindValue(':annee', $annee);
             } else {
-                $sql .= " ORDER BY executed_at DESC LIMIT 1";
+                $sql .= "ORDER BY executed_at DESC LIMIT 1";
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             }
             $request = $stmt->executeQuery()->fetchAllAssociative();
@@ -268,8 +271,9 @@ class ActiviteRepository extends ServiceEntityRepository
      */
     public function listeProjectAnalyse($annee = null): array
     {
-        $sql = "SELECT DATE(executed_at) AS day, COUNT(DISTINCT project_name) AS count FROM ma_moulinette.activite ";
-
+        $sql = "SELECT DATE(executed_at) AS day,
+                    COUNT(DISTINCT project_name) AS count
+                FROM ma_moulinette.activite ";
         try {
             if ($annee !== null) {
                 $sql.= "WHERE EXTRACT(YEAR FROM executed_at) = :annee
@@ -277,7 +281,7 @@ class ActiviteRepository extends ServiceEntityRepository
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $stmt->bindValue(':annee', $annee);
             } else {
-                $sql .= " GROUP BY DATE(executed_at) ORDER BY day DESC";
+                $sql .= "GROUP BY DATE(executed_at) ORDER BY day DESC";
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             }
             $request = $stmt->executeQuery()->fetchAllAssociative();
