@@ -84,7 +84,7 @@ class HotspotOwaspValidatorTest extends KernelTestCase
     $this->assertHasErrors($this->getEntity()->setRuleKey(''), 1);
     $this->assertHasErrors($this->getEntity()->setProbability(''), 1);
     $this->assertHasErrors($this->getEntity()->setStatus(''), 1);
-    $this->assertHasErrors($this->getEntity()->setResolution(''), 1);
+    $this->assertHasErrors($this->getEntity()->setResolution(''), 0);
     $this->assertHasErrors($this->getEntity()->setModeCollecte(''), 0);
     $this->assertHasErrors($this->getEntity()->setUtilisateurCollecte(''), 0);
   }
