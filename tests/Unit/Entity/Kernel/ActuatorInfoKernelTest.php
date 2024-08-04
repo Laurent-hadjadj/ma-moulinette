@@ -52,7 +52,7 @@ class ActuatorInfoKernelTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         $actuatorInfoRepository = $entityManager->getRepository(ActuatorInfo::class);
-        $response = $actuatorInfoRepository->findOneBy(['actuator_id' => 1]);
+        $response = $actuatorInfoRepository->findOneBy(['actuator' => 5]);
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée');
         $this->assertCount(1, [$response], 'ACTUATOR_ID: Aucune réponse trouvée');
