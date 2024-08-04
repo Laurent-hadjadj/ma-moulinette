@@ -19,7 +19,6 @@ use Doctrine\Persistence\ManagerRegistry;
 
 class ActiviteRepository extends ServiceEntityRepository
 {
-
     public static $removeReturnLine = "/\s+/u";
     public static $formatDate = 'Y-m-d H:i:sO';
 
@@ -41,8 +40,8 @@ class ActiviteRepository extends ServiceEntityRepository
     public function selectActivite($annee): array
     {
         try {
-                $sql = " SELECT *
-                        FROM activite
+                $sql = "SELECT *
+                        FROM ma_moulinette.activite
                         WHERE EXTRACT(YEAR FROM started_at) = :annee ";
                         $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                         $stmt->bindValue(':annee', $annee);
@@ -65,7 +64,7 @@ class ActiviteRepository extends ServiceEntityRepository
      */
     public function insertActivites($data): array
     {
-        $sql = "INSERT INTO activite (
+        $sql = "INSERT INTO ma_moulinette.activite (
                     maven_key, project_name, analyse_id, status, submitter_login, submitted_at, started_at, executed_at, execution_time)
                 VALUES (
                     :maven_key, :project_name, :analyse_id, :status, :submitter_login,:submitted_at, :started_at, :executed_at, :execution_time)";
@@ -105,7 +104,7 @@ class ActiviteRepository extends ServiceEntityRepository
     public function nombreJourAnneeDonnee($annee): array
     {
         $sql = "SELECT COUNT(DISTINCT started_at) AS unique_days
-                FROM activite
+                FROM ma_moulinette.activite
                 WHERE EXTRACT(YEAR FROM started_at) = :annee ";
         try {
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
@@ -130,7 +129,7 @@ class ActiviteRepository extends ServiceEntityRepository
     public function tempsExecutionMax($annee): array
     {
         $sql = "SELECT max(execution_time) AS max_time
-                FROM activite
+                FROM ma_moulinette.activite
                 WHERE EXTRACT(YEAR FROM started_at) = :annee ";
         try {
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
@@ -157,7 +156,7 @@ class ActiviteRepository extends ServiceEntityRepository
     public function nombreStatus($annee,$status): array
     {
         $sql = "SELECT COUNT(*) AS nb_status
-                FROM activite
+                FROM ma_moulinette.activite
                 WHERE EXTRACT(YEAR FROM started_at) = :annee
                 AND status LIKE :status";
 
@@ -185,7 +184,7 @@ class ActiviteRepository extends ServiceEntityRepository
     public function nombreAnalyse($annee): array
     {
         $sql = "SELECT COUNT(*) AS nb_analyse
-                FROM activite
+                FROM ma_moulinette.activite
                 WHERE EXTRACT(YEAR FROM started_at) = :annee";
 
         try {
@@ -210,7 +209,7 @@ class ActiviteRepository extends ServiceEntityRepository
      */
     public function dernierDate($annee = null): array
     {
-        $sql = "SELECT executed_at as date FROM activite";
+        $sql = "SELECT executed_at as date FROM ma_moulinette.activite";
         try {
             if ($annee !== null) {
                 $sql .= " WHERE EXTRACT(YEAR FROM started_at) = :annee ORDER BY executed_at DESC LIMIT 1";
@@ -239,7 +238,7 @@ class ActiviteRepository extends ServiceEntityRepository
      */
     public function premiereDate($annee = null): array
     {
-        $sql = "SELECT executed_at as date FROM activite";
+        $sql = "SELECT executed_at as date FROM ma_moulinette.activite";
 
         try {
             if ($annee !== null) {
@@ -269,7 +268,7 @@ class ActiviteRepository extends ServiceEntityRepository
      */
     public function listeProjectAnalyse($annee = null): array
     {
-        $sql = "SELECT DATE(executed_at) AS day, COUNT(DISTINCT project_name) AS count FROM activite ";
+        $sql = "SELECT DATE(executed_at) AS day, COUNT(DISTINCT project_name) AS count FROM ma_moulinette.activite ";
 
         try {
             if ($annee !== null) {
@@ -302,7 +301,7 @@ class ActiviteRepository extends ServiceEntityRepository
     {
         try {
             $sql = "SELECT DATE(executed_at) AS day,
-                            COUNT(*) AS count FROM activite ";
+                            COUNT(*) AS count FROM ma_moulinette.activite ";
             if ($annee !== null) {
                 $sql.= "WHERE EXTRACT(YEAR FROM executed_at) = :annee
                 GROUP BY DATE(executed_at) ORDER BY day ASC";
@@ -335,7 +334,7 @@ class ActiviteRepository extends ServiceEntityRepository
             $sql = "SELECT DATE(executed_at) AS day,
                         COUNT(*) AS analyse,
                         COUNT(DISTINCT project_name) AS projet
-                    FROM activite ";
+                    FROM ma_moulinette.activite ";
             if ($annee !== null) {
                 $sql.= "WHERE EXTRACT(YEAR FROM executed_at) = :annee
                 GROUP BY DATE(executed_at) ORDER BY day ASC";
