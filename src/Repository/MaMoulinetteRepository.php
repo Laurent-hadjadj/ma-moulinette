@@ -22,7 +22,7 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class MaMoulinetteRepository extends ServiceEntityRepository
 {
-    public static $removeReturnline = "/\s+/u";
+    public static $removeReturnLine = "/\s+/u";
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -35,16 +35,16 @@ class MaMoulinetteRepository extends ServiceEntityRepository
      * @return array
      *
      * Created at: 27/10/2023 15:45:02 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function getMaMoulinetteVersion(): array
     {
         try {
                 $sql = "SELECT version
-                        FROM ma_moulinette
+                        FROM ma_moulinette.ma_moulinette
                         ORDER BY date_version DESC LIMIT 1";
-                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $request=$conn->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
             return ['code'=>500, 'erreur'=> $e->getMessage()];
