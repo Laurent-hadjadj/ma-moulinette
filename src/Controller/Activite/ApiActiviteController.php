@@ -250,16 +250,16 @@ class ApiActiviteController extends AbstractController
         $tab = array();
         $id= 0;
         foreach($data['tasks'] as $value){
-        $tab[$id]['maven_key'] = $value['componentKey'];
-        $tab[$id]['project_name'] = $value['componentName'];
-        $tab[$id]['analyse_id'] = $value['analysisId'];
-        $tab[$id]['status'] = $value['status'];
-        $tab[$id]['submitter_login']= $value['submitterLogin'];
-        $tab[$id]['submitted_at'] =  new \DateTimeImmutable($value['submittedAt']);
-        $tab[$id]['started_at'] = new \DateTimeImmutable($value['startedAt']);
-        $tab[$id]['executed_at'] = new \DateTimeImmutable($value['executedAt']);
-        $tab[$id]['execution_time'] = (int) round($value['executionTimeMs'] / 1000)+1; // Conversion de l'input en ms en s
-        $id++;
+            $tab[$id]['maven_key'] = $value['componentKey'];
+            $tab[$id]['project_name'] = $value['componentName'];
+            $tab[$id]['analyse_id'] = $value['analysisId'];
+            $tab[$id]['status'] = $value['status'];
+            $tab[$id]['submitter_login']= $value['submitterLogin'];
+            $tab[$id]['submitted_at'] =  new \DateTimeImmutable($value['submittedAt']);
+            $tab[$id]['started_at'] = new \DateTimeImmutable($value['startedAt']);
+            $tab[$id]['executed_at'] = new \DateTimeImmutable($value['executedAt']);
+            $tab[$id]['execution_time'] = (int) round($value['executionTimeMs'] / 1000)+1; // Conversion de l'input en ms en s
+            $id++;
         }
         return $tab;
     }
