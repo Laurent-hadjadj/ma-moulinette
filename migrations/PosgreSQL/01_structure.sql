@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##         Creation des tables et des objets      ##
-##               V1.21.1 - 31/07/2024             ##
+##               V1.22.0 - 04/08/2024             ##
 ##                                                ##
 ####################################################*/
 
@@ -28,6 +28,8 @@
 -- 31/07/2024 : Laurent HADJADJ - Ajout de la table activite_historique (Quentin) ;
 -- 31/07/2024 : Laurent HADJADJ - Correction du commentaire moyenne_analyse.
 -- 31/07/2024 : Laurent HADJADJ - Correction Taux_reussite en FLOAT
+-- 04/08/2024 : Laurent HADJADJ - Correction du nom de la table activite_historique ;
+-- 04:08/2024 : Laurent HADJADJ - Ajout de la table profiles_historique ;
 
 -- SCHEMA: ma_moulinette
 
@@ -76,10 +78,10 @@ COMMENT ON COLUMN ma_moulinette.activite.started_at IS 'Date et heure du debut d
 COMMENT ON COLUMN ma_moulinette.activite.executed_at IS ' Date et heure de fin du traitement d’import des données';
 COMMENT ON COLUMN ma_moulinette.activite.execution_time IS 'Temps d’execution du traitement d’import des données';
 
--- Table: ma_moulinette.historique_activite
+-- Table: ma_moulinette.activite_historique
 
-DROP TABLE ma_moulinette.historique_activite;
-CREATE TABLE IF NOT EXISTS ma_moulinette.historique_activite
+DROP TABLE ma_moulinette.activite_historique;
+CREATE TABLE IF NOT EXISTS ma_moulinette.activite_historique
 (id SERIAL PRIMARY KEY,
   annee INT NOT NULL,
   nb_jour INT NOT NULL,
@@ -92,18 +94,18 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.historique_activite
   date_enregistrement timestamptz NOT NULL
 );
 
-ALTER TABLE ma_moulinette.historique_activite OWNER to db_user;
-GRANT ALL ON TABLE ma_moulinette.historique_activite TO db_user;
+ALTER TABLE ma_moulinette.activite_historique OWNER to db_user;
+GRANT ALL ON TABLE ma_moulinette.activite_historique TO db_user;
 
-COMMENT ON COLUMN ma_moulinette.historique_activite.id IS 'Identifiant unique de la table historique_activite.';
-COMMENT ON COLUMN ma_moulinette.historique_activite.nb_jour IS 'Nombre jour d’activité.';
-COMMENT ON COLUMN ma_moulinette.historique_activite.nb_analyse IS 'Nombre d’analyse.';
-COMMENT ON COLUMN ma_moulinette.historique_activite.moyenne_analyse IS 'Moyenne des analyses.';
-COMMENT ON COLUMN ma_moulinette.historique_activite.nb_reussi IS 'Nombre d’analyse réussi.';
-COMMENT ON COLUMN ma_moulinette.historique_activite.nb_echec IS 'Nombre d’analyse en échec.';
-COMMENT ON COLUMN ma_moulinette.historique_activite.taux_reussite IS 'Taux de réussite.';
-COMMENT ON COLUMN ma_moulinette.historique_activite.max_temps IS 'Temps maximum d’une analyse.';
-COMMENT ON COLUMN ma_moulinette.historique_activite.date_enregistrement IS 'Date de l’enregistrement';
+COMMENT ON COLUMN ma_moulinette.activite_historique.id IS 'Identifiant unique de la table activite_historique.';
+COMMENT ON COLUMN ma_moulinette.activite_historique.nb_jour IS 'Nombre jour d’activité.';
+COMMENT ON COLUMN ma_moulinette.activite_historique.nb_analyse IS 'Nombre d’analyse.';
+COMMENT ON COLUMN ma_moulinette.activite_historique.moyenne_analyse IS 'Moyenne des analyses.';
+COMMENT ON COLUMN ma_moulinette.activite_historique.nb_reussi IS 'Nombre d’analyse réussi.';
+COMMENT ON COLUMN ma_moulinette.activite_historique.nb_echec IS 'Nombre d’analyse en échec.';
+COMMENT ON COLUMN ma_moulinette.activite_historique.taux_reussite IS 'Taux de réussite.';
+COMMENT ON COLUMN ma_moulinette.activite_historique.max_temps IS 'Temps maximum d’une analyse.';
+COMMENT ON COLUMN ma_moulinette.activite_historique.date_enregistrement IS 'Date de l’enregistrement';
 
 -- Table: ma_moulinette.actuator
 
@@ -1043,6 +1045,36 @@ COMMENT ON COLUMN ma_moulinette.profiles.active_rule_count IS 'Nombre de règles
 COMMENT ON COLUMN ma_moulinette.profiles.rules_update_at IS 'Date de la dernière mise à jour des règles';
 COMMENT ON COLUMN ma_moulinette.profiles.referentiel_default IS 'Indique si le profil est le profil par défaut';
 COMMENT ON COLUMN ma_moulinette.profiles.date_enregistrement IS 'Date d’enregistrement du profil';
+
+-- Table: ma_moulinette.profiles_historique
+
+CREATE TABLE IF NOT EXISTS ma_moulinette.profiles_historique
+(
+    id SERIAL PRIMARY KEY,
+    date_courte TIMESTAMPTZ NOT NULL,
+    language character varying(16) NOT NULL,
+    date timestamp(0) with time zone NOT NULL,
+    action character varying(16) NOT NULL,
+    auteur character varying(64) NOT NULL,
+    regle character varying(128) NOT NULL,
+    description text NOT NULL,
+    detail bytea NOT NULL,
+    date_enregistrement TIMESTAMPTZ NOT NULL
+)
+
+ALTER TABLE ma_moulinette.profiles_historique OWNER to db_user;
+GRANT ALL ON TABLE ma_moulinette.profiles_historique TO db_user;
+
+COMMENT ON COLUMN ma_moulinette.profiles_historique.id IS 'Identifiant unique pour chaque historique de profil';
+COMMENT ON COLUMN ma_moulinette.profiles_historique.date_courte IS 'Date courte associée à l’historique';
+COMMENT ON COLUMN ma_moulinette.profiles_historique.language IS 'language de programmation associé';
+COMMENT ON COLUMN ma_moulinette.profiles_historique.date IS 'Date complète de l’événement de l’historique';
+COMMENT ON COLUMN ma_moulinette.profiles_historique.action IS 'Action réalisée, par exemple modification ou création';
+COMMENT ON COLUMN ma_moulinette.profiles_historique.auteur IS 'Auteur de l’action dans l’historique';
+COMMENT ON COLUMN ma_moulinette.profiles_historique.regle IS 'Règle ou norme concernée par l’historique';
+COMMENT ON COLUMN ma_moulinette.profiles_historique.description IS 'Description détaillée de l’événement historique';
+COMMENT ON COLUMN ma_moulinette.profiles_historique.detail IS 'Détails supplémentaires ou données binaires associées à l’événement';
+COMMENT ON COLUMN ma_moulinette.profiles_historique.date_enregistrement IS 'Date d’enregistrement de l’entrée historique';
 
 -- Table: ma_moulinette.properties
 
