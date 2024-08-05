@@ -22,7 +22,7 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class AnomalieRepository extends ServiceEntityRepository
 {
-    public static $removeReturnline = "/\s+/u";
+    public static $removeReturnLine = "/\s+/u";
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -46,9 +46,9 @@ class AnomalieRepository extends ServiceEntityRepository
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "DELETE
-                        FROM anomalie
+                        FROM ma_moulinette.anomalie
                         WHERE maven_key=:maven_key";
-                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $conn->bindValue(':maven_key', $map['maven_key']);
                 $conn->executeQuery();
             $this->getEntityManager()->getConnection()->commit();
@@ -75,13 +75,14 @@ class AnomalieRepository extends ServiceEntityRepository
     {
         try {
                 $sql = "SELECT maven_key as key
-                        FROM anomalie
-                        GROUP BY maven_key
+                        FROM ma_moulinette.anomalie
+                        GROUP BY maven_key, project_name
                         ORDER BY project_name ASC";
-                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                         $r=$conn->executeQuery();
                         $liste=$r->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
+            dd($e);
             return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
@@ -102,9 +103,9 @@ class AnomalieRepository extends ServiceEntityRepository
     {
         try {
                 $sql = "SELECT *
-                        FROM anomalie
+                        FROM ma_moulinette.anomalie
                         WHERE maven_key=:maven_key";
-                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $conn->bindValue(':maven_key', $map['maven_key']);
                 $liste=$conn->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
@@ -128,7 +129,7 @@ class AnomalieRepository extends ServiceEntityRepository
     {
         try {
                 $this->getEntityManager()->getConnection()->beginTransaction();
-                    $sql = "INSERT INTO anomalie
+                    $sql = "INSERT INTO ma_moulinette.anomalie
                                 (maven_key, project_name, anomalie_total, dette_minute, dette_reliability_minute, dette_vulnerability_minute, dette_code_smell_minute, dette, dette_reliability, dette_vulnerability, dette_code_smell, frontend, backend, autre, blocker, critical, major, info, minor, bug, vulnerability, code_smell,
                                 mode_collecte, utilisateur_collecte,
                                 date_enregistrement)
@@ -136,7 +137,7 @@ class AnomalieRepository extends ServiceEntityRepository
                                 (:maven_key, :project_name, :anomalie_total, :dette_minute, :dette_reliability_minute, :dette_vulnerability_minute, :dette_code_smell_minute, :dette, :dette_reliability, :dette_vulnerability, :dette_code_smell, :frontend, :backend, :autre, :blocker, :critical, :major, :info, :minor, :bug, :vulnerability, :code_smell,
                                 :mode_collecte, :utilisateur_collecte,
                                 :date_enregistrement)";
-                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                         $stmt->bindValue(':maven_key', $map['maven_key']);
                         $stmt->bindValue(':project_name', $map['project_name']);
                         $stmt->bindValue(':anomalie_total', $map['anomalie_total']);
