@@ -46,7 +46,7 @@ class InformationProjetRepository extends ServiceEntityRepository
     {
         try {
             $sql = "SELECT *
-                    FROM information_projet
+                    FROM ma_moulinette.information_projet
                     WHERE maven_key=:maven_key LIMIT 1";
             $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $stmt->bindValue(static::$phMavenKey, $map['maven_key']);
@@ -78,7 +78,7 @@ class InformationProjetRepository extends ServiceEntityRepository
     {
         try {
             $sql = "SELECT COUNT(type) AS total
-                    FROM information_projet
+                    FROM ma_moulinette.information_projet
                     WHERE maven_key=:maven_key";
             $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $stmt->bindValue(static::$phMavenKey, $map['maven_key']);
@@ -107,7 +107,7 @@ class InformationProjetRepository extends ServiceEntityRepository
     {
         try {
             $sql = "SELECT type, COUNT(*) AS total
-                    FROM information_projet
+                    FROM ma_moulinette.information_projet
                     WHERE maven_key=:maven_key AND type=:type GROUP BY type";
             $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $stmt->bindValue(static::$phMavenKey, $map['maven_key']);
@@ -135,7 +135,7 @@ class InformationProjetRepository extends ServiceEntityRepository
     {
         try {
                 $sql = "SELECT type, COUNT(type) AS total
-                        FROM information_projet
+                        FROM ma_moulinette.information_projet
                         WHERE maven_key=:maven_key
                         GROUP BY type";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
@@ -164,7 +164,7 @@ class InformationProjetRepository extends ServiceEntityRepository
     {
         try {
             $sql = "SELECT project_version as projet, date, analyse_key
-                    FROM information_projet
+                    FROM ma_moulinette.information_projet
                     WHERE maven_key=:maven_key
                     ORDER BY date DESC LIMIT 1";
             $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
@@ -193,7 +193,7 @@ class InformationProjetRepository extends ServiceEntityRepository
     {
         try {
                 $sql = "SELECT maven_key, project_version as version, date
-                        FROM information_projet
+                        FROM ma_moulinette.information_projet
                         WHERE maven_key=:maven_key";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(static::$phMavenKey, $map['maven_key']);
@@ -222,7 +222,7 @@ class InformationProjetRepository extends ServiceEntityRepository
     {
         try {
             $sql = "SELECT project_version, date
-                    FROM information_projet
+                    FROM ma_moulinette.information_projet
                     WHERE maven_key=:maven_key
                     ORDER by date DESC LIMIT 1";
             $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
@@ -236,7 +236,7 @@ class InformationProjetRepository extends ServiceEntityRepository
     }
 
     /**
-     * [Description for deleteInformationProjetMavenKey]
+     * [Description for TestDeleteInformationProjetMavenKey]
      * On supprime les informations sur le projet
      *
      * @param array $map
@@ -252,7 +252,7 @@ class InformationProjetRepository extends ServiceEntityRepository
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "DELETE
-                        FROM information_projet
+                        FROM ma_moulinette.information_projet
                         WHERE maven_key=:maven_key";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(static::$phMavenKey, $map['maven_key']);
@@ -280,7 +280,7 @@ class InformationProjetRepository extends ServiceEntityRepository
     {
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-                $sql = "INSERT INTO information_projet
+                $sql = "INSERT INTO ma_moulinette.information_projet
                             (maven_key, analyse_key, date, project_version, type, mode_collecte, utilisateur_collecte, date_enregistrement)
                         VALUES
                             (:maven_key, :analyse_key, :date, :project_version, :type, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
