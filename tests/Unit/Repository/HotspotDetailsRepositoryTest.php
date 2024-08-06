@@ -39,7 +39,7 @@ class HotspotDetailsRepositoryTest extends KernelTestCase
         $platform = $connection->getDatabasePlatform('SET search_path TO ma_moulinette_test');
 
         if ($platform instanceof \Doctrine\DBAL\Platforms\PostgreSqlPlatform) {
-            $sequence = 'ma_moulinette.Hotspot_details_id_seq';
+            $sequence = 'ma_moulinette.hotspot_details_id_seq';
             $connection->executeQuery("SELECT setval('$sequence', 1, false);");
         }
 
