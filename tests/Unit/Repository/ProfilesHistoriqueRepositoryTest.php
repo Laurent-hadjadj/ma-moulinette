@@ -154,4 +154,15 @@ class ProfilesHistoriqueRepositoryTest extends KernelTestCase
         $this->assertEquals(200, $r['code'], static::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
+
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+
+        // On se déconnecte pour éviter des problèmes de mémoires
+        $container = static::getContainer();
+        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager->close();
+        $entityManager = null;
+    }
 }
