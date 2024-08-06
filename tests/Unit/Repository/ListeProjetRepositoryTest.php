@@ -26,14 +26,23 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 class ListeProjetRepositoryTest extends KernelTestCase
 {
     private static $visibility = 'private';
-
-    private static $erreurCode200 = 'Erreur le code retour doit être 200';
+    private static $erreurCode200 = 'Erreur le code retour doit être 200.';
 
     protected function setUp(): void
     {
         self::bootKernel();
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
+
+        // Réinitialiser la séquence
+        $connection = $entityManager->getConnection();
+        $platform = $connection->getDatabasePlatform('SET search_path TO ma_moulinette_test');
+
+        if ($platform instanceof \Doctrine\DBAL\Platforms\PostgreSqlPlatform) {
+            $sequence = 'ma_moulinette.liste_projet_id_seq';
+            $connection->executeQuery("SELECT setval('$sequence', 1, false);");
+        }
+
         $purger = new ORMPurger($entityManager);
         $executor = new ORMExecutor($entityManager, $purger);
         $executor->execute([new ListeProjetFixtures()]);
@@ -73,6 +82,23 @@ class ListeProjetRepositoryTest extends KernelTestCase
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
+    public function testCountListeProjetTags(): void
+    {
+        // Connexion à la base de données
+        self::bootKernel();
+        /* On se connecte à la base de tests */
+        $container = static::getContainer();
+        $entityManager = $container->get('doctrine')->getManager();
+
+        // Appel de la méthode
+        $listeProjetRepository = $entityManager->getRepository(ListeProjet::class);
+        $r = $listeProjetRepository->countListeProjetTags();
+
+        // Assert
+        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEmpty($r['erreur'], $r['erreur']);
+    }
+
     public function testSelectListeProjetByEquipe(): void
     {
         // Connexion à la base de données
@@ -81,7 +107,7 @@ class ListeProjetRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = ['clause_where'=>"json_each.value LIKE 'ma-moulinette%' OR json_each.value LIKE '2048%'" ];
+        $map = ['clause_where'=>"tag LIKE 'ma-moulinette%' OR tag LIKE '2048%'" ];
 
         // Appel de la méthode
         $listeProjetRepository = $entityManager->getRepository(ListeProjet::class);
