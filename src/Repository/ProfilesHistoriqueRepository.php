@@ -22,7 +22,7 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ProfilesHistoriqueRepository extends ServiceEntityRepository
 {
-    public static $removeReturnline = "/\s+/u";
+    public static $removeReturnLine = "/\s+/u";
     public static $phLanguage = ':language';
 
     public function __construct(ManagerRegistry $registry)
@@ -46,7 +46,7 @@ class ProfilesHistoriqueRepository extends ServiceEntityRepository
     {
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-                $sql = "INSERT OR IGNORE INTO profiles_historique (
+                $sql = "INSERT INTO ma_moulinette.profiles_historique (
                             date_courte, language, date,
                             action, auteur, regle,
                             description, detail, date_enregistrement)
@@ -58,12 +58,12 @@ class ProfilesHistoriqueRepository extends ServiceEntityRepository
                     /** On escape les ' */
                     /* "$reEncode = str_replace("'", "''", $map['description']);" */
 
-                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                         $stmt->bindValue(':date_courte', $map['date_courte']);
                         $stmt->bindValue(static::$phLanguage, $map['language']);
                         $stmt->bindValue(':date', $map['date']);
                         $stmt->bindValue(':action', $map['action']);
-                        $stmt->bindValue(':auteur', $map['date_courte']);
+                        $stmt->bindValue(':auteur', $map['auteur']);
                         $stmt->bindValue(':regle', $map['regle']);
                         $stmt->bindValue(':description', $map['description']);
                         $stmt->bindValue(':detail', $map['detail']);
@@ -92,14 +92,15 @@ class ProfilesHistoriqueRepository extends ServiceEntityRepository
     public function selectProfilesHistoriqueAction($map):array
     {
         try {
-                $sql = "SELECT COUNT() AS 'nombre'
-                        FROM profiles_historique
+                $sql = "SELECT COUNT(*) AS nombre
+                        FROM ma_moulinette.profiles_historique
                         WHERE action=:action AND language=:language";
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(':action', $map['action']);
                     $stmt->bindValue(static::$phLanguage, $map['language']);
                 $request=$stmt->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
+            dd($e);
             return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'request'=>$request, 'erreur'=>''];
@@ -122,10 +123,10 @@ class ProfilesHistoriqueRepository extends ServiceEntityRepository
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "SELECT date
-                        FROM profiles_historique
+                        FROM ma_moulinette.profiles_historique
                         WHERE language=:language
                         ORDER BY date ".$map['tri']." limit ".$map['limit'];
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(static::$phLanguage, $map['language']);
                 $request=$stmt->executeQuery()->fetchAllAssociative();
             $this->getEntityManager()->getConnection()->commit();
@@ -153,11 +154,11 @@ class ProfilesHistoriqueRepository extends ServiceEntityRepository
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "SELECT date_courte
-                        FROM profiles_historique
+                        FROM ma_moulinette.profiles_historique
                         WHERE language=:language
                         GROUP BY date_courte
                         ORDER BY date_courte DESC";
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(static::$phLanguage, $map['language']);
                 $request=$stmt->executeQuery()->fetchAllAssociative();
             $this->getEntityManager()->getConnection()->commit();
@@ -185,9 +186,9 @@ class ProfilesHistoriqueRepository extends ServiceEntityRepository
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "SELECT *
-                        FROM profiles_historique
+                        FROM ma_moulinette.profiles_historique
                         WHERE language=:language AND date_courte=:date_courte";
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(static::$phLanguage, $map['language']);
                     $stmt->bindValue(':date_courte', $map['date_courte']);
                 $request=$stmt->executeQuery()->fetchAllAssociative();
