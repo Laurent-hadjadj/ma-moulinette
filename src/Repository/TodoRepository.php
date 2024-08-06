@@ -23,7 +23,7 @@ use Doctrine\Persistence\ManagerRegistry;
 class TodoRepository extends ServiceEntityRepository
 {
 
-  public static $removeReturnline = "/\s+/u";
+  public static $removeReturnLine = "/\s+/u";
 
   public function __construct(ManagerRegistry $registry)
   {
@@ -47,9 +47,9 @@ class TodoRepository extends ServiceEntityRepository
     try {
       $this->getEntityManager()->getConnection()->beginTransaction();
         $sql = "DELETE
-                FROM todo
+                FROM ma_moulinette.todo
                 WHERE maven_key=:maven_key";
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $conn->bindValue(':maven_key', $map['maven_key']);
             $conn->executeStatement();
       $this->getEntityManager()->getConnection()->commit();
@@ -76,10 +76,10 @@ class TodoRepository extends ServiceEntityRepository
   {
     try {
         $sql = "SELECT rule, count(*) as total
-                FROM todo
+                FROM ma_moulinette.todo
                 WHERE maven_key=:maven_key
                 GROUP BY rule";
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
         $conn->bindValue(':maven_key', $map['maven_key']);
           $exec=$conn->executeQuery();
           $liste=$exec->fetchAllAssociative();
@@ -105,11 +105,11 @@ class TodoRepository extends ServiceEntityRepository
   {
     try {
             $sql = "SELECT rule, component, line
-                    FROM todo
+                    FROM ma_moulinette.todo
                     WHERE maven_key=:maven_key
                     ORDER BY rule";
-            $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-            $conn->bindValue(':maven_key', $map['maven_key']);
+            $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+              $conn->bindValue(':maven_key', $map['maven_key']);
             $exec=$conn->executeQuery();
             $liste=$exec->fetchAllAssociative();
     } catch (\Doctrine\DBAL\Exception $e) {
@@ -131,14 +131,14 @@ class TodoRepository extends ServiceEntityRepository
    */
   public function insertTodo($map):array
   {
-      $sql = "INSERT INTO todo
+      $sql = "INSERT INTO ma_moulinette.todo
                   (maven_key, rule, component, line, mode_collecte, utilisateur_collecte, date_enregistrement)
               VALUES
                   (:maven_key, :rule, :component, :line, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
       try {
               $this->getEntityManager()->getConnection()->beginTransaction();
                   foreach($map as $item){
-                      $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                      $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                           $stmt->bindValue(':maven_key', $item['maven_key']);
                           $stmt->bindValue(':rule', $item['rule']);
                           $stmt->bindValue(':component', $item['component']);
