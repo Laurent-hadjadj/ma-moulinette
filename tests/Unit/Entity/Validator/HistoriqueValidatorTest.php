@@ -186,6 +186,6 @@ class HistoriqueValidatorTest extends KernelTestCase
       $entity = $this->getEntity();
       $reflectionClass = new \ReflectionClass($entity);
       $nbAttributs = count($reflectionClass->getProperties());
-      $this->assertEquals($nbAttributs, 61);
+      $this->assertEquals($nbAttributs, 62);
   }
 }
