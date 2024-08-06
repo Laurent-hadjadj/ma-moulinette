@@ -139,7 +139,7 @@ class HotspotDetails
     #[Assert\NotBlank]
     #[Assert\Length(max: 32,
         maxMessage: "La clé ne doit pas dépasser 32 caractères.")]
-    private $key;
+    private $hotspotKey;
 
     #[ORM\Column(type: Types::STRING, length: 32, nullable: true,
     options: ['comment' => 'Mode de collecte : [COLLECTE] | [TRAITEMENT MANUEL] | [TRAITEMENT AUTOMATIQUE]'])]
@@ -297,14 +297,14 @@ class HotspotDetails
         return $this;
     }
 
-    public function getKey(): ?string
+    public function getHotspotKey(): ?string
     {
-        return $this->key;
+        return $this->hotspotKey;
     }
 
-    public function setKey(string $key): static
+    public function setKey(string $hotspotKey): static
     {
-        $this->key = $key;
+        $this->hotspotKey = $hotspotKey;
 
         return $this;
     }
