@@ -47,6 +47,16 @@ class UtilisateurRepositoryTest extends KernelTestCase
         self::bootKernel();
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
+
+        // Réinitialiser la séquence
+        $connection = $entityManager->getConnection();
+        $platform = $connection->getDatabasePlatform('SET search_path TO ma_moulinette_test');
+
+        if ($platform instanceof \Doctrine\DBAL\Platforms\PostgreSqlPlatform) {
+            $sequence = 'ma_moulinette.utilisateur_id_seq';
+            $connection->executeQuery("SELECT setval('$sequence', 1, false);");
+        }
+
         $purger = new ORMPurger($entityManager);
         $executor = new ORMExecutor($entityManager, $purger);
         $executor->execute([new UtilisateurFixtures()]);
@@ -194,4 +204,16 @@ class UtilisateurRepositoryTest extends KernelTestCase
         $this->assertEquals(200, $r['code'], static::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
+
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+
+        // On se déconnecte pour éviter des problèmes de mémoires
+        $container = static::getContainer();
+        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager->close();
+        $entityManager = null;
+    }
+
 }
