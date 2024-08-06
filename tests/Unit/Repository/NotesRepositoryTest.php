@@ -28,7 +28,9 @@ class NotesRepositoryTest extends KernelTestCase
 
     private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
     private static $dateEnregistrement = '2024-03-26 14:46:38';
-    private static $erreurCode200 = 'Erreur le code retour doit être 200';
+    private static $erreurCode200 = 'Erreur le code retour doit être 200.';
+    private static $modeCollecte = 'TRAITEMENT MANUEL';
+    private static $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
 
     /**
      * [Description for setUp]
@@ -45,13 +47,23 @@ class NotesRepositoryTest extends KernelTestCase
         self::bootKernel();
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
+
+        // Réinitialiser la séquence
+        $connection = $entityManager->getConnection();
+        $platform = $connection->getDatabasePlatform('SET search_path TO ma_moulinette_test');
+
+        if ($platform instanceof \Doctrine\DBAL\Platforms\PostgreSqlPlatform) {
+            $sequence = 'ma_moulinette.notes_id_seq';
+            $connection->executeQuery("SELECT setval('$sequence', 1, false);");
+        }
+
         $purger = new ORMPurger($entityManager);
         $executor = new ORMExecutor($entityManager, $purger);
         $executor->execute([new NotesFixtures()]);
     }
 
     /**
-     * [Description for testdeleteNotesMavenKey]
+     * [Description for testDeleteNotesMavenKey]
      *
      * @return void
      *
@@ -104,11 +116,11 @@ class NotesRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         $map1 = ['maven_key' => static::$mavenKey, 'type' => 'reliability',
-                'value'=>3, 'date_enregistrement'=> static::$dateEnregistrement];
+                'value'=>3, 'mode_collecte' => static::$modeCollecte, 'utilisateur_collecte' => static::$utilisateurCollecte, 'date_enregistrement' => new \DateTimeImmutable(static::$dateEnregistrement)];
         $map2 = ['maven_key' => static::$mavenKey, 'type' => 'security',
-        'value'=>1, 'date_enregistrement'=>static::$dateEnregistrement];
+        'value'=>1, 'mode_collecte' => static::$modeCollecte, 'utilisateur_collecte' => static::$utilisateurCollecte, 'date_enregistrement' => new \DateTimeImmutable(static::$dateEnregistrement)];
         $map3 = ['maven_key' => static::$mavenKey, 'type' => 'sqale',
-        'value'=>2, 'date_enregistrement'=> static::$dateEnregistrement];
+        'value'=>2, 'mode_collecte' => static::$modeCollecte, 'utilisateur_collecte' => static::$utilisateurCollecte, 'date_enregistrement' => new \DateTimeImmutable(static::$dateEnregistrement)];
 
         // Appel de la méthode
         $notesRepository = $entityManager->getRepository(Notes::class);
@@ -160,4 +172,16 @@ class NotesRepositoryTest extends KernelTestCase
         $this->assertEquals(200, $r3['code'], static::$erreurCode200);
         $this->assertEmpty($r3['erreur'], $r3['erreur']);
     }
+
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+
+        // On se déconnecte pour éviter des problèmes de mémoires
+        $container = static::getContainer();
+        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager->close();
+        $entityManager = null;
+    }
+
 }
