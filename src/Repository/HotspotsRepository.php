@@ -22,7 +22,7 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class HotspotsRepository extends ServiceEntityRepository
 {
-    public static $removeReturnline = "/\s+/u";
+    public static $removeReturnLine = "/\s+/u";
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -46,9 +46,9 @@ class HotspotsRepository extends ServiceEntityRepository
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "DELETE
-                        FROM hotspots
+                        FROM ma_moulinette.hotspots
                         WHERE maven_key=:maven_key";
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(':maven_key', $map['maven_key']);
                     $stmt->executeStatement();
             $this->getEntityManager()->getConnection()->commit();
@@ -74,10 +74,10 @@ class HotspotsRepository extends ServiceEntityRepository
     {
         try {
                 $sql = "SELECT *
-                        FROM hotspots
+                        FROM ma_moulinette.hotspots
                         WHERE maven_key=:maven_key AND status='TO_REVIEW'
                         ORDER BY niveau";
-                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $conn->bindValue(':maven_key', $map['maven_key']);
                 $liste=$conn->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
@@ -101,9 +101,9 @@ class HotspotsRepository extends ServiceEntityRepository
     {
         try {
                 $sql = "SELECT COUNT(*) as nombre
-                        FROM hotspots
+                        FROM ma_moulinette.hotspots
                         WHERE maven_key=:maven_key AND status=:status";
-                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $conn->bindValue(':maven_key', $map['maven_key']);
                 $conn->bindValue(':status', $map['status']);
                 $exec=$conn->executeQuery();
@@ -129,10 +129,10 @@ class HotspotsRepository extends ServiceEntityRepository
     {
         try {
                 $sql = "SELECT niveau, count(*) as hotspot
-                        FROM hotspots
+                        FROM ma_moulinette.hotspots
                         WHERE maven_key=:maven_key AND status=:status
                         GROUP BY niveau";
-                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $conn->bindValue(':maven_key', $map['maven_key']);
                 $conn->bindValue(':status', $map['status']);
                 $exec=$conn->executeQuery();
@@ -157,7 +157,7 @@ class HotspotsRepository extends ServiceEntityRepository
     public function insertHotspots(array $map): array
     {
         /** Traitement de masse (bulk) */
-        $sql = "INSERT INTO hotspots
+        $sql = "INSERT INTO ma_moulinette.hotspots
                 (maven_key, version, date_version, rule_key, security_category, hotspot_key, probability, status, resolution, niveau, mode_collecte, utilisateur_collecte, date_enregistrement)
                 VALUES
                     (:maven_key, :version, :date_version, :rule_key, :security_category, :hotspot_key, :probability, :status, :resolution, :niveau, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
@@ -183,9 +183,9 @@ class HotspotsRepository extends ServiceEntityRepository
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            return ['code' => 500, 'error' => $e->getMessage()];
+            return ['code' => 500, 'erreur' => $e->getMessage()];
         }
-        return ['code' => 200, 'message' => 'Insertion réussie'];
+        return ['code' => 200, 'message' => 'Insertion réussie', 'erreur' => ''];
     }
 
 }
