@@ -321,6 +321,10 @@ class Historique
     #[Assert\NotNull]
     private $codeSmellInfo;
 
+    #[ORM\Column(type: Types::JSON, nullable: true,
+    options: ['comment' => 'Actuator Info'])]
+    private $actuatorInfo=null;
+
     #[ORM\Column(type: Types::STRING, length: 32, nullable: true,
     options: ['comment' => 'Mode de collecte : COLLECTE | TRAITEMENT MANUEL | TRAITEMENT AUTOMATIQUE'])]
     #[Assert\Length(max: 32,
@@ -2147,6 +2151,18 @@ class Historique
     public function setUtilisateurCollecte(?string $utilisateurCollecte): static
     {
         $this->utilisateurCollecte = $utilisateurCollecte;
+
+        return $this;
+    }
+
+    public function getActuatorInfo(): ?array
+    {
+        return $this->actuatorInfo;
+    }
+
+    public function setActuatorInfo(?array $actuatorInfo): static
+    {
+        $this->actuatorInfo = $actuatorInfo;
 
         return $this;
     }
