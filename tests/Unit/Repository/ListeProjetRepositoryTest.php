@@ -135,4 +135,15 @@ class ListeProjetRepositoryTest extends KernelTestCase
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+
+        // On se déconnecte pour éviter des problèmes de mémoires
+        $container = static::getContainer();
+        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager->close();
+        $entityManager = null;
+    }
+
 }
