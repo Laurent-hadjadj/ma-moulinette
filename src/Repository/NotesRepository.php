@@ -22,7 +22,7 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class NotesRepository extends ServiceEntityRepository
 {
-    public static $removeReturnline = "/\s+/u";
+    public static $removeReturnLine = "/\s+/u";
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -46,12 +46,12 @@ class NotesRepository extends ServiceEntityRepository
         try {
                 $this->getEntityManager()->getConnection()->beginTransaction();
                     $sql = "DELETE
-                            FROM notes
+                            FROM ma_moulinette.notes
                             WHERE maven_key=:maven_key and type=:type";
-                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-                    $stmt->bindValue(':maven_key', $map['maven_key']);
-                    $stmt->bindValue(':type', $map['type']);
-                    $stmt->executeStatement();
+                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+                        $stmt->bindValue(':maven_key', $map['maven_key']);
+                        $stmt->bindValue(':type', $map['type']);
+                        $stmt->executeStatement();
                 $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->rollback();
@@ -76,20 +76,20 @@ class NotesRepository extends ServiceEntityRepository
     {
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-                $sql = "INSERT INTO notes
+                $sql = "INSERT INTO ma_moulinette.notes
                             (maven_key, type, value, mode_collecte, utilisateur_collecte, date_enregistrement)
                         VALUES
                             (:maven_key, :type, :value, :mode_collecte,
                             :utilisateur_collecte, :date_enregistrement)";
 
-                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-                    $stmt->bindValue(':maven_key', $map['maven_key']);
-                    $stmt->bindValue(':type', $map['type']);
-                    $stmt->bindValue(':value', $map['value']);
-                    $stmt->bindValue(':mode_collecte', $map['mode_collecte']);
-                    $stmt->bindValue(':utilisateur_collecte', $map['utilisateur_collecte']);
-                    /** on formate la date avant de l'enregistrer */
-                    $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
+                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+                        $stmt->bindValue(':maven_key', $map['maven_key']);
+                        $stmt->bindValue(':type', $map['type']);
+                        $stmt->bindValue(':value', $map['value']);
+                        $stmt->bindValue(':mode_collecte', $map['mode_collecte']);
+                        $stmt->bindValue(':utilisateur_collecte', $map['utilisateur_collecte']);
+                        /** on formate la date avant de l'enregistrer */
+                        $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
                     $stmt->executeStatement();
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
@@ -115,13 +115,13 @@ class NotesRepository extends ServiceEntityRepository
     {
         try {
                 $sql = "SELECT type, value, date_enregistrement
-                        FROM notes
+                        FROM ma_moulinette.notes
                         WHERE maven_key=:maven_key AND type=:type
                         ORDER BY date_enregistrement DESC LIMIT 1";
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-                $stmt->bindValue(':maven_key', $map['maven_key']);
-                $stmt->bindValue(':type', $map['type']);
-                $exec=$stmt->executeQuery();
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+                    $stmt->bindValue(':maven_key', $map['maven_key']);
+                    $stmt->bindValue(':type', $map['type']);
+                    $exec=$stmt->executeQuery();
                 $liste=$exec->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
             return ['code'=>500, 'erreur'=> $e->getMessage()];
