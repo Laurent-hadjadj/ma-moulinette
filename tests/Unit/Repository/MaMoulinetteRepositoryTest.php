@@ -25,7 +25,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
  */
 class MaMoulinetteRepositoryTest extends KernelTestCase
 {
-    private static $erreurCode200 = 'Erreur le code retour doit être 200';
+    private static $erreurCode200 = 'Erreur le code retour doit être 200.';
 
     protected function setUp(): void
     {
@@ -74,4 +74,5 @@ class MaMoulinetteRepositoryTest extends KernelTestCase
         $entityManager->close();
         $entityManager = null;
     }
+
 }
