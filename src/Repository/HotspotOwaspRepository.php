@@ -19,7 +19,7 @@ use Doctrine\Persistence\ManagerRegistry;
 
 class HotspotOwaspRepository extends ServiceEntityRepository
 {
-    public static $removeReturnline = "/\s+/u";
+    public static $removeReturnLine = "/\s+/u";
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -41,9 +41,9 @@ class HotspotOwaspRepository extends ServiceEntityRepository
     {
         try {
             $sql = "SELECT count(*) AS nombre
-                    FROM hotspot_owasp
+                    FROM ma_moulinette.hotspot_owasp
                     WHERE maven_key=:maven_key AND status=:status";
-            $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+            $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $conn->bindValue(':maven_key', $map['maven_key']);
             $conn->bindValue(':status', $map['status']);
             $nombre=$conn->executeQuery()->fetchAllAssociative();
@@ -68,9 +68,9 @@ class HotspotOwaspRepository extends ServiceEntityRepository
     {
         try {
             $sql = "SELECT probability, count(*) as total
-                    FROM hotspot_owasp
+                    FROM ma_moulinette.hotspot_owasp
                     WHERE maven_key=:maven_key AND status='TO_REVIEW' GROUP BY probability";
-            $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+            $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $conn->bindValue(':maven_key', $map['maven_key']);
             $nombre=$conn->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
@@ -95,11 +95,11 @@ class HotspotOwaspRepository extends ServiceEntityRepository
 
         try {
             $sql = "SELECT menace, count(*) as total
-                    FROM hotspot_owasp
+                    FROM ma_moulinette.hotspot_owasp
                     WHERE maven_key=:maven_key
                     AND status='TO_REVIEW' GROUP BY menace";
-            $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
-            $conn->bindValue(':maven_key', $map['maven_key']);
+            $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+                $conn->bindValue(':maven_key', $map['maven_key']);
             $nombre=$conn->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
             return ['code'=>500, 'erreur'=> $e->getMessage()];
@@ -122,12 +122,12 @@ class HotspotOwaspRepository extends ServiceEntityRepository
     {
         try {
             $sql = "SELECT count(*) as total
-                    FROM hotspot_owasp
+                    FROM ma_moulinette.hotspot_owasp
                     WHERE maven_key=:maven_key
                     AND menace=:menace
                     AND status='TO_REVIEW'
                     AND probability=:probability";
-            $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+            $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $conn->bindValue(':maven_key', $map['maven_key']);
             $conn->bindValue(':menace', $map['menace']);
             $conn->bindValue(':probability', $map['probability']);
@@ -154,9 +154,9 @@ class HotspotOwaspRepository extends ServiceEntityRepository
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "DELETE
-                        FROM hotspot_owasp
+                        FROM ma_moulinette.hotspot_owasp
                         WHERE maven_key=:maven_key";
-                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $conn->bindValue(':maven_key', $map['maven_key']);
                     $conn->executeStatement();
             $this->getEntityManager()->getConnection()->commit();
@@ -180,7 +180,7 @@ class HotspotOwaspRepository extends ServiceEntityRepository
      */
     public function insertHotspotOwasp($map):array
     {
-        $sql = "INSERT INTO hotspot_owasp
+        $sql = "INSERT INTO ma_moulinette.hotspot_owasp
                 (referentiel_owasp, maven_key, version, date_version, menace, security_category, rule_key, probability, status, resolution, niveau,
                 mode_collecte, utilisateur_collecte, date_enregistrement)
                 VALUES
@@ -188,7 +188,7 @@ class HotspotOwaspRepository extends ServiceEntityRepository
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
                 foreach ($map as $ref) {
-                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                         $stmt->bindValue(':referentiel_owasp', $ref['referentiel_owasp']);
                         $stmt->bindValue(':maven_key', $ref['maven_key']);
                         $stmt->bindValue(':version', $ref['version']);
