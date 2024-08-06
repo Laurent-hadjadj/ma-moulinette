@@ -30,48 +30,6 @@ class UtilisateurRepository extends ServiceEntityRepository
     }
 
     /**
-     * [Description for add]
-     *
-     * @param Utilisateur $entity
-     * @param bool $flush
-     *
-     * @return void
-     *
-     * Created at: 13/02/2024 19:29:49 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function add(Utilisateur $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->persist($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
-    /**
-     * [Description for remove]
-     *
-     * @param Utilisateur $entity
-     * @param bool $flush
-     *
-     * @return void
-     *
-     * Created at: 13/02/2024 19:29:45 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function remove(Utilisateur $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->remove($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
-    /**
      * [Description for insertUtilisateurPreferenceFavori]
      *
      * @param array $preference
@@ -146,7 +104,7 @@ class UtilisateurRepository extends ServiceEntityRepository
         $response=['code'=>200, 'erreur'=>''];
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-                $sql = "UPDATE utilisateur
+                $sql = "UPDATE ma_moulinette.utilisateur
                     SET preference=:preference
                     WHERE courriel=:courriel";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
@@ -245,7 +203,7 @@ class UtilisateurRepository extends ServiceEntityRepository
         $response=['code'=>200, 'erreur'=>''];
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-                $sql = "UPDATE utilisateur
+                $sql = "UPDATE ma_moulinette.utilisateur
                         SET preference=:preference
                         WHERE courriel=:courriel";
 
@@ -280,7 +238,7 @@ class UtilisateurRepository extends ServiceEntityRepository
         $isFavori = in_array($map['maven_key'], $preference['favori']);
 
         /**
-         * On le supprime de la liste des favoris s'il exsite dans les préferences
+         * On le supprime de la liste des favoris s'il existe dans les préférences
          * Sinon on l'ajoute
          */
 
@@ -309,12 +267,12 @@ class UtilisateurRepository extends ServiceEntityRepository
             /** On met à jour les préférences. */
             try {
                     $this->getEntityManager()->getConnection()->beginTransaction();
-                        $sql = "UPDATE utilisateur
+                        $sql = "UPDATE ma_moulinette.utilisateur
                                 SET preference = '$jarray'
                                 WHERE courriel=:courriel";
                         $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                        $stmt->bindValue(':courriel', $map['courriel']);
-                        $stmt->executeStatement();
+                            $stmt->bindValue(':courriel', $map['courriel']);
+                            $stmt->executeStatement();
             } catch (\Doctrine\DBAL\Exception $e) {
                 $this->getEntityManager()->getConnection()->rollBack();
                 $response = ['code'=>500, 'statut'=>-1, 'erreur'=> $e->getMessage()];
@@ -337,12 +295,12 @@ class UtilisateurRepository extends ServiceEntityRepository
             /** On met à jour les préférences. */
             try {
                 $this->getEntityManager()->getConnection()->beginTransaction();
-                    $sql = "UPDATE utilisateur
+                    $sql = "UPDATE ma_moulinette.utilisateur
                         SET preference = '$jarray'
                         WHERE courriel=:courriel";
                     $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(':courriel', $map['courriel']);
-                    $stmt->executeStatement();
+                        $stmt->bindValue(':courriel', $map['courriel']);
+                        $stmt->executeStatement();
                 $this->getEntityManager()->getConnection()->commit();
 
             } catch (\Doctrine\DBAL\Exception $e) {
@@ -369,14 +327,14 @@ class UtilisateurRepository extends ServiceEntityRepository
     public function updateUtilisateurResetPassword($map):array {
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-                $sql = "UPDATE utilisateur
+                $sql = "UPDATE ma_moulinette.utilisateur
                         SET init = :init, date_modification=:date_modification
                         WHERE courriel=:courriel";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(':init', $map['init']);
                     $stmt->bindValue(':date_modification', $map['date_modification']);
                     $stmt->bindValue(':courriel', $map['courriel']);
-                $stmt->executeStatement();
+                    $stmt->executeStatement();
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
