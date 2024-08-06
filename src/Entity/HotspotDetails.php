@@ -302,7 +302,7 @@ class HotspotDetails
         return $this->hotspotKey;
     }
 
-    public function setKey(string $hotspotKey): static
+    public function setHotspotKey(string $hotspotKey): static
     {
         $this->hotspotKey = $hotspotKey;
 
