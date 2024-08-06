@@ -20,7 +20,7 @@ use Doctrine\Persistence\ManagerRegistry;
 
 class HotspotDetailsRepository extends ServiceEntityRepository
 {
-    public static $removeReturnline = "/\s+/u";
+    public static $remoreReturnLine = "/\s+/u";
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -42,11 +42,11 @@ class HotspotDetailsRepository extends ServiceEntityRepository
     {
         /** Utiliser dans la page OWASP */
         $sql = "SELECT *
-                FROM hotspot_details
+                FROM ma_moulinette.hotspot_details
                 WHERE maven_key=:maven_key
                 ORDER BY status ASC";
         try {
-            $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+            $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$remoreReturnLine, " ", $sql));
                 $conn->bindValue(':maven_key', $map['maven_key']);
                 $nombre=$conn->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
@@ -71,9 +71,9 @@ class HotspotDetailsRepository extends ServiceEntityRepository
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "DELETE
-                        FROM hotspot_details
+                        FROM ma_moulinette.hotspot_details
                         WHERE maven_key=:maven_key";
-                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$remoreReturnLine, " ", $sql));
                     $conn->bindValue(':maven_key', $map['maven_key']);
                     $conn->executeStatement();
             $this->getEntityManager()->getConnection()->commit();
@@ -97,7 +97,7 @@ class HotspotDetailsRepository extends ServiceEntityRepository
      */
     public function insertHotspotDetails($map):array
     {
-        $sql = "INSERT INTO hotspot_details
+        $sql = "INSERT INTO ma_moulinette.hotspot_details
                     (maven_key, version, date_version, security_category, rule_key, rule_name, severity, status, resolution, niveau, frontend, backend, autre, file_name, file_path, line, message, hotspot_key,
                     mode_collecte, utilisateur_collecte,
                     date_enregistrement)
@@ -107,7 +107,7 @@ class HotspotDetailsRepository extends ServiceEntityRepository
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
                 foreach($map as $item){
-                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$remoreReturnLine, " ", $sql));
                         $stmt->bindValue(':maven_key', $item['maven_key']);
                         $stmt->bindValue(':version', $item['version']);
                         $stmt->bindValue(':date_version', $item['date_version']->format('Y-m-d H:i:sO'));
