@@ -29,7 +29,7 @@ class HotspotDetailsFixtures extends Fixture
   private static $filePath = 'ma-moulinette/angular/src/service-worker-network-first.ts';
   private static $line = 60;
   private static $message = 'Make sure the regex used here, which is vulnerable to super-linear runtime due to backtracking, cannot lead to denial of service.';
-  private static $key = 'AZCc06XbgfifxdiJPzw2';
+  private static $hotspotKey = 'AZCc06XbgfifxdiJPzw2';
   private static $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
   private static $dateEnregistrement = '2024-03-26 14:46:38+02';
 
@@ -56,7 +56,7 @@ class HotspotDetailsFixtures extends Fixture
           ->setFilePath(static::$filePath)
           ->setLine(static::$line)
           ->setMessage(static::$message)
-          ->setKey(static::$key)
+          ->setHotspotKey(static::$hotspotKey)
           ->setModeCollecte($mode)
           ->setUtilisateurCollecte(static::$utilisateurCollecte)
           ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
