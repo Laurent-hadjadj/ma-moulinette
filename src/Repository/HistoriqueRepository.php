@@ -44,7 +44,7 @@ class HistoriqueRepository extends ServiceEntityRepository
     public function countHistoriqueProjet($map):array {
         try {
                 $sql = "SELECT count(*) AS nombre
-                        FROM historique
+                        FROM ma_moulinette.historique
                         WHERE maven_key=:maven_key";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(':maven_key', $map['maven_key']);
@@ -77,18 +77,17 @@ class HistoriqueRepository extends ServiceEntityRepository
                             note_sqale as sqale, nombre_bug as bug,
                             nombre_vulnerability as vulnerability,
                             nombre_code_smell as code_smell, nombre_hotspot as hotspots
-                        FROM historique
-                        WHERE :where
-                        ORDER BY date_version DESC limit 4";
+                        FROM ma_moulinette.historique
+                        WHERE ". $where ."
+                        ORDER BY date DESC limit 4";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(":where", $where);
-                        $request=$stmt->executeQuery()->fetchAllAssociative();
+                $request=$stmt->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
-                return ['code'=> 500, 'erreur'=>$e->getMessage()];
+            return ['code'=> 500, 'erreur'=>$e->getMessage()];
         }
         /** on prépare la réponse */
         return ['code'=>200, 'erreur'=>'', 'request'=>$request];
-}
+    }
 
     /**
      * [Description for updateHistoriqueReference]
@@ -107,7 +106,7 @@ class HistoriqueRepository extends ServiceEntityRepository
         try {
             /** On désactive toutes les versions */
             $this->getEntityManager()->getConnection()->beginTransaction();
-                $sql = "UPDATE historique
+                $sql = "UPDATE ma_moulinette.historique
                         SET initial=false
                         WHERE maven_key=:maven_key";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
@@ -119,10 +118,10 @@ class HistoriqueRepository extends ServiceEntityRepository
             $response=['code'=> 500, 'erreur'=>$e->getMessage()];
         }
 
-        /** On met ajour la version de reference pour le projet */
+        /** On met à jour la version de reference pour le projet */
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-                $sql = "UPDATE historique
+                $sql = "UPDATE ma_moulinette.historique
                         SET initial=:initial
                         WHERE maven_key=:maven_key
                         AND version=:version
@@ -158,7 +157,7 @@ class HistoriqueRepository extends ServiceEntityRepository
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
                 /** On prépare la requête */
-                $sql = "DELETE FROM historique
+                $sql = "DELETE FROM ma_moulinette.historique
                         WHERE maven_key=:maven_key
                         AND version=:version
                         AND date_version=:date_version";
@@ -208,7 +207,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                         note_hotspot,
                         note_sqale AS maintainability,
                         initial
-                        FROM historique
+                        FROM ma_moulinette.historique
                         WHERE maven_key=:maven_key AND initial=:initial_true
                     ) AS initial_true
                     UNION
@@ -231,7 +230,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                         note_hotspot,
                         note_sqale as maintainability,
                         initial
-                        FROM historique
+                        FROM ma_moulinette.historique
                         WHERE maven_key=:maven_key AND initial=:initial_false
                     ) AS initial_false
                     ORDER BY date DESC
@@ -270,7 +269,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                             nombre_anomalie_critique AS critique,
                             nombre_anomalie_majeur AS majeur,
                             nombre_anomalie_mineur AS mineur
-                        FROM historique
+                        FROM ma_moulinette.historique
                         WHERE maven_key = :maven_key AND initial = :initial_true
                     ) AS initial_data
                     UNION ALL
@@ -281,7 +280,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                             nombre_anomalie_critique AS critique,
                             nombre_anomalie_majeur AS majeur,
                             nombre_anomalie_mineur AS mineur
-                        FROM historique
+                        FROM ma_moulinette.historique
                         WHERE maven_key = :maven_key AND initial = :initial_false
                         LIMIT :limit
                     ) AS non_initial_data
@@ -325,7 +324,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                                 code_smell_blocker, code_smell_critical,
                                 code_smell_major, code_smell_minor,
                                 code_smell_info, initial
-                            FROM historique
+                            FROM ma_moulinette.historique
                             WHERE maven_key=:maven_key AND initial=:initial_true
                         ) AS initial_data
                             UNION SELECT * FROM
@@ -339,7 +338,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                                 code_smell_blocker, code_smell_critical,
                                 code_smell_major, code_smell_minor,
                                 code_smell_info, initial
-                            FROM historique
+                            FROM ma_moulinette.historique
                             WHERE maven_key=:maven_key AND initial=:initial_false
                         ) AS non_initial_data
                         ORDER BY date DESC LIMIT :limit";
@@ -375,7 +374,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                                 nombre_vulnerability AS sec,
                                 nombre_code_smell AS code_smell,
                                 date_version AS date
-                        FROM historique
+                        FROM ma_moulinette.historique
                         WHERE maven_key = :maven_key
                         GROUP BY nombre_bug, nombre_vulnerability, nombre_code_smell, date_version
                         ORDER BY date ASC";
@@ -412,7 +411,7 @@ class HistoriqueRepository extends ServiceEntityRepository
         try {
                 $this->getEntityManager()->getConnection()->beginTransaction();
                     /** On prépare la requête */
-                    $sql = "INSERT INTO historique
+                    $sql = "INSERT INTO ma_moulinette.historique
                     (maven_key, analyse_key, version, date_version,
                     nom_projet, version_release, version_snapshot, version_autre,
                     suppress_warning, no_sonar, todo,
@@ -551,7 +550,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                 $this->getEntityManager()->getConnection()->beginTransaction();
                     /** On prépare la requête */
                     $sql = "SELECT maven_key, version, date_version as date, initial
-                            FROM historique
+                            FROM ma_moulinette.historique
                             WHERE maven_key=:maven_key
                             ORDER BY date_version DESC";
                     $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
@@ -588,7 +587,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                                 vulnerability_blocker, vulnerability_critical, vulnerability_major,
                                 code_smell_blocker, code_smell_critical, code_smell_major,
                                 nombre_hotspot, coverage, sqale_debt_ratio
-                        FROM historique
+                        FROM ma_moulinette.historique
                         WHERE maven_key=:maven_key
                         ORDER BY date_version DESC LIMIT 1";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
@@ -621,8 +620,8 @@ class HistoriqueRepository extends ServiceEntityRepository
                                 vulnerability_blocker, vulnerability_critical, vulnerability_major,
                                 code_smell_blocker, code_smell_critical, code_smell_major,
                                 nombre_hotspot, coverage, sqale_debt_ratio
-                        FROM historique
-                        WHERE maven_key=:maven_key AND initial=1";
+                        FROM ma_moulinette.historique
+                        WHERE maven_key=:maven_key AND initial=true";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(':maven_key', $map['maven_key']);
                 $exec=$stmt->executeQuery();
@@ -656,9 +655,9 @@ class HistoriqueRepository extends ServiceEntityRepository
                                         nombre_vulnerability as vulnerability,
                                         nombre_code_smell as code_smell,
                                         nombre_hotspot as hotspots
-                        FROM historique
+                        FROM ma_moulinette.historique
                         WHERE ".$map['clause_where'].
-                        " GROUP BY maven_key LIMIT ".$map['nombre_projet_favori'];
+                        " GROUP BY maven_key, nom, version, date LIMIT ".$map['nombre_projet_favori'];
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                         $exec=$stmt->executeQuery();
                         $liste=$exec->fetchAllAssociative();
@@ -683,8 +682,9 @@ class HistoriqueRepository extends ServiceEntityRepository
     public function selectHistoriqueIsValide($map):array {
         try {
                 /** On prépare la requête */
-                $sql = "SELECT version, nom_projet AS name, date_version, analyse_key
-                        FROM historique
+                $sql = "SELECT version, nom_projet AS name,
+                                date_version, analyse_key
+                        FROM ma_moulinette.historique
                         WHERE maven_key=:maven_key
                         ORDER BY date_version DESC LIMIT 1";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
