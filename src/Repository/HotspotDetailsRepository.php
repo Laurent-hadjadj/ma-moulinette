@@ -20,7 +20,7 @@ use Doctrine\Persistence\ManagerRegistry;
 
 class HotspotDetailsRepository extends ServiceEntityRepository
 {
-    public static $remoreReturnLine = "/\s+/u";
+    public static $removeReturnLine = "/\s+/u";
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -46,7 +46,7 @@ class HotspotDetailsRepository extends ServiceEntityRepository
                 WHERE maven_key=:maven_key
                 ORDER BY status ASC";
         try {
-            $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$remoreReturnLine, " ", $sql));
+            $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $conn->bindValue(':maven_key', $map['maven_key']);
                 $nombre=$conn->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
@@ -73,7 +73,7 @@ class HotspotDetailsRepository extends ServiceEntityRepository
                 $sql = "DELETE
                         FROM ma_moulinette.hotspot_details
                         WHERE maven_key=:maven_key";
-                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$remoreReturnLine, " ", $sql));
+                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $conn->bindValue(':maven_key', $map['maven_key']);
                     $conn->executeStatement();
             $this->getEntityManager()->getConnection()->commit();
@@ -107,7 +107,7 @@ class HotspotDetailsRepository extends ServiceEntityRepository
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
                 foreach($map as $item){
-                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$remoreReturnLine, " ", $sql));
+                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                         $stmt->bindValue(':maven_key', $item['maven_key']);
                         $stmt->bindValue(':version', $item['version']);
                         $stmt->bindValue(':date_version', $item['date_version']->format('Y-m-d H:i:sO'));
