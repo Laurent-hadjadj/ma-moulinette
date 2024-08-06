@@ -45,7 +45,7 @@ class PortefeuilleRepository extends ServiceEntityRepository
     {
         try {
                 $sql = "SELECT liste
-                        FROM portefeuille
+                        FROM ma_moulinette.portefeuille
                         WHERE titre=:portefeuille";
                 /** On escape les ' : normalement on en a pas besoin */
                 //"$reEncode = str_replace("'", "''", $map['portefeuille']);
