@@ -188,7 +188,7 @@ class BatchCollecteHotspotController extends AbstractController
         $insert = $hotspotsRepository->insertHotspots($map);
         if ($insert['code'] !== 200) {
             return ['code' => $insert['code'],
-                    'error' => [$insert['erreur'],
+                    'erreur' => [$insert['erreur'],
                     static::$request => 'insertHotspot']
             ];
         }
