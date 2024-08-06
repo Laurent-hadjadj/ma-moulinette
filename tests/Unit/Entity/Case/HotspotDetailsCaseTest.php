@@ -65,7 +65,7 @@ class HotspotDetailsCaseTest extends TestCase
             ->setFilePath(static::$filePath)
             ->setLine(static::$line)
             ->setMessage(static::$message)
-            ->setKey(static::$key)
+            ->setHotspotKey(static::$key)
             ->setModeCollecte(static::$modeCollecte)
             ->setUtilisateurCollecte(static::$utilisateurCollecte)
             ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
@@ -182,8 +182,8 @@ class HotspotDetailsCaseTest extends TestCase
 
     public function testSettingAndGettingKey(): void
     {
-        $this->hotspotDetails->setKey(static::$key);
-        $this->assertEquals(static::$key, $this->hotspotDetails->getKey());
+        $this->hotspotDetails->setHotspotKey(static::$key);
+        $this->assertEquals(static::$key, $this->hotspotDetails->getHotspotKey());
     }
 
     public function testSettingAndGettingModeCollecte(): void

@@ -65,7 +65,7 @@ class HotspotDetailsValidatorTest extends KernelTestCase
         ->setFilePath(static::$filePath)
         ->setLine(static::$line)
         ->setMessage(static::$message)
-        ->setKey(static::$key)
+        ->setHotspotKey(static::$key)
         ->setModeCollecte(static::$modeCollecte)
         ->setUtilisateurCollecte(static::$utilisateurCollecte)
         ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
@@ -100,7 +100,7 @@ class HotspotDetailsValidatorTest extends KernelTestCase
     $this->assertHasErrors($this->getEntity()->setStatus(''), 1);$this->assertHasErrors($this->getEntity()->setResolution(''), 0);$this->assertHasErrors($this->getEntity()->setFileName(''), 1);
     $this->assertHasErrors($this->getEntity()->setFilePath(''), 1);
     $this->assertHasErrors($this->getEntity()->setMessage(''), 1);
-    $this->assertHasErrors($this->getEntity()->setKey(''), 1);
+    $this->assertHasErrors($this->getEntity()->setHotspotKey(''), 1);
     $this->assertHasErrors($this->getEntity()->setModeCollecte(''), 0);
     $this->assertHasErrors($this->getEntity()->setUtilisateurCollecte(''), 0);
   }
