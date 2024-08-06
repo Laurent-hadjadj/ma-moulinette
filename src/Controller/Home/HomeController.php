@@ -359,6 +359,7 @@ class HomeController extends AbstractController
      */
     public function contruitMaRequete(array $liste, array $mavenkey, int $index): string
     {
+        //maven_key='fr.ma-petite-entreprise:ma-moulinette' AND (version = '1.2.0-RELEASE' OR version = '1.2.1-RELEASE')
         $m = $mavenkey[0];
         $l = "";
         $mavenKey = "maven_key='".$m."'";
