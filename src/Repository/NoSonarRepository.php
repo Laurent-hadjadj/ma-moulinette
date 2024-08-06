@@ -19,7 +19,7 @@ use Doctrine\Persistence\ManagerRegistry;
 
 class NoSonarRepository extends ServiceEntityRepository
 {
-    public static $removeReturnline = "/\s+/u";
+    public static $removeReturnLine = "/\s+/u";
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -43,9 +43,9 @@ class NoSonarRepository extends ServiceEntityRepository
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "DELETE
-                        FROM no_sonar
+                        FROM ma_moulinette.no_sonar
                         WHERE maven_key=:maven_key";
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(':maven_key', $map['maven_key']);
                     $stmt->executeStatement();
             $this->getEntityManager()->getConnection()->commit();
@@ -72,10 +72,10 @@ class NoSonarRepository extends ServiceEntityRepository
     {
         try {
                 $sql = "SELECT rule, count(*) as total
-                        FROM no_sonar
+                        FROM ma_moulinette.no_sonar
                         WHERE maven_key=:maven_key
                         GROUP BY rule";
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(':maven_key', $map['maven_key']);
                     $liste=$stmt->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
@@ -98,14 +98,14 @@ class NoSonarRepository extends ServiceEntityRepository
      */
     public function insertNoSonar($map):array
     {
-        $sql = "INSERT INTO no_sonar
+        $sql = "INSERT INTO ma_moulinette.no_sonar
                     (maven_key, rule, component, line, mode_collecte, utilisateur_collecte, date_enregistrement)
                 VALUES
                     (:maven_key, :rule, :component, :line, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
         try {
                 $this->getEntityManager()->getConnection()->beginTransaction();
                     foreach($map as $item){
-                        $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                        $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                             $stmt->bindValue(':maven_key', $item['maven_key']);
                             $stmt->bindValue(':rule', $item['rule']);
                             $stmt->bindValue(':component', $item['component']);
