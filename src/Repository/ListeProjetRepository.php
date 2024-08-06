@@ -22,7 +22,7 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ListeProjetRepository extends ServiceEntityRepository
 {
-    public static $removeReturnline = "/\s+/u";
+    public static $removeReturnLine = "/\s+/u";
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -45,9 +45,9 @@ class ListeProjetRepository extends ServiceEntityRepository
     {
         try {
                 $sql = "SELECT count(*) as visibility
-                        FROM liste_projet
+                        FROM ma_moulinette.liste_projet
                         WHERE visibility=:visibility";
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(":visibility", $type);
                 $request=$stmt->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
@@ -70,8 +70,8 @@ class ListeProjetRepository extends ServiceEntityRepository
     {
         try {
                 $sql = "SELECT COUNT(*) AS total
-                        FROM liste_projet";
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                        FROM ma_moulinette.liste_projet";
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $exec=$stmt->executeQuery();
                 $nombre=$exec->fetchAllAssociative();
             } catch (\Doctrine\DBAL\Exception $e) {
@@ -95,9 +95,9 @@ class ListeProjetRepository extends ServiceEntityRepository
     {
         try {
                 $sql = "SELECT COUNT(*) AS tag
-                        FROM liste_projet
+                        FROM ma_moulinette.liste_projet
                         WHERE tags IS NOT NULL AND jsonb_array_length(tags::jsonb) > 0";
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $nombre=$stmt->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
             return ['code'=>500, 'erreur'=> $e->getMessage()];
@@ -120,13 +120,18 @@ class ListeProjetRepository extends ServiceEntityRepository
     public function selectListeProjetByEquipe($map): array
     {
         try {
-                $sql = "SELECT DISTINCT liste_projet.maven_key AS id, liste_projet.name AS text
-                        FROM ma_moulinette.liste_projet, jsonb_array_elements_text(liste_projet.tags::jsonb) AS tag
+                $sql = "SELECT DISTINCT
+                            liste_projet.maven_key AS id,
+                            liste_projet.name AS text
+                        FROM
+                            ma_moulinette.liste_projet,
+                            jsonb_array_elements_text(liste_projet.tags::jsonb) AS tag
                         WHERE ".$map['clause_where'];
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $exec=$stmt->executeQuery();
                 $liste=$exec->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
+            dd($e);
             return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
         return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
@@ -149,8 +154,8 @@ class ListeProjetRepository extends ServiceEntityRepository
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "DELETE
-                        FROM liste_projet";
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                        FROM ma_moulinette.liste_projet";
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->executeStatement();
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
