@@ -22,11 +22,11 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class PropertiesRepository extends ServiceEntityRepository
 {
-    public static $removeReturnline = "/\s+/u";
+    public static $removeReturnLine = "/\s+/u";
 
-    public function __construct(ManagerRegistry $stmtegistry)
+    public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($stmtegistry, Properties::class);
+        parent::__construct($registry, Properties::class);
     }
 
     /**
@@ -45,12 +45,12 @@ class PropertiesRepository extends ServiceEntityRepository
     {
         try {
                 $sql = "SELECT *
-                        FROM properties
+                        FROM ma_moulinette.properties
                         WHERE type=:type";
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(':type', $type);
-                    $stmtequest = $stmt->executeQuery()->fetchAllAssociative();
-            return ['code' => 200, 'request' => $stmtequest, 'erreur' => ''];
+                    $request = $stmt->executeQuery()->fetchAllAssociative();
+            return ['code' => 200, 'request' => $request, 'erreur' => ''];
         } catch (\Doctrine\DBAL\Exception $e) {
             return ['code' => 500, 'erreur' => $e->getMessage()];
         }
@@ -72,21 +72,21 @@ class PropertiesRepository extends ServiceEntityRepository
     {
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-                $sql = "INSERT INTO properties (
-                    type,
-                    projet_bd, projet_sonar,
-                    profil_bd, profil_sonar,
-                    date_modification_projet,
-                    date_modification_profil,
-                    date_creation)
-                VALUES (
-                    :type,
-                    :projet_bd, :projet_sonar,
-                    :profil_bd, :profil_sonar,
-                    :date_modification_projet,
-                    :date_modification_profil,
-                    :date_creation)";
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $sql = "INSERT INTO ma_moulinette.properties (
+                            type,
+                            projet_bd, projet_sonar,
+                            profil_bd, profil_sonar,
+                            date_modification_projet,
+                            date_modification_profil,
+                            date_creation)
+                        VALUES (
+                            :type,
+                            :projet_bd, :projet_sonar,
+                            :profil_bd, :profil_sonar,
+                            :date_modification_projet,
+                            :date_modification_profil,
+                            :date_creation)";
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(":type", 'properties');
                     $stmt->bindValue(":projet_bd", $map["projet_bd"]);
                     $stmt->bindValue(":projet_sonar", $map["projet_sonar"]);
@@ -121,12 +121,12 @@ class PropertiesRepository extends ServiceEntityRepository
     {
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-                $sql = "UPDATE properties
+                $sql = "UPDATE ma_moulinette.properties
                         SET projet_bd = :projet_bd,
                             projet_sonar = :projet_sonar,
                             date_modification_projet = :date_modification_projet
                         WHERE type = :type";
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(':projet_bd', $map['projet_bd']);
                     $stmt->bindValue(':projet_sonar', $map['projet_sonar']);
                     $stmt->bindValue(':date_modification_projet', $map['date_modification_projet']->format('Y-m-d H:i:sO'));
@@ -156,12 +156,12 @@ class PropertiesRepository extends ServiceEntityRepository
     {
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-                $sql = "UPDATE properties
+                $sql = "UPDATE ma_moulinette.properties
                         SET profil_bd=:profil_bd,
                             profil_sonar=:profil_sonar,
                             date_modification_profil=:date_modification_profil
                         WHERE type=:type";
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnline, " ", $sql));
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(':profil_bd', $map['profil_bd']);
                     $stmt->bindValue(':profil_sonar', $map['profil_sonar']);
                     $stmt->bindValue(':date_modification_profil', $map['date_modification_profil']->format('Y-m-d H:i:sO'));
