@@ -47,7 +47,7 @@ class MesuresRepository extends ServiceEntityRepository
                 $sql = "SELECT project_name as name, ncloc, language_distribution,
                             lines, coverage, sqale_debt_ratio,
                             duplicated_lines_density as duplication, tests, issues
-                        FROM mesures
+                        FROM ma_moulinette.mesures
                         WHERE maven_key=:maven_key
                         ORDER BY date_enregistrement DESC LIMIT 1";
                 $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
@@ -75,7 +75,7 @@ class MesuresRepository extends ServiceEntityRepository
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
 
-            $sql = "INSERT INTO mesures
+            $sql = "INSERT INTO ma_moulinette.mesures
                         (maven_key, project_name, lines, ncloc, language_distribution, sqale_debt_ratio, coverage, duplicated_lines_density, tests, issues, mode_collecte, utilisateur_collecte, date_enregistrement)
                     VALUES
                         (:maven_key, :project_name, :lines, :ncloc, :language_distribution::json, :sqale_debt_ratio, :coverage, :duplicated_lines_density, :tests, :issues, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
@@ -127,7 +127,7 @@ class MesuresRepository extends ServiceEntityRepository
         try {
                 $this->getEntityManager()->getConnection()->beginTransaction();
                     $sql = "DELETE
-                            FROM mesures
+                            FROM ma_moulinette.mesures
                             WHERE maven_key=:maven_key";
 
                     $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
