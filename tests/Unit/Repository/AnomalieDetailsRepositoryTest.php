@@ -101,7 +101,7 @@ class AnomalieDetailsRepositoryTest extends KernelTestCase
                 'vulnerability_critical' => 9, 'vulnerability_major' => 0,
                 'vulnerability_info' => 0, 'vulnerability_minor' => 0,
                 'code_smell_blocker' => 0, 'code_smell_critical' => 4,
-                'code_smell_major' => 109, 'cod_sSmell_info' => 72,
+                'code_smell_major' => 109, 'code_smell_info' => 72,
                 'code_smell_minor' => 13,  'utilisateur_collecte' => 'laurent.hadjadj@ma-petite-entreprise.fr', 'mode_collecte' => 'TRAITEMENT MANUEL', 'date_enregistrement' => new \DateTimeImmutable('2024-06-28 17:55:45+02')];
 
         // Appel de la méthode
