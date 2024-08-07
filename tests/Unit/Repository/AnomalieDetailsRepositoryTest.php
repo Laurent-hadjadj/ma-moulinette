@@ -96,7 +96,7 @@ class AnomalieDetailsRepositoryTest extends KernelTestCase
         $map=[
                 'maven_key' => 'fr.ma-petite-entreprise:ma-moulinette',
                 'name' => 'ma-moulinette', 'bug_blocker' => 7,
-                'bug_critical' => 0, 'bug_major' => 44, 'bugInfo' => 37,
+                'bug_critical' => 0, 'bug_major' => 44, 'bug_info' => 37,
                 'bug_minor' => 0, 'vulnerability_blocker' => 0,
                 'vulnerability_critical' => 9, 'vulnerability_major' => 0,
                 'vulnerability_info' => 0, 'vulnerability_minor' => 0,
