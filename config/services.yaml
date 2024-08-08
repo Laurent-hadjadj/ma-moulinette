@@ -63,4 +63,11 @@ services:
             $user: '%env(RABBITMQ_USER)%'
             $password: '%env(RABBITMQ_PASSWORD)%'
             $vhost: '%env(RABBITMQ_VHOST)%'
+
+    # POur les TU
+    App\Controller\Batch\BatchCollecteTodoController:
+        arguments:
+            $em: '@doctrine.orm.entity_manager'
+            $client: '@App\Service\Client'
+        tags: ['controller.service_arguments']
 ...
