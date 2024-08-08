@@ -2,6 +2,16 @@
 
 ![Ma-Moulinette](/assets/images/home/home-000.jpg)
 
+## Nombre de tests unitaires
+
+- [x] Entity Case........ **289** tests, **356** vérifications.
+- [x] Entity Kernel...... **43** tests, ***90** vérifications.
+- [x] Entity Validator... **109** tests, **359** vérifications.
+- [x] Entity Repository.. **100** tests, **243** vérifications.
+- [x] Entity Performance. **1** tests, **1001** vérifications/
+
+> Total : **542** tests, **2049** vérifications.
+
 ## Les différents tests unitaires
 
 > Tests unitaires
@@ -57,7 +67,34 @@ Exemple de paramètres utilises :
 SYMFONY_PHPUNIT_LOCALE="fr_FR"
 SYMFONY_DEPRECATIONS_HELPER='max[total]=10&max[self]=10&max[direct]=10&verbose=10'
 
-DATABASE_URL="sqlite:///%kernel.project_dir%/var/data-test.db"
+#DATABASE_URL="sqlite:///%kernel.project_dir%/var/data-test.db"
+DATABASE_URL='postgresql://db_user:db_password@localhost:5432/ma_moulinette?serveurVersion=15&charset=utf8'
+```
+
+### Création de la base de données de tests
+
+Si la base de données n'a pas été créé, il suffit d'executer les commandes sql dans un terminal psql :
+
+```sql
+--- si on c'est connecté avec l'utilisateur db_user
+ALTER ROLE db_user CREATEDB;
+-- si on c'est connecté avec l'utilisateur postgres
+CREATE DATABASE ma_moulinette_test WITH
+    OWNER = db_user
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'fr_FR.UTF-8'
+    LC_CTYPE = 'fr_FR.UTF-8'
+    LOCALE_PROVIDER = 'libc'
+    TABLESPACE = pg_default
+    CONNECTION LIMIT = -1
+    IS_TEMPLATE = False;
+
+COMMENT ON DATABASE ma_moulinette_test IS 'Base de données Ma-Moulinette de Tests';
+
+ALTER ROLE db_user IN DATABASE ma_moulinette_test SET search_path TO ma_moulinette_test;
+ALTER DATABASE ma_moulinette_test SET search_path TO ma_moulinette_test;
+GRANT TEMPORARY, CONNECT ON DATABASE ma_moulinette_test TO PUBLIC;
+GRANT ALL ON DATABASE ma_moulinette_test TO db_user;
 ```
 
 ### Préparation de la base de données de test
@@ -86,7 +123,7 @@ c:\environnement\ma-moulinette>php bin/console --env=test doctrine:schema:update
  [OK] Database schema updated successfully!
 ```
 
-`note :` Il faut que l'utilisateur ait les droits de création. Vous pouvez ajouter le droit CREATEDB à l'utilisateur db_user (`ALTER ROLE db_user CREATEDB;`).
+`note :` Il faut que l'utilisateur ait les droits de création. Vous pouvez ajouter le droit **CREATEDB** à l'utilisateur **db_user**.
 
 ### Chargement des fixtures
 
@@ -109,6 +146,22 @@ Ou d’exécuter simplement un test en particulier :
 Ou  d’exécuter un ensemble de tests :
 
 - `php ./bin/phpunit --filter CaseTest`
+
+### Couverture de code
+
+> prérequis.
+
+Il faudra ajouter le dépendances suivantes au fichier php.ini.
+
+- [x] zend_extension=xdebug;
+- [x] extension=pcov
+- [x] pcov.enabled=1
+
+Cette commande permet de générer automatiquement le rapport de couverture des tests pour le format clover.
+
+```bash
+php vendor/bin/phpunit --coverage-clover=build/logs/clover.xml --coverage-html=build/coverage-report --coverage-text
+```
 
 -**-- FIN --**-
 
