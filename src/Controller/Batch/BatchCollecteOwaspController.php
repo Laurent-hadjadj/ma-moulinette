@@ -112,11 +112,11 @@ class BatchCollecteOwaspController extends AbstractController
         $effortTotal = $result['effortTotal'];
 
         /** Pour chaque signalement OWASP a1, a2, a3,... */
-        $total=0;
+        $total = 0;
         foreach ($result['facets'][0]['values'] as $value) {
             $index = substr($value['val'], 1);
             $nombre[$index] = $value['count'];
-            $total=$value['count']++;
+            $total += $value['count']; // Ajoute cette valeur au total
         }
 
         /** On remplie le tableau pour les signalement a1 à a10 pour les clés de sévérité */
@@ -144,7 +144,7 @@ class BatchCollecteOwaspController extends AbstractController
         $delete=$owaspRepository->deleteOwaspMavenKey($map);
         if ($delete['code']!=200) {
             return ['code' => $delete['code'],
-                    'error'=> [$delete['erreur'], static::$request=>'deleteOwaspMavenKey']
+                    'erreur'=> [$delete['erreur'], static::$request=>'deleteOwaspMavenKey']
             ];
         }
 
