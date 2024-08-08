@@ -61,7 +61,6 @@ composer.bat
 
 ###> symfony/phpunit-bridge ###
 .phpunit.result.cache
-/phpunit.xml
 ###< symfony/phpunit-bridge ###
 
 ###> phpunit/phpunit ###
@@ -70,7 +69,7 @@ phpunit.xml.dist
 .phpunit.result.cache
 /var/log/test.log
 /.phpunit.cache/
-/reports/
+/build/
 .env.test
 .env.test.local
 .env.local
