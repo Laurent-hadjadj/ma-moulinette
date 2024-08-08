@@ -51,7 +51,7 @@ for %%d in (C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (
 @echo nodejs      	: 18.17.1
 @echo:
 
-echo "Création de la basd de données de tests"
+echo "Création de la base de données de tests"
 echo:
 php bin/console --env=test doctrine:database:drop --force
 php bin/console --env=test doctrine:database:create --if-not-exists
