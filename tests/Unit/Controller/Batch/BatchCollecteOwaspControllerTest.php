@@ -50,28 +50,18 @@ class BatchCollecteOwaspControllerTest extends TestCase
         $this->informationProjetRepository = $this->createMock(InformationProjetRepository::class);
 
         // Stubbing la méthode getRepository pour retourner le mock approprié
-        $this->entityManager
-            ->method('getRepository')
-            ->willReturnMap([
+        $this->entityManager->method('getRepository')->willReturnMap([
                 [Owasp::class, $this->owaspRepository],
                 [InformationProjet::class, $this->informationProjetRepository],
             ]);
 
         // Création du mock pour ContainerInterface
         $this->container = $this->createMock(ContainerInterface::class);
-        $this->container
-            ->method('has')
-            ->with('parameter_bag')
-            ->willReturn(true);
-        $this->container
-            ->method('get')
-            ->with('parameter_bag')
-            ->willReturn($this->parameterBag);
+        $this->container->method('has')->with('parameter_bag')->willReturn(true);
+        $this->container->method('get')->with('parameter_bag')->willReturn($this->parameterBag);
 
         // Stubbing la méthode getParameter pour retourner l'URL du sonar
-        $this->parameterBag
-            ->method('get')
-            ->with(BatchCollecteOwaspController::$sonarUrl)
+        $this->parameterBag->method('get')->with(BatchCollecteOwaspController::$sonarUrl)
             ->willReturn('http://localhost/api/issues/search?' . static::$parameters);
 
         // Instanciation du contrôleur
@@ -102,7 +92,7 @@ class BatchCollecteOwaspControllerTest extends TestCase
         $this->owaspRepository->method('deleteOwaspMavenKey')->willReturn(['code' => 200]);
         $this->owaspRepository->method('insertOwasp')->willReturn(['code' => 200]);
 
-        $result = $this->controller->BatchCollecteOwasp('mavenKey', 'manual', 'user');
+        $result = $this->controller->BatchCollecteOwasp('mavenKey', 'manual', 'laurent.hadjadj@ma-petite-entreprise.fr');
         $this->assertEquals(200, $result['code']);
         $this->assertEquals(10, $result['nombre']);
     }
@@ -112,7 +102,7 @@ class BatchCollecteOwaspControllerTest extends TestCase
         $this->parameterBag->method('get')->with(BatchCollecteOwaspController::$sonarUrl)->willReturn('http://localhost/api/issues/search?' . static::$parameters);
         $this->client->method('http')->willReturn(['code' => 404, 'erreur' => 'Not Found']);
 
-        $result = $this->controller->BatchCollecteOwasp('mavenKey', 'manual', 'user');
+        $result = $this->controller->BatchCollecteOwasp('mavenKey', 'manual', 'laurent.hadjadj@ma-petite-entreprise.fr');
         $this->assertEquals(404, $result['code']);
         $this->assertEquals('Not Found', $result['error']);
     }
@@ -133,7 +123,7 @@ class BatchCollecteOwaspControllerTest extends TestCase
         ]);
 
         // Exécutez la méthode que vous voulez tester
-        $result = $this->controller->BatchCollecteOwasp('mavenKey', 'manual', 'user');
+        $result = $this->controller->BatchCollecteOwasp('mavenKey', 'manual', 'laurent.hadjadj@ma-petite-entreprise.fr');
 
         // Vérifiez que le code retourné est celui attendu
         $this->assertEquals(500, $result['code']);
@@ -168,7 +158,7 @@ class BatchCollecteOwaspControllerTest extends TestCase
         $this->owaspRepository->method('insertOwasp')->willReturn(['code' => 200]);
 
         // Exécutez la méthode que vous voulez tester
-        $result = $this->controller->BatchCollecteOwasp('mavenKey', 'manual', 'user');
+        $result = $this->controller->BatchCollecteOwasp('mavenKey', 'manual', 'laurent.hadjadj@ma-petite-entreprise.fr');
 
         // Vérifiez que le code retourné est celui attendu
         $this->assertEquals(404, $result['code']);
@@ -203,7 +193,7 @@ class BatchCollecteOwaspControllerTest extends TestCase
         // On plante la suppression des données pour la mavenKey
         $this->owaspRepository->method('deleteOwaspMavenKey')->willReturn(['code' => 500, 'erreur' => 'Deletion failed']);
 
-        $result = $this->controller->BatchCollecteOwasp('mavenKey', 'manual', 'user');
+        $result = $this->controller->BatchCollecteOwasp('mavenKey', 'manual', 'laurent.hadjadj@ma-petite-entreprise.fr');
          // Vérifiez que le code retourné est celui attendu
         $this->assertEquals(500, $result['code']);
         $this->assertArrayHasKey('erreur', $result);
@@ -239,7 +229,7 @@ class BatchCollecteOwaspControllerTest extends TestCase
         $this->owaspRepository->method('insertOwasp')->willReturn(['code' => 500, 'erreur' => 'Insertion failed']);
 
         // Exécutez la méthode que vous voulez tester
-        $result = $this->controller->BatchCollecteOwasp('mavenKey', 'manual', 'user');
+        $result = $this->controller->BatchCollecteOwasp('mavenKey', 'manual', 'laurent.hadjadj@ma-petite-entreprise.fr');
         $this->assertEquals(500, $result['code']);
 
         // Vérifiez le message d'erreur retourné
