@@ -59,6 +59,29 @@ class BatchCollecteAnomalieController extends AbstractController
         $this->serviceDateTools = $serviceDateTools;
     }
 
+    /**
+     * [Description for makeRequest]
+     * Fonction générique pour executer une requête et retourner le résultat dans un tableau
+     *
+     * @param array $queryParams
+     * @param string $tempoUrl
+     *
+     * @return array
+     *
+     * Created at: 09/08/2024 07:52:30 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function makeRequest(array $queryParams, string $tempoUrl): array
+        {
+            /** on renvoi un tableau avec le résultat de la requête ou un tableau avec un code erreur. */
+            $queryString = http_build_query($queryParams);
+            $result = $this->client->http("$tempoUrl/api/issues/search?$queryString");
+            if (isset($result['code']) && in_array($result['code'], [401, 404])) {
+                return ['error' => $result['code'], $result['erreur']];
+            }
+            return $result;
+        }
 
     /**
      * [Description for BatchCollecteAnomalie]
@@ -89,16 +112,6 @@ class BatchCollecteAnomalieController extends AbstractController
         $tempoUrl = $this->getParameter(static::$sonarUrl);
         $mavenKey = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
 
-        /* Fonction générique pour executer une requête et retourner le résultat dans un tableau */
-        $makeRequest = function($queryParams) use ($tempoUrl) {
-            $queryString = http_build_query($queryParams);
-            $result = $this->client->http("$tempoUrl/api/issues/search?$queryString");
-            if (isset($result['code']) && in_array($result['code'], [401, 404])) {
-                return ['error' => $result['code'], $result['erreur']];
-            }
-            return $result;
-        };
-
         /* Tableau des paramètres pour les requêtes HTTP */
         $queryParamsList = [
             'general' => [ 'componentKeys' => $mavenKey, 'facets' => 'directories,types,severities',
@@ -112,12 +125,23 @@ class BatchCollecteAnomalieController extends AbstractController
 
         /* On appelle les API en passant les querryParams à la fonction générique */
         $results = [];
-        foreach ($queryParamsList as $key => $queryParams) {
-            $results[$key] = $makeRequest($queryParams);
-            if (isset($results[$key]['error'])) {
-                return ['code' => $results[$key]['error'], 'error'=>$results['erreur']];
+        $results['general']=self::makeRequest($queryParamsList['general'], $tempoUrl);
+        if (isset($results['general']['error'])) {
+                return ['code' => $results['general']['error'], 'error'=>$results['erreur']];
             }
-        }
+        $results['BUG']=self::makeRequest($queryParamsList['BUG'], $tempoUrl);
+        if (isset($results['BUG']['error'])) {
+                return ['code' => $results['BUG']['error'], 'error'=>$results['erreur']];
+            }
+
+        $results['VULNERABILITY']=self::makeRequest($queryParamsList['VULNERABILITY'], $tempoUrl);
+        if (isset($results['VULNERABILITY']['error'])) {
+                return ['code' => $results['VULNERABILITY']['error'], 'error'=>$results['erreur']];
+            }
+        $results['CODE_SMELL']=self::makeRequest($queryParamsList['CODE_SMELL'], $tempoUrl);
+        if (isset($results['CODE_SMELL']['error'])) {
+                return ['code' => $results['CODE_SMELL']['error'], 'error'=>$results['erreur']];
+            }
 
         if ($results['general']['paging']['total'] != 0) {
             /** On supprime les résultats pour la maven_key. */
