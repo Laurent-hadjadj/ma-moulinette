@@ -48,47 +48,31 @@ class BatchCollecteTodoControllerTest extends TestCase
         $this->todoRepository = $this->createMock(TodoRepository::class);
 
         /** Stubbing la méthode getRepository pour retourner le mock de TodoRepository */
-        $this->entityManager
-            ->method('getRepository')
-            ->willReturn($this->todoRepository);
+        $this->entityManager->method('getRepository')->willReturn($this->todoRepository);
 
         /* Création du mock pour ContainerInterface */
         $this->container = $this->createMock(Container::class);
-        $this->container
-            ->method('has')
-            ->with('parameter_bag')
-            ->willReturn(true);
-        $this->container
-            ->method('get')
-            ->with('parameter_bag')
-            ->willReturn($this->parameterBag);
+        $this->container->method('has')->with('parameter_bag')->willReturn(true);
+        $this->container->method('get')->with('parameter_bag')->willReturn($this->parameterBag);
 
         // Instanciation du contrôleur
         $this->controller = new BatchCollecteTodoController($this->entityManager, $this->client);
-        $this->controller->setContainer($this->container); // Setting container to access parameters
+        $this->controller->setContainer($this->container);
     }
 
     public function testBatchCollecteTodoSuccess()
     {
         // Création du Stub pour la méthode getParameter pour retourner une "dummy" URL
-        $this->parameterBag
-            ->method('get')
-            ->willReturn('http://localhost/api/issues/search?'.static::$parameters);
+        $this->parameterBag->method('get')->willReturn('http://localhost/api/issues/search?'.static::$parameters);
 
         // Création du mock du client pour la réponse
-        $this->client
-            ->method('http')
-            ->willReturn(['paging' => ['total' => 1], 'issues' => [['rule' => 'php:s1135', 'component' => 'component', 'line' => 10]]]);
+        $this->client->method('http')->willReturn(['paging' => ['total' => 1], 'issues' => [['rule' => 'php:s1135', 'component' => 'component', 'line' => 10]]]);
 
         // Création du mock pour la méthode deleteTodoMavenKey
-        $this->todoRepository
-            ->method('deleteTodoMavenKey')
-            ->willReturn(['code' => 200]);
+        $this->todoRepository->method('deleteTodoMavenKey')->willReturn(['code' => 200]);
 
         // Création du mocj pour la méthode insertTodo
-        $this->todoRepository
-            ->method('insertTodo')
-            ->willReturn(['code' => 200]);
+        $this->todoRepository->method('insertTodo')->willReturn(['code' => 200]);
 
         // Appel de la méthode à tester
         $result = $this->controller->BatchCollecteTodo('dummyMavenKey', 'dummyModeCollecte', 'dummyUtilisateurCollecte');
@@ -102,12 +86,10 @@ class BatchCollecteTodoControllerTest extends TestCase
 
     public function testBatchCollecteTodoHttpError()
     {
-        $this->parameterBag
-            ->method('get')
+        $this->parameterBag->method('get')
             ->willReturn('http://localhost/api/issues/search?'.static::$parameters);
 
-        $this->client
-            ->method('http')
+        $this->client->method('http')
             ->willReturn(['code' => 401]);
 
         $result = $this->controller->BatchCollecteTodo('dummyMavenKey', 'dummyModeCollecte', 'dummyUtilisateurCollecte');
@@ -118,17 +100,14 @@ class BatchCollecteTodoControllerTest extends TestCase
 
     public function testBatchCollecteTodoDeleteError()
     {
-        $this->parameterBag
-            ->method('get')
+        $this->parameterBag->method('get')
             ->willReturn('http://localhost/api/issues/search?'.static::$parameters);
 
         $this->client
             ->method('http')
             ->willReturn(['paging' => ['total' => 1], 'issues' => [['rule' => 'php:s1135', 'component' => 'component', 'line' => 10]]]);
 
-        $this->todoRepository
-            ->method('deleteTodoMavenKey')
-            ->willReturn(['code' => 500]);
+        $this->todoRepository->method('deleteTodoMavenKey')->willReturn(['code' => 500]);
 
         // Calling the method to test
         $result = $this->controller->BatchCollecteTodo('dummyMavenKey', 'dummyModeCollecte', 'dummyUtilisateurCollecte');
