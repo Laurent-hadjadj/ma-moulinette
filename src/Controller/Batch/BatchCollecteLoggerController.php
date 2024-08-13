@@ -47,6 +47,32 @@ class BatchCollecteLoggerController extends AbstractController
         $this->client = $client;
     }
 
+    /**
+     * [Description for makeRequest]
+     *
+     * @param array $queryParams
+     * @param string $tempoUrl
+     *
+     * @return array
+     *
+     * Created at: 12/08/2024 11:24:17 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function makeRequest(array $queryParams, string $tempoUrl): array
+    {
+        /* Fonction générique pour executer une requête et retourner le résultat dans un tableau */
+        $queryString = http_build_query($queryParams);
+        /** Appelle le client HTTP */
+        $result = $this->client->http("$tempoUrl/api/issues/search?$queryString");
+        if (isset($result['code']) && in_array($result['code'], [401, 404])) {
+            return ['error' => $result['code'], $result['erreur']];
+        }
+        if (isset($result['code']) && $result['code']!=200) {
+            return ['code' => $result['code'], 'erreur' => $result['erreur']];
+        }
+        return ['total' => $result['total']] ?? ['total' => -1];
+    }
 
     /**
      * [Description for BatchCollecteLogger]
@@ -64,44 +90,47 @@ class BatchCollecteLoggerController extends AbstractController
         /** On instancie l'EntityRepository */
         $loggerRepository = $this->em->getRepository(Logger::class);
 
-        /** On regarde si le plugin Track-Logger-Method est  activé */
+        /** On regarde si le plugin Track-Logger-Method est activé */
         $loggerPlugin = $this->getParameter('track.logger.method');
-        if ((boolean)$loggerPlugin){
-            return ['code' => 404, 'message' => "La collecte des LOGGERS n'a pas été lancée.  (TRACK_LOGGER_METHOD=false).", 'data' => ''];
+        if ((boolean)$loggerPlugin === false || $loggerPlugin === 'false' || $loggerPlugin === 'False'){
+            return ['code' => 404, 'message' => "La collecte des LOGGERS n'a pas été lancée. (TRACK_LOGGER_METHOD=false).", 'data' => ''];
         }
+
         /** On construit l'URL */
         $tempoUrl = $this->getParameter(static::$sonarUrl);
         $mavenKey = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
 
-        /* Fonction générique pour executer une requête et retourner le résultat dans un tableau */
-        $makeRequest = function($queryParams) use ($tempoUrl) {
-            $queryString = http_build_query($queryParams);
-            /** Appelle le client HTTP */
-            $result = $this->client->http("$tempoUrl/api/issues/search?$queryString");
-            if (isset($result['code']) && in_array($result['code'], [401, 404])) {
-                return ['error' => $result['code'], $result['erreur']];
-            }
-            return $result['total'] ?? -1;
-        };
-
         /* Liste des différents Logger */
-        $methods = [ 'track-info-method', 'track-warn-method', 'track-error-method', 'track-debug-method' ];
+        $method = [ 'track-info-method', 'track-warn-method', 'track-error-method', 'track-debug-method' ];
+        $queryParams = [
+            $method[0] => [ 'componentKeys' => $mavenKey,
+            'facets'  => 'rules', 'statuses' => 'OPEN', 'rules' => 'track-logger-method:'.$method[0], 'ps' => 500],
+            $method[1] => [ 'componentKeys' => $mavenKey,
+            'facets'  => 'rules', 'statuses' => 'OPEN', 'rules' => 'track-logger-method:'.$method[1], 'ps' => 500],
+            $method[2] => [ 'componentKeys' => $mavenKey,
+            'facets'  => 'rules', 'statuses' => 'OPEN', 'rules' => 'track-logger-method:'.$method[2], 'ps' => 500],
+            $method[3] => [ 'componentKeys' => $mavenKey,
+            'facets'  => 'rules', 'statuses' => 'OPEN', 'rules' => 'track-logger-method:'.$method[3], 'ps' => 500]
+        ];
 
         /* On appelle les API en passant les querryParams à la fonction générique */
         $results = [];
-        foreach ($methods as $method) {
-            $queryParams = [ 'componentKeys' => $mavenKey,
-            'facets'  => 'rules',
-            'statuses' => 'OPEN',
-            'rules' => 'track-logger-method:'.$method,
-            'ps' => 500,
-            ];
-            $results[$method] = $makeRequest($queryParams);
-
-            if (isset($results[$method]['error'])) {
-                return ['code' => $results[$method]['error'], 'error'=>$results['erreur']];
+        $results['track-info-method']=self::makeRequest($queryParams['track-info-method'], $tempoUrl);
+        if (isset($results['track-info-method']['error'])) {
+                return ['code' => $results['track-info-method']['error'], 'error'=>$results['erreur']];
             }
-        }
+        $results['track-warn-method']=self::makeRequest($queryParams['track-warn-method'], $tempoUrl);
+        if (isset($results['track-warn-method']['error'])) {
+                return ['code' => $results['track-warn-method']['error'], 'error'=>$results['erreur']];
+            }
+        $results['track-error-method']=self::makeRequest($queryParams['track-error-method'], $tempoUrl);
+        if (isset($results['track-error-method']['error'])) {
+                return ['code' => $results['track-error-method']['error'], 'error'=>$results['erreur']];
+            }
+        $results['track-debug-method']=self::makeRequest($queryParams['track-debug-method'], $tempoUrl);
+        if (isset($results['track-debug-method']['error'])) {
+                return ['code' => $results['track-debug-method']['error'], 'error'=>$results['erreur']];
+            }
 
         /** On supprime les résultats pour la maven_key. */
         $map=['maven_key'=>$mavenKey];
@@ -109,6 +138,7 @@ class BatchCollecteLoggerController extends AbstractController
         if ($delete['code']!=200) {
             return ['code' => $delete['code'], 'error'=>[$delete['erreur'], static::$request=>'deleteLoggerMavenKey']];
         }
+
         /** Création de la date du jour */
         $date = new \DateTimeImmutable();
         $date->setTimezone(new \DateTimeZone("Europe/Paris"));
@@ -116,10 +146,10 @@ class BatchCollecteLoggerController extends AbstractController
          /** On enregistre les données */
         $loggerData = [
             'maven_key' => $mavenKey,
-            'logger_info' => $results['track-info-method'],
-            'logger_warn' => $results['track-warn-method'],
-            'logger_error' => $results['track-error-method'],
-            'logger_debug' => $results['track-debug-method'],
+            'logger_info' => $results['track-info-method']['total'],
+            'logger_warn' => $results['track-warn-method']['total'],
+            'logger_error' => $results['track-error-method']['total'],
+            'logger_debug' => $results['track-debug-method']['total'],
             'mode_collecte' => $modeCollecte,
             'utilisateur_collecte' => $utilisateurCollecte,
             'date_enregistrement' => $date
