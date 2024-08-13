@@ -50,25 +50,15 @@ class BatchCollecteNoSonarControllerTest extends TestCase
         $this->noSonarRepository = $this->createMock(NoSonarRepository::class);
 
         // Stubbing la méthode getRepository pour retourner le mock de NoSonarRepository
-        $this->entityManager
-            ->method('getRepository')
-            ->willReturn($this->noSonarRepository);
+        $this->entityManager->method('getRepository')->willReturn($this->noSonarRepository);
 
         // Création du mock pour ContainerInterface
         $this->container = $this->createMock(ContainerInterface::class);
-        $this->container
-            ->method('has')
-            ->with('parameter_bag')
-            ->willReturn(true);
-        $this->container
-            ->method('get')
-            ->with('parameter_bag')
-            ->willReturn($this->parameterBag);
+        $this->container->method('has')->with('parameter_bag')->willReturn(true);
+        $this->container->method('get')->with('parameter_bag')->willReturn($this->parameterBag);
 
         // Stubbing la méthode getParameter pour retourner l'URL du sonar
-        $this->parameterBag
-            ->method('get')
-            ->with(BatchCollecteNoSonarController::$sonarUrl)
+        $this->parameterBag->method('get')->with(BatchCollecteNoSonarController::$sonarUrl)
             ->willReturn('http://localhost/api/issues/search?'.static::$parameters);
 
         // Instanciation du contrôleur
