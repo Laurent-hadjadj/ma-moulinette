@@ -159,7 +159,7 @@ class BatchCollecteNoteController extends AbstractController
         if ($toReview['code']!=200) {
             return ['code' => $toReview['code'],
                     'error'=>[$toReview['erreur'],
-                    static::$request=>'countHotspotsStatus']
+                    static::$request=>'countHotspotsStatus(TO_REVIEW)']
             ];
         }
         // Seconde requête pour obtenir le nombre de hotspots révisés
@@ -168,27 +168,26 @@ class BatchCollecteNoteController extends AbstractController
         if ($reviewed['code']!=200) {
             return ['code' => $reviewed['code'],
                     'error'=>[$reviewed['erreur'],
-                    static::$request=>'countHotspotsStatus']
+                    static::$request=>'countHotspotsStatus(REVIEWED)']
             ];
         }
-
         // Initialisation de la note
-        $note = "A";
+        $note = 'A';
         if (!empty($toReview['to_review']) && $toReview['to_review'] > 0) {
             // Calcul du ratio si 'to_review' n'est pas vide et supérieur à 0
             $ratio = intval($reviewed['reviewed']) * 100 / intval($toReview['to_review']) + intval($reviewed['reviewed']);
 
             // Détermination de la note en fonction du ratio
             if ($ratio >= 80) {
-                $note = "A";
+                $note = 'A';
             } elseif ($ratio >= 70) {
-                $note = "B";
+                $note = 'B';
             } elseif ($ratio >= 50) {
-                $note = "C";
+                $note = 'C';
             } elseif ($ratio >= 30) {
-                $note = "D";
+                $note = 'D';
             } else {
-                $note = "E";
+                $note = 'E';
             }
         }
         /** On prépare les données pour l'historique */
