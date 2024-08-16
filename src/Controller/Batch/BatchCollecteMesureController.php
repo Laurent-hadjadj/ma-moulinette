@@ -105,7 +105,6 @@ class BatchCollecteMesureController extends AbstractController
         /** Appelle le client HTTP */
         $result2 = $this->client->http("$tempoUrl/api/measures/component?$queryString");
 
-
         /** Initialise ncloc avec une valeur par défaut */
         foreach($result2['component']['measures'] as $mesure){
             if ($mesure['metric']==='ncloc'){
@@ -131,7 +130,7 @@ class BatchCollecteMesureController extends AbstractController
         /** Appelle le client HTTP */
         $result3 = $this->client->http("$tempoUrl/api/measures/component?$queryString");
 
-        $sqaleRatio = intval($result3['component']['measures'][0]['value'] ?? -1);
+        $sqaleRatio = floatval($result3['component']['measures'][0]['value'] ?? -1);
 
          /** On enregistre les données */
         $mesureData = [
