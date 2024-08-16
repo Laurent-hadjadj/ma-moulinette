@@ -33,7 +33,7 @@ class BatchCollecteLoggerControllerTest extends TestCase
     /** @var ContainerInterface&MockObject */
     private MockObject $container;
 
-     protected function setUp(): void
+    protected function setUp(): void
     {
         // Création du mock pour EntityManagerInterface
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
@@ -193,26 +193,11 @@ class BatchCollecteLoggerControllerTest extends TestCase
 
         $date=(new \DateTimeImmutable('2024-08-13T14:41:49.646488+0200'))->format(\DateTime::ATOM);
 
-        $this->client->method('http')->willReturn([
-            'code' => 200,
-            'message' => [
-                'maven_key' => 'some-maven-key',
-                'logger_info' => 1,
-                'logger_warn' => 1,
-                'logger_error' => 1,
-                'logger_debug' => 1,
-                'mode_collecte' => 'COLLECTE',
-                'utilisateur_collecte' => 'laurent.hadjadj@ma-petite-entreprise.fr',
-                'date_enregistrement' => $date
-            ],
-            'data' => [
-                'maven_key' => 'some-maven-key',
-                'logger_info' => ['total' => 1],
-                'logger_warn' => ['total' => 1],
-                'logger_error' => ['total' => 1],
-                'logger_debug' => ['total' => 1]
-            ]
-        ]);
+        $this->client->method('http')->willReturnOnConsecutiveCalls(
+            ['total' => 5],
+            ['total' => 3],
+            ['total' => 1],
+            ['total' => 0]);
 
         $result = $this->controller->BatchCollecteLogger('some-maven-key', 'COLLECTE', 'laurent.hadjadj@ma-petite-entreprise.fr');
         $expectedDateEnregistrement = $result['message']['date_enregistrement'];
