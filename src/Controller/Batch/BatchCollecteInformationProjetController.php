@@ -75,6 +75,7 @@ class BatchCollecteInformationProjetController extends AbstractController
 
         /** Appelle le client HTTP */
         $result = $this->client->http("$tempoUrl/api/project_analyses/search?$queryString");
+
         /** On vérifie si le projet existe en locale */
         $requestInformation=$this->isValidMavenKey->isValideInformation($mavenKey);
         $requestHistorique=$this->isValidMavenKey->isValideHistorique($mavenKey);
