@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\Controller\Batch;
 
 use App\Controller\Batch\BatchCollecteInformationProjetController;
-use App\Repository\InformationProjetRepository;
 use App\Service\Client;
 use App\Service\IsValideMavenKey;
 use Doctrine\ORM\EntityManagerInterface;
@@ -144,6 +143,5 @@ class BatchCollecteInformationProjetControllerTest extends TestCase
             'date' => '2024-08-09',
         ], $result);
     }
-
 
 }
