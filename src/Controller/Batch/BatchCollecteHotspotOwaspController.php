@@ -88,8 +88,8 @@ class BatchCollecteHotspotOwaspController extends AbstractController
     public function batchCollecteHotspotOwasp(string $mavenKey, string $mode_collecte, string $utilisateur_collecte, string $menace): array
     {
         /** On instancie l'EntityRepository */
-        $hotspotOwaspRepository = $this->em->getRepository(HotspotOwasp::class);
         $informationProjetRepository = $this->em->getRepository(InformationProjet::class);
+        $hotspotOwaspRepository = $this->em->getRepository(HotspotOwasp::class);
 
         /** On contrôle la variable mavenKey */
         $mavenKey = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
