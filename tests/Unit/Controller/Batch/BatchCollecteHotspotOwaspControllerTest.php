@@ -30,7 +30,6 @@ class BatchCollecteHotspotOwaspControllerTest extends TestCase
 
         // Mock ParameterBagInterface
         $this->parameterBag = $this->createMock(ParameterBagInterface::class);
-        //$this->parameterBag->method('get')->with('sonar.url')->willReturn('http://localhost');
 
         // Mock ContainerInterface
         $this->container = $this->createMock(ContainerInterface::class);
