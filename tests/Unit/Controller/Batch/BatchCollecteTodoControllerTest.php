@@ -71,7 +71,7 @@ class BatchCollecteTodoControllerTest extends TestCase
         // Création du mock pour la méthode deleteTodoMavenKey
         $this->todoRepository->method('deleteTodoMavenKey')->willReturn(['code' => 200]);
 
-        // Création du mocj pour la méthode insertTodo
+        // Création du mock pour la méthode insertTodo
         $this->todoRepository->method('insertTodo')->willReturn(['code' => 200]);
 
         // Appel de la méthode à tester
