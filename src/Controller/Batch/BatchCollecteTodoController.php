@@ -97,16 +97,16 @@ class BatchCollecteTodoController extends AbstractController
         /** Si on a trouvé des to.do dans le code alors on les dénombre */
         $todo = 0;
         $mapData=[];
-        if ($result["paging"]["total"] !== 0) {
-            foreach ($result["issues"] as $issue) {
+        if ($result['paging']['total'] !== 0) {
+            foreach ($result['issues'] as $issue) {
                 $todo++;
-                $component = str_replace("$mavenKey :", "", $issue["component"]);
-                $line = empty($issue["line"]) ? 0 : $issue["line"];
+                $component = str_replace('$mavenKey :', '', $issue['component']);
+                $line = empty($issue['line']) ? 0 : $issue['line'];
 
                 /** On créé la map */
                 $mapData[] = [
                     'maven_key' => $mavenKey,
-                    'rule' => $issue["rule"],
+                    'rule' => $issue['rule'],
                     'component' => $component,
                     'line' => $line,
                     'mode_collecte' => $modeCollecte,
