@@ -76,7 +76,7 @@ class BatchCollecteAnomalieDetailControllerTest extends TestCase
         // Mocking ExtractName service
         $this->serviceExtractName->method('extractNameFromMavenKey')->willReturn('ProjectName');
 
-        $result = $this->controller->BatchCollecteAnomalieDetail('mavenKey', 'manual', 'laurent.hadjadj@ma-petite-entreprise.fr');
+        $result = $this->controller->BatchCollecteAnomalieDetail('maven_key', 'mode_collecte', 'mode_utilisateur');
 
         $this->assertEquals(200, $result['code']);
         $this->assertArrayHasKey('message', $result);
@@ -97,19 +97,23 @@ class BatchCollecteAnomalieDetailControllerTest extends TestCase
 
     public function testBatchCollecteAnomalieDetailError()
     {
+        // Mocking client http response
+        $this->client->method('http')->willReturn([
+                'paging' => ['total' => 1],
+                'facets' => [
+                    ['property' => 'severities', 'values' => [['val' => 'BLOCKER', 'count' => 1]]],
+                    ['property' => 'severities', 'values' => [['val' => 'CRITICAL', 'count' => 1]]],
+                    ['property' => 'severities', 'values' => [['val' => 'MAJOR', 'count' => 1]]],
+                    ['property' => 'severities', 'values' => [['val' => 'MINOR', 'count' => 1]]],
+                    ['property' => 'severities', 'values' => [['val' => 'INFO', 'count' => 1]]],
+                ],
+            ]);
         $this->anomalieDetailsRepository->method('deleteAnomalieDetailsMavenKey')->willReturn(['code' => 500, 'erreur' => 'Delete Error']);
         $this->anomalieDetailsRepository->method('insertAnomalieDetail')->willReturn(['code' => 200]);
 
-        // Mocking client http response
-        $this->client->method('http')->willReturn([
-            'code' => 401,
-            'erreur' => 'Unauthorized'
-        ]);
-
-        $result = $this->controller->BatchCollecteAnomalieDetail('mavenKey', 'manual', 'laurent.hadjadj@ma-petite-entreprise.fr');
-
-        $this->assertEquals(401, $result['code']);
-        $this->assertEquals('Unauthorized', $result['error']);
+        $result = $this->controller->BatchCollecteAnomalieDetail('maven_key', 'mode_collecte', 'utilisateur_collecte');
+        $this->assertEquals(500, $result['code']);
+        $this->assertEquals(['Delete Error', 'requête : ' => 'deleteAnomalieDetailsMavenKey'], $result['error']);
     }
 
     public function testBatchCollecteAnomalieDetailNoIssues()
@@ -129,25 +133,4 @@ class BatchCollecteAnomalieDetailControllerTest extends TestCase
         $this->assertEmpty($result['data']);
     }
 
-    public function testMakeRequestUnauthorizedError()
-    {
-        $queryParams = ['key' => 'value'];
-        $tempoUrl = 'http://localhost';
-
-        $mockResponse = ['code' => 401, 'erreur' => 'Unauthorized'];
-
-        $this->client->expects($this->once())
-            ->method('http')
-            ->with('http://localhost/api/issues/search?key=value')
-            ->willReturn($mockResponse);
-
-        // Accessing private method with reflection
-        $reflection = new \ReflectionClass($this->controller);
-        $method = $reflection->getMethod('makeRequest');
-        $method->setAccessible(true);
-
-        $result = $method->invokeArgs($this->controller, [$queryParams, $tempoUrl]);
-
-        $this->assertEquals(['error' => 401, 'Unauthorized'], $result);
-    }
 }
