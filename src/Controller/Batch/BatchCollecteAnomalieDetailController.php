@@ -107,7 +107,7 @@ class BatchCollecteAnomalieDetailController extends AbstractController
         $issueTypes = ['BUG', 'VULNERABILITY', 'CODE_SMELL'];
         $pagingTotals = [];
 
-        /** On map pour chaque type les tableau de résultats qui nous interesse */
+        /** On map pour chaque type les tableau de résultats qui nous intéresse */
         foreach ($issueTypes as $type) {
             if (isset($results[$type]['paging']['total'])) {
                 $pagingTotals[$type] = $results[$type]['paging']['total'];
