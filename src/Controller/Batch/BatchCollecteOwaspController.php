@@ -174,7 +174,8 @@ class BatchCollecteOwaspController extends AbstractController
         $request=$owaspRepository->insertOwasp($map);
         if ($request['code']!=200) {
             return ['code' => $request['code'],
-                    'error' => [$request['erreur'],                            static::$request=>'insertNote']];
+                    'error' => [$request['erreur'],
+                    static::$request=>'insertNote']];
         }
 
         return ['code' => 200, 'nombre' => $total, 'message' => ['nombre' => $total], 'data' => $map];
