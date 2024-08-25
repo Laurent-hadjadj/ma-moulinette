@@ -45,11 +45,11 @@ use App\Controller\Batch\BatchCollecteActuatorController;
  */
 class CollecteController extends AbstractController
 {
-    public static $dateFormat = "Y-m-d H:i:s";
-    public static $dateFormatMini = "Y-m-d";
-    public static $europeParis = "Europe/Paris";
+    public static $dateFormat = 'Y-m-d H:i:s';
+    public static $dateFormatMini = 'Y-m-d';
+    public static $europeParis = 'Europe/Paris';
 
-    public static $erreur400 = "La requête est incorrecte (Erreur 400).";
+    public static $erreur400 = 'La requête est incorrecte (Erreur 400).';
     public static $erreur404 = "L'appel à l'API n'a pas abouti (Erreur 404).";
 
     /**
@@ -121,10 +121,10 @@ class CollecteController extends AbstractController
         $debutTraitement = new \DateTime();
         $debutTraitement->setTimezone(new \DateTimeZone(static::$europeParis));
         $collecte[]=[
-            "********************* DEBUT DU TRAITEMENT ********************",
-            "Portefeuille : ".$portefeuille,
-            "Projet : ".$maven_key,
-            "Date :".$debutTraitement->format(static::$dateFormat)
+            '********************* DEBUT DU TRAITEMENT ********************',
+            'Portefeuille : '.$portefeuille,
+            'Projet : '.$maven_key,
+            'Date :'.$debutTraitement->format(static::$dateFormat)
         ];
 
         /** On récupère les données du projet */
@@ -132,7 +132,6 @@ class CollecteController extends AbstractController
 
         /** Informations du projet (nom, type de version) */
         $informationProjet=$this->batchCollecteInformation->batchCollecteInformation($maven_key, $mode_collecte, $utilisateur_collecte);
-
         /** Tout vas bien, on peut lancer la collecte */
         if ($informationProjet['code']===200){
             $collecte[]=['01 - INFORMATION PROJET'=>$informationProjet['message']];
@@ -144,7 +143,7 @@ class CollecteController extends AbstractController
             $collecte[]=[
                 '01 - INFORMATION PROJET'=>$informationProjet['message'],
                 $informationProjet['data'],
-                "~************* FIN DU TRAITEMENT ***************~"];
+                '~************* FIN DU TRAITEMENT ***************~'];
 
             $this->logger->file($portefeuille, $collecte);
             return ['code'=>202, 'Collecte' => $collecte];
@@ -153,10 +152,9 @@ class CollecteController extends AbstractController
         /** Pour les autres messages d'erreur */
         if (!in_array($informationProjet['code'], ['200', '100'])) {
             $collecte[]=[
-                "**** ERREUR : INFORMATION PROJET ".$informationProjet['code']. "****",
+                '**** ERREUR : INFORMATION PROJET '.$informationProjet['code']. ' ****',
                 $informationProjet['message'] ?? $informationProjet['error'],
-                "~************* FIN DU TRAITEMENT ***************~"];
-
+                '~************* FIN DU TRAITEMENT ***************~'];
             $this->logger->file($portefeuille, $collecte);
             return ['code'=>500, 'Collecte' => $collecte];
         }
@@ -164,154 +162,171 @@ class CollecteController extends AbstractController
         /** Mesures du projet (ligne de code, coverage, dette, ...) */
         $mesure=$this->batchCollecteMesure->batchCollecteMesure($maven_key, $mode_collecte, $utilisateur_collecte);
         if ($mesure['code']===200){
-            $collecte[]=["02 - MESURE" => $mesure['message']];
+            $collecte[]=['02 - MESURE' => $mesure['message']];
             $mapMerged=array_merge($mapMerged, $mesure['data']);
         } else {
             $collecte[]=[
-                "**** ERREUR : MESURE ".$mesure['code']."****",
-                $mesure['message'] ?? $mesure['error']
-            ];
-            return ['code'=>500, 'Collecte' => $collecte];
+                '**** ERREUR : MESURE '.$mesure['code'].' ****',
+                $mesure['message'] ?? $mesure['error']];
+                $this->logger->file($portefeuille, $collecte);
+                return ['code'=>500, 'Collecte' => $collecte];
         }
 
         /** Notes du projet  (fiabilité, sécurité, mauvaise pratique) */
         $noteReliability=$this->batchCollecteNote->batchCollecteNote($maven_key, $mode_collecte, $utilisateur_collecte, 'reliability');
         if ($noteReliability['code']===200){
-            $collecte[]=["03 - NOTE RELIABILITY" => $noteReliability];
+            $collecte[]=['03 - NOTE RELIABILITY' => $noteReliability['message']];
             $mapMerged=array_merge($mapMerged, $noteReliability['data']);
-        } else { $collecte[]=[
-                "**** ERREUR : NOTE RELIABILITY".$noteReliability['code'], $noteReliability['message'] ?? $noteReliability['error']
-            ];
+        } else {
+            $collecte[]=[
+                '**** ERREUR : NOTE RELIABILITY '.$noteReliability['code'].' ****', $noteReliability['message'] ?? $noteReliability['error']];
+                $this->logger->file($portefeuille, $collecte);
+                return ['code'=>500, 'Collecte' => $collecte];
         }
 
         $noteSecurity=$this->batchCollecteNote->batchCollecteNote($maven_key, $mode_collecte, $utilisateur_collecte, 'security');
         if ($noteSecurity['code']===200){
-            $collecte[]=["03 - NOTE SECURITY"=> $noteSecurity['message']];
+            $collecte[]=['03 - NOTE SECURITY'=> $noteSecurity['message']];
             $mapMerged=array_merge($mapMerged, $noteSecurity['data']);
         } else { $collecte[]=[
-                "**** ERREUR : NOTE SECURITY".$noteSecurity['code'], $noteSecurity['message'] ?? $noteSecurity['error']
-            ];
+                '**** ERREUR : NOTE SECURITY '.$noteSecurity['code'].' ****', $noteSecurity['message'] ?? $noteSecurity['error']];
+                $this->logger->file($portefeuille, $collecte);
+                return ['code'=>500, 'Collecte' => $collecte];
         }
-
         $noteSqale=$this->batchCollecteNote->batchCollecteNote($maven_key, $mode_collecte, $utilisateur_collecte, 'sqale');
-        if ($noteSecurity['code']===200){
-            $collecte[]=["03 - NOTE SQALE" => $noteSqale['message']];
+        if ($noteSqale['code']===200){
+            $collecte[]=['03 - NOTE SQALE' => $noteSqale['message']];
             $mapMerged=array_merge($mapMerged, $noteSqale['data']);
         } else {
-            $collecte[]=["**** ERREUR : NOTE SQALE".$noteSqale['code'], $noteSqale['message'] ?? $noteSqale['error']
-            ];
+            $collecte[]=['**** ERREUR : NOTE SQALE '.$noteSqale['code'].' ****', $noteSqale['message'] ?? $noteSqale['error']];
+            $this->logger->file($portefeuille, $collecte);
+            return ['code'=>500, 'Collecte' => $collecte];
         }
 
         /** Signalement des Anomalies pour le projet  */
-        $anomalie=$this->batchCollecteAnomalie->batchCollecteAnomalie($maven_key, $mode_collecte, $utilisateur_collecte, $utilisateur_collecte);
+        $anomalie=$this->batchCollecteAnomalie->batchCollecteAnomalie($maven_key, $mode_collecte, $utilisateur_collecte);
         if ($anomalie['code']===200){
-            $collecte[]=["04 - ANOMALIE" => $anomalie['message']];
+            $collecte[]=['04 - ANOMALIE' => $anomalie['message']];
             $mapMerged=array_merge($mapMerged, $anomalie['data']);
         } else {
-                $collecte[]=["**** ERREUR : ANOMALIE ".$anomalie['code'],
-                $anomalie['message'] ?? $anomalie['error']
-            ];
+                $collecte[]=['**** ERREUR : ANOMALIE '.$anomalie['code'].' ****',
+                $anomalie['message'] ?? $anomalie['error']];
+                $this->logger->file($portefeuille, $collecte);
+                return ['code'=>500, 'Collecte' => $collecte];
         }
 
         /** Signalement du détails des Anomalies pour le projet  */
         $anomalieDetail=$this->batchCollecteAnomalieDetail->BatchCollecteAnomalieDetail($maven_key, $mode_collecte, $utilisateur_collecte);
         if ($anomalieDetail['code']===200){
-            $collecte[]=["05 - ANOMALIE DETAIL" => $anomalieDetail['message']];
+            $collecte[]=['05 - ANOMALIE DETAIL' => $anomalieDetail['message']];
             $mapMerged=array_merge($mapMerged, $anomalieDetail['data']);
         } else {
-                $collecte[]=["**** ERREUR : ANOMALIE DETAIL ".$anomalieDetail['code'],
-                $anomalieDetail['message'] ?? $anomalieDetail['error']
-            ];
+                $collecte[]=['**** ERREUR : ANOMALIE DETAIL '.$anomalieDetail['code'].' ****', $anomalieDetail['message'] ?? $anomalieDetail['error']];
+                $this->logger->file($portefeuille, $collecte);
+                return ['code'=>500, 'Collecte' => $collecte];
         }
         /** Signalement Hotspots pour le projet  */
         $hotspot=$this->batchCollecteHotspot->batchCollecteHotspot($maven_key, $mode_collecte, $utilisateur_collecte);
         if ($hotspot['code']===200){
-            $collecte[]=["06 - HOTSPOT" => $hotspot['message']];
+            $collecte[]=['06 - HOTSPOT' => $hotspot['message']];
             $mapMerged=array_merge($mapMerged, $hotspot['data']);
         } else {
-                $collecte[]=["**** ERREUR : HOTSPOT ".$hotspot['code'],
-                $hotspot['message'] ?? $hotspot['error']
-            ];
+                $collecte[]=['**** ERREUR : HOTSPOT '.$hotspot['code'].' ****',
+                $hotspot['message'] ?? $hotspot['error']];
+                $this->logger->file($portefeuille, $collecte);
+                return ['code'=>500, 'Collecte' => $collecte];
         }
 
         /** On calcule la note pour les hotspot */
         $noteHotspot=$this->batchCollecteNote->batchCollecteNoteHotspot($maven_key, $mode_collecte, $utilisateur_collecte);
-        if ($hotspot['code']===200){
-                $collecte[]=["07 - NOTE HOTSPOT" => $noteHotspot['message']];
+        if ($noteHotspot['code']===200){
+                $collecte[]=['07 - NOTE HOTSPOT' => $noteHotspot['message']];
                 $mapMerged=array_merge($mapMerged, $noteHotspot['data']);
             } else {
-                    $collecte[]=["**** ERREUR : NOTE HOTSPOT ".$noteHotspot['code'],
-                    $noteHotspot['message'] ?? $noteHotspot['error']
-                ];
+                    $collecte[]=['**** ERREUR : NOTE HOTSPOT '.$noteHotspot['code'].' ****',$noteHotspot['message'] ?? $noteHotspot['error']];
+                    $this->logger->file($portefeuille, $collecte);
+                    return ['code'=>500, 'Collecte' => $collecte];
             }
 
         /** Signalement du détail des Hotspots pour le projet */
         $hotspotDetails=$this->batchCollecteHotspotDetail->batchCollecteHotspotDetail($maven_key, $mode_collecte, $utilisateur_collecte);
         if ($hotspotDetails['code']===200){
-            $collecte[]=["08 - HOTSPOT DETAIL" => $hotspotDetails['message']];
+            $collecte[]=['08 - HOTSPOT DETAIL' => $hotspotDetails['message']];
         } else {
             $collecte[]=[
-                "**** ERREUR : HOTSPOT DETAIL " .$hotspotDetails['code'],
-                $hotspotDetails['message'] ?? $hotspotDetails['error']
-            ];
+                '**** ERREUR : HOTSPOT DETAIL ' .$hotspotDetails['code'].' ****',
+                $hotspotDetails['message'] ?? $hotspotDetails['error']];
+            $this->logger->file($portefeuille, $collecte);
+            return ['code'=>500, 'Collecte' => $collecte];
         }
         /** Signalement OWASP et nombre d'issue par type pour le projet  */
         $owasp=$this->batchCollecteOwasp->batchCollecteOwasp($maven_key, $mode_collecte, $utilisateur_collecte);
         if ($owasp['code']===200){
-            $collecte[]=["09 - OWASP" => $owasp['message']];
+            $collecte[]=['09 - OWASP' => ['message' => $owasp['message'], 'data' => $owasp['data']]];
         } else {
             $collecte[]=[
-                "**** ERREUR : OWASP ".$owasp['code'],
-                $owasp['message'] ?? $owasp['error']
-            ];
+                '**** ERREUR : OWASP '.$owasp['code'].' ****',
+                $owasp['message'] ?? $owasp['error']];
+            $this->logger->file($portefeuille, $collecte);
+            return ['code'=>500, 'Collecte' => $collecte];
         }
 
+        $errorEncountered = false;
         /** Signalement HotspotOwasp pour le projet */
         $owaspKeys = ['a0', 'a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7', 'a8', 'a9', 'a10'];
         foreach ($owaspKeys as $owaspKey) {
             $hotspotOwasp = $this->batchCollecteHotspotOwasp->batchCollecteHotspotOwasp($maven_key, $mode_collecte, $utilisateur_collecte, $owaspKey);
             if ($hotspotOwasp['code'] === 200) {
-                $collecte[] = ["10 - HOTSPOT OWASP" . strtoupper($owaspKey) => $hotspotOwasp['message']];
+                $collecte[] = ['10 - HOTSPOT OWASP ' . strtoupper($owaspKey) => $hotspotOwasp['message'], 'info' => $hotspotOwasp['info'],'owasp_2017' => $hotspotOwasp['owasp_2017'], 'owasp_2021' => $hotspotOwasp['owasp_2021'], 'data'=> $hotspotOwasp['data']];
             } else {
                 $collecte[]=[
-                    "**** ERREUR : HOTSPOT OWASP ".$hotspotOwasp['code'],
+                    '**** ERREUR : HOTSPOT OWASP '.$owaspKey.' --> '.$hotspotOwasp['code']. ' ****',
                     $hotspotOwasp['message'] ?? $hotspotOwasp['error']
                 ];
+                $errorEncountered = true;
+            }
+
+            if ($errorEncountered) {
+                $this->logger->file($portefeuille, $collecte);
+                return ['code' => 500, 'Collecte' => $collecte];
             }
         }
 
         /** Signalement NoSonar et suppressWarning pour les projets Java */
         $noSonar=$this->batchCollecteNoSonar->batchCollecteNoSonar($maven_key, $mode_collecte, $utilisateur_collecte);
         if ($noSonar['code']===200){
-            $collecte[]=["11 - NOSONAR" => $noSonar['message']];
+            $collecte[]=['11 - NOSONAR' => $noSonar['message']];
             $mapMerged=array_merge($mapMerged, $noSonar['data']);
         } else {
             $collecte[]=[
-                    "**** ERREUR : NOSONAR ".$noSonar['code'],
-                    $noSonar['message'] ?? $noSonar['error']
-                    ];
+                    '**** ERREUR : NOSONAR '.$noSonar['code'].' ****',
+                    $noSonar['message'] ?? $noSonar['error']];
+            $this->logger->file($portefeuille, $collecte);
+            return ['code'=>500, 'Collecte' => $collecte];
         }
 
         /** Signalement des to.do pour le projet */
         $todo=$this->batchCollecteTodo->batchCollecteTodo($maven_key, $mode_collecte, $utilisateur_collecte);
         if ($todo['code']===200){
-            $collecte[]=["12 - TODO" => $todo['message']];
+            $collecte[]=['12 - TODO' => $todo['message']];
             $mapMerged=array_merge($mapMerged, $todo['data']);
         } else {
             $collecte[]=[
-                    "**** ERREUR : TODO ".$todo['code'],
+                    '**** ERREUR : TODO '.$todo['code'].' ****',
                     $todo['message'] ?? $todo['error']
                 ];
+            $this->logger->file($portefeuille, $collecte);
+            return ['code'=>500, 'Collecte' => $collecte];
         }
 
         /** Actuator Info du projet (java spring-boot) */
         $actuatorInfo=$this->batchCollecteActuator->BatchCollecteActuatorInfo($maven_key);
         if ($actuatorInfo['code']===200 || $actuatorInfo['code']===404){
-            $collecte[]=["013 - Actuator" => $actuatorInfo['message']];
+            $collecte[]=['13 - Actuator' => $actuatorInfo['message']];
             $json=$actuatorInfo['message']['json'] ?? '{}';
         } else {
             $collecte[]=[
-                "**** ERREUR : Actuator INFO ".$actuatorInfo['code']."****",
+                '**** ERREUR : ACTUATOR INFO '.$actuatorInfo['code'].' ****',
                 $actuatorInfo['message'] ?? $actuatorInfo['error']
             ];
             $this->logger->file($portefeuille, $collecte);
@@ -321,11 +336,11 @@ class CollecteController extends AbstractController
         /** Logger dans le projet (info, warn, error, debug) */
         $logger=$this->batchCollecteLogger->BatchCollecteLogger($maven_key,$mode_collecte, $utilisateur_collecte);
         if ($logger['code']===200 || $logger['code']===404){
-            $collecte[]=["014 - LoggerActuator" => $logger['message']];
-            $mapMerged=array_merge($mapMerged, $logger['message']['data'] ?? []);
+            $collecte[]=['14 - LoggerActuator' => $logger['message']];
+            $mapMerged=array_merge($mapMerged, $logger['data'] ?? []);
         } else {
             $collecte[]=[
-                "**** ERREUR : Logger ".$logger['code']."****",
+                '**** ERREUR : LOGGER '.$logger['code'].' ****',
                 $logger['message'] ?? $logger['error']
             ];
             $this->logger->file($portefeuille, $collecte);
@@ -333,7 +348,7 @@ class CollecteController extends AbstractController
         }
 
         /** Création de la date du jour */
-        $dateHistorique = new \DateTimeImmutable('now', new \DateTimeZone("Europe/Paris"));
+        $dateHistorique = new \DateTimeImmutable('now', new \DateTimeZone('Europe/Paris'));
 
         /** Consolidation des données */
         $mapMerged=array_merge($mapMerged, [
@@ -345,29 +360,31 @@ class CollecteController extends AbstractController
         /** Enregistrement dans le table historique */
         $historique=$historiqueRepository->insertHistoriqueAjoutProjet($mapMerged, $json);
         if ($historique['code']===200){
-            $collecte[]=["14 - HISTORIQUE" => $mapMerged];
+            $collecte[]=['14 - HISTORIQUE' => $mapMerged];
         } else {
             $collecte[]=[
-                "**** ERREUR : HISTORIQUE ".$historique['code'],
+                '**** ERREUR : HISTORIQUE '.$historique['code'],
                 $historique['message'] ?? $historique['erreur']
             ];
+            $this->logger->file($portefeuille, $collecte);
+            return ['code'=>500, 'Collecte' => $collecte];
         }
 
         /** Fin du traitement */
         $finTraitement = new \DateTime();
         $finTraitement->setTimezone(new \DateTimeZone(static::$europeParis));
         $interval = $debutTraitement->diff($finTraitement);
-        $temps = $interval->format("%H:%i:%s.%f");
+        $temps = $interval->format('%H:%i:%s.%f');
         $collecte[]=[
-            "************* FIN DU TRAITEMENT ***************",
-            "Date : ".$finTraitement->format(static::$dateFormat),
+            '************* FIN DU TRAITEMENT ***************',
+            'Date : '.$finTraitement->format(static::$dateFormat),
             "Temps d'exécution : ".$temps,
-            ".",
+            '.',
         ];
 
         /** Rapport de collecte */
         $this->logger->file($portefeuille, $collecte);
-        return ['code'=>200, 'Collecte' => $collecte];
+        return ['code'=>200, 'Collecte' => $collecte, 'data' => $mapMerged];
     }
 
 }
