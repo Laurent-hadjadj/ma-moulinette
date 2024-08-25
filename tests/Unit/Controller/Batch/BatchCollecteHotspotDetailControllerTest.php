@@ -102,7 +102,6 @@ class BatchCollecteHotspotDetailControllerTest extends TestCase
             ]);
 
         $result = $this->controller->batchCollecteHotspotDetail('maven-key-123', 'manual', 'laurent.hadjadj@ma-petite-entreprise.fr');
-
         $this->assertEquals(200, $result['code']);
         $this->assertCount(1, $result['message']);
         $this->assertArrayHasKey('hotspot_key', $result['message'][0]);
