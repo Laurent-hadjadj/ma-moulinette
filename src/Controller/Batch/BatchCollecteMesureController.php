@@ -92,7 +92,8 @@ class BatchCollecteMesureController extends AbstractController
         /** Initialisation des mesures avec des valeurs par défaut */
         $lines = intval($result['measures']['lines'] ?? 0);
         $coverage = $result['measures']['coverage'] ?? 0;
-        $duplicatedLinesDensity = $result['measures']['duplicated_lines_density'] ?? 0;
+        // SonarQube doc -> duplicated_lines_density
+        $duplicatedLinesDensity = $result['measures']['duplicationDensity'] ?? 0;
         $tests = intval($result['measures']['tests'] ?? 0);
         $issues = intval($result['measures']['issues'] ?? 0);
 
