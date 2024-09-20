@@ -60,7 +60,7 @@ class ActiviteController extends AbstractController
         /** On instancie l'EntityRepository */
         $activiteEntity = $this->em->getRepository(Activite::class);
 
-        // On recupere l'anne actuelle
+        // On récupère l'année actuelle
         $dateMoins1 = new DateTime();
         $dateMoins1->setTimezone(new DateTimeZone('Europe/Paris'));
         $anneeActuelle = $dateMoins1->format('Y');
@@ -69,11 +69,8 @@ class ActiviteController extends AbstractController
         . "/api/ce/activity";
         $respond = $client->http($url);
 
-
-
-
         if ($activiteEntity->selectActivite($anneeActuelle)['request'] == [] ){
-            $this->addFlash('notice', ['type'=>'alert', 'titre'=> '[ACTIVITE-003]', 'message'=>" Votre La liste des analyses sonarQube est vide. Veuillez rafraichir la liste"]);
+            $this->addFlash('notice', ['type'=>'alert', 'titre'=> '[ACTIVITE-003]', 'message'=>" Votre La liste des analyses sonarQube est vide. Veuillez rafraîchir la liste"]);
             $request["-"] = [
                 'annee' => "-",
                 'nb_jour' => "-",
@@ -95,10 +92,10 @@ class ActiviteController extends AbstractController
         if($dateSonar > $dateBase){
             // Ici on calcule l'interval de jour entre la base et sonar
             $interval = $dateBase->diff(new DateTime($respond['tasks'][0]['executedAt']))->format('%d');
-            $this->addFlash('notice', ['type'=>'warning', 'titre'=> '[ACTIVITE-002]', 'message'=>"Vous pouvez mettre à jour  La liste des analyses sonarQube. Il y a " .$interval. " jours de retard"]);
+            $this->addFlash('notice', ['type'=>'warning', 'titre'=> '[ACTIVITE-002]', 'message'=>"Vous pouvez mettre à jour  La liste des analyses SonarQube. Il y a " .$interval. " jours de retard"]);
         }
         if($dateSonar == $dateBase){
-            $this->addFlash('notice', ['type'=>'default', 'titre'=> '[ACTIVITE-001]', 'message'=>" La liste des analyses sonarQube est à jour."]);
+            $this->addFlash('notice', ['type'=>'default', 'titre'=> '[ACTIVITE-001]', 'message'=>" La liste des analyses SonarQube est à jour."]);
         }
 
         $historiqueActiviteEntity = $this->em->getRepository(ActiviteHistorique::class);
