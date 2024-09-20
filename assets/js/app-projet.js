@@ -261,9 +261,13 @@ const selectProjet=async function() {
  */
 const afficheMessage=function(t){
   $('#callout-projet-message').removeClass('hide success alert warning primary secondary');
-  $('#callout-projet-message').addClass(t.type);
-  $('#js-reference-information').html(t.reference);
-  $('#js-message-information').html(t.message);
+  const type= t.type ?? 'alert';
+  const reference = t.reference ?? '[PROJET]';
+  const message = t.message[0] ?? t.message;
+
+  $('#callout-projet-message').addClass(type);
+  $('#js-reference-information').html(reference);
+  $('#js-message-information').html(message);
 }
 
 /**
@@ -337,7 +341,7 @@ const projetMesure=function(mavenKey) {
           dataType: 'json', data: JSON.stringify(data), contentType };
   return new Promise(resolve => {
     $.ajax(options).then(t => {
-      if (t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
+      if (t.code===http_500 || t.code===http_400 || t.code===http_401 || t.code===http_403 || t.code===http_404){
         afficheMessage(t)
         sessionStorage.setItem('collecte', 'Erreur phase 02');
         return;
@@ -1115,6 +1119,7 @@ $('.js-analyse').on('click', function () {
     /* Analyse Sécurité et Owasp. */
     await projetRating(idProject, 'reliability'); /*(03)*/
     await projetRating(idProject, 'security');    /*(03)*/
+    await projetRating(idProject, 'sqale');       /*(03)*/
 
     await projetOwasp(idProject);                 /*(04)*/
     await projetHotspot(idProject);               /*(05)*/
