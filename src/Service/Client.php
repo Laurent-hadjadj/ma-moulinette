@@ -29,7 +29,7 @@ class Client
 {
     /** Définition des constantes */
     public static $strContentType = 'application/json';
-    public static $regex = "/\s+/u";
+    public static $returnLine = "/\s+/u";
     public static $erreur400="Erreur 400 - L'URL n'est pas correcte.";
     public static $erreur401="Erreur 401 - Erreur d'Authentification. La clé n'est pas correcte.";
     public static $erreur403="Erreur 403 - Vous n’êtes pas autorisé à vous connecter.";
@@ -75,7 +75,7 @@ class Client
         $ciphers = "DEFAULT:!DH";
         $response = $this->client->request('GET', $url,
             [
-                'ciphers' => trim(preg_replace(static::$regex, " ", $ciphers)),
+                'ciphers' => trim(preg_replace(static::$returnLine, " ", $ciphers)),
                 'auth_basic' => [$user, $password], 'timeout' => 45,
                 'headers' => [
                     'Accept' => static::$strContentType,
@@ -84,7 +84,7 @@ class Client
                 ]
             ]
         );
-        /** catch les erreurs 400, 404 les erreurs 401 et eutres génére une erreur 500 */
+        /** catch les erreurs 400, 404 les erreurs 401 et autres génères une erreur 500 */
         if (200 !== $response->getStatusCode()) {
             if ($response->getStatusCode() == 400) {
                 $this->logger->ERROR(static::$erreur400);
@@ -133,7 +133,7 @@ class Client
 
         /** Options sans Auth_http_basic */
         $options=[
-            'ciphers' => trim(preg_replace(static::$regex, " ", $ciphers)),
+            'ciphers' => trim(preg_replace(static::$returnLine, " ", $ciphers)),
             'timeout' => 45,
             'headers' => [
                 'Accept' => static::$strContentType,
