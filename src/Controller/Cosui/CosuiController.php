@@ -100,12 +100,12 @@ class CosuiController extends AbstractController
     private function setup($mavenKey): string
     {
         /** On se connecte à la base pour connaître la version du dernier setup pour le projet. */
-        $reponse = $this->mr->getRepository(Repartition::class)
+        $response = $this->mr->getRepository(Repartition::class)
                     ->findBy(['mavenKey' => $mavenKey], ['setup' => 'DESC'], 1);
 
         $setup = "NaN";
-        if (!empty($reponse)) {
-            $setup = $reponse[0]->getSetup();
+        if (!empty($response)) {
+            $setup = $response[0]->getSetup();
         }
 
         return $setup;
@@ -139,7 +139,7 @@ class CosuiController extends AbstractController
         }
 
         if (!$request['infos']) {
-            return ['resultat' => false];
+            return ['result' => false];
         }
 
         /**
@@ -149,7 +149,7 @@ class CosuiController extends AbstractController
          */
         $tempo = explode("-", $request['infos'][0]['version']);
 
-        return ['resultat' => true,
+        return ['result' => true,
                 'name' => $request['infos'][0]['name'],
                 'version' => $tempo[0],
                 'type' => $tempo[1],
@@ -200,11 +200,11 @@ class CosuiController extends AbstractController
                     ];
         }
         if (!$request['reference']) {
-            return ['resultat' => false];
+            return ['result' => false];
         }
 
         $tempo = explode("-", $request['reference'][0]['version']);
-        return ['resultat' => true,
+        return ['result' => true,
                 'initial_version_application' => $tempo[0],
                 'initial_date_version' => $request['reference'][0]['date_version'],
                 'initial_note_reliability' => $request['reference'][0]['note_reliability'],
@@ -324,12 +324,14 @@ class CosuiController extends AbstractController
      */
     private function traitement($mavenKey, $setup, $type, $severity): array
     {
+        if ($setup==='NaN'){ return []; }
+
         /**
          * On récupère la liste
          * Type : BUG, VULNERABILITY, CODE_SMELL
          * Severity : BLOCKER, CRITICAL, MAJOR,..
          */
-        $liste = $this->mr->getRepository(Repartition::class, 'secondary')
+        $liste = $this->mr->getRepository(Repartition::class)
             ->findBy(
                 [
                     'type' => $type,
@@ -355,15 +357,15 @@ class CosuiController extends AbstractController
      */
     private function variation($ancienneValeur, $nouvelleValeur)
     {
-        $resultat = 0;
+        $result = 0;
         if ($ancienneValeur === 0) {
             return "equal";
         }
-        $resultat = (($nouvelleValeur - $ancienneValeur) / $ancienneValeur) * 100;
-        if ($resultat > 0) {
+        $result = (($nouvelleValeur - $ancienneValeur) / $ancienneValeur) * 100;
+        if ($result > 0) {
             $response = 'down';
         }
-        if ($resultat < 0) {
+        if ($result < 0) {
             $response = 'up';
         }
         return $response;
@@ -390,7 +392,7 @@ class CosuiController extends AbstractController
         /** On récupère les notes */
         $n = static::notes($mavenKey);
 
-        if ($n['resultat'] === false) {
+        if ($n['result'] === false) {
             $nameApplication = $versionApplication = $typeApplication = 'NaN';
             $dateApplication = '01/01/1980';
             $noteCodeSmell = $noteReliability = $noteSecurity = $noteHotspot = 'F';
@@ -438,7 +440,7 @@ class CosuiController extends AbstractController
 
         /** On récupères les indicateurs de la version de référence */
         $nn = self::reference($mavenKey);
-        if ($nn['resultat'] === false) {
+        if ($nn['result'] === false) {
             $initialVersionApplication = 'NaN';
             $initialDateApplication = '01/01/1980';
             $initialNoteCodeSmell = $initialNoteReliability = 'F';
@@ -446,7 +448,7 @@ class CosuiController extends AbstractController
             $initialBugBlocker = $initialBugCritical = $initialBugMajor = 0;
             $initialVulnerabilityBlocker = $initialVulnerabilityCritical = $initialVulnerabilityMajor = 0;
             $initialCodeSmellBlocker = $initialCodeSmellCritical = $initialCodeSmellMajor = 0;
-            $initialCouverture = $initialHotspot = 0;
+            $initialCoverage = $initialHotspot = 0;
             $initialSqaleDebtRatio = 100;
             $message = "[COSUI-002] Vous devez choisir un projet comme référence !";
             $this->addFlash('alert', $message);
@@ -470,54 +472,55 @@ class CosuiController extends AbstractController
             $initialCoverage = $nn['initial_coverage'];
             $initialSqaleDebtRatio = $nn['initial_sqale_debt_ratio'];
         }
-        /** on récupère le dernier setup pour le projet */
+
+        /** on récupère le dernier setup pour le projet, revoie NaN si il n'y en a pas. */
         $setup = self::setup($mavenKey);
 
         /** On récupère la répartition pour l'application backend */
         /** Fiabilité Blocker */
-        $fiabilite01 = self::traitement($mavenKey, $setup, 'BUG', 'BLOCKER');
-        $nombrePresentationReliabilityBlocker = $fiabilite01['frontend'];
-        $nombreMetierReliabilityBlocker = $fiabilite01['backend'];
+        $viability01 = self::traitement($mavenKey, $setup, 'BUG', 'BLOCKER');
+        $nombrePresentationReliabilityBlocker = $viability01['frontend'] ?? '--';
+        $nombreMetierReliabilityBlocker = $viability01['backend'] ?? '--';
 
         /** Fiabilité Critical */
-        $fiabilite02 = self::traitement($mavenKey, $setup, 'BUG', 'CRITICAL');
-        $nombrePresentationReliabilityCritical = $fiabilite02['frontend'];
-        $nombreMetierReliabilityCritical = $fiabilite02['backend'];
+        $viability02 = self::traitement($mavenKey, $setup, 'BUG', 'CRITICAL');
+        $nombrePresentationReliabilityCritical = $viability02['frontend'] ?? '--';
+        $nombreMetierReliabilityCritical = $viability02['backend'] ?? '--';
 
         /** Fiabilité Major */
-        $fiabilite03 = self::traitement($mavenKey, $setup, 'BUG', 'MAJOR');
-        $nombrePresentationReliabilityMajor = $fiabilite03['frontend'];
-        $nombreMetierReliabilityMajor = $fiabilite03['backend'];
+        $viability03 = self::traitement($mavenKey, $setup, 'BUG', 'MAJOR');
+        $nombrePresentationReliabilityMajor = $viability03['frontend'] ?? '--';
+        $nombreMetierReliabilityMajor = $viability03['backend'] ?? '--';
 
         /** Vulnérabilité Blocker */
-        $vulnerabilite01 = self::traitement($mavenKey, $setup, 'VULNERABILITY', 'BLOCKER');
-        $nombrePresentationVulnerabilityBlocker = $vulnerabilite01['frontend'];
-        $nombreMetierVulnerabilityBlocker = $vulnerabilite01['backend'];
+        $vulnerability01 = self::traitement($mavenKey, $setup, 'VULNERABILITY', 'BLOCKER');
+        $nombrePresentationVulnerabilityBlocker = $vulnerability01['frontend'] ?? '--';
+        $nombreMetierVulnerabilityBlocker = $vulnerability01['backend'] ?? '--';
 
         /** Vulnérabilité Critical */
-        $vulnerabilite02 = self::traitement($mavenKey, $setup, 'VULNERABILITY', 'CRITICAL');
-        $nombrePresentationVulnerabilityCritical = $vulnerabilite02['frontend'];
-        $nombreMetierVulnerabilityCritical = $vulnerabilite02['backend'];
+        $vulnerability02 = self::traitement($mavenKey, $setup, 'VULNERABILITY', 'CRITICAL');
+        $nombrePresentationVulnerabilityCritical = $vulnerability02['frontend'] ?? '--';
+        $nombreMetierVulnerabilityCritical = $vulnerability02['backend'] ?? '--';
 
         /** Vulnérabilité Major */
-        $vulnerabilite03 = self::traitement($mavenKey, $setup, 'VULNERABILITY', 'MAJOR');
-        $nombrePresentationVulnerabilityMajor = $vulnerabilite03['frontend'];
-        $nombreMetierVulnerabilityMajor = $vulnerabilite03['backend'];
+        $vulnerability03 = self::traitement($mavenKey, $setup, 'VULNERABILITY', 'MAJOR');
+        $nombrePresentationVulnerabilityMajor = $vulnerability03['frontend'] ?? '--';
+        $nombreMetierVulnerabilityMajor = $vulnerability03['backend'] ?? '--';
 
         /** Maintenabilité Bloquant*/
         $codeSmell01 = self::traitement($mavenKey, $setup, 'CODE_SMELL', 'BLOCKER');
-        $nombrePresentationCodeSmellBlocker = $codeSmell01['frontend'];
-        $nombreMetierCodeSmellBlocker = $codeSmell01['backend'];
+        $nombrePresentationCodeSmellBlocker = $codeSmell01['frontend'] ?? '--';
+        $nombreMetierCodeSmellBlocker = $codeSmell01['backend'] ?? '--';
 
         /** Maintenabilité Critical */
         $codeSmell02 = self::traitement($mavenKey, $setup, 'CODE_SMELL', 'CRITICAL');
-        $nombrePresentationCodeSmellCritical = $codeSmell02['frontend'];
-        $nombreMetierCodeSmellCritical = $codeSmell02['backend'];
+        $nombrePresentationCodeSmellCritical = $codeSmell02['frontend'] ?? '--';
+        $nombreMetierCodeSmellCritical = $codeSmell02['backend'] ?? '--';
 
         /** Maintenabilité Major */
         $codeSmell03 = self::traitement($mavenKey, $setup, 'CODE_SMELL', 'MAJOR');
-        $nombrePresentationCodeSmellMajor = $codeSmell03['frontend'];
-        $nombreMetierCodeSmellMajor = $codeSmell03['frontend'];
+        $nombrePresentationCodeSmellMajor = $codeSmell03['frontend'] ?? '--';
+        $nombreMetierCodeSmellMajor = $codeSmell03['frontend'] ?? '--';
 
         /** On calcul l'évolution pour chaque indicateur par rapport
          *  aux notes de référence.
@@ -551,7 +554,7 @@ class CosuiController extends AbstractController
         $idata2=static::note2point($initialNoteSecurity);
         $idata3=static::note2point($initialNoteHotspot);
         $idata4=static::note2point($initialNoteCodeSmell);
-        $idata5=$initialCouverture;
+        $idata5=$initialCoverage;
 
         /** On inverse la courbe, plus le résultat est proche de 100 et plus la dette est petite */
         $idata6=100-$initialSqaleDebtRatio;
