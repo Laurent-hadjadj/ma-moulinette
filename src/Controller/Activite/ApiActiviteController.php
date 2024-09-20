@@ -128,11 +128,11 @@ class ApiActiviteController extends AbstractController
         $anneeActuelle = $dateActuelle->format('Y');
 
         // On forme le tableau qui va être envoyé dans la vue
-        // Le nombre de jour pour cette annee
+        // Le nombre de jour pour cette année
         $result=$activiteEntity->premiereDate($anneeActuelle);
         $donneeTableau[$anneeActuelle]['nb_jour'] = static::calculDifferenceDate(new \DateTime($result['request'][0]['date']), $dateActuelle);
 
-        // Le nombre d'analyse pour cette annee
+        // Le nombre d'analyse pour cette année
         $result = $activiteEntity->nombreAnalyse($anneeActuelle);
         $donneeTableau[$anneeActuelle]['nb_analyse'] = $result['request']['nb_analyse'];
 
