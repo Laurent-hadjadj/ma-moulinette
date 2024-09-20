@@ -22,10 +22,6 @@ use Symfony\Bundle\SecurityBundle\Security;
 /** Gestion de accès aux API */
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-/** Gestion du temps */
-use DateTime;
-use DateTimeZone;
-
 use App\Entity\Historique;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -82,13 +78,14 @@ class ApiEnregistrementController extends AbstractController
 
         /** On créé un objet date Immutable, avec la date courante. */
         $dateEnregistrement = new \DateTimeImmutable();
-        $dateEnregistrement->setTimezone(new DateTimeZone(static::$europeParis));
+        $dateEnregistrement->setTimezone(new \DateTimeZone(static::$europeParis));
 
         /** On contrôle le mode d'utilisation */
         $utilisateur_collecte = $this->security->getUser()->getCourriel();
         $json='{}';
+        //'logger_debug'=>$data->logger_debug, 'tests'=>$data->tests, 'violations'=>$data->violations
         $map=['maven_key'=>$data->maven_key, 'analyse_key'=>$data->analyse_key,
-            'version'=>$data->version, 'date_version'=>$data->version,
+            'version'=>$data->version, 'date_version'=>$data->date_version,
             'nom_projet'=>$data->nom_projet, 'version_release'=>$data->version_release, 'version_snapshot'=>$data->version_snapshot, 'version_autre'=>$data->version_autre,
             'suppress_warning'=>$data->suppress_warning, 'no_sonar'=>$data->no_sonar,
             'todo'=>$data->todo,
