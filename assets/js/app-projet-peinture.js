@@ -199,14 +199,25 @@ export const remplissage=function(mavenKey) {
       return;
     }
 
-    /* Le projet n'a pas été trouvé dans la babase. */
-    if (t.code === http_406 || t.code === http_500){
-        afficheMessage(t);
-        return;
-      }
-      /** Il n'y a pas de logger pour ce projet, i.e ce n'est peut être pas un projet java */
-      if (t.total < 0) {
-        $('#logger-liste').html("N.C");
+      /* Le projet n'a pas été trouvé dans la babase. */
+      if (t.code === http_406 || t.code === http_500){
+          afficheMessage(t);
+          return;
+        }
+
+      //Historique
+      const logger1 = document.getElementById('js-logger-info');
+      const logger2 = document.getElementById('js-logger-warn');
+      const logger3 = document.getElementById('js-logger-error');
+      const logger4 = document.getElementById('js-logger-debug');
+
+        /** Il n'y a pas de logger pour ce projet, i.e ce n'est peut être pas un projet java */
+      if (t.total === -1 || t.total === 0) {
+        $('#logger-liste').html('N.C');
+        logger1.dataset.loggerInfo=(t.logger_info);
+        logger2.dataset.loggerWarn=(t.logger_warn);
+        logger3.dataset.loggerError=(t.logger_error);
+        logger4.dataset.loggerDebug=(t.logger_debug);
         return;
       }
 
@@ -217,17 +228,10 @@ export const remplissage=function(mavenKey) {
       $('#js-logger-error').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.logger_error));
       $('#js-logger-debug').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.logger_debug));
 
-      //Historique
-      const logger1 = document.getElementById('js-logger-info');
-      const logger2 = document.getElementById('js-logger-warn');
-      const logger3 = document.getElementById('js-logger-error');
-      const logger4 = document.getElementById('js-logger-debug');
-
       logger1.dataset.loggerInfo=(t.logger_info);
       logger2.dataset.loggerWarn=(t.logger_warn);
       logger3.dataset.loggerError=(t.logger_error);
       logger4.dataset.loggerDebug=(t.logger_debug);
-
     });
 
 
@@ -311,7 +315,7 @@ export const remplissage=function(mavenKey) {
     const t9 = document.getElementById('coverage');
     const t9a = document.getElementById('ratio-dette-technique');
     const t10 = document.getElementById('duplicated-lines-density');
-    const t11 = document.getElementById('tests-unitaires');
+    const t11 = document.getElementById('tests');
     const t12 = document.getElementById('violations');
 
     t7.dataset.nombreLigne=(t.lines);
@@ -320,7 +324,7 @@ export const remplissage=function(mavenKey) {
     t9a.dataset.sqaleDebtRatio=(t.sqaleDebtRatio);
     t10.dataset.duplicatedLinesDensity=(t.duplicated_lines_density);
     t11.dataset.tests=(t.tests);
-    t12.dataset.violations=(t.issues);
+    t12.dataset.violations=t.issues;
   });
 
   /**
