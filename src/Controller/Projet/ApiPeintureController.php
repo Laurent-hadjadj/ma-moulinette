@@ -328,6 +328,7 @@ class ApiPeintureController extends AbstractController
         /** On récupère la dernière version et sa date de publication */
         $map=['maven_key'=>$data->maven_key];
         $request=$mesuresRepository->selectMesuresVersionLast($map);
+
         if ($request['code']!=200) {
             return $response->setData([
                 'code' => $request['code']], Response::HTTP_OK);
@@ -688,8 +689,8 @@ class ApiPeintureController extends AbstractController
     }
 
     /**
-     * [Description for peintureProjetNosonar]
-     * Récupère les exclusions nosonar et suppressWarning pour Java
+     * [Description for peintureProjetNoSonar]
+     * Récupère les exclusions noSonar et suppressWarning pour Java
      *
      * @param Request $request
      *
@@ -700,7 +701,7 @@ class ApiPeintureController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/peinture/projet/nosonar', name: 'peinture_projet_nosonar', methods: ['POST'])]
-    public function peintureProjetNosonarDetails(Request $request): response
+    public function peintureProjetNoSonarDetails(Request $request): response
     {
         /** On instancie l'entityRepository */
         $noSonarRepository = $this->em->getRepository(NoSonar::class);
@@ -831,6 +832,17 @@ class ApiPeintureController extends AbstractController
         );
     }
 
+    /**
+     * [Description for peintureProjetLogger]
+     *
+     * @param Request $request
+     *
+     * @return response
+     *
+     * Created at: 12/09/2024 21:57:18 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     #[Route('/api/peinture/projet/logger', name: 'peinture_projet_logger', methods: ['POST'])]
     public function peintureProjetLogger(Request $request): response
     {
@@ -863,7 +875,6 @@ class ApiPeintureController extends AbstractController
         }
         /** Il n'y a pas de logger  */
         $loggerInfo = $loggerWarn = $loggerError = $loggerDebug = $total = -1;
-
         if (!empty($logger['liste'])) {
             $loggerInfo = $logger['liste'][0]['logger_info'];
             $loggerWarn = $logger['liste'][0]['logger_warn'];
@@ -876,7 +887,6 @@ class ApiPeintureController extends AbstractController
                     intval($loggerError, 10) +
                     intval($loggerDebug, 10);
         }
-
         return $response->setData(
             ['code'=>200, 'total' => $total,
                 'logger_info' => $loggerInfo,
