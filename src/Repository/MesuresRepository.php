@@ -46,7 +46,7 @@ class MesuresRepository extends ServiceEntityRepository
         try {
                 $sql = "SELECT project_name as name, ncloc, language_distribution,
                             lines, coverage, sqale_debt_ratio,
-                            duplicated_lines_density as duplication, tests, issues
+                            duplicated_lines_density, tests, issues
                         FROM ma_moulinette.mesures
                         WHERE maven_key=:maven_key
                         ORDER BY date_enregistrement DESC LIMIT 1";
