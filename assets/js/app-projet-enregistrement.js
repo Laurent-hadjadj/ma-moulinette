@@ -86,8 +86,8 @@ export const enregistrement=function(mavenKey) {
   const loggerWarn=jsLoggerWarn.dataset.loggerWarn;
   const jsLoggerError = document.getElementById('js-logger-error');
   const loggerError=jsLoggerError.dataset.loggerError;
-  const jsLoggerdebug = document.getElementById('js-logger-debug');
-  const loggerDebug=jsLoggerdebug.dataset.loggerDebug;
+  const jsLoggerDebug = document.getElementById('js-logger-debug');
+  const loggerDebug=jsLoggerDebug.dataset.loggerDebug;
 
   /**
    * On récupère les informations du projet :
