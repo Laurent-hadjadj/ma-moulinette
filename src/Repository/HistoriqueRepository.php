@@ -188,53 +188,56 @@ class HistoriqueRepository extends ServiceEntityRepository
     public function selectUnionHistoriqueProjet($map):array {
         try {
                 /** On prépare la requête */
-                    $sql = "SELECT * FROM (
+                // -- Sélection de la version initiale (la plus ancienne)
+                // -- Sélection des 10 dernières versions (triées par date décroissante)
+                // -- Tri final : version initiale en premier, puis les autres par date croissante
+                $sql="SELECT *
+                FROM (
+                    (
                         SELECT
-                        nom_projet AS nom,
-                        date_version AS date,
-                        version,
-                        suppress_warning,
-                        no_sonar,
-                        nombre_bug AS bug,
-                        nombre_vulnerability AS faille,
-                        nombre_code_smell AS mauvaise_pratique,
-                        nombre_hotspot,
-                        frontend AS presentation,
-                        backend as metier,
-                        autre,
-                        note_reliability AS reliability,
-                        note_security AS security,
-                        note_hotspot,
-                        note_sqale AS maintainability,
-                        initial
+                            nom_projet AS nom,
+                            date_version AS date,
+                            version,
+                            suppress_warning,
+                            no_sonar,
+                            nombre_bug AS bug,
+                            nombre_vulnerability AS faille,
+                            nombre_code_smell AS mauvaise_pratique,
+                            nombre_hotspot,
+                            frontend AS presentation,
+                            backend AS metier,
+                            autre,
+                            note_reliability AS reliability,
+                            note_security AS security,
+                            note_hotspot,
+                            note_sqale AS maintainability,
+                            initial
                         FROM ma_moulinette.historique
-                        WHERE maven_key=:maven_key AND initial=:initial_true
-                    ) AS initial_true
-                    UNION
-                    SELECT * FROM (
+                        WHERE maven_key = :maven_key AND initial = :initial_true
+                    ) UNION ALL (
                         SELECT
-                        nom_projet as nom,
-                        date_version as date,
-                        version,
-                        suppress_warning,
-                        no_sonar,
-                        nombre_bug as bug,
-                        nombre_vulnerability as faille,
-                        nombre_code_smell as mauvaise_pratique,
-                        nombre_hotspot,
-                        frontend as presentation,
-                        backend as metier,
-                        autre,
-                        note_reliability as reliability,
-                        note_security as security,
-                        note_hotspot,
-                        note_sqale as maintainability,
-                        initial
+                            nom_projet AS nom,
+                            date_version AS date,
+                            version,
+                            suppress_warning,
+                            no_sonar,
+                            nombre_bug AS bug,
+                            nombre_vulnerability AS faille,
+                            nombre_code_smell AS mauvaise_pratique,
+                            nombre_hotspot,
+                            frontend AS presentation,
+                            backend AS metier,
+                            autre,
+                            note_reliability AS reliability,
+                            note_security AS security,
+                            note_hotspot,
+                            note_sqale AS maintainability,
+                            initial
                         FROM ma_moulinette.historique
-                        WHERE maven_key=:maven_key AND initial=:initial_false
-                    ) AS initial_false
-                    ORDER BY date DESC
-                    LIMIT :limit";
+                        WHERE maven_key = :maven_key AND initial = :initial_false
+                        ORDER BY date_version DESC
+                        LIMIT :limit)) AS versions
+                    ORDER BY date ASC";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(':maven_key', $map['maven_key']);
                     $stmt->bindValue(':initial_true', 0);
@@ -262,29 +265,26 @@ class HistoriqueRepository extends ServiceEntityRepository
     public function selectUnionHistoriqueAnomalie($map):array {
         try {
             /** On prépare la requête */
-            $sql = "SELECT * FROM
-                    (
-                        SELECT date_version AS date,
-                            nombre_anomalie_bloquant AS bloquant,
-                            nombre_anomalie_critique AS critique,
-                            nombre_anomalie_majeur AS majeur,
-                            nombre_anomalie_mineur AS mineur
+            $sql = "SELECT *
+                    FROM (
+                        (SELECT date_version AS date,
+                                nombre_anomalie_bloquant AS bloquant,
+                                nombre_anomalie_critique AS critique,
+                                nombre_anomalie_majeur AS majeur,
+                                nombre_anomalie_mineur AS mineur
                         FROM ma_moulinette.historique
-                        WHERE maven_key = :maven_key AND initial = :initial_true
-                    ) AS initial_data
-                    UNION ALL
-                    SELECT * FROM
-                    (
-                        SELECT date_version AS date,
+                        WHERE maven_key = :maven_key AND initial = :initial_true)
+                        UNION ALL
+                        (SELECT date_version AS date,
                             nombre_anomalie_bloquant AS bloquant,
                             nombre_anomalie_critique AS critique,
                             nombre_anomalie_majeur AS majeur,
                             nombre_anomalie_mineur AS mineur
                         FROM ma_moulinette.historique
                         WHERE maven_key = :maven_key AND initial = :initial_false
-                        LIMIT :limit
-                    ) AS non_initial_data
-                    ORDER BY date DESC;";
+                        ORDER BY date_version DESC
+                        LIMIT :limit)) AS versions
+                    ORDER BY date ASC";
             $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $stmt->bindValue(':maven_key', $map['maven_key']);
                 $stmt->bindValue(':initial_true', 0);
@@ -313,35 +313,34 @@ class HistoriqueRepository extends ServiceEntityRepository
     public function selectUnionHistoriqueDetails($map):array {
         try {
                 /** On prépare la requête */
-                $sql = "SELECT * FROM
-                        (
-                            SELECT date_version AS date, version,
-                                bug_blocker, bug_critical, bug_major,
-                                bug_minor, bug_info,
-                                vulnerability_blocker, vulnerability_critical,
-                                vulnerability_major, vulnerability_minor,
-                                vulnerability_info,
-                                code_smell_blocker, code_smell_critical,
-                                code_smell_major, code_smell_minor,
-                                code_smell_info, initial
-                            FROM ma_moulinette.historique
-                            WHERE maven_key=:maven_key AND initial=:initial_true
-                        ) AS initial_data
-                            UNION SELECT * FROM
-                        (
-                            SELECT date_version AS date, version,
-                                bug_blocker, bug_critical, bug_major,
-                                bug_minor, bug_info,
-                                vulnerability_blocker, vulnerability_critical,
-                                vulnerability_major, vulnerability_minor,
-                                vulnerability_info,
-                                code_smell_blocker, code_smell_critical,
-                                code_smell_major, code_smell_minor,
-                                code_smell_info, initial
-                            FROM ma_moulinette.historique
-                            WHERE maven_key=:maven_key AND initial=:initial_false
-                        ) AS non_initial_data
-                        ORDER BY date DESC LIMIT :limit";
+                $sql = "SELECT *
+                FROM (
+                    (SELECT date_version AS date, version,
+                            bug_blocker, bug_critical, bug_major,
+                            bug_minor, bug_info,
+                            vulnerability_blocker, vulnerability_critical,
+                            vulnerability_major, vulnerability_minor,
+                            vulnerability_info,
+                            code_smell_blocker, code_smell_critical,
+                            code_smell_major, code_smell_minor,
+                            code_smell_info, initial
+                    FROM ma_moulinette.historique
+                    WHERE maven_key = :maven_key AND initial = :initial_true)
+                    UNION ALL
+                        (SELECT date_version AS date, version,
+                            bug_blocker, bug_critical, bug_major,
+                            bug_minor, bug_info,
+                            vulnerability_blocker, vulnerability_critical,
+                            vulnerability_major, vulnerability_minor,
+                            vulnerability_info,
+                            code_smell_blocker, code_smell_critical,
+                            code_smell_major, code_smell_minor,
+                            code_smell_info, initial
+                        FROM ma_moulinette.historique
+                        WHERE maven_key = :maven_key AND initial = :initial_false
+                        ORDER BY date_version DESC
+                        LIMIT :limit)) AS versions
+                    ORDER BY date ASC";
 
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(':maven_key', $map['maven_key']);
