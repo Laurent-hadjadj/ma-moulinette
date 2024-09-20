@@ -1,12 +1,13 @@
 @echo off
-@mode con: cols=160 lines=70
-@color 0f
-@CHCP 65001
-@cls
-@echo ###                                                                           ###
-@echo ### Atention le fichier doit être encodé en UTF-8 avec une séquence de fin de ###
-@echo ### ligne Windows (CRLF).                                                     ###
-@echo ###                                                                           ###
+mode con: cols=160 lines=70
+color 0f
+CHCP 65001
+cls
+echo:
+echo [93m###                                                                         ###[0m
+echo [93m### Atention le fichier doit être encodé en UTF-8 avec une séquence         ###[0m
+echo [93m### de fin de ligne Windows (CRLF).                                         ###[0m
+echo [93m###                                                                         ###[0m
 echo:
 
 set filename=lecteur.bat
@@ -19,57 +20,60 @@ for %%d in (C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (
 )
 
 :found
-@if %found%==0 (
-@echo Le fichier %filename% n'a pas été trouvé sur les disques disponibles.
-@goto :exit
+if %found%==0 (
+echo Le fichier %filename% n'a pas été trouvé sur les disques disponibles.
+goto :exit
 ) else (
-@call  %%d:\environnement\lecteur.bat
+call  %%d:\environnement\lecteur.bat
 )
 
-@set VERSION=2024-05-24 v1.3.1
-@title Laurent HADJADJ - version %VERSION%
-@cls
-@echo ".. __  __             __  __             _              _   _       "
-@echo "  |  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___ "
-@echo "  | |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \"
-@echo "  | |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/"
-@echo "  |_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|"
-@echo:
-@echo    Laurent HADJADJ
-@echo    https://github.com/Laurent-hadjadj/ma-moulinette
-@echo    © 2024 - CC BY-SA-NC 4.0
-@echo:
+set VERSION=2024-05-24 v1.3.1
+title Laurent HADJADJ - version %VERSION%
+cls
+echo ".. __  __             __  __             _              _   _       "
+echo "  |  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___ "
+echo "  | |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \"
+echo "  | |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/"
+echo "  |_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|"
+echo:
+echo    Laurent HADJADJ
+echo    https://github.com/Laurent-hadjadj/ma-moulinette
+echo    © 2024 - CC BY-SA-NC 4.0
+echo [93m###                                                                         ###[0m
+echo [93m### Atention le fichier doit être encodé en UTF-8 avec une séquence         ###[0m
+echo [93m### de fin de ligne Windows (CRLF).                                         ###[0m
+echo [93m###                                                                         ###[0m
 
-@rem  Laurent HADJADJ - 2023-02-13 v1.0.0
-@rem  Laurent HADJADJ - 2024-02-11 v1.1.0
-@rem  Laurent HADJADJ - 2024-05-13 v1.2.0 - Ajout du lecteur
-@rem  Laurent HADJADJ - 2024-05-24 v1.3.0 - tests du lecteur par défaut
-@rem  Laurent HADJADJ - 2024-08-01 v1.3.1 - Correction de l'en-tête sur 80 colonnes
+echo:
+echo Env       	: dev
+echo lecteur     : %LECTEUR%
+echo version:    : %VERSION%
+echo Symfony   	: 6.4.7
+echo Symfony-cli : 5.8.2
+echo Php       	: 8.3.0-NTS
+echo nodejs    	: 20.17.1
+echo:
 
-@echo:
-@echo Env       	: dev
-@echo lecteur     : %LECTEUR%
-@echo version:    : %VERSION%
-@echo Symfony   	: 6.4.7
-@echo Symfony-cli : 5.8.2
-@echo Php       	: 8.3.0-NTS
-@echo nodejs    	: 18.17.1
-@echo:
+echo Génére le rapport de couverture des tests unitaires.
+echo Le rapport se trouve dans le dossier ma-moulinette/reports
 
-@echo Génére le rapport de couverture des tests unitaires.
-@echo Le rapport se trouve dans le dossier ma-moulinette/reports
+set app=%lecteur%\environnement
+set php=%app%\0_toolz\php-8.3.0-NTS\
+set nodejs=%app%\0_toolz\node-18.17.1\
 
-@set app=%lecteur%\environnement
-@set php=%app%\0_toolz\php-8.3.0-NTS\
-@set nodejs=%app%\0_toolz\node-18.17.1\
+set HTTP_PROXY=
+set HTTPS_PROXY=
 
-@set HTTP_PROXY=
-@set HTTPS_PROXY=
+set PATH=%app%\symfony-cli\current;%php%;%nodejs%;%PATH%
 
-@set PATH=%app%\symfony-cli\current;%php%;%nodejs%;%PATH%
-
-@cd %app%\ma-moulinette
+cd %app%\ma-moulinette
 
 php -dxdebug.mode=coverage bin/phpunit --coverage-clover=reports/phpunit-coverage-result.xml --coverage-html=reports --log-junit=reports/phpunit-execution-result.xml
 
 :exit
+rem  Laurent HADJADJ - 2023-02-13 v1.0.0
+rem  Laurent HADJADJ - 2024-02-11 v1.1.0
+rem  Laurent HADJADJ - 2024-05-13 v1.2.0 - Ajout du lecteur
+rem  Laurent HADJADJ - 2024-05-24 v1.3.0 - tests du lecteur par défaut
+rem  Laurent HADJADJ - 2024-08-01 v1.3.1 - Correction de l'en-tête sur 80 colonnes
+rem  Laurent HADJADJ - 2024-09-19 v1.3.2 - Mise à jour de la version de nodejS 20.17.1

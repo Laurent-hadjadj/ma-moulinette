@@ -13,6 +13,11 @@ parameters:
     sonar.token: '%env(SONAR_TOKEN)%'
     sonar.user: '%env(SONAR_USER)%'
     sonar.password: '%env(SONAR_PASSWORD)%'
+
+    sonar.activity.token: '%env(SONAR_ACTIVITY_TOKEN)%'
+    sonar.activity.user: '%env(SONAR_ACTIVITY_USER)%'
+    sonar.activity.password: '%env(SONAR_ACTIVITY_USER)%'
+
     sonar.profiles: '%env(SONAR_PROFILES)%'
     sonar.organization: '%env(SONAR_ORGANIZATION)%'
     nombre.favori: '%env(NOMBRE_FAVORI)%'
