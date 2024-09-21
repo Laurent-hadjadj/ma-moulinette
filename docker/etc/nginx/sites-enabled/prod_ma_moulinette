@@ -1,0 +1,51 @@
+# prod_ma_moulinette
+geo $limit {
+    default 1;
+    10.0.0.0/8 0;
+    172.16.0.0/24 0;
+    192.168.0.0/24 0;
+}
+
+map $limit $limit_key {
+    0 "";
+    1 $binary_remote_addr;
+}
+
+limit_req_zone $limit_key zone=req_zone:10m rate=5r/s;
+
+server {
+    # TODO - mettre à jour le nom du dossier de l'application
+    root /var/www/prod_ma_moulinette/public;
+    # TODO - mettre à jour le nom du serveur
+    server_name ma-moulinette.*;
+
+    # On ajoute un identifiant dynamique serveur
+    # Il faut avoir le module HttpEchoModule ou le module HttpRequestIdModule
+    #add_header X-Request-ID $request_id;
+
+    # Avoid clickjacking
+    add_header X-Frame-Options SAMEORIGIN;
+
+    # Disable content-type sniffing on some browsers
+    add_header X-Content-Type-Options nosniff;
+
+    # Protection XSS
+    add_header X-XSS-Protection "1; mode=block";
+
+    # Enable the Cross-site scripting (XSS) filter
+    add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' https://ma-moulinette.*;" always;
+
+    charset UTF-8;
+
+    # TODO - Ajout des Certificats pour le mode HTTP/2
+    #include conf.d/ssl_cert_ma_moulinette_set.inc;
+
+    # TODO - Ajoute les règles SSL
+    #include conf.d/ssl_set.inc;
+
+    # Ajoute les règles symfony
+    include conf.d/prod_ma-moulinette_set.inc;
+
+    # Ajoute les règles du cache
+    include conf.d/cache_set.inc;
+}

@@ -1,0 +1,82 @@
+# Definition des services pour la stack Symfony
+services:
+  # ma base de données postgreSQL
+  database:
+    platform: ${platform}
+    container_name: "postgresql"
+    image: "postgres:${postgresql_version}"
+    restart: "unless-stopped"
+    shm_size: "128mb"
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      - "TZ=Europe/Paris"
+      - "LANG=fr_FR.utf8"
+      - "POSTGRES_INITDB_ARGS=${postgresql_initdb}"
+      - "POSTGRES_PASSWORD=${postgresql_password}"
+      - "POSTGRES_USER=${postgresql_user}"
+      - "POSTGRES_DB=${postgresql_db}"
+    volumes:
+      - "${root_volume}/postgresql:/var/lib/postgresql/data"
+    networks:
+      - backend-network
+
+  php:
+    platform: ${platform}
+    container_name: php-fpm
+    environment:
+      - "TZ=Europe/Paris"
+      - "LANG=fr_FR.utf8"
+    build:
+      dockerfile: php-custom.dockerfile
+      context: .
+    volumes:
+      - "${root_volume}/web-app:/var/www/"
+    restart: unless-stopped
+    depends_on:
+      - database
+    networks:
+      - frontend-network
+      - backend-network
+
+  nginx:
+    platform: ${platform}
+    image: nginx:${nginx_version}
+    container_name: nginx
+    environment:
+      - "TZ=Europe/Paris"
+      - "LANG=fr_FR.utf8"
+    volumes:
+      - "${root_volume}/web-app:/var/www/"
+      - "${root_volume}/log:/var/log/nginx/"
+      - "${root_volume}/opt:/opt:rw"
+      - "${root_volume}/etc/letsencrypt:/etc/letsencrypt:ro"
+      - "${root_volume}/etc/nginx/ssl/dhparam.pem:/etc/nginx/ssl/dhparam.pem:ro"
+      - "${root_volume}/etc/nginx/conf.d/:/etc/nginx/conf.d/:ro"
+      - "${root_volume}/etc/nginx/sites-enabled/:/etc/nginx/sites-enabled/:ro"
+      - "${root_volume}/etc/nginx/nginx.conf:/etc/nginx/nginx.conf:ro"
+      - "${root_volume}/etc/nginx/mime.types:/etc/nginx/mime.types:ro"
+    ports:
+      - "8080:80"
+      - "8443:443"
+    restart: unless-stopped
+    depends_on:
+      - php
+      - database
+    networks:
+      - frontend-network
+      - backend-network
+
+# Définition des réseaux
+networks:
+  frontend-network:
+  backend-network:
+
+## penses-bête :)++
+# construire l'image et démarrer : docker-compose up --build -d
+# vérifier que le port 80 est libre : netstat -ano | findstr :80
+# logs nginx : docker-compose logs nginx
+# logs php : docker-compose logs php
+# logs postgresql :docker-compose logs database
+# arret des containers : docker compose down
+# démarrage des containers : docker compose up -d
