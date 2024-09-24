@@ -68,9 +68,9 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
         // On cherche si l'utilisateur existe !
         return new Passport(
             /**
-             * Si l'utilisateur n'existe pas on génére une exception.
+             * Si l'utilisateur n'existe pas on génère une exception.
              * Si l'utilisateur existe mais que son statut est 'FALSE',
-             *  i.e. l'attribut 'actif', on génére une excption.
+             *  i.e. l'attribut 'actif', on génère une exception.
              * Si l'utilisateur existe et son statut est à "TRUE" et
              *  que le mot de passe est correcte :
              * 1 - On ajoute le support CSRF ;
