@@ -514,8 +514,8 @@ class HomeController extends AbstractController
                  */
                 $titre = '[ACCUEIL]';
                 $message = 'Vous devez mettre à jour le référentiel local pour les';
-                $referentiel='PROJETS';
-                $this->addFlash('info', ['type'=>'primary', 'titre'=>$titre, 'message'=>$message, 'referentiel'=>$referentiel]);
+                $ref='PROJETS';
+                $this->addFlash('info', ['type'=>'primary', 'titre'=>$titre, 'message'=>$message, 'referentiel'=>$ref]);
             }
 
             /**
@@ -537,11 +537,11 @@ class HomeController extends AbstractController
                  */
                 $titre = '[ACCUEIL]';
                 $message = 'Vous devez mettre à jour le référentiel local pour les';
-                $referentiel='PROFILS';
-                $this->addFlash('info', ['type'=>'primary', 'titre'=>$titre, 'message'=>$message, 'referentiel'=>$referentiel]);
+                $ref='PROFILS';
+                $this->addFlash('info', ['type'=>'primary', 'titre'=>$titre, 'message'=>$message, 'referentiel'=>$ref]);
             }
             /**
-             * Si le referentiel sonar est égale de celui sur le serveur et que la table
+             * Si le référentiel sonar est égale de celui sur le serveur et que la table
              * de properties n'est pas à jour, on met à jour la table.
              */
             if ($profilSonar == $profilBd  && $profilSonar !== $properties['profil_sonar']) {
@@ -610,6 +610,10 @@ class HomeController extends AbstractController
             'public' => $public, 'private' => $private,
             'nombre_projet' => $projetBd,
             'nombre_tag' => $tag['nombre'][0]['tag'],
+            'marque_entreprise_short' => $this->getParameter('marque.entreprise.short'),
+            'marque_entreprise_long' => $this->getParameter('marque.entreprise.long'),
+            'logo_entreprise' => $this->getParameter('logo.entreprise'),
+            'env' => $this->getParameter('environnement'),
             'version' => $versionApp, 'dateCopyright' => \date('Y')];
 
             return $this->render('home/index.html.twig', $render);
