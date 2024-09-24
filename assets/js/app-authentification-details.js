@@ -23,14 +23,14 @@ import {serveur} from './properties.js';
  * description
  * On active ou non la mise à jour du mot de passe.
  *
- * @type {"#js-indentifiant-oui-non"}
+ * @type {"#js-identifiant-oui-non"}
  */
-$('#js-indentifiant-oui-non').on('click', function () {
+$('#js-identifiant-oui-non').on('click', function () {
   let data={}, init=0;
-  /** On effece les messages */
+  /** On efface les messages */
   $('#mise-a-jour-message').html('');
 
-  const ouinon = $('#js-indentifiant-oui-non').is(':checked');
+  const ouinon = $('#js-identifiant-oui-non').is(':checked');
 
   /** Par défaut on bloque la mise à jour du mot de passe. */
   data={ 'mode': 'null', 'init': 0 };
@@ -52,7 +52,7 @@ $('#js-indentifiant-oui-non').on('click', function () {
         }
         const message='<span class="color-rouge">Vous devez vous reconnecter pour changer votre mot de passe.</span>';
         if (t.code===http_200) {
-          const r=document.getElementById('js-indentifiant-oui-non');
+          const r=document.getElementById('js-identifiant-oui-non');
           r.dataset.init=init;
         }
         if (init===1) {
@@ -66,10 +66,10 @@ $('#js-indentifiant-oui-non').on('click', function () {
 });
 
 /** On récupère la valeur de data-init et on met à jour le switch */
-const r=document.getElementById('js-indentifiant-oui-non');
+const r=document.getElementById('js-identifiant-oui-non');
 const init=r.dataset.init;
   if (init>=un) {
-    $('#js-indentifiant-oui-non').trigger('click');
+    $('#js-identifiant-oui-non').trigger('click');
   }
 
   /** On efface les messages */
