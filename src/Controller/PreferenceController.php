@@ -18,7 +18,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-/** Securité */
+/** Sécurité */
 use Symfony\Bundle\SecurityBundle\Security;
 
 /** Accès aux tables SLQLite*/
@@ -49,7 +49,7 @@ class PreferenceController extends AbstractController
 
     /**
      * [Description for apiPreferenceStatut]
-     * On met à jour le statut pour la categorie
+     * On met à jour le statut pour la catégorie
      *
      * @param Security $security
      * @param Client $client
@@ -64,7 +64,7 @@ class PreferenceController extends AbstractController
     #[Route('/api/preference/statut', name: 'api_preference_statut', methods:'POST')]
     public function apiPreferenceStatut(Security $security, Request $request): Response
     {
-        /** On créé on objet de reponse HTTP */
+        /** On créé on objet de response HTTP */
         $response = new JsonResponse();
 
         /** On récupère le filtre de recherche */
@@ -76,7 +76,7 @@ class PreferenceController extends AbstractController
         $preference = $security->getUser()->getPreference();
         $courriel = $security->getUser()->getCourriel();
 
-        /** On récupéres les préférences */
+        /** On récupères les préférences */
         $statut = $preference['statut'];
         $projet = $preference['projet'];
         $favori = $preference['favori'];
@@ -134,7 +134,7 @@ class PreferenceController extends AbstractController
         $preference = $security->getUser()->getPreference();
         $courriel = $security->getUser()->getCourriel();
 
-        /** On récupéres les préférences */
+        /** On récupères les préférences */
         $statut = $preference['statut'];
         $projet = $preference['projet'];
         $version = $preference['version'];
@@ -195,13 +195,13 @@ class PreferenceController extends AbstractController
         $preference = $security->getUser()->getPreference();
         $courriel = $security->getUser()->getCourriel();
 
-        /** On récupéres les préférences */
+        /** On récupères les préférences */
         $statut = $preference['statut'];
         $projet = $preference['projet'];
         $favori = $preference['favori'];
         $bookmark = $preference['bookmark'];
 
-        /** Le modele
+        /** Le modèle
          * "version":[ {"mavenKey":["version","version"]}, {"mavenKey":["version"]} ],
         */
 
@@ -235,7 +235,6 @@ class PreferenceController extends AbstractController
                 WHERE courriel='$courriel';";
         $trim = trim(preg_replace(static::$regex, " ", $sql));
         $this->em->getConnection()->prepare($trim)->executeStatement();
- 
 
         /** On crée un objet de response JSON 'o'=>$object,'n'=>$nouvelleListeVersion,'t'=>$trim */
         $response = new JsonResponse();
@@ -245,7 +244,7 @@ class PreferenceController extends AbstractController
 
     /**
      * [Description for apiPreferenceCategorie]
-     * Renvoi le statut et les préferences d'une catégorie
+     * Renvoi le statut et les préférences d'une catégorie
      *
      * @param Security $security
      * @param Client $client
@@ -258,7 +257,7 @@ class PreferenceController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/preference/categorie', name: 'api_preference_categorie', methods:'GET')]
-    public function apiPreferenceCategori(Security $security, Client $client, Request $request): Response
+    public function apiPreferenceCategorie(Security $security, Client $client, Request $request): Response
     {
         /** On bind les arguments passés depuis l'URL */
         $categorie = $request->get('categorie');
