@@ -33,6 +33,16 @@ parameters:
     csrf.salt: '%env(CSRF_SALT)%'
     path.audit: '%env(PATH_AUDIT)%'
 
+    # Copyright | Entreprise
+    marque.entreprise.short: '%env(MARQUE_ENTREPRISE_SHORT)%'
+    marque.entreprise.long: '%env(MARQUE_ENTREPRISE_LONG)%'
+
+    # Environnement
+    environnement: '%env(ENVIRONNEMENT)%'
+
+    # Logo Entreprise
+    logo.entreprise: '%env(LOGO_ENTREPRISE)%'
+
     # RGA
     rgaa: '%env(RGAA)%'
 
