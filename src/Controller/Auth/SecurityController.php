@@ -43,7 +43,7 @@ class SecurityController extends AbstractController
     }
 
     /**
-     * [Description for relogin]
+     * [Description for re-login]
      *
      * @param AuthenticationUtils $authenticationUtils
      *
@@ -53,8 +53,8 @@ class SecurityController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/', name: 're_login')]
-    public function relogin(AuthenticationUtils $authenticationUtils): Response
+    #[Route('/', name: 'reLogin')]
+    public function reLogin(AuthenticationUtils $authenticationUtils): Response
     {
         /**
          * Si on est déjà connecté
@@ -66,6 +66,10 @@ class SecurityController extends AbstractController
         } else {
             return $this->render('auth/login.html.twig', [
                 'error' => $authenticationUtils->getLastAuthenticationError(),
+                'marque_entreprise_short' => $this->getParameter('marque.entreprise.short'),
+                'marque_entreprise_long' => $this->getParameter('marque.entreprise.long'),
+                'logo_entreprise' => $this->getParameter('logo.entreprise'),
+                'env' => $this->getParameter('environnement'),
                 'version' => $this->getParameter('version'),
                 'dateCopyright' => \date('Y')
             ]);
@@ -86,11 +90,19 @@ class SecurityController extends AbstractController
     #[Route('/login', name: 'login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
-        return $this->render('auth/login.html.twig', [
-            'error' => $authenticationUtils->getLastAuthenticationError(),
-            'version' => $this->getParameter('version'),
-            'dateCopyright' => \date('Y')
+        if ($this->getUser()->getUserIdentifier()) {
+            return $this->redirectToRoute('home');
+        } else {
+            return $this->render('auth/login.html.twig', [
+                'error' => $authenticationUtils->getLastAuthenticationError(),
+                'marque_entreprise_short' => $this->getParameter('marque.entreprise.short'),
+                'marque_entreprise_long' => $this->getParameter('marque.entreprise.long'),
+                'logo_entreprise' => $this->getParameter('logo.entreprise'),
+                'env' => $this->getParameter('environnement'),
+                'version' => $this->getParameter('version'),
+                'dateCopyright' => \date('Y')
         ]);
+        }
     }
 
 
