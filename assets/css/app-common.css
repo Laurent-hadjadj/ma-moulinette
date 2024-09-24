@@ -19,42 +19,54 @@
 @media (width <= 20em) {
   /* marge du logo en small */
   .logo {
-    margin-left: 10px;
     margin-top: 10px;
+    margin-left: 10px;
   }
 
-  /* Taille du logo */
-  .logo-svg {
-    width: 50px;
-    height: 50px;
+  .marque-mm {
+    width: 44px;
+    height: 44px;
   }
 
-  .ma-moulinette-container {
-    margin-top: 7px;
+  .ma-moulinette {
     margin-left: 0.5rem;
-    margin-bottom: 0;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
   }
 
   .version {
     margin-left: 0.5rem;
-    font-size: 0.7rem;
+    margin-top: -0.9rem;
+    font-size: 1rem;
+  }
+
+  .label-custom {
+    margin-left: 0.5rem;
+    padding: 0.1rem;
+    font-size:0.7rem;
   }
 
   .logout-svg {
-    width: 23px;
-    height: 24px;
+    margin-top: 0.8rem;
+    width: 27px;
+    height: 27px;
+    margin-right: 0.1rem;
+    margin-left: -0.2rem;
   }
+
+  .e-dashboard-svg { margin-left: 0.1rem; }
 
   .e-dashboard-svg,
   .preferences-svg,
   .utilisateurs-svg,
   .batch-svg {
-    margin-top: 0.8rem;
-    width: 28px;
-    height: 28px;
+    margin-top: 0.7rem;
+    width: 32px;
+    height: 31px;
     margin-right: 0.1rem;
   }
+
+  /* On remonte le menu utilisateur */
+  .menu-identifiant { margin-top: -0.5rem; }
 
   /* Défini la taille de la police par défaut */
   .open-sans { font-size: 0.9rem; }
@@ -67,6 +79,12 @@
     transform: translateX(-2%);
   }
 
+  /* bas de page - on un bottom 0 sur certaines pages */
+  .footer-fixed {
+    position: fixed;
+    bottom: 0;
+  }
+
   .footer-bottom-links {
     flex-direction: column;
     align-content: space-around;
@@ -77,48 +95,52 @@
 @media (20.025em <= width <= 22em) {
   /* marge du logo en small */
   .logo {
-    margin-left: 10px;
     margin-top: 10px;
+    margin-left: 10px;
   }
 
-  .logo-svg {
-    width: 54px;
-    height: 54px;
+  .marque-mm {
+    width: 49px;
+    height: 49px;
   }
 
-  .ma-moulinette-container {
-    margin-top: 7px;
+  .ma-moulinette {
     margin-left: 0.5rem;
-    margin-bottom: 0;
-    font-size: 0.9rem;
+    font-size: 1rem;
   }
 
   .version {
     margin-left: 0.5rem;
-    font-size: 0.9rem;
+    margin-top: -0.9rem;
+    font-size: 1rem;
   }
 
+  .label-custom {
+    margin-left: 0.5rem;
+    padding: 0.1rem;
+    font-size:0.7rem;
+  }
 
   .logout-svg {
-    width: 28px;
-    height: 28px;
+    margin-top: 0.7rem;
     margin-right: 0.1rem;
+    width: 29px;
+    height: 29px;
   }
 
   .utilisateurs-svg,
-  .batch-svg {
-    margin-top: 1.4rem;
-    margin-right: 0.3rem;
+  .batch-svg,
+  .e-dashboard-svg,
+  .preferences-svg {
+    margin-top: 0.7rem;
+    margin-left: 0.1rem;
+    margin-right: 0.1rem;
     width: 35px;
     height: 35px;
   }
 
-  .e-dashboard-svg,
-  .preferences-svg {
-    margin-top: 1.4rem;
-    width: 35px;
-    height: 35px;
-  }
+  /* On remonte le menu utilisateur */
+  .menu-identifiant { margin-top: -0.5rem; }
 
   .open-sans { font-size: 0.9rem; }
   .body-for-sticky { padding-bottom: 2rem; }
@@ -129,6 +151,12 @@
     transform: translateY(-5%);
     transform: translateX(-2%);
   }
+
+    /* bas de page - on un bottom 0 sur certaines pages */
+    .footer-fixed {
+      position: fixed;
+      bottom: 0;
+    }
 
   .footer-bottom-links {
     flex-direction: column;
@@ -139,42 +167,52 @@
 /* Mobile */
 @media (22.025em <= width <= 30em) {
   .logo {
-    margin-left: 5px;
-    margin-top: 5px;
+    margin-top: 10px;
+    margin-left: 10px;
   }
 
-  .logo-svg {
-    width: 80px;
-    height: 80px;
+  .marque-mm {
+    width: 50px;
+    height: 50px;
   }
 
-  .ma-moulinette-container {
-    margin-top: 7px;
+  .ma-moulinette {
     margin-left: 0.5rem;
-    margin-bottom: 0;
     font-size: 1rem;
   }
 
   .version {
     margin-left: 0.5rem;
+    margin-top: -0.9rem;
     font-size: 1rem;
   }
 
-  .logout-svg {
-    margin-right: 0.2rem;
-    width: 28px;
-    height: 29px;
+  .label-custom {
+    font-size:0.7rem;
+    margin-left: 0.4rem;
   }
+
+  .logout-svg {
+    margin-top: 0.8rem;
+    margin-right: 0.2rem;
+    width: 31px;
+    height: 34px;
+  }
+
+  .e-dashboard-svg { margin-left: 0.4rem; }
 
   .e-dashboard-svg,
   .preferences-svg,
   .utilisateurs-svg,
   .batch-svg {
-    margin-top: 2rem;
+    margin-top: 0.8rem;
     margin-right: 0.1rem;
-    width: 37px;
-    height: 31px;
+    width: 39px;
+    height: 41px;
   }
+
+  /* On remonte le menu utilisateur */
+  .menu-identifiant { margin-top: -0.5rem; }
 
   .open-sans { font-size: 0.9rem; }
   .body-for-sticky { padding-bottom: 2rem; }
@@ -185,6 +223,12 @@
     transform: translateY(-5%);
     transform: translateX(-2%);
   }
+
+    /* bas de page - on un bottom 0 sur certaines pages */
+    .footer-fixed {
+      position: fixed;
+      bottom: 0;
+    }
 
   .footer-bottom-links {
     flex-direction: column;
@@ -194,46 +238,60 @@
 
 /* Mobile */
 @media (30.025em <= width <= 40em) {
-  .logo {
-    margin-left: 10px;
-    margin-top: 10px;
-    justify-content: space-around;
-  }
-
   .ma-moulinette-container {
-    margin-left: 0.4rem;
-    margin-top: 0.8rem;
-    margin-bottom: 1.5rem;
-    line-height: 1.4rem;
+    margin-top: 0.5rem;
+    justify-content: space-between;
   }
 
-  .ma-moulinette { font-size: 1.7rem; }
+  .logo {
+    margin-top: 10px;
+    margin-left: 10px;
+  }
+
+  .marque-mm {
+    width: 72px;
+    height: 72px;
+  }
+
+  .ma-moulinette {
+    margin-left: 0.5rem;
+    font-size: 1.6rem;
+  }
+
+  .version {
+    margin-left: 0.5rem;
+    margin-top: -0.9rem;
+    font-size: 1rem;
+  }
+
+  .label-custom {
+    margin-left: 0.4rem;
+    font-size:0.7rem;
+  }
 
   .logout-svg {
-    margin-left: 0.1rem;
-    margin-right: 0.2rem;
-    width: 32px;
-    height: 36px;
+    margin-right: 0.4rem;
+    width: 38px;
+    height: 39px;
   }
+
+  .e-dashboard-svg { margin-left: 0.4rem; }
 
   .e-dashboard-svg,
   .preferences-svg,
   .utilisateurs-svg,
   .batch-svg {
-    margin-top: 0.8rem;
-    margin-right: 0.5rem;
-    width: 38px;
-    height: 38px;
+    margin-top: 1rem;
+    margin-right: 0.2rem;
+    width: 42px;
+    height: 42px;
   }
 
-  .version {
-    margin-left: 0.4rem;
-    margin-top: -1.5rem;
-    font-size: 1rem;
-  }
+  /* On remonte le menu utilisateur */
+  .menu-identifiant { margin-top: -0.5rem; }
 
   .open-sans { font-size: 0.9rem; }
-  .body-for-sticky { padding-bottom: 2rem; }
+  .body-for-sticky { padding-bottom: 4rem; }
 
   .alert-callout-border .close-button {
     top: 5%;
@@ -242,9 +300,10 @@
     transform: translateX(-2%);
 }
 
-  .logo-svg {
-    width: 90px;
-    height: 90px;
+  /* bas de page - on un bottom 0 sur certaines pages */
+  .footer-fixed {
+    position: fixed;
+    bottom: 0;
   }
 
   .footer-bottom-links {
@@ -254,61 +313,72 @@
 }
 
 /* Tablette */
-@media (40.025em <= width <= 64em) {
+@media (40em <= width <= 64em) {
+  .ma-moulinette-container { margin-top: -1rem; }
+
   .logo {
-    margin-left: 10px;
     margin-top: 10px;
-    justify-content: space-around;
+    margin-left: 10px;
   }
 
-  .logo-svg {
-    width: 60px;
-    height: 60px;
-  }
+  .marque-entreprise { width: 120px; }
 
-  .ma-moulinette-container {
-    margin-top: 0.4rem;
-    margin-left: 0.5rem;
-    margin-bottom: 1.5rem;
-    line-height: 1.4rem;
+  .marque-mm {
+    width: 56px;
+    height: 56px;
+    margin-bottom: 0.4rem;
   }
 
   .ma-moulinette {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
+    margin-left: 0.5rem;
   }
 
   .version {
-    margin-left: 0.5rem;
-    margin-top: -1.5rem;
     font-size: 1rem;
+    margin-top: -1.5rem;
+    margin-left: 0.5rem;
   }
 
   .logout-svg {
-    margin-right: 0.2rem;
-    width: 36px;
-    height: 45px;
+    margin-top: 1.1rem;
+    margin-right: 0.4rem;
+    width: 38px;
+    height: 42px;
   }
 
   .batch-svg {
-    margin-top: 0.8rem;
-    margin-right: 0.2rem;
-    margin-left: 0.2rem;
-    width: 46px;
+    width: 44px;
+    height: 44px;
+  }
+
+  .e-dashboard-svg {
+    width: 49px;
+    height: 44px;
+    padding-left: 0.3rem;
+  }
+
+  .preferences-svg {
+    width: 42px;
+    height: 44px;
+  }
+
+  .utilisateurs-svg {
+    width: 44px;
     height: 44px;
   }
 
   .e-dashboard-svg,
   .preferences-svg,
-  .utilisateurs-svg {
+  .utilisateurs-svg,
+  .batch-svg {
     margin-top: 0.8rem;
     margin-right: 0.2rem;
     margin-left: 0.3rem;
-    width: 46px;
-    height: 46px;
   }
 
   .open-sans { font-size: 1rem; }
-  .body-for-sticky { padding-bottom: 2rem; }
+  .body-for-sticky { padding-bottom: 4rem; }
 
   .alert-callout-border .close-button {
     top: 10%;
@@ -331,54 +401,59 @@
 
 /* Desktop */
 @media (64.025em <= width <= 90em) {
+  .ma-moulinette-container { margin-top: -1rem; }
+
   .logo {
-    margin-left: 10px;
     margin-top: 10px;
-    justify-content: space-around;
+    margin-left: 10px;
   }
 
-  .logo-svg {
-    width: 90px;
-    height: 90px;
+  .marque-entreprise { width: 122px; }
+
+  .marque-mm {
+    width: 56px;
+    height: 56px;
+    margin-bottom: 0.4rem;
   }
 
-
-  .ma-moulinette-container {
-    margin-top: 0.4rem;
-    margin-left: 0.5rem;
-    margin-bottom: 1.5rem;
-    line-height: 1.8rem;
+  .ma-moulinette {
+    font-size: 1.9rem;
+    padding-left: 0.4rem;
+    margin-top: 0.5rem;
   }
 
-  .ma-moulinette { font-size: 1.9rem; }
-
-  /* Desktop */
   .version {
-    margin-left: 0.5rem;
     margin-top: -1.5rem;
     font-size: 1.1rem;
+    padding-left: 0.4rem;
   }
 
   .logout-svg {
-    margin-left: 0.5rem;
-    margin-right: 0.5rem;
-    width: 40px;
-    height: 45px;
+    margin-top: 1.1rem;
+    margin-right: 0.4rem;
+    width: 50px;
+    height: 50px;
   }
 
-  .e-dashboard-svg,
+  .e-dashboard-svg {
+    margin-top: 1.1rem;
+    margin-left: 0.5rem;
+    width: 53px;
+    height: 53px;
+  }
+
   .preferences-svg,
   .utilisateurs-svg,
   .batch-svg {
     margin-top: 1.1rem;
     margin-right: 0.2rem;
     margin-left: 0.4rem;
-    width: 46px;
-    height: 46px;
+    width: 53px;
+    height: 53px;
   }
 
   .open-sans { font-size: 1rem; }
-  .body-for-sticky { padding-bottom: 4rem; }
+  .body-for-sticky { padding-bottom: 6rem; }
 
   .alert-callout-border .close-button {
     top: 10%;
@@ -401,52 +476,57 @@
 
 /* Desktop 1920 */
 @media (90.025em <= width <= 120em) {
+  .ma-moulinette-container { margin-top: -1rem; }
+
   .logo {
-    margin-left: 10px;
     margin-top: 10px;
-    justify-content: space-around;
+    margin-left: 10px;
   }
 
-  .logo-svg {
-    width: 120px;
-    height: 120px;
+  .marque-entreprise { width: 122px; }
+
+  .marque-mm {
+    width: 74px;
+    height: 66px;
   }
 
-  .ma-moulinette-container {
-    margin-top: 0.4rem;
+  .ma-moulinette {
+    font-size: 1.9rem;
     margin-left: 0.5rem;
-    margin-bottom: 1.5rem;
-    line-height: 1.8rem;
   }
-
-  .ma-moulinette { font-size: 2rem; }
 
   .version {
-    margin-left: 0.5rem;
+    font-size: 1.1rem;
     margin-top: -1.5rem;
-    font-size: 1.2rem;
+    margin-left: 0.5rem;
   }
 
   .logout-svg {
-    margin-left: 0.5rem;
-    margin-right: 0.5rem;
-    width: 40px;
-    height: 45px;
+    margin-top: 1.1rem;
+    margin-right: 0.4rem;
+    width: 50px;
+    height: 52px;
   }
 
-  .e-dashboard-svg,
+  .e-dashboard-svg {
+    margin-top: 1.1rem;
+    margin-left: 0.5rem;
+    width: 55px;
+    height: 55px;
+  }
+
   .preferences-svg,
   .utilisateurs-svg,
   .batch-svg {
     margin-top: 1.1rem;
     margin-right: 0.2rem;
     margin-left: 0.4rem;
-    width: 46px;
-    height: 46px;
+    width: 55px;
+    height: 55px;
   }
 
   .open-sans { font-size: 1rem; }
-  .body-for-sticky { padding-bottom: 4rem; }
+  .body-for-sticky { padding-bottom: 6rem; }
 
   .alert-callout-border .close-button {
     top: 10%;
@@ -469,52 +549,58 @@
 
 /* Desktop 4K */
 @media (120.025em <= width <= 160em) {
+  .ma-moulinette-container { margin-top: -1rem; }
+
   .logo {
-    margin-left: 10px;
     margin-top: 10px;
-    justify-content: space-around;
+    margin-left: 10px;
   }
 
-  .logo-svg {
-    width: 120px;
-    height: 120px;
+  .marque-entreprise { width: 122px; }
+
+  .marque-mm {
+    width: 80px;
+    height: 71px;
+    margin-bottom: 0.4rem;
   }
 
-  .ma-moulinette-container {
-    margin-top: 0.4rem;
+  .ma-moulinette {
+    font-size: 1.9rem;
     margin-left: 0.5rem;
-    margin-bottom: 1.5rem;
-    line-height: 1.8rem;
   }
-
-  .ma-moulinette { font-size: 2rem; }
 
   .version {
-    margin-left: 0.5rem;
+    font-size: 1.1rem;
     margin-top: -1.5rem;
-    font-size: 1.2rem;
+    margin-left: 0.5rem;
   }
 
   .logout-svg {
-    margin-top: 1.5rem;
-    margin-left: 1rem;
-    width: 32px;
-    height: 32px;
+    margin-top: 1.1rem;
+    margin-right: 0.4rem;
+    width: 50px;
+    height: 52px;
   }
 
-  .e-dashboard-svg,
+  .e-dashboard-svg {
+    margin-top: 1.1rem;
+    margin-left: 0.5rem;
+    width: 55px;
+    height: 55px;
+  }
+
   .preferences-svg,
   .utilisateurs-svg,
   .batch-svg {
     margin-top: 1.1rem;
     margin-right: 0.2rem;
-    margin-left: 1rem;
-    width: 46px;
-    height: 46px;
+    margin-left: 0.4rem;
+    width: 55px;
+    height: 55px;
   }
 
   .open-sans { font-size: 1.2rem; }
-  .body-for-sticky { padding-bottom: 4rem; }
+  .body-for-sticky { padding-bottom: 8rem; }
 
   .alert-callout-border .close-button {
     top: 10%;
@@ -546,21 +632,30 @@ body { background: #eee; }
 
 
 /** désactive la selection de texte sur un élément */
-.noselect {
+.no-select {
   -webkit-touch-callout: none; /* iOS Safari */
   user-select: none;           /* Non-prefixed version, currently
                                   supported by Chrome, Edge, Opera and Firefox */
 }
 
-/** Suppression du style inline */
+/** Définition des couleurs et des background */
 .color-blanc { color: #fff; }
 .color-noir { color: #000; }
+.color-gris { color: #444; }
 .color-bleu { color: #00445b; }
-.color-rouge { color: #d4333f; }
+.color-rouge { color: #a00a14; }
+.color-vert { color: #037505; }
+
 .background-color-blanc { background-color: #eee; }
+.background-color-noir { background-color: #000; }
+.background-color-gris { background-color: #444; }
+.background-color-bleu { background-color: #00445b; }
+.background-color-rouge { background-color: #a00a14; }
+.background-color-vert { background-color: #037505; }
 
 .margin-bottom-05 { margin-bottom: 0.5rem; }
 .margin-left-2 { margin-left: 2rem; }
+.margin-left-1 { margin-left: 1rem; }
 
 /** link */
 .source-link {
@@ -601,19 +696,12 @@ body { background: #eee; }
 .alert-callout-border.warning { border-left-color: #ffae00; }
 .alert-callout-border.warning strong { color: #ffae00; }
 
-/** HoneyPot */
-input.email {
-  height: 0;
-  margin: 0;
-  text-decoration: none;
-  border: none;
-  opacity: 0;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 0;
-  z-index: -1;
+/* Titre + badge container */
+.ma-moulinette-container {
+  display: flex;
+  flex-direction: column;
 }
+.logo-container { display: flex; }
 
 /* Titre */
 .ma-moulinette {
@@ -627,23 +715,8 @@ input.email {
 /** Version de l'application */
 .version { color: #00445b; }
 
-/* Chargement du logo */
-.logo {
-  display: flex;
-  justify-content: space-around;
-}
-
-/* Définition du logo SVG */
-.logo-svg {
-  fill: #00445b;
-  shape-rendering: geometricprecision;
-  text-rendering: geometricprecision;
-  image-rendering: optimizequality;
-  fill-rule: evenodd;
-  clip-rule: evenodd;
-}
-
-/* Définition du logout SVG */
+/* Définition des SVG */
+.logo-svg,
 .logout-svg,
 .utilisateurs-svg,
 .batch-svg {
@@ -670,6 +743,15 @@ input.email {
   stroke-width: 4px;
 }
 
+/* Affiche le titre du sous menu */
+.container-information {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.menu-custom{ width: 100px; }
+
 /* breadcrumbs */
 .breadcrumbs li { font-size: 1rem; }
 .breadcrumbs a { color: #850385; }
@@ -682,14 +764,22 @@ input.email {
 }
 
 .menu-identifiant-titre:hover,
-.menu-indentifiant-item:hover { color: #e7552c; }
+.menu-identifiant-item:hover { color: #e7552c; }
 
 /** Ajoute un bouton fermer à la fenêtre modale */
 #fermer-identifiant-details {
   color: #fff;
   background-color: #00445b;
 }
+
 #fermer-identifiant-details:hover { background-color: #006182; }
+
+.information-svg {
+  fill: #00445b;
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+}
 
 /**
   * gestion du switch pour la mise à jour du mot de passe
@@ -718,16 +808,18 @@ input:checked ~ .switch-paddle-identifiant { background-color: #00445b; }
   min-height: 100%;
 }
 
-/* bas de page - conainter */
-.footer {
+/* bas de page - container */
+.footer { width: 100%; }
+
+.footer-color {
   background-color: #00445b;
   color: #fff;
   width: 100%;
 }
 
 .footer-padding {
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
+  padding-top: 0.1rem;
+  padding-bottom: 0.1rem;
 }
 
 .footer-bottom-links { display: flex; }
@@ -735,6 +827,13 @@ input:checked ~ .switch-paddle-identifiant { background-color: #00445b; }
 .footer-bottom-links a:hover { color: #ed7d20; }
 
 /* Gestion des crédits */
+
+/* container de copyright */
+.container-copyright {
+  display: flex;
+  place-content: stretch space-between;
+  align-items: center;
+}
 
 /* Copyright */
 .copyright {
@@ -749,63 +848,19 @@ input:checked ~ .switch-paddle-identifiant { background-color: #00445b; }
   font-size: 0.9rem;
 }
 
-/** custom menu */
+/** custom menu pour les informations utilisateur */
 .dropdown.menu > li.is-dropdown-submenu-parent > a {
-  padding-right: 1rem;
+  padding-right: 1.5rem;
   margin-right: 1em;
   color: #00445b;
 }
 
-.is-dropdown-submenu { background-color: #f2f2f2; }
+.is-dropdown-submenu { background-color: #fff; }
 
-/* Les notes */
-.note-a,
-.note-b,
-.note-c,
-.note-d,
-.note-e,
-.note-z {
-  font-size: 0.9rem;
-  color: #fff;
-}
-
-.note-a { background-color: #0a0; }    /* Note de couleur A */
-.note-b { background-color: #b0d513; } /* Note de couleur B */
-.note-c { background-color: #eabe06; } /* Note de couleur C */
-.note-d { background-color: #ed7d20; } /* Note de couleur D */
-.note-e { background-color: #d4333f; } /* Note de couleur E */
-.note-z { background-color: #00445b; } /* Note de couleur Z */
-
-.couleur-vert { color: #048404 !important; }
-.couleur-orange { color: #c75e08 !important; }
-.couleur-rouge { color: #bf0815 !important; }
-.couleur-bordeaux { color: #771404 !important; }
-
-
-/* dégradation */
-.down {
-  content: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBmaWxsPSIjOTcxYzA5Ij4KICA8cGF0aCBkPSJNMjUxLjQgMS4zYy0yLjMgMS4zLTE0Ny4yIDE0Mi44LTE1MS44IDE0OC4yLTMuNCA0LTMuOSA5LjktMS4yIDE0LjEgMy40IDUuMSA1LjUgNS40IDQ0LjEgNS40SDE3OGwuMiA5NS4zLjMgOTUuMyAyLjcgNC4xYzUuNCA4LjEgMi4yIDcuOCA3My44IDggNDkuOC4yIDY0IDAgNjYtMSAxLjQtLjcgMy0yLjggMy43LTQuNy45LTIuNiAxLjItMjggMS4yLTEwMC4zbC4xLTk2LjdoMzkuNWM0Mi45IDAgNDQuNi0uMiA0OC4xLTUuNCAyLjctNC4yIDIuMi0xMC4xLTEuMi0xNC4xLTQuNS01LjItMTQ4LjMtMTQ1LjgtMTUxLjMtMTQ3LjctMy0yLjEtNi43LTIuMi05LjctLjV6TTE4OC4zIDM5Ni42Yy0zLjMgMS42LTYuMyA2LjYtNi4zIDEwLjQgMCAzLjEgMi41IDcuNSA1LjQgOS40IDIuMyAxLjQgOC45IDEuNiA2OC42IDEuNiA3Mi43IDAgNjkuMi4zIDcyLjYtNi4xIDEuOC0zLjYgMS44LTYuMy0uMi0xMC40LTMuMS02LjctMS4yLTYuNS03Mi42LTYuNS01Ni4zIDAtNjQuNy4yLTY3LjUgMS42ek0xODcuOSA0NDMuNWMtMi43IDEuNC01LjkgNi45LTUuOSA5LjkgMCAuOS42IDMuMiAxLjQgNS4xIDIuOCA2LjcuNCA2LjUgNzIuNiA2LjUgNzIuMiAwIDY5LjguMiA3Mi42LTYuNSAxLjgtNC40IDEuOC01LjktLjItMTAuMS0zLjItNi42LS41LTYuNC03Mi42LTYuNC01NC41LjEtNjUuNy4zLTY3LjkgMS41ek0xODYuOCA0OTEuM2MtNSA0LjItNS45IDguNS0zLjIgMTQuMiAzLjEgNi43IDEuMiA2LjUgNzIuNCA2LjVzNjkuMy4yIDcyLjQtNi41YzItNC4xIDItNi44LjItMTAuNC0zLjQtNi40LjEtNi4xLTcyLjgtNi4xaC02Ni4zbC0yLjcgMi4zeiIvPgo8L3N2Zz4=");
-  cursor: none;
-  margin-bottom: -0.2rem;
-  width: 28px;
-  height: 28px;
-}
-
-/** amélioration **/
-.up {
-  content: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBmaWxsPSIjMTg3ZTNkIj48cGF0aCBkPSJNMTg4LjMgMS42QzE4NSAzLjIgMTgyIDguMiAxODIgMTJjMCAzLjEgMi41IDcuNSA1LjQgOS40IDIuMyAxLjQgOC45IDEuNiA2OC42IDEuNiA3Mi43IDAgNjkuMi4zIDcyLjYtNi4xIDEuOC0zLjYgMS44LTYuMy0uMi0xMC40LTMuMS02LjctMS4yLTYuNS03Mi42LTYuNS01Ni4zIDAtNjQuNy4yLTY3LjUgMS42ek0xODcuOCA0OC42Yy01LjMgMi44LTcuMiA5LjgtNC4zIDE1LjQgMy4yIDYuMiAxLjEgNiA3Mi41IDZzNjkuMy4yIDcyLjUtNmMzLTUuNyAxLTEyLjctNC41LTE1LjUtNC4zLTIuMi0xMzIuMS0yLjItMTM2LjIuMXpNMTg2LjggOTYuM2MtNSA0LjItNS45IDguNS0zLjIgMTQuMiAzLjEgNi43IDEuMiA2LjUgNzIuNCA2LjVzNjkuMy4yIDcyLjQtNi41YzItNC4xIDItNi44LjItMTAuNC0zLjQtNi40LjEtNi4xLTcyLjgtNi4xaC02Ni4zbC0yLjcgMi4zek0xOTAuNSAxNDEuMmMtNSAxLjgtOC4yIDQuNi0xMC40IDkuMS0yLjEgNC4zLTIuMSA1LjEtMi4xIDk4LjV2OTQuMWwtMzYuOS4zYy0zNS43LjMtMzcuMS40LTM5LjggMi40LTMuNyAyLjgtNS41IDguMS00LjIgMTIuNy43IDIuOCAxNi4xIDE4LjMgNzYuNCA3Ny4zIDQxLjUgNDAuNiA3Ni41IDc0LjQgNzcuNyA3NS4xIDIuOSAxLjYgNi43IDEuNiA5LjYgMCAxLjItLjcgMzYuMi0zNC41IDc3LjctNzUuMSA1NC4zLTUzLjEgNzUuNy03NC43IDc2LjUtNzcgMS40LTQuNC0uNS0xMC4yLTQuMy0xMy0yLjgtMi00LTIuMS00My44LTIuNGwtNDAuOS0uMy0uMS05Ni43YzAtNzIuMi0uMy05Ny42LTEuMi0xMDAuMi0uNy0xLjktMi4zLTQtMy43LTQuNy0zLjMtMS43LTEyNS44LTEuNy0xMzAuNS0uMXoiLz48L3N2Zz4=");
-  cursor: none;
-  margin-bottom: -0.2rem;
-  width: 28px;
-  height: 28px;
-}
-
-.equal {
-  content: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBmaWxsPSIjMDA0NDViOyI+CjxwYXRoIGQ9Ik0yOC4yIDg0LjFjLTEwLjggMS44LTIwLjkgOS42LTI1LjUgMTkuN0MuNiAxMDguNC41IDEwOS42LjUgMTUwdjQxLjVsMi42IDUuNWMzLjcgOCA4LjEgMTIuNSAxNS43IDE2LjJsNi43IDMuM2g0NjFsNS41LTIuNmM4LTMuNyAxMi41LTguMSAxNi4yLTE1LjdsMy4zLTYuN1YxNTBjMC00MC40LS4xLTQxLjYtMi4yLTQ2LjItMi44LTYuMi05LjctMTMuNC0xNS40LTE2LjMtMi42LTEuNC03LjUtMi45LTExLTMuNS04LTEuMi00NDYuOS0xLjItNDU0LjcuMXpNMjMuOSAyOTYuNmMtNi44IDIuMS0xNCA3LjItMTcuNyAxMi44LTYuMSA5LjItNi4zIDExLjItNiA1NC44LjMgNDQuNi4yIDQzLjkgOC45IDUzLjMgNS4zIDUuOCAxMS43IDkuMSAyMCAxMC41IDguOSAxLjQgNDQ0LjkgMS40IDQ1My44IDAgMy41LS42IDguNC0yLjEgMTEtMy41IDUuNy0yLjkgMTIuNi0xMC4xIDE1LjQtMTYuMyAyLjEtNC42IDIuMi01LjggMi4yLTQ2LjJ2LTQxLjVsLTMuMy02LjdjLTMuNy03LjYtOC4yLTEyLTE2LjItMTUuN2wtNS41LTIuNi0yMjktLjJjLTE5Ni4xLS4xLTIyOS43IDAtMjMzLjYgMS4zeiIvPgo8L3N2Zz4=");
-  cursor: none;
-  margin-bottom: -0.6rem;
-  width: 28px;
-  height: 28px;
+.dropdown.menu > li.opens-right > .is-dropdown-submenu {
+  top: 80%;
+  right: 10px;
+  left: auto;
 }
 
 /* loader - volume */
