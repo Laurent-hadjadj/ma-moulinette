@@ -143,6 +143,10 @@ class ResetPasswordController extends AbstractController
         return $this->render('auth/reset.html.twig', [
             'resetPasswordForm' => $form->createView(),
             'courriel'=>$courriel,
+            'marque_entreprise_short' => $this->getParameter('marque.entreprise.short'),
+            'marque_entreprise_long' => $this->getParameter('marque.entreprise.long'),
+            'logo_entreprise' => $this->getParameter('logo.entreprise'),
+            'env' => $this->getParameter('environnement'),
             'version' => $this->getParameter('version'),
             'dateCopyright' => \date('Y')
         ]);

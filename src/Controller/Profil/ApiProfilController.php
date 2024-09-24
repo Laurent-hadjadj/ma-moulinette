@@ -213,6 +213,10 @@ class ApiProfilController extends AbstractController
             "profil" => 'NC', "langage" => 'aucun',
             "opened" =>0, "closed" => 0, "updated" => 0, "totalRegle" => null,
             "first" => null, "last"=> null, "dateGroupe" => null, "nbGroupe" => null, "liste" => null, "badge" => null,
+            'marque_entreprise_short' => $this->getParameter('marque.entreprise.short'),
+            'marque_entreprise_long' => $this->getParameter('marque.entreprise.long'),
+            'logo_entreprise' => $this->getParameter('logo.entreprise'),
+            'env' => $this->getParameter('environnement'),
             "version" => $this->getParameter("version"),
             "dateCopyright" => \date("Y")];
         /** si le mode n'est pas défini ou si le tableau ne contient pas trois clé alors */
@@ -228,7 +232,7 @@ class ApiProfilController extends AbstractController
         $profil = $exxplode[2];
 
 
-        /** On renome les langages pour sonarqube */
+        /** On renomme les langages pour SonarQube */
         switch ($language) {
             case "java properties": $language = "jproperties";
                 break;
@@ -257,9 +261,9 @@ class ApiProfilController extends AbstractController
         $date->setTimezone(new DateTimeZone(static::$europeParis));
         $dateEnregistrement = $date->format(static::$dateFormat);
 
-        /** On met à jkour la table contenant l'historique des changements. */
+        /** On met à jour la table contenant l'historique des changements. */
         foreach($events as $event) {
-            /* On bind les données avant de les enregsitrer */
+            /* On bind les données avant de les enregistrer */
             $dc = new DateTime($event["date"]);
             $dc->setTimezone(new DateTimeZone(static::$europeParis));
             $dateCourte = $dc->format(static::$dateFormatShort);
@@ -340,6 +344,10 @@ class ApiProfilController extends AbstractController
             "totalRegle" => $total,
             "first" => $first['request'][0], "last" => $last['request'][0],
             "dateGroupe" => $tempoDateGroupe, "nbGroupe" => $i, "liste" => $liste, "badge" => $badge,
+            'marque_entreprise_short' => $this->getParameter('marque.entreprise.short'),
+            'marque_entreprise_long' => $this->getParameter('marque.entreprise.long'),
+            'logo_entreprise' => $this->getParameter('logo.entreprise'),
+            'env' => $this->getParameter('environnement'),
             "version" => $this->getParameter("version"),
             "dateCopyright" => \date("Y")];
 
@@ -348,7 +356,7 @@ class ApiProfilController extends AbstractController
 
     /**
      * [Description for listeQualityOff]
-     * Renvoie la liste des profils qui ne ont pas acitf pour un language donné
+     * Renvoie la liste des profils qui ne ont pas actif pour un language donné
      *
      * @param Request $request
      *

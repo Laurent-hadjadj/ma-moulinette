@@ -227,6 +227,10 @@ class SuiviController extends AbstractController
             'suivi' => [], 'severity' => [], 'details' => [],
             'nom' => 'N.C', 'mavenKey' => $mavenKey ?? '',
             'data1' => 0, 'data2' => 0, 'data3' => 0, 'labels' => 0,
+            'marque_entreprise_short' => $this->getParameter('marque.entreprise.short'),
+            'marque_entreprise_long' => $this->getParameter('marque.entreprise.long'),
+            'logo_entreprise' => $this->getParameter('logo.entreprise'),
+            'env' => $this->getParameter('environnement'),
             'version' => $this->getParameter('version'), 'dateCopyright' => date('Y'),
             Response::HTTP_OK
         ];

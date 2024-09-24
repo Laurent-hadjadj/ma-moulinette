@@ -325,6 +325,10 @@ class PreferenceController extends AbstractController
             'prenom' => $prenom, 'nom' => $nom, 'avatar' => $avatar, 'courriel' => $courriel,
             'roles' => $roles, 'equipes' => $equipes,
             'preferences' => $mesPreferences,
+            'marque_entreprise_short' => $this->getParameter('marque.entreprise.short'),
+            'marque_entreprise_long' => $this->getParameter('marque.entreprise.long'),
+            'logo_entreprise' => $this->getParameter('logo.entreprise'),
+            'env' => $this->getParameter('environnement'),
             'version' => $versionAPP, 'dateCopyright' => \date('Y')];
 
         return $this->render('preference/index.html.twig', $render);

@@ -66,6 +66,10 @@ class ProfilController extends AbstractController
 
         return $this->render('profil/index.html.twig', [
             'liste' => $rq1['liste'],
+            'marque_entreprise_short' => $this->getParameter('marque.entreprise.short'),
+            'marque_entreprise_long' => $this->getParameter('marque.entreprise.long'),
+            'logo_entreprise' => $this->getParameter('logo.entreprise'),
+            'env' => $this->getParameter('environnement'),
             'version' => $this->getParameter('version'), 'dateCopyright' => \date("Y")]);
     }
 }

@@ -53,6 +53,10 @@ class ProjetController extends AbstractController
         }
 
         $render = [
+            'marque_entreprise_short' => $this->getParameter('marque.entreprise.short'),
+            'marque_entreprise_long' => $this->getParameter('marque.entreprise.long'),
+            'logo_entreprise' => $this->getParameter('logo.entreprise'),
+            'env' => $this->getParameter('environnement'),
             'version' => $this->getParameter('version'),
             'dateCopyright' => \date('Y'),
             'bookmark' => $bookmark,

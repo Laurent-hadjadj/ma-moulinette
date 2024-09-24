@@ -72,6 +72,10 @@ class BatchController extends AbstractController
             'bulle' => 'bulle-info-vide',
             'date' => '01/01/1980',
             'traitements' => [['processus' => 'vide']],
+            'marque_entreprise_short' => $this->getParameter('marque.entreprise.short'),
+            'marque_entreprise_long' => $this->getParameter('marque.entreprise.long'),
+            'logo_entreprise' => $this->getParameter('logo.entreprise'),
+            'env' => $this->getParameter('environnement'),
             'version' => $this->getParameter('version'),
             'dateCopyright' => \date('Y')
         ];

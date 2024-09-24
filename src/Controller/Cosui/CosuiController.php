@@ -647,6 +647,10 @@ class CosuiController extends AbstractController
             'nombre_presentation_vulnerability_blocker' => $nombrePresentationVulnerabilityBlocker,
             'nombre_presentation_vulnerability_critical' => $nombrePresentationVulnerabilityCritical,
             'nombre_presentation_vulnerability_major' => $nombrePresentationVulnerabilityMajor,
+            'marque_entreprise_short' => $this->getParameter('marque.entreprise.short'),
+            'marque_entreprise_long' => $this->getParameter('marque.entreprise.long'),
+            'logo_entreprise' => $this->getParameter('logo.entreprise'),
+            'env' => $this->getParameter('environnement'),
             'version' => $this->getParameter('version'), 'dateCopyright' => \date('Y'),
             Response::HTTP_OK
         ];

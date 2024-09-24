@@ -62,6 +62,10 @@ class ActuatorController extends AbstractController
 
         // Initialisation des informations
         $render = [
+            'marque_entreprise_short' => $this->getParameter('marque.entreprise.short'),
+            'marque_entreprise_long' => $this->getParameter('marque.entreprise.long'),
+            'logo_entreprise' => $this->getParameter('logo.entreprise'),
+            'env' => $this->getParameter('environnement'),
             'version' => $this->getParameter('version'),
             'dateCopyright' => \date('Y'),
             'pagination' => null,
@@ -101,6 +105,10 @@ class ActuatorController extends AbstractController
 
         // Initialisation des informations pour la bulle d'information
         $render = [
+            'marque_entreprise_short' => $this->getParameter('marque.entreprise.short'),
+            'marque_entreprise_long' => $this->getParameter('marque.entreprise.long'),
+            'logo_entreprise' => $this->getParameter('logo.entreprise'),
+            'env' => $this->getParameter('environnement'),
             'version' => $this->getParameter('version'),
             'dateCopyright' => \date('Y')
         ];

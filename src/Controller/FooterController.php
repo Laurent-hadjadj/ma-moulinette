@@ -35,6 +35,10 @@ class FooterController extends AbstractController
     public function planDuSite(): Response
     {
         return $this->render('footer/plan-du-site.html.twig', [
+            'marque_entreprise_short' => $this->getParameter('marque.entreprise.short'),
+            'marque_entreprise_long' => $this->getParameter('marque.entreprise.long'),
+            'logo_entreprise' => $this->getParameter('logo.entreprise'),
+            'env' => $this->getParameter('environnement'),
             'version' => $this->getParameter('version'),
             'dateCopyright' => \date('Y')
         ]);
@@ -63,6 +67,23 @@ class FooterController extends AbstractController
             'sourceURL'=>$this->getParameter('cgu.source.url'),
             'sourceSCM'=>$this->getParameter('cgu.source.scm'),
             'hebergement'=>$this->getParameter('cgu.hebergement'),
+            'marque_entreprise_short' => $this->getParameter('marque.entreprise.short'),
+            'marque_entreprise_long' => $this->getParameter('marque.entreprise.long'),
+            'env' => $this->getParameter('environnement'),
+            'version' => $this->getParameter('version'),
+            'dateCopyright' => \date('Y')
+        ]);
+    }
+
+    #[Route('/donnees-personnelles', name: 'donnees_personnelles')]
+    public function rgpd(): Response
+    {
+        return $this->render('footer/donnees-personnelles.html.twig', [
+            'editeur' => $this->getParameter('cgu.editeur'),
+            'urlSite' => $this->getParameter('cgu.url.site'),
+            'marque_entreprise_short' => $this->getParameter('marque.entreprise.short'),
+            'marque_entreprise_long' => $this->getParameter('marque.entreprise.long'),
+            'env' => $this->getParameter('environnement'),
             'version' => $this->getParameter('version'),
             'dateCopyright' => \date('Y')
         ]);
