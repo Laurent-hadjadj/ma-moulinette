@@ -56,6 +56,11 @@ class RegistrationController extends AbstractController
         EntityManagerInterface $em,
         LoggerInterface $logger
     ): Response {
+        // si on est déjà connecté en renvoi vers la page d'accueil !!!
+        if ($this->getUser()->getUserIdentifier()) {
+            return $this->redirectToRoute('home');
+        }
+
         /** On créé un objet utilisateur. */
         $utilisateur = new Utilisateur();
         /** on prépare le formulaire. */
@@ -68,7 +73,7 @@ class RegistrationController extends AbstractController
             $date = new DateTime();
             $date->setTimezone(new DateTimeZone('Europe/Paris'));
 
-            /** je récupére les données du HoneyPot  */
+            /** je récupère les données du HoneyPot  */
             $honeyPot = $form->get('email')->getData();
             /** J'enregistre l'url de l'image */
             $avatar = $form->get('avatar')->getData();
@@ -77,7 +82,7 @@ class RegistrationController extends AbstractController
             /** J'enregistre le nom en majuscule */
             $utilisateur->setNom(strtoupper($form->get('nom')->getData()));
 
-            /** J'enregistre le Prenom */
+            /** J'enregistre le Prénom */
             $utilisateur->setPrenom(ucfirst($form->get('prenom')->getData()));
 
             /** J'enregistre en base de données */
@@ -93,7 +98,7 @@ class RegistrationController extends AbstractController
                 )
             );
 
-            /** On desactive l'utilisateur */
+            /** On désactive l'utilisateur */
             $utilisateur->setActif(false);
 
             /** En enregistre la date de création */
@@ -117,11 +122,15 @@ class RegistrationController extends AbstractController
             /** Connexion automatique ? */
             /** "return $userAuthenticator->authenticateUser($utilisateur, $authenticator,$request);" */
 
-            /** On préfére redirider l'utilisateur sur la page de bienvenu des nouveaux utiliasteurs */
+            /** On préfère rediriger l'utilisateur sur la page de bienvenu des nouveaux utilisateurs */
             return $this->render('welcome/index.html.twig', [
                 'nom' => $utilisateur->getNom(),
                 'prenom' => $utilisateur->getPrenom(),
                 'courriel' => $utilisateur->getCourriel(),
+                'marque_entreprise_short' => $this->getParameter('marque.entreprise.short'),
+                'marque_entreprise_long' => $this->getParameter('marque.entreprise.long'),
+                'logo_entreprise' => $this->getParameter('logo.entreprise'),
+                'env' => $this->getParameter('environnement'),
                 'version' => $this->getParameter('version'),
                 'dateCopyright' => \date('Y'),
                 'rgaa' => $this->getParameter('rgaa')
@@ -130,6 +139,10 @@ class RegistrationController extends AbstractController
 
         return $this->render('auth/register.html.twig', [
             'registrationForm' => $form->createView(),
+            'marque_entreprise_short' => $this->getParameter('marque.entreprise.short'),
+            'marque_entreprise_long' => $this->getParameter('marque.entreprise.long'),
+            'logo_entreprise' => $this->getParameter('logo.entreprise'),
+            'env' => $this->getParameter('environnement'),
             'version' => $this->getParameter('version'),
             'dateCopyright' => \date('Y'),
             'rgaa' => $this->getParameter('rgaa')
@@ -154,6 +167,10 @@ class RegistrationController extends AbstractController
             'courriel' => 'laurent.hadjadj@ma-petite-entreprise.fr',
             'version' => $this->getParameter('version'),
             'dateCopyright' => \date('Y'),
+            'marque_entreprise_short' => $this->getParameter('marque.entreprise.short'),
+            'marque_entreprise_long' => $this->getParameter('marque.entreprise.long'),
+            'logo_entreprise' => $this->getParameter('logo.entreprise'),
+            'env' => $this->getParameter('environnement'),
             'rgaa' => $this->getParameter('rgaa')
         ]);
     }
