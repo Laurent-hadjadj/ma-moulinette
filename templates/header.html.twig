@@ -1,23 +1,36 @@
 <!-- head -->
+{% set badge ='' %}
+{% if  env == 'DEV' %} {% set badge = 'label background-color-rouge' %} {% endif %}
+{% if  env == 'REC' %} {% set badge = 'label background-color-bleu' %} {% endif %}
+{% if  env == 'PROD' %} {% set badge = 'label background-color-gris' %} {% endif %}
 <div class="grid-x cell">
-  <div class="small-2 medium-1 large-1 cell">
-    <div class="logo grid-x" aria-label="Logo Ma Moulinette">
-      <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 255 256" class="logo-svg">
-        <path d="M 27.5,-0.5 C 30.8333,-0.5 34.1667,-0.5 37.5,-0.5C 42.0964,2.26065 45.9297,5.92732 49,10.5C 52.6535,17.2999 55.8202,24.2999 58.5,31.5C 62.3696,21.4256 67.5363,12.0922 74,3.5C 76.0153,2.30342 77.8487,0.970083 79.5,-0.5C 82.8333,-0.5 86.1667,-0.5 89.5,-0.5C 97.3568,4.49589 102.857,11.4959 106,20.5C 110.566,32.0959 113.566,44.0959 115,56.5C 116.908,74.4457 117.908,92.4457 118,110.5C 118.5,158.832 118.667,207.166 118.5,255.5C 107.167,255.5 95.8333,255.5 84.5,255.5C 84.6667,204.166 84.5,152.832 84,101.5C 80.8549,89.5619 78.1882,89.8952 76,102.5C 75.5,153.499 75.3333,204.499 75.5,255.5C 64.1667,255.5 52.8333,255.5 41.5,255.5C 41.6667,204.166 41.5,152.832 41,101.5C 41.0133,97.8756 39.6799,94.8756 37,92.5C 34.6845,95.7772 33.3512,99.4438 33,103.5C 32.5,154.166 32.3333,204.832 32.5,255.5C 21.5,255.5 10.5,255.5 -0.5,255.5C -0.5,195.5 -0.5,135.5 -0.5,75.5C 1.07174,57.486 4.90508,39.8193 11,22.5C 14.097,12.9208 19.597,5.25418 27.5,-0.5 Z"/>
-        <path d="M 164.5,-0.5 C 167.833,-0.5 171.167,-0.5 174.5,-0.5C 179.096,2.26065 182.93,5.92732 186,10.5C 189.654,17.2999 192.82,24.2999 195.5,31.5C 199.37,21.4256 204.536,12.0922 211,3.5C 213.015,2.30342 214.849,0.970083 216.5,-0.5C 219.833,-0.5 223.167,-0.5 226.5,-0.5C 234.357,4.49589 239.857,11.4959 243,20.5C 249.431,39.1113 253.264,58.1113 254.5,77.5C 254.5,136.833 254.5,196.167 254.5,255.5C 243.5,255.5 232.5,255.5 221.5,255.5C 221.667,204.166 221.5,152.832 221,101.5C 217.81,89.6109 215.143,89.9442 213,102.5C 212.5,153.499 212.333,204.499 212.5,255.5C 201.167,255.5 189.833,255.5 178.5,255.5C 178.667,204.166 178.5,152.832 178,101.5C 178.013,97.8756 176.68,94.8756 174,92.5C 171.685,95.7772 170.351,99.4438 170,103.5C 169.5,154.166 169.333,204.832 169.5,255.5C 158.167,255.5 146.833,255.5 135.5,255.5C 135.333,203.832 135.5,152.166 136,100.5C 135.201,71.8789 139.868,44.2122 150,17.5C 153.206,10.0299 158.04,4.02989 164.5,-0.5 Z"/>
-      </svg>
+  <div class="small-6 medium-6 large-6 cell">
+    <div class="logo-container">
+      <div class="logo" aria-label="Logo ma-moulinette">
+        <img class="show-for-medium marque-entreprise" src="/build/images/{{logo_entreprise}}" alt="Marque entreprise">
+        <img class="marque-mm" src="/build/images/logo-mm-150.min.svg" alt="Logo Ma-moulinette">
+      </div>
+
+      <div class="ma-moulinette-container">
+        <h1 class="claire-hand">
+          <a tabindex="0" class="ma-moulinette" href="/" rel="next" title="Retour vers la page principale">Ma-Moulinette</a>
+        </h1>
+        <h2 class="show-for-small-only claire-hand version" aria-label="Version">
+          V. {{version}}
+          <span class="{{badge}} label-custom color-blanc">{{env| default('') }}</span>
+        </h2>
+        <h2 class="show-for-medium claire-hand version" aria-label="Version">
+          Version {{version}}
+          <span class="{{badge}} label-custom color-blanc">{{env| default('') }}</span>
+        </h2>
+      </div>
     </div>
   </div>
-  <div class="small-3 medium-5 large-7 cell">
-    <h1 class="claire-hand ma-moulinette-container">
-      <a tabindex="0" class="ma-moulinette" href="/" rel="next" title="Retour vers la page principale">Ma Moulinette</a>
-    </h1>
-    <h2 class="show-for-small-only claire-hand version" aria-label="Version">V.{{version}}</h2>
-    <h2 class="show-for-medium claire-hand version" aria-label="Version">Version {{version}}</h2>
-  </div>
-  <div class="small-7 medium-6 large-4 cell">
+
+  {# ------------------- Menu icônes --------------------#}
+  <div class="small-6 medium-6 large-6 cell">
     {# Dashboard | Preferences | Déconnexion  #}
-    <div class="float-right right">
+    <div class="float-right right no-select">
       {% if is_granted('ROLE_UTILISATEUR') %}
       {# dashboard #}
       <a href="/admin" title="Dashboard">
@@ -27,7 +40,7 @@
         </svg>
       </a>
       {#préférence#}
-      <a href="/preferences" title="Préferences">
+      <a href="/preferences" title="Préférences">
         <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="preferences-svg">
           <path d="M339.3 1.6c-5.4 2-12.8 8.5-15.5 13.8-1.7 3.2-2.3 6.6-2.7 14.9l-.6 10.9-5.6 2.4c-6.5 2.7-15.2 7.7-22.3 12.8l-4.9 3.5-5.1-3c-9.9-5.8-11.6-6.4-20.7-6.4-13.5 0-17.3 3-29.1 22.9-2.4 4.1-3.1 4.5-4.7 3.6-1.1-.5-6.2-2.2-11.3-3.6-7.8-2.2-12.1-2.7-26.3-3.1-14.8-.4-18.4-.2-27.5 1.7-28.3 5.8-53.4 21.7-71.1 44.9-6.8 9-15.3 26.6-18.3 38.1-10.2 38.5-.2 79.3 26.3 108.5 6.6 7.2 15.7 15.1 22.4 19.2 3.1 2 5.7 3.9 5.7 4.2 0 .4-3.1 1.7-6.9 2.9-3.8 1.3-11.8 4.7-17.8 7.6C59.4 319 27.6 359.4 17 407c-3.1 14.1-4 27.6-4 62.1 0 36.9.2 38.4 6.3 41.2 3.2 1.6 16.3 1.7 167.7 1.7h164.2l3.5-3.5 3.4-3.4-.4-43.3c-.3-39.8-.6-44.1-2.5-53-8.8-39.3-31.9-74.8-63.2-97.1-10.9-7.7-31.2-18.2-41.8-21.6l-7.3-2.4 4.5-2.6c16-9.4 33.2-27.5 41.5-43.8l2.1-4.3 6.5 4.4c3.5 2.4 10.2 6 14.9 8.2l8.4 3.9.4 10.5c.3 9.4.7 11.1 3.3 15.9 3.1 5.6 8.8 10.6 14.8 12.8 2 .7 10.2 1.2 21.7 1.2 17.4.1 18.8-.1 23.5-2.3 5.6-2.6 11.7-8.7 14.1-14.3 1-2.3 1.8-7.8 2.1-13.9l.6-10.1 7.4-3.3c4.1-1.8 11.1-5.7 15.6-8.8 4.5-3 8.7-5.6 9.3-5.9.6-.2 4.2 1.4 8 3.6 9 5.2 15.5 6.6 22.9 5.1 9-1.9 14.1-6.1 20.7-17 11.9-19.6 13.2-22.8 13.2-30.5 0-11.7-5.2-19.4-18.1-26.7-7-4-7.2-4.2-6.5-7.2.9-4 .9-27.2 0-31.2-.7-3.1-.5-3.3 7.1-7.7 11.5-6.7 16.1-12.6 17.6-22.8 1-6.7-.8-11.9-9.2-26.4-8.6-15-11.9-18.8-18.8-22.1-9.6-4.5-19.6-3-32.1 4.9l-4.1 2.5-6.4-4.5c-3.5-2.5-11-6.7-16.5-9.4L401.3 41l-.5-9.8c-.7-14.7-5-22.7-15.2-28C380.6.6 380 .5 362 .3c-14.5-.2-19.4.1-22.7 1.3zm38.3 22.5c1.6 1.8 2 4.2 2.4 15.9.6 16.2 1.2 17.5 10.8 20.4 8 2.5 19.5 8.7 27.6 14.9 9.5 7.2 12.6 8.9 15.8 8.3 1.5-.3 7.4-3.2 13.2-6.6 10.4-6 12-6.6 15.1-5.4 2.2.9 15.5 23.6 15.5 26.6 0 3.2-1.5 4.4-12.7 10.7-5.1 2.9-10.2 6.4-11.3 7.9-2.4 2.9-2.4 2.9 0 20.4 1.1 8.1 1.1 11.5 0 19.5-2.4 18-2.4 17.7.2 20.6 1.2 1.4 6.4 4.9 11.3 7.7 11.1 6.3 12.5 7.6 12.5 11 0 2.4-10.2 21.2-13.8 25.2-2.5 2.9-5.8 2.1-17-4.2-14-7.8-15.7-7.8-24.6-.6-10.4 8.6-21.2 14.5-33.7 18.5-2 .6-4.7 2.3-6 3.7-2.3 2.4-2.4 3.4-2.7 16.5-.5 18.3-.1 17.9-18.7 17.9-18.5 0-18.2.3-18.7-17.4-.4-16.7-1-17.9-11.9-21.7-14.9-5.2-32.5-16.2-31.5-19.7.3-.9.9-4.4 1.5-7.7 6-35.9-4-70.5-28.4-98.1-5.2-5.9-17.7-16.7-22.2-19.2-1.4-.9-1.1-1.9 2.8-8.8 6.3-11.2 7-11.3 20.6-3.6 6 3.3 12.1 6.4 13.5 6.7 3.5.9 8.1-1.4 15.8-8 6.6-5.6 20.2-12.9 29.8-16 8.2-2.6 9.2-5 9.2-20.8 0-17.3-.7-16.7 18.8-16.7 13.9 0 15 .1 16.8 2.1zM203.2 92.4c29.7 5.7 54.3 24.6 67.8 51.9 7.5 15.3 9.3 23.1 9.4 41.2 0 12.6-.3 16.4-2.2 23.4-12.3 45.7-50.6 74-97.2 71.8-13.7-.7-23.9-3.1-35.6-8.6C100.2 250.9 79 199.7 96 152.7c11-30.3 38.6-53.8 70.9-60.2 8.9-1.8 27.3-1.8 36.3-.1zm21.2 212.5c28.3 5.8 49.9 17.4 70.8 38.1 24.3 24 37.8 52.8 40.8 87 .5 6.3 1 22.4 1 35.7V490H34v-24.8c0-13.6.5-29.7 1-35.7 3.3-35.2 17.3-64.2 42.8-88.6 23-22.1 49.8-34.3 84.2-38.3 1.9-.2 14.5-.3 28-.1 19.8.3 26.4.8 34.4 2.4z"/>
           <path d="M348.5 89.4c-9.8 2.3-16.6 5.3-23.7 10.6-24.1 17.8-30.7 51.3-15.3 77.6 4.1 7 13.9 16.5 21.6 20.7 12 6.7 28.1 9.3 41.1 6.6 7.9-1.6 20.6-8.1 26.9-13.8 15-13.4 22.6-35.9 18.5-55.1-4.6-21.8-20.5-39.2-41.6-45.4-7.8-2.3-20.3-2.8-27.5-1.2zm24 22.3c6.4 2.2 14.1 8 17.9 13.6 5.2 7.6 6.8 13 6.9 22.4.1 7.4-.2 8.7-3.6 15.6-11.4 23-40.6 28.8-59.1 11.7-22.5-20.8-12.3-58.9 17.4-64.9 5.4-1.1 14.9-.4 20.5 1.6z"/>
@@ -54,10 +67,11 @@
       {% endif %}
     </div>
     {# Utilisateur #}
-    <div class="float-right right">
+    <div class="float-right right no-select">
       {% if is_granted('ROLE_GESTIONNAIRE') %}
-      {% set url = "&crudControllerFqcn=App\\Controller\\Admin\\UtilisateurCrudController" %}
-      <a href="/admin?crudAction=index{{url}}" title="Gestion des utilisateurs">
+      <a href="{{ ea_url().setController
+                  ('App\\Controller\\Admin\\UserCrudController')}}"
+        title="Gestion des utilisateurs">
         <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" class="utilisateurs-svg">
           <path d="M231.5 38.1c-48.3 5.9-88.5 39-102.9 84.7-9.2 29.3-7 62.3 6 89.7 6.9 14.7 19.1 30.8 30.3 40 3.3 2.7 6.1 5.2 6.1 5.5 0 .3-3.8 1.8-8.5 3.3-10.9 3.6-29.6 12.9-41 20.4-48.7 32.1-78.8 83.5-83.5 142.6-1.2 14-.5 18.5 3.2 23.2 5.9 7.6 19.4 7.1 25-.8 1.8-2.4 2.4-5.6 3.4-17.6 2.3-24.8 6.8-41.9 16-60.2 21.4-42.9 58.5-71.6 106.9-83 7.9-1.9 13.3-2.2 44-2.8 33.6-.6 35.1-.7 38.5-2.8 1.9-1.2 6.4-3.1 10-4.3 3.6-1.3 11-4.5 16.4-7.3 58.3-29.7 82.6-100.5 55.1-160.4-10.2-22.3-30.1-43.6-51.6-55.5C283.6 41 255 35.3 231.5 38.1zm33.2 33.5c27.1 6.1 49.7 23.9 61.8 48.7 7 14.5 8.8 22.5 8.8 39.7 0 16.5-1.7 25-7.8 37.8-11.4 24.1-29.9 40.4-55.5 48.7-7.3 2.5-10.5 2.9-23.5 3.3-12.8.3-16.3.1-23.9-1.7-28.7-6.9-53-27.9-63.6-55.3-7.8-20.2-8-43.9-.6-64.4 5.6-15.3 18.6-32.3 32-41.9 21.2-15 47.8-20.5 72.3-14.9zM452.5 273.4c-4.2 1.9-4.6 2.4-76 84.1-35.1 40.1-64.9 74.1-66.1 75.5l-2.4 2.5-36.8-36.7c-31.6-31.6-37.2-36.7-40.4-37.3-4.9-.9-9.2.2-12.9 3.2-4.1 3.5-5.9 7.4-5.9 13v4.7l44.7 44.8c49.4 49.4 49.5 49.5 57.7 46.7 3.6-1.2 12.9-11.5 80.4-88.4 41.9-47.9 77-88.4 77.9-90 2.3-4.2 2.1-11.4-.3-15.6-3.9-6.6-13-9.6-19.9-6.5z"/>
         </svg>
@@ -66,7 +80,7 @@
     </div>
   </div>
   {% if is_granted('ROLE_UTILISATEUR') %}
-  <div class="cell menu-identifiant">
+  <div class="grid-container cell menu-identifiant">
     <ul class="dropdown menu" data-dropdown-menu>
       <li class="is-dropdown-submenu-parent">
         <a href="#">
@@ -74,7 +88,15 @@
         </a>
         <ul class="menu">
           <li>
-            <a class="color-bleu menu-indentifiant-item" href="#" data-open="modal-details">Détails</a>
+            <a class="color-bleu menu-identifiant-item" href="#" data-open="modal-details">
+            <div class="container-information no-select">
+            <svg xmlns="http://www.w3.org/2000/svg"
+                shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
+                viewbox="0 0 512 512" class="information-svg">
+              <path opacity=".99" d="M234.5 25.5c50.555-1.648 88.722 19.02 114.5 62 23.272 50.76 16.606 97.093-20 139-36.381 33.412-78.214 42.578-125.5 27.5-43.004-17.677-68.171-49.51-75.5-95.5-4.186-51.796 15.647-91.296 59.5-118.5 14.879-7.797 30.546-12.63 47-14.5z"/>
+              <path opacity=".983" d="M360.5 260.5c55.772-2.553 94.938 21.447 117.5 72 17.158 55.857 2.325 101.024-44.5 135.5-45.19 25.185-88.857 22.851-131-7-36.018-31.39-48.851-70.556-38.5-117.5 15.148-47.631 47.314-75.297 96.5-83zm12 43c18.993 3.986 24.827 14.986 17.5 33-10.42 11.143-21.42 11.81-33 2-6.948-11.141-5.781-21.308 3.5-30.5 3.801-2.416 7.801-3.916 12-4.5zm-4 54c9.764-1.205 16.264 2.795 19.5 12 .667 20 .667 40 0 60-4.542 11.355-12.375 14.522-23.5 9.5-2.902-2.24-5.069-5.073-6.5-8.5a960.77 960.77 0 0 1 0-62c2.02-5.185 5.52-8.852 10.5-11z"/>
+              <path opacity=".985" d="M227.5 278.5c16.716-.38 33.382.287 50 2-37.441 42.046-46.608 89.712-27.5 143 6.329 14.807 14.829 28.14 25.5 40a7704.56 7704.56 0 0 1-215 .5c-19.157-2.155-30.657-12.655-34.5-31.5-7.946-40.162 3.22-73.662 33.5-100.5 22.601-17.135 47.601-29.801 75-38 30.568-8.65 61.568-13.817 93-15.5z"/>
+            </svg> Information</div></a>
           </li>
         </ul>
       </li>
@@ -84,11 +106,10 @@
 </div>
 
 {# fenêtre modal details #}
-{% if is_granted('ROLE_GESTIONNAIRE') %}
-<div id="modal-details" class="reveal small" data-reveal data-close-on-click="true"
+{% if is_granted('ROLE_UTILISATEUR') %}
+<dialog id="modal-details" class="reveal small" data-reveal data-close-on-click="true"
     data-animation-in="fade-in" data-animation-out="fade-out" aria-modal="true">
-  <h1 class="h3 claire-hand">Détails.</h1>
-  <h2 class="h4 claire-hand">Mes informations.</h2>
+  <h1 class="h4 claire-hand">Informations</h1>
   <p class="open-sans">
     <strong>Nom : </strong><span class="color-noir">{{ app.user.nom}}</span>
   </p>
@@ -107,9 +128,9 @@
   <div class="grid-x">
     <p class="open-sans">Mise à jour du mot-de-passe ? &nbsp;</p>
     <div class="switch switch-identifiant small">
-      <input class="switch-input" id="js-indentifiant-oui-non" type="checkbox"
+      <input class="switch-input" id="js-identifiant-oui-non" type="checkbox"
         name="variationSwitch" data-init="{{app.user.init}}">
-      <label class="switch-paddle switch-paddle-identifiant" for="js-indentifiant-oui-non">
+      <label class="switch-paddle switch-paddle-identifiant" for="js-identifiant-oui-non">
         <span class="show-for-sr">Mise à jour du mot-de-passe ?</span>
         <span class="switch-active switch-identifiant-active" aria-hidden="true">Oui</span>
         <span class="switch-inactive switch-identifiant-inactive" aria-hidden="true">Non</span>
@@ -121,5 +142,5 @@
   {# fermeture de la fenêtre modale #}
   <button id="fermer-identifiant-details" class="expanded button open-sans" data-close aria-label="Fermeture" type="button">Fermer</button>
   <a class="close-button" data-close aria-label="Fermeture">&#215;</a>
-</div>
+</dialog>
 {% endif %}
