@@ -2,7 +2,7 @@
 security:
     # On active le mécanisme d'authentification
     enable_authenticator_manager: true
-    # On léve une exception si l'utilisateur n'existe pas
+    # On lève une exception si l'utilisateur n'existe pas
     hide_user_not_found: false
 
     role_hierarchy:
