@@ -82,7 +82,12 @@ class ActiviteController extends AbstractController
                 'taux_reussite' => "-"
             ];
             return $this->render('activite/index.html.twig', [
-                'data' => $request,'version' => $this->getParameter('version'), 'dateCopyright' => \date("Y"),
+                'marque_entreprise_short' => $this->getParameter('marque.entreprise.short'),
+                'marque_entreprise_long' => $this->getParameter('marque.entreprise.long'),
+                'logo_entreprise' => $this->getParameter('logo.entreprise'),
+                'env' => $this->getParameter('environnement'),
+                'data' => $request,'version' => $this->getParameter('version'),
+                'dateCopyright' => \date("Y"),
                 Response::HTTP_OK]);
         }
 
@@ -109,7 +114,12 @@ class ActiviteController extends AbstractController
         $result['request'][0]["date_enregistrement"] = (new DateTime($result['request'][0]["date_enregistrement"]))->format('d-m-Y H:i:s');
 
         return $this->render('activite/index.html.twig', [
-            'data' => $result['request'],'version' => $this->getParameter('version'), 'dateCopyright' => \date("Y"),
+            'marque_entreprise_short' => $this->getParameter('marque.entreprise.short'),
+            'marque_entreprise_long' => $this->getParameter('marque.entreprise.long'),
+            'logo_entreprise' => $this->getParameter('logo.entreprise'),
+            'env' => $this->getParameter('environnement'),
+            'data' => $result['request'],'version' => $this->getParameter('version'),
+            'dateCopyright' => \date("Y"),
             Response::HTTP_OK]);
     }
 
