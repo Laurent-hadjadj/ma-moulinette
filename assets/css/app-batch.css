@@ -217,7 +217,7 @@ tbody tr:nth-child(even) {
 
 /** bouton OU */
 .button-group-option::before {
-  content: attr(data-grouptype);
+  content: attr(data-group-type);
   z-index: 1;
   color: #8a8a8a;
   display: inline-block;
@@ -291,7 +291,7 @@ tbody tr:nth-child(even) {
   display: inline-block;
 }
 
-/* Propriété du texte qui sera affiché dans le tooltype */
+/* Propriété du texte qui sera affiché dans le tool-type */
 .tool-tip .tool-tip-text-right {
   visibility: hidden;
   top: -6px;
@@ -321,7 +321,7 @@ tbody tr:nth-child(even) {
   border-color: transparent transparent transparent #555;
 }
 
-/* Action au moment du survol du tooltype */
+/* Action au moment du survol du tool-type */
 .tool-tip:hover .tool-tip-text-right {
   visibility: visible;
   opacity: 1;

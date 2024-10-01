@@ -108,7 +108,7 @@
 .marqueur-circle { list-style: circle; }
 .marqueur-square { list-style: square; }
 
-.marqueur-nobullet {
+.marqueur-no-bullet {
   list-style: none;
   margin-left: -1.72rem;
 }
