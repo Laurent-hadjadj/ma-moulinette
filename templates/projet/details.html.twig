@@ -30,14 +30,9 @@
     <header class="grid-container">
       <nav aria-label="vous êtes ici :">
         <ul class="claire-hand breadcrumbs">
-          <li>
-            <a href="/">Accueil</a>
-          </li>
-          <li>
-            <a href="/projet">Projet</a>
-          </li>
-          <li>
-            <span class="show-for-sr">vous êtes ici :</span>Répartition</li>
+          <li><a href="{{ path('home') }}">Accueil</a></li>
+          <li><a href="{{ path('projet') }}">Projet</a></li>
+          <li><span class="show-for-sr">vous êtes ici :</span>Répartition</li>
         </ul>
       </nav>
     </header>
@@ -119,7 +114,7 @@
               </ul>
 
               <p class="ligne">
-                <strong>Maintenalibité</strong>&nbsp;:
+                <strong>Maintenabilité</strong>&nbsp;:
                 <span id="nombre-mauvaise-pratique" class="stat resultat"></span>
               </p>
               <ul class="stats-list">
