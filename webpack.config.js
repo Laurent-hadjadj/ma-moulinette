@@ -30,6 +30,7 @@ Encore
     .addEntry('preference', './assets/js/app-preference.js')
     .addEntry('preference-ajouter', './assets/js/app-preference-ajouter.js')
     .addEntry('projet', './assets/js/app-projet.js')
+    .addEntry('mes-projets', './assets/js/app-mes-projets.js')
     .addEntry('profil', './assets/js/app-profil.js')
     .addEntry('profil-details', './assets/js/app-profil-details.js')
     .addEntry('owasp', './assets/js/app-owasp.js')
