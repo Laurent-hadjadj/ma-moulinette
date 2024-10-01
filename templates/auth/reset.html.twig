@@ -30,16 +30,20 @@
     <br><br>
 
     <main class="grid-container">
-      {% for message in app.flashes('warning') %}
-        <div class="open-sans callout alert-callout-border warning" role="alert">{{ message }}</div>
+      {# On affiche les messages #}
+      {% for message in app.flashes('notice') %}
+      <div class="callout {{message.type}} alert-callout-border" data-closable>
+        <p class="open-sans text-justify callout-message"><strong>{{message.titre}}</strong> {{ message.message }}</p>
+        <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
       {% endfor %}
-      {% for message in app.flashes('success') %}
-        <div class="open-sans callout alert-callout-border success" role="alert">{{ message }}</div>
-      {% endfor %}
+
       <div class="grid-x">
         <div class="small-12 medium-6 large-6 cell">
           <video id="video-dessin-anime" class="video-dessin-anime" preload="metadata" loop autoplay muted>
-            <source src="{{ asset('build/video/DessinAnime.mp4') }}">
+            <source src="{{ asset('build/video/dessin_anime.mp4') }}">
             <track label="Français" kind="captions" srclang="fr" default src="{{ asset('build/video/dessin_anime_subtitles_fr.vtt') }}">
               <track label="English" kind="captions" srclang="en" src="{{ asset('build/video/dessin_anime_subtitles_en.vtt') }}"></video>
               <span class="open-sans float-center text-center">
