@@ -700,4 +700,35 @@ class HistoriqueRepository extends ServiceEntityRepository
         /** on prépare la réponse */
         return ['code'=>200, 'is_valide'=>$isValide[0], 'erreur'=>''];
     }
+
+    /**
+     * [Description for selectHistoriqueIndicateurs]
+     *
+     * @param string $map
+     *
+     * @return array
+     *
+     * Created at: 24/09/2024 16:47:27 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function selectHistoriqueIndicateurs(string $map):array {
+        try {
+                /** On prépare la requête */
+                $sql = "SELECT DISTINCT ON (maven_key)
+                            nom_projet, version, suppress_warning, no_sonar, todo, nombre_ligne, nombre_ligne_code, tests, violations, nombre_bug, nombre_vulnerability, nombre_code_smell, frontend, backend, autre, note_reliability, note_security, note_sqale, note_hotspot, logger_info, logger_warn, logger_error, logger_debug
+                        FROM ma_moulinette.historique
+                        WHERE maven_key IN (".$map.") ORDER BY maven_key ASC, version DESC, date_version DESC";
+                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+                $indicateur=$stmt->executeQuery()->fetchAllAssociative();
+                    /** j'ai pas trouvé de projet */
+        } catch (\Doctrine\DBAL\Exception $e) {
+            dd($e->getMessage());
+            return ['code'=> 500, 'erreur'=>$e->getMessage()];
+        }
+        /** on prépare la réponse */
+        return ['code'=>200, 'indicateur'=>$indicateur, 'erreur'=>''];
+    }
+
+
 }
