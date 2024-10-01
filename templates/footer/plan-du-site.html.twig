@@ -30,11 +30,8 @@
     <header class="grid-container">
       <nav id="fil-ariane" aria-label="vous êtes ici :">
         <ol class="claire-hand breadcrumbs">
-          <li>
-            <a href="/" alt="">Accueil</a>
-          </li>
-          <li>
-            <span class="show-for-sr">Vous êtes sur la page :</span>Plan-du-site</li>
+          <li><a href="{{ path('home') }}" alt="">Accueil</a></li>
+          <li><span class="show-for-sr">Vous êtes sur la page :</span>Plan-du-site</li>
         </ol>
       </nav>
     </header>
@@ -45,8 +42,8 @@
         <ul class="open-sans">
           <li class="marqueur-circle color-bleu">Indique un lien vers une page.</li>
           <li class="marqueur-square color-bleu">Indique une action (ouvrir une page, lancer une action).</li>
-          <li class="marqueur-nobullet color-bleu">
-            <img class="cadenas" src="/build/images/lock-bleu.min.svg" alt="cadenas">
+          <li class="marqueur-no-bullet color-bleu">
+            <img class="cadenas" src="{{ asset('/build/images/lock-bleu.min.svg') }}" alt="cadenas">
             La page nécessite une identification.
           </li>
         </ul>
@@ -83,7 +80,7 @@
           </div>
           <div class="timeline-content">
             <p class="open-sans timeline-content-titre">
-              <img class="cadenas" src="/build/images/lock-blanc.min.svg" alt="cadenas">
+              <img class="cadenas" src="{{ asset('/build/images/lock-blanc.min.svg') }}" alt="cadenas">
               Menu principal
             </p>
             <ul class="open-sans timeline-content-liste">
@@ -115,9 +112,7 @@
           </div>
           <div class="timeline-content">
             <p class="open-sans timeline-content-titre">
-              <img class="cadenas" src="/build/images/lock-blanc.min.svg" alt="cadenas">
-              Accueil
-            </p>
+              <img class="cadenas" src="{{ asset('/build/images/lock-blanc.min.svg') }}" alt="cadenas">Accueil</p>
             <ul class="open-sans timeline-content-liste">
               <li class="timeline-content-link marqueur-square">Mise à jour de la liste des projets.</li>
               <li class="timeline-content-link marqueur-circle">
@@ -139,9 +134,7 @@
           </div>
           <div class="timeline-content">
             <p class="open-sans timeline-content-titre">
-              <img class="cadenas" src="/build/images/lock-blanc.min.svg" alt="cadenas">
-              Liste des profils SonarQube.
-            </p>
+              <img class="cadenas" src="{{ asset('/build/images/lock-blanc.min.svg') }}" alt="cadenas">Liste des profils SonarQube.</p>
             <ul class="open-sans timeline-content-liste">
               <li class="timeline-content-link marqueur-square">Mise à jour de la table.</li>
               <li class="timeline-content-link marqueur-square">Répartition des langages.</li>
@@ -158,9 +151,7 @@
           </div>
           <div class="timeline-content">
             <p class="open-sans timeline-content-titre">
-              <img class="cadenas" src="/build/images/lock-blanc.min.svg" alt="cadenas">
-              Mon Projet
-            </p>
+              <img class="cadenas" src="{{ asset('/build/images/lock-blanc.min.svg') }}" alt="cadenas">Mon Projet</p>
             <ul class="open-sans timeline-content-liste">
               <li class="timeline-content-link marqueur-square">Collecte des données.</li>
               <li class="timeline-content-link marqueur-square">Afficher les résultats.</li>
