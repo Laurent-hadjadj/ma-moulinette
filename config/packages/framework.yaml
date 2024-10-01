@@ -1,43 +1,36 @@
 ---
-# see https://symfony.com/doc/current/reference/configuration/framework.html
 framework:
-    trusted_hosts: ['127.0.0.1', 'localhost', '%env(TRUST_HOST1)%','%env(TRUST_HOST2)%',]
     secret: '%env(APP_SECRET)%'
     csrf_protection: true
     http_method_override: false
-
-    # the IP address (or range) of proxy
-    #trusted_proxies: '192.0.0.1,10.0.0.0/8'
-    trusted_headers: ['x-forwarded-for', 'x-forwarded-host', 'x-forwarded-proto', 'x-forwarded-port', 'x-forwarded-prefix']
-
+    handle_all_throwables: true
     default_locale: 'fr'
 
+    # the IP address (or range) of your proxy
+    trusted_hosts: ['127.0.0.1', 'localhost', '%env(TRUST_HOST1)%','%env(TRUST_HOST2)%',]
+    trusted_proxies: '%env(TRUSTED_PROXIES)%'
+    trusted_headers: ['x-forwarded-for', 'x-forwarded-host', 'x-forwarded-proto', 'x-forwarded-port', 'x-forwarded-prefix']
+
     http_client:
-        max_host_connections: 10
-        default_options:
-            headers: { 'X-Powered-By': 'Ma-Moulinette' }
-            max_redirects: 7
-            # vérification des certificats
-            verify_host: true
-            verify_peer: true
-            # Définition des ciphers
-            ciphers: 'RC4-SHA:TLS13-AES-128-GCM-SHA256'
-
-            # Définition du proxy
-            proxy: null
-            # Résolution DNS
-            resolve:
-                'localhost': 127.0.0.1
-
-            # Définition des CA Root
-            #cafile: ''
-            #capath: ''
+            max_host_connections: 10
+            default_options:
+                headers: { 'X-Powered-By': 'Ma-Moulinette' }
+                max_redirects: 7
+                # vérification des certificats
+                verify_host: true
+                verify_peer: true
+                # Définition des ciphers
+                ciphers: 'RC4-SHA:TLS13-AES-128-GCM-SHA256'
+                # Résolution DNS
+                resolve:
+                    'localhost': 127.0.0.1
 
     session:
         handler_id: 'session.handler.native_file'
         save_path: '%kernel.project_dir%/var/sessions/%kernel.environment%'
-    #esi: true
-    #fragments: true
+
+    esi: false
+    fragments: false
     php_errors:
         log: true
 
