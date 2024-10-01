@@ -38,7 +38,7 @@ class SuiviController extends AbstractController
     public static $erreur400 = "La requête est incorrecte (Erreur 400).";
     public static $erreur404 = "Vous devez être rattaché à une équipe (erreur 404).";
     public static $erreur406 = "Je n'ai pas trouvé de projets pour ton équipe. ".
-    "Vérifiez le nom du tag utilisé dans SonarQube (erreur 406).";
+    "Vérifies le nom du tag utilisé dans SonarQube (erreur 406).";
 
     /**
      * [Description for __construct]
@@ -134,7 +134,6 @@ class SuiviController extends AbstractController
      * On remonte les 10 dernières version + la version initiale
      *
      * @param Request $request
-     * @param Security $security
      *
      * @return response
      *
