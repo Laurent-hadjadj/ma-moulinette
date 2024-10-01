@@ -30,15 +30,9 @@
     <header class="grid-container">
       <nav aria-label="Vous êtes Ici : ">
         <ul class="claire-hand breadcrumbs">
-          <li>
-            <a href="/">Accueil</a>
-          </li>
-          <li>
-            <a href="/projet">Projet</a>
-          </li>
-          <li>
-            <span class="show-for-sr">Vous êtes ici:</span>Owasp</li>
-        </ul>
+          <li><a href="{{ path('home') }}">Accueil</a></li>
+          <li><a href="{{ path('projet') }}">Projet</a></li>
+          <li><span class="show-for-sr">Vous êtes ici:</span>Owasp</li></ul>
       </nav>
     </header>
 
@@ -58,7 +52,7 @@
         <legend>Informations.</legend>
         <p class="open-sans">Le tableau ci-dessous liste
           <strong>uniquement</strong>
-          les vulnérabiltés de type OWASP et les hotspots OWASP.
+          les vulnérabilités de type OWASP et les hotspots OWASP.
         </p>
         {# Vulnérabilité OWASP #}
         <p class="ligne open-sans">
@@ -121,7 +115,7 @@
       <fieldset class="fieldset cell">
         <legend>Synthèse.</legend>
         <table>
-          <caption>Liste des vulnérabilité OWASP et des hotspot sonarqube.</caption>
+          <caption>Liste des vulnérabilité OWASP et des hotspot SonarQube.</caption>
           <thead>
             <tr class="open-sans">
               <th scope="col"></th>
@@ -278,7 +272,7 @@
       <h3 class="claire-hand">Liste des failles de sécurité.</h3>
       <div class="detail cell">
         <table class="table-scroll">
-          <caption>Liste détaillée des vulnérabilités détéctées.</caption>
+          <caption>Liste détaillée des vulnérabilités détectées.</caption>
           <thead>
             <tr class="open-sans">
               <th class="text-center" scope="col">N°</th>
@@ -296,7 +290,7 @@
     </div>
 
     <br>
-    {# Référebtiel OWASP 2017 - Doc #}
+    {# Référentiel OWASP 2017 - Doc #}
     <div class="grid-container grid-x">
       <h1 class="h2 claire-hand">Référentiel OWASP 2017.</h1>
       <div class="small-12 medium-12 large-12 cell">
