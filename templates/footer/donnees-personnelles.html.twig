@@ -31,7 +31,7 @@
       <nav aria-label="Vous êtes sur la page">
         <ol class="claire-hand breadcrumbs">
           <li>
-            <a href="/">Accueil</a>
+            <a href="{{ path('home') }}">Accueil</a>
           </li>
           <li>
             <span class="show-for-sr">Vous êtes sur la page :</span>Données-personnelles</li>
@@ -41,7 +41,7 @@
     <main class="grid-container grid-x" role="main">
       <h1 class="h2 claire-hand">Données personnelles et cookies</h1>
       <hr>
-      <p class="open-sans text-justify">La DINUM s’engage à ce que la collecte et le traitement de données personnelles effectués sur numerique.gouv.fr soient conformes au règlement général sur la protection des données (RGPD) et à la loi Informatique et Libertés.</p>
+      <p class="open-sans text-justify">{{marque_entreprise_long}} s’engage à ce que la collecte et le traitement de données personnelles effectués sur {{urlSite}} soient conformes au règlement général sur la protection des données (RGPD) et à la loi Informatique et Libertés.</p>
 
       <section class="cell">
         <h2 class="h4 claire-hand">Exercer vos droits</h2>
@@ -67,12 +67,10 @@
         <h4 class="h6 claire-hand">Directive 2002/58 sur la vie privée.</h4>
 
         <p class="open-sans text-justify">
-          <span class="lead">La directive 2002/58 vie privée et communications électroniques</span>, contient des règles sur l'utilisation des cookies. En particulier,
-          <strong>l'article 5, paragraphe 3</strong>de cette directive exige que le stockage des données (comme les cookies) sur l'ordinateur de l'utilisateur puisse seulement être fait si :
-        </p>
+          <span class="lead">La directive 2002/58 vie privée et communications électroniques</span>, contient des règles sur l'utilisation des cookies. En particulier, <strong>l'article 5, paragraphe 3</strong> de cette directive exige que le stockage des données (comme les cookies) sur l'ordinateur de l'utilisateur puisse seulement être fait si :</p>
 
         <ul class="open-sans">
-          <li>l'utilisateur est informé de la façon dont les données sont utilisées&nbsp;;</li>
+          <li>l'utilisateur est informé de la façon dont les données sont utilisées,</li>
           <li>il est donné à l'utilisateur la possibilité de refuser cette opération de stockage. Cependant, cet article statue aussi que le stockage de données pour raisons techniques est exempté de cette loi.</li>
         </ul>
 
@@ -100,7 +98,7 @@
       <section class="cell">
         <h3 class="h5 claire-hand">Les cookies et autres traceurs utilisés sur Ma-Moulinette.</h3>
         <p class="open-sans text-justify">
-          <span class="lead">Sur Ma-moulinette</span>, nous utilisons différents cookies pour améliorer votre expérience et nos services.
+          <span class="lead">Sur {{urlSite}}</span>, nous utilisons différents cookies pour améliorer votre expérience et nos services.
         </p>
         <h4 class="h6 claire-hand">Cookies strictement nécessaires au fonctionnement du site.</h4>
         <p class="open-sans text-justify">
@@ -119,7 +117,7 @@
           </thead>
           <tbody>
             <tr>
-              <td headers="data1">Tarte au citron</td>
+              <td headers="data1">Browser Update</td>
               <td headers="data2">browserupdateorg</td>
               <td headers="data3">Sauvegarde vos choix en matière de rappel sur la mise à jour de votre navigateur.</td>
               <td headers="data4">7 jours</td>
@@ -144,8 +142,7 @@
       <section class="cell">
         <h3 class="h5 claire-hand">Cookies tiers, destinés à fournir des contenus du site.</h3>
         <p class="open-sans text-justify">
-          <span class="lead">Ma-moulinette</span>
-          ne s’appuie sur aucun des services proposés par des sites tiers.
+          <span class="lead">Ma-moulinette</span> ne s’appuie sur aucun des services proposés par des sites tiers.
         </p>
       </section>
 
@@ -185,12 +182,15 @@
       </section>
 
       <section>
-        <a class="source-link" href="https://www.cnil.fr/fr/cookies-et-autres-traceurs">Cookies et autres traceurs.</a>
-        <a class="source-link" href="https://www.cnil.fr/sites/cnil/files/atoms/files/recommandation-cookies-et-autres-traceurs.pdf">Recommandations sur les Cookies et autres traceurs.</a>
-        <a class="source-link" href="https://www.cnil.fr/fr/reglement-europeen-protection-donnees/chapitre2#Article5">RGPD - Article 5 - Principes relatifs au traitement des données à caractère personnel.</a>
-        <a class="source-link" href="https://www.cnil.fr/fr/reglement-europeen-protection-donnees/chapitre2#Article6">RGPD - Article 6 - Licéité du traitement.</a>
-        <a class="source-link" href="https://www.cnil.fr/fr/reglement-europeen-protection-donnees/chapitre2#Article7">RGPD - Article 7 - Conditions applicables au consentement.</a>
-        <a class="source-link" href="Article 11 - Traitement ne nécessitant pas l'identification">RGPD - Article 11 - Traitement ne nécessitant pas l'identification.</a>
+        <h2 class="h5 claire-hand">Liens utiles</h2>
+
+      <ul>
+        <li><a class="source-link" href="https://www.cnil.fr/fr/cookies-et-autres-traceurs">Cookies et autres traceurs.</a></li>
+        <li><a class="source-link" href="https://www.cnil.fr/sites/cnil/files/atoms/files/recommandation-cookies-et-autres-traceurs.pdf">Recommandations sur les Cookies et autres traceurs.</a></li>
+        <li><a class="source-link" href="https://www.cnil.fr/fr/reglement-europeen-protection-donnees/chapitre2#Article5">RGPD - Article 5 - Principes relatifs au traitement des données à caractère personnel.</a></li>
+        <li><a class="source-link" href="https://www.cnil.fr/fr/reglement-europeen-protection-donnees/chapitre2#Article6">RGPD - Article 6 - Licéité du traitement.</a></li>
+        <li><a class="source-link" href="https://www.cnil.fr/fr/reglement-europeen-protection-donnees/chapitre2#Article7">RGPD - Article 7 - Conditions applicables au consentement.</a></li>
+        <li><a class="source-link" href="Article 11 - Traitement ne nécessitant pas l'identification">RGPD - Article 11 - Traitement ne nécessitant pas l'identification.</a></li>
         <br>
       </section>
 
