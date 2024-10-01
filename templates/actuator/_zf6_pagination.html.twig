@@ -6,11 +6,11 @@
             {% if previous is defined %}
                 <li class="pagination-previous">
                     <a rel="prev" href="{{ path(route, query|merge({(pageParameterName): previous})) }}">
-                        <span class="open-sans">Précedent</span>
+                        <span class="open-sans">Précédent</span>
                     </a>
                 </li>
             {% else %}
-                <li class="pagination-previous disabled"><span class="open-sans">Précedent</span></li>
+                <li class="pagination-previous disabled"><span class="open-sans">Précédent</span></li>
             {% endif %}
 
             {% if startPage > 1 %}
