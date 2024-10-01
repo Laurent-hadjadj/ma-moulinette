@@ -272,6 +272,10 @@ export const remplissage=function(mavenKey) {
       }
     }
 
+    /** On nettoie la liste des langages */
+    $('#distribution-langage').html('');
+
+    /** On ajoute les langages */
     for (const key in jsonObject) {
       if (jsonObject.hasOwnProperty(key)) {
           i++;
@@ -285,8 +289,10 @@ export const remplissage=function(mavenKey) {
           $('#distribution-langage').append(item);
       }
     }
+
     $('#coverage').html(new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(parseInt(t.coverage,10)/cent));
     $('#ratio-dette-technique').html(new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(parseInt(t.sqaleDebtRatio,10)/cent));
+
     /** On colorise le résultat */
     if (t.sqaleDebtRatio<=30){
       /** La dette technique est soutenable */
