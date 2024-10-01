@@ -30,15 +30,9 @@
     <header class="grid-container">
       <nav aria-label="Vous êtes Ici :" role="navigation">
         <ul class="claire-hand breadcrumbs">
-          <li>
-            <a href="/">Accueil</a>
-          </li>
-          <li>
-            <a href="/profil">Profil</a>
-          </li>
-          <li>
-            <span class="show-for-sr">Vous êtes ici :</span>Détails</li>
-        </ul>
+          <li><a href="{{ path('home') }}">Accueil</a></li>
+          <li><a href="{{ path('profil') }}">Profil</a></li>
+          <li><span class="show-for-sr">Vous êtes ici :</span>Détails</li></ul>
       </nav>
     </header>
 
