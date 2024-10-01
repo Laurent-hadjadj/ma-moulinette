@@ -70,7 +70,7 @@ class ApiProjetController extends AbstractController
     public function favori(Security $security, Request $request): response
     {
         /** On instancie l'entityRepository */
-        $utilisateurEntity = $this->em->getRepository(Utilisateur::class);
+        $utilisateurRepository = $this->em->getRepository(Utilisateur::class);
 
         /** On décode le body */
         $data = json_decode($request->getContent());
@@ -89,7 +89,7 @@ class ApiProjetController extends AbstractController
         $courriel = $security->getUser()->getCourriel();
 
         $map=['maven_key'=>$data->maven_key, 'courriel'=>$courriel];
-        $request = $utilisateurEntity->updateUtilisateurPreferenceFavori($preference, $map);
+        $request = $utilisateurRepository->updateUtilisateurPreferenceFavori($preference, $map);
         if ($request['code']!=200) {
             return $response->setData(['code' => $request['code']], Response::HTTP_OK);
         }
