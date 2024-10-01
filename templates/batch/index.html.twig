@@ -29,7 +29,7 @@
     <header class="grid-container">
       <nav aria-label="vous êtes ici :">
         <ul class="claire-hand breadcrumbs">
-          <li><a href="/">Accueil</a></li>
+          <li><a href="{{ path('home') }}">Accueil</a></li>
           <li><span class="show-for-sr">vous êtes ici :</span>Traitement</li>
         </ul>
       </nav>
@@ -72,7 +72,7 @@
 
 
       {# On choisi le type d'affichage #}
-      <div class="button-group-option" data-grouptype="OU">
+      <div class="button-group-option" data-group-type="OU">
         <a class="js-automatique button bouton-automatique">Automatique</a>
         <a class="js-manuel button bouton-manuel">Manuel</a>
       </div>
