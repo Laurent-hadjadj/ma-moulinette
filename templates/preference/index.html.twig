@@ -32,11 +32,8 @@
     <header class="grid-container">
       <nav aria-label="Ici : " role="navigation">
         <ul class="claire-hand breadcrumbs">
-          <li>
-            <a href="/">Accueil</a>
-          </li>
-          <li>
-            <span class="show-for-sr">Current:</span>Mes préférences</li>
+          <li><a href="{{ path('home') }}">Accueil</a></li>
+          <li><span class="show-for-sr">Current:</span>Mes préférences</li>
         </ul>
       </nav>
     </header>
@@ -46,7 +43,7 @@
       <div class="fieldset fieldset-information">
         <div
           class="grid-x">
-          {# Prenom + Nom #}
+          {# Prénom + Nom #}
           <div class="small-12 medium-1 large-1 cell">
             <img id="ma-tete" src="/build/avatar/{{avatar}}" alt="mOi"/>
           </div>
@@ -125,7 +122,7 @@
             <th scope="col" class="open-sans text-center"></th>
             <th scope="col" class="open-sans text-center">Option</th>
             <th scope="col" class="open-sans text-center">Description</th>
-            <th scope="col" class="open-sans text-center">Etat</th>
+            <th scope="col" class="open-sans text-center">État</th>
           </tr>
         </thead>
         <tbody id="tableau-liste-preferences" class="open-sans">
@@ -170,7 +167,7 @@
         <blockquote class="text-justify">
           Le service de
           <em>bookmark</em>
-          permet de revenir sur le dernier projet visité. Cette fonction est très utile car elle évite de selectionner à chaque fois le projet dans le sélecteur de projets.
+          permet de revenir sur le dernier projet visité. Cette fonction est très utile car elle évite de sélectionner à chaque fois le projet dans le sélecteur de projets.
         </blockquote>
 
         <p class="open-sans">
@@ -195,8 +192,7 @@
         <blockquote class="text-justify">
           Mettre en
           <em>favori</em>
-          (petit-coeur) un projet permet son ajout à la liste des projets qui seront affichés
-          sur la page d'accueil. Il est possible d'afficher dix (10) projets.
+          (petit-coeur) un projet permet son ajout à la liste des projets qui seront affichés sur la page d'accueil. Il est possible d'afficher dix (10) projets.
         </blockquote>
 
         <p class="open-sans">
@@ -238,10 +234,8 @@
         <br>
 
         <blockquote class="text-justify">
-          La liste des
-          <em>projets</em>
-          contient tous mes projets dont une collecte a été effectuée. Les projets sont ainsi disponibles depuis le bouton
-          <em>Liste des projets</em>
+          La liste des <em>projets</em>
+          contient tous mes projets dont une collecte a été effectuée. Les projets sont ainsi disponibles depuis le bouton <em>Liste des projets</em>
           de la page Projet.
         </blockquote>
 
@@ -281,8 +275,7 @@
 
         <blockquote class="text-justify">
           Pour chaque
-          <em>favori</em>, une ou plusieurs versions peuvent être ajoutées à la liste de suivi
-          des projets favori. Cela permet donc d'avoir une liste des projets favoris et pour chacun une liste des versions.
+          <em>favori</em>, une ou plusieurs versions peuvent être ajoutées à la liste de suivi des projets favori. Cela permet donc d'avoir une liste des projets favoris et pour chacun une liste des versions.
         </blockquote>
 
         <p class="open-sans">La liste des versions est :
