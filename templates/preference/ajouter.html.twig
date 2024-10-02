@@ -55,7 +55,7 @@
         {# Avatar + Prénom + Nom #}
         <div class="grid-x">
           <div class="small-12 medium-1 large-1 cell avatar-container">
-            <img id="mon-avatar" src="/build/avatar/{{avatar}}" alt="mon Avatar"/>
+            <img id="mon-avatar" src="{{ asset('build/avatar/{{avatar}}') }}" alt="mon Avatar"/>
           </div>
           <div class="small-12 medium-11 large-11 cell">
             <p class="open-sans prenom-nom-ajouter">{{prenom}}
