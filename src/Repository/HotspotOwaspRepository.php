@@ -20,6 +20,7 @@ use Doctrine\Persistence\ManagerRegistry;
 class HotspotOwaspRepository extends ServiceEntityRepository
 {
     public static $removeReturnLine = "/\s+/u";
+    public static $mavenKey = ':maven_key';
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -44,7 +45,7 @@ class HotspotOwaspRepository extends ServiceEntityRepository
                     FROM ma_moulinette.hotspot_owasp
                     WHERE maven_key=:maven_key AND status=:status";
             $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-            $conn->bindValue(':maven_key', $map['maven_key']);
+            $conn->bindValue(static::$mavenKey, $map['maven_key']);
             $conn->bindValue(':status', $map['status']);
             $nombre=$conn->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
@@ -71,7 +72,7 @@ class HotspotOwaspRepository extends ServiceEntityRepository
                     FROM ma_moulinette.hotspot_owasp
                     WHERE maven_key=:maven_key AND status='TO_REVIEW' GROUP BY probability";
             $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-            $conn->bindValue(':maven_key', $map['maven_key']);
+            $conn->bindValue(static::$mavenKey, $map['maven_key']);
             $nombre=$conn->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
             return ['code'=>500, 'erreur'=> $e->getMessage()];
@@ -99,7 +100,7 @@ class HotspotOwaspRepository extends ServiceEntityRepository
                     WHERE maven_key=:maven_key
                     AND status='TO_REVIEW' GROUP BY menace";
             $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $conn->bindValue(':maven_key', $map['maven_key']);
+                $conn->bindValue(static::$mavenKey, $map['maven_key']);
             $nombre=$conn->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
             return ['code'=>500, 'erreur'=> $e->getMessage()];
@@ -128,7 +129,7 @@ class HotspotOwaspRepository extends ServiceEntityRepository
                     AND status='TO_REVIEW'
                     AND probability=:probability";
             $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-            $conn->bindValue(':maven_key', $map['maven_key']);
+            $conn->bindValue(static::$mavenKey, $map['maven_key']);
             $conn->bindValue(':menace', $map['menace']);
             $conn->bindValue(':probability', $map['probability']);
             $nombre=$conn->executeQuery()->fetchAllAssociative();
@@ -157,7 +158,7 @@ class HotspotOwaspRepository extends ServiceEntityRepository
                         FROM ma_moulinette.hotspot_owasp
                         WHERE maven_key=:maven_key";
                 $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $conn->bindValue(':maven_key', $map['maven_key']);
+                    $conn->bindValue(static::$mavenKey, $map['maven_key']);
                     $conn->executeStatement();
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
@@ -190,7 +191,7 @@ class HotspotOwaspRepository extends ServiceEntityRepository
                 foreach ($map as $ref) {
                     $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                         $stmt->bindValue(':referentiel_owasp', $ref['referentiel_owasp']);
-                        $stmt->bindValue(':maven_key', $ref['maven_key']);
+                        $stmt->bindValue(static::$mavenKey, $ref['maven_key']);
                         $stmt->bindValue(':version', $ref['version']);
                         $stmt->bindValue(':date_version', $ref['date_version']->format('Y-m-d H:i:sO'));
                         $stmt->bindValue(':menace', $ref['menace']);

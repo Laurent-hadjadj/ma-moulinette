@@ -23,6 +23,7 @@ use Doctrine\Persistence\ManagerRegistry;
 class MesuresRepository extends ServiceEntityRepository
 {
     public static $removeReturnLine = "/\s+/u";
+    public static $mavenKey = ':maven_key';
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -51,7 +52,7 @@ class MesuresRepository extends ServiceEntityRepository
                         WHERE maven_key=:maven_key
                         ORDER BY date_enregistrement DESC LIMIT 1";
                 $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $conn->bindValue(':maven_key', $map['maven_key']);
+                    $conn->bindValue(static::$mavenKey, $map['maven_key']);
                 $mesures=$conn->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
             return ['code'=>500, 'erreur'=> $e->getMessage()];
@@ -81,7 +82,7 @@ class MesuresRepository extends ServiceEntityRepository
                         (:maven_key, :project_name, :lines, :ncloc, :language_distribution::json, :sqale_debt_ratio, :coverage, :duplicated_lines_density, :tests, :issues, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
 
             $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-            $stmt->bindValue(':maven_key', $map['maven_key']);
+            $stmt->bindValue(static::$mavenKey, $map['maven_key']);
             $stmt->bindValue(':project_name', $map['project_name']);
             $stmt->bindValue(':lines', $map['lines']);
             $stmt->bindValue(':ncloc', $map['ncloc']);
@@ -131,7 +132,7 @@ class MesuresRepository extends ServiceEntityRepository
                             WHERE maven_key=:maven_key";
 
                     $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                        $stmt->bindValue(':maven_key', $map['maven_key']);
+                        $stmt->bindValue(static::$mavenKey, $map['maven_key']);
                         $stmt->executeStatement();
                 $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {

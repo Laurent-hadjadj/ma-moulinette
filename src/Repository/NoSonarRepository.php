@@ -20,6 +20,7 @@ use Doctrine\Persistence\ManagerRegistry;
 class NoSonarRepository extends ServiceEntityRepository
 {
     public static $removeReturnLine = "/\s+/u";
+    public static $mavenKey = ':maven_key';
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -46,7 +47,7 @@ class NoSonarRepository extends ServiceEntityRepository
                         FROM ma_moulinette.no_sonar
                         WHERE maven_key=:maven_key";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(':maven_key', $map['maven_key']);
+                    $stmt->bindValue(static::$mavenKey, $map['maven_key']);
                     $stmt->executeStatement();
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
@@ -76,7 +77,7 @@ class NoSonarRepository extends ServiceEntityRepository
                         WHERE maven_key=:maven_key
                         GROUP BY rule";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(':maven_key', $map['maven_key']);
+                    $stmt->bindValue(static::$mavenKey, $map['maven_key']);
                     $liste=$stmt->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
             return ['code'=>500, 'erreur'=> $e->getMessage()];
@@ -106,7 +107,7 @@ class NoSonarRepository extends ServiceEntityRepository
                 $this->getEntityManager()->getConnection()->beginTransaction();
                     foreach($map as $item){
                         $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                            $stmt->bindValue(':maven_key', $item['maven_key']);
+                            $stmt->bindValue(static::$mavenKey, $item['maven_key']);
                             $stmt->bindValue(':rule', $item['rule']);
                             $stmt->bindValue(':component', $item['component']);
                             $stmt->bindValue(':line', $item['line']);

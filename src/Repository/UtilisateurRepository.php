@@ -23,6 +23,7 @@ use Doctrine\Persistence\ManagerRegistry;
 class UtilisateurRepository extends ServiceEntityRepository
 {
     public static $removeReturnLine = "/\s+/u";
+    public static $courriel = ':courriel';
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -108,7 +109,7 @@ class UtilisateurRepository extends ServiceEntityRepository
                     SET preference=:preference
                     WHERE courriel=:courriel";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(':courriel', $map['courriel']);
+                $stmt->bindValue(static::$courriel, $map['courriel']);
                 $stmt->bindValue(':preference', $jsonArray);
                 $stmt->executeStatement();
             $this->getEntityManager()->getConnection()->commit();
@@ -133,7 +134,7 @@ class UtilisateurRepository extends ServiceEntityRepository
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function deleteUtilisateurPreferenceFavori($preference, $map): array
-
+    {
         /**
          * On regarde d'abord si le projet à une version en favori
          * ensuite on regarde combien de version pour ce projet sont en favori
@@ -208,7 +209,7 @@ class UtilisateurRepository extends ServiceEntityRepository
                         WHERE courriel=:courriel";
 
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(':courriel', $map['courriel']);
+                $stmt->bindValue(static::$courriel, $map['courriel']);
                 $stmt->bindValue(':preference', $jsonArray);
 
                 $stmt->executeStatement();
@@ -234,6 +235,7 @@ class UtilisateurRepository extends ServiceEntityRepository
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function updateUtilisateurPreferenceFavori($preference, $map): array
+    {
         /** On regarde si la projet est dans les favoris */
         $isFavori = in_array($map['maven_key'], $preference['favori']);
 
@@ -271,7 +273,7 @@ class UtilisateurRepository extends ServiceEntityRepository
                                 SET preference = '$jarray'
                                 WHERE courriel=:courriel";
                         $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                            $stmt->bindValue(':courriel', $map['courriel']);
+                            $stmt->bindValue(static::$courriel, $map['courriel']);
                             $stmt->executeStatement();
             } catch (\Doctrine\DBAL\Exception $e) {
                 $this->getEntityManager()->getConnection()->rollBack();
@@ -299,7 +301,7 @@ class UtilisateurRepository extends ServiceEntityRepository
                         SET preference = '$jarray'
                         WHERE courriel=:courriel";
                     $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                        $stmt->bindValue(':courriel', $map['courriel']);
+                        $stmt->bindValue(static::$courriel, $map['courriel']);
                         $stmt->executeStatement();
                 $this->getEntityManager()->getConnection()->commit();
 
@@ -325,15 +327,17 @@ class UtilisateurRepository extends ServiceEntityRepository
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function updateUtilisateurResetPassword($map): array
+    {
+        $sql = "UPDATE ma_moulinette.utilisateur
+        SET init = :init, date_modification=:date_modification
+        WHERE courriel=:courriel";
+
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-                $sql = "UPDATE ma_moulinette.utilisateur
-                        SET init = :init, date_modification=:date_modification
-                        WHERE courriel=:courriel";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(':init', $map['init']);
                     $stmt->bindValue(':date_modification', $map['date_modification']);
-                    $stmt->bindValue(':courriel', $map['courriel']);
+                    $stmt->bindValue(static::$courriel, $map['courriel']);
                     $stmt->executeStatement();
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {

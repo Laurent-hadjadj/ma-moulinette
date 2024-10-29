@@ -23,6 +23,7 @@ use Doctrine\Persistence\ManagerRegistry;
 class PropertiesRepository extends ServiceEntityRepository
 {
     public static $removeReturnLine = "/\s+/u";
+    public static $type = ':type';
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -48,7 +49,7 @@ class PropertiesRepository extends ServiceEntityRepository
                         FROM ma_moulinette.properties
                         WHERE type=:type";
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(':type', $type);
+                    $stmt->bindValue(static::$type, $type);
                     $request = $stmt->executeQuery()->fetchAllAssociative();
             return ['code' => 200, 'request' => $request, 'erreur' => ''];
         } catch (\Doctrine\DBAL\Exception $e) {
@@ -130,7 +131,7 @@ class PropertiesRepository extends ServiceEntityRepository
                     $stmt->bindValue(':projet_bd', $map['projet_bd']);
                     $stmt->bindValue(':projet_sonar', $map['projet_sonar']);
                     $stmt->bindValue(':date_modification_projet', $map['date_modification_projet']->format('Y-m-d H:i:sO'));
-                    $stmt->bindValue(':type', 'properties');
+                    $stmt->bindValue(static::$type, 'properties');
                     $stmt->executeQuery();
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
@@ -165,7 +166,7 @@ class PropertiesRepository extends ServiceEntityRepository
                     $stmt->bindValue(':profil_bd', $map['profil_bd']);
                     $stmt->bindValue(':profil_sonar', $map['profil_sonar']);
                     $stmt->bindValue(':date_modification_profil', $map['date_modification_profil']->format('Y-m-d H:i:sO'));
-                    $stmt->bindValue(':type', 'properties');
+                    $stmt->bindValue(static::$type, 'properties');
                     $stmt->executeStatement();
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {

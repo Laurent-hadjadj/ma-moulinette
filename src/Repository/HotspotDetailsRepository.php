@@ -21,6 +21,7 @@ use Doctrine\Persistence\ManagerRegistry;
 class HotspotDetailsRepository extends ServiceEntityRepository
 {
     public static $removeReturnLine = "/\s+/u";
+    public static $mavenKey = ':maven_key';
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -47,7 +48,7 @@ class HotspotDetailsRepository extends ServiceEntityRepository
                 ORDER BY status ASC";
         try {
             $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $conn->bindValue(':maven_key', $map['maven_key']);
+                $conn->bindValue(static::$mavenKey, $map['maven_key']);
                 $nombre=$conn->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
             return ['code'=>500, 'erreur'=> $e->getMessage()];
@@ -74,7 +75,7 @@ class HotspotDetailsRepository extends ServiceEntityRepository
                         FROM ma_moulinette.hotspot_details
                         WHERE maven_key=:maven_key";
                 $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $conn->bindValue(':maven_key', $map['maven_key']);
+                    $conn->bindValue(static::$mavenKey, $map['maven_key']);
                     $conn->executeStatement();
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
@@ -108,7 +109,7 @@ class HotspotDetailsRepository extends ServiceEntityRepository
             $this->getEntityManager()->getConnection()->beginTransaction();
                 foreach($map as $item){
                     $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                        $stmt->bindValue(':maven_key', $item['maven_key']);
+                        $stmt->bindValue(static::$mavenKey, $item['maven_key']);
                         $stmt->bindValue(':version', $item['version']);
                         $stmt->bindValue(':date_version', $item['date_version']->format('Y-m-d H:i:sO'));
                         $stmt->bindValue(':security_category', $item['security_category']);

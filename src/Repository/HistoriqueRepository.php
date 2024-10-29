@@ -23,6 +23,12 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 class HistoriqueRepository extends ServiceEntityRepository
 {
     public static $removeReturnLine = "/\s+/u";
+    public static $mavenKey = ':maven_key';
+    public static $version = ':version';
+    public static $dateVersion = ':date_version';
+    public static $initialTrue = ':initial_true';
+    public static $initialFalse = ':initial_false';
+    public static $limit = ':limit';
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -42,12 +48,13 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function countHistoriqueProjet($map): array
-        try {
-                $sql = "SELECT count(*) AS nombre
+    {
+        $sql = "SELECT count(*) AS nombre
                         FROM ma_moulinette.historique
                         WHERE maven_key=:maven_key";
+        try {
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(':maven_key', $map['maven_key']);
+                    $stmt->bindValue(static::$mavenKey, $map['maven_key']);
                 $request=$stmt->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
             return ['code'=> 500, 'erreur'=>$e->getMessage()];
@@ -69,17 +76,16 @@ class HistoriqueRepository extends ServiceEntityRepository
      */
     public function getProjetFavori($where): array
     {
+        $sql = "SELECT DISTINCT
+                    maven_key as mavenkey, nom_projet as nom,
+                    version, date_version as date, note_reliability as fiabilite,
+                    note_security as securite, note_hotspot as hotspot,
+                    note_sqale as sqale, nombre_bug as bug,
+                    nombre_vulnerability as vulnerability,
+                    nombre_code_smell as code_smell, nombre_hotspot as hotspots
+                FROM ma_moulinette.historique
+                WHERE ". $where ."ORDER BY date DESC limit 4";
         try {
-                $sql = "SELECT DISTINCT
-                            maven_key as mavenkey, nom_projet as nom,
-                            version, date_version as date, note_reliability as fiabilite,
-                            note_security as securite, note_hotspot as hotspot,
-                            note_sqale as sqale, nombre_bug as bug,
-                            nombre_vulnerability as vulnerability,
-                            nombre_code_smell as code_smell, nombre_hotspot as hotspots
-                        FROM ma_moulinette.historique
-                        WHERE ". $where ."
-                        ORDER BY date DESC limit 4";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $request=$stmt->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
@@ -101,6 +107,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function updateHistoriqueReference($map): array
+    {
         /** on prépare la réponse */
         $response=['code'=>200, 'erreur'=>''];
         try {
@@ -110,7 +117,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                         SET initial=false
                         WHERE maven_key=:maven_key";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(':maven_key', $map['maven_key']);
+                    $stmt->bindValue(static::$mavenKey, $map['maven_key']);
                     $stmt->executeStatement();
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
@@ -128,9 +135,9 @@ class HistoriqueRepository extends ServiceEntityRepository
                         AND date_version=:date_version";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(':initial', $map['initial']);
-                    $stmt->bindValue(':maven_key', $map['maven_key']);
-                    $stmt->bindValue(':version', $map['version']);
-                    $stmt->bindValue(':date_version', $map['date_version']);
+                    $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+                    $stmt->bindValue(static::$version, $map['version']);
+                    $stmt->bindValue(static::$dateVersion, $map['date_version']);
                     $stmt->executeStatement();
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
@@ -152,6 +159,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function deleteHistoriqueProjet($map): array
+    {
         /** on prépare la réponse */
         $response=['code'=>200, 'erreur'=>''];
         try {
@@ -162,9 +170,9 @@ class HistoriqueRepository extends ServiceEntityRepository
                         AND version=:version
                         AND date_version=:date_version";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(':maven_key', $map['maven_key']);
-                    $stmt->bindValue(':version', $map['version']);
-                    $stmt->bindValue(':date_version', $map['date_version']);
+                    $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+                    $stmt->bindValue(static::$version, $map['version']);
+                    $stmt->bindValue(static::$dateVersion, $map['date_version']);
                     $stmt->executeStatement();
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
@@ -186,63 +194,64 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function selectUnionHistoriqueProjet($map): array
+    {
+        /** On prépare la requête */
+        // -- Sélection de la version initiale (la plus ancienne)
+        // -- Sélection des 10 dernières versions (triées par date décroissante)
+        // -- Tri final : version initiale en premier, puis les autres par date croissante
+        $sql="SELECT *
+        FROM (
+            (
+                SELECT
+                    nom_projet AS nom,
+                    date_version AS date,
+                    version,
+                    suppress_warning,
+                    no_sonar,
+                    nombre_bug AS bug,
+                    nombre_vulnerability AS faille,
+                    nombre_code_smell AS mauvaise_pratique,
+                    nombre_hotspot,
+                    frontend AS presentation,
+                    backend AS metier,
+                    autre,
+                    note_reliability AS reliability,
+                    note_security AS security,
+                    note_hotspot,
+                    note_sqale AS maintainability,
+                    initial
+                FROM ma_moulinette.historique
+                WHERE maven_key = :maven_key AND initial = :initial_true
+            ) UNION ALL (
+                SELECT
+                    nom_projet AS nom,
+                    date_version AS date,
+                    version,
+                    suppress_warning,
+                    no_sonar,
+                    nombre_bug AS bug,
+                    nombre_vulnerability AS faille,
+                    nombre_code_smell AS mauvaise_pratique,
+                    nombre_hotspot,
+                    frontend AS presentation,
+                    backend AS metier,
+                    autre,
+                    note_reliability AS reliability,
+                    note_security AS security,
+                    note_hotspot,
+                    note_sqale AS maintainability,
+                    initial
+                FROM ma_moulinette.historique
+                WHERE maven_key = :maven_key AND initial = :initial_false
+                ORDER BY date_version DESC
+                LIMIT :limit)) AS versions
+            ORDER BY date ASC";
         try {
-                /** On prépare la requête */
-                // -- Sélection de la version initiale (la plus ancienne)
-                // -- Sélection des 10 dernières versions (triées par date décroissante)
-                // -- Tri final : version initiale en premier, puis les autres par date croissante
-                $sql="SELECT *
-                FROM (
-                    (
-                        SELECT
-                            nom_projet AS nom,
-                            date_version AS date,
-                            version,
-                            suppress_warning,
-                            no_sonar,
-                            nombre_bug AS bug,
-                            nombre_vulnerability AS faille,
-                            nombre_code_smell AS mauvaise_pratique,
-                            nombre_hotspot,
-                            frontend AS presentation,
-                            backend AS metier,
-                            autre,
-                            note_reliability AS reliability,
-                            note_security AS security,
-                            note_hotspot,
-                            note_sqale AS maintainability,
-                            initial
-                        FROM ma_moulinette.historique
-                        WHERE maven_key = :maven_key AND initial = :initial_true
-                    ) UNION ALL (
-                        SELECT
-                            nom_projet AS nom,
-                            date_version AS date,
-                            version,
-                            suppress_warning,
-                            no_sonar,
-                            nombre_bug AS bug,
-                            nombre_vulnerability AS faille,
-                            nombre_code_smell AS mauvaise_pratique,
-                            nombre_hotspot,
-                            frontend AS presentation,
-                            backend AS metier,
-                            autre,
-                            note_reliability AS reliability,
-                            note_security AS security,
-                            note_hotspot,
-                            note_sqale AS maintainability,
-                            initial
-                        FROM ma_moulinette.historique
-                        WHERE maven_key = :maven_key AND initial = :initial_false
-                        ORDER BY date_version DESC
-                        LIMIT :limit)) AS versions
-                    ORDER BY date ASC";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(':maven_key', $map['maven_key']);
-                    $stmt->bindValue(':initial_true', 0);
-                    $stmt->bindValue(':initial_false', 1);
-                    $stmt->bindValue(':limit', $map['limit']);
+                    $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+                    $stmt->bindValue(static::$initialTrue, 0);
+                    $stmt->bindValue(static::$initialFalse, 1);
+                    $stmt->bindValue(static::$limit, $map['limit']);
                         $suivi=$stmt->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
             return ['code'=> 500, 'erreur'=>$e->getMessage()];
@@ -263,33 +272,35 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function selectUnionHistoriqueAnomalie($map): array
+    {
+        /** On prépare la requête */
+        $sql = "SELECT *
+        FROM (
+            (SELECT date_version AS date,
+                    nombre_anomalie_bloquant AS bloquant,
+                    nombre_anomalie_critique AS critique,
+                    nombre_anomalie_majeur AS majeur,
+                    nombre_anomalie_mineur AS mineur
+            FROM ma_moulinette.historique
+            WHERE maven_key = :maven_key AND initial = :initial_true)
+            UNION ALL
+            (SELECT date_version AS date,
+                nombre_anomalie_bloquant AS bloquant,
+                nombre_anomalie_critique AS critique,
+                nombre_anomalie_majeur AS majeur,
+                nombre_anomalie_mineur AS mineur
+            FROM ma_moulinette.historique
+            WHERE maven_key = :maven_key AND initial = :initial_false
+            ORDER BY date_version DESC
+            LIMIT :limit)) AS versions
+        ORDER BY date ASC";
+
         try {
-            /** On prépare la requête */
-            $sql = "SELECT *
-                    FROM (
-                        (SELECT date_version AS date,
-                                nombre_anomalie_bloquant AS bloquant,
-                                nombre_anomalie_critique AS critique,
-                                nombre_anomalie_majeur AS majeur,
-                                nombre_anomalie_mineur AS mineur
-                        FROM ma_moulinette.historique
-                        WHERE maven_key = :maven_key AND initial = :initial_true)
-                        UNION ALL
-                        (SELECT date_version AS date,
-                            nombre_anomalie_bloquant AS bloquant,
-                            nombre_anomalie_critique AS critique,
-                            nombre_anomalie_majeur AS majeur,
-                            nombre_anomalie_mineur AS mineur
-                        FROM ma_moulinette.historique
-                        WHERE maven_key = :maven_key AND initial = :initial_false
-                        ORDER BY date_version DESC
-                        LIMIT :limit)) AS versions
-                    ORDER BY date ASC";
             $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(':maven_key', $map['maven_key']);
-                $stmt->bindValue(':initial_true', 0);
-                $stmt->bindValue(':initial_false', 1);
-                $stmt->bindValue(':limit', $map['limit']);
+                $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+                $stmt->bindValue(static::$initialTrue, 0);
+                $stmt->bindValue(static::$initialFalse, 1);
+                $stmt->bindValue(static::$limit, $map['limit']);
             $exec=$stmt->executeQuery();
             $liste=$exec->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
@@ -311,42 +322,43 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function selectUnionHistoriqueDetails($map): array
-        try {
-                /** On prépare la requête */
-                $sql = "SELECT *
-                FROM (
-                    (SELECT date_version AS date, version,
-                            bug_blocker, bug_critical, bug_major,
-                            bug_minor, bug_info,
-                            vulnerability_blocker, vulnerability_critical,
-                            vulnerability_major, vulnerability_minor,
-                            vulnerability_info,
-                            code_smell_blocker, code_smell_critical,
-                            code_smell_major, code_smell_minor,
-                            code_smell_info, initial
-                    FROM ma_moulinette.historique
-                    WHERE maven_key = :maven_key AND initial = :initial_true)
-                    UNION ALL
-                        (SELECT date_version AS date, version,
-                            bug_blocker, bug_critical, bug_major,
-                            bug_minor, bug_info,
-                            vulnerability_blocker, vulnerability_critical,
-                            vulnerability_major, vulnerability_minor,
-                            vulnerability_info,
-                            code_smell_blocker, code_smell_critical,
-                            code_smell_major, code_smell_minor,
-                            code_smell_info, initial
-                        FROM ma_moulinette.historique
-                        WHERE maven_key = :maven_key AND initial = :initial_false
-                        ORDER BY date_version DESC
-                        LIMIT :limit)) AS versions
-                    ORDER BY date ASC";
+    {
+        /** On prépare la requête */
+        $sql = "SELECT *
+        FROM (
+            (SELECT date_version AS date, version,
+                    bug_blocker, bug_critical, bug_major,
+                    bug_minor, bug_info,
+                    vulnerability_blocker, vulnerability_critical,
+                    vulnerability_major, vulnerability_minor,
+                    vulnerability_info,
+                    code_smell_blocker, code_smell_critical,
+                    code_smell_major, code_smell_minor,
+                    code_smell_info, initial
+            FROM ma_moulinette.historique
+            WHERE maven_key = :maven_key AND initial = :initial_true)
+            UNION ALL
+                (SELECT date_version AS date, version,
+                    bug_blocker, bug_critical, bug_major,
+                    bug_minor, bug_info,
+                    vulnerability_blocker, vulnerability_critical,
+                    vulnerability_major, vulnerability_minor,
+                    vulnerability_info,
+                    code_smell_blocker, code_smell_critical,
+                    code_smell_major, code_smell_minor,
+                    code_smell_info, initial
+                FROM ma_moulinette.historique
+                WHERE maven_key = :maven_key AND initial = :initial_false
+                ORDER BY date_version DESC
+                LIMIT :limit)) AS versions
+            ORDER BY date ASC";
 
+        try {
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(':maven_key', $map['maven_key']);
-                    $stmt->bindValue(':initial_true', 0);
-                    $stmt->bindValue(':initial_false', 1);
-                    $stmt->bindValue(':limit', $map['limit']);
+                    $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+                    $stmt->bindValue(static::$initialTrue, 0);
+                    $stmt->bindValue(static::$initialFalse, 1);
+                    $stmt->bindValue(static::$limit, $map['limit']);
                 $details=$stmt->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
             return ['code'=> 500, 'erreur'=>$e->getMessage()];
@@ -367,18 +379,20 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function selectHistoriqueAnomalieGraphique($map): array
+    {
+        /** On prépare la requête */
+        $sql = "SELECT nombre_bug AS bug,
+                        nombre_vulnerability AS sec,
+                        nombre_code_smell AS code_smell,
+                        date_version AS date
+                FROM ma_moulinette.historique
+                WHERE maven_key = :maven_key
+                GROUP BY nombre_bug, nombre_vulnerability, nombre_code_smell, date_version
+                ORDER BY date ASC";
+
         try {
-                /** On prépare la requête */
-                $sql = "SELECT nombre_bug AS bug,
-                                nombre_vulnerability AS sec,
-                                nombre_code_smell AS code_smell,
-                                date_version AS date
-                        FROM ma_moulinette.historique
-                        WHERE maven_key = :maven_key
-                        GROUP BY nombre_bug, nombre_vulnerability, nombre_code_smell, date_version
-                        ORDER BY date ASC";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(':maven_key', $map['maven_key']);
+                $stmt->bindValue(static::$mavenKey, $map['maven_key']);
                 $graph=$stmt->executeQuery()->fetchAllAssociative();
                 // Conversion des dates en format ISO 8601
                 foreach ($graph as &$row) {
@@ -407,8 +421,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function insertHistoriqueAjoutProjet($map,$json): array
-        try {
-                $this->getEntityManager()->getConnection()->beginTransaction();
+    {
                     /** On prépare la requête */
                     $sql = "INSERT INTO ma_moulinette.historique
                     (maven_key, analyse_key, version, date_version,
@@ -454,11 +467,13 @@ class HistoriqueRepository extends ServiceEntityRepository
                     :mode_collecte, :utilisateur_collecte, '".json_encode($json)."',
                     :date_enregistrement)";
 
+        try {
+                $this->getEntityManager()->getConnection()->beginTransaction();
                     $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                        $stmt->bindValue(':maven_key', $map['maven_key']);
+                        $stmt->bindValue(static::$mavenKey, $map['maven_key']);
                         $stmt->bindValue(':analyse_key', $map['analyse_key']);
-                        $stmt->bindValue(':version', $map['version']);
-                        $stmt->bindValue(':date_version', $map['date_version']);
+                        $stmt->bindValue(static::$version, $map['version']);
+                        $stmt->bindValue(static::$dateVersion, $map['date_version']);
                         $stmt->bindValue(':nom_projet', $map['nom_projet']);
                         $stmt->bindValue(':version_release', $map['version_release']);
                         $stmt->bindValue(':version_snapshot', $map['version_snapshot']);
@@ -545,15 +560,17 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function selectHistoriqueProjetByDate($map): array
+    {
+        /** On prépare la requête */
+        $sql = "SELECT maven_key, version, date_version as date, initial
+                FROM ma_moulinette.historique
+                WHERE maven_key=:maven_key
+                ORDER BY date_version DESC";
+
         try {
                 $this->getEntityManager()->getConnection()->beginTransaction();
-                    /** On prépare la requête */
-                    $sql = "SELECT maven_key, version, date_version as date, initial
-                            FROM ma_moulinette.historique
-                            WHERE maven_key=:maven_key
-                            ORDER BY date_version DESC";
                     $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(':maven_key', $map['maven_key']);
+                    $stmt->bindValue(static::$mavenKey, $map['maven_key']);
                         $version=$stmt->executeQuery()->fetchAllAssociative();
                 $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
@@ -578,19 +595,21 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function selectHistoriqueProjetLast($map): array
+    {
+        /** On prépare la requête */
+        $sql =  "SELECT version, nom_projet AS name, date_version,
+                        note_reliability, note_security, note_hotspot,note_sqale,
+                        bug_blocker, bug_critical, bug_major,
+                        vulnerability_blocker, vulnerability_critical, vulnerability_major,
+                        code_smell_blocker, code_smell_critical, code_smell_major,
+                        nombre_hotspot, coverage, sqale_debt_ratio
+                FROM ma_moulinette.historique
+                WHERE maven_key=:maven_key
+                ORDER BY date_version DESC LIMIT 1";
+
         try {
-                /** On prépare la requête */
-                $sql =  "SELECT version, nom_projet AS name, date_version,
-                                note_reliability, note_security, note_hotspot,note_sqale,
-                                bug_blocker, bug_critical, bug_major,
-                                vulnerability_blocker, vulnerability_critical, vulnerability_major,
-                                code_smell_blocker, code_smell_critical, code_smell_major,
-                                nombre_hotspot, coverage, sqale_debt_ratio
-                        FROM ma_moulinette.historique
-                        WHERE maven_key=:maven_key
-                        ORDER BY date_version DESC LIMIT 1";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(':maven_key', $map['maven_key']);
+                $stmt->bindValue(static::$mavenKey, $map['maven_key']);
                     $infos=$stmt->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
             return ['code'=> 500, 'erreur'=>$e->getMessage()];
@@ -611,18 +630,20 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function selectHistoriqueProjetReference($map): array
+    {
+        /** On prépare la requête */
+        $sql = "SELECT version, date_version,
+                        note_reliability, note_security, note_hotspot, note_sqale,
+                        bug_blocker, bug_critical, bug_major,
+                        vulnerability_blocker, vulnerability_critical, vulnerability_major,
+                        code_smell_blocker, code_smell_critical, code_smell_major,
+                        nombre_hotspot, coverage, sqale_debt_ratio
+                FROM ma_moulinette.historique
+                WHERE maven_key=:maven_key AND initial=true";
+
         try {
-                /** On prépare la requête */
-                $sql = "SELECT version, date_version,
-                                note_reliability, note_security, note_hotspot, note_sqale,
-                                bug_blocker, bug_critical, bug_major,
-                                vulnerability_blocker, vulnerability_critical, vulnerability_major,
-                                code_smell_blocker, code_smell_critical, code_smell_major,
-                                nombre_hotspot, coverage, sqale_debt_ratio
-                        FROM ma_moulinette.historique
-                        WHERE maven_key=:maven_key AND initial=true";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(':maven_key', $map['maven_key']);
+                    $stmt->bindValue(static::$mavenKey, $map['maven_key']);
                 $exec=$stmt->executeQuery();
                 $liste=$exec->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
@@ -644,19 +665,21 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function selectHistoriqueProjetFavori($map): array
+    {
+        /** On prépare la requête */
+        $sql = "SELECT DISTINCT maven_key as mavenkey, nom_projet as nom,
+                                version, date_version as date,
+                                note_reliability as fiabilite,
+                                note_security as securite, note_hotspot as hotspot,
+                                note_sqale as sqale, nombre_bug as bug,
+                                nombre_vulnerability as vulnerability,
+                                nombre_code_smell as code_smell,
+                                nombre_hotspot as hotspots
+                FROM ma_moulinette.historique
+                WHERE ".$map['clause_where'].
+                " GROUP BY maven_key, nom, version, date LIMIT ".$map['nombre_projet_favori'];
+
         try {
-                /** On prépare la requête */
-                $sql = "SELECT DISTINCT maven_key as mavenkey, nom_projet as nom,
-                                        version, date_version as date,
-                                        note_reliability as fiabilite,
-                                        note_security as securite, note_hotspot as hotspot,
-                                        note_sqale as sqale, nombre_bug as bug,
-                                        nombre_vulnerability as vulnerability,
-                                        nombre_code_smell as code_smell,
-                                        nombre_hotspot as hotspots
-                        FROM ma_moulinette.historique
-                        WHERE ".$map['clause_where'].
-                        " GROUP BY maven_key, nom, version, date LIMIT ".$map['nombre_projet_favori'];
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                         $exec=$stmt->executeQuery();
                         $liste=$exec->fetchAllAssociative();
@@ -679,22 +702,22 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function selectHistoriqueIsValide($map): array
+    {
+        /** On prépare la requête */
+        $sql = "SELECT version, nom_projet AS name,
+                        date_version, analyse_key
+                FROM ma_moulinette.historique
+                WHERE maven_key=:maven_key
+                ORDER BY date_version DESC LIMIT 1";
         try {
-                /** On prépare la requête */
-                $sql = "SELECT version, nom_projet AS name,
-                                date_version, analyse_key
-                        FROM ma_moulinette.historique
-                        WHERE maven_key=:maven_key
-                        ORDER BY date_version DESC LIMIT 1";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(':maven_key', $map['maven_key']);
+                    $stmt->bindValue(static::$mavenKey, $map['maven_key']);
                 $isValide=$stmt->executeQuery()->fetchAllAssociative();
                     /** j'ai pas trouvé de projet */
                 if (!$isValide){
                     return ['code'=>404, 'erreur'=>"Je n'ai pas trouvé le projet dans la base de données."];
                 }
         } catch (\Doctrine\DBAL\Exception $e) {
-            dd($e->getMessage());
             return ['code'=> 500, 'erreur'=>$e->getMessage()];
         }
         /** on prépare la réponse */
@@ -713,15 +736,17 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function selectHistoriqueIndicateurs(string $map): array
+    {
+        /** On prépare la requête */
+        $sql = "SELECT DISTINCT ON (maven_key)
+                    nom_projet, version, suppress_warning, no_sonar, todo, nombre_ligne, nombre_ligne_code, tests, violations, nombre_bug, nombre_vulnerability, nombre_code_smell, frontend, backend, autre, note_reliability, note_security, note_sqale, note_hotspot, logger_info, logger_warn, logger_error, logger_debug
+                FROM ma_moulinette.historique
+                WHERE maven_key IN (".$map.") ORDER BY maven_key ASC, version DESC, date_version DESC";
+
         try {
-                /** On prépare la requête */
-                $sql = "SELECT DISTINCT ON (maven_key)
-                            nom_projet, version, suppress_warning, no_sonar, todo, nombre_ligne, nombre_ligne_code, tests, violations, nombre_bug, nombre_vulnerability, nombre_code_smell, frontend, backend, autre, note_reliability, note_security, note_sqale, note_hotspot, logger_info, logger_warn, logger_error, logger_debug
-                        FROM ma_moulinette.historique
-                        WHERE maven_key IN (".$map.") ORDER BY maven_key ASC, version DESC, date_version DESC";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $indicateur=$stmt->executeQuery()->fetchAllAssociative();
-                    /** j'ai pas trouvé de projet */
+                /** j'ai pas trouvé de projet */
         } catch (\Doctrine\DBAL\Exception $e) {
             dd($e->getMessage());
             return ['code'=> 500, 'erreur'=>$e->getMessage()];
@@ -729,6 +754,5 @@ class HistoriqueRepository extends ServiceEntityRepository
         /** on prépare la réponse */
         return ['code'=>200, 'indicateur'=>$indicateur, 'erreur'=>''];
     }
-
 
 }

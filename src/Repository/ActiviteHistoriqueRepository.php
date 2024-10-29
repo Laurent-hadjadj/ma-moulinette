@@ -21,6 +21,7 @@ class ActiviteHistoriqueRepository extends ServiceEntityRepository
 {
     public static $removeReturnLine = "/\s+/u";
     public static $formatDate = 'Y-m-d H:i:sO';
+    public static $year = ':annee';
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -39,15 +40,17 @@ class ActiviteHistoriqueRepository extends ServiceEntityRepository
      */
     public function insertHistoriqueActivites($data): array
     {
-        $sql = "INSERT INTO ma_moulinette.activite_historique (
-                    annee, nb_jour, nb_analyse, moyenne_analyse,                     nb_reussi, nb_echec, taux_reussite, max_temps,                     date_enregistrement)
+        $sql = "INSERT INTO ma_moulinette.activite_historique
+                        (annee, nb_jour, nb_analyse, moyenne_analyse,
+                        nb_reussi, nb_echec, taux_reussite, max_temps,
+                        date_enregistrement)
                 VALUES (:annee, :nb_hour, :nb_analyse, :moyenne_analyse,
                         :nb_reussi, :nb_echec, :taux_reussite, :max_temps, :date_enregistrement)";
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
                 foreach ($data as $annee => $valeur) {
                     $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(':annee', $annee);
+                    $stmt->bindValue(static::$year, $annee);
                     $stmt->bindValue(':nb_hour', $valeur['nb_jour']);
                     $stmt->bindValue(':nb_analyse', $valeur['nb_analyse']);
                     $stmt->bindValue(':moyenne_analyse', $valeur['moyenne_analyse']);
@@ -55,7 +58,7 @@ class ActiviteHistoriqueRepository extends ServiceEntityRepository
                     $stmt->bindValue(':nb_echec', $valeur['nb_echec']);
                     $stmt->bindValue(':taux_reussite', $valeur['taux_reussite']);
                     $stmt->bindValue(':max_temps', $valeur['max_temps']);
-                    $stmt->bindValue(':date_enregistrement', $valeur['date_enregistrement']->format('Y-m-d H:i:sO'));
+                    $stmt->bindValue(':date_enregistrement', $valeur['date_enregistrement']->format(static::$formatDate));
                     $stmt->executeStatement();
                 }
             $this->getEntityManager()->getConnection()->commit();
@@ -92,7 +95,7 @@ class ActiviteHistoriqueRepository extends ServiceEntityRepository
             $this->getEntityManager()->getConnection()->beginTransaction();
             foreach ($data as $annee => $valeur) {
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(':annee', $annee);
+                    $stmt->bindValue(static::$year, $annee);
                     $stmt->bindValue(':nb_jour', $valeur['nb_jour']);
                     $stmt->bindValue(':nb_analyse', $valeur['nb_analyse']);
                     $stmt->bindValue(':moyenne_analyse', $valeur['moyenne_analyse']);
@@ -100,7 +103,7 @@ class ActiviteHistoriqueRepository extends ServiceEntityRepository
                     $stmt->bindValue(':nb_echec', $valeur['nb_echec']);
                     $stmt->bindValue(':taux_reussite', $valeur['taux_reussite']);
                     $stmt->bindValue(':max_temps', $valeur['max_temps']);
-                    $stmt->bindValue(':date_enregistrement', $valeur['date_enregistrement']->format('Y-m-d H:i:sO'));
+                    $stmt->bindValue(':date_enregistrement', $valeur['date_enregistrement']->format(static::$formatDate));
                     $stmt->executeStatement();
             }
             $this->getEntityManager()->getConnection()->commit();
@@ -130,7 +133,7 @@ class ActiviteHistoriqueRepository extends ServiceEntityRepository
                         if ($annee !== null){
                             $sql .= " WHERE annee = :annee";
                             $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                            $stmt->bindValue(':annee', $annee);
+                            $stmt->bindValue(static::$year, $annee);
                         }else{
                             $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                         }

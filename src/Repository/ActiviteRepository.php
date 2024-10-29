@@ -21,6 +21,7 @@ class ActiviteRepository extends ServiceEntityRepository
 {
     public static $removeReturnLine = "/\s+/u";
     public static $formatDate = 'Y-m-d H:i:sO';
+    public static $year = ':annee';
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -44,7 +45,7 @@ class ActiviteRepository extends ServiceEntityRepository
                         FROM ma_moulinette.activite
                         WHERE EXTRACT(YEAR FROM started_at) = :annee ";
                         $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                        $stmt->bindValue(':annee', $annee);
+                        $stmt->bindValue(static::$year, $annee);
                 $request=$stmt->executeQuery()->fetchAllAssociative();
             } catch (\Doctrine\DBAL\Exception $e) {
             return ['code'=>500, 'erreur'=> $e->getMessage()];
@@ -81,9 +82,9 @@ class ActiviteRepository extends ServiceEntityRepository
                         $stmt->bindValue(':analyse_id', $ref['analyse_id']);
                         $stmt->bindValue(':status', $ref['status']);
                         $stmt->bindValue(':submitter_login', $ref['submitter_login']);
-                        $stmt->bindValue(':submitted_at', $ref['submitted_at']->format('Y-m-d H:i:sO'));
-                        $stmt->bindValue(':started_at', $ref['started_at']->format('Y-m-d H:i:sO'));
-                        $stmt->bindValue(':executed_at', $ref['executed_at']->format('Y-m-d H:i:sO'));
+                        $stmt->bindValue(':submitted_at', $ref['submitted_at']->format(static::$formatDate));
+                        $stmt->bindValue(':started_at', $ref['started_at']->format(static::$formatDate));
+                        $stmt->bindValue(':executed_at', $ref['executed_at']->format(static::$formatDate));
                         $stmt->bindValue(':execution_time', $ref['execution_time']);
                         $stmt->executeStatement();
                 }
@@ -113,7 +114,7 @@ class ActiviteRepository extends ServiceEntityRepository
                 WHERE EXTRACT(YEAR FROM started_at) = :annee ";
         try {
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(':annee', $annee);
+                    $stmt->bindValue(static::$year, $annee);
                 $request=$stmt->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
             return ['code'=>500, 'erreur'=> $e->getMessage()];
@@ -165,7 +166,7 @@ class ActiviteRepository extends ServiceEntityRepository
 
         try {
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(':annee', $annee);
+                    $stmt->bindValue(static::$year, $annee);
                     $stmt->bindValue(':status', $status);
                 $request=$stmt->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
@@ -192,7 +193,7 @@ class ActiviteRepository extends ServiceEntityRepository
 
         try {
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(':annee', $annee);
+                    $stmt->bindValue(static::$year, $annee);
                 $request=$stmt->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
             return ['code'=>500, 'erreur'=> $e->getMessage()];
@@ -217,7 +218,7 @@ class ActiviteRepository extends ServiceEntityRepository
             if ($annee !== null) {
                 $sql .= "WHERE EXTRACT(YEAR FROM started_at) = :annee ORDER BY executed_at DESC LIMIT 1";
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(':annee', $annee);
+                $stmt->bindValue(static::$year, $annee);
             } else {
                 $sql .= "ORDER BY executed_at DESC LIMIT 1";
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
@@ -247,7 +248,7 @@ class ActiviteRepository extends ServiceEntityRepository
             if ($annee !== null) {
                 $sql .= "WHERE EXTRACT(YEAR FROM started_at) = :annee ORDER BY executed_at ASC LIMIT 1";
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(':annee', $annee);
+                $stmt->bindValue(static::$year, $annee);
             } else {
                 $sql .= "ORDER BY executed_at DESC LIMIT 1";
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
@@ -279,9 +280,9 @@ class ActiviteRepository extends ServiceEntityRepository
                 $sql.= "WHERE EXTRACT(YEAR FROM executed_at) = :annee
                         GROUP BY DATE(executed_at) ORDER BY day ASC";
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(':annee', $annee);
+                $stmt->bindValue(static::$year, $annee);
             } else {
-                $sql .= "GROUP BY DATE(executed_at) ORDER BY day DESC";
+                $sql .= "GROUP BY DATE(executed_at) ORDER BY day DESC ";
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             }
             $request = $stmt->executeQuery()->fetchAllAssociative();
@@ -310,7 +311,7 @@ class ActiviteRepository extends ServiceEntityRepository
                 $sql.= "WHERE EXTRACT(YEAR FROM executed_at) = :annee
                 GROUP BY DATE(executed_at) ORDER BY day ASC";
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(':annee', $annee);
+                $stmt->bindValue(static::$year, $annee);
             } else {
                 $sql .= "GROUP BY DATE(executed_at) ORDER BY day DESC";
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
@@ -343,7 +344,7 @@ class ActiviteRepository extends ServiceEntityRepository
                 $sql.= "WHERE EXTRACT(YEAR FROM executed_at) = :annee
                 GROUP BY DATE(executed_at) ORDER BY day ASC";
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(':annee', $annee);
+                $stmt->bindValue(static::$year, $annee);
             } else {
                 $sql .= "GROUP BY DATE(executed_at) ORDER BY day DESC";
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));

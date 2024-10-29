@@ -24,6 +24,7 @@ class LoggerRepository extends ServiceEntityRepository
 {
 
   public static $removeReturnLine = "/\s+/u";
+  public static $mavenKey = ':maven_key';
 
   public function __construct(ManagerRegistry $registry)
   {
@@ -50,7 +51,7 @@ class LoggerRepository extends ServiceEntityRepository
                 FROM ma_moulinette.logger
                 WHERE maven_key=:maven_key";
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-            $conn->bindValue(':maven_key', $map['maven_key']);
+            $conn->bindValue(static::$mavenKey, $map['maven_key']);
             $conn->executeStatement();
       $this->getEntityManager()->getConnection()->commit();
     } catch (\Doctrine\DBAL\Exception $e) {
@@ -78,7 +79,7 @@ class LoggerRepository extends ServiceEntityRepository
                       FROM ma_moulinette.logger
                       WHERE maven_key=:maven_key";
               $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                  $stmt->bindValue(':maven_key', $map['maven_key']);
+                  $stmt->bindValue(static::$mavenKey, $map['maven_key']);
                   $liste=$stmt->executeQuery()->fetchAllAssociative();
       } catch (\Doctrine\DBAL\Exception $e) {
           return ['code'=>500, 'erreur'=> $e->getMessage()];
@@ -107,7 +108,7 @@ class LoggerRepository extends ServiceEntityRepository
       try {
             $this->getEntityManager()->getConnection()->beginTransaction();
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                  $stmt->bindValue(':maven_key', $map['maven_key']);
+                  $stmt->bindValue(static::$mavenKey, $map['maven_key']);
                   $stmt->bindValue(':logger_info', $map['logger_info']);
                   $stmt->bindValue(':logger_warn', $map['logger_warn']);
                   $stmt->bindValue(':logger_error', $map['logger_error']);

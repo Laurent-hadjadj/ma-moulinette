@@ -23,6 +23,7 @@ use Doctrine\Persistence\ManagerRegistry;
 class AnomalieDetailsRepository extends ServiceEntityRepository
 {
     public static $removeReturnLine = "/\s+/u";
+    public static $mavenKey = ':maven_key';
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -49,7 +50,7 @@ class AnomalieDetailsRepository extends ServiceEntityRepository
                         FROM ma_moulinette.anomalie_details
                         WHERE maven_key=:maven_key";
                 $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $conn->bindValue(':maven_key', $map['maven_key']);
+                    $conn->bindValue(static::$mavenKey, $map['maven_key']);
                     $conn->executeStatement();
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
@@ -78,7 +79,7 @@ class AnomalieDetailsRepository extends ServiceEntityRepository
                         FROM ma_moulinette.anomalie_details
                         WHERE maven_key=:maven_key";
                 $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $conn->bindValue(':maven_key', $map['maven_key']);
+                $conn->bindValue(static::$mavenKey, $map['maven_key']);
                 $exec=$conn->executeQuery();
                 $liste=$exec->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
@@ -107,7 +108,7 @@ class AnomalieDetailsRepository extends ServiceEntityRepository
                             VALUES
                     (:maven_key, :name, :bug_blocker, :bug_critical, :bug_major, :bug_minor, :bug_info, :vulnerability_blocker, :vulnerability_critical, :vulnerability_major, :vulnerability_minor, :vulnerability_info, :code_smell_blocker, :code_smell_critical, :code_smell_major, :code_smell_minor, :code_smell_info, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
                     $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                        $stmt->bindValue(':maven_key', $map['maven_key']);
+                        $stmt->bindValue(static::$mavenKey, $map['maven_key']);
                         $stmt->bindValue(':name', $map['name']);
 
                         $stmt->bindValue(':bug_blocker', $map['bug_blocker']);

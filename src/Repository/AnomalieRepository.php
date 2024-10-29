@@ -23,6 +23,7 @@ use Doctrine\Persistence\ManagerRegistry;
 class AnomalieRepository extends ServiceEntityRepository
 {
     public static $removeReturnLine = "/\s+/u";
+    public static $mavenKey = ':maven_key';
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -49,7 +50,7 @@ class AnomalieRepository extends ServiceEntityRepository
                         FROM ma_moulinette.anomalie
                         WHERE maven_key=:maven_key";
                 $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $conn->bindValue(':maven_key', $map['maven_key']);
+                $conn->bindValue(static::$mavenKey, $map['maven_key']);
                 $conn->executeQuery();
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
@@ -106,7 +107,7 @@ class AnomalieRepository extends ServiceEntityRepository
                         FROM ma_moulinette.anomalie
                         WHERE maven_key=:maven_key";
                 $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $conn->bindValue(':maven_key', $map['maven_key']);
+                $conn->bindValue(static::$mavenKey, $map['maven_key']);
                 $liste=$conn->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
             return ['code'=>500, 'erreur'=> $e->getMessage()];
@@ -138,7 +139,7 @@ class AnomalieRepository extends ServiceEntityRepository
                                 :mode_collecte, :utilisateur_collecte,
                                 :date_enregistrement)";
                     $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                        $stmt->bindValue(':maven_key', $map['maven_key']);
+                        $stmt->bindValue(static::$mavenKey, $map['maven_key']);
                         $stmt->bindValue(':project_name', $map['project_name']);
                         $stmt->bindValue(':anomalie_total', $map['anomalie_total']);
                         $stmt->bindValue(':dette', $map['dette']);

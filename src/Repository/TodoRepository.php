@@ -24,6 +24,7 @@ class TodoRepository extends ServiceEntityRepository
 {
 
   public static $removeReturnLine = "/\s+/u";
+  public static $mavenKey = ':maven_key';
 
   public function __construct(ManagerRegistry $registry)
   {
@@ -50,7 +51,7 @@ class TodoRepository extends ServiceEntityRepository
                 FROM ma_moulinette.todo
                 WHERE maven_key=:maven_key";
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-            $conn->bindValue(':maven_key', $map['maven_key']);
+            $conn->bindValue(static::$mavenKey, $map['maven_key']);
             $conn->executeStatement();
       $this->getEntityManager()->getConnection()->commit();
     } catch (\Doctrine\DBAL\Exception $e) {
@@ -80,7 +81,7 @@ class TodoRepository extends ServiceEntityRepository
                 WHERE maven_key=:maven_key
                 GROUP BY rule";
         $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-        $conn->bindValue(':maven_key', $map['maven_key']);
+        $conn->bindValue(static::$mavenKey, $map['maven_key']);
           $exec=$conn->executeQuery();
           $liste=$exec->fetchAllAssociative();
     } catch (\Doctrine\DBAL\Exception $e) {
@@ -109,7 +110,7 @@ class TodoRepository extends ServiceEntityRepository
                     WHERE maven_key=:maven_key
                     ORDER BY rule";
             $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-              $conn->bindValue(':maven_key', $map['maven_key']);
+              $conn->bindValue(static::$mavenKey, $map['maven_key']);
             $exec=$conn->executeQuery();
             $liste=$exec->fetchAllAssociative();
     } catch (\Doctrine\DBAL\Exception $e) {
@@ -139,7 +140,7 @@ class TodoRepository extends ServiceEntityRepository
               $this->getEntityManager()->getConnection()->beginTransaction();
                   foreach($map as $item){
                       $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                          $stmt->bindValue(':maven_key', $item['maven_key']);
+                          $stmt->bindValue(static::$mavenKey, $item['maven_key']);
                           $stmt->bindValue(':rule', $item['rule']);
                           $stmt->bindValue(':component', $item['component']);
                           $stmt->bindValue(':line', $item['line']);

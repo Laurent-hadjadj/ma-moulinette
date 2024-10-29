@@ -23,6 +23,8 @@ use Doctrine\Persistence\ManagerRegistry;
 class NotesRepository extends ServiceEntityRepository
 {
     public static $removeReturnLine = "/\s+/u";
+    public static $mavenKey = ':maven_key';
+    public static $type = ':type';
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -49,8 +51,8 @@ class NotesRepository extends ServiceEntityRepository
                             FROM ma_moulinette.notes
                             WHERE maven_key=:maven_key and type=:type";
                     $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                        $stmt->bindValue(':maven_key', $map['maven_key']);
-                        $stmt->bindValue(':type', $map['type']);
+                        $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+                        $stmt->bindValue(static::$type, $map['type']);
                         $stmt->executeStatement();
                 $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
@@ -83,8 +85,8 @@ class NotesRepository extends ServiceEntityRepository
                             :utilisateur_collecte, :date_enregistrement)";
 
                     $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                        $stmt->bindValue(':maven_key', $map['maven_key']);
-                        $stmt->bindValue(':type', $map['type']);
+                        $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+                        $stmt->bindValue(static::$type, $map['type']);
                         $stmt->bindValue(':value', $map['value']);
                         $stmt->bindValue(':mode_collecte', $map['mode_collecte']);
                         $stmt->bindValue(':utilisateur_collecte', $map['utilisateur_collecte']);
@@ -119,8 +121,8 @@ class NotesRepository extends ServiceEntityRepository
                         WHERE maven_key=:maven_key AND type=:type
                         ORDER BY date_enregistrement DESC LIMIT 1";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(':maven_key', $map['maven_key']);
-                    $stmt->bindValue(':type', $map['type']);
+                    $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+                    $stmt->bindValue(static::$type, $map['type']);
                     $exec=$stmt->executeQuery();
                 $liste=$exec->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
