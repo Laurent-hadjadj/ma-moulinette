@@ -16,7 +16,7 @@ namespace App\Controller\Profil;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 
-/** Securité */
+/** Sécurité */
 use Symfony\Bundle\SecurityBundle\Security;
 
 /** Gestion du temps */
@@ -36,6 +36,7 @@ use App\Entity\ProfilesHistorique;
 
 /** Client HTTP */
 use App\Service\Client;
+use DateTimeImmutable;
 
 class ApiProfilController extends AbstractController
 {
@@ -98,7 +99,7 @@ class ApiProfilController extends AbstractController
         }
 
         /*** Super on a récupéré la liste des profils par langage */
-        $date = new DateTime();
+        $date = new DateTimeImmutable();
         $date->setTimezone(new DateTimeZone('Europe/Paris'));
         $nombre = 0;
 
@@ -117,7 +118,7 @@ class ApiProfilController extends AbstractController
             $profils->setLanguageName($profil['languageName']);
             $profils->setReferentielDefault($profil['isDefault']);
             $profils->setActiveRuleCount($profil['activeRuleCount']);
-            $rulesDate = new DateTime($profil['rulesUpdatedAt']);
+            $rulesDate = new DateTimeImmutable($profil['rulesUpdatedAt']);
             $profils->setRulesUpdateAt($rulesDate);
             $profils->setDateEnregistrement($date);
 
@@ -127,7 +128,7 @@ class ApiProfilController extends AbstractController
         /** On récupère la nouvelle liste des profils */
         $rq2=$profilesEntity->selectProfiles();
 
-        /** On met à jour la table proprietes */
+        /** On met à jour la table propriétés */
         $dateModificationProfil = $date->format("Y-m-d H:i:s");
         $map=['profil_bd'=>$nombre, 'profil_sonar'=>$nombre, 'date_modification_profil'=>$dateModificationProfil];
         $propertiesEntity->updatePropertiesProfiles($map);
