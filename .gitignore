@@ -1,17 +1,12 @@
 ###> symfony/framework-bundle ###
-.env
-.env.local.php
-.env.staging.php
+/.env.local
+/.env.local.php
+/.env.*.local
 /config/secrets/prod/prod.decrypt.private.php
 /public/bundles/
-/var/log/dev*.log
-/var/cache/dev/
+/var/
 /vendor/
-/migrations/default/*.php
-/migration/secondary/*.php
 composer.lock
-/var/sessions/*
-/var/cache/*
 package-lock.json
 symfony.lock
 var/log/doctrine.log
