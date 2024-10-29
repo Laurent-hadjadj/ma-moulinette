@@ -1,0 +1,8 @@
+###> git ###
+git.store
+###< git ###
+
+## Fichiers temporaires
+.env
+*.old
+*.backup
