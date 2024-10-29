@@ -19,8 +19,8 @@ framework:
                 # vérification des certificats
                 verify_host: true
                 verify_peer: true
-                # Définition des ciphers
-                ciphers: 'RC4-SHA:TLS13-AES-128-GCM-SHA256'
+                # Définition des ciphers TLS1.3
+                ciphers: "DEFAULT:!DH"
                 # Résolution DNS
                 resolve:
                     'localhost': 127.0.0.1
