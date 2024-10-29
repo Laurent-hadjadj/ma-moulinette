@@ -1,11 +1,14 @@
 # Liste des évolutions et défauts corrigés
 
-## v2.0.0 - 01/09/2023 - WiP
+## v2.0.0 - 01/12/2024 - WiP
 
 ### Framework
 
 * Migration PHP 8.3.0 NTS ;
 * Migration symfony/core 6.4 (6.4.8) ;
+* Migration symfony/core 6.4 vers 7.1 ;
+* Décommissionnement de webpack pour importMapper ;
+* Redimensionnement de toutes les images SVG à leur taille nominale (512 -> 92/72/64/32...) ;
 * Migration de la base SQLite vers PostgreSQL ;
 * Mise à jour Twig 3 (3.10.3) ;
 * Mise à jour doctrine/dbal 4 (4.0.4) ;
@@ -20,7 +23,7 @@
 ### Transverse
 
 * Décommissionnement de SQLite ;
-* Décommissionnement du "mode" Test. Utilisation d'une base de données pour les tests ;
+* Décommissionnement du 'mode' Test. Utilisation d'une base de données pour les tests ;
 * Migration : La documentation au format markdown utilise mkDocs pour la consultation ;
 * Refactor : mises à jour des commentaires ;
 * Refactor : regroupement des classes dans des packages ;
@@ -31,6 +34,7 @@
 * Refactor : Déplacement et des requêtes présentent dans les contrôleurs PHP vers les EntityRepository ;
 * Refactor : Bind et cast des paramètres avant injection dans les requêtes ;
 * Refactor : Mise en place du rollback sur les requêtes de type INSERT, DELETE et UPDATE ;
+* Refactor : Ajout d'une exception en cas d'absence de la BD sur toutes les requêtes SQL ;
 * Refactor : Ajout de traces lors des appel HTTP 200, 400, 401 et 404.
 * Refactor : Définition de la timezone [Europe/Paris] pour la gestion des dates ;
 * Refactor : Utilisation de DATETIME_IMMUTABLE à la place de DATETIME ;
@@ -130,7 +134,6 @@
 * [Page_Projet] Coverage -> Ajout des indicateurs suivants : skipped_tests,test_errors,test_failures,test_success_density;
 * [Page_Projet] Size -> Ajout des indicateurs suivants : classes,comment_lines comment_lines_density,files,functions;
 
-
 > Page de suivi des indicateurs
 
 * [Page_Suivi_Modification] Une seule version de référence pour un projet.
@@ -148,6 +151,7 @@
 
 * [TU] Mise à jour des TU (Entity, EntityRepository).
 * [TU] OK (251 tests, 2865 assertions) ;
+* [TF] Mise en place de Cypress ;
 
 ## v1.6.0 - 30/11/2022 - Release
 
