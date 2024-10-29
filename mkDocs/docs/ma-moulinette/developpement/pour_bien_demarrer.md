@@ -15,7 +15,7 @@ Il vous faudra :
 - [x] L'application **symfony-cli** pour démarrer l'application et effectuer les différentes actions symfony et composer ;
 - [x] La version **PHP 8.3.0** ;
 - [x] Un serveur de base de données **PostgreSQL 15** ou plus ;
-- [x] L'application **Nodejs 18.3.1** pour générer les composants javascript ;
+- [x] ~~L'application **Nodejs 18.3.1** pour générer les composants javascript ;~~ sauf pour l'utilisation de Cypress ;
 - [x] Un serveur **rabbitMQ 3.13** ou plus pour gérer les traitements asynchrones ;
 - [x] Un serveur **SonarQube 8 LTS** ou **9 LTS** (la version 10 est supportée) ;
 - [x] La version **Python 3** et l'extension **mkDocs** pour la génération de la documentation markdown ;
@@ -35,11 +35,10 @@ Il vous faudra :
 En fonction de votre environnement, vous pouvez avoir un fichier d'environnement ayant un nom différent.
 
 - [x] **.env** est le fichier de propriétés par défaut contenant l'ensemble des propriétés de l'application ;
-- [ ] **.env.local** est le fichier de propriétés spécifique à l'application.
-- [ ] **.env.prod** est le fichier livré pour une mise en production de l'application.
-- [x] **.env.test** est le fichier par défaut pour les tests unitaires de symfony.
-- [ ] **.env.test.local** est le fichier spécifiques pour l'application.
-
+- [ ] **.env.local** est le fichier de propriétés spécifique à l'application ;
+- [ ] **.env.prod** est le fichier livré pour une mise en production de l'application ;
+- [x] **.env.test** est le fichier par défaut pour les tests unitaires de symfony ;
+- [ ] **.env.test.local** est le fichier spécifiques pour l'application ;
 
 - [x] modifiez les paramètres **APP_ENV** et **APP_DEBUG** du fichier `.env` ou des fichiers spécifiques :
 
@@ -50,13 +49,13 @@ APP_ENV = dev
 APP_DEBUG = 1
 ```
 
-> outils de développement pour windows
+> Outils de développement pour windows
 
 Les scripts DOS sont disponibles dans le dossier **bin/** du projet.
 
 |---environnement
 ----|---0_toolz
---------|---node-18.17.1
+--------|---node-20.17.1 (pour cyPress)
 --------|---php-8.3.0-NTS
 --------|---postgresql-15.6-1
 --------|---python-3.12.3-embed
@@ -67,7 +66,7 @@ Les scripts DOS sont disponibles dans le dossier **bin/** du projet.
 --------|---bin
 
 - [x] **console-cli.bat** pour lancer la console symfony et executer des commandes symfony ou composer
-- [x] **encore.bat** pour lancer la compilation à la volée des ressources JS/CSS ;
+- [x] ~~**encore.bat** pour lancer la compilation à la volée des ressources JS/CSS ;~~
 - [x] **mkdocs_serve.bat** pour lancer le serveur mkDocs ;
 - [x] **phpunit.bat** pour lancer les tests unitaires ;
 - [x] **rabbitmqadmin.py** pour lancer les commandes rabbitMQ en ligne de commande ;
@@ -90,27 +89,17 @@ APP_DEBUG = 0 ou 1 (si on veut avoir des logs complètes)
 - [x] supprimez les fichiers du dossier **public/build** ;
 - [x] supprimez le dossier **dev** et **prod** du dossier **var/cache** ;
 - [x] supprimez le fichier **dev.log** du dossier **var/log** ;
-- [x] lancez la commande pour compiler le fichier **.env** :  `composer dump-env prod`
+- [x] lancez la commande pour compiler le fichier **.env.local** :  `composer dump-env prod`
 - [x] lancez la commande pour compiler le code PHP :
 
-```plaintext
+```bash
 symfony composer dump-autoload --no-dev --classmap-authoritative
 ```
 
-- [x] lancez la commande pour compiler les fichiers css/js :  `npm run-script build`
+- [x] lancez la commande pour compiler les fichiers css/js :
 
-```plaintext
-npm run-script build
-
-> ma-moulinette@1.2.4 build c:\sonar-dash.dev\ma-moulinette
-> encore production --progress
-
-Running webpack ...
-
-99% done plugins FriendlyErrorsWebpackPlugin DONE  Compiled successfully in 18856ms                                           20:45:28
-
-131 files written to public\build
-webpack compiled successfully
+```bash
+php bin/console asset-map:compile
 ```
 
 -**-- FIN --**-
