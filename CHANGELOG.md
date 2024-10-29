@@ -6,19 +6,19 @@
 
 * Migration PHP 8.3.0 NTS ;
 * Migration symfony/core 6.4 (6.4.8) ;
-* Migration symfony/core 6.4 vers 7.1 ;
-* Décommissionnement de webpack pour importMapper ;
+* Migration symfony/core 6.4 vers 7.1 (7.1.6) ;
+* Décommissionnement de webpack pour asset-mapper ;
 * Redimensionnement de toutes les images SVG à leur taille nominale (512 -> 92/72/64/32...) ;
 * Migration de la base SQLite vers PostgreSQL ;
 * Mise à jour Twig 3 (3.10.3) ;
-* Mise à jour doctrine/dbal 4 (4.0.4) ;
-* Mise à jour doctrine/orm 3 (3.2.0) ;
-* Mise à jour easycorp/easyadmin-bundle 4 (4.10.2) ;
+* Mise à jour doctrine/dbal 4 (4.0.5) ;
+* Mise à jour doctrine/orm 3 (3.2.3) ;
+* Mise à jour easycorp/easyadmin-bundle 4 (4.13.5) ;
 * Mise à jour de twig/twig 3.10 (3.10.3) ;
-* Mise à jour de phpstan/phpstan 1.11 (1.11.5) ;
-* Mise à jour de phpunit/phpunit 9.6 (9.6.19) ;
-* Intégration de php-amqplib/php-amqplib 3.6 (3.6.2) ;
-* Intégration de knplabs/knp-paginator-bundle 6.4 (6.4.0) ;
+* Mise à jour de phpstan/phpstan 1.11 (1.11.11) ;
+* Mise à jour de phpunit/phpunit 9.6 (9.6.21) ;
+* Intégration de php-amqplib/php-amqplib 3.7 (3.7.1) ;
+* Intégration de knplabs/knp-paginator-bundle 6.6 (6.6.1) ;
 
 ### Transverse
 
