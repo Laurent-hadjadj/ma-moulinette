@@ -1,0 +1,20 @@
+{
+  "validUser": {
+    "mel": "correctemail@ma-petite-entreprise.fr",
+    "password": "correctpassword"
+  },
+  "invalidUser": {
+    "mel": "wrongemail@ma-petite-entreprise.fr",
+    "password": "wrongpassword"
+  },
+  "newUser": {
+    "nom": "Dupont",
+    "prenom": "Jean",
+    "courriel": "jean.dupont@ma-petite-entreprise.fr",
+    "password": "motdepasse123"
+  },
+  "user": {
+    "ancienMotDePasse": "ancienMotDePasse123",
+    "nouveauMotDePasse": "nouveauMotDePasse123"
+  }
+}
