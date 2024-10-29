@@ -34,7 +34,7 @@ class RepartitionTest extends TestCase
   public function dataset(): array
   {
     return [
-      ['id'=>1,
+      [
       'maven_key'=> 'fr.ma-petite-entreprise:ma-moulinette',
       'name'=>'ma-moulinette',
       'component'=>'fr.ma-petite-entreprise:ma-moulinette:ma-moulinette-metier/
