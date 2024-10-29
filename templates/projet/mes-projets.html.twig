@@ -12,168 +12,176 @@
   https://github.com/Laurent-hadjadj/ma-moulinette
   © 2024 - CC BY-SA-NC 4.0
 -->
-<html lang="fr">
-  {# Chargement de la section HEAD #}
-  <head>
-    <title>{{ title }}</title>
-    {{ include('head.html.twig') }}
-    {% block stylesheets %}
-      {{ encore_entry_link_tags('mes-projets') }}
-    {% endblock %}
-  </head>
+<html
+	lang="fr">
+	{# Chargement de la section HEAD #}
+	<head>
+		<title>{{ title }}</title>
+		{{ include('head.html.twig') }}
+		{% block stylesheets %}
+			{{ encore_entry_link_tags('mes-projets') }}
+		{% endblock %}
+	</head>
 
-  <body>
-    {# Chargement de la section header #}
-    {{ include('header.html.twig') }}
-    <br>
-    <header class="grid-container">
-      <nav aria-label="vous êtes ici :">
-        <ul class="claire-hand breadcrumbs">
-          <li><a href="{{ path('home'), {} }}">Accueil</a></li>
-          <li><a href="{{ path('projet'), {} }}">Projet</a></li>
-          <li><span class="show-for-sr">vous êtes ici :</span>Mes-Projets</li>
-        </ul>
-      </nav>
-    </header>
+	<body>
+		{# Chargement de la section header #}
+		{{ include('header.html.twig') }}
+		<br>
+		<header class="grid-container">
+			<nav aria-label="vous êtes ici :">
+				<ul class="claire-hand breadcrumbs">
+					<li>
+						<a href="{{ path('home', {}) }}">Accueil</a>
+					</li>
+					<li>
+						<a href="{{ path('projet', {}) }}">Projet</a>
+					</li>
+					<li>
+						<span class="show-for-sr">vous êtes ici :</span>Mes-Projets</li>
+				</ul>
+			</nav>
+		</header>
 
-    <main>
-      <div class="grid-container">
-        <h1 class="h2 claire-hand">Mes Projets</h1>
-        <h2 class="h3 claire-hand">Suivi des principaux indicateurs.</h2>
+		<main>
+			<div class="grid-container">
+				<h1 class="h2 claire-hand">Mes Projets</h1>
+				<h2 class="h3 claire-hand">Suivi des principaux indicateurs.</h2>
 
-        {# On affiche les messages #}
-        {% for message in app.flashes('alert') %}
-          <div class="callout alert-callout-border alert" data-closable>
-            <p class="open-sans text-justify callout-message">{{ message }}</p>
-            <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-        {% endfor %}
-      </div>
+				{# On affiche les messages #}
+				{% for message in app.flashes('alert') %}
+					<div class="callout alert-callout-border alert" data-closable>
+						<p class="open-sans text-justify callout-message">{{ message }}</p>
+						<button class="close-button" aria-label="Dismiss alert" type="button" data-close>
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+				{% endfor %}
+			</div>
 
-      <div class="table-scroll pleine-page">
-        <table class="hover striped">
-          <caption class="no-caption" aria-hidden="true"></caption>
-          <thead>
-            <tr class="open-sans">
-              <!-- En-têtes avec les attributs scope -->
-              <th rowspan="1" scope="col" class="text-center">Application</th>
-              <th rowspan="1" scope="col" class="text-center">Version</th>
-              <th colspan="2" scope="col" class="text-center">Lignes</th>
-              <th colspan="4" scope="col" class="text-center">Notes</th>
-              <th colspan="4" scope="col" class="text-center">Violations</th>
-              <th colspan="3" scope="col" class="text-center">Composants</th>
-              <th colspan="3" scope="col" class="text-center">Qualité du Code</th>
-              <th colspan="4" scope="col" class="text-center">Loggers</th>
-              <th colspan="1" scope="col" class="text-center">Tests</th>
-            </tr>
-            <tr class="open-sans">
-              <th scope="col" class="text-center"></th>
-              <th scope="col" class="text-center"></th>
-              <th scope="col" class="text-center">Total</th>
-              <th scope="col" class="text-center">Code</th>
-              <th scope="col" class="text-center">Fiabilité</th>
-              <th scope="col" class="text-center">Sécurité</th>
-              <th scope="col" class="text-center">Hotspot</th>
-              <th scope="col" class="text-center">Maintenabilité</th>
-              <th scope="col" class="text-center">Fiabilité</th>
-              <th scope="col" class="text-center">Sécurité</th>
-              <th scope="col" class="text-center">Maintenabilité</th>
-              <th scope="col" class="text-center">Total</th>
-              <th scope="col" class="text-center">Front</th>
-              <th scope="col" class="text-center">Back</th>
-              <th scope="col" class="text-center">Autre</th>
-              <th scope="col" class="text-center">Supp. Warn.</th>
-              <th scope="col" class="text-center">NoSonar</th>
-              <th scope="col" class="text-center">Todo</th>
-              <th scope="col" class="text-center">Info</th>
-              <th scope="col" class="text-center">Warn</th>
-              <th scope="col" class="text-center">Error</th>
-              <th scope="col" class="text-center">Debug</th>
-              <th scope="col" class="text-center">Test</th>
-            </tr>
-          </thead>
-          <tbody id="mon-bo-tableau" class="open-sans">
-            {% if liste_projet is not empty %}
-              {% for projet in liste_projet %}
-                <tr class="open-sans">
-                  <!-- Application et version -->
-                  <td class="text-right">
-                    <span>{{ projet['nom_projet'] }}</span>
-                  </td>
-                  <td class="text-right">
-                    <span>{{ projet['version'] }}</span>
-                  </td>
+			<div class="table-scroll pleine-page">
+				<table class="hover striped">
+					<caption class="no-caption" aria-hidden="true"></caption>
+					<thead>
+						<tr
+							class="open-sans">
+							<!-- En-têtes avec les attributs scope -->
+							<th rowspan="1" scope="col" class="text-center">Application</th>
+							<th rowspan="1" scope="col" class="text-center">Version</th>
+							<th colspan="2" scope="col" class="text-center">Lignes</th>
+							<th colspan="4" scope="col" class="text-center">Notes</th>
+							<th colspan="4" scope="col" class="text-center">Violations</th>
+							<th colspan="3" scope="col" class="text-center">Composants</th>
+							<th colspan="3" scope="col" class="text-center">Qualité du Code</th>
+							<th colspan="4" scope="col" class="text-center">Loggers</th>
+							<th colspan="1" scope="col" class="text-center">Tests</th>
+						</tr>
+						<tr class="open-sans">
+							<th scope="col" class="text-center"></th>
+							<th scope="col" class="text-center"></th>
+							<th scope="col" class="text-center">Total</th>
+							<th scope="col" class="text-center">Code</th>
+							<th scope="col" class="text-center">Fiabilité</th>
+							<th scope="col" class="text-center">Sécurité</th>
+							<th scope="col" class="text-center">Hotspot</th>
+							<th scope="col" class="text-center">Maintenabilité</th>
+							<th scope="col" class="text-center">Fiabilité</th>
+							<th scope="col" class="text-center">Sécurité</th>
+							<th scope="col" class="text-center">Maintenabilité</th>
+							<th scope="col" class="text-center">Total</th>
+							<th scope="col" class="text-center">Front</th>
+							<th scope="col" class="text-center">Back</th>
+							<th scope="col" class="text-center">Autre</th>
+							<th scope="col" class="text-center">Supp. Warn.</th>
+							<th scope="col" class="text-center">NoSonar</th>
+							<th scope="col" class="text-center">Todo</th>
+							<th scope="col" class="text-center">Info</th>
+							<th scope="col" class="text-center">Warn</th>
+							<th scope="col" class="text-center">Error</th>
+							<th scope="col" class="text-center">Debug</th>
+							<th scope="col" class="text-center">Test</th>
+						</tr>
+					</thead>
+					<tbody id="mon-bo-tableau" class="open-sans">
+						{% if liste_projet is not empty %}
+							{% for projet in liste_projet %}
+								<tr
+									class="open-sans">
+									<!-- Application et version -->
+									<td class="text-right">
+										<span>{{ projet['nom_projet'] }}</span>
+									</td>
+									<td class="text-right">
+										<span>{{ projet['version'] }}</span>
+									</td>
 
-                  <!-- Lignes -->
-                  <td class="text-right">
-                    <span>{{ projet['nombre_ligne']|format_number(locale='fr') }}</span>
-                  </td>
-                  <td class="text-right">
-                    <span>{{ projet['nombre_ligne_code']|format_number(locale='fr') }}</span>
-                  </td>
+									<!-- Lignes -->
+									<td class="text-right">
+										<span>{{ projet['nombre_ligne']|format_number(locale='fr') }}</span>
+									</td>
+									<td class="text-right">
+										<span>{{ projet['nombre_ligne_code']|format_number(locale='fr') }}</span>
+									</td>
 
-                  <!-- Notes avec icônes et couleurs -->
-                  <td class="text-center">
-                    <span class="note note-{{ projet['note_reliability']|lower }}">{{ projet['note_reliability'] }}</span>
-                  </td>
-                  <td class="text-center">
-                    <span class="note note-{{ projet['note_security']|lower }}">{{ projet['note_security'] }}</span>
-                  </td>
-                  <td class="text-center">
-                    <span class="note note-{{ projet['note_hotspot']|lower }}">{{ projet['note_hotspot'] }}</span>
-                  </td>
-                  <td class="text-center">
-                    <span class="note note-{{ projet['note_sqale']|lower }}">{{ projet['note_sqale'] }}</span>
-                  </td>
+									<!-- Notes avec icônes et couleurs -->
+									<td class="text-center">
+										<span class="note note-{{ projet['note_reliability']|lower }}">{{ projet['note_reliability'] }}</span>
+									</td>
+									<td class="text-center">
+										<span class="note note-{{ projet['note_security']|lower }}">{{ projet['note_security'] }}</span>
+									</td>
+									<td class="text-center">
+										<span class="note note-{{ projet['note_hotspot']|lower }}">{{ projet['note_hotspot'] }}</span>
+									</td>
+									<td class="text-center">
+										<span class="note note-{{ projet['note_sqale']|lower }}">{{ projet['note_sqale'] }}</span>
+									</td>
 
-                  <!-- Violations avec formatage en fonction des valeurs -->
-                  <td class="text-right">
-                    <span class="{{ projet['nombre_bug'] > 0 ? 'label alert' : 'label success' }}">{{ projet['nombre_bug']|format_number(locale='fr') }}</span>
-                  </td>
-                  <td class="text-right">
-                    <span class="{{ projet['nombre_vulnerability'] > 0 ? 'label alert' : 'label success' }}">{{ projet['nombre_vulnerability']|format_number(locale='fr') }}</span>
-                  </td>
-                  <td class="text-right">
-                    <span class="{{ projet['nombre_code_smell'] > 50 ? 'label warning' : 'label success' }}">{{ projet['nombre_code_smell']|format_number(locale='fr') }}</span>
-                  </td>
-                  <td class="text-right">
-                    <span>{{ projet['violations']|format_number(locale='fr') }}</span>
-                  </td>
+									<!-- Violations avec formatage en fonction des valeurs -->
+									<td class="text-right">
+										<span class="{{ projet['nombre_bug'] > 0 ? 'label alert' : 'label success' }}">{{ projet['nombre_bug']|format_number(locale='fr') }}</span>
+									</td>
+									<td class="text-right">
+										<span class="{{ projet['nombre_vulnerability'] > 0 ? 'label alert' : 'label success' }}">{{ projet['nombre_vulnerability']|format_number(locale='fr') }}</span>
+									</td>
+									<td class="text-right">
+										<span class="{{ projet['nombre_code_smell'] > 50 ? 'label warning' : 'label success' }}">{{ projet['nombre_code_smell']|format_number(locale='fr') }}</span>
+									</td>
+									<td class="text-right">
+										<span>{{ projet['violations']|format_number(locale='fr') }}</span>
+									</td>
 
-                  <!-- Composants -->
-                  <td class="text-right">{{ projet['frontend']|format_number(locale='fr') }}</td>
-                  <td class="text-right">{{ projet['backend']|format_number(locale='fr') }}</td>
-                  <td class="text-right">{{ projet['autre']|format_number(locale='fr') }}</td>
+									<!-- Composants -->
+									<td class="text-right">{{ projet['frontend']|format_number(locale='fr') }}</td>
+									<td class="text-right">{{ projet['backend']|format_number(locale='fr') }}</td>
+									<td class="text-right">{{ projet['autre']|format_number(locale='fr') }}</td>
 
-                  <!-- Qualité du Code -->
-                  <td class="text-right">{{ projet['suppress_warning']|format_number(locale='fr') }}</td>
-                  <td class="text-right">{{ projet['no_sonar']|format_number(locale='fr') }}</td>
-                  <td class="text-right">{{ projet['todo']|format_number(locale='fr') }}</td>
+									<!-- Qualité du Code -->
+									<td class="text-right">{{ projet['suppress_warning']|format_number(locale='fr') }}</td>
+									<td class="text-right">{{ projet['no_sonar']|format_number(locale='fr') }}</td>
+									<td class="text-right">{{ projet['todo']|format_number(locale='fr') }}</td>
 
-                  <!-- Loggers -->
-                  <td class="text-right">{{ projet['logger_info']|format_number(locale='fr') }}</td>
-                  <td class="text-right">{{ projet['logger_warn']|format_number(locale='fr') }}</td>
-                  <td class="text-right">{{ projet['logger_error']|format_number(locale='fr') }}</td>
-                  <td class="text-right">{{ projet['logger_debug']|format_number(locale='fr') }}</td>
+									<!-- Loggers -->
+									<td class="text-right">{{ projet['logger_info']|format_number(locale='fr') }}</td>
+									<td class="text-right">{{ projet['logger_warn']|format_number(locale='fr') }}</td>
+									<td class="text-right">{{ projet['logger_error']|format_number(locale='fr') }}</td>
+									<td class="text-right">{{ projet['logger_debug']|format_number(locale='fr') }}</td>
 
-                  <!-- Tests -->
-                  <td class="text-right">{{ projet['tests']|format_number(locale='fr') }}</td>
-                </tr>
-              {% endfor %}
-            {% endif %}
-          </tbody>
-        </table>
-      </div>
-    </main>
+									<!-- Tests -->
+									<td class="text-right">{{ projet['tests']|format_number(locale='fr') }}</td>
+								</tr>
+							{% endfor %}
+						{% endif %}
+					</tbody>
+				</table>
+			</div>
+		</main>
 
-    <br><br>
-    {# Chargement de la section footer #}
-    {{ include('footer.html.twig') }}
-    {# Chargement du code javascript #}
-    {% block javascripts %}
-      {{ encore_entry_script_tags('mes-projets') }}
-    {% endblock %}
-  </body>
+		<br><br>
+		{# Chargement de la section footer #}
+		{{ include('footer.html.twig') }}
+		{# Chargement du code javascript #}
+		{% block javascripts %}
+			{{ encore_entry_script_tags('mes-projets') }}
+		{% endblock %}
+	</body>
 </html>
