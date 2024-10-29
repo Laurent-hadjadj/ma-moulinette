@@ -40,7 +40,7 @@ class HotspotsRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function deleteHotspotsMavenKey($map):array
+    public function deleteHotspotsMavenKey($map): array
     {
 
         try {
@@ -70,7 +70,7 @@ class HotspotsRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectHotspotsToReview($map):array
+    public function selectHotspotsToReview($map): array
     {
         try {
                 $sql = "SELECT *
@@ -97,7 +97,7 @@ class HotspotsRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function countHotspotsStatus($map):array
+    public function countHotspotsStatus($map): array
     {
         try {
                 $sql = "SELECT COUNT(*) as nombre
@@ -125,7 +125,7 @@ class HotspotsRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectHotspotsByNiveau($map):array
+    public function selectHotspotsByNiveau($map): array
     {
         try {
                 $sql = "SELECT niveau, count(*) as hotspot

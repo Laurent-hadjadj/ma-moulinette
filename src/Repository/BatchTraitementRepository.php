@@ -40,7 +40,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectBatchTraitementDateEnregistrementAutomatiqueLast():array
+    public function selectBatchTraitementDateEnregistrementAutomatiqueLast(): array
     {
         try {
                 $sql = "SELECT date_enregistrement as date
@@ -66,7 +66,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectBatchTraitementDateEnregistrementLast():array
+    public function selectBatchTraitementDateEnregistrementLast(): array
     {
         try {
                 $sql = "SELECT date_enregistrement as date
@@ -94,7 +94,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectBatchTraitementLast($dateShort):array
+    public function selectBatchTraitementLast($dateShort): array
     {
         try {
                 $sql = "SELECT  demarrage, resultat, titre, portefeuille,
@@ -125,7 +125,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectBatchTraitement($map):array
+    public function selectBatchTraitement($map): array
     {
         try {
                 $sql = "SELECT id, demarrage, titre, portefeuille, nombre_projet as projet
@@ -152,7 +152,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function updateBatchTraitement($map):array
+    public function updateBatchTraitement($map): array
     {
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
@@ -183,7 +183,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function insertBatchTraitement($map):array
+    public function insertBatchTraitement($map): array
     {
         $connection = $this->getEntityManager()->getConnection();
         try {

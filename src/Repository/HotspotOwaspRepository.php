@@ -37,7 +37,7 @@ class HotspotOwaspRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function countHotspotOwaspStatus($map):array
+    public function countHotspotOwaspStatus($map): array
     {
         try {
             $sql = "SELECT count(*) AS nombre
@@ -64,7 +64,7 @@ class HotspotOwaspRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function countHotspotOwaspProbability($map):array
+    public function countHotspotOwaspProbability($map): array
     {
         try {
             $sql = "SELECT probability, count(*) as total
@@ -90,7 +90,7 @@ class HotspotOwaspRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function countHotspotOwaspMenaces($map):array
+    public function countHotspotOwaspMenaces($map): array
     {
 
         try {
@@ -118,7 +118,7 @@ class HotspotOwaspRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function countHotspotOwaspMenaceByStatus($map):array
+    public function countHotspotOwaspMenaceByStatus($map): array
     {
         try {
             $sql = "SELECT count(*) as total
@@ -149,7 +149,7 @@ class HotspotOwaspRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function deleteHotspotOwaspMavenKey($map):array
+    public function deleteHotspotOwaspMavenKey($map): array
     {
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
@@ -178,7 +178,7 @@ class HotspotOwaspRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function insertHotspotOwasp($map):array
+    public function insertHotspotOwasp($map): array
     {
         $sql = "INSERT INTO ma_moulinette.hotspot_owasp
                 (referentiel_owasp, maven_key, version, date_version, menace, security_category, rule_key, probability, status, resolution, niveau,

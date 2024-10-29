@@ -38,7 +38,7 @@ class NoSonarRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function deleteNoSonarMavenKey($map):array
+    public function deleteNoSonarMavenKey($map): array
     {
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
@@ -68,7 +68,7 @@ class NoSonarRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectNoSonarRuleGroupByRule($map):array
+    public function selectNoSonarRuleGroupByRule($map): array
     {
         try {
                 $sql = "SELECT rule, count(*) as total
@@ -96,7 +96,7 @@ class NoSonarRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function insertNoSonar($map):array
+    public function insertNoSonar($map): array
     {
         $sql = "INSERT INTO ma_moulinette.no_sonar
                     (maven_key, rule, component, line, mode_collecte, utilisateur_collecte, date_enregistrement)

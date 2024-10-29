@@ -41,7 +41,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function countHistoriqueProjet($map):array {
+    public function countHistoriqueProjet($map): array
         try {
                 $sql = "SELECT count(*) AS nombre
                         FROM ma_moulinette.historique
@@ -100,7 +100,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function updateHistoriqueReference($map):array {
+    public function updateHistoriqueReference($map): array
         /** on prépare la réponse */
         $response=['code'=>200, 'erreur'=>''];
         try {
@@ -151,7 +151,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function deleteHistoriqueProjet($map):array {
+    public function deleteHistoriqueProjet($map): array
         /** on prépare la réponse */
         $response=['code'=>200, 'erreur'=>''];
         try {
@@ -185,7 +185,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectUnionHistoriqueProjet($map):array {
+    public function selectUnionHistoriqueProjet($map): array
         try {
                 /** On prépare la requête */
                 // -- Sélection de la version initiale (la plus ancienne)
@@ -262,7 +262,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectUnionHistoriqueAnomalie($map):array {
+    public function selectUnionHistoriqueAnomalie($map): array
         try {
             /** On prépare la requête */
             $sql = "SELECT *
@@ -310,7 +310,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectUnionHistoriqueDetails($map):array {
+    public function selectUnionHistoriqueDetails($map): array
         try {
                 /** On prépare la requête */
                 $sql = "SELECT *
@@ -366,7 +366,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectHistoriqueAnomalieGraphique($map):array {
+    public function selectHistoriqueAnomalieGraphique($map): array
         try {
                 /** On prépare la requête */
                 $sql = "SELECT nombre_bug AS bug,
@@ -406,7 +406,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function insertHistoriqueAjoutProjet($map,$json):array {
+    public function insertHistoriqueAjoutProjet($map,$json): array
         try {
                 $this->getEntityManager()->getConnection()->beginTransaction();
                     /** On prépare la requête */
@@ -544,7 +544,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectHistoriqueProjetByDate($map):array {
+    public function selectHistoriqueProjetByDate($map): array
         try {
                 $this->getEntityManager()->getConnection()->beginTransaction();
                     /** On prépare la requête */
@@ -577,7 +577,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectHistoriqueProjetLast($map):array {
+    public function selectHistoriqueProjetLast($map): array
         try {
                 /** On prépare la requête */
                 $sql =  "SELECT version, nom_projet AS name, date_version,
@@ -610,7 +610,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectHistoriqueProjetReference($map):array {
+    public function selectHistoriqueProjetReference($map): array
         try {
                 /** On prépare la requête */
                 $sql = "SELECT version, date_version,
@@ -643,7 +643,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectHistoriqueProjetFavori($map):array {
+    public function selectHistoriqueProjetFavori($map): array
         try {
                 /** On prépare la requête */
                 $sql = "SELECT DISTINCT maven_key as mavenkey, nom_projet as nom,
@@ -678,7 +678,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectHistoriqueIsValide($map):array {
+    public function selectHistoriqueIsValide($map): array
         try {
                 /** On prépare la requête */
                 $sql = "SELECT version, nom_projet AS name,
@@ -712,7 +712,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectHistoriqueIndicateurs(string $map):array {
+    public function selectHistoriqueIndicateurs(string $map): array
         try {
                 /** On prépare la requête */
                 $sql = "SELECT DISTINCT ON (maven_key)

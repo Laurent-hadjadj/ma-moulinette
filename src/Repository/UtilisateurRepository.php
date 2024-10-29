@@ -41,7 +41,7 @@ class UtilisateurRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function insertUtilisateurPreferenceFavori($preference, $map):array
+    public function insertUtilisateurPreferenceFavori($preference, $map): array
     {
         /** On récupère les préférences */
         $statut = $preference['statut'];
@@ -132,7 +132,7 @@ class UtilisateurRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function deleteUtilisateurPreferenceFavori($preference, $map):array {
+    public function deleteUtilisateurPreferenceFavori($preference, $map): array
 
         /**
          * On regarde d'abord si le projet à une version en favori
@@ -233,7 +233,7 @@ class UtilisateurRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function updateUtilisateurPreferenceFavori($preference, $map):array {
+    public function updateUtilisateurPreferenceFavori($preference, $map): array
         /** On regarde si la projet est dans les favoris */
         $isFavori = in_array($map['maven_key'], $preference['favori']);
 
@@ -324,7 +324,7 @@ class UtilisateurRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function updateUtilisateurResetPassword($map):array {
+    public function updateUtilisateurResetPassword($map): array
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
                 $sql = "UPDATE ma_moulinette.utilisateur

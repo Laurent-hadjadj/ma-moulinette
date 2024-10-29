@@ -37,7 +37,7 @@ class OwaspRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectOwaspOrderByDateEnregistrement($map):array
+    public function selectOwaspOrderByDateEnregistrement($map): array
     {
         try {
                 $sql = "SELECT *
@@ -66,7 +66,7 @@ class OwaspRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function deleteOwaspMavenKey($map):array
+    public function deleteOwaspMavenKey($map): array
     {
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
@@ -96,7 +96,7 @@ class OwaspRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function insertOwasp($map):array
+    public function insertOwasp($map): array
     {
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();

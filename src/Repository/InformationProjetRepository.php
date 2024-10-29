@@ -42,7 +42,7 @@ class InformationProjetRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectInformationProjetIsValide($map):array
+    public function selectInformationProjetIsValide($map): array
     {
         try {
             $sql = "SELECT *
@@ -74,7 +74,7 @@ class InformationProjetRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function countInformationProjetAllType($map):array
+    public function countInformationProjetAllType($map): array
     {
         try {
             $sql = "SELECT COUNT(type) AS total
@@ -103,7 +103,7 @@ class InformationProjetRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function countInformationProjetType($map):array
+    public function countInformationProjetType($map): array
     {
         try {
             $sql = "SELECT type, COUNT(*) AS total
@@ -131,7 +131,7 @@ class InformationProjetRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectInformationProjetTypeIndexed($map):array
+    public function selectInformationProjetTypeIndexed($map): array
     {
         try {
                 $sql = "SELECT type, COUNT(type) AS total
@@ -160,7 +160,7 @@ class InformationProjetRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectInformationProjetVersionLast(array $map):array
+    public function selectInformationProjetVersionLast(array $map): array
     {
         try {
             $sql = "SELECT project_version as projet, date, analyse_key
@@ -189,7 +189,7 @@ class InformationProjetRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectInformationProjetVersion($map):array
+    public function selectInformationProjetVersion($map): array
     {
         try {
                 $sql = "SELECT maven_key, project_version as version, date
@@ -218,7 +218,7 @@ class InformationProjetRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectInformationProjetProjectVersion($map):array
+    public function selectInformationProjetProjectVersion($map): array
     {
         try {
             $sql = "SELECT project_version, date
@@ -247,7 +247,7 @@ class InformationProjetRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function deleteInformationProjetMavenKey($map):array
+    public function deleteInformationProjetMavenKey($map): array
     {
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
@@ -276,7 +276,7 @@ class InformationProjetRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function insertInformationProjet($map):array
+    public function insertInformationProjet($map): array
     {
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();

@@ -63,7 +63,7 @@ class BatchCollecteInformationProjetController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function controleVersionProjet($mavenKey):array
+    public function controleVersionProjet($mavenKey): array
     {
         /** On construit l'URL */
         $tempoUrl = $this->getParameter(static::$sonarUrl);

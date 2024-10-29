@@ -88,7 +88,7 @@ class BatchManuelController extends AbstractController
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/messages/count/{queueName}', name: 'messages_count_queue', methods: ['GET'])]
-    public function getMessageCount(string $queueName): response
+    public function getMessageCount(string $queueName): Response
     {
          /** On créé on objet de response HTTP */
         $response = new JsonResponse();

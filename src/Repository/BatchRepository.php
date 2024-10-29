@@ -39,7 +39,7 @@ class BatchRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectBatchByStatut():array
+    public function selectBatchByStatut(): array
     {
         try {
                 $sql = "SELECT statut, titre, responsable, portefeuille,

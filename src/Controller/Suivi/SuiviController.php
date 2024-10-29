@@ -142,7 +142,7 @@ class SuiviController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/suivi', name: 'suivi', methods: ['GET'])]
-    public function suivi(Request $request): Response
+    public function suivi(Request $request): response
     {
         $session = $request->getSession();
 

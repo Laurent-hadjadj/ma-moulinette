@@ -174,7 +174,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setCourriel(string $courriel): self
+    public function setCourriel(string $courriel): \App\Entity\Utilisateur
     {
         $this->courriel = $courriel;
 
@@ -213,7 +213,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setRoles(array $roles): self
+    public function setRoles(array $roles): \App\Entity\Utilisateur
     {
         $this->roles = $roles;
 
@@ -245,7 +245,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setPassword(string $password): self
+    public function setPassword(string $password): \App\Entity\Utilisateur
     {
         $this->password = $password;
 
@@ -263,7 +263,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setActif(bool $actif): self
+    public function setActif(bool $actif): \App\Entity\Utilisateur
     {
         $this->actif = $actif;
 
@@ -295,7 +295,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setDateModification(\DateTimeInterface $dateModification): self
+    public function setDateModification(\DateTimeInterface $dateModification): \App\Entity\Utilisateur
     {
         $this->dateModification = $dateModification;
 
@@ -327,7 +327,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setDateEnregistrement(\DateTimeInterface $dateEnregistrement): self
+    public function setDateEnregistrement(\DateTimeInterface $dateEnregistrement): \App\Entity\Utilisateur
     {
         $this->dateEnregistrement = $dateEnregistrement;
 
@@ -394,7 +394,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setPrenom(string $prenom): self
+    public function setPrenom(string $prenom): \App\Entity\Utilisateur
     {
         $this->prenom = $prenom;
 
@@ -426,7 +426,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setNom(string $nom): self
+    public function setNom(string $nom): \App\Entity\Utilisateur
     {
         $this->nom = $nom;
 
@@ -472,7 +472,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setAvatar(?string $avatar): self
+    public function setAvatar(?string $avatar): \App\Entity\Utilisateur
     {
         $this->avatar = $avatar;
 
@@ -505,7 +505,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function getEquipe(): ?array
+    public function getEquipe(): array
     {
         return $this->equipe;
     }
@@ -521,7 +521,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setEquipe(array $equipe): self
+    public function setEquipe(array $equipe): \App\Entity\Utilisateur
     {
         $this->equipe = $equipe;
 
@@ -538,7 +538,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function getPreference(): ?array
+    public function getPreference(): array
     {
         return $this->preference;
     }
@@ -554,7 +554,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setPreference(array $preference): self
+    public function setPreference(array $preference): \App\Entity\Utilisateur
     {
         $this->preference = $preference;
 
@@ -586,7 +586,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setInit(int $init): self
+    public function setInit(int $init): \App\Entity\Utilisateur
     {
         $this->init = $init;
 

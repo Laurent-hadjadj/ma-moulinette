@@ -42,7 +42,7 @@ class LoggerRepository extends ServiceEntityRepository
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function deleteLoggerMavenKey($map):array
+  public function deleteLoggerMavenKey($map): array
   {
     try {
       $this->getEntityManager()->getConnection()->beginTransaction();
@@ -71,7 +71,7 @@ class LoggerRepository extends ServiceEntityRepository
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function selectLogger($map):array
+  public function selectLogger($map): array
   {
       try {
               $sql = "SELECT logger_info, logger_warn, logger_error, logger_debug
@@ -98,7 +98,7 @@ class LoggerRepository extends ServiceEntityRepository
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function insertLogger($map):array
+  public function insertLogger($map): array
   {
       $sql = "INSERT INTO ma_moulinette.logger
                   (maven_key, logger_info, logger_warn, logger_error, logger_debug, mode_collecte, utilisateur_collecte, date_enregistrement)

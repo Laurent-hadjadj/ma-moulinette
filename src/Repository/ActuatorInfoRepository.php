@@ -34,7 +34,7 @@ class ActuatorInfoRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function findActuatorInfoById(array $map):array
+    public function findActuatorInfoById(array $map): array
     {
         try {
                 $sql = "SELECT actuator_info_description AS nom, actuator_info_value as valeur

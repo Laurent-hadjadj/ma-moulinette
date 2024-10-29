@@ -41,7 +41,7 @@ class MesuresRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectMesuresVersionLast($map):array
+    public function selectMesuresVersionLast($map): array
     {
         try {
                 $sql = "SELECT project_name as name, ncloc, language_distribution,
@@ -122,7 +122,7 @@ class MesuresRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function deleteMesuresMavenKey($map):array
+    public function deleteMesuresMavenKey($map): array
     {
         try {
                 $this->getEntityManager()->getConnection()->beginTransaction();

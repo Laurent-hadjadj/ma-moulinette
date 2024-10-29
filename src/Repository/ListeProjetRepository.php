@@ -149,7 +149,7 @@ class ListeProjetRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function deleteListeProjet():array
+    public function deleteListeProjet(): array
     {
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();

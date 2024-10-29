@@ -41,7 +41,7 @@ class NotesRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function deleteNotesMavenKey($map):array
+    public function deleteNotesMavenKey($map): array
     {
         try {
                 $this->getEntityManager()->getConnection()->beginTransaction();
@@ -72,7 +72,7 @@ class NotesRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function insertNotes($map):array
+    public function insertNotes($map): array
     {
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
@@ -111,7 +111,7 @@ class NotesRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectNotesMavenType($map):array
+    public function selectNotesMavenType($map): array
     {
         try {
                 $sql = "SELECT type, value, date_enregistrement

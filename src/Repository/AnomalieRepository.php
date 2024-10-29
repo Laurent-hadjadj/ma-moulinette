@@ -41,7 +41,7 @@ class AnomalieRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function deleteAnomalieMavenKey($map):array
+    public function deleteAnomalieMavenKey($map): array
     {
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
@@ -71,7 +71,7 @@ class AnomalieRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectAnomalieByProjectName():array
+    public function selectAnomalieByProjectName(): array
     {
         try {
                 $sql = "SELECT maven_key as key
@@ -99,7 +99,7 @@ class AnomalieRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectAnomalie($map):array
+    public function selectAnomalie($map): array
     {
         try {
                 $sql = "SELECT *
@@ -125,7 +125,7 @@ class AnomalieRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function insertAnomalie($map):array
+    public function insertAnomalie($map): array
     {
         try {
                 $this->getEntityManager()->getConnection()->beginTransaction();

@@ -71,7 +71,7 @@ class ProfilesRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectProfiles($referentielDefault='true' ,$langage = null):array
+    public function selectProfiles($referentielDefault='true' ,$langage = null): array
     {
         try {
             $sql = "SELECT name as profil,
@@ -108,7 +108,7 @@ class ProfilesRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function deleteProfiles():array
+    public function deleteProfiles(): array
     {
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
@@ -131,7 +131,7 @@ class ProfilesRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectProfilesLanguage():array
+    public function selectProfilesLanguage(): array
     {
         try {
                 $sql = "SELECT language_name AS profile
@@ -155,7 +155,7 @@ class ProfilesRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectProfilesRuleCount():array
+    public function selectProfilesRuleCount(): array
     {
         try {
                 $sql = "SELECT active_rule_count AS total

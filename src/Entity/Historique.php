@@ -385,7 +385,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setMavenKey(string $mavenKey): self
+    public function setMavenKey(string $mavenKey): \App\Entity\Historique
     {
         $this->mavenKey = $mavenKey;
         return $this;
@@ -402,7 +402,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setVersion(string $version): self
+    public function setVersion(string $version): \App\Entity\Historique
     {
         $this->version = $version;
         return $this;
@@ -419,7 +419,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setDateVersion(string $dateVersion): self
+    public function setDateVersion(string $dateVersion): \App\Entity\Historique
     {
         $this->dateVersion = $dateVersion;
         return $this;
@@ -479,7 +479,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setNomProjet(string $nomProjet): self
+    public function setNomProjet(string $nomProjet): \App\Entity\Historique
     {
         $this->nomProjet = $nomProjet;
 
@@ -523,7 +523,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setVersionRelease(int $versionRelease): self
+    public function setVersionRelease(int $versionRelease): \App\Entity\Historique
     {
         $this->versionRelease = $versionRelease;
 
@@ -555,7 +555,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setVersionSnapshot(int $versionSnapshot): self
+    public function setVersionSnapshot(int $versionSnapshot): \App\Entity\Historique
     {
         $this->versionSnapshot = $versionSnapshot;
 
@@ -587,7 +587,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setVersionAutre(int $versionAutre): self
+    public function setVersionAutre(int $versionAutre): \App\Entity\Historique
     {
         $this->versionAutre = $versionAutre;
 
@@ -619,7 +619,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setSuppressWarning(int $suppressWarning): self
+    public function setSuppressWarning(int $suppressWarning): \App\Entity\Historique
     {
         $this->suppressWarning = $suppressWarning;
 
@@ -651,7 +651,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setNoSonar(int $noSonar): self
+    public function setNoSonar(int $noSonar): \App\Entity\Historique
     {
         $this->noSonar = $noSonar;
 
@@ -683,7 +683,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setNombreLigne(int $nombreLigne): self
+    public function setNombreLigne(int $nombreLigne): \App\Entity\Historique
     {
         $this->nombreLigne = $nombreLigne;
 
@@ -715,7 +715,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setNombreLigneCode(int $nombreLigneCode): self
+    public function setNombreLigneCode(int $nombreLigneCode): \App\Entity\Historique
     {
         $this->nombreLigneCode = $nombreLigneCode;
 
@@ -747,7 +747,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setCoverage(float $coverage): self
+    public function setCoverage(float $coverage): \App\Entity\Historique
     {
         $this->coverage = $coverage;
 
@@ -779,7 +779,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setDuplicatedLinesDensity(float $duplicatedLinesDensity): self
+    public function setDuplicatedLinesDensity(float $duplicatedLinesDensity): \App\Entity\Historique
     {
         $this->duplicatedLinesDensity = $duplicatedLinesDensity;
 
@@ -811,7 +811,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setTests(int $tests): self
+    public function setTests(int $tests): \App\Entity\Historique
     {
         $this->tests = $tests;
 
@@ -843,7 +843,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setViolations(int $violations): self
+    public function setViolations(int $violations): \App\Entity\Historique
     {
         $this->violations = $violations;
 
@@ -875,7 +875,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setNombreBug(int $nombreBug): self
+    public function setNombreBug(int $nombreBug): \App\Entity\Historique
     {
         $this->nombreBug = $nombreBug;
 
@@ -907,7 +907,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setNombreVulnerability(int $nombreVulnerability): self
+    public function setNombreVulnerability(int $nombreVulnerability): \App\Entity\Historique
     {
         $this->nombreVulnerability = $nombreVulnerability;
 
@@ -939,7 +939,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setNombreCodeSmell(int $nombreCodeSmell): self
+    public function setNombreCodeSmell(int $nombreCodeSmell): \App\Entity\Historique
     {
         $this->nombreCodeSmell = $nombreCodeSmell;
 
@@ -971,7 +971,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setFrontend(int $frontend): self
+    public function setFrontend(int $frontend): \App\Entity\Historique
     {
         $this->frontend = $frontend;
 
@@ -1003,7 +1003,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setBackend(int $backend): self
+    public function setBackend(int $backend): \App\Entity\Historique
     {
         $this->backend = $backend;
 
@@ -1035,7 +1035,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setAutre(int $autre): self
+    public function setAutre(int $autre): \App\Entity\Historique
     {
         $this->autre = $autre;
 
@@ -1067,7 +1067,7 @@ class Historique
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setDette(int $dette): self
+    public function setDette(int $dette): \App\Entity\Historique
     {
         $this->dette = $dette;
 
@@ -1099,7 +1099,7 @@ class Historique
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setSqaleDebtRatio(float $sqaleDebtRatio): self
+    public function setSqaleDebtRatio(float $sqaleDebtRatio): \App\Entity\Historique
     {
         $this->sqaleDebtRatio = $sqaleDebtRatio;
 
@@ -1131,7 +1131,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setNombreAnomalieBloquant(int $nombreAnomalieBloquant): self
+    public function setNombreAnomalieBloquant(int $nombreAnomalieBloquant): \App\Entity\Historique
     {
         $this->nombreAnomalieBloquant = $nombreAnomalieBloquant;
 
@@ -1163,7 +1163,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setNombreAnomalieCritique(int $nombreAnomalieCritique): self
+    public function setNombreAnomalieCritique(int $nombreAnomalieCritique): \App\Entity\Historique
     {
         $this->nombreAnomalieCritique = $nombreAnomalieCritique;
 
@@ -1195,7 +1195,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setNombreAnomalieInfo(int $nombreAnomalieInfo): self
+    public function setNombreAnomalieInfo(int $nombreAnomalieInfo): \App\Entity\Historique
     {
         $this->nombreAnomalieInfo = $nombreAnomalieInfo;
 
@@ -1227,7 +1227,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setNombreAnomalieMajeur(int $nombreAnomalieMajeur): self
+    public function setNombreAnomalieMajeur(int $nombreAnomalieMajeur): \App\Entity\Historique
     {
         $this->nombreAnomalieMajeur = $nombreAnomalieMajeur;
 
@@ -1259,7 +1259,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setNombreAnomalieMineur(int $nombreAnomalieMineur): self
+    public function setNombreAnomalieMineur(int $nombreAnomalieMineur): \App\Entity\Historique
     {
         $this->nombreAnomalieMineur = $nombreAnomalieMineur;
 
@@ -1291,7 +1291,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setNoteReliability(string $noteReliability): self
+    public function setNoteReliability(string $noteReliability): \App\Entity\Historique
     {
         $this->noteReliability = $noteReliability;
 
@@ -1323,7 +1323,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setNoteSecurity(string $noteSecurity): self
+    public function setNoteSecurity(string $noteSecurity): \App\Entity\Historique
     {
         $this->noteSecurity = $noteSecurity;
 
@@ -1355,7 +1355,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setNoteSqale(string $noteSqale): self
+    public function setNoteSqale(string $noteSqale): \App\Entity\Historique
     {
         $this->noteSqale = $noteSqale;
 
@@ -1387,7 +1387,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setNoteHotspot(string $noteHotspot): self
+    public function setNoteHotspot(string $noteHotspot): \App\Entity\Historique
     {
         $this->noteHotspot = $noteHotspot;
 
@@ -1419,7 +1419,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setHotspotHigh(int $hotspotHigh): self
+    public function setHotspotHigh(int $hotspotHigh): \App\Entity\Historique
     {
         $this->hotspotHigh = $hotspotHigh;
 
@@ -1451,7 +1451,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setHotspotMedium(int $hotspotMedium): self
+    public function setHotspotMedium(int $hotspotMedium): \App\Entity\Historique
     {
         $this->hotspotMedium = $hotspotMedium;
 
@@ -1483,7 +1483,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setHotspotLow(int $hotspotLow): self
+    public function setHotspotLow(int $hotspotLow): \App\Entity\Historique
     {
         $this->hotspotLow = $hotspotLow;
 
@@ -1515,7 +1515,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setNombreHotspot(int $nombreHotspot): self
+    public function setNombreHotspot(int $nombreHotspot): \App\Entity\Historique
     {
         $this->nombreHotspot = $nombreHotspot;
 
@@ -1547,7 +1547,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setInitial(bool $initial): self
+    public function setInitial(bool $initial): \App\Entity\Historique
     {
         $this->initial = $initial;
 
@@ -1579,7 +1579,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setBugBlocker(int $bugBlocker): self
+    public function setBugBlocker(int $bugBlocker): \App\Entity\Historique
     {
         $this->bugBlocker = $bugBlocker;
 
@@ -1611,7 +1611,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setBugCritical(int $bugCritical): self
+    public function setBugCritical(int $bugCritical): \App\Entity\Historique
     {
         $this->bugCritical = $bugCritical;
 
@@ -1643,7 +1643,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setBugMajor(int $bugMajor): self
+    public function setBugMajor(int $bugMajor): \App\Entity\Historique
     {
         $this->bugMajor = $bugMajor;
 
@@ -1675,7 +1675,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setBugMinor(int $bugMinor): self
+    public function setBugMinor(int $bugMinor): \App\Entity\Historique
     {
         $this->bugMinor = $bugMinor;
 
@@ -1707,7 +1707,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setBugInfo(int $bugInfo): self
+    public function setBugInfo(int $bugInfo): \App\Entity\Historique
     {
         $this->bugInfo = $bugInfo;
 
@@ -1739,7 +1739,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setVulnerabilityBlocker(int $vulnerabilityBlocker): self
+    public function setVulnerabilityBlocker(int $vulnerabilityBlocker): \App\Entity\Historique
     {
         $this->vulnerabilityBlocker = $vulnerabilityBlocker;
 
@@ -1771,7 +1771,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setVulnerabilityCritical(int $vulnerabilityCritical): self
+    public function setVulnerabilityCritical(int $vulnerabilityCritical): \App\Entity\Historique
     {
         $this->vulnerabilityCritical = $vulnerabilityCritical;
 
@@ -1803,7 +1803,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setVulnerabilityMajor(int $vulnerabilityMajor): self
+    public function setVulnerabilityMajor(int $vulnerabilityMajor): \App\Entity\Historique
     {
         $this->vulnerabilityMajor = $vulnerabilityMajor;
 
@@ -1835,7 +1835,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setVulnerabilityMinor(int $vulnerabilityMinor): self
+    public function setVulnerabilityMinor(int $vulnerabilityMinor): \App\Entity\Historique
     {
         $this->vulnerabilityMinor = $vulnerabilityMinor;
 
@@ -1867,7 +1867,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setVulnerabilityInfo(int $vulnerabilityInfo): self
+    public function setVulnerabilityInfo(int $vulnerabilityInfo): \App\Entity\Historique
     {
         $this->vulnerabilityInfo = $vulnerabilityInfo;
 
@@ -1899,7 +1899,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setCodeSmellBlocker(int $codeSmellBlocker): self
+    public function setCodeSmellBlocker(int $codeSmellBlocker): \App\Entity\Historique
     {
         $this->codeSmellBlocker = $codeSmellBlocker;
 
@@ -1931,7 +1931,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setCodeSmellCritical(int $codeSmellCritical): self
+    public function setCodeSmellCritical(int $codeSmellCritical): \App\Entity\Historique
     {
         $this->codeSmellCritical = $codeSmellCritical;
 
@@ -1963,7 +1963,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setCodeSmellMajor(int $codeSmellMajor): self
+    public function setCodeSmellMajor(int $codeSmellMajor): \App\Entity\Historique
     {
         $this->codeSmellMajor = $codeSmellMajor;
 
@@ -1995,7 +1995,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setCodeSmellMinor(int $codeSmellMinor): self
+    public function setCodeSmellMinor(int $codeSmellMinor): \App\Entity\Historique
     {
         $this->codeSmellMinor = $codeSmellMinor;
 
@@ -2027,7 +2027,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setCodeSmellInfo(int $codeSmellInfo): self
+    public function setCodeSmellInfo(int $codeSmellInfo): \App\Entity\Historique
     {
         $this->codeSmellInfo = $codeSmellInfo;
 
@@ -2059,7 +2059,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setDateEnregistrement(\DateTimeInterface $dateEnregistrement): self
+    public function setDateEnregistrement(\DateTimeInterface $dateEnregistrement): \App\Entity\Historique
     {
         $this->dateEnregistrement = $dateEnregistrement;
 

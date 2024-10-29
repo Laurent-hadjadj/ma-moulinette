@@ -42,7 +42,7 @@ class ProfilesHistoriqueRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function insertProfilesHistorique($map):array
+    public function insertProfilesHistorique($map): array
     {
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
@@ -89,7 +89,7 @@ class ProfilesHistoriqueRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectProfilesHistoriqueAction($map):array
+    public function selectProfilesHistoriqueAction($map): array
     {
         try {
                 $sql = "SELECT COUNT(*) AS nombre
@@ -118,7 +118,7 @@ class ProfilesHistoriqueRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectProfilesHistoriqueDateTri($map):array
+    public function selectProfilesHistoriqueDateTri($map): array
     {
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
@@ -149,7 +149,7 @@ class ProfilesHistoriqueRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectProfilesHistoriqueDateCourteGroupeBy($map):array
+    public function selectProfilesHistoriqueDateCourteGroupeBy($map): array
     {
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
@@ -181,7 +181,7 @@ class ProfilesHistoriqueRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectProfilesHistoriqueLangageDateCourte($map):array
+    public function selectProfilesHistoriqueLangageDateCourte($map): array
     {
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();

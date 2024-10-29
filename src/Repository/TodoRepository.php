@@ -42,7 +42,7 @@ class TodoRepository extends ServiceEntityRepository
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function deleteTodoMavenKey($map):array
+  public function deleteTodoMavenKey($map): array
   {
     try {
       $this->getEntityManager()->getConnection()->beginTransaction();
@@ -72,7 +72,7 @@ class TodoRepository extends ServiceEntityRepository
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function selectTodoRuleGroupByRule($map):array
+  public function selectTodoRuleGroupByRule($map): array
   {
     try {
         $sql = "SELECT rule, count(*) as total
@@ -101,7 +101,7 @@ class TodoRepository extends ServiceEntityRepository
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function selectTodoComponentOrderByRule($map):array
+  public function selectTodoComponentOrderByRule($map): array
   {
     try {
             $sql = "SELECT rule, component, line
@@ -129,7 +129,7 @@ class TodoRepository extends ServiceEntityRepository
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function insertTodo($map):array
+  public function insertTodo($map): array
   {
       $sql = "INSERT INTO ma_moulinette.todo
                   (maven_key, rule, component, line, mode_collecte, utilisateur_collecte, date_enregistrement)

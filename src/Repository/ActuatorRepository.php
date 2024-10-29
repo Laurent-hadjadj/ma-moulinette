@@ -36,7 +36,7 @@ class ActuatorRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function deleteActuatorUrl($map):array
+    public function deleteActuatorUrl($map): array
     {
         try {
                 $this->getEntityManager()->getConnection()->beginTransaction();
@@ -66,7 +66,7 @@ class ActuatorRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function findActuatorOrderBy($sortColumn, $sortDirection):array
+    public function findActuatorOrderBy($sortColumn, $sortDirection): array
     {
         try {
                 $sql = "SELECT *
@@ -92,7 +92,7 @@ class ActuatorRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function findActuatorOrderByDate($sortDirection):array
+    public function findActuatorOrderByDate($sortDirection): array
     {
         try {
                 $sql = "SELECT * FROM ma_moulinette.actuator
@@ -121,7 +121,7 @@ class ActuatorRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function findActuatorMavenKey($map):array
+    public function findActuatorMavenKey($map): array
     {
         try {
                 $sql = "SELECT id, url, actuator_user, actuator_password

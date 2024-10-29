@@ -38,7 +38,7 @@ class HotspotDetailsRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectHotspotDetailsByStatus($map):array
+    public function selectHotspotDetailsByStatus($map): array
     {
         /** Utiliser dans la page OWASP */
         $sql = "SELECT *
@@ -66,7 +66,7 @@ class HotspotDetailsRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function deleteHotspotDetailsMavenKey($map):array
+    public function deleteHotspotDetailsMavenKey($map): array
     {
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
@@ -95,7 +95,7 @@ class HotspotDetailsRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function insertHotspotDetails($map):array
+    public function insertHotspotDetails($map): array
     {
         $sql = "INSERT INTO ma_moulinette.hotspot_details
                     (maven_key, version, date_version, security_category, rule_key, rule_name, severity, status, resolution, niveau, frontend, backend, autre, file_name, file_path, line, message, hotspot_key,
