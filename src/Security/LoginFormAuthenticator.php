@@ -112,7 +112,7 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
-        /** */
+    {
         $init=$token->getUser()->getInit();
         $targetPath = $this->getTargetPath($request->getSession(), $firewallName);
         /** si target n'est pas null,
