@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Controller\Batch;
+namespace App\Tests\Unit\Controller\Batch;
 
 use PHPUnit\Framework\TestCase;
 use App\Controller\Batch\BatchCollecteAnomalieController;

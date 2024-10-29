@@ -11,7 +11,7 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
-namespace App\Tests\Unit\Entity;
+namespace App\Tests\Unit\Entity\Case;
 
 use App\Entity\HotspotDetails;
 use PHPUnit\Framework\TestCase;

@@ -23,7 +23,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 /**
  * [Description PortefeuilleRepositoryTest]
  */
-class PortefeuilleRepositoryTest extends KernelTestCase
+class PorteFeuilleRepositoryTest extends KernelTestCase
 {
     private static $portefeuille = 'MES PROJETS';
     private static $erreurCode200 = 'Erreur le code retour doit être 200.';

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Controller\Batch;
+namespace App\Tests\Unit\Controller\Batch;
 
 use App\Controller\Batch\BatchCollecteNoSonarController;
 use App\Service\Client;

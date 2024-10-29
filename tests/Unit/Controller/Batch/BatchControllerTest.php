@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Controller\Batch;
+namespace App\Tests\Unit\Controller\Batch;
 
 use App\Controller\Batch\BatchController;
 use App\Entity\BatchTraitement;

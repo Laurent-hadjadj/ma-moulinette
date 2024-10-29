@@ -11,7 +11,7 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
-namespace App\Tests\Unit\Entity;
+namespace App\Tests\Unit\Entity\Case;
 
 use PHPUnit\Framework\TestCase;
 use App\Entity\Utilisateur;

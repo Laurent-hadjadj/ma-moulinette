@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Controller\Batch;
+namespace App\Tests\Unit\Controller\Batch;
 
 use App\Controller\Batch\BatchManuelController;
 use App\Service\FileLogger;
@@ -49,7 +49,7 @@ class BatchManuelControllerTest extends WebTestCase
     {
         $queueName = 'testQueue';
         $messageCount = 5;
-        
+
         // Mock RabbitMQService method
         $this->rabbitMQService->method('getMessageCount')->willReturn($messageCount);
 
@@ -85,7 +85,7 @@ class BatchManuelControllerTest extends WebTestCase
                 'type' => 'alert',
                 'reference' => BatchManuelController::$reference,
                 'message' => BatchManuelController::$erreur400
-            ]), 
+            ]),
             $response->getContent()
         );
     }
@@ -95,7 +95,7 @@ class BatchManuelControllerTest extends WebTestCase
         $portefeuille = 'testPortefeuille';
         $type = 'testType';
         $journalContent = ['recherche' => 'search result', 'content' => 'journal content'];
-        
+
         // Mock FileLogger methods
         $this->logger->method('downloadContent')->willReturn($journalContent);
 
@@ -126,7 +126,7 @@ class BatchManuelControllerTest extends WebTestCase
                 'type' => 'alert',
                 'reference' => BatchManuelController::$reference,
                 'message' => BatchManuelController::$erreur400
-            ]), 
+            ]),
             $response->getContent()
         );
     }
@@ -135,7 +135,7 @@ class BatchManuelControllerTest extends WebTestCase
     {
         $portefeuille = 'testPortefeuille';
         $type = 'testType';
-        
+
         // Mock FileLogger methods
         $this->logger->expects($this->once())->method('log')->with($portefeuille, $type, 'delete');
 
@@ -155,19 +155,19 @@ class BatchManuelControllerTest extends WebTestCase
         $titrePortefeuille = 'testTitle';
         $portefeuille = 'testPortefeuille';
         $result = ['code' => 200, 'liste' => ['project1', 'project2']];
-        
+
         // Mock repository methods
         $batchTraitementRepository = $this->createMock(\App\Repository\BatchTraitementRepository::class);
         $portefeuilleRepository = $this->createMock(\App\Repository\PortefeuilleRepository::class);
-        
+
         $batchTraitementRepository->method('SelectBatchTraitement')->willReturn(['code' => 200, 'liste' => ['project1']]);
         $portefeuilleRepository->method('selectPortefeuille')->willReturn(['code' => 200, 'liste' => ['["project1", "project2"]']]);
-        
+
         $this->em->method('getRepository')->willReturnMap([
             [Portefeuille::class, $portefeuilleRepository],
             [BatchTraitement::class, $batchTraitementRepository]
         ]);
-        
+
         $result = $this->controller->listeProjet($titrePortefeuille, $portefeuille);
         $this->assertEquals(['code' => 200, 'project1', 'project2'], $result);
     }
@@ -186,7 +186,7 @@ class BatchManuelControllerTest extends WebTestCase
             json_encode([
                 'code' => 403,
                 'message' => 'L’utilisateur essaye d’accéder à la page sans avoir le rôle ROLE_BATCH'
-            ]), 
+            ]),
             $response->getContent()
         );
     }
@@ -194,16 +194,16 @@ class BatchManuelControllerTest extends WebTestCase
     public function testTraitementManuelSuccess()
     {
         $request = new Request([], [], [], [], [], [], json_encode(['titre_portefeuille' => 'testTitle', 'portefeuille' => 'testPortefeuille']));
-        
+
         // Mock security methods
         $this->security->method('getUser')->willReturn((object) ['getCourriel' => 'test@example.com']);
-        
+
         // Mock CollecteController method
         $this->collecte->method('collecte')->willReturn(['code' => 200]);
 
         // Mock listeProjet method
         $this->controller->method('listeProjet')->willReturn(['code' => 200, 'project1']);
-        
+
         $response = $this->controller->traitementManuel($request);
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());

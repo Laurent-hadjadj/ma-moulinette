@@ -11,7 +11,7 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
-namespace App\Tests\Entity;
+namespace App\Tests\Unit\Entity;
 
 use DateTime;
 use App\Entity\Repartition;
