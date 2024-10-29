@@ -1,7 +1,5 @@
 ---
 security:
-    # On active le mécanisme d'authentification
-    enable_authenticator_manager: true
     # On lève une exception si l'utilisateur n'existe pas
     hide_user_not_found: false
 
