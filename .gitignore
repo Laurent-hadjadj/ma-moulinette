@@ -91,7 +91,3 @@ phpstan.neon
 /public/assets/
 /assets/vendor/
 ###< symfony/asset-mapper ###
-
-###> sensiolabs/minify-bundle ###
-/var/minify/
-###< sensiolabs/minify-bundle ###
