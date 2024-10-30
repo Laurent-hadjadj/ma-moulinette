@@ -1,4 +1,4 @@
 ---
-'Too many failed login attempts, please try again in %minutes% minute.': Plusieurs tentatives de connexion ont échoué, veuillez réessayer dans %minutes% minute..
+'Too many failed login attempts, please try again in %minutes% minute.': Plusieurs tentatives de connexion ont échoué, veuillez réessayer dans %minutes% minutes.
+'Username could not be found.': L'adresse de courriel et/ou le mot de passe sont incorrects.
 ...
-
