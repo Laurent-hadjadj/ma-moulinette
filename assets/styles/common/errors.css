@@ -1,0 +1,191 @@
+/**
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2021-2024.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ */
+
+@font-face {
+  font-family: Poppins;
+  src: url("../../fonts/Poppins-Regular-webfont.eot");
+  src:
+    url("../../fonts/Poppins-Regular-webfont.eot#iefix") format("embedded-opentype"),
+    url("../../fonts/Poppins-Regular-webfont.woff2") format("woff2"),
+    url("../../fonts/Poppins-Regular-webfont.woff") format("woff"),
+    url("../../fonts/Poppins-Regular-webfont.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+.pop-pins { font-family: Poppins, sans-serif; }
+
+/* Mobile */
+@media (width <= 20em) {
+  .logo-mm-svg { width: 128px; }
+  .message-erreur {
+    font-size: 1.4rem;
+    margin-left: 1rem;
+  }
+  .information-erreur {
+    font-size: 1rem;
+    margin-left: 1rem;
+  }
+  .press-left-button { display: block; }
+}
+
+/* Mobile */
+@media (20.025em <= width <= 22em) {
+  .logo-mm-svg { width: 128px; }
+  .message-erreur {
+    font-size: 1.4rem;
+    margin-left: 2rem;
+  }
+  .information-erreur {
+    font-size: 1rem;
+    margin-left: 2rem;
+  }
+  .press-left-button { display: block; }
+}
+
+/* Mobile */
+@media (22.025em <= width <= 30em) {
+  .logo-mm-svg { width: 128px; }
+  .message-erreur {
+    font-size: 1.4rem;
+    margin-left: 2rem;}
+  .information-erreur {
+    font-size: 1rem;
+    margin-left: 2rem;
+  }
+  .press-left-button { display: block; }
+}
+
+/* Mobile */
+@media (30.025em <= width <= 40em) {
+  .logo-mm-svg { width: 256px; }
+  .message-erreur { font-size: 1.4rem; }
+  .information-erreur { font-size: 1rem; }
+  .press-left-button { display: block; }
+}
+
+@media (40.025em <= width <= 64em) {
+  .logo-mm-svg { width: 256px; }
+  .message-erreur { font-size: 1.4rem; }
+  .information-erreur { font-size: 1rem; }
+}
+
+@media (64.025em <= width <= 90em) {
+  .logo-mm-svg { width: 256px; }
+  .message-erreur { font-size: 1.4rem; }
+  .information-erreur { font-size: 1rem; }
+}
+
+@media (90.025em <= width <= 120em) {
+  .logo-mm-svg { width: 256px; }
+  .message-erreur { font-size: 1.4rem; }
+  .information-erreur { font-size: 1rem; }
+}
+
+@media (120.025em <= width <= 160em) {
+  .logo-mm-svg { width: 256px; }
+  .message-erreur { font-size: 1.4rem; }
+  .information-erreur { font-size: 1rem; }
+}
+
+@media (width >= 160.025em) {
+  .logo-mm-svg { width: 256px; }
+  .message-erreur { font-size: 1.4rem; }
+  .information-erreur { font-size: 1rem; }
+}
+
+body {
+  margin: 0;
+  background: #00445b;
+}
+
+/* Définition du logo SVG */
+.logo-mm-container {
+  display: flex;
+  justify-content: center;
+}
+
+.logo-mm-svg { fill: #fff; }
+
+.code-erreur {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  font-size: 18vw;
+  color: #fff;
+  background-color: #00445b;
+  line-height: 1em;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+.message-erreur {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.information-erreur {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+  color: #fff;
+}
+
+/** On défini les propriétés du bouton accueil */
+.bouton-container {
+  display: flex;
+  justify-content: space-around;
+}
+
+.bouton {
+  background-color: #00445b;
+  border: none;
+  margin: 25px 0; }
+
+.bouton a {
+  display: inline-block;
+  margin: 0 10px;
+  text-decoration: none;
+  border: 2px solid #fff;
+  color: #fff;
+  font-weight: 500;
+  padding: 10px 25px;
+  border-radius: 10px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+
+.bouton a:hover {
+  background: #8f0f0f;
+  color: #fff;
+}
+
+/** The Guru meditation */
+#guru {
+  background: #222b;
+  color: #f73939;
+  text-align: center;
+  border: 7px solid #f73939;
+  font-family: monospace;
+  font-size: 1rem;
+  font-weight: bold;
+  animation: border 1.5s infinite;
+}
+
+/** On fait clignoter le cadre **/
+@keyframes border {
+  50% { border: 7px solid #f73939; }
+  100% { border: 7px solid #222b; }
+}

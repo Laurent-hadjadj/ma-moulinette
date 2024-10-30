@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2022.
+ *  Copyright (c) 2021-2024.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -24,6 +24,9 @@ use Symfony\Component\ErrorHandler\Exception\FlattenException;
 /** TWIG */
 use Twig\Environment;
 
+/**
+ * [Description ErrorController]
+ */
 class ErrorController extends AbstractController
 {
     #[Route('/error', name: 'error', methods: ['GET'])]
