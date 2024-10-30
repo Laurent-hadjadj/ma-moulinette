@@ -1,32 +1,34 @@
 {% block footer %}
-  <div id="body-for-sticky" class="body-for-sticky" aria-hidden=true><span>&nbsp;</span></div>
-  <!-- Footer complet-->
   <footer class="footer {{ bottom | default('')}}">
-  <div class="grid-x">
-    <div class="small-6 medium-6 large-7 cell">
-      <ul class="menu footer-bottom-links footer-color">
-        <li><a href="{{ path('plan_du_site', {}) }}">
-        <span class="show-for-medium">Plan du site</span>
-        <span class="show-for-small-only">Site</span></a></li>
-        <li><a href="#">
-        <span class="show-for-medium">Accessibilité</span>
-        <span class="show-for-small-only">RGAA</span>
-        | {{rgaa|default('non')}}</a></li>
-      </ul>
+  {# footer complet #}
+  {% if type_footer == 'complet' %}
+    <div class="grid-x">
+      <div class="small-6 medium-6 large-7 cell">
+        <ul class="menu footer-bottom-links footer-color">
+          <li><a href="{{ path('plan_du_site', {}) }}">
+          <span class="show-for-medium">Plan du site</span>
+          <span class="show-for-small-only">Site</span></a></li>
+          <li><a href="#">
+          <span class="show-for-medium">Accessibilité</span>
+          <span class="show-for-small-only">RGAA</span>
+          | {{rgaa|default('non')}}</a></li>
+        </ul>
+      </div>
+      <div class="small-6 medium-6 large-5 cell">
+        <ul class="menu footer-bottom-links footer-color">
+          <li><a href="{{ path('donnees_personnelles', {}) }}">
+          <span class="show-for-medium">Données personnelles</span>
+          <span class="show-for-small-only">RGPD</span></a></li>
+          <li><a href="{{ path('mention_legale', {}) }}">
+          <span class="show-for-medium">Mentions légales</span>
+          <span class="show-for-small-only">CGU</span>
+          </a></li>
+        </ul>
+      </div>
     </div>
-    <div class="small-6 medium-6 large-5 cell">
-      <ul class="menu footer-bottom-links footer-color">
-        <li><a href="{{ path('donnees_personnelles', {}) }}">
-        <span class="show-for-medium">Données personnelles</span>
-        <span class="show-for-small-only">RGPD</span></a></li>
-        <li><a href="{{ path('mention_legale', {}) }}">
-        <span class="show-for-medium">Mentions légales</span>
-        <span class="show-for-small-only">CGU</span>
-        </a></li>
-      </ul>
-    </div>
-  </div>
+    {% endif %}
 
+    {# footer simple #}
     <div class="container-copyright open-sans-light footer-padding footer-color">
       <span class="copyright">© {{dateCopyright}} - CC BY-SA-NC 4.0</span>
       <span class="show-for-small-only auteur color-blanc">{{marque_entreprise_short}}</span>
