@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2022.
+ *  Copyright (c) 2021-2024.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -23,11 +23,32 @@ use Doctrine\Persistence\ManagerRegistry;
 class UtilisateurRepository extends ServiceEntityRepository
 {
     public static $removeReturnLine = "/\s+/u";
+    public static $noDataBase = 'La connexion à la base de données a échoué.';
     public static $courriel = ':courriel';
 
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Utilisateur::class);
+    }
+
+    /**
+   * [Description for handleDatabaseException]
+   *
+   * @param \Doctrine\DBAL\Exception $e
+   *
+   * @return array
+   *
+   * Created at: 21/10/2024 16:55:20 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Lilmod & Lelamed - Creative Common CC-BY-NC-SA 4.0.
+   */
+    protected function handleDatabaseException(\Doctrine\DBAL\Exception $e): array
+    {
+        if (strpos($e->getMessage(), 'SQLSTATE[08006]') !== false) {
+            return ['code'=>500, 'erreur' => static::$noDataBase];
+        } else {
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
+        }
     }
 
     /**
@@ -61,7 +82,6 @@ class UtilisateurRepository extends ServiceEntityRepository
                 $index=$i;
             }
         }
-
 
         /* si le projet n'est pas un favori on l'ajoute */
         if (!in_array($map['maven_key'], $listeFavori)){
@@ -115,7 +135,7 @@ class UtilisateurRepository extends ServiceEntityRepository
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            $response=['code'=>500, 'erreur'=> $e->getMessage()];
+            return $this->handleDatabaseException($e);
         }
         return $response;
     }
@@ -216,7 +236,7 @@ class UtilisateurRepository extends ServiceEntityRepository
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            $response=['code'=>500, 'erreur'=> $e->getMessage()];
+            return $this->handleDatabaseException($e);
         }
         return $response;
     }
@@ -258,7 +278,7 @@ class UtilisateurRepository extends ServiceEntityRepository
             $statut['favori'] = false;
 
             /** On met à jour l'objet. */
-            $jarray = json_encode([
+            $jsonArray = json_encode([
                 'statut' => $statut,
                 'projet' => $listeProjet,
                 'favori' => $nouvelleListeFavori,
@@ -270,14 +290,14 @@ class UtilisateurRepository extends ServiceEntityRepository
             try {
                     $this->getEntityManager()->getConnection()->beginTransaction();
                         $sql = "UPDATE ma_moulinette.utilisateur
-                                SET preference = '$jarray'
+                                SET preference = '$jsonArray'
                                 WHERE courriel=:courriel";
                         $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                             $stmt->bindValue(static::$courriel, $map['courriel']);
                             $stmt->executeStatement();
             } catch (\Doctrine\DBAL\Exception $e) {
                 $this->getEntityManager()->getConnection()->rollBack();
-                $response = ['code'=>500, 'statut'=>-1, 'erreur'=> $e->getMessage()];
+                return $this->handleDatabaseException($e);
             }
             $response = ['code'=> 200, 'statut'=>0, 'erreur'=>''];
         } else {
@@ -286,7 +306,7 @@ class UtilisateurRepository extends ServiceEntityRepository
             $statut['favori'] = true;
 
             /** On met à jour l'objet. */
-            $jarray = json_encode([
+            $jsonArray = json_encode([
                 'statut' => $statut,
                 'projet' => $listeProjet,
                 'favori' => $listeFavori,
@@ -298,7 +318,7 @@ class UtilisateurRepository extends ServiceEntityRepository
             try {
                 $this->getEntityManager()->getConnection()->beginTransaction();
                     $sql = "UPDATE ma_moulinette.utilisateur
-                        SET preference = '$jarray'
+                        SET preference = '$jsonArray'
                         WHERE courriel=:courriel";
                     $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                         $stmt->bindValue(static::$courriel, $map['courriel']);
@@ -307,7 +327,7 @@ class UtilisateurRepository extends ServiceEntityRepository
 
             } catch (\Doctrine\DBAL\Exception $e) {
                 $this->getEntityManager()->getConnection()->rollBack();
-                $response = ['code'=>500, 'statut'=>-1, 'erreur'=> $e->getMessage()];
+                return $this->handleDatabaseException($e);
             }
             $response = ['code'=> 200, 'statut'=>1, 'erreur'=>''];
         }
@@ -342,7 +362,7 @@ class UtilisateurRepository extends ServiceEntityRepository
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            return ['code'=>500, 'statut'=>-1, 'erreur'=> $e->getMessage()];
+            return $this->handleDatabaseException($e);
         }
         return ['code'=>200, 'erreur'=>''];
     }
