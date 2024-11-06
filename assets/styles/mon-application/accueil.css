@@ -1,0 +1,345 @@
+/**
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2021-2024.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ */
+
+/**
+  * Propriété pour les class :
+  *  - Pour les images SVG : refresh-bd-svg, affiche-profil-svg, projet-svg, gomme-svg
+  *  - Pour le container de log : logger
+  *  - Pour la ligne de log : log
+  *  - Pour le container des favoris : callout-information
+  *  - Pour les lignes et les résultats des favoris : ligne-favori, resultat-favori
+  *
+  *  On fixe la taille en fonction des mediaType : small, medium et large
+  */
+
+/* Media SMALL  */
+@media (width <= 20em) {
+  .stat-visibility { line-height: 0.7; }
+
+  .tableau-de-board-svg {
+    margin-bottom: -0.2rem;
+    max-width: 32px;
+  }
+
+  .bulle-information-svg { max-width: 32px; }
+
+  .logger {
+    padding-left: 1rem;
+    margin-top: -2rem;
+  }
+
+  .log { font-size: 0.75rem; }
+
+  .callout-information { width: 17.4rem; }
+
+  .ligne-favori,
+  .resultat-favori { font-size: 0.9rem; }
+}
+
+/* Media SMALL  */
+@media (20.025em <= width <= 22em) {
+  .stat-visibility { line-height: 0.7; }
+
+  .tableau-de-board-svg {
+    margin-bottom: -0.2rem;
+    max-width: 32px;
+  }
+
+  .bulle-information-svg { max-width: 32px; }
+  .callout-information { width: 17.4rem; }
+  .ligne-favori,
+  .resultat-favori { font-size: 0.9rem; }
+}
+
+/* Media SMALL  */
+@media (22.025em <= width <= 30em) {
+  .stat-visibility { line-height: 0.7; }
+
+  .tableau-de-board-svg {
+    margin-bottom: -0.2rem;
+    max-width: 32px;
+  }
+
+  .bulle-information-svg { max-width: 32px; }
+  .callout-information { width: 17.4rem; }
+  .ligne-favori,
+  .resultat-favori { font-size: 0.9rem; }
+}
+
+@media (30.025em <= width <= 40em) {
+  .stat-visibility { line-height: 0.7; }
+
+  .tableau-de-board-svg {
+    margin-bottom: -0.2rem;
+    max-width: 32px;
+  }
+
+  .bulle-information-svg { max-width: 32px; }
+  .callout-information { width: 17.4rem; }
+  .ligne-favori,
+  .resultat-favori { font-size: 0.9rem; }
+}
+
+/* Media MEDIUM  */
+@media (40.025em <= width <= 64em) {
+  .projet { margin-top: 1rem; }
+  .visibility-box-public, .tag-box-projet { margin-right: 0.2rem; }
+  .visibility-box-private, .tag-box-tag { margin-left: 0.2rem; }
+
+  .tableau-de-board-svg {
+    margin-bottom: -0.2rem;
+    max-width: 32px;
+  }
+
+  .bulle-information-svg { max-width: 32px; }
+  .callout-information { width: 17.4rem; }
+  .ligne-favori,
+  .resultat-favori { font-size: 1rem; }
+}
+
+/* Media LARGE  */
+@media (64.025em <= width <= 90em) {
+  .projet { margin-top: 1rem; }
+  .visibility-box-public, .tag-box-projet { margin-right: 0.2rem; }
+  .visibility-box-private, .tag-box-tag { margin-left: 0.2rem; }
+
+  .tableau-de-board-svg {
+    margin-bottom: -0.2rem;
+    max-width: 32px;
+  }
+
+  .bulle-information-svg { max-width: 32px; }
+  .callout-information { width: 17.4rem; }
+
+  .ligne-favori,
+  .resultat-favori { font-size: 1rem; }
+}
+
+/* Media LARGE  */
+@media (90.025em <= width <= 120em) {
+  .projet { margin-top: 1rem; }
+  .visibility-box-public, .tag-box-projet { margin-right: 0.2rem; }
+  .visibility-box-private, .tag-box-tag { margin-left: 0.2rem; }
+
+  .tableau-de-board-svg {
+    margin-bottom: -0.2rem;
+    max-width: 32px;
+  }
+
+  .bulle-information-svg { max-width: 32px; }
+  .callout-information { width: 17.4rem; }
+  .ligne-favori,
+  .resultat-favori { font-size: 1rem; }
+}
+
+/* Media Extra-large  */
+@media (120.025em <= width <= 160em) {
+  .projet { margin-top: 1rem; }
+  .visibility-box-public, .tag-box-projet { margin-right: 0.4rem; }
+  .visibility-box-private, .tag-box-tag { margin-left: 0.4rem; }
+
+  .tableau-de-board-svg {
+    margin-bottom: -0.2rem;
+    max-width: 48px;
+  }
+
+  .bulle-information-svg { max-width: 48px; }
+  .callout-information { width: 17.4rem; }
+  .ligne-favori,
+  .resultat-favori { font-size: 1rem; }
+}
+
+@media (width >= 160.025em) {
+  .projet { margin-top: 1rem; }
+  .visibility-box-public, .tag-box-projet { margin-right: 0.4rem; }
+  .visibility-box-private, .tag-box-tag { margin-left: 0.4rem; }
+
+  .tableau-de-board-svg
+  {
+    margin-bottom: -0.2rem;
+    max-width: 48px;
+  }
+
+  .bulle-information-svg { max-width: 48px; }
+  .callout-information { width: 17.4rem; }
+  .ligne-favori,
+  .resultat-favori { font-size: 1rem; }
+}
+
+/*************************          Global     *********************************/
+
+.callout-message { padding-right: 1rem; }
+.fieldset-container { padding-bottom: 0.5rem; }
+.ref-bouton { padding-right: 0.4rem; }
+
+.ref-resultat {
+  padding-left: 0.4rem;
+  padding-top: 0.5rem;
+}
+
+/* callout de message */
+.plus, .couleur-rouge { color: #971c09!important; }
+.moins, .couleur-vert { color: #187e3d!important; }
+
+/* bouton */
+.refresh-bd,
+.profil-quality,
+.mon-projet,
+#fermer-liste-profil,
+#fermer-info-tag { background-color: #00445b; }
+
+/* hover des boutons */
+.refresh-bd:hover,
+.profil-quality:hover,
+.mon-projet:hover,
+#fermer-liste-profil:hover,
+#fermer-info-tag:hover { background-color: #006182; }
+
+.refresh-container,
+.profil-quality-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Images SVG : couleur blanc
+ *
+ * refresh-svg
+ * profil-quality-svg
+ * mon-projet-svg
+ */
+.refresh-bd-svg,
+.profil-quality-svg,
+.mon-projet-svg {
+  width: 100%;
+  height: auto;
+  max-width: 32px;
+  fill: #fff;
+  cursor: pointer;
+}
+
+/* Images SVG : couleur bleu
+ *
+ * bulle-information-svg
+ * tableau-de-board-svg
+ */
+.bulle-information-svg,
+.tableau-de-board-svg {
+  width: 100%;
+  height: auto;
+  fill: #00445b;
+  cursor: pointer;
+}
+
+.bulle-information-svg:hover,
+.tableau-de-board-svg:hover { fill: #850385; }
+
+.bulle-information-svg { margin-top: -14px; }
+
+/* Bouton désactivé */
+.bouton-disabled {
+  cursor: not-allowed;
+  background-color: #4c7c8c;
+}
+
+/************* Mini tableau de suivi des indicateurs ***********/
+/* Définit la taille de la carte */
+.callout-information {
+  border-radius: 0.8rem;
+  box-shadow: 2px 2px 5px #444;
+  margin-right: 5px;
+}
+
+/* Couleur pour les résultats des favoris */
+.resultat-favori { color: #333; }
+
+/* Taille pour le nom de l'application en mode small */
+.nom-small { font-size: 0.78rem; }
+
+/* Taille pour le nom de l'application en mode medium */
+.nom-normal { font-size: 0.9rem; }
+
+/* Taille pour les lignes des favori */
+.small-favori { font-size: 1rem; }
+
+/* Fixe une marge de 0.1 pour éviter d'avoir une erreur si la marge est à  0 */
+.ligne-favori { margin: 0.1rem; }
+
+/* Taille et hauteur pour l'affichage des statistiques */
+.stat-favori {
+  line-height: 0.9;
+  font-size: 2rem;
+}
+
+/* Taille, couleur, bordure et espacement */
+.note-favori {
+  font-size: 0.95rem;
+  border: solid 1px #aaa;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+/* Taille, couleur, bordure et espacement */
+.nombre-favori {
+  color: #000;
+  border: solid 1px #888;
+  padding-left: 2px;
+  padding-right: 2px;
+}
+
+/* box pour les notes B, C, D, E et Z */
+.note {
+  color: #fff;
+  font-size: 0.9rem;
+  border: solid 1px #00445b;
+  border-radius: 0.2rem;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+/* box pour les notes A,B,C,D,E */
+.note-a {
+  background-color: #0a0;
+  padding-left: 14px; }
+.note-b { background-color: #b0d513; }
+.note-c { background-color: #eabe06; }
+.note-d { background-color: #ed7d20; }
+.note-e { background-color: #d4333f; }
+
+/* couleur pour la légende des indicateur */
+.color-reliability { color: #696969; }
+.color-security { color: #794044; }
+.color-hotspot { color: #065535; }
+.color-code-smell { color: #670267; }
+
+/* Affichage de la visibilité des projets */
+.fieldset-visibility, .fieldset-tag {
+  /* haut | droit | bas | gauche */
+  padding: 0.5rem;
+  margin-top: -1rem;
+}
+
+.fieldset-legend-custom { display: flex; }
+
+.visibility-box, .tag-box {
+  padding: 0.6rem;
+  border: solid 1px #00445b;
+  border-radius: 0.2rem;
+  background-color: #fff;
+}
+
+.stat-visibility, .stat-tag {
+  color: #222;
+  font-family: "open sans", sans-serif;
+}
+
+/********************* FIN *********************/
