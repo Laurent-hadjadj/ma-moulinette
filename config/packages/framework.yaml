@@ -11,20 +11,6 @@ framework:
     trusted_proxies: '%env(TRUSTED_PROXIES)%'
     trusted_headers: ['x-forwarded-for', 'x-forwarded-host', 'x-forwarded-proto', 'x-forwarded-port', 'x-forwarded-prefix']
 
-    http_client:
-            max_host_connections: 10
-            default_options:
-                headers: { 'X-Powered-By': 'Ma-Moulinette' }
-                max_redirects: 7
-                # vérification des certificats
-                verify_host: true
-                verify_peer: true
-                # Définition des ciphers TLS1.3
-                ciphers: "DEFAULT:!DH"
-                # Résolution DNS
-                resolve:
-                    'localhost': 127.0.0.1
-
     session:
         handler_id: 'session.handler.native_file'
         save_path: '%kernel.project_dir%/var/sessions/%kernel.environment%'

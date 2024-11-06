@@ -22,6 +22,11 @@ parameters:
     sonar.organization: '%env(SONAR_ORGANIZATION)%'
     nombre.favori: '%env(NOMBRE_FAVORI)%'
 
+    #Paramètre HTTP
+    ciphers: '%env(CIPHERS)%'
+    verify.host: '%env(VERIFY_HOST)%'
+    verify.peer: '%env(VERIFY_PEER)%'
+
     # Plugin SonarQube (optionnel)
     track.logger.method: '%env(TRACK_LOGGER_METHOD)%'
 
