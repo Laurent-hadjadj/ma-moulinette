@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2022.
+ *  Copyright (c) 2021-2024.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -655,7 +655,7 @@ class HistoriqueRepository extends ServiceEntityRepository
 
     /**
      * [Description for selectHistoriqueProjetFavori]
-     * retourne la liste des données pour les projets favoris.
+     * retourne la liste des données pour la dernière version des projets favoris .
      * @param array $map
      *
      * @return array
@@ -667,18 +667,23 @@ class HistoriqueRepository extends ServiceEntityRepository
     public function selectHistoriqueProjetFavori($map): array
     {
         /** On prépare la requête */
-        $sql = "SELECT DISTINCT maven_key as mavenkey, nom_projet as nom,
-                                version, date_version as date,
-                                note_reliability as fiabilite,
-                                note_security as securite, note_hotspot as hotspot,
-                                note_sqale as sqale, nombre_bug as bug,
-                                nombre_vulnerability as vulnerability,
-                                nombre_code_smell as code_smell,
-                                nombre_hotspot as hotspots
+        $sql="WITH LastVersions AS (
+                SELECT  maven_key AS mavenkey, nom_projet AS nom,
+                        version, date_version AS date,
+                        note_reliability AS reliability,
+                        note_security AS security, note_hotspot AS hotspot,
+                        note_sqale AS sqale, nombre_bug AS bug,
+                        nombre_vulnerability AS vulnerability,
+                        nombre_code_smell AS code_smell,
+                        nombre_hotspot AS hotspots,
+                ROW_NUMBER() OVER (PARTITION BY maven_key ORDER BY date_version DESC) AS rn
                 FROM ma_moulinette.historique
-                WHERE ".$map['clause_where'].
-                " GROUP BY maven_key, nom, version, date LIMIT ".$map['nombre_projet_favori'];
-
+                WHERE maven_key IN (".$map['liste_projet']."))
+                SELECT  mavenkey, nom, version, date, reliability, security, hotspot, sqale, bug,
+                        vulnerability, code_smell, hotspots
+                FROM LastVersions
+                WHERE rn = 1
+                LIMIT ".$map['nombre_projet_favori'];
         try {
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                         $exec=$stmt->executeQuery();
