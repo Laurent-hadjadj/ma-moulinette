@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2022.
+ *  Copyright (c) 2021-2024.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -18,6 +18,9 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * [Description Profiles]
+ */
 #[ORM\Entity(repositoryClass: ProfilesRepository::class)]
 #[ORM\Table(name: "profiles", schema: "ma_moulinette")]
 class Profiles
@@ -62,7 +65,7 @@ class Profiles
     #[ORM\Column(type: TYPES::BOOLEAN, nullable: false,
         options: ['comment' => 'Indique si le profil est le profil par défaut'])]
     #[Assert\NotNull]
-    private $referentielDefault;
+    private $referentialDefault;
 
     #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
         options: ['comment' => 'Date d’enregistrement du profil'])]
@@ -134,14 +137,14 @@ class Profiles
         return $this;
     }
 
-    public function isReferentielDefault(): ?bool
+    public function isReferentialDefault(): ?bool
     {
-        return $this->referentielDefault;
+        return $this->referentialDefault;
     }
 
-    public function setReferentielDefault(bool $referentielDefault): static
+    public function setReferentialDefault(bool $referentialDefault): static
     {
-        $this->referentielDefault = $referentielDefault;
+        $this->referentialDefault = $referentialDefault;
 
         return $this;
     }

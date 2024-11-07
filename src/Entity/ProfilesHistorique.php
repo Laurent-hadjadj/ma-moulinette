@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2022.
+ *  Copyright (c) 2021-2024.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -63,7 +63,7 @@ class ProfilesHistorique
     #[Assert\NotBlank]
     #[Assert\Length(max: 128,
         maxMessage: "La règle ne peut pas dépasser 32 caractères.")]
-    private $regle;
+    private $rule;
 
     #[ORM\Column(type: Types::TEXT, nullable: false,
         options: ['comment' => 'Description détaillée de l’événement historique'])]
@@ -145,14 +145,14 @@ class ProfilesHistorique
         return $this;
     }
 
-    public function getRegle(): ?string
+    public function getRule(): ?string
     {
-        return $this->regle;
+        return $this->rule;
     }
 
-    public function setRegle(string $regle): static
+    public function setRule(string $rule): static
     {
-        $this->regle = $regle;
+        $this->rule = $rule;
 
         return $this;
     }
