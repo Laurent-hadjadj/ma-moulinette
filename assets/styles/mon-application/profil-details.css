@@ -1,0 +1,158 @@
+/**
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2021-2024.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ */
+
+@media (width <= 20em) {
+  /* no comment */
+}
+
+@media (20.025em <= width <= 22em) {
+  /* no comment */
+}
+
+@media (22.025em <= width <= 30em) {
+  /* no comment */
+}
+
+@media (30.025em <= width <= 40em) {
+  /* no comment */
+}
+
+@media (40.025em <= width <= 64em) {
+  /* no comment */
+}
+
+@media (64.025em <= width <= 90em) {
+  /* no comment */
+}
+
+@media (90.025em <= width <= 120em) {
+  /* no comment */
+}
+
+@media (120.025em <= width <= 160em) {
+  /* no comment */
+}
+
+@media (width >= 160.025em) {
+  /* no comment */
+}
+
+/*************************          Global     *********************************/
+
+/** profil-titre */
+
+/** alignement des informations générales */
+.flex-container {
+  display: inline-flex;
+  align-items: center;
+}
+
+.profil-titre {
+  font-family: "open sans", Arial, Helvetica, sans-serif;
+  color: #00445b;
+}
+
+.profil-stat {
+  font-family: "open sans", Arial, Helvetica, sans-serif;
+  color: #444;
+}
+
+/* Ajuste de la taille des dates */
+.profil-first-date,
+.profil-last-date {
+  margin-right: 0.5rem;
+  font-size: 1rem;
+  color: #444;
+}
+
+/* Ajuste de la taille résultats */
+.profil-total,
+.profil-opened,
+.profil-closed,
+.profil-updated {
+  margin-right: 0.5rem;
+  font-size: 1.2rem;
+  color: #444;
+}
+
+/* Couleur pour les informations */
+.profil-rule,
+.profil-description,
+.profil-details,
+.profil-auteur { color: #444; }
+
+/** Nombre de règle pour le groupe */
+.nombre-rule {
+  font-size: 1.2rem;
+  padding-right: 1.5rem;
+  color: #000;
+}
+
+.bulle {
+  border: solid 1px;
+  border-radius: 0.3rem;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+/** décalage de la bulle */
+.bulle-marge { margin-left: 2rem; }
+
+.activated {
+  background-color: #0a0;
+  color: #fff;
+}
+
+.deactivated {
+  background-color: #d4333f;
+  color: #fff;
+}
+
+.updated {
+  background-color: #ed7d20;
+  color: #fff;
+}
+
+/** Ni updated, ni activated, ni deactivated */
+.xoxo {
+  background-color: #000;
+  color: #fff;
+}
+
+/* menu liste-changement */
+.liste-changement-menu {
+  background-color: #fff;
+  border-radius: 5px;
+  margin-top: 0.5rem;
+}
+
+/** Pour chaque changement */
+.changement {
+  background-color: #eee;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+  list-style: none;
+}
+
+.accordion-menu .is-accordion-submenu-parent:not(.has-submenu-toggle) > a::after {
+  border-color: #00445b;
+}
+
+.liste-changement-titre {
+  color: #000;
+  font-weight: 700;
+}
+
+.liste-changement-titre:hover {
+  color: #c45d4e;
+  font-weight: 800;
+}
