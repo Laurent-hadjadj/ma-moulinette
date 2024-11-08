@@ -45,7 +45,7 @@ class AccueilController extends AbstractController
 {
     public static $strContentType = 'application/json';
     public static $sonarUrl = "sonar.url";
-    public static $dateFormat = "Y-m-d H:i:s";
+    public static $oups = "OUPS !!!";
     public static $europeParis = "Europe/Paris";
     public static $reference = "<strong>[Accueil]</strong>";
     public static $erreur400 = "La requête est incorrecte (Erreur 400).";
@@ -148,7 +148,7 @@ class AccueilController extends AbstractController
         $result = $this->client->httpSonarQube("$tempoUrl/api/components/search?".http_build_query($queryParams));
         /* On affiche un message flash pour un timeout ou si le serveur n'est pas démarré. */
         if (in_array($result['code'] ?? -1, [503, 504])) {
-                $titre="Oups !!";
+                $titre=static::$oups;
                 $message = $result['erreur'];
                 $this->addFlash('notice', ['type'=>'alert', 'titre'=>$titre, 'message'=>$message]);
                 return 0;
@@ -217,7 +217,7 @@ class AccueilController extends AbstractController
         $queryParams = ['defaults'=>'true', 'p'=>1, 'ps'=>500 ];
         $result = $this->client->httpSonarQube("$tempoUrl/api/qualityprofiles/search?".http_build_query($queryParams));
         if (in_array($result['code'] ?? -1, [503, 504])) {
-            $titre="Oups !!";
+            $titre=static::$oups;
             $message = $result['erreur'];
             $this->addFlash('notice', ['type'=>'alert', 'titre'=>$titre, 'message'=>$message]);
             return 0;
@@ -256,8 +256,8 @@ class AccueilController extends AbstractController
 
         $map=[  'projet_bd'=>$bd, 'projet_sonar'=>$sonar,
                 'profil_bd'=>$bd, 'profil_sonar'=>$sonar,
-                'date_modification_projet'=>$date->format(static::$dateFormat),
-                'date_modification_profil'=>$date->format(static::$dateFormat)];
+                'date_modification_projet'=>$date,
+                'date_modification_profil'=>$date];
 
         if ($type === 'projet') {
             $propertiesRepository->updatePropertiesProjet($map);
@@ -289,9 +289,9 @@ class AccueilController extends AbstractController
 
             $date = new \DateTimeImmutable();
             $date->setTimezone(new \DateTimeZone(static::$europeParis));
-            $dateCreationFormat = $date->format(static::$dateFormat);
-            $dateModificationProjet = $date->format(static::$dateFormat);
-            $dateModificationProfil = $date->format(static::$dateFormat);
+            $dateCreationFormat = $date;
+            $dateModificationProjet = $date;
+            $dateModificationProfil = $date;
             $map=[
                 'projet_bd'=>$projetBd, 'projet_sonar'=>$projetSonar,
                 'profil_bd'=>$profilBd, 'profil_sonar'=>$profilSonar,
@@ -603,7 +603,7 @@ class AccueilController extends AbstractController
         $versionApp = $this->getParameter('version');
         /** si la dernière version en base est inférieure, on renvoie une alerte ; */
         if ($versionApp !== $versionBd) {
-            $titre="Oups !!!";
+            $titre="OUPS !!!";
             $m1= "La base de données est en version ".$versionBd.". ";
             $m2 = "Vous devez passer le script de migration ".$versionApp.".";
             $message = $m1.$m2;
