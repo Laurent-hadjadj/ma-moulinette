@@ -60,7 +60,7 @@ class Profiles
     #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
         options: ['comment' => 'Date de la dernière mise à jour des règles'])]
     #[Assert\NotNull]
-    private $rulesUpdateAt;
+    private $rulesUpdatedAt;
 
     #[ORM\Column(type: TYPES::BOOLEAN, nullable: false,
         options: ['comment' => 'Indique si le profil est le profil par défaut'])]
@@ -125,14 +125,14 @@ class Profiles
         return $this;
     }
 
-    public function getRulesUpdateAt(): ?\DateTimeImmutable
+    public function getRulesUpdatedAt(): ?\DateTimeImmutable
     {
-        return $this->rulesUpdateAt;
+        return $this->rulesUpdatedAt;
     }
 
-    public function setRulesUpdateAt(\DateTimeImmutable $rulesUpdateAt): static
+    public function setRulesUpdatedAt(\DateTimeImmutable $rulesUpdatedAt): static
     {
-        $this->rulesUpdateAt = $rulesUpdateAt;
+        $this->rulesUpdatedAt = $rulesUpdatedAt;
 
         return $this;
     }
