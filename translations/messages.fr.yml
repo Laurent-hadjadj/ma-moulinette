@@ -17,7 +17,7 @@ label.ancien.motdepasse: Actuel
 invalid.message.motdepasse: Les mots de passe ne correspondent pas.
 
 # Menu EasyAdmin
-Home: Home
+Accueil: Accueil
 Titre: Titre
 Dashboard: Dashboard
 Utilisateur: Utilisateur
