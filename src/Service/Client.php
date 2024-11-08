@@ -34,13 +34,13 @@ use Psr\Log\LoggerInterface;
 class Client
 {
     /** Définition des constantes */
-    public static $erreur400="Erreur 400 - L'URL n'est pas correcte.";
+    public static $erreur400="Erreur 400 - La requête est incorrecte.";
     public static $erreur401="Erreur 401 - Erreur d'Authentification. La clé n'est pas correcte.";
     public static $erreur403="Erreur 403 - Vous n’êtes pas autorisé à vous connecter.";
     public static $erreur404="Erreur 404 - Le service n'a pas trouvé les éléments.";
     public static $erreur500="Erreur 500 - Le fichier JSON n'est pas valide.";
     public static $erreur503="Erreur 503 - Le service est actuellement indisponible. Impossible d'établir une connexion.";
-    public static $erreur504="Erreur 504 - Temps d’attente d’une réponse écoulé..";
+    public static $erreur504="Erreur 504 - Temps d’attente d’une réponse écoulé...";
 
     public function __construct(
         private HttpClientInterface $client,
