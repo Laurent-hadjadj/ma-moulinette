@@ -29,7 +29,8 @@
 -- 31/07/2024 : Laurent HADJADJ - Correction du commentaire moyenne_analyse.
 -- 31/07/2024 : Laurent HADJADJ - Correction Taux_reussite en FLOAT
 -- 04/08/2024 : Laurent HADJADJ - Correction du nom de la table activite_historique ;
--- 04:08/2024 : Laurent HADJADJ - Ajout de la table profiles_historique ;
+-- 04/08/2024 : Laurent HADJADJ - Ajout de la table profiles_historique ;
+-- 07/11/2024 : Laurent HADJADJ - Mise à jour de la la table profiles ;
 
 -- SCHEMA: ma_moulinette
 
@@ -1030,7 +1031,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.profiles
   language_name character varying(64) NOT NULL,
   active_rule_count integer NOT NULL,
   rules_update_at TIMESTAMPTZ NOT NULL,
-  referentiel_default boolean NOT NULL,
+  referential_default boolean NOT NULL,
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
@@ -1043,7 +1044,7 @@ COMMENT ON COLUMN ma_moulinette.profiles.name IS 'Nom du profil';
 COMMENT ON COLUMN ma_moulinette.profiles.language_name IS 'Nom du langage de programmation';
 COMMENT ON COLUMN ma_moulinette.profiles.active_rule_count IS 'Nombre de règles actives associées au profil';
 COMMENT ON COLUMN ma_moulinette.profiles.rules_update_at IS 'Date de la dernière mise à jour des règles';
-COMMENT ON COLUMN ma_moulinette.profiles.referentiel_default IS 'Indique si le profil est le profil par défaut';
+COMMENT ON COLUMN ma_moulinette.profiles.referential_default IS 'Indique si le profil est le profil par défaut';
 COMMENT ON COLUMN ma_moulinette.profiles.date_enregistrement IS 'Date d’enregistrement du profil';
 
 -- Table: ma_moulinette.profiles_historique
@@ -1056,7 +1057,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.profiles_historique
     date timestamp(0) with time zone NOT NULL,
     action character varying(16) NOT NULL,
     auteur character varying(64) NOT NULL,
-    regle character varying(128) NOT NULL,
+    rule character varying(128) NOT NULL,
     description text NOT NULL,
     detail bytea NOT NULL,
     date_enregistrement TIMESTAMPTZ NOT NULL
@@ -1071,7 +1072,7 @@ COMMENT ON COLUMN ma_moulinette.profiles_historique.language IS 'language de pro
 COMMENT ON COLUMN ma_moulinette.profiles_historique.date IS 'Date complète de l’événement de l’historique';
 COMMENT ON COLUMN ma_moulinette.profiles_historique.action IS 'Action réalisée, par exemple modification ou création';
 COMMENT ON COLUMN ma_moulinette.profiles_historique.auteur IS 'Auteur de l’action dans l’historique';
-COMMENT ON COLUMN ma_moulinette.profiles_historique.regle IS 'Règle ou norme concernée par l’historique';
+COMMENT ON COLUMN ma_moulinette.profiles_historique.rule IS 'Règle ou norme concernée par l’historique';
 COMMENT ON COLUMN ma_moulinette.profiles_historique.description IS 'Description détaillée de l’événement historique';
 COMMENT ON COLUMN ma_moulinette.profiles_historique.detail IS 'Détails supplémentaires ou données binaires associées à l’événement';
 COMMENT ON COLUMN ma_moulinette.profiles_historique.date_enregistrement IS 'Date d’enregistrement de l’entrée historique';
