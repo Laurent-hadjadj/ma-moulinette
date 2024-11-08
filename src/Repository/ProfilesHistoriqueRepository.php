@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2022.
+ *  Copyright (c) 2021-2024.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -23,11 +23,32 @@ use Doctrine\Persistence\ManagerRegistry;
 class ProfilesHistoriqueRepository extends ServiceEntityRepository
 {
     public static $removeReturnLine = "/\s+/u";
-    public static $phLanguage = ':language';
+    public static $language = ':language';
+    public static $noDataBase = 'La connexion à la base de données a échoué.';
 
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, ProfilesHistorique::class);
+    }
+
+    /**
+     * [Description for handleDatabaseException]
+     *
+     * @param \Doctrine\DBAL\Exception $e
+     *
+     * @return array
+     *
+     * Created at: 21/10/2024 16:55:20 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Lilmod & Lelamed - Creative Common CC-BY-NC-SA 4.0.
+     */
+    protected function handleDatabaseException(\Doctrine\DBAL\Exception $e): array
+    {
+        if (strpos($e->getMessage(), 'SQLSTATE[08006]') !== false) {
+            return ['code'=>500, 'erreur' => static::$noDataBase];
+        } else {
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
+        }
     }
 
     /**
@@ -44,35 +65,33 @@ class ProfilesHistoriqueRepository extends ServiceEntityRepository
      */
     public function insertProfilesHistorique($map): array
     {
+        $sql = "INSERT INTO ma_moulinette.profiles_historique (
+                            date_courte, language, date,
+                            action, auteur, rule,
+                            description, detail, date_enregistrement)
+                VALUES (
+                            :date_courte, :language, :date,
+                            :action, :auteur, :rule,
+                            :description, :detail, :date_enregistrement)";
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-                $sql = "INSERT INTO ma_moulinette.profiles_historique (
-                            date_courte, language, date,
-                            action, auteur, regle,
-                            description, detail, date_enregistrement)
-                        VALUES (
-                            :date_courte, :language, :date,
-                            :action, :auteur, :regle,
-                            :description, :detail, :date_enregistrement)";
-
                     /** On escape les ' */
                     /* "$reEncode = str_replace("'", "''", $map['description']);" */
-
                     $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                         $stmt->bindValue(':date_courte', $map['date_courte']);
-                        $stmt->bindValue(static::$phLanguage, $map['language']);
+                        $stmt->bindValue(static::$language, $map['language']);
                         $stmt->bindValue(':date', $map['date']);
                         $stmt->bindValue(':action', $map['action']);
                         $stmt->bindValue(':auteur', $map['auteur']);
-                        $stmt->bindValue(':regle', $map['regle']);
+                        $stmt->bindValue(':rule', $map['rule']);
                         $stmt->bindValue(':description', $map['description']);
                         $stmt->bindValue(':detail', $map['detail']);
-                        $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
+                        $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sP'));
                         $stmt->executeStatement();
                 $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            return ['code'=>500, 'erreur'=> $e->getMessage()];
+            return $this->handleDatabaseException($e);
         }
         return ['code'=>200, 'erreur'=>''];
     }
@@ -91,19 +110,18 @@ class ProfilesHistoriqueRepository extends ServiceEntityRepository
      */
     public function selectProfilesHistoriqueAction($map): array
     {
-        try {
-                $sql = "SELECT COUNT(*) AS nombre
+        $sql = "SELECT COUNT(*) AS nombre
                         FROM ma_moulinette.profiles_historique
                         WHERE action=:action AND language=:language";
+        try {
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(':action', $map['action']);
-                    $stmt->bindValue(static::$phLanguage, $map['language']);
-                $request=$stmt->executeQuery()->fetchAllAssociative();
+                    $stmt->bindValue(static::$language, $map['language']);
+                $nombre=$stmt->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
-            dd($e);
-            return ['code'=>500, 'erreur'=> $e->getMessage()];
+            return $this->handleDatabaseException($e);
         }
-        return ['code'=>200, 'request'=>$request, 'erreur'=>''];
+        return ['code'=>200, 'nombre'=>$nombre, 'erreur'=>''];
     }
 
     /**
@@ -120,21 +138,18 @@ class ProfilesHistoriqueRepository extends ServiceEntityRepository
      */
     public function selectProfilesHistoriqueDateTri($map): array
     {
+        $sql = "SELECT date
+                FROM ma_moulinette.profiles_historique
+                WHERE language=:language
+                ORDER BY date ".$map['tri']." limit ".$map['limit'];
         try {
-            $this->getEntityManager()->getConnection()->beginTransaction();
-                $sql = "SELECT date
-                        FROM ma_moulinette.profiles_historique
-                        WHERE language=:language
-                        ORDER BY date ".$map['tri']." limit ".$map['limit'];
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(static::$phLanguage, $map['language']);
-                $request=$stmt->executeQuery()->fetchAllAssociative();
-            $this->getEntityManager()->getConnection()->commit();
+                    $stmt->bindValue(static::$language, $map['language']);
+                $liste=$stmt->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
-            return ['code'=>500, 'erreur'=> $e->getMessage()];
+            return $this->handleDatabaseException($e);
         }
-        return ['code'=>200, 'request'=>$request, 'erreur'=>''];
+        return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
     }
 
     /**
@@ -151,22 +166,19 @@ class ProfilesHistoriqueRepository extends ServiceEntityRepository
      */
     public function selectProfilesHistoriqueDateCourteGroupeBy($map): array
     {
+        $sql = "SELECT date_courte
+                FROM ma_moulinette.profiles_historique
+                WHERE language=:language
+                GROUP BY date_courte
+                ORDER BY date_courte DESC";
         try {
-            $this->getEntityManager()->getConnection()->beginTransaction();
-                $sql = "SELECT date_courte
-                        FROM ma_moulinette.profiles_historique
-                        WHERE language=:language
-                        GROUP BY date_courte
-                        ORDER BY date_courte DESC";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(static::$phLanguage, $map['language']);
-                $request=$stmt->executeQuery()->fetchAllAssociative();
-            $this->getEntityManager()->getConnection()->commit();
+                    $stmt->bindValue(static::$language, $map['language']);
+                $liste=$stmt->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
-            return ['code'=>500, 'erreur'=> $e->getMessage()];
+            return $this->handleDatabaseException($e);
         }
-        return ['code'=>200, 'request'=>$request, 'erreur'=>''];
+        return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
     }
 
     /**
@@ -183,20 +195,17 @@ class ProfilesHistoriqueRepository extends ServiceEntityRepository
      */
     public function selectProfilesHistoriqueLangageDateCourte($map): array
     {
+        $sql = "SELECT *
+                FROM ma_moulinette.profiles_historique
+                WHERE language=:language AND date_courte=:date_courte";
         try {
-            $this->getEntityManager()->getConnection()->beginTransaction();
-                $sql = "SELECT *
-                        FROM ma_moulinette.profiles_historique
-                        WHERE language=:language AND date_courte=:date_courte";
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(static::$phLanguage, $map['language']);
+                    $stmt->bindValue(static::$language, $map['language']);
                     $stmt->bindValue(':date_courte', $map['date_courte']);
-                $request=$stmt->executeQuery()->fetchAllAssociative();
-            $this->getEntityManager()->getConnection()->commit();
+                $liste=$stmt->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
-            return ['code'=>500, 'erreur'=> $e->getMessage()];
+            return $this->handleDatabaseException($e);
         }
-        return ['code'=>200, 'request'=>$request, 'erreur'=>''];
+        return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
     }
 }
