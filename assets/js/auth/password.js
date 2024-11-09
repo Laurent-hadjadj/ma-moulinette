@@ -23,7 +23,6 @@
  *   - optimisation du code.
 */
 
-
 import $ from 'jquery';
 window.jQuery = $;
 
