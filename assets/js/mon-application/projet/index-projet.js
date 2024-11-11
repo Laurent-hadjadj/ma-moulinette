@@ -933,7 +933,7 @@ const afficheMesProjets=function() {
                     <span>
                   </td>
                   <td class="text-center capsule">
-                    <span id="R-${i}" class="capsule-bulle R js-liste-afficher-resultat">
+                    <span id="R-${i}" class="capsule-bulle R js-liste-afficher-result">
                       <span id="tooltips-${i}" data-tooltip tabindex="2" title="J'affiche les résultats.">R</span>
                     </span>
                   </td>
@@ -987,7 +987,7 @@ const afficheMesProjets=function() {
         });
 
         /* On gère le click sur le bouton R (afficher les Résultats) */
-        $('.js-liste-afficher-resultat').on('click', e => {
+        $('.js-liste-afficher-result').on('click', e => {
 
           /* On récupère la valeur de l'ID */
           const id = e.currentTarget.id;
@@ -999,10 +999,10 @@ const afficheMesProjets=function() {
           const mavenKey=element.dataset.mavenkey;
           $('#select-result').html(`<strong>${mavenKey}</strong>`);
           /* on active le bouton pour afficher les infos du projet */
-          $('.js-affiche-resultat').removeClass('affiche-resultat-disabled');
-          $('.js-affiche-resultat').addClass('affiche-resultat-enabled');
+          $('.js-affiche-result').removeClass('affiche-result-disabled');
+          $('.js-affiche-result').addClass('affiche-result-enabled');
           /* On clique sur le bouton afficher les résultats */
-          $('.js-affiche-resultat').trigger('click');
+          $('.js-affiche-result').trigger('click');
           setTimeout(function(){
             $('.information-texte').html(`[02] - L'affichage des résultats est terminé.`);
           }, cinqMille);
@@ -1021,7 +1021,7 @@ const afficheMesProjets=function() {
           const mavenKey=element.dataset.mavenkey;
           $('#select-result').html(`<strong>${mavenKey}</strong>`);
           /* On clique sur le bouton tableau de suivi */
-          $('.js-tableau-suivi').trigger('click');
+          $('.js-tableau-de-bord').trigger('click');
         });
 
         /* On gère le click sur le bouton C (COSUI) */
@@ -1107,8 +1107,8 @@ $('.js-analyse').on('click', function () {
 
   log(' - INFO   : On lance la collecte...');
   /* on bloque le bouton afficher les résultats. */
-  $('.js-affiche-resultat').removeClass('affiche-resultat-enabled');
-  $('.js-affiche-resultat').addClass('affiche-resultat-disabled');
+  $('.js-affiche-result').removeClass('affiche-result-enabled');
+  $('.js-affiche-result').addClass('affiche-result-disabled');
 
   /* On récupère la clé du projet qui est affichée. */
   const idProject = $('#select-result').text().trim();
@@ -1170,8 +1170,8 @@ $('.js-analyse').on('click', function () {
   fnAsync();
 
   /* on active le bouton pour afficher les infos du projet. */
-  $('.js-affiche-resultat').removeClass('affiche-resultat-disabled');
-  $('.js-affiche-resultat').addClass('affiche-resultat-enabled');
+  $('.js-affiche-result').removeClass('affiche-result-disabled');
+  $('.js-affiche-result').addClass('affiche-result-enabled');
 });
 
 /************* Events ***************************/
@@ -1215,37 +1215,44 @@ $('select[name="projet"]').on('change', function () {
   /* Bouton : Lance la collecte. */
   $('.js-analyse').removeClass('lance-analyse-disabled');
   $('.js-analyse').addClass('lance-analyse-enabled');
+  $('.js-analyse').attr('aria-disabled', 'false');
 
   /* Bouton : Affiche les résultats. */
-  $('.js-affiche-resultat').removeClass('affiche-resultat-disabled');
-  $('.js-affiche-resultat').addClass('affiche-resultat-enabled');
+  $('.js-affiche-result').removeClass('affiche-result-disabled');
+  $('.js-affiche-result').addClass('affiche-result-enabled');
+  $('.js-affiche-result').attr('aria-disabled', 'false');
 
   /* Bouton : Ouvre la page d'analyse OWASP. */
   $('.js-analyse-owasp').removeClass('analyse-owasp-disabled');
   $('.js-analyse-owasp').addClass('analyse-owasp-enabled');
+  $('.js-analyse-owasp').attr('aria-disabled', 'false');
 
   /* Bouton : Ouvre la page de suivi des indicateurs. */
-  $('.js-tableau-suivi').removeClass('tableau-suivi-disabled');
-  $('.js-tableau-suivi' ).addClass('tableau-suivi-enabled');
+  $('.js-tableau-de-bord').removeClass('tableau-de-bord-disabled');
+  $('.js-tableau-de-bord' ).addClass('tableau-de-bord-enabled');
+  $('.js-tableau-de-bord').attr('aria-disabled', 'false');
 
   /* Bouton : Ouvre la page du Comité de Suivi. */
   $('.js-cosui').removeClass('cosui-disabled');
   $('.js-cosui' ).addClass('cosui-enabled');
+  $('.js-cosui').attr('aria-disabled', 'false');
 
   /* Bouton : Ouvre la page de répartition des indicateurs par Module. */
   $('.js-repartition-module').removeClass('repartition-module-disabled');
   $('.js-repartition-module' ).addClass('repartition-module-enabled');
+  $('.js-repartition-module').attr('aria-disabled', 'false');
 
   /* Bouton : active le bouton enregistrement. */
   $('.js-enregistrement').removeClass('enregistrement-disabled');
   $('.js-enregistrement' ).addClass('enregistrement-enabled');
+  $('.js-enregistrement').attr('aria-disabled', 'false');
 });
 
 /**
  * description
  * On affiche la liste des projets déjà analysés et des favoris
  */
-$('.js-affiche-liste').on('click', function () {
+$('#js-affiche-liste').on('click', function () {
   afficheMesProjets();
   $('#modal-liste-projet').foundation('open');
 });
@@ -1254,7 +1261,7 @@ $('.js-affiche-liste').on('click', function () {
  * description
  * On affiche la liste des types d'anomalies par sévérité.
  */
-$('.js-affiche-severity').on('click', function () {
+$('#js-affiche-severity').on('click', function () {
   if ($('select[name="projet"]').val() !=='' && $('select[name="projet"]').val() !=='TheID') {
     $('#modal-affiche-severity').foundation('open');
   }
@@ -1264,7 +1271,7 @@ $('.js-affiche-severity').on('click', function () {
  * description
  * On affiche la liste des hotspots
  */
-$('#js-affiche-hotspot').on('click', function () {
+$('#js-affiche-detail-hotspot').on('click', function () {
   if ($('select[name="projet"]').val() !=='' && $('select[name="projet"]').val() !=='TheID') {
       $('#modal-liste-hotspot').foundation('open');
   }
@@ -1274,7 +1281,7 @@ $('#js-affiche-hotspot').on('click', function () {
  * description
  * Événement : Ouvre la fenêtre modale de la distribution de la dette technique.
  */
-$('.js-affiche-details').on('click', () => {
+$('#js-affiche-detail-dette').on('click', () => {
   if ($('select[name="projet"]').val() !=='' && $('select[name="projet"]').val() !=='TheID') {
     $('#modal-dette-technique').foundation('open');
   }
@@ -1284,7 +1291,7 @@ $('.js-affiche-details').on('click', () => {
  * description
  * On affiche la liste des tags to do par langage.
  */
-$('.js-affiche-todo').on('click', function () {
+$('#js-affiche-detail-todo').on('click', function () {
   if ($('select[name="projet"]').val() !=='' && $('select[name="projet"]').val() !=='TheID') {
     $('#modal-affiche-todo').foundation('open');
   }
@@ -1294,7 +1301,7 @@ $('.js-affiche-todo').on('click', function () {
  * description
  * On affiche la liste des logger par méthode
  */
-$('.js-affiche-logger').on('click', function () {
+$('#js-affiche-detail-logger').on('click', function () {
   $('#modal-liste-logger').foundation('open');
 });
 
@@ -1359,7 +1366,7 @@ $('#js-version-autre').on('click', () => {
  * description
  * On passe à la peinture
  */
-$('.js-affiche-resultat').on('click', () => {
+$('.js-affiche-result').on('click', () => {
   /* On récupère la clé du projet. */
   const apiMaven = $('#select-result').text().trim();
   /** On regarde si tou vas bien ! */
@@ -1369,7 +1376,7 @@ $('.js-affiche-resultat').on('click', () => {
     return;
   };
   /* On appel une fonction externe. */
-  if ( $('.js-affiche-resultat').hasClass('affiche-resultat-enabled')){
+  if ( $('.js-affiche-result').hasClass('affiche-result-enabled')){
       /* On récupère les résultats. */
       remplissage(apiMaven);
       afficheHotspotDetails(apiMaven);
@@ -1408,7 +1415,7 @@ $('.js-enregistrement').on('click', () => {
  * description
  * On génère la route et on ouvre la page des tableau de suivi
  */
-$('.js-tableau-suivi').on('click', () => {
+$('.js-tableau-de-bord').on('click', () => {
   if ($('select[name="projet"]').val() !=='' && $('select[name="projet"]').val() !=='TheID'){
     const apiMaven = $('#select-result').text().trim();
     window.location.href=`/suivi/set?mavenKey=${apiMaven}`;
