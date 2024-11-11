@@ -16,7 +16,7 @@
   *  - Pour le container de log : logger
   *  - Pour la ligne de log : log
   *  - Pour le container des favoris : callout-information
-  *  - Pour les lignes et les résultats des favoris : ligne-favori, resultat-favori
+  *  - Pour les lignes et les résultats des favoris : ligne-favori, result-favori
   *
   *  On fixe la taille en fonction des mediaType : small, medium et large
   */
@@ -42,7 +42,7 @@
   .callout-information { width: 17.4rem; }
 
   .ligne-favori,
-  .resultat-favori { font-size: 0.9rem; }
+  .result-favori { font-size: 0.9rem; }
 }
 
 /* Media SMALL  */
@@ -57,7 +57,7 @@
   .bulle-information-svg { max-width: 32px; }
   .callout-information { width: 17.4rem; }
   .ligne-favori,
-  .resultat-favori { font-size: 0.9rem; }
+  .result-favori { font-size: 0.9rem; }
 }
 
 /* Media SMALL  */
@@ -72,7 +72,7 @@
   .bulle-information-svg { max-width: 32px; }
   .callout-information { width: 17.4rem; }
   .ligne-favori,
-  .resultat-favori { font-size: 0.9rem; }
+  .result-favori { font-size: 0.9rem; }
 }
 
 @media (30.025em <= width <= 40em) {
@@ -86,7 +86,7 @@
   .bulle-information-svg { max-width: 32px; }
   .callout-information { width: 17.4rem; }
   .ligne-favori,
-  .resultat-favori { font-size: 0.9rem; }
+  .result-favori { font-size: 0.9rem; }
 }
 
 /* Media MEDIUM  */
@@ -103,7 +103,7 @@
   .bulle-information-svg { max-width: 32px; }
   .callout-information { width: 17.4rem; }
   .ligne-favori,
-  .resultat-favori { font-size: 1rem; }
+  .result-favori { font-size: 1rem; }
 }
 
 /* Media LARGE  */
@@ -121,7 +121,7 @@
   .callout-information { width: 17.4rem; }
 
   .ligne-favori,
-  .resultat-favori { font-size: 1rem; }
+  .result-favori { font-size: 1rem; }
 }
 
 /* Media LARGE  */
@@ -138,7 +138,7 @@
   .bulle-information-svg { max-width: 32px; }
   .callout-information { width: 17.4rem; }
   .ligne-favori,
-  .resultat-favori { font-size: 1rem; }
+  .result-favori { font-size: 1rem; }
 }
 
 /* Media Extra-large  */
@@ -155,7 +155,7 @@
   .bulle-information-svg { max-width: 48px; }
   .callout-information { width: 17.4rem; }
   .ligne-favori,
-  .resultat-favori { font-size: 1rem; }
+  .result-favori { font-size: 1rem; }
 }
 
 @media (width >= 160.025em) {
@@ -172,7 +172,7 @@
   .bulle-information-svg { max-width: 48px; }
   .callout-information { width: 17.4rem; }
   .ligne-favori,
-  .resultat-favori { font-size: 1rem; }
+  .result-favori { font-size: 1rem; }
 }
 
 /*************************          Global     *********************************/
@@ -180,7 +180,7 @@
 .fieldset-container { padding-bottom: 0.5rem; }
 .ref-bouton { padding-right: 0.4rem; }
 
-.ref-resultat {
+.referential-result {
   padding-left: 0.4rem;
   padding-top: 0.5rem;
 }
@@ -259,7 +259,7 @@
 }
 
 /* Couleur pour les résultats des favoris */
-.resultat-favori { color: #333; }
+.result-favori { color: #333; }
 
 /* Taille pour le nom de l'application en mode small */
 .nom-small { font-size: 0.78rem; }
