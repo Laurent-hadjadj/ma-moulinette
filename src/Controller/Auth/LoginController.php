@@ -67,7 +67,7 @@ class LoginController extends AbstractController
             'marque_entreprise_long' => $this->marqueEntrepriseLong,
             'env' => $this->environnement,
             'version' => $this->version,
-            'dateCopyright' => $this->dateCopyright];
+            'date_copyright' => $this->dateCopyright];
         }
 
     /**
