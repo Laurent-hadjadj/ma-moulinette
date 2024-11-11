@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2022.
+ *  Copyright (c) 2021-2024.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -34,11 +34,11 @@ use App\Entity\ListeProjet;
 class ApiProjetController extends AbstractController
 {
     /** Définition des constantes */
-    public static $reference = "<strong>[PROJET]</strong>";
+    public static $reference = "<strong>[Projet]</strong>";
     public static $erreur400 = "La requête est incorrecte (Erreur 400).";
-    public static $erreur404 = "Vous devez être rattaché à une équipe (erreur 404).";
+    public static $erreur404 = "Vous devez être rattaché à une équipe (Erreur 404).";
     public static $erreur406 = "Je n'ai pas trouvé de projets pour ton équipe. ".
-    "Vérifiez le nom du tag utilisé dans SonarQube (erreur 406).";
+    "Vérifiez le nom du tag utilisé dans SonarQube (Erreur 406).";
 
     /**
      * [Description for __construct]
@@ -60,14 +60,14 @@ class ApiProjetController extends AbstractController
      *
      * @param Request $request
      *
-     * @return response
+     * @return JsonResponse
      *
      * Created at: 15/12/2022, 21:27:08 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/favori', name: 'favori', methods: ['POST'])]
-    public function favori(Security $security, Request $request): response
+    public function favori(Security $security, Request $request): JsonResponse
     {
         /** On instancie l'entityRepository */
         $utilisateurRepository = $this->em->getRepository(Utilisateur::class);
@@ -75,13 +75,10 @@ class ApiProjetController extends AbstractController
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On crée un objet de response JSON */
-        $response = new JsonResponse();
-
         /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'maven_key') ) {
-            return $response->setData(
-                ['data'=>$data,'code'=>400, 'type'=>'alert', 'reference'=> static::$reference, 'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+            return new JsonResponse(
+                ['data'=>$data,'code'=>400, 'type'=>'alert', 'reference'=> static::$reference, 'message'=> static::$erreur400], Response::HTTP_OK);
         }
 
         /** On récupère l'objet User du contexte de sécurité */
@@ -91,11 +88,10 @@ class ApiProjetController extends AbstractController
         $map=['maven_key'=>$data->maven_key, 'courriel'=>$courriel];
         $request = $utilisateurRepository->updateUtilisateurPreferenceFavori($preference, $map);
         if ($request['code']!=200) {
-            return $response->setData(['code' => $request['code']], Response::HTTP_OK);
+            return new JsonResponse(['code' => $request['code']], Response::HTTP_OK);
         }
 
-        return $response->setData(
-            ['code'=>200, 'statut' => $request['statut']], Response::HTTP_OK);
+        return new JsonResponse(['code'=>200, 'statut' => $request['statut']], Response::HTTP_OK);
     }
 
     /**
@@ -106,33 +102,30 @@ class ApiProjetController extends AbstractController
      *
      * @param Request $request
      *
-     * @return response
+     * @return JsonResponse
      *
      * Created at: 15/12/2022, 21:28:07 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/favori/check', name: 'favori_check', methods: ['POST'])]
-    public function favoriCheck(Security $security, Request $request): response
+    public function favoriCheck(Security $security, Request $request): JsonResponse
     {
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On crée un objet de response JSON */
-        $response = new JsonResponse();
-
         /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'maven_key') ) {
-            return $response->setData(
+            return new JsonResponse(
                 ['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
-            'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+            'message'=> static::$erreur400], Response::HTTP_OK);
         }
 
         /** On récupère l'objet User du contexte de sécurité */
         $preference = $security->getUser()->getPreference();
 
         $favori = in_array($data->mavenKey, $preference['favori']);
-        return $response->setData(['favori' => $favori], Response::HTTP_OK);
+        return new JsonResponse(['favori' => $favori], Response::HTTP_OK);
     }
 
     /**
@@ -142,37 +135,34 @@ class ApiProjetController extends AbstractController
      *
      * @param Security $security
      *
-     * @return response
+     * @return JsonResponse
      *
      * Created at: 15/12/2022, 21:28:51 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/projet/liste', name: 'projet_liste', methods: ['POST'])]
-    public function liste_projet(Security $security): response
+    public function liste_projet(Security $security): JsonResponse
     {
         /** On instancie l'entityRepository */
         $listeProjetRepository = $this->em->getRepository(ListeProjet::class);
 
-        /** On crée un objet de response JSON */
-        $response = new JsonResponse();
-
         /* On bind les informations utilisateur */
-        $equipes = $security->getUser()->getEquipe();
+        $groupes = $security->getUser()->getEquipe();
         /** Si l'utilisateur n'est pas rattaché à une équipe on ne charge rien */
-        if (empty($equipes)) {
+        if (empty($groupes)) {
             /** On envoi un message à l'utilisateur */
-            return $response->setData([
+            return new JsonResponse([
                 'code'=>404, 'reference' => static::$reference,
                 'message' => static::$erreur404, 'type' => 'alert'], Response::HTTP_OK);
         }
 
         /** On recherche les projets pour les équipes rattaché à l'utilisateur */
         $in = '';
-        foreach ($equipes as $equipe) {
-            if ($equipe !== '@TEST' || $equipe !== 'null') {
+        foreach ($groupes as $groupe) {
+            if ($groupe !== '@TEST' || $groupe !== 'null') {
                 /** On met en minuscule */
-                $minus = trim(strtolower($equipe));
+                $minus = trim(strtolower($groupe));
                 /** On construit la clause in et on remplace les espaces par des tirets  */
                 $in = $in." tag LIKE '".preg_replace('/\s+/', '-', $minus)."%' OR ";
             }
@@ -185,7 +175,7 @@ class ApiProjetController extends AbstractController
         $map=['clause_where'=>$inTrim];
         $requestListe = $listeProjetRepository->selectListeProjetByEquipe($map);
         if ($requestListe['code']!=200) {
-            return $response->setData(['code' => $requestListe['code']], Response::HTTP_OK);
+            return new JsonResponse(['code' => $requestListe['code']], Response::HTTP_OK);
         }
 
         $projets = $requestListe['liste'];
@@ -193,12 +183,12 @@ class ApiProjetController extends AbstractController
         /** j'ai pas trouvé de projet pour cette équipe. */
         if (empty($projets)) {
             $type = 'warning';
-            return $response->setData(
+            return new JsonResponse(
                 ['code'=>406, 'reference' =>  static::$reference,
                 'message' => static::$erreur406, 'type' => $type], Response::HTTP_OK);
         }
 
-        return $response->setData(['code'=>200, 'projet' => $projets], Response::HTTP_OK);
+        return new JsonResponse(['code'=>200, 'projet' => $projets], Response::HTTP_OK);
     }
 
 }

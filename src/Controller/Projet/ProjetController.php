@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2022.
+ *  Copyright (c) 2021-2024.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -15,6 +15,7 @@ namespace App\Controller\Projet;
 
 /** Core */
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 /** Sécurité */
@@ -28,14 +29,13 @@ use App\Service\MesProjets;
 
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Historique;
-use Doctrine\ORM\EntityManager;
 
 /**
  * [Description ProjetController]
  */
 class ProjetController extends AbstractController
 {
-    public static $route= "projet/mes-projets.html.twig";
+    public static $page= "projet/mes-projets.html.twig";
     public static $reference = "<strong>[MES-PROJETS]</strong>";
     public static $erreur404 = "Tu dois être rattaché à une équipe (erreur 404).";
     public static $erreur406 = "Je n'ai pas trouvé de projets pour ton équipe. ".
@@ -46,35 +46,49 @@ class ProjetController extends AbstractController
     private $security;
     private $em;
 
+    private $logoEntreprise;
+    private $marqueEntrepriseShort;
+    private $marqueEntrepriseLong;
+    private $environnement;
+    private $version;
+    private $dateCopyright;
+
     public function __construct(
         MesProjets $mesProjets,
         Security $security,
-        EntityManagerInterface $em
+        EntityManagerInterface $em,
+        private ParameterBagInterface $params,
     ) {
         $this->mesProjets = $mesProjets;
         $this->security = $security;
         $this->em = $em;
+        $this->logoEntreprise = $params->get('logo.entreprise');
+        $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
+        $this->marqueEntrepriseLong = $params->get('marque.entreprise.long');
+        $this->environnement = $params->get('environnement');
+        $this->version = $params->get('version');
+        $this->dateCopyright = \date('Y');
     }
 
-    /**
-     * [Description for getDefaultRender]
-     *  Retourne les paramètres par défaut pour la page.
+        /**
+     * [Description for genericRender]
      *
      * @return array
      *
-     * Created at: 24/09/2024 15:15:17 (Europe/Paris)
+     * Created at: 30/10/2024 08:21:04 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function getDefaultRender(): array
+    private function genericRender(): array
     {
         return [
-            'marque_entreprise_short' => $this->getParameter('marque.entreprise.short'),
-            'marque_entreprise_long' => $this->getParameter('marque.entreprise.long'),
-            'logo_entreprise' => $this->getParameter('logo.entreprise'),
-            'env' => $this->getParameter('environnement'),
-            'version' => $this->getParameter('version'),
-            'dateCopyright' => \date('Y')];
+            'type_footer' => null,
+            'logo_entreprise' => $this->logoEntreprise,
+            'marque_entreprise_short' => $this->marqueEntrepriseShort,
+            'marque_entreprise_long' => $this->marqueEntrepriseLong,
+            'env' => $this->environnement,
+            'version' => $this->version,
+            'date_copyright' => $this->dateCopyright];
     }
 
     /**
@@ -102,35 +116,35 @@ class ProjetController extends AbstractController
         }
 
         // Mise à jour du rendu
-        $defaultRender = $this->getDefaultRender();
-        $render = array_merge($defaultRender, ['bookmark' => $bookmark]);
+        $render=static::genericRender();
+        $render['bookmark'] = $bookmark;
         return $this->render('projet/index.html.twig', $render);
     }
 
 
     #[Route('/projet/mes-projets', name: 'mes_projets', methods: 'GET')]
-    public function mesProjets(Security $security): Response
+    public function mesProjets(): Response
     {
         /** On instancie l'entityRepository */
         $historiqueRepository = $this->em->getRepository(Historique::class);
 
-        $defaultRender = $this->getDefaultRender();
+        $render=static::genericRender();
         $teams = $this->security->getUser()->getEquipe();
         $debug='';
 
         /** Si l'utilisateur n'est pas rattaché à une équipe on ne charge rien */
         if (empty($teams)) {
             /** On envoi un message à l'utilisateur */
-            $render = array_merge($defaultRender, ['liste_projet' => []]);
+            $render['liste_projet'] = [];
             $this->addFlash('notice', ['type' => 'warning', 'reference' => static::$reference, 'message' => static::$erreur404, 'debug'=>$debug] );
-            return $this->render(static::$route, $render);
+            return $this->render(static::$page, $render);
         }
 
         $mes_projets=$this->mesProjets->liste($teams);
         if ($mes_projets['code'] === 406) {
-            $render = array_merge($defaultRender, ['liste_projet' => []]);
+            $render['liste_projet'] = [];
             $this->addFlash('notice', ['type' => 'warning', 'reference' => static::$reference, 'message' => $mes_projets['message'], 'debug'=>$mes_projets['erreur']] );
-            return $this->render(static::$route, $render);
+            return $this->render(static::$page, $render);
         }
 
         /** On construit la clause where  */
@@ -143,12 +157,12 @@ class ProjetController extends AbstractController
         $rtrim = rtrim($c, " ,");
         $liste = $historiqueRepository->selectHistoriqueIndicateurs($rtrim);
         if ($liste['code']!=200) {
-            $render = array_merge($defaultRender, ['liste_projet' => []]);
+            $render['liste_projet'] = [];
             $this->addFlash('notice', ['type' => 'error', 'reference' => static::$reference, 'message' => static::$erreur404, 'debug'=>$liste['erreur']] );
-            return $this->render(static::$route, $render);
+            return $this->render(static::$page, $render);
         }
 
-        $render = array_merge($defaultRender, ['liste_projet' => $liste['indicateur']]);
-        return $this->render(static::$route, $render);
+        $render['liste_projet'] = $liste['indicateur'];
+        return $this->render(static::$page, $render);
     }
 }

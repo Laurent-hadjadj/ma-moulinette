@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2022.
+ *  Copyright (c) 2021-2024.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -57,22 +57,20 @@ class ApiEnregistrementController extends AbstractController
      *
      * @param Request $request
      *
-     * @return response
+     * @return JsonResponse
      *
      * Created at: 15/12/2022, 21:44:09 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/enregistrement', name: 'enregistrement', methods: ['PUT'])]
-    public function enregistrement(Request $request): response
+    public function enregistrement(Request $request): JsonResponse
     {
         /** On instancie l'entityRepository */
         $historiqueRepository = $this->em->getRepository(Historique::class);
 
         /** On décode le body. */
         $data = json_decode($request->getContent());
-        /** On créé un objet response pour le retour JSON. */
-        $response = new JsonResponse();
 
         /** todo : vérifier les droits et que les data != null */
 
@@ -116,10 +114,10 @@ class ApiEnregistrementController extends AbstractController
             'rq'=>'insertTodo'];
         }
         if ($historique['code']===23505){
-            return $response->setData(["code" => 202], Response::HTTP_OK);
+            return new JsonResponse(["code" => 202], Response::HTTP_OK);
         }
 
     /** Tout va bien ! */
-    return $response->setData(["code" => 200], Response::HTTP_OK);
+    return new JsonResponse(["code" => 200], Response::HTTP_OK);
     }
 }

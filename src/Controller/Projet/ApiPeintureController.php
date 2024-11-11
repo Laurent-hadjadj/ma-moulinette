@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2022.
+ *  Copyright (c) 2021-2024.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -105,14 +105,17 @@ class ApiPeintureController extends AbstractController
      * [Description for projetMesApplicationsListe]
      * Récupère la liste des projets que j'ai visité et ceux en favori
      *
-     * @return response
+     * @param Request $request
+     * @param Security $security
+     *
+     * @return JsonResponse
      *
      * Created at: 15/12/2022, 21:51:40 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/projet/mes-applications/liste', name: 'projet_mes_applications_liste', methods: ['POST'])]
-    public function projetMesApplicationsListe(Request $request, Security $security): response
+    public function projetMesApplicationsListe(Request $request, Security $security): JsonResponse
     {
         /** On instancie l'entityRepository */
         $anomalieRepository = $this->em->getRepository(Anomalie::class);
@@ -120,14 +123,11 @@ class ApiPeintureController extends AbstractController
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On crée un objet de response JSON */
-        $response = new JsonResponse();
-
         /** On teste si la clé est valide */
         if ($data === null) {
-            return $response->setData([
+            return new JsonResponse([
                 'data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
-                'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+                'message'=> static::$erreur400], Response::HTTP_OK);
         }
 
         /**
@@ -137,7 +137,7 @@ class ApiPeintureController extends AbstractController
          */
         $request = $anomalieRepository->selectAnomalieByProjectName();
         if ($request['code']!=200) {
-            return $response->setData(['code' => $request['code']], Response::HTTP_OK);
+            return new JsonResponse(['code' => $request['code']], Response::HTTP_OK);
         }
 
         /** Si on a pas trouvé d'application. */
@@ -145,7 +145,7 @@ class ApiPeintureController extends AbstractController
             $type = 'primary';
             $reference = static::$reference;
             $message = static::$erreur404;
-            return $response->setData(['code'=>406, 'type' => $type, 'reference' => $reference, 'message' => $message], Response::HTTP_OK);
+            return new JsonResponse(['code'=>406, 'type' => $type, 'reference' => $reference, 'message' => $message], Response::HTTP_OK);
         }
 
         /** On récupère l'objet User du contexte de sécurité */
@@ -166,10 +166,7 @@ class ApiPeintureController extends AbstractController
             }
         }
 
-        return $response->setData([
-            'code' => 200,
-            'projets' => $projets],
-            Response::HTTP_OK);
+        return new JsonResponse(['code' => 200, 'projets' => $projets], Response::HTTP_OK);
     }
 
     /**
@@ -179,14 +176,14 @@ class ApiPeintureController extends AbstractController
      *
      * @param Request $request
      *
-     * @return response
+     * @return JsonResponse
      *
      * Created at: 15/12/2022, 21:53:31 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/peinture/projet/version', name: 'peinture_projet_version', methods: ['POST'])]
-    public function peintureProjetVersion(Request $request): response
+    public function peintureProjetVersion(Request $request): JsonResponse
     {
         /** On instancie l'entityRepository */
         $informationProjetEntity = $this->em->getRepository(InformationProjet::class);
@@ -194,30 +191,27 @@ class ApiPeintureController extends AbstractController
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On crée un objet de response JSON */
-        $response = new JsonResponse();
-
         /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'maven_key') ) {
-            return $response->setData([
+            return new JsonResponse([
                 'data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
-                'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+                'message'=> static::$erreur400], Response::HTTP_OK);
         }
 
         /** On regarde si le projet existe */
         $isValide= $this->isValidMavenKey->isValideInformation($data->maven_key);
 
         if ($isValide['code'] === 404) {
-            return $response->setData([
+            return new JsonResponse([
                 'code'=>404, 'type'=> 'secondary', 'reference'=> static::$reference,
-                'message' => static::$erreur404, Response::HTTP_NOT_ACCEPTABLE]);
+                'message' => static::$erreur404], Response::HTTP_OK);
         }
 
         /** Toutes les versions par type (RELEASE, SNAPSHOT, AUTRE) */
         $map=['maven_key'=>$data->maven_key];
         $toutesLesVersions=$informationProjetEntity->countInformationProjetAllType($map);
         if ($toutesLesVersions['code']!=200) {
-            return $response->setData([
+            return new JsonResponse([
                 'code' => $toutesLesVersions['code'], 'type'=>'alert',
                 'reference'=> static::$reference, 'message'=> static::$erreur500], Response::HTTP_OK);
         }
@@ -227,7 +221,7 @@ class ApiPeintureController extends AbstractController
         $release=$informationProjetEntity->countInformationProjetType($map);
         $releaseCount = isset($release['nombre'][0]['total']) ? $release['nombre'][0]['total'] : 0;
         if ($release['code']!=200) {
-            return $response->setData(['code' => $release['code']], Response::HTTP_OK);
+            return new JsonResponse(['code' => $release['code']], Response::HTTP_OK);
         }
 
         /** Les snapshots */
@@ -235,7 +229,7 @@ class ApiPeintureController extends AbstractController
         $snapshot=$informationProjetEntity->countInformationProjetType($map);
         $snapshotCount = isset($snapshot['nombre'][0]['total']) ? $snapshot['nombre'][0]['total'] : 0;
         if ($snapshot['code']!=200) {
-            return $response->setData([ 'code' => $snapshot['code']], Response::HTTP_OK);
+            return new JsonResponse([ 'code' => $snapshot['code']], Response::HTTP_OK);
         }
 
         /** On calcul la valeur pour les autres types de version */
@@ -246,7 +240,7 @@ class ApiPeintureController extends AbstractController
         $map=['maven_key'=>$data->maven_key];
         $infoVersion=$informationProjetEntity->selectInformationProjetTypeIndexed($map);
         if ($snapshot['code']!=200) {
-            return $response->setData(['code' => $snapshot['code']], Response::HTTP_OK);
+            return new JsonResponse(['code' => $snapshot['code']], Response::HTTP_OK);
         }
 
         $label = [];
@@ -260,7 +254,7 @@ class ApiPeintureController extends AbstractController
         $map=['maven_key'=>$data->maven_key];
         $infoRelease=$informationProjetEntity->selectInformationProjetVersionLast($map);
         if ($infoRelease['code']!=200) {
-            return $response->setData(['code' => $infoRelease['code']], Response::HTTP_OK);
+            return new JsonResponse(['code' => $infoRelease['code']], Response::HTTP_OK);
         }
 
         /** Contrôle de la valeur des versions release, snapshot et release */
@@ -274,7 +268,7 @@ class ApiPeintureController extends AbstractController
             $snapshot = $snapshot['nombre'][0]['total'];
         }
 
-        return $response->setData(
+        return new JsonResponse(
             [
                 'code'=>200,
                 'release' => $release, 'snapshot' => $snapshot,  'autre' => $lesAutres,
@@ -292,14 +286,14 @@ class ApiPeintureController extends AbstractController
      *
      * @param Request $request
      *
-     * @return response
+     * @return JsonResponse
      *
      * Created at: 15/12/2022, 21:53:58 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/peinture/projet/mesures', name: 'peinture_projet_mesures', methods: ['POST'])]
-    public function peintureProjetMesures(Request $request): response
+    public function peintureProjetMesures(Request $request): JsonResponse
     {
         /** On instancie l'entityRepository */
         $mesuresRepository = $this->em->getRepository(Mesures::class);
@@ -307,22 +301,19 @@ class ApiPeintureController extends AbstractController
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On crée un objet de response JSON */
-        $response = new JsonResponse();
-
         /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'maven_key') ) {
-            return $response->setData([
+            return new JsonResponse([
                 'data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
-                'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+                'message'=> static::$erreur400], Response::HTTP_OK);
         }
 
         /** On regarde si le projet existe */
         $isValide= $this->isValidMavenKey->isValideInformation($data->maven_key);
         if ($isValide['code'] === 404) {
-            return $response->setData([
+            return new JsonResponse([
                 'code'=>404, 'type'=> 'secondary', 'reference'=> static::$reference,
-                'message' => static::$erreur404, Response::HTTP_NOT_FOUND]);
+                'message' => static::$erreur404], response::HTTP_OK);
         }
 
         /** On récupère la dernière version et sa date de publication */
@@ -330,12 +321,11 @@ class ApiPeintureController extends AbstractController
         $request=$mesuresRepository->selectMesuresVersionLast($map);
 
         if ($request['code']!=200) {
-            return $response->setData([
-                'code' => $request['code']], Response::HTTP_OK);
+            return new JsonResponse(['code' => $request['code']], Response::HTTP_OK);
         }
         $languageDistribution=json_decode($request['mesures'][0]['language_distribution'], true);
 
-        return $response->setData([
+        return new JsonResponse([
             'code'=>200,
             'name' => $request['mesures'][0]['name'],
             'ncloc' => $request['mesures'][0]['ncloc'],
@@ -356,14 +346,14 @@ class ApiPeintureController extends AbstractController
      *
      * @param Request $request
      *
-     * @return response
+     * @return JsonResponse
      *
      * Created at: 15/12/2022, 21:54:30 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/peinture/projet/anomalie', name: 'peinture_projet_anomalie', methods: ['POST'])]
-    public function peintureProjetAnomalie(Request $request): response
+    public function peintureProjetAnomalie(Request $request): JsonResponse
     {
         /** On instancie l'entityRepository */
         $anomalieRepository = $this->em->getRepository(Anomalie::class);
@@ -372,29 +362,26 @@ class ApiPeintureController extends AbstractController
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On crée un objet de response JSON */
-        $response = new JsonResponse();
-
         /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'maven_key') ) {
-            return $response->setData([
+            return new JsonResponse([
                 'data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
-                'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+                'message'=> static::$erreur400], Response::HTTP_OK);
         }
 
         /** On regarde si le projet existe */
         $isValide= $this->isValidMavenKey->isValideInformation($data->maven_key);
         if ($isValide['code'] === 404) {
-            return $response->setData([
+            return new JsonResponse([
                 'code'=>404, 'type'=> 'secondary', 'reference'=> static::$reference,
-                'message' => static::$erreur404, Response::HTTP_NOT_FOUND]);
+                'message' => static::$erreur404,], response::HTTP_OK);
         }
 
         /** On récupère la dernière version et sa date de publication */
         $map=['maven_key'=>$data->maven_key];
         $anomalie=$anomalieRepository->selectAnomalie($map);
         if ($anomalie['code']!=200) {
-            return $response->setData(['code' => $anomalie['code']], Response::HTTP_OK);
+            return new JsonResponse(['code' => $anomalie['code']], Response::HTTP_OK);
         }
 
         /**
@@ -436,9 +423,7 @@ class ApiPeintureController extends AbstractController
             $map=['maven_key'=>$data->maven_key, 'type'=>$type];
             $note=$notesRepository->selectNotesMavenType($map);
             if ($note['code']!=200) {
-                return $response->setData([
-                    'code' => $note['code']],
-                    Response::HTTP_OK);
+                return new JsonResponse(['code' => $note['code']], Response::HTTP_OK);
             }
 
             if (isset($note['liste'][0]['value'])) {
@@ -452,7 +437,7 @@ class ApiPeintureController extends AbstractController
             }
         }
 
-        return $response->setData([
+        return new JsonResponse([
             'code'=>200,
             'dette' => $dette,
             'detteReliability' => $detteReliability,
@@ -471,8 +456,8 @@ class ApiPeintureController extends AbstractController
             'frontend' => $frontend, 'backend' => $backend, 'autre' => $autre,
             'noteReliability' => $noteReliability,
             'noteSecurity' => $noteSecurity,
-            'noteSqale' => $noteSqale, Response::HTTP_OK
-        ]);
+            'noteSqale' => $noteSqale
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -481,7 +466,7 @@ class ApiPeintureController extends AbstractController
      *
      * @param Request $request
      *
-     * @return response
+     * @return JsonResponse
      *
      * Created at: 15/12/2022, 21:56:17 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
@@ -496,30 +481,26 @@ class ApiPeintureController extends AbstractController
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On crée un objet de response JSON */
-        $response = new JsonResponse();
-
         /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'maven_key') ) {
-            return $response->setData([
+            return new JsonResponse([
                 'data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
-                'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+                'message'=> static::$erreur400], Response::HTTP_OK);
         }
 
         /** On regarde si le projet existe */
         $isValide= $this->isValidMavenKey->isValideInformation($data->maven_key);
         if ($isValide['code'] === 404) {
-            return $response->setData([
+            return new JsonResponse([
                 'code'=>404, 'type'=> 'secondary', 'reference'=> static::$reference,
-                'message' => static::$erreur404, Response::HTTP_NOT_FOUND]);
+                'message' => static::$erreur404], Response::HTTP_OK);
         }
 
         /** On récupère les données pour le projet */
         $map=['maven_key'=>$data->maven_key];
         $details=$anomalieDetailsRepository->selectAnomalieDetailsMavenKey($map);
         if ($details['code']!=200) {
-            return $response->setData([
-                'code' => $details['code']], Response::HTTP_OK);
+            return new JsonResponse(['code' => $details['code']], Response::HTTP_OK);
         }
 
         $bugBlocker = $details['liste'][0]['bug_blocker'];
@@ -540,7 +521,7 @@ class ApiPeintureController extends AbstractController
         $codeSmellMinor = $details['liste'][0]['code_smell_minor'];
         $codeSmellInfo = $details['liste'][0]['code_smell_info'];
 
-        return $response->setData([
+        return new JsonResponse([
             "code" => 200,
             "bugBlocker" => $bugBlocker,
             "bugCritical" => $bugCritical,
@@ -556,9 +537,7 @@ class ApiPeintureController extends AbstractController
             "codeSmellCritical" => $codeSmellCritical,
             "codeSmellMajor" => $codeSmellMajor,
             "codeSmellMinor" => $codeSmellMinor,
-            "codeSmellInfo" => $codeSmellInfo,
-            Response::HTTP_OK
-        ]);
+            "codeSmellInfo" => $codeSmellInfo], Response::HTTP_OK);
     }
 
     /**
@@ -567,14 +546,14 @@ class ApiPeintureController extends AbstractController
      *
      * @param Request $request
      *
-     * @return response
+     * @return JsonResponse
      *
      * Created at: 15/12/2022, 21:56:43 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/peinture/projet/hotspots', name: 'peinture_projet_hotspots', methods: ['POST'])]
-    public function peintureProjetHotspots(Request $request): response
+    public function peintureProjetHotspots(Request $request): JsonResponse
     {
         /** On instancie l'entityRepository */
         $hotspotsRepository = $this->em->getRepository(Hotspots::class);
@@ -582,35 +561,32 @@ class ApiPeintureController extends AbstractController
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On crée un objet de response JSON */
-        $response = new JsonResponse();
-
         /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'maven_key') ) {
-            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert',
-            'reference'=> static::$reference, 'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+            return new JsonResponse(['data'=>$data,'code'=>400, 'type'=>'alert',
+            'reference'=> static::$reference, 'message'=> static::$erreur400,], Response::HTTP_OK);
         }
 
         /** On regarde si le projet existe */
         $isValide= $this->isValidMavenKey->isValideInformation($data->maven_key);
         if ($isValide['code'] === 404) {
-            return $response->setData([
+            return new JsonResponse([
                 'code'=>404, 'type'=> 'secondary', 'reference'=> static::$reference,
-                'message' => static::$erreur404, Response::HTTP_NOT_FOUND]);
+                'message' => static::$erreur404], Response::HTTP_OK);
         }
 
         /** On compte le nombre de hotspot au statut TO_REVIEW */
         $map=['maven_key'=>$data->maven_key, 'status'=>'TO_REVIEW'];
         $toReview=$hotspotsRepository->countHotspotsStatus($map);
         if ($toReview['code']!=200) {
-            return $response->setData(['code' => $toReview['code']], Response::HTTP_OK);
+            return new JsonResponse(['code' => $toReview['code']], Response::HTTP_OK);
         }
 
         /** On compte le nombre de hotspot au statut REVIEWED */
         $map=['maven_key'=>$data->maven_key, 'status'=>'REVIEWED'];
         $reviewed=$hotspotsRepository->countHotspotsStatus($map);
         if ($reviewed['code']!=200) {
-            return $response->setData(['code' => $reviewed['code']], Response::HTTP_OK);
+            return new JsonResponse(['code' => $reviewed['code']], Response::HTTP_OK);
         }
 
         /** On calcul la note sonar */
@@ -620,7 +596,7 @@ class ApiPeintureController extends AbstractController
             $note=static::calculNoteHotspot($toReview['nombre'][0]['to_review'], $reviewed['nombre'][0]['reviewed']);
         }
 
-        return $response->setData(['code'=>200, 'note' => $note], Response::HTTP_OK);
+        return new JsonResponse(['code'=>200, 'note' => $note], Response::HTTP_OK);
     }
 
     /**
@@ -629,14 +605,14 @@ class ApiPeintureController extends AbstractController
      *
      * @param Request $request
      *
-     * @return response
+     * @return JsonResponse
      *
      * Created at: 15/12/2022, 21:57:40 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/peinture/projet/hotspots/details', name: 'peinture_projet_hotspots_details', methods: ['POST'])]
-    public function peintureProjetHotspotsDetails(Request $request): response
+    public function peintureProjetHotspotsDetails(Request $request): JsonResponse
     {
         /** On instancie l'entityRepository */
         $hotspotsRepository = $this->em->getRepository(Hotspots::class);
@@ -644,21 +620,18 @@ class ApiPeintureController extends AbstractController
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On crée un objet de response JSON */
-        $response = new JsonResponse();
-
         /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'maven_key') ) {
-            return $response->setData([
+            return new JsonResponse([
                 'data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
-                'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+                'message'=> static::$erreur400], Response::HTTP_OK);
         }
         /** On regarde si le projet existe */
         $isValide= $this->isValidMavenKey->isValideInformation($data->maven_key);
         if ($isValide['code'] === 404) {
-            return $response->setData([
+            return new JsonResponse([
                 'code'=>404, 'type'=> 'secondary', 'reference'=> static::$reference,
-                'message' => static::$erreur404, Response::HTTP_NOT_FOUND]);
+                'message' => static::$erreur404], Response::HTTP_OK);
         }
 
         $total = $high = $medium = $low = 0;
@@ -666,7 +639,7 @@ class ApiPeintureController extends AbstractController
         $map=['maven_key'=>$data->maven_key, 'status'=>'REVIEWED'];
         $niveaux=$hotspotsRepository->selectHotspotsByNiveau($map);
         if ($niveaux['code']!=200) {
-            return $response->setData(['code' => $niveaux['code']], Response::HTTP_OK);
+            return new JsonResponse(['code' => $niveaux['code']], Response::HTTP_OK);
         }
         if (!$niveaux){
             foreach ($niveaux as $niveau) {
@@ -682,7 +655,7 @@ class ApiPeintureController extends AbstractController
             }
             $total = intval($high) + intval($medium) + intval($low);
         }
-        return $response->setData(
+        return new JsonResponse(
             ['code' => 200, 'total' => $total, 'high' => $high,
             'medium' => $medium, 'low' => $low], Response::HTTP_OK
         );
@@ -694,14 +667,14 @@ class ApiPeintureController extends AbstractController
      *
      * @param Request $request
      *
-     * @return response
+     * @return JsonResponse
      *
      * Created at: 15/12/2022, 21:58:42 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/peinture/projet/nosonar', name: 'peinture_projet_nosonar', methods: ['POST'])]
-    public function peintureProjetNoSonarDetails(Request $request): response
+    public function peintureProjetNoSonarDetails(Request $request): JsonResponse
     {
         /** On instancie l'entityRepository */
         $noSonarRepository = $this->em->getRepository(NoSonar::class);
@@ -709,26 +682,23 @@ class ApiPeintureController extends AbstractController
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On crée un objet de response JSON */
-        $response = new JsonResponse();
-
         /** On teste si la clé est valide */
         if ($data === null) {
-            return $response->setData(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference, 'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+            return new JsonResponse(['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference, 'message'=> static::$erreur400], Response::HTTP_OK);
         }
 
         /** On regarde si le projet existe */
         $isValide= $this->isValidMavenKey->isValideInformation($data->maven_key);
         if ($isValide['code'] === 404) {
-            return $response->setData([
+            return new JsonResponse([
                 'code'=>404, 'type'=> 'secondary', 'reference'=> static::$reference,
-                'message' => static::$erreur404, Response::HTTP_NOT_FOUND]);
+                'message' => static::$erreur404], Response::HTTP_OK);
         }
         /** On récupère la liste des règles et leur nombre pour un projet. */
         $map=['maven_key'=>$data->maven_key];
         $rules=$noSonarRepository->selectNoSonarRuleGroupByRule($map);
         if ($rules['code']!=200) {
-            return $response->setData(['code' => $rules['code']], Response::HTTP_OK);
+            return new JsonResponse(['code' => $rules['code']], Response::HTTP_OK);
         }
 
         $sonar1309 = $nosonar = $total = 0;
@@ -744,7 +714,7 @@ class ApiPeintureController extends AbstractController
             $total = intval($sonar1309, 10) + intval($nosonar, 10);
         }
 
-        return $response->setData(
+        return new JsonResponse(
             ['code'=>200, 'total' => $total, 's1309' => $sonar1309, 'nosonar' => $nosonar], Response::HTTP_OK
         );
     }
@@ -755,14 +725,14 @@ class ApiPeintureController extends AbstractController
        *
        * @param Request $request
        *
-       * @return response
+       * @return JsonResponse
        *
        * Created at: 10/04/2023, 17:54:08 (Europe/Paris)
        * @author    Laurent HADJADJ <laurent_h@me.com>
        * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
        */
     #[Route('/api/peinture/projet/todo', name: 'peinture_projet_todo', methods: ['POST'])]
-    public function peintureProjetTodo(Request $request): response
+    public function peintureProjetTodo(Request $request): JsonResponse
     {
         /** On instancie l'entityRepository */
         $todoRepository = $this->em->getRepository(Todo::class);
@@ -770,29 +740,26 @@ class ApiPeintureController extends AbstractController
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On crée un objet de response JSON */
-        $response = new JsonResponse();
-
         /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'maven_key') ) {
-            return $response->setData([
+            return new JsonResponse([
                 'data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
-                'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+                'message'=> static::$erreur400], Response::HTTP_OK);
         }
 
         /** On regarde si le projet existe */
         $isValide= $this->isValidMavenKey->isValideInformation($data->maven_key);
         if ($isValide['code'] === 404) {
-            return $response->setData([
+            return new JsonResponse([
                 'code'=>404, 'type'=> 'secondary', 'reference'=> static::$reference,
-                'message' => static::$erreur404, Response::HTTP_NOT_FOUND]);
+                'message' => static::$erreur404], Response::HTTP_OK);
         }
 
         /** On récupère la liste des to do pour le projet. */
         $map=['maven_key'=>$data->maven_key];
         $rules=$todoRepository->selectTodoRuleGroupByRule($map);
         if ($rules['code']!=200) {
-            return $response->setData(['code' => $rules['code']], Response::HTTP_OK);
+            return new JsonResponse(['code' => $rules['code']], Response::HTTP_OK);
         }
 
         $todo = $java = $javascript = $typescript = $html = $xml = 0;
@@ -823,10 +790,10 @@ class ApiPeintureController extends AbstractController
         $map=['maven_key'=>$data->maven_key];
         $details=$todoRepository->selectTodoComponentOrderByRule($map);
         if ($details['code']!=200) {
-            return $response->setData(['code' => $details['code']], Response::HTTP_OK);
+            return new JsonResponse(['code' => $details['code']], Response::HTTP_OK);
         }
 
-        return $response->setData(
+        return new JsonResponse(
             ['code'=>200, 'todo' => $todo, 'java' => $java, 'javascript' => $javascript,
                 'typescript' => $typescript, 'html' => $html, 'xml' => $xml, "details" => $details], Response::HTTP_OK
         );
@@ -837,14 +804,14 @@ class ApiPeintureController extends AbstractController
      *
      * @param Request $request
      *
-     * @return response
+     * @return JsonResponse
      *
      * Created at: 12/09/2024 21:57:18 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/peinture/projet/logger', name: 'peinture_projet_logger', methods: ['POST'])]
-    public function peintureProjetLogger(Request $request): response
+    public function peintureProjetLogger(Request $request): JsonResponse
     {
         /** On instancie l'entityRepository */
         $loggerRepository = $this->em->getRepository(Logger::class);
@@ -852,26 +819,23 @@ class ApiPeintureController extends AbstractController
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On crée un objet de response JSON */
-        $response = new JsonResponse();
-
         /** On teste si la clé est valide */
         if ($data === null) {
-            return $response->setData(['data'=>$data, 'code'=>400, 'type'=>'alert','reference'=> static::$reference, 'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+            return new JsonResponse(['data'=>$data, 'code'=>400, 'type'=>'alert','reference'=> static::$reference, 'message'=> static::$erreur400], Response::HTTP_OK);
         }
 
         /** On regarde si le projet existe */
         $isValide= $this->isValidMavenKey->isValideInformation($data->maven_key);
         if ($isValide['code'] === 404) {
-            return $response->setData([
+            return new JsonResponse([
                 'code'=>404, 'type'=> 'secondary', 'reference'=> static::$reference,
-                'message' => static::$erreur404, Response::HTTP_NOT_FOUND]);
+                'message' => static::$erreur404], Response::HTTP_OK);
         }
         /** On récupère la liste des règles et leur nombre pour un projet. */
         $map=['maven_key'=>$data->maven_key];
         $logger=$loggerRepository->selectLogger($map);
         if ($logger['code']!=200) {
-            return $response->setData(['code' => $logger['code']], Response::HTTP_OK);
+            return new JsonResponse(['code' => $logger['code']], Response::HTTP_OK);
         }
         /** Il n'y a pas de logger  */
         $loggerInfo = $loggerWarn = $loggerError = $loggerDebug = $total = -1;
@@ -887,13 +851,12 @@ class ApiPeintureController extends AbstractController
                     intval($loggerError, 10) +
                     intval($loggerDebug, 10);
         }
-        return $response->setData(
+        return new JsonResponse(
             ['code'=>200, 'total' => $total,
                 'logger_info' => $loggerInfo,
                 'logger_warn' => $loggerWarn,
                 'logger_error' => $loggerError,
-                'logger_debug' => $loggerDebug], Response::HTTP_OK
-        );
+                'logger_debug' => $loggerDebug], Response::HTTP_OK);
     }
 
 }
