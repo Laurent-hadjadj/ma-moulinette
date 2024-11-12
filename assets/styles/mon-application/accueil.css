@@ -295,24 +295,17 @@
   padding-right: 2px;
 }
 
+/* On surcharge la class common.css */
+
 /* box pour les notes B, C, D, E et Z */
 .note {
-  color: #fff;
-  font-size: 0.9rem;
   border: solid 1px #00445b;
   border-radius: 0.2rem;
   padding-left: 15px;
   padding-right: 15px;
 }
 
-/* box pour les notes A,B,C,D,E */
-.note-a {
-  background-color: #0a0;
-  padding-left: 14px; }
-.note-b { background-color: #b0d513; }
-.note-c { background-color: #eabe06; }
-.note-d { background-color: #ed7d20; }
-.note-e { background-color: #d4333f; }
+.note-a { padding-left: 14px; }
 
 /* couleur pour la légende des indicateur */
 .color-reliability { color: #696969; }
