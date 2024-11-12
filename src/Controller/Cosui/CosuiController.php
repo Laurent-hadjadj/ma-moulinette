@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2022.
+ *  Copyright (c) 2021-2024.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -14,6 +14,7 @@
 namespace App\Controller\Cosui;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 /** Gestion de accès aux API */
@@ -31,6 +32,14 @@ use App\Service\ExtractName;
 
 class CosuiController extends AbstractController
 {
+
+    private $logoEntreprise;
+    private $marqueEntrepriseShort;
+    private $marqueEntrepriseLong;
+    private $environnement;
+    private $version;
+    private $dateCopyright;
+
     /**
      * [Description for __construct]
      *
@@ -41,11 +50,39 @@ class CosuiController extends AbstractController
     public function __construct(
         private EntityManagerInterface $em,
         private ManagerRegistry $mr,
-        private ExtractName $serviceExtractName)
+        private ExtractName $serviceExtractName,
+        private ParameterBagInterface $params)
     {
         $this->em = $em;
         $this->mr = $mr;
         $this->serviceExtractName = $serviceExtractName;
+        $this->logoEntreprise = $params->get('logo.entreprise');
+        $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
+        $this->marqueEntrepriseLong = $params->get('marque.entreprise.long');
+        $this->environnement = $params->get('environnement');
+        $this->version = $params->get('version');
+        $this->dateCopyright = \date('Y');
+    }
+
+    /**
+     * [Description for genericRender]
+     *
+     * @return array
+     *
+     * Created at: 30/10/2024 08:21:04 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function genericRender(): array
+    {
+        return [
+            'type_footer' => null,
+            'logo_entreprise' => $this->logoEntreprise,
+            'marque_entreprise_short' => $this->marqueEntrepriseShort,
+            'marque_entreprise_long' => $this->marqueEntrepriseLong,
+            'env' => $this->environnement,
+            'version' => $this->version,
+            'date_copyright' => $this->dateCopyright];
     }
 
     /**
@@ -386,6 +423,9 @@ class CosuiController extends AbstractController
     #[Route('/projet/cosui', name: 'projet_cosui', methods: 'GET')]
     public function projetCosui(Request $request): Response
     {
+        /** On charge le template du render */
+        $render=static::genericRender();
+
         /** On bind les variables */
         $mavenKey = $request->get('mavenKey');
 
@@ -438,6 +478,30 @@ class CosuiController extends AbstractController
             $sqaleDebtRatio = $n['sqale_debt_ratio'];
         }
 
+        $render['monApplication'] = $nameApplication;
+        $render['version_application'] = $versionApplication;
+        $render['type_application'] = $typeApplication;
+        $render['date_application'] = $dateApplication;
+
+        $render['bug_blocker'] = $bugBlocker;
+        $render['bug_critical'] = $bugCritical;
+        $render['bug_major'] = $bugMajor;
+
+        $render['vulnerability_blocker'] = $vulnerabilityBlocker;
+        $render['vulnerability_critical'] = $vulnerabilityCritical;
+        $render['vulnerability_major'] = $vulnerabilityMajor;
+
+        $render['code_smell_blocker'] = $codeSmellBlocker;
+        $render['code_smell_critical'] = $codeSmellCritical;
+        $render['code_smell_major'] = $codeSmellMajor;
+
+        $render['hotspot'] = $hotspot;
+
+        $render['note_code_smell'] = $noteCodeSmell;
+        $render['note_reliability'] = $noteReliability;
+        $render['note_security'] = $noteSecurity;
+        $render['note_hotspot'] = $noteHotspot;
+
         /** On récupères les indicateurs de la version de référence */
         $nn = self::reference($mavenKey);
         if ($nn['result'] === false) {
@@ -473,54 +537,101 @@ class CosuiController extends AbstractController
             $initialSqaleDebtRatio = $nn['initial_sqale_debt_ratio'];
         }
 
+        /** on prépare les données pour la vue */
+        $render['initial_version_application'] = $initialVersionApplication;
+        $render['initial_date_application'] = $initialDateApplication;
+        $render['initial_note_code_smell'] = $initialNoteCodeSmell;
+        $render['initial_note_reliability'] = $initialNoteReliability;
+        $render['initial_note_security'] = $initialNoteSecurity;
+        $render['initial_note_hotspot'] = $initialNoteHotspot;
+        $render['initial_bug_blocker'] = $initialBugBlocker;
+        $render['initial_bug_critical'] = $initialBugCritical;
+        $render['initial_bug_major'] = $initialBugMajor;
+        $render['initial_vulnerability_blocker'] = $initialVulnerabilityBlocker;
+        $render['initial_vulnerability_critical'] = $initialVulnerabilityCritical;
+        $render['initial_vulnerability_major'] = $initialVulnerabilityMajor;
+        $render['initial_code_smell_blocker'] = $initialCodeSmellBlocker;
+        $render['initial_code_smell_critical'] = $initialCodeSmellCritical;
+        $render['initial_code_smell_major'] = $initialCodeSmellMajor;
+
+        $render['modal_initial_bug_blocker'] = $initialBugBlocker;
+        $render['modal_initial_bug_critical'] = $initialBugCritical;
+        $render['modal_initial_bug_major'] = $initialBugMajor;
+        $render['modal_initial_vulnerability_blocker'] = $initialVulnerabilityBlocker;
+        $render['modal_initial_vulnerability_critical'] = $initialVulnerabilityCritical;
+        $render['modal_initial_vulnerability_major'] = $initialVulnerabilityMajor;
+        $render['modal_initial_code_smell_blocker'] = $initialCodeSmellBlocker;
+        $render['modal_initial_code_smell_critical'] = $initialCodeSmellCritical;
+        $render['modal_initial_code_smell_major'] = $initialCodeSmellMajor;
+        $render['modal_initial_hotspot'] = $initialHotspot;
+
         /** on récupère le dernier setup pour le projet, revoie NaN si il n'y en a pas. */
         $setup = self::setup($mavenKey);
+        $render['setup'] = $setup;
 
         /** On récupère la répartition pour l'application backend */
         /** Fiabilité Blocker */
         $viability01 = self::traitement($mavenKey, $setup, 'BUG', 'BLOCKER');
         $nombrePresentationReliabilityBlocker = $viability01['frontend'] ?? '--';
         $nombreMetierReliabilityBlocker = $viability01['backend'] ?? '--';
+        $render['nombre_presentation_reliability_blocker'] = $nombrePresentationReliabilityBlocker;
+        $render['nombre_metier_reliability_blocker'] = $nombreMetierReliabilityBlocker;
 
         /** Fiabilité Critical */
         $viability02 = self::traitement($mavenKey, $setup, 'BUG', 'CRITICAL');
         $nombrePresentationReliabilityCritical = $viability02['frontend'] ?? '--';
         $nombreMetierReliabilityCritical = $viability02['backend'] ?? '--';
+        $render['nombre_presentation_reliability_critical'] = $nombrePresentationReliabilityCritical;
+        $render['nombre_metier_reliability_critical'] = $nombreMetierReliabilityCritical;
 
         /** Fiabilité Major */
         $viability03 = self::traitement($mavenKey, $setup, 'BUG', 'MAJOR');
         $nombrePresentationReliabilityMajor = $viability03['frontend'] ?? '--';
         $nombreMetierReliabilityMajor = $viability03['backend'] ?? '--';
+        $render['nombre_presentation_reliability_major'] = $nombrePresentationReliabilityMajor;
+        $render['nombre_metier_reliability_major'] = $nombreMetierReliabilityMajor;
 
         /** Vulnérabilité Blocker */
         $vulnerability01 = self::traitement($mavenKey, $setup, 'VULNERABILITY', 'BLOCKER');
         $nombrePresentationVulnerabilityBlocker = $vulnerability01['frontend'] ?? '--';
         $nombreMetierVulnerabilityBlocker = $vulnerability01['backend'] ?? '--';
+        $render['nombre_presentation_vulnerability_blocker'] = $nombrePresentationVulnerabilityBlocker;
+        $render['nombre_metier_vulnerability_blocker'] = $nombreMetierVulnerabilityBlocker;
 
         /** Vulnérabilité Critical */
         $vulnerability02 = self::traitement($mavenKey, $setup, 'VULNERABILITY', 'CRITICAL');
         $nombrePresentationVulnerabilityCritical = $vulnerability02['frontend'] ?? '--';
         $nombreMetierVulnerabilityCritical = $vulnerability02['backend'] ?? '--';
+        $render['nombre_presentation_vulnerability_critical'] = $nombrePresentationVulnerabilityCritical;
+        $render['nombre_metier_vulnerability_critical'] = $nombreMetierVulnerabilityCritical;
 
         /** Vulnérabilité Major */
         $vulnerability03 = self::traitement($mavenKey, $setup, 'VULNERABILITY', 'MAJOR');
         $nombrePresentationVulnerabilityMajor = $vulnerability03['frontend'] ?? '--';
         $nombreMetierVulnerabilityMajor = $vulnerability03['backend'] ?? '--';
+        $render['nombre_presentation_vulnerability_major'] = $nombrePresentationVulnerabilityMajor;
+        $render['nombre_metier_vulnerability_major'] = $nombreMetierVulnerabilityMajor;
 
         /** Maintenabilité Bloquant*/
         $codeSmell01 = self::traitement($mavenKey, $setup, 'CODE_SMELL', 'BLOCKER');
         $nombrePresentationCodeSmellBlocker = $codeSmell01['frontend'] ?? '--';
         $nombreMetierCodeSmellBlocker = $codeSmell01['backend'] ?? '--';
+        $render['nombre_presentation_code_smell_blocker'] = $nombrePresentationCodeSmellBlocker;
+        $render['nombre_metier_code_smell_blocker'] = $nombreMetierCodeSmellBlocker;
 
         /** Maintenabilité Critical */
         $codeSmell02 = self::traitement($mavenKey, $setup, 'CODE_SMELL', 'CRITICAL');
         $nombrePresentationCodeSmellCritical = $codeSmell02['frontend'] ?? '--';
         $nombreMetierCodeSmellCritical = $codeSmell02['backend'] ?? '--';
+        $render['nombre_presentation_code_smell_critical'] = $nombrePresentationCodeSmellCritical;
+        $render['nombre_metier_code_smell_critical'] = $nombreMetierCodeSmellCritical;
 
         /** Maintenabilité Major */
         $codeSmell03 = self::traitement($mavenKey, $setup, 'CODE_SMELL', 'MAJOR');
         $nombrePresentationCodeSmellMajor = $codeSmell03['frontend'] ?? '--';
         $nombreMetierCodeSmellMajor = $codeSmell03['frontend'] ?? '--';
+        $render['nombre_presentation_code_smell_major'] = $nombrePresentationCodeSmellMajor;
+        $render['nombre_metier_code_smell_major'] = $nombreMetierCodeSmellMajor;
 
         /** On calcul l'évolution pour chaque indicateur par rapport
          *  aux notes de référence.
@@ -528,44 +639,54 @@ class CosuiController extends AbstractController
 
         /** Calcul de la variation des hotspots */
         $evolutionHotspot = self::variation($initialHotspot, $hotspot);
+        $render['evolution_hotspot'] = $evolutionHotspot;
 
         /** Calcul de la variation des mauvaises pratiques */
         $evolutionCodeSmellBlocker = self::variation($initialCodeSmellBlocker, $codeSmellBlocker);
         $evolutionCodeSmellCritical = self::variation($initialCodeSmellCritical, $codeSmellCritical);
         $evolutionCodeSmellMajor = self::variation($initialCodeSmellMajor, $codeSmellMajor);
+        $render['evolution_code_smell_blocker'] = $evolutionCodeSmellBlocker;
+        $render['evolution_code_smell_critical'] = $evolutionCodeSmellCritical;
+        $render['evolution_code_smell_major'] = $evolutionCodeSmellMajor;
 
         /** Calcul de la variation des vulnérabilités */
         $evolutionVulnerabilityBlocker = self::variation($initialVulnerabilityBlocker, $vulnerabilityBlocker);
         $evolutionVulnerabilityCritical = self::variation($initialVulnerabilityCritical, $vulnerabilityCritical);
         $evolutionVulnerabilityMajor = self::variation($initialVulnerabilityMajor, $vulnerabilityMajor);
+        $render['evolution_vulnerability_blocker'] = $evolutionVulnerabilityBlocker;
+        $render['evolution_vulnerability_critical'] = $evolutionVulnerabilityCritical;
+        $render['evolution_vulnerability_major'] = $evolutionVulnerabilityMajor;
 
         /** Calcul de la variation des vulnérabilités */
         $evolutionBugBlocker = self::variation($initialBugBlocker, $bugBlocker);
         $evolutionBugCritical = self::variation($initialBugCritical, $bugCritical);
         $evolutionBugMajor = self::variation($initialBugMajor, $bugMajor);
+        $render['evolution_bug_blocker'] = $evolutionBugBlocker;
+        $render['evolution_bug_critical'] = $evolutionBugCritical;
+        $render['evolution_bug_major'] = $evolutionBugMajor;
 
         /** série pour la version de référence et la version courante */
         // ['Fiabilité','Vulnérabilité','Hotspot','Maintenabilité','Couverture','Dette']
         // >100, 70, 50 30 10
 
         /** On calcul la valeur des notes pour le Radar */
-        $idata1=$idata2=$idata3=$idata4=$idata5=$idata6=0;
-        $idata1=static::note2point($initialNoteReliability);
-        $idata2=static::note2point($initialNoteSecurity);
-        $idata3=static::note2point($initialNoteHotspot);
-        $idata4=static::note2point($initialNoteCodeSmell);
-        $idata5=$initialCoverage;
+        $i_data1=$i_data2=$i_data3=$i_data4=$i_data5=$i_data6=0;
+        $i_data1=static::note2point($initialNoteReliability);
+        $i_data2=static::note2point($initialNoteSecurity);
+        $i_data3=static::note2point($initialNoteHotspot);
+        $i_data4=static::note2point($initialNoteCodeSmell);
+        $i_data5=$initialCoverage;
 
         /** On inverse la courbe, plus le résultat est proche de 100 et plus la dette est petite */
-        $idata6=100-$initialSqaleDebtRatio;
+        $i_data6=100-$initialSqaleDebtRatio;
 
         /* si la dette technique est > à 100M alors le ration est de 100% */
         if ($initialSqaleDebtRatio>100) {
-            $idata6=100;
+            $i_data6=100;
         }
         /** Si on a pad de données pour l'indicateur on fixe le niveau à 50 */
         if ($initialSqaleDebtRatio<0) {
-            $idata6=50;
+            $i_data6=50;
         }
 
         $data1=$data2=$data3=$data4=$data5=$data6=0;
@@ -588,74 +709,14 @@ class CosuiController extends AbstractController
         }
 
         /** On constitue les dataSet */
-        $dataSet1="$idata1, $idata2, $idata3, $idata4, $idata5, $idata6";
+        $dataSet1="$i_data1, $i_data2, $i_data3, $i_data4, $i_data5, $i_data6";
         $dataSet2="$data1, $data2, $data3, $data4, $data5, $data6";
 
-        $render = [
-            'dataset1'=>$dataSet1, 'dataset2'=>$dataSet2,
-            'label1'=>$initialVersionApplication, 'label2'=>$versionApplication,
-            'setup' => $setup, 'monApplication' => $nameApplication, 'version_application' => $versionApplication,
-            'type_application' => $typeApplication, 'date_application' => $dateApplication,
-            'note_code_smell' => $noteCodeSmell, 'note_reliability' => $noteReliability,
-            'note_security' => $noteSecurity, 'note_hotspot' => $noteHotspot, 'bug_blocker' => $bugBlocker,
-            'bug_critical' => $bugCritical, 'bug_major' => $bugMajor, 'vulnerability_blocker' => $vulnerabilityBlocker,
-            'vulnerability_critical' => $vulnerabilityCritical, 'vulnerability_major' => $vulnerabilityMajor,
-            'code_smell_blocker' => $codeSmellBlocker, 'code_smell_critical' => $codeSmellCritical,
-            'code_smell_major' => $codeSmellMajor, 'hotspot' => $hotspot,
-            'initial_version_application' => $initialVersionApplication,
-            'initial_date_application' => $initialDateApplication,
-            'initial_note_code_smell' => $initialNoteCodeSmell, 'initial_note_reliability' => $initialNoteReliability,
-            'initial_note_security' => $initialNoteSecurity, 'initial_note_hotspot' => $initialNoteHotspot,
-            'initial_bug_blocker' => $initialBugBlocker,
-            'initial_bug_critical' => $initialBugCritical,
-            'initial_bug_major' => $initialBugMajor, 'initial_vulnerability_blocker' => $initialVulnerabilityBlocker,
-            'initial_vulnerability_critical' => $initialVulnerabilityCritical,
-            'initial_vulnerability_major' => $initialVulnerabilityMajor,
-            'initial_code_smell_blocker' => $initialCodeSmellBlocker,
-            'initial_code_smell_critical' => $initialCodeSmellCritical,
-            'initial_code_smell_major' => $initialCodeSmellMajor, 'evolution_bug_blocker' => $evolutionBugBlocker,
-            'evolution_bug_critical' => $evolutionBugCritical, 'evolution_bug_major' => $evolutionBugMajor,
-            'evolution_vulnerability_blocker' => $evolutionVulnerabilityBlocker,
-            'evolution_vulnerability_critical' => $evolutionVulnerabilityCritical,
-            'evolution_vulnerability_major' => $evolutionVulnerabilityMajor,
-            'evolution_code_smell_blocker' => $evolutionCodeSmellBlocker,
-            'evolution_code_smell_critical' => $evolutionCodeSmellCritical,
-            'evolution_code_smell_major' => $evolutionCodeSmellMajor, 'evolution_hotspot' => $evolutionHotspot,
-            'modal_initial_bug_blocker' => $initialBugBlocker, 'modal_initial_bug_critical' => $initialBugCritical,
-            'modal_initial_bug_major' => $initialBugMajor,
-            'modal_initial_vulnerability_blocker' => $initialVulnerabilityBlocker,
-            'modal_initial_vulnerability_critical' => $initialVulnerabilityCritical,
-            'modal_initial_vulnerability_major' => $initialVulnerabilityMajor,
-            'modal_initial_code_smell_blocker' => $initialCodeSmellBlocker,
-            'modal_initial_code_smell_critical' => $initialCodeSmellCritical,
-            'modal_initial_code_smell_major' => $initialCodeSmellMajor, 'modal_initial_hotspot' => $initialHotspot,
-            'nombre_metier_code_smell_blocker' => $nombreMetierCodeSmellBlocker,
-            'nombre_metier_code_smell_critical' => $nombreMetierCodeSmellCritical,
-            'nombre_metier_code_smell_major' => $nombreMetierCodeSmellMajor,
-            'nombre_presentation_code_smell_blocker' => $nombrePresentationCodeSmellBlocker,
-            'nombre_presentation_code_smell_critical' => $nombrePresentationCodeSmellCritical,
-            'nombre_presentation_code_smell_major' => $nombrePresentationCodeSmellMajor,
-            'nombre_metier_reliability_blocker' => $nombreMetierReliabilityBlocker,
-            'nombre_metier_reliability_critical' => $nombreMetierReliabilityCritical,
-            'nombre_metier_reliability_major' => $nombreMetierReliabilityMajor,
-            'nombre_presentation_reliability_blocker' => $nombrePresentationReliabilityBlocker,
-            'nombre_presentation_reliability_critical' => $nombrePresentationReliabilityCritical,
-            'nombre_presentation_reliability_major' => $nombrePresentationReliabilityMajor,
-            'nombre_metier_vulnerability_blocker' => $nombreMetierVulnerabilityBlocker,
-            'nombre_metier_vulnerability_critical' => $nombreMetierVulnerabilityCritical,
-            'nombre_metier_vulnerability_major' => $nombreMetierVulnerabilityMajor,
-            'nombre_presentation_vulnerability_blocker' => $nombrePresentationVulnerabilityBlocker,
-            'nombre_presentation_vulnerability_critical' => $nombrePresentationVulnerabilityCritical,
-            'nombre_presentation_vulnerability_major' => $nombrePresentationVulnerabilityMajor,
-            'marque_entreprise_short' => $this->getParameter('marque.entreprise.short'),
-            'marque_entreprise_long' => $this->getParameter('marque.entreprise.long'),
-            'logo_entreprise' => $this->getParameter('logo.entreprise'),
-            'env' => $this->getParameter('environnement'),
-            'version' => $this->getParameter('version'), 'dateCopyright' => \date('Y'),
-            Response::HTTP_OK
-        ];
+        $render['dataset1'] = $dataSet1;
+        $render['dataset2'] = $dataSet2;
+        $render['label1'] = $initialVersionApplication;
+        $render['label2'] = $versionApplication;
 
         return $this->render('projet/cosui.html.twig', $render);
-
     }
 }
