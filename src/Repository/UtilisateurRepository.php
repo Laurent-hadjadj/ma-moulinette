@@ -25,6 +25,7 @@ class UtilisateurRepository extends ServiceEntityRepository
     public static $removeReturnLine = "/\s+/u";
     public static $noDataBase = 'La connexion à la base de données a échoué.';
     public static $courriel = ':courriel';
+    public static $dateModification = ':date_modification';
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -272,9 +273,11 @@ class UtilisateurRepository extends ServiceEntityRepository
         $bookmark = $preference['bookmark'];
 
         $response = ['code'=> 206, 'statut'=>-1, 'erreur'=>''];
-        if ($isFavori) {
-            /** on supprime le projet de la liste */
+        $now = new \DateTime();
 
+        if ($isFavori) {
+
+            /** on supprime le projet de la liste */
             $nouvelleListeFavori = array_diff($listeFavori, [$map['maven_key']]);
 
             /** Si le nombre de favoris dans la liste est = 0 alors on désactive la gestion des favoris */
@@ -287,9 +290,14 @@ class UtilisateurRepository extends ServiceEntityRepository
                 'statut' => $statut,
                 'projet' => $listeProjet,
                 'favori' => $nouvelleListeFavori,
-                'version' =>$listeVersion,
+                'version' => $listeVersion,
                 'bookmark' => $bookmark
-            ]);
+            ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+             // Vérification de l'erreur JSON
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                return ['code' => 400, 'erreur' => 'Invalid JSON: ' . json_last_error_msg()];
+            }
 
             /** Modèle JSON */
             // {"statut" :{"projet":false,"favori":false,"version":true,"bookmark":true},
@@ -303,16 +311,19 @@ class UtilisateurRepository extends ServiceEntityRepository
             try {
                     $this->getEntityManager()->getConnection()->beginTransaction();
                         $sql = "UPDATE ma_moulinette.utilisateur
-                                SET preference = '$jsonArray'
+                                SET preference = :preference, date_modification = :date_modification
                                 WHERE courriel=:courriel";
                         $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+                            $stmt->bindValue(':preference', $jsonArray);
+                            $stmt->bindValue(static::$dateModification, $now->format('Y-m-d H:i:sP'));
                             $stmt->bindValue(static::$courriel, $map['courriel']);
                             $stmt->executeStatement();
+                    $this->getEntityManager()->getConnection()->commit();
             } catch (\Doctrine\DBAL\Exception $e) {
                 $this->getEntityManager()->getConnection()->rollBack();
                 return $this->handleDatabaseException($e);
             }
-            $response = ['code'=> 200, 'statut'=>0, 'erreur'=>''];
+            $response = ['code' => 200, 'statut' => 0, 'erreur' => ''];
         } else {
             /** On ajoute le projet à la liste des favoris et on active la gestion des favoris */
             array_push($preference['favori'], $map['maven_key']);
@@ -325,24 +336,25 @@ class UtilisateurRepository extends ServiceEntityRepository
                 'favori' => $preference['favori'],
                 'version' => $listeVersion,
                 'bookmark' => $bookmark
-            ]);
+            ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
             /** On met à jour les préférences. */
             try {
                 $this->getEntityManager()->getConnection()->beginTransaction();
                     $sql = "UPDATE ma_moulinette.utilisateur
-                        SET preference = '$jsonArray'
+                        SET preference = :preference, date_modification = :date_modification
                         WHERE courriel=:courriel";
                     $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                         $stmt->bindValue(static::$courriel, $map['courriel']);
+                        $stmt->bindValue(':preference', $jsonArray);
+                        $stmt->bindValue(static::$dateModification, $now->format('Y-m-d H:i:sP'));
                         $stmt->executeStatement();
                 $this->getEntityManager()->getConnection()->commit();
-
             } catch (\Doctrine\DBAL\Exception $e) {
                 $this->getEntityManager()->getConnection()->rollBack();
                 return $this->handleDatabaseException($e);
             }
-            $response = ['code'=> 200, 'statut'=>1, 'erreur'=>''];
+            $response = ['code' => 200, 'statut' => 1, 'erreur'=> ''];
         }
         return $response;
     }
