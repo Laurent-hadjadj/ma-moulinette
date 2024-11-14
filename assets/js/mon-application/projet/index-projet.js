@@ -1329,11 +1329,12 @@ $('.favori-svg').on('click', () => {
           sessionStorage.setItem('favori', 'Erreur update.');
           return;
         }
-        /*SQLite : 0 (false) and 1 (true). */
-        if (t.code===http_200 && t.statut===0) {
+
+        /* 0 (false) and 1 (true). */
+        if (t.code===http_200 && (t.statut===0 || t.statut === false)) {
           log(' - INFO   : Suppression du projet à la liste des favoris.');
         }
-        if (t.code===http_200 && t.statut===1) {
+        if (t.code===http_200 && (t.statut===1 || t.statut === true)) {
           log(' - INFO   : Ajout du projet à la liste des favoris.');
         }
       });
