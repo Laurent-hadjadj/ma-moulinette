@@ -44,32 +44,32 @@
 /* Media MEDIUM  */
 @media (40.025em <= width <= 64em) {
   .graphique-note-container {
-    width: 55vw;
-    height: 60vw;
+    width: 49vw;
+    height: 49vw;
   }
 }
 
 /* Media LARGE  */
 @media (64.025em <= width <= 90em) {
   .graphique-note-container {
-    width: 55vw;
-    height: 60vw;
+    width: 45vw;
+    height: 45vw;
   }
 }
 
 /* Media LARGE  */
 @media (90.025em <= width <= 120em) {
   .graphique-note-container {
-    width: 55vw;
-    height: 60vw;
+    width: 40vw;
+    height: 40vw;
   }
 }
 
 /* Media Extra-large  */
 @media (120.025em <= width <= 160em) {
   .graphique-note-container {
-    width: 55vw;
-    height: 60vw;
+    width: 40vw;
+    height: 40vw;
   }
 }
 
