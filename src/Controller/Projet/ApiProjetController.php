@@ -124,8 +124,8 @@ class ApiProjetController extends AbstractController
         /** On récupère l'objet User du contexte de sécurité */
         $preference = $security->getUser()->getPreference();
 
-        $favori = in_array($data->mavenKey, $preference['favori']);
-        return new JsonResponse(['favori' => $favori], Response::HTTP_OK);
+        $favori = in_array($data->maven_key, $preference['favori']);
+        return new JsonResponse(['code' => 200, 'favori' => $favori], Response::HTTP_OK);
     }
 
     /**
