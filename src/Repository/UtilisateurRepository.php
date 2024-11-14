@@ -256,7 +256,7 @@ class UtilisateurRepository extends ServiceEntityRepository
      */
     public function updateUtilisateurPreferenceFavori($preference, $map): array
     {
-        /** On regarde si la projet est dans les favoris */
+        /** On regarde si la projet est dans la liste des favoris (true) */
         $isFavori = in_array($map['maven_key'], $preference['favori']);
 
         /**
@@ -274,8 +274,13 @@ class UtilisateurRepository extends ServiceEntityRepository
         $response = ['code'=> 206, 'statut'=>-1, 'erreur'=>''];
         if ($isFavori) {
             /** on supprime le projet de la liste */
+
             $nouvelleListeFavori = array_diff($listeFavori, [$map['maven_key']]);
-            $statut['favori'] = false;
+
+            /** Si le nombre de favoris dans la liste est = 0 alors on désactive la gestion des favoris */
+            if (count($nouvelleListeFavori) === 0){
+                $statut['favori'] = false;
+            }
 
             /** On met à jour l'objet. */
             $jsonArray = json_encode([
@@ -285,6 +290,14 @@ class UtilisateurRepository extends ServiceEntityRepository
                 'version' =>$listeVersion,
                 'bookmark' => $bookmark
             ]);
+
+            /** Modèle JSON */
+            // {"statut" :{"projet":false,"favori":false,"version":true,"bookmark":true},
+	        // "projet"  :{},
+            // "favori":["fr.ma-petite-entreprise:ma-moulinette"],
+	        // "version":[{"fr.x:app1":["1.0.0-RELEASE", "2.0.0-RELEASE","3.0.0-RELEASE"]},
+            //            {"fr.x:app2":["1.1.0-RELEASE"]}],
+            // "bookmark":["fr.ma-petite-entreprise:ma-moulinette"]}'
 
             /** On met à jour les préférences. */
             try {
@@ -301,15 +314,15 @@ class UtilisateurRepository extends ServiceEntityRepository
             }
             $response = ['code'=> 200, 'statut'=>0, 'erreur'=>''];
         } else {
-            /** On ajoute le projet à la liste */
-            array_push($preference['favori'], $map->maven_key);
+            /** On ajoute le projet à la liste des favoris et on active la gestion des favoris */
+            array_push($preference['favori'], $map['maven_key']);
             $statut['favori'] = true;
 
             /** On met à jour l'objet. */
             $jsonArray = json_encode([
                 'statut' => $statut,
                 'projet' => $listeProjet,
-                'favori' => $listeFavori,
+                'favori' => $preference['favori'],
                 'version' => $listeVersion,
                 'bookmark' => $bookmark
             ]);
