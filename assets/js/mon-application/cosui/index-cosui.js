@@ -104,72 +104,77 @@ const dessineMoiUnRadar = function (dataset1, dataset2, label1, label2){
           text: `Comparaison version v${label1} vs v${label2}.`,
           font: { size: 18, weight: 'bold'}
         },
-        tooltip: { enabled: true,
+        tooltip: {
+          enabled: true,
           callbacks: {
-            label: context => {
-                switch (context.label) {
-                  case 'Fiabilité' :
-                  case 'Vulnérabilité' :
-                  case 'Maintenabilité' :
-                    if (context.parsed.r===cent){
-                      return ' Note : A';
-                    }
-                    if (context.parsed.r===quatreVingt){
-                      return ' Note : B';
-                    }
-                    if (context.parsed.r===soixante){
-                      return ' Note : C';
-                    }
-                    if (context.parsed.r===trente){
-                      return ' Note : D';
-                    }
-                    if (context.parsed.r===dix){
-                      return ' Note : E';
-                    }
-                    if (context.parsed.r===zero){
-                      return ' Note : Z';
-                    }
-                  break;
-                  case 'Hotspot' :
-                  if (context.parsed.r>=quatreVingt){
-                    return ' Note : A';
+            label: (context) => {
+              // Dictionnaire des notations en fonction des labels
+              const noteMapping = {
+                'Fiabilité': [
+                  { value: cent, note: 'A' },
+                  { value: quatreVingt, note: 'B' },
+                  { value: soixante, note: 'C' },
+                  { value: trente, note: 'D' },
+                  { value: dix, note: 'E' },
+                  { value: zero, note: 'Z' }
+                ],
+                'Vulnérabilité': [
+                  { value: cent, note: 'A' },
+                  { value: quatreVingt, note: 'B' },
+                  { value: soixante, note: 'C' },
+                  { value: trente, note: 'D' },
+                  { value: dix, note: 'E' },
+                  { value: zero, note: 'Z' }
+                ],
+                'Maintenabilité': [
+                  { value: cent, note: 'A' },
+                  { value: quatreVingt, note: 'B' },
+                  { value: soixante, note: 'C' },
+                  { value: trente, note: 'D' },
+                  { value: dix, note: 'E' },
+                  { value: zero, note: 'Z' }
+                ],
+                'Hotspot': [
+                  { value: quatreVingt, note: 'A' },
+                  { value: soixanteDix, note: 'B' },
+                  { value: cinquante, note: 'C' },
+                  { value: trente, note: 'D' },
+                  { value: zero, note: 'E' }
+                ],
+                'Dette': [
+                  { value: quatreVingt, note: 'A' },
+                  { value: soixante, note: 'B' },
+                  { value: quarante, note: 'C' },
+                  { value: vingt, note: 'D' },
+                  { value: zero, note: 'E' }
+                ],
+                'Couverture': [
+                  { value: quatreVingt, note: 'A' },
+                  { value: soixante, note: 'B' },
+                  { value: quarante, note: 'C' },
+                  { value: vingt, note: 'D' },
+                  { value: zero, note: 'E' }
+                ]
+              };
+
+              // Vérifier si le label existe dans le dictionnaire
+              const label = context.label;
+              const rValue = context.parsed.r;
+
+              if (noteMapping[label]) {
+                // On parcourt les critères de notation
+                for (const { value, note } of noteMapping[label]) {
+                  if (rValue >= value) {
+                    return `Note : ${note}`;
                   }
-                  if (context.parsed.r>=soixanteDix && context.parsed.r<quatreVingt){
-                      return ' Note : B';
-                    }
-                  if (context.parsed.r>=cinquante && context.parsed.r<soixanteDix){
-                      return ' Note : C';
-                    }
-                  if (context.parsed.r>=trente && context.parsed.r<quarante){
-                      return ' Note : D';
-                    }
-                  if (context.parsed.r<trente){
-                    return ' Note : E';
-                  }
-                  break;
-                  case 'Dette' :
-                  case 'Couverture' :
-                    if (context.parsed.r>=quatreVingt){
-                        return ' Note : A';
-                      }
-                    if (context.parsed.r>=soixante && context.parsed.r<quatreVingt){
-                      return ' Note : B';
-                    }
-                    if (context.parsed.r>=quarante && context.parsed.r<soixante){
-                      return ' Note : C';
-                    }
-                    if (context.parsed.r>=vingt && context.parsed.r<quarante){
-                      return ' Note : D';
-                    }
-                    if (context.parsed.r<vingt){
-                      return ' Note : E';
-                    }
-                  break;
-                  default:
-                    sessionStorage.setItem('error', `Oups, le label ${context.label} n'est pas pris en charge.`);
                 }
+              } else {
+                sessionStorage.setItem('error', `Oups, le label ${label} n'est pas pris en charge.`);
+              }
+
+              return ''; // Retourner une chaîne vide si aucune note n'est trouvée
             }
-          },
+          }
         },
         legend: { position: 'bottom',
                   labels: { font: { size: 16, weight: 'bold' } }
