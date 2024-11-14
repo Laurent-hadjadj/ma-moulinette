@@ -37,9 +37,9 @@ class ProjetController extends AbstractController
 {
     public static $page= "projet/mes-projets.html.twig";
     public static $reference = "<strong>[MES-PROJETS]</strong>";
-    public static $erreur404 = "Tu dois être rattaché à une équipe (erreur 404).";
+    public static $erreur404 = "Tu dois être rattaché à une équipe (Erreur 404).";
     public static $erreur406 = "Je n'ai pas trouvé de projets pour ton équipe. ".
-    "Vérifiez le nom du tag utilisé dans SonarQube (erreur 406).";
+    "Vérifiez le nom du tag utilisé dans SonarQube (Erreur 406).";
 
 
     private $mesProjets;
@@ -70,7 +70,7 @@ class ProjetController extends AbstractController
         $this->dateCopyright = \date('Y');
     }
 
-        /**
+    /**
      * [Description for genericRender]
      *
      * @return array
