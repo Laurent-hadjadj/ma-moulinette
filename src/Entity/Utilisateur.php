@@ -493,7 +493,8 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         if (!$this->avatar) {
             return null;
         }
-        return sprintf('build/avatar/%s', $this->avatar);
+        /* Attention avec assetMapper, les fichiers doivent être copiés directement dans assets/avatar */
+        return sprintf('assets/avatar/%s', $this->avatar);
     }
 
     /**
