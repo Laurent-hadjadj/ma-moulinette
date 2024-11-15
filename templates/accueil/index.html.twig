@@ -222,9 +222,9 @@
     </main>
 
     {# On choisi le composant en fonction des préférences #}
-    {% if composant == "projet" %}
+    {% if composant == 'projet' and favori|length > 0 %}
       {{ include('/accueil/_projet.html.twig') }}
-    {% elseif composant == "version" %}
+    {% elseif composant == 'version' and favori|length > 0 %}
       {{ include('/accueil/_version.html.twig') }}
     {% else %}
       {{ include('/accueil/_vide.html.twig') }}
