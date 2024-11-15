@@ -338,7 +338,7 @@ class AccueilController extends AbstractController
     }
 
     /**
-     * [Description for getListeFavoris]
+     * [Description for getListeFavoriProjet]
      * Récupère la liste des projets favoris.
      *
      * @param Security $security
@@ -349,8 +349,8 @@ class AccueilController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/accueil/liste/favori', name: 'accueil_liste_favori')]
-    private function getListeFavori(Security $security): JsonResponse
+    #[Route('/accueil/favori/liste/projet', name: 'accueil_favori_liste_projet')]
+    private function getListeFavoriProjet(Security $security): JsonResponse
     {
         /** On instancie l'entityRepository */
         $historiqueRepository = $this->em->getRepository(Historique::class);
@@ -360,27 +360,22 @@ class AccueilController extends AbstractController
 
         /** On récupère l'objet User du contexte de sécurité */
         $preference = $security->getUser()->getPreference();
-        $statutFavori = $preference['statut']['favori'];
-        $statutVersion = $preference['statut']['version'];
-        $listeFavori = $preference['favori'];
+        $statutFavoriProjet = $preference['statut']['favori_projet'];
+        $listeFavoriProjet = $preference['favori_projet'];
+        $liste = '';
 
-        /** On regarde si l'utilisateur a activé l'affichage des favoris. */
-        if ($statutFavori === false || count($listeFavori) === 0 ||
-            $statutVersion === true) {
-            $liste = false;
-        } else {
-            $liste = '';
-            foreach ($listeFavori as $value) {
+        /** Si la liste de favoris pour les projets est activée et que le nombre de projet > 0  */
+        if ($statutFavoriProjet === true && count($listeFavoriProjet) > 0) {
+            foreach ($listeFavoriProjet as $value) {
                 $liste = $liste."'".$value."', ";
             }
-
             /* on prépare les données pour la requête */
             $map=['liste_projet'=>rtrim($liste, " , "), 'nombre_projet_favori'=>$nombreProjetFavori];
             $liste = $historiqueRepository->selectHistoriqueProjetFavori($map);
         }
 
-        $data = [  'code' => $liste['code'] ?? 200, 'statut' => $statutFavori, 'liste_favori' => $liste,
-                    'nombre_projet' => count($listeFavori)];
+        $data = [  'code' => $liste['code'] ?? 200, 'statut' => $statutFavoriProjet,
+                    'liste_favori' => $liste, 'nombre_projet' => count($listeFavoriProjet)];
         return new JsonResponse($data, Response::HTTP_OK);
     }
 
@@ -418,7 +413,7 @@ class AccueilController extends AbstractController
 
 
     /**
-     * [Description for getListeVersion]
+     * [Description for getListeFavoriVersion]
      * Récupération de la liste des projets par version (limité à 4).
      *
      * @param Security $security
@@ -429,24 +424,22 @@ class AccueilController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/accueil/liste/version', name: 'accueil_liste_version')]
-    private function getListeVersion(Security $security): JsonResponse
+    #[Route('/accueil/favori/liste/version', name: 'accueil_favori_liste_version')]
+    private function getListeFavoriVersion(Security $security): JsonResponse
     {
         /** On instancie l'entityRepository */
         $historiqueRepository = $this->em->getRepository(Historique::class);
 
         /** On récupère l'objet User du contexte de sécurité */
         $preference = $security->getUser()->getPreference();
-        $statutVersion = $preference['statut']['version'];
-        $listeVersion = $preference['version'];
+        $statutFavoriVersion = $preference['statut']['favori_version'];
+        $listeFavoriVersion = $preference['favori_version'];
 
-        /** On regarde si l'utilisateur a activé l'affichage des favoris. */
-        if ($statutVersion === false || count($listeVersion) === 0) {
-            $liste = false;
-        } else {
+        $liste = [];
+        /** Si la liste de favoris pour les versions est activée et que le nombre de projet > 0  */
+        if ($statutFavoriVersion === true && count($listeFavoriVersion) > 0){
             /** Nombre de projets  */
-            $keys = array_values($listeVersion);
-            $liste = [];
+            $keys = array_values($listeFavoriVersion);
             /** pour chaque projet */
             for ($i = 0; $i < count($keys); $i++) {
                 $where = static::construitMaRequest($keys, array_keys($keys[$i]), $i);
@@ -455,8 +448,8 @@ class AccueilController extends AbstractController
             }
         }
 
-        $data = [ 'code' => $liste['code'] ?? 200, 'statut' => $statutVersion, 'liste_version' => $liste,
-            'nombre_projet' => count($listeVersion)];
+        $data = [ 'code' => $liste['code'] ?? 200, 'statut' => $statutFavoriVersion,
+                'liste_version' => $liste, 'nombre_projet' => count($listeFavoriVersion)];
         return new JsonResponse($data, Response::HTTP_OK);
     }
 
@@ -611,26 +604,26 @@ class AccueilController extends AbstractController
         }
 
         /** On va chercher les projets favoris ou les versions des projets */
-        $t3 = static::getListeFavori($security, $request);
-        $data1 = json_decode($t3->getContent());
-        $t4 = static::getListeVersion($security, $request);
-        $data2 = json_decode($t4->getContent());
+        $t3 = static::getListeFavoriProjet($security, $request);
+        $favoriProjet = json_decode($t3->getContent());
+        $t4 = static::getListeFavoriVersion($security, $request);
+        $favoriVersion = json_decode($t4->getContent());
 
         /** On a choisi la liste des projets favori
          *  sinon la liste des versions
          *  sinon rien
         */
-        if ($data1->statut && $data1->code!==500 ) {
-            $favori = $data1->liste_favori;
-            $nombreProjet = $data1->nombre_projet;
+        if ($favoriProjet->statut && $favoriProjet->code!==500) {
+            $favori = $favoriProjet->liste_favori;
+            $nombreProjet = $favoriProjet->nombre_projet;
             $composant = 'projet';
-        } elseif ($data2->statut && $data2->code!==500) {
-            $favori = $data2->liste_version;
-            $nombreProjet = $data2->nombre_projet;
+        } elseif ($favoriVersion->statut && $favoriVersion->code!==500) {
+            $favori = $favoriVersion->liste_version;
+            $nombreProjet = $favoriVersion->nombre_projet;
             $composant = 'version';
         } else {
             $nombreProjet = 0;
-            $favori = false;
+            $favori = [];
             $composant = 'vide';
         }
 
@@ -645,7 +638,7 @@ class AccueilController extends AbstractController
         $render['profil_bd'] = $profilBd;
         $render['profil_sonar'] = $profilSonar;
         $render['composant'] = $composant;
-        $render['nombre_projet_favoris'] = $nombreProjet;
+        $render['nombre_projet_favori'] = $nombreProjet;
         $render['favori'] = $favori;
         $render['public'] = $public;
         $render['private'] = $private;
