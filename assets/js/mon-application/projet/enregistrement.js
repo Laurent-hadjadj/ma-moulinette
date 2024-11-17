@@ -235,6 +235,7 @@ export const enregistrement=function(mavenKey) {
                         <button class="close-button" aria-label="Fermer la fenêtre" type="button" data-close>
                         <span aria-hidden="true">&times;</span></button></div>`;
         $('#message').html(callbox);
+        return;
       }
 
       if (t.code === http_202) {
