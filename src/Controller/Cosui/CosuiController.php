@@ -30,6 +30,9 @@ use App\Entity\Repartition;
 /** Import des services */
 use App\Service\ExtractName;
 
+/**
+ * [Description CosuiController]
+ */
 class CosuiController extends AbstractController
 {
 
