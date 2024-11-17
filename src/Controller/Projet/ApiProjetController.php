@@ -88,7 +88,7 @@ class ApiProjetController extends AbstractController
         $map=['maven_key'=>$data->maven_key, 'courriel'=>$courriel];
         $request = $utilisateurRepository->updateUtilisateurPreferenceFavori($preference, $map);
         if ($request['code']!=200) {
-            return new JsonResponse(['code' => $request['code']], Response::HTTP_OK);
+            return new JsonResponse(['code' => $request['code'], 'erreur' => $request['erreur']], Response::HTTP_OK);
         }
 
         return new JsonResponse(['code'=>200, 'statut' => $request['statut']], Response::HTTP_OK);
@@ -96,8 +96,7 @@ class ApiProjetController extends AbstractController
 
     /**
      * [Description for favoriCheck]
-     * Récupère le statut d'un favori. Le
-     * favori est TRUE ou FALSE ou null
+     * Récupère le statut d'un favori. Le favori est TRUE ou FALSE ou null
      * http://{url}/api/favori/check={key}
      *
      * @param Request $request
@@ -124,7 +123,7 @@ class ApiProjetController extends AbstractController
         /** On récupère l'objet User du contexte de sécurité */
         $preference = $security->getUser()->getPreference();
 
-        $favori = in_array($data->maven_key, $preference['favori']);
+        $favori = in_array($data->maven_key, $preference['favori_projet']);
         return new JsonResponse(['code' => 200, 'favori' => $favori], Response::HTTP_OK);
     }
 
