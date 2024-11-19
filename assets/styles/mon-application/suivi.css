@@ -1,0 +1,187 @@
+/**
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2021-2024.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ */
+
+/* stylelint-disable-next-line selector-class-pattern */
+
+ /* Mobile */
+@media (width <= 20em) { .pleine-page { margin: 0.5rem; } }
+
+/* Mobile */
+@media (20.025em <= width <= 22em) { .pleine-page { margin: 0.5rem; } }
+
+/* Mobile */
+@media (22.025em <= width <= 30em) { .pleine-page { margin: 1rem; } }
+
+/* Mobile */
+@media (30.025em <= width <= 40em) { .pleine-page { margin: 1rem; } }
+
+/* tablette */
+@media (40.025em <= width <= 64em) { .pleine-page { margin: 1rem; } }
+
+/* desktop */
+@media (64.025em <= width <= 90em) { .pleine-page { margin: 2rem; } }
+
+/* desktop */
+@media (90.025em <= width <= 120em) { .pleine-page { margin: 2rem; } }
+
+/* desktop */
+@media (120.025em <= width <= 160em) { .pleine-page { margin: 2rem; } }
+
+/*************************          Global     *********************************/
+
+/** Ajustement close-button sur alert-callout */
+.padding-right-1 { padding-right: 1rem; }
+
+.text-up { color: #187e3d; }
+.text-down { color: #971c09; }
+
+.error { background-color: #ab493a; }
+
+.note {
+  border: solid 1px #00445b;
+  border-radius: 0.2rem;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+/* couleur sévérité */
+.text-rouge { color: #971c09; }   /* Bloquant */
+.text-orange { color: #e69500; }  /* Critique */
+.text-jaune { color: #b3b300; }   /* Majeur */
+.text-vert { color: #187e3d; }    /* Mineur */
+.text-bleu { color: #3b89a3; }    /* Info */
+.text-noir { color: #000; }
+
+.result-note {
+  padding-left: 0.5rem;
+  color: #333;
+  flex: 1;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.result {
+  padding-right: 1rem;
+  color: #333;
+  flex: 2;
+  text-align: right;
+}
+
+.ligne {
+  margin: 0.1rem;
+  display: flex;
+}
+
+.ajouter-analyse-container,
+.modifier-analyse-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.enregistrer-analyse-container {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.enregistrer-analyse-svg,
+.poubelle-svg,
+.ajouter-analyse-svg,
+.modifier-analyse-svg,
+.imprimer-pdf-svg {
+  width: 100%;
+  height: auto;
+  max-width: 32px;
+}
+
+.enregistrer-analyse-svg,
+.modifier-analyse-svg,
+.imprimer-pdf-svg { cursor: none; }
+
+.poubelle-svg { cursor: pointer; }
+
+.poubelle-svg,
+.ajouter-analyse-svg,
+.modifier-analyse-svg { fill: #00445b; }
+
+.enregistrer-analyse-svg { fill: #fff; }
+.poubelle-svg:hover { fill: #c45d4e; }
+.imprimer-pdf-svg { fill: #971c09; }
+
+/* bouton */
+.enregistrer-analyse {
+  padding: 1rem 3rem 0.5rem 3rem;
+  display: flex;
+  align-items: center;
+}
+
+.enregistrer-analyse,
+#fermer-choisir-analyse,
+#fermer-modifier-analyse {
+  color: #fff;
+  background-color: #00445b;
+}
+
+.enregistrer-analyse:hover,
+#fermer-modifier-analyse:hover,
+#fermer-choisir-analyse:hover { background-color: #006182; }
+
+.lien-ajouter,
+.lien-modifier,
+.lien-imprimer-pdf {
+  font-size: 1.2rem;
+  color: #00445b;
+  cursor: pointer;
+}
+
+.lien-ajouter:hover,
+.lien-modifier:hover,
+.lien-imprimer-pdf:hover {
+  font-size: 1.2rem;
+  color: #c45d4e;
+}
+
+.enregistrement-disabled {
+  background-color: #4c7c8c;
+  cursor: not-allowed;
+}
+
+/* Choisir la version de départ */
+.switch-paddle { width: 4.3rem; }
+
+input:checked ~ .switch-paddle { background-color: #00445b; }
+
+/* Affiche la version de référence */
+.reference { color: #971c09; }
+
+/* Container flex pour le menu */
+.menu-outil-container {
+  display : flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+/* Ajoute une séparation à gauche */
+.separation-gauche { border-right: 1px solid black; }
+
+/* select2 : Affichage de : Proposition trouvé */
+.select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+  background-color: #006a8e;
+  color: #fff;
+}
+
+/** modale : modifier les paramètres */
+.custom-switch-favori,
+.custom-switch-reference {
+  margin-bottom: 0.1rem;
+  margin-top: 0.3rem;
+}
