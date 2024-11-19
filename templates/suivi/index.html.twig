@@ -1,5 +1,6 @@
 {% set title = 'Suivi des versions' %}
 {% set description = 'Ma Moulinette - Suivi des versions.' %}
+{% set bottom="footer-fixed" %}
 <!DOCTYPE html>
 <!--
 .. __  __             __  __             _ _            _   _
@@ -17,19 +18,16 @@
   <head>
     <title>{{ title }}</title>
     {{ include('head.html.twig') }}
-    {% block stylesheets %}
-      {{ encore_entry_link_tags('suivi') }}
-    {% endblock %}
+    {% block importmap %}{{ importmap('suivi') }}{% endblock %}
   </head>
 
   <body>
     {# Chargement de la section header #}
     {{ include('header.html.twig') }}
-    <br>
     <header class="grid-container">
       <nav aria-label="vous êtes Ici : ">
         <ul class="claire-hand breadcrumbs">
-          <li><a href="{{ path('home', {}) }}">Accueil</a></li>
+          <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
           <li><a href="{{ path('projet', {}) }}">Projet</a></li>
           <li><span class="show-for-sr">Vous êtes Ici :</span>Suivi</li>
         </ul>
@@ -63,30 +61,24 @@
               {% set s="" %}
             {% endif %}
             {{nombre | default('0') }}</span>
-          version{{s}}
-          trouvé{{s}}.
+          version{{s}} sélectionné{{s}}.
         </h1>
       </div>
     </div>
 
     {# Affichage du suivi des anomalies #}
     {{ include('/suivi/_suivi_anomalie.html.twig') }}
+
     {# Menu des outils  #}
     {{ include('/suivi/_menu_outils.html.twig') }}
+
     {# Affiche le graphique des courbes des anomalies #}
     {{ include('/suivi/_affiche_graphique_anomalie.html.twig') }}
-
-    {# Element 3 #}
-    <div id="element3-to-print" class="html2pdf__page-break pleine-page">
     {{ include('/suivi/_repartition_par_module.html.twig') }}
-    {{ include('/suivi/_repartition_par_severite.html.twig') }}
-    </div>
+    {{ include('/suivi/_repartition_par_severity.html.twig') }}
 
-    {# Element 4 #}
-    <div id="element4-to-print" class="html2pdf__page-break pleine-page">
-      {# Affiche le tableau des anomalies par sévérité détaillée #}
-      {{ include('/suivi/_repartition_anomalie_par_severite.html.twig') }}
-    </div>
+    {# Affiche le tableau des anomalies par sévérité détaillée #}
+    {{ include('/suivi/_repartition_anomalie_par_severity.html.twig') }}
 
     {#-- fenêtre modale --#}
     {{ include('/suivi/_modale_ajouter_une_analyse.html.twig') }}
@@ -95,9 +87,5 @@
     <br><br>
     {# Chargement de la section footer #}
     {{ include('footer.html.twig') }}
-    {# Chargement du code javascript #}
-    {% block javascripts %}
-      {{ encore_entry_script_tags('suivi') }}
-    {% endblock %}
   </body>
 </html>

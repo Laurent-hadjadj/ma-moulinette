@@ -1,7 +1,8 @@
 {# Tableau des anomalies par sévérité #}
-<div class="table-scroll">
-  <table class="hover">
-    <caption class="claire-hand">Tableau des anomalies par sévérité.</caption>
+<div class="table-scroll pleine-page">
+  <table id="element5-to-print" class="hover">
+    <caption class="show-for-medium claire-hand">Tableau des anomalies par sévérité.</caption>
+    <caption class="show-for-small-only text-left claire-hand">Tableau des anomalies par sévérité.</caption>
     <thead>
       <tr>
         <th scope="col"></th>
@@ -18,7 +19,7 @@
         {% endif %}
       </tr>
     </thead>
-    <tbody id="tableau-anomalie-severite" class="open-sans">
+    <tbody id="tableau-anomalie-severity" class="open-sans">
       <tr class="open-sans">
         <td class="text-left text-noir">Date</td>
         {% if severity is not empty %}

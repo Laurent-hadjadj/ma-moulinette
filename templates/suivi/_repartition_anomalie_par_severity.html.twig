@@ -1,7 +1,8 @@
 {# Affiche le tableau des anomalies par sévérité détaillée #}
-<div class="table-scroll">
-  <table class="hover">
-    <caption class="claire-hand">Répartition des anomalies par type de sévérité.</caption>
+<div class="table-scroll pleine-page">
+  <table id="element6-to-print" class="hover">
+    <caption class="show-for-medium claire-hand">Répartition des anomalies par type de sévérité.</caption>
+    <caption class="show-for-small-only text-left claire-hand">Répartition des anomalies par type de sévérité.</caption>
     <thead>
       <tr>
         <th scope="col"></th>
@@ -30,7 +31,7 @@
         {% endif %}
       </tr>
     </thead>
-    <tbody id="tableau-anomalie-type-severite" class="open-sans">
+    <tbody id="tableau-anomalie-type-severity" class="open-sans">
       <tr>
         <td></td>
         {% if details is not empty %}
@@ -75,6 +76,7 @@
             {% if details[i]["bug_blocker"]==-1  %}
               <td class="text-center text-noir separation-gauche">
                 <span>-</span>
+              </td>
               {% else %}
                 <td class="text-right {{text1}}">
                   {{details[i]["bug_blocker"]|format_number(locale='fr')}}
@@ -102,7 +104,6 @@
               {% endif %}
             {% endfor %}
           {% endif %}
-        </tr>
       </tr>
       <tr>
         <td class="text-orange">Critique</td>
