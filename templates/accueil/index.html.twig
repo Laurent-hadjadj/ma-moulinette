@@ -53,7 +53,7 @@
           <p class="open-sans text-justify callout-message">
               <strong>{{ message.titre }}</strong> {{ message.message }}
           </p>
-          <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
+          <button class="close-button {{message.type}}" aria-label="Dismiss alert" type="button" data-close>
               <span aria-hidden="true">&times;</span>
           </button>
       </div>
@@ -145,7 +145,7 @@
             <div class="callout alert-callout-border {{message.type}} cell" data-closable>
               <p class="open-sans text-justify callout-message">
                 <strong>{{message.titre}}</strong>{{ message.message }}<strong>{{message.ref}}</strong>.</p>
-              <button id="info-close" class="close-button" aria-label="Dismiss alert" type="button" data-close>
+              <button class="close-button {{message.type}}" aria-label="Dismiss alert" type="button" data-close>
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
@@ -252,7 +252,6 @@
       <br>
       {# fermeture de la fenêtre modale #}
       <button id="fermer-info-tag" class="expanded button open-sans color-blanc" data-close aria-label="Ferme modale" type="button">Fermer</button>
-      <a class="close-button" data-close aria-label="Ferme modale">&#215;</a>
     </div>
 
     <br><br>
