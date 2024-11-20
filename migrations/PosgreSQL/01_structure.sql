@@ -963,8 +963,32 @@ COMMENT ON COLUMN ma_moulinette.owasp.a10_info IS 'Nombre d’informations pour 
 COMMENT ON COLUMN ma_moulinette.owasp.a10_minor IS 'Nombre d’anomalies mineures pour A10';
 COMMENT ON COLUMN ma_moulinette.owasp.mode_collecte IS 'Mode de collecte : collecte, traitement manuel ou traitement automatique';
 COMMENT ON COLUMN ma_moulinette.owasp.utilisateur_collecte IS 'Compte de l’utilisateur qui a réalisé la collecte';
-
 COMMENT ON COLUMN ma_moulinette.owasp.date_enregistrement IS 'Date d’enregistrement des données';
+
+-- Création de la table owasp_top10
+DROP TABLE IF EXISTS ma_moulinette.owasp_top10;
+CREATE TABLE IF NOT EXISTS ma_moulinette.owasp_top10 (
+    id SERIAL PRIMARY KEY,
+    year INTEGER NOT NULL,
+    category VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    date_enregistrement TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT year_check CHECK (year >= 2000 AND year <= EXTRACT(YEAR FROM CURRENT_DATE))
+);
+
+ALTER TABLE ma_moulinette.owasp_top10 OWNER to db_user;
+GRANT ALL ON TABLE ma_moulinette.owasp_top10 TO db_user;
+
+-- Ajout de commentaires aux colonnes
+COMMENT ON TABLE owasp_top10 IS 'Table des catégories OWASP Top 10 avec descriptions et années de publication';
+COMMENT ON COLUMN owasp_top10.id IS 'Identifiant unique pour chaque enregistrement';
+COMMENT ON COLUMN owasp_top10.year IS 'Année associée à la catégorie OWASP Top 10';
+COMMENT ON COLUMN owasp_top10.category IS 'Catégorie du Top 10 OWASP, par exemple, A1 - Attaques d’injection';
+COMMENT ON COLUMN owasp_top10.description IS 'Description détaillée des vulnérabilités ou attaques associées à la catégorie';
+COMMENT ON COLUMN owasp_top10.date_enregistrement IS 'Date et heure d’enregistrement de l’entrée dans la table';
+
+-- Création d’index pour améliorer les performances des requêtes sur la colonne year
+CREATE INDEX idx_owasp_year ON owasp_top10(year);
 
 -- Table: ma_moulinette.portefeuille
 
