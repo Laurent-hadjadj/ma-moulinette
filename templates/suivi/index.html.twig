@@ -41,7 +41,7 @@
         {% if app.environment == 'dev' and message.debug is defined %}
           <p class"open-sans">{{message.debug}}</p>
         {% endif %}
-        <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
+        <button class="close-button {{message.type}}" aria-label="Dismiss alert" type="button" data-close>
           <span aria-hidden="true">&times;</span>
         </button>
       </div>

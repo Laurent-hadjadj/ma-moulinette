@@ -36,10 +36,10 @@
     {# Message d'information du contrôleur #}
     <div class="grid-container grid-x" role="alert" aria-label="messages d'information">
       {% for message in app.flashes('notice') %}
-        <div class="callout alert-callout-border  js-message {{message.type}} role="alert" cell" data-closable>
+        <div class="callout alert-callout-border js-message-flash {{message.type}} role="alert" cell" data-closable>
           <p class="open-sans text-justify callout-message">
             <strong>{{message.titre}}</strong> {{ message.message }}.</p>
-          <button id="info-close" class="close-button" aria-label="Dismiss alert" type="button" data-close>
+          <button class="close-button {{message.type}}" aria-label="Dismiss alert" type="button" data-close>
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
@@ -164,7 +164,6 @@
 
       {# fermeture de la fenêtre modale #}
       <button id="bouton-fermer-autre-profil" class="expanded button open-sans" data-close aria-label="Close reveal" type="button">Fermer</button>
-      <a class="close-button" data-close aria-label="Close reveal">&#215;</a>
     </div>
 
     {# Chargement de la section footer #}

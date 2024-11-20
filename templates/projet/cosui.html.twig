@@ -78,8 +78,8 @@
       <div class="callout alert-callout-border {{message.type}} cell" data-closable>
         <p class="open-sans text-justify callout-message">
             <strong>{{message.titre}}</strong> {{ message.message }}</p>
-        <button id="info-close" class="close-button" aria-label="Dismiss alert"
-                type="button" data-close><span aria-hidden="true">&times;</span>
+        <button class="close-button {{message.type}}" aria-label="Dismiss alert" type="button" data-close>
+            <span aria-hidden="true">&times;</span>
         </button>
       </div>
       {% endfor %}
@@ -379,7 +379,6 @@
 
       <button id="fermer-projet-reference" class="expanded button open-sans" data-close aria-label="Close reveal" type="button">Fermer
       </button>
-      <a class="close-button" data-close aria-label="Close reveal">&#215;</a>
     </div>
 
     <br><br>

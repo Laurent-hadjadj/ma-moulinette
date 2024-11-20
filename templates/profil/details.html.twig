@@ -39,10 +39,10 @@
     {# Message d'information du contrôleur #}
     <div class="grid-container grid-x" role="alert" aria-label="messages d'information">
       {% for message in app.flashes('notice') %}
-        <div class="callout alert-callout-border  js-message {{message.type}} role="alert" cell" data-closable>
+        <div class="callout alert-callout-border js-message-flash {{message.type}} role="alert" cell" data-closable>
           <p class="open-sans text-justify callout-message">
             <strong>{{message.titre}}</strong> {{ message.message }}.</p>
-          <button id="info-close" class="close-button" aria-label="Dismiss alert" type="button" data-close>
+          <button class="close-button {{message.type}}" aria-label="Dismiss alert" type="button" data-close>
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
@@ -66,10 +66,10 @@
       <br>
       <h3 class="h4 profil-titre">Informations générales</h3>
       {# Message d'alerte sur le nombre de changements récupéré #}
-      <div data-closable class="callout alert-callout-border primary">
+      <div class="callout alert-callout-border primary">
         <strong>Attention</strong> - Seul les 500 premiers changements sont affichés.
-        <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
-          <span aria-hidden="true">&times;</span>
+        <button class="close-button primary" aria-label="Dismiss alert"
+                type="button" data-close><span aria-hidden="true">&times;</span>
         </button>
       </div>
 
