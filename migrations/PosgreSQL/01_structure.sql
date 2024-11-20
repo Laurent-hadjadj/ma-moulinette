@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##         Creation des tables et des objets      ##
-##               V1.22.0 - 04/08/2024             ##
+##               V1.24.0 - 20/11/2024             ##
 ##                                                ##
 ####################################################*/
 
@@ -31,6 +31,8 @@
 -- 04/08/2024 : Laurent HADJADJ - Correction du nom de la table activite_historique ;
 -- 04/08/2024 : Laurent HADJADJ - Ajout de la table profiles_historique ;
 -- 07/11/2024 : Laurent HADJADJ - Mise à jour de la la table profiles ;
+-- 19/11/2024 : Laurent HADJADJ - Ajout de la table Owasp_Top10 ;
+-- 20/11/2024 : Laurent HADJADJ - Ajout de la colonne referential_version dans la table Owasp ;
 
 -- SCHEMA: ma_moulinette
 
@@ -418,7 +420,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.historique
   code_smell_info integer NOT NULL,
   mode_collecte character varying(32),
   utilisateur_collecte character varying(320),
-  actuator_info json default null,
+  actuator_info json DEFAULT null,
   logger_info integer NOT NULL,
   logger_warn integer NOT NULL,
   logger_error integer NOT NULL,
@@ -824,6 +826,7 @@ DROP TABLE IF EXISTS ma_moulinette.owasp;
 CREATE TABLE IF NOT EXISTS ma_moulinette.owasp
 (
   id SERIAL PRIMARY KEY,
+  referential_version INTEGER DEFAULT 2017 NOT NULL
   maven_key character varying(255) NOT NULL,
   version character varying(32) NOT NULL,
   date_version TIMESTAMPTZ NOT NULL,
