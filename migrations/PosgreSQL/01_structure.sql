@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##         Creation des tables et des objets      ##
-##               V1.24.0 - 20/11/2024             ##
+##               V1.25.0 - 20/11/2024             ##
 ##                                                ##
 ####################################################*/
 
@@ -32,7 +32,8 @@
 -- 04/08/2024 : Laurent HADJADJ - Ajout de la table profiles_historique ;
 -- 07/11/2024 : Laurent HADJADJ - Mise à jour de la la table profiles ;
 -- 19/11/2024 : Laurent HADJADJ - Ajout de la table Owasp_Top10 ;
--- 20/11/2024 : Laurent HADJADJ - Ajout de la colonne referential_version dans la table Owasp ;
+-- 20/11/2024 : Laurent HADJADJ - Ajout de la colonne referential_owasp dans la table owasp ;
+-- 22/11/2024 : Laurent HADJADJ - Ajout de la colonne lien dans la table owasp_top10 ;
 
 -- SCHEMA: ma_moulinette
 
@@ -556,7 +557,7 @@ DROP TABLE IF EXISTS ma_moulinette.hotspot_owasp;
 CREATE TABLE IF NOT EXISTS ma_moulinette.hotspot_owasp
 (
   id SERIAL PRIMARY KEY,
-  referentiel_owasp integer NOT NULL,
+  referential_owasp integer DEFAULT 2017 NOT NULL,
   maven_key character varying(255) NOT NULL,
   version character varying(32) NOT NULL,
   date_version TIMESTAMPTZ NOT NULL,
@@ -826,7 +827,7 @@ DROP TABLE IF EXISTS ma_moulinette.owasp;
 CREATE TABLE IF NOT EXISTS ma_moulinette.owasp
 (
   id SERIAL PRIMARY KEY,
-  referential_version INTEGER DEFAULT 2017 NOT NULL
+  referential_owasp INTEGER DEFAULT 2017 NOT NULL
   maven_key character varying(255) NOT NULL,
   version character varying(32) NOT NULL,
   date_version TIMESTAMPTZ NOT NULL,
@@ -973,8 +974,9 @@ DROP TABLE IF EXISTS ma_moulinette.owasp_top10;
 CREATE TABLE IF NOT EXISTS ma_moulinette.owasp_top10 (
     id SERIAL PRIMARY KEY,
     year INTEGER NOT NULL,
-    category VARCHAR(255) NOT NULL,
+    category character varying(255) NOT NULL,
     description TEXT NOT NULL,
+    lien character varying(128) NOT NULL,
     date_enregistrement TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT year_check CHECK (year >= 2000 AND year <= EXTRACT(YEAR FROM CURRENT_DATE))
 );
@@ -988,6 +990,7 @@ COMMENT ON COLUMN owasp_top10.id IS 'Identifiant unique pour chaque enregistreme
 COMMENT ON COLUMN owasp_top10.year IS 'Année associée à la catégorie OWASP Top 10';
 COMMENT ON COLUMN owasp_top10.category IS 'Catégorie du Top 10 OWASP, par exemple, A1 - Attaques d’injection';
 COMMENT ON COLUMN owasp_top10.description IS 'Description détaillée des vulnérabilités ou attaques associées à la catégorie';
+COMMENT ON COLUMN owasp_top10.lien IS 'Lien vers la page de détails.';
 COMMENT ON COLUMN owasp_top10.date_enregistrement IS 'Date et heure d’enregistrement de l’entrée dans la table';
 
 -- Création d’index pour améliorer les performances des requêtes sur la colonne year
