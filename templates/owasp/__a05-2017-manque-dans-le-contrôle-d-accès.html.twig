@@ -1,0 +1,184 @@
+<div class="grid-container">
+  <section class="container-detail-titre">
+    <div class="small-4 medium-4 large-4">
+      <img class="icon-owasp" src="{{ asset('images/owasp/TOP_10_logo_Final_Logo_Colour.png') }}" alt="icon">
+    </div>
+    <div class="small-8 medium-8 large-8">
+      <h1 class="h2 claire-hand margin-left-1">A5:2017 Manque dans le contrôle d'accès</h1>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Résumé</strong></h2>
+    <div class="callout open-sans font-size-11 text-justify">
+      {{ owasp.description }}
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Facteurs de Menace/Vecteurs d'Attaque</strong></h2>
+    <div class="table-scroll">
+      <table class="responsive-card-table unstriped">
+        <thead>
+          <tr>
+            <th>Facteurs | Vecteurs</th>
+            <th>Vulnérabilité</th>
+            <th>Impacts</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="text-center">
+            <td data-label="Facteurs | Vecteurs">Exploitation 2</td>
+            <td data-label="Vulnérabilité">Détection 2</td>
+            <td data-label="Impacts">Métier</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout alert-callout-border">
+      <p class="open-sans font-size-11">
+        <span class="lead">Facteurs de Menace/Vecteurs d'Attaque</span>
+      </p>
+      <p class="open-sans font-size-11 text-justify">L'exploitation des contrôles d'accès est une des principales compétences des attaquants. Les outils Les outils <a href="https://www.owasp.org/index.php/Source_Code_Analysis_Tools" target="_blank" rel="noopener noreferrer"><span class="source-link">SAST (Static Application Security Testing)</span></a> peuvent découvrir ces problèmes en inspectant les dépendances et la configuration. Les outils <a href="https://www.owasp.org/index.php/Category:Vulnerability_Scanning_Tools" target="_blank" rel="noopener noreferrer">
+      <span class="source-link">DAST (Dynamic Application Security Testing)</span></a> peuvent détecter l'absence de contrôles d'accès, mais ne peuvent vérifier s'ils sont efficaces quand ils existent. Les vulnérabilités de contrôles d'accès peuvent être détectés par des tests manuels, leur absence peut être détectée par des contrôles automatiques dans certains frameworks.</p>
+    </div>
+
+    <div class="callout alert-callout-border">
+      <p class="open-sans font-size-11">
+        <span class="lead">Vulnérabilité</span>
+      </p>
+      <p class="open-sans font-size-11 text-justify">Les vulnérabilités de contrôles d'accès surviennent souvent par le manque de détection automatique, et le manque de tests fonctionnels effectifs par les développeurs d'applications. La detection des vulnérabilités de contrôles d'accès ne se prête pas bien aux tests statiques ou dynamiques. Les tests manuels sont la meilleure méthode pour détecter des vulnérabilités de contrôles d'accès manquants ou défectueux. Ceci inclut les méthodes HTTP (GET vs PUT, etc.), les contrôleurs, les références directes d'objets, etc.</p>
+    </div>
+
+    <div class="callout alert-callout-border">
+      <p class="open-sans font-size-11">
+        <span class="lead">Impacts</span>
+      </p>
+      <p class="open-sans font-size-11 text-justify">Techniquement parlant, l'impact est qu'un attaquant peut obtenir les droits d'un utilisateur ou d'un administrateur, ou qu'un utilisateur obtienne des droits privilégiés ou qu'il puisse créer, lire ou supprimer tout enregistrement de son choix. L'impact métier est dépendant du niveau de protection nécessité par l'application et ses données.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>L'application est-elle vulnérable&nbsp;?</strong></h2>
+    <p class="open-sans font-size-11 text-justify">Les contrôles d'accès appliquent une politique assurant que les utilisateurs respectent leurs permissions. Une faille entraînera généralement des fuites d'informations, des corruptions ou destructions de données, ou permettra des actions en dehors des autorisations de l'utilisateur. Les vulnérabilités de contrôle d'accès consistent généralement&nbsp;:</p>
+    <ul class="open-sans font-size-11 margin-left-2">
+      <li>A contourner les contrôles d'accès en modifiant l'URL, l'état interne de l'application, ou la page HTML ; ou simplement en utilisant un outil dédié d'attaque d'API.</li>
+      <li>A permettre la modification de la clef primaire pour pointer sur l'enregistrement d'un autre utilisateur, donnant ainsi la possibilité de voir ou modifier le compte de quelqu'un d'autre.</li>
+      <li>A permettre une élévation de privilège, c'est à dire permettre d'agir comme un utilisateur connecté, ou comme administrateur alors que l'on est connecté comme utilisateur.</li>
+      <li>A permettre les manipulations de meta-données, comme le rejeu ou la modification de JSON Web Token (JWT), de cookies ou de champs cachés, afin d'élever les privilèges, ou d'abuser les invalidations JWT.</li>
+      <li>A permettre l'accès non-autorisé à des API, par mauvaise configuration CORS.</li>
+      <li>A permettre la navigation forcée vers des pages soumises à authentification sans être authentifié, ou à des pages soumises à accès privilégié en étant connecté comme simple utilisateur. A permettre l'accès à des API sans contrôle pour POST, PUT et DELETE.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Comment s'en prémunir&nbsp;?</strong></h2>
+    <p class="open-sans font-size-11 text-justify">Les contrôles d'accès ne sont efficaces que s'ils sont appliqués dans du code de confiance côté serveur ou dans des API server-less, là ou un attaquant ne peut pas modifier les vérifications des contrôles ni les meta-données.</p>
+    <ul class="open-sans font-size-11 margin-left-2">
+      <li>A l'exception des ressources publiques, tout doit être bloqué par défaut.</li>
+      <li>Centraliser l'implémentation des mécanismes de contrôle d'accès et les réutiliser dans l'ensemble de l'application. Cela comprend de minimiser l'utilisation de CORS.</li>
+      <li>Le modèle de contrôle d'accès doit vérifier l'appartenance des enregistrements, plutôt que de permettre à l'utilisateur de créer, lire, modifier ou supprimer n'importe quel enregistrement.</li>
+      <li>Les exigences spécifiques métier de l'application doivent être appliquées par domaines.</li>
+      * Désactiver le listing de dossier sur le serveur web, et vérifier que les fichiers de meta-données (ex : .git) et de sauvegardes ne se trouvent pas dans l'arborescence web.</li>
+      <li>Tracer les échecs de contrôles d'accès, les alertes administrateur quand c'est approprié (ex : échecs répétés).</li>
+      <li>Limiter la fréquence d'accès aux API et aux contrôleurs d'accès, afin de minimiser les dégâts que causeraient des outils d'attaques automatisés.</li>
+      <li>Les jetons JWT doivent être invalidés côté serveur après une déconnexion.</li>
+      <li>Les développeurs et les testeurs qualités doivent procéder à des tests unitaires et d'intégration sur les fonctionnalités de contrôle d'accès.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Exemple de scénarios d'attaques</strong></h2>
+    <p class="open-sans font-size-11 text-justify"><strong>Scénario 1</strong>&nbsp;: L'application utilise des données non vérifiées dans un appel SQL qui accède aux informations d'un compte&nbsp;:</p>
+    <pre>
+      <code class="code-block source-code">
+pstmt.setString(1, request.getParameter("acct"));
+ResultSet results = pstmt.executeQuery();
+      </code>
+    </pre>
+
+    <p class="open-sans font-size-11 text-justify">En modifiant simplement le paramètre <strong>'acct'</strong> dans le navigateur, un attaquant peut envoyer le numéro de compte qu'il veut. Si ce numéro n'est pas vérifié, l'attaquant peut accéder à n'importe quel compte utilisateur.</p>
+
+    <pre>
+      <code class="code-block source-code">
+http://example.com/app/accountInfo?acct=notmyacct
+      </code>
+    </pre>
+
+    <p class="open-sans font-size-11 text-justify"><strong>Scénario 2</strong>&nbsp;: Un attaquant force le navigateur à visiter des URL arbitraires. Il faut imposer des droits pour accéder à une page d'administration.</p>
+
+    <pre>
+      <code class="code-block source-code">
+http://example.com/app/getappInfo
+http://example.com/app/admin_getappInfo
+      </code>
+    </pre>
+
+    <p class="open-sans font-size-11 text-justify">Si un utilisateur non-authentifié peut accéder à l'une des pages, c'est une faille. Si un non-administrateur peut accéder à une page d'administration, c'est une faille.</p>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Références</strong></h2>
+    <h3 class="h5 claire-hand">OWASP</h3>
+    <ul class="open-sans font-size-11 margin-left-2">
+      <li>
+        <a href="https://www.owasp.org/index.php/OWASP_Proactive_Controls#6:_Implement_Access_Controls" target="_blank" rel="noopener noreferrer" aria-label="OWASP Proactive Controls: Access Controls">
+          OWASP Proactive Controls: Access Controls
+        </a>
+      </li>
+      <li>
+        <a href="https://www.owasp.org/index.php/Category:OWASP_Application_Security_Verification_Standard_Project#tab=Home" target="_blank" rel="noopener noreferrer" aria-label="OWASP Application Security Verification Standard: V4 Access Control">
+          OWASP Application Security Verification Standard: V4 Access Control
+        </a>
+      </li>
+      <li>
+        <a href="https://www.owasp.org/index.php/Testing_for_Authorization" target="_blank" rel="noopener noreferrer" aria-label="OWASP Testing Guide: Authorization Testing">
+          OWASP Testing Guide: Authorization Testing
+        </a>
+      </li>
+      <li>
+        <a href="https://www.owasp.org/index.php/Access_Control_Cheat_Sheet" target="_blank" rel="noopener noreferrer" aria-label="OWASP Cheat Sheet: Access Control">
+          OWASP Cheat Sheet: Access Control
+        </a>
+      </li>
+    </ul>
+
+    <h3 class="h5 claire-hand">Externes</h3>
+    <ul class="open-sans font-size-11 margin-left-2">
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/22.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')">
+          CWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/284.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-284: Improper Access Control (Authorization)">
+          CWE-284: Improper Access Control (Authorization)
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/285.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-285: Improper Authorization">
+          CWE-285: Improper Authorization
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/639.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-639: Authorization Bypass Through User-Controlled Key">
+          CWE-639: Authorization Bypass Through User-Controlled Key
+        </a>
+      </li>
+      <li>
+        <a href="https://portswigger.net/blog/exploiting-cors-misconfigurations-for-bitcoins-and-bounties" target="_blank" rel="noopener noreferrer" aria-label="PortSwigger: Exploiting CORS misconfiguration">
+          PortSwigger: Exploiting CORS misconfiguration
+        </a>
+      </li>
+    </ul>
+  </section>
+</div>
+
+<div class="callout primary alert-callout-border">
+  <p class="open-sans text-justify">
+    Copyright © 2003-2021 La Fondation OWASP™.<br>
+    Ce document est publié sous la licence Creative Commons Attribution Share-Alike 4.0 (CC 4.0 BY-SA).
+  </p>
+</div>
+<br><br>

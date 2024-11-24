@@ -1,0 +1,157 @@
+<div class="grid-container">
+  <section class="container-detail-titre">
+    <div class="small-4 medium-4 large-4">
+      <img class="icon-owasp" src="{{ asset('images/owasp/TOP_10_logo_Final_Logo_Colour.png') }}" alt="icon">
+    </div>
+    <div class="small-8 medium-8 large-8">
+      <h1 class="h2 claire-hand margin-left-1">A2:2017 Authentification de mauvaise qualité</h1>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Résumé</strong></h2>
+    <div class="callout open-sans font-size-11 text-justify">
+      {{ owasp.description }}
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Facteurs de Menace/Vecteurs d'Attaque</strong></h2>
+    <div class="table-scroll">
+      <table class="responsive-card-table unstriped">
+        <thead>
+          <tr>
+            <th>Facteurs | Vecteurs</th>
+            <th>Vulnérabilité</th>
+            <th>Impacts</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="text-center">
+            <td data-label="Facteurs | Vecteurs">Exploitation 3</td>
+            <td data-label="Vulnérabilité">Détection 2</td>
+            <td data-label="Impacts">Métier</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout alert-callout-border">
+      <p class="open-sans font-size-11">
+        <span class="lead">Facteurs de Menace/Vecteurs d'Attaque</span>
+      </p>
+      <p class="open-sans font-size-11 text-justify">Les attaquants ont des accès à des centaines de millions de combinaisons de logins et mots de passe, des comptes par défaut d’administration, d’outils de force brute automatisés. Les attaques de gestion de session sont bien connues, en particulier en ce qui concerne les jetons de sessions non expirés.</p>
+    </div>
+
+    <div class="callout alert-callout-border">
+      <p class="open-sans font-size-11">
+        <span class="lead">Vulnérabilité</span>
+      </p>
+      <p class="open-sans font-size-11 text-justify">Le prévalence de la violation de l’authentification est généralement liée à une erreur de conception ou de mise en œuvre dans la plupart des contrôles d’identités et d’accès. La gestion des sessions est la base  de l’authentification et du contrôle d’accès. Les attaquants peuvent détecter une violation de l’authentification avec des tests manuels et les exploiter avec des outils automatisés utilisant des listes de mots de passe et des attaques par dictionnaires.</p>
+    </div>
+
+    <div class="callout alert-callout-border">
+      <p class="open-sans font-size-11">
+        <span class="lead">Impacts</span>
+      </p>
+      <p class="open-sans font-size-11 text-justify">Les attaquants doivent avoir accès à seulement quelques comptes ou à un seul compte admin pour compromettre le système. Selon le domaine de l'application, cela peut permettre le blanchiment d'argent, une fraude à la sécurité sociale et le vol d'identité, ou divulguer des informations hautement sensibles protégées par la loi.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Suis-je vulnérable ?</strong></h2>
+    <p class="open-sans font-size-11 text-justify">La confirmation de l'identité, de l'authentification et de la session de l'utilisateur est essentielle pour se protéger des attaques liées à l'authentification.</p>
+    <p class="open-sans font-size-11 text-justify">Il peut y avoir des faiblesses d'authentification si l'application&nbsp;:</p>
+    <ul class="open-sans font-size-11 margin-left-2">
+      <li>Autorise les attaques automatisées telles que le <a href="https://www.owasp.org/index.php/Credential_stuffing" target="_blank" rel="noopener noreferrer"><span class="source-link">credential stuffing</span></a>, où l'attaquant dispose d'une liste de noms d'utilisateurs valides et mots de passe.
+      <li>Permet la force brute ou d'autres attaques automatisées.</li>
+      <li>Autorise les mots de passe par défaut, faibles ou bien connus, tels que « Password1 » ou « admin / admin ».
+      <li>Utilise des processus de récupération des informations d'identification faibles ou inefficaces et des processus de mot de passe oublié, tels que « Questions secrètes », qui ne peuvent être sécurisées.</li>
+      <li>Utilise des mots de passe en texte brut, chiffrés ou faiblement hachés (voir A3 : Exposition de données sensibles 2017).</li>
+      <li>Absence ou utilisation inefficace de l’authentification multi-facteur.</li>
+      <li>Exposition des ID de session dans l'URL. (ex : réécriture).</li>
+      <li>Non rotation des ID de session après une connexion réussie.</li>
+      <li>N'invalide pas correctement les ID de session. Les sessions utilisateurs ou les jetons.</li> d'authentification (en particulier les jetons SSO) ne sont pas correctement invalidés lors de la déconnexion ou après une période d'inactivité.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Comment protéger l'application ?</strong></h2>
+    <ul class="open-sans font-size-11 margin-left-2">
+      <li>Lorsque cela est possible, implémentez l'authentification multi-facteur pour éviter les attaques automatisées, le bourrage des informations d'identification, le brute force et la réutilisation des informations d'identification volées.</li>
+      <li>Ne pas livrer ou déployer avec des informations d'identification par défaut, en particulier pour les utilisateurs avec privilèges.</li>
+      <li>Intégrer des tests de mots de passes faibles, à la création ou au changement. Comparer ce mot de passe avec la liste des <a href="https://github.com/danielmiessler/SecLists/tree/master/Passwords" target="_blank" rel="noopener noreferrer"><span class="source-link">tops 10000 mots de passe faibles</span></a> et <a href="https://github.com/wallarm/jwt-secrets" target="_blank" rel="noopener noreferrer"><span class="source-link">scraped-JWT-secrets</span></a></li>
+      <li>Respecter la longueur, la complexité et la rotation des mots de passe par rapport aux directives <a href="https://pages.nist.gov/800-63-3/sp800-63b.html#memsecret" target="_blank" rel="noopener noreferrer"><span class="source-link">NIST 800-63 B à la section 5.1.1</span></a> ou autre directives modernes.</li>
+      <li>Assurez-vous que l'inscription, la récupération des informations d'identification et les chemins d'accès aux API sont durcis contre les attaques d'énumération de compte en utilisant le même message pour tous les résultats.</li>
+      <li>Limiter ou retarder de plus en plus les tentatives de connexions infructueuses. Enregistrer tous les échecs et alerter les administrateurs lors du bourrage des informations d'identification, de brute force ou d'autres attaques détectées.</li>
+      <li>Utilisez un gestionnaire de session intégré et sécurisé côté serveur qui génère un nouvel ID de session aléatoire avec une entropie élevée après la connexion. Les ID de session ne doivent pas se trouver dans l'URL, ils doivent être stockés de manière sécurisée et être invalidés après la déconnexion, une inactivité et une certaine durée.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Exemple de scénarios d'attaques</strong></h2>
+    <p class="open-sans font-size-11 text-justify"><strong>Scénario 1</strong>&nbsp;: La réutilisation de mots de passe, l’utilisation de mots de passe connus, est une attaque classique. Si une application n’implémente une protection automatisée contre le bourrage d'informations, ou l'utilisation des mots de passe connus.</p>
+    <p class="open-sans font-size-11 text-justify"><strong>Scénario 2</strong>&nbsp;: La plupart des attaques d’authentification se produisent en raison de l’utilisation de mots de passe comme facteur unique. Une fois considéré, les exigences de rotation et de complexité des mots de passe, sont considérées comme encourageant les utilisateurs à utiliser et réutiliser des mots de passe faibles. Il est maintenant recommandé d’arrêter ces pratiques NIST 800-63 et d’utiliser du multi-facteur.</p>
+    <p class="open-sans font-size-11 text-justify"><strong>Scénario 3</strong>&nbsp;: Les timeouts de session d’application ne sont pas paramétrés correctement. Un utilisateur utilise un ordinateur public pour accéder à une application. A la place de se déconnecter correctement, l’utilisateur ferme le navigateur et quitte l’ordinateur. Un attaquant utilise ensuite le même navigateur quelques temps après et l’utilisateur est toujours authentifié.</p>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Références</strong></h2>
+
+    <h3 class="h5 claire-hand">OWASP</h3>
+    <ul class="open-sans font-size-11 margin-left-2">
+      <li><a href="https://www.owasp.org/index.php/OWASP_Proactive_Controls#5:_Implement_Identity_and_Authentication_Controls" target="_blank" rel="noopener noreferrer" aria-label="OWASP Proactive Controls: Implement Identity and Authentication Controls">
+        <span class="source-link">OWASP Proactive Controls: Implement Identity and Authentication Controls</span></a>
+      </li>
+      <li><a href="https://www.owasp.org/index.php/Category:OWASP_Application_Security_Verification_Standard_Project#tab=Home" target="_blank" rel="noopener noreferrer" aria-label="OWASP Application Security Verification Standard: V2 Authentication">
+        <span class="source-link">OWASP Application Security Verification Standard: V2 Authentication</span></a>
+      </li>
+      <li><a href="https://www.owasp.org/index.php/Category:OWASP_Application_Security_Verification_Standard_Project#tab=Home" target="_blank" rel="noopener noreferrer" aria-label="OWASP Application Security Verification Standard: V3 Session Management">
+        <span class="source-link">OWASP Application Security Verification Standard: V3 Session Management</span></a>
+      </li>
+      <li><a href="https://www.owasp.org/index.php/Testing_Identity_Management" target="_blank" rel="noopener noreferrer" aria-label="OWASP Testing Guide: Identity">
+        <span class="source-link">OWASP Testing Guide: Identity</span></a>
+        et
+        <a href="https://www.owasp.org/index.php/Testing_for_authentication" target="_blank" rel="noopener noreferrer" aria-label="OWASP Testing Guide: Authentication">
+          <span class="source-link">Authentication</span>
+        </a>
+      </li>
+      <li><a href="https://www.owasp.org/index.php/Authentication_Cheat_Sheet" target="_blank" rel="noopener noreferrer" aria-label="OWASP Cheat Sheet: Authentication">
+        <span class="source-link">OWASP Cheat Sheet: Authentication</span></a>
+      </li>
+      <li><a href="https://www.owasp.org/index.php/Credential_Stuffing_Prevention_Cheat_Sheet" target="_blank" rel="noopener noreferrer" aria-label="OWASP Cheat Sheet: Credential Stuffing">
+        <span class="source-link">OWASP Cheat Sheet: Credential Stuffing</span></a>
+      </li>
+      <li><a href="https://www.owasp.org/index.php/Forgot_Password_Cheat_Sheet" target="_blank" rel="noopener noreferrer" aria-label="OWASP Cheat Sheet: Forgot Password">
+        <span class="source-link">OWASP Cheat Sheet: Forgot Password</span></a>
+      </li>
+      <li><a href="https://www.owasp.org/index.php/Session_Management_Cheat_Sheet" target="_blank" rel="noopener noreferrer" aria-label="OWASP Cheat Sheet: Session Management">
+        <span class="source-link">OWASP Cheat Sheet: Session Management</span></a>
+      </li>
+      <li><a href="https://www.owasp.org/index.php/OWASP_Automated_Threats_to_Web_Applications" target="_blank" rel="noopener noreferrer" aria-label="OWASP Automated Threats Handbook">
+        <span class="source-link">OWASP Automated Threats Handbook</span></a>
+      </li>
+    </ul>
+
+    <h3 class="h5 claire-hand">Externes</h3>
+    <ul class="open-sans font-size-11 margin-left-2">
+      <li><a href="https://pages.nist.gov/800-63-3/sp800-63b.html#memsecret" target="_blank" rel="noopener noreferrer" aria-label="NIST 800-63b: 5.1.1 Memorized Secrets">
+        <span class="source-link">NIST 800-63b: 5.1.1 Memorized Secrets</span></a> - for thorough, modern, evidence-based advice on authentication.
+      </li>
+      <li><a href="https://cwe.mitre.org/data/definitions/287.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-287: Improper Authentication">
+        <span class="source-link">CWE-287: Improper Authentication</span></a>
+      </li>
+      <li><a href="https://cwe.mitre.org/data/definitions/384.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-384: Session Fixation">
+        <span class="source-link">CWE-384: Session Fixation</span></a>
+      </li>
+    </ul>
+  </section>
+</div>
+
+<div class="callout primary alert-callout-border">
+  <p class="open-sans text-justify">
+    Copyright © 2003-2021 La Fondation OWASP™.<br>
+    Ce document est publié sous la licence Creative Commons Attribution Share-Alike 4.0 (CC 4.0 BY-SA).
+  </p>
+</div>
+<br><br>

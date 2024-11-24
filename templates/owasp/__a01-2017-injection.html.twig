@@ -1,0 +1,149 @@
+<div class="grid-container">
+  <section class="container-detail-titre">
+    <div class="small-4 medium-4 large-4">
+      <img class="icon-owasp" src="{{ asset('images/owasp/TOP_10_logo_Final_Logo_Colour.png') }}" alt="icon">
+    </div>
+    <div class="small-8 medium-8 large-8">
+      <h1 class="h2 claire-hand margin-left-1">A1:2017 Injection</h1>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Résumé</strong></h2>
+    <div class="callout open-sans font-size-11 text-justify">
+      {{ owasp.description }}
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Facteurs de Menace/Vecteurs d'Attaque</strong></h2>
+    <div class="table-scroll">
+      <table class="responsive-card-table unstriped">
+        <thead>
+          <tr>
+            <th>Facteurs | Vecteurs</th>
+            <th>Vulnérabilité</th>
+            <th>Impacts</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="text-center">
+            <td data-label="Facteurs | Vecteurs">Exploitation 3</td>
+            <td data-label="Vulnérabilité">Détection 3</td>
+            <td data-label="Impacts">Métier</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout alert-callout-border">
+      <p class="open-sans font-size-11">
+        <span class="lead">Facteurs de Menace/Vecteurs d'Attaque</span>
+      </p>
+      <p class="open-sans font-size-11 text-justify">Considérez que n’importe qui peut envoyer des données non fiables au système, y compris les utilisateurs externes, internes, et administrateurs. Presque toute source de données peut être un vecteur d’injection, y compris les variables d'environnement, les paramètres et les web services internes et externes. Les failles d'injection surviennent lorsqu’une application envoie des données non fiable à un interpréteur.</p>
+
+      Lien&nbsp;:<a href="https://www.owasp.org/index.php/Injection_Flaws" target="_blank" rel="noopener noreferrer"><span class="source-link">Les failles d'injection</span></a>
+    </div>
+
+    <div class="callout alert-callout-border">
+      <p class="open-sans font-size-11">
+        <span class="lead">Vulnérabilité</span>
+      </p>
+      <p class="open-sans font-size-11 text-justify">Les failles d’injection sont très fréquentes, surtout dans le code ancien. On les retrouve souvent dans les requêtes SQL, LDAP, XPath, noSQL, commandes OS, parseurs XML, arguments de programme, etc. Les failles d’Injection sont faciles à découvrir lors d’un audit de code, mais plus difficilement via des tests. Scanners et Fuzzers aident les attaquants à les trouver.</p>
+    </div>
+
+    <div class="callout alert-callout-border">
+      <p class="open-sans font-size-11">
+        <span class="lead">Impacts</span>
+      </p>
+      <p class="open-sans font-size-11 text-justify">L’Injection peut résulter en une perte ou une corruption de données, une divulgation à des tiers non autorisés, une perte de droits, ou un refus d’accès. L’Injection peut parfois mener à une prise de contrôle totale du serveur. Considérez la valeur métier de la donnée impactée et la plateforme exécutant l’interpréteur. Toute donnée pourrait être volée, modifiée ou supprimée. Votre réputation pourrait-elle en pâtir&nbsp;?</p>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Suis-je vulnérable à l’Injection ?</strong></h2>
+    <p class="open-sans font-size-11 text-justify">Une application est vulnérable quand&nbsp;:</p>
+    <ul class="open-sans font-size-11 margin-left-2">
+      <li>les données venant de l'utilisateur ne sont pas validées, filtrées ou nettoyées par l'application&nbsp;;</li>
+      <li>des requêtes dynamiques ou des appels non paramétrés sans « échappage » par rapport au contexte sont envoyés à l'interpréteur&nbsp;;</li>
+      <li>des données hostiles sont utilisées au sein de paramètres de recherche de mapping objet - relationnel (ORM) pour extraire des données supplémentaires sensibles&nbsp;;</li>
+      <li>des données hostiles sont utilisées directement ou concaténées, par exemple lors de la construction de requête dynamiques, de commandes ou de procédures stockées pour des requêtes SQL ou des commandes OS&nbsp;;</li>
+      <li>les injections les plus courantes se font dans le SQL, le NoSQL, les commandes OS, le mapping objet - relationnel, le LDAP, l'Expression Language et le Object Graph Navigation Library (OGNL). La façon de faire est la même pour tous les interpréteurs. La revue de code source est la meilleure manière de détecter si une application est vulnérable à l'Injection, suivie de près par le test automatique de toutes les données d'entrée via les paramètres, en-têtes, URL, cookies, JSON, SOAP et XML. Les organisations peuvent tirer profit de la puissance des outils d'analyse statique de code (SAST) ou d'analyse dynamique de l'application (DAST) en les intégrant dans leur chaîne d'intégration continue (CI / CD) pour identifier avant déploiement en production les vulnérabilités liées aux injections.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Comment empêcher l'Injection ?</strong></h2>
+    <p class="open-sans font-size-11 text-justify">Prévenir l’Injection exige de séparer les données non fiables des commandes et requêtes.&nbsp;:</p>
+    <ul class="open-sans font-size-11 margin-left-2">
+      <li>La meilleure option est d’utiliser une API saine qui évite complètement l’utilisation de l’interpréteur ou fournit une interface paramétrable, ou bien de migrer pour utiliser les outils d'Object Relational Mapping Tools (ORMs). <strong>Note</strong>: Attention aux API, telles les procédures stockées, qui sont paramétrables, mais qui pourraient introduire une Injection SQL si PL/SQL ou T-SQL concatène requêtes et données ou exécute des données non saines avec EXECUTE IMMEDIATE ou exec().</li>
+      <li>Pour les données en entrée, la « whitelist » avec normalisation est recommandée, mais n’est pas une défense complète dans la mesure où de nombreuses applications requièrent des caractères spéciaux, par exemple les zones de texte ou les API pour les applications mobiles.</li>
+      <li>Pour les requêtes dynamiques restantes, vous devriez soigneusement échapper les caractères spéciaux en utilisant la syntaxe d’échappement spécifique à l’interpréteur. <strong>Note</strong>: Les structures SQL  telles que les noms de table, les noms de colonne, et d'autres ne peuvent pas être échappées et les noms de structures venant de l'utilisateur doivent donc être considérés comme dangereuses. Ceci est un problème courant dans les logiciels d'aide à l'écriture de rapports.</li>
+      <li>Il est conseillé d'utiliser LIMIT et autres contrôles SQL à l'intérieur des requêtes pour empêcher les divulgations massives de données dans le cas d'injection SQL.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Exemple de scénarios d'attaque</strong></h2>
+
+    <p class="open-sans font-size-11 text-justify"><strong>Scénario 1</strong>&nbsp;: L’application utilise des données non fiables dans la construction de l’appel SQL vulnérable suivant&nbsp;:</p>
+    <pre>
+      <code class="code-block source-code">
+String query = "SELECT * FROM accounts WHERE custID='" + request.getParameter("id") + "'";
+      </code>
+    </pre>
+
+    <p class="open-sans font-size-11 text-justify"><strong>Scénario 2</strong>&nbsp;: De même, la confiance aveugle d'une application dans les frameworks qu'elle utilise peut faire que ses requêtes sont toujours vulnérables (par exemple Hibernate Query Language (HQL))&nbsp;:</p>
+    <pre>
+      <code class="code-block source-code">
+Query HQLQuery = session.createQuery("FROM accounts WHERE custID='" + request.getParameter("id") + "'");
+      </code>
+    </pre>
+
+<p class="open-sans font-size-11 text-justify">Dans les deux cas, l'attaquant modifie le paramètre <span class="code-inline">‘id’</span> dans son navigateur en : <span class="code-inline">UNION SELECT SLEEP(10);</span>. Par exemple&nbsp;:
+
+    <pre>
+      <code class="code-block source-code">
+http://example.com/app/accountView?id=' UNION SELECT SLEEP(10);--
+      </code>
+    </pre>
+
+    <p class="open-sans font-size-11 text-justify">Ceci change le sens de chacune des requêtes pour récupérer tous les enregistrements de la table des comptes. Dans le pire des cas, l’attaquant exploite cette faiblesse pour modifier ou détruire des données, ou appeler des procédures stockées de la base de données.</p>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Références</strong></h2>
+    <h3 class="h5 claire-hand">OWASP</h3>
+    <ul class="open-sans font-size-11 margin-left-2">
+      <li><a href="https://www.owasp.org/index.php/OWASP_Proactive_Controls#2:_Parameterize_Queries" target="_blank" rel="noopener noreferrer" aria-label="OWASP Proactive Controls: Parameterize Queries"><span class="source-link">OWASP Proactive Controls: Parameterize Queries</a></li>
+      <li><a href="https://www.owasp.org/index.php/ASVS_V5_Input_validation_and_output_encoding" target="_blank" rel="noopener noreferrer" aria-label="OWASP ASVS: V5 Input Validation and Encoding"><span class="source-link">OWASP ASVS: V5 Input Validation and Encoding</span></a></li>
+      <li>OWASP Testing Guide:
+        <a href="https://www.owasp.org/index.php/Testing_for_SQL_Injection_(OTG-INPVAL-005)" target="_blank" rel="noopener noreferrer" aria-label="SQL Injection"><span class="source-link">SQL Injection</a>,
+        <a href="https://www.owasp.org/index.php/Testing_for_Command_Injection_(OTG-INPVAL-013)" target="_blank" rel="noopener noreferrer" aria-label="Command Injection"><span class="source-link">Command Injection</span></a>,
+        <a href="https://www.owasp.org/index.php/Testing_for_ORM_Injection_(OTG-INPVAL-007)" target="_blank" rel="noopener noreferrer" aria-label="ORM Injection"><span class="source-link">ORM Injection</span></a>
+      </li>
+      <li><span class="source-link"><a href="https://www.owasp.org/index.php/Injection_Prevention_Cheat_Sheet" target="_blank" rel="noopener noreferrer" aria-label="OWASP Cheat Sheet: Injection Prevention"><span class="source-link">OWASP Cheat Sheet: Injection Prevention</span></a></li>
+      <li><span class="source-link"><a href="https://www.owasp.org/index.php/SQL_Injection_Prevention_Cheat_Sheet" target="_blank" rel="noopener noreferrer" aria-label="OWASP Cheat Sheet: SQL Injection Prevention"><span class="source-link">OWASP Cheat Sheet: SQL Injection Prevention</span></a></li>
+      <li><span class="source-link"><a href="https://www.owasp.org/index.php/Injection_Prevention_Cheat_Sheet_in_Java" target="_blank" rel="noopener noreferrer" aria-label="OWASP Cheat Sheet: Injection Prevention in Java"><span class="source-link">OWASP Cheat Sheet: Injection Prevention in Java</span></a></li>
+      <li><span class="source-link"><a href="https://www.owasp.org/index.php/Query_Parameterization_Cheat_Sheet" target="_blank" rel="noopener noreferrer" aria-label="OWASP Cheat Sheet: Query Parameterization"><span class="source-link">OWASP Cheat Sheet: Query Parameterization</span></a></li>
+      <li><span class="source-link"><a href="https://www.owasp.org/index.php/OWASP_Automated_Threats_to_Web_Applications" target="_blank" rel="noopener noreferrer" aria-label="OWASP Automated Threats to Web Applications – OAT-014"><span class="source-link">OWASP Automated Threats to Web Applications – OAT-014</span></a></li>
+    </ul>
+
+    <h3 class="h5 claire-hand">Externes</h3>
+    <ul class="open-sans font-size-11 margin-left-2">
+      <li><a href="https://cwe.mitre.org/data/definitions/77.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-77: Command Injection"><span class="source-link">CWE-77: Command Injection</span></a></li>
+      <li><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-89: SQL Injection"><span class="source-link">CWE-89: SQL Injection</span></a></li>
+      <li><a href="https://cwe.mitre.org/data/definitions/564.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-564: Hibernate Injection"><span class="source-link">CWE-564: Hibernate Injection</span></a></li>
+      <li><a href="https://cwe.mitre.org/data/definitions/917.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-917: Expression Language Injection"><span class="source-link">CWE-917: Expression Language Injection</span></a></li>
+      <li><a href="https://portswigger.net/kb/issues/00101080_serversidetemplateinjection" target="_blank" rel="noopener noreferrer" aria-label="PortSwigger: Server-side template injection"><span class="source-link">PortSwigger: Server-side template injection</span></a></li>
+    </ul>
+  </section>
+</div>
+
+<div class="callout primary alert-callout-border">
+  <p class="open-sans text-justify">
+    Copyright © 2003-2021 La Fondation OWASP™.<br>
+    Ce document est publié sous la licence Creative Commons Attribution Share-Alike 4.0 (CC 4.0 BY-SA).
+  </p>
+</div>
+<br><br>

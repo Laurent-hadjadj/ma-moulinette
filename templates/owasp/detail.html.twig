@@ -1,0 +1,42 @@
+{% set title = 'Détails OWASP' %}
+{% set description = 'Détails des vulnérabilités OWASP.' %}
+{% set bottom="footer-fixed" %}
+
+<!DOCTYPE html>
+<!--
+.. __  __             __  __             _ _            _   _
+  |  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
+  | |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
+  | |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
+  |_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
+
+  Laurent HADJADJ
+  https://github.com/Laurent-hadjadj/ma-moulinette
+  © 2024 - CC BY-SA-NC 4.0
+-->
+<html lang="fr">
+  {# Chargement de la section HEAD #}
+  <head>
+      <title>{{ title }}</title>
+      {{ include('head.html.twig') }}
+      {% block importmap %}{{ importmap('owasp') }}{% endblock %}
+  </head>
+  <body>
+    {{ include('header.html.twig') }}
+
+    <header class="grid-container">
+      <nav aria-label="Vous êtes Ici : ">
+        <ul class="claire-hand breadcrumbs">
+          <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
+          <li><a href="{{ path('projet', {}) }}">Projet</a></li>
+          <li><a href="{{ path('owasp', {}) }}">Projet</a></li>
+          <li><span class="show-for-sr">Vous êtes ici:</span>{{ owasp.category }}</li>
+        </ul>
+      </nav>
+    </header>
+
+    {{ include('owasp/' ~ owasp.lien) }}
+
+    {{ include('footer.html.twig') }}
+  </body>
+</html>
