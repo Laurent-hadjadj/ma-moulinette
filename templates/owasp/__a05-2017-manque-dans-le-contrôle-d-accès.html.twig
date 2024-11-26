@@ -80,7 +80,7 @@
       <li>Centraliser l'implémentation des mécanismes de contrôle d'accès et les réutiliser dans l'ensemble de l'application. Cela comprend de minimiser l'utilisation de CORS.</li>
       <li>Le modèle de contrôle d'accès doit vérifier l'appartenance des enregistrements, plutôt que de permettre à l'utilisateur de créer, lire, modifier ou supprimer n'importe quel enregistrement.</li>
       <li>Les exigences spécifiques métier de l'application doivent être appliquées par domaines.</li>
-      * Désactiver le listing de dossier sur le serveur web, et vérifier que les fichiers de meta-données (ex : .git) et de sauvegardes ne se trouvent pas dans l'arborescence web.</li>
+      <li>Désactiver le listing de dossier sur le serveur web, et vérifier que les fichiers de meta-données (ex : .git) et de sauvegardes ne se trouvent pas dans l'arborescence web.</li>
       <li>Tracer les échecs de contrôles d'accès, les alertes administrateur quand c'est approprié (ex : échecs répétés).</li>
       <li>Limiter la fréquence d'accès aux API et aux contrôleurs d'accès, afin de minimiser les dégâts que causeraient des outils d'attaques automatisés.</li>
       <li>Les jetons JWT doivent être invalidés côté serveur après une déconnexion.</li>
@@ -175,10 +175,12 @@ http://example.com/app/admin_getappInfo
   </section>
 </div>
 
-<div class="callout primary alert-callout-border">
-  <p class="open-sans text-justify">
-    Copyright © 2003-2021 La Fondation OWASP™.<br>
-    Ce document est publié sous la licence Creative Commons Attribution Share-Alike 4.0 (CC 4.0 BY-SA).
-  </p>
+<div class="grid-container">
+  <div class="callout primary alert-callout-border">
+    <p class="open-sans text-justify">
+      Copyright © 2003-2021 La Fondation OWASP™.<br>
+      Ce document est publié sous la licence Creative Commons Attribution Share-Alike 4.0 (CC 4.0 BY-SA).
+    </p>
+  </div>
 </div>
 <br><br>
