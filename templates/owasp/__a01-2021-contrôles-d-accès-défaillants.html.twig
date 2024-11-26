@@ -1,0 +1,341 @@
+<div class="grid-container">
+  <section class="container-detail-titre">
+    <div class="small-4 medium-4 large-4">
+      <img class="icon-owasp" src="{{ asset('images/owasp/TOP_10_logo_Final_Logo_Colour.png') }}" alt="icon">
+    </div>
+    <div class="small-8 medium-8 large-8">
+      <h1 class="h2 claire-hand margin-left-1">A01:2021 – Contrôles d'accès défaillants</h1>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Résumé</strong></h2>
+    <div class="callout open-sans font-size-11 text-justify">
+      {{ owasp.description }}
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Facteurs</strong></h2>
+    <div class="table-scroll">
+      <table class="responsive-card-table unstriped">
+        <thead>
+          <tr>
+            <th>CWEs associées</th>
+            <th>Taux d'incidence max</th>
+            <th>Taux d'incidence moyen</th>
+            <th>Exploitation pondérée moyenne</th>
+            <th>Impact pondéré moyen</th>
+            <th>Couverture max</th>
+            <th>Couverture moyenne</th>
+            <th>Nombre total d'occurrences</th>
+            <th>Nombre total de CVEs</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="text-center">
+            <td data-label="CWEs associées">34</td>
+            <td data-label="Taux d'incidence max">55,97&nbsp;%</td>
+            <td data-label="Taux d'incidence moyen">3,81&nbsp;%</td>
+            <td data-label="Exploitation pondérée moyenne">6,92</td>
+            <td data-label="Impact pondéré moyen">5,93</td>
+            <td data-label="Couverture max">94,55&nbsp;%</td>
+            <td data-label="Couverture moyenne">47,72&nbsp;%</td>
+            <td data-label="Nombre total d'occurrences">318 487</td>
+            <td data-label="Nombre total de CVEs">19 013</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Aperçu</strong></h2>
+    <p class="open-sans font-size-11 text-justify">
+      Précédemment à la cinquième place, 94&nbsp;% des applications ont été testées pour une forme de contrôle d'accès défaillant avec un taux d'incidence moyen de 3,81&nbsp;%. Cette catégorie a le plus d'occurrences dans l'ensemble de données contribué avec plus de 318&nbsp;000. Les <em>Common Weakness Enumerations</em> (CWE) notables incluses sont <em>CWE-200: Exposure of Sensitive Information to an Unauthorized Actor</em>, <em>CWE-201: Insertion of Sensitive Information Into Sent Data</em>, et <em>CWE-352: Cross-Site Request Forgery</em>.
+    </p>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Description</strong></h2>
+    <p class="open-sans font-size-11 text-justify">
+      Le contrôle d'accès applique une stratégie telle que les utilisateurs ne peuvent pas agir en dehors de leurs autorisations prévues.
+      Les défaillances entraînent généralement la divulgation, la modification ou la destruction d'informations non autorisées de toutes les données ou l'exécution d'une fonctionnalité métier en dehors des limites de l'utilisateur. Les vulnérabilités courantes du contrôle d'accès incluent&nbsp;:
+    </p>
+    <ul class="open-sans font-size-11 margin-left-2">
+      <li>Violation du principe du moindre privilège ou de refus par défaut, où l'accès ne doit être accordé que pour des capacités, des rôles ou des utilisateurs particuliers, mais est accessible à tous.</li>
+      <li>Contourner les contrôles d'accès en modifiant l'URL (falsification de paramètres ou navigation forcée), l'état interne de l'application ou la page HTML, ou en utilisant un outil d'attaque modifiant les requêtes API.</li>
+      <li>Autoriser l'affichage ou la modification du compte de quelqu'un d'autre, en fournissant son identifiant unique (références directes d'objet non sécurisées).</li>
+      <li>Accès à l'API avec des contrôles d'accès manquants pour POST, PUT et DELETE.</li>
+      <li>Élévation de privilège. Agir en tant qu'utilisateur sans être connecté ou agir en tant qu'administrateur lorsqu'il est connecté en tant qu'utilisateur.</li>
+      <li>Manipulation de métadonnées, comme le rejeu ou la falsification de JSON Web Token (JWT), de cookies ou de champs cachés, afin d'élever les privilèges ou abuser de l'invalidation JWT.</li>
+      <li>La mauvaise configuration de CORS permettant l'accès à l'API à partir d'origines non autorisées/non approuvées.</li>
+      <li>Forcer la navigation vers des pages authentifiées en tant qu'utilisateur non authentifié ou vers des pages privilégiées en tant qu'utilisateur standard.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Comment s'en prémunir</strong></h2>
+    <p class="open-sans font-size-11 text-justify">
+      Le contrôle d'accès n'est efficace que dans le code de confiance côté serveur ou des API serverless, où l'attaquant ne peut pas modifier la vérification du contrôle d'accès ou les métadonnées.
+    </p>
+    <ul class="open-sans font-size-11 margin-left-2">
+      <li>À l'exception des ressources publiques, tout doit être bloqué par défaut.</li>
+      <li>Centraliser l'implémentation des mécanismes de contrôle d'accès et les réutiliser dans l'ensemble de l'application. Cela comprend de minimiser l'utilisation de CORS.</li>
+      <li>Le modèle de contrôle d'accès doit imposer l'appartenance des enregistrements, plutôt que de permettre à l'utilisateur de créer, lire, modifier ou supprimer n'importe quel enregistrement.</li>
+      <li>Les exigences métier spécifiques de l'application doivent être appliquées par domaines.</li>
+      <li>Désactiver le listing de dossier sur le serveur web, et vérifier que les fichiers de métadonnées (ex&nbsp;: .git) et de sauvegardes ne se trouvent pas dans l'arborescence web.</li>
+      <li>Tracer les échecs de contrôles d'accès, alerter les administrateurs quand c'est approprié (ex&nbsp;: échecs répétés).</li>
+      <li>Limiter la fréquence d'accès aux API et aux contrôleurs d'accès, afin de minimiser les dégâts que causeraient des outils d'attaques automatisés.</li>
+      <li>Les identifiants de session avec état doivent être invalidés côté serveur après une déconnexion. Les JWT, sans état, doivent être à durée de vie relativement courte pour que la fenêtre d'opportunité d'un attaquant soit minimisée. Pour les JWT avec une durée de vie plus longue, il est fortement recommandé de suivre le standard OAuth de révocation d'accès.</li>
+    </ul>
+    <p class="open-sans font-size-11 text-justify">Les développeurs et les testeurs qualité doivent procéder à des tests unitaires et d'intégration sur les fonctionnalités de contrôle d'accès.</p>
+  </section>
+
+  <section>
+    <h2 class="h3 claire-hand"><strong>Exemple de scénarios d'attaque</strong></h2>
+    <p class="open-sans font-size-11 text-justify"><strong>Scenario 1&nbsp;:</strong> L'application utilise des données non vérifiées dans une requête SQL qui accède à des informations d'un compte&nbsp;:</p>
+    <pre>
+      <code class="code-block source-code">
+pstmt.setString(1, request.getParameter("acct"));
+ResultSet results = pstmt.executeQuery();
+      </code>
+    </pre>
+    <p class="open-sans font-size-11 text-justify">
+        En modifiant simplement le paramètre 'acct' dans le navigateur, un attaquant peut envoyer le numéro de compte qu'il veut. Si ce numéro n'est pas vérifié, l'attaquant peut accéder à n'importe quel compte utilisateur.
+    </p>
+    <pre>
+      <code class="code-block source-code">
+https://example.com/app/accountInfo?acct=notmyacct
+      </code>
+    </pre>
+    <p class="open-sans font-size-11 text-justify"><strong>Scenario 2&nbsp;:</strong> Un attaquant force le navigateur à visiter des URL arbitraires. Il faut imposer des droits pour accéder à une page d'administration.</p>
+    <pre>
+      <code class="code-block source-code">
+https://example.com/app/getappInfo
+https://example.com/app/admin_getappInfo
+      </code>
+    </pre>
+    <p class="open-sans font-size-11 text-justify">
+        Si un utilisateur non-authentifié peut accéder à l'une des pages, c'est une faille. Si un non-administrateur peut accéder à une page d'administration, c'est une faille.
+    </p>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Références</strong></h2>
+    <ul class="open-sans font-size-11 margin-left-2">
+      <li>
+        <a href="https://owasp.org/www-project-proactive-controls/v3/en/c7-enforce-access-controls" target="_blank" rel="noopener noreferrer" aria-label="OWASP Proactive Controls: Enforce Access Controls">
+          <span class="source-link">OWASP Proactive Controls: Enforce Access Controls</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://owasp.org/www-project-application-security-verification-standard" target="_blank" rel="noopener noreferrer" aria-label="OWASP Application Security Verification Standard: V4 Access Control"><span class="source-link">OWASP Application Security Verification Standard: V4 Access Control</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/05-Authorization_Testing/README" target="_blank" rel="noopener noreferrer" aria-label="OWASP Testing Guide: Authorization Testing"><span class="source-link">OWASP Testing Guide: Authorization Testing</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html" target="_blank" rel="noopener noreferrer" aria-label="OWASP Cheat Sheet: Authorization"><span class="source-link">OWASP Cheat Sheet: Authorization</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://portswigger.net/blog/exploiting-cors-misconfigurations-for-bitcoins-and-bounties" target="_blank" rel="noopener noreferrer" aria-label="PortSwigger: Exploiting CORS misconfiguration">
+          <span class="source-link">PortSwigger: Exploiting CORS misconfiguration</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://www.oauth.com/oauth2-servers/listing-authorizations/revoking-access/" target="_blank" rel="noopener noreferrer" aria-label="OAuth: Revoking Access"><span class="source-link">OAuth: Revoking Access</span>
+        </a>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Liste des CWEs associées</strong></h2>
+    <ul class="open-sans font-size-11 margin-left-2">
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/22.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-22 Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')">
+          <span class="source-link">CWE-22 Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/23.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-23 Relative Path Traversal">
+          <span class="source-link">CWE-23 Relative Path Traversal</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/35.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-35 Path Traversal: '.../...//'">
+          <span class="source-link">CWE-35 Path Traversal: '.../...//'</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/59.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-59 Improper Link Resolution Before File Access ('Link Following')">
+          <span class="source-link">CWE-59 Improper Link Resolution Before File Access ('Link Following')</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/200.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-200 Exposure of Sensitive Information to an Unauthorized Actor">
+          <span class="source-link">CWE-200 Exposure of Sensitive Information to an Unauthorized Actor</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/201.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-201 Exposure of Sensitive Information Through Sent Data">
+          <span class="source-link">CWE-201 Exposure of Sensitive Information Through Sent Data</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/219.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-219 Storage of File with Sensitive Data Under Web Root">
+          <span class="source-link">CWE-219 Storage of File with Sensitive Data Under Web Root</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/264.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-264 Permissions, Privileges, and Access Controls (should no longer be used)">
+          <span class="source-link">CWE-264 Permissions, Privileges, and Access Controls (should no longer be used)</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/275.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-275 Permission Issues">
+          <span class="source-link">CWE-275 Permission Issues</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/276.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-276 Incorrect Default Permissions">
+          <span class="source-link">CWE-276 Incorrect Default Permissions</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/284.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-284 Improper Access Control">
+          <span class="source-link">CWE-284 Improper Access Control</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/285.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-285 Improper Authorization">
+          <span class="source-link">CWE-285 Improper Authorization</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/352.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-352 Cross-Site Request Forgery (CSRF)">
+          <span class="source-link">CWE-352 Cross-Site Request Forgery (CSRF)</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/359.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-359 Exposure of Private Personal Information to an Unauthorized Actor">
+          <span class="source-link">CWE-359 Exposure of Private Personal Information to an Unauthorized Actor</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/377.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-377 Insecure Temporary File">
+          <span class="source-link">CWE-377 Insecure Temporary File</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/402.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-402 Transmission of Private Resources into a New Sphere ('Resource Leak')">
+          <span class="source-link">CWE-402 Transmission of Private Resources into a New Sphere ('Resource Leak')</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/425.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-425 Direct Request ('Forced Browsing')">
+          <span class="source-link">CWE-425 Direct Request ('Forced Browsing')</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/441.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-441 Unintended Proxy or Intermediary ('Confused Deputy')">
+          <span class="source-link">CWE-441 Unintended Proxy or Intermediary ('Confused Deputy')</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/497.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-497 Exposure of Sensitive System Information to an Unauthorized Control Sphere">
+          <span class="source-link">CWE-497 Exposure of Sensitive System Information to an Unauthorized Control Sphere</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/538.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-538 Insertion of Sensitive Information into Externally-Accessible File or Directory">
+          <span class="source-link">CWE-538 Insertion of Sensitive Information into Externally-Accessible File or Directory</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/540.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-540 Inclusion of Sensitive Information in Source Code">
+          <span class="source-link">CWE-540 Inclusion of Sensitive Information in Source Code</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/548.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-548 Exposure of Information Through Directory Listing">
+          <span class="source-link">CWE-548 Exposure of Information Through Directory Listing</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/552.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-552 Files or Directories Accessible to External Parties">
+          <span class="source-link">CWE-552 Files or Directories Accessible to External Parties</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/566.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-566 Authorization Bypass Through User-Controlled SQL Primary Key">
+          <span class="source-link">CWE-566 Authorization Bypass Through User-Controlled SQL Primary Key</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/601.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-601 URL Redirection to Untrusted Site ('Open Redirect')">
+          <span class="source-link">CWE-601 URL Redirection to Untrusted Site ('Open Redirect')</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/639.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-639 Authorization Bypass Through User-Controlled Key">
+          <span class="source-link">CWE-639 Authorization Bypass Through User-Controlled Key</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/651.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-651 Exposure of WSDL File Containing Sensitive Information">
+          <span class="source-link">CWE-651 Exposure of WSDL File Containing Sensitive Information</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/668.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-668 Exposure of Resource to Wrong Sphere">
+          <span class="source-link">CWE-668 Exposure of Resource to Wrong Sphere</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/706.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-706 Use of Incorrectly-Resolved Name or Reference">
+          <span class="source-link">CWE-706 Use of Incorrectly-Resolved Name or Reference</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/862.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-862 Missing Authorization">
+          <span class="source-link">CWE-862 Missing Authorization</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/863.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-863 Incorrect Authorization">
+          <span class="source-link">CWE-863 Incorrect Authorization</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/913.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-913 Improper Control of Dynamically-Managed Code Resources">
+          <span class="source-link">CWE-913 Improper Control of Dynamically-Managed Code Resources</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/922.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-922 Insecure Storage of Sensitive Information">
+          <span class="source-link">CWE-922 Insecure Storage of Sensitive Information</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/1275.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-1275 Sensitive Cookie with Improper SameSite Attribute">
+          <span class="source-link">CWE-1275 Sensitive Cookie with Improper SameSite Attribute</span>
+        </a>
+      </li>
+    </ul>
+  </section>
+</div>
+
+<div class="grid-container">
+  <div class="callout primary alert-callout-border">
+    <p class="open-sans text-justify">
+      Copyright © 2003-2021 La Fondation OWASP™.<br>
+      Ce document est publié sous la licence Creative Commons Attribution Share-Alike 4.0 (CC 4.0 BY-SA).
+    </p>
+  </div>
+</div>
+<br><br>

@@ -1,0 +1,245 @@
+<div class="grid-container">
+  <section class="container-detail-titre">
+    <div class="small-4 medium-4 large-4">
+      <img class="icon-owasp" src="{{ asset('images/owasp/TOP_10_logo_Final_Logo_Colour.png') }}" alt="icon">
+    </div>
+    <div class="small-8 medium-8 large-8">
+      <h1 class="h2 claire-hand margin-left-1">A05:2021 – Mauvaise configuration de sécurité</h1>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Résumé</strong></h2>
+    <div class="callout open-sans font-size-11 text-justify">
+      {{ owasp.description }}
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Facteurs</strong></h2>
+    <div class="table-scroll">
+      <table class="responsive-card-table unstriped">
+        <thead>
+          <tr>
+            <th>CWEs associées</th>
+            <th>Taux d'incidence max</th>
+            <th>Taux d'incidence moyen</th>
+            <th>Exploitation pondérée moyenne</th>
+            <th>Impact pondéré moyen</th>
+            <th>Couverture max</th>
+            <th>Couverture moyenne</th>
+            <th>Nombre total d'occurrences</th>
+            <th>Nombre total de CVEs</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="text-center">
+            <td data-label="CWEs associées">20</td>
+            <td data-label="Taux d'incidence max">19.84 %</td>
+            <td data-label="Taux d'incidence moyen">4.51 %</td>
+            <td data-label="Exploitation pondérée moyenne">8.12</td>
+            <td data-label="Impact pondéré moyen">6.56</td>
+            <td data-label="Couverture max">89,58 %</td>
+            <td data-label="Couverture moyenne">44,84 %</td>
+            <td data-label="Nombre total d'occurrences">208 387</td>
+            <td data-label="Nombre total de CVEs">789</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Aperçu</strong></h2>
+    <p class="open-sans font-size-11 text-justify">En progression depuis la sixième place, 90&nbsp;% des applications ont été testées pour une forme de mauvaise configuration, avec un taux d'incidence moyen de 4,51&nbsp;% et plus de 208&nbsp;000 occurrences de <em>Common Weakness Enumeration</em> (CWE) dans cette catégorie. Avec une plus grande part de logiciels offrant une configuration riche, il n'est pas surprenant de voir cette catégorie gagner une place. Les CWEs notables incluses sont <em>CWE-16 Configuration</em> et <em>CWE-611 Improper Restriction of XML External Entity Reference</em>.</p>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Description</strong></h2>
+    <p class="open-sans font-size-11 text-justify">Une application est vulnérable quand&nbsp;:</p>
+    <ul class="open-sans font-size-11 margin-left-2">
+      <li>elle n'a pas fait l'objet d'un durcissement de la sécurité approprié sur l'ensemble des couches protocolaires applicatives, ou si les permissions sont mal configurées sur les services cloud&nbsp;;</li>
+      <li>des fonctionnalités inutiles sont activées ou installées (ex : des ports, des services, des pages, des comptes ou des privilèges inutiles)&nbsp;;</li>
+      <li>les comptes par défaut et leurs mots de passe sont toujours activés et inchangés&nbsp;;</li>
+      <li>le traitement des erreurs révèle aux utilisateurs des traces des piles protocolaires ou d'autres messages d'erreur laissant transpirer trop d'informations&nbsp;;</li>
+      <li>pour les systèmes à jour ou mis à niveau, les dernières fonctionnalités de sécurité sont désactivées ou ne sont pas configurées de manière sécurisée&nbsp;;</li>
+      <li>les paramètres de sécurité dans les serveurs d'application, les frameworks applicatifs (ex : Struts, Spring, ASP.NET), les bibliothèques, les bases de données, etc. ne sont pas paramétrés avec des valeurs correctes du point de vue de la sécurité&nbsp;;</li>
+      <li>le serveur n'envoie pas d'en-têtes ou de directives de sécurité, ou s'ils ne sont pas paramétrés avec des valeurs correctes du point de vue de la sécurité&nbsp;;</li>
+      <li>La version du logiciel est obsolète ou vulnérable (voir <strong>[A06:2021-Composants vulnérables et obsolètes]</strong>).</li>
+    </ul>
+    <p class="open-sans font-size-11 text-justify">Sans un processus concerté et répétable de configuration de la sécurité des applications, les systèmes courent un risque plus élevé.</p>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Comment s'en prémunir</strong></h2>
+    <p class="open-sans font-size-11 text-justify">Des processus d'installation sécurisés doivent être mis en œuvre, avec notamment&nbsp;:</p>
+    <ul class="open-sans font-size-11 margin-left-2">
+      <li>un processus de durcissement répétable qui permette de déployer rapidement et facilement un autre environnement correctement sécurisé avec une configuration verrouillée. Les environnements de développement, d'assurance qualité et de production doivent tous être configurés de manière identique, avec des droits différents pour chaque environnement. Ce processus devrait être automatisé afin de réduire au minimum les efforts requis pour mettre en place un nouvel environnement sécurisé&nbsp;;</li>
+      <li>une plate-forme minimale sans fonctionnalité, composant, documentation et échantillon inutile. Supprimer ou ne pas installer des fonctionnalités et frameworks inutilisés&nbsp;;</li>
+      <li>une tâche pour revoir et mettre à jour les configurations appropriées à tous les avis de sécurité, toutes les mises à jour et tous les correctifs dans le cadre du processus de gestion des correctifs (voir <strong>[A06:2021-Composants vulnérables et obsolètes]</strong>). En particulier, examiner les permissions de stockage dans le Cloud (ex. les permissions des buckets AWS S3)&nbsp;;</li>
+      <li>une architecture d'application segmentée qui fournit une séparation efficace et sécurisée entre les composants ou les environnements hébergés, avec de la segmentation, de la mise en conteneurs ou l'utilisation de groupes de sécurité dans le Cloud (ACL)&nbsp;;</li>
+      <li>l'envoi de directives de sécurité aux clients, par exemple <a href="https://www.owasp.org/index.php/OWASP_Secure_Headers_Project"><span class="source-link">En-têtes de sécurité</span></a>&nbsp;;</li>
+      <li>un processus automatisé pour vérifier l'efficacité des configurations et des réglages dans tous les environnements.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Exemple de scénarios d'attaque</strong></h2>
+    <p class="open-sans font-size-11 text-justify"><strong>Scénario 1</strong>&nbsp;: Le serveur d'application est livré avec des applications classiques qui ne sont pas supprimées du serveur mis en production. Ces mêmes applications ont des failles de sécurité connues que les attaquants utilisent afin de compromettre le serveur. Si l'une de ces applications est la console d'administration, et que les comptes par défaut n'ont pas été modifiés, l'attaquant se connecte avec les mots de passe par défaut et prend la main sur la cible.</p>
+    <p class="open-sans font-size-11 text-justify"><strong>Scénario 2</strong>&nbsp;: La fonctionnalité de listage des répertoires n'est pas désactivée sur le serveur. Un attaquant découvre qu'il peut simplement lister les répertoires. L'attaquant trouve et télécharge les classes Java compilées, qu'il décompose et fait de l'ingénierie inversée pour visualiser le code. L'attaquant trouve alors un grave défaut dans le contrôle d'accès de l'application.</p>
+    <p class="open-sans font-size-11 text-justify"><strong>Scénario 3</strong>&nbsp;: La configuration du serveur d'application permet de renvoyer aux utilisateurs des messages d'erreur détaillés, par exemple avec des traces des couches protocolaires applicatives. Cela peut ainsi exposer des informations sensibles ou des vulnérabilités sous-jacentes telles que les versions de composants dont on sait qu'elles sont vulnérables.</p>
+    <p class="open-sans font-size-11 text-justify"><strong>Scénario 4</strong>&nbsp;: Un fournisseur de services Cloud (CSP) a positionné des droits de partage par défaut qui sont ouverts sur Internet par d'autres utilisateurs du CSP. Cela permet d'accéder à des données sensibles stockées dans le stockage Cloud.</p>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Références</strong></h2>
+    <ul class="open-sans font-size-11 margin-left-2">
+      <li>
+        <a href="https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/02-Configuration_and_Deployment_Management_Testing/README" target="_blank" rel="noopener noreferrer" aria-label="OWASP Testing Guide: Configuration Management">
+          <span class="source-link">OWASP Testing Guide: Configuration Management</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://owasp.org/www-project-web-security-testing-guide/stable/4-Web_Application_Security_Testing/08-Testing_for_Error_Handling/01-Testing_For_Improper_Error_Handling" target="_blank" rel="noopener noreferrer" aria-label="OWASP Testing Guide: Testing for Error Codes">
+          <span class="source-link">OWASP Testing Guide: Testing for Error Codes</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://github.com/OWASP/ASVS/blob/master/4.0/en/0x22-V14-Config.md" target="_blank" rel="noopener noreferrer" aria-label="Application Security Verification Standard V14 Configuration">
+          <span class="source-link">Application Security Verification Standard V14 Configuration</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://csrc.nist.gov/publications/detail/sp/800-123/final" target="_blank" rel="noopener noreferrer" aria-label="NIST Guide to General Server Hardening">
+          <span class="source-link">NIST Guide to General Server Hardening</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://www.cisecurity.org/cis-benchmarks/" target="_blank" rel="noopener noreferrer" aria-label="CIS Security Configuration Guides/Benchmarks">
+          <span class="source-link">CIS Security Configuration Guides/Benchmarks</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://blog.websecurify.com/2017/10/aws-s3-bucket-discovery.html" target="_blank" rel="noopener noreferrer" aria-label="Amazon S3 Bucket Discovery and Enumeration">
+          <span class="source-link">Amazon S3 Bucket Discovery and Enumeration</span>
+        </a>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Liste des CWEs associées</strong></h2>
+    <ul class="open-sans font-size-11 margin-left-2">
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/2.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-2 7PK - Environment">
+          <span class="source-link">CWE-2 7PK - Environment</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/11.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-11 ASP.NET Misconfiguration: Creating Debug Binary">
+          <span class="source-link">CWE-11 ASP.NET Misconfiguration: Creating Debug Binary</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/13.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-13 ASP.NET Misconfiguration: Password in Configuration File">
+          <span class="source-link">CWE-13 ASP.NET Misconfiguration: Password in Configuration File</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/15.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-15 External Control of System or Configuration Setting">
+          <span class="source-link">CWE-15 External Control of System or Configuration Setting</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/16.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-16 Configuration">
+          <span class="source-link">CWE-16 Configuration</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/260.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-260 Password in Configuration File">
+          <span class="source-link">CWE-260 Password in Configuration File</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/315.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-315 Cleartext Storage of Sensitive Information in a Cookie">
+          <span class="source-link">CWE-315 Cleartext Storage of Sensitive Information in a Cookie</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/520.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-520 .NET Misconfiguration: Use of Impersonation">
+          <span class="source-link">CWE-520 .NET Misconfiguration: Use of Impersonation</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/526.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-526 Exposure of Sensitive Information Through Environmental Variables">
+          <span class="source-link">CWE-526 Exposure of Sensitive Information Through Environmental Variables</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/537.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-537 Java Runtime Error Message Containing Sensitive Information">
+          <span class="source-link">CWE-537 Java Runtime Error Message Containing Sensitive Information</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/541.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-541 Inclusion of Sensitive Information in an Include File">
+          <span class="source-link">CWE-541 Inclusion of Sensitive Information in an Include File</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/547.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-547 Use of Hard-coded, Security-relevant Constants">
+          <span class="source-link">CWE-547 Use of Hard-coded, Security-relevant Constants</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/611.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-611 Improper Restriction of XML External Entity Reference">
+          <span class="source-link">CWE-611 Improper Restriction of XML External Entity Reference</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/614.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-614 Sensitive Cookie in HTTPS Session Without 'Secure' Attribute">
+          <span class="source-link">CWE-614 Sensitive Cookie in HTTPS Session Without 'Secure' Attribute</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/756.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-756 Missing Custom Error Page">
+          <span class="source-link">CWE-756 Missing Custom Error Page</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/776.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-776 Improper Restriction of Recursive Entity References in DTDs ('XML Entity Expansion')">
+          <span class="source-link">CWE-776 Improper Restriction of Recursive Entity References in DTDs ('XML Entity Expansion')</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/942.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-942 Permissive Cross-domain Policy with Untrusted Domains">
+          <span class="source-link">CWE-942 Permissive Cross-domain Policy with Untrusted Domains</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/1004.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-1004 Sensitive Cookie Without 'HttpOnly' Flag">
+          <span class="source-link">CWE-1004 Sensitive Cookie Without 'HttpOnly' Flag</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/1032.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-1032 OWASP Top Ten 2017 Category A6 - Security Misconfiguration">
+          <span class="source-link">CWE-1032 OWASP Top Ten 2017 Category A6 - Security Misconfiguration</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/1174.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-1174 ASP.NET Misconfiguration: Improper Model Validation">
+          <span class="source-link">CWE-1174 ASP.NET Misconfiguration: Improper Model Validation</span>
+        </a>
+      </li>
+    </ul>
+  </section>
+</div>
+
+<div class="grid-container">
+  <div class="callout primary alert-callout-border">
+    <p class="open-sans text-justify">
+      Copyright © 2003-2021 La Fondation OWASP™.<br>
+      Ce document est publié sous la licence Creative Commons Attribution Share-Alike 4.0 (CC 4.0 BY-SA).
+    </p>
+  </div>
+</div>
+<br><br>
