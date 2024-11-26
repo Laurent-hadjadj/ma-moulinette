@@ -368,8 +368,8 @@ window.jQuery = $;
         $object.trigger('password.score', [score]);
         let percent = score < 0 ? 0 : score;
 
-        if ($colorbar.length === 0) {
-          localStorage.setItem('error', '$colorbar introuvable');
+        if ($colorBar.length === 0) {
+          localStorage.setItem('error', '$colorBar introuvable');
           return;
         }
         $colorBar = addColorBarStyle($colorBar, percent);
