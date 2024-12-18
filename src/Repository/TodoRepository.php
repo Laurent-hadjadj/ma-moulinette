@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2022.
+ *  Copyright (c) 2021-2024.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -24,12 +24,22 @@ class TodoRepository extends ServiceEntityRepository
 {
 
   public static $removeReturnLine = "/\s+/u";
+  public static $noDataBase = 'La connexion à la base de données a échoué.';
   public static $mavenKey = ':maven_key';
 
   public function __construct(ManagerRegistry $registry)
   {
     parent::__construct($registry, Todo::class);
   }
+
+  protected function handleDatabaseException(\Doctrine\DBAL\Exception $e): array
+    {
+        if (strpos($e->getMessage(), 'SQLSTATE[08006]') !== false) {
+            return ['code'=>500, 'erreur' => static::$noDataBase];
+        } else {
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
+        }
+    }
 
   /**
    * [Description for deleteTodoMavenKey]
@@ -45,18 +55,18 @@ class TodoRepository extends ServiceEntityRepository
    */
   public function deleteTodoMavenKey($map): array
   {
+    $sql = "DELETE
+            FROM ma_moulinette.todo
+            WHERE maven_key = :maven_key";
     try {
       $this->getEntityManager()->getConnection()->beginTransaction();
-        $sql = "DELETE
-                FROM ma_moulinette.todo
-                WHERE maven_key=:maven_key";
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-            $conn->bindValue(static::$mavenKey, $map['maven_key']);
-            $conn->executeStatement();
+        $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+            $stmt->executeStatement();
       $this->getEntityManager()->getConnection()->commit();
     } catch (\Doctrine\DBAL\Exception $e) {
       $this->getEntityManager()->getConnection()->rollBack();
-      return ['code'=>500, 'erreur'=> $e->getMessage()];
+      return $this->handleDatabaseException($e);
     }
     return ['code'=>200, 'erreur'=>''];
   }
@@ -75,17 +85,16 @@ class TodoRepository extends ServiceEntityRepository
    */
   public function selectTodoRuleGroupByRule($map): array
   {
+    $sql = "SELECT rule, count(*) as total
+            FROM ma_moulinette.todo
+            WHERE maven_key = :maven_key
+            GROUP BY rule";
     try {
-        $sql = "SELECT rule, count(*) as total
-                FROM ma_moulinette.todo
-                WHERE maven_key=:maven_key
-                GROUP BY rule";
-        $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-        $conn->bindValue(static::$mavenKey, $map['maven_key']);
-          $exec=$conn->executeQuery();
-          $liste=$exec->fetchAllAssociative();
+        $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+        $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+        $liste=$stmt->executeQuery()->fetchAllAssociative();
     } catch (\Doctrine\DBAL\Exception $e) {
-      return ['code'=>500, 'erreur'=> $e->getMessage()];
+      return $this->handleDatabaseException($e);
     }
     return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
   }
@@ -104,17 +113,16 @@ class TodoRepository extends ServiceEntityRepository
    */
   public function selectTodoComponentOrderByRule($map): array
   {
+    $sql = "SELECT rule, component, line
+            FROM ma_moulinette.todo
+            WHERE maven_key=:maven_key
+            ORDER BY rule";
     try {
-            $sql = "SELECT rule, component, line
-                    FROM ma_moulinette.todo
-                    WHERE maven_key=:maven_key
-                    ORDER BY rule";
-            $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-              $conn->bindValue(static::$mavenKey, $map['maven_key']);
-            $exec=$conn->executeQuery();
-            $liste=$exec->fetchAllAssociative();
+          $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $conn->bindValue(static::$mavenKey, $map['maven_key']);
+          $liste=$conn->executeQuery()->fetchAllAssociative();
     } catch (\Doctrine\DBAL\Exception $e) {
-      return ['code'=>500, 'erreur'=> $e->getMessage()];
+      return $this->handleDatabaseException($e);
     }
     return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
   }
@@ -152,7 +160,7 @@ class TodoRepository extends ServiceEntityRepository
               $this->getEntityManager()->getConnection()->commit();
       } catch (\Doctrine\DBAL\Exception $e) {
           $this->getEntityManager()->getConnection()->rollBack();
-          return ['code'=>500, 'erreur'=> $e->getMessage()];
+          return $this->handleDatabaseException($e);
       }
       return ['code'=>200, 'erreur'=>''];
   }
