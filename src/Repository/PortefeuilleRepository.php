@@ -35,12 +35,12 @@ class PortefeuilleRepository extends ServiceEntityRepository
      * [Description for handleDatabaseException]
      *
      * @param \Doctrine\DBAL\Exception $e
-     * 
+     *
      * @return array
-     * 
+     *
      * Created at: 18/12/2024 15:12:12 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com> 
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0. 
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     protected function handleDatabaseException(\Doctrine\DBAL\Exception $e): array
     {
