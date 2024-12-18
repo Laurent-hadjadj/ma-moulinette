@@ -57,17 +57,17 @@ class HotspotsRepository extends ServiceEntityRepository
     $sql = "DELETE
             FROM ma_moulinette.hotspots
             WHERE maven_key=:maven_key";
-      try {
-            $this->getEntityManager()->getConnection()->beginTransaction();
-              $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(static::$mavenKey, $map['maven_key']);
-                $stmt->executeStatement();
-            $this->getEntityManager()->getConnection()->commit();
-      } catch (\Doctrine\DBAL\Exception $e) {
-          $this->getEntityManager()->getConnection()->rollBack();
-          return $this->handleDatabaseException($e);
-      }
-      return ['code'=>200, 'erreur'=>''];
+    try {
+          $this->getEntityManager()->getConnection()->beginTransaction();
+            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+              $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+              $stmt->executeStatement();
+          $this->getEntityManager()->getConnection()->commit();
+    } catch (\Doctrine\DBAL\Exception $e) {
+        $this->getEntityManager()->getConnection()->rollBack();
+        return $this->handleDatabaseException($e);
+    }
+    return ['code'=>200, 'erreur'=>''];
   }
 
   /**

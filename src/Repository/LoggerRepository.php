@@ -45,11 +45,11 @@ class LoggerRepository extends ServiceEntityRepository
    */
   protected function handleDatabaseException(\Doctrine\DBAL\Exception $e): array
   {
-      if (strpos($e->getMessage(), 'SQLSTATE[08006]') !== false) {
-          return ['code' => 500, 'erreur' => static::$noDataBase];
-      } else {
-          return ['code' => 500, 'erreur' => $e->getMessage()];
-      }
+    if (strpos($e->getMessage(), 'SQLSTATE[08006]') !== false) {
+      return ['code' => 500, 'erreur' => static::$noDataBase];
+    } else {
+      return ['code' => 500, 'erreur' => $e->getMessage()];
+    }
   }
 
   /**
@@ -70,11 +70,11 @@ class LoggerRepository extends ServiceEntityRepository
             FROM ma_moulinette.logger
             WHERE maven_key=:maven_key";
     try {
-        $this->getEntityManager()->getConnection()->beginTransaction();
-          $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-            $stmt->bindValue(static::$mavenKey, $map['maven_key']);
-            $stmt->executeStatement();
-      $this->getEntityManager()->getConnection()->commit();
+          $this->getEntityManager()->getConnection()->beginTransaction();
+            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+              $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+              $stmt->executeStatement();
+        $this->getEntityManager()->getConnection()->commit();
     } catch (\Doctrine\DBAL\Exception $e) {
       $this->getEntityManager()->getConnection()->rollBack();
       return $this->handleDatabaseException($e);
@@ -128,16 +128,16 @@ class LoggerRepository extends ServiceEntityRepository
                   (:maven_key, :logger_info, :logger_warn, :logger_error, :logger_debug, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
       try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                  $stmt->bindValue(static::$mavenKey, $map['maven_key']);
-                  $stmt->bindValue(':logger_info', $map['logger_info']);
-                  $stmt->bindValue(':logger_warn', $map['logger_warn']);
-                  $stmt->bindValue(':logger_error', $map['logger_error']);
-                  $stmt->bindValue(':logger_debug', $map['logger_debug']);
-                  $stmt->bindValue(':mode_collecte', $map['mode_collecte']);
-                  $stmt->bindValue(':utilisateur_collecte', $map['utilisateur_collecte']);
-                  $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
-                  $stmt->executeStatement();
+              $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ",$sql));
+                $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+                $stmt->bindValue(':logger_info', $map['logger_info']);
+                $stmt->bindValue(':logger_warn', $map['logger_warn']);
+                $stmt->bindValue(':logger_error', $map['logger_error']);
+                $stmt->bindValue(':logger_debug', $map['logger_debug']);
+                $stmt->bindValue(':mode_collecte', $map['mode_collecte']);
+                $stmt->bindValue(':utilisateur_collecte', $map['utilisateur_collecte']);
+                $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
+                $stmt->executeStatement();
             $this->getEntityManager()->getConnection()->commit();
       } catch (\Doctrine\DBAL\Exception $e) {
         $this->getEntityManager()->getConnection()->rollBack();

@@ -1,15 +1,15 @@
 <?php
 
 /*
- *  Ma-Moulinette
- *  --------------
- *  Copyright (c) 2021-2024.
- *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
- *  ---
- *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
- */
+*  Ma-Moulinette
+*  --------------
+*  Copyright (c) 2021-2024.
+*  Laurent HADJADJ <laurent_h@me.com>.
+*  Licensed Creative Common  CC-BY-NC-SA 4.0.
+*  ---
+*  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+*  http://creativecommons.org/licenses/by-nc-sa/4.0/
+*/
 
 namespace App\Repository;
 
@@ -22,299 +22,299 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class InformationProjetRepository extends ServiceEntityRepository
 {
-    public static $removeReturnLine = "/\s+/u";
-    public static $mavenKey = ':maven_key';
-    public static $noDataBase = 'La connexion à la base de données a échoué.';
+  public static $removeReturnLine = "/\s+/u";
+  public static $mavenKey = ':maven_key';
+  public static $noDataBase = 'La connexion à la base de données a échoué.';
 
-    public function __construct(ManagerRegistry $registry)
-    {
-        parent::__construct($registry, InformationProjet::class);
+  public function __construct(ManagerRegistry $registry)
+  {
+    parent::__construct($registry, InformationProjet::class);
+  }
+
+  /**
+   * [Description for handleDatabaseException]
+   *
+   * @param \Doctrine\DBAL\Exception $e
+   *
+   * @return array
+   *
+   * Created at: 18/12/2024 15:51:18 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  protected function handleDatabaseException(\Doctrine\DBAL\Exception $e): array
+  {
+    if (strpos($e->getMessage(), 'SQLSTATE[08006]') !== false) {
+      return ['code' => 500, 'erreur' => static::$noDataBase];
+    } else {
+      return ['code' => 500, 'erreur' => $e->getMessage()];
     }
+  }
 
-    /**
-     * [Description for handleDatabaseException]
-     *
-     * @param \Doctrine\DBAL\Exception $e
-     *
-     * @return array
-     *
-     * Created at: 18/12/2024 15:51:18 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    protected function handleDatabaseException(\Doctrine\DBAL\Exception $e): array
-    {
-        if (strpos($e->getMessage(), 'SQLSTATE[08006]') !== false) {
-            return ['code' => 500, 'erreur' => static::$noDataBase];
-        } else {
-            return ['code' => 500, 'erreur' => $e->getMessage()];
-        }
-    }
-
-    /**
-     * [Description for selectInformationProjetIsValide]
-     * Vérifie si le projet existe.
-     *
-     * @param array $map
-     *
-     * @return array
-     *
-     * Created at: 16/03/2024 21:06:43 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function selectInformationProjetIsValide($map): array
-    {
-      $sql = "SELECT *
-              FROM ma_moulinette.information_projet
-              WHERE maven_key=:maven_key LIMIT 1";
-        try {
+  /**
+   * [Description for selectInformationProjetIsValide]
+   * Vérifie si le projet existe.
+   *
+   * @param array $map
+   *
+   * @return array
+   *
+   * Created at: 16/03/2024 21:06:43 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function selectInformationProjetIsValide($map): array
+  {
+    $sql = "SELECT *
+            FROM ma_moulinette.information_projet
+            WHERE maven_key=:maven_key LIMIT 1";
+      try {
             $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+              $stmt->bindValue(static::$mavenKey, $map['maven_key']);
             $isValide=$stmt->executeQuery()->fetchAllAssociative();
             /** j'ai pas trouvé de projet */
             if (!$isValide){
-                return ['code'=>404, 'erreur'=>"Je n'ai pas trouvé le projet dans la base de données."];
+              return ['code'=>404, 'erreur'=>"Je n'ai pas trouvé le projet dans la base de données."];
             }
-            } catch (\Doctrine\DBAL\Exception $e) {
-                return $this->handleDatabaseException($e);
-        }
-        return ['code'=>200, 'is_valide'=>$isValide[0], 'erreur'=>''];
-    }
+          } catch (\Doctrine\DBAL\Exception $e) {
+              return $this->handleDatabaseException($e);
+      }
+      return ['code'=>200, 'is_valide'=>$isValide[0], 'erreur'=>''];
+  }
 
-    /**
-     * [Description for countInformationProjetAllType]
-     * Compte le nombre de version de type RELEASE, SNAPSHOT ou AUTRE
-     *
-     * @param array $map
-     *
-     * @return array
-     *
-     * Created at: 16/03/2024 21:43:04 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function countInformationProjetAllType($map): array
-    {
-      $sql = "SELECT COUNT(type) AS total
-              FROM ma_moulinette.information_projet
-              WHERE maven_key=:maven_key";
-        try {
+  /**
+   * [Description for countInformationProjetAllType]
+   * Compte le nombre de version de type RELEASE, SNAPSHOT ou AUTRE
+   *
+   * @param array $map
+   *
+   * @return array
+   *
+   * Created at: 16/03/2024 21:43:04 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function countInformationProjetAllType($map): array
+  {
+    $sql = "SELECT COUNT(type) AS total
+            FROM ma_moulinette.information_projet
+            WHERE maven_key=:maven_key";
+      try {
             $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
               $stmt->bindValue(static::$mavenKey, $map['maven_key']);
             $nombre=$stmt->executeQuery()->fetchAllAssociative();
-        } catch (\Doctrine\DBAL\Exception $e) {
-            return $this->handleDatabaseException($e);
-        }
-        return ['code'=>200, 'nombre'=>$nombre, 'erreur'=>''];
-    }
+      } catch (\Doctrine\DBAL\Exception $e) {
+          return $this->handleDatabaseException($e);
+      }
+      return ['code'=>200, 'nombre'=>$nombre, 'erreur'=>''];
+  }
 
-    /**
-     * [Description for countInformationProjetType]
-     * On retourne le nombre de version pour un type donné.
-     *
-     * @param array $map
-     *
-     * @return array
-     *
-     * Created at: 17/03/2024 22:18:09 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function countInformationProjetType($map): array
-    {
-      $sql = "SELECT type, COUNT(*) AS total
-              FROM ma_moulinette.information_projet
-              WHERE maven_key=:maven_key AND type=:type GROUP BY type";
-        try {
+  /**
+   * [Description for countInformationProjetType]
+   * On retourne le nombre de version pour un type donné.
+   *
+   * @param array $map
+   *
+   * @return array
+   *
+   * Created at: 17/03/2024 22:18:09 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function countInformationProjetType($map): array
+  {
+    $sql = "SELECT type, COUNT(*) AS total
+            FROM ma_moulinette.information_projet
+            WHERE maven_key=:maven_key AND type=:type GROUP BY type";
+      try {
             $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
               $stmt->bindValue(static::$mavenKey, $map['maven_key']);
               $stmt->bindValue(':type', $map['type']);
             $nombre=$stmt->executeQuery()->fetchAllAssociative();
-        } catch (\Doctrine\DBAL\Exception $e) {
-            return $this->handleDatabaseException($e);
-        }
-        return ['code'=>200, 'nombre'=>$nombre, 'erreur'=>''];
-    }
+      } catch (\Doctrine\DBAL\Exception $e) {
+          return $this->handleDatabaseException($e);
+      }
+      return ['code'=>200, 'nombre'=>$nombre, 'erreur'=>''];
+  }
 
-    /**
-     * [Description for selectInformationProjetType]
-     *
-     * @param array $map
-     *
-     * @return array
-     *
-     * Created at: 17/03/2024 22:27:26 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function selectInformationProjetTypeIndexed($map): array
-    {
-      $sql = "SELECT type, COUNT(type) AS total
-              FROM ma_moulinette.information_projet
-              WHERE maven_key=:maven_key
-              GROUP BY type";
-        try {
-              $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(static::$mavenKey, $map['maven_key']);
-              $liste=$stmt->executeQuery()->fetchAllAssociativeIndexed();
-        } catch (\Doctrine\DBAL\Exception $e) {
-            return $this->handleDatabaseException($e);
-        }
-        return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
-    }
+  /**
+   * [Description for selectInformationProjetType]
+   *
+   * @param array $map
+   *
+   * @return array
+   *
+   * Created at: 17/03/2024 22:27:26 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function selectInformationProjetTypeIndexed($map): array
+  {
+    $sql = "SELECT type, COUNT(type) AS total
+            FROM ma_moulinette.information_projet
+            WHERE maven_key=:maven_key
+            GROUP BY type";
+      try {
+            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+              $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+            $liste=$stmt->executeQuery()->fetchAllAssociativeIndexed();
+      } catch (\Doctrine\DBAL\Exception $e) {
+          return $this->handleDatabaseException($e);
+      }
+      return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
+  }
 
-    /**
-     * [Description for selectInformationProjetVersionLast]
-     * Retourne la version du dernier projet.
-     *
-     * @param array $map
-     *
-     * @return array
-     *
-     * Created at: 17/03/2024 22:34:34 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function selectInformationProjetVersionLast(array $map): array
-    {
-      $sql = "SELECT project_version as projet, date, analyse_key
-              FROM ma_moulinette.information_projet
-              WHERE maven_key=:maven_key
-              ORDER BY date DESC LIMIT 1";
-        try {
+  /**
+   * [Description for selectInformationProjetVersionLast]
+   * Retourne la version du dernier projet.
+   *
+   * @param array $map
+   *
+   * @return array
+   *
+   * Created at: 17/03/2024 22:34:34 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function selectInformationProjetVersionLast(array $map): array
+  {
+    $sql = "SELECT project_version as projet, date, analyse_key
+            FROM ma_moulinette.information_projet
+            WHERE maven_key=:maven_key
+            ORDER BY date DESC LIMIT 1";
+      try {
             $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
               $stmt->bindValue(static::$mavenKey, $map['maven_key']);
             $liste=$stmt->executeQuery()->fetchAllAssociative();
-        } catch (\Doctrine\DBAL\Exception $e) {
-            return $this->handleDatabaseException($e);
-        }
-        return ['code'=>200, 'version'=>$liste, 'erreur'=>''];
-    }
+      } catch (\Doctrine\DBAL\Exception $e) {
+          return $this->handleDatabaseException($e);
+      }
+      return ['code'=>200, 'version'=>$liste, 'erreur'=>''];
+  }
 
-    /**
-     * [Description for selectInformationProjetVersion]
-     * Retourne la liste des versions pour un projet.
-     *
-     * @param array $map
-     *
-     * @return array
-     *
-     * Created at: 27/02/2024 21:44:39 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function selectInformationProjetVersion($map): array
-    {
-      $sql = "SELECT maven_key, project_version as version, date
-              FROM ma_moulinette.information_projet
-              WHERE maven_key=:maven_key";
-        try {
-              $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(static::$mavenKey, $map['maven_key']);
-              $liste=$stmt->executeQuery()->fetchAllAssociative();
-        } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
-            return $this->handleDatabaseException($e);
-        }
-        return ['code'=>200, 'versions'=>$liste, 'erreur'=>''];
-    }
-
-    /**
-     * [Description for selectInformationProjetProjectVersion]
-     * Récupère la version du projet de la dernière version du projet
-     *
-     * @param array $map
-     *
-     * @return array
-     *
-     * Created at: 11/03/2024 08:32:02 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function selectInformationProjetProjectVersion($map): array
-    {
-      $sql = "SELECT project_version, date
-              FROM ma_moulinette.information_projet
-              WHERE maven_key=:maven_key
-              ORDER by date DESC LIMIT 1";
-        try {
+  /**
+   * [Description for selectInformationProjetVersion]
+   * Retourne la liste des versions pour un projet.
+   *
+   * @param array $map
+   *
+   * @return array
+   *
+   * Created at: 27/02/2024 21:44:39 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function selectInformationProjetVersion($map): array
+  {
+    $sql = "SELECT maven_key, project_version as version, date
+            FROM ma_moulinette.information_projet
+            WHERE maven_key=:maven_key";
+      try {
             $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
               $stmt->bindValue(static::$mavenKey, $map['maven_key']);
             $liste=$stmt->executeQuery()->fetchAllAssociative();
-        } catch (\Doctrine\DBAL\Exception $e) {
-            return $this->handleDatabaseException($e);
-        }
-        return ['code'=>200, 'info'=>$liste, 'erreur'=>''];
+      } catch (\Doctrine\DBAL\Exception $e) {
+          $this->getEntityManager()->getConnection()->rollBack();
+          return $this->handleDatabaseException($e);
+      }
+      return ['code'=>200, 'versions'=>$liste, 'erreur'=>''];
+  }
+
+  /**
+   * [Description for selectInformationProjetProjectVersion]
+   * Récupère la version du projet de la dernière version du projet
+   *
+   * @param array $map
+   *
+   * @return array
+   *
+   * Created at: 11/03/2024 08:32:02 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function selectInformationProjetProjectVersion($map): array
+  {
+    $sql = "SELECT project_version, date
+            FROM ma_moulinette.information_projet
+            WHERE maven_key=:maven_key
+            ORDER by date DESC LIMIT 1";
+      try {
+          $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+          $liste=$stmt->executeQuery()->fetchAllAssociative();
+      } catch (\Doctrine\DBAL\Exception $e) {
+          return $this->handleDatabaseException($e);
+      }
+      return ['code'=>200, 'info'=>$liste, 'erreur'=>''];
+  }
+
+  /**
+   * [Description for TestDeleteInformationProjetMavenKey]
+   * On supprime les informations sur le projet
+   *
+   * @param array $map
+   *
+   * @return array
+   *
+   * Created at: 11/03/2024 19:03:15 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function deleteInformationProjetMavenKey($map): array
+  {
+    $sql = "DELETE
+            FROM ma_moulinette.information_projet
+            WHERE maven_key=:maven_key";
+      try {
+          $this->getEntityManager()->getConnection()->beginTransaction();
+            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+              $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+              $stmt->executeStatement();
+          $this->getEntityManager()->getConnection()->commit();
+      } catch (\Doctrine\DBAL\Exception $e) {
+          $this->getEntityManager()->getConnection()->rollBack();
+          return $this->handleDatabaseException($e);
+      }
+      return ['code'=>200, 'erreur'=>''];
+  }
+
+  /**
+   * [Description for insertInformationProjet]
+   *
+   * @param array $map
+   *
+   * @return array
+   *
+   * Created at: 20/05/2024 23:09:33 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function insertInformationProjet($map): array
+  {
+    $sql = "INSERT INTO ma_moulinette.information_projet
+              (maven_key, analyse_key, date, project_version, type, mode_collecte, utilisateur_collecte, date_enregistrement)
+            VALUES
+              (:maven_key, :analyse_key, :date, :project_version, :type, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
+    try {
+          $this->getEntityManager()->getConnection()->beginTransaction();
+            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+              $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+              $stmt->bindValue(':analyse_key', $map['analyse_key']);
+              $stmt->bindValue(':date', $map['date']);
+              $stmt->bindValue(':project_version', $map['project_version']);
+              $stmt->bindValue(':type', $map['type']);
+              $stmt->bindValue(':mode_collecte', $map['mode_collecte']);
+              $stmt->bindValue(':utilisateur_collecte', $map['utilisateur_collecte']);
+              /** on formate la date avant de l'enregistrer */
+              $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
+              $stmt->executeStatement();
+          $this->getEntityManager()->getConnection()->commit();
+    } catch (\Doctrine\DBAL\Exception $e) {
+        $this->getEntityManager()->getConnection()->rollBack();
+        return $this->handleDatabaseException($e);
     }
 
-    /**
-     * [Description for TestDeleteInformationProjetMavenKey]
-     * On supprime les informations sur le projet
-     *
-     * @param array $map
-     *
-     * @return array
-     *
-     * Created at: 11/03/2024 19:03:15 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function deleteInformationProjetMavenKey($map): array
-    {
-      $sql = "DELETE
-              FROM ma_moulinette.information_projet
-              WHERE maven_key=:maven_key";
-        try {
-            $this->getEntityManager()->getConnection()->beginTransaction();
-              $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(static::$mavenKey, $map['maven_key']);
-                $stmt->executeStatement();
-            $this->getEntityManager()->getConnection()->commit();
-        } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
-            return $this->handleDatabaseException($e);
-        }
-        return ['code'=>200, 'erreur'=>''];
-    }
-
-    /**
-     * [Description for insertInformationProjet]
-     *
-     * @param array $map
-     *
-     * @return array
-     *
-     * Created at: 20/05/2024 23:09:33 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function insertInformationProjet($map): array
-    {
-      $sql = "INSERT INTO ma_moulinette.information_projet
-                (maven_key, analyse_key, date, project_version, type, mode_collecte, utilisateur_collecte, date_enregistrement)
-              VALUES
-                (:maven_key, :analyse_key, :date, :project_version, :type, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
-        try {
-            $this->getEntityManager()->getConnection()->beginTransaction();
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                  $stmt->bindValue(static::$mavenKey, $map['maven_key']);
-                  $stmt->bindValue(':analyse_key', $map['analyse_key']);
-                  $stmt->bindValue(':date', $map['date']);
-                  $stmt->bindValue(':project_version', $map['project_version']);
-                  $stmt->bindValue(':type', $map['type']);
-                  $stmt->bindValue(':mode_collecte', $map['mode_collecte']);
-                  $stmt->bindValue(':utilisateur_collecte', $map['utilisateur_collecte']);
-                  /** on formate la date avant de l'enregistrer */
-                  $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sP'));
-                  $stmt->executeStatement();
-            $this->getEntityManager()->getConnection()->commit();
-        } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
-            return $this->handleDatabaseException($e);
-        }
-
-        return ['code'=>200, 'erreur'=>''];
-    }
+    return ['code'=>200, 'erreur'=>''];
+  }
 
 }
