@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2022.
+ *  Copyright (c) 2021-2024.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -58,7 +58,7 @@ class ContainsPortefeuilleUniqueValidator extends ConstraintValidator
             throw new UnexpectedTypeException($constraint, ContainsPortefeuilleUnique::class);
         }
 
-        /** La valeur ne doit pas $etre null ou vide. */
+        /** La valeur ne doit pas être null ou vide. */
         if (null === $value || '' === $value) {
             return;
         }
@@ -68,7 +68,7 @@ class ContainsPortefeuilleUniqueValidator extends ConstraintValidator
             throw new UnexpectedValueException($value, 'string');
         }
 
-        /** On cherche si la valeur exsite déjà.  */
+        /** On cherche si la valeur existe déjà.  */
         $record = $this->em->getRepository(Portefeuille::class)->findOneBy(['titre' => mb_strtoupper($value)]);
 
         /** Si la valeur existe, on affiche une erreur. */

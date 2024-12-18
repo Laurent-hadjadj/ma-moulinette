@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2022.
+ *  Copyright (c) 2021-2024.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -58,7 +58,7 @@ class ContainsBatchUniqueValidator extends ConstraintValidator
             throw new UnexpectedTypeException($constraint, ContainsBatchUnique::class);
         }
 
-        /** La valeur ne doit pas $etre null ou vide. */
+        /** La valeur ne doit pas être null ou vide. */
         if (null === $value || '' === $value) {
             return;
         }
@@ -68,7 +68,7 @@ class ContainsBatchUniqueValidator extends ConstraintValidator
             throw new UnexpectedValueException($value, 'string');
         }
 
-        /** On cherche si la valeur exsite déjà.  renvoi null ou un objet*/
+        /** On cherche si la valeur existe déjà.  renvoi null ou un objet*/
         $portefeuille = $this->em->getRepository(Batch::class)->findOneBy(['portefeuille' => mb_strtoupper($value)]);
 
         /** Si la valeur existe, on affiche une erreur. */
@@ -78,7 +78,7 @@ class ContainsBatchUniqueValidator extends ConstraintValidator
                 ->addViolation();
         }
 
-        /** On cherche si la valeur exsite déjà.  renvoi null ou un objet*/
+        /** On cherche si la valeur existe déjà.  renvoi null ou un objet*/
         $titre = $this->em->getRepository(Batch::class)->findOneBy(['titre' => mb_strtoupper($value)]);
 
         /** Si la valeur existe, on affiche une erreur. */
