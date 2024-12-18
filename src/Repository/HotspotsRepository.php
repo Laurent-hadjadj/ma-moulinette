@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2022.
+ *  Copyright (c) 2021-2024.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -22,172 +22,178 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class HotspotsRepository extends ServiceEntityRepository
 {
-    public static $removeReturnLine = "/\s+/u";
-    public static $mavenKey = ':maven_key';
-    public static $status = ':status';
+  public static $removeReturnLine = "/\s+/u";
+  public static $mavenKey = ':maven_key';
+  public static $status = ':status';
+  public static $noDataBase = 'La connexion à la base de données a échoué.';
 
-    public function __construct(ManagerRegistry $registry)
-    {
-        parent::__construct($registry, Hotspots::class);
-    }
+  public function __construct(ManagerRegistry $registry)
+  {
+      parent::__construct($registry, Hotspots::class);
+  }
 
-    /**
-     * [Description for deleteHotspotsMavenKey]
-     * Supprime les hotspots pour la version courante (i.e. correspondant à la maven_key)
-     * @param mixed $map
-     *
-     * @return array
-     *
-     * Created at: 12/03/2024 21:49:02 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function deleteHotspotsMavenKey($map): array
-    {
+  protected function handleDatabaseException(\Doctrine\DBAL\Exception $e): array
+  {
+      if (strpos($e->getMessage(), 'SQLSTATE[08006]') !== false) {
+          return ['code'=>500, 'erreur' => static::$noDataBase];
+      } else {
+          return ['code'=>500, 'erreur'=> $e->getMessage()];
+      }
+  }
 
-        try {
+  /**
+   * [Description for deleteHotspotsMavenKey]
+   * Supprime les hotspots pour la version courante (i.e. correspondant à la maven_key)
+   * @param mixed $map
+   *
+   * @return array
+   *
+   * Created at: 12/03/2024 21:49:02 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function deleteHotspotsMavenKey($map): array
+  {
+    $sql = "DELETE
+            FROM ma_moulinette.hotspots
+            WHERE maven_key=:maven_key";
+      try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-                $sql = "DELETE
-                        FROM ma_moulinette.hotspots
-                        WHERE maven_key=:maven_key";
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(static::$mavenKey, $map['maven_key']);
-                    $stmt->executeStatement();
+              $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+                $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+                $stmt->executeStatement();
             $this->getEntityManager()->getConnection()->commit();
-        } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
-            return ['code'=>500, 'erreur'=> $e->getMessage()];
-        }
-        return ['code'=>200, 'erreur'=>''];
-    }
+      } catch (\Doctrine\DBAL\Exception $e) {
+          $this->getEntityManager()->getConnection()->rollBack();
+          return $this->handleDatabaseException($e);
+      }
+      return ['code'=>200, 'erreur'=>''];
+  }
 
-    /**
-     * [Description for selectHotspotsToReview]
-     * Retourne la liste des hotspots pour le status TO_REVIEW
-     * @param array $map
-     *
-     * @return array
-     *
-     * Created at: 14/03/2024 08:50:52 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function selectHotspotsToReview($map): array
-    {
-        try {
-                $sql = "SELECT *
-                        FROM ma_moulinette.hotspots
-                        WHERE maven_key=:maven_key AND status='TO_REVIEW'
-                        ORDER BY niveau";
-                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $conn->bindValue(static::$mavenKey, $map['maven_key']);
-                $liste=$conn->executeQuery()->fetchAllAssociative();
-        } catch (\Doctrine\DBAL\Exception $e) {
-            return ['code'=>500, 'erreur'=> $e->getMessage()];
-        }
-        return ['code'=>200, 'erreur'=>'', 'liste'=>$liste];
-    }
+  /**
+   * [Description for selectHotspotsToReview]
+   * Retourne la liste des hotspots pour le status TO_REVIEW
+   * @param array $map
+   *
+   * @return array
+   *
+   * Created at: 14/03/2024 08:50:52 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function selectHotspotsToReview($map): array
+  {
+    $sql = "SELECT *
+            FROM ma_moulinette.hotspots
+            WHERE maven_key=:maven_key AND status='TO_REVIEW'
+            ORDER BY niveau";
+    try {
+          $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+            $liste=$stmt->executeQuery()->fetchAllAssociative();
+      } catch (\Doctrine\DBAL\Exception $e) {
+        return $this->handleDatabaseException($e);
+      }
+      return ['code'=>200, 'erreur'=>'', 'liste'=>$liste];
+  }
 
-    /**
-     * [Description for countHotspotsStatus]
-     * Compte le nombre de hotspots au status TO_REVIEW, REVIEWED
-     * @param array $map
-     *
-     * @return array
-     *
-     * Created at: 20/03/2024 16:45:58 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function countHotspotsStatus($map): array
-    {
-        try {
-                $sql = "SELECT COUNT(*) as nombre
-                        FROM ma_moulinette.hotspots
-                        WHERE maven_key=:maven_key AND status=:status";
-                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $conn->bindValue(static::$mavenKey, $map['maven_key']);
-                $conn->bindValue(static::$status, $map['status']);
-                $exec=$conn->executeQuery();
-                $nombre=$exec->fetchAllAssociative();
-        } catch (\Doctrine\DBAL\Exception $e) {
-            return ['code'=>500, 'erreur'=> $e->getMessage()];
-        }
-        return ['code'=>200, 'erreur'=>'', 'nombre'=>$nombre];
-    }
+  /**
+   * [Description for countHotspotsStatus]
+   * Compte le nombre de hotspots au status TO_REVIEW, REVIEWED
+   * @param array $map
+   *
+   * @return array
+   *
+   * Created at: 20/03/2024 16:45:58 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function countHotspotsStatus($map): array
+  {
+    $sql = "SELECT COUNT(*) as nombre
+            FROM ma_moulinette.hotspots
+            WHERE maven_key=:maven_key AND status=:status";
+      try {
+            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+              $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+              $stmt->bindValue(static::$status, $map['status']);
+            $nombre=$stmt->executeQuery()->fetchAllAssociative();
+      } catch (\Doctrine\DBAL\Exception $e) {
+        return $this->handleDatabaseException($e);
+      }
+      return ['code'=>200, 'erreur'=>'', 'nombre'=>$nombre];
+  }
 
-    /**
-     * [Description for selectHotspotsByNiveau]
-     * Retourne la liste du niveau et du nombre de hotspots pour une version au status TO_REVIEWED
-     * @param array $map
-     *
-     * @return array
-     *
-     * Created at: 20/03/2024 19:50:36 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function selectHotspotsByNiveau($map): array
-    {
-        try {
-                $sql = "SELECT niveau, count(*) as hotspot
-                        FROM ma_moulinette.hotspots
-                        WHERE maven_key=:maven_key AND status=:status
-                        GROUP BY niveau";
-                $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $conn->bindValue(static::$mavenKey, $map['maven_key']);
-                $conn->bindValue(static::$status, $map['status']);
-                $exec=$conn->executeQuery();
-                $liste=$exec->fetchAllAssociative();
-        } catch (\Doctrine\DBAL\Exception $e) {
-            return ['code'=>500, 'erreur'=> $e->getMessage()];
-        }
-        return ['code'=>200, 'erreur'=>'', 'liste'=>$liste];
-    }
+  /**
+   * [Description for selectHotspotsByNiveau]
+   * Retourne la liste du niveau et du nombre de hotspots pour une version au status TO_REVIEWED
+   * @param array $map
+   *
+   * @return array
+   *
+   * Created at: 20/03/2024 19:50:36 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function selectHotspotsByNiveau($map): array
+  {
+    $sql = "SELECT niveau, count(*) as hotspot
+            FROM ma_moulinette.hotspots
+            WHERE maven_key=:maven_key AND status=:status
+            GROUP BY niveau";
+      try {
+            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+              $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+              $stmt->bindValue(static::$status, $map['status']);
+            $liste=$stmt->executeQuery()->fetchAllAssociative();
+      } catch (\Doctrine\DBAL\Exception $e) {
+        return $this->handleDatabaseException($e);
+      }
+      return ['code'=>200, 'erreur'=>'', 'liste'=>$liste];
+  }
 
-    /**
-     * [Description for insertHotspots]
-     *
-     * @param array $map
-     *
-     * @return array
-     *
-     * Created at: 26/05/2024 17:57:58 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function insertHotspots(array $map): array
-    {
-        /** Traitement de masse (bulk) */
-        $sql = "INSERT INTO ma_moulinette.hotspots
+  /**
+   * [Description for insertHotspots]
+   *
+   * @param array $map
+   *
+   * @return array
+   *
+   * Created at: 26/05/2024 17:57:58 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function insertHotspots(array $map): array
+  {
+      /** Traitement de masse (bulk) */
+      $sql = "INSERT INTO ma_moulinette.hotspots
                 (maven_key, version, date_version, rule_key, security_category, hotspot_key, probability, status, resolution, niveau, mode_collecte, utilisateur_collecte, date_enregistrement)
-                VALUES
-                    (:maven_key, :version, :date_version, :rule_key, :security_category, :hotspot_key, :probability, :status, :resolution, :niveau, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
-        try {
-            $this->getEntityManager()->getConnection()->beginTransaction();
-                foreach( $map as $item){
-                    $stmt=$this->getEntityManager()->getConnection()->prepare($sql);
-                        $stmt->bindValue(static::$mavenKey, $item['maven_key']);
-                        $stmt->bindValue(':version', $item['version']);
-                        $stmt->bindValue(':date_version', $item['date_version']->format('Y-m-d H:i:sO'));
-                        $stmt->bindValue(':rule_key', $item['rule_key']);
-                        $stmt->bindValue(':security_category', $item['security_category']);
-                        $stmt->bindValue(':hotspot_key', $item['hotspot_key']);
-                        $stmt->bindValue(':probability', $item['probability']);
-                        $stmt->bindValue(static::$status, $item['status']);
-                        $stmt->bindValue(':resolution', $item['resolution']);
-                        $stmt->bindValue(':niveau', $item['niveau']);
-                        $stmt->bindValue(':mode_collecte', $item['mode_collecte']);
-                        $stmt->bindValue(':utilisateur_collecte', $item['utilisateur_collecte']);
-                        $stmt->bindValue(':date_enregistrement', $item['date_enregistrement']->format('Y-m-d H:i:sO'));
-                        $stmt->executeStatement();
-                }
-            $this->getEntityManager()->getConnection()->commit();
-        } catch (\Doctrine\DBAL\Exception $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
-            return ['code' => 500, 'erreur' => $e->getMessage()];
-        }
-        return ['code' => 200, 'message' => 'Insertion réussie', 'erreur' => ''];
-    }
-
+              VALUES
+                (:maven_key, :version, :date_version, :rule_key, :security_category, :hotspot_key, :probability, :status, :resolution, :niveau, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
+      try {
+          $this->getEntityManager()->getConnection()->beginTransaction();
+            foreach( $map as $item){
+              $stmt=$this->getEntityManager()->getConnection()->prepare($sql);
+                $stmt->bindValue(static::$mavenKey, $item['maven_key']);
+                $stmt->bindValue(':version', $item['version']);
+                $stmt->bindValue(':date_version', $item['date_version']->format('Y-m-d H:i:sO'));
+                $stmt->bindValue(':rule_key', $item['rule_key']);
+                $stmt->bindValue(':security_category', $item['security_category']);
+                $stmt->bindValue(':hotspot_key', $item['hotspot_key']);
+                $stmt->bindValue(':probability', $item['probability']);
+                $stmt->bindValue(static::$status, $item['status']);
+                $stmt->bindValue(':resolution', $item['resolution']);
+                $stmt->bindValue(':niveau', $item['niveau']);
+                $stmt->bindValue(':mode_collecte', $item['mode_collecte']);
+                $stmt->bindValue(':utilisateur_collecte', $item['utilisateur_collecte']);
+                $stmt->bindValue(':date_enregistrement', $item['date_enregistrement']->format('Y-m-d H:i:sO'));
+                $stmt->executeStatement();
+              }
+          $this->getEntityManager()->getConnection()->commit();
+      } catch (\Doctrine\DBAL\Exception $e) {
+          $this->getEntityManager()->getConnection()->rollBack();
+          return $this->handleDatabaseException($e);
+      }
+      return ['code' => 200, 'message' => 'Insertion réussie', 'erreur' => ''];
+  }
 }
