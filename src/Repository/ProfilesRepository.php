@@ -220,10 +220,10 @@ class ProfilesRepository extends ServiceEntityRepository
                     $stmt->bindValue(':referential_default', $profil['isDefault'] === true ? 'true' : 'false');
                     $stmt->bindValue(':active_rule_count', $profil['activeRuleCount']);
                     $rulesUpdatedAt = new \DateTimeImmutable($profil['rulesUpdatedAt']);
-                    $formattedRulesUpdatedAt = $rulesUpdatedAt->format('Y-m-d H:i:sP');
+                    $formattedRulesUpdatedAt = $rulesUpdatedAt->format('Y-m-d H:i:sO');
 
                     $stmt->bindValue(':rules_updated_at', $formattedRulesUpdatedAt);
-                    $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sP'));
+                    $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
                     $stmt->executeStatement();
                 }
             $this->getEntityManager()->getConnection()->commit();
