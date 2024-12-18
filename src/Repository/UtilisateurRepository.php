@@ -35,16 +35,16 @@ class UtilisateurRepository extends ServiceEntityRepository
     }
 
     /**
-   * [Description for handleDatabaseException]
-   *
-   * @param \Doctrine\DBAL\Exception $e
-   *
-   * @return array
-   *
-   * Created at: 21/10/2024 16:55:20 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Lilmod & Lelamed - Creative Common CC-BY-NC-SA 4.0.
-   */
+     * [Description for handleDatabaseException]
+     *
+     * @param \Doctrine\DBAL\Exception $e
+     *
+     * @return array
+     *
+     * Created at: 21/10/2024 16:55:20 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Lilmod & Lelamed - Creative Common CC-BY-NC-SA 4.0.
+     */
     protected function handleDatabaseException(\Doctrine\DBAL\Exception $e): array
     {
         if (strpos($e->getMessage(), 'SQLSTATE[08006]') !== false) {
