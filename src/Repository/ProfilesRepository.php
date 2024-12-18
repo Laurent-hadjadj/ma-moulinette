@@ -46,7 +46,7 @@ class ProfilesRepository extends ServiceEntityRepository
         if (strpos($e->getMessage(), 'SQLSTATE[08006]') !== false) {
             return ['code'=>500, 'erreur' => static::$noDataBase];
         } else {
-            return ['code'=>500, 'erreur'=> $e->getMessage()];
+            return ['code' => 500, 'erreur' => $e->getMessage()];
         }
     }
 
@@ -181,8 +181,8 @@ class ProfilesRepository extends ServiceEntityRepository
     public function selectProfilesRuleCount(): array
     {
         $sql = "SELECT active_rule_count AS total
-                        FROM ma_moulinette.profiles
-                        WHERE referential_default = true";
+                FROM ma_moulinette.profiles
+                WHERE referential_default = true";
         try {
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $dataSets=$stmt->executeQuery()->fetchAllAssociative();
