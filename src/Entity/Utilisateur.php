@@ -529,7 +529,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-
     /**
      * [Description for getPreference]
      *

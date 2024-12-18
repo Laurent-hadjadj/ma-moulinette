@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2022.
+ *  Copyright (c) 2021-2024.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -17,7 +17,6 @@ use App\Repository\PortefeuilleRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-use App\Validator as AcmeAssert;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PortefeuilleRepository::class)]

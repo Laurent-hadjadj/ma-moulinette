@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2022.
+ *  Copyright (c) 2021-2024.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -31,7 +31,7 @@ class HotspotOwasp
     #[ORM\Column(type: Types::INTEGER, nullable: false,
         options: ['comment' => 'Référentiel OWASP 2017, 2021'])]
     #[Assert\NotNull(message: "Le référentiel ne peut pas être null")]
-    private ?int $referentielOwasp=2017;
+    private ?int $referentialOwasp=2017;
 
     #[ORM\Column(type: Types::STRING, length: 255, nullable: false,
         options: ['comment' => 'Clé Maven du projet'])]
@@ -276,14 +276,14 @@ class HotspotOwasp
         return $this;
     }
 
-    public function getReferentielOwasp(): ?int
+    public function getReferentialOwasp(): ?int
     {
-        return $this->referentielOwasp;
+        return $this->referentialOwasp;
     }
 
-    public function setReferentielOwasp(int $referentielOwasp): static
+    public function setReferentialOwasp(int $referentialOwasp): static
     {
-        $this->referentielOwasp = $referentielOwasp;
+        $this->referentialOwasp = $referentialOwasp;
 
         return $this;
     }

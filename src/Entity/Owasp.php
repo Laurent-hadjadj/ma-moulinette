@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2022.
+ *  Copyright (c) 2021-2024.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -31,6 +31,11 @@ class Owasp
         options: ['comment' => 'clé unique pour la table Owasp'])]
     private int $id;
 
+    #[ORM\Column( type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Référentiel version (2017, 2021)']
+    )]
+    private int $referentialOwasp = 2017;
+
     #[ORM\Column(type: Types::STRING, length: 255, nullable: false,
         options: ['comment' => 'Clé maven du projet'])]
     #[Assert\NotBlank]
@@ -39,7 +44,7 @@ class Owasp
     private string $mavenKey;
 
     #[ORM\Column(type: Types::STRING, length: 32, nullable: false,
-        options: ['comment' => 'Version du projeyt'])]
+        options: ['comment' => 'Version du projet'])]
     #[Assert\NotBlank]
     private string $version;
 
@@ -372,6 +377,18 @@ class Owasp
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    /* [version du référentiel]*/
+    public function getReferentialOwasp(): ?string
+    {
+        return $this->referentialOwasp;
+    }
+
+    public function setReferentialOwasp(string $referentialOwasp): self
+    {
+        $this->referentialOwasp = $referentialOwasp;
+        return $this;
     }
 
     public function getMavenKey(): ?string
