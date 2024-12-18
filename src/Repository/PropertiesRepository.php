@@ -24,7 +24,7 @@ class PropertiesRepository extends ServiceEntityRepository
 {
     public static $removeReturnLine = "/\s+/u";
     public static $type = ':type';
-    public static $horodatage = 'Y-m-d H:i:sP';
+    public static $horodatage = 'Y-m-d H:i:sO';
     public static $noDataBase = 'La connexion à la base de données a échoué.';
 
     public function __construct(ManagerRegistry $registry)
@@ -184,7 +184,6 @@ class PropertiesRepository extends ServiceEntityRepository
                     profil_sonar=:profil_sonar,
                     date_modification_profil=:date_modification_profil
                 WHERE type=:type";
-
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
