@@ -17,9 +17,8 @@
   <head>
     <title>{{ title }}</title>
     {{ include('head.html.twig') }}
-    {% block stylesheets %}
-      {{ encore_entry_link_tags('donnees-personnelles') }}
-    {% endblock %}
+    {# Chargement du code javascript #}
+    {% block importmap %}{{ importmap('donnees-personnelles') }}{% endblock %}
   </head>
 
   <body>
