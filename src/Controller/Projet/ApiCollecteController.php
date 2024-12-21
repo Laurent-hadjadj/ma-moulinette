@@ -132,9 +132,9 @@ class ApiCollecteController extends AbstractController
         $information=$this->batchCollecteInformation->batchCollecteInformation($data->maven_key, 'COLLECTE', $utilisateur_collecte);
         if ($information['code']!=200){
             return new JsonResponse([
-                'type' => 'error', 'code' => $information['code'],
+                'type' => 'erreur', 'code' => $information['code'],
                 'reference' => static::$reference,
-                'message' => $information['message'] ?? $information['error']],
+                'message' => $information['message'] ?? $information['erreur']],
                 Response::HTTP_OK);
         }
         return new JsonResponse(['code' => 200, 'message' => [
@@ -184,9 +184,9 @@ class ApiCollecteController extends AbstractController
         $mesure=$this->batchCollecteMesure->batchCollecteMesure($data->maven_key, 'COLLECTE', $utilisateur_collecte);
         if ($mesure['code']!=200){
             return new JsonResponse([
-                'type' => 'error', 'code' => $mesure['code'],
+                'type' => 'erreur', 'code' => $mesure['code'],
                 'reference' => static::$reference,
-                'message' => $mesure['message'] ?? $mesure['error']], Response::HTTP_OK);
+                'message' => $mesure['message'] ?? $mesure['erreur']], Response::HTTP_OK);
         }
 
         return new JsonResponse(['code' => 200, 'message'=>['issues'=>$mesure['message']['issues']]], Response::HTTP_OK);
@@ -232,27 +232,27 @@ class ApiCollecteController extends AbstractController
         $note=$this->batchCollecteNote->batchCollecteNote($data->maven_key, 'COLLECTE', $utilisateur_collecte, $data->type);
         if ($note['code']!=200){
             return new JsonResponse([
-                'type' => 'error', 'code' => $note['code'],
+                'type' => 'erreur', 'code' => $note['code'],
                 'reference' => static::$reference,
-                'message' => $note['message'] ?? $note['error']],
+                'message' => $note['message'] ?? $note['erreur']],
                 Response::HTTP_OK);
         }
         return new JsonResponse(['code' => 200, 'type' => $data->type,
         'message'=> ['note' => $note['message']['value']]], Response::HTTP_OK);
     }
 
-    #[Route('/api/collecte/owasp', name: 'api_collecte_owasp', methods: ['POST'])]
     /**
      * [Description for apiCollecteOwasp]
      *
      * @param Request $request
-     * 
+     *
      * @return JsonResponse
-     * 
+     *
      * Created at: 11/11/2024 11:05:41 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com> 
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0. 
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
+    #[Route('/api/collecte/owasp', name: 'api_collecte_owasp', methods: ['POST'])]
     public function apiCollecteOwasp(Request $request): JsonResponse
     {
         /** On décode le body */
@@ -279,14 +279,12 @@ class ApiCollecteController extends AbstractController
         $owasp=$this->batchCollecteOwasp->batchCollecteOwasp($data->maven_key, 'COLLECTE', $utilisateur_collecte);
         if ($owasp['code']!=200){
             return new JsonResponse([
-                'type' => 'error', 'code' => $owasp['code'],
+                'type' => 'erreur', 'code' => $owasp['code'],
                 'reference' => static::$reference,
-                'message' => $owasp['message'] ?? $owasp['error']],
+                'message' => $owasp['message'] ?? $owasp['erreur']],
                 Response::HTTP_OK);
         }
-
-        return new JsonResponse(['code' => 200, 'nombre' => $owasp['nombre'],
-                                'message'=>['Nombre de faille OWASP : ' => $owasp['nombre']]], Response::HTTP_OK);
+        return new JsonResponse(['code' => 200, 'owasp2017' => $owasp['owasp2017'], 'owasp2021' => $owasp['owasp2021'], 'message'=>['Nombre de faille OWASP 2017 : ' => $owasp['owasp2017'], 'Nombre de faille OWASP 2021 : ' => $owasp['owasp2021']]], Response::HTTP_OK);
     }
 
     /**
@@ -327,9 +325,9 @@ class ApiCollecteController extends AbstractController
         $hotspot=$this->batchCollecteHotspot->batchCollecteHotspot($data->maven_key, 'COLLECTE', $utilisateur_collecte);
         if ($hotspot['code']!=200){
             return new JsonResponse([
-                'type' => 'error', 'code' => $hotspot['code'],
+                'type' => 'erreur', 'code' => $hotspot['code'],
                 'reference' => static::$reference,
-                'message' => $hotspot['message'] ?? $hotspot['error']], Response::HTTP_OK);
+                'message' => $hotspot['message'] ?? $hotspot['erreur']], Response::HTTP_OK);
         }
 
         return new JsonResponse([
@@ -379,9 +377,9 @@ class ApiCollecteController extends AbstractController
         $anomalie=$this->batchCollecteAnomalie->BatchCollecteAnomalie($data->maven_key, 'COLLECTE', $utilisateur_collecte);
         if ($anomalie['code']!=200){
             return new JsonResponse([
-                'type' => 'error', 'code' => $anomalie['code'],
+                'type' => 'erreur', 'code' => $anomalie['code'],
                 'reference' => static::$reference,
-                'message' => $anomalie['message'] ?? $anomalie['error']], Response::HTTP_OK);
+                'message' => $anomalie['message'] ?? $anomalie['erreur']], Response::HTTP_OK);
         }
 
         return new JsonResponse(['code' => 200, 'info'=>$anomalie['info'],'message'=>[
@@ -430,9 +428,9 @@ class ApiCollecteController extends AbstractController
         $anomalieDetail=$this->batchCollecteAnomalieDetail->BatchCollecteAnomalieDetail($data->maven_key, 'COLLECTE', $utilisateur_collecte);
         if ($anomalieDetail['code']!=200){
             return new JsonResponse([
-                'type' => 'error', 'code' => $anomalieDetail['code'],
+                'type' => 'erreur', 'code' => $anomalieDetail['code'],
                 'reference' => static::$reference,
-                'message' => $anomalieDetail['message'] ?? $anomalieDetail['error']], Response::HTTP_OK);
+                'message' => $anomalieDetail['message'] ?? $anomalieDetail['erreur']], Response::HTTP_OK);
         }
 
         return new JsonResponse(['code' => 200, 'message'=>['chargement des anomalies details']], Response::HTTP_OK);
@@ -478,9 +476,9 @@ class ApiCollecteController extends AbstractController
 
         if ($hotspotOwasp['code']!=200){
             return new JsonResponse([
-                'type' => 'error', 'code' => $hotspotOwasp['code'],
+                'type' => 'erreur', 'code' => $hotspotOwasp['code'],
                 'reference' => static::$reference,
-                'message' => $hotspotOwasp['message'] ?? $hotspotOwasp['error']], Response::HTTP_OK);
+                'message' => $hotspotOwasp['message'] ?? $hotspotOwasp['erreur']], Response::HTTP_OK);
         }
 
         return new JsonResponse(['code' => 200, 'info' => $hotspotOwasp['info'],
@@ -527,9 +525,9 @@ class ApiCollecteController extends AbstractController
         $hotspotDetail=$this->batchCollecteHotspotDetail->BatchCollecteHotspotDetail($data->maven_key, 'COLLECTE', $utilisateur_collecte);
         if ($hotspotDetail['code']!=200){
             return new JsonResponse([
-                'type' => 'error', 'code' => $hotspotDetail['code'],
+                'type' => 'erreur', 'code' => $hotspotDetail['code'],
                 'reference' => static::$reference,
-                'message' => $hotspotDetail['message'] ?? $hotspotDetail['error']], Response::HTTP_OK);
+                'message' => $hotspotDetail['message'] ?? $hotspotDetail['erreur']], Response::HTTP_OK);
         }
 
         return new JsonResponse(['code' => 200, 'nombre'=>count($hotspotDetail),'message'=>''], Response::HTTP_OK);
@@ -573,9 +571,9 @@ class ApiCollecteController extends AbstractController
         $noSonar=$this->batchCollecteNoSonar->BatchCollecteNoSonar($data->maven_key, 'COLLECTE', $utilisateur_collecte);
         if ($noSonar['code']!=200){
             return new JsonResponse([
-                'type' => 'error', 'code' => $noSonar['code'],
+                'type' => 'erreur', 'code' => $noSonar['code'],
                 'reference' => static::$reference,
-                'message' => $noSonar['message'] ?? $noSonar['error']], Response::HTTP_OK);
+                'message' => $noSonar['message'] ?? $noSonar['erreur']], Response::HTTP_OK);
         }
 
         $nombre=$noSonar['message']['suppress_warning']??0 + $noSonar['message']['no_sonar']??0;
@@ -622,9 +620,9 @@ class ApiCollecteController extends AbstractController
         $todo=$this->batchCollecteTodo->BatchCollecteTodo($data->maven_key, 'COLLECTE', $utilisateur_collecte);
         if ($todo['code']!=200){
             return new JsonResponse([
-                'type' => 'error', 'code' => $todo['code'],
+                'type' => 'erreur', 'code' => $todo['code'],
                 'reference' => static::$reference,
-                'message' => $todo['message'] ?? $todo['error']], Response::HTTP_OK);
+                'message' => $todo['message'] ?? $todo['erreur']], Response::HTTP_OK);
         }
         return new JsonResponse(['code' => 200, 'nombre' => $todo['nombre'], 'message'=>''], Response::HTTP_OK);
     }
@@ -668,9 +666,9 @@ class ApiCollecteController extends AbstractController
         $actuatorInfo=$this->batchCollecteActuator->BatchCollecteActuatorInfo($data->maven_key, 'COLLECTE', $utilisateur_collecte);
         if ($actuatorInfo['code']!=200){
             return new JsonResponse([
-                'type' => 'error', 'code' => $actuatorInfo['code'],
+                'type' => 'erreur', 'code' => $actuatorInfo['code'],
                 'reference' => static::$reference,
-                'message' => $actuatorInfo['message'] ?? $actuatorInfo['error']], Response::HTTP_OK);
+                'message' => $actuatorInfo['message'] ?? $actuatorInfo['erreur']], Response::HTTP_OK);
         }
         return new JsonResponse(['code' => 200, 'message'=>[
             'json' => $actuatorInfo['json']]], Response::HTTP_OK);
@@ -715,9 +713,9 @@ class ApiCollecteController extends AbstractController
         $logger=$this->batchCollecteLogger->BatchCollecteLogger($data->maven_key, 'COLLECTE', $utilisateur_collecte);
         if ($logger['code']!=200){
             return new JsonResponse([
-                'type' => 'error', 'code' => $logger['code'],
+                'type' => 'erreur', 'code' => $logger['code'],
                 'reference' => static::$reference,
-                'message' => $logger['message'] ?? $logger['error']], Response::HTTP_OK);
+                'message' => $logger['message'] ?? $logger['erreur']], Response::HTTP_OK);
         }
         return new JsonResponse(['code' => 200, 'message'=>$logger['data']], Response::HTTP_OK);
     }

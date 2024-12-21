@@ -79,9 +79,9 @@ class BatchCollecteNoteController extends AbstractController
         $queryString = http_build_query($queryParams);
 
         /** Appelle le client HTTP */
-        $result = $this->client->http("$tempoUrl/api/measures/component?$queryString");
+        $result = $this->client->httpSonarQube("$tempoUrl/api/measures/component?$queryString");
         if (isset($result['code']) && in_array($result['code'], [401, 404])) {
-            return ['code' => $result['code'], 'error'=>[$result['erreur']]];
+            return ['code' => $result['code'], 'erreur'=>[$result['erreur']]];
         }
 
         /** On supprime les résultats pour la maven_key. */
@@ -89,7 +89,7 @@ class BatchCollecteNoteController extends AbstractController
         $delete=$noteRepository->deleteNotesMavenKey($map);
         if ($delete['code']!=200) {
             return ['code' => $delete['code'],
-                    'error'=>[$delete['erreur'],
+                    'erreur'=>[$delete['erreur'],
                     static::$request=>'deleteNoteMavenKey']
                     ];
         }
@@ -110,7 +110,7 @@ class BatchCollecteNoteController extends AbstractController
             $request=$noteRepository->insertNotes($map);
             if ($request['code']!=200) {
                 return ['code' => $request['code'],
-                        'error'=>[$request['erreur'],
+                        'erreur'=>[$request['erreur'],
                         static::$request=>'insertNote']
                 ];
             }
@@ -158,7 +158,7 @@ class BatchCollecteNoteController extends AbstractController
         $toReview=$hotspotsRepository->countHotspotsStatus($map);
         if ($toReview['code']!=200) {
             return ['code' => $toReview['code'],
-                    'error'=>[$toReview['erreur'],
+                    'erreur'=>[$toReview['erreur'],
                     static::$request=>'countHotspotsStatus(TO_REVIEW)']
             ];
         }
@@ -167,7 +167,7 @@ class BatchCollecteNoteController extends AbstractController
         $reviewed=$hotspotsRepository->countHotspotsStatus($map);
         if ($reviewed['code']!=200) {
             return ['code' => $reviewed['code'],
-                    'error'=>[$reviewed['erreur'],
+                    'erreur'=>[$reviewed['erreur'],
                     static::$request=>'countHotspotsStatus(REVIEWED)']
             ];
         }

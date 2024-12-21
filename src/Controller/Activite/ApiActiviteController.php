@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2022.
+ *  Copyright (c) 2021-2024.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -19,8 +19,6 @@ use Symfony\Component\Routing\Annotation\Route;
 
 /** Accès aux tables */
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\ListeProjet;
-use App\Entity\Properties;
 
 /** Gestion de accès aux API */
 use Symfony\Component\HttpFoundation\Request;
@@ -37,7 +35,7 @@ use App\Entity\Activite;
 use App\Entity\ActiviteHistorique;
 
 /**
- * [Description ApiHomeController]
+ * [Description ApiActiviteController]
  */
 class ApiActiviteController extends AbstractController
 {
@@ -72,20 +70,18 @@ class ApiActiviteController extends AbstractController
      * http://{url}}/api/components/search_projects?ps=500
      *
      * @param ClientActivite $client
-     * @return response
+     * @return JsonResponse
      *
      * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/activite/sauvegarde', name: 'api_sauvegarde_historique', methods: ['POST'])]
-    public function apiSauvegardeHistorique(ClientActivite $client, Security $security): response
+    public function apiSauvegardeHistorique(ClientActivite $client, Security $security): JsonResponse
     {
-        $response = new JsonResponse();
-
         /** si on est pas GESTIONNAIRE on ne fait rien. */
         if (!$security->isGranted('ROLE_ACTIVITE')){
-            return $response->setData(['code' => 403, Response::HTTP_OK]);
+            return new JsonResponse(['code' => 403, Response::HTTP_OK]);
         }
         /** On instancie l'EntityRepository */
         $activiteEntity = $this->em->getRepository(Activite::class);
@@ -122,7 +118,7 @@ class ApiActiviteController extends AbstractController
 
 
 
-        // On recupere l'anne actuelle
+        // On récupère l'année actuelle
         $dateActuelle = new \DateTime();
         $dateActuelle->setTimezone(new \DateTimeZone('Europe/Paris'));
         $anneeActuelle = $dateActuelle->format('Y');
@@ -136,7 +132,7 @@ class ApiActiviteController extends AbstractController
         $result = $activiteEntity->nombreAnalyse($anneeActuelle);
         $donneeTableau[$anneeActuelle]['nb_analyse'] = $result['request']['nb_analyse'];
 
-        // Le nombre d'analyse réussi ou en échec pour cette annee
+        // Le nombre d'analyse réussi ou en échec pour cette année
         // Réussi
         $statusRechercher = 'SUCCESS';
         $result = $activiteEntity->nombreStatus($anneeActuelle,$statusRechercher);
@@ -169,7 +165,7 @@ class ApiActiviteController extends AbstractController
         $tableHistoriqueActivite = $historiqueActiviteEntity->selectActivite();
         $tableHistoriqueActivite['request'][0]["date_enregistrement"] = (new \DateTime($tableHistoriqueActivite['request'][0]["date_enregistrement"]))->format('d-m-Y H:i:s');
 
-        return $response->setData(['code' => 200,'listeDonnee' => $tableHistoriqueActivite, Response::HTTP_OK]);
+        return new JsonResponse(['code' => 200,'listeDonnee' => $tableHistoriqueActivite], Response::HTTP_OK);
     }
 
     /**
@@ -178,16 +174,16 @@ class ApiActiviteController extends AbstractController
      * http://{url}}/api/components/search_projects?ps=500
      *
      * @param ClientActivite $client
-     * @return response
+     * @return JsonResponse
      *
      * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/activite/dessin', name: 'api_dessin', methods: ['POST'])]
-    public function apiRecupereDonnee(Request $request): response
+    public function apiRecupereDonnee(Request $request): JsonResponse
     {
-        /**On recupere la date actuelle */
+        /**On récupère la date actuelle */
         $dateActuelle = new \DateTime();
 
         /** On instancie la classe */
@@ -196,12 +192,9 @@ class ApiActiviteController extends AbstractController
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On instancie une nouvelle response */
-        $response = new JsonResponse();
-
       /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'source')) {
-            return $response->setData(
+            return new JsonResponse(
                 ['data'=>$data,'code'=>400, Response::HTTP_BAD_REQUEST]);
         }
 

@@ -110,7 +110,7 @@ class ApiEnregistrementController extends AbstractController
        /** Enregistrement dans le table historique */
         $historique=$historiqueRepository->insertHistoriqueAjoutProjet($map,$json);
         if ($historique['code']!=200 && $historique['code']!=23505) {
-            return ['code' => $historique['code'], 'error'=>[$historique['erreur']],
+            return ['code' => $historique['code'], 'erreur'=>[$historique['erreur']],
             'rq'=>'insertTodo'];
         }
         if ($historique['code']===23505){

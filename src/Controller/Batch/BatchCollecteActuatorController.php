@@ -22,7 +22,6 @@ use App\Entity\ActuatorInfo;
 
 /** Client HTTP */
 use Doctrine\ORM\EntityManagerInterface;
-use PhpParser\Node\Stmt\Foreach_;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
@@ -72,7 +71,7 @@ class BatchCollecteActuatorController extends AbstractController
         $actuatorEndpoint=$actuatorRepository->findActuatorMavenKey($map);
         if ($actuatorEndpoint['code'] != 200 && $actuatorEndpoint['code']!= 404 ) {
             return ['code' => $actuatorEndpoint['code'],
-            'error'=>[$actuatorEndpoint['erreur'], static::$request=>'findActuatorMavenKey']];
+            'erreur'=>[$actuatorEndpoint['erreur'], static::$request=>'findActuatorMavenKey']];
         }
 
         /** Il n'y a pas de endpoint pour ce projet */
@@ -96,7 +95,7 @@ class BatchCollecteActuatorController extends AbstractController
         $data = json_decode($actuatorInfo->getContent());
         /** On catch les erreurs HTTP 400, 401, 403 et 404, si possible :) */
         if (isset($data->code) && in_array($data->code, [400, 401, 403, 404])) {
-                return ['code' => $data->code, 'error'=>[$data->erreur]];
+                return ['code' => $data->code, 'erreur'=>[$data->erreur]];
         }
 
         /** On renvoi les résultats */

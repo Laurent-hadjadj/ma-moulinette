@@ -73,17 +73,17 @@ class BatchCollecteMesureController extends AbstractController
         $queryString = http_build_query($queryParams);
 
         /** Appelle le client HTTP */
-        $result = $this->client->http("$tempoUrl/api/components/app?$queryString");
+        $result = $this->client->httpSonarQube("$tempoUrl/api/components/app?$queryString");
         /** On catch les erreurs HTTP 401 et 404, si possible :) */
         if (isset($result['code']) && in_array($result['code'], [401, 404])) {
-            return ['code' => $result['code'], 'error'=>[$result['erreur']]];
+            return ['code' => $result['code'], 'erreur'=>[$result['erreur']]];
         }
 
         /** On supprime les résultats pour la maven_key. */
         $map=['maven_key'=>$mavenKey];
         $delete=$mesuresRepository->deleteMesuresMavenKey($map);
         if ($delete['code']!=200) {
-            return ['code' => $delete['code'], 'error'=>[$delete['erreur'], static::$request=>'deleteMesureMavenKey']];
+            return ['code' => $delete['code'], 'erreur'=>[$delete['erreur'], static::$request=>'deleteMesureMavenKey']];
         }
         /** Création de la date du jour */
         $date = new \DateTimeImmutable();
@@ -104,7 +104,7 @@ class BatchCollecteMesureController extends AbstractController
         ];
         $queryString = http_build_query($queryParams);
         /** Appelle le client HTTP */
-        $result2 = $this->client->http("$tempoUrl/api/measures/component?$queryString");
+        $result2 = $this->client->httpSonarQube("$tempoUrl/api/measures/component?$queryString");
 
         /** Initialise ncloc avec une valeur par défaut */
         foreach($result2['component']['measures'] as $mesure){
@@ -129,7 +129,7 @@ class BatchCollecteMesureController extends AbstractController
             ];
             $queryString = http_build_query($queryParams);
         /** Appelle le client HTTP */
-        $result3 = $this->client->http("$tempoUrl/api/measures/component?$queryString");
+        $result3 = $this->client->httpSonarQube("$tempoUrl/api/measures/component?$queryString");
 
         $sqaleRatio = floatval($result3['component']['measures'][0]['value'] ?? -1);
 
@@ -152,7 +152,7 @@ class BatchCollecteMesureController extends AbstractController
         $insert=$mesuresRepository->insertMesures($mesureData);
         if ($insert['code'] !== 200) {
             return ['code' => $insert['code'],
-                    'error'=>[$insert['erreur'],
+                    'erreur'=>[$insert['erreur'],
                     static::$request => 'insertMesures']];
         }
 

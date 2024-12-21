@@ -64,9 +64,9 @@ class BatchCollecteLoggerController extends AbstractController
         /* Fonction générique pour executer une requête et retourner le résultat dans un tableau */
         $queryString = http_build_query($queryParams);
         /** Appelle le client HTTP */
-        $result = $this->client->http("$tempoUrl/api/issues/search?$queryString");
+        $result = $this->client->httpSonarQube("$tempoUrl/api/issues/search?$queryString");
         if (isset($result['code']) && in_array($result['code'], [401, 404])) {
-            return ['error' => $result['code'], $result['erreur']];
+            return ['erreur' => $result['code'], $result['erreur']];
         }
         if (isset($result['code']) && $result['code']!=200) {
             return ['code' => $result['code'], 'erreur' => $result['erreur']];
@@ -116,27 +116,27 @@ class BatchCollecteLoggerController extends AbstractController
         /* On appelle les API en passant les querryParams à la fonction générique */
         $results = [];
         $results['track-info-method']=self::makeRequest($queryParams['track-info-method'], $tempoUrl);
-        if (isset($results['track-info-method']['error'])) {
-                return ['code' => $results['track-info-method']['error'], 'error'=>$results['erreur']];
+        if (isset($results['track-info-method']['erreur'])) {
+                return ['code' => $results['track-info-method']['erreur'], 'erreur'=>$results['erreur']];
             }
         $results['track-warn-method']=self::makeRequest($queryParams['track-warn-method'], $tempoUrl);
-        if (isset($results['track-warn-method']['error'])) {
-                return ['code' => $results['track-warn-method']['error'], 'error'=>$results['erreur']];
+        if (isset($results['track-warn-method']['erreur'])) {
+                return ['code' => $results['track-warn-method']['erreur'], 'erreur'=>$results['erreur']];
             }
         $results['track-error-method']=self::makeRequest($queryParams['track-error-method'], $tempoUrl);
-        if (isset($results['track-error-method']['error'])) {
-                return ['code' => $results['track-error-method']['error'], 'error'=>$results['erreur']];
+        if (isset($results['track-error-method']['erreur'])) {
+                return ['code' => $results['track-error-method']['erreur'], 'erreur'=>$results['erreur']];
             }
         $results['track-debug-method']=self::makeRequest($queryParams['track-debug-method'], $tempoUrl);
-        if (isset($results['track-debug-method']['error'])) {
-                return ['code' => $results['track-debug-method']['error'], 'error'=>$results['erreur']];
+        if (isset($results['track-debug-method']['erreur'])) {
+                return ['code' => $results['track-debug-method']['erreur'], 'erreur'=>$results['erreur']];
             }
 
         /** On supprime les résultats pour la maven_key. */
         $map=['maven_key'=>$mavenKey];
         $delete=$loggerRepository->deleteLoggerMavenKey($map);
         if ($delete['code']!=200) {
-            return ['code' => $delete['code'], 'error'=>[$delete['erreur'], static::$request=>'deleteLoggerMavenKey']];
+            return ['code' => $delete['code'], 'erreur'=>[$delete['erreur'], static::$request=>'deleteLoggerMavenKey']];
         }
 
         /** Création de la date du jour */
@@ -158,7 +158,7 @@ class BatchCollecteLoggerController extends AbstractController
         $insert=$loggerRepository->insertLogger($loggerData);
         if ($insert['code'] !== 200) {
             return ['code' => $insert['code'],
-                    'error'=>[$insert['erreur'],
+                    'erreur'=>[$insert['erreur'],
                     static::$request => 'insertLogger']];
         }
 

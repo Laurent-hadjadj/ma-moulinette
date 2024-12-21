@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2022.
+ *  Copyright (c) 2021-2024.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -13,25 +13,28 @@
 
 namespace App\Controller\Activite;
 
-use DateTime;
-use DateTimeZone;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\Routing\Annotation\Route;
 
 use App\Entity\Activite;
 use App\Entity\ActiviteHistorique;
 use App\Service\ClientActivite;
-use DateTimeImmutable;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
 
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-
 use Doctrine\ORM\EntityManagerInterface;
 
 class ActiviteController extends AbstractController
 {
 
     public static $sonarUrl = "sonar.url";
+
+    private $logoEntreprise;
+    private $marqueEntrepriseShort;
+    private $marqueEntrepriseLong;
+    private $environnement;
+    private $version;
+    private $dateCopyright;
 
     /**
      * [Description for __construct]
@@ -40,9 +43,38 @@ class ActiviteController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function __construct(private EntityManagerInterface $em)
+    public function __construct(
+        private EntityManagerInterface $em,
+        private ParameterBagInterface $params)
     {
         $this->em = $em;
+        $this->logoEntreprise = $params->get('logo.entreprise');
+        $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
+        $this->marqueEntrepriseLong = $params->get('marque.entreprise.long');
+        $this->environnement = $params->get('environnement');
+        $this->version = $params->get('version');
+        $this->dateCopyright = \date('Y');
+    }
+
+    /**
+     * [Description for genericRender]
+     *
+     * @return array
+     *
+     * Created at: 21/12/2024 20:50:02 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function genericRender(): array
+    {
+        return [
+            'type_footer' => null,
+            'logo_entreprise' => $this->logoEntreprise,
+            'marque_entreprise_short' => $this->marqueEntrepriseShort,
+            'marque_entreprise_long' => $this->marqueEntrepriseLong,
+            'env' => $this->environnement,
+            'version' => $this->version,
+            'date_copyright' => $this->dateCopyright];
     }
 
     /**
@@ -61,8 +93,8 @@ class ActiviteController extends AbstractController
         $activiteEntity = $this->em->getRepository(Activite::class);
 
         // On récupère l'année actuelle
-        $dateMoins1 = new DateTime();
-        $dateMoins1->setTimezone(new DateTimeZone('Europe/Paris'));
+        $dateMoins1 = new \DateTime();
+            $dateMoins1->setTimezone(new \DateTimeZone('Europe/Paris'));
         $anneeActuelle = $dateMoins1->format('Y');
 
         $url = $this->getParameter(static::$sonarUrl)
@@ -91,12 +123,12 @@ class ActiviteController extends AbstractController
                 Response::HTTP_OK]);
         }
 
-        $dateBase = new DateTime($activiteEntity->dernierDate()['request'][0]['date']);
-        $dateSonar = new DateTime($respond['tasks'][0]['executedAt']);
+        $dateBase = new \DateTime($activiteEntity->dernierDate()['request'][0]['date']);
+        $dateSonar = new \DateTime($respond['tasks'][0]['executedAt']);
 
         if($dateSonar > $dateBase){
             // Ici on calcule l'interval de jour entre la base et sonar
-            $interval = $dateBase->diff(new DateTime($respond['tasks'][0]['executedAt']))->format('%d');
+            $interval = $dateBase->diff(new \DateTime($respond['tasks'][0]['executedAt']))->format('%d');
             $this->addFlash('notice', ['type'=>'warning', 'titre'=> '[ACTIVITE-002]', 'message'=>"Vous pouvez mettre à jour  La liste des analyses SonarQube. Il y a " .$interval. " jours de retard"]);
         }
         if($dateSonar == $dateBase){
@@ -107,20 +139,14 @@ class ActiviteController extends AbstractController
 
         $result = $historiqueActiviteEntity->selectActivite();
         for ($i = 0; $i < count($result['request']); $i++){
-            $formatedDate = new DateTimeImmutable($result['request'][$i]['max_temps']);
+            $formatedDate = new \DateTimeImmutable($result['request'][$i]['max_temps']);
             $result['request'][$i]['max_temps'] = $formatedDate->format('H:i:s');
         }
 
-        $result['request'][0]["date_enregistrement"] = (new DateTime($result['request'][0]["date_enregistrement"]))->format('d-m-Y H:i:s');
+        $result['request'][0]["date_enregistrement"] = (new \DateTime($result['request'][0]["date_enregistrement"]))->format('d-m-Y H:i:s');
 
-        return $this->render('activite/index.html.twig', [
-            'marque_entreprise_short' => $this->getParameter('marque.entreprise.short'),
-            'marque_entreprise_long' => $this->getParameter('marque.entreprise.long'),
-            'logo_entreprise' => $this->getParameter('logo.entreprise'),
-            'env' => $this->getParameter('environnement'),
-            'data' => $result['request'],'version' => $this->getParameter('version'),
-            'dateCopyright' => \date("Y"),
-            Response::HTTP_OK]);
+        $render=static::genericRender();
+        return $this->render('activite/index.html.twig', $render);
     }
 
 }

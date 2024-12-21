@@ -77,7 +77,7 @@ class BatchCollecteTodoController extends AbstractController
         'rules'=> 'javascript:S1135,xml:S1135,typescript:S1135,Web:S1135,java:S1135,php:s1135,ruby:s1135,python:s1135', 'p'=>1, 'ps'=>500 ];
 
         /** On construit l'URL et on appel le WS. */
-        $result = $this->client->http("$tempoUrl/api/issues/search?".http_build_query($queryParams));
+        $result = $this->client->httpSonarQube("$tempoUrl/api/issues/search?".http_build_query($queryParams));
          /** On catch les erreurs HTTP 401 et 404, si possible :) */
         if (isset($result['code']) && in_array($result['code'], [401, 404])) {
             return ['code' => $result['code']];
@@ -122,7 +122,7 @@ class BatchCollecteTodoController extends AbstractController
         $request=$todoRepository->insertTodo($mapData);
         if ($request['code']!=200) {
             return ['code' => $request['code'],
-            'error'=>[$request['erreur']],
+            'erreur'=>[$request['erreur']],
             static::$request=>'insertTodo'];
         }
         /** On enregistre les données */

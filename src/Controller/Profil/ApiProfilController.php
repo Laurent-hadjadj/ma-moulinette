@@ -14,6 +14,7 @@
 namespace App\Controller\Profil;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 /** Sécurité */
@@ -46,7 +47,12 @@ class ApiProfilController extends AbstractController
     public static $dateFormat = "Y-m-d H:i:s";
     public static $dateFormatShort = "Y-m-d";
 
-    private $client;
+    private $logoEntreprise;
+    private $marqueEntrepriseShort;
+    private $marqueEntrepriseLong;
+    private $environnement;
+    private $version;
+    private $dateCopyright;
 
     /**
      * [Description for __construct]
@@ -58,10 +64,17 @@ class ApiProfilController extends AbstractController
      */
     public function __construct(
         private EntityManagerInterface $em,
-        Client $client,
+        private Client $client,
+        private ParameterBagInterface $params
     ) {
         $this->em = $em;
         $this->client = $client;
+        $this->logoEntreprise = $params->get('logo.entreprise');
+        $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
+        $this->marqueEntrepriseLong = $params->get('marque.entreprise.long');
+        $this->environnement = $params->get('environnement');
+        $this->version = $params->get('version');
+        $this->dateCopyright = \date('Y');
     }
 
     /**
@@ -77,13 +90,13 @@ class ApiProfilController extends AbstractController
     {
         return [
             'type_footer' => null,
-            'marque_entreprise_short' => $this->getParameter('marque.entreprise.short'),
-            'marque_entreprise_long' => $this->getParameter('marque.entreprise.long'),
-            'logo_entreprise' => $this->getParameter('logo.entreprise'),
-            'env' => $this->getParameter('environnement'),
-            "version" => $this->getParameter("version"),
-            "date_copyright" => \date("Y")];
-        }
+            'logo_entreprise' => $this->logoEntreprise,
+            'marque_entreprise_short' => $this->marqueEntrepriseShort,
+            'marque_entreprise_long' => $this->marqueEntrepriseLong,
+            'env' => $this->environnement,
+            'version' => $this->version,
+            'date_copyright' => $this->dateCopyright];
+    }
 
     /**
      * [Description for listeQualityProfiles]

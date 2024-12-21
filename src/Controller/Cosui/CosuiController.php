@@ -166,11 +166,11 @@ class CosuiController extends AbstractController
     private function notes($mavenKey): array
     {
         /** On instancie l'entityRepository */
-        $historique = $this->em->getRepository(Historique::class);
+        $historiqueRepository = $this->em->getRepository(Historique::class);
 
         /** On récupère les informations du projet de la table historique */
         $map=['maven_key'=>$mavenKey];
-        $request=$historique->selectHistoriqueProjetLast($map);
+        $request=$historiqueRepository->selectHistoriqueProjetLast($map);
         if ($request['code']!=200) {
             return [
                     'maven_key' => $mavenKey,'code'=>$request['code'],
@@ -228,11 +228,11 @@ class CosuiController extends AbstractController
     private function reference($mavenKey): array
     {
         /** On instancie l'entityRepository */
-        $historique = $this->em->getRepository(Historique::class);
+        $historiqueRepository = $this->em->getRepository(Historique::class);
 
         /** On récupère les informations du projet de référence */
         $map=['maven_key'=>$mavenKey];
-        $request=$historique->selectHistoriqueProjetReference($map);
+        $request=$historiqueRepository->selectHistoriqueProjetReference($map);
         if ($request['code']!=200) {
             return [
                     'maven_key' => $mavenKey,'code'=>$request['code'],
@@ -263,7 +263,6 @@ class CosuiController extends AbstractController
                 'initial_nombre_hotspot' => $request['reference'][0]['nombre_hotspot'],
                 'initial_coverage' => $request['reference'][0]['coverage'],
                 'initial_sqale_debt_ratio' => $request['reference'][0]['sqale_debt_ratio']
-
             ];
     }
 

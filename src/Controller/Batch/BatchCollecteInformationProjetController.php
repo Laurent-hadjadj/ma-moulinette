@@ -74,7 +74,7 @@ class BatchCollecteInformationProjetController extends AbstractController
         $queryString = http_build_query($queryParams);
 
         /** Appelle le client HTTP */
-        $result = $this->client->http("$tempoUrl/api/project_analyses/search?$queryString");
+        $result = $this->client->httpSonarQube("$tempoUrl/api/project_analyses/search?$queryString");
 
         /** On vérifie si le projet existe en locale */
         $requestInformation=$this->isValidMavenKey->isValideInformation($mavenKey);
@@ -244,7 +244,7 @@ class BatchCollecteInformationProjetController extends AbstractController
         $delete=$informationProjetRepository->deleteInformationProjetMavenKey($map);
         if ($delete['code']!=200) {
             return ['code' => $delete['code'],
-                    'error'=>[$delete['erreur'], static::$request=>'deleteInformationProjetMavenKey']
+                    'erreur'=>[$delete['erreur'], static::$request=>'deleteInformationProjetMavenKey']
                 ];
         }
 
@@ -275,7 +275,7 @@ class BatchCollecteInformationProjetController extends AbstractController
         $insert=$informationProjetRepository->insertInformationProjet($map);
         if ($insert['code']!=200) {
             return ['code' => $insert['code'],
-            'error'=>[$insert['erreur']],
+            'erreur'=>[$insert['erreur']],
             static::$request=>'insertInformationProjetMavenKey'];
         }
 

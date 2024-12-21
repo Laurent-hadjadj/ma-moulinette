@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2022.
+ *  Copyright (c) 2021-2024.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -21,13 +21,11 @@ use Symfony\Component\Routing\Annotation\Route;
 // Gestion de accès aux API
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-// Accès aux tables SLQLite
+// Accès aux tables
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Owasp;
 use App\Entity\HotspotOwasp;
 use App\Entity\HotspotDetails;
-
-
 
 /**
  * [Description ApiOwaspPeintureController]
@@ -58,46 +56,44 @@ class ApiOwaspPeintureController extends AbstractController
      *
      * @param Request $request
      *
-     * @return response
+     * @return JsonResponse
      *
      * Created at: 15/12/2022, 21:19:10 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/peinture/owasp/liste', name: 'peinture_owasp_liste', methods: ['POST'])]
-    public function peintureOwaspListe(Request $request): response
+    public function peintureOwaspListe(Request $request): JsonResponse
     {
         /** On instancie l'entityRepository */
-        $owasp = $this->em->getRepository(Owasp::class);
+        $owaspRepository = $this->em->getRepository(Owasp::class);
 
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On crée un objet de reponse JSON */
-        $response = new JsonResponse();
-
         /** On teste si la clé est valide */
-        if ($data === null || !property_exists($data, 'maven_key')) {
-            return $response->setData(
-                ['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
-                'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+        if ($data === null || !property_exists($data, 'maven_key')
+        || !property_exists($data, 'referential_owasp')) {
+            return new JsonResponse(
+                ['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference, 'message'=> static::$erreur400], Response::HTTP_OK);
         }
 
         /** On récupère les failles owasp */
-        $map=['maven_key'=>$data->maven_key];
-        $request=$owasp->selectOwaspOrderByDateEnregistrement($map);
+        $map=['maven_key' => $data->maven_key, 'referential_owasp' => $data->referential_owasp];
+        $request=$owaspRepository->selectOwaspOrderByDateEnregistrement($map);
         if ($request['code']!=200) {
-            return $response->setData([
+            return new JsonResponse([
                 'maven_key' => $data->maven_key, 'code'=>$request['code'],
                 'erreur' => $request['erreur']], Response::HTTP_OK);
         }
 
         /** si on ne trouve pas la liste on retourne une erreur HTTP 406 */
         if (empty($request['liste'])) {
-            return $response->setData(['code' => 406, 'liste' => $request['liste']], Response::HTTP_OK);
+            return new JsonResponse(['code' => 406, 'liste' => $request['liste']], Response::HTTP_OK);
         }
 
         /** Informations */
+        $referential_owasp = $request['liste'][0]['referential_owasp'];
         $total = $request['liste'][0]['a1'] + $request['liste'][0]['a2'] + $request['liste'][0]['a3'] + $request['liste'][0]['a4']
                     + $request['liste'][0]['a5'] + $request['liste'][0]['a6'] + $request['liste'][0]['a7'] + $request['liste'][0]['a8']
                     + $request['liste'][0]['a9'] + $request['liste'][0]['a10'];
@@ -123,9 +119,10 @@ class ApiOwaspPeintureController extends AbstractController
                     + $request['liste'][0]['a7_minor'] + $request['liste'][0]['a8_minor'] + $request['liste'][0]['a9_minor']
                     + $request['liste'][0]['a10_minor'];
 
-        return $response->setData(
+        return new JsonResponse(
             [
                 'code' => 200,
+                'referential_owasp' => $referential_owasp,
                 'total' => $total, 'version' => $request['liste'][0]['version'], 'date_version' => $request['liste'][0]['date_version'],
                 'bloquant' => $bloquant, 'critique' => $critique, 'majeur' => $majeur, 'mineur' => $mineur,
                 'a1' => $request['liste'][0]['a1'], 'a2' => $request['liste'][0]['a2'], 'a3' => $request['liste'][0]['a3'],
@@ -161,14 +158,14 @@ class ApiOwaspPeintureController extends AbstractController
        *
      * @param Request $request
      *
-     * @return response
+     * @return JsonResponse
      *
      * Created at: 15/12/2022, 22:11:35 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/peinture/owasp/hotspot/info', name: 'peinture_owasp_hotspot_info', methods: ['POST'])]
-    public function peintureOwaspHotspotInfo(Request $request): response
+    public function peintureOwaspHotspotInfo(Request $request): JsonResponse
     {
         /** On instancie l'entityRepository */
         $hotspotOwasp = $this->em->getRepository(HotspotOwasp::class);
@@ -176,21 +173,18 @@ class ApiOwaspPeintureController extends AbstractController
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On crée un objet de reponse JSON */
-        $response = new JsonResponse();
-
         /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'maven_key')) {
-            return $response->setData(
+            return new JsonResponse(
                 ['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
-                'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+                'message'=> static::$erreur400], Response::HTTP_OK);
         }
 
         /** On compte le nombre de hotspot REVIEWED */
         $map=['maven_key'=>$data->maven_key, 'status'=>'REVIEWED'];
         $reviewed=$hotspotOwasp->countHotspotOwaspStatus($map);
         if ($reviewed['code']!=200) {
-            return $response->setData([
+            return new JsonResponse([
                 'maven_key' => $data->maven_key,
                 'code'=>$reviewed['code'], 'erreur' => $request['erreur']],
                 Response::HTTP_OK);
@@ -200,7 +194,7 @@ class ApiOwaspPeintureController extends AbstractController
         $map=['maven_key'=>$data->maven_key, 'status'=>'TO_REVIEW'];
         $toReview=$hotspotOwasp->countHotspotOwaspStatus($map);
         if ($toReview['code']!=200) {
-            return $response->setData([
+            return new JsonResponse([
                 'maven_key' => $data->maven_key,'code'=>$toReview['code'],
                 'erreur' => $toReview['erreur']], Response::HTTP_OK);
         }
@@ -209,7 +203,7 @@ class ApiOwaspPeintureController extends AbstractController
         $map=['maven_key'=>$data->maven_key];
         $probability=$hotspotOwasp->countHotspotOwaspProbability($map);
         if ($probability['code']!=200) {
-            return $response->setData([
+            return new JsonResponse([
                 'maven_key' => $data->maven_key, 'code'=>$probability['code'],
                 'erreur' => $probability['erreur']], Response::HTTP_OK);
         }
@@ -229,30 +223,27 @@ class ApiOwaspPeintureController extends AbstractController
             }
         }
 
-        return $response->setData(
-            [
+        return new JsonResponse([
             'reviewed' => $reviewed['request'][0]['nombre'], 'toReview' => $toReview['request'][0]['nombre'],
             'total' => $reviewed['request'][0]['nombre'] + $toReview['request'][0]['nombre'],
-            'high' => $high, 'medium' => $medium, 'low' => $low,
-            Response::HTTP_OK
-        ]
-        );
+            'high' => $high, 'medium' => $medium, 'low' => $low],
+            Response::HTTP_OK);
     }
 
     /**
      * [Description for peintureOwaspHotspotListe]
-     * On récupère les résultats de la table hotpsot_owasp
+     * On récupère les résultats de la table hotspot_owasp
      *
      * @param Request $request
      *
-     * @return response
+     * @return JsonResponse
      *
      * Created at: 15/12/2022, 21:20:20 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/peinture/owasp/hotspot/liste', name: 'peinture_owasp_hotspot_liste', methods: ['POST'])]
-    public function peintureOwaspHotspotListe(Request $request): response
+    public function peintureOwaspHotspotListe(Request $request): JsonResponse
     {
         /** On instancie l'entityRepository */
         $hotspotOwasp = $this->em->getRepository(HotspotOwasp::class);
@@ -260,21 +251,18 @@ class ApiOwaspPeintureController extends AbstractController
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On crée un objet de reponse JSON */
-        $response = new JsonResponse();
-
         /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'maven_key') ) {
-        return $response->setData(
+        return new JsonResponse(
             ['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
-            'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+            'message'=> static::$erreur400], Response::HTTP_OK);
         }
 
         /** On compte le nombre de hotspot de type OWASP au statut TO_REVIEWED */
         $map=['maven_key'=>$data->maven_key];
         $menaces=$hotspotOwasp->countHotspotOwaspMenaces($map);
         if ($menaces['code']!=200) {
-            return $response->setData([
+            return new JsonResponse([
                 'maven_key' => $data->maven_key,
                 'code'=>$menaces['code'], 'erreur' => $menaces['erreur']],
                 Response::HTTP_OK);
@@ -315,31 +303,29 @@ class ApiOwaspPeintureController extends AbstractController
             }
         }
 
-        return $response->setData(
-            [   'menaceA1' => $menaceA1, 'menaceA2' => $menaceA2,
+        return new JsonResponse([
+                'menaceA1' => $menaceA1, 'menaceA2' => $menaceA2,
                 'menaceA3' => $menaceA3, 'menaceA4' => $menaceA4,
                 'menaceA5' => $menaceA5, 'menaceA6' => $menaceA6,
                 'menaceA7' => $menaceA7, 'menaceA8' => $menaceA8,
-                'menaceA9' => $menaceA9, 'menaceA10' => $menaceA10,
-                Response::HTTP_OK
-            ]
-        );
+                'menaceA9' => $menaceA9, 'menaceA10' => $menaceA10],
+                Response::HTTP_OK);
     }
 
     /**
      * [Description for peintureOwaspHotspotDetails]
-     * On récupère le détails des failles de type hotpsot
+     * On récupère le détails des failles de type hotspot
      *
      * @param Request $request
      *
-     * @return response
+     * @return JsonResponse
      *
      * Created at: 15/12/2022, 21:20:54 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/peinture/owasp/hotspot/details', name: 'peinture_owasp_hotspot_details', methods: ['POST'])]
-    public function peintureOwaspHotspotDetails(Request $request): response
+    public function peintureOwaspHotspotDetails(Request $request): JsonResponse
     {
         /** On instancie l'entityRepository */
         $hotspotDetails = $this->em->getRepository(HotspotDetails::class);
@@ -347,43 +333,41 @@ class ApiOwaspPeintureController extends AbstractController
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On crée un objet de reponse JSON */
-        $response = new JsonResponse();
-
         /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'maven_key')) {
-            return $response->setData
-                (['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
-                    'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+            return new JsonResponse([
+                'data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
+                'message'=> static::$erreur400], Response::HTTP_OK);
         }
 
         /** On récupère la liste des hotspots par status de la table détails. */
         $map=['maven_key'=>$data->maven_key];
         $details=$hotspotDetails->selectHotspotDetailsByStatus($map);
+        dd($details);
         if ($details['code']!=200) {
-            return $response->setData([
+            return new JsonResponse([
                 'maven_key' => $data->maven_key,
                 'code'=>$details['code'], 'erreur' => $details['erreur']],
                 Response::HTTP_OK);
         }
 
-        return $response->setData(['details' => $details], Response::HTTP_OK);
+        return new JsonResponse(['details' => $details], Response::HTTP_OK);
     }
 
     /**
      * [Description for peintureOwaspSeverity]
-     * On récupère le détails des failles de type hotpsot
+     * On récupère le détails des failles de type hotspot
      *
      * @param Request $request
      *
-     * @return response
+     * @return JsonResponse
      *
      * Created at: 15/12/2022, 21:21:20 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/peinture/owasp/hotspot/severity', name: 'peinture_owasp_hotspot_severity', methods: ['POST'])]
-    public function peintureOwaspSeverity(Request $request): response
+    public function peintureOwaspSeverity(Request $request): JsonResponse
     {
         /** On instancie l'entityRepository */
         $hotspotOwasp = $this->em->getRepository(HotspotOwasp::class);
@@ -391,70 +375,52 @@ class ApiOwaspPeintureController extends AbstractController
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On crée un objet de reponse JSON */
-        $response = new JsonResponse();
-
         /** On teste si le body est correcte */
         if ($data === null || !property_exists($data, 'maven_key')) {
-            return $response->setData(
-                ['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
-                    'message'=> static::$erreur400, Response::HTTP_BAD_REQUEST]);
+            return new JsonResponse([
+                'data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
+                'message'=> static::$erreur400], Response::HTTP_OK);
         }
 
         /** On compte le nombre de faille OWASP au statut HIGH */
-        $map=['maven_key'=>$data->maven_key, 'menace'=>$data->menace, 'status'=>'HIGH'];
+        $map=['maven_key'=>$data->maven_key, 'menace'=>$data->menace, 'probability'=>'HIGH'];
         $high=$hotspotOwasp->countHotspotOwaspMenaceByStatus($map);
         if ($high['code']!=200) {
-            return $response->setData([
+            return new JsonResponse([
                 'maven_key' => $data->maven_key,
                 'code'=>$high['code'], 'erreur' => $high['erreur']],
                 Response::HTTP_OK);
         }
 
         /** On compte le nombre de faille OWASP au statut MEDIUM */
-        $map=['maven_key'=>$data->maven_key, 'menace'=>$data->menace, 'status'=>'MEDIUM'];
+        $map=['maven_key'=>$data->maven_key, 'menace'=>$data->menace, 'probability'=>'MEDIUM'];
         $medium=$hotspotOwasp->countHotspotOwaspMenaceByStatus($map);
-        if ($high['code']!=200) {
-            return $response->setData([
+        if ($medium['code']!=200) {
+            return new JsonResponse([
                 'maven_key' => $data->maven_key,
                 'code'=>$medium['code'], 'erreur' => $medium['erreur']],
                 Response::HTTP_OK);
         }
 
         /**  On compte le nombre de faille OWASP au statut LOW */
-        $map=['maven_key'=>$data->maven_key, 'menace'=>$data->menace, 'status'=>'LOW'];
+        $map=['maven_key'=>$data->maven_key, 'menace'=>$data->menace, 'probability'=>'LOW'];
         $low=$hotspotOwasp->countHotspotOwaspMenaceByStatus($map);
-        if ($high['code']!=200) {
-            return $response->setData([
+        if ($low['code']!=200) {
+            return new JsonResponse([
                 'maven_key' => $data->maven_key,
                 'code'=>$low['code'], 'erreur' => $low['erreur']], Response::HTTP_OK);
         }
-
 
         /**
          * On vérifie la valeur des vulnérabilité de type HIGH, MEDIUMet LOW
          * Si la valeur est null alors on initialise à 0
          */
-        if (empty($hhigh)) {
-            $high = 0;
-        } else {
-            $high = $hhigh[0];
-        }
+        $x_high = empty($high) ? 0 : $high['nombre']['total'];
+        $x_medium = empty($medium) ? 0 : $medium['nombre']['total'];
+        $x_low = empty($low) ? 0 : $low['nombre']['total'];
 
-        if (empty($mmedium)) {
-            $medium = 0;
-        } else {
-            $medium = $mmedium[0];
-        }
-
-        if (empty($llow)) {
-            $low = 0;
-        } else {
-            $low = $llow[0];
-        }
-
-        return $response->setData(
-            ['high' => $high, 'medium' => $medium, 'low' => $low], Response::HTTP_OK);
+        return new JsonResponse(
+            ['high' => $x_high, 'medium' => $x_medium, 'low' => $x_low], Response::HTTP_OK);
     }
 
 }

@@ -3,7 +3,7 @@
 /**
 *  Ma-Moulinette
 *  --------------
-*  Copyright (c) 2021-2022.
+*  Copyright (c) 2021-2024.
 *  Laurent HADJADJ <laurent_h@me.com>.
 *  Licensed Creative Common CC-BY-NC-SA 4.0.
 *  ---
@@ -13,21 +13,22 @@
 
 namespace App\Controller\Actuator;
 
-/** Core */
-use App\Service\Client;
-use App\Entity\Actuator;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\Routing\Annotation\Route;
 
-use App\Entity\ActuatorInfo;
-use App\Form\ActuatorFormType;
-
-use Doctrine\ORM\EntityManagerInterface;
-
-/** Client HTTP */
-use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+
+use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Actuator;
+use App\Entity\ActuatorInfo;
+
+use App\Form\ActuatorFormType;
+
+use App\Service\Client;
+
+use Knp\Component\Pager\PaginatorInterface;
 
 class ActuatorController extends AbstractController
 {
@@ -37,18 +38,50 @@ class ActuatorController extends AbstractController
     public static $titre = 'Traitement';
     public static $erreur403 = "Vous devez avoir le rôle 'ACTUATOR' accéder à cette page [Erreur 403].";
 
-    private $em;
-    private $client;
-    private $paginator;
+    private $logoEntreprise;
+    private $marqueEntrepriseShort;
+    private $marqueEntrepriseLong;
+    private $environnement;
+    private $version;
+    private $dateCopyright;
 
     public function __construct(
-        EntityManagerInterface $em,
-        Client $client,
-        PaginatorInterface $paginator
+        private EntityManagerInterface $em,
+        private Client $client,
+        private PaginatorInterface $paginator,
+        private ParameterBagInterface $params
     ) {
         $this->em = $em;
         $this->client = $client;
         $this->paginator = $paginator;
+
+        $this->logoEntreprise = $params->get('logo.entreprise');
+        $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
+        $this->marqueEntrepriseLong = $params->get('marque.entreprise.long');
+        $this->environnement = $params->get('environnement');
+        $this->version = $params->get('version');
+        $this->dateCopyright = \date('Y');
+    }
+
+    /**
+     * [Description for genericRender]
+     *
+     * @return array
+     *
+     * Created at: 21/12/2024 20:50:18 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function genericRender(): array
+    {
+        return [
+            'type_footer' => null,
+            'logo_entreprise' => $this->logoEntreprise,
+            'marque_entreprise_short' => $this->marqueEntrepriseShort,
+            'marque_entreprise_long' => $this->marqueEntrepriseLong,
+            'env' => $this->environnement,
+            'version' => $this->version,
+            'date_copyright' => $this->dateCopyright];
     }
 
     #[Route('/actuator', name: 'actuator', methods:'GET')]
@@ -61,15 +94,8 @@ class ActuatorController extends AbstractController
         $sortDirection = $request->query->get('direction') ?? 'DESC';
 
         // Initialisation des informations
-        $render = [
-            'marque_entreprise_short' => $this->getParameter('marque.entreprise.short'),
-            'marque_entreprise_long' => $this->getParameter('marque.entreprise.long'),
-            'logo_entreprise' => $this->getParameter('logo.entreprise'),
-            'env' => $this->getParameter('environnement'),
-            'version' => $this->getParameter('version'),
-            'dateCopyright' => \date('Y'),
-            'pagination' => null,
-        ];
+        $render=static::genericRender();
+        $render['pagination'] = null;
 
         /** Vérifier si l'utilisateur a le rôle 'ROLE_ACTUATOR'. */
         if (!$this->isGranted('ROLE_ACTUATOR')) {
@@ -93,25 +119,18 @@ class ActuatorController extends AbstractController
             9                                   /*limit par page*/
         );
 
-        return $this->render(static::$index, array_merge($render, [
-                'pagination' => $pagination ])
-        );
+        $render['pagination'] = $pagination;
+        return $this->render(static::$index, $render);
     }
+
     #[Route('/actuator/info', name: 'actuator_info', methods:'GET')]
     public function actuatorInfo(Request $request): Response
     {
-      /** On instancie l'EntityRepository */
+        /** On instancie l'EntityRepository */
         //$actuatorRepository = $this->em->getRepository(BatchTraitement::class);
 
         // Initialisation des informations pour la bulle d'information
-        $render = [
-            'marque_entreprise_short' => $this->getParameter('marque.entreprise.short'),
-            'marque_entreprise_long' => $this->getParameter('marque.entreprise.long'),
-            'logo_entreprise' => $this->getParameter('logo.entreprise'),
-            'env' => $this->getParameter('environnement'),
-            'version' => $this->getParameter('version'),
-            'dateCopyright' => \date('Y')
-        ];
+        $render=static::genericRender();
 
         // Vérifier si l'utilisateur a le rôle 'ROLE_ACTUATOR'.
         if (!$this->isGranted('ROLE_ACTUATOR')) {
@@ -160,11 +179,9 @@ class ActuatorController extends AbstractController
             return $this->redirectToRoute('actuator_success');
         }
 
-        return $this->render('actuator/ajouter.html.twig',
-            array_merge($render, [
-                'form' => $form->createView(),
-            ])
-        );
+        $render['form'] = $form->createView();
+
+        return $this->render('actuator/ajouter.html.twig', $render);
     }
 
 }

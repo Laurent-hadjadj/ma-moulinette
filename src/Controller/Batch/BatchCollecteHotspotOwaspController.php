@@ -138,24 +138,24 @@ class BatchCollecteHotspotOwaspController extends AbstractController
         ];
 
         /** On appelle les requêtes HTTP pour chaque référentiel */
-        $owasp2017 = $this->client->http("$tempoUrl/api/hotspots/search?".http_build_query($queryParamsList['owasp2017']));
+        $owasp2017 = $this->client->httpSonarQube("$tempoUrl/api/hotspots/search?".http_build_query($queryParamsList['owasp2017']));
         if (isset($owasp2017['code']) && in_array($owasp2017['code'], [401, 404])) {
-            return ['error' => $owasp2017['code']];
+            return ['erreur' => $owasp2017['code']];
         }
 
         /** On execute si la version de SonarQube est >= 9 */
         $owasp2021=['NC'];
         if ($sonarVersion>8){
-            $owasp2021 = $this->client->http("$tempoUrl/api/hotspots/search?".http_build_query($queryParamsList['owasp2021']));
+            $owasp2021 = $this->client->httpSonarQube("$tempoUrl/api/hotspots/search?".http_build_query($queryParamsList['owasp2021']));
             if (isset($owasp2021['code']) && in_array($owasp2021['code'], [401, 404])) {
-            return ['error' => $owasp2021['code']];
+            return ['erreur' => $owasp2021['code']];
             }
         }
 
         /** On prépare les données */
         $prepareHotspotData = function($data, $ref) use ($mavenKey, $information, $dateVersion, $date, $menace, $mode_collecte, $utilisateur_collecte) {
             return [
-                'referentiel_owasp' => $ref,
+                'referential_owasp' => $ref,
                 'maven_key' => $mavenKey,
                 'version' => $information['info'][0]['project_version'],
                 'date_version' => $dateVersion,

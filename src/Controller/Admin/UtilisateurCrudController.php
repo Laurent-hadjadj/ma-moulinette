@@ -137,14 +137,14 @@ class UtilisateurCrudController extends AbstractCrudController
         /** On récupère la liste des équipes */
         $sql = "SELECT titre, description FROM equipe ORDER BY titre ASC";
         $l = $this->emm->getConnection()->prepare($sql)->executeQuery();
-        $resultat = $l->fetchAllAssociative();
+        $result = $l->fetchAllAssociative();
         /** si la table est vide */
-        if (empty($resultat)) {
+        if (empty($result)) {
             $resultat = [["titre" => "Aucune", "description" => "Aucune équipe."]];
         }
         $key = [];
         $val = [];
-        foreach($resultat as $value) {
+        foreach($result as $value) {
             array_push($key, $value['titre']." - ".$value['description']);
             array_push($val, $value['titre']);
         }
@@ -183,7 +183,7 @@ class UtilisateurCrudController extends AbstractCrudController
         if (!$entityInstance instanceof Utilisateur) {
             return;
         }
-        $entityInstance->setdateModification(new \DateTimeImmutable());
+        $entityInstance->setDateModification(new \DateTimeImmutable());
         parent::updateEntity($em, $entityInstance);
     }
 

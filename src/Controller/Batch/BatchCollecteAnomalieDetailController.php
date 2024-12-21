@@ -82,9 +82,9 @@ class BatchCollecteAnomalieDetailController extends AbstractController
         /* Fonction générique pour executer une requête et retourner le résultat dans un tableau */
         $makeRequest = function($queryParams) use ($tempoUrl) {
             $queryString = http_build_query($queryParams);
-            $result = $this->client->http("$tempoUrl/api/issues/search?$queryString");
+            $result = $this->client->httpSonarQube("$tempoUrl/api/issues/search?$queryString");
             if (isset($result['code']) && in_array($result['code'], [401, 404])) {
-                return ['error' => $result['code'], $result['erreur']];
+                return ['erreur' => $result['code'], $result['erreur']];
             }
             return $result;
         };
@@ -100,8 +100,8 @@ class BatchCollecteAnomalieDetailController extends AbstractController
         $results = [];
         foreach ($queryParamsList as $key => $queryParams) {
             $results[$key] = $makeRequest($queryParams);
-            if (isset($results[$key]['error'])) {
-                return ['code' => $results[$key]['error'], 'error'=>$results['erreur']];
+            if (isset($results[$key]['erreur'])) {
+                return ['code' => $results[$key]['erreur'], 'erreur'=>$results['erreur']];
             }
         }
         $issueTypes = ['BUG', 'VULNERABILITY', 'CODE_SMELL'];
@@ -123,7 +123,7 @@ class BatchCollecteAnomalieDetailController extends AbstractController
         $map=['maven_key'=>$mavenKey];
         $delete=$anomalieDetailsRepository->deleteAnomalieDetailsMavenKey($map);
         if ($delete['code']!=200) {
-            return ['code' => $delete['code'], 'error'=>[$delete['erreur'], static::$request=>'deleteAnomalieDetailsMavenKey']];
+            return ['code' => $delete['code'], 'erreur'=>[$delete['erreur'], static::$request=>'deleteAnomalieDetailsMavenKey']];
         }
 
         /** On crée un objet DateTime */
@@ -176,7 +176,7 @@ class BatchCollecteAnomalieDetailController extends AbstractController
             $insert=$anomalieDetailsRepository->insertAnomalieDetail($mapData);
             if ($insert['code'] !== 200) {
                 return ['code' => $insert['code'],
-                        'error'=>[$insert['erreur'],
+                        'erreur'=>[$insert['erreur'],
                         static::$request => 'insertAnomalieDetail']];
             }
             $data =['bug_blocker' => $bugSeverities['BLOCKER'],

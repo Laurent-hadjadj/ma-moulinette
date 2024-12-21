@@ -153,7 +153,7 @@ class CollecteController extends AbstractController
         if (!in_array($informationProjet['code'], ['200', '100'])) {
             $collecte[]=[
                 '**** ERREUR : INFORMATION PROJET '.$informationProjet['code']. ' ****',
-                $informationProjet['message'] ?? $informationProjet['error'],
+                $informationProjet['message'] ?? $informationProjet['erreur'],
                 '~************* FIN DU TRAITEMENT ***************~'];
             $this->logger->file($portefeuille, $collecte);
             return ['code'=>500, 'Collecte' => $collecte];
@@ -167,7 +167,7 @@ class CollecteController extends AbstractController
         } else {
             $collecte[]=[
                 '**** ERREUR : MESURE '.$mesure['code'].' ****',
-                $mesure['message'] ?? $mesure['error']];
+                $mesure['message'] ?? $mesure['erreur']];
                 $this->logger->file($portefeuille, $collecte);
                 return ['code'=>500, 'Collecte' => $collecte];
         }
@@ -179,7 +179,7 @@ class CollecteController extends AbstractController
             $mapMerged=array_merge($mapMerged, $noteReliability['data']);
         } else {
             $collecte[]=[
-                '**** ERREUR : NOTE RELIABILITY '.$noteReliability['code'].' ****', $noteReliability['message'] ?? $noteReliability['error']];
+                '**** ERREUR : NOTE RELIABILITY '.$noteReliability['code'].' ****', $noteReliability['message'] ?? $noteReliability['erreur']];
                 $this->logger->file($portefeuille, $collecte);
                 return ['code'=>500, 'Collecte' => $collecte];
         }
@@ -189,7 +189,7 @@ class CollecteController extends AbstractController
             $collecte[]=['03 - NOTE SECURITY'=> $noteSecurity['message']];
             $mapMerged=array_merge($mapMerged, $noteSecurity['data']);
         } else { $collecte[]=[
-                '**** ERREUR : NOTE SECURITY '.$noteSecurity['code'].' ****', $noteSecurity['message'] ?? $noteSecurity['error']];
+                '**** ERREUR : NOTE SECURITY '.$noteSecurity['code'].' ****', $noteSecurity['message'] ?? $noteSecurity['erreur']];
                 $this->logger->file($portefeuille, $collecte);
                 return ['code'=>500, 'Collecte' => $collecte];
         }
@@ -198,7 +198,7 @@ class CollecteController extends AbstractController
             $collecte[]=['03 - NOTE SQALE' => $noteSqale['message']];
             $mapMerged=array_merge($mapMerged, $noteSqale['data']);
         } else {
-            $collecte[]=['**** ERREUR : NOTE SQALE '.$noteSqale['code'].' ****', $noteSqale['message'] ?? $noteSqale['error']];
+            $collecte[]=['**** ERREUR : NOTE SQALE '.$noteSqale['code'].' ****', $noteSqale['message'] ?? $noteSqale['erreur']];
             $this->logger->file($portefeuille, $collecte);
             return ['code'=>500, 'Collecte' => $collecte];
         }
@@ -210,7 +210,7 @@ class CollecteController extends AbstractController
             $mapMerged=array_merge($mapMerged, $anomalie['data']);
         } else {
                 $collecte[]=['**** ERREUR : ANOMALIE '.$anomalie['code'].' ****',
-                $anomalie['message'] ?? $anomalie['error']];
+                $anomalie['message'] ?? $anomalie['erreur']];
                 $this->logger->file($portefeuille, $collecte);
                 return ['code'=>500, 'Collecte' => $collecte];
         }
@@ -221,7 +221,7 @@ class CollecteController extends AbstractController
             $collecte[]=['05 - ANOMALIE DETAIL' => $anomalieDetail['message']];
             $mapMerged=array_merge($mapMerged, $anomalieDetail['data']);
         } else {
-                $collecte[]=['**** ERREUR : ANOMALIE DETAIL '.$anomalieDetail['code'].' ****', $anomalieDetail['message'] ?? $anomalieDetail['error']];
+                $collecte[]=['**** ERREUR : ANOMALIE DETAIL '.$anomalieDetail['code'].' ****', $anomalieDetail['message'] ?? $anomalieDetail['erreur']];
                 $this->logger->file($portefeuille, $collecte);
                 return ['code'=>500, 'Collecte' => $collecte];
         }
@@ -232,7 +232,7 @@ class CollecteController extends AbstractController
             $mapMerged=array_merge($mapMerged, $hotspot['data']);
         } else {
                 $collecte[]=['**** ERREUR : HOTSPOT '.$hotspot['code'].' ****',
-                $hotspot['message'] ?? $hotspot['error']];
+                $hotspot['message'] ?? $hotspot['erreur']];
                 $this->logger->file($portefeuille, $collecte);
                 return ['code'=>500, 'Collecte' => $collecte];
         }
@@ -243,7 +243,7 @@ class CollecteController extends AbstractController
                 $collecte[]=['07 - NOTE HOTSPOT' => $noteHotspot['message']];
                 $mapMerged=array_merge($mapMerged, $noteHotspot['data']);
             } else {
-                    $collecte[]=['**** ERREUR : NOTE HOTSPOT '.$noteHotspot['code'].' ****',$noteHotspot['message'] ?? $noteHotspot['error']];
+                    $collecte[]=['**** ERREUR : NOTE HOTSPOT '.$noteHotspot['code'].' ****',$noteHotspot['message'] ?? $noteHotspot['erreur']];
                     $this->logger->file($portefeuille, $collecte);
                     return ['code'=>500, 'Collecte' => $collecte];
             }
@@ -255,7 +255,7 @@ class CollecteController extends AbstractController
         } else {
             $collecte[]=[
                 '**** ERREUR : HOTSPOT DETAIL ' .$hotspotDetails['code'].' ****',
-                $hotspotDetails['message'] ?? $hotspotDetails['error']];
+                $hotspotDetails['message'] ?? $hotspotDetails['erreur']];
             $this->logger->file($portefeuille, $collecte);
             return ['code'=>500, 'Collecte' => $collecte];
         }
@@ -266,7 +266,7 @@ class CollecteController extends AbstractController
         } else {
             $collecte[]=[
                 '**** ERREUR : OWASP '.$owasp['code'].' ****',
-                $owasp['message'] ?? $owasp['error']];
+                $owasp['message'] ?? $owasp['erreur']];
             $this->logger->file($portefeuille, $collecte);
             return ['code'=>500, 'Collecte' => $collecte];
         }
@@ -281,7 +281,7 @@ class CollecteController extends AbstractController
             } else {
                 $collecte[]=[
                     '**** ERREUR : HOTSPOT OWASP '.$owaspKey.' --> '.$hotspotOwasp['code']. ' ****',
-                    $hotspotOwasp['message'] ?? $hotspotOwasp['error']
+                    $hotspotOwasp['message'] ?? $hotspotOwasp['erreur']
                 ];
                 $errorEncountered = true;
             }
@@ -300,7 +300,7 @@ class CollecteController extends AbstractController
         } else {
             $collecte[]=[
                     '**** ERREUR : NOSONAR '.$noSonar['code'].' ****',
-                    $noSonar['message'] ?? $noSonar['error']];
+                    $noSonar['message'] ?? $noSonar['erreur']];
             $this->logger->file($portefeuille, $collecte);
             return ['code'=>500, 'Collecte' => $collecte];
         }
@@ -313,7 +313,7 @@ class CollecteController extends AbstractController
         } else {
             $collecte[]=[
                     '**** ERREUR : TODO '.$todo['code'].' ****',
-                    $todo['message'] ?? $todo['error']
+                    $todo['message'] ?? $todo['erreur']
                 ];
             $this->logger->file($portefeuille, $collecte);
             return ['code'=>500, 'Collecte' => $collecte];
@@ -327,7 +327,7 @@ class CollecteController extends AbstractController
         } else {
             $collecte[]=[
                 '**** ERREUR : ACTUATOR INFO '.$actuatorInfo['code'].' ****',
-                $actuatorInfo['message'] ?? $actuatorInfo['error']
+                $actuatorInfo['message'] ?? $actuatorInfo['erreur']
             ];
             $this->logger->file($portefeuille, $collecte);
             return ['code'=>500, 'Collecte' => $collecte];
@@ -341,7 +341,7 @@ class CollecteController extends AbstractController
         } else {
             $collecte[]=[
                 '**** ERREUR : LOGGER '.$logger['code'].' ****',
-                $logger['message'] ?? $logger['error']
+                $logger['message'] ?? $logger['erreur']
             ];
             $this->logger->file($portefeuille, $collecte);
             return ['code'=>500, 'Collecte' => $collecte];

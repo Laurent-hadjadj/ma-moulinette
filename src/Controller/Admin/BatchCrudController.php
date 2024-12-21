@@ -101,17 +101,17 @@ class BatchCrudController extends AbstractCrudController
         /** To.do : ajouter le filtrage en fonction du portefeuille de projets */
         $sql = "SELECT titre FROM portefeuille ORDER BY titre ASC";
         $l = $this->emm->getConnection()->prepare($sql)->executeQuery();
-        $resultat = $l->fetchAllAssociative();
+        $result = $l->fetchAllAssociative();
         /**
          * Si la liste des portefeuilles est vide on renvoi "Aucun"
          */
         $i = 0;
 
-        if (empty($resultat)) {
+        if (empty($result)) {
             $key = ["aucun"];
             $val = ["Aucun"];
         } else {
-            foreach($resultat as $value) {
+            foreach($result as $value) {
                 $key[$i] = $value['titre'];
                 $val[$i] = $value['titre'];
                 $i++;

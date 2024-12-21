@@ -158,7 +158,7 @@ class ProjetController extends AbstractController
         $liste = $historiqueRepository->selectHistoriqueIndicateurs($rtrim);
         if ($liste['code']!=200) {
             $render['liste_projet'] = [];
-            $this->addFlash('notice', ['type' => 'error', 'reference' => static::$reference, 'message' => static::$erreur404, 'debug'=>$liste['erreur']] );
+            $this->addFlash('notice', ['type' => 'erreur', 'reference' => static::$reference, 'message' => static::$erreur404, 'debug'=>$liste['erreur']] );
             return $this->render(static::$page, $render);
         }
 

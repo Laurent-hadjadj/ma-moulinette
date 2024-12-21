@@ -74,6 +74,7 @@ class BatchCollecteHotspotController extends AbstractController
 
     /**
      * [Description for BatchCollecteHotspot]
+     * On récupère les hotspots pour l'application
      *
      * @param string $mavenKey
      * @param string $modeCollecte
@@ -114,10 +115,10 @@ class BatchCollecteHotspotController extends AbstractController
         /** Construit l'URL en utilisant http_build_query pour les paramètres de la requête */
         $queryParams = ['projectKey' => $mavenKey, 'ps' => 500, 'p' => 1];
         /** Appelle le client HTTP */
-        $result = $this->client->http("$tempoUrl/api/hotspots/search?".http_build_query($queryParams));
+        $result = $this->client->httpSonarQube("$tempoUrl/api/hotspots/search?".http_build_query($queryParams));
         /** On catch les erreurs HTTP 401 et 404, si possible :) */
         if (isset($result['code']) && in_array($result['code'], [401, 404])) {
-            return ['code' => $result['code'],'error'=>$result['erreur']];
+            return ['code' => $result['code'],'erreur'=>$result['erreur']];
         }
        /** Création de la date du jour */
         $date = new \DateTimeImmutable();
@@ -128,7 +129,7 @@ class BatchCollecteHotspotController extends AbstractController
         $delete=$hotspotsRepository->deleteHotspotsMavenKey($map);
         if ($delete['code']!=200) {
             return ['code' => $delete['code'],
-                    'error'=>[$delete['erreur'],
+                    'erreur'=>[$delete['erreur'],
                             static::$request=>'deleteHotspotsMavenKey']];
         }
 
@@ -139,7 +140,7 @@ class BatchCollecteHotspotController extends AbstractController
             foreach ($result['hotspots'] as $value) {
                 // Traitement de la probabilité de vulnérabilité
                 $niveau = $this->vulnerabilityProbability($value['vulnerabilityProbability']);
-                /** On compte le nombre de hotspot par nvieau */
+                /** On compte le nombre de hotspot par niveau */
                 switch ($niveau) {
                     case 1: $high++; break;
                     case 2: $medium++; break;

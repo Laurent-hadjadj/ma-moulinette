@@ -63,84 +63,135 @@ class BatchCollecteOwaspController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function BatchCollecteOwasp(string $mavenKey, string $modeCollecte, string $utilisateurCollecte): array
+    public function BatchCollecteOwasp(string $maven_key, string $mode_collecte, string $utilisateur_collecte): array
     {
         /** On instancie l'EntityRepository */
         $informationProjet = $this->em->getRepository(InformationProjet::class);
         $owaspRepository = $this->em->getRepository(Owasp::class);
 
-        /** On construit l'URL */
-        $tempoUrl = $this->getParameter(static::$sonarUrl);
-        $mavenKey = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
-        /** Construit l'URL en utilisant http_build_query pour les paramètres de la requête */
-        $queryParams = [
-            'componentKeys' => $mavenKey,
-            'facets' => 'owaspTop10',
-            'owaspTop10' => 'a1,a2,a3,a4,a5,a6,a7,a8,a9,a10'
+        /** On contrôle la variable mavenKey */
+        $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
+
+        /** On récupère la version du serveur SonarQube */
+        $sonar_version = $this->getParameter('sonar.version');
+
+        /** Tableau des paramètres pour la requête HTTP */
+        $queryParamsList = [
+            'owasp2017'=>['componentKeys' => $maven_key, 'facets' => 'owaspTop10', 'owaspTop10' => 'a1,a2,a3,a4,a5,a6,a7,a8,a9,a10'],
+            'owasp2021'=>['componentKeys' => $maven_key, 'facets' => 'owaspTop10-2021', 'owaspTop10-2021' => 'a1,a2,a3,a4,a5,a6,a7,a8,a9,a10'],
         ];
-        $queryString = http_build_query($queryParams);
+        /** On construit l'URL */
+        $url = $this->getParameter(static::$sonarUrl);
+        /** On appelle les requêtes HTTP pour chaque référentiel */
+        $owasp2017 = $this->client->httpSonarQube("$url/api/issues/search?".http_build_query($queryParamsList['owasp2017']));
+        if (isset($owasp2017['code']) && in_array($owasp2017['code'], [401, 404])) {
+            return ['erreur' => $owasp2017['code']];
+        }
 
-       /** Appelle le client HTTP */
-        $result = $this->client->http("$tempoUrl/api/issues/search?$queryString");
-
-        /** On catch les erreurs HTTP 401 et 404, si possible :) */
-        if (isset($result['code']) && in_array($result['code'], [401, 404])) {
-            return ['code' => $result['code'], 'error'=>$result['erreur']];
+        /** On execute si la version de SonarQube est >= 9 */
+        $owasp2021=['NC'];
+        if ($sonar_version>8){
+            $owasp2021 = $this->client->httpSonarQube("$url/api/issues/search?".http_build_query($queryParamsList['owasp2021']));
+            if (isset($owasp2021['code']) && in_array($owasp2021['code'], [401, 404])) {
+            return ['erreur' => $owasp2021['code']];
+            }
         }
 
         /** On récupère dans la table information_projet la version et la date du projet la plus récente. */
-        $map=['maven_key'=>$mavenKey];
-        $select=$informationProjet->selectInformationProjetProjectVersion($map);
-        if ($select['code']!=200) {
-            return ['code' => $select['code'], 'message'=>$select['erreur']];
+        $map=['maven_key' => $maven_key];
+        $select_information=$informationProjet->selectInformationProjetProjectVersion($map);
+        if ($select_information['code']!=200) {
+            return ['code' => $select_information['code'], 'message'=>$select_information['erreur']];
         }
 
-        if (!$select['info']) {
+        if (!$select_information['info']) {
             return ['code' => 404, 'message' => static::$erreur404];
         }
 
         /** On reconstruit des date au format dateTime */
-        $dateVersion = new \DateTimeImmutable($select['info'][0]['date']);
-        $dateVersion->setTimezone(new \DateTimeZone(static::$europeParis));
+        $date_version = new \DateTimeImmutable($select_information['info'][0]['date']);
+        $date_version->setTimezone(new \DateTimeZone(static::$europeParis));
 
         $date = new \DateTimeImmutable();
         $date->setTimezone(new \DateTimeZone(static::$europeParis));
 
-        /** On initialise un tableau avec comme valeur 0 */
-        $nombre = array_fill(1, 10, 0);
-        $nombre[0] = $result['total'];
-        $effortTotal = $result['effortTotal'];
+        $prepareOwaspData = function($referential) use ($maven_key, $date_version, $date, $select_information, $mode_collecte, $utilisateur_collecte) {
+            /** On initialise un tableau avec comme valeur 0 */
+            $nombre = array_fill(1, 10, 0);
+            $nombre[0] = $referential['total'];
+            $effort_total = $referential['effortTotal'];
 
-        /** Pour chaque signalement OWASP a1, a2, a3,... */
-        $total = 0;
-        foreach ($result['facets'][0]['values'] as $value) {
-            $index = substr($value['val'], 1);
-            $nombre[$index] = $value['count'];
-            $total += $value['count']; // Ajoute cette valeur au total
-        }
+            /** Pour chaque signalement OWASP a1, a2, a3,... */
+            $total = 0;
+            foreach ($referential['facets'][0]['values'] as $value) {
+                $index = substr($value['val'], 1);
+                $nombre[$index] = $value['count'];
+                $total += $value['count']; // Ajoute cette valeur au total
+            }
 
-        /** On remplie le tableau pour les signalement a1 à a10 pour les clés de sévérité */
-        $owaspIssues = array_fill_keys(range(1, 10), array_fill_keys(['blocker', 'critical', 'major', 'info', 'minor'], 0));
+            /** On remplie le tableau pour les signalement a1 à a10 pour les clés de sévérité */
+            $owaspIssues = array_fill_keys(range(1, 10), array_fill_keys(['blocker', 'critical', 'major', 'info', 'minor'], 0));
 
-        /** Calcul du nombre d'issue par type de signalement OWASP et par type de sévérité */
-        if ($result['total'] != 0) {
-            foreach ($result['issues'] as $issue) {
-                if (in_array($issue['status'], ['OPEN', 'CONFIRMED', 'REOPENED'])) {
-                    foreach ($issue['tags'] as $tag) {
-                        if (preg_match("/owasp-a(\d+)/", $tag, $matches)) {
-                            $owaspIndex = (int)$matches[1];
-                            $severity = strtolower($issue['severity']);
-                            if (isset($owaspIssues[$owaspIndex][$severity])) {
-                                $owaspIssues[$owaspIndex][$severity]++;
+            /** Calcul du nombre d'issue par type de signalement OWASP et par type de sévérité */
+            if ($referential['total'] != 0) {
+                foreach ($referential['issues'] as $issue) {
+                    if (in_array($issue['status'], ['OPEN', 'CONFIRMED', 'REOPENED'])) {
+                        foreach ($issue['tags'] as $tag) {
+                            if (preg_match("/owasp-a(\d+)/", $tag, $matches)) {
+                                $owaspIndex = (int)$matches[1];
+                                $severity = strtolower($issue['severity']);
+                                if (isset($owaspIssues[$owaspIndex][$severity])) {
+                                    $owaspIssues[$owaspIndex][$severity]++;
+                                }
                             }
                         }
                     }
                 }
             }
+
+            $map = [
+                    'total' => $total,
+                    'maven_key' => $maven_key,
+                    'version' => $select_information['info'][0]['project_version'],
+                    'date_version' => $date_version,
+                    'effort_total' => $effort_total,
+                    'mode_collecte' => $mode_collecte,
+                    'utilisateur_collecte' => $utilisateur_collecte,
+                    'date_enregistrement' => $date
+            ];
+
+            /** On ajoute les valeurs de a1 à a10 */
+            for ($i = 1; $i <= 10; $i++) {
+                $map["a$i"] = $nombre[$i];
+            }
+
+            /** Ajoute le nombre de cas par gravité pour chaque catégorie OWASP */
+            foreach ($owaspIssues as $index => $severities) {
+                foreach ($severities as $severity => $count) {
+                    $map["a{$index}_{$severity}"] = $count;
+                }
+            }
+            /** On renvoi la collection pour le référentiel OWASP */
+            return $map;
+        };
+
+        $owaspDataList=[];
+        /* pour chaque référentiel 2017/2021 */
+        if (array_key_exists('total', $owasp2017)) {
+            $owaspDataList[] = $prepareOwaspData($owasp2017);
+            $owaspDataList[0]['referential_owasp'] = 2017;
+            $total_2017=$owaspDataList[0]['total'];
+        }
+        $total_2021='NC';
+        /** $owasp2021 = ['NC'] on a pas de données pour le référentiel 2021 */
+        if (array_key_exists('total', $owasp2021)) {
+            $owaspDataList[] = $prepareOwaspData($owasp2021);
+            $owaspDataList[0]['referential_owasp'] = 2021;
+            $total_2021=$owaspDataList[0]['total'];
         }
 
         /** On supprime les informations sur le projet pour la dernière analyse. */
-        $map=['maven_key'=>$mavenKey];
+        $map=['maven_key'=>$maven_key];
         $delete=$owaspRepository->deleteOwaspMavenKey($map);
         if ($delete['code']!=200) {
             return ['code' => $delete['code'],
@@ -148,36 +199,14 @@ class BatchCollecteOwaspController extends AbstractController
             ];
         }
 
-        /** préparation des données avant l'enregistrement. */
-        $map = [
-            'maven_key' => $mavenKey,
-            'version' => $select['info'][0]['project_version'],
-            'date_version' => $dateVersion,
-            'effort_total' => $effortTotal,
-            'mode_collecte' => $modeCollecte,
-            'utilisateur_collecte' => $utilisateurCollecte,
-            'date_enregistrement' => $date
-        ];
-
-        /** On ajoute les valeurs de a1 à a10 */
-        for ($i = 1; $i <= 10; $i++) {
-            $map["a$i"] = $nombre[$i];
-        }
-
-        /** Ajoute le nombre de cas par gravité pour chaque catégorie OWASP */
-        foreach ($owaspIssues as $index => $severities) {
-            foreach ($severities as $severity => $count) {
-                $map["a{$index}_{$severity}"] = $count;
-            }
-        }
         /** On on enregistre */
-        $request=$owaspRepository->insertOwasp($map);
+        $request=$owaspRepository->insertOwasp($owaspDataList);
         if ($request['code']!=200) {
             return ['code' => $request['code'],
-                    'error' => [$request['erreur'],
+                    'erreur' => [$request['erreur'],
                     static::$request=>'insertNote']];
         }
 
-        return ['code' => 200, 'nombre' => $total, 'message' => ['nombre' => $total], 'data' => $map];
+        return ['code' => 200, 'owasp2017' => $total_2017, 'owasp2021' => $total_2021,'message' => ['nombre_2017' => $total_2017, 'nombre_2021' => $total_2021, 'data' => $owaspDataList]];
     }
 }

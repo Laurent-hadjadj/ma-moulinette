@@ -144,7 +144,7 @@ class EquipeCrudController extends AbstractCrudController
         if (!$entityInstance instanceof Equipe) {
             return;
         }
-        $entityInstance->setdateModification(new \DateTimeImmutable());
+        $entityInstance->setDateModification(new \DateTimeImmutable());
         parent::updateEntity($em, $entityInstance);
     }
 }

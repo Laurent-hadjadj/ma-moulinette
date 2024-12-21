@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2022.
+ *  Copyright (c) 2021-2024.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -15,6 +15,7 @@ namespace App\Controller\Auth;
 
 /** Symfony Core */
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -48,14 +49,48 @@ class ResetPasswordController extends AbstractController
     public static $reference = '<strong>[Auth]</strong>';
     public static $erreur400 = "La requête est incorrecte (Erreur 400).";
 
+    private $logoEntreprise;
+    private $marqueEntrepriseShort;
+    private $marqueEntrepriseLong;
+    private $environnement;
+    private $version;
+    private $dateCopyright;
+
     public function __construct(
         private UtilisateurRepository $utilisateurRepository,
         private EntityManagerInterface $em,
+        private ParameterBagInterface $params,
     ) {
         $this->utilisateurRepository = $utilisateurRepository;
         $this->em = $em;
+        $this->logoEntreprise = $params->get('logo.entreprise');
+        $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
+        $this->marqueEntrepriseLong = $params->get('marque.entreprise.long');
+        $this->environnement = $params->get('environnement');
+        $this->version = $params->get('version');
+        $this->dateCopyright = \date('Y');
     }
 
+    /**
+     * [Description for genericRender]
+     *
+     * @return array
+     *
+     * Created at: 21/12/2024 21:16:12 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function genericRender(): array
+    {
+        return [
+            'type_footer' => null,
+            'logo_entreprise' => $this->logoEntreprise,
+            'marque_entreprise_short' => $this->marqueEntrepriseShort,
+            'marque_entreprise_long' => $this->marqueEntrepriseLong,
+            'env' => $this->environnement,
+            'version' => $this->version,
+            'date_copyright' => $this->dateCopyright];
+    }
 
     /**
      * [Description for resetMotDePasse]
@@ -106,7 +141,7 @@ class ResetPasswordController extends AbstractController
 
         /** Si l'ancien mot de passe est incorrecte */
         if ($isValid===false){
-            /** On vérouille après 5 tentatives */
+            /** On verrouille après 5 tentatives */
             if ($init>5) {
                 return $this->redirectToRoute('logout');
             }
@@ -116,7 +151,7 @@ class ResetPasswordController extends AbstractController
                 '%s : %s', "[Erreur 001]","Votre mot de passe est incorrect."
             ));
 
-            /** On incremente le nombre de tentative */
+            /** On incrémente le nombre de tentative */
             $utilisateur->setInit($init+1);
             $utilisateur->setDateModification($date);
             $this->em->flush();
@@ -140,16 +175,10 @@ class ResetPasswordController extends AbstractController
             return $this->redirectToRoute('reset_mot_de_passe');
         }
 
-        return $this->render('auth/reset.html.twig', [
-            'resetPasswordForm' => $form->createView(),
-            'courriel'=>$courriel,
-            'marque_entreprise_short' => $this->getParameter('marque.entreprise.short'),
-            'marque_entreprise_long' => $this->getParameter('marque.entreprise.long'),
-            'logo_entreprise' => $this->getParameter('logo.entreprise'),
-            'env' => $this->getParameter('environnement'),
-            'version' => $this->getParameter('version'),
-            'dateCopyright' => \date('Y')
-        ]);
+        $render=static::genericRender();
+        $render['resetPasswordForm'] = $form->createView();
+        $render['courriel'] = 'laurent.hadjadj@ma-petite-entreprise.fr';
+        return $this->render('auth/reset.html.twig', $render);
     }
 
     /**
@@ -157,14 +186,14 @@ class ResetPasswordController extends AbstractController
      *
      * @param Request $request
      *
-     * @return Response
+     * @return JsonResponse
      *
      * Created at: 07/02/2024 12:11:20 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/mot-de-passe/mise-a-jour', name: 'api_reset_mot_de_passe', methods:'POST')]
-    public function apiResetMotDePasse(Request $request): Response
+    public function apiResetMotDePasse(Request $request): JsonResponse
     {
         /** On instancie l'EntityRepository */
         $utilisateurEntity = $this->em->getRepository(Utilisateur::class);
@@ -172,15 +201,12 @@ class ResetPasswordController extends AbstractController
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On créé on objet de reponse HTTP */
-        $response = new JsonResponse();
-
         /** On teste si le body est correcte */
         if ($data === null || !property_exists($data, 'init')) {
-            return $response->setData(
+            return new JsonResponse(
                     ['data'=>$data,'code'=>400, 'reference'=>static::$reference,
-                'message'=>static::$erreur400,
-                'type'=>'alert', Response::HTTP_BAD_REQUEST]);
+                    'message'=>static::$erreur400,
+                    'type'=>'alert'], Response::HTTP_OK);
             }
 
         /** On récupère le filtre de recherche */
@@ -201,12 +227,12 @@ class ResetPasswordController extends AbstractController
                 'courriel'=>$courriel ];
         $r=$utilisateurEntity->updateUtilisateurResetPassword($map);
         if ($r['code']!=200) {
-            return $response->setData([
+            return new JsonResponse([
                 'type' => 'alert',
                 'reference' => static::$reference, 'code' => $r['code'],
                 'message'=>$r['erreur']], Response::HTTP_OK);
         }
 
-        return $response->setData(['code'=>200], Response::HTTP_OK);
+        return new JsonResponse(['code'=>200], Response::HTTP_OK);
     }
 }

@@ -24,7 +24,6 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 /** On récupère les exceptions de l'authentification */
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
-
 /**
  * [Description LoginController]
  */
@@ -68,7 +67,7 @@ class LoginController extends AbstractController
             'env' => $this->environnement,
             'version' => $this->version,
             'date_copyright' => $this->dateCopyright];
-        }
+    }
 
     /**
      * [Description for re-login]
@@ -115,7 +114,7 @@ class LoginController extends AbstractController
         }
 
         $render=static::genericRender();
-        $render['error'] = $authenticationUtils->getLastAuthenticationError();
+        $render['erreur'] = $authenticationUtils->getLastAuthenticationError();
         $render['type_footer'] = 'complet';
 
         return $this->render('auth/login.html.twig', $render);

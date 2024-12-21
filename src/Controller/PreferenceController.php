@@ -3,7 +3,7 @@
 /*
 *  Ma-Moulinette
 *  --------------
-*  Copyright (c) 2021-2022.
+*  Copyright (c) 2021-2024.
 *  Laurent HADJADJ <laurent_h@me.com>.
 *  Licensed Creative Common  CC-BY-NC-SA 4.0.
 *  ---
@@ -15,6 +15,7 @@ namespace App\Controller;
 
 /** Core */
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -33,7 +34,15 @@ use App\Service\Client;
 
 class PreferenceController extends AbstractController
 {
-    public static $regex = "/\s+/u";
+    public static $returnLine = "/\s+/u";
+
+    private $logoEntreprise;
+    private $marqueEntrepriseShort;
+    private $marqueEntrepriseLong;
+    private $environnement;
+    private $version;
+    private $dateCopyright;
+
 
     /**
      * [Description for __construct]
@@ -42,9 +51,38 @@ class PreferenceController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function __construct(private EntityManagerInterface $em)
+    public function __construct(
+        private EntityManagerInterface $em,
+        private ParameterBagInterface $params)
     {
         $this->em = $em;
+        $this->logoEntreprise = $params->get('logo.entreprise');
+        $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
+        $this->marqueEntrepriseLong = $params->get('marque.entreprise.long');
+        $this->environnement = $params->get('environnement');
+        $this->version = $params->get('version');
+        $this->dateCopyright = \date('Y');
+    }
+
+    /**
+     * [Description for genericRender]
+     *
+     * @return array
+     *
+     * Created at: 21/12/2024 21:31:52 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function genericRender(): array
+    {
+        return [
+            'type_footer' => null,
+            'logo_entreprise' => $this->logoEntreprise,
+            'marque_entreprise_short' => $this->marqueEntrepriseShort,
+            'marque_entreprise_long' => $this->marqueEntrepriseLong,
+            'env' => $this->environnement,
+            'version' => $this->version,
+            'date_copyright' => $this->dateCopyright];
     }
 
     /**
@@ -55,18 +93,15 @@ class PreferenceController extends AbstractController
      * @param Client $client
      * @param Request $request
      *
-     * @return Response
+     * @return JsonResponse
      *
      * Created at: 09/06/2023, 15:43:33 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/preference/statut', name: 'api_preference_statut', methods:'POST')]
-    public function apiPreferenceStatut(Security $security, Request $request): Response
+    public function apiPreferenceStatut(Security $security, Request $request): JsonResponse
     {
-        /** On créé on objet de response HTTP */
-        $response = new JsonResponse();
-
         /** On récupère le filtre de recherche */
         $data = json_decode($request->getContent());
         $etat = $data->statut;
@@ -99,14 +134,14 @@ class PreferenceController extends AbstractController
         $sql = "UPDATE utilisateur
                 SET preference = '$jarray'
                 WHERE courriel='$courriel';";
-        $trim = trim(preg_replace(static::$regex, " ", $sql));
+        $trim = trim(preg_replace(static::$returnLine, " ", $sql));
         $exec = $this->em->getConnection()->prepare($trim)->executeQuery();
 
         $exec->fetchAllAssociative();
 
 
         $data = ['statut' => $statut, 'categorie' => $categorie];
-        return $response->setData($data,Response::HTTP_OK);
+        return new JsonResponse($data,Response::HTTP_OK);
     }
 
     /**
@@ -114,8 +149,7 @@ class PreferenceController extends AbstractController
      * On supprime un favori de la liste
      *
      * @param Security $security
-     * @param Client $client
-     * @param Request $request
+      * @param Request $request
      *
      * @return Response
      *
@@ -124,7 +158,7 @@ class PreferenceController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/preference/favori/delete', name: 'api_preference_favori_delete', methods:'POST')]
-    public function apiPreferenceFavoriDelete(Security $security, Client $client, Request $request): Response
+    public function apiPreferenceFavoriDelete(Security $security, Request $request): JsonResponse
     {
         /** On bind les arguments passés depuis l'URL */
         $data = json_decode($request->getContent());
@@ -156,16 +190,11 @@ class PreferenceController extends AbstractController
         $sql = "UPDATE utilisateur
                 SET preference = '$jarray'
                 WHERE courriel='$courriel';";
-        $trim = trim(preg_replace(static::$regex, " ", $sql));
+        $trim = trim(preg_replace(static::$returnLine, " ", $sql));
         $exec = $this->em->getConnection()->prepare($trim)->executeQuery();
         $exec->fetchAllAssociative();
 
-
-        /** On crée un objet de response JSON */
-        $response = new JsonResponse();
-
-        $data = ['200'];
-        return $response->setData($data, Response::HTTP_OK);
+        return new JsonResponse(['200'], Response::HTTP_OK);
     }
 
     /**
@@ -173,17 +202,16 @@ class PreferenceController extends AbstractController
      * On supprime la version de la liste des versions
      *
      * @param Security $security
-     * @param Client $client
      * @param Request $request
      *
-     * @return Response
+     * @return JsonResponse
      *
      * Created at: 12/06/2023, 14:35:59 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/preference/version/delete', name: 'api_preference_version_delete', methods:'POST')]
-    public function apiPreferenceVersionDelete(Security $security, Client $client, Request $request): Response
+    public function apiPreferenceVersionDelete(Security $security, Request $request): JsonResponse
     {
         /** On bind les arguments passés depuis l'URL */
         $data = json_decode($request->getContent());
@@ -233,13 +261,11 @@ class PreferenceController extends AbstractController
         $sql = "UPDATE utilisateur
                 SET preference = '$jarray'
                 WHERE courriel='$courriel';";
-        $trim = trim(preg_replace(static::$regex, " ", $sql));
+        $trim = trim(preg_replace(static::$returnLine, " ", $sql));
         $this->em->getConnection()->prepare($trim)->executeStatement();
 
         /** On crée un objet de response JSON 'o'=>$object,'n'=>$nouvelleListeVersion,'t'=>$trim */
-        $response = new JsonResponse();
-        $data = [200];
-        return $response->setData($data,Response::HTTP_OK);
+        return new JsonResponse(['200'],Response::HTTP_OK);
     }
 
     /**
@@ -247,17 +273,16 @@ class PreferenceController extends AbstractController
      * Renvoi le statut et les préférences d'une catégorie
      *
      * @param Security $security
-     * @param Client $client
      * @param Request $request
      *
-     * @return Response
+     * @return JsonResponse
      *
      * Created at: 15/05/2023, 14:06:12 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/preference/categorie', name: 'api_preference_categorie', methods:'GET')]
-    public function apiPreferenceCategorie(Security $security, Client $client, Request $request): Response
+    public function apiPreferenceCategorie(Security $security, Request $request): JsonResponse
     {
         /** On bind les arguments passés depuis l'URL */
         $categorie = $request->get('categorie');
@@ -265,12 +290,8 @@ class PreferenceController extends AbstractController
         /** On récupère l'objet User du contexte de sécurité */
         $preference = $security->getUser()->getPreference();
 
-        /** On crée un objet de response JSON */
-        $response = new JsonResponse();
-
-        $data = [
-                'statut' => $preference['statut'], $categorie => $preference[$categorie]];
-        return $response->setData($data, Response::HTTP_OK);
+        $data = ['statut' => $preference['statut'], $categorie => $preference[$categorie]];
+        return new JsonResponse($data, Response::HTTP_OK);
     }
 
     /**
@@ -288,10 +309,8 @@ class PreferenceController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/preferences', name: 'preferences', methods:'GET')]
-    public function index(Security $security, Client $client, Request $request): Response
+    public function index(Security $security): Response
     {
-        $response = new JsonResponse();
-
         /** On bind les informations utilisateur */
         $prenom = $security->getUser()->getPrenom();
         $nom = $security->getUser()->getNom();
@@ -305,31 +324,30 @@ class PreferenceController extends AbstractController
 
         $preferences = $security->getUser()->getPreference();
         /** Valeur par défaut */
-        $descriptionProjet = "Liste des projets à suivre.";
-        $descriptionFavori = "Liste des projets favoris.";
-        $descriptionVersion = "Liste des versions favorites.";
+        $descriptionSuiviProjet = "Liste des projets à suivre.";
+        $descriptionFavoriProjet = "Liste des projets favoris.";
+        $descriptionFavoriVersion = "Liste des versions favorites.";
         $descriptionBookmark = "Afficher le dernier projet.";
 
         $mesPreferences = [
-            "projet" => ["option" => "Projet", "description" => $descriptionProjet, "statut" => $preferences['statut']['projet']],
-            "favori" => ["option" => "Favori", "description" => $descriptionFavori,
-            "statut" => $preferences['statut']['favori']],
-            "version" => ["option" => "Version","description" => $descriptionVersion,
-            "statut" => $preferences['statut']['version']],
+            "suivi_projet" => ["option" => "Projet", "description" => $descriptionSuiviProjet, "statut" => $preferences['statut']['suivi_projet']],
+            "favori_projet" => ["option" => "Favori", "description" => $descriptionFavoriProjet,
+            "statut" => $preferences['statut']['favori_projet']],
+            "favori_version" => ["option" => "Version","description" => $descriptionFavoriVersion,
+            "statut" => $preferences['statut']['favori_version']],
             "bookmark" => ["option" => "Bookmark", "description" => $descriptionBookmark, "statut" => $preferences['statut']['bookmark']]
         ];
 
-        $versionAPP = $this->getParameter('version');
-        $render = [
-            'prenom' => $prenom, 'nom' => $nom, 'avatar' => $avatar, 'courriel' => $courriel,
-            'roles' => $roles, 'equipes' => $equipes,
-            'preferences' => $mesPreferences,
-            'marque_entreprise_short' => $this->getParameter('marque.entreprise.short'),
-            'marque_entreprise_long' => $this->getParameter('marque.entreprise.long'),
-            'logo_entreprise' => $this->getParameter('logo.entreprise'),
-            'env' => $this->getParameter('environnement'),
-            'version' => $versionAPP, 'dateCopyright' => \date('Y')];
-
+         /** On charge le template du render */
+        $render=static::genericRender();
+        $render['prenom'] = $prenom;
+        $render['nom'] = $nom;
+        $render['avatar'] = $avatar;
+        $render['courriel'] = $courriel;
+        $render['roles'] = $roles;
+        $render['equipes'] = $equipes;
+        $render['preferences'] = $mesPreferences;
+        $render['version'] = $mesPreferences;
         return $this->render('preference/index.html.twig', $render);
     }
 

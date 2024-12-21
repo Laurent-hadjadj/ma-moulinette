@@ -176,7 +176,7 @@ class BatchCollecteController extends AbstractController
         if (!in_array($informationProjet['code'], ['200', '100'])) {
             $collecte[]=[
                 "**** ERREUR : INFORMATION PROJET ".$informationProjet['code']. "****",
-                $informationProjet['message'] ?? $informationProjet['error']
+                $informationProjet['message'] ?? $informationProjet['erreur']
             ];
             $trace=$this->logger->file($mavenKey, $collecte);
             return $response->setData(["Collecte" => $collecte, 'trace'=>$trace]);
@@ -190,7 +190,7 @@ class BatchCollecteController extends AbstractController
         } else {
             $collecte[]=[
                 "**** ERREUR : MESURE ".$mesure['code']. "****",
-                $mesure['message'] ?? $mesure['error']
+                $mesure['message'] ?? $mesure['erreur']
             ];
             return $response->setData(["Collecte" => $collecte]);
         }
@@ -201,7 +201,7 @@ class BatchCollecteController extends AbstractController
             $collecte[]=["03 - NOTE RELIABILITY" => $noteReliability];
             $mapMerged=array_merge($mapMerged, $noteReliability['data']);
         } else { $collecte[]=[
-                "**** ERREUR : NOTE RELIBILITY".$noteReliability['code'], $noteReliability['message'] ?? $noteReliability['error']
+                "**** ERREUR : NOTE RELIBILITY".$noteReliability['code'], $noteReliability['message'] ?? $noteReliability['erreur']
             ];
         }
 
@@ -210,7 +210,7 @@ class BatchCollecteController extends AbstractController
             $collecte[]=["03 - NOTE SECURITY"=> $noteSecurity['message']];
             $mapMerged=array_merge($mapMerged, $noteSecurity['data']);
         } else { $collecte[]=[
-                "**** ERREUR : NOTE SECURITY".$noteSecurity['code'], $noteSecurity['message'] ?? $noteSecurity['error']
+                "**** ERREUR : NOTE SECURITY".$noteSecurity['code'], $noteSecurity['message'] ?? $noteSecurity['erreur']
             ];
         }
 
@@ -219,7 +219,7 @@ class BatchCollecteController extends AbstractController
             $collecte[]=["03 - NOTE SQALE" => $noteSqale['message']];
             $mapMerged=array_merge($mapMerged, $noteSqale['data']);
         } else {
-            $collecte[]=["**** ERREUR : NOTE SQALE".$noteSqale['code'], $noteSqale['message'] ?? $noteSqale['error']
+            $collecte[]=["**** ERREUR : NOTE SQALE".$noteSqale['code'], $noteSqale['message'] ?? $noteSqale['erreur']
             ];
         }
 
@@ -230,7 +230,7 @@ class BatchCollecteController extends AbstractController
             $mapMerged=array_merge($mapMerged, $anomalie['data']);
         } else {
                 $collecte[]=["**** ERREUR : ANOMALIE ".$anomalie['code'],
-                $anomalie['message'] ?? $anomalie['error']
+                $anomalie['message'] ?? $anomalie['erreur']
             ];
         }
 
@@ -241,7 +241,7 @@ class BatchCollecteController extends AbstractController
             $mapMerged=array_merge($mapMerged, $anomalieDetail['data']);
         } else {
                 $collecte[]=["**** ERREUR : ANOMALIE DETAIL ".$anomalieDetail['code'],
-                $anomalieDetail['message'] ?? $anomalieDetail['error']
+                $anomalieDetail['message'] ?? $anomalieDetail['erreur']
             ];
         }
         /** Signalement Hotspots pour le projet  */
@@ -251,7 +251,7 @@ class BatchCollecteController extends AbstractController
             $mapMerged=array_merge($mapMerged, $hotspot['data']);
         } else {
                 $collecte[]=["**** ERREUR : HOTSPOT ".$hotspot['code'],
-                $hotspot['message'] ?? $hotspot['error']
+                $hotspot['message'] ?? $hotspot['erreur']
             ];
         }
 
@@ -262,7 +262,7 @@ class BatchCollecteController extends AbstractController
                 $mapMerged=array_merge($mapMerged, $noteHotspot['data']);
             } else {
                     $collecte[]=["**** ERREUR : NOTE HOTSPOT ".$noteHotspot['code'],
-                    $noteHotspot['message'] ?? $noteHotspot['error']
+                    $noteHotspot['message'] ?? $noteHotspot['erreur']
                 ];
             }
 
@@ -273,7 +273,7 @@ class BatchCollecteController extends AbstractController
         } else {
             $collecte[]=[
                 "**** ERREUR : HOTSPOT DETAIL " .$hotspotDetails['code'],
-                $hotspotDetails['message'] ?? $hotspotDetails['error']
+                $hotspotDetails['message'] ?? $hotspotDetails['erreur']
             ];
         }
         /** Signalement OWASP et nombre d'issue par type pour le projet  */
@@ -283,7 +283,7 @@ class BatchCollecteController extends AbstractController
         } else {
             $collecte[]=[
                 "**** ERREUR : OWASP ".$owasp['code'],
-                $owasp['message'] ?? $owasp['error']
+                $owasp['message'] ?? $owasp['erreur']
             ];
         }
 
@@ -296,7 +296,7 @@ class BatchCollecteController extends AbstractController
             } else {
                 $collecte[]=[
                     "**** ERREUR : HOTSPOT OWASP ".$hotspotOwasp['code'],
-                    $hotspotOwasp['message'] ?? $hotspotOwasp['error']
+                    $hotspotOwasp['message'] ?? $hotspotOwasp['erreur']
                 ];
             }
         }
@@ -309,7 +309,7 @@ class BatchCollecteController extends AbstractController
         } else {
             $collecte[]=[
                     "**** ERREUR : NOSONAR ".$noSonar['code'],
-                    $noSonar['message'] ?? $noSonar['error']
+                    $noSonar['message'] ?? $noSonar['erreur']
                     ];
         }
 
@@ -321,7 +321,7 @@ class BatchCollecteController extends AbstractController
         } else {
             $collecte[]=[
                     "**** ERREUR : TODO ".$todo['code'],
-                    $todo['message'] ?? $todo['error']
+                    $todo['message'] ?? $todo['erreur']
                 ];
         }
 

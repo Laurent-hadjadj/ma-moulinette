@@ -95,10 +95,10 @@ class BatchCollecteHotspotDetailController extends AbstractController
         $queryParams = [ 'hotspot' => $hotspotKey ];
 
         /** Appelle le client HTTP */
-        $result = $this->client->http("$tempoUrl/api/hotspots/show?".http_build_query($queryParams));
+        $result = $this->client->httpSonarQube("$tempoUrl/api/hotspots/show?".http_build_query($queryParams));
         /** On catch les erreurs HTTP 401 et 404, si possible :) */
         if (isset($result['code']) && in_array($result['code'], [401, 404])) {
-            return ['code' => $result['code'], 'error' => $result['erreur']];
+            return ['code' => $result['code'], 'erreur' => $result['erreur']];
         }
 
         /****************** préparation des données globales */
@@ -205,7 +205,7 @@ class BatchCollecteHotspotDetailController extends AbstractController
         $liste=$hotspotsRepository->selectHotspotsToReview($map);
         if ($liste['code']!=200) {
             return ['code' => $liste['code'],
-                    'error'=>[
+                    'erreur'=>[
                                 $liste['erreur'],
                                 static::$request=>'selectHotspotsToReview']
                     ];
@@ -216,7 +216,7 @@ class BatchCollecteHotspotDetailController extends AbstractController
         $delete=$hotspotDetailsRepository->deleteHotspotDetailsMavenKey($map);
         if ($delete['code']!=200) {
             return ['code' => $delete['code'],
-                    'error'=>[$delete['erreur'],                static::$request=>'deleteHotspotDetailsMavenKey']
+                    'erreur'=>[$delete['erreur'],                static::$request=>'deleteHotspotDetailsMavenKey']
                     ];
         }
 
@@ -256,7 +256,7 @@ class BatchCollecteHotspotDetailController extends AbstractController
         if ($insert['code'] !== 200) {
             return [
                 'code' => $insert['code'],
-                'error' => [$insert['erreur'],
+                'erreur' => [$insert['erreur'],
                             static::$request => 'insertHotspotDetails']
             ];
         }

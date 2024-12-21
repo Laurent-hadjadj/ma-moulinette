@@ -95,13 +95,13 @@ class PortefeuilleCrudController extends AbstractCrudController
         // On récupère la liste des équipes
         $sql = "SELECT titre, description FROM equipe ORDER BY titre ASC";
         $l = $this->emm->getConnection()->prepare($sql)->executeQuery();
-        $resultat = $l->fetchAllAssociative();
+        $result = $l->fetchAllAssociative();
         $i = 0;
         /** si la table est vide */
-        if (empty($resultat)) {
+        if (empty($result)) {
             $resultat = [["titre" => "Aucune", "description" => "Aucune équipe."]];
         }
-        foreach($resultat as $value) {
+        foreach($result as $value) {
             $key1[$i] = $value['titre']." - ".$value['description'];
             $val1[$i] = $value['titre'];
             $i++;
@@ -115,16 +115,16 @@ class PortefeuilleCrudController extends AbstractCrudController
         /** On récupère la liste des projets */
         $sql = "SELECT name, maven_key FROM liste_projet ORDER BY name ASC";
         $l = $this->emm->getConnection()->prepare($sql)->executeQuery();
-        $resultat = $l->fetchAllAssociative();
+        $result = $l->fetchAllAssociative();
         /**
          * Si la liste des projets vide on renvoi un tableau vide
          */
         $i = 0;
-        if (empty($resultat)) {
+        if (empty($result)) {
             $key2 = ['Aucun Projet'];
             $val2 = [''];
         } else {
-            foreach($resultat as $value) {
+            foreach($result as $value) {
                 $key2[$i] = $value['name'];
                 $val2[$i] = $value['maven_key'];
                 $i++;

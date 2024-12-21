@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2022.
+ *  Copyright (c) 2021-2024.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -14,14 +14,11 @@
 namespace App\Controller\Auth;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-
-/** Gestion du temps */
-use DateTime;
-use DateTimeZone;
 
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Utilisateur;
@@ -33,8 +30,53 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 /** Logger */
 use Psr\Log\LoggerInterface;
 
+/**
+ * [Description RegistrationController]
+ */
 class RegistrationController extends AbstractController
 {
+    private $logoEntreprise;
+    private $marqueEntrepriseShort;
+    private $marqueEntrepriseLong;
+    private $environnement;
+    private $version;
+    private $dateCopyright;
+
+    public function __construct(
+        private ParameterBagInterface $params,
+        private EntityManagerInterface $em,
+        private LoggerInterface $logger,
+    ) {
+        $this->em = $em;
+        $this->logger = $logger;
+        $this->logoEntreprise = $params->get('logo.entreprise');
+        $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
+        $this->marqueEntrepriseLong = $params->get('marque.entreprise.long');
+        $this->environnement = $params->get('environnement');
+        $this->version = $params->get('version');
+        $this->dateCopyright = \date('Y');
+    }
+
+    /**
+     * [Description for genericRender]
+     *
+     * @return array
+     *
+     * Created at: 21/12/2024 21:03:28 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function genericRender(): array
+    {
+        return [
+            'type_footer' => null,
+            'logo_entreprise' => $this->logoEntreprise,
+            'marque_entreprise_short' => $this->marqueEntrepriseShort,
+            'marque_entreprise_long' => $this->marqueEntrepriseLong,
+            'env' => $this->environnement,
+            'version' => $this->version,
+            'date_copyright' => $this->dateCopyright];
+    }
 
     /**
      * [Description for register]
@@ -50,15 +92,10 @@ class RegistrationController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/register', name: 'register')]
-    public function register(
-        Request $request,
-        UserPasswordHasherInterface $userPasswordHasher,
-        EntityManagerInterface $em,
-        LoggerInterface $logger
-    ): Response {
+    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher): Response {
         // si on est déjà connecté en renvoi vers la page d'accueil !!!
         if ($this->getUser()->getUserIdentifier()) {
-            return $this->redirectToRoute('home');
+            return $this->redirectToRoute('accueil');
         }
 
         /** On créé un objet utilisateur. */
@@ -70,8 +107,8 @@ class RegistrationController extends AbstractController
 
         /** Le formulaire est valide */
         if ($form->isSubmitted() && $form->isValid()) {
-            $date = new DateTime();
-            $date->setTimezone(new DateTimeZone('Europe/Paris'));
+            $date = new \DateTime();
+            $date->setTimezone(new \DateTimeZone('Europe/Paris'));
 
             /** je récupère les données du HoneyPot  */
             $honeyPot = $form->get('email')->getData();
@@ -105,48 +142,38 @@ class RegistrationController extends AbstractController
             $utilisateur->setDateEnregistrement($date);
 
             /** On initialise les préférences par défaut */
-            $preferences=
-            ["statut"=>["projet"=>false, "favori"=>false, "version"=>false,"bookmark"=>false]];
+            $preferences = ['statut' => ['suivi_projet' => false, 'favori_projet' => false,
+                            'favori_version' => false,'bookmark'=> false],
+                            'suivi_projet' => [], 'favori_projet' => [],'favori_version' => [],
+                            'bookmark' =>[]];
             $utilisateur->setPreference($preferences);
 
             /** On enregistre le petit malin dans le pot de miel */
             if (!empty(trim($honeyPot))) {
                 // Spam detected!
                 $warning = sprintf('🐛 SPAM detected. honeypot content: %s IP: %s', $honeyPot, $request->getClientIp());
-                $logger->warning($warning);
+                $this->logger->warning($warning);
             } else {
-                $em->persist($utilisateur);
-                $em->flush();
+                $this->em->persist($utilisateur);
+                $this->em->flush();
             }
 
             /** Connexion automatique ? */
             /** "return $userAuthenticator->authenticateUser($utilisateur, $authenticator,$request);" */
 
             /** On préfère rediriger l'utilisateur sur la page de bienvenu des nouveaux utilisateurs */
-            return $this->render('welcome/index.html.twig', [
-                'nom' => $utilisateur->getNom(),
-                'prenom' => $utilisateur->getPrenom(),
-                'courriel' => $utilisateur->getCourriel(),
-                'marque_entreprise_short' => $this->getParameter('marque.entreprise.short'),
-                'marque_entreprise_long' => $this->getParameter('marque.entreprise.long'),
-                'logo_entreprise' => $this->getParameter('logo.entreprise'),
-                'env' => $this->getParameter('environnement'),
-                'version' => $this->getParameter('version'),
-                'dateCopyright' => \date('Y'),
-                'rgaa' => $this->getParameter('rgaa')
-            ]);
+            $render=static::genericRender();
+            $render['nom'] = $utilisateur->getNom();
+            $render['prenom'] = $utilisateur->getPrenom();
+            $render['courriel'] = $utilisateur->getCourriel();
+            $render['rgaa'] = $this->getParameter('rgaa');
+            return $this->render('welcome/index.html.twig', $render);
         }
 
-        return $this->render('auth/register.html.twig', [
-            'registrationForm' => $form->createView(),
-            'marque_entreprise_short' => $this->getParameter('marque.entreprise.short'),
-            'marque_entreprise_long' => $this->getParameter('marque.entreprise.long'),
-            'logo_entreprise' => $this->getParameter('logo.entreprise'),
-            'env' => $this->getParameter('environnement'),
-            'version' => $this->getParameter('version'),
-            'dateCopyright' => \date('Y'),
-            'rgaa' => $this->getParameter('rgaa')
-        ]);
+        $render=static::genericRender();
+        $render['registrationForm'] = $form->createView();
+        $render['rgaa'] = $this->getParameter('rgaa');
+        return $this->render('auth/register.html.twig', $render);
     }
 
     /**
@@ -161,18 +188,12 @@ class RegistrationController extends AbstractController
     #[Route('/welcome', name: 'welcome')]
     public function welcome()
     {
-        return $this->render('welcome/index.html.twig', [
-            'nom' => 'HADJADJ',
-            'prenom' => 'Laurent',
-            'courriel' => 'laurent.hadjadj@ma-petite-entreprise.fr',
-            'version' => $this->getParameter('version'),
-            'dateCopyright' => \date('Y'),
-            'marque_entreprise_short' => $this->getParameter('marque.entreprise.short'),
-            'marque_entreprise_long' => $this->getParameter('marque.entreprise.long'),
-            'logo_entreprise' => $this->getParameter('logo.entreprise'),
-            'env' => $this->getParameter('environnement'),
-            'rgaa' => $this->getParameter('rgaa')
-        ]);
+        $render=static::genericRender();
+        $render['nom'] = 'HADJADJ';
+        $render['prenom'] = 'Laurent';
+        $render['courriel'] = 'laurent.hadjadj@ma-petite-entreprise.fr';
+        $render['rgaa'] = $this->getParameter('rgaa');
+        return $this->render('welcome/index.html.twig', $render);
     }
 
 }

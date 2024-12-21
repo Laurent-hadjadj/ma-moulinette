@@ -76,10 +76,10 @@ class BatchCollecteNoSonarController extends AbstractController
 
         /** Appelle le client HTTP */
         $queryParams = ['componentKeys'=>$mavenKey, 'rules'=> 'java:S1309,java:NoSonar', 'p'=>1, 'ps'=>500 ];
-        $result = $this->client->http("$tempoUrl/api/issues/search?".http_build_query($queryParams));
+        $result = $this->client->httpSonarQube("$tempoUrl/api/issues/search?".http_build_query($queryParams));
          /** On catch les erreurs HTTP 401 et 404, si possible :) */
         if (isset($result['code']) && in_array($result['code'], [401, 404])) {
-            return ['code' => $result['code'], 'error'=>[$result['erreur']]];
+            return ['code' => $result['code'], 'erreur'=>[$result['erreur']]];
         }
 
         /** On supprime les résultats pour la maven_key. */
@@ -87,7 +87,7 @@ class BatchCollecteNoSonarController extends AbstractController
         $delete=$noSonarRepository->deleteNoSonarMavenKey($map);
         if ($delete['code']!=200) {
             return ['code' => $delete['code'],
-                    'error'=>[$delete['erreur'],static::$request=>'deleteNoSonarMavenKey']
+                    'erreur'=>[$delete['erreur'],static::$request=>'deleteNoSonarMavenKey']
                 ];
         }
 
@@ -131,7 +131,7 @@ class BatchCollecteNoSonarController extends AbstractController
         $request=$noSonarRepository->insertNoSonar($mapData);
         if ($request['code']!=200) {
             return ['code' => $request['code'],
-            'error'=>[$request['erreur'],static::$request=>'insertNoSonar']];
+            'erreur'=>[$request['erreur'],static::$request=>'insertNoSonar']];
         }
 
         /** On prépare les données pour l'historique */
