@@ -52,6 +52,55 @@ class Client
         $this->logger = $logger;
     }
 
+    private function handleTimeoutException(TimeoutException $e): array {
+        $this->logger->error("Erreur de transport : " . $e->getMessage());
+        return ['code' => 504, 'error' => static::$erreur504];
+    }
+
+    private function handleTransportException(TransportException $e): array {
+        $errorMessage = $e->getMessage() ?: "Erreur de transport non spécifiée.";
+
+        if (strpos($errorMessage, "Failed to open stream") !== false) {
+            $errorMessage = "Erreur 503 - Le service est actuellement indisponible. Impossible d'établir une connexion.";
+        } elseif (strpos($errorMessage, "Could not resolve host") !== false) {
+            $errorMessage = "Erreur 503 - La résolution DNS n'a pas permis d'accéder au serveur SonarQube.";
+        } elseif (strpos($errorMessage, "Invalid HTTP proxy") !== false) {
+            $errorMessage = "Erreur 503 - L'adresse définit pour le proxy n'est pas correcte.";
+        }
+
+        $this->logger->error("Erreur de transport (Erreur 504) : " . $e->getMessage());
+        return ['code' => 504, 'error' => $errorMessage];
+    }
+
+    private function handleClientException(ClientException $e): array {
+        $response = $e->getResponse();
+        $body = $response->getContent(false);
+        $errorCode = $e->getCode();
+        $errorMessage = match ($errorCode) {
+            400 => static::$erreur400,
+            401 => static::$erreur401,
+            404 => static::$erreur404,
+            default => "Erreur client non spécifiée.",
+        };
+
+        $this->logger->error("Erreur du client : " . $body);
+        return ['code' => $errorCode, 'error' => $errorMessage];
+    }
+
+    private function handleServerException(ServerException $e): array {
+        $response = $e->getResponse();
+        $body = $response->getContent(false);
+        $errorCode = $e->getCode();
+        $errorMessage = "Le service est indisponible (Erreur 500).";
+
+        $this->logger->error($body);
+        return ['code' => $errorCode, 'error' => $errorMessage];
+    }
+
+    private function handleGenericException(\Exception $e): array {
+        $this->logger->error("Erreur inattendue : " . $e->getMessage());
+        return ['code' => 500, 'error' => "Une erreur inattendue s'est produite."];
+    }
 
     /**
      * [Description for genericHeaders]
@@ -102,7 +151,7 @@ class Client
             $verify_host = $this->params->get('verify.host');
             $verify_peer =$this->params->get('verify.peer');
 
-            $response = $this->client->request('GET', $url, [
+            $options = [
                 'auth_basic' => [$user, $password],
                 'timeout' => 45,
                 'headers' => static::genericHeaders(),
@@ -111,7 +160,15 @@ class Client
                 # vérification des certificats
                 'verify_host' => $verify_host,
                 'verify_peer' => $verify_peer
-            ]);
+            ];
+
+            /** On a ajoute le proxy aux options s'il est défini*/
+            $proxy = $this->params->get('proxy');
+            if (!isempty($proxy)){
+                $options['proxy']=$proxy;
+            }
+
+            $response = $this->client->request('GET', $url, $options);
 
             /** Si tout va bien, ajoute une trace dans les logs */
             $message = "[" . $response->getInfo('http_method') . "] - " .
@@ -120,64 +177,22 @@ class Client
                 $response->getInfo('url');
             $this->logger->info($message);
 
-            /** On retourne la réponse. */
             $responseJson = $response->getContent();
-            return json_decode($responseJson, true, 512, JSON_THROW_ON_ERROR);
-        } catch (TimeoutException $e){
-                // Gestion du timeout
-                $this->logger->error("Erreur de transport : " . $e->getMessage());
-                return ['code' => 504, 'erreur' => static::$erreur504];
+            return [
+                    'message' => $message,
+                    'code' => $response->getStatusCode(),
+                    'json' => json_decode($responseJson, true, 512, JSON_THROW_ON_ERROR)
+                ];
+        } catch (TimeoutException $e) {
+            return $this->handleTimeoutException($e);
         } catch (TransportException $e) {
-            $errorMessage = $e->getMessage() ?: 'Erreur de transport non spécifiée.';
-            /* Vérifier si l'erreur contient "Failed to open stream" */
-            if (strpos($errorMessage, 'Failed to open stream') !== false) {
-                // Si l'erreur mentionne "Failed to open stream", on définit un message personnalisé pour l'erreur 503
-                $errorMessage = 'Erreur 503 - Le service est actuellement indisponible. Impossible d\'établir une connexion.';
-            }
-            $this->logger->error("Erreur de transport (503) : " . $errorMessage);
-            return ['code' => 503, 'erreur' => $errorMessage];
+            return $this->handleTransportException($e);
         } catch (ClientException $e) {
-            // Gère les erreurs 4xx (ex: 404, 401, etc.)
-            $response=$e->getResponse();
-            $body = $response->getContent(false);
-            $errorCode = $e->getCode();
-            $errorMessage = '';
-            switch ($errorCode) {
-                case 400:
-                    $errorMessage = static::$erreur400;
-                    break;
-                case 401:
-                    $errorMessage = static::$erreur401;
-                    break;
-                case 404:
-                    $errorMessage = static::$erreur404;
-                    break;
-                default:
-                    $errorMessage = "Erreur client non spécifiée.";
-                    break;
-            }
-            $this->logger->error("Erreur du client : " . $body);
-            return ['code' => $errorCode, 'erreur' => $errorMessage];
+            return $this->handleClientException($e);
         } catch (ServerException $e) {
-            // Gère les erreurs 5xx (ex: 500, 502, etc.)
-            $response=$e->getResponse();
-            $body = $response->getContent(false);
-            $errorCode = $e->getCode();
-            $errorMessage = 'Le service est indisponible (Erreur 500).';
-            // Journaliser l'erreur
-            $this->logger->error($body);
-
-            return ['code' => $errorCode, 'erreur' => $errorMessage];
+            return $this->handleServerException($e);
         } catch (\Exception $e) {
-            // Gère toutes les autres exceptions
-            $response=$e->getResponse();
-            $body = $response->getContent(false);
-            $errorCode = $e->getCode();
-            $errorMessage = "Une erreur inétendue s'est produite !";
-
-            // Journaliser l'erreur
-            $this->logger->error($body);
-            return ['code' => $errorCode, 'erreur' => $errorMessage];
+            return $this->handleGenericException($e);
         }
     }
 
@@ -188,58 +203,141 @@ class Client
      * @param string $user
      * @param string $password
      *
-     * @return Response
+     * @return array
      *
      * Created at: 27/06/2024 21:02:25 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function httpActuator(string $url, string $user, string $password): JsonResponse
+    public function httpActuator(string $url, string $user, string $password): array
     {
-        /** Options sans Auth_http_basic */
-        $options=[
-            'timeout' => 45,
-            'headers' => static::genericHeaders(),
-        ];
+        try {
+            $ciphers = $this->params->get('ciphers');
+            $verify_host = $this->params->get('verify.host');
+            $verify_peer =$this->params->get('verify.peer');
 
-        /** Si on a un login/password défini avec actuator */
-        $authHttpBasic=['auth_basic' => [$user, $password]];
+            /** Options sans Auth_http_basic */
+            $options=[
+                'timeout' => 45,
+                'headers' => static::genericHeaders(),
+                # Définition des ciphers TLS1.3
+                'ciphers' => $ciphers,
+                # vérification des certificats
+                'verify_host' => $verify_host,
+                'verify_peer' => $verify_peer
+            ];
 
-        /** on ajout Auth_http_basic si $user&&$password != null */
-        if($user!=null && $password!=null) {
-            $options=array_merge($options, $authHttpBasic);
+            /** Si on a un login/password défini avec actuator */
+            $authHttpBasic=['auth_basic' => [$user, $password]];
+
+            /** On ajout Auth_http_basic si $user&&$password != null */
+            if($user!=null && $password!=null) {
+                $options=array_merge($options, $authHttpBasic);
+            }
+
+            $response = $this->client->request('GET', $url, $options);
+
+            /** Si tout va bien, ajoute une trace dans les logs */
+            $message = "[" . $response->getInfo('http_method') . "] - " .
+                $response->getInfo('http_code') . " - " .
+                $response->getInfo('total_time') . " - " .
+                $response->getInfo('url');
+            $this->logger->info($message);
+
+            /** On retourne la réponse. */
+            $responseJson = $response->getContent();
+            return [
+                'message' => $message,
+                'code' => $response->getStatusCode(),
+                'json' => json_decode($responseJson, true, 512, JSON_THROW_ON_ERROR)
+            ];
+        } catch (TimeoutException $e) {
+            return $this->handleTimeoutException($e);
+        } catch (TransportException $e) {
+            return $this->handleTransportException($e);
+        } catch (ClientException $e) {
+            return $this->handleClientException($e);
+        } catch (ServerException $e) {
+            return $this->handleServerException($e);
+        } catch (\Exception $e) {
+            return $this->handleGenericException($e);
+        }
+    }
+
+    /**
+     * [Description for httpActivity]
+     *
+     * @param string $url
+     *
+     * @return array
+     *
+     * Created at: 22/05/2024 15:03:12 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function httpActivity($url): array
+    {
+        if (empty($this->params->get('sonar.activity.token')) && empty($this->params->get('sonar.activity.user'))){
+            return ['code'=> 401];
         }
 
-        $response = $this->client->request('GET', $url, $options);
-        /** catch les erreurs 400, 404, les erreurs 401 et les autres génère une erreur 500 */
-        if (200 !== $response->getStatusCode()) {
-            if ($response->getStatusCode() == 400) {
-                $this->logger->ERROR(static::$erreur400);
-                return new JsonResponse(['code'=> 400, 'erreur'=>static::$erreur400], Response::HTTP_OK);
-            }
-            if ($response->getStatusCode() == 401) {
-                $this->logger->ERROR(static::$erreur401);
-                return new JsonResponse(['code'=> 401, 'erreur'=>static::$erreur401], Response::HTTP_OK);
-            }
-            if ($response->getStatusCode() == 403) {
-                $this->logger->ERROR(static::$erreur403);
-                return new JsonResponse(['code'=> 403, 'erreur'=>static::$erreur403], Response::HTTP_OK);
-            }
-            if ($response->getStatusCode() == 404) {
-                $this->logger->ERROR(static::$erreur404);
-                return new JsonResponse(['code'=> 404, 'erreur'=>static::$erreur404], Response::HTTP_OK);
-            }
+        if (empty($this->params->get('sonar.activity.token'))) {
+            $user = $this->params->get('sonar.activity.user');
+            $password = $this->params->get('sonar.activity.password');
+        } else {
+            $user = $this->params->get('sonar.activity.token');
+            $password = '';
         }
 
-        /** Si tous va bien on ajoute une trace dans les log */
-        $message = "[".$response->getInfo('http_method')."] - ".
-                    $response->getInfo('http_code')." - ".
-                    $response->getInfo('total_time')." - ".
-                    $response->getInfo('url');
-        $this->logger->INFO($message);
+        try {
+            $ciphers = $this->params->get('ciphers');
+            $verify_host = $this->params->get('verify.host');
+            $verify_peer =$this->params->get('verify.peer');
 
-        /** On retourne la réponse. */
-        return new JsonResponse(json_decode($response->getContent(), JSON_THROW_ON_ERROR), Response::HTTP_OK);
+            $options = [
+                'auth_basic' => [$user, $password],
+                'timeout' => 45,
+                'headers' => static::genericHeaders(),
+                # Définition des ciphers TLS1.3
+                'ciphers' => $ciphers,
+                # vérification des certificats
+                'verify_host' => $verify_host,
+                'verify_peer' => $verify_peer
+            ];
+
+            /** On a ajoute le proxy aux options s'il est défini*/
+            $proxy = $this->params->get('proxy');
+            if (!isempty($proxy)){
+                $options['proxy']=$proxy;
+            }
+
+            $response = $this->client->request('GET', $url, $options);
+
+            /** Si tout va bien, ajoute une trace dans les logs */
+            $message = "[" . $response->getInfo('http_method') . "] - " .
+                $response->getInfo('http_code') . " - " .
+                $response->getInfo('total_time') . " - " .
+                $response->getInfo('url');
+            $this->logger->info($message);
+
+            $responseJson = $response->getContent();
+            return [
+                    'message' => $message,
+                    'code' => $response->getStatusCode(),
+                    'json' => json_decode($responseJson, true, 512, JSON_THROW_ON_ERROR)
+                ];
+        } catch (TimeoutException $e) {
+            return $this->handleTimeoutException($e);
+        } catch (TransportException $e) {
+            return $this->handleTransportException($e);
+        } catch (ClientException $e) {
+            return $this->handleClientException($e);
+        } catch (ServerException $e) {
+            return $this->handleServerException($e);
+        } catch (\Exception $e) {
+            return $this->handleGenericException($e);
+        }
+
     }
 
 }
