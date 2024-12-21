@@ -31,7 +31,7 @@
       <nav aria-label="Vous êtes sur la page">
         <ol class="claire-hand breadcrumbs">
           <li>
-            <a href="{{ path('home') }}">Accueil</a>
+            <a href="{{ path('accueil') }}">Accueil</a>
           </li>
           <li>
             <span class="show-for-sr">Vous êtes sur la page :</span>Données-personnelles</li>
@@ -193,14 +193,8 @@
         <li><a class="source-link" href="https://www.cnil.fr/fr/reglement-europeen-protection-donnees/chapitre2#Article11">RGPD - Article 11 - Traitement ne nécessitant pas l'identification.</a></li>
         <br>
       </section>
-
-
     </main>
     {# Chargement de la section footer #}
     {{ include('footer.html.twig') }}
-    {# Chargement du code javascript #}
-    {% block javascripts %}
-      {{ encore_entry_script_tags('donnees-personnelles') }}
-    {% endblock %}
   </body>
 </html>
