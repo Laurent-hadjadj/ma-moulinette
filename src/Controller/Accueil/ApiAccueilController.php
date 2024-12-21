@@ -125,9 +125,8 @@ class ApiAccueilController extends AbstractController
         /** On, initialiser les variables  */
         $public = $private = $emptyTags = $nombre = 0;
 
-        /** On créé un objet DateTime */
-        $date = new \DateTimeImmutable();
-        $date->setTimezone(new \DateTimeZone(static::$europeParis));
+        /** On créé un objet DateTimeImmutable */
+        $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
 
         /** On vérifie que SonarQube a au moins 1 projet */
         if (array_key_exists('total', $result) && $result['code']===404){
