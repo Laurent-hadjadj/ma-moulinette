@@ -16,9 +16,8 @@
 	<html lang="fr"> <head>
 		<title>{{ title }}</title>
 		{{ include('head.html.twig') }}
-		{% block stylesheets %}
-			{{ encore_entry_link_tags('mention-legale') }}
-		{% endblock %}
+		{# Chargement du code javascript #}
+    {% block importmap %}{{ importmap('mention-legale') }}{% endblock %}
 	</head>
 
 	<body>
@@ -30,7 +29,7 @@
 			<nav aria-label="Vous êtes sur la page">
 				<ol class="claire-hand breadcrumbs">
 					<li>
-						<a href="{{ path('home', {}) }}">Accueil</a>
+						<a href="{{ path('accueil', {}) }}">Accueil</a>
 					</li>
 					<li>
 						<span class="show-for-sr">Vous êtes sur la page :</span>mentions-légales</li>
@@ -104,9 +103,7 @@
 				</div>
 				<p class="open-sans text-justify">Sauf mention de propriété intellectuelle détenue par des tiers (notamment un crédit sur certaines images), les contenus de ce site sont proposés sous licence ouverte.</p>
 
-				<p class="open-sans text-justify">La mise en place de liens vers nos contenus et documents est cependant est à privilégier par rapport à la reproduction sur un site tiers. La mention explicite du site source
-					<strong>ma-moulinette.fr</strong>
-					est recommandée.</p>
+				<p class="open-sans text-justify">La mise en place de liens vers nos contenus et documents est cependant est à privilégier par rapport à la reproduction sur un site tiers. La mention explicite du site source <strong>ma-moulinette.fr</strong> est recommandée.</p>
 				<br>
 			</section>
 
@@ -120,9 +117,5 @@
 		</main>
 		{# Chargement de la section footer #}
 		{{ include('footer.html.twig') }}
-		{# Chargement du code javascript #}
-		{% block javascripts %}
-			{{ encore_entry_script_tags('mention-legale') }}
-		{% endblock %}
 	</body>
 </html>

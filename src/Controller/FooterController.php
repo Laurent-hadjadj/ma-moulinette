@@ -14,14 +14,55 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * [Description SecurityController]
+ * [Description FooterController]
  */
 class FooterController extends AbstractController
 {
+
+    private $logoEntreprise;
+    private $marqueEntrepriseShort;
+    private $marqueEntrepriseLong;
+    private $environnement;
+    private $version;
+    private $dateCopyright;
+
+    public function __construct(
+        private ParameterBagInterface $params,
+    ) {
+        $this->logoEntreprise = $params->get('logo.entreprise');
+        $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
+        $this->marqueEntrepriseLong = $params->get('marque.entreprise.long');
+        $this->environnement = $params->get('environnement');
+        $this->version = $params->get('version');
+        $this->dateCopyright = \date('Y');
+    }
+
+    /**
+     * [Description for genericRender]
+     *
+     * @return array
+     *
+     * Created at: 21/12/2024 23:25:49 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function genericRender(): array
+    {
+        return [
+            'type_footer' => null,
+            'logo_entreprise' => $this->logoEntreprise,
+            'marque_entreprise_short' => $this->marqueEntrepriseShort,
+            'marque_entreprise_long' => $this->marqueEntrepriseLong,
+            'env' => $this->environnement,
+            'version' => $this->version,
+            'date_copyright' => $this->dateCopyright];
+    }
+
     /**
      * [Description for planDuSite]
      *
@@ -34,18 +75,12 @@ class FooterController extends AbstractController
     #[Route('/plan-du-site', name: 'plan_du_site')]
     public function planDuSite(): Response
     {
-        return $this->render('footer/plan-du-site.html.twig', [
-            'marque_entreprise_short' => $this->getParameter('marque.entreprise.short'),
-            'marque_entreprise_long' => $this->getParameter('marque.entreprise.long'),
-            'logo_entreprise' => $this->getParameter('logo.entreprise'),
-            'env' => $this->getParameter('environnement'),
-            'version' => $this->getParameter('version'),
-            'dateCopyright' => \date('Y')
-        ]);
+        $render=static::genericRender();
+        return $this->render('footer/plan-du-site.html.twig', $render);
     }
 
     /**
-     * [Description for mentionLegale]
+     * [Description for mentionLegal]
      *
      * @return Response
      *
@@ -53,40 +88,29 @@ class FooterController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/mentions-legales', name: 'mention_legale')]
-    public function mentionLegale(): Response
+    #[Route('/mention-legale', name: 'mention_legal')]
+    public function mentionLegal(): Response
     {
-        return $this->render('footer/mentions-legales.html.twig', [
-            'editeur'=>$this->getParameter('cgu.editeur'),
-            'adresse'=>$this->getParameter('cgu.adresse'),
-            'siret'=>$this->getParameter('cgu.siret'),
-            'siren'=>$this->getParameter('cgu.siren'),
-            'numSiret'=>$this->getParameter('cgu.numero.siret'),
-            'numSiren'=>$this->getParameter('cgu.numero.siren'),
-            'directeurPublication'=>$this->getParameter('cgu.directeur.publication'),
-            'sourceURL'=>$this->getParameter('cgu.source.url'),
-            'sourceSCM'=>$this->getParameter('cgu.source.scm'),
-            'hebergement'=>$this->getParameter('cgu.hebergement'),
-            'marque_entreprise_short' => $this->getParameter('marque.entreprise.short'),
-            'marque_entreprise_long' => $this->getParameter('marque.entreprise.long'),
-            'env' => $this->getParameter('environnement'),
-            'version' => $this->getParameter('version'),
-            'dateCopyright' => \date('Y')
-        ]);
+        $render=static::genericRender();
+        $render['editeur'] = $this->getParameter('cgu.editeur');
+        $render['urlSite'] = $this->getParameter('cgu.url.site');
+        return $this->render('footer/mention-legal.html.twig', $render);
     }
 
+    /**
+     * [Description for donneesPersonnelles]
+     *
+     * @return Response
+     *
+     * Created at: 21/12/2024 23:32:34 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     #[Route('/donnees-personnelles', name: 'donnees_personnelles')]
-    public function rgpd(): Response
+    public function donneesPersonnelles(): Response
     {
-        return $this->render('footer/donnees-personnelles.html.twig', [
-            'editeur' => $this->getParameter('cgu.editeur'),
-            'urlSite' => $this->getParameter('cgu.url.site'),
-            'marque_entreprise_short' => $this->getParameter('marque.entreprise.short'),
-            'marque_entreprise_long' => $this->getParameter('marque.entreprise.long'),
-            'env' => $this->getParameter('environnement'),
-            'version' => $this->getParameter('version'),
-            'dateCopyright' => \date('Y')
-        ]);
+        $render=static::genericRender();
+        return $this->render('footer/donnees-personnelles.html.twig', $render);
     }
 
 }
