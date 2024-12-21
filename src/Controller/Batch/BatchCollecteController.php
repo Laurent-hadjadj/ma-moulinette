@@ -132,8 +132,7 @@ class BatchCollecteController extends AbstractController
         $modeCollecte = htmlspecialchars($data->mode_collecte, ENT_QUOTES, 'UTF-8');
 
         /** On démarre la mesure du traitement */
-        $debutTraitement = new \DateTime();
-        $debutTraitement->setTimezone(new \DateTimeZone(static::$europeParis));
+        $debutTraitement = new \DateTime('now', new \DateTimeZone(static::$europeParis));
         $collecte[]=[
             "********************* DEBUT DU TRAITEMENT ********************",
             "Projet : ".$mavenKey,
@@ -326,8 +325,7 @@ class BatchCollecteController extends AbstractController
         }
 
         /** On créé un objet date. */
-        $date = new \DateTimeImmutable();
-        $date->setTimezone(new \DateTimeZone(static::$europeParis));
+        $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
 
         /** Consolidation des données */
         $mapMerged=array_merge($mapMerged, [
@@ -347,8 +345,7 @@ class BatchCollecteController extends AbstractController
         }
 
         /** Fin du traitement */
-        $finTraitement = new \DateTime();
-        $finTraitement->setTimezone(new \DateTimeZone(static::$europeParis));
+        $finTraitement = new \DateTime('now', new \DateTimeZone(static::$europeParis));
         $interval = $debutTraitement->diff($finTraitement);
         $temps = $interval->format("%H:%i:%s.%f");
         $collecte[]=[

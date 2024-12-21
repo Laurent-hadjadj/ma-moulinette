@@ -102,8 +102,7 @@ class BatchCollecteAnomalieController extends AbstractController
         $anomalieRepository = $this->em->getRepository(Anomalie::class);
 
         /** On créé un objet date. */
-        $date = new \DateTimeImmutable();
-        $date->setTimezone(new \DateTimeZone(static::$europeParis));
+        $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
 
         /** On récupère le nom du projet */
         $app=$this->serviceExtractName->extractNameFromMavenKey($mavenKey);

@@ -67,8 +67,7 @@ class BatchCollecteNoSonarController extends AbstractController
         $noSonarRepository = $this->em->getRepository(NoSonar::class);
 
         /** On créé un objet date. */
-        $date = new \DateTimeImmutable();
-        $date->setTimezone(new \DateTimeZone(static::$europeParis));
+        $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
 
         /** On construit l'URL */
         $tempoUrl = $this->getParameter(static::$sonarUrl);

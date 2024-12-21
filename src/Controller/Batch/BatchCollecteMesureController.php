@@ -86,8 +86,7 @@ class BatchCollecteMesureController extends AbstractController
             return ['code' => $delete['code'], 'erreur'=>[$delete['erreur'], static::$request=>'deleteMesureMavenKey']];
         }
         /** Création de la date du jour */
-        $date = new \DateTimeImmutable();
-        $date->setTimezone(new \DateTimeZone("Europe/Paris"));
+        $date = new \DateTimeImmutable('now', new \DateTimeZone("Europe/Paris"));
 
         /** Initialisation des mesures avec des valeurs par défaut */
         $lines = intval($result['measures']['lines'] ?? 0);

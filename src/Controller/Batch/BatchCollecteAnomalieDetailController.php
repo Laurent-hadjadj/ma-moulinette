@@ -72,8 +72,7 @@ class BatchCollecteAnomalieDetailController extends AbstractController
         $anomalieDetailsRepository = $this->em->getRepository(AnomalieDetails::class);
 
         /** On créé un objet date. */
-        $date = new \DateTimeImmutable();
-        $date->setTimezone(new \DateTimeZone(static::$europeParis));
+        $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
 
         /** On construit l'URL */
         $tempoUrl = $this->getParameter(static::$sonarUrl);
@@ -125,10 +124,6 @@ class BatchCollecteAnomalieDetailController extends AbstractController
         if ($delete['code']!=200) {
             return ['code' => $delete['code'], 'erreur'=>[$delete['erreur'], static::$request=>'deleteAnomalieDetailsMavenKey']];
         }
-
-        /** On crée un objet DateTime */
-        $date = new \DateTime();
-        $date->setTimezone(new \DateTimeZone(static::$europeParis));
 
         /** Fonction pour mapper les résultats */
         function mapSeverities($severities) {

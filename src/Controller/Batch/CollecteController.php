@@ -118,8 +118,7 @@ class CollecteController extends AbstractController
         $mode_collecte = htmlspecialchars($mode_collecte, ENT_QUOTES, 'UTF-8');
 
         /** On démarre la mesure du traitement */
-        $debutTraitement = new \DateTime();
-        $debutTraitement->setTimezone(new \DateTimeZone(static::$europeParis));
+        $debutTraitement = new \DateTime('now', new \DateTimeZone(static::$europeParis));
         $collecte[]=[
             '********************* DEBUT DU TRAITEMENT ********************',
             'Portefeuille : '.$portefeuille,
@@ -371,8 +370,7 @@ class CollecteController extends AbstractController
         }
 
         /** Fin du traitement */
-        $finTraitement = new \DateTime();
-        $finTraitement->setTimezone(new \DateTimeZone(static::$europeParis));
+        $finTraitement = new \DateTime('now', new \DateTimeZone(static::$europeParis));
         $interval = $debutTraitement->diff($finTraitement);
         $temps = $interval->format('%H:%i:%s.%f');
         $collecte[]=[

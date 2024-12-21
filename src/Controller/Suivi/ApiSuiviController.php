@@ -130,7 +130,7 @@ class ApiSuiviController extends AbstractController
         /** objet = { id: clé, text: "blablabla" }; */
         foreach ($result['analyses'] as $version) {
             $ts = new \DateTime($version['date'], new \DateTimeZone(static::$europeParis));
-            $cc = $ts->format('d-m-Y H:i:sP');
+            $cc = $ts->format('d-m-Y H:i:sO');
             $objet = [
                 'id' => $id,
                 'text' => $version['projectVersion'] . " (" . $cc . ")"];
@@ -332,8 +332,7 @@ class ApiSuiviController extends AbstractController
         }
 
         /** On créé objet date */
-        $dateEnregistrement = new \DateTimeImmutable();
-        $dateEnregistrement->setTimezone(new \DateTimeZone(static::$europeParis));
+        $dateEnregistrement = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
 
         /** On bind chaque valeur dans une map. */
         $info = [

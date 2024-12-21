@@ -65,8 +65,7 @@ class BatchCollecteTodoController extends AbstractController
         $todoRepository = $this->em->getRepository(Todo::class);
 
         /** On créé un objet date. */
-        $date = new \DateTimeImmutable();
-        $date->setTimezone(new \DateTimeZone(static::$europeParis));
+        $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
 
         /** On construit l'URL */
         $tempoUrl = $this->getParameter(static::$sonarUrl);
@@ -82,10 +81,6 @@ class BatchCollecteTodoController extends AbstractController
         if (isset($result['code']) && in_array($result['code'], [401, 404])) {
             return ['code' => $result['code']];
         }
-
-        /** On crée un objet date */
-        $date = new \DateTime();
-        $date->setTimezone(new \DateTimeZone(static::$europeParis));
 
         /** On supprime les résultats pour la maven_key. */
         $map=['maven_key'=>$mavenKey];

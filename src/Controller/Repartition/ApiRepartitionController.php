@@ -25,10 +25,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Repartition;
 
-/** Gestion du temps */
-use DateTime;
-use DateTimeZone;
-
 /** Logger */
 use Psr\Log\LoggerInterface;
 
@@ -257,8 +253,7 @@ class ApiRepartitionController extends AbstractController
         $setup = $data->setup;
 
         /** on créé un objet date */
-        $date = new DateTime();
-        $date->setTimezone(new DateTimeZone('Europe/Paris'));
+        $date = new \DateTimeImmutable('now', new \DateTimeZone('Europe/Paris'));
 
         /** On récupère le nombre d'anomalie pour le type */
         $result = $this->batch_anomalie($client, $mavenKey, 1, 1, $type, $severity);

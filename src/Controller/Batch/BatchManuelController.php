@@ -36,8 +36,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
  */
 class BatchManuelController extends AbstractController
 {
-    public static $dateFormat = "Y-m-d H:i:s";
-    public static $dateFormatMini = "Y-m-d";
     public static $timeFormat = "%H:%I:%S";
     public static $europeParis = "Europe/Paris";
     public static $request = "requête : ";

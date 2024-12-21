@@ -258,8 +258,7 @@ class BatchCollecteInformationProjetController extends AbstractController
         if (!isset($explode[1]) || empty($explode[1])) {
             $explode[1] = 'N.C';
         }
-        $date = new \DateTimeImmutable();
-        $date->setTimezone(new \DateTimeZone(static::$europeParis));
+        $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
 
         $map=[
                 'maven_key' => $mavenKey,

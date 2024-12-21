@@ -109,11 +109,8 @@ class BatchCollecteOwaspController extends AbstractController
         }
 
         /** On reconstruit des date au format dateTime */
-        $date_version = new \DateTimeImmutable($select_information['info'][0]['date']);
-        $date_version->setTimezone(new \DateTimeZone(static::$europeParis));
-
-        $date = new \DateTimeImmutable();
-        $date->setTimezone(new \DateTimeZone(static::$europeParis));
+        $date_version = new \DateTimeImmutable($select_information['info'][0]['date'], new \DateTimeZone(static::$europeParis));
+        $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
 
         $prepareOwaspData = function($referential) use ($maven_key, $date_version, $date, $select_information, $mode_collecte, $utilisateur_collecte) {
             /** On initialise un tableau avec comme valeur 0 */

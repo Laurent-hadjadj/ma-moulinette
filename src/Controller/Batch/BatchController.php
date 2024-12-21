@@ -86,10 +86,6 @@ class BatchController extends AbstractController
             return $this->render(static::$page, $render);
         }
 
-        // Créer un objet date avec le fuseau horaire Europe/Paris
-        $date = new \DateTimeImmutable();
-        $date->setTimezone(new \DateTimeZone(static::$europeParis));
-
         // Obtenir la date du dernier traitement automatique ou programmé
         $r = $batchTraitementRepository->selectBatchTraitementDateEnregistrementLast();
         if ($r['code'] != 200) {
@@ -107,7 +103,7 @@ class BatchController extends AbstractController
 
         // Permet d'obtenir la liste des traitements programmés pour la journée en cours
         // 2024-06-14 17:00:11+02
-        $dateTimeDernierBatch = new \DateTime($r['liste'][0]['date']);
+        $dateTimeDernierBatch = new \DateTime($r['liste'][0]['date'], new \DateTimeZone(static::$europeParis));
         $listeAll = $batchTraitementRepository->selectBatchTraitementLast($dateTimeDernierBatch->format('Y-m-d'));
         if ($listeAll['code'] != 200) {
             $message = '2-Nous avons rencontré une erreur inattendue [' . $listeAll['code'] . ']';
@@ -125,8 +121,8 @@ class BatchController extends AbstractController
                 $message = ($resultat == 0) ? "Erreur" : "Succès";
                 $css = ($resultat == 0) ? "ko" : "ok";
 
-                $debut = new \DateTime($traitement['debut']);
-                $fin = new \DateTime($traitement['fin']);
+                $debut = new \DateTime($traitement['debut'], new \DateTimeZone(static::$europeParis));
+                $fin = new \DateTime($traitement['fin'], new \DateTimeZone(static::$europeParis));
                 $interval = $debut->diff($fin);
                 $execution = $interval->format(static::$timeFormat);
             } else {

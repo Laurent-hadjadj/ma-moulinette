@@ -105,8 +105,7 @@ class BatchCollecteHotspotController extends AbstractController
         }
 
         /** On reconstruit la date de version au format dateTime */
-        $dateVersion = new \DateTimeImmutable($select['info'][0]['date']);
-        $dateVersion->setTimezone(new \DateTimeZone(static::$europeParis));
+        $dateVersion = new \DateTimeImmutable($select['info'][0]['date'], new \DateTimeZone(static::$europeParis));
 
         /** On construit l'URL */
         $tempoUrl = $this->getParameter(static::$sonarUrl);
@@ -121,8 +120,7 @@ class BatchCollecteHotspotController extends AbstractController
             return ['code' => $result['code'],'erreur'=>$result['erreur']];
         }
        /** Création de la date du jour */
-        $date = new \DateTimeImmutable();
-        $date->setTimezone(new \DateTimeZone(static::$europeParis));
+        $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
 
         /** On supprime les résultats pour la maven_key. */
         $map=['maven_key'=>$mavenKey];

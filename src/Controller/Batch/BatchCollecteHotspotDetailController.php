@@ -193,12 +193,10 @@ class BatchCollecteHotspotDetailController extends AbstractController
         }
 
         /** On reconstruit la date de version au format dateTime */
-        $dateVersion = new \DateTimeImmutable($information['info'][0]['date']);
-        $dateVersion->setTimezone(new \DateTimeZone(static::$europeParis));
+        $dateVersion = new \DateTimeImmutable($information['info'][0]['date'], new \DateTimeZone(static::$europeParis));
 
         /** Création de la date du jour */
-        $date = new \DateTimeImmutable();
-        $date->setTimezone(new \DateTimeZone(static::$europeParis));
+        $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
 
         /** On récupère la liste des hotspots au status TO_REVIEW */
         $map=['maven_key'=>$mavenKey];

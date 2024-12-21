@@ -140,8 +140,7 @@ class BatchCollecteLoggerController extends AbstractController
         }
 
         /** Création de la date du jour */
-        $date = new \DateTimeImmutable();
-        $date->setTimezone(new \DateTimeZone("Europe/Paris"));
+        $date = new \DateTimeImmutable('now', new \DateTimeZone("Europe/Paris"));
 
          /** On enregistre les données */
         $loggerData = [

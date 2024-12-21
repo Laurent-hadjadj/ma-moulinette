@@ -123,10 +123,8 @@ class BatchCollecteHotspotOwaspController extends AbstractController
         }
 
         /** On reconstruit les dates au format dateTimeImmutable */
-        $date = new \DateTimeImmutable();
-        $date->setTimezone(new \DateTimeZone(static::$europeParis));
-        $dateVersion = new \DateTimeImmutable($information['info'][0]['date']);
-        $dateVersion->setTimezone(new \DateTimeZone(static::$europeParis));
+        $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
+        $dateVersion = new \DateTimeImmutable($information['info'][0]['date'], new \DateTimeZone(static::$europeParis));
 
         /** On construit l'URL */
         $tempoUrl = $this->getParameter(static::$sonarUrl);

@@ -75,8 +75,7 @@ class ApiEnregistrementController extends AbstractController
         /** todo : vérifier les droits et que les data != null */
 
         /** On créé un objet date Immutable, avec la date courante. */
-        $dateEnregistrement = new \DateTimeImmutable();
-        $dateEnregistrement->setTimezone(new \DateTimeZone(static::$europeParis));
+        $dateEnregistrement = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
 
         /** On contrôle le mode d'utilisation */
         $utilisateur_collecte = $this->security->getUser()->getCourriel();

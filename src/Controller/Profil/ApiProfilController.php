@@ -139,8 +139,7 @@ class ApiProfilController extends AbstractController
         }
 
         /*** Super on a récupéré la liste des profils par langage */
-        $date = new \DateTimeImmutable();
-        $date->setTimezone(new \DateTimeZone(static::$europeParis));
+        $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
 
         /** On supprime les données de la table avant d'importer les données;*/
         $r1=$profilesRepository->deleteProfiles();
@@ -302,14 +301,12 @@ class ApiProfilController extends AbstractController
         $total = $result['total'];
 
         /* On créé une date */
-        $date = new \DateTime();
-        $date->setTimezone(new \DateTimeZone(static::$europeParis));
+        $date = new \DateTime('now', new \DateTimeZone(static::$europeParis));
 
         /** On met à jour la table contenant l'historique des changements. */
         foreach($events as $event) {
             /* On bind les données avant de les enregistrer */
-            $dc = new \DateTime($event['date']);
-            $dc->setTimezone(new \DateTimeZone(static::$europeParis));
+            $dc = new \DateTime($event['date'], new \DateTimeZone(static::$europeParis));
             $dateCourte = $dc->format(static::$dateFormatShort);
             $dateModification = $event['date'];
             $action = $event['action'];
