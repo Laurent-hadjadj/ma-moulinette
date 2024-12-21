@@ -1,0 +1,52 @@
+/**
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2021-2024.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ */
+
+ @media (width <= 20em) { /* vide */ }
+
+ @media (20.025em <= width <= 22em) { /* vide */ }
+
+ @media (22.025em <= width <= 30em) { /* vide */ }
+
+ @media (30.025em <= width <= 40em) { /* vide */ }
+
+ @media (40.025em <= width <= 64em) { /* vide */ }
+
+ @media (64.025em <= width <= 90em) { /* vide */ }
+
+ @media (90.025em <= width <= 120em) { /* vide */ }
+
+ @media (120.025em <= width <= 160em) { /* vide */ }
+
+ @media (width >= 160.025em) { /* vide */ }
+
+ /*******************  Global ******************/
+.bouton-activite-refresh,
+.bouton-activite-graph,
+.bouton-activite-dujou {
+  color: #fff;
+  background-color: #00445b;
+}
+
+.bouton-activite-refresh:hover,
+.bouton-activite-graph:hover,
+.bouton-activite-dujour:hover { background-color: #006182; }
+.couleur-changement{ color: #c46e27; }
+
+.tooltip-icon {
+  cursor: pointer;
+  display: inline-block;
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+}
+
+th { position: relative; }

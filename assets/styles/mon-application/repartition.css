@@ -1,0 +1,265 @@
+/**
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2021-2024.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ */
+
+/* stylelint-disable selector-class-pattern */
+
+/*************************          Global     *********************************/
+
+/* Surpression du style inline */
+.spinner-titre {
+  margin-left: 1rem;
+  margin-top: -3px;
+}
+.progress-meter-custom { width: 0%; }
+
+.je-dors {
+  margin-left: 16px;
+  margin-top: 4px;
+}
+
+/* Couleur des boutons */
+.bouton-collecte-bug,
+.bouton-collecte-vulnerability,
+.bouton-collecte-mauvaise-pratique,
+.bouton-supprime-donnees,
+.bouton-repartition-traitement-donnees,
+.bouton-repartition-affiche-result {
+  color: #fff;
+  background-color: #00445b;
+}
+
+/* Gestion du hover sur les boutons */
+.bouton-collecte-bug:hover,
+.bouton-collecte-vulnerability:hover,
+.bouton-collecte-mauvaise-pratique:hover,
+.bouton-supprime-donnees:hover,
+.bouton-repartition-traitement-donnees:hover,
+.bouton-repartition-affiche-result:hover { background-color: #006182; }
+
+/* Gestion des boutons désactivés */
+.bouton-collecte-bug-disabled,
+.bouton-collecte-vulnerability-disabled,
+.bouton-collecte-mauvaise-pratique-disabled,
+.bouton-repartition-affiche-result-disabled {
+  background-color: #4c7c8c;
+  cursor: not-allowed;
+}
+
+/* Information bug, vulnérabilité et code_smell  */
+.stats-list {
+  list-style-type: none;
+  clear: left;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+/* Couleur pour la sévérité */
+.stats-list-vert {
+  border: 1px solid #cacaca;
+  background-color: #fff;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  color: #187e3d;
+}
+
+.stats-list-orange {
+  border: 1px solid #cacaca;
+  background-color: #fff;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  color: #c45d4e;
+}
+
+.stats-list-rouge-intense {
+  border: 1px solid #cacaca;
+  background-color: #fff;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  color: #771404;
+}
+
+.stats-list-rouge-claire {
+  border: 1px solid #cacaca;
+  background-color: #fff;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  color: #b33926;
+}
+
+.stats-list-bleu {
+  border: 1px solid #cacaca;
+  background-color: #fff;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  color: #3b89a3;
+}
+
+/* propriété du sélecteur */
+.stats-list > li {
+  display: inline-block;
+  text-align: center;
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-right: 4rem;
+}
+
+.stats-list > li .stats-list-label {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.9em;
+  font-weight: normal;
+}
+
+/* Positionnement et couleur des résultats dans une carte */
+.resultat {
+  padding-left: 0.5rem;
+  color: #333;
+  flex: 1;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Taille de la police en small */
+.small { font-size: 1rem; }
+
+/* Propriété de la ligne */
+.ligne {
+  margin: 0.1rem;
+  display: flex;
+}
+
+/* Taille de pour les stats */
+.stat {
+  line-height: 0.9;
+  font-size: 2rem;
+}
+
+/* Progress */
+.progress-meter {
+  background: #ff4754;
+  transition: width 0.4s ease;
+}
+
+.progress-meter-text {
+  color: #fff;
+  margin-left: 1rem;
+  transition: width 0.4s ease;
+}
+
+.progress-stat {
+  font-size: 2rem;
+  margin-left: 1rem;
+  line-height: 0.5rem;
+}
+
+/* Ajoute un saut de ligne au dessous des boutons de collecte */
+.etape { padding-bottom: 1rem; }
+
+/* couleur sévérité */
+.texte-rouge { color: #971c09; }
+.texte-orange { color: #b33926; }
+.texte-bleu { color: #3b89a3; }
+.texte-vert { color: #187e3d; }
+
+/**
+  * Propriétés pour les class en fonction des media type
+  *
+  */
+
+/* Media Small */
+@media (width <= 20em) {
+  .stats-list > li { width: 3rem; }
+  .stats-list > li .stats-list-label { width: 3rem; }
+
+  /* on aligne à droite */
+  .button { text-align: left; }
+}
+
+/* Media Small */
+@media (20.025em <= width <= 22em) {
+  .stats-list > li { width: 2rem; }
+  .stats-list > li .stats-list-label { width: 3rem; }
+
+  /* on aligne à droite */
+  .button { text-align: left; }
+}
+
+/* Media Small */
+@media (22.025em <= width <= 30em) {
+  .stats-list > li { width: 2rem; }
+  .stats-list > li .stats-list-label { width: 3rem; }
+}
+
+/* Media Small */
+@media (30.025em <= width <= 40em) {
+  .stats-list > li { width: 2rem; }
+  .stats-list > li .stats-list-label { width: 3rem; }
+
+  /* on aligne à droite */
+  .button { text-align: left; }
+}
+
+/* Media Medium */
+@media (40.025em <= width <= 64em) {
+  .stats-list > li { width: 5rem; }
+  .stats-list > li .stats-list-label { width: 5rem; }
+  .bouton-afficher-right { padding-right: 1rem; }
+  .bouton-afficher-left { padding-left: 1rem; }
+
+  /* on aligne au centre */
+  .button { text-align: center; }
+}
+
+/* Media Large */
+@media (64.025em <= width <= 90em) {
+  .stats-list > li { width: 5rem; }
+  .stats-list > li .stats-list-label { width: 5rem; }
+  .bouton-afficher-right { padding-right: 1rem; }
+  .bouton-afficher-left { padding-left: 1rem; }
+
+  /* on aligne au centre */
+  .button { text-align: center; }
+}
+
+/* Media Large */
+@media (90.025em <= width <= 120em) {
+  .stats-list > li { width: 5rem; }
+  .stats-list > li .stats-list-label { width: 5rem; }
+  .bouton-afficher-right { padding-right: 1rem; }
+  .bouton-afficher-left { padding-left: 1rem; }
+
+  /* on aligne au centre */
+  .button { text-align: center; }
+}
+
+/* Media Extra-Large */
+@media (120.025em <= width <= 160em) {
+  .stats-list > li { width: 5rem; }
+  .stats-list > li .stats-list-label { width: 5rem; }
+  .bouton-afficher-right { padding-right: 1rem; }
+  .bouton-afficher-left { padding-left: 1rem; }
+
+  /* on aligne au centre */
+  .button { text-align: center; }
+}
+
+@media (width >= 160.025em) {
+.stats-list > li { width: 5rem; }
+.stats-list > li .stats-list-label { width: 5rem; }
+.bouton-afficher-right { padding-right: 1rem; }
+.bouton-afficher-left { padding-left: 1rem; }
+
+/* on aligne au centre */
+.button { text-align: center; }
+}

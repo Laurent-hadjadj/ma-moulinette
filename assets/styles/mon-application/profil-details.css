@@ -10,41 +10,15 @@
  *
  */
 
-@media (width <= 20em) {
-  /* no comment */
-}
-
-@media (20.025em <= width <= 22em) {
-  /* no comment */
-}
-
-@media (22.025em <= width <= 30em) {
-  /* no comment */
-}
-
-@media (30.025em <= width <= 40em) {
-  /* no comment */
-}
-
-@media (40.025em <= width <= 64em) {
-  /* no comment */
-}
-
-@media (64.025em <= width <= 90em) {
-  /* no comment */
-}
-
-@media (90.025em <= width <= 120em) {
-  /* no comment */
-}
-
-@media (120.025em <= width <= 160em) {
-  /* no comment */
-}
-
-@media (width >= 160.025em) {
-  /* no comment */
-}
+@media (width <= 20em) { /* no comment */ }
+@media (20.025em <= width <= 22em) { /* no comment */ }
+@media (22.025em <= width <= 30em) { /* no comment */ }
+@media (30.025em <= width <= 40em) { /* no comment */ }
+@media (40.025em <= width <= 64em) { /* no comment */ }
+@media (64.025em <= width <= 90em) { /* no comment */ }
+@media (90.025em <= width <= 120em) { /* no comment */ }
+@media (120.025em <= width <= 160em) { /* no comment */ }
+@media (width >= 160.025em) { /* no comment */ }
 
 /*************************          Global     *********************************/
 
@@ -90,7 +64,7 @@
 .profil-details,
 .profil-auteur { color: #444; }
 
-/** Nombre de règle pour le groupe */
+/* Nombre de règle pour le groupe */
 .nombre-rule {
   font-size: 1.2rem;
   padding-right: 1.5rem;
@@ -104,7 +78,7 @@
   padding-right: 15px;
 }
 
-/** décalage de la bulle */
+/* décalage de la bulle */
 .bulle-marge { margin-left: 2rem; }
 
 .activated {

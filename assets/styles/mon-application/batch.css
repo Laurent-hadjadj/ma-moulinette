@@ -1,0 +1,338 @@
+/**
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2021-2024.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ */
+
+/* Mobile */
+@media (width <= 20em) {
+  .i-am-robot-svg,
+  .i-am-human-svg,
+  .batch-processing-svg {
+    width: 42px;
+    height: 42px;
+  }
+}
+
+/* Mobile */
+@media (20.025em <= width <= 22em) {
+  .i-am-robot-svg,
+  .i-am-human-svg,
+  .batch-processing-svg {
+    width: 42px;
+    height: 42px;
+  }
+}
+
+/* Mobile */
+@media (22.025em <= width <= 30em) {
+  .i-am-robot-svg,
+  .i-am-human-svg,
+  .batch-processing-svg {
+    width: 42px;
+    height: 42px;
+  }
+}
+
+/* Mobile */
+@media (30.025em <= width <= 40em) {
+  .i-am-robot-svg,
+  .i-am-human-svg,
+  .batch-processing-svg {
+    width: 42px;
+    height: 42px;
+  }
+}
+
+/* tablette */
+@media (40.025em <= width <= 64em) {
+  .i-am-robot-svg,
+  .i-am-human-svg,
+  .batch-processing-svg {
+    width: 45px;
+    height: 45px;
+  }
+}
+
+/* desktop */
+@media (64.025em <= width <= 90em) {
+  .i-am-robot-svg,
+  .i-am-human-svg,
+  .batch-processing-svg {
+    width: 45px;
+    height: 45px;
+  }
+}
+
+/* desktop */
+@media (90.025em <= width <= 120em) {
+  .i-am-robot-svg,
+  .i-am-human-svg,
+  .batch-processing-svg {
+    width: 45px;
+    height: 45px;
+  }
+}
+
+/* desktop  4k */
+@media (120.025em <= width <= 160em) {
+  .i-am-robot-svg,
+  .i-am-human-svg,
+  .batch-processing-svg {
+    width: 45px;
+    height: 45px;
+  }
+}
+
+/* Media Extra-large 8k */
+@media (120.025em <= width <= 160em) {
+  .i-am-robot-svg,
+  .i-am-human-svg,
+  .batch-processing-svg {
+    width: 45px;
+    height: 45px;
+  }
+}
+
+/*************************          Global     *********************************/
+
+/** Suppression du style inline */
+.callout-message { padding-right: 1rem; }
+
+tbody tr:nth-child(even) {
+  border-bottom: 0;
+  background-color: #ddd;
+}
+
+/** Fixe du footer */
+.footer {
+    position: fixed;
+    bottom: 0;
+}
+
+/** couleur pour le résultat */
+.ok { color: #187e3d; }
+.ko { color: #971c09; }
+.oko { color: #000; }
+.error { background-color: #ab493a; }
+
+/* Bouton information SVG */
+.i-am-robot-svg,
+.i-am-human-svg,
+.batch-processing-svg { fill: #00445b; }
+
+.i-am-human-svg:hover,
+.batch-processing-svg:hover {
+  cursor: progress;
+  fill: #ed7d20;
+}
+
+#batch-processing-label {
+  margin-top: 1rem;
+  margin-left: 0.5rem;
+}
+
+/* Bouton information SVG */
+.information-svg, .poubelle-svg {
+  fill: #00445b;
+  cursor: pointer;
+  margin-bottom: -0.2rem;
+  width: 28px;
+  height: 28px;
+}
+
+/* hover sur l'icône information */
+.information-svg:hover, .poubelle-svg:hover {
+  fill: #ed7d20;
+}
+
+/* disable */
+.disable { cursor: not-allowed; }
+
+/* bouton fermer */
+#fermer-traitement-liste {
+  color: #fff;
+  background-color: #00445b;
+}
+
+#fermer-traitement-liste:hover { background-color: #006182; }
+
+
+/** Ajout d'un spinner lors du traitement  */
+.spinner-titre {
+  margin-left: 1rem;
+  margin-top: -3px;
+}
+
+/** Bouton automatique ou Manuel */
+.button-group-option {
+  position: relative;
+  display: flex;
+  flex-wrap: nowrap;
+  width: 100%;
+  margin-bottom: 0.2rem;
+}
+
+.button-group-option::before,
+.button-group-option::after {
+  display: table;
+  content: " ";
+  -ms-flex-preferred-size: 0;
+  flex-basis: 0;
+  -ms-flex-order: 1;
+  order: 1;
+}
+
+.button-group-option::after { clear: both; }
+
+.button-group-option .button {
+  margin: 0;
+  margin-right: 1px;
+  margin-bottom: 1px;
+  flex: 1 1 0px;
+  font-size: 1.125rem;
+  border-radius: 0.2rem;
+}
+
+.button-group-option .button:last-child { margin-right: 0; }
+
+/** Gestion des états des boutons automatique et manuel */
+.bouton-automatique,
+.bouton-manuel {
+  background-color: #00445b;
+  color: #fff;
+}
+
+.bouton-automatique:hover,
+.bouton-manuel:hover {
+  background-color: #006182;
+  color: #eee;
+}
+
+.active {
+  background-color: #ed7d20;
+  color: #eee;
+}
+
+.active:hover {
+  background-color: #c46e27;
+  color: #eee;
+}
+
+/** bouton OU */
+.button-group-option::before {
+  content: attr(data-group-type);
+  z-index: 1;
+  color: #8a8a8a;
+  display: inline-block;
+  font-size: 1rem;
+  padding: 0.25em;
+  border-radius: 5000px;
+  background: #fefefe;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.button-group-option .button + .button { margin-left: 0.35rem; }
+
+/** bouton permettant d'aller à la fin du textarea de la modal-information */
+.go-end {
+  background-color: #00445b;
+  color: #fff;
+}
+
+.go-end:hover {
+  background-color: #006182;
+  color: #eee;
+}
+
+/** Bulle info pour les traitements manuels */
+.bulle-info {
+  color: #eee;
+  border-radius: 0.9rem;
+  font-size: 1.2rem;
+  font-weight: 400;
+  padding-left: 0.7rem;
+  padding-right: 0.7rem;
+}
+
+.bulle-info-start { background-color: #187e3d; }
+.bulle-info-end { background-color: #00445b; }
+.bulle-info-error { background-color: #971c09; }
+.bulle-info-vide { background-color: #8a8a8a; }
+
+/** clignotant */
+.blink {
+  animation: blink 1.5s steps(5, start) infinite;
+  fill: #c46e27;
+}
+
+@keyframes blink {
+  from {
+    visibility: 100%;
+  }
+
+  to {
+    visibility: hidden;
+  }
+}
+
+@keyframes blink {
+  from {
+    visibility: 100%;
+  }
+
+  to {
+    visibility: hidden;
+  }
+}
+
+/** Ajout d'un tooltip CSS */
+.tool-tip {
+  position: relative;
+  display: inline-block;
+}
+
+/* Propriété du texte qui sera affiché dans le tool-type */
+.tool-tip .tool-tip-text-right {
+  visibility: hidden;
+  top: -6px;
+  right: 120%;
+  width: 165px;
+  background-color: #555;
+  color: #fff;
+  text-align: justify;
+  padding: 0.5rem;
+  border-radius: 6px;
+  position: absolute;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.5s;
+  hyphens: auto;
+}
+
+/* Mise en place de l'encoche à droite */
+.tool-tip .tool-tip-text-right::after {
+  content: " ";
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  margin-top: -7px;
+  border-width: 8px;
+  border-style: solid;
+  border-color: transparent transparent transparent #555;
+}
+
+/* Action au moment du survol du tool-type */
+.tool-tip:hover .tool-tip-text-right {
+  visibility: visible;
+  opacity: 1;
+}

@@ -1,0 +1,268 @@
+/**
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2021-2024.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ */
+
+@media (width <= 20em) {
+  .fermer-comparaison-owasp {
+    position: fixed;
+    bottom: 1rem;
+  }
+}
+
+@media (20.025em <= width <= 22em) {
+  .fermer-comparaison-owasp {
+    position: fixed;
+    bottom: 1rem;
+  }
+}
+
+@media (22.025em <= width <= 30em) {
+  .fermer-comparaison-owasp {
+    position: fixed;
+    bottom: 1rem;
+  }
+}
+
+@media (30.025em <= width <= 40em) {
+  .fermer-comparaison-owasp {
+    position: fixed;
+    bottom: 1rem;
+  }
+}
+
+@media (40.025em <= width <= 64em) { /* vide */ }
+
+@media (64.025em <= width <= 90em) { /* vide */ }
+
+@media (90.025em <= width <= 120em) { /* vide */ }
+
+@media (120.025em <= width <= 160em) { /* vide */ }
+
+@media (width >= 160.025em) { /* vide */ }
+
+/*************************          Global     *******************************/
+
+/** Suppression du style in line */
+.owasp-padding-left { padding-left: 2rem; }
+
+.owasp-padding-left-right {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.container-owasp-description {
+  display: flex;
+  justify-content: space-around;
+}
+
+/* Affiche la version du référentiel owasp disponible. */
+#owasp-version {
+  margin-top: 1rem;
+  margin-bottom: -1rem;
+}
+
+/* Bouton SVG */
+.voir-details-svg {
+  fill: #00445b;
+  cursor: pointer;
+  width: 100%;
+  height: auto;
+  max-width: 32px
+}
+
+.voir-details-svg:hover { fill: #c45d4e; }
+
+/* Information bug, vulnérabilité et code_smell  */
+.stat-list {
+  list-style-type: none;
+  clear: left;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.stat-list-bleu { color: #00445b; }
+
+.stat-list > li {
+  display: inline-block;
+  margin-right: 10px;
+  padding-right: 10px;
+  border-right: 1px solid #cacaca;
+  text-align: center;
+  font-size: 1.1em;
+  font-weight: bold;
+}
+
+.stat-list > li:last-child {
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+.stat-list > li .stat-list-label {
+  display: block;
+  margin-top: 2px;
+  font-size: 1.2em;
+  font-weight: normal;
+}
+
+/* comparaison des référentiel OWASP */
+.button-comparaison,
+.fermer-comparaison-owasp {
+  color:#fff;
+  background-color: #00445b;
+  border-radius: 0.2rem;
+}
+
+.button-comparaison:hover,
+.fermer-comparaison-owasp:hover { background-color: #f34d4d; }
+
+/* Styles pour le diagramme circulaire */
+#owasp-pie-chart-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 10px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgb(0 0 0 / 10%);
+}
+
+#owasp-pie-chart {
+  width: 100% !important;
+  height: auto !important;
+}
+
+/* Ajuste ka taille des badge */
+.badge { font-size: 1rem; }
+
+/* a supprimer dans la prochaine version */
+.badge-rouge { margin-bottom: -10px; }
+
+/* masque le référentiel OWASP */
+
+.hide { display: none; }
+
+.accordion-menu .is-accordion-submenu-parent:not(.has-submenu-toggle) > a::after {
+  border-color: #00445b;
+}
+
+/* menu référentiel-owasp */
+.referential-owasp-menu {
+  background-color: white;
+  border-radius: 5px;
+  margin-top: 0.5rem;
+}
+
+.referential-owasp-titre {
+  color: #000;
+  font-weight: 700;
+}
+
+.referential-owasp-titre:hover {
+  color: #c45d4e;
+  font-weight: 800;
+}
+
+.referential-owasp-titre:focus {
+  color: #c45d4e;
+  font-weight: 800;
+}
+
+.bouton-affiche-details {
+  margin-left: 2rem;
+  margin-right: 2rem;
+  cursor: pointer;
+  border: none;
+  background-color: #00445b;
+  color: white;
+  border-radius: 5px;
+}
+
+.bouton-affiche-details:hover { background-color: #f34d4d; }
+
+/* Liste des hotspot */
+.component { word-break: break-all; }
+
+/* Affiche les statistiques dans les modales */
+.stat-detail {
+  border-radius: 0.3rem;
+  text-align: center;
+  padding-left: 26px;
+  padding-right: 26px;
+  margin-bottom: 0.8rem;
+}
+
+.result {
+  padding-left: 0.5rem;
+  color: #333;
+  flex: 1;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.small { font-size: 1rem; }
+
+.ligne {
+  margin: 0.1rem;
+  display: flex;
+}
+
+.stat {
+  line-height: 0.9;
+  font-size: 2rem;
+}
+
+.stat-note { font-size: 1.5rem; }
+
+.stat-owasp {
+  line-height: 0.9;
+  font-size: 1.5rem;
+}
+
+.strong { font-weight: 700; }
+.light { font-weight: 300; }
+
+.box {
+  color: #fff;
+  border: solid 1px;
+  border-radius: 0.3rem;
+  padding-left: 30px;
+  padding-right: 30px;
+}
+
+/* Gestion de du bouton de version Owasp */
+.version-button {
+  padding: 10px 20px;
+  margin: 5px;
+  cursor: pointer;
+  border: none;
+  background-color: #00445b;
+  color: white;
+  border-radius: 5px;
+}
+
+.version-button.active { background-color: #0056b3; }
+.version-button.disable {
+  background-color: #333;
+  cursor: not-allowed;
+}
+
+.version-button.disable:hover { background-color: #333!important; }
+.version-button:hover { background-color: #c45d4e; }
+
+.container-detail-titre {
+  display: flex;
+  align-items: center;
+}
+
+.icon-owasp { width: 260px; }

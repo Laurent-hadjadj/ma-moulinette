@@ -1,0 +1,109 @@
+/**
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2021-2024.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ */
+
+/**
+  * Propriétés pour les class en fonction des medias type
+  *
+  */
+
+ /* Mobile */
+@media (width <= 20em) { .pleine-page { margin: 0.5rem; } }
+
+/* Mobile */
+@media (20.025em <= width <= 22em) { .pleine-page { margin: 0.5rem; } }
+
+/* Mobile */
+@media (22.025em <= width <= 30em) { .pleine-page { margin: 1rem; } }
+
+/* Mobile */
+@media (30.025em <= width <= 40em) { .pleine-page { margin: 1rem; } }
+
+/* tablette */
+@media (40.025em <= width <= 64em) { .pleine-page { margin: 1rem; } }
+
+/* desktop */
+@media (64.025em <= width <= 90em) { .pleine-page { margin: 2rem; } }
+
+/* desktop */
+@media (90.025em <= width <= 120em) { .pleine-page { margin: 2rem; } }
+
+/* desktop */
+@media (120.025em <= width <= 160em) { .pleine-page { margin: 2rem; } }
+
+/* Media Extra-large 8k */
+@media (120.025em <= width <= 160em) { .pleine-page { margin: 2rem; } }
+
+/*************************          Global     *********************************/
+.result-note {
+  padding-left: 0.5rem;
+  color: #333;
+  flex: 1;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.result {
+  padding-right: 1rem;
+  color: #333;
+  flex: 2;
+  text-align: right;
+}
+
+/* Couleur pour la note A */
+.note-a {
+  background-color: #0a0;
+  color: #fff;
+  border: solid 2px #00445b;
+  border-radius: 0.2rem;
+  padding-left: 18px;
+  padding-right: 20px;
+}
+
+/* Couleur pour la note B */
+.note-b {
+  background-color: #b0d513;
+  color: #fff;
+  border: solid 1px #00445b;
+  border-radius: 0.2rem;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+/* Couleur pour la note C */
+.note-c {
+  background-color: #eabe06;
+  color: #fff;
+  border: solid 1px #00445b;
+  border-radius: 0.2rem;
+  padding-left: 19px;
+  padding-right: 20px;
+}
+
+/* Couleur pour la note D */
+.note-d {
+  background-color: #ed7d20;
+  color: #fff;
+  border: solid 1px #00445b;
+  border-radius: 0.2rem;
+  padding-left: 19px;
+  padding-right: 19px;
+}
+
+/* Couleur pour la note E */
+.note-e {
+  background-color: #d4333f;
+  color: #fff;
+  border: solid 1px #00445b;
+  border-radius: 0.2rem;
+  padding-left: 21px;
+  padding-right: 22px;
+}
