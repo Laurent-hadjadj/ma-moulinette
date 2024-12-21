@@ -29,7 +29,7 @@ use Twig\Environment;
  */
 class ErrorController extends AbstractController
 {
-    #[Route('/error', name: 'error', methods: ['GET'])]
+    #[Route('/error', name: 'erreur', methods: ['GET'])]
     public function show(FlattenException $exception, Environment $env): Response
     {
         /** On affiche la page correspondant au code HTTP */
