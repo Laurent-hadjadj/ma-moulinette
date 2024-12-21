@@ -107,8 +107,7 @@ class RegistrationController extends AbstractController
 
         /** Le formulaire est valide */
         if ($form->isSubmitted() && $form->isValid()) {
-            $date = new \DateTime();
-            $date->setTimezone(new \DateTimeZone('Europe/Paris'));
+            $date = new \DateTime('now', new \DateTimeZone("Europe/Paris"));
 
             /** je récupère les données du HoneyPot  */
             $honeyPot = $form->get('email')->getData();
