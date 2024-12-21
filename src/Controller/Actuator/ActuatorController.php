@@ -139,8 +139,7 @@ class ActuatorController extends AbstractController
         }
 
         // Créer un objet date avec le fuseau horaire Europe/Paris
-        $date = new \DateTimeImmutable();
-        $date->setTimezone(new \DateTimeZone(static::$europeParis));
+        $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
 
         $actuatorInfo=[
             "nom" => "monapplication-mat-api",
