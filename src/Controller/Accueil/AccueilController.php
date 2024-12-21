@@ -251,8 +251,7 @@ class AccueilController extends AbstractController
         $propertiesRepository = $this->em->getRepository(Properties::class);
 
         /** On met à jour la date de modification */
-        $date = new \DateTimeImmutable();
-        $date->setTimezone(new \DateTimeZone(static::$europeParis));
+        $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
 
         $map=[  'projet_bd'=>$bd, 'projet_sonar'=>$sonar,
                 'profil_bd'=>$bd, 'profil_sonar'=>$sonar,
@@ -287,8 +286,7 @@ class AccueilController extends AbstractController
         if (!$getProperties['request']) {
             $projetBd = $projetSonar = $profilBd = $profilSonar = 0;
 
-            $date = new \DateTimeImmutable();
-            $date->setTimezone(new \DateTimeZone(static::$europeParis));
+            $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
             $dateCreationFormat = $date;
             $dateModificationProjet = $date;
             $dateModificationProfil = $date;
@@ -482,8 +480,7 @@ class AccueilController extends AbstractController
          *     properties.
          */
 
-        $date = new \DateTimeImmutable();
-        $date->setTimezone(new \DateTimeZone(static::$europeParis));
+        $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
 
         /** On récupère les properties des projets et profils */
         $properties = static::getProperties();
