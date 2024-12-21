@@ -94,25 +94,22 @@ class ApiAccueilController extends AbstractController
      * http://{url}}/api/components/search_projects?ps=500
      *
      * @param Client $client
-     * @return response
+     * @return JsonResponse
      *
      * Created at: 15/12/2022, 21:15:04 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/accueil/projet', name: 'accueil_projet_liste', methods: ['POST'])]
-    public function accueilProjetListe(Client $client): response
+    public function accueilProjetListe(Client $client): JsonResponse
     {
         /** On instancie l'EntityRepository */
         $listeProjetRepository = $this->em->getRepository(ListeProjet::class);
         $propertiesRepository = $this->em->getRepository(Properties::class);
 
-        /** On crée un objet de response JSON */
-        $response = new JsonResponse();
-
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
-            return $response->setData([
+            return new JsonResponse([
                 'type'=>'warning', 'code' => 403,
                 'reference' => static::$reference,
                 'message' => static::$erreur403], Response::HTTP_OK);
@@ -130,7 +127,7 @@ class ApiAccueilController extends AbstractController
 
         /** On vérifie que SonarQube a au moins 1 projet */
         if (array_key_exists('total', $result) && $result['code']===404){
-            return $response->setData([
+            return new JsonResponse([
                 'type' => 'warning',
                 'reference' => static::$reference, 'code' => 404,
                 'message'=>static::$erreur404], Response::HTTP_OK);
@@ -139,7 +136,7 @@ class ApiAccueilController extends AbstractController
         /** On supprime les données de la table avant d'importer les données. */
         $delete=$listeProjetRepository->deleteListeProjet();
         if ($delete['code']!=200) {
-            return $response->setData([
+            return new JsonResponse([
                 'type' => 'alert',
                 'reference' => static::$reference, 'code' => $delete['code'],
                 'message'=>$delete['erreur']], Response::HTTP_OK);
@@ -186,7 +183,7 @@ class ApiAccueilController extends AbstractController
             ];
         $r=$propertiesRepository->updatePropertiesProjet($map);
         if ($r['code']!=200) {
-            return $response->setData([
+            return new JsonResponse([
                 'type' => 'alert',
                 'reference' => static::$reference, 'code' => $r['code'],
                 'message'=>$r['erreur']], Response::HTTP_OK);
@@ -195,7 +192,7 @@ class ApiAccueilController extends AbstractController
         /** on renvoie les résultats */
         $message = "Mise à jour de la liste des projets effectuée.";
 
-        return $response->setData(
+        return new JsonResponse(
             ['code' => 200,
             'reference' => static::$reference, 'type' => 'success',
             'message' => $message,'nombre' => $nombre,
@@ -206,24 +203,21 @@ class ApiAccueilController extends AbstractController
     /**
      * [Description for accueilProjetTags]
      *
-     * @return response
+     * @return JsonResponse
      *
      * Created at: 29/07/2024 20:51:02 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/accueil/tags', name: 'accueil_projet_tags', methods: ['POST'])]
-    public function accueilProjetTags(): response
+    public function accueilProjetTags(): JsonResponse
     {
         /** On instancie l'EntityRepository */
         $listeProjetRepository = $this->em->getRepository(ListeProjet::class);
 
-        /** On crée un objet de response JSON */
-        $response = new JsonResponse();
-
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
-            return $response->setData([
+            return new JsonResponse([
                 'type'=>'warning', 'code' => 403,
                 'reference' => static::$reference,
                 'message' => static::$erreur403], Response::HTTP_OK);
@@ -231,7 +225,7 @@ class ApiAccueilController extends AbstractController
 
         $tag = $listeProjetRepository->countListeProjetTags();
 
-        return $response->setData(
+        return new JsonResponse(
             ['code' => 200, 'nombre_tag' => $tag['nombre'][0]['tag']], Response::HTTP_OK);
     }
 
