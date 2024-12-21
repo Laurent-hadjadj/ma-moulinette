@@ -98,6 +98,18 @@
   font-weight: 400;
   font-style: normal;
 }
+
+/** Ajout de la police SourceCodePro-Regular */
+@font-face {
+  font-family: "Source Code Pro";
+  src:
+    url("../../fonts/SourceCodePro-Regular.woff2") format("woff2"),
+    url("../../fonts/SourceCodePro-Regular.woff") format("woff"),
+    url("../../fonts/SourceCodePro-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
 .open-sans { font-family: "Open Sans", sans-serif; }
 
 .open-sans-light { font-family: "Open Sans Light", sans-serif; }
@@ -107,5 +119,7 @@
 .claire-hand { font-family: "Claire Hand", sans-serif; }
 
 .nasa { font-family: "Nasalization Rg", sans-serif; }
+
+.source-code { font-family: "SourceCodePro-Regular", Consolas, "Courier New", monospace; }
 
 /*********************************** Fin de l"initialisation ***********************************/
