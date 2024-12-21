@@ -28,10 +28,6 @@ use App\Entity\Utilisateur;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
-/** Gestion du temps */
-use DateTime;
-use DateTimeZone;
-
 use App\Form\ResetPasswordFormType;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -123,9 +119,7 @@ class ResetPasswordController extends AbstractController
             }
 
         /** On créé un objet DateTime */
-        $date = new \DateTime();
-        $timezone = new \DateTimeZone(static::$europeParis);
-        $date->setTimezone($timezone);
+        $date = new \DateTime('now', new \DateTimeZone(static::$europeParis));
 
         /**
          * Le mot de passe actuel de l'utilisateur est valide,
@@ -214,9 +208,7 @@ class ResetPasswordController extends AbstractController
         $init = $data->init;
 
         /** On créé un objet DateTime */
-        $date = new DateTime();
-        $timezone = new DateTimeZone(static::$europeParis);
-        $date->setTimezone($timezone);
+        $date = new \DateTime('now', new \DateTimeZone(static::$europeParis));
         $dateModification = $date->format(static::$dateFormat);
 
         /** on récupère l'adresse mél de l'utilisateur qui fait la demande */
