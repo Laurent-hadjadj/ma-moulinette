@@ -260,12 +260,12 @@
   color: #e7552c;
 }
 
-/* on desactive le focus quand on change de champ */
+/* on désactive le focus quand on change de champ */
 :focus { outline: none; }
 
 /* Formulaires */
 
-/* desactivaton du bouton inscription */
+/* désactivation du bouton inscription */
 .disabled-custom {
   cursor: not-allowed;
   opacity: 0.70;
@@ -294,10 +294,10 @@
 
 /** Gestion de l'affichage et du masquage du mot de passe */
 
-/** Création d'un bloc pour le champs password et repassword */
+/** Création d'un bloc pour le champs password et re-password */
 .isolation { position: relative }
 
-/* On désactive l'icone qui affiche le mot de passe et celui qui supprime les données */
+/* On désactive l’icône qui affiche le mot de passe et celui qui supprime les données */
 input[type='password']::-ms-reveal,
 input[type='password']::-ms-clear { display: none; }
 
