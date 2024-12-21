@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2022.
+ *  Copyright (c) 2021-2024.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -94,10 +94,10 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
         );
     }
 
-    /* si le courriel existe et le credential est bon on redirige vers home */
+    /* si le courriel existe et le credential est bon on redirige vers accueil */
     /**
      * [Description for onAuthenticationSuccess]
-     * Si le courriel existe et le credential est bon on redirige vers home
+     * Si le courriel existe et le credential est bon on redirige vers accueil
      * Si l'attribut est égale à 1 on redirige sur la page
      * de changement du mot de passe
      *
@@ -122,7 +122,7 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
         }
         /** Ce n'est pas la première connexion ! */
         if ($init==0){
-            return new RedirectResponse($this->urlGenerator->generate('home'));
+            return new RedirectResponse($this->urlGenerator->generate('accueil'));
         } else {
             return new RedirectResponse($this->urlGenerator->generate('reset_mot_de_passe'));
         }
