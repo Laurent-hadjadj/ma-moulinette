@@ -34,6 +34,7 @@
 -- 19/11/2024 : Laurent HADJADJ - Ajout de la table Owasp_Top10 ;
 -- 20/11/2024 : Laurent HADJADJ - Ajout de la colonne referential_owasp dans la table owasp ;
 -- 22/11/2024 : Laurent HADJADJ - Ajout de la colonne lien dans la table owasp_top10 ;
+-- 22/12/2024 : Laurent HADJADJ - Renommage des table activite et activite_historique ;
 
 -- SCHEMA: ma_moulinette
 
@@ -52,10 +53,10 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 GRANT EXECUTE ON FUNCTION get_pg_stat_activity() TO db_user;
 
--- Table: ma_moulinette.activite
+-- Table: ma_moulinette.activity
 
-DROP TABLE IF EXISTS ma_moulinette.activite;
-CREATE TABLE IF NOT EXISTS ma_moulinette.activite
+DROP TABLE IF EXISTS ma_moulinette.activity;
+CREATE TABLE IF NOT EXISTS ma_moulinette.activity
 (id SERIAL PRIMARY KEY,
   maven_key character varying(255) NOT NULL,
   project_name character varying(64) NOT NULL,
@@ -68,48 +69,49 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.activite
   execution_time integer NOT NULL
 );
 
-ALTER TABLE ma_moulinette.activite OWNER to db_user;
-GRANT ALL ON TABLE ma_moulinette.activite TO db_user;
+ALTER TABLE ma_moulinette.activity OWNER to db_user;
+GRANT ALL ON TABLE ma_moulinette.activity TO db_user;
 
-COMMENT ON COLUMN ma_moulinette.activite.id IS 'Identifiant unique de la table activité';
-COMMENT ON COLUMN ma_moulinette.activite.maven_key IS 'Clé Maven du projet';
-COMMENT ON COLUMN ma_moulinette.activite.project_name IS 'Nom du projet associé à la clé maven';
-COMMENT ON COLUMN ma_moulinette.activite.analyse_id IS 'Identifiant de l’analyse du projet';
-COMMENT ON COLUMN ma_moulinette.activite.status IS 'Statut du traitement d’import';
-COMMENT ON COLUMN ma_moulinette.activite.submitter_login IS 'Utilisateur soumettant l’import';
-COMMENT ON COLUMN ma_moulinette.activite.submitted_at IS 'Date et heure de la soumission du traitement d’import des données';
-COMMENT ON COLUMN ma_moulinette.activite.started_at IS 'Date et heure du debut du traitement d’import des données';
-COMMENT ON COLUMN ma_moulinette.activite.executed_at IS ' Date et heure de fin du traitement d’import des données';
-COMMENT ON COLUMN ma_moulinette.activite.execution_time IS 'Temps d’execution du traitement d’import des données';
+COMMENT ON COLUMN ma_moulinette.activity.id IS 'Identifiant unique de la table activité';
+COMMENT ON COLUMN ma_moulinette.activity.maven_key IS 'Clé Maven du projet';
+COMMENT ON COLUMN ma_moulinette.activity.project_name IS 'Nom du projet associé à la clé maven';
+COMMENT ON COLUMN ma_moulinette.activity.analyse_id IS 'Identifiant de l’analyse du projet';
+COMMENT ON COLUMN ma_moulinette.activity.status IS 'Statut du traitement d’import';
+COMMENT ON COLUMN ma_moulinette.activity.submitter_login IS 'Utilisateur soumettant l’import';
+COMMENT ON COLUMN ma_moulinette.activity.submitted_at IS 'Date et heure de la soumission du traitement d’import des données';
+COMMENT ON COLUMN ma_moulinette.activity.started_at IS 'Date et heure du debut du traitement d’import des données';
+COMMENT ON COLUMN ma_moulinette.activity.executed_at IS ' Date et heure de fin du traitement d’import des données';
+COMMENT ON COLUMN ma_moulinette.activity.execution_time IS 'Temps d’execution du traitement d’import des données';
 
--- Table: ma_moulinette.activite_historique
+-- Table: ma_moulinette.activity_historique
 
-DROP TABLE ma_moulinette.activite_historique;
-CREATE TABLE IF NOT EXISTS ma_moulinette.activite_historique
+DROP TABLE ma_moulinette.activity_historique;
+CREATE TABLE IF NOT EXISTS ma_moulinette.activity_historique
 (id SERIAL PRIMARY KEY,
-  annee INT NOT NULL,
-  nb_jour INT NOT NULL,
-  nb_analyse INT NOT NULL,
-  moyenne_analyse FLOAT NOT NULL,
-  nb_reussi INT NOT NULL,
-  nb_echec INT NOT NULL,
-  taux_reussite FLOAT NOT NULL,
-  max_temps VARCHAR NOT NULL,
+  year INT NOT NULL,
+  day INT NOT NULL,
+  analyse INT NOT NULL,
+  analyse_average FLOAT NOT NULL,
+  success INT NOT NULL,
+  fail INT NOT NULL,
+  success_rate FLOAT NOT NULL,
+  max_time VARCHAR NOT NULL,
   date_enregistrement timestamptz NOT NULL
 );
 
-ALTER TABLE ma_moulinette.activite_historique OWNER to db_user;
-GRANT ALL ON TABLE ma_moulinette.activite_historique TO db_user;
+ALTER TABLE ma_moulinette.activity_historique OWNER to db_user;
+GRANT ALL ON TABLE ma_moulinette.activity_historique TO db_user;
 
-COMMENT ON COLUMN ma_moulinette.activite_historique.id IS 'Identifiant unique de la table activite_historique.';
-COMMENT ON COLUMN ma_moulinette.activite_historique.nb_jour IS 'Nombre jour d’activité.';
-COMMENT ON COLUMN ma_moulinette.activite_historique.nb_analyse IS 'Nombre d’analyse.';
-COMMENT ON COLUMN ma_moulinette.activite_historique.moyenne_analyse IS 'Moyenne des analyses.';
-COMMENT ON COLUMN ma_moulinette.activite_historique.nb_reussi IS 'Nombre d’analyse réussi.';
-COMMENT ON COLUMN ma_moulinette.activite_historique.nb_echec IS 'Nombre d’analyse en échec.';
-COMMENT ON COLUMN ma_moulinette.activite_historique.taux_reussite IS 'Taux de réussite.';
-COMMENT ON COLUMN ma_moulinette.activite_historique.max_temps IS 'Temps maximum d’une analyse.';
-COMMENT ON COLUMN ma_moulinette.activite_historique.date_enregistrement IS 'Date de l’enregistrement';
+COMMENT ON COLUMN ma_moulinette.activity_historique.id IS 'Identifiant unique de la table.';
+COMMENT ON COLUMN ma_moulinette.activity_historique.year IS 'Année.';
+COMMENT ON COLUMN ma_moulinette.activity_historique.day IS 'Nombre jour d’activité.';
+COMMENT ON COLUMN ma_moulinette.activity_historique.analyse IS 'Nombre d’analyse.';
+COMMENT ON COLUMN ma_moulinette.activity_historique.analyse_average IS 'Moyenne des analyses.';
+COMMENT ON COLUMN ma_moulinette.activity_historique.success IS 'Nombre d’analyse réussi.';
+COMMENT ON COLUMN ma_moulinette.activity_historique.fail IS 'Nombre d’analyse en échec.';
+COMMENT ON COLUMN ma_moulinette.activity_historique.success_rate IS 'Taux de réussite.';
+COMMENT ON COLUMN ma_moulinette.activity_historique.max_time IS 'Temps maximum d’une analyse.';
+COMMENT ON COLUMN ma_moulinette.activity_historique.date_enregistrement IS 'Date de l’enregistrement';
 
 -- Table: ma_moulinette.actuator
 
