@@ -28,114 +28,61 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => "clé unique de la table utilisateur"]
-        )]
+    #[ORM\Column(type: Types::INTEGER, nullable: false, options: ['comment' => "clé unique de la table utilisateur"])]
     private $id;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 32,
-        nullable: false,
-        options: ['comment' => "Prénom de l'utilisateur"]
-        )]
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: false, options: ['comment' => "Prénom de l'utilisateur"])]
+    #[Assert\NotBlank(groups: ['form', 'default'])]
+    private ?string $prenom = null;
+
+    #[ORM\Column(type: Types::STRING, length: 64, nullable: false, options: ['comment' => "Nom de l'utilisateur"])]
+    #[Assert\NotBlank(groups: ['form', 'default'])]
+    private ?string $nom = null;
+
+    #[ORM\Column(type: Types::STRING, length: 128, nullable: true, options: ['comment' => "Avatar de l'utilisateur"])]
+    private ?string $avatar = null;
+
+    // RFC 5321
+    #[ORM\Column(type: Types::STRING, length: 320, unique: true, options: ['comment' => "Adresse de courriel, clé unique"])]
+    #[Assert\NotBlank(groups: ['form', 'default'])]
+    #[Assert\Email(groups: ['form', 'default'])]
+    private ?string $courriel = null;
+
+    #[ORM\Column(type: Types::JSON, nullable: false, options: ['comment' => "Liste des rôles"])]
+    private array $roles = [];
+
+    #[ORM\Column(type: Types::JSON, nullable: true, options: ['comment' => "Liste des équipes"])]
+    private array $equipe = [];
+
+    #[ORM\Column(type: Types::STRING, length: 64, nullable: false, options: ['comment' => "Mot de passe de l'utilisateur"])]
     #[Assert\NotBlank]
-    private $prenom;
+    private string $password;
 
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 64,
-        nullable: false,
-        options: ['comment' => "Nom de l'utilisateur"]
-        )]
-    #[Assert\NotBlank]
-    private $nom;
-
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 128,
-        nullable: true,
-        options: ['comment' => "Avatar de l'utilisateur"]
-        )]
-    private $avatar;
-
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 320,
-        nullable: false,
-        unique: true,
-        options: ['comment' => "Adresse de courriel, clé unique"]
-        )]
-    #[Assert\NotBlank]
-    private $courriel;
-
-    #[ORM\Column(
-        type: Types::JSON, /* le type array est deprecated */
-        nullable: true,
-        options: ['comment' => "Liste des rôles"]
-        )]
-    #[Assert\NotBlank]
-    private $roles = [];
-
-    #[ORM\Column(
-        type: Types::JSON, /* le type array est deprecated */
-        nullable: true,
-        options: ['comment' => "Liste des équipes"]
-        )]
-    #[Assert\NotNull]
-    private $equipe = [];
-
-    #[ORM\Column(
-        type: Types::STRING,
-        length: 64,
-        nullable: false,
-        options: ['comment' => "Mot de passe de l'utilisateur"]
-        )]
-    #[Assert\NotBlank]
-    private $password;
-
-    #[ORM\Column(
-        type: Types::BOOLEAN,
-        nullable: false,
-        options: ['default' => 0, 'comment' => "L'utilisateur est désactivé"]
-        )]
-        #[Assert\NotNull]
-    private $actif;
+    #[ORM\Column(type: Types::BOOLEAN, nullable: false,
+        options: ['default' => 0, 'comment' => "L'utilisateur est désactivé"])]
+    private bool $actif = false;
 
     # Préférences de l'utilisateur
-    #[ORM\Column(
-        type: Types::JSON,
-        nullable: false,
-        options: ['comment' => "Préférences de l'utilisateur"]
-        )]
-    #[Assert\NotNull]
-    private $preference = [];
+    #[ORM\Column(type: Types::JSON, nullable: false, options: ['comment' => "Préférences de l'utilisateur"])]
+    private array $preference = [];
 
-    #[ORM\Column(
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => "Indicateur de réinitialisation du mot de passe"]
-        )]
-    #[Assert\NotNull]
-    private $init=0;
+    #[ORM\Column(type: Types::INTEGER, nullable: false, options: ['comment' => "Indicateur de réinitialisation du mot de passe"])]
+    private int $init = 0;
 
-    #[ORM\Column(
-        type: Types::DATETIME_MUTABLE,
-        nullable: true,
-        options: ['comment' => "Date de modification"]
-        )]
-        #[Assert\NotNull]
-    private $dateModification;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true, options: ['comment' => "Date de modification"])]
+    private ?\DateTime $dateModification = null;
 
-    #[ORM\Column(
-        type: Types::DATETIMETZ_IMMUTABLE,
-        nullable: false,
-        options: ['comment' => "Date de création"]
-        )]
-        #[Assert\NotNull]
-    private $dateEnregistrement;
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, options: ['comment' => "Date de création"])]
+    private ?\DateTimeImmutable $dateEnregistrement = null;
+
+    public function __construct()
+    {
+        $this->roles = [];
+        $this->preference = [];
+        $this->init = 0;
+        $this->actif = false;
+        $this->dateEnregistrement = new \DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {
@@ -493,8 +440,9 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         if (!$this->avatar) {
             return null;
         }
-        /* Attention avec assetMapper, les fichiers doivent être copiés directement dans assets/avatar */
-        return sprintf('assets/avatar/%s', $this->avatar);
+
+        return sprintf('/avatar/%s', $this->avatar);
+
     }
 
     /**
