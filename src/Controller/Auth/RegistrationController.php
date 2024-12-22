@@ -93,8 +93,11 @@ class RegistrationController extends AbstractController
      */
     #[Route('/register', name: 'register')]
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher): Response {
-        // si on est déjà connecté en renvoi vers la page d'accueil !!!
-        if ($this->getUser()->getUserIdentifier()) {
+        /**
+         * Si on est déjà connecté
+         * On affiche la page /accueil, Si on la page /login
+         */
+        if (!is_Null($this->getUser())) {
             return $this->redirectToRoute('accueil');
         }
 
@@ -165,13 +168,13 @@ class RegistrationController extends AbstractController
             $render['nom'] = $utilisateur->getNom();
             $render['prenom'] = $utilisateur->getPrenom();
             $render['courriel'] = $utilisateur->getCourriel();
-            $render['rgaa'] = $this->getParameter('rgaa');
+            //$render['rgaa'] = $this->getParameter('rgaa');
             return $this->render('welcome/index.html.twig', $render);
         }
 
         $render=static::genericRender();
         $render['registrationForm'] = $form->createView();
-        $render['rgaa'] = $this->getParameter('rgaa');
+        //$render['rgaa'] = $this->getParameter('rgaa');
         return $this->render('auth/register.html.twig', $render);
     }
 
@@ -191,7 +194,7 @@ class RegistrationController extends AbstractController
         $render['nom'] = 'HADJADJ';
         $render['prenom'] = 'Laurent';
         $render['courriel'] = 'laurent.hadjadj@ma-petite-entreprise.fr';
-        $render['rgaa'] = $this->getParameter('rgaa');
+        //$render['rgaa'] = $this->getParameter('rgaa');
         return $this->render('welcome/index.html.twig', $render);
     }
 
