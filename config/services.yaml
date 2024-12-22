@@ -59,6 +59,7 @@ parameters:
     cgu.numero.siret: '%env(CGU_NUMERO_SIRET)%'
     cgu.numero.siren: '%env(CGU_NUMERO_SIREN)%'
     cgu.directeur.publication: '%env(CGU_DIRECTEUR_PUBLICATION)%'
+    cgu.url.site: '%env(CGU_URL_SITE)%'
     cgu.source.url: '%env(CGU_SOURCE_URL)%'
     cgu.source.scm: '%env(CGU_SOURCE_SCM)%'
     cgu.hebergement: '%env(CGU_HEBERGEMENT)%'
