@@ -18,7 +18,7 @@
     <title>{{ title }}</title>
     {{ include('head.html.twig') }}
     {# Chargement du code javascript #}
-    {% block importmap %}{{ importmap('plan-du-site') }}{% endblock %}
+    {% block importmap %}{{ importmap('footer-plan-du-site') }}{% endblock %}
   </head>
 
   <body>
@@ -179,7 +179,8 @@
 
         {# Fin du bloc #}
       </div>
-    </div>
+    </main>
+    <br>
     {# Chargement de la section footer #}
     {{ include('footer.html.twig') }}
   </body>
