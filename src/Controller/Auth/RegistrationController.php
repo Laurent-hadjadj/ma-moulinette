@@ -24,6 +24,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Utilisateur;
 
 use App\Form\RegistrationFormType;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -92,7 +93,7 @@ class RegistrationController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/register', name: 'register')]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher): Response {
+    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, ValidatorInterface $validator): Response {
         /**
          * Si on est déjà connecté
          * On affiche la page /accueil, Si on la page /login
@@ -108,73 +109,68 @@ class RegistrationController extends AbstractController
         /** On récupère la requête. */
         $form->handleRequest($request);
 
-        /** Le formulaire est valide */
-        if ($form->isSubmitted() && $form->isValid()) {
-            $date = new \DateTime('now', new \DateTimeZone("Europe/Paris"));
+        /** je récupère les données du HoneyPot  */
+        $honeyPot = $form->get('email')->getData();
+        if (!empty(trim($honeyPot))) {
+            // Spam detected!
+            $warning = sprintf('🐛 SPAM detected. honeypot content: %s IP: %s', $honeyPot, $request->getClientIp());
+            $this->logger->warning($warning);
+        } else {
+            /** Le formulaire est valide */
+            if ($form->isSubmitted() && $form->isValid()) {
+                // Récupérer le mot de passe en clair
+                $plainPassword = $form->get('plainPassword')->getData();
+                $date = new \DateTimeImmutable('now', new \DateTimeZone('Europe/Paris'));
+                /** J'enregistre l'url de l'image */
+                $avatar = $form->get('avatar')->getData();
+                // Si avatar est null ou vide, on applique la valeur par défaut
+                if (!$avatar || empty($avatar)) {
+                    $utilisateur->setAvatar('personne.png');
+                } else {
+                    $utilisateur->setAvatar($avatar);
+                }
+                /** J'enregistre le nom en majuscule */
+                $utilisateur->setNom(strtoupper($form->get('nom')->getData()));
+                /** J'enregistre le Prénom */
+                $utilisateur->setPrenom(ucfirst($form->get('prenom')->getData()));
+                /** J'enregistre en base de données */
+                $courriel = $form->get('courriel')->getData();
+                /** On canonise l'adresse. */
+                $utilisateur->setCourriel(strtolower($courriel));
+                /** On hash le mot de passe */
+                $utilisateur->setPassword($userPasswordHasher->hashPassword($utilisateur, $plainPassword));
+                /** On désactive l'utilisateur */
+                $utilisateur->setActif(false);
+                /** En enregistre la date de création */
+                $utilisateur->setDateEnregistrement($date);
 
-            /** je récupère les données du HoneyPot  */
-            $honeyPot = $form->get('email')->getData();
-            /** J'enregistre l'url de l'image */
-            $avatar = $form->get('avatar')->getData();
-            $utilisateur->setAvatar($avatar);
+                // Valider l'entité
+                $errors = $validator->validate($utilisateur);
+                if (count($errors) > 0) {
+                    // Si des erreurs sont trouvées, afficher ces erreurs
+                    foreach ($errors as $error) {
+                        $this->addFlash('error', ['type' => 'alert', 'message' => $error->getMessage()] );
+                    }
+                    $render=static::genericRender();
+                    $render['registrationForm'] = $form->createView();
+                    return $this->render('auth/register.html.twig', $render);
+                }
 
-            /** J'enregistre le nom en majuscule */
-            $utilisateur->setNom(strtoupper($form->get('nom')->getData()));
-
-            /** J'enregistre le Prénom */
-            $utilisateur->setPrenom(ucfirst($form->get('prenom')->getData()));
-
-            /** J'enregistre en base de données */
-            $courriel = $form->get('courriel')->getData();
-            /** On canonise l'adresse. */
-            $utilisateur->setCourriel(strtolower($courriel));
-
-            /** On hash le mot de passe */
-            $utilisateur->setPassword(
-                $userPasswordHasher->hashPassword(
-                    $utilisateur,
-                    $form->get('plainPassword')->getData()
-                )
-            );
-
-            /** On désactive l'utilisateur */
-            $utilisateur->setActif(false);
-
-            /** En enregistre la date de création */
-            $utilisateur->setDateEnregistrement($date);
-
-            /** On initialise les préférences par défaut */
-            $preferences = ['statut' => ['suivi_projet' => false, 'favori_projet' => false,
-                            'favori_version' => false,'bookmark'=> false],
-                            'suivi_projet' => [], 'favori_projet' => [],'favori_version' => [],
-                            'bookmark' =>[]];
-            $utilisateur->setPreference($preferences);
-
-            /** On enregistre le petit malin dans le pot de miel */
-            if (!empty(trim($honeyPot))) {
-                // Spam detected!
-                $warning = sprintf('🐛 SPAM detected. honeypot content: %s IP: %s', $honeyPot, $request->getClientIp());
-                $this->logger->warning($warning);
-            } else {
+                /** On enregistre */
                 $this->em->persist($utilisateur);
                 $this->em->flush();
             }
 
-            /** Connexion automatique ? */
-            /** "return $userAuthenticator->authenticateUser($utilisateur, $authenticator,$request);" */
-
-            /** On préfère rediriger l'utilisateur sur la page de bienvenu des nouveaux utilisateurs */
-            $render=static::genericRender();
-            $render['nom'] = $utilisateur->getNom();
-            $render['prenom'] = $utilisateur->getPrenom();
-            $render['courriel'] = $utilisateur->getCourriel();
-            //$render['rgaa'] = $this->getParameter('rgaa');
-            return $this->render('welcome/index.html.twig', $render);
+            /** On prepare un message flash */
+            $titre="[AUTH] ";
+            $message= "Votre compte a été correctement créé.";
+            $this->addFlash('notice', ['type'=>'primary', 'titre'=>$titre, 'message'=>$message]);
+            /** On préfère rediriger l'utilisateur sur la page de bienvenue */
+            return $this->redirectToRoute('welcome');
         }
 
         $render=static::genericRender();
         $render['registrationForm'] = $form->createView();
-        //$render['rgaa'] = $this->getParameter('rgaa');
         return $this->render('auth/register.html.twig', $render);
     }
 
