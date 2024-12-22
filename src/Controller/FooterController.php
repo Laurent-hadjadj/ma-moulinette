@@ -93,6 +93,10 @@ class FooterController extends AbstractController
     {
         $render=static::genericRender();
         $render['editeur'] = $this->getParameter('cgu.editeur');
+        $render['siret'] = $this->getParameter('cgu.siret');
+        $render['siren'] = $this->getParameter('cgu.siren');
+        $render['numSiret'] = $this->getParameter('cgu.numero.siret');
+        $render['numSiren'] = $this->getParameter('cgu.numero.siren');
         $render['urlSite'] = $this->getParameter('cgu.url.site');
         return $this->render('footer/mention-legal.html.twig', $render);
     }
