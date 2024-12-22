@@ -14,7 +14,7 @@ import 'foundation-sites/dist/css/foundation.min.css';
 import 'motion-ui/dist/motion-ui.css';
 import '../../styles/common/common.css';
 import '../../styles/common/police.css';
-import '../../styles/footer/plan-site.css';
+import '../../styles/footer/plan-du-site.css';
 
 /** Intégration de jquery */
 import $ from 'jquery';
