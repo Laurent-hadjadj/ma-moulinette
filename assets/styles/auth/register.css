@@ -226,18 +226,27 @@
   transition: all 0.15s ease-in;
 }
 
+.container-check-password {
+  display:flex;
+  justify-content: space-around;
+  margin-top: 0.4rem;
+  margin-left: 0.2rem;
+}
+
 .info-check-ko-svg {
-  padding-left: 0.3rem;
-  padding-top: 0.4rem;
   fill: #761f11;
-  width: 32px;
+  width: 100%;
+  height: auto;
+  max-width: 32px;
+  cursor: help;
 }
 
 .info-check-ok-svg {
-  padding-left: 0.3rem;
-  padding-top: 0.4rem;
   fill: #188a4f;
-  width: 32px;
+  width: 100%;
+  height: auto;
+  max-width: 32px;
+  cursor: help;
 }
 
 /*************** Ajouter un utilisateur *****************/
@@ -267,11 +276,11 @@
 /***************  Avatar                        *******************************/
 .sepia { filter: sepia(0); }
 .sepia:hover { filter: sepia(1); }
-.grayscale { filter: grayscale(1); }
-.grayscale:hover { filter: grayscale(0); }
+.gray-scale { filter: grayscale(1); }
+.gray-scale:hover { filter: grayscale(0); }
 
 /* Accordion */
-.menu-accordeon {
+.menu-accordion {
   background-color: white;
   border-radius: 5px;
   margin-top: 0.1rem;
@@ -283,7 +292,7 @@
 
 /* Suppression style inline */
 .avatar-chiffre,
-.avatar-emoticone,
+.avatar-emoticon,
 .avatar-fille1,
 .avatar-fille2,
 .avatar-garcon1,
@@ -374,3 +383,14 @@ input[type='password']::-ms-clear { display: none; }
   z-index: 2;
   border-radius: 50%;
 }
+
+/* Honey pot */
+.email {
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 0;
+  width: 0;
+  z-index: -1;
+  }
