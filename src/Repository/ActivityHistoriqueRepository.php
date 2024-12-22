@@ -13,23 +13,23 @@
 
 namespace App\Repository;
 
-use App\Entity\ActiviteHistorique;
+use App\Entity\ActivityHistorique;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-class ActiviteHistoriqueRepository extends ServiceEntityRepository
+class ActivityHistoriqueRepository extends ServiceEntityRepository
 {
     public static $removeReturnLine = "/\s+/u";
     public static $formatDate = 'Y-m-d H:i:sO';
-    public static $year = ':annee';
+    public static $year = ':year';
 
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, ActiviteHistorique::class);
+        parent::__construct($registry, ActivityHistorique::class);
     }
 
     /**
-     * [Description for selectActivite]
+     * [Description for selectActivity]
      * On insère la liste de toutes les activités qui sont envoyé
      *
      * @return array
@@ -38,26 +38,26 @@ class ActiviteHistoriqueRepository extends ServiceEntityRepository
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function insertHistoriqueActivites($data): array
+    public function insertHistoriqueActivity($data): array
     {
-        $sql = "INSERT INTO ma_moulinette.activite_historique
-                        (annee, nb_jour, nb_analyse, moyenne_analyse,
-                        nb_reussi, nb_echec, taux_reussite, max_temps,
+        $sql = "INSERT INTO ma_moulinette.activity_historique
+                        (year, day, analyse, analyse_average,
+                        success, fail, success_rate, max_time,
                         date_enregistrement)
-                VALUES (:annee, :nb_hour, :nb_analyse, :moyenne_analyse,
-                        :nb_reussi, :nb_echec, :taux_reussite, :max_temps, :date_enregistrement)";
+                VALUES (:year, :nb_hour, :analyse, :analyse_average,
+                        :success, :fail, :success_rate, :max_time, :date_enregistrement)";
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-                foreach ($data as $annee => $valeur) {
+                foreach ($data as $year => $valeur) {
                     $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(static::$year, $annee);
-                    $stmt->bindValue(':nb_hour', $valeur['nb_jour']);
-                    $stmt->bindValue(':nb_analyse', $valeur['nb_analyse']);
-                    $stmt->bindValue(':moyenne_analyse', $valeur['moyenne_analyse']);
-                    $stmt->bindValue(':nb_reussi', $valeur['nb_reussi']);
-                    $stmt->bindValue(':nb_echec', $valeur['nb_echec']);
-                    $stmt->bindValue(':taux_reussite', $valeur['taux_reussite']);
-                    $stmt->bindValue(':max_temps', $valeur['max_temps']);
+                    $stmt->bindValue(static::$year, $year);
+                    $stmt->bindValue(':nb_hour', $valeur['day']);
+                    $stmt->bindValue(':analyse', $valeur['analyse']);
+                    $stmt->bindValue(':analyse_average', $valeur['analyse_average']);
+                    $stmt->bindValue(':success', $valeur['success']);
+                    $stmt->bindValue(':fail', $valeur['fail']);
+                    $stmt->bindValue(':success_rate', $valeur['success_rate']);
+                    $stmt->bindValue(':max_time', $valeur['max_time']);
                     $stmt->bindValue(':date_enregistrement', $valeur['date_enregistrement']->format(static::$formatDate));
                     $stmt->executeStatement();
                 }
@@ -70,7 +70,7 @@ class ActiviteHistoriqueRepository extends ServiceEntityRepository
     }
 
     /**
-     * [Description for selectActivite]
+     * [Description for selectActivity]
      * On insérer la liste de toute les activities qui sont envoyé
      *
      * @return array
@@ -79,30 +79,30 @@ class ActiviteHistoriqueRepository extends ServiceEntityRepository
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function updateHistoriqueActivites($data): array
+    public function updateHistoriqueActivity($data): array
     {
-        $sql = "UPDATE ma_moulinette.activite_historique
-                SET nb_jour = :nb_jour,
-                    nb_analyse = :nb_analyse,
-                    moyenne_analyse = :moyenne_analyse,
-                    nb_reussi = :nb_reussi,
-                    nb_echec = :nb_echec,
-                    taux_reussite = :taux_reussite,
-                    max_temps = :max_temps,
+        $sql = "UPDATE ma_moulinette.activity_historique
+                SET day = :day,
+                    analyse = :analyse,
+                    analyse_average = :analyse_average,
+                    success = :success,
+                    fail = :fail,
+                    success_rate = :success_rate,
+                    max_time = :max_time,
                     date_enregistrement = :date_enregistrement
-                WHERE annee = :annee";
+                WHERE year = :year";
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-            foreach ($data as $annee => $valeur) {
+            foreach ($data as $year => $valeur) {
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(static::$year, $annee);
-                    $stmt->bindValue(':nb_jour', $valeur['nb_jour']);
-                    $stmt->bindValue(':nb_analyse', $valeur['nb_analyse']);
-                    $stmt->bindValue(':moyenne_analyse', $valeur['moyenne_analyse']);
-                    $stmt->bindValue(':nb_reussi', $valeur['nb_reussi']);
-                    $stmt->bindValue(':nb_echec', $valeur['nb_echec']);
-                    $stmt->bindValue(':taux_reussite', $valeur['taux_reussite']);
-                    $stmt->bindValue(':max_temps', $valeur['max_temps']);
+                    $stmt->bindValue(static::$year, $year);
+                    $stmt->bindValue(':day', $valeur['day']);
+                    $stmt->bindValue(':analyse', $valeur['analyse']);
+                    $stmt->bindValue(':analyse_average', $valeur['analyse_average']);
+                    $stmt->bindValue(':success', $valeur['success']);
+                    $stmt->bindValue(':fail', $valeur['fail']);
+                    $stmt->bindValue(':success_rate', $valeur['success_rate']);
+                    $stmt->bindValue(':max_time', $valeur['max_time']);
                     $stmt->bindValue(':date_enregistrement', $valeur['date_enregistrement']->format(static::$formatDate));
                     $stmt->executeStatement();
             }
@@ -116,7 +116,7 @@ class ActiviteHistoriqueRepository extends ServiceEntityRepository
     }
 
     /**
-     * [Description for selectActivite]
+     * [Description for selectActivity]
      * On récupère la liste de toute les activities
      *
      * @return array
@@ -125,15 +125,15 @@ class ActiviteHistoriqueRepository extends ServiceEntityRepository
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectActivite($annee = null): array
+    public function selectActivity($year = null): array
     {
         try {
                 $sql = "SELECT *
-                        FROM ma_moulinette.activite_historique";
-                        if ($annee !== null){
-                            $sql .= " WHERE annee = :annee";
+                        FROM ma_moulinette.activity_historique";
+                        if ($year !== null){
+                            $sql .= " WHERE year = :year";
                             $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                            $stmt->bindValue(static::$year, $annee);
+                            $stmt->bindValue(static::$year, $year);
                         }else{
                             $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                         }

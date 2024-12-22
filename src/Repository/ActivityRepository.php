@@ -13,23 +13,23 @@
 
 namespace App\Repository;
 
-use App\Entity\Activite;
+use App\Entity\Activity;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-class ActiviteRepository extends ServiceEntityRepository
+class ActivityRepository extends ServiceEntityRepository
 {
     public static $removeReturnLine = "/\s+/u";
     public static $formatDate = 'Y-m-d H:i:sO';
-    public static $year = ':annee';
+    public static $year = ':year';
 
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Activite::class);
+        parent::__construct($registry, Activity::class);
     }
 
     /**
-     * [Description for selectActivite]
+     * [Description for selectActivity]
      * On récupère la liste de toute les activités
      *
      * @return array
@@ -38,14 +38,14 @@ class ActiviteRepository extends ServiceEntityRepository
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectActivite($annee): array
+    public function selectActivity($year): array
     {
         try {
                 $sql = "SELECT *
-                        FROM ma_moulinette.activite
-                        WHERE EXTRACT(YEAR FROM started_at) = :annee ";
+                        FROM ma_moulinette.activity
+                        WHERE EXTRACT(YEAR FROM started_at) = :year ";
                         $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                        $stmt->bindValue(static::$year, $annee);
+                        $stmt->bindValue(static::$year, $year);
                 $request=$stmt->executeQuery()->fetchAllAssociative();
             } catch (\Doctrine\DBAL\Exception $e) {
             return ['code'=>500, 'erreur'=> $e->getMessage()];
@@ -54,7 +54,7 @@ class ActiviteRepository extends ServiceEntityRepository
     }
 
     /**
-     * [Description for selectActivite]
+     * [Description for selectActivity]
      * On insère la liste de toute les activités qui sont envoyé
      *
      * @return array
@@ -63,9 +63,9 @@ class ActiviteRepository extends ServiceEntityRepository
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function insertActivites($data): array
+    public function insertActivity($data): array
     {
-        $sql = "INSERT INTO ma_moulinette.activite (
+        $sql = "INSERT INTO ma_moulinette.activity (
                     maven_key, project_name, analyse_id,
                     status, submitter_login, submitted_at,
                     started_at, executed_at, execution_time)
@@ -98,7 +98,7 @@ class ActiviteRepository extends ServiceEntityRepository
     }
 
     /**
-     * [Description for selectActivite]
+     * [Description for selectActivity]
      * On compte le nombre de jour pour une année donnée
      *
      * @return array
@@ -107,14 +107,14 @@ class ActiviteRepository extends ServiceEntityRepository
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function nombreJourAnneeDonnee($annee): array
+    public function nombreJourAnneeDonnee($year): array
     {
         $sql = "SELECT COUNT(DISTINCT started_at) AS unique_days
-                FROM ma_moulinette.activite
-                WHERE EXTRACT(YEAR FROM started_at) = :annee ";
+                FROM ma_moulinette.activity
+                WHERE EXTRACT(YEAR FROM started_at) = :year ";
         try {
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(static::$year, $annee);
+                    $stmt->bindValue(static::$year, $year);
                 $request=$stmt->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
             return ['code'=>500, 'erreur'=> $e->getMessage()];
@@ -123,7 +123,7 @@ class ActiviteRepository extends ServiceEntityRepository
     }
 
     /**
-     * [Description for selectActivite]
+     * [Description for selectActivity]
      * On recherche du temps max d'execution pour une année donnée
      *
      * @return array
@@ -132,14 +132,14 @@ class ActiviteRepository extends ServiceEntityRepository
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function tempsExecutionMax($annee): array
+    public function tempsExecutionMax($year): array
     {
         $sql = "SELECT max(execution_time) AS max_time
-                FROM ma_moulinette.activite
-                WHERE EXTRACT(YEAR FROM started_at) = :annee ";
+                FROM ma_moulinette.activity
+                WHERE EXTRACT(YEAR FROM started_at) = :year ";
         try {
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue("annee", $annee);
+                    $stmt->bindValue("year", $year);
                 $request=$stmt->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
             return ['code'=>500, 'erreur'=> $e->getMessage()];
@@ -148,7 +148,7 @@ class ActiviteRepository extends ServiceEntityRepository
     }
 
     /**
-     * [Description for selectActivite]
+     * [Description for selectActivity]
      * On compte le nombre de status (SUCCESS,FAILED) envoyer pour une année donnée
      *
      * @return array
@@ -157,16 +157,16 @@ class ActiviteRepository extends ServiceEntityRepository
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function nombreStatus($annee,$status): array
+    public function nombreStatus($year, $status): array
     {
         $sql = "SELECT COUNT(*) AS nb_status
-                FROM ma_moulinette.activite
-                WHERE EXTRACT(YEAR FROM started_at) = :annee
+                FROM ma_moulinette.activity
+                WHERE EXTRACT(YEAR FROM started_at) = :year
                 AND status LIKE :status";
 
         try {
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(static::$year, $annee);
+                    $stmt->bindValue(static::$year, $year);
                     $stmt->bindValue(':status', $status);
                 $request=$stmt->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
@@ -176,7 +176,7 @@ class ActiviteRepository extends ServiceEntityRepository
     }
 
     /**
-     * [Description for selectActivite]
+     * [Description for selectActivity]
      * On compte le nombre d'analyse pour une année donnée
      *
      * @return array
@@ -185,15 +185,15 @@ class ActiviteRepository extends ServiceEntityRepository
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function nombreAnalyse($annee): array
+    public function nombreAnalyse($year): array
     {
         $sql = "SELECT COUNT(*) AS nb_analyse
-                FROM ma_moulinette.activite
-                WHERE EXTRACT(YEAR FROM started_at) = :annee";
+                FROM ma_moulinette.activity
+                WHERE EXTRACT(YEAR FROM started_at) = :year";
 
         try {
                 $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(static::$year, $annee);
+                    $stmt->bindValue(static::$year, $year);
                 $request=$stmt->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
             return ['code'=>500, 'erreur'=> $e->getMessage()];
@@ -202,7 +202,7 @@ class ActiviteRepository extends ServiceEntityRepository
     }
 
     /**
-     * [Description for selectActivite]
+     * [Description for selectActivity]
      * On récupère la date la plus récente dans la table pour une année donnée
      *
      * @return array
@@ -211,14 +211,14 @@ class ActiviteRepository extends ServiceEntityRepository
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function dernierDate($annee = null): array
+    public function dernierDate($year = null): array
     {
-        $sql = "SELECT executed_at as date FROM ma_moulinette.activite ";
+        $sql = "SELECT executed_at as date FROM ma_moulinette.activity ";
         try {
-            if ($annee !== null) {
-                $sql .= "WHERE EXTRACT(YEAR FROM started_at) = :annee ORDER BY executed_at DESC LIMIT 1";
+            if ($year !== null) {
+                $sql .= "WHERE EXTRACT(YEAR FROM started_at) = :year ORDER BY executed_at DESC LIMIT 1";
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(static::$year, $annee);
+                $stmt->bindValue(static::$year, $year);
             } else {
                 $sql .= "ORDER BY executed_at DESC LIMIT 1";
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
@@ -231,7 +231,7 @@ class ActiviteRepository extends ServiceEntityRepository
     }
 
     /**
-     * [Description for selectActivite]
+     * [Description for selectActivity]
      * On récupère la date la plus récente dans la table pour une année donnée
      *
      * @return array
@@ -240,15 +240,15 @@ class ActiviteRepository extends ServiceEntityRepository
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function premiereDate($annee = null): array
+    public function premiereDate($year = null): array
     {
-        $sql = "SELECT executed_at as date FROM ma_moulinette.activite ";
+        $sql = "SELECT executed_at as date FROM ma_moulinette.activity ";
 
         try {
-            if ($annee !== null) {
-                $sql .= "WHERE EXTRACT(YEAR FROM started_at) = :annee ORDER BY executed_at ASC LIMIT 1";
+            if ($year !== null) {
+                $sql .= "WHERE EXTRACT(YEAR FROM started_at) = :year ORDER BY executed_at ASC LIMIT 1";
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(static::$year, $annee);
+                $stmt->bindValue(static::$year, $year);
             } else {
                 $sql .= "ORDER BY executed_at DESC LIMIT 1";
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
@@ -261,7 +261,7 @@ class ActiviteRepository extends ServiceEntityRepository
     }
 
     /**
-     * [Description for selectActivite]
+     * [Description for selectActivity]
      * On récupère la date la plus récente dans la table pour une année donnée
      *
      * @return array
@@ -270,17 +270,17 @@ class ActiviteRepository extends ServiceEntityRepository
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function listeProjectAnalyse($annee = null): array
+    public function listeProjectAnalyse($year = null): array
     {
         $sql = "SELECT DATE(executed_at) AS day,
                     COUNT(DISTINCT project_name) AS count
-                FROM ma_moulinette.activite ";
+                FROM ma_moulinette.activity ";
         try {
-            if ($annee !== null) {
-                $sql.= "WHERE EXTRACT(YEAR FROM executed_at) = :annee
+            if ($year !== null) {
+                $sql.= "WHERE EXTRACT(YEAR FROM executed_at) = :year
                         GROUP BY DATE(executed_at) ORDER BY day ASC";
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(static::$year, $annee);
+                $stmt->bindValue(static::$year, $year);
             } else {
                 $sql .= "GROUP BY DATE(executed_at) ORDER BY day DESC ";
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
@@ -293,7 +293,7 @@ class ActiviteRepository extends ServiceEntityRepository
     }
 
     /**
-     * [Description for selectActivite]
+     * [Description for selectActivity]
      * On récupère la date la plus récente dans la table pour une année donnée
      *
      * @return array
@@ -302,16 +302,16 @@ class ActiviteRepository extends ServiceEntityRepository
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function listeAnalyseJour($annee = null): array
+    public function listeAnalyseJour($year = null): array
     {
         try {
             $sql = "SELECT DATE(executed_at) AS day,
-                            COUNT(*) AS count FROM ma_moulinette.activite ";
-            if ($annee !== null) {
-                $sql.= "WHERE EXTRACT(YEAR FROM executed_at) = :annee
+                            COUNT(*) AS count FROM ma_moulinette.activity ";
+            if ($year !== null) {
+                $sql.= "WHERE EXTRACT(YEAR FROM executed_at) = :year
                 GROUP BY DATE(executed_at) ORDER BY day ASC";
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(static::$year, $annee);
+                $stmt->bindValue(static::$year, $year);
             } else {
                 $sql .= "GROUP BY DATE(executed_at) ORDER BY day DESC";
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
@@ -324,7 +324,7 @@ class ActiviteRepository extends ServiceEntityRepository
     }
 
     /**
-     * [Description for selectActivite]
+     * [Description for selectActivity]
      * On récupère la date la plus récente dans la table pour une année donnée
      *
      * @return array
@@ -333,18 +333,18 @@ class ActiviteRepository extends ServiceEntityRepository
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function listeAnalyseProjet($annee = null): array
+    public function listeAnalyseProjet($year = null): array
     {
         try {
             $sql = "SELECT DATE(executed_at) AS day,
                         COUNT(*) AS analyse,
                         COUNT(DISTINCT project_name) AS projet
-                    FROM ma_moulinette.activite ";
-            if ($annee !== null) {
-                $sql.= "WHERE EXTRACT(YEAR FROM executed_at) = :annee
+                    FROM ma_moulinette.activity ";
+            if ($year !== null) {
+                $sql.= "WHERE EXTRACT(YEAR FROM executed_at) = :year
                 GROUP BY DATE(executed_at) ORDER BY day ASC";
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(static::$year, $annee);
+                $stmt->bindValue(static::$year, $year);
             } else {
                 $sql .= "GROUP BY DATE(executed_at) ORDER BY day DESC";
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
