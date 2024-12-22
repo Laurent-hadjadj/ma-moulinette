@@ -19,7 +19,7 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 
-/** Accès aux tables SLQLite*/
+/** Accès aux tables*/
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\UtilisateurRepository;
 use App\Entity\Utilisateur;
