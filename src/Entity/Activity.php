@@ -13,14 +13,14 @@
 
 namespace App\Entity;
 
-use App\Repository\ActiviteRepository;
+use App\Repository\ActivityRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: ActiviteRepository::class)]
-#[ORM\Table(name: "activite", schema: "ma_moulinette")]
-class Activite
+#[ORM\Entity(repositoryClass: ActivityRepository::class)]
+#[ORM\Table(name: "activity", schema: "ma_moulinette")]
+class Activity
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]

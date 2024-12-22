@@ -13,14 +13,14 @@
 
 namespace App\Entity;
 
-use App\Repository\ActiviteHistoriqueRepository;
+use App\Repository\ActivityHistoriqueRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: ActiviteHistoriqueRepository::class)]
-#[ORM\Table(name: "activite_historique", schema: "ma_moulinette")]
-class ActiviteHistorique
+#[ORM\Entity(repositoryClass: ActivityHistoriqueRepository::class)]
+#[ORM\Table(name: "activity_historique", schema: "ma_moulinette")]
+class ActivityHistorique
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -31,42 +31,42 @@ class ActiviteHistorique
     #[ORM\Column(type: Types::INTEGER, nullable: false,
         options: ['comment' => 'Année'])]
     #[Assert\NotNull]
-    private int $annee;
+    private int $year;
 
     #[ORM\Column(type: Types::INTEGER, nullable: false,
         options: ['comment' => 'Nombre de jours'])]
     #[Assert\NotNull]
-    private int $nbJour;
+    private int $day;
 
     #[ORM\Column(type: Types::INTEGER, nullable: false,
         options: ['comment' => "Nombre d'analyses"])]
     #[Assert\NotNull]
-    private int $nbAnalyse;
+    private int $analyse;
 
     #[ORM\Column(type: Types::FLOAT, nullable: false,
         options: ['comment' => 'Moyenne des analyses'])]
     #[Assert\NotNull]
-    private float $moyenneAnalyse;
+    private float $analyseAverage;
 
     #[ORM\Column(type: Types::INTEGER, nullable: false,
         options: ['comment' => 'Nombre de réussites'])]
     #[Assert\NotNull]
-    private int $nbReussi;
+    private int $success;
 
     #[ORM\Column(type: Types::INTEGER, nullable: false,
         options: ['comment' => "Nombre d'échecs"])]
     #[Assert\NotNull]
-    private int $nbEchec;
+    private int $fail;
 
     #[ORM\Column(type: Types::FLOAT, nullable: false,
         options: ['comment' => 'Taux de réussite'])]
     #[Assert\NotNull]
-    private float $tauxReussite;
+    private float $successRate;
 
     #[ORM\Column(type: Types::INTEGER, nullable: false,
         options: ['comment' => 'Temps maximal'])]
     #[Assert\NotNull]
-    private int $maxTemps;
+    private int $maxTime;
 
     #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
         options: ['comment' => "Date et heure d'enregistrement"])]
@@ -78,91 +78,91 @@ class ActiviteHistorique
         return $this->id;
     }
 
-    public function getAnnee(): ?int
+    public function getYear(): ?int
     {
-        return $this->annee;
+        return $this->year;
     }
 
-    public function setAnnee(int $annee): static
+    public function setYear(int $year): static
     {
-        $this->annee = $annee;
+        $this->year = $year;
         return $this;
     }
 
-    public function getNbJour(): ?int
+    public function getDay(): ?int
     {
-        return $this->nbJour;
+        return $this->day;
     }
 
-    public function setNbJour(int $nbJour): static
+    public function setDay(int $day): static
     {
-        $this->nbJour = $nbJour;
+        $this->day = $day;
         return $this;
     }
 
-    public function getNbAnalyse(): ?int
+    public function getAnalyse(): ?int
     {
-        return $this->nbAnalyse;
+        return $this->analyse;
     }
 
-    public function setNbAnalyse(int $nbAnalyse): static
+    public function setAnalyse(int $analyse): static
     {
-        $this->nbAnalyse = $nbAnalyse;
+        $this->analyse = $analyse;
         return $this;
     }
 
-    public function getMoyenneAnalyse(): ?float
+    public function getAnalyseAverage(): ?float
     {
-        return $this->moyenneAnalyse;
+        return $this->analyseAverage;
     }
 
-    public function setMoyenneAnalyse(float $moyenneAnalyse): static
+    public function setAnalyseAverage(float $analyseAverage): static
     {
-        $this->moyenneAnalyse = $moyenneAnalyse;
+        $this->analyseAverage = $analyseAverage;
         return $this;
     }
 
-    public function getNbReussi(): ?int
+    public function getSuccess(): ?int
     {
-        return $this->nbReussi;
+        return $this->success;
     }
 
-    public function setNbReussi(int $nbReussi): static
+    public function setSuccess(int $success): static
     {
-        $this->nbReussi = $nbReussi;
+        $this->success = $success;
         return $this;
     }
 
-    public function getNbEchec(): ?int
+    public function getFail(): ?int
     {
-        return $this->nbEchec;
+        return $this->fail;
     }
 
-    public function setNbEchec(int $nbEchec): static
+    public function setFail(int $fail): static
     {
-        $this->nbEchec = $nbEchec;
+        $this->fail = $fail;
         return $this;
     }
 
-    public function getTauxReussite(): ?float
+    public function getSuccessRate(): ?float
     {
-        return $this->tauxReussite;
+        return $this->successRate;
     }
 
-    public function setTauxReussite(float $tauxReussite): static
+    public function setSuccesRate(float $successRate): static
     {
-        $this->tauxReussite = $tauxReussite;
+        $this->successRate = $successRate;
         return $this;
     }
 
-    public function getMaxTemps(): ?int
+    public function getMaxTime(): ?int
     {
-        return $this->maxTemps;
+        return $this->maxTime;
     }
 
-    public function setMaxTemps(int $maxTemps): static
+    public function setMaxTime(int $maxTime): static
     {
-        $this->maxTemps = $maxTemps;
+        $this->maxTime = $maxTime;
         return $this;
     }
 
