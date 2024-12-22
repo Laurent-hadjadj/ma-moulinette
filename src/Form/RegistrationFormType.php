@@ -30,6 +30,18 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 class RegistrationFormType extends AbstractType
 {
 
+    /**
+     * [Description for buildForm]
+     *
+     * @param FormBuilderInterface $builder
+     * @param array $options
+     *
+     * @return void
+     *
+     * Created at: 22/12/2024 13:40:29 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -73,16 +85,18 @@ class RegistrationFormType extends AbstractType
                         'maxMessage' => 'Le prénom ne doit pas comporter plus de {{ limit }} caractères.',
                     ]), ]
             ])
-            ->add('email', TextType::class, [
+
+            //Honey pot
+            ->add('email', EmailType::class, [
                 'required' => false,
                 'mapped' => false,
+                'label' => 'email',
                 'attr' => [
                     'placeholder' => 'steeve@gmail.com',
-                    'tabindex' => '-1',
                     'autocomplete' => 'off',
                     'class' => 'email']])
 
-            //RFC 3696 (64+1+255).
+            //RFC 3696.
             ->add('courriel', EmailType::class, [
                 'label' => 'label.courriel',
                 'trim' => true,
@@ -107,9 +121,21 @@ class RegistrationFormType extends AbstractType
                         'autocomplete' => 'off',
                         'aria-label'=>'Mot de passe',
                         'aria-describedby'=>'registration_form_plainPassword_first'],
+                    'constraints' => [
+                        new NotBlank([
+                            'message' => 'Merci de saisir ton mot de passe.',
+                        ]),
+                        new Length([
+                            'min' => 8,
+                            'minMessage' => 'Ton mot de passe doit comporter au moins {{ limit }} caractères.',
+                            'max' => 52,
+                            'maxMessage' => 'Ton mot de passe ne doit pas comporter plus de {{ limit }} caractères.',
+                        ]),
+                    ],
                 ],
                 'second_options' => [
                     'label' => 'label.remotdepasse',
+                    'mapped' => false,
                     'attr' => [
                         'placeholder' => 'placeholder.remotdepasse',
                         'class' => 'color-bleu',
@@ -119,25 +145,29 @@ class RegistrationFormType extends AbstractType
                 ],
                 'constraints' => [
                     new NotBlank([
-                        'message' => 'Merci de saisir votre mot de passe.',
+                        'message' => 'Merci de re-saisir ton mot de passe.',
                     ]),
                     new Length([
                         'min' => 8,
-                        'minMessage' => 'Votre mot de passe doit comporter au moins {{ limit }} caractères.',
+                        'minMessage' => 'Ton mot de passe doit comporter au moins {{ limit }} caractères.',
                         'max' => 52,
-                        'maxMessage' => 'Votre mot de passe ne doit pas comporter plus de {{ limit }} caractères.',
+                        'maxMessage' => 'Ton mot de passe ne doit pas comporter plus de {{ limit }} caractères.',
                     ]),
                 ],
             ])
+            /** On ajoute le champ avatar mais on ne l'affiche pas */
             ->add('avatar', HiddenType::class, [
-                'data' => 'personne.png',
+                'mapped' => false, // Le champ n'est pas lié à l'entité
+                'required' => false,
             ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
+        /** on met null pour ne pas se baser sur la class Utilisateur, car tout les attributs ne sont pas utilisés. */
         $resolver->setDefaults([
-            'data_class' => Utilisateur::class,
+            'data_class' => \App\Entity\Utilisateur::class,
+            'validation_groups' => ['form']
         ]);
     }
 }
