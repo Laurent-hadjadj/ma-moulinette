@@ -19,9 +19,8 @@
   <head>
     <title>{{ title }}</title>
     {{ include('head.html.twig') }}
-    {% block stylesheets %}
-      {{ encore_entry_link_tags('reset') }}
-    {% endblock %}
+    {# Chargement du code javascript #}
+    {% block importmap %}{{ importmap('reset') }}{% endblock %}
   </head>
 
   <body>
@@ -43,9 +42,9 @@
       <div class="grid-x">
         <div class="small-12 medium-6 large-6 cell">
           <video id="video-dessin-anime" class="video-dessin-anime" preload="metadata" loop autoplay muted>
-            <source src="{{ asset('build/video/dessin_anime.mp4') }}">
-            <track label="Français" kind="captions" srclang="fr" default src="{{ asset('build/video/dessin_anime_subtitles_fr.vtt') }}">
-              <track label="English" kind="captions" srclang="en" src="{{ asset('build/video/dessin_anime_subtitles_en.vtt') }}"></video>
+            <source src="{{ asset('video/dessin_anime.mp4') }}">
+            <track label="Français" kind="captions" srclang="fr" default src="{{ asset('video/dessin_anime_subtitles_fr.vtt') }}">
+              <track label="English" kind="captions" srclang="en" src="{{ asset('video/dessin_anime_subtitles_en.vtt') }}"></video>
               <span class="open-sans float-center text-center">
                 {% set a="https://pixabay.com/fr/" %}
                 {% set b="users/u_cakf541pns-41051938/" %}
@@ -101,7 +100,7 @@
                     </button>
                   </div>
                   <div class="check-svg small-1 medium-1 large-1 cell">
-                    <span id="reset-info-check-password"></span>
+                    <div class="container-check-password"><span id="reset-info-check-password"></span></div>
                   </div>
                 </div>
 
@@ -115,7 +114,7 @@
                     <button class="unmask2" type="button" title="Affiche/masque le mot de passe">Afficher|Masquer</button>
                   </div>
                   <div class="check-svg small-1 medium-1 large-1 cell">
-                    <span id="reset-info-check-repassword"></span>
+                    <div class="container-check-password"><span id="reset-info-check-re-password"></span></div>
                   </div>
                 </div>
 
@@ -139,10 +138,6 @@
       </div>
       {# Chargement de la section footer #}
       {{ include('footer.html.twig') }}
-      {# Chargement du code javascript #}
-      {% block javascripts %}
-        {{ encore_entry_script_tags('reset') }}
-      {% endblock %}
     </body>
   </body>
 </html>
