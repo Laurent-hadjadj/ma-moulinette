@@ -11,7 +11,7 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
-namespace App\Controller\Activite;
+namespace App\Controller\Activity;
 
 /** Core */
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -29,25 +29,18 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\SecurityBundle\Security;
 
 /** Client HTTP */
-use App\Service\ClientActivite;
+use App\Service\Client;
 
-use App\Entity\Activite;
-use App\Entity\ActiviteHistorique;
+use App\Entity\Activity;
+use App\Entity\ActivityHistorique;
 
 /**
- * [Description ApiActiviteController]
+ * [Description ApiActivityController]
  */
-class ApiActiviteController extends AbstractController
+class ApiActivityController extends AbstractController
 {
     /** Définition des constantes */
     public static $sonarUrl = "sonar.url";
-    public static $dateFormatShort = "Y-m-d";
-    public static $dateFormat = "Y-m-d H:i:s";
-    public static $europeParis = "Europe/Paris";
-    public static $reference = '<strong>[Accueil]</strong>';
-    public static $erreur400 = "La requête est incorrecte (Erreur 400).";
-    public static $erreur403 = "Vous devez avoir le rôle [ACTIVITE] pour réaliser cette action (Erreur 403).";
-    public static $erreur404 = "Je n'ai pas trouvé de projets sur le serveur SonarQube (Erreur 404).";
 
     /**
      * [Description for __construct]
@@ -69,34 +62,34 @@ class ApiActiviteController extends AbstractController
      * Récupération de la liste des projets.
      * http://{url}}/api/components/search_projects?ps=500
      *
-     * @param ClientActivite $client
+     * @param Client $client
      * @return JsonResponse
      *
      * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/activite/sauvegarde', name: 'api_sauvegarde_historique', methods: ['POST'])]
-    public function apiSauvegardeHistorique(ClientActivite $client, Security $security): JsonResponse
+    #[Route('/api/activity/sauvegarde', name: 'api_sauvegarde_historique', methods: ['POST'])]
+    public function apiSauvegardeHistorique(Client $client, Security $security): JsonResponse
     {
         /** si on est pas GESTIONNAIRE on ne fait rien. */
-        if (!$security->isGranted('ROLE_ACTIVITE')){
+        if (!$security->isGranted('ROLE_ACTIVITY')){
             return new JsonResponse(['code' => 403, Response::HTTP_OK]);
         }
         /** On instancie l'EntityRepository */
-        $activiteEntity = $this->em->getRepository(Activite::class);
-        $historiqueActiviteEntity = $this->em->getRepository(ActiviteHistorique::class);
+        $activityEntity = $this->em->getRepository(Activity::class);
+        $historiqueActivityEntity = $this->em->getRepository(ActivityHistorique::class);
 
         $url = $this->getParameter(static::$sonarUrl) . "/api/ce/activity";
         $result = $client->http($url);
         // dateBase représente la date la plus récente dans la base de donnée
         // On ne prend pas directement la donnee de date parce que la base peux ne peut pas avoir de donnée
-        $dateBase = $activiteEntity->dernierDate();
+        $dateBase = $activityEntity->dernierDate();
 
         if (empty($dateBase['request'])){
             // méthode pour insérer si la base est vierge
             $formatedData = static::organisationDonnee($result);
-            $activiteEntity->insertActivites($formatedData);
+            $activityEntity->insertActivity($formatedData);
         } else {
             // Méthode pour insérer si la base n'est pas vierge.
             // Cette méthode consiste à prendre toutes les analyse dans un intervalle de date représenter par dateMin et dateMax.
@@ -110,7 +103,7 @@ class ApiActiviteController extends AbstractController
                 $url = $this->getParameter(static::$sonarUrl) . "/api/ce/activity?minSubmittedAt=".$dateMin->format('Y-m-d')."&maxExecutedAt=".$dateMax->format('Y-m-d')."";
                 $result = $client->http($url);
                 $formatedData = static::organisationDonnee($result);
-                $activiteEntity->insertActivites($formatedData);
+                $activityEntity->insertActivity($formatedData);
                 $dateMin = $dateMin->modify('+7 days');
                 $dateMax = $dateMax->modify('+7 days');
             }
@@ -125,26 +118,26 @@ class ApiActiviteController extends AbstractController
 
         // On forme le tableau qui va être envoyé dans la vue
         // Le nombre de jour pour cette année
-        $result=$activiteEntity->premiereDate($anneeActuelle);
+        $result=$activityEntity->premiereDate($anneeActuelle);
         $donneeTableau[$anneeActuelle]['nb_jour'] = static::calculDifferenceDate(new \DateTime($result['request'][0]['date']), $dateActuelle);
 
         // Le nombre d'analyse pour cette année
-        $result = $activiteEntity->nombreAnalyse($anneeActuelle);
+        $result = $activityEntity->nombreAnalyse($anneeActuelle);
         $donneeTableau[$anneeActuelle]['nb_analyse'] = $result['request']['nb_analyse'];
 
         // Le nombre d'analyse réussi ou en échec pour cette année
         // Réussi
         $statusRechercher = 'SUCCESS';
-        $result = $activiteEntity->nombreStatus($anneeActuelle,$statusRechercher);
+        $result = $activityEntity->nombreStatus($anneeActuelle,$statusRechercher);
         $donneeTableau[$anneeActuelle]['nb_reussi'] = $result['request']['nb_status'];
         // Échec
         $statusRechercher = 'FAILED';
-        $result = $activiteEntity->nombreStatus($anneeActuelle,$statusRechercher);
+        $result = $activityEntity->nombreStatus($anneeActuelle,$statusRechercher);
         $donneeTableau[$anneeActuelle]['nb_echec'] = $result['request']['nb_status'];
 
-        // Le temps max d'execution pour cette annee
-        $result=$activiteEntity->tempsExecutionMax($anneeActuelle);
-        $donneeTableau[$anneeActuelle]['max_temps']= static::formatDureemax($result['request']['max_time']);
+        // Le temps max d'execution pour cette année
+        $result=$activityEntity->tempsExecutionMax($anneeActuelle);
+        $donneeTableau[$anneeActuelle]['max_temps']= static::formatDureeMax($result['request']['max_time']);
 
         // La moyenne d'analyse par jour
         $donneeTableau[$anneeActuelle]['moyenne_analyse'] = static::calculAnalyseMoyenne($donneeTableau[$anneeActuelle]['nb_jour'], $donneeTableau[$anneeActuelle]['nb_analyse']);
@@ -153,19 +146,19 @@ class ApiActiviteController extends AbstractController
         $donneeTableau[$anneeActuelle]['taux_reussite'] = static::calculeTauxReussite($donneeTableau[$anneeActuelle]['nb_analyse'], $donneeTableau[$anneeActuelle]['nb_reussi']);
 
         // Date d'enregistrement
-        $donneeTableau[$anneeActuelle]['date_enregistrement'] = new \DateTimeImmutable();
+        $donneeTableau[$anneeActuelle]['date_enregistrement'] = new \DateTimeImmutable('now');
 
-        $verifUpdateOuInsert = $historiqueActiviteEntity->selectActivite($anneeActuelle);
+        $verifUpdateOuInsert = $historiqueActivityEntity->selectActivity($anneeActuelle);
         if (empty($verifUpdateOuInsert['request'])) {
             // Utilisation de empty() pour vérifier si le tableau est vide
-            $historiqueActiviteEntity->insertHistoriqueActivites($donneeTableau);
+            $historiqueActivityEntity->insertHistoriqueActivity($donneeTableau);
         } else {
-            $historiqueActiviteEntity->updateHistoriqueActivites($donneeTableau);
+            $historiqueActivityEntity->updateHistoriqueActivity($donneeTableau);
         }
-        $tableHistoriqueActivite = $historiqueActiviteEntity->selectActivite();
-        $tableHistoriqueActivite['request'][0]["date_enregistrement"] = (new \DateTime($tableHistoriqueActivite['request'][0]["date_enregistrement"]))->format('d-m-Y H:i:s');
+        $tableHistoriqueActivity = $historiqueActivityEntity->selectActivity();
+        $tableHistoriqueActivity['request'][0]["date_enregistrement"] = (new \DateTime($tableHistoriqueActivity['request'][0]["date_enregistrement"]))->format('d-m-Y H:i:s');
 
-        return new JsonResponse(['code' => 200,'listeDonnee' => $tableHistoriqueActivite], Response::HTTP_OK);
+        return new JsonResponse(['code' => 200,'listeDonnee' => $tableHistoriqueActivity], Response::HTTP_OK);
     }
 
     /**
@@ -173,21 +166,21 @@ class ApiActiviteController extends AbstractController
      * Récupération de la liste des projets.
      * http://{url}}/api/components/search_projects?ps=500
      *
-     * @param ClientActivite $client
+     * @param Client $client
      * @return JsonResponse
      *
      * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/activite/dessin', name: 'api_dessin', methods: ['POST'])]
-    public function apiRecupereDonnee(Request $request): JsonResponse
+    #[Route('/api/activity/dessin', name: 'api_dessin', methods: ['POST'])]
+    public function apiDessin(Request $request): JsonResponse
     {
         /**On récupère la date actuelle */
-        $dateActuelle = new \DateTime();
+        $dateActuelle = new \DateTime('now');
 
         /** On instancie la classe */
-        $activiteEntity = $this->em->getRepository(Activite::class);
+        $activityEntity = $this->em->getRepository(Activity::class);
 
         /** On décode le body */
         $data = json_decode($request->getContent());
@@ -195,7 +188,7 @@ class ApiActiviteController extends AbstractController
       /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'source')) {
             return new JsonResponse(
-                ['data'=>$data,'code'=>400, Response::HTTP_BAD_REQUEST]);
+                ['data'=>$data,'code'=>400], Response::HTTP_OK);
         }
 
         /**On récupère les données demandés */
@@ -203,13 +196,13 @@ class ApiActiviteController extends AbstractController
         $source = $data->source;
         switch ($source) {
             case 'analyse':
-                $response = $activiteEntity->listeAnalyseJour($dateActuelle->format('Y'));
+                $response = $activityEntity->listeAnalyseJour($dateActuelle->format('Y'));
                 break;
             case 'projet':
-                $response = $activiteEntity->listeProjectAnalyse($dateActuelle->format('Y'));
+                $response = $activityEntity->listeProjectAnalyse($dateActuelle->format('Y'));
                 break;
             case 'projet_analyse':
-                $response = $response = $activiteEntity->listeAnalyseProjet($dateActuelle->format('Y'));
+                $response = $response = $activityEntity->listeAnalyseProjet($dateActuelle->format('Y'));
                 break;
             default:
             //to.do gestion des insertions de donnée des utilisateurs
