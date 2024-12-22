@@ -29,7 +29,7 @@
   #reset_password_form_plainPassword_second + .unmask2
   {
     top: 1.25rem;
-    right: 2.3rem;
+    right: 1.25rem;
   }
 }
 
@@ -63,8 +63,6 @@
     top: 1.25rem;
     right: 3.3rem;
   }
-
-
 }
 
 /* Media Small */
@@ -139,9 +137,7 @@
 
   #reset_password_form_ancienMotDePasse + .unmask0,
   #reset_password_form_plainPassword_first + .unmask1,
-  #reset_password_form_plainPassword_second + .unmask2
-
-  {
+  #reset_password_form_plainPassword_second + .unmask2 {
     top: 1.25rem;
     right: 3.2rem;
   }
@@ -172,8 +168,7 @@
 
   #reset_password_form_ancienMotDePasse + .unmask0,
   #reset_password_form_plainPassword_first + .unmask1,
-  #reset_password_form_plainPassword_second + .unmask2
-  {
+  #reset_password_form_plainPassword_second + .unmask2 {
     top: 1.25rem;
     right: 3.2rem;
   }
@@ -189,14 +184,10 @@
 }
 
 /* hover des boutons */
-#valider-formulaire-enregistrement:hover {
-  background-color: #006182;
-}
+#valider-formulaire-enregistrement:hover { background-color: #006182; }
 
 /* affichage du crédit */
 .credit, #sur { font-size: 0.8rem; }
-
-/* gestion du formulaire de connexion */
 
 /** Gestion des labels */
 .floated-label-wrapper { position: relative; }
@@ -229,18 +220,27 @@
   transition: all 0.15s ease-in;
 }
 
+.container-check-password {
+  display:flex;
+  justify-content: space-around;
+  margin-top: 0.4rem;
+  margin-left: 0.2rem;
+}
+
 .info-check-ko-svg {
-  padding-left: 0.3rem;
-  padding-top: 0.4rem;
   fill: #761f11;
-  width: 32px;
+  width: 100%;
+  height: auto;
+  max-width: 32px;
+  cursor: help;
 }
 
 .info-check-ok-svg {
-  padding-left: 0.3rem;
-  padding-top: 0.4rem;
   fill: #188a4f;
-  width: 32px;
+  width: 100%;
+  height: auto;
+  max-width: 32px;
+  cursor: help;
 }
 
 /*************** Ajouter un utilisateur *****************/
