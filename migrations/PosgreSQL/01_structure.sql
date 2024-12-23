@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##         Creation des tables et des objets      ##
-##               V1.25.0 - 20/11/2024             ##
+##               V1.27.0 - 23/12/2024             ##
 ##                                                ##
 ####################################################*/
 
@@ -35,6 +35,7 @@
 -- 20/11/2024 : Laurent HADJADJ - Ajout de la colonne referential_owasp dans la table owasp ;
 -- 22/11/2024 : Laurent HADJADJ - Ajout de la colonne lien dans la table owasp_top10 ;
 -- 22/12/2024 : Laurent HADJADJ - Renommage des table activite et activite_historique ;
+-- 23/12/2024 : Laurent HADJADJ - Correction "analyse" et ajout des indexes ;
 
 -- SCHEMA: ma_moulinette
 
@@ -90,7 +91,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.activity_historique
 (id SERIAL PRIMARY KEY,
   year INT NOT NULL,
   day INT NOT NULL,
-  analyse INT NOT NULL,
+  "analyse" INT NOT NULL,
   analyse_average FLOAT NOT NULL,
   success INT NOT NULL,
   fail INT NOT NULL,
@@ -112,6 +113,13 @@ COMMENT ON COLUMN ma_moulinette.activity_historique.fail IS 'Nombre d’analyse 
 COMMENT ON COLUMN ma_moulinette.activity_historique.success_rate IS 'Taux de réussite.';
 COMMENT ON COLUMN ma_moulinette.activity_historique.max_time IS 'Temps maximum d’une analyse.';
 COMMENT ON COLUMN ma_moulinette.activity_historique.date_enregistrement IS 'Date de l’enregistrement';
+
+-- Ajout des index
+CREATE INDEX idx_year ON ma_moulinette.activity_historique (year);
+CREATE INDEX idx_day ON ma_moulinette.activity_historique (day);
+CREATE INDEX idx_analyse ON ma_moulinette.activity_historique ("analyse");
+CREATE INDEX idx_success_rate ON ma_moulinette.activity_historique (success_rate);
+CREATE INDEX idx_date_enregistrement ON ma_moulinette.activity_historique (date_enregistrement);
 
 -- Table: ma_moulinette.actuator
 
