@@ -14,7 +14,7 @@
 
 <!-- Informations générales -->
 <meta name="description" content="{{ description }}">
-<meta name="copyright" content="Ma-Moulinette. Copyright (c) {{dateCopyright}}">
+<meta name="copyright" content="Ma-Moulinette. Copyright (c) {{date_copyright}}">
 {% set subpath_location = app.request.headers.get('X-Forwarded-Prefix', '') %}
 {# Définition d'une META #}
 <meta name="url" content="{{ absolute_url ~ subpath_location }}">
