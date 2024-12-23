@@ -3,7 +3,9 @@
 {% if app.request.port != 80 and app.request.port != 443 %}
     {% set absolute_url = absolute_url ~ ':' ~ app.request.port %}
 {% endif %}
-{% set subpath_location = app.request.headers.get('X-Subpath-Location', '') %}
+
+{# On utilise plus x-Subpath-Location: marche pas #}
+{# {% set subpath_location = app.request.headers.get('X-Subpath-Location', '') %}#}
 
 {% block meta %}
 <meta charset="utf-8">
@@ -12,8 +14,9 @@
 
 <!-- Informations générales -->
 <meta name="description" content="{{ description }}">
-<meta name="copyright" content="Ma-Moulinette. Copyright (c) {{date_copyright}}">
-{% set subpath_location = app.request.headers.get('X-Subpath-Location', '') %}
+<meta name="copyright" content="Ma-Moulinette. Copyright (c) {{dateCopyright}}">
+{% set subpath_location = app.request.headers.get('X-Forwarded-Prefix', '') %}
+{# Définition d'une META #}
 <meta name="url" content="{{ absolute_url ~ subpath_location }}">
 {% endblock %}
 
