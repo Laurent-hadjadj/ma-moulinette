@@ -649,6 +649,10 @@ body { background: #eee; }
   box-shadow: 0 6px 8px rgba(0 0 0 / 20%);
 }
 
+/* Ombre pour les callout */
+.callout-ombre { box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); }
+.callout-ombre:hover { box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); }
+
 /* Titre + badge container */
 .ma-moulinette-container {
   display: flex;
