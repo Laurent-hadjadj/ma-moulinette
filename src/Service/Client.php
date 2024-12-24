@@ -22,9 +22,6 @@ use Symfony\Component\HttpClient\Exception\ClientException;
 use Symfony\Component\HttpClient\Exception\ServerException;
 use Symfony\Component\HttpClient\Exception\TransportException;
 
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\JsonResponse;
-
 /** Logger */
 use Psr\Log\LoggerInterface;
 
@@ -54,7 +51,7 @@ class Client
 
     private function handleTimeoutException(TimeoutException $e): array {
         $this->logger->error("Erreur de transport : " . $e->getMessage());
-        return ['code' => 504, 'error' => static::$erreur504];
+        return ['code' => 504, 'erreur' => static::$erreur504];
     }
 
     private function handleTransportException(TransportException $e): array {
@@ -69,7 +66,7 @@ class Client
         }
 
         $this->logger->error("Erreur de transport (Erreur 504) : " . $e->getMessage());
-        return ['code' => 504, 'error' => $errorMessage];
+        return ['code' => 504, 'erreur' => $errorMessage];
     }
 
     private function handleClientException(ClientException $e): array {
@@ -82,9 +79,8 @@ class Client
             404 => static::$erreur404,
             default => "Erreur client non spécifiée.",
         };
-
         $this->logger->error("Erreur du client : " . $body);
-        return ['code' => $errorCode, 'error' => $errorMessage];
+        return ['code' => $errorCode, 'erreur' => $errorMessage];
     }
 
     private function handleServerException(ServerException $e): array {
@@ -94,12 +90,12 @@ class Client
         $errorMessage = "Le service est indisponible (Erreur 500).";
 
         $this->logger->error($body);
-        return ['code' => $errorCode, 'error' => $errorMessage];
+        return ['code' => $errorCode, 'erreur' => $errorMessage];
     }
 
     private function handleGenericException(\Exception $e): array {
         $this->logger->error("Erreur inattendue : " . $e->getMessage());
-        return ['code' => 500, 'error' => "Une erreur inattendue s'est produite."];
+        return ['code' => 500, 'erreur' => "Une erreur inattendue s'est produite."];
     }
 
     /**
