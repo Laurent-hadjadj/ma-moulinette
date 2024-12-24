@@ -114,6 +114,7 @@ class FooterController extends AbstractController
     public function donneesPersonnelles(): Response
     {
         $render=static::genericRender();
+        $render['urlSite'] = $this->getParameter('cgu.url.site');
         return $this->render('footer/donnees-personnelles.html.twig', $render);
     }
 
