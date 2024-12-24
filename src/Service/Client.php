@@ -160,7 +160,7 @@ class Client
 
             /** On a ajoute le proxy aux options s'il est défini*/
             $proxy = $this->params->get('proxy');
-            if (!isempty($proxy)){
+            if (!empty($proxy)){
                 $options['proxy']=$proxy;
             }
 
@@ -274,7 +274,7 @@ class Client
     public function httpActivity($url): array
     {
         if (empty($this->params->get('sonar.activity.token')) && empty($this->params->get('sonar.activity.user'))){
-            return ['code'=> 401];
+            return ['code'=> 401, 'erreur' => static::$erreur401];
         }
 
         if (empty($this->params->get('sonar.activity.token'))) {
@@ -303,7 +303,7 @@ class Client
 
             /** On a ajoute le proxy aux options s'il est défini*/
             $proxy = $this->params->get('proxy');
-            if (!isempty($proxy)){
+            if (!empty($proxy)){
                 $options['proxy']=$proxy;
             }
 
