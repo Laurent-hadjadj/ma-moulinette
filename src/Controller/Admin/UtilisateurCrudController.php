@@ -111,27 +111,29 @@ class UtilisateurCrudController extends AbstractCrudController
      */
     public function configureFields(string $pageName): iterable
     {
+       // $value est obligatoire
         yield AvatarField::new('avatar')
             ->formatValue(static function ($value, ?Utilisateur $utilisateur) {
-                return $utilisateur?->getAvatarUrl();
+                return '/assets'.$utilisateur?->getAvatarUrl();
             })
             ->setFormTypeOption(
                 'disabled',
                 $pageName !== Crud::PAGE_DETAIL
             )
             ->hideOnForm();
+
         yield TextField::new('personne')
             ->hideOnForm();
         yield EmailField::new('courriel');
 
-        $key1 = ['Gestionnaire', 'Batch', 'Collecte','Utilisateur' ];
-        $value1 = ['ROLE_GESTIONNAIRE','ROLE_BATCH', 'ROLE_COLLECTE','ROLE_UTILISATEUR'];
+        $key1 = ['Gestionnaire', 'Traitement', 'Collecteur','Utilisateur', 'Analyse' ];
+        $value1 = ['ROLE_GESTIONNAIRE','ROLE_BATCH', 'ROLE_COLLECTE','ROLE_UTILISATEUR', 'ROLE_ACTIVITY'];
         yield ChoiceField::new('roles')
             ->setChoices(array_combine($key1, $value1))
             ->allowMultipleChoices()
             ->renderExpanded()
-            ->renderAsBadges(['ROLE_UTILISATEUR' => 'success',
-            'ROLE_BATCH' => 'warning', 'ROLE_GESTIONNAIRE' => 'danger'])
+            ->renderAsBadges(['ROLE_UTILISATEUR' => 'primary',
+            'ROLE_BATCH' => 'warning', 'ROLE_ACTIVITY' => 'warning', 'ROLE_GESTIONNAIRE' => 'danger'])
             ->setHelp('Sélectionne le ou les rôles.');
 
         /** On récupère la liste des équipes */
@@ -140,7 +142,7 @@ class UtilisateurCrudController extends AbstractCrudController
         $result = $l->fetchAllAssociative();
         /** si la table est vide */
         if (empty($result)) {
-            $resultat = [["titre" => "Aucune", "description" => "Aucune équipe."]];
+            $result = [["titre" => "Aucune", "description" => "Aucune équipe."]];
         }
         $key = [];
         $val = [];
