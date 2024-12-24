@@ -111,10 +111,11 @@ class UtilisateurCrudController extends AbstractCrudController
      */
     public function configureFields(string $pageName): iterable
     {
-       // $value est obligatoire
+        /** @var mixed $_callback Variable non utilisée */
         yield AvatarField::new('avatar')
-            ->formatValue(static function ($value, ?Utilisateur $utilisateur) {
-                return '/assets'.$utilisateur?->getAvatarUrl();
+            /** @var mixed $value Variable non utilisée */
+            ->formatValue(static function ($callback, ?Utilisateur $utilisateur) {
+                return '/assets'.$utilisateur?->getAvatarUrl() ?? '/assets/avatar/personne.png';
             })
             ->setFormTypeOption(
                 'disabled',
@@ -185,7 +186,7 @@ class UtilisateurCrudController extends AbstractCrudController
         if (!$entityInstance instanceof Utilisateur) {
             return;
         }
-        $entityInstance->setDateModification(new \DateTimeImmutable());
+        $entityInstance->setDateModification(new \DateTime());
         parent::updateEntity($em, $entityInstance);
     }
 
