@@ -56,7 +56,7 @@ class ActivityHistorique
     #[ORM\Column(type: Types::INTEGER, nullable: false,
         options: ['comment' => "Nombre d'échecs"])]
     #[Assert\NotNull]
-    private int $fail;
+    private int $failed;
 
     #[ORM\Column(type: Types::FLOAT, nullable: false,
         options: ['comment' => 'Taux de réussite'])]
@@ -133,14 +133,14 @@ class ActivityHistorique
         return $this;
     }
 
-    public function getFail(): ?int
+    public function getFailed(): ?int
     {
-        return $this->fail;
+        return $this->failed;
     }
 
-    public function setFail(int $fail): static
+    public function setFailed(int $failed): static
     {
-        $this->fail = $fail;
+        $this->failed = $failed;
         return $this;
     }
 
