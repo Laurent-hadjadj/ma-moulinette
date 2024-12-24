@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##         Creation des tables et des objets      ##
-##               V1.27.0 - 23/12/2024             ##
+##               V1.27.1 - 24/12/2024             ##
 ##                                                ##
 ####################################################*/
 
@@ -36,6 +36,8 @@
 -- 22/11/2024 : Laurent HADJADJ - Ajout de la colonne lien dans la table owasp_top10 ;
 -- 22/12/2024 : Laurent HADJADJ - Renommage des table activite et activite_historique ;
 -- 23/12/2024 : Laurent HADJADJ - Correction "analyse" et ajout des indexes ;
+-- 24/12/2024 : Laurent HADJADJ - Renommage fail en failed ;
+
 
 -- SCHEMA: ma_moulinette
 
@@ -94,7 +96,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.activity_historique
   "analyse" INT NOT NULL,
   analyse_average FLOAT NOT NULL,
   success INT NOT NULL,
-  fail INT NOT NULL,
+  failed INT NOT NULL,
   success_rate FLOAT NOT NULL,
   max_time VARCHAR NOT NULL,
   date_enregistrement timestamptz NOT NULL
@@ -109,7 +111,7 @@ COMMENT ON COLUMN ma_moulinette.activity_historique.day IS 'Nombre jour d’acti
 COMMENT ON COLUMN ma_moulinette.activity_historique.analyse IS 'Nombre d’analyse.';
 COMMENT ON COLUMN ma_moulinette.activity_historique.analyse_average IS 'Moyenne des analyses.';
 COMMENT ON COLUMN ma_moulinette.activity_historique.success IS 'Nombre d’analyse réussi.';
-COMMENT ON COLUMN ma_moulinette.activity_historique.fail IS 'Nombre d’analyse en échec.';
+COMMENT ON COLUMN ma_moulinette.activity_historique.failed IS 'Nombre d’analyse en échec.';
 COMMENT ON COLUMN ma_moulinette.activity_historique.success_rate IS 'Taux de réussite.';
 COMMENT ON COLUMN ma_moulinette.activity_historique.max_time IS 'Temps maximum d’une analyse.';
 COMMENT ON COLUMN ma_moulinette.activity_historique.date_enregistrement IS 'Date de l’enregistrement';
