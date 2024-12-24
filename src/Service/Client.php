@@ -76,6 +76,7 @@ class Client
         $errorMessage = match ($errorCode) {
             400 => static::$erreur400,
             401 => static::$erreur401,
+            403 => static::$erreur403,
             404 => static::$erreur404,
             default => "Erreur client non spécifiée.",
         };
