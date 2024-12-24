@@ -1,0 +1,96 @@
+/**
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2021-2024.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ */
+
+ @media (width <= 20em) { /* vide */ }
+
+ @media (20.025em <= width <= 22em) { /* vide */ }
+
+ @media (22.025em <= width <= 30em) { /* vide */ }
+
+ @media (30.025em <= width <= 40em) { /* vide */ }
+
+ @media (40.025em <= width <= 64em) { /* vide */ }
+
+ @media (64.025em <= width <= 90em) { /* vide */ }
+
+ @media (90.025em <= width <= 120em) { /* vide */ }
+
+ @media (120.025em <= width <= 160em) { /* vide */ }
+
+ @media (width >= 160.025em) { /* vide */ }
+
+ /*******************  Global ******************/
+.bouton-activity-refresh,
+.bouton-activity-graph,
+.bouton-activity-du-jour {
+  color: #fff;
+  background-color: #00445b;
+}
+
+.bouton-activity-refresh:hover,
+.bouton-activity-graph:hover,
+.bouton-activity-du-jour:hover { background-color: #006182; }
+.couleur-changement{ color: #c46e27; }
+
+/* Tool-tip pour le tableau */
+.tool-tip-activity {
+  position: relative;
+  display: inline-block;
+  cursor: help;
+}
+
+/* Propriété du texte qui sera affiché dans le tool-type */
+.tool-tip-activity .tool-tip-activity-text-top {
+  visibility: hidden;
+  top: 30%; /* Centre verticalement */
+  left: 50%; /* Centre horizontalement */
+  transform: translate(-50%, calc(-100% - 8px)); /* Monte au-dessus du parent avec un léger espace */
+  width: 227px;
+  background-color: #555;
+  color: #fff;
+  text-align: justify;
+  padding: 0.5rem;
+  border-radius: 6px;
+  position: absolute;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.5s;
+  hyphens: auto;
+  font-size: 0.8rem;
+}
+
+/* Mise en place de l'encoche en bas */
+.tool-tip-activity .tool-tip-activity-text-top::after {
+  content: "";
+  position: absolute;
+  top: 99%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 8px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+
+/* Action au moment du survol du tool-type */
+.tool-tip-activity:hover .tool-tip-activity-text-top {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Taille pour les mobiles */
+@media (max-width: 768px) {
+  .tool-tip-activity .tool-tip-activity-text-top {
+      width: 180px;
+      font-size: 0.7rem;
+  }
+}
