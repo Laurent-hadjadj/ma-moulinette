@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##         Creation des tables et des objets      ##
-##               V1.27.1 - 24/12/2024             ##
+##               V1.27.2 - 24/12/2024             ##
 ##                                                ##
 ####################################################*/
 
@@ -37,6 +37,7 @@
 -- 22/12/2024 : Laurent HADJADJ - Renommage des table activite et activite_historique ;
 -- 23/12/2024 : Laurent HADJADJ - Correction "analyse" et ajout des indexes ;
 -- 24/12/2024 : Laurent HADJADJ - Renommage fail en failed ;
+-- 24/12/2024 : Laurent HADJADJ - Correction de la création de la table activity_historique ;
 
 
 -- SCHEMA: ma_moulinette
@@ -72,7 +73,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.activity
   execution_time integer NOT NULL
 );
 
-ALTER TABLE ma_moulinette.activity OWNER to db_user;
+ALTER TABLE ma_moulinette.activity OWNER TO db_user;
 GRANT ALL ON TABLE ma_moulinette.activity TO db_user;
 
 COMMENT ON COLUMN ma_moulinette.activity.id IS 'Identifiant unique de la table activité';
@@ -88,7 +89,7 @@ COMMENT ON COLUMN ma_moulinette.activity.execution_time IS 'Temps d’execution 
 
 -- Table: ma_moulinette.activity_historique
 
-DROP TABLE ma_moulinette.activity_historique;
+DROP TABLE IF EXISTS ma_moulinette.activity_historique;
 CREATE TABLE IF NOT EXISTS ma_moulinette.activity_historique
 (id SERIAL PRIMARY KEY,
   year INT NOT NULL,
@@ -98,11 +99,11 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.activity_historique
   success INT NOT NULL,
   failed INT NOT NULL,
   success_rate FLOAT NOT NULL,
-  max_time VARCHAR NOT NULL,
+  max_time INT NOT NULL,
   date_enregistrement timestamptz NOT NULL
 );
 
-ALTER TABLE ma_moulinette.activity_historique OWNER to db_user;
+ALTER TABLE ma_moulinette.activity_historique OWNER TO db_user;
 GRANT ALL ON TABLE ma_moulinette.activity_historique TO db_user;
 
 COMMENT ON COLUMN ma_moulinette.activity_historique.id IS 'Identifiant unique de la table.';
@@ -113,7 +114,7 @@ COMMENT ON COLUMN ma_moulinette.activity_historique.analyse_average IS 'Moyenne 
 COMMENT ON COLUMN ma_moulinette.activity_historique.success IS 'Nombre d’analyse réussi.';
 COMMENT ON COLUMN ma_moulinette.activity_historique.failed IS 'Nombre d’analyse en échec.';
 COMMENT ON COLUMN ma_moulinette.activity_historique.success_rate IS 'Taux de réussite.';
-COMMENT ON COLUMN ma_moulinette.activity_historique.max_time IS 'Temps maximum d’une analyse.';
+COMMENT ON COLUMN ma_moulinette.activity_historique.max_time IS 'Temps maximum d’une analyse en seconde.';
 COMMENT ON COLUMN ma_moulinette.activity_historique.date_enregistrement IS 'Date de l’enregistrement';
 
 -- Ajout des index
@@ -140,7 +141,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.actuator
     CONSTRAINT uq_actuator_url UNIQUE (url)
 );
 
-ALTER TABLE IF EXISTS ma_moulinette.actuator OWNER to db_user;
+ALTER TABLE IF EXISTS ma_moulinette.actuator OWNER TO db_user;
 GRANT ALL ON TABLE ma_moulinette.actuator TO db_user;
 
 COMMENT ON COLUMN ma_moulinette.actuator.id IS 'Identifiant unique de la table';
@@ -166,7 +167,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.actuator_info
     CONSTRAINT fk_actuator_info_actuator FOREIGN KEY (actuator_id) REFERENCES ma_moulinette.actuator (id) ON DELETE CASCADE
 );
 
-ALTER TABLE IF EXISTS ma_moulinette.actuator_info OWNER to db_user;
+ALTER TABLE IF EXISTS ma_moulinette.actuator_info OWNER TO db_user;
 GRANT ALL ON TABLE ma_moulinette.actuator_info TO db_user;
 
 COMMENT ON COLUMN ma_moulinette.actuator_info.id IS 'Identifiant unique de la table';
@@ -206,7 +207,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.anomalie
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
-ALTER TABLE ma_moulinette.anomalie OWNER to db_user;
+ALTER TABLE ma_moulinette.anomalie OWNER TO db_user;
 GRANT ALL ON TABLE ma_moulinette.anomalie TO db_user;
 
 COMMENT ON COLUMN ma_moulinette.anomalie.id IS 'Identifiant unique de l’anomalie';
@@ -264,7 +265,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.anomalie_details
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
-ALTER TABLE ma_moulinette.anomalie_details OWNER to db_user;
+ALTER TABLE ma_moulinette.anomalie_details OWNER TO db_user;
 GRANT ALL ON TABLE ma_moulinette.anomalie_details TO db_user;
 
 COMMENT ON COLUMN ma_moulinette.anomalie_details.id IS 'Identifiant unique pour les détails de l’anomalie';
@@ -306,7 +307,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.batch
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
-ALTER TABLE ma_moulinette.batch OWNER to db_user;
+ALTER TABLE ma_moulinette.batch OWNER TO db_user;
 GRANT ALL ON TABLE ma_moulinette.batch TO db_user;
 
 COMMENT ON COLUMN ma_moulinette.batch.id IS 'Identifiant unique du batch';
@@ -337,7 +338,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.batch_traitement
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
-ALTER TABLE ma_moulinette.batch_traitement OWNER to db_user;
+ALTER TABLE ma_moulinette.batch_traitement OWNER TO db_user;
 GRANT ALL ON TABLE ma_moulinette.batch_traitement TO db_user;
 
 COMMENT ON COLUMN ma_moulinette.batch_traitement.id IS 'Identifiant unique du traitement';
@@ -363,7 +364,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.equipe
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
-ALTER TABLE ma_moulinette.equipe OWNER to db_user;
+ALTER TABLE ma_moulinette.equipe OWNER TO db_user;
 GRANT ALL ON TABLE ma_moulinette.equipe TO db_user;
 
 COMMENT ON COLUMN ma_moulinette.equipe.id IS 'Identifiant unique de l’équipe';
@@ -442,7 +443,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.historique
   CONSTRAINT historique_pkey PRIMARY KEY (maven_key, version, date_version)
 );
 
-ALTER TABLE ma_moulinette.historique OWNER to db_user;
+ALTER TABLE ma_moulinette.historique OWNER TO db_user;
 GRANT ALL ON TABLE ma_moulinette.historique TO db_user;
 
 COMMENT ON COLUMN ma_moulinette.historique.maven_key IS 'Clé Maven du projet';
@@ -537,7 +538,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.hotspot_details
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
-ALTER TABLE ma_moulinette.hotspot_details OWNER to db_user;
+ALTER TABLE ma_moulinette.hotspot_details OWNER TO db_user;
 GRANT ALL ON TABLE ma_moulinette.hotspot_details TO db_user;
 
 COMMENT ON COLUMN ma_moulinette.hotspot_details.id IS 'Identifiant unique pour la table hotspot owasp details';
@@ -585,7 +586,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.hotspot_owasp
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
-ALTER TABLE ma_moulinette.hotspot_owasp OWNER to db_user;
+ALTER TABLE ma_moulinette.hotspot_owasp OWNER TO db_user;
 GRANT ALL ON TABLE ma_moulinette.hotspot_owasp TO db_user;
 
 COMMENT ON COLUMN ma_moulinette.hotspot_owasp.id IS 'Identifiant unique pour chaque hotspot OWASP';
@@ -625,7 +626,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.hotspots
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
-ALTER TABLE ma_moulinette.hotspots OWNER to db_user;
+ALTER TABLE ma_moulinette.hotspots OWNER TO db_user;
 GRANT ALL ON TABLE ma_moulinette.hotspots TO db_user;
 
 COMMENT ON COLUMN ma_moulinette.hotspots.id IS 'Identifiant unique pour chaque hotspot';
@@ -659,7 +660,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.information_projet
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
-ALTER TABLE ma_moulinette.information_projet OWNER to db_user;
+ALTER TABLE ma_moulinette.information_projet OWNER TO db_user;
 GRANT ALL ON TABLE ma_moulinette.information_projet TO db_user;
 
 COMMENT ON COLUMN ma_moulinette.information_projet.id IS 'Identifiant unique pour chaque instance de InformationProjet';
@@ -685,7 +686,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.liste_projet
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
-ALTER TABLE ma_moulinette.liste_projet OWNER to db_user;
+ALTER TABLE ma_moulinette.liste_projet OWNER TO db_user;
 GRANT ALL ON TABLE ma_moulinette.liste_projet TO db_user;
 
 COMMENT ON COLUMN ma_moulinette.liste_projet.id IS 'Identifiant unique pour chaque instance de ListeProjet';
@@ -711,7 +712,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.logger
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
-ALTER TABLE ma_moulinette.logger OWNER to db_user;
+ALTER TABLE ma_moulinette.logger OWNER TO db_user;
 GRANT ALL ON TABLE ma_moulinette.logger TO db_user;
 
 COMMENT ON COLUMN ma_moulinette.logger.id IS 'Identifiant unique pour chaque instance de ListeProjet';
@@ -735,7 +736,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.ma_moulinette
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
-ALTER TABLE ma_moulinette.ma_moulinette OWNER to db_user;
+ALTER TABLE ma_moulinette.ma_moulinette OWNER TO db_user;
 GRANT ALL ON TABLE ma_moulinette.ma_moulinette TO db_user;
 
 COMMENT ON COLUMN ma_moulinette.ma_moulinette.id IS 'Unique identifier for each MaMoulinette instance';
@@ -764,7 +765,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.mesures
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
-ALTER TABLE ma_moulinette.mesures OWNER to db_user;
+ALTER TABLE ma_moulinette.mesures OWNER TO db_user;
 GRANT ALL ON TABLE ma_moulinette.mesures TO db_user;
 
 COMMENT ON COLUMN ma_moulinette.mesures.id IS 'Identifiant unique pour chaque mesure';
@@ -797,7 +798,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.no_sonar
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
-ALTER TABLE ma_moulinette.no_sonar OWNER to db_user;
+ALTER TABLE ma_moulinette.no_sonar OWNER TO db_user;
 GRANT ALL ON TABLE ma_moulinette.no_sonar TO db_user;
 
 COMMENT ON COLUMN ma_moulinette.no_sonar.id IS 'Identifiant unique pour chaque entrée NoSonar';
@@ -823,7 +824,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.notes
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
-ALTER TABLE ma_moulinette.notes OWNER to db_user;
+ALTER TABLE ma_moulinette.notes OWNER TO db_user;
 GRANT ALL ON TABLE ma_moulinette.notes TO db_user;
 
 COMMENT ON COLUMN ma_moulinette.notes.maven_key IS 'Clé Maven unique identifiant la note';
@@ -909,7 +910,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.owasp
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
-ALTER TABLE ma_moulinette.owasp OWNER to db_user;
+ALTER TABLE ma_moulinette.owasp OWNER TO db_user;
 GRANT ALL ON TABLE ma_moulinette.owasp TO db_user;
 
 COMMENT ON COLUMN ma_moulinette.owasp.id IS 'Clé unique pour les enregistrement de la table';
@@ -993,7 +994,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.owasp_top10 (
     CONSTRAINT year_check CHECK (year >= 2000 AND year <= EXTRACT(YEAR FROM CURRENT_DATE))
 );
 
-ALTER TABLE ma_moulinette.owasp_top10 OWNER to db_user;
+ALTER TABLE ma_moulinette.owasp_top10 OWNER TO db_user;
 GRANT ALL ON TABLE ma_moulinette.owasp_top10 TO db_user;
 
 -- Ajout de commentaires aux colonnes
@@ -1021,7 +1022,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.portefeuille
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
-ALTER TABLE ma_moulinette.portefeuille OWNER to db_user;
+ALTER TABLE ma_moulinette.portefeuille OWNER TO db_user;
 GRANT ALL ON TABLE ma_moulinette.portefeuille TO db_user;
 
 COMMENT ON COLUMN ma_moulinette.portefeuille.id IS 'Identifiant unique pour chaque portefeuille';
@@ -1048,7 +1049,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.portefeuille_historique
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
-ALTER TABLE ma_moulinette.portefeuille_historique OWNER to db_user;
+ALTER TABLE ma_moulinette.portefeuille_historique OWNER TO db_user;
 GRANT ALL ON TABLE ma_moulinette.portefeuille_historique TO db_user;
 
 COMMENT ON COLUMN ma_moulinette.portefeuille_historique.id IS 'Identifiant unique pour chaque historique de profil';
@@ -1077,7 +1078,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.profiles
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
-ALTER TABLE ma_moulinette.profiles OWNER to db_user;
+ALTER TABLE ma_moulinette.profiles OWNER TO db_user;
 GRANT ALL ON TABLE ma_moulinette.profiles TO db_user;
 
 COMMENT ON COLUMN ma_moulinette.profiles.id IS 'Identifiant unique pour chaque profil';
@@ -1105,7 +1106,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.profiles_historique
     date_enregistrement TIMESTAMPTZ NOT NULL
 )
 
-ALTER TABLE ma_moulinette.profiles_historique OWNER to db_user;
+ALTER TABLE ma_moulinette.profiles_historique OWNER TO db_user;
 GRANT ALL ON TABLE ma_moulinette.profiles_historique TO db_user;
 
 COMMENT ON COLUMN ma_moulinette.profiles_historique.id IS 'Identifiant unique pour chaque historique de profil';
@@ -1135,7 +1136,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.properties
   date_modification_profil TIMESTAMP DEFAULT NULL
 );
 
-ALTER TABLE ma_moulinette.properties OWNER to db_user;
+ALTER TABLE ma_moulinette.properties OWNER TO db_user;
 GRANT ALL ON TABLE ma_moulinette.properties TO db_user;
 
 COMMENT ON COLUMN ma_moulinette.properties.id IS 'Identifiant unique pour chaque propriété';
@@ -1163,7 +1164,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.repartition
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
-ALTER TABLE ma_moulinette.repartition OWNER to db_user;
+ALTER TABLE ma_moulinette.repartition OWNER TO db_user;
 GRANT ALL ON TABLE ma_moulinette.repartition TO db_user;
 
 COMMENT ON COLUMN ma_moulinette.repartition.id IS 'ID unique pour chaque répartition';
@@ -1190,7 +1191,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.todo
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
-ALTER TABLE ma_moulinette.todo OWNER to db_user;
+ALTER TABLE ma_moulinette.todo OWNER TO db_user;
 GRANT ALL ON TABLE ma_moulinette.todo TO db_user;
 
 COMMENT ON COLUMN ma_moulinette.todo.id IS 'ID unique pour chaque Todo';
@@ -1222,7 +1223,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.utilisateur
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
-ALTER TABLE ma_moulinette.utilisateur OWNER to db_user;
+ALTER TABLE ma_moulinette.utilisateur OWNER TO db_user;
 GRANT ALL ON TABLE ma_moulinette.utilisateur TO db_user;
 
 COMMENT ON COLUMN ma_moulinette.utilisateur.id IS 'clé unique de la table';
