@@ -26,6 +26,7 @@ parameters:
     ciphers: '%env(CIPHERS)%'
     verify.host: '%env(VERIFY_HOST)%'
     verify.peer: '%env(VERIFY_PEER)%'
+    proxy: '%env(PROXY)%'
 
     # Plugin SonarQube (optionnel)
     track.logger.method: '%env(TRACK_LOGGER_METHOD)%'
