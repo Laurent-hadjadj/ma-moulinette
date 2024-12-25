@@ -40,21 +40,22 @@ class ActivityRepository extends ServiceEntityRepository
      */
     public function selectActivity($year): array
     {
-        try {
-                $sql = "SELECT *
-                        FROM ma_moulinette.activity
-                        WHERE EXTRACT(YEAR FROM started_at) = :year ";
-                        $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+
+        $sql = "SELECT *
+                FROM ma_moulinette.activity
+                WHERE EXTRACT(YEAR FROM started_at) = :year ";
+            try {
+                    $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                         $stmt->bindValue(static::$year, $year);
-                $request=$stmt->executeQuery()->fetchAllAssociative();
+                    $liste = $stmt->executeQuery()->fetchAllAssociative();
             } catch (\Doctrine\DBAL\Exception $e) {
             return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
-        return ['request'=>$request, 'code'=>200, 'erreur'=>''];
+        return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
     }
 
     /**
-     * [Description for selectActivity]
+     * [Description for insertActivity]
      * On insère la liste de toute les activités qui sont envoyé
      *
      * @return array
@@ -90,7 +91,6 @@ class ActivityRepository extends ServiceEntityRepository
                 }
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Doctrine\DBAL\Exception $e) {
-        dd($e);
             $this->getEntityManager()->getConnection()->rollBack();
             return ['code'=>500, 'erreur'=> $e->getMessage()];
         }
@@ -98,7 +98,7 @@ class ActivityRepository extends ServiceEntityRepository
     }
 
     /**
-     * [Description for selectActivity]
+     * [Description for nombreJourAnneeDonnee]
      * On compte le nombre de jour pour une année donnée
      *
      * @return array
@@ -123,7 +123,7 @@ class ActivityRepository extends ServiceEntityRepository
     }
 
     /**
-     * [Description for selectActivity]
+     * [Description for tempsExecutionMax]
      * On recherche du temps max d'execution pour une année donnée
      *
      * @return array
@@ -148,7 +148,7 @@ class ActivityRepository extends ServiceEntityRepository
     }
 
     /**
-     * [Description for selectActivity]
+     * [Description for nombreStatus]
      * On compte le nombre de status (SUCCESS,FAILED) envoyer pour une année donnée
      *
      * @return array
@@ -176,7 +176,7 @@ class ActivityRepository extends ServiceEntityRepository
     }
 
     /**
-     * [Description for selectActivity]
+     * [Description for nombreAnalyse]
      * On compte le nombre d'analyse pour une année donnée
      *
      * @return array
@@ -202,7 +202,44 @@ class ActivityRepository extends ServiceEntityRepository
     }
 
     /**
-     * [Description for selectActivity]
+     * [Description for dernierDate]
+     * On récupère la date la plus récente dans la table pour une année donnée ou non
+     *
+     * @return array
+     *
+     * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
+     * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function dernierDate(?int $year = null): array
+    {
+        // Base SQL
+        $sql = "SELECT executed_at AS date FROM ma_moulinette.activity";
+
+        try {
+            // Ajout de la condition si une année est fournie
+            if ($year !== null) {
+                $sql .= " WHERE EXTRACT(YEAR FROM started_at) = :year";
+            }
+            // Ajout de l'ordre et de la limite
+            $sql .= " ORDER BY executed_at DESC LIMIT 1";
+
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+
+            // Ajout des paramètres si nécessaire
+            if ($year !== null) {
+                $stmt->bindValue(':year', $year);
+            }
+            // Exécution de la requête
+            $liste = $stmt->executeQuery()->fetchAssociative();
+        } catch (\Doctrine\DBAL\Exception $e) {
+            return ['code'=>500, 'erreur'=> $e->getMessage()];
+        }
+        return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
+    }
+
+    /**
+     * [Description for premiereDate]
      * On récupère la date la plus récente dans la table pour une année donnée
      *
      * @return array
@@ -211,57 +248,49 @@ class ActivityRepository extends ServiceEntityRepository
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function dernierDate($year = null): array
+    public function premiereDate(?int $year = null): array
     {
-        $sql = "SELECT executed_at as date FROM ma_moulinette.activity ";
-        try {
-            if ($year !== null) {
-                $sql .= "WHERE EXTRACT(YEAR FROM started_at) = :year ORDER BY executed_at DESC LIMIT 1";
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(static::$year, $year);
-            } else {
-                $sql .= "ORDER BY executed_at DESC LIMIT 1";
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-            }
-            $request = $stmt->executeQuery()->fetchAllAssociative();
-        } catch (\Doctrine\DBAL\Exception $e) {
-            return ['code'=>500, 'erreur'=> $e->getMessage()];
-        }
-        return ['request' => $request, 'code' => 200, 'erreur' => ''];
-    }
-
-    /**
-     * [Description for selectActivity]
-     * On récupère la date la plus récente dans la table pour une année donnée
-     *
-     * @return array
-     *
-     * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
-     * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function premiereDate($year = null): array
-    {
-        $sql = "SELECT executed_at as date FROM ma_moulinette.activity ";
+        // Construction de la base de la requête SQL
+        $sql = "SELECT executed_at AS date FROM ma_moulinette.activity";
 
         try {
+            // Ajout conditionnel pour l'année
             if ($year !== null) {
-                $sql .= "WHERE EXTRACT(YEAR FROM started_at) = :year ORDER BY executed_at ASC LIMIT 1";
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(static::$year, $year);
-            } else {
-                $sql .= "ORDER BY executed_at DESC LIMIT 1";
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+                $sql .= " WHERE EXTRACT(YEAR FROM started_at) = :year";
             }
-            $request = $stmt->executeQuery()->fetchAllAssociative();
+
+            // Ajout de l'ordre et de la limite
+            $sql .= " ORDER BY executed_at ASC LIMIT 1";
+
+            // Préparation de la requête
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+
+            // Ajout des paramètres si une année est spécifiée
+            if ($year !== null) {
+                $stmt->bindValue(':year', $year);
+            }
+
+            // Exécution de la requête et récupération du résultat
+            $liste = $stmt->executeQuery()->fetchAssociative();
+
+            // Retourne une réponse formatée avec le code de succès
+            return [
+                'liste' => $liste ?: [], // Retourne un tableau vide si aucun résultat n'est trouvé
+                'code' => 200,
+                'erreur' => '',
+            ];
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['code'=>500, 'erreur'=> $e->getMessage()];
+            // Gestion des exceptions en loguant ou en masquant les informations sensibles
+            return [
+                'code' => 500,
+                'erreur' => 'Une erreur s’est produite lors de l’exécution de la requête.',
+            ];
         }
-        return ['request' => $request, 'code' => 200, 'erreur' => ''];
     }
 
+
     /**
-     * [Description for selectActivity]
+     * [Description for listeProjectAnalyse]
      * On récupère la date la plus récente dans la table pour une année donnée
      *
      * @return array
@@ -293,7 +322,7 @@ class ActivityRepository extends ServiceEntityRepository
     }
 
     /**
-     * [Description for selectActivity]
+     * [Description for  listeAnalyseJour]
      * On récupère la date la plus récente dans la table pour une année donnée
      *
      * @return array
@@ -324,7 +353,7 @@ class ActivityRepository extends ServiceEntityRepository
     }
 
     /**
-     * [Description for selectActivity]
+     * [Description for listeAnalyseProjet]
      * On récupère la date la plus récente dans la table pour une année donnée
      *
      * @return array
