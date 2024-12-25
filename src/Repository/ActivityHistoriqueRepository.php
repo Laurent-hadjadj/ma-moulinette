@@ -147,36 +147,8 @@ class ActivityHistoriqueRepository extends ServiceEntityRepository
         $liste = $stmt->executeQuery()->fetchAllAssociative();
 
     } catch (\Doctrine\DBAL\Exception $e) {
-        return [
-            'code' => 500,
-            'erreur' => $e->getMessage()
-        ];
+        return [ 'code' => 500, 'erreur' => $e->getMessage()];
     }
-
-    return [
-        'liste' => $liste,
-        'code' => 200,
-        'erreur' => ''
-    ];
-
-
-
-
-    $sql = "SELECT *
-            FROM ma_moulinette.activity_historique";
-    try {
-          if ($year !== null){
-              $sql .= " WHERE year = :year";
-              $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(static::$year, $year);
-          }else{
-              $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-          }
-          $request=$stmt->executeQuery()->fetchAllAssociative();
-    } catch (\Doctrine\DBAL\Exception $e) {
-        return ['code'=>500, 'erreur'=> $e->getCode()];
-    }
-    return ['request'=>$request, 'code'=>200, 'erreur'=>''];
+    return [ 'code' => 200, 'liste' => $liste, 'erreur' => '' ];
   }
-
 }
