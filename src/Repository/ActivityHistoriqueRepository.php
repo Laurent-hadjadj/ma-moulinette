@@ -126,6 +126,42 @@ class ActivityHistoriqueRepository extends ServiceEntityRepository
    */
   public function selectActivity($year = null): array
   {
+    $sql = "SELECT * FROM ma_moulinette.activity_historique";
+    $params = [];
+
+    if ($year !== null) {
+        $sql .= " WHERE year = :year";
+        $params[':year'] = $year;
+    }
+
+    try {
+        // Préparer et nettoyer la requête
+        $sql = preg_replace(static::$removeReturnLine, " ", $sql);
+        $stmt = $this->getEntityManager()->getConnection()->prepare($sql);
+
+        // Associer les paramètres, si présents
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value);
+        }
+
+        $liste = $stmt->executeQuery()->fetchAllAssociative();
+
+    } catch (\Doctrine\DBAL\Exception $e) {
+        return [
+            'code' => 500,
+            'erreur' => $e->getMessage()
+        ];
+    }
+
+    return [
+        'liste' => $liste,
+        'code' => 200,
+        'erreur' => ''
+    ];
+
+
+
+
     $sql = "SELECT *
             FROM ma_moulinette.activity_historique";
     try {
