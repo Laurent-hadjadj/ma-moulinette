@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##         Creation des tables et des objets      ##
-##               V1.27.2 - 24/12/2024             ##
+##               V1.29.1 - 28/12/2024             ##
 ##                                                ##
 ####################################################*/
 
@@ -38,7 +38,9 @@
 -- 23/12/2024 : Laurent HADJADJ - Correction "analyse" et ajout des indexes ;
 -- 24/12/2024 : Laurent HADJADJ - Renommage fail en failed ;
 -- 24/12/2024 : Laurent HADJADJ - Correction de la création de la table activity_historique ;
-
+-- 26/12/2024 : Laurent HADJADJ - Ajout de la table activity_batch_report ;
+-- 27/12/2024 : Laurent HADJADJ - Réorganisation de la table ;
+-- 28/12/2024 : Laurent HADJADJ - le type de l'attribut erreur de la table activity_batch_report est un json ;
 
 -- SCHEMA: ma_moulinette
 
@@ -124,6 +126,27 @@ CREATE INDEX idx_analyse ON ma_moulinette.activity_historique ("analyse");
 CREATE INDEX idx_success_rate ON ma_moulinette.activity_historique (success_rate);
 CREATE INDEX idx_date_enregistrement ON ma_moulinette.activity_historique (date_enregistrement);
 
+-- Table: ma_moulinette.activity_batch_report
+
+DROP TABLE IF EXISTS ma_moulinette.activity_batch_report;
+CREATE TABLE IF NOT EXISTS ma_moulinette.activity_batch_report (
+    id SERIAL PRIMARY KEY,
+    executed_at TIMESTAMPTZ NOT NULL,
+    task_count INTEGER NOT NULL DEFAULT 0,
+    erreur JSON NULL
+);
+
+ALTER TABLE IF EXISTS ma_moulinette.activity_batch_report OWNER TO db_user;
+GRANT ALL ON TABLE ma_moulinette.activity_batch_report TO db_user;
+
+COMMENT ON COLUMN ma_moulinette.activity_batch_report.id IS 'Identifiant unique de la table.';
+COMMENT ON COLUMN ma_moulinette.activity_batch_report.executed_at IS 'Date d’execution.';
+COMMENT ON COLUMN ma_moulinette.activity_batch_report.task_count IS 'Nombre de tâche importé';
+COMMENT ON COLUMN ma_moulinette.activity_batch_report.erreur IS 'Erreur du traitement';
+
+-- Index pour améliorer les performances sur les requêtes basées sur executed_at
+CREATE INDEX idx_executed_at ON ma_moulinette.activity_batch_report (executed_at);
+
 -- Table: ma_moulinette.actuator
 
 DROP TABLE IF EXISTS ma_moulinette.actuator;
@@ -146,11 +169,11 @@ GRANT ALL ON TABLE ma_moulinette.actuator TO db_user;
 
 COMMENT ON COLUMN ma_moulinette.actuator.id IS 'Identifiant unique de la table';
 COMMENT ON COLUMN ma_moulinette.actuator.maven_key IS 'Clé Maven du projet';
-COMMENT ON COLUMN ma_moulinette.actuator.nom_application IS 'Nom de l''application.';
+COMMENT ON COLUMN ma_moulinette.actuator.nom_application IS 'Nom de l’application.';
 COMMENT ON COLUMN ma_moulinette.actuator.url IS 'URL de base du serveur.';
-COMMENT ON COLUMN ma_moulinette.actuator.actuator_user IS 'Nom de l''utilisateur Actuator';
-COMMENT ON COLUMN ma_moulinette.actuator.actuator_password IS 'Mot de passe de l''utilisateur Actuator';
-COMMENT ON COLUMN ma_moulinette.actuator.personne IS 'Prénom et nom de l''utilisateur';
+COMMENT ON COLUMN ma_moulinette.actuator.actuator_user IS 'Nom de l’utilisateur Actuator';
+COMMENT ON COLUMN ma_moulinette.actuator.actuator_password IS 'Mot de passe de l’utilisateur Actuator';
+COMMENT ON COLUMN ma_moulinette.actuator.personne IS 'Prénom et nom de l’utilisateur';
 COMMENT ON COLUMN ma_moulinette.actuator.date_modification IS 'Date de la dernière modification.';
 COMMENT ON COLUMN ma_moulinette.actuator.date_enregistrement IS 'Date d’enregistrement.';
 
