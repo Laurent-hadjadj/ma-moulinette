@@ -1,78 +1,76 @@
 ---
-# This file is the entry point to configure your own services.
-# Files in the packages/ subdirectory configure your dependencies.
+# services.yaml
+# Ce fichier configure les services et dépendances spécifiques à l'application.
 
-# Put parameters here that don't need to change on each machine where the app is deployed
-# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 imports:
     - { resource: ma-moulinette.yaml }
+
+# ---------------------------------------------------------------------------
+# PARAMETERS
+# Les paramètres globaux pour l'application sont définis ici.
+# Ils sont généralement fournis par des variables d'environnement.
+# ---------------------------------------------------------------------------
+
 parameters:
-    # SonarQube
-    sonar.version: '%env(SONAR_VERSION)%'
+    # Configuration SonarQube
     sonar.url: '%env(SONAR_URL)%'
+    sonar.version: '%env(SONAR_VERSION)%'
     sonar.token: '%env(SONAR_TOKEN)%'
     sonar.user: '%env(SONAR_USER)%'
     sonar.password: '%env(SONAR_PASSWORD)%'
-
     sonar.activity.token: '%env(SONAR_ACTIVITY_TOKEN)%'
     sonar.activity.user: '%env(SONAR_ACTIVITY_USER)%'
-    sonar.activity.password: '%env(SONAR_ACTIVITY_USER)%'
-
+    sonar.activity.password: '%env(SONAR_ACTIVITY_PASSWORD)%'
     sonar.profiles: '%env(SONAR_PROFILES)%'
     sonar.organization: '%env(SONAR_ORGANIZATION)%'
-    nombre.favori: '%env(NOMBRE_FAVORI)%'
 
-    #Paramètre HTTP
-    ciphers: '%env(CIPHERS)%'
-    verify.host: '%env(VERIFY_HOST)%'
-    verify.peer: '%env(VERIFY_PEER)%'
-    proxy: '%env(PROXY)%'
-
-    # Plugin SonarQube (optionnel)
-    track.logger.method: '%env(TRACK_LOGGER_METHOD)%'
+    # HTTP Configuration
+    http.ciphers: '%env(CIPHERS)%'
+    http.verify.host: '%env(VERIFY_HOST)%'
+    http.verify.peer: '%env(VERIFY_PEER)%'
+    http.proxy: '%env(PROXY)%'
 
     # Gestion des projets et profils
-    maj.projet: '%env(MAJ_PROJET)%'
-    maj.profil: '%env(MAJ_PROFIL)%'
+    projects.maj_projet: '%env(MAJ_PROJET)%'
+    projects.maj_profil: '%env(MAJ_PROFIL)%'
 
-    # Traitement
-    csrf.salt: '%env(CSRF_SALT)%'
-    path.audit: '%env(PATH_AUDIT)%'
-
-    # Copyright | Entreprise
-    marque.entreprise.short: '%env(MARQUE_ENTREPRISE_SHORT)%'
-    marque.entreprise.long: '%env(MARQUE_ENTREPRISE_LONG)%'
-
-    # Environnement
+    # Configuration diverse
+    track_logger_method: '%env(TRACK_LOGGER_METHOD)%'
+    csrf_salt: '%env(CSRF_SALT)%'
+    path_audit: '%env(PATH_AUDIT)%'
     environnement: '%env(ENVIRONNEMENT)%'
 
-    # Logo Entreprise
-    logo.entreprise: '%env(LOGO_ENTREPRISE)%'
+    # Identité et marque
+    entreprise.marque.short: '%env(MARQUE_ENTREPRISE_SHORT)%'
+    entreprise.marque.long: '%env(MARQUE_ENTREPRISE_LONG)%'
+    entreprise.logo: '%env(LOGO_ENTREPRISE)%'
 
-    # RGA
+    # RGAA et CGU
     rgaa: '%env(RGAA)%'
-
-    # CGU
     cgu.editeur: '%env(CGU_EDITEUR)%'
     cgu.adresse: '%env(CGU_ADRESSE)%'
     cgu.siret: '%env(CGU_SIRET)%'
     cgu.siren: '%env(CGU_SIREN)%'
     cgu.numero.siret: '%env(CGU_NUMERO_SIRET)%'
     cgu.numero.siren: '%env(CGU_NUMERO_SIREN)%'
-    cgu.directeur.publication: '%env(CGU_DIRECTEUR_PUBLICATION)%'
+    cgu.directeur_publication: '%env(CGU_DIRECTEUR_PUBLICATION)%'
     cgu.url.site: '%env(CGU_URL_SITE)%'
     cgu.source.url: '%env(CGU_SOURCE_URL)%'
     cgu.source.scm: '%env(CGU_SOURCE_SCM)%'
     cgu.hebergement: '%env(CGU_HEBERGEMENT)%'
 
-services:
-    # default configuration for services in *this* file
-    _defaults:
-        autowire: true      # Automatically injects dependencies in your services.
-        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+# ---------------------------------------------------------------------------
+# SERVICES
+# Configuration des services spécifiques à l'application.
+# ---------------------------------------------------------------------------
 
-    # makes classes in src/ available to be used as services
-    # this creates a service per class whose id is the fully-qualified class name
+services:
+    # Configuration par défaut des services dans ce fichier
+    _defaults:
+        autowire: true      # Injection automatique des dépendances.
+        autoconfigure: true # Enregistrement automatique des commandes, events, etc.
+
+    # Inclut automatiquement toutes les classes de src/
     App\:
         resource: '../src/'
         exclude:
@@ -80,7 +78,11 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
+    # -----------------------------------------------------------------------
     # Services explicites
+    # -----------------------------------------------------------------------
+
+    # RabbitMQ Service
     App\Service\RabbitMQService:
         arguments:
             $host: '%env(RABBITMQ_HOST)%'
@@ -89,7 +91,25 @@ services:
             $password: '%env(RABBITMQ_PASSWORD)%'
             $vhost: '%env(RABBITMQ_VHOST)%'
 
-    # POur les TU
+    # Serializer pour Messenger
+    messenger.transport.serializer:
+        alias: 'Symfony\Component\Messenger\Transport\Serialization\SerializerInterface'
+
+    # Transport Factory pour RabbitMQ
+    App\Transport\RabbitMqTransportFactory:
+        arguments:
+            $rabbitMqService: '@App\Service\RabbitMQService'
+        tags: ['messenger.transport_factory']
+
+    # Transport RabbitMQ
+    App\Transport\RabbitMqTransport:
+        factory: ['@App\Transport\RabbitMqTransportFactory', 'createTransport']
+        arguments:
+            $dsn: '%env(MESSENGER_TRANSPORT_RABBITMQ_DSN)%'
+            $options: []
+            $serializer: '@messenger.transport.serializer'
+
+    # Exemple pour les tests unitaires
     App\Controller\Batch\BatchCollecteTodoController:
         arguments:
             $em: '@doctrine.orm.entity_manager'
