@@ -24,16 +24,16 @@ parameters:
     sonar.profiles: '%env(SONAR_PROFILES)%'
     sonar.organization: '%env(SONAR_ORGANIZATION)%'
 
-    # HTTP Configuration
-    http.ciphers: '%env(CIPHERS)%'
-    http.verify.host: '%env(VERIFY_HOST)%'
-    http.verify.peer: '%env(VERIFY_PEER)%'
-    http.proxy: '%env(PROXY)%'
+    # Paramètre HTTP
+    ciphers: '%env(CIPHERS)%'
+    verify.host: '%env(VERIFY_HOST)%'
+    verify.peer: '%env(VERIFY_PEER)%'
+    proxy: '%env(PROXY)%'
 
     # Gestion des projets et profils
-    projects.maj_projet: '%env(MAJ_PROJET)%'
-    projects.maj_profil: '%env(MAJ_PROFIL)%'
-
+    maj_projet: '%env(MAJ_PROJET)%'
+    maj_profil: '%env(MAJ_PROFIL)%'
+    nombre.favori: '%env(NOMBRE_FAVORI)%'
     # Configuration diverse
     track_logger_method: '%env(TRACK_LOGGER_METHOD)%'
     csrf_salt: '%env(CSRF_SALT)%'
@@ -43,7 +43,7 @@ parameters:
     # Identité et marque
     entreprise.marque.short: '%env(MARQUE_ENTREPRISE_SHORT)%'
     entreprise.marque.long: '%env(MARQUE_ENTREPRISE_LONG)%'
-    entreprise.logo: '%env(LOGO_ENTREPRISE)%'
+    logo.entreprise: '%env(LOGO_ENTREPRISE)%'
 
     # RGAA et CGU
     rgaa: '%env(RGAA)%'
