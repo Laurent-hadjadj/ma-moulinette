@@ -1,8 +1,10 @@
 ---
 monolog:
     channels:
-        - deprecation # Deprecations are logged in the dedicated "deprecation" channel when it exists
+        - deprecation # Pour capturer les dépréciations
         - doctrine
+        - messenger
+
     handlers:
         main:
             type: stream
@@ -17,26 +19,29 @@ monolog:
             path: '%kernel.logs_dir%/doctrine.log'
             level: debug
             channels: ['doctrine']
+        messenger:
+            type: stream
+            path: '%kernel.logs_dir%/messenger.log'
+            level: debug
+            channels: ['messenger']
+
 when@dev:
     monolog:
         handlers:
             main:
                 type: stream
-                path: "%kernel.logs_dir%/%kernel.environment%.log"
+                path: '%kernel.logs_dir%/%kernel.environment%.log'
                 level: debug
-                channels: ["!event"]
-            # uncomment to get logging in your browser
-            # you may have to allow bigger header sizes in your Web server configuration
-            #firephp:
-            #    type: firephp
-            #    level: info
-            #chromephp:
-            #    type: chromephp
-            #    level: info
+                channels: ['!event']
             console:
                 type: console
                 process_psr_3_messages: false
-                channels: ["!event", "!doctrine", "!console"]
+                channels: ['!event', '!doctrine', '!console']
+            messenger:
+                type: stream
+                path: '%kernel.logs_dir%/messenger_dev.log'
+                level: debug
+                channels: ['messenger']
 
 when@test:
     monolog:
@@ -46,11 +51,16 @@ when@test:
                 action_level: error
                 handler: nested
                 excluded_http_codes: [404, 405]
-                channels: ["!event"]
+                channels: ['!event']
             nested:
                 type: stream
-                path: "%kernel.logs_dir%/%kernel.environment%.log"
+                path: '%kernel.logs_dir%/%kernel.environment%.log'
                 level: debug
+            doctrine:
+                type: stream
+                path: '%kernel.logs_dir%/doctrine_test.log'
+                level: debug
+                channels: ['doctrine']
 
 when@prod:
     monolog:
@@ -60,7 +70,7 @@ when@prod:
                 action_level: error
                 handler: nested
                 excluded_http_codes: [404, 405]
-                buffer_size: 50 # How many messages should be saved? Prevent memory leaks
+                buffer_size: 50 # Évite les fuites de mémoire
             nested:
                 type: stream
                 path: php://stderr
@@ -69,9 +79,19 @@ when@prod:
             console:
                 type: console
                 process_psr_3_messages: false
-                channels: ["!event", "!doctrine"]
+                channels: ['!event', '!doctrine']
             deprecation:
                 type: stream
-                channels: [deprecation]
+                channels: ['deprecation']
                 path: php://stderr
+            messenger:
+                type: stream
+                path: '%kernel.logs_dir%/messenger_prod.log'
+                level: debug
+                channels: ['messenger']
+            doctrine:
+                type: stream
+                path: '%kernel.logs_dir%/doctrine_prod.log'
+                level: error
+                channels: ['doctrine']
 ...
