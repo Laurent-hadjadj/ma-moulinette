@@ -38,6 +38,7 @@ class Client
     public static $erreur500="Erreur 500 - Le fichier JSON n'est pas valide.";
     public static $erreur503="Erreur 503 - Le service est actuellement indisponible. Impossible d'établir une connexion.";
     public static $erreur504="Erreur 504 - Temps d’attente d’une réponse écoulé...";
+    public static $responseData="Response Data: ";
 
     public function __construct(
         private HttpClientInterface $client,
@@ -168,13 +169,19 @@ class Client
             $response = $this->client->request('GET', $url, $options);
 
             /** Si tout va bien, ajoute une trace dans les logs */
-            $message = "[" . $response->getInfo('http_method') . "] - " .
-                $response->getInfo('http_code') . " - " .
-                $response->getInfo('total_time') . " - " .
-                $response->getInfo('url');
-            $this->logger->info($message);
-
             $responseJson = $response->getContent();
+
+            /** Extraire les informations de la réponse */
+            $httpMethod = $response->getInfo('http_method');
+            $httpCode = $response->getInfo('http_code');
+            $totalTime = $response->getInfo('total_time');
+            $url = $response->getInfo('url') . " - " .
+                static::$responseData . substr($responseJson, 0, 100);
+
+            // Log des informations
+            $message = "[" . $httpMethod . "] - " . $httpCode . " - " . $totalTime . " - " . $url;
+
+            $this->logger->info($message);
             return [
                     'message' => $message,
                     'code' => $response->getStatusCode(),
@@ -235,14 +242,19 @@ class Client
             $response = $this->client->request('GET', $url, $options);
 
             /** Si tout va bien, ajoute une trace dans les logs */
-            $message = "[" . $response->getInfo('http_method') . "] - " .
-                $response->getInfo('http_code') . " - " .
-                $response->getInfo('total_time') . " - " .
-                $response->getInfo('url');
-            $this->logger->info($message);
-
-            /** On retourne la réponse. */
             $responseJson = $response->getContent();
+
+            /** Extraire les informations de la réponse */
+            $httpMethod = $response->getInfo('http_method');
+            $httpCode = $response->getInfo('http_code');
+            $totalTime = $response->getInfo('total_time');
+            $url = $response->getInfo('url') . " - " .
+                static::$responseData . substr($responseJson, 0, 100);
+
+            // Log des informations
+            $message = "[" . $httpMethod . "] - " . $httpCode . " - " . $totalTime . " - " . $url;
+
+            $this->logger->info($message);
             return [
                 'message' => $message,
                 'code' => $response->getStatusCode(),
@@ -293,7 +305,7 @@ class Client
 
             $options = [
                 'auth_basic' => [$user, $password],
-                'timeout' => 45,
+                'timeout' => 10,
                 'headers' => static::genericHeaders(),
                 # Définition des ciphers TLS1.3
                 'ciphers' => $ciphers,
@@ -311,13 +323,19 @@ class Client
             $response = $this->client->request('GET', $url, $options);
 
             /** Si tout va bien, ajoute une trace dans les logs */
-            $message = "[" . $response->getInfo('http_method') . "] - " .
-                $response->getInfo('http_code') . " - " .
-                $response->getInfo('total_time') . " - " .
-                $response->getInfo('url');
-            $this->logger->info($message);
-
             $responseJson = $response->getContent();
+
+            /** Extraire les informations de la réponse */
+            $httpMethod = $response->getInfo('http_method');
+            $httpCode = $response->getInfo('http_code');
+            $totalTime = $response->getInfo('total_time');
+            $url = $response->getInfo('url') . " - " .
+                static::$responseData . substr($responseJson, 0, 100);
+
+            // Log des informations
+            $message = "[" . $httpMethod . "] - " . $httpCode . " - " . $totalTime . " - " . $url;
+
+            $this->logger->info($message);
             return [
                     'message' => $message,
                     'code' => $response->getStatusCode(),
