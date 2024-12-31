@@ -91,24 +91,6 @@ services:
             $password: '%env(RABBITMQ_PASSWORD)%'
             $vhost: '%env(RABBITMQ_VHOST)%'
 
-    # Serializer pour Messenger
-    messenger.transport.serializer:
-        alias: 'Symfony\Component\Messenger\Transport\Serialization\SerializerInterface'
-
-    # Transport Factory pour RabbitMQ
-    App\Transport\RabbitMqTransportFactory:
-        arguments:
-            $rabbitMqService: '@App\Service\RabbitMQService'
-        tags: ['messenger.transport_factory']
-
-    # Transport RabbitMQ
-    App\Transport\RabbitMqTransport:
-        factory: ['@App\Transport\RabbitMqTransportFactory', 'createTransport']
-        arguments:
-            $dsn: '%env(MESSENGER_TRANSPORT_RABBITMQ_DSN)%'
-            $options: []
-            $serializer: '@messenger.transport.serializer'
-
     # Exemple pour les tests unitaires
     App\Controller\Batch\BatchCollecteTodoController:
         arguments:
