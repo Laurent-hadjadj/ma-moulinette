@@ -19,6 +19,9 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ActivityRepository::class)]
+#[ORM\Index(name: 'idx_maven_key', columns: ['maven_key'])]
+#[ORM\Index(name: 'idx_project_name', columns: ['project_name'])]
+#[ORM\Index(name: 'idx_status_executed_at', columns: ['status', 'executed_at'])]
 #[ORM\Table(name: "activity", schema: "ma_moulinette")]
 class Activity
 {
