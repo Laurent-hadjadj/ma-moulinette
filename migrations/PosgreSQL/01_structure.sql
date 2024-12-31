@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##         Creation des tables et des objets      ##
-##               V1.29.1 - 28/12/2024             ##
+##               V1.29.2 - 28/12/2024             ##
 ##                                                ##
 ####################################################*/
 
@@ -40,7 +40,8 @@
 -- 24/12/2024 : Laurent HADJADJ - Correction de la création de la table activity_historique ;
 -- 26/12/2024 : Laurent HADJADJ - Ajout de la table activity_batch_report ;
 -- 27/12/2024 : Laurent HADJADJ - Réorganisation de la table ;
--- 28/12/2024 : Laurent HADJADJ - le type de l'attribut erreur de la table activity_batch_report est un json ;
+-- 28/12/2024 : Laurent HADJADJ - Le type de l'attribut erreur de la table activity_batch_report est un json ;
+-- 31/12/2024 : Laurent HADJADJ - correction de la table activity_batch_report ;
 
 -- SCHEMA: ma_moulinette
 
@@ -131,21 +132,34 @@ CREATE INDEX idx_date_enregistrement ON ma_moulinette.activity_historique (date_
 DROP TABLE IF EXISTS ma_moulinette.activity_batch_report;
 CREATE TABLE IF NOT EXISTS ma_moulinette.activity_batch_report (
     id SERIAL PRIMARY KEY,
-    executed_at TIMESTAMPTZ NOT NULL,
+    date_start TIMESTAMPTZ NOT NULL,
+    date_end TIMESTAMPTZ NOT NULL,
     task_count INTEGER NOT NULL DEFAULT 0,
-    erreur JSON NULL
+    task_done INTEGER NOT NULL DEFAULT 0,
+    page INTEGER NOT NULL DEFAULT 0,
+    last_error JSON DEFAULT '[]'::json,
+    date_enregistrement TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 ALTER TABLE IF EXISTS ma_moulinette.activity_batch_report OWNER TO db_user;
 GRANT ALL ON TABLE ma_moulinette.activity_batch_report TO db_user;
 
 COMMENT ON COLUMN ma_moulinette.activity_batch_report.id IS 'Identifiant unique de la table.';
-COMMENT ON COLUMN ma_moulinette.activity_batch_report.executed_at IS 'Date d’execution.';
-COMMENT ON COLUMN ma_moulinette.activity_batch_report.task_count IS 'Nombre de tâche importé';
-COMMENT ON COLUMN ma_moulinette.activity_batch_report.erreur IS 'Erreur du traitement';
+COMMENT ON COLUMN ma_moulinette.activity_batch_report.date_start IS 'Date de début de l’intervalle pour l’extraction des tâches.';
+COMMENT ON COLUMN ma_moulinette.activity_batch_report.date_end IS 'Date de fin de l’intervalle pour l’extraction des tâches.';
+COMMENT ON COLUMN ma_moulinette.activity_batch_report.task_count IS 'Nombre total de tâches récupérées dans le lot.';
+COMMENT ON COLUMN ma_moulinette.activity_batch_report.task_done IS 'Nombre de tâches traitées dans le lot.';
+COMMENT ON COLUMN ma_moulinette.activity_batch_report.page IS 'Numéro de la page traitée (utilisé pour la pagination).';
+COMMENT ON COLUMN ma_moulinette.activity_batch_report.last_error IS 'Liste des erreurs rencontrées durant le traitement des tâches.';
+COMMENT ON COLUMN ma_moulinette.activity_batch_report.date_enregistrement IS 'Date et heure de l’enregistrement du rapport dans la base de données.';
 
 -- Index pour améliorer les performances sur les requêtes basées sur executed_at
-CREATE INDEX idx_executed_at ON ma_moulinette.activity_batch_report (executed_at);
+DROP INDEX IF EXISTS ma_moulinette.idx_date_enregistrement;
+DROP INDEX IF EXISTS ma_moulinette.idx_task_status;
+DROP INDEX IF EXISTS ma_moulinette.idx_last_error_error_code;
+CREATE INDEX IF NOT EXISTS idx_executed_at ON ma_moulinette.activity_batch_report (date_enregistrement ASC NULLS LAST);
+CREATE INDEX IF NOT EXISTS idx_task_status ON ma_moulinette.activity_batch_report (task_count, task_done, page);
+CREATE INDEX IF NOT EXISTS idx_last_error_error_code ON ma_moulinette.activity_batch_report ((last_error->>'errorCode'));
 
 -- Table: ma_moulinette.actuator
 
