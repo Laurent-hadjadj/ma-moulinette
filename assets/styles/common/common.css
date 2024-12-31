@@ -622,6 +622,7 @@ body { background: #eee; }
 }
 
 .close-button.primary { background-color: #1779ba; }
+.close-button.default { background-color: #767676; }
 .close-button.secondary { background-color: #767676; }
 .close-button.alert { background-color: #cc4b37; }
 .close-button.success { background-color: #2fb961; }
