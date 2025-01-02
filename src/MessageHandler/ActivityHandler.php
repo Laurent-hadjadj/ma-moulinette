@@ -18,16 +18,16 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Envelope;
 use Psr\Log\LoggerInterface;
-use App\Message\ApiCallMessage;
+use App\Message\ActivityMessage;
 use App\Message\ProcessTaskMessage;
 use App\Service\ActivityReportService;
 use App\Service\Client;
 
 #[AsMessageHandler]
 /**
- * [Description ApiCallHandler]
+ * [Description ActivityHandler]
  */
-final class ApiCallHandler
+final class ActivityHandler
 {
 
     public function __construct(
@@ -55,13 +55,13 @@ final class ApiCallHandler
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function __invoke(ApiCallMessage $message): void
+    public function __invoke(ActivityMessage $message): void
     {
         $fromDate = $message->getFromDate();
         $toDate = $message->getToDate();
 
         $this->logger->info('##########################################################');
-        $this->logger->info('ApiCallHandler reçu', ['de' => $fromDate, 'à' => $toDate]);
+        $this->logger->info('ActivityHandler reçu', ['de' => $fromDate, 'à' => $toDate]);
         $this->logger->info('#########################################################');
 
         /** Initialisation */
@@ -84,6 +84,7 @@ final class ApiCallHandler
             try {
                 /** On appelle l'API */
                 $response = $this->client->httpActivity($url);
+
                 /** On récupère les tâches ou rien */
                 $tasks = $response['json']['tasks'] ?? [];
 
