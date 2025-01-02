@@ -42,7 +42,7 @@ class OwaspTop10
     #[ORM\Column(type: Types::STRING, length: 128)]
     private string $lien;
 
-    #[ORM\Column(type: Types::DATETIMETZ_MUTABLE, options: ['default' => 'CURRENT_TIMESTAMP'])]
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, options: ['default' => 'CURRENT_TIMESTAMP'])]
     private \DateTimeImmutable $dateEnregistrement;
 
     // Getters and Setters
