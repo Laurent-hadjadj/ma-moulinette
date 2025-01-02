@@ -20,10 +20,10 @@ use Doctrine\DBAL\Types\Types;
  * [Description ActivityBatchReport]
  */
 #[ORM\Entity]
-#[ORM\Table(name: 'activity_batch_report', schema: "ma_moulinette")]
 #[ORM\Index(name: 'idx_date_enregistrement', columns: ['date_enregistrement'])]
 #[ORM\Index(name: 'idx_task_status', columns: ['task_count', 'task_done', 'page'])]
 #[ORM\Index(name: 'idx_last_error', columns: ['lastError'])]
+#[ORM\Table(name: 'activity_batch_report', schema: "ma_moulinette")]
 class ActivityBatchReport
 {
     #[ORM\Id]
