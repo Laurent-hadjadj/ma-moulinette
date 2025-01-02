@@ -13,15 +13,15 @@
 
 namespace App\Tests\Unit\Entity\Case;
 
-use App\Entity\Activite;
+use App\Entity\Activity;
 use PHPUnit\Framework\TestCase;
 
 /**
- * [Description ActiviteCaseTest]
+ * [Description ActivityCaseTest]
  */
-class ActiviteCaseTest extends TestCase
+class ActivityCaseTest extends TestCase
 {
-    private $activite;
+    private $activity;
 
     private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
     private static $projectName = 'ma-moulinette';
@@ -33,9 +33,9 @@ class ActiviteCaseTest extends TestCase
     private static $executedAt = '2024-07-31 12:27:47+02';
     private static $executionTime = 42;
 
-    private function getEntity(): Activite
+    private function getEntity(): Activity
     {
-        return (new activite())
+        return (new activity())
         ->setMavenKey(static::$mavenKey)
         ->setProjectName(static::$projectName)
         ->setAnalyseId(static::$analyseId)
@@ -50,64 +50,64 @@ class ActiviteCaseTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->activite = $this->getEntity();
+        $this->activity = $this->getEntity();
     }
 
     public function testSettingAndGettingMavenKey(): void
     {
-        $this->activite->setMavenKey(static::$mavenKey);
-        $this->assertEquals(static::$mavenKey, $this->activite->getMavenKey());
+        $this->activity->setMavenKey(static::$mavenKey);
+        $this->assertEquals(static::$mavenKey, $this->activity->getMavenKey());
     }
 
     public function testSettingAndGettingProjectName(): void
     {
-        $this->activite->setProjectName(static::$projectName);
-        $this->assertEquals(static::$projectName, $this->activite->getProjectName());
+        $this->activity->setProjectName(static::$projectName);
+        $this->assertEquals(static::$projectName, $this->activity->getProjectName());
     }
 
     public function testSettingAndGettingAnalyseId(): void
     {
-        $this->activite->setAnalyseId(static::$analyseId);
-        $this->assertEquals(static::$analyseId, $this->activite->getAnalyseId());
+        $this->activity->setAnalyseId(static::$analyseId);
+        $this->assertEquals(static::$analyseId, $this->activity->getAnalyseId());
     }
 
     public function testSettingAndGettingStatus(): void
     {
-        $this->activite->setStatus(static::$status);
-        $this->assertEquals(static::$status, $this->activite->getStatus());
+        $this->activity->setStatus(static::$status);
+        $this->assertEquals(static::$status, $this->activity->getStatus());
     }
 
     public function testSettingAndGettingSubmitterLogin(): void
     {
-        $this->activite->setSubmitterLogin(static::$submitterLogin);
-        $this->assertEquals(static::$submitterLogin, $this->activite->getSubmitterLogin());
+        $this->activity->setSubmitterLogin(static::$submitterLogin);
+        $this->assertEquals(static::$submitterLogin, $this->activity->getSubmitterLogin());
     }
 
     public function testSettingAndGettingSubmittedAt(): void
     {
         $newDate=new \DateTimeImmutable(static::$submittedAt);
-        $this->activite->setSubmittedAt($newDate);
-        $this->assertEquals($newDate, $this->activite->getSubmittedAt());
+        $this->activity->setSubmittedAt($newDate);
+        $this->assertEquals($newDate, $this->activity->getSubmittedAt());
     }
 
     public function testSettingAndGettingStartedAt(): void
     {
         $newDate=new \DateTimeImmutable(static::$startedAt);
-        $this->activite->setStartedAt($newDate);
-        $this->assertEquals($newDate, $this->activite->getStartedAt());
+        $this->activity->setStartedAt($newDate);
+        $this->assertEquals($newDate, $this->activity->getStartedAt());
     }
 
     public function testSettingAndGettingExecutedAt(): void
     {
         $newDate=new \DateTimeImmutable(static::$executedAt);
-        $this->activite->setExecutedAt($newDate);
-        $this->assertEquals($newDate, $this->activite->getExecutedAt());
+        $this->activity->setExecutedAt($newDate);
+        $this->assertEquals($newDate, $this->activity->getExecutedAt());
     }
 
     public function testSettingAndGettingExecutionTime(): void
     {
-        $this->activite->setExecutionTime(static::$executionTime);
-        $this->assertEquals(static::$executionTime, $this->activite->getExecutionTime());
+        $this->activity->setExecutionTime(static::$executionTime);
+        $this->assertEquals(static::$executionTime, $this->activity->getExecutionTime());
     }
 
 }
