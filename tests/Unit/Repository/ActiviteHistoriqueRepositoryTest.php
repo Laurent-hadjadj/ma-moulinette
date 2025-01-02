@@ -13,8 +13,8 @@
 
 namespace App\Tests\Unit\Repository;
 
-use App\Entity\ActiviteHistorique;
-use App\DataFixtures\ActiviteHistoriqueFixtures;
+use App\Entity\ActivityHistorique;
+use App\DataFixtures\ActivityHistoriqueFixtures;
 use DateTime;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
@@ -60,7 +60,7 @@ class ActiviteHistoriqueRepositoryTest extends KernelTestCase
         $map=[ 2024 => ['nb_jour' => 326, 'nb_analyse' => 1253,
                 'moyenne_analyse' => 87.3, 'nb_reussi' => 1249, 'nb_echec' => 4, 'taux_reussite' => 0.99, 'max_temps' => 34, 'date_enregistrement' => new  DateTime('2024-07-14 19:36:33+02')]];
 
-        $activiteHistoriqueRepository = $entityManager->getRepository(ActiviteHistorique::class);
+        $activiteHistoriqueRepository = $entityManager->getRepository(ActivityHistorique::class);
         $r = $activiteHistoriqueRepository->insertHistoriqueActivites($map);
 
         // Assert
