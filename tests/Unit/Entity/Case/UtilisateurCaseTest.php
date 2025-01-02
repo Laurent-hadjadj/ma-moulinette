@@ -51,7 +51,7 @@ class UtilisateurCaseTest extends TestCase
       ->setEquipe(static::$equipe)
       ->setPreference(static::$preference)
       ->setDateModification(new \DateTime(static::$dateModification))
-      ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
+      ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
   }
 
   public function testUtilisateurPersonne(): void
@@ -78,7 +78,7 @@ class UtilisateurCaseTest extends TestCase
   {
     $utilisateur = new Utilisateur();
     $utilisateur->setAvatar(static::$avatar);
-    $this->assertSame('build/avatar/'.static::$avatar, $utilisateur->getAvatarUrl());
+    $this->assertSame('/avatar/'.static::$avatar, $utilisateur->getAvatarUrl());
   }
 
 
@@ -99,7 +99,7 @@ class UtilisateurCaseTest extends TestCase
     $entity->setEquipe(static::$equipe);
     $entity->setPreference(static::$preference);
     $entity->setDateModification(new \DateTime(static::$dateModification));
-    $entity->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
+    $entity->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
 
     // Vérification des valeurs
     $this->assertEquals(static::$init, $entity->getInit(), "Erreur INIT");
@@ -111,7 +111,7 @@ class UtilisateurCaseTest extends TestCase
     $this->assertEquals(static::$password, $entity->getPassword(), "Erreur PASSWORD");
     $entity->eraseCredentials();
     $this->assertNotNull($entity->getPassword(), "Mot de passe null");
-    $this->assertTrue(true, $entity->isActif(), "isActif doit être vari");
+    $this->assertTrue(true, $entity->isActif(), "isActif doit être vrai");
     $this->assertEquals(static::$roles, $entity->getRoles(), "Erreur ROLES");
     $this->assertEquals(static::$equipe, $entity->getEquipe(), "Erreur EQUIPE");
     $this->assertEquals(static::$preference, $entity->getPreference(),"Erreur PREFERENCE");
