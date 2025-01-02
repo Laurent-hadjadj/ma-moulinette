@@ -38,7 +38,7 @@ class ActivityHistorique
     #[Assert\NotNull]
     private int $day;
 
-    #[ORM\Column(type: Types::INTEGER, nullable: false,
+    #[ORM\Column(name: '"analyse"', type: Types::INTEGER, nullable: false,
         options: ['comment' => "Nombre d'analyses"])]
     #[Assert\NotNull]
     private int $analyse;
