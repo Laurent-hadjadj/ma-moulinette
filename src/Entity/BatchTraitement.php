@@ -31,14 +31,14 @@ class BatchTraitement
         options: ['comment' => 'Mode de démarrage du traitement'])]
     ##[Assert\Choice(choices: ["Manuel", "Automatique"], message: "Le démarrage doit être 'Manuel' ou 'Automatique'")]
     #[Assert\NotBlank]
-    private $demarrage = "Manuel";
+    private $start = "Manuel";
 
     #[ORM\Column(type: 'boolean', nullable: false,
         options: ['comment' => 'Indique si le traitement a réussi ou échoué'])]
     #[Assert\Type(type: 'bool',
         message: "Le résultat doit être un booléen.")]
     #[Assert\NotNull]
-    private $resultat = false;
+    private $result = false;
 
     #[ORM\Column(type: Types::STRING, length: 32, nullable: false,
         options: ['comment' => 'Titre du traitement'])]
@@ -88,26 +88,26 @@ class BatchTraitement
         return $this->id;
     }
 
-    public function getDemarrage(): ?string
+    public function getStart(): ?string
     {
-        return $this->demarrage;
+        return $this->start;
     }
 
-    public function setDemarrage(string $demarrage): static
+    public function setStart(string $start): static
     {
-        $this->demarrage = $demarrage;
+        $this->start = $start;
 
         return $this;
     }
 
-    public function isResultat(): ?bool
+    public function isResult(): ?bool
     {
-        return $this->resultat;
+        return $this->result;
     }
 
-    public function setResultat(bool $resultat): static
+    public function setResult(bool $result): static
     {
-        $this->resultat = $resultat;
+        $this->result = $result;
 
         return $this;
     }
