@@ -149,7 +149,7 @@ class ActivityHistorique
         return $this->successRate;
     }
 
-    public function setSuccesRate(float $successRate): static
+    public function setSuccessRate(float $successRate): static
     {
         $this->successRate = $successRate;
         return $this;
