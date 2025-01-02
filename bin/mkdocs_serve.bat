@@ -5,7 +5,7 @@ mode con: cols=160 lines=70
 color 0f
 CHCP 65001
 echo ###                                                                           ###
-echo ### Atention le fichier doit être encodé en UTF-8 avec une séquence de fin de ###
+echo ### Attention le fichier doit être encodé en UTF-8 avec une séquence de fin de ###
 echo ### ligne Windows (CRLF).                                                     ###
 echo ###                                                                           ###
 echo:
