@@ -14,18 +14,18 @@
 namespace App\Tests\Unit\Entity\Kernel;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use App\DataFixtures\ActiviteHistoriqueFixtures;
-use App\Entity\ActiviteHistorique;
+use App\DataFixtures\ActivityHistoriqueFixtures;
+use App\Entity\ActivityHistorique;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 
 /**
- * [Description ActiviteHistoriqueKernelTest]
+ * [Description ActivityHistoriqueKernelTest]
  */
-class ActiviteHistoriqueKernelTest extends KernelTestCase
+class ActivityHistoriqueKernelTest extends KernelTestCase
 {
 
-    private static $annee = 2024;
+    private static $year = 2024;
 
     protected function setUp(): void
     {
@@ -38,26 +38,26 @@ class ActiviteHistoriqueKernelTest extends KernelTestCase
         $platform = $connection->getDatabasePlatform();
 
         if ($platform instanceof \Doctrine\DBAL\Platforms\PostgreSqlPlatform) {
-            $sequence = 'ma_moulinette.activite_historique_id_seq';
+            $sequence = 'ma_moulinette.activity_historique_id_seq';
             $connection->executeQuery("SELECT setval('$sequence', 1, false);");
         }
 
         $purger = new ORMPurger($entityManager);
         $executor = new ORMExecutor($entityManager, $purger);
-        $executor->execute([new ActiviteHistoriqueFixtures()]);
+        $executor->execute([new ActivityHistoriqueFixtures()]);
     }
 
-    public function testActiviteHistoriqueFindOneBy(): void
+    public function testActivityHistoriqueFindOneBy(): void
     {
         /* On se connecte à la base de tests */
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $activiteHistoriqueRepository = $entityManager->getRepository(ActiviteHistorique::class);
-        $response = $activiteHistoriqueRepository->findOneBy(['annee' => static::$annee]);
+        $activiteHistoriqueRepository = $entityManager->getRepository(ActivityHistorique::class);
+        $response = $activiteHistoriqueRepository->findOneBy(['year' => static::$year]);
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée');
-        $this->assertCount(1, [$response], 'ANNEE: Aucune réponse trouvée');
+        $this->assertCount(1, [$response], 'ANNÉE: Aucune réponse trouvée');
     }
 
 }
