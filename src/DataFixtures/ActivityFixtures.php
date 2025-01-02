@@ -2,14 +2,14 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\Activite;
+use App\Entity\Activity;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
 /**
- * [Description ActiviteFixtures]
+ * [Description ActivityFixtures]
  */
-class ActiviteFixtures extends Fixture
+class ActivityFixtures extends Fixture
 {
 
   private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
@@ -38,7 +38,7 @@ class ActiviteFixtures extends Fixture
       $statuses=['SUCCESS', 'FAILED'];
 
       foreach($statuses as $status){
-        $activite=(new Activite())
+        $activity=(new Activity())
             ->setMavenKey(static::$mavenKey)
             ->setProjectName(static::$projectName)
             ->setAnalyseId(static::$analyseId)
@@ -48,7 +48,7 @@ class ActiviteFixtures extends Fixture
             ->setStartedAt(new \DateTimeImmutable(static::$startedAt))
             ->setExecutedAt(new \DateTimeImmutable(static::$executedAt))
             ->setExecutionTime(static::$executionTime);
-            $manager->persist($activite);
+            $manager->persist($activity);
       }
       /** Enregistrement des données dans la base de tests */
         $manager->flush();
