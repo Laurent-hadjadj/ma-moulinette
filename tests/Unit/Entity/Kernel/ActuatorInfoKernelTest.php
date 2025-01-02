@@ -64,8 +64,8 @@ class ActuatorInfoKernelTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $anomalieRepository = $entityManager->getRepository(ActuatorInfo::class);
-        $response = $anomalieRepository->findAll();
+        $actuatorInfoRepository = $entityManager->getRepository(ActuatorInfo::class);
+        $response = $actuatorInfoRepository->findAll();
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée');
         $this->assertCount(4, $response, 'findAll(): Aucune réponse trouvée');

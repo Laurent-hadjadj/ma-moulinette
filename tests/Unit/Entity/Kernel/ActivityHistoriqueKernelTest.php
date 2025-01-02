@@ -53,8 +53,8 @@ class ActivityHistoriqueKernelTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $activiteHistoriqueRepository = $entityManager->getRepository(ActivityHistorique::class);
-        $response = $activiteHistoriqueRepository->findOneBy(['year' => static::$year]);
+        $activityHistoriqueRepository = $entityManager->getRepository(ActivityHistorique::class);
+        $response = $activityHistoriqueRepository->findOneBy(['year' => static::$year]);
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée');
         $this->assertCount(1, [$response], 'ANNÉE: Aucune réponse trouvée');

@@ -53,8 +53,8 @@ class ActivityKernelTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $activiteRepository = $entityManager->getRepository(Activity::class);
-        $response = $activiteRepository->findOneBy(['mavenKey' => static::$mavenKey]);
+        $activityRepository = $entityManager->getRepository(Activity::class);
+        $response = $activityRepository->findOneBy(['mavenKey' => static::$mavenKey]);
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée');
         $this->assertCount(1, [$response], 'MavenKey: Aucune réponse trouvée');
@@ -66,8 +66,8 @@ class ActivityKernelTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $anomalieRepository = $entityManager->getRepository(Activity::class);
-        $response = $anomalieRepository->findBy(['mavenKey' => static::$mavenKey]);
+        $activityRepository = $entityManager->getRepository(Activity::class);
+        $response = $activityRepository->findBy(['mavenKey' => static::$mavenKey]);
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée');
         $this->assertCount(2, $response, 'MAVENKEY: Aucune réponse trouvée');
