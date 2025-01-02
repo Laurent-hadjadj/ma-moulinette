@@ -24,7 +24,7 @@ class HotspotOwaspCaseTest extends TestCase
     private $hotspotOwasp;
 
     private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
-    private static $referentielOwasp = 2017;
+    private static $referentialOwasp = 2017;
     private static $version = '1.2.0-RELEASE';
     private static $dateVersion = '2024-07-10 15:26:07+02';
     private static $menace = 'a1';
@@ -42,7 +42,7 @@ class HotspotOwaspCaseTest extends TestCase
     {
         return (new hotspotOwasp())
             ->setMavenKey(static::$mavenKey)
-            ->setReferentielOwasp(static::$referentielOwasp)
+            ->setReferentialOwasp(static::$referentialOwasp)
             ->setVersion(static::$version)
             ->setDateVersion(new \DateTimeImmutable(static::$dateVersion))
             ->setMenace(static::$menace)
@@ -68,10 +68,10 @@ class HotspotOwaspCaseTest extends TestCase
         $this->hotspotOwasp->setMavenKey(static::$mavenKey);
         $this->assertEquals(static::$mavenKey, $this->hotspotOwasp->getMavenKey());
     }
-    public function testSettingAndGettingReferentielOwasp(): void
+    public function testSettingAndGettingReferentialOwasp(): void
     {
-        $this->hotspotOwasp->setReferentielOwasp(static::$referentielOwasp);
-        $this->assertEquals(static::$referentielOwasp, $this->hotspotOwasp->getReferentielOwasp());
+        $this->hotspotOwasp->setReferentialOwasp(static::$referentialOwasp);
+        $this->assertEquals(static::$referentialOwasp, $this->hotspotOwasp->getReferentialOwasp());
     }
 
     public function testSettingAndGettingVersion(): void
