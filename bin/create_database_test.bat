@@ -15,7 +15,7 @@ for %%d in (C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (
 
 :found
 if %found%==0 (
-    echo Le fichier %filename% n'a pas été trouvé sur les disques disponibles.
+    echo Le fichier %filename% n'a pas Ã©tÃ© trouvÃ© sur les disques disponibles.
     goto :exit
 ) else (
     call  %%d:\environnement\lecteur.bat
@@ -31,10 +31,10 @@ echo "  |_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|"
 echo:
 echo    Laurent HADJADJ
 echo    https://github.com/Laurent-hadjadj/ma-moulinette
-echo    © 2024 - CC BY-SA-NC 4.0
+echo    Â© 2024 - CC BY-SA-NC 4.0
 echo:
 echo [93m###                                                                         ###[0m
-echo [93m### Atention le fichier doit être encodé en UTF-8 avec une séquence         ###[0m
+echo [93m### Atention le fichier doit Ãªtre encodÃ© en UTF-8 avec une sÃ©quence         ###[0m
 echo [93m### de fin de ligne Windows (CRLF).                                         ###[0m
 echo [93m###                                                                         ###[0m
 echo:
@@ -49,13 +49,16 @@ echo php         	: 8.3.0-NTS
 echo nodejs      	: 18.17.1
 echo:
 
-echo "Création de la base de données de tests"
+echo "Création de la base de donnÃ©es de tests"
 echo:
+php bin/console --env=test cache:clear
 php bin/console --env=test doctrine:database:drop --force
 php bin/console --env=test doctrine:database:create --if-not-exists
+php bin/console --env=test doctrine:migrations:status
 php bin/console --env=test doctrine:schema:update --force
+php bin/console doctrine:schema:validate --env=test
 php bin/console --env=test doctrine:migrations:migrate -n
 
 exit:
-rem  Laurent HADJADJ - 2024-08-25 v1.0.0 - création du script
-rem  Laurent HADJADJ - 2024-08-25 v1.1.0 - Corrections de l'affichage de l'en-tête.
+rem  Laurent HADJADJ - 2024-08-25 v1.0.0 - crÃ©ation du script
+rem  Laurent HADJADJ - 2024-08-25 v1.1.0 - Corrections de l'affichage de l'en-tÃªte.
