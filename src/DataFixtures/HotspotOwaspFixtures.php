@@ -13,7 +13,7 @@ class HotspotOwaspFixtures extends Fixture
 {
 
   private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
-  private static $referentielOwasp = 2017;
+  private static $referentialOwasp = 2017;
   private static $version = '1.2.0-RELEASE';
   private static $dateVersion = '2024-07-10 15:26:07+02';
   private static $menace = 'a1';
@@ -34,7 +34,7 @@ class HotspotOwaspFixtures extends Fixture
       foreach($modeCollecte as $mode){
         $hotspotOwasp=(new HotspotOwasp())
           ->setMavenKey(static::$mavenKey)
-          ->setReferentielOwasp(static::$referentielOwasp)
+          ->setReferentialOwasp(static::$referentialOwasp)
           ->setVersion(static::$version)
           ->setDateVersion(new \DateTimeImmutable(static::$dateVersion))
           ->setMenace(static::$menace)
