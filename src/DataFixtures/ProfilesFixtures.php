@@ -16,8 +16,8 @@ class ProfilesFixtures extends Fixture
   private static $name = 'Ma-Petite-Entreprise v1.0.0 (2024)';
   private static $languageName = 'css';
   private static $activeRuleCount = 31;
-  private static $rulesUpdateAt = '2024-04-13 12:10:51+01';
-  private static $referentielDefault = true;
+  private static $rulesUpdatedAt = '2024-04-13 12:10:51+01';
+  private static $referentialDefault = true;
   private static $dateEnregistrement = '2024-04-12 16:23:11+01';
 
   public function load(ObjectManager $manager): void
@@ -28,8 +28,8 @@ class ProfilesFixtures extends Fixture
           ->setName(static::$name)
           ->setLanguageName(static::$languageName)
           ->setActiveRuleCount(static::$activeRuleCount)
-          ->setRulesUpdateAt(new \DateTimeImmutable(static::$rulesUpdateAt))
-          ->setReferentielDefault(static::$referentielDefault)
+          ->setRulesUpdatedAt(new \DateTimeImmutable(static::$rulesUpdatedAt))
+          ->setReferentialDefault(static::$referentialDefault)
           ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
       $manager->persist($profiles);
 
