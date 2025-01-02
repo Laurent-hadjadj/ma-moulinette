@@ -28,7 +28,7 @@ class ProfilesHistoriqueCaseTest extends TestCase
     private static $date  = '2022-08-30T18:42:41+0200';
     private static $action = 'ACTIVATED';
     private static $auteur = 'HADJADJ Laurent';
-    private static $regle = 'java:S5679';
+    private static $rule = 'java:S5679';
     private static $description = 'OpenSAML2 should be configured to prevent authentication bypass';
     private static $detail = '{"severity":"MAJOR"}';
     private static $dateEnregistrement = '2024-04-12 16:23:11+01';
@@ -41,7 +41,7 @@ class ProfilesHistoriqueCaseTest extends TestCase
         ->setDate(new \DateTimeImmutable(static::$date))
         ->setAction(static::$action)
         ->setAuteur(static::$auteur)
-        ->setRegle(static::$regle)
+        ->setRule(static::$rule)
         ->setDescription(static::$description)
         ->setDetail(static::$detail)
         ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
@@ -85,10 +85,10 @@ class ProfilesHistoriqueCaseTest extends TestCase
         $this->assertEquals(static::$auteur, $this->profilesHistorique->getAuteur());
     }
 
-    public function testSettingAndGettingRegle(): void
+    public function testSettingAndGettingRule(): void
     {
-        $this->profilesHistorique->setRegle(static::$regle);
-        $this->assertEquals(static::$regle, $this->profilesHistorique->getRegle());
+        $this->profilesHistorique->setRule(static::$rule);
+        $this->assertEquals(static::$rule, $this->profilesHistorique->getRule());
     }
 
     public function testSettingAndGettingDescription(): void
