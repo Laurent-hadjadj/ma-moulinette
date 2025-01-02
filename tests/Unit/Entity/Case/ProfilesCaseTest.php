@@ -27,8 +27,8 @@ class ProfilesCaseTest extends TestCase
     private static $name = 'Ma-Petite-Entreprise v1.0.0 (2024)';
     private static $languageName = 'CSS';
     private static $activeRuleCount = 31;
-    private static $rulesUpdateAt = '2024-04-13 12:10:51+01';
-    private static $referentielDefault = true;
+    private static $rulesUpdatedAt = '2024-04-13 12:10:51+01';
+    private static $referentialDefault = true;
     private static $dateEnregistrement = '2024-04-12 16:23:11+01';
 
     private function getEntity(): Profiles    {
@@ -37,8 +37,8 @@ class ProfilesCaseTest extends TestCase
         ->setName(static::$name)
         ->setLanguageName(static::$languageName)
         ->setActiveRuleCount(static::$activeRuleCount)
-        ->setRulesUpdateAt(new \DateTimeImmutable(static::$rulesUpdateAt))
-        ->setReferentielDefault(static::$referentielDefault)
+        ->setRulesUpdatedAt(new \DateTimeImmutable(static::$rulesUpdatedAt))
+        ->setReferentialDefault(static::$referentialDefault)
         ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
     }
 
@@ -72,9 +72,15 @@ class ProfilesCaseTest extends TestCase
 
     public function testSettingAndGettingRulesUpdateAt(): void
     {
-        $newDate=new \DateTimeImmutable(static::$rulesUpdateAt);
-        $this->profiles->setRulesUpdateAt($newDate);
-        $this->assertEquals($newDate, $this->profiles->getRulesUpdateAt());
+        $newDate=new \DateTimeImmutable(static::$rulesUpdatedAt);
+        $this->profiles->setRulesUpdatedAt($newDate);
+        $this->assertEquals($newDate, $this->profiles->getRulesUpdatedAt());
+    }
+
+    public function testSettingAndGettingReferentialDefault(): void
+    {
+        $this->profiles->setReferentialDefault(static::$referentialDefault);
+        $this->assertEquals(static::$referentialDefault, $this->profiles->isReferentialDefault());
     }
 
     public function testSettingAndGettingDateEnregistrement(): void
