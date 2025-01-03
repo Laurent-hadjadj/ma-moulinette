@@ -110,6 +110,6 @@ class DateTools
         $h = (int)(($minutes - ($j * 1440)) / 60);
         $m = round($minutes % 60, 0);
 
-        return sprintf('%d%sd, %dh:%dm', $j, $j > 1 ? 's' : '', $h, $m);
+        return sprintf('%d%s d, %dh:%dm', $j, $j > 1 ? 's' : '', $h, $m);
     }
 }
