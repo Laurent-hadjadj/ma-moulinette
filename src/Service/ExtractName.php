@@ -31,18 +31,23 @@ class ExtractName
  * @author     Laurent HADJADJ <laurent_h@me.com>
  * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
-public function extractNameFromMavenKey($mavenKey): string
+    public function extractNameFromMavenKey(?string $mavenKey): string
     {
+        // Vérifier que la mavenKey n'est pas null avant de la traiter
+        if ($mavenKey === null) {
+            return '';  // ou une valeur par défaut de ton choix
+        }
+
         /**
          * On récupère le nom de l'application depuis la clé mavenKey
          * [fr.ma-petite-entreprise] : [ma-moulinette]
          */
         $app = explode(":", $mavenKey);
-        if (count($app)===1) {
+        if (count($app) === 1) {
             /** La clé maven n'est pas conforme, on ne peut pas déduire le nom de l'application */
-            $name=$mavenKey;
+            $name = $mavenKey;
         } else {
-            $name=$app[1];
+            $name = $app[1];
         }
         return $name;
     }
