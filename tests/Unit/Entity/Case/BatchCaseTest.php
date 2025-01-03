@@ -43,7 +43,7 @@ class BatchCaseTest extends TestCase
         ->setPortefeuille(static::$portefeuille)
         ->setNombreProjet(static::$nombreProjet)
         ->setExecution(static::$execution)
-        ->setDateModification(new \DateTimeImmutable(static::$dateModification))
+        ->setDateModification(new \DateTime(static::$dateModification))
         ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
     }
 
@@ -97,7 +97,7 @@ class BatchCaseTest extends TestCase
 
     public function testSettingAndGettingDateModification(): void
     {
-        $newDate = new \DateTimeImmutable('2025-01-02 12:00:00+02');
+        $newDate = new \DateTime('2025-01-02 12:00:00+02');
         $this->batch->setDateModification($newDate);
         $this->assertEquals($newDate, $this->batch->getDateModification());
     }
@@ -108,7 +108,5 @@ class BatchCaseTest extends TestCase
         $this->batch->setDateEnregistrement($newDate);
         $this->assertEquals($newDate, $this->batch->getDateEnregistrement());
     }
-
-
 
 }
