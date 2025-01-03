@@ -24,6 +24,7 @@ class OwaspCaseTest extends TestCase
     private $owasp;
 
     private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static $referentialOwasp = 2017;
     private static $version = '1.2.0-RELEASE';
     private static $dateVersion = '2024-07-10 15:26:07+02';
     private static $effortTotal = 0;
@@ -41,6 +42,7 @@ class OwaspCaseTest extends TestCase
     {
         $owasp = new Owasp();
             $owasp->setMavenKey(static::$mavenKey);
+            $owasp->setReferentialOwasp(static::$referentialOwasp);
             $owasp->setVersion(static::$version);
             $owasp->setDateVersion(new \DateTimeImmutable(static::$dateVersion));
             $owasp->setEffortTotal(static::$effortTotal);
@@ -70,6 +72,12 @@ class OwaspCaseTest extends TestCase
     {
         $this->owasp->setMavenKey(static::$mavenKey);
         $this->assertEquals(static::$mavenKey, $this->owasp->getMavenKey());
+    }
+
+    public function testSettingAndGettingReferentialOwasp(): void
+    {
+        $this->owasp->setReferentialOwasp(static::$referentialOwasp);
+        $this->assertEquals(static::$referentialOwasp, $this->owasp->getReferentialOwasp());
     }
 
     public function testSettingAndGettingVersion(): void
