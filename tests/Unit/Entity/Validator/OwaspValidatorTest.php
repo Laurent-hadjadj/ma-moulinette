@@ -24,6 +24,7 @@ class OwaspValidatorTest extends KernelTestCase
 {
 
   private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+  private static $referentialOwasp = 2017;
   private static $version = '1.2.0-RELEASE';
   private static $dateVersion = '2024-07-10 15:26:07+02';
   private static $effortTotal = 0;
@@ -41,6 +42,7 @@ class OwaspValidatorTest extends KernelTestCase
   {
     $owasp = new Owasp();
     $owasp->setMavenKey(static::$mavenKey);
+    $owasp->setReferentialOwasp(static::$referentialOwasp);
     $owasp->setVersion(static::$version);
     $owasp->setDateVersion(new \DateTimeImmutable(static::$dateVersion));
     $owasp->setEffortTotal(static::$effortTotal);
@@ -135,6 +137,6 @@ class OwaspValidatorTest extends KernelTestCase
       $entity = $this->getEntity();
       $reflectionClass = new \ReflectionClass($entity);
       $nbAttributs = count($reflectionClass->getProperties());
-      $this->assertEquals($nbAttributs, 68);
+      $this->assertEquals($nbAttributs, 69);
   }
 }
