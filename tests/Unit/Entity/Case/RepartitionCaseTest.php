@@ -24,11 +24,11 @@ class RepartitionCaseTest extends TestCase
     private $repartition;
 
     private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
-    private static $name = 'nom ?';
-    private static $component = '/controller/auth';
+    private static $name = 'ma-moulinette';
+    private static $component = '/controller/auth/reset-password.php';
     private static $type = 'bug';
     private static $severity = 'medium';
-    private static $setup = '202403261446';
+    private static $setup = '2024032614';
     private static $dateEnregistrement = '2024-04-12 16:23:11+01';
 
     private function getEntity(): Repartition
