@@ -24,7 +24,7 @@ class HotspotOwaspValidatorTest extends KernelTestCase
 {
 
   private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
-  private static $referentielOwasp = 2017;
+  private static $referentialOwasp = 2017;
   private static $version = '1.2.0-RELEASE';
   private static $dateVersion = '2024-07-10 15:26:07+02';
   private static $menace = 'a1';
@@ -42,7 +42,7 @@ class HotspotOwaspValidatorTest extends KernelTestCase
   {
       return (new hotspotOwasp())
       ->setMavenKey(static::$mavenKey)
-      ->setReferentielOwasp(static::$referentielOwasp)
+      ->setReferentialOwasp(static::$referentialOwasp)
       ->setVersion(static::$version)
       ->setDateVersion(new \DateTimeImmutable(static::$dateVersion))
       ->setMenace(static::$menace)
@@ -91,7 +91,7 @@ class HotspotOwaspValidatorTest extends KernelTestCase
 
   public function testValidIntegerEntity(): void
   {
-    $this->assertHasErrors($this->getEntity()->setReferentielOwasp(-1), 0);
+    $this->assertHasErrors($this->getEntity()->setReferentialOwasp(-1), 0);
     $this->assertHasErrors($this->getEntity()->setNiveau(-1), 0);
   }
 
