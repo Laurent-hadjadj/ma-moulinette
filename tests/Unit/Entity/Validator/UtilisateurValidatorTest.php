@@ -52,15 +52,14 @@ class UtilisateurValidatorTest extends KernelTestCase
       ->setEquipe(static::$equipe)
       ->setPreference(static::$preference)
       ->setDateModification(new \DateTime(static::$dateModification))
-      ->setDateEnregistrement(new \DateTime(static::$dateEnregistrement));
+      ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
   }
 
-
-  public function assertHasErrors(Utilisateur $entity, int $number = 0)
+  public function assertHasErrors(Utilisateur $entity, int $number = 0, array $groups = ['default'])
   {
     self::bootKernel();
     $container = static::getContainer();
-    $errors = $container->get('validator')->validate($entity);
+    $errors = $container->get('validator')->validate($entity, null, $groups);
     $messages = [];
     /** @var ConstraintViolation $error */
     foreach($errors as $error) {
@@ -76,18 +75,18 @@ class UtilisateurValidatorTest extends KernelTestCase
 
   public function testInvalidBlankEntity(): void
   {
-    $this->assertHasErrors($this->getEntity()->setPrenom(''), 1);
-    $this->assertHasErrors($this->getEntity()->setNom(''), 1);
-    $this->assertHasErrors($this->getEntity()->setCourriel(''), 1);
-    $this->assertHasErrors($this->getEntity()->setPassword(''), 1);
-    $this->assertHasErrors($this->getEntity()->setRoles([]), 1);
+    $this->assertHasErrors($this->getEntity()->setPrenom(''), 1, ['default']);
+    $this->assertHasErrors($this->getEntity()->setNom(''), 1, ['default']);
+    $this->assertHasErrors($this->getEntity()->setCourriel(''), 1, ['default']);
+    $this->assertHasErrors($this->getEntity()->setPassword(''), 1, ['default']);
   }
 
   public function testValidBlankEntity(): void
   {
     $this->assertHasErrors($this->getEntity()->setAvatar(''), 0);
     $this->assertHasErrors($this->getEntity()->setEquipe([]), 0);
-    $this->assertHasErrors($this->getEntity()->setPreference([]), 0); // pas normal
+    $this->assertHasErrors($this->getEntity()->setPreference([]), 0);
+    $this->assertHasErrors($this->getEntity()->setRoles([]), 0);
   }
 
   public function testValidIntegerEntity(): void
