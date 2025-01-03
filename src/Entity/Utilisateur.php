@@ -55,7 +55,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private array $equipe = [];
 
     #[ORM\Column(type: Types::STRING, length: 64, nullable: false, options: ['comment' => "Mot de passe de l'utilisateur"])]
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(groups: ['default'])]
     private string $password;
 
     #[ORM\Column(type: Types::BOOLEAN, nullable: false,
