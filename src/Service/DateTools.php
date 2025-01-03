@@ -110,6 +110,12 @@ class DateTools
         $h = (int)(($minutes - ($j * 1440)) / 60);
         $m = round($minutes % 60, 0);
 
-        return sprintf('%d%s d, %dh:%dm', $j, $j > 1 ? 's' : '', $h, $m);
+        // Pour 0 jours, éviter l'espace avant 'd'
+        if ($j == 0) {
+            return sprintf('0d, %dh:%dm', $h, $m); // Pas d'espace avant 'd' pour 0 jours
+        }
+
+        return sprintf('%dd, %dh:%dm', $j, $h, $m); // Pas d'espace entre les jours et 'd'
     }
+
 }
