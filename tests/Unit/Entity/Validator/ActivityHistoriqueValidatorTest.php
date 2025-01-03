@@ -13,38 +13,38 @@
 
 namespace App\Tests\Unit\Entity\Validator;
 
-use App\Entity\ActiviteHistorique;
+use App\Entity\ActivityHistorique;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\ConstraintViolation;
 
-class ActiviteHistoriqueValidatorTest extends KernelTestCase
+class ActivityHistoriqueValidatorTest extends KernelTestCase
 {
 
-  private static $annee = 2024;
-  private static $nbJour = 326;
-  private static $nbAnalyse = 1253;
-  private static $moyenneAnalyse = 87.5;
-  private static $nbReussi = 1249;
-  private static $nbEchec = 4;
-  private static $tauxReussite = 0.99;
-  private static $maxTemps = 34;
+  private static $year = 2024;
+  private static $day = 326;
+  private static $analyse = 1253;
+  private static $analyseAverage = 87.5;
+  private static $success = 1249;
+  private static $failed = 4;
+  private static $successRate = 0.99;
+  private static $maxTime = 34;
   private static $dateEnregistrement = '2024-07-14 19:36:33+02';
 
-  private function getEntity(): ActiviteHistorique
+  private function getEntity(): ActivityHistorique
   {
-      return (new activiteHistorique())
-      ->setAnnee(static::$annee)
-      ->setNbJour(static::$nbJour)
-      ->setNbAnalyse(static::$nbAnalyse)
-      ->setMoyenneAnalyse(static::$moyenneAnalyse)
-      ->setNbReussi(static::$nbReussi)
-      ->setNbEchec(static::$nbEchec)
-      ->setTauxReussite(static::$tauxReussite)
-      ->setmaxTemps(static::$maxTemps)
+      return (new activityHistorique())
+      ->setYear(static::$year)
+      ->setDay(static::$day)
+      ->setAnalyse(static::$analyse)
+      ->setAnalyseAverage(static::$analyseAverage)
+      ->setSuccess(static::$success)
+      ->setFailed(static::$failed)
+      ->setSuccessRate(static::$successRate)
+      ->setmaxTime(static::$maxTime)
       ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
 }
 
-  public function assertHasErrors(ActiviteHistorique $entity, int $number = 0): void
+  public function assertHasErrors(ActivityHistorique $entity, int $number = 0): void
   {
     self::bootKernel();
     $container = static::getContainer();
@@ -64,18 +64,18 @@ class ActiviteHistoriqueValidatorTest extends KernelTestCase
 
   public function testValidIntegerEntity(): void
   {
-    $this->assertHasErrors($this->getEntity()->setAnnee(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setNbJour(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setNbAnalyse(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setNbReussi(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setNbEchec(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setMaxTemps(-1), 0);
+    $this->assertHasErrors($this->getEntity()->setYear(-1), 0);
+    $this->assertHasErrors($this->getEntity()->setDay(-1), 0);
+    $this->assertHasErrors($this->getEntity()->setAnalyse(-1), 0);
+    $this->assertHasErrors($this->getEntity()->setSuccess(-1), 0);
+    $this->assertHasErrors($this->getEntity()->setFailed(-1), 0);
+    $this->assertHasErrors($this->getEntity()->setMaxTime(-1), 0);
   }
 
   public function testValidFloatEntity(): void
   {
-    $this->assertHasErrors($this->getEntity()->setMoyenneAnalyse(0.0), 0);
-    $this->assertHasErrors($this->getEntity()->setTauxReussite(0.0), 0);
+    $this->assertHasErrors($this->getEntity()->setAnalyseAverage(0.0), 0);
+    $this->assertHasErrors($this->getEntity()->setSuccessRate(0.0), 0);
   }
 
   public function testCountAttribut(): void
