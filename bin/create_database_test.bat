@@ -1,5 +1,5 @@
 @echo off
-mode con: cols=160 lines=70
+mode con: cols=160 lines=5000
 color 0f
 CHCP 65001
 cls
@@ -34,7 +34,7 @@ echo    https://github.com/Laurent-hadjadj/ma-moulinette
 echo    Â© 2024 - CC BY-SA-NC 4.0
 echo:
 echo [93m###                                                                         ###[0m
-echo [93m### Atention le fichier doit Ãªtre encodÃ© en UTF-8 avec une sÃ©quence         ###[0m
+echo [93m### Attention le fichier doit être encodé en UTF-8 avec une séquence        ###[0m
 echo [93m### de fin de ligne Windows (CRLF).                                         ###[0m
 echo [93m###                                                                         ###[0m
 echo:

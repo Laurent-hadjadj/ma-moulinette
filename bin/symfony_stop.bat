@@ -3,7 +3,7 @@ cls
 if "%1"=="" (
     echo Erreur : Aucun paramètre fourni.
     echo Usage : symfony_start.bat [paramètre]
-    echo [parametre] correspond au nom du projet. Ex. ma-moulinette
+    echo [paramètre] correspond au nom du projet. Ex. ma-moulinette
     exit /b 1
 ) else (
     set PROJET=%1
@@ -44,7 +44,7 @@ echo    https://github.com/Laurent-hadjadj/ma-moulinette
 echo    © 2024 - CC BY-SA-NC 4.0
 echo:
 echo [93m###                                                                         ###[0m
-echo [93m### Attention le fichier doit être encodé en UTF-8 avec une séquence         ###[0m
+echo [93m### Attention le fichier doit être encodé en UTF-8 avec une séquence        ###[0m
 echo [93m### de fin de ligne Windows (CRLF).                                         ###[0m
 echo [93m###                                                                         ###[0m
 echo:
@@ -85,6 +85,6 @@ rem  Laurent HADJADJ - 2023-09-18 v1.5.0
 rem  Laurent HADJADJ - 2024-05-13 v1.6.0 - Ajout du lecteur
 rem  Laurent HADJADJ - 2024-05-24 v1.7.0 - tests du lecteur par défaut
 rem  Laurent HADJADJ - 2024-08-01 v1.7.1 - Correction de l'en-tête sur 80 colonnes
-rem  Laurent HADJADJ - 2024-08-28 v1.8.0 - Mise à jour de nodjs en version 20.17.0 LTS
+rem  Laurent HADJADJ - 2024-08-28 v1.8.0 - Mise à jour de nodejs en version 20.17.0 LTS
 rem  Laurent HADJADJ - 2024-08-28 v1.8.0 - Passage du nom du projet en paramètre
-rem  Laurent HADJADJ - 2024-08-28 v1.8.1 - Mise à jour de nodjs en version 20.17.1 LTS
+rem  Laurent HADJADJ - 2024-08-28 v1.8.1 - Mise à jour de nodejs en version 20.17.1 LTS

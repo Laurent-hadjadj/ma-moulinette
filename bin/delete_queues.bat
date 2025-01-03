@@ -1,6 +1,6 @@
 @echo off
 
-mode con: cols=160 lines=70
+mode con: cols=160 lines=1000
 color 0f
 CHCP 65001
 

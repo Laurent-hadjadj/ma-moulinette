@@ -2,8 +2,8 @@
 cls
 if "%1"=="" (
     echo Erreur : Aucun paramètre fourni.
-    echo Usage : console-cli.bat [parametre]
-    echo [parametre] correspond au nom du projet. Ex. ma-moulinette
+    echo Usage : console-cli.bat [paramètre]
+    echo [paramètre] correspond au nom du projet. Ex. ma-moulinette
     exit /b 1
 ) else (
     set PROJET=%1
@@ -26,7 +26,7 @@ goto :exit
 call  %%d:\environnement\lecteur.bat
 )
 
-mode con: cols=160 lines=70
+mode con: cols=160 lines=5000
 rem background : noir, color: blanc
 color 0f
 CHCP 65001
@@ -43,7 +43,7 @@ echo    https://github.com/Laurent-hadjadj/ma-moulinette
 echo    © 2024 - CC BY-SA-NC 4.0
 echo:
 echo [93m###                                                                         ###[0m
-echo [93m### Atention le fichier doit être encodé en UTF-8 avec une séquence         ###[0m
+echo [93m### Attention le fichier doit être encodé en UTF-8 avec une séquence        ###[0m
 echo [93m### de fin de ligne Windows (CRLF).                                         ###[0m
 echo [93m###                                                                         ###[0m
 echo:
@@ -69,7 +69,7 @@ echo python		: [93m3.12.3[0m
 echo maven		: [93m3.8.8[0m
 echo jdk		: [93m17[0m
 echo posgresql	: [93m15.6[0m
-echo sonarqube	: [93m9.9.4-LTS[0m
+echo SonarQube	: [93m9.9.4-LTS[0m
 echo:
 
 set app=%LECTEUR%\environnement
