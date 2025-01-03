@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##         Creation des tables et des objets      ##
-##               V1.29.2 - 28/12/2024             ##
+##               V1.29.3 - 03/01/2025             ##
 ##                                                ##
 ####################################################*/
 
@@ -41,7 +41,9 @@
 -- 26/12/2024 : Laurent HADJADJ - Ajout de la table activity_batch_report ;
 -- 27/12/2024 : Laurent HADJADJ - Réorganisation de la table ;
 -- 28/12/2024 : Laurent HADJADJ - Le type de l'attribut erreur de la table activity_batch_report est un json ;
--- 31/12/2024 : Laurent HADJADJ - correction de la table activity_batch_report ;
+-- 31/12/2024 : Laurent HADJADJ - Correction de la table activity_batch_report ;
+-- 03/01/2025 : Laurent HADJADJ - Bonne année 2025. Renommage de l'attribut start en mode_collecte  pour la table batch_traitement ;
+
 
 -- SCHEMA: ma_moulinette
 
@@ -364,8 +366,8 @@ DROP TABLE IF EXISTS ma_moulinette.batch_traitement;
 CREATE TABLE IF NOT EXISTS ma_moulinette.batch_traitement
 (
   id SERIAL PRIMARY KEY,
-  demarrage character varying(16) NOT NULL,
-  resultat boolean NOT NULL,
+  mode_collecte character varying(32) NOT NULL,
+  result boolean NOT NULL,
   titre character varying(32) NOT NULL,
   portefeuille character varying(32) NOT NULL,
   nombre_projet integer NOT NULL,
@@ -379,8 +381,8 @@ ALTER TABLE ma_moulinette.batch_traitement OWNER TO db_user;
 GRANT ALL ON TABLE ma_moulinette.batch_traitement TO db_user;
 
 COMMENT ON COLUMN ma_moulinette.batch_traitement.id IS 'Identifiant unique du traitement';
-COMMENT ON COLUMN ma_moulinette.batch_traitement.demarrage IS 'Mode de démarrage du traitement';
-COMMENT ON COLUMN ma_moulinette.batch_traitement.resultat IS 'Indique si le traitement a réussi ou échoué';
+COMMENT ON COLUMN ma_moulinette.batch_traitement.mode_collecte IS 'Mode de collecte du traitement';
+COMMENT ON COLUMN ma_moulinette.batch_traitement.result IS 'Indique si le traitement a réussi ou échoué';
 COMMENT ON COLUMN ma_moulinette.batch_traitement.titre IS 'Titre du traitement';
 COMMENT ON COLUMN ma_moulinette.batch_traitement.portefeuille IS 'Nom du portefeuille de projets associé';
 COMMENT ON COLUMN ma_moulinette.batch_traitement.nombre_projet IS 'Nombre de projets traités';
