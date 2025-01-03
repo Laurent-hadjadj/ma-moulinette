@@ -23,7 +23,7 @@ class BatchTraitementCaseTest extends TestCase
 {
     private $batchTraitement;
 
-    private static $start = 'Manuel';
+    private static $modeCollecte = 'TRAITEMENT MANUEL';
     private static $result = true;
     private static $titre = 'mon-batch à moi';
     private static $portefeuille = 'application-ma-moulinette';
@@ -36,7 +36,7 @@ class BatchTraitementCaseTest extends TestCase
     private function getEntity(): batchTraitement
     {
         return (new batchTraitement())
-        ->setStart(static::$start)
+        ->setModeCollecte(static::$modeCollecte)
         ->setResult(static::$result)
         ->setTitre(static::$titre)
         ->setPortefeuille(static::$portefeuille)
@@ -53,11 +53,11 @@ class BatchTraitementCaseTest extends TestCase
         $this->batchTraitement = $this->getEntity();
     }
 
-    public function testSettingAndGettingStart(): void
+    public function testSettingAndGettingModeCollecte(): void
     {
-        $newStart = 'Automatique';
-        $this->batchTraitement->setStart($newStart);
-        $this->assertEquals($newStart, $this->batchTraitement->getStart());
+        $newModeCollecte = 'TRAITEMENT AUTOMATIQUE';
+        $this->batchTraitement->setModeCollecte($newModeCollecte);
+        $this->assertEquals($newModeCollecte, $this->batchTraitement->getModeCollecte());
     }
 
     public function testSettingAndGettingResult(): void
