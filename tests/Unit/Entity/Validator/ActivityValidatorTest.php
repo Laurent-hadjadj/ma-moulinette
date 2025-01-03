@@ -13,11 +13,11 @@
 
 namespace App\Tests\Unit\Entity\Validator;
 
-use App\Entity\Activite;
+use App\Entity\Activity;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\ConstraintViolation;
 
-class ActiviteValidatorTest extends KernelTestCase
+class ActivityValidatorTest extends KernelTestCase
 {
 
   private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
@@ -30,9 +30,9 @@ class ActiviteValidatorTest extends KernelTestCase
   private static $executedAt = '2024-07-31 12:27:47+02';
   private static $executionTime = 42;
 
-  private function getEntity(): Activite
+  private function getEntity(): Activity
   {
-      return (new activite())
+      return (new activity())
         ->setMavenKey(static::$mavenKey)
         ->setProjectName(static::$projectName)
         ->setAnalyseId(static::$analyseId)
@@ -44,7 +44,7 @@ class ActiviteValidatorTest extends KernelTestCase
         ->setExecutionTime(static::$executionTime);
   }
 
-  public function assertHasErrors(Activite $entity, int $number = 0): void
+  public function assertHasErrors(Activity $entity, int $number = 0): void
   {
     self::bootKernel();
     $container = static::getContainer();
