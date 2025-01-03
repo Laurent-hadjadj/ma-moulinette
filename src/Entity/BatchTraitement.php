@@ -27,11 +27,11 @@ class BatchTraitement
         options: ['comment' => 'Identifiant unique pour la table Batch Traitemeny'])]
     private $id;
 
-    #[ORM\Column(type: Types::STRING, length: 16, nullable: false,
-        options: ['comment' => 'Mode de démarrage du traitement'])]
-    ##[Assert\Choice(choices: ["Manuel", "Automatique"], message: "Le démarrage doit être 'Manuel' ou 'Automatique'")]
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: false,
+        options: ['comment' => 'Mode de collecte du traitement'])]
+    #[Assert\Choice(choices: ['COLLECTE', 'TRAITEMENT MANUEL', 'TRAITEMENT AUTOMATIQUE'], message: "Le démarrage doit être COLLECTE, MANUEL ou AUTOMATIQUE")]
     #[Assert\NotBlank]
-    private $start = "Manuel";
+    private $modeCollecte = "TRAITEMENT MANUEL";
 
     #[ORM\Column(type: 'boolean', nullable: false,
         options: ['comment' => 'Indique si le traitement a réussi ou échoué'])]
@@ -88,14 +88,14 @@ class BatchTraitement
         return $this->id;
     }
 
-    public function getStart(): ?string
+    public function getModeCollecte(): ?string
     {
-        return $this->start;
+        return $this->modeCollecte;
     }
 
-    public function setStart(string $start): static
+    public function setModeCollecte(string $modeCollecte): static
     {
-        $this->start = $start;
+        $this->modeCollecte = $modeCollecte;
 
         return $this;
     }
