@@ -12,6 +12,7 @@ use Doctrine\Persistence\ObjectManager;
 class OwaspFixtures extends Fixture
 {
     private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static $referentialOwasp = 2017;
     private string $version = '1.2.0-RELEASE';
     private static $dateVersion = '2024-07-10 15:26:07+02';
     private static $effortTotal = 0;
@@ -31,6 +32,7 @@ class OwaspFixtures extends Fixture
         foreach ($modeCollecte as $mode) {
             $owasp = new Owasp();
             $owasp->setMavenKey(static::$mavenKey);
+            $owasp->setReferentialOwasp(static::$referentialOwasp);
             $owasp->setVersion($this->version);
             $owasp->setDateVersion(new \DateTimeImmutable(static::$dateVersion));
             $owasp->setEffortTotal(static::$effortTotal);
