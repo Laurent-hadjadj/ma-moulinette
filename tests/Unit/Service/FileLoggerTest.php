@@ -39,62 +39,62 @@ class FileLoggerTest extends TestCase
         $this->projectDir = realpath(__DIR__ . '/../..');
         $this->auditPath = '/Fixtures/';
 
-      $this->params->method('get')->will($this->returnValueMap([
-        ['kernel.project_dir', $this->projectDir],
-        ['path.audit', $this->auditPath],
-      ]));
+        $this->params->method('get')->will($this->returnValueMap([
+            ['kernel.project_dir', $this->projectDir],
+            ['path.audit', $this->auditPath],
+        ]));
 
-      // Stocker le chemin complet attendu
-      $this->fullAuditPath = $this->projectDir . str_replace('/', DIRECTORY_SEPARATOR, $this->auditPath);
+        // Stocker le chemin complet attendu
+        $this->fullAuditPath = $this->projectDir . str_replace('/', DIRECTORY_SEPARATOR, $this->auditPath);
 
-      // Initialiser FileLogger avec les paramètres simulés
-      $this->fileLogger = new FileLogger($this->params, $this->filesystem, $this->finder, $this->rotation);
+        // Initialiser FileLogger avec les paramètres simulés
+        $this->fileLogger = new FileLogger($this->params, $this->filesystem, $this->finder, $this->rotation);
     }
 
     public function testDownloadContentWhenFileExists()
     {
-      $portefeuille = "MA_MOULINETTE";
-      $type = "manuel";
+        $portefeuille = "MA_MOULINETTE";
+        $type = "manuel";
 
-      // Simuler l'existence du répertoire
-      $mockFilesystem = $this->createMock(Filesystem::class);
-      $mockFilesystem->method('exists')->with($this->fullAuditPath)->willReturn(true);
+        // Simuler l'existence du répertoire
+        $mockFilesystem = $this->createMock(Filesystem::class);
+        $mockFilesystem->method('exists')->with($this->fullAuditPath)->willReturn(true);
 
-      // Simuler Finder pour trouver le fichier
-      $mockFinder = $this->createMock(Finder::class);
-      $mockFinder->method('files')->willReturn($mockFinder);
-      $mockFinder->method('in')->with($this->fullAuditPath)->willReturn($mockFinder);
-      $mockFinder->method('name')->with("manuel_MA_MOULINETTE.log")->willReturn($mockFinder);
+        // Simuler Finder pour trouver le fichier
+        $mockFinder = $this->createMock(Finder::class);
+        $mockFinder->method('files')->willReturn($mockFinder);
+        $mockFinder->method('in')->with($this->fullAuditPath)->willReturn($mockFinder);
+        $mockFinder->method('name')->with("manuel_MA_MOULINETTE.log")->willReturn($mockFinder);
 
-      // Simuler un fichier trouvé avec un contenu
-      $mockFile = $this->createMock(\Symfony\Component\Finder\SplFileInfo::class);
-      $mockFile->method('getPathname')->willReturn("{$this->fullAuditPath}manuel_MA_MOULINETTE.log");
-      $mockFile->method('getContents')->willReturn("Contenu du fichier log");
-      $mockFinder->method('getIterator')->willReturn(new \ArrayIterator([$mockFile]));
+        // Simuler un fichier trouvé avec un contenu
+        $mockFile = $this->createMock(\Symfony\Component\Finder\SplFileInfo::class);
+        $mockFile->method('getPathname')->willReturn("{$this->fullAuditPath}manuel_MA_MOULINETTE.log");
+        $mockFile->method('getContents')->willReturn("Contenu du fichier log");
+        $mockFinder->method('getIterator')->willReturn(new \ArrayIterator([$mockFile]));
 
-      // Appliquer le test
-      $result = $this->fileLogger->downloadContent($portefeuille, $type);
+        // Appliquer le test
+        $result = $this->fileLogger->downloadContent($portefeuille, $type);
 
-      // Vérifications
-      $this->assertArrayHasKey('recherche', $result);
-      $this->assertArrayHasKey('content', $result);
-      $this->assertEquals('OK', $result['recherche']);  // Recherche OK
-      $this->assertEquals('Contenu du fichier log', $result['content']);  // Vérifie le contenu
+        // Vérifications
+        $this->assertArrayHasKey('recherche', $result);
+        $this->assertArrayHasKey('content', $result);
+        $this->assertEquals('OK', $result['recherche']);  // Recherche OK
+        $this->assertEquals('Contenu du fichier log', $result['content']);  // Vérifie le contenu
     }
 
     public function testDownloadContentWhenFileIsEmpty()
     {
-      $portefeuille = "MA_MOULINETTE";
-      $type = "automatique";
+        $portefeuille = "MA_MOULINETTE";
+        $type = "automatique";
 
-      // Appliquer le test
-      $result = $this->fileLogger->downloadContent($portefeuille, $type);
+        // Appliquer le test
+        $result = $this->fileLogger->downloadContent($portefeuille, $type);
 
-      // Vérification des assertions
-      $this->assertArrayHasKey('recherche', $result);
-      $this->assertArrayHasKey('content', $result);
-      $this->assertEquals('Pas de journal disponible.', $result['recherche']);  // Vérifier le message
-      $this->assertEquals('', $result['content']);  // Vérifier que le contenu est vide
+        // Vérification des assertions
+        $this->assertArrayHasKey('recherche', $result);
+        $this->assertArrayHasKey('content', $result);
+        $this->assertEquals('Pas de journal disponible.', $result['recherche']);  // Vérifier le message
+        $this->assertEquals('', $result['content']);  // Vérifier que le contenu est vide
     }
 
     public function testDownloadContentWhenFileDoesNotExist()
@@ -132,8 +132,8 @@ class FileLoggerTest extends TestCase
         // 2. Simuler la classe Rotation
         $rotationMock = $this->createMock(Rotation::class);
         $rotationMock->expects($this->any())
-                      ->method('rotate')
-                      ->with($fileToRotate);
+                        ->method('rotate')
+                        ->with($fileToRotate);
 
         // 3. Simuler Filesystem
         $filesystemMock = $this->createMock(Filesystem::class);
@@ -237,33 +237,33 @@ class FileLoggerTest extends TestCase
 
     public function testFileWithSpecialValues(): void
     {
-      // Préparer les données d'entrée
-      $collecte = [
-          'date' => new \DateTime('2024-01-01 12:00:00'),
-          'object' => (object) ['property' => 'value'],
-          'number' => 42,
-      ];
-      $portfolio = 'portfolio_special';
+        // Préparer les données d'entrée
+        $collecte = [
+            'date' => new \DateTime('2024-01-01 12:00:00'),
+            'object' => (object) ['property' => 'value'],
+            'number' => 42,
+        ];
+        $portfolio = 'portfolio_special';
 
-      // Contenu attendu après formatage
-      $expectedFormattedContent = '<p><strong>date : </strong> 2024-01-01 12:00:00</p><p><strong>object : </strong> stdClass Object([property] =&gt; value)</p><p><strong>number : </strong> 42</p>';
+        // Contenu attendu après formatage
+        $expectedFormattedContent = '<p><strong>date : </strong> 2024-01-01 12:00:00</p><p><strong>object : </strong> stdClass Object([property] =&gt; value)</p><p><strong>number : </strong> 42</p>';
 
-      // Simuler la méthode log()
-      $fileLoggerMock = $this->getMockBuilder(FileLogger::class)
-          ->setConstructorArgs([$this->params, $this->filesystem, $this->finder, $this->rotation])
-          ->onlyMethods(['log'])
-          ->getMock();
+        // Simuler la méthode log()
+        $fileLoggerMock = $this->getMockBuilder(FileLogger::class)
+            ->setConstructorArgs([$this->params, $this->filesystem, $this->finder, $this->rotation])
+            ->onlyMethods(['log'])
+            ->getMock();
 
-      $fileLoggerMock->expects($this->once())
-          ->method('log')
-          ->with(
-              $this->equalTo($portfolio),
-              $this->equalTo($expectedFormattedContent),
-              $this->equalTo('append')
-          );
+        $fileLoggerMock->expects($this->once())
+            ->method('log')
+            ->with(
+                $this->equalTo($portfolio),
+                $this->equalTo($expectedFormattedContent),
+                $this->equalTo('append')
+            );
 
-      // Appeler la méthode file
-      $fileLoggerMock->file($portfolio, $collecte);
+        // Appeler la méthode file
+        $fileLoggerMock->file($portfolio, $collecte);
     }
 
     public function testFileWithEmptyArray(): void
@@ -399,7 +399,7 @@ class FileLoggerTest extends TestCase
 
     public function testLogWithNonExistingPath(): void
     {
-        // 5. Simuler ParameterBagInterface si nécessaire
+        // Simuler ParameterBagInterface si nécessaire
         /** @var \Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface */
         $paramsMock = $this->createMock(ParameterBagInterface::class);
         $paramsMock->method('get')->will($this->returnValueMap([
@@ -417,31 +417,31 @@ class FileLoggerTest extends TestCase
 
     public function testLogWithRemove(): void
     {
-      $fileToRotate = rtrim($this->fullAuditPath, '\\') . DIRECTORY_SEPARATOR . 'manuel_remove.log';
-      file_put_contents($fileToRotate, str_repeat('x', 1));
+        $fileToRotate = rtrim($this->fullAuditPath, '\\') . DIRECTORY_SEPARATOR . 'manuel_remove.log';
+        file_put_contents($fileToRotate, str_repeat('x', 1));
 
-      /** @var \Symfony\Component\Filesystem\Filesystem */
-      $filesystemMock = $this->createMock(Filesystem::class);
-      $filesystemMock->method('exists')->willReturn(true);
+        /** @var \Symfony\Component\Filesystem\Filesystem */
+        $filesystemMock = $this->createMock(Filesystem::class);
+        $filesystemMock->method('exists')->willReturn(true);
 
-      // 3. Définir le comportement attendu du mock
-      $filesystemMock->expects($this->any())
-          ->method('remove')
-          ->with($this->stringContains('manuel_remove.log'));
+        // 3. Définir le comportement attendu du mock
+        $filesystemMock->expects($this->any())
+            ->method('remove')
+            ->with($this->stringContains('manuel_remove.log'));
 
-      $fileLogger = new FileLogger($this->params, $filesystemMock, $this->finder, $this->rotation);
-      $result = $fileLogger->log('test', 'test log', 'remove');
+        $fileLogger = new FileLogger($this->params, $filesystemMock, $this->finder, $this->rotation);
+        $result = $fileLogger->log('test', 'test log', 'remove');
 
-      $this->assertEquals(202, $result);
-    }
-
-    protected function tearDown(): void
-    {
-        $filePath = $this->fullAuditPath . DIRECTORY_SEPARATOR .'manuel_test.log';
-        if (file_exists($filePath)) {
-            unlink($filePath);
+        $this->assertEquals(202, $result);
         }
 
-        parent::tearDown();
-    }
+        protected function tearDown(): void
+        {
+            $filePath = $this->fullAuditPath . DIRECTORY_SEPARATOR .'manuel_test.log';
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
+
+            parent::tearDown();
+        }
 }
