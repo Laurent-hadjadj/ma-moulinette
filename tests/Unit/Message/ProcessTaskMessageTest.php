@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\unit\Message;
+namespace App\Tests\Unit\Message;
 
 use App\Message\ProcessTaskMessage;
 use PHPUnit\Framework\TestCase;
