@@ -28,6 +28,8 @@ class FileLoggerTest extends TestCase
     private string $projectDir;
     private string $fullAuditPath;
 
+    private static $testLog = 'test log';
+
     protected function setUp(): void
     {
         $this->params = $this->createMock(ParameterBagInterface::class);
@@ -359,9 +361,9 @@ class FileLoggerTest extends TestCase
         $filesystemMock->method('exists')->willReturn(true); // Simuler que le répertoire existe
         $filesystemMock->expects($this->any())
             ->method('appendToFile')
-            ->with($this->stringContains('manuel_test.log'), $this->stringContains('test log'), $this->stringContains('append'));
+            ->with($this->stringContains('manuel_test.log'), $this->stringContains(static::$testLog), $this->stringContains('append'));
         $fileLogger = new FileLogger($this->params, $filesystemMock, $this->finder, $this->rotation);
-        $result = $fileLogger->log('test', 'test log', 'append');
+        $result = $fileLogger->log('test', static::$testLog, 'append');
 
         $this->assertEquals(200, $result); // Vérifier que la méthode renvoie bien 200
     }
@@ -379,7 +381,7 @@ class FileLoggerTest extends TestCase
         $fileLogger = new FileLogger($this->params, $filesystemMock, $this->finder, $this->rotation);
 
         // Appeler la méthode log avec un type 'remove'
-        $result = $fileLogger->log('portfolio_special', 'test log', 'remove');
+        $result = $fileLogger->log('portfolio_special', static::$testLog, 'remove');
 
         // Vérifier que la méthode retourne 202 pour un type non supporté
         $this->assertEquals(202, $result);
@@ -392,7 +394,7 @@ class FileLoggerTest extends TestCase
         $filesystemMock->method('exists')->willReturn(true);
 
         $fileLogger = new FileLogger($this->params, $filesystemMock, $this->finder, $this->rotation);
-        $result = $fileLogger->log('test', 'test log', 'unknownType');
+        $result = $fileLogger->log('test', static::$testLog, 'unknownType');
         /** On supprime le fichier et on renvoie 200 */
         $this->assertEquals(400, $result);
     }
@@ -411,7 +413,7 @@ class FileLoggerTest extends TestCase
         $fileLogger = new FileLogger($paramsMock, $this->filesystem, $this->finder, $this->rotation);
 
         // Ensuite vous pouvez tester comme avant
-        $result = $fileLogger->log('portfolio_special', 'test log', 'append');
+        $result = $fileLogger->log('portfolio_special', static::$testLog, 'append');
         $this->assertEquals(404, $result); // Le chemin n'existe pas dans ce cas
     }
 
@@ -430,7 +432,7 @@ class FileLoggerTest extends TestCase
             ->with($this->stringContains('manuel_remove.log'));
 
         $fileLogger = new FileLogger($this->params, $filesystemMock, $this->finder, $this->rotation);
-        $result = $fileLogger->log('test', 'test log', 'remove');
+        $result = $fileLogger->log('test', static::$testLog, 'remove');
 
         $this->assertEquals(202, $result);
         }
