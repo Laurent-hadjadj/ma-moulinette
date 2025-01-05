@@ -16,7 +16,6 @@ namespace App\Service;
 use Cesargb\Log\Rotation;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 /**
@@ -26,10 +25,22 @@ class FileLogger
 {
     private string $path;
 
-    public function __construct(private ParameterBagInterface $params)
+    public function __construct(
+        private ParameterBagInterface $params,
+        private Filesystem $filesystem,
+        private Finder $finder,
+        private Rotation $rotation
+        )
     {
         $this->params = $params;
-        $this->path = $this->params->get('kernel.project_dir') . $this->params->get('path.audit');
+        $this->filesystem = $filesystem;
+        $this->finder = $finder;
+        $this->rotation = $rotation;
+
+        // Obtenir le chemin avec nettoyage des barres obliques inversées
+        $projectDir = rtrim($this->params->get('kernel.project_dir'), '\\');
+        $auditPath = ltrim($this->params->get('path.audit'), '\\');
+        $this->path = $projectDir . DIRECTORY_SEPARATOR . $auditPath;
     }
 
     /**
@@ -45,29 +56,46 @@ class FileLogger
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function downloadContent(string $portefeuille, string $type){
-        /* On initialise le journal des traces */
-        $filesystem = new Filesystem();
-        $recherche = "KO";
-        $content='Pas de contenu !!!';
-        $finder='';
+    $filesystem = new Filesystem();
+    // Initialisation de recherche à KO
+    $recherche = "KO";
+    // c'est le texte qui sera affiché à l'utilisateur si le fichier qu'il a demandé n'est pas trouvé
+    $content = 'Pas de contenu !!!';
+    $fileFound = false;
 
-        /* Le dossier d'audit est présent */
-        if ($filesystem->exists($this->path)) {
-            $name = preg_replace("/[ :.]/", "_", $portefeuille);
-            $fichier = "{$type}_$name.log";
+    // Si le dossier existe
+    if ($filesystem->exists($this->path)) {
+        /** Le fichier est composé, du type: 'manuel' ou 'automatique' et du nom du portefeuille*/
+        $name = preg_replace("/[ :.]/", "_", $portefeuille);  // Normalise le nom
+        $fichier = "{$type}_{$name}.log";  // Nom du fichier attendu. Ex. manuel_mes_projets.log
 
-            /** on récupère la log */
-            $finder = new Finder();
-            $finder->files()->in($this->path);
-            $finder->name($fichier);
+        /** On scanne le dossier pour trouver le fichier demandé */
+        $finder = new Finder();
+        $finder->files()->in($this->path);
+        $finder->name($fichier);
 
-            foreach ($finder as $file) {
-                $content = $file->getContents();
-            }
+        foreach ($finder as $file) {
+            $fileFound = true;
+            // Récupère le contenu du fichier
+            $content = $file->getContents();
+        }
+
+        if (!$fileFound) {
+            $recherche = 'KO';
+            $content = 'Pas de contenu !!!';
+        } else {
+            // Si le contenu est vide, retourner "Pas de journal disponible.", sinon "OK"
             $recherche = (empty($content)) ? 'Pas de journal disponible.' : 'OK';
         }
-        return ["recherche" => $recherche, 'content' => $content];
     }
+
+    /**
+     * On retourne KO, si le chemin n'existe pas,
+     * 'pas de journal disponible' si on a trouvé un fichier mais vide, 'content' => 'Pas de contenu !!!'
+     * 'OK', on a trouvé un fichier avec un contenu, alors 'content' => $content
+     */
+    return ["recherche" => $recherche, 'content' => $content];
+}
 
     /**
      * [Description for logrotate]
@@ -82,12 +110,11 @@ class FileLogger
     public function logrotate(): void
     {
         $filesystem = new Filesystem();
-
         if ($filesystem->exists($this->path)) {
             $rotation = new Rotation([
                 'files' => 5,
                 'compress' => true,
-                'min-size' => 102400,
+                'min-size' => 1048576, //1mo
                 'truncate' => false,
                 //'then' => function ($filenameTarget, $filenameRotated) {},
                 //'catch' => function (RotationFailed $exception) {},
@@ -97,6 +124,7 @@ class FileLogger
             $finder = new Finder();
             $finder->files()->in($this->path)->depth(0)->sortByName();
 
+            /** Rotation pour tous les fichier de 1mo + 1oc  */
             foreach ($finder as $file) {
                 $rotation->rotate($file->getPathname());
             }
@@ -109,49 +137,62 @@ class FileLogger
      * @param mixed $collecte
      *
      * @return string
-     *
-     * Created at: 05/06/2024 18:52:03 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function file($portefeuille, $collecte){
-        // Fonction pour formater les informations du tableau de manière récursive
-        function formatArray($json, $level = 1) {
-            // Retourner une chaîne vide si les données ne sont pas un tableau
-            if (!is_array($json)) {
-                return '';
-            }
-            $output = '';
-            // Déterminer la balise à utiliser (h1, h2, etc.)
-            $tag = 'h' . $level;
+    public function file($portefeuille, $collecte)
+    {
+        return static::log($portefeuille, $this->formatArray($collecte), 'append');
+    }
 
-            foreach ($json as $key => $value) {
-                if (is_array($value)) {
-                    // Si la clé est numérique, ne pas l'afficher
-                    if (!is_numeric($key)) {
-                        $output .= "<$tag>" . htmlspecialchars($key) . "</$tag>";
-                    }
-                    // Appel récursif avec un niveau d'indentation supérieur
-                    $output .= formatArray($value, $level + 1);
+    /**
+     * Fonction pour formater les informations du tableau de manière récursive
+     *
+     * @param mixed $json
+     * @param int $level
+     *
+     * @return string
+     */
+    private function formatArray($json, $level = 1)
+    {
+        if (!is_array($json)) {
+            return '';
+        }
+        $output = '';
+        $tag = 'h' . ($level + 1);
+
+        foreach ($json as $key => $value) {
+            if (is_array($value)) {
+                // Si la clé est numérique, ne pas l'afficher
+                if (!is_numeric($key)) {
+                    $output .= "<$tag>" . htmlspecialchars($key) . "</$tag>";
+                }
+                // Appel récursif avec un niveau d'indentation supérieur
+                $output .= $this->formatArray($value, $level + 1);
+            } else {
+                // Vérifie si la valeur est un objet DateTimeImmutable et la convertir en chaîne si nécessaire
+                if ($value instanceof \DateTimeImmutable || $value instanceof \DateTime) {
+                    $value = $value->format('Y-m-d H:i:s');
+                }
+
+                // Si la valeur est un objet, on la convertit en chaîne via print_r
+                if (is_object($value)) {
+                    $value = print_r($value, true); // Cela donne le format attendu de l'objet
+                    // Suppression des retours à la ligne pour les objets
+                    $value = str_replace(["\n", "\r"], '', $value);
+                    // Suppression des espaces inutiles avant et après les parenthèses
+                    $value = preg_replace('/\(\s+/', '(', $value);
+                    $value = preg_replace('/\s+\)/', ')', $value);
+                    $value = preg_replace('/\s+=>/', ' =>', $value); // Réduction des espaces avant '=>'
+                }
+
+                if (is_numeric($key)) {
+                    $output .= '<p>' . htmlspecialchars($value) . '</p>';
                 } else {
-                    // Vérifie si la valeur est un objet DateTimeImmutable et la convertir en chaîne si nécessaire
-                    if ($value instanceof \DateTimeImmutable || $value instanceof \DateTime) {
-                        $value = $value->format('Y-m-d H:i:s');
-                    }
-                    if (is_object($value)){ $value=print_r($value, true);
-                    }
-                    // Si la clé est numérique, ne pas l'afficher
-                    if (is_numeric($key)) {
-                        $output .= '<p>' . htmlspecialchars($value) . '</p>';
-                    } else {
-                        $output .= '<p><strong>' . htmlspecialchars($key) . ' : </strong> ' . htmlspecialchars($value) . '</p>';
-                    }
+                    $output .= '<p><strong>' . htmlspecialchars($key) . ' : </strong> ' .htmlspecialchars($value) . '</p>';
                 }
             }
-            return $output;
-        }
 
-        return static::log($portefeuille, formatArray($collecte), 'append');
+        }
+            return $output;
     }
 
     /**
@@ -171,24 +212,21 @@ class FileLogger
     public function log(string $portefeuille, string $log, string $type): int
     {
         $filesystem = new Filesystem();
-
-        if ($filesystem->exists($this->path)) {
+        if ($filesystem->exists(rtrim($this->path, '/\\') . DIRECTORY_SEPARATOR)) {
             $name = preg_replace("/[ :.]/", "_", $portefeuille);
-            $filePath = $this->path . "/manuel_{$name}.log";
-            if ($type==='append') {
-                    $filesystem->appendToFile($filePath, $log);
-            } else {
-                try {
+            $filePath = rtrim($this->path, '/\\') . "/manuel_{$name}.log";
+            if ($type === 'append') {
+                $filesystem->appendToFile($filePath, $log);
+            } elseif ($type === 'remove') {
                     $filesystem->remove($filePath);
-                } catch (FileException $e) {
-                    // Une erreur s'est produite lors de la suppression du fichier
-                    return $filesystem->getError();
-                }
+                    return 202;
+            } else {
+                // Si le type n'est ni 'append' ni 'remove'
+                return 400;
             }
             return 200;
-        } else {
-            return 404;
         }
+        return 404;
     }
 
 }
