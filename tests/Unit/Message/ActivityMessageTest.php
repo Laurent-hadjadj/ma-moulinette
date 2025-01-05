@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Message;
+namespace App\Tests\unit\Message;
 
 use App\Message\ActivityMessage;
 use PHPUnit\Framework\TestCase;
@@ -10,8 +10,8 @@ use PHPUnit\Framework\TestCase;
  */
 class ActivityMessageTest extends TestCase
 {
-  private static $fromDate = '2025-01-01 00:00:00';
-  private static $toDate = '2025-12-31 23:59:59';
+    private static $fromDate = '2025-01-01 00:00:00';
+    private static $toDate = '2025-12-31 23:59:59';
 
     /**
      * Teste la construction d'un ActivityMessage et les getters
@@ -92,7 +92,7 @@ class ActivityMessageTest extends TestCase
         $fromTimestamp = strtotime($activityMessage->getFromDate());
         $toTimestamp = strtotime($activityMessage->getToDate());
 
-      // Vérifie que la date de début est bien avant ou égale à la date de fin
-      $this->assertLessThanOrEqual($toTimestamp, $fromTimestamp, 'La date de début est postérieure à la date de fin.');
+        // Vérifie que la date de début est bien avant ou égale à la date de fin
+        $this->assertLessThanOrEqual($toTimestamp, $fromTimestamp, 'La date de début est postérieure à la date de fin.');
     }
 }
