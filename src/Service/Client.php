@@ -15,6 +15,7 @@ namespace App\Service;
 
 /** Gestion de accès aux API */
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 use \Symfony\Component\HttpClient\Exception\TimeoutException;
@@ -31,14 +32,21 @@ use Psr\Log\LoggerInterface;
 class Client
 {
     /** Définition des constantes */
-    public static $erreur400="Erreur 400 - La requête est incorrecte.";
-    public static $erreur401="Erreur 401 - Erreur d'Authentification. La clé n'est pas correcte.";
-    public static $erreur403="Erreur 403 - Vous n’êtes pas autorisé à vous connecter.";
-    public static $erreur404="Erreur 404 - Le service n'a pas trouvé les éléments.";
-    public static $erreur500="Erreur 500 - Le fichier JSON n'est pas valide.";
-    public static $erreur503="Erreur 503 - Le service est actuellement indisponible. Impossible d'établir une connexion.";
-    public static $erreur504="Erreur 504 - Temps d’attente d’une réponse écoulé...";
+    public static $erreur400 = "Erreur 400 - La requête est incorrecte.";
+    public static $erreur401 = "Erreur 401 - Erreur d'Authentification. La clé n'est pas correcte.";
+    public static $erreur403 = "Erreur 403 - Vous n’êtes pas autorisé à vous connecter.";
+    public static $erreur404 = "Erreur 404 - Le service n'a pas trouvé les éléments.";
+    public static $erreur407 = "Erreur 407 - La requête n'a pas été appliquée à cause d'un manque d'authentification.";
+    public static $erreur414 = "Erreur 414 - L'URI demandée par le client est plus trop longue.";
+    public static $erreur418 = "Erreur 418 - « Je suis une théière », je refuse de préparer du café.";
+    public static $erreur429 = "Erreur 429 - Le client a envoyé trop de requêtes en un temps donné.";
+    public static $erreur500 = "Erreur 500 - Le serveur a rencontré un problème inattendu qui l'empêche de répondre à la requête.";
+    public static $erreur502 = "Erreur 502 - Le serveur, agissant comme une passerelle ou un proxy, a reçu une réponse invalide.";
+    public static $erreur505 = "Erreur 505 - La version du protocole HTTP utilisée dans la requête n'est pas prise en charge par le serveur.";
+    public static $erreur504 = "Erreur 504 - Temps d’attente d’une réponse écoulé...";
+
     public static $responseData="Response Data: ";
+    public static $erreurTransport = "Erreur de transport : ";
 
     public function __construct(
         private HttpClientInterface $client,
@@ -51,53 +59,79 @@ class Client
     }
 
     private function handleTimeoutException(TimeoutException $e): array {
-        $this->logger->error("Erreur de transport : " . $e->getMessage());
+        $this->logger->error(static::$erreurTransport . $e->getMessage());
         return ['code' => 504, 'erreur' => static::$erreur504];
     }
 
-    private function handleTransportException(TransportException $e): array {
-        $errorMessage = $e->getMessage() ?: "Erreur de transport non spécifiée.";
+    private const ERROR_TRANSPORT_MESSAGES = [
+        'Failed to open stream' => "Erreur 503 - Le service est actuellement indisponible. Impossible d'établir une connexion.",
+        'Could not resolve host' => "Erreur 503 - La résolution DNS n'a pas permis d'accéder au serveur SonarQube.",
+        'Invalid HTTP proxy' => "Erreur 503 - L'adresse définit pour le proxy n'est pas correcte."
+    ];
 
-        if (strpos($errorMessage, "Failed to open stream") !== false) {
-            $errorMessage = "Erreur 503 - Le service est actuellement indisponible. Impossible d'établir une connexion.";
-        } elseif (strpos($errorMessage, "Could not resolve host") !== false) {
-            $errorMessage = "Erreur 503 - La résolution DNS n'a pas permis d'accéder au serveur SonarQube.";
-        } elseif (strpos($errorMessage, "Invalid HTTP proxy") !== false) {
-            $errorMessage = "Erreur 503 - L'adresse définit pour le proxy n'est pas correcte.";
+    private function handleTransportException(TransportException $e): array {
+        $errorMessage = "Erreur 503|504 de transport non spécifiée. | Détails : " . $e->getMessage();
+        $customMessage = false;
+
+        foreach (self::ERROR_TRANSPORT_MESSAGES as $key => $customMsg) {
+            if (strpos($errorMessage, $key) !== false) {
+                $errorMessage = $customMsg;
+                $customMessage = true;
+                break;
+            }
         }
 
-        $this->logger->error("Erreur de transport (Erreur 504) : " . $e->getMessage());
-        return ['code' => 504, 'erreur' => $errorMessage];
+        if ($customMessage) {
+            $this->logger->error(static::$erreurTransport . $errorMessage);
+            $code=503;
+        } else {
+            $this->logger->error(static::$erreurTransport . $errorMessage . " | Détails : " . $e->getMessage());
+            $code=504;
+        }
+
+        return ['code' => $code, 'erreur' => $errorMessage];
     }
 
-    private function handleClientException(ClientException $e): array {
+    private function handleClientException(HttpExceptionInterface $e): array {
         $response = $e->getResponse();
         $body = $response->getContent(false);
         $errorCode = $e->getCode();
+
         $errorMessage = match ($errorCode) {
             400 => static::$erreur400,
             401 => static::$erreur401,
             403 => static::$erreur403,
             404 => static::$erreur404,
-            default => "Erreur client non spécifiée.",
+            407 => static::$erreur407,
+            414 => static::$erreur414,
+            418 => static::$erreur418,
+            429 => static::$erreur429,
+            default => "Erreur du client non spécifiée.",
         };
-        $this->logger->error("Erreur du client : " . $body);
+
+        $this->logger->error("Erreur ".$errorCode . " du client : " . $body);
         return ['code' => $errorCode, 'erreur' => $errorMessage];
     }
 
-    private function handleServerException(ServerException $e): array {
+    private function handleServerException(HttpExceptionInterface $e): array {
         $response = $e->getResponse();
         $body = $response->getContent(false);
         $errorCode = $e->getCode();
-        $errorMessage = "Le service est indisponible (Erreur 500).";
 
-        $this->logger->error($body);
+        $errorMessage = match ($errorCode) {
+            500 => static::$erreur500,
+            502 => static::$erreur502,
+            505 => static::$erreur505,
+            default => "Erreur du serveur non spécifiée.",
+        };
+
+        $this->logger->error("Erreur ".$errorCode . " du serveur : " . $body);
         return ['code' => $errorCode, 'erreur' => $errorMessage];
     }
 
     private function handleGenericException(\Exception $e): array {
-        $this->logger->error("Erreur inattendue : " . $e->getMessage());
-        return ['code' => 500, 'erreur' => "Une erreur inattendue s'est produite."];
+        $this->logger->error("Une erreur inattendue du serveur s'est produite : " . $e->getMessage());
+        return ['code' => 500, 'erreur' => "Une erreur inattendue du serveur s'est produite (Erreur 500)."];
     }
 
     /**
@@ -191,10 +225,12 @@ class Client
             return $this->handleTimeoutException($e);
         } catch (TransportException $e) {
             return $this->handleTransportException($e);
-        } catch (ClientException $e) {
-            return $this->handleClientException($e);
-        } catch (ServerException $e) {
-            return $this->handleServerException($e);
+        } catch (HttpExceptionInterface $e) {
+            if ($e instanceof ClientException) {
+                return $this->handleClientException($e);
+            } elseif ($e instanceof ServerException) {
+                return $this->handleServerException($e);
+            }
         } catch (\Exception $e) {
             return $this->handleGenericException($e);
         }
@@ -264,10 +300,12 @@ class Client
             return $this->handleTimeoutException($e);
         } catch (TransportException $e) {
             return $this->handleTransportException($e);
-        } catch (ClientException $e) {
-            return $this->handleClientException($e);
-        } catch (ServerException $e) {
-            return $this->handleServerException($e);
+        } catch (HttpExceptionInterface $e) {
+            if ($e instanceof ClientException) {
+                return $this->handleClientException($e);
+            } elseif ($e instanceof ServerException) {
+                return $this->handleServerException($e);
+            }
         } catch (\Exception $e) {
             return $this->handleGenericException($e);
         }
@@ -345,10 +383,12 @@ class Client
             return $this->handleTimeoutException($e);
         } catch (TransportException $e) {
             return $this->handleTransportException($e);
-        } catch (ClientException $e) {
-            return $this->handleClientException($e);
-        } catch (ServerException $e) {
-            return $this->handleServerException($e);
+        } catch (HttpExceptionInterface $e) {
+            if ($e instanceof ClientException) {
+                return $this->handleClientException($e);
+            } elseif ($e instanceof ServerException) {
+                return $this->handleServerException($e);
+            }
         } catch (\Exception $e) {
             return $this->handleGenericException($e);
         }
