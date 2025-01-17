@@ -12,6 +12,9 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Psr\Container\ContainerInterface;
 
+/**
+ * [Description BatchCollecteMesureControllerTest]
+ */
 class BatchCollecteMesureControllerTest extends TestCase
 {
     private EntityManagerInterface $em;
@@ -19,6 +22,9 @@ class BatchCollecteMesureControllerTest extends TestCase
     private BatchCollecteMesureController $controller;
     private ContainerInterface $container;
     private ParameterBagInterface $parameterBag;
+
+    private static $mel = 'laurent.hadjadj@ma-petite-entreprise.fr';
+    private static $nclocDistributionValue = 'java=60;php=40';
 
     protected function setUp(): void
     {
@@ -50,7 +56,7 @@ class BatchCollecteMesureControllerTest extends TestCase
             'erreur' => 'Not Found'
         ]);
 
-        $result = $this->controller->BatchCollecteMesure('some-maven-key', 'COLLECTE', 'laurent.hadjadj@ma-petite-entreprise.fr');
+        $result = $this->controller->BatchCollecteMesure('some-maven-key', 'COLLECTE', static::$mel);
         $this->assertEquals(['code' => 404, 'erreur' => ['Not Found']], $result);
     }
 
@@ -58,17 +64,17 @@ class BatchCollecteMesureControllerTest extends TestCase
     {
         // Mock the HTTP client to return valid data
         $this->client->method('httpSonarQube')->will($this->returnValueMap([
-            ['http://localhost/api/components/app?component=some-maven-key', ['measures' => ['lines' => 100, 'coverage' => 75, 'duplicated_lines_density' => 5, 'tests' => 20, 'issues' => 3]]],
-            ['http://localhost/api/measures/component?component=some-maven-key&metricKeys=ncloc,ncloc_language_distribution', ['component' => ['measures' => [['metric' => 'ncloc', 'value' => 1500], ['metric' => 'ncloc_language_distribution', 'value' => 'java=60;php=40']]]]],
+            ['http://localhost/api/components/app?component=some-maven-key', ['measures' => ['lines' => 100, 'coverage' => 75, 'duplicationDensity' => 5, 'tests' => 20, 'issues' => 3]]],
+            ['http://localhost/api/measures/component?component=some-maven-key&metricKeys=ncloc,ncloc_language_distribution', ['component' => ['measures' => [['metric' => 'ncloc', 'value' => 1500], ['metric' => 'ncloc_language_distribution', 'value' => static::$nclocDistributionValue]]]]],
             ['http://localhost/api/measures/component?component=some-maven-key&metricKeys=sqale_debt_ratio', ['component' => ['measures' => [['metric' => 'sqale_debt_ratio', 'value' => '1.23']]]]]
         ]));
-    
+
         // Mock the repository to return an error on delete
         $mesuresRepository = $this->createMock(MesuresRepository::class);
         $mesuresRepository->method('deleteMesuresMavenKey')->willReturn(['code' => 500, 'erreur' => 'Delete error']);
         $this->em->method('getRepository')->willReturn($mesuresRepository);
-    
-        $result = $this->controller->BatchCollecteMesure('some-maven-key', 'COLLECTE', 'laurent.hadjadj@ma-petite-entreprise.fr');
+
+        $result = $this->controller->BatchCollecteMesure('some-maven-key', 'COLLECTE', static::$mel);
         $this->assertEquals([
             'code' => 500,
             'erreur' => [
@@ -87,7 +93,7 @@ class BatchCollecteMesureControllerTest extends TestCase
                 'measures' => [
                     'lines' => 100,
                     'coverage' => 75,
-                    'duplicated_lines_density' => 5,
+                    'duplicationDensity' => 5,
                     'tests' => 20,
                     'issues' => 3
                 ]
@@ -96,7 +102,7 @@ class BatchCollecteMesureControllerTest extends TestCase
                 'component' => [
                     'measures' => [
                         ['metric' => 'ncloc', 'value' => 1500],
-                        ['metric' => 'ncloc_language_distribution', 'value' => 'java=60;php=40']
+                        ['metric' => 'ncloc_language_distribution', 'value' => static::$nclocDistributionValue]
                     ]
                 ]
             ],
@@ -116,7 +122,7 @@ class BatchCollecteMesureControllerTest extends TestCase
         $this->em->method('getRepository')->willReturn($mesuresRepository);
 
         // Invoke the controller method
-        $result = $this->controller->BatchCollecteMesure('some-maven-key', 'COLLECTE', 'laurent.hadjadj@ma-petite-entreprise.fr');
+        $result = $this->controller->BatchCollecteMesure('some-maven-key', 'COLLECTE', static::$mel);
 
         // Assert that the result matches the expected error format
         $this->assertEquals([
@@ -137,7 +143,7 @@ class BatchCollecteMesureControllerTest extends TestCase
                 'measures' => [
                     'lines' => 100,
                     'coverage' => 75,
-                    'duplicated_lines_density' => 5,
+                    'duplicationDensity' => 5.0,
                     'tests' => 20,
                     'issues' => 3
                 ]
@@ -146,7 +152,7 @@ class BatchCollecteMesureControllerTest extends TestCase
                 'component' => [
                     'measures' => [
                         ['metric' => 'ncloc', 'value' => 1500],
-                        ['metric' => 'ncloc_language_distribution', 'value' => 'java=60;php=40']
+                        ['metric' => 'ncloc_language_distribution', 'value' => static::$nclocDistributionValue]
                     ]
                 ]
             ],
@@ -165,7 +171,7 @@ class BatchCollecteMesureControllerTest extends TestCase
         $mesuresRepository->method('insertMesures')->willReturn(['code' => 200]);
         $this->em->method('getRepository')->willReturn($mesuresRepository);
 
-        $result = $this->controller->BatchCollecteMesure('some-maven-key', 'COLLECTE', 'laurent.hadjadj@ma-petite-entreprise.fr');
+        $result = $this->controller->BatchCollecteMesure('some-maven-key', 'COLLECTE', static::$mel);
 
         $currentDateTimeParis = (new \DateTimeImmutable())->setTimezone(new \DateTimeZone("UTC"))->format('Y-m-d H:i:sO');
 
@@ -190,18 +196,20 @@ class BatchCollecteMesureControllerTest extends TestCase
                 'language_distribution' => ['java' => 60, 'php' => 40],
                 'sqale_debt_ratio' => 1.23,
                 'coverage' => 75,
-                'duplicated_lines_density' => 5,
+                'duplicated_lines_density' => 5.0,
                 'tests' => 20,
                 'issues' => 3,
                 'mode_collecte' => 'COLLECTE',
-                'utilisateur_collecte' => 'laurent.hadjadj@ma-petite-entreprise.fr',
+                'utilisateur_collecte' => static::$mel,
                 'date_enregistrement' => $currentDateTimeParis
             ],
             'data' => $expectedData
         ];
 
-    if ($result['message']['date_enregistrement'] instanceof \DateTimeImmutable) {
-            $result['message']['date_enregistrement'] = $result['message']['date_enregistrement']->format('Y-m-d H:i:sO');
+        if ($result['message']['date_enregistrement'] instanceof \DateTimeImmutable) {
+            $result['message']['date_enregistrement'] = $result['message']['date_enregistrement']
+                ->setTimezone(new \DateTimeZone('UTC')) // Normalisez en UTC
+                ->format('Y-m-d H:i:sO');
         }
 
         $this->assertEquals($expectedResult, $result);
