@@ -23,6 +23,10 @@ class BatchCollecteHotspotOwaspControllerTest extends TestCase
     private ContainerInterface $container;
     private ParameterBagInterface $parameterBag;
 
+    private static $date = '2024-08-09';
+    private static $mel = 'laurent.hadjadj@ma-petite-entreprise.fr';
+
+
     protected function setUp(): void
     {
         $this->em = $this->createMock(EntityManagerInterface::class);
@@ -116,13 +120,13 @@ class BatchCollecteHotspotOwaspControllerTest extends TestCase
         $informationProjetRepositoryMock->method('selectInformationProjetProjectVersion')
             ->willReturn([
                 'code' => 200,
-                'info' => [['project_version' => '1.0', 'date' => '2024-08-09']],
+                'info' => [['project_version' => '1.0', 'date' => static::$date]],
             ]);
 
         $hotspotOwaspRepositoryMock->method('deleteHotspotOwaspMavenKey')
             ->willReturn(['code' => 200]);
 
-        $result = $this->controller->batchCollecteHotspotOwasp('mavenKey', 'collectMode', 'laurent.hadjadj@ma-petite-entreprise.fr', 'a1');
+        $result = $this->controller->batchCollecteHotspotOwasp('mavenKey', 'collectMode', static::$mel, 'a1');
 
         $this->assertEquals(404, $result['erreur']);
     }
@@ -144,13 +148,13 @@ class BatchCollecteHotspotOwaspControllerTest extends TestCase
         $informationProjetRepositoryMock->method('selectInformationProjetProjectVersion')
             ->willReturn([
                 'code' => 200,
-                'info' => [['project_version' => '1.0', 'date' => '2024-08-09']],
+                'info' => [['project_version' => '1.0', 'date' => static::$date]],
             ]);
 
         $hotspotOwaspRepositoryMock->method('deleteHotspotOwaspMavenKey')
             ->willReturn(['code' => 200]);
 
-        $result = $this->controller->batchCollecteHotspotOwasp('mavenKey', 'collectMode', 'laurent.hadjadj@ma-petite-entreprise.fr', 'a1');
+        $result = $this->controller->batchCollecteHotspotOwasp('mavenKey', 'collectMode', static::$mel, 'a1');
 
         $this->assertEquals(200, $result['code']);
         $this->assertEquals(0, $result['owasp_2017']);
@@ -180,7 +184,7 @@ class BatchCollecteHotspotOwaspControllerTest extends TestCase
                 'info' => [],
             ]);
 
-        $result = $this->controller->batchCollecteHotspotOwasp('mavenKey', 'collectMode', 'laurent.hadjadj@ma-petite-entreprise.fr', 'a1');
+        $result = $this->controller->batchCollecteHotspotOwasp('mavenKey', 'collectMode', static::$mel, 'a1');
 
         $this->assertEquals(404, $result['code']);
         $this->assertEquals('L\'appel à l\'API n\'a pas abouti (Erreur 404).', $result['message']);
@@ -214,7 +218,7 @@ class BatchCollecteHotspotOwaspControllerTest extends TestCase
         $informationProjetRepositoryMock->method('selectInformationProjetProjectVersion')
             ->willReturn([
                 'code' => 200,
-                'info' => [['project_version' => '1.0', 'date' => '2024-08-09']],
+                'info' => [['project_version' => '1.0', 'date' => static::$date]],
             ]);
 
         // Configuration du mock pour HotspotOwaspRepository
@@ -226,7 +230,7 @@ class BatchCollecteHotspotOwaspControllerTest extends TestCase
             ->willReturn(['code' => 200]);
 
         // Exécuter la méthode
-        $result = $this->controller->batchCollecteHotspotOwasp('mavenKey', 'collectMode', 'laurent.hadjadj@ma-petite-entreprise.fr', 'a1');
+        $result = $this->controller->batchCollecteHotspotOwasp('mavenKey', 'collectMode', static::$mel, 'a1');
 
         // Assert sur le résultat
         $this->assertEquals(200, $result['code']);
@@ -258,7 +262,7 @@ class BatchCollecteHotspotOwaspControllerTest extends TestCase
         $informationProjetRepositoryMock->method('selectInformationProjetProjectVersion')
             ->willReturn([
                 'code' => 200,
-                'info' => [['project_version' => '1.0', 'date' => '2024-08-09']],
+                'info' => [['project_version' => '1.0', 'date' => static::$date]],
             ]);
 
         $hotspotOwaspRepositoryMock->method('deleteHotspotOwaspMavenKey')
@@ -267,40 +271,9 @@ class BatchCollecteHotspotOwaspControllerTest extends TestCase
         $hotspotOwaspRepositoryMock->method('insertHotspotOwasp')
             ->willReturn(['code' => 500, ['requête :' => 'insertHotspotOwasp']]);
 
-        $result = $this->controller->batchCollecteHotspotOwasp('mavenKey', 'collectMode', 'laurent.hadjadj@ma-petite-entreprise.fr', 'a1');
+        $result = $this->controller->batchCollecteHotspotOwasp('mavenKey', 'collectMode', static::$mel, 'a1');
         $this->assertEquals(500, $result['code']);
         $this->assertEquals('insertHotspotOwasp', $result['requête : ']);
-    }
-
-    public function testBatchCollecteHotspotOwaspWithNoHotspotsReturned()
-    {
-        $this->client->method('httpSonarQube')
-            ->willReturn([
-                'hotspots' => [],
-                'paging' => ['total' => 0],
-            ]);
-
-        $informationProjetRepositoryMock = $this->createMock(InformationProjetRepository::class);
-        $this->em->method('getRepository')->willReturn($informationProjetRepositoryMock);
-
-        $hotspotOwaspRepositoryMock = $this->createMock(HotspotOwaspRepository::class);
-        $this->em->method('getRepository')->willReturn($hotspotOwaspRepositoryMock);
-
-        $informationProjetRepositoryMock->method('selectInformationProjetProjectVersion')
-            ->willReturn([
-                'code' => 200,
-                'info' => [['project_version' => '1.0', 'date' => '2024-08-09']],
-            ]);
-
-        $hotspotOwaspRepositoryMock->method('deleteHotspotOwaspMavenKey')
-            ->willReturn(['code' => 200]);
-
-        $result = $this->controller->batchCollecteHotspotOwasp('mavenKey', 'collectMode', 'laurent.hadjadj@ma-petite-entreprise.fr', 'a1');
-
-        $this->assertEquals(200, $result['code']);
-        $this->assertEquals(0, $result['owasp_2017']);
-        $this->assertEquals('enregistrement', $result['info']);
-        $this->assertCount(0, $result['data']);
     }
 
 }
