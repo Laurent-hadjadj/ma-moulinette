@@ -11,6 +11,9 @@ use App\Repository\TodoRepository;
 use Symfony\Component\DependencyInjection\Container;
 use Psr\Container\ContainerInterface;
 
+/**
+ * [Description BatchCollecteTodoControllerTest]
+ */
 class BatchCollecteTodoControllerTest extends TestCase
 {
     /** @var EntityManagerInterface&\PHPUnit\Framework\MockObject\MockObject */
@@ -32,6 +35,8 @@ class BatchCollecteTodoControllerTest extends TestCase
     private ContainerInterface $container;
 
     private static $parameters='componentKeys=DummyMavenKey&rules=javascript:S1135,xml:S1135,typescript:S1135,Web:S1135,java:S1135,php:s1135,ruby:s1135,python:s1135&p=1&ps=500';
+    private static $api = 'http://localhost/api/issues/search?';
+    private static $s1135 = 'php:s1135';
 
     protected function setUp(): void
     {
@@ -63,10 +68,10 @@ class BatchCollecteTodoControllerTest extends TestCase
     public function testBatchCollecteTodoSuccess()
     {
         // Création du Stub pour la méthode getParameter pour retourner une "dummy" URL
-        $this->parameterBag->method('get')->willReturn('http://localhost/api/issues/search?'.static::$parameters);
+        $this->parameterBag->method('get')->willReturn(static::$api.static::$parameters);
 
         // Création du mock du client pour la réponse
-        $this->client->method('httpSonarQube')->willReturn(['paging' => ['total' => 1], 'issues' => [['rule' => 'php:s1135', 'component' => 'component', 'line' => 10]]]);
+        $this->client->method('httpSonarQube')->willReturn(['paging' => ['total' => 1], 'issues' => [['rule' => static::$s1135, 'component' => 'component', 'line' => 10]]]);
 
         // Création du mock pour la méthode deleteTodoMavenKey
         $this->todoRepository->method('deleteTodoMavenKey')->willReturn(['code' => 200]);
@@ -87,7 +92,7 @@ class BatchCollecteTodoControllerTest extends TestCase
     public function testBatchCollecteTodoHttpError()
     {
         $this->parameterBag->method('get')
-            ->willReturn('http://localhost/api/issues/search?'.static::$parameters);
+            ->willReturn(static::$api.static::$parameters);
 
         $this->client->method('httpSonarQube')
             ->willReturn(['code' => 401]);
@@ -101,11 +106,11 @@ class BatchCollecteTodoControllerTest extends TestCase
     public function testBatchCollecteTodoDeleteError()
     {
         $this->parameterBag->method('get')
-            ->willReturn('http://localhost/api/issues/search?'.static::$parameters);
+            ->willReturn(static::$api.static::$parameters);
 
         $this->client
             ->method('httpSonarQube')
-            ->willReturn(['paging' => ['total' => 1], 'issues' => [['rule' => 'php:s1135', 'component' => 'component', 'line' => 10]]]);
+            ->willReturn(['paging' => ['total' => 1], 'issues' => [['rule' => static::$s1135, 'component' => 'component', 'line' => 10]]]);
 
         $this->todoRepository->method('deleteTodoMavenKey')->willReturn(['code' => 500]);
 
@@ -121,11 +126,11 @@ class BatchCollecteTodoControllerTest extends TestCase
     {
         $this->parameterBag
             ->method('get')
-            ->willReturn('http://localhost/api/issues/search?'.static::$parameters);
+            ->willReturn(static::$api.static::$parameters);
 
         $this->client
             ->method('httpSonarQube')
-            ->willReturn(['paging' => ['total' => 1], 'issues' => [['rule' => 'php:s1135', 'component' => 'component', 'line' => 10]]]);
+            ->willReturn(['paging' => ['total' => 1], 'issues' => [['rule' => static::$s1135, 'component' => 'component', 'line' => 10]]]);
 
         $this->todoRepository
             ->method('deleteTodoMavenKey')
