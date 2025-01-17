@@ -62,7 +62,7 @@ class BatchCollecteAnomalieDetailControllerTest extends TestCase
         $this->anomalieDetailsRepository->method('insertAnomalieDetail')->willReturn(['code' => 200]);
 
         // Mocking client http response
-        $this->client->method('http')->willReturn([
+        $this->client->method('httpSonarQube')->willReturn([
             'paging' => ['total' => 1],
             'facets' => [
                 ['property' => 'severities', 'values' => [['val' => 'BLOCKER', 'count' => 1]]],
@@ -98,7 +98,7 @@ class BatchCollecteAnomalieDetailControllerTest extends TestCase
     public function testBatchCollecteAnomalieDetailError()
     {
         // Mocking client http response
-        $this->client->method('http')->willReturn([
+        $this->client->method('httpSonarQube')->willReturn([
                 'paging' => ['total' => 1],
                 'facets' => [
                     ['property' => 'severities', 'values' => [['val' => 'BLOCKER', 'count' => 1]]],
@@ -113,7 +113,7 @@ class BatchCollecteAnomalieDetailControllerTest extends TestCase
 
         $result = $this->controller->BatchCollecteAnomalieDetail('maven_key', 'mode_collecte', 'utilisateur_collecte');
         $this->assertEquals(500, $result['code']);
-        $this->assertEquals(['Delete Error', 'requête : ' => 'deleteAnomalieDetailsMavenKey'], $result['error']);
+        $this->assertEquals(['Delete Error', 'requête : ' => 'deleteAnomalieDetailsMavenKey'], $result['erreur']);
     }
 
     public function testBatchCollecteAnomalieDetailNoIssues()
@@ -122,7 +122,7 @@ class BatchCollecteAnomalieDetailControllerTest extends TestCase
         $this->anomalieDetailsRepository->method('insertAnomalieDetail')->willReturn(['code' => 200]);
 
         // Mocking client http response
-        $this->client->method('http')->willReturn([
+        $this->client->method('httpSonarQube')->willReturn([
             'paging' => ['total' => 0]
         ]);
 

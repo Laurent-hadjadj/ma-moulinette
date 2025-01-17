@@ -104,7 +104,7 @@ class BatchCollecteHotspotOwaspControllerTest extends TestCase
     }
     public function testBatchCollecteHotspotOwaspWithErrorInApiCall()
     {
-        $this->client->method('http')
+        $this->client->method('httpSonarQube')
             ->willReturn(['code' => 404]);
 
         $informationProjetRepositoryMock = $this->createMock(InformationProjetRepository::class);
@@ -124,12 +124,12 @@ class BatchCollecteHotspotOwaspControllerTest extends TestCase
 
         $result = $this->controller->batchCollecteHotspotOwasp('mavenKey', 'collectMode', 'laurent.hadjadj@ma-petite-entreprise.fr', 'a1');
 
-        $this->assertEquals(404, $result['error']);
+        $this->assertEquals(404, $result['erreur']);
     }
 
     public function testBatchCollecteHotspotOwaspWithEmptyData()
     {
-        $this->client->method('http')
+        $this->client->method('httpSonarQube')
             ->willReturn([
                 'hotspots' => [],
                 'paging' => ['total' => 0],
@@ -160,7 +160,7 @@ class BatchCollecteHotspotOwaspControllerTest extends TestCase
 
     public function testBatchCollecteHotspotOwaspWithMissingProjectInformation()
     {
-        $this->client->method('http')
+        $this->client->method('httpSonarQube')
             ->willReturn([
                 'hotspots' => [
                     ['securityCategory' => 'Cat1', 'ruleKey' => 'Rule1', 'vulnerabilityProbability' => 'HIGH', 'status' => 'status1', 'resolution' => 'res1'],
@@ -189,7 +189,7 @@ class BatchCollecteHotspotOwaspControllerTest extends TestCase
     public function testBatchCollecteHotspotOwaspWithInsertSuccess()
     {
         // Mock de la méthode HTTP
-        $this->client->method('http')
+        $this->client->method('httpSonarQube')
             ->willReturn([
                 'hotspots' => [
                     ['securityCategory' => 'Cat1', 'ruleKey' => 'Rule1', 'vulnerabilityProbability' => 'HIGH', 'status' => 'status1', 'resolution' => 'res1'],
@@ -234,7 +234,7 @@ class BatchCollecteHotspotOwaspControllerTest extends TestCase
 
     public function testBatchCollecteHotspotOwaspWithInsertFailure()
     {
-        $this->client->method('http')
+        $this->client->method('httpSonarQube')
             ->willReturn([
                 'hotspots' => [
                     ['securityCategory' => 'Cat1', 'ruleKey' => 'Rule1', 'vulnerabilityProbability' => 'HIGH', 'status' => 'status1', 'resolution' => 'res1'],
@@ -274,7 +274,7 @@ class BatchCollecteHotspotOwaspControllerTest extends TestCase
 
     public function testBatchCollecteHotspotOwaspWithNoHotspotsReturned()
     {
-        $this->client->method('http')
+        $this->client->method('httpSonarQube')
             ->willReturn([
                 'hotspots' => [],
                 'paging' => ['total' => 0],

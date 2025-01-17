@@ -54,16 +54,16 @@ class BatchCollecteNoteControllerTest extends TestCase
 
     public function testBatchCollecteNoteHttpError()
     {
-        $this->client->method('http')->willReturn(['code' => 404, 'erreur' => 'Not Found']);
+        $this->client->method('httpSonarQube')->willReturn(['code' => 404, 'erreur' => 'Not Found']);
 
         $result = $this->controller->batchCollecteNote('some-maven-key', 'COLLECTE', 'laurent.hadjadj@ma-petite-entreprise.fr', 'quality');
 
-        $this->assertEquals(['code' => 404, 'error' => ['Not Found']], $result);
+        $this->assertEquals(['code' => 404, 'erreur' => ['Not Found']], $result);
     }
 
     public function testBatchCollecteNoteDeleteError()
     {
-        $this->client->method('http')->willReturn([
+        $this->client->method('httpSonarQube')->willReturn([
             'component' => ['measures' => [['value' => 3.5]]]
         ]);
 
@@ -72,12 +72,12 @@ class BatchCollecteNoteControllerTest extends TestCase
         $result = $this->controller->batchCollecteNote('some-maven-key', 'COLLECTE', 'laurent.hadjadj@ma-petite-entreprise.fr', 'quality');
 
         $this->assertEquals(500, $result['code']);
-        $this->assertEquals(['Delete error', 'requête : ' => 'deleteNoteMavenKey'], $result['error']);
+        $this->assertEquals(['Delete error', 'requête : ' => 'deleteNoteMavenKey'], $result['erreur']);
     }
 
     public function testBatchCollecteNoteInsertError()
     {
-        $this->client->method('http')->willReturn([
+        $this->client->method('httpSonarQube')->willReturn([
             'component' => ['measures' => [['value' => 3.5]]]
         ]);
 
@@ -87,12 +87,12 @@ class BatchCollecteNoteControllerTest extends TestCase
         $result = $this->controller->batchCollecteNote('some-maven-key', 'COLLECTE', 'laurent.hadjadj@ma-petite-entreprise.fr', 'quality');
 
         $this->assertEquals(500, $result['code']);
-        $this->assertEquals(['Insert error', 'requête : ' => 'insertNote'], $result['error']);
+        $this->assertEquals(['Insert error', 'requête : ' => 'insertNote'], $result['erreur']);
     }
 
     public function testBatchCollecteNoteSuccess()
     {
-        $this->client->method('http')->willReturn([
+        $this->client->method('httpSonarQube')->willReturn([
             'component' => ['measures' => [['value' => 4.2]]]
         ]);
 
@@ -119,7 +119,7 @@ class BatchCollecteNoteControllerTest extends TestCase
 
         $result = $this->controller->BatchCollecteNoteHotspot('some-maven-key');
 
-        $this->assertEquals(['code' => 500, 'error' => ['Error fetching to_review', 'requête : ' => 'countHotspotsStatus(TO_REVIEW)']], $result);
+        $this->assertEquals(['code' => 500, 'erreur' => ['Error fetching to_review', 'requête : ' => 'countHotspotsStatus(TO_REVIEW)']], $result);
     }
 
     public function testBatchCollecteNoteHotspotSuccess()

@@ -53,7 +53,7 @@ class BatchCollecteInformationProjetControllerTest extends TestCase
         ];
 
         // Simule les retours du client HTTP
-        $this->client->method('http')->willReturn($sonarResult);
+        $this->client->method('httpSonarQube')->willReturn($sonarResult);
         // Simule les retours des méthodes de validation Maven
         $this->isValidMavenKey->method('isValideInformation')->willReturn([
             'code' => 200,
@@ -77,7 +77,7 @@ class BatchCollecteInformationProjetControllerTest extends TestCase
     public function testControleVersionProjetNotFound()
     {
         $mavenKey = 'some-maven-key';
-        $this->client->method('http')->willReturn(['code' => 404]);
+        $this->client->method('httpSonarQube')->willReturn(['code' => 404]);
 
         // Simule les retours des méthodes de validation Maven
         $this->isValidMavenKey->method('isValideInformation')->willReturn(['code' => 404]);
@@ -94,7 +94,7 @@ class BatchCollecteInformationProjetControllerTest extends TestCase
     public function testControleVersionProjetUnauthorized()
     {
         $mavenKey = 'some-maven-key';
-        $this->client->method('http')->willReturn(['code' => 401]);
+        $this->client->method('httpSonarQube')->willReturn(['code' => 401]);
 
         // Simule les retours des méthodes de validation Maven
         $this->isValidMavenKey->method('isValideInformation')->willReturn(['code' => 200]);

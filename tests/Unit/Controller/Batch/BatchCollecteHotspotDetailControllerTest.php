@@ -83,7 +83,7 @@ class BatchCollecteHotspotDetailControllerTest extends TestCase
         $this->hotspotDetailsRepository->method('insertHotspotDetails')->willReturn(['code' => 200]);
 
         $this->client
-            ->method('http')
+            ->method('httpSonarQube')
             ->willReturn([
                 'rule' => [
                     'securityCategory' => 'SECURITY',
@@ -159,7 +159,7 @@ class BatchCollecteHotspotDetailControllerTest extends TestCase
             ->willReturn(['code' => 500, 'erreur' => 'Erreur insertion']);
 
             $this->client
-            ->method('http')
+            ->method('httpSonarQube')
             ->willReturn([
                 'rule' => [
                     'securityCategory' => 'SECURITY',
@@ -180,7 +180,7 @@ class BatchCollecteHotspotDetailControllerTest extends TestCase
         $result = $this->controller->batchCollecteHotspotDetail('maven-key-123', 'manual', 'laurent.hadjadj@ma-petite-entreprise.fr');
 
         $this->assertEquals(500, $result['code']);
-        $this->assertEquals('Erreur insertion', $result['error'][0]);
-        $this->assertEquals('insertHotspotDetails', $result['error']['requête : ']);
+        $this->assertEquals('Erreur insertion', $result['erreur'][0]);
+        $this->assertEquals('insertHotspotDetails', $result['erreur']['requête : ']);
     }
 }

@@ -70,7 +70,7 @@ class BatchCollecteNoSonarControllerTest extends TestCase
     {
         // Configuration du mock Client pour retourner une réponse API correcte
         $this->client
-            ->method('http')
+            ->method('httpSonarQube')
             ->willReturn([
                 'code' => 200,
                 'paging' => ['total' => 2],
@@ -101,7 +101,7 @@ class BatchCollecteNoSonarControllerTest extends TestCase
     {
         // Configuration du mock Client pour retourner une erreur HTTP
         $this->client
-            ->method('http')
+            ->method('httpSonarQube')
             ->willReturn(['code' => 401, 'erreur' => 'Unauthorized']);
 
         // Exécution de la méthode à tester
@@ -109,14 +109,14 @@ class BatchCollecteNoSonarControllerTest extends TestCase
 
         // Vérification des résultats
         $this->assertEquals(401, $result['code']);
-        $this->assertEquals(['Unauthorized'], $result['error']);
+        $this->assertEquals(['Unauthorized'], $result['erreur']);
     }
 
     public function testBatchCollecteNoSonarDeleteError(): void
     {
         // Configuration du mock Client pour retourner une réponse API correcte
         $this->client
-            ->method('http')
+            ->method('httpSonarQube')
             ->willReturn([
                 'code' => 200,
                 'paging' => ['total' => 1],
@@ -135,14 +135,14 @@ class BatchCollecteNoSonarControllerTest extends TestCase
 
         // Vérification des résultats
         $this->assertEquals(500, $result['code']);
-        $this->assertEquals(['Deletion failed', 'requête : ' => 'deleteNoSonarMavenKey'], $result['error']);
+        $this->assertEquals(['Deletion failed', 'requête : ' => 'deleteNoSonarMavenKey'], $result['erreur']);
     }
 
     public function testBatchCollecteNoSonarInsertError(): void
     {
         // Configuration du mock Client pour retourner une réponse API correcte
         $this->client
-            ->method('http')
+            ->method('httpSonarQube')
             ->willReturn([
                 'code' => 200,
                 'paging' => ['total' => 1],
@@ -164,6 +164,6 @@ class BatchCollecteNoSonarControllerTest extends TestCase
 
         // Vérification des résultats
         $this->assertEquals(500, $result['code']);
-        $this->assertEquals(['Insertion failed', 'requête : ' => 'insertNoSonar'], $result['error']);
+        $this->assertEquals(['Insertion failed', 'requête : ' => 'insertNoSonar'], $result['erreur']);
     }
 }

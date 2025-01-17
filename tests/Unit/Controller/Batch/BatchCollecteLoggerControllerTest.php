@@ -92,7 +92,7 @@ class BatchCollecteLoggerControllerTest extends TestCase
         $expectedUrl = 'http://localhost/api/issues/search?' . http_build_query($queryParams);
 
         // Configurez le mock pour retourner la réponse simulée
-        $this->client->method('http')->with($this->equalTo($expectedUrl))->willReturn($mockResponse);
+        $this->client->method('httpSonarQube')->with($this->equalTo($expectedUrl))->willReturn($mockResponse);
 
         // Utilisation de la réflexion pour accéder à la méthode privée
         $reflection = new \ReflectionClass($this->controller);
@@ -116,7 +116,7 @@ class BatchCollecteLoggerControllerTest extends TestCase
         $expectedUrl = 'http://localhost/api/issues/search?' . http_build_query($queryParams);
 
         // Configurer le mock pour retourner la réponse d'erreur
-        $this->client->method('http')->with($this->equalTo($expectedUrl))->willReturn($mockErrorResponse);
+        $this->client->method('httpSonarQube')->with($this->equalTo($expectedUrl))->willReturn($mockErrorResponse);
 
         // Utilisation de la réflexion pour accéder à la méthode privée
         $reflection = new \ReflectionClass($this->controller);
@@ -125,8 +125,8 @@ class BatchCollecteLoggerControllerTest extends TestCase
 
         // Appeler la méthode privée
         $result = $method->invokeArgs($this->controller, [$queryParams, $tempoUrl]);
-        $this->assertArrayHasKey('error', $result);
-        $this->assertEquals(401, $result['error']);
+        $this->assertArrayHasKey('erreur', $result);
+        $this->assertEquals(401, $result['erreur']);
     }
 
     public function testMakeRequestNotFoundError()
@@ -135,7 +135,7 @@ class BatchCollecteLoggerControllerTest extends TestCase
         $tempoUrl = 'http://localhost';
         $mockErrorResponse = ['code' => 404, 'erreur' => 'Not Found'];
 
-        $this->client->method('http')
+        $this->client->method('httpSonarQube')
             ->with('http://localhost/api/issues/search?key=value')
             ->willReturn($mockErrorResponse);
 
@@ -144,8 +144,8 @@ class BatchCollecteLoggerControllerTest extends TestCase
         $method->setAccessible(true);
 
         $result = $method->invokeArgs($this->controller, [$queryParams, $tempoUrl]);
-        $this->assertArrayHasKey('error', $result);
-        $this->assertEquals(404, $result['error']);
+        $this->assertArrayHasKey('erreur', $result);
+        $this->assertEquals(404, $result['erreur']);
     }
 
     public function testMakeRequestOtherError()
@@ -158,7 +158,7 @@ class BatchCollecteLoggerControllerTest extends TestCase
         $expectedUrl = 'http://localhost/api/issues/search?' . http_build_query($queryParams);
 
         // Configurer le mock pour retourner la réponse d'erreur
-        $this->client->method('http')->with($this->equalTo($expectedUrl))->willReturn($mockErrorResponse);
+        $this->client->method('httpSonarQube')->with($this->equalTo($expectedUrl))->willReturn($mockErrorResponse);
 
         // Utilisation de la réflexion pour accéder à la méthode privée
         $reflection = new \ReflectionClass($this->controller);
@@ -189,11 +189,11 @@ class BatchCollecteLoggerControllerTest extends TestCase
         $this->loggerRepository->method('deleteLoggerMavenKey')->willReturn(['code' => 200]);
         $this->loggerRepository->method('insertLogger')->willReturn(['code' => 200]);
 
-        $this->client->method('http')->willReturn(['total' => 1]);
+        $this->client->method('httpSonarQube')->willReturn(['total' => 1]);
 
         $date=(new \DateTimeImmutable('2024-08-13T14:41:49.646488+0200'))->format(\DateTime::ATOM);
 
-        $this->client->method('http')->willReturnOnConsecutiveCalls(
+        $this->client->method('httpSonarQube')->willReturnOnConsecutiveCalls(
             ['total' => 5],
             ['total' => 3],
             ['total' => 1],
@@ -235,7 +235,7 @@ class BatchCollecteLoggerControllerTest extends TestCase
             ['sonar.url', 'http://localhost']
         ]);
 
-        $this->client->method('http')->willReturn(['total' => 5]);
+        $this->client->method('httpSonarQube')->willReturn(['total' => 5]);
 
         $this->loggerRepository->method('deleteLoggerMavenKey')->willReturn(['code' => 500, 'erreur' => 'Error deleting logger data']);
         $this->loggerRepository->method('insertLogger')->willReturn(['code' => 200]);
@@ -243,7 +243,7 @@ class BatchCollecteLoggerControllerTest extends TestCase
         $result = $this->controller->BatchCollecteLogger('some-maven-key', 'COLLECTE', 'laurent.hadjadj@ma-petite-entreprise.fr');
         $expectedResult = [
             'code' => 500,
-            'error' => ['Error deleting logger data', 'requête : ' => 'deleteLoggerMavenKey']
+            'erreur' => ['Error deleting logger data', 'requête : ' => 'deleteLoggerMavenKey']
         ];
         $this->assertArrayHasKey('code', $result);
         $this->assertEquals(500, $result['code']);
@@ -257,9 +257,9 @@ class BatchCollecteLoggerControllerTest extends TestCase
             ['sonar.url', 'http://localhost']
         ]);
 
-        $this->client->method('http')->willReturn(["total" => -1]);
+        $this->client->method('httpSonarQube')->willReturn(["total" => -1]);
         $this->loggerRepository->method('deleteLoggerMavenKey')->willReturn(['code' => 200]);
-        $this->loggerRepository->method('insertLogger')->willReturn(['erreur'=>'', 'code' => 500, 'error' => ['Insert erreur', "requête : " => "insertLogger"]]);
+        $this->loggerRepository->method('insertLogger')->willReturn(['erreur'=>'', 'code' => 500, 'erreur' => ['Insert erreur', "requête : " => "insertLogger"]]);
 
         $result = $this->controller->BatchCollecteLogger('some-maven-key', 'COLLECTE', 'laurent.hadjadj@ma-petite-entreprise.fr');
         $this->assertArrayHasKey('code', $result);

@@ -77,7 +77,7 @@ class BatchCollecteOwaspControllerTest extends TestCase
             'info' => [['date' => '2024-08-01', 'project_version' => '1.0.0']]
         ]);
 
-        $this->client->method('http')->willReturn([
+        $this->client->method('httpSonarQube')->willReturn([
             'total' => 10,
             'effortTotal' => 100,
             'facets' => [[
@@ -100,11 +100,11 @@ class BatchCollecteOwaspControllerTest extends TestCase
     public function testBatchCollecteOwaspHttpError()
     {
         $this->parameterBag->method('get')->with(BatchCollecteOwaspController::$sonarUrl)->willReturn('http://localhost/api/issues/search?' . static::$parameters);
-        $this->client->method('http')->willReturn(['code' => 404, 'erreur' => 'Not Found']);
+        $this->client->method('httpSonarQube')->willReturn(['code' => 404, 'erreur' => 'Not Found']);
 
         $result = $this->controller->BatchCollecteOwasp('mavenKey', 'manual', 'laurent.hadjadj@ma-petite-entreprise.fr');
         $this->assertEquals(404, $result['code']);
-        $this->assertEquals('Not Found', $result['error']);
+        $this->assertEquals('Not Found', $result['erreur']);
     }
 
     public function testBatchCollecteOwaspSelectError()
@@ -146,7 +146,7 @@ class BatchCollecteOwaspControllerTest extends TestCase
         ]);
 
         // Configurez également le mock pour la réponse du client HTTP, même si ce n'est pas directement utilisé ici
-        $this->client->method('http')->willReturn([
+        $this->client->method('httpSonarQube')->willReturn([
             'total' => 0,
             'effortTotal' => 0,
             'facets' => [],
@@ -170,7 +170,7 @@ class BatchCollecteOwaspControllerTest extends TestCase
         $this->parameterBag->method('get')->with(BatchCollecteOwaspController::$sonarUrl)->willReturn('http://localhost/api/issues/search?' . static::$parameters);
 
         // on récupère les résultats du client HTTP
-        $this->client->method('http')->willReturn([
+        $this->client->method('httpSonarQube')->willReturn([
             'total' => 10,
             'effortTotal' => 100,
             'facets' => [
@@ -209,7 +209,7 @@ class BatchCollecteOwaspControllerTest extends TestCase
         $this->informationProjetRepository->method('selectInformationProjetProjectVersion')->willReturn(['code' => 200, 'info' => [['project_version' => '1.2.0-RELEASE',
                 'date' => '2024-07-10 15:26:07+02']]]);
         $this->owaspRepository->method('deleteOwaspMavenKey')->willReturn(['code' => 200]);
-        $this->client->method('http')->willReturn([
+        $this->client->method('httpSonarQube')->willReturn([
             'total' => 10,
             'effortTotal' => 100,
             'facets' => [
@@ -233,7 +233,7 @@ class BatchCollecteOwaspControllerTest extends TestCase
         $this->assertEquals(500, $result['code']);
 
         // Vérifiez le message d'erreur retourné
-        $this->assertArrayHasKey('error', $result);
-        $this->assertEquals(['Insertion failed', BatchCollecteOwaspController::$request => 'insertNote'], $result['error']);
+        $this->assertArrayHasKey('erreur', $result);
+        $this->assertEquals(['Insertion failed', BatchCollecteOwaspController::$request => 'insertNote'], $result['erreur']);
     }
 }

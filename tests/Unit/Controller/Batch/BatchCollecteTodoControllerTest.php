@@ -66,7 +66,7 @@ class BatchCollecteTodoControllerTest extends TestCase
         $this->parameterBag->method('get')->willReturn('http://localhost/api/issues/search?'.static::$parameters);
 
         // Création du mock du client pour la réponse
-        $this->client->method('http')->willReturn(['paging' => ['total' => 1], 'issues' => [['rule' => 'php:s1135', 'component' => 'component', 'line' => 10]]]);
+        $this->client->method('httpSonarQube')->willReturn(['paging' => ['total' => 1], 'issues' => [['rule' => 'php:s1135', 'component' => 'component', 'line' => 10]]]);
 
         // Création du mock pour la méthode deleteTodoMavenKey
         $this->todoRepository->method('deleteTodoMavenKey')->willReturn(['code' => 200]);
@@ -89,7 +89,7 @@ class BatchCollecteTodoControllerTest extends TestCase
         $this->parameterBag->method('get')
             ->willReturn('http://localhost/api/issues/search?'.static::$parameters);
 
-        $this->client->method('http')
+        $this->client->method('httpSonarQube')
             ->willReturn(['code' => 401]);
 
         $result = $this->controller->BatchCollecteTodo('dummyMavenKey', 'dummyModeCollecte', 'dummyUtilisateurCollecte');
@@ -104,7 +104,7 @@ class BatchCollecteTodoControllerTest extends TestCase
             ->willReturn('http://localhost/api/issues/search?'.static::$parameters);
 
         $this->client
-            ->method('http')
+            ->method('httpSonarQube')
             ->willReturn(['paging' => ['total' => 1], 'issues' => [['rule' => 'php:s1135', 'component' => 'component', 'line' => 10]]]);
 
         $this->todoRepository->method('deleteTodoMavenKey')->willReturn(['code' => 500]);
@@ -124,7 +124,7 @@ class BatchCollecteTodoControllerTest extends TestCase
             ->willReturn('http://localhost/api/issues/search?'.static::$parameters);
 
         $this->client
-            ->method('http')
+            ->method('httpSonarQube')
             ->willReturn(['paging' => ['total' => 1], 'issues' => [['rule' => 'php:s1135', 'component' => 'component', 'line' => 10]]]);
 
         $this->todoRepository
@@ -139,6 +139,6 @@ class BatchCollecteTodoControllerTest extends TestCase
 
         $this->assertEquals(500, $result['code']);
         $this->assertEquals('insertTodo', $result[BatchCollecteTodoController::$request]);
-        $this->assertEquals(['Insert error'], $result['error']);
+        $this->assertEquals(['Insert error'], $result['erreur']);
     }
 }

@@ -41,6 +41,11 @@ class BatchCollecteAnomalieControllerTest extends TestCase
     /** @var ContainerInterface&MockObject */
     private MockObject $container;
 
+    private static $localhost = 'http://localhost';
+    private static $api = 'http://localhost/api/issues/search?';
+    private static $mel = 'laurent.hadjadj@ma-petite-entreprise.fr';
+    private static $frontend = 'frontend/';
+
     protected function setUp(): void
     {
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
@@ -64,16 +69,16 @@ class BatchCollecteAnomalieControllerTest extends TestCase
     public function testMakeRequestSuccess()
     {
         $queryParams = ['key' => 'value'];
-        $tempoUrl = 'http://localhost';
+        $tempoUrl = static::$localhost;
 
         // Réponse simulée pour une requête 200
         $mockResponse = ['code' => 200, ''];
 
         // Construire l'URL attendue
-        $expectedUrl = 'http://localhost/api/issues/search?' . http_build_query($queryParams);
+        $expectedUrl = static::$api . http_build_query($queryParams);
 
         // Configurez le mock pour retourner la réponse simulée
-        $this->client->method('http')->with($this->equalTo($expectedUrl))->willReturn($mockResponse);
+        $this->client->method('httpSonarQube')->with($this->equalTo($expectedUrl))->willReturn($mockResponse);
 
         // Utilisation de la réflexion pour accéder à la méthode privée
         $reflection = new \ReflectionClass($this->controller);
@@ -88,16 +93,16 @@ class BatchCollecteAnomalieControllerTest extends TestCase
     public function testMakeRequestUnauthorizedError()
     {
         $queryParams = ['key' => 'value'];
-        $tempoUrl = 'http://localhost';
+        $tempoUrl = static::$localhost;
 
         // Réponse simulée pour une erreur 401
-        $mockErrorResponse = ['error' => 401, 'Unauthorized'];
+        $mockErrorResponse = ['erreur' => 401, 'Unauthorized'];
 
         // Construire l'URL attendue
-        $expectedUrl = 'http://localhost/api/issues/search?' . http_build_query($queryParams);
+        $expectedUrl = static::$api . http_build_query($queryParams);
 
         // Configurer le mock pour retourner la réponse d'erreur
-        $this->client->method('http')->with($this->equalTo($expectedUrl))->willReturn($mockErrorResponse);
+        $this->client->method('httpSonarQube')->with($this->equalTo($expectedUrl))->willReturn($mockErrorResponse);
 
         // Utilisation de la réflexion pour accéder à la méthode privée
         $reflection = new \ReflectionClass($this->controller);
@@ -112,10 +117,10 @@ class BatchCollecteAnomalieControllerTest extends TestCase
     public function testMakeRequestNotFoundError()
     {
         $queryParams = ['key' => 'value'];
-        $tempoUrl = 'http://localhost';
+        $tempoUrl = static::$localhost;
         $mockErrorResponse = ['code' => 404, 'erreur' => 'Not Found'];
 
-        $this->client->method('http')
+        $this->client->method('httpSonarQube')
             ->with('http://localhost/api/issues/search?key=value')
             ->willReturn($mockErrorResponse);
 
@@ -125,16 +130,16 @@ class BatchCollecteAnomalieControllerTest extends TestCase
 
         $result = $method->invokeArgs($this->controller, [$queryParams, $tempoUrl]);
 
-        $this->assertEquals(['error' => 404, 'Not Found'], $result);
+        $this->assertEquals(['erreur' => 404, 'Not Found'], $result);
     }
 
     public function testMakeRequestOtherError()
     {
         $queryParams = ['key' => 'value'];
-        $tempoUrl = 'http://localhost';
+        $tempoUrl = static::$localhost;
         $mockErrorResponse = ['code' => 500, 'erreur' => 'Internal Server Error'];
 
-        $this->client->method('http')
+        $this->client->method('httpSonarQube')
             ->with('http://localhost/api/issues/search?key=value')
             ->willReturn($mockErrorResponse);
 
@@ -150,17 +155,17 @@ class BatchCollecteAnomalieControllerTest extends TestCase
     public function testBatchCollecteAnomalieSuccess()
     {
         // Création du Stub pour la méthode getParameter pour retourner une "dummy" URL
-        $this->parameterBag->method('get')->willReturn('http://localhost/api/issues/search?');
+        $this->parameterBag->method('get')->willReturn(static::$api);
 
         // Création du mock du client pour la réponse
-        $this->client->method('http')->willReturn([
+        $this->client->method('httpSonarQube')->willReturn([
             'paging' => ['total' => 1],
             'total' => 1,
             'effortTotal' => 120,
             'facets' => [
                 ['property' => 'severities', 'values' => [['val' => 'BLOCKER', 'count' => 1]]],
                 ['property' => 'types', 'values' => [['val' => 'BUG', 'count' => 2]]],
-                ['property' => 'directories', 'values' => [['val' => 'frontend/', 'count' => 3]]],
+                ['property' => 'directories', 'values' => [['val' => static::$frontend, 'count' => 3]]],
             ],
         ]);
 
@@ -168,7 +173,7 @@ class BatchCollecteAnomalieControllerTest extends TestCase
         $this->anomalieRepository->method('deleteAnomalieMavenKey')->willReturn(['code' => 200]);
         $this->anomalieRepository->method('insertAnomalie')->willReturn(['code' => 200]);
 
-        $result = $this->controller->BatchCollecteAnomalie('mavenKey', 'manual', 'laurent.hadjadj@ma-petite-entreprise.fr');
+        $result = $this->controller->BatchCollecteAnomalie('mavenKey', 'manual', static::$mel);
 
         // Assertions
         $this->assertEquals(200, $result['code']);
@@ -200,7 +205,7 @@ class BatchCollecteAnomalieControllerTest extends TestCase
             'vulnerability' => 0,
             'code_smell' => 0,
             'mode_collecte' => 'manual',
-            'utilisateur_collecte' => 'laurent.hadjadj@ma-petite-entreprise.fr',
+            'utilisateur_collecte' => static::$mel,
             'date_enregistrement' => $result['message']['date_enregistrement']
         ], $result['message']);
 
@@ -224,44 +229,44 @@ class BatchCollecteAnomalieControllerTest extends TestCase
     public function testBatchCollecteAnomalieDeleteError()
     {
         // Création du Stub pour la méthode getParameter pour retourner une "dummy" URL
-        $this->parameterBag->method('get')->willReturn('http://localhost/api/issues/search?');
+        $this->parameterBag->method('get')->willReturn(static::$api);
 
         // Création du mock du client pour la réponse
-        $this->client->method('http')->willReturn([
+        $this->client->method('httpSonarQube')->willReturn([
             'paging' => ['total' => 1],
             'total' => 1,
             'effortTotal' => 120,
             'facets' => [
                 ['property' => 'severities', 'values' => [['val' => 'BLOCKER', 'count' => 1]]],
                 ['property' => 'types', 'values' => [['val' => 'BUG', 'count' => 2]]],
-                ['property' => 'directories', 'values' => [['val' => 'frontend/', 'count' => 3]]],
+                ['property' => 'directories', 'values' => [['val' => static::$frontend, 'count' => 3]]],
             ],
         ]);
 
         // Configuration pour simuler une erreur lors de la suppression
         $this->anomalieRepository->method('deleteAnomalieMavenKey')->willReturn(['code' => 500, 'erreur' => 'Delete failed']);
 
-        $result = $this->controller->BatchCollecteAnomalie('mavenKey', 'manual', 'laurent.hadjadj@ma-petite-entreprise.fr');
+        $result = $this->controller->BatchCollecteAnomalie('mavenKey', 'manual', static::$mel);
 
         // Vérification du retour en cas d'erreur
         $this->assertEquals(500, $result['code']);
-        $this->assertEquals('Delete failed', $result['error'][0]);
+        $this->assertEquals('Delete failed', $result['erreur'][0]);
     }
 
     public function testBatchCollecteAnomalieInsertError()
     {
         // Création du Stub pour la méthode getParameter pour retourner une "dummy" URL
-        $this->parameterBag->method('get')->willReturn('http://localhost/api/issues/search?');
+        $this->parameterBag->method('get')->willReturn(static::$api);
 
         // Création du mock du client pour la réponse
-        $this->client->method('http')->willReturn([
+        $this->client->method('httpSonarQube')->willReturn([
             'paging' => ['total' => 1],
             'total' => 1,
             'effortTotal' => 120,
             'facets' => [
                 ['property' => 'severities', 'values' => [['val' => 'BLOCKER', 'count' => 1]]],
                 ['property' => 'types', 'values' => [['val' => 'BUG', 'count' => 2]]],
-                ['property' => 'directories', 'values' => [['val' => 'frontend/', 'count' => 3]]],
+                ['property' => 'directories', 'values' => [['val' => static::$frontend, 'count' => 3]]],
             ],
         ]);
 
@@ -269,10 +274,10 @@ class BatchCollecteAnomalieControllerTest extends TestCase
         $this->anomalieRepository->method('deleteAnomalieMavenKey')->willReturn(['code' => 200]);
         $this->anomalieRepository->method('insertAnomalie')->willReturn(['code' => 500, 'erreur' => 'Insert failed']);
 
-        $result = $this->controller->BatchCollecteAnomalie('mavenKey', 'manual', 'laurent.hadjadj@ma-petite-entreprise.fr');
+        $result = $this->controller->BatchCollecteAnomalie('mavenKey', 'manual', static::$mel);
 
         // Vérification du retour en cas d'erreur
         $this->assertEquals(500, $result['code']);
-        $this->assertEquals('Insert failed', $result['error'][0]);
+        $this->assertEquals('Insert failed', $result['erreur'][0]);
     }
 }

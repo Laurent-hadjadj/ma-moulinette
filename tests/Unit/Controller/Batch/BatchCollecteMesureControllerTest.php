@@ -45,19 +45,19 @@ class BatchCollecteMesureControllerTest extends TestCase
     public function testBatchCollecteMesureHttpError(): void
     {
         // Mock the HTTP client to return an error
-        $this->client->method('http')->willReturn([
+        $this->client->method('httpSonarQube')->willReturn([
             'code' => 404,
             'erreur' => 'Not Found'
         ]);
 
         $result = $this->controller->BatchCollecteMesure('some-maven-key', 'COLLECTE', 'laurent.hadjadj@ma-petite-entreprise.fr');
-        $this->assertEquals(['code' => 404, 'error' => ['Not Found']], $result);
+        $this->assertEquals(['code' => 404, 'erreur' => ['Not Found']], $result);
     }
 
     public function testBatchCollecteMesureDeleteError(): void
     {
         // Mock the HTTP client to return valid data
-        $this->client->method('http')->will($this->returnValueMap([
+        $this->client->method('httpSonarQube')->will($this->returnValueMap([
             ['http://localhost/api/components/app?component=some-maven-key', ['measures' => ['lines' => 100, 'coverage' => 75, 'duplicated_lines_density' => 5, 'tests' => 20, 'issues' => 3]]],
             ['http://localhost/api/measures/component?component=some-maven-key&metricKeys=ncloc,ncloc_language_distribution', ['component' => ['measures' => [['metric' => 'ncloc', 'value' => 1500], ['metric' => 'ncloc_language_distribution', 'value' => 'java=60;php=40']]]]],
             ['http://localhost/api/measures/component?component=some-maven-key&metricKeys=sqale_debt_ratio', ['component' => ['measures' => [['metric' => 'sqale_debt_ratio', 'value' => '1.23']]]]]
@@ -71,7 +71,7 @@ class BatchCollecteMesureControllerTest extends TestCase
         $result = $this->controller->BatchCollecteMesure('some-maven-key', 'COLLECTE', 'laurent.hadjadj@ma-petite-entreprise.fr');
         $this->assertEquals([
             'code' => 500,
-            'error' => [
+            'erreur' => [
                 'requête : ' => 'deleteMesureMavenKey',
                 0 => 'Delete error'
             ]
@@ -81,7 +81,7 @@ class BatchCollecteMesureControllerTest extends TestCase
     public function testBatchCollecteMesureInsertError(): void
     {
         // Define a return value map for the mocked http() method
-        $this->client->method('http')->willReturnOnConsecutiveCalls(
+        $this->client->method('httpSonarQube')->willReturnOnConsecutiveCalls(
             [
                 'projectName' => 'ma-moulinette',
                 'measures' => [
@@ -121,7 +121,7 @@ class BatchCollecteMesureControllerTest extends TestCase
         // Assert that the result matches the expected error format
         $this->assertEquals([
             'code' => 500,
-            'error' => [
+            'erreur' => [
                 'requête : ' => 'insertMesures',
                 0 => 'Insert error'
             ]
@@ -131,7 +131,7 @@ class BatchCollecteMesureControllerTest extends TestCase
     public function testBatchCollecteMesureSuccess(): void
     {
         // Mock the HTTP client to return valid data
-        $this->client->method('http')->willReturnOnConsecutiveCalls(
+        $this->client->method('httpSonarQube')->willReturnOnConsecutiveCalls(
             [
                 'projectName' => 'ma-moulinette',
                 'measures' => [
