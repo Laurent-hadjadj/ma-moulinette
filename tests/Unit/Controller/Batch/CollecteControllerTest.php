@@ -7,8 +7,6 @@ namespace App\Tests\Unit\Controller\Batch;
 use App\Controller\Batch\CollecteController;
 use App\Service\FileLogger;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Repository\HistoriqueRepository;
-use App\Entity\Historique;
 use App\Controller\Batch\BatchCollecteActuatorController;
 use App\Controller\Batch\BatchCollecteInformationProjetController;
 use App\Controller\Batch\BatchCollecteMesureController;
@@ -27,6 +25,9 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Psr\Container\ContainerInterface;
 
+/**
+ * [Description CollecteControllerTest]
+ */
 class CollecteControllerTest extends TestCase
 {
     private EntityManagerInterface $em;
@@ -49,6 +50,27 @@ class CollecteControllerTest extends TestCase
     private BatchCollecteTodoController $batchCollecteTodo;
     private BatchCollecteActuatorController $batchCollecteActuator;
     private BatchCollecteLoggerController $batchCollecteLogger;
+
+    private static $anomalieDetail = 'Anomalie Detail';
+    private static $hotspotDetail = 'Hotspot Detail';
+    private static $owaspA0 = 'Owasp a0';
+    private static $owaspA1 = 'Owasp a1';
+    private static $owaspA2 = 'Owasp a2';
+    private static $owaspA3 = 'Owasp a3';
+    private static $owaspA4 = 'Owasp a4';
+    private static $owaspA5 = 'Owasp a5';
+    private static $owaspA6 = 'Owasp a6';
+    private static $owaspA7 = 'Owasp a7';
+    private static $owaspA8 = 'Owasp a8';
+    private static $owaspA9 = 'Owasp a9';
+    private static $erreurCollecte = 'Erreur lors de la collecte des informations';
+    private static $informationProjet = 'Information projet';
+    private static $s09Owasp = '09 - OWASP';
+    private static $s11NoSonar = '11 - NOSONAR';
+    private static $s12Todo = '12 - TODO';
+    private static $s14LoggerActuator = '14 - LoggerActuator';
+    private static $owaspA0A10 = 'Owasp a0-a10';
+    private static $noteHotspot = 'Note Hotspot';
 
     protected function setUp(): void
     {
@@ -125,7 +147,7 @@ class CollecteControllerTest extends TestCase
 
         $this->batchCollecteAnomalieDetail->method('BatchCollecteAnomalieDetail')->willReturn([
             'code' => 200,
-            'message' => 'Anomalie detail',
+            'message' => static::$anomalieDetail,
             'data' => ['bug_blocker' => 1, 'bug_critical' => 1, 'bug_major' => 1, 'bug_minor' => 1, 'bug_info' => 1, 'bug_critical' => 0, 'bug_major' => 0, 'bug_minor' => 0, 'bug_info' => 0, 'vulnerability_blocker' => 1, 'vulnerability_critical' => 1, 'vulnerability_major' => 1, 'vulnerability_minor' => 1, 'vulnerability_info' => 1, 'vulnerability_critical' => 0, 'vulnerability_major' => 0, 'vulnerability_minor' => 0, 'vulnerability_info' => 0, 'code_smell_blocker' => 1, 'code_smell_critical' => 1, 'code_smell_major' => 1, 'code_smell_minor' => 1, 'code_smell_info' => 1, 'code_smell_critical' => 0, 'code_smell_major' => 0, 'code_smell_minor' => 0, 'code_smell_info' => 0]]);
 
         $this->batchCollecteHotspot->method('batchCollecteHotspot')->willReturn([
@@ -136,12 +158,12 @@ class CollecteControllerTest extends TestCase
 
         $this->batchCollecteNote->method('batchCollecteNoteHotspot')->willReturn([
             'code' => 200,
-            'message' => 'Note Hotspot',
+            'message' => static::$noteHotspot,
             'data' => ['note_hotspot' => 'A']]);
 
         $this->batchCollecteHotspotDetail->method('batchCollecteHotspotDetail')->willReturn([
             'code' => 200,
-            'message' => 'Hotspot detail',
+            'message' => static::$hotspotDetail,
         ]);
         $this->batchCollecteOwasp->method('batchCollecteOwasp')->willReturn([
             'code' => 200,
@@ -242,7 +264,7 @@ class CollecteControllerTest extends TestCase
         $this->assertArrayHasKey('06 - HOTSPOT', $collecte[8]);
         $this->assertArrayHasKey('07 - NOTE HOTSPOT', $collecte[9]);
         $this->assertArrayHasKey('08 - HOTSPOT DETAIL', $collecte[10]);
-        $this->assertArrayHasKey('09 - OWASP', $collecte[11]);
+        $this->assertArrayHasKey(static::$s09Owasp, $collecte[11]);
         $this->assertArrayHasKey('10 - HOTSPOT OWASP A0', $collecte[12]);
         $this->assertArrayHasKey('10 - HOTSPOT OWASP A1', $collecte[13]);
         $this->assertArrayHasKey('10 - HOTSPOT OWASP A2', $collecte[14]);
@@ -254,10 +276,10 @@ class CollecteControllerTest extends TestCase
         $this->assertArrayHasKey('10 - HOTSPOT OWASP A8', $collecte[20]);
         $this->assertArrayHasKey('10 - HOTSPOT OWASP A9', $collecte[21]);
         $this->assertArrayHasKey('10 - HOTSPOT OWASP A10', $collecte[22]);
-        $this->assertArrayHasKey('11 - NOSONAR', $collecte[23]);
-        $this->assertArrayHasKey('12 - TODO', $collecte[24]);
+        $this->assertArrayHasKey(static::$s11NoSonar, $collecte[23]);
+        $this->assertArrayHasKey(static::$s12Todo, $collecte[24]);
         $this->assertArrayHasKey('13 - Actuator', $collecte[25]);
-        $this->assertArrayHasKey('14 - LoggerActuator', $collecte[26]);
+        $this->assertArrayHasKey(static::$s14LoggerActuator, $collecte[26]);
 
         $data = $result['data'];
 
@@ -343,8 +365,8 @@ class CollecteControllerTest extends TestCase
         /** Hotspots Details */
 
         /** OWASP */
-        $this->assertEquals(150, $collecte[11]['09 - OWASP']['data']['effort_total']);
-        $this->assertEquals(10, $collecte[11]['09 - OWASP']['message']['nombre']);
+        $this->assertEquals(150, $collecte[11][static::$s09Owasp]['data']['effort_total']);
+        $this->assertEquals(10, $collecte[11][static::$s09Owasp]['message']['nombre']);
 
         /** Hotspot OWASP */
         $this->assertEquals($message, $collecte[12]['10 - HOTSPOT OWASP A0']);
@@ -405,22 +427,22 @@ class CollecteControllerTest extends TestCase
         $this->assertEquals(['referentiel_owasp' => 2017, 'menace' => 'a10', 'security_category' => 'NC', 'rule_key' => 'NC', 'probability' => 'NC', 'status' => 'NC', 'resolution' => '', 'niveau' => -1], $collecte[22]['data']);
 
         /** NoSonar */
-        $this->assertEquals(1, $collecte[23]['11 - NOSONAR']['suppress_warning']);
-        $this->assertEquals(1, $collecte[23]['11 - NOSONAR']['no_sonar']);
+        $this->assertEquals(1, $collecte[23][static::$s11NoSonar]['suppress_warning']);
+        $this->assertEquals(1, $collecte[23][static::$s11NoSonar]['no_sonar']);
         $this->assertEquals(1, $data['suppress_warning']);
         $this->assertEquals(1, $data['no_sonar']);
 
         /** To.do */
-        $this->assertEquals('java:007', $collecte[24]['12 - TODO']['todo']['rule']);
-        $this->assertEquals('/src/cool/toto.java', $collecte[24]['12 - TODO']['todo']['component']);
-        $this->assertEquals(10, $collecte[24]['12 - TODO']['todo']['line']);
+        $this->assertEquals('java:007', $collecte[24][static::$s12Todo]['todo']['rule']);
+        $this->assertEquals('/src/cool/toto.java', $collecte[24][static::$s12Todo]['todo']['component']);
+        $this->assertEquals(10, $collecte[24][static::$s12Todo]['todo']['line']);
         $this->assertEquals(5, $data['todo']);
 
         /** Logger */
-        $this->assertEquals(1, $collecte[26]['14 - LoggerActuator']['logger_info']);
-        $this->assertEquals(1, $collecte[26]['14 - LoggerActuator']['logger_warn']);
-        $this->assertEquals(1, $collecte[26]['14 - LoggerActuator']['logger_error']);
-        $this->assertEquals(1, $collecte[26]['14 - LoggerActuator']['logger_debug']);
+        $this->assertEquals(1, $collecte[26][static::$s14LoggerActuator]['logger_info']);
+        $this->assertEquals(1, $collecte[26][static::$s14LoggerActuator]['logger_warn']);
+        $this->assertEquals(1, $collecte[26][static::$s14LoggerActuator]['logger_error']);
+        $this->assertEquals(1, $collecte[26][static::$s14LoggerActuator]['logger_debug']);
 
         $this->assertEquals(1, $data['logger_info']['total']);
         $this->assertEquals(1, $data['logger_warn']['total']);
@@ -437,7 +459,7 @@ class CollecteControllerTest extends TestCase
     {
         $this->batchCollecteInformation->method('batchCollecteInformation')->willReturn([
             'code' => 500,
-            'message' => 'Erreur lors de la collecte des informations'
+            'message' => static::$erreurCollecte
         ]);
 
         $result = $this->controller->collecte('portefeuille', 'maven_key', 'mode_collecte', 'utilisateur_collecte');
@@ -452,7 +474,7 @@ class CollecteControllerTest extends TestCase
         // Vérification complète du contenu de l'élément Collecte[1]
         $expectedErrorArray = [
         '**** ERREUR : INFORMATION PROJET 500 ****',
-        'Erreur lors de la collecte des informations',
+        static::$erreurCollecte,
         '~************* FIN DU TRAITEMENT ***************~'];
         $this->assertSame($expectedErrorArray, $result['Collecte'][1]);
     }
@@ -461,7 +483,7 @@ class CollecteControllerTest extends TestCase
     {
         $this->batchCollecteInformation->method('batchCollecteInformation')->willReturn([
             'code' => 200,
-            'message' => 'Information projet',
+            'message' => static::$informationProjet,
             'data' => []
         ]);
 
@@ -488,7 +510,7 @@ class CollecteControllerTest extends TestCase
     {
         $this->batchCollecteInformation->method('batchCollecteInformation')->willReturn([
             'code' => 200,
-            'message' => 'Information projet',
+            'message' => static::$informationProjet,
             'data' => []
         ]);
         $this->batchCollecteMesure->method('batchCollecteMesure')->willReturn([
@@ -522,7 +544,7 @@ class CollecteControllerTest extends TestCase
     {
         $this->batchCollecteInformation->method('batchCollecteInformation')->willReturn([
             'code' => 200,
-            'message' => 'Information projet',
+            'message' => static::$informationProjet,
             'data' => []
         ]);
         $this->batchCollecteMesure->method('batchCollecteMesure')->willReturn([
@@ -554,7 +576,7 @@ class CollecteControllerTest extends TestCase
     {
         $this->batchCollecteInformation->method('batchCollecteInformation')->willReturn([
             'code' => 200,
-            'message' => 'Information projet',
+            'message' => static::$informationProjet,
             'data' => []
         ]);
         $this->batchCollecteMesure->method('batchCollecteMesure')->willReturn([
@@ -586,7 +608,7 @@ class CollecteControllerTest extends TestCase
     {
         $this->batchCollecteInformation->method('batchCollecteInformation')->willReturn([
             'code' => 200,
-            'message' => 'Information projet',
+            'message' => static::$informationProjet,
             'data' => []
         ]);
         $this->batchCollecteMesure->method('batchCollecteMesure')->willReturn([
@@ -623,7 +645,7 @@ class CollecteControllerTest extends TestCase
     {
         $this->batchCollecteInformation->method('batchCollecteInformation')->willReturn([
             'code' => 200,
-            'message' => 'Information projet',
+            'message' => static::$informationProjet,
             'data' => []
         ]);
         $this->batchCollecteMesure->method('batchCollecteMesure')->willReturn([
@@ -664,7 +686,7 @@ class CollecteControllerTest extends TestCase
     {
         $this->batchCollecteInformation->method('batchCollecteInformation')->willReturn([
             'code' => 200,
-            'message' => 'Information projet',
+            'message' => static::$informationProjet,
             'data' => []
         ]);
         $this->batchCollecteMesure->method('batchCollecteMesure')->willReturn([
@@ -688,7 +710,7 @@ class CollecteControllerTest extends TestCase
         ]);
         $this->batchCollecteAnomalieDetail->method('batchCollecteAnomalieDetail')->willReturn([
             'code' => 200,
-            'message' => 'Anomalie Detail',
+            'message' => static::$anomalieDetail,
             'data' => []
         ]);
 
@@ -710,7 +732,7 @@ class CollecteControllerTest extends TestCase
     {
         $this->batchCollecteInformation->method('batchCollecteInformation')->willReturn([
             'code' => 200,
-            'message' => 'Information projet',
+            'message' => static::$informationProjet,
             'data' => []
         ]);
         $this->batchCollecteMesure->method('batchCollecteMesure')->willReturn([
@@ -734,7 +756,7 @@ class CollecteControllerTest extends TestCase
         ]);
         $this->batchCollecteAnomalieDetail->method('batchCollecteAnomalieDetail')->willReturn([
             'code' => 200,
-            'message' => 'Anomalie Detail',
+            'message' => static::$anomalieDetail,
             'data' => []
         ]);
         $this->batchCollecteHotspot->method('batchCollecteHotspot')->willReturn([
@@ -760,7 +782,7 @@ class CollecteControllerTest extends TestCase
     {
         $this->batchCollecteInformation->method('batchCollecteInformation')->willReturn([
             'code' => 200,
-            'message' => 'Information projet',
+            'message' => static::$informationProjet,
             'data' => []
         ]);
         $this->batchCollecteMesure->method('batchCollecteMesure')->willReturn([
@@ -784,7 +806,7 @@ class CollecteControllerTest extends TestCase
         ]);
         $this->batchCollecteAnomalieDetail->method('batchCollecteAnomalieDetail')->willReturn([
             'code' => 200,
-            'message' => 'Anomalie Detail',
+            'message' => static::$anomalieDetail,
             'data' => []
         ]);
         $this->batchCollecteHotspot->method('batchCollecteHotspot')->willReturn([
@@ -794,7 +816,7 @@ class CollecteControllerTest extends TestCase
         ]);
         $this->batchCollecteNote->method('batchCollecteNoteHotspot')->willReturn([
             'code' => 200,
-            'message' => 'Note Hotspot',
+            'message' => static::$noteHotspot,
             'data' => []
         ]);
 
@@ -816,7 +838,7 @@ class CollecteControllerTest extends TestCase
     {
         $this->batchCollecteInformation->method('batchCollecteInformation')->willReturn([
             'code' => 200,
-            'message' => 'Information projet',
+            'message' => static::$informationProjet,
             'data' => []
         ]);
         $this->batchCollecteMesure->method('batchCollecteMesure')->willReturn([
@@ -840,7 +862,7 @@ class CollecteControllerTest extends TestCase
         ]);
         $this->batchCollecteAnomalieDetail->method('batchCollecteAnomalieDetail')->willReturn([
             'code' => 200,
-            'message' => 'Anomalie Detail',
+            'message' => static::$anomalieDetail,
             'data' => []
         ]);
         $this->batchCollecteHotspot->method('batchCollecteHotspot')->willReturn([
@@ -850,12 +872,12 @@ class CollecteControllerTest extends TestCase
         ]);
         $this->batchCollecteNote->method('batchCollecteNoteHotspot')->willReturn([
             'code' => 200,
-            'message' => 'Note Hotspot',
+            'message' => static::$noteHotspot,
             'data' => []
         ]);
         $this->batchCollecteHotspotDetail->method('batchCollecteHotspotDetail')->willReturn([
             'code' => 200,
-            'message' => 'Hotspot Detail',
+            'message' => static::$hotspotDetail,
             'data' => []
         ]);
 
@@ -877,7 +899,7 @@ class CollecteControllerTest extends TestCase
     {
         $this->batchCollecteInformation->method('batchCollecteInformation')->willReturn([
             'code' => 200,
-            'message' => 'Information projet',
+            'message' => static::$informationProjet,
             'data' => []
         ]);
         $this->batchCollecteMesure->method('batchCollecteMesure')->willReturn([
@@ -901,7 +923,7 @@ class CollecteControllerTest extends TestCase
         ]);
         $this->batchCollecteAnomalieDetail->method('batchCollecteAnomalieDetail')->willReturn([
             'code' => 200,
-            'message' => 'Anomalie Detail',
+            'message' => static::$anomalieDetail,
             'data' => []
         ]);
         $this->batchCollecteHotspot->method('batchCollecteHotspot')->willReturn([
@@ -911,12 +933,12 @@ class CollecteControllerTest extends TestCase
         ]);
         $this->batchCollecteNote->method('batchCollecteNoteHotspot')->willReturn([
             'code' => 200,
-            'message' => 'Note Hotspot',
+            'message' => static::$noteHotspot,
             'data' => []
         ]);
         $this->batchCollecteHotspotDetail->method('batchCollecteHotspotDetail')->willReturn([
             'code' => 200,
-            'message' => 'Hotspot Detail',
+            'message' => static::$hotspotDetail,
             'data' => []
         ]);
         $this->batchCollecteOwasp->method('batchCollecteOwasp')->willReturn([
@@ -948,7 +970,7 @@ class CollecteControllerTest extends TestCase
     {
         $this->batchCollecteInformation->method('batchCollecteInformation')->willReturn([
             'code' => 200,
-            'message' => 'Information projet',
+            'message' => static::$informationProjet,
             'data' => []
         ]);
         $this->batchCollecteMesure->method('batchCollecteMesure')->willReturn([
@@ -972,7 +994,7 @@ class CollecteControllerTest extends TestCase
         ]);
         $this->batchCollecteAnomalieDetail->method('batchCollecteAnomalieDetail')->willReturn([
             'code' => 200,
-            'message' => 'Anomalie Detail',
+            'message' => static::$anomalieDetail,
             'data' => []
         ]);
         $this->batchCollecteHotspot->method('batchCollecteHotspot')->willReturn([
@@ -982,12 +1004,12 @@ class CollecteControllerTest extends TestCase
         ]);
         $this->batchCollecteNote->method('batchCollecteNoteHotspot')->willReturn([
             'code' => 200,
-            'message' => 'Note Hotspot',
+            'message' => static::$noteHotspot,
             'data' => []
         ]);
         $this->batchCollecteHotspotDetail->method('batchCollecteHotspotDetail')->willReturn([
             'code' => 200,
-            'message' => 'Hotspot Detail',
+            'message' => static::$hotspotDetail,
             'data' => []
         ]);
         $this->batchCollecteOwasp->method('batchCollecteOwasp')->willReturn([
@@ -1001,7 +1023,7 @@ class CollecteControllerTest extends TestCase
                 ['maven_key', 'mode_collecte', 'utilisateur_collecte', 'a0'],
                 ['maven_key', 'mode_collecte', 'utilisateur_collecte', 'a1'],
             )->willReturnOnConsecutiveCalls(
-                ['code' => 200, 'message' => 'Owasp a0', 'data' => [], 'info'=>'effacement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA0, 'data' => [], 'info'=>'effacement', 'owasp_2017'=>'', 'owasp_2021' => ''],
                 ['code' => 500, 'message' => 'Erreur Hotspot Owasp a1'],
             );
 
@@ -1021,7 +1043,7 @@ class CollecteControllerTest extends TestCase
     {
         $this->batchCollecteInformation->method('batchCollecteInformation')->willReturn([
             'code' => 200,
-            'message' => 'Information projet',
+            'message' => static::$informationProjet,
             'data' => []
         ]);
         $this->batchCollecteMesure->method('batchCollecteMesure')->willReturn([
@@ -1045,7 +1067,7 @@ class CollecteControllerTest extends TestCase
         ]);
         $this->batchCollecteAnomalieDetail->method('batchCollecteAnomalieDetail')->willReturn([
             'code' => 200,
-            'message' => 'Anomalie Detail',
+            'message' => static::$anomalieDetail,
             'data' => []
         ]);
         $this->batchCollecteHotspot->method('batchCollecteHotspot')->willReturn([
@@ -1055,12 +1077,12 @@ class CollecteControllerTest extends TestCase
         ]);
         $this->batchCollecteNote->method('batchCollecteNoteHotspot')->willReturn([
             'code' => 200,
-            'message' => 'Note Hotspot',
+            'message' => static::$noteHotspot,
             'data' => []
         ]);
         $this->batchCollecteHotspotDetail->method('batchCollecteHotspotDetail')->willReturn([
             'code' => 200,
-            'message' => 'Hotspot Detail',
+            'message' => static::$hotspotDetail,
             'data' => []
         ]);
         $this->batchCollecteOwasp->method('batchCollecteOwasp')->willReturn([
@@ -1075,8 +1097,8 @@ class CollecteControllerTest extends TestCase
                 ['maven_key', 'mode_collecte', 'utilisateur_collecte', 'a1'],
                 ['maven_key', 'mode_collecte', 'utilisateur_collecte', 'a2'],
                 )->willReturnOnConsecutiveCalls(
-                ['code' => 200, 'message' => 'Owasp a0', 'data' => [], 'info'=>'effacement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a1', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA0, 'data' => [], 'info'=>'effacement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA1, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
                 ['code' => 500, 'message' => 'Erreur Hotspot Owasp a2'],
             );
 
@@ -1096,7 +1118,7 @@ class CollecteControllerTest extends TestCase
     {
         $this->batchCollecteInformation->method('batchCollecteInformation')->willReturn([
             'code' => 200,
-            'message' => 'Information projet',
+            'message' => static::$informationProjet,
             'data' => []
         ]);
         $this->batchCollecteMesure->method('batchCollecteMesure')->willReturn([
@@ -1120,7 +1142,7 @@ class CollecteControllerTest extends TestCase
         ]);
         $this->batchCollecteAnomalieDetail->method('batchCollecteAnomalieDetail')->willReturn([
             'code' => 200,
-            'message' => 'Anomalie Detail',
+            'message' => static::$anomalieDetail,
             'data' => []
         ]);
         $this->batchCollecteHotspot->method('batchCollecteHotspot')->willReturn([
@@ -1130,12 +1152,12 @@ class CollecteControllerTest extends TestCase
         ]);
         $this->batchCollecteNote->method('batchCollecteNoteHotspot')->willReturn([
             'code' => 200,
-            'message' => 'Note Hotspot',
+            'message' => static::$noteHotspot,
             'data' => []
         ]);
         $this->batchCollecteHotspotDetail->method('batchCollecteHotspotDetail')->willReturn([
             'code' => 200,
-            'message' => 'Hotspot Detail',
+            'message' => static::$hotspotDetail,
             'data' => []
         ]);
         $this->batchCollecteOwasp->method('batchCollecteOwasp')->willReturn([
@@ -1151,9 +1173,9 @@ class CollecteControllerTest extends TestCase
                 ['maven_key', 'mode_collecte', 'utilisateur_collecte', 'a2'],
                 ['maven_key', 'mode_collecte', 'utilisateur_collecte', 'a3'],
                 )->willReturnOnConsecutiveCalls(
-                ['code' => 200, 'message' => 'Owasp a0', 'data' => [], 'info'=>'effacement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a1', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a2', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA0, 'data' => [], 'info'=>'effacement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA1, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA2, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
                 ['code' => 500, 'message' => 'Erreur Hotspot Owasp a3'],
             );
 
@@ -1173,7 +1195,7 @@ class CollecteControllerTest extends TestCase
     {
         $this->batchCollecteInformation->method('batchCollecteInformation')->willReturn([
             'code' => 200,
-            'message' => 'Information projet',
+            'message' => static::$informationProjet,
             'data' => []
         ]);
         $this->batchCollecteMesure->method('batchCollecteMesure')->willReturn([
@@ -1197,7 +1219,7 @@ class CollecteControllerTest extends TestCase
         ]);
         $this->batchCollecteAnomalieDetail->method('batchCollecteAnomalieDetail')->willReturn([
             'code' => 200,
-            'message' => 'Anomalie Detail',
+            'message' => static::$anomalieDetail,
             'data' => []
         ]);
         $this->batchCollecteHotspot->method('batchCollecteHotspot')->willReturn([
@@ -1207,12 +1229,12 @@ class CollecteControllerTest extends TestCase
         ]);
         $this->batchCollecteNote->method('batchCollecteNoteHotspot')->willReturn([
             'code' => 200,
-            'message' => 'Note Hotspot',
+            'message' => static::$noteHotspot,
             'data' => []
         ]);
         $this->batchCollecteHotspotDetail->method('batchCollecteHotspotDetail')->willReturn([
             'code' => 200,
-            'message' => 'Hotspot Detail',
+            'message' => static::$hotspotDetail,
             'data' => []
         ]);
         $this->batchCollecteOwasp->method('batchCollecteOwasp')->willReturn([
@@ -1229,10 +1251,10 @@ class CollecteControllerTest extends TestCase
                 ['maven_key', 'mode_collecte', 'utilisateur_collecte', 'a3'],
                 ['maven_key', 'mode_collecte', 'utilisateur_collecte', 'a4'],
                 )->willReturnOnConsecutiveCalls(
-                ['code' => 200, 'message' => 'Owasp a0', 'data' => [], 'info'=>'effacement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a1', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a2', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a3', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA0, 'data' => [], 'info'=>'effacement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA1, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA2, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA3, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
                 ['code' => 500, 'message' => 'Erreur Hotspot Owasp a4'],
             );
 
@@ -1252,7 +1274,7 @@ class CollecteControllerTest extends TestCase
     {
         $this->batchCollecteInformation->method('batchCollecteInformation')->willReturn([
             'code' => 200,
-            'message' => 'Information projet',
+            'message' => static::$informationProjet,
             'data' => []
         ]);
         $this->batchCollecteMesure->method('batchCollecteMesure')->willReturn([
@@ -1276,7 +1298,7 @@ class CollecteControllerTest extends TestCase
         ]);
         $this->batchCollecteAnomalieDetail->method('batchCollecteAnomalieDetail')->willReturn([
             'code' => 200,
-            'message' => 'Anomalie Detail',
+            'message' => static::$anomalieDetail,
             'data' => []
         ]);
         $this->batchCollecteHotspot->method('batchCollecteHotspot')->willReturn([
@@ -1286,12 +1308,12 @@ class CollecteControllerTest extends TestCase
         ]);
         $this->batchCollecteNote->method('batchCollecteNoteHotspot')->willReturn([
             'code' => 200,
-            'message' => 'Note Hotspot',
+            'message' => static::$noteHotspot,
             'data' => []
         ]);
         $this->batchCollecteHotspotDetail->method('batchCollecteHotspotDetail')->willReturn([
             'code' => 200,
-            'message' => 'Hotspot Detail',
+            'message' => static::$hotspotDetail,
             'data' => []
         ]);
         $this->batchCollecteOwasp->method('batchCollecteOwasp')->willReturn([
@@ -1309,11 +1331,11 @@ class CollecteControllerTest extends TestCase
                 ['maven_key', 'mode_collecte', 'utilisateur_collecte', 'a4'],
                 ['maven_key', 'mode_collecte', 'utilisateur_collecte', 'a5'],
                 )->willReturnOnConsecutiveCalls(
-                ['code' => 200, 'message' => 'Owasp a0', 'data' => [], 'info'=>'effacement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a1', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a2', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a3', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a4', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA0, 'data' => [], 'info'=>'effacement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA1, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA2, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA3, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA4, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
                 ['code' => 500, 'message' => 'Erreur Hotspot Owasp a5'],
             );
 
@@ -1333,7 +1355,7 @@ class CollecteControllerTest extends TestCase
     {
         $this->batchCollecteInformation->method('batchCollecteInformation')->willReturn([
             'code' => 200,
-            'message' => 'Information projet',
+            'message' => static::$informationProjet,
             'data' => []
         ]);
         $this->batchCollecteMesure->method('batchCollecteMesure')->willReturn([
@@ -1357,7 +1379,7 @@ class CollecteControllerTest extends TestCase
         ]);
         $this->batchCollecteAnomalieDetail->method('batchCollecteAnomalieDetail')->willReturn([
             'code' => 200,
-            'message' => 'Anomalie Detail',
+            'message' => static::$anomalieDetail,
             'data' => []
         ]);
         $this->batchCollecteHotspot->method('batchCollecteHotspot')->willReturn([
@@ -1367,12 +1389,12 @@ class CollecteControllerTest extends TestCase
         ]);
         $this->batchCollecteNote->method('batchCollecteNoteHotspot')->willReturn([
             'code' => 200,
-            'message' => 'Note Hotspot',
+            'message' => static::$noteHotspot,
             'data' => []
         ]);
         $this->batchCollecteHotspotDetail->method('batchCollecteHotspotDetail')->willReturn([
             'code' => 200,
-            'message' => 'Hotspot Detail',
+            'message' => static::$hotspotDetail,
             'data' => []
         ]);
         $this->batchCollecteOwasp->method('batchCollecteOwasp')->willReturn([
@@ -1391,12 +1413,12 @@ class CollecteControllerTest extends TestCase
                 ['maven_key', 'mode_collecte', 'utilisateur_collecte', 'a5'],
                 ['maven_key', 'mode_collecte', 'utilisateur_collecte', 'a6'],
                 )->willReturnOnConsecutiveCalls(
-                ['code' => 200, 'message' => 'Owasp a0', 'data' => [], 'info'=>'effacement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a1', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a2', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a3', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a4', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a5', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA0, 'data' => [], 'info'=>'effacement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA1, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA2, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA3, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA4, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA5, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
                 ['code' => 500, 'message' => 'Erreur Hotspot Owasp a6'],
             );
 
@@ -1416,7 +1438,7 @@ class CollecteControllerTest extends TestCase
     {
         $this->batchCollecteInformation->method('batchCollecteInformation')->willReturn([
             'code' => 200,
-            'message' => 'Information projet',
+            'message' => static::$informationProjet,
             'data' => []
         ]);
         $this->batchCollecteMesure->method('batchCollecteMesure')->willReturn([
@@ -1440,7 +1462,7 @@ class CollecteControllerTest extends TestCase
         ]);
         $this->batchCollecteAnomalieDetail->method('batchCollecteAnomalieDetail')->willReturn([
             'code' => 200,
-            'message' => 'Anomalie Detail',
+            'message' => static::$anomalieDetail,
             'data' => []
         ]);
         $this->batchCollecteHotspot->method('batchCollecteHotspot')->willReturn([
@@ -1450,12 +1472,12 @@ class CollecteControllerTest extends TestCase
         ]);
         $this->batchCollecteNote->method('batchCollecteNoteHotspot')->willReturn([
             'code' => 200,
-            'message' => 'Note Hotspot',
+            'message' => static::$noteHotspot,
             'data' => []
         ]);
         $this->batchCollecteHotspotDetail->method('batchCollecteHotspotDetail')->willReturn([
             'code' => 200,
-            'message' => 'Hotspot Detail',
+            'message' => static::$hotspotDetail,
             'data' => []
         ]);
         $this->batchCollecteOwasp->method('batchCollecteOwasp')->willReturn([
@@ -1475,13 +1497,13 @@ class CollecteControllerTest extends TestCase
                 ['maven_key', 'mode_collecte', 'utilisateur_collecte', 'a6'],
                 ['maven_key', 'mode_collecte', 'utilisateur_collecte', 'a7'],
                 )->willReturnOnConsecutiveCalls(
-                ['code' => 200, 'message' => 'Owasp a0', 'data' => [], 'info'=>'effacement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a1', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a2', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a3', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a4', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a5', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a6', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA0, 'data' => [], 'info'=>'effacement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA1, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA2, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA3, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA4, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA5, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA6, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
                 ['code' => 500, 'message' => 'Erreur Hotspot Owasp a7'],
             );
 
@@ -1501,7 +1523,7 @@ class CollecteControllerTest extends TestCase
     {
         $this->batchCollecteInformation->method('batchCollecteInformation')->willReturn([
             'code' => 200,
-            'message' => 'Information projet',
+            'message' => static::$informationProjet,
             'data' => []
         ]);
         $this->batchCollecteMesure->method('batchCollecteMesure')->willReturn([
@@ -1525,7 +1547,7 @@ class CollecteControllerTest extends TestCase
         ]);
         $this->batchCollecteAnomalieDetail->method('batchCollecteAnomalieDetail')->willReturn([
             'code' => 200,
-            'message' => 'Anomalie Detail',
+            'message' => static::$anomalieDetail,
             'data' => []
         ]);
         $this->batchCollecteHotspot->method('batchCollecteHotspot')->willReturn([
@@ -1535,12 +1557,12 @@ class CollecteControllerTest extends TestCase
         ]);
         $this->batchCollecteNote->method('batchCollecteNoteHotspot')->willReturn([
             'code' => 200,
-            'message' => 'Note Hotspot',
+            'message' => static::$noteHotspot,
             'data' => []
         ]);
         $this->batchCollecteHotspotDetail->method('batchCollecteHotspotDetail')->willReturn([
             'code' => 200,
-            'message' => 'Hotspot Detail',
+            'message' => static::$hotspotDetail,
             'data' => []
         ]);
         $this->batchCollecteOwasp->method('batchCollecteOwasp')->willReturn([
@@ -1561,14 +1583,14 @@ class CollecteControllerTest extends TestCase
                 ['maven_key', 'mode_collecte', 'utilisateur_collecte', 'a7'],
                 ['maven_key', 'mode_collecte', 'utilisateur_collecte', 'a8'],
                 )->willReturnOnConsecutiveCalls(
-                ['code' => 200, 'message' => 'Owasp a0', 'data' => [], 'info'=>'effacement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a1', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a2', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a3', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a4', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a5', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a6', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a7', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA0, 'data' => [], 'info'=>'effacement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA1, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA2, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA3, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA4, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA5, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA6, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA7, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
                 ['code' => 500, 'message' => 'Erreur Hotspot Owasp a8'],
             );
 
@@ -1588,7 +1610,7 @@ class CollecteControllerTest extends TestCase
     {
         $this->batchCollecteInformation->method('batchCollecteInformation')->willReturn([
             'code' => 200,
-            'message' => 'Information projet',
+            'message' => static::$informationProjet,
             'data' => []
         ]);
         $this->batchCollecteMesure->method('batchCollecteMesure')->willReturn([
@@ -1612,7 +1634,7 @@ class CollecteControllerTest extends TestCase
         ]);
         $this->batchCollecteAnomalieDetail->method('batchCollecteAnomalieDetail')->willReturn([
             'code' => 200,
-            'message' => 'Anomalie Detail',
+            'message' => static::$anomalieDetail,
             'data' => []
         ]);
         $this->batchCollecteHotspot->method('batchCollecteHotspot')->willReturn([
@@ -1622,12 +1644,12 @@ class CollecteControllerTest extends TestCase
         ]);
         $this->batchCollecteNote->method('batchCollecteNoteHotspot')->willReturn([
             'code' => 200,
-            'message' => 'Note Hotspot',
+            'message' => static::$noteHotspot,
             'data' => []
         ]);
         $this->batchCollecteHotspotDetail->method('batchCollecteHotspotDetail')->willReturn([
             'code' => 200,
-            'message' => 'Hotspot Detail',
+            'message' => static::$hotspotDetail,
             'data' => []
         ]);
         $this->batchCollecteOwasp->method('batchCollecteOwasp')->willReturn([
@@ -1649,15 +1671,15 @@ class CollecteControllerTest extends TestCase
                 ['maven_key', 'mode_collecte', 'utilisateur_collecte', 'a8'],
                 ['maven_key', 'mode_collecte', 'utilisateur_collecte', 'a9'],
                 )->willReturnOnConsecutiveCalls(
-                ['code' => 200, 'message' => 'Owasp a0', 'data' => [], 'info'=>'effacement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a1', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a2', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a3', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a4', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a5', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a6', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a7', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a8', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA0, 'data' => [], 'info'=>'effacement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA1, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA2, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA3, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA4, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA5, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA6, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA7, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA8, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
                 ['code' => 500, 'message' => 'Erreur Hotspot Owasp a9'],
             );
 
@@ -1677,7 +1699,7 @@ class CollecteControllerTest extends TestCase
     {
         $this->batchCollecteInformation->method('batchCollecteInformation')->willReturn([
             'code' => 200,
-            'message' => 'Information projet',
+            'message' => static::$informationProjet,
             'data' => []
         ]);
         $this->batchCollecteMesure->method('batchCollecteMesure')->willReturn([
@@ -1701,7 +1723,7 @@ class CollecteControllerTest extends TestCase
         ]);
         $this->batchCollecteAnomalieDetail->method('batchCollecteAnomalieDetail')->willReturn([
             'code' => 200,
-            'message' => 'Anomalie Detail',
+            'message' => static::$anomalieDetail,
             'data' => []
         ]);
         $this->batchCollecteHotspot->method('batchCollecteHotspot')->willReturn([
@@ -1711,12 +1733,12 @@ class CollecteControllerTest extends TestCase
         ]);
         $this->batchCollecteNote->method('batchCollecteNoteHotspot')->willReturn([
             'code' => 200,
-            'message' => 'Note Hotspot',
+            'message' => static::$noteHotspot,
             'data' => []
         ]);
         $this->batchCollecteHotspotDetail->method('batchCollecteHotspotDetail')->willReturn([
             'code' => 200,
-            'message' => 'Hotspot Detail',
+            'message' => static::$hotspotDetail,
             'data' => []
         ]);
         $this->batchCollecteOwasp->method('batchCollecteOwasp')->willReturn([
@@ -1739,16 +1761,16 @@ class CollecteControllerTest extends TestCase
                 ['maven_key', 'mode_collecte', 'utilisateur_collecte', 'a9'],
                 ['maven_key', 'mode_collecte', 'utilisateur_collecte', 'a10'],
                 )->willReturnOnConsecutiveCalls(
-                ['code' => 200, 'message' => 'Owasp a0', 'data' => [], 'info'=>'effacement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a1', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a2', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a3', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a4', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a5', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a6', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a7', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a8', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
-                ['code' => 200, 'message' => 'Owasp a9', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA0, 'data' => [], 'info'=>'effacement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA1, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA2, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA3, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA4, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA5, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA6, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA7, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA8, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
+                ['code' => 200, 'message' => static::$owaspA9, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => ''],
                 ['code' => 500, 'message' => 'Erreur Hotspot Owasp a10'],
             );
 
@@ -1768,7 +1790,7 @@ class CollecteControllerTest extends TestCase
     {
         $this->batchCollecteInformation->method('batchCollecteInformation')->willReturn([
             'code' => 200,
-            'message' => 'Information projet',
+            'message' => static::$informationProjet,
             'data' => []
         ]);
         $this->batchCollecteMesure->method('batchCollecteMesure')->willReturn([
@@ -1792,7 +1814,7 @@ class CollecteControllerTest extends TestCase
         ]);
         $this->batchCollecteAnomalieDetail->method('batchCollecteAnomalieDetail')->willReturn([
             'code' => 200,
-            'message' => 'Anomalie Detail',
+            'message' => static::$anomalieDetail,
             'data' => []
         ]);
         $this->batchCollecteHotspot->method('batchCollecteHotspot')->willReturn([
@@ -1802,12 +1824,12 @@ class CollecteControllerTest extends TestCase
         ]);
         $this->batchCollecteNote->method('batchCollecteNoteHotspot')->willReturn([
             'code' => 200,
-            'message' => 'Note Hotspot',
+            'message' => static::$noteHotspot,
             'data' => []
         ]);
         $this->batchCollecteHotspotDetail->method('batchCollecteHotspotDetail')->willReturn([
             'code' => 200,
-            'message' => 'Hotspot Detail',
+            'message' => static::$hotspotDetail,
             'data' => []
         ]);
         $this->batchCollecteOwasp->method('batchCollecteOwasp')->willReturn([
@@ -1816,7 +1838,7 @@ class CollecteControllerTest extends TestCase
             'data' => []
         ]);
 
-        $this->batchCollecteHotspotOwasp->method('batchCollecteHotspotOwasp')->willReturn(['code' => 200, 'message' => 'Owasp a0-a10', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => '']);
+        $this->batchCollecteHotspotOwasp->method('batchCollecteHotspotOwasp')->willReturn(['code' => 200, 'message' => static::$owaspA0A10, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => '']);
 
         $this->batchCollecteNoSonar->method('batchCollecteNoSonar')->willReturn([
             'code' => 500,
@@ -1836,7 +1858,7 @@ class CollecteControllerTest extends TestCase
     {
         $this->batchCollecteInformation->method('batchCollecteInformation')->willReturn([
             'code' => 200,
-            'message' => 'Information projet',
+            'message' => static::$informationProjet,
             'data' => []
         ]);
         $this->batchCollecteMesure->method('batchCollecteMesure')->willReturn([
@@ -1860,7 +1882,7 @@ class CollecteControllerTest extends TestCase
         ]);
         $this->batchCollecteAnomalieDetail->method('batchCollecteAnomalieDetail')->willReturn([
             'code' => 200,
-            'message' => 'Anomalie Detail',
+            'message' => static::$anomalieDetail,
             'data' => []
         ]);
         $this->batchCollecteHotspot->method('batchCollecteHotspot')->willReturn([
@@ -1870,12 +1892,12 @@ class CollecteControllerTest extends TestCase
         ]);
         $this->batchCollecteNote->method('batchCollecteNoteHotspot')->willReturn([
             'code' => 200,
-            'message' => 'Note Hotspot',
+            'message' => static::$noteHotspot,
             'data' => []
         ]);
         $this->batchCollecteHotspotDetail->method('batchCollecteHotspotDetail')->willReturn([
             'code' => 200,
-            'message' => 'Hotspot Detail',
+            'message' => static::$hotspotDetail,
             'data' => []
         ]);
         $this->batchCollecteOwasp->method('batchCollecteOwasp')->willReturn([
@@ -1884,7 +1906,7 @@ class CollecteControllerTest extends TestCase
             'data' => []
         ]);
 
-        $this->batchCollecteHotspotOwasp->method('batchCollecteHotspotOwasp')->willReturn(['code' => 200, 'message' => 'Owasp a0-a10', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => '']);
+        $this->batchCollecteHotspotOwasp->method('batchCollecteHotspotOwasp')->willReturn(['code' => 200, 'message' => static::$owaspA0A10, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => '']);
         $this->batchCollecteNoSonar->method('batchCollecteNoSonar')->willReturn([
             'code' => 200,
             'message' => 'NoSonar',
@@ -1909,7 +1931,7 @@ class CollecteControllerTest extends TestCase
     {
         $this->batchCollecteInformation->method('batchCollecteInformation')->willReturn([
             'code' => 200,
-            'message' => 'Information projet',
+            'message' => static::$informationProjet,
             'data' => []
         ]);
         $this->batchCollecteMesure->method('batchCollecteMesure')->willReturn([
@@ -1933,7 +1955,7 @@ class CollecteControllerTest extends TestCase
         ]);
         $this->batchCollecteAnomalieDetail->method('batchCollecteAnomalieDetail')->willReturn([
             'code' => 200,
-            'message' => 'Anomalie Detail',
+            'message' => static::$anomalieDetail,
             'data' => []
         ]);
         $this->batchCollecteHotspot->method('batchCollecteHotspot')->willReturn([
@@ -1943,12 +1965,12 @@ class CollecteControllerTest extends TestCase
         ]);
         $this->batchCollecteNote->method('batchCollecteNoteHotspot')->willReturn([
             'code' => 200,
-            'message' => 'Note Hotspot',
+            'message' => static::$noteHotspot,
             'data' => []
         ]);
         $this->batchCollecteHotspotDetail->method('batchCollecteHotspotDetail')->willReturn([
             'code' => 200,
-            'message' => 'Hotspot Detail',
+            'message' => static::$hotspotDetail,
             'data' => []
         ]);
         $this->batchCollecteOwasp->method('batchCollecteOwasp')->willReturn([
@@ -1956,7 +1978,7 @@ class CollecteControllerTest extends TestCase
             'message' => 'Owasp',
             'data' => []
         ]);
-        $this->batchCollecteHotspotOwasp->method('batchCollecteHotspotOwasp')->willReturn(['code' => 200, 'message' => 'Owasp a0-a10', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => '']);
+        $this->batchCollecteHotspotOwasp->method('batchCollecteHotspotOwasp')->willReturn(['code' => 200, 'message' => static::$owaspA0A10, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => '']);
         $this->batchCollecteNoSonar->method('batchCollecteNoSonar')->willReturn([
             'code' => 200,
             'message' => 'NoSonar',
@@ -1986,7 +2008,7 @@ class CollecteControllerTest extends TestCase
     {
         $this->batchCollecteInformation->method('batchCollecteInformation')->willReturn([
             'code' => 200,
-            'message' => 'Information projet',
+            'message' => static::$informationProjet,
             'data' => []
         ]);
         $this->batchCollecteMesure->method('batchCollecteMesure')->willReturn([
@@ -2010,7 +2032,7 @@ class CollecteControllerTest extends TestCase
         ]);
         $this->batchCollecteAnomalieDetail->method('batchCollecteAnomalieDetail')->willReturn([
             'code' => 200,
-            'message' => 'Anomalie Detail',
+            'message' => static::$anomalieDetail,
             'data' => []
         ]);
         $this->batchCollecteHotspot->method('batchCollecteHotspot')->willReturn([
@@ -2020,12 +2042,12 @@ class CollecteControllerTest extends TestCase
         ]);
         $this->batchCollecteNote->method('batchCollecteNoteHotspot')->willReturn([
             'code' => 200,
-            'message' => 'Note Hotspot',
+            'message' => static::$noteHotspot,
             'data' => []
         ]);
         $this->batchCollecteHotspotDetail->method('batchCollecteHotspotDetail')->willReturn([
             'code' => 200,
-            'message' => 'Hotspot Detail',
+            'message' => static::$hotspotDetail,
             'data' => []
         ]);
         $this->batchCollecteOwasp->method('batchCollecteOwasp')->willReturn([
@@ -2033,7 +2055,7 @@ class CollecteControllerTest extends TestCase
             'message' => 'Owasp',
             'data' => []
         ]);
-        $this->batchCollecteHotspotOwasp->method('batchCollecteHotspotOwasp')->willReturn(['code' => 200, 'message' => 'Owasp a0-a10', 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => '']);
+        $this->batchCollecteHotspotOwasp->method('batchCollecteHotspotOwasp')->willReturn(['code' => 200, 'message' => static::$owaspA0A10, 'data' => [], 'info'=>'enregistrement', 'owasp_2017'=>'', 'owasp_2021' => '']);
         $this->batchCollecteNoSonar->method('batchCollecteNoSonar')->willReturn([
             'code' => 200,
             'message' => 'NoSonar',
