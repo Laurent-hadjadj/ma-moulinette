@@ -13,6 +13,9 @@ use App\Repository\NotesRepository;
 use App\Repository\HotspotsRepository;
 use Psr\Container\ContainerInterface;
 
+/**
+ * [Description BatchCollecteNoteControllerTest]
+ */
 class BatchCollecteNoteControllerTest extends TestCase
 {
     private EntityManagerInterface $entityManager;
@@ -22,6 +25,9 @@ class BatchCollecteNoteControllerTest extends TestCase
     private HotspotsRepository $hotspotsRepository;
     private BatchCollecteNoteController $controller;
     private ContainerInterface $container;
+
+    private static $mel = 'laurent.hadjadj@ma-petite-entreprise.fr';
+    private static $request = 'requête : ';
 
     protected function setUp(): void
     {
@@ -56,7 +62,7 @@ class BatchCollecteNoteControllerTest extends TestCase
     {
         $this->client->method('httpSonarQube')->willReturn(['code' => 404, 'erreur' => 'Not Found']);
 
-        $result = $this->controller->batchCollecteNote('some-maven-key', 'COLLECTE', 'laurent.hadjadj@ma-petite-entreprise.fr', 'quality');
+        $result = $this->controller->batchCollecteNote('some-maven-key', 'COLLECTE', static::$mel, 'quality');
 
         $this->assertEquals(['code' => 404, 'erreur' => ['Not Found']], $result);
     }
@@ -69,10 +75,10 @@ class BatchCollecteNoteControllerTest extends TestCase
 
         $this->notesRepository->method('deleteNotesMavenKey')->willReturn(['code' => 500, 'erreur' => 'Delete error']);
 
-        $result = $this->controller->batchCollecteNote('some-maven-key', 'COLLECTE', 'laurent.hadjadj@ma-petite-entreprise.fr', 'quality');
+        $result = $this->controller->batchCollecteNote('some-maven-key', 'COLLECTE', static::$mel, 'quality');
 
         $this->assertEquals(500, $result['code']);
-        $this->assertEquals(['Delete error', 'requête : ' => 'deleteNoteMavenKey'], $result['erreur']);
+        $this->assertEquals(['Delete error', static::$request => 'deleteNoteMavenKey'], $result['erreur']);
     }
 
     public function testBatchCollecteNoteInsertError()
@@ -84,10 +90,10 @@ class BatchCollecteNoteControllerTest extends TestCase
         $this->notesRepository->method('deleteNotesMavenKey')->willReturn(['code' => 200]);
         $this->notesRepository->method('insertNotes')->willReturn(['code' => 500, 'erreur' => 'Insert error']);
 
-        $result = $this->controller->batchCollecteNote('some-maven-key', 'COLLECTE', 'laurent.hadjadj@ma-petite-entreprise.fr', 'quality');
+        $result = $this->controller->batchCollecteNote('some-maven-key', 'COLLECTE', static::$mel, 'quality');
 
         $this->assertEquals(500, $result['code']);
-        $this->assertEquals(['Insert error', 'requête : ' => 'insertNote'], $result['erreur']);
+        $this->assertEquals(['Insert error', static::$request => 'insertNote'], $result['erreur']);
     }
 
     public function testBatchCollecteNoteSuccess()
@@ -99,7 +105,7 @@ class BatchCollecteNoteControllerTest extends TestCase
         $this->notesRepository->method('deleteNotesMavenKey')->willReturn(['code' => 200]);
         $this->notesRepository->method('insertNotes')->willReturn(['code' => 200]);
 
-        $result = $this->controller->batchCollecteNote('some-maven-key', 'COLLECTE', 'laurent.hadjadj@ma-petite-entreprise.fr', 'quality');
+        $result = $this->controller->batchCollecteNote('some-maven-key', 'COLLECTE', static::$mel, 'quality');
         $expectedData = ['note_quality' => 'D'];
 
         $this->assertEquals(['code' => 200, 'message' => ['value' => 'D'], 'data' => $expectedData], $result);
@@ -119,7 +125,7 @@ class BatchCollecteNoteControllerTest extends TestCase
 
         $result = $this->controller->BatchCollecteNoteHotspot('some-maven-key');
 
-        $this->assertEquals(['code' => 500, 'erreur' => ['Error fetching to_review', 'requête : ' => 'countHotspotsStatus(TO_REVIEW)']], $result);
+        $this->assertEquals(['code' => 500, 'erreur' => ['Error fetching to_review', static::$request => 'countHotspotsStatus(TO_REVIEW)']], $result);
     }
 
     public function testBatchCollecteNoteHotspotSuccess()
