@@ -13,6 +13,9 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use App\Repository\NoSonarRepository;
 use Psr\Container\ContainerInterface;
 
+/**
+ * [Description BatchCollecteNoSonarControllerTest]
+ */
 class BatchCollecteNoSonarControllerTest extends TestCase
 {
     /** @var EntityManagerInterface&MockObject */
@@ -32,6 +35,8 @@ class BatchCollecteNoSonarControllerTest extends TestCase
 
     /** @var ContainerInterface&MockObject */
     private MockObject $container;
+
+    private static $s1309 = 'java:S1309';
 
     private static $parameters='componentKeys=DummyMavenKey&rules=java:S1309,java:NoSonar&p=1&ps=500';
 
@@ -75,7 +80,7 @@ class BatchCollecteNoSonarControllerTest extends TestCase
                 'code' => 200,
                 'paging' => ['total' => 2],
                 'issues' => [
-                    ['rule' => 'java:S1309', 'component' => 'component1', 'line' => 10],
+                    ['rule' => static::$s1309, 'component' => 'component1', 'line' => 10],
                     ['rule' => 'java:NoSonar', 'component' => 'component2', 'line' => 20],
                 ]
             ]);
@@ -121,7 +126,7 @@ class BatchCollecteNoSonarControllerTest extends TestCase
                 'code' => 200,
                 'paging' => ['total' => 1],
                 'issues' => [
-                    ['rule' => 'java:S1309', 'component' => 'component1', 'line' => 10],
+                    ['rule' => static::$s1309, 'component' => 'component1', 'line' => 10],
                 ]
             ]);
 
@@ -147,7 +152,7 @@ class BatchCollecteNoSonarControllerTest extends TestCase
                 'code' => 200,
                 'paging' => ['total' => 1],
                 'issues' => [
-                    ['rule' => 'java:S1309', 'component' => 'component1', 'line' => 10],
+                    ['rule' => static::$s1309, 'component' => 'component1', 'line' => 10],
                 ]
             ]);
 
