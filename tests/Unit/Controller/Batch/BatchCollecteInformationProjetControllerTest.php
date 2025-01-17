@@ -12,6 +12,9 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Psr\Container\ContainerInterface;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * [Description BatchCollecteInformationProjetControllerTest]
+ */
 class BatchCollecteInformationProjetControllerTest extends TestCase
 {
     private IsValideMavenKey $isValidMavenKey;
@@ -20,6 +23,9 @@ class BatchCollecteInformationProjetControllerTest extends TestCase
     private BatchCollecteInformationProjetController $controller;
     private ContainerInterface $container;
     private ParameterBagInterface $parameterBag;
+
+    private static $projectVersion = '1.0.0';
+    private static $date = '2024-08-09';
 
     protected function setUp(): void
     {
@@ -48,7 +54,7 @@ class BatchCollecteInformationProjetControllerTest extends TestCase
         // Simule une réponse valide du service HTTP
         $sonarResult = [
             'analyses' => [
-                ['projectVersion' => '1.0.0', 'date' => '2024-08-09', 'key' => 'key']
+                ['projectVersion' => static::$projectVersion, 'date' => static::$date, 'key' => 'key']
             ]
         ];
 
@@ -57,12 +63,12 @@ class BatchCollecteInformationProjetControllerTest extends TestCase
         // Simule les retours des méthodes de validation Maven
         $this->isValidMavenKey->method('isValideInformation')->willReturn([
             'code' => 200,
-            'request' => ['version' => '1.0.0']
+            'request' => ['version' => static::$projectVersion]
         ]);
 
         $this->isValidMavenKey->method('isValideHistorique')->willReturn([
             'code' => 200,
-            'request' => ['version' => '1.0.0']
+            'request' => ['version' => static::$projectVersion]
         ]);
 
         // Exécute la méthode à tester
@@ -124,7 +130,7 @@ class BatchCollecteInformationProjetControllerTest extends TestCase
         ]);
         $repositoryMock->method('selectInformationProjetVersionLast')->willReturn([
             'code' => 200,
-            'version' => [['analyse_key' => 'key', 'projet' => '1.0.0', 'date' => '2024-08-09']]
+            'version' => [['analyse_key' => 'key', 'projet' => static::$projectVersion, 'date' => static::$date]]
         ]);
 
         // Utilisation de la réflexion pour appeler la méthode privée
@@ -139,8 +145,8 @@ class BatchCollecteInformationProjetControllerTest extends TestCase
             'release' => 5,
             'snapshot' => 2,
             'autre' => 3,
-            'projet' => '1.0.0',
-            'date' => '2024-08-09',
+            'projet' => static::$projectVersion,
+            'date' => static::$date,
         ], $result);
     }
 
