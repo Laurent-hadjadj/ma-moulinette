@@ -45,6 +45,9 @@ class BatchCollecteHotspotDetailControllerTest extends TestCase
     /** @var ContainerInterface&MockObject */
     private MockObject $container;
 
+    private static $date = '2024-08-09';
+    private static $mel = 'laurent.hadjadj@ma-petite-entreprise.fr';
+
     protected function setUp(): void
     {
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
@@ -72,7 +75,7 @@ class BatchCollecteHotspotDetailControllerTest extends TestCase
     {
         $this->informationProjetRepository
             ->method('selectInformationProjetProjectVersion')
-            ->willReturn(['code' => 200, 'info' => [['project_version' => '1.0', 'date' => '2024-08-09']]]);
+            ->willReturn(['code' => 200, 'info' => [['project_version' => '1.0', 'date' => static::$date]]]);
 
         $this->hotspotsRepository
             ->method('selectHotspotsToReview')
@@ -101,7 +104,7 @@ class BatchCollecteHotspotDetailControllerTest extends TestCase
                 'line' => 42
             ]);
 
-        $result = $this->controller->batchCollecteHotspotDetail('maven-key-123', 'manual', 'laurent.hadjadj@ma-petite-entreprise.fr');
+        $result = $this->controller->batchCollecteHotspotDetail('maven-key-123', 'manual', static::$mel);
         $this->assertEquals(200, $result['code']);
         $this->assertCount(1, $result['message']);
         $this->assertArrayHasKey('hotspot_key', $result['message'][0]);
@@ -114,7 +117,7 @@ class BatchCollecteHotspotDetailControllerTest extends TestCase
             ->method('selectInformationProjetProjectVersion')
             ->willReturn(['code' => 500, 'erreur' => 'Erreur projet']);
 
-        $result = $this->controller->batchCollecteHotspotDetail('maven-key-123', 'manual', 'laurent.hadjadj@ma-petite-entreprise.fr');
+        $result = $this->controller->batchCollecteHotspotDetail('maven-key-123', 'manual', static::$mel);
 
         $this->assertEquals(500, $result['code']);
         $this->assertEquals('Erreur projet', $result['message']);
@@ -124,7 +127,7 @@ class BatchCollecteHotspotDetailControllerTest extends TestCase
     {
         $this->informationProjetRepository
             ->method('selectInformationProjetProjectVersion')
-            ->willReturn(['code' => 200, 'info' => [['project_version' => '1.0', 'date' => '2024-08-09']]]);
+            ->willReturn(['code' => 200, 'info' => [['project_version' => '1.0', 'date' => static::$date]]]);
 
         $this->hotspotsRepository
             ->method('selectHotspotsToReview')
@@ -134,7 +137,7 @@ class BatchCollecteHotspotDetailControllerTest extends TestCase
             ->method('deleteHotspotDetailsMavenKey')
             ->willReturn(['code' => 200]);
 
-        $result = $this->controller->batchCollecteHotspotDetail('maven-key-123', 'manual', 'laurent.hadjadj@ma-petite-entreprise.fr');
+        $result = $this->controller->batchCollecteHotspotDetail('maven-key-123', 'manual', static::$mel);
 
         $this->assertEquals(406, $result['code']);
         $this->assertEquals('Liste vide !!! ', $result['message']);
@@ -144,7 +147,7 @@ class BatchCollecteHotspotDetailControllerTest extends TestCase
     {
         $this->informationProjetRepository
             ->method('selectInformationProjetProjectVersion')
-            ->willReturn(['code' => 200, 'info' => [['project_version' => '1.0', 'date' => '2024-08-09']]]);
+            ->willReturn(['code' => 200, 'info' => [['project_version' => '1.0', 'date' => static::$date]]]);
 
         $this->hotspotsRepository
             ->method('selectHotspotsToReview')
@@ -177,7 +180,7 @@ class BatchCollecteHotspotDetailControllerTest extends TestCase
                 'line' => 42
             ]);
 
-        $result = $this->controller->batchCollecteHotspotDetail('maven-key-123', 'manual', 'laurent.hadjadj@ma-petite-entreprise.fr');
+        $result = $this->controller->batchCollecteHotspotDetail('maven-key-123', 'manual', static::$mel);
 
         $this->assertEquals(500, $result['code']);
         $this->assertEquals('Erreur insertion', $result['erreur'][0]);
