@@ -13,6 +13,9 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use App\Repository\LoggerRepository;
 use Psr\Container\ContainerInterface;
 
+/**
+ * [Description BatchCollecteLoggerControllerTest]
+ */
 class BatchCollecteLoggerControllerTest extends TestCase
 {
     /** @var EntityManagerInterface&MockObject */
@@ -32,6 +35,10 @@ class BatchCollecteLoggerControllerTest extends TestCase
 
     /** @var ContainerInterface&MockObject */
     private MockObject $container;
+
+    private static $localhost = 'http://localhost';
+    private static $api = 'http://localhost/api/issues/search?';
+    private static $mel = 'laurent.hadjadj@ma-petite-entreprise.fr';
 
     protected function setUp(): void
     {
@@ -70,7 +77,7 @@ class BatchCollecteLoggerControllerTest extends TestCase
         // Mock the parameter to simulate that the logger plugin is not activated
         $this->parameterBag->method('get')->willReturnMap([
             ['track.logger.method', false],
-            ['sonar.url', 'http://localhost']
+            ['sonar.url', static::$localhost]
         ]);
 
         // Call the method that uses the parameter
@@ -83,13 +90,13 @@ class BatchCollecteLoggerControllerTest extends TestCase
     public function testMakeRequestSuccess()
     {
         $queryParams = ['key' => 'value'];
-        $tempoUrl = 'http://localhost';
+        $tempoUrl = static::$localhost;
 
         // Réponse simulée pour une requête 401
         $mockResponse = ['total' => -1];
 
         // Construire l'URL attendue
-        $expectedUrl = 'http://localhost/api/issues/search?' . http_build_query($queryParams);
+        $expectedUrl = static::$api . http_build_query($queryParams);
 
         // Configurez le mock pour retourner la réponse simulée
         $this->client->method('httpSonarQube')->with($this->equalTo($expectedUrl))->willReturn($mockResponse);
@@ -107,13 +114,13 @@ class BatchCollecteLoggerControllerTest extends TestCase
     public function testMakeRequestUnauthorizedError()
     {
         $queryParams = ['key' => 'value'];
-        $tempoUrl = 'http://localhost';
+        $tempoUrl = static::$localhost;
 
         // Réponse simulée pour une erreur 401
         $mockErrorResponse = ['code' => 401, 'erreur' => 'Unauthorized'];
 
         // Construire l'URL attendue
-        $expectedUrl = 'http://localhost/api/issues/search?' . http_build_query($queryParams);
+        $expectedUrl = static::$api . http_build_query($queryParams);
 
         // Configurer le mock pour retourner la réponse d'erreur
         $this->client->method('httpSonarQube')->with($this->equalTo($expectedUrl))->willReturn($mockErrorResponse);
@@ -132,7 +139,7 @@ class BatchCollecteLoggerControllerTest extends TestCase
     public function testMakeRequestNotFoundError()
     {
         $queryParams = ['key' => 'value'];
-        $tempoUrl = 'http://localhost';
+        $tempoUrl = static::$localhost;
         $mockErrorResponse = ['code' => 404, 'erreur' => 'Not Found'];
 
         $this->client->method('httpSonarQube')
@@ -151,11 +158,11 @@ class BatchCollecteLoggerControllerTest extends TestCase
     public function testMakeRequestOtherError()
     {
         $queryParams = ['key' => 'value'];
-        $tempoUrl = 'http://localhost';
+        $tempoUrl = static::$localhost;
         $mockErrorResponse = ['code' => 500, 'erreur' => 'Internal Server Error'];
 
         // Construire l'URL attendue
-        $expectedUrl = 'http://localhost/api/issues/search?' . http_build_query($queryParams);
+        $expectedUrl = static::$api . http_build_query($queryParams);
 
         // Configurer le mock pour retourner la réponse d'erreur
         $this->client->method('httpSonarQube')->with($this->equalTo($expectedUrl))->willReturn($mockErrorResponse);
@@ -182,7 +189,7 @@ class BatchCollecteLoggerControllerTest extends TestCase
         // Le plugin Logger est activé. L'URL du serveur est défini
         $this->parameterBag->method('get')->willReturnMap([
             ['track.logger.method', true],
-            ['sonar.url', 'http://localhost']
+            ['sonar.url', static::$localhost]
         ]);
 
         // On valide la méthode deleteLoggerMavenKey
@@ -190,16 +197,13 @@ class BatchCollecteLoggerControllerTest extends TestCase
         $this->loggerRepository->method('insertLogger')->willReturn(['code' => 200]);
 
         $this->client->method('httpSonarQube')->willReturn(['total' => 1]);
-
-        $date=(new \DateTimeImmutable('2024-08-13T14:41:49.646488+0200'))->format(\DateTime::ATOM);
-
         $this->client->method('httpSonarQube')->willReturnOnConsecutiveCalls(
             ['total' => 5],
             ['total' => 3],
             ['total' => 1],
             ['total' => 0]);
 
-        $result = $this->controller->BatchCollecteLogger('some-maven-key', 'COLLECTE', 'laurent.hadjadj@ma-petite-entreprise.fr');
+        $result = $this->controller->BatchCollecteLogger('some-maven-key', 'COLLECTE', static::$mel);
         $expectedDateEnregistrement = $result['message']['date_enregistrement'];
         $this->assertEquals($expectedDateEnregistrement->format(\DateTime::ATOM), $result['message']['date_enregistrement']->format(\DateTime::ATOM));
 
@@ -212,7 +216,7 @@ class BatchCollecteLoggerControllerTest extends TestCase
                 'logger_error' => 1,
                 'logger_debug' => 1,
                 'mode_collecte' => 'COLLECTE',
-                'utilisateur_collecte' => 'laurent.hadjadj@ma-petite-entreprise.fr',
+                'utilisateur_collecte' => static::$mel,
                 'date_enregistrement' => $expectedDateEnregistrement
             ],
             'data' => [
@@ -232,7 +236,7 @@ class BatchCollecteLoggerControllerTest extends TestCase
         // Le plugin Logger est activé. L'URL du serveur est défini
         $this->parameterBag->method('get')->willReturnMap([
             ['track.logger.method', true],
-            ['sonar.url', 'http://localhost']
+            ['sonar.url', static::$localhost]
         ]);
 
         $this->client->method('httpSonarQube')->willReturn(['total' => 5]);
@@ -240,11 +244,7 @@ class BatchCollecteLoggerControllerTest extends TestCase
         $this->loggerRepository->method('deleteLoggerMavenKey')->willReturn(['code' => 500, 'erreur' => 'Error deleting logger data']);
         $this->loggerRepository->method('insertLogger')->willReturn(['code' => 200]);
 
-        $result = $this->controller->BatchCollecteLogger('some-maven-key', 'COLLECTE', 'laurent.hadjadj@ma-petite-entreprise.fr');
-        $expectedResult = [
-            'code' => 500,
-            'erreur' => ['Error deleting logger data', 'requête : ' => 'deleteLoggerMavenKey']
-        ];
+        $result = $this->controller->BatchCollecteLogger('some-maven-key', 'COLLECTE', static::$mel);
         $this->assertArrayHasKey('code', $result);
         $this->assertEquals(500, $result['code']);
     }
@@ -254,14 +254,14 @@ class BatchCollecteLoggerControllerTest extends TestCase
         // Le plugin Logger est activé. L'URL du serveur est défini
         $this->parameterBag->method('get')->willReturnMap([
             ['track.logger.method', true],
-            ['sonar.url', 'http://localhost']
+            ['sonar.url', static::$localhost]
         ]);
 
         $this->client->method('httpSonarQube')->willReturn(["total" => -1]);
         $this->loggerRepository->method('deleteLoggerMavenKey')->willReturn(['code' => 200]);
         $this->loggerRepository->method('insertLogger')->willReturn(['erreur'=>'', 'code' => 500, 'erreur' => ['Insert erreur', "requête : " => "insertLogger"]]);
 
-        $result = $this->controller->BatchCollecteLogger('some-maven-key', 'COLLECTE', 'laurent.hadjadj@ma-petite-entreprise.fr');
+        $result = $this->controller->BatchCollecteLogger('some-maven-key', 'COLLECTE', static::$mel);
         $this->assertArrayHasKey('code', $result);
         $this->assertEquals(500, $result['code']);
     }
