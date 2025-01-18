@@ -73,7 +73,7 @@ class BatchCollecteTodoController extends AbstractController
 
         /** Appelle le client HTTP */
         $queryParams = ['componentKeys'=>$mavenKey,
-        'rules'=> 'javascript:S1135,xml:S1135,typescript:S1135,Web:S1135,java:S1135,php:s1135,ruby:s1135,python:s1135', 'p'=>1, 'ps'=>500 ];
+        'rules' => 'javascript:S1135,xml:S1135,typescript:S1135,Web:S1135,java:S1135,php:s1135,ruby:s1135,python:s1135', 'p'=>1, 'ps'=>500 ];
 
         /** On construit l'URL et on appel le WS. */
         $result = $this->client->httpSonarQube("$tempoUrl/api/issues/search?".http_build_query($queryParams));
@@ -83,17 +83,17 @@ class BatchCollecteTodoController extends AbstractController
         }
 
         /** On supprime les résultats pour la maven_key. */
-        $map=['maven_key'=>$mavenKey];
-        $delete=$todoRepository->deleteTodoMavenKey($map);
-        if ($delete['code']!=200) {
+        $map = ['maven_key' => $mavenKey];
+        $delete = $todoRepository->deleteTodoMavenKey($map);
+        if ($delete['code'] != 200) {
             return ['code' => $delete['code'], static::$request=>'deleteTodoMavenKey'];
         }
 
         /** Si on a trouvé des to.do dans le code alors on les dénombre */
         $todo = 0;
         $mapData=[];
-        if ($result['paging']['total'] !== 0) {
-            foreach ($result['issues'] as $issue) {
+        if ($result['json']['paging']['total'] !== 0) {
+            foreach ($result['json']['issues'] as $issue) {
                 $todo++;
                 $component = str_replace('$mavenKey :', '', $issue['component']);
                 $line = empty($issue['line']) ? 0 : $issue['line'];
@@ -114,13 +114,13 @@ class BatchCollecteTodoController extends AbstractController
         }
 
         /* On enregistre */
-        $request=$todoRepository->insertTodo($mapData);
-        if ($request['code']!=200) {
+        $request = $todoRepository->insertTodo($mapData);
+        if ($request['code'] != 200) {
             return ['code' => $request['code'],
-            'erreur'=>[$request['erreur']],
-            static::$request=>'insertTodo'];
+                    'erreur' => [$request['erreur']],
+                    static::$request => 'insertTodo'];
         }
         /** On enregistre les données */
-        return ['code' => 200, 'nombre'=>$todo, 'message' =>['todo'=>$mapData], 'data'=> ['todo'=>$todo]];
+        return ['code' => 200, 'nombre'=>$todo, 'message' => ['todo'=>$mapData], 'data'=> ['todo'=>$todo]];
     }
 }

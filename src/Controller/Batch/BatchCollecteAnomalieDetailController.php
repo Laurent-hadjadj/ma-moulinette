@@ -85,7 +85,7 @@ class BatchCollecteAnomalieDetailController extends AbstractController
             if (isset($result['code']) && in_array($result['code'], [401, 404])) {
                 return ['erreur' => $result['code'], $result['erreur']];
             }
-            return $result;
+            return $result['json'];
         };
 
         /* Tableau des paramètres pour les requêtes HTTP */
@@ -119,10 +119,10 @@ class BatchCollecteAnomalieDetailController extends AbstractController
         }
 
         /** On supprime l'enregistrement correspondant à la clé */
-        $map=['maven_key'=>$mavenKey];
-        $delete=$anomalieDetailsRepository->deleteAnomalieDetailsMavenKey($map);
-        if ($delete['code']!=200) {
-            return ['code' => $delete['code'], 'erreur'=>[$delete['erreur'], static::$request=>'deleteAnomalieDetailsMavenKey']];
+        $map = ['maven_key' => $mavenKey];
+        $delete = $anomalieDetailsRepository->deleteAnomalieDetailsMavenKey($map);
+        if ($delete['code'] != 200) {
+            return ['code' => $delete['code'], 'erreur' => [$delete['erreur'], static::$request=>'deleteAnomalieDetailsMavenKey']];
         }
 
         /** Fonction pour mapper les résultats */
@@ -168,10 +168,10 @@ class BatchCollecteAnomalieDetailController extends AbstractController
             'utilisateur_collecte' => $utilisateurCollecte,
             'date_enregistrement' => $date];
 
-            $insert=$anomalieDetailsRepository->insertAnomalieDetail($mapData);
+            $insert = $anomalieDetailsRepository->insertAnomalieDetail($mapData);
             if ($insert['code'] !== 200) {
                 return ['code' => $insert['code'],
-                        'erreur'=>[$insert['erreur'],
+                        'erreur'=> [$insert['erreur'],
                         static::$request => 'insertAnomalieDetail']];
             }
             $data =['bug_blocker' => $bugSeverities['BLOCKER'],

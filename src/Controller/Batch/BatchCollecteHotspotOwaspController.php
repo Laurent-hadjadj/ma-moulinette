@@ -99,23 +99,23 @@ class BatchCollecteHotspotOwaspController extends AbstractController
 
         /** On supprime les hotspots pour la maven_key. */
         if ($menace === 'a0') {
-            $map=['maven_key'=>$mavenKey];
-            $delete=$hotspotOwaspRepository->deleteHotspotOwaspMavenKey($map);
-            if ($delete['code']!=200) {
+            $map = ['maven_key'=>$mavenKey];
+            $delete = $hotspotOwaspRepository->deleteHotspotOwaspMavenKey($map);
+            if ($delete['code'] != 200) {
                 return ['code' => $delete['code'], static::$request=>'deleteHotspotOwaspMavenKey'];
             }
 
-            $message='A0 : Effacement des données de la table hotspotOwasp pour le projet.';
+            $message = 'A0 : Effacement des données de la table hotspotOwasp pour le projet.';
             /** si on est en version 8, on envoi pas de tableau owasp2021 */
-            return ($sonarVersion==8) ?
+            return ($sonarVersion == (int)8) ?
                 ['code' => 200, 'info'=>'effacement', 'message' => $message] : ['code' => 200, 'owasp_2021'=> [], 'info'=>'effacement', 'message' => $message];
         }
 
         /** On récupère dans la table information_projet la version et la date du projet la plus récente. */
-        $map=['maven_key'=>$mavenKey];
-        $information=$informationProjetRepository->selectInformationProjetProjectVersion($map);
-        if ($information['code']!=200) {
-            return ['code' => $information['code'], 'message'=>$information['erreur']];
+        $map = ['maven_key' => $mavenKey];
+        $information = $informationProjetRepository->selectInformationProjetProjectVersion($map);
+        if ($information['code'] != 200) {
+            return ['code' => $information['code'], 'message' => $information['erreur']];
         }
 
         if (!$information['info']) {
@@ -131,8 +131,8 @@ class BatchCollecteHotspotOwaspController extends AbstractController
 
         /** Tableau des paramètres pour la requête HTTP */
         $queryParamsList = [
-            'owasp2017'=>['projectKey' => $mavenKey, 'owaspTop10' => $menace,'p' => 1, 'ps' => 500 ],
-            'owasp2021'=>['projectKey' => $mavenKey, 'owaspTop10-2021' => $menace,'p' => 1, 'ps' => 500 ]
+            'owasp2017' => ['projectKey' => $mavenKey, 'owaspTop10' => $menace,'p' => 1, 'ps' => 500 ],
+            'owasp2021' => ['projectKey' => $mavenKey, 'owaspTop10-2021' => $menace,'p' => 1, 'ps' => 500 ]
         ];
 
         /** On appelle les requêtes HTTP pour chaque référentiel */
@@ -143,7 +143,7 @@ class BatchCollecteHotspotOwaspController extends AbstractController
 
         /** On execute si la version de SonarQube est >= 9 */
         $owasp2021=['NC'];
-        if ($sonarVersion>8){
+        if ($sonarVersion > (int)8){
             $owasp2021 = $this->client->httpSonarQube("$tempoUrl/api/hotspots/search?".http_build_query($queryParamsList['owasp2021']));
             if (isset($owasp2021['code']) && in_array($owasp2021['code'], [401, 404])) {
             return ['erreur' => $owasp2021['code']];
@@ -192,8 +192,8 @@ class BatchCollecteHotspotOwaspController extends AbstractController
         }
 
         return ['code' => 200, 'info' => 'enregistrement',
-                'owasp_2017' => $owasp2017['paging']['total'],
-                'owasp_2021' => $owasp2021['paging']['total'] ?? 'NC',
+                'owasp_2017' => $owasp2017['json']['paging']['total'],
+                'owasp_2021' => $owasp2021['json']['paging']['total'] ?? 'NC',
                 'message' => '',
                 'data' => $hotspotDataList];
     }

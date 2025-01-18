@@ -82,11 +82,11 @@ class BatchCollecteNoSonarController extends AbstractController
         }
 
         /** On supprime les résultats pour la maven_key. */
-        $map=['maven_key'=>$mavenKey];
-        $delete=$noSonarRepository->deleteNoSonarMavenKey($map);
-        if ($delete['code']!=200) {
+        $map = ['maven_key' => $mavenKey];
+        $delete = $noSonarRepository->deleteNoSonarMavenKey($map);
+        if ($delete['code'] != 200) {
             return ['code' => $delete['code'],
-                    'erreur'=>[$delete['erreur'],static::$request=>'deleteNoSonarMavenKey']
+                    'erreur' => [$delete['erreur'], static::$request=>'deleteNoSonarMavenKey']
                 ];
         }
 
@@ -94,22 +94,21 @@ class BatchCollecteNoSonarController extends AbstractController
          * Si on a trouvé des @notations de type noSonar ou suppressWarning.
          * dans le code alors on les dénombre
          */
-
         $noSonar = $suppressWarning = 0;
         $mapData=[];
-        if ($result["paging"]["total"] !== 0) {
-            foreach ($result["issues"] as $issue) {
-                switch ($issue["rule"]) {
-                    case "java:S1309":
+        if ($result['json']['paging']['total'] !== 0) {
+            foreach ($result['json']['issues'] as $issue) {
+                switch ($issue['rule']) {
+                    case 'java:S1309':
                         $suppressWarning++;
                         break;
-                    case "java:NoSonar":
+                    case 'java:NoSonar':
                         $noSonar++;
                         break;
                     default: break;
                 }
-                $component = str_replace("$mavenKey :", "", $issue["component"]);
-                $line = empty($issue["line"]) ? 0 : $issue["line"];
+                $component = str_replace('$mavenKey :', '', $issue['component']);
+                $line = empty($issue['line']) ? 0 : $issue['line'];
 
                 /** On créé la map */
                 $mapData[] = [
@@ -127,15 +126,15 @@ class BatchCollecteNoSonarController extends AbstractController
         }
 
         /* On enregistre */
-        $request=$noSonarRepository->insertNoSonar($mapData);
-        if ($request['code']!=200) {
+        $request = $noSonarRepository->insertNoSonar($mapData);
+        if ($request['code'] != 200) {
             return ['code' => $request['code'],
-            'erreur'=>[$request['erreur'],static::$request=>'insertNoSonar']];
+            'erreur'=>[$request['erreur'], static::$request => 'insertNoSonar']];
         }
 
         /** On prépare les données pour l'historique */
         $data = ['suppress_warning' => $suppressWarning, 'no_sonar' => $noSonar];
 
-        return ['code' => 200, 'message' => $data, 'data'=>$data];
+        return ['code' => 200, 'message' => $data, 'data' => $data];
     }
 }

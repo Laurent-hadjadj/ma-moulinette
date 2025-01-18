@@ -80,7 +80,7 @@ class BatchCollecteAnomalieController extends AbstractController
             if (isset($result['code']) && in_array($result['code'], [401, 404])) {
                 return ['erreur' => $result['code'], $result['erreur']];
             }
-            return $result;
+            return $result['json'];
         }
 
     /**
@@ -105,7 +105,7 @@ class BatchCollecteAnomalieController extends AbstractController
         $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
 
         /** On récupère le nom du projet */
-        $app=$this->serviceExtractName->extractNameFromMavenKey($mavenKey);
+        $app = $this->serviceExtractName->extractNameFromMavenKey($mavenKey);
 
         /** On construit l'URL */
         $tempoUrl = $this->getParameter(static::$sonarUrl);
@@ -124,30 +124,30 @@ class BatchCollecteAnomalieController extends AbstractController
 
         /* On appelle les API en passant les querryParams à la fonction générique */
         $results = [];
-        $results['general']=self::makeRequest($queryParamsList['general'], $tempoUrl);
+        $results['general'] = self::makeRequest($queryParamsList['general'], $tempoUrl);
         if (isset($results['general']['erreur'])) {
                 return ['code' => $results['general']['erreur'], 'erreur'=>$results['erreur']];
             }
-        $results['BUG']=self::makeRequest($queryParamsList['BUG'], $tempoUrl);
+        $results['BUG'] = self::makeRequest($queryParamsList['BUG'], $tempoUrl);
         if (isset($results['BUG']['erreur'])) {
-                return ['code' => $results['BUG']['erreur'], 'erreur'=>$results['erreur']];
+                return ['code' => $results['BUG']['erreur'], 'erreur '=> $results['erreur']];
             }
 
-        $results['VULNERABILITY']=self::makeRequest($queryParamsList['VULNERABILITY'], $tempoUrl);
+        $results['VULNERABILITY'] = self::makeRequest($queryParamsList['VULNERABILITY'], $tempoUrl);
         if (isset($results['VULNERABILITY']['erreur'])) {
                 return ['code' => $results['VULNERABILITY']['erreur'], 'erreur'=>$results['erreur']];
             }
-        $results['CODE_SMELL']=self::makeRequest($queryParamsList['CODE_SMELL'], $tempoUrl);
+        $results['CODE_SMELL'] = self::makeRequest($queryParamsList['CODE_SMELL'], $tempoUrl);
         if (isset($results['CODE_SMELL']['erreur'])) {
-                return ['code' => $results['CODE_SMELL']['erreur'], 'erreur'=>$results['erreur']];
+                return ['code' => $results['CODE_SMELL']['erreur'], 'erreur' => $results['erreur']];
             }
 
         if ($results['general']['paging']['total'] != 0) {
             /** On supprime les résultats pour la maven_key. */
-            $map=['maven_key'=>$mavenKey];
-            $delete=$anomalieRepository->deleteAnomalieMavenKey($map);
-            if ($delete['code']!=200) {
-                return ['code' => $delete['code'],'erreur'=>[$delete['erreur'], static::$request=>'deleteAnomalieMavenKey']];
+            $map = ['maven_key' => $mavenKey];
+            $delete = $anomalieRepository->deleteAnomalieMavenKey($map);;
+            if ($delete['code'] != 200) {
+                return ['code' => $delete['code'],'erreur' => [$delete['erreur'], static::$request => 'deleteAnomalieMavenKey']];
             }
 
             //** On récupère le nombre d'anomalie et la dette technique */
@@ -158,10 +158,10 @@ class BatchCollecteAnomalieController extends AbstractController
             $detteReliabilityMinute=$results['BUG']['effortTotal'];
             $detteVulnerability = $this->serviceDateTools->minutesTo($results['VULNERABILITY']
             ['effortTotal']);
-            $detteVulnerabilityMinute=$results['VULNERABILITY']
+            $detteVulnerabilityMinute = $results['VULNERABILITY']
             ['effortTotal'];
             $detteCodeSmell = $this->serviceDateTools->minutesTo($results['CODE_SMELL']['effortTotal']);
-            $detteCodeSmellMinute=$results['CODE_SMELL']['effortTotal'];
+            $detteCodeSmellMinute = $results['CODE_SMELL']['effortTotal'];
 
             /* On initialise les indicateurs de sévérité, de type et de répartition */
             $severities = ['BLOCKER' => 0, 'CRITICAL' => 0, 'MAJOR' => 0, 'INFO' => 0, 'MINOR' => 0];
