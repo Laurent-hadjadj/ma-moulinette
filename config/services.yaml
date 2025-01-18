@@ -31,18 +31,18 @@ parameters:
     proxy: '%env(PROXY)%'
 
     # Gestion des projets et profils
-    maj_projet: '%env(MAJ_PROJET)%'
-    maj_profil: '%env(MAJ_PROFIL)%'
+    maj.projet: '%env(MAJ_PROJET)%'
+    maj.profil: '%env(MAJ_PROFIL)%'
     nombre.favori: '%env(NOMBRE_FAVORI)%'
     # Configuration diverse
-    track_logger_method: '%env(TRACK_LOGGER_METHOD)%'
-    csrf_salt: '%env(CSRF_SALT)%'
-    path_audit: '%env(PATH_AUDIT)%'
+    track.logger.method: '%env(TRACK_LOGGER_METHOD)%'
+    csrf.salt: '%env(CSRF_SALT)%'
+    path.audit: '%env(PATH_AUDIT)%'
     environnement: '%env(ENVIRONNEMENT)%'
 
     # Identité et marque
-    entreprise.marque.short: '%env(MARQUE_ENTREPRISE_SHORT)%'
-    entreprise.marque.long: '%env(MARQUE_ENTREPRISE_LONG)%'
+    marque.entreprise.short: '%env(MARQUE_ENTREPRISE_SHORT)%'
+    marque.entreprise.long: '%env(MARQUE_ENTREPRISE_LONG)%'
     logo.entreprise: '%env(LOGO_ENTREPRISE)%'
 
     # RGAA et CGU
@@ -53,7 +53,7 @@ parameters:
     cgu.siren: '%env(CGU_SIREN)%'
     cgu.numero.siret: '%env(CGU_NUMERO_SIRET)%'
     cgu.numero.siren: '%env(CGU_NUMERO_SIREN)%'
-    cgu.directeur_publication: '%env(CGU_DIRECTEUR_PUBLICATION)%'
+    cgu.directeur.publication: '%env(CGU_DIRECTEUR_PUBLICATION)%'
     cgu.url.site: '%env(CGU_URL_SITE)%'
     cgu.source.url: '%env(CGU_SOURCE_URL)%'
     cgu.source.scm: '%env(CGU_SOURCE_SCM)%'
