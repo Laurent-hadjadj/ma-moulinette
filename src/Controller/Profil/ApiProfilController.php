@@ -134,7 +134,7 @@ class ApiProfilController extends AbstractController
         }
 
         /** On Vérifie qu'il existe au moins un profil */
-        if (empty($result['profiles'])) {
+        if (empty($result['json']['profiles'])) {
             return new JsonResponse(['code' => 404], Response::HTTP_OK);
         }
 
@@ -148,7 +148,7 @@ class ApiProfilController extends AbstractController
         }
 
         /** On insert les profils dans la table profiles. */
-        $map=[ 'profiles' => $result['profiles'], 'date_enregistrement' => $date ];
+        $map=[ 'profiles' => $result['json']['profiles'], 'date_enregistrement' => $date ];
         $r2=$profilesRepository->insertProfiles($map);
         if ($r2['code']===500) {
             return new JsonResponse(['code' => 500, 'erreur'=>$r2['erreur']], Response::HTTP_OK);
@@ -258,10 +258,12 @@ class ApiProfilController extends AbstractController
         /** On récupère le nom du langage et le nom du profil */
         $language = strtolower($explode[1]);
         $profil = $explode[2];
-        /** On renomme les langages pour SonarQube */
+        /** Liste des langages pour SonarQube */
         $sonarLanguage = ['delphi', 'css', 'jsp', 'py', 'js', 'secrets', 'ruby', 'java', 'web', 'xml', 'php', 'json', 'text', 'grvy', 'ts', 'yaml'];
+        /** Liste des langages Ma-Moulinette */
+        $maMoulinetteLanguage = ['java properties', 'javascript', 'html', 'typescript', 'python', 'groovy'];
 
-        if (!in_array($language, $sonarLanguage)){
+        if (!in_array($language, $sonarLanguage) && !in_array($language, $maMoulinetteLanguage)){
             $titre="[DÉTAILS-002]";
             $message = "Le langage sélectionné ne fait pas partir des langages supporté par SonarQube (Erreur 404)";
             $this->addFlash('notice', ['type'=>'alert', 'titre'=>$titre, 'message'=>$message]);
@@ -269,18 +271,18 @@ class ApiProfilController extends AbstractController
         }
 
         switch ($language) {
-            case "java properties": $language = "jproperties";
+            case 'java properties': $language = 'jproperties';
                 break;
-            case "javascript": $language = "js";
+            case 'javascript': $language = 'js';
                 break;
-            case "html": $language = "web";
+            case 'html': $language = 'web';
                 break;
-            case "typescript": $language = "ts";
+            case 'typescript': $language = 'ts';
                 break;
-            case "python": $language = "py";
+            case 'python': $language = 'py';
                 break;
-            case "groovy": $language = "grvy";
-            break;
+            case 'groovy': $language = 'grvy';
+                break;
             default: $language;
         }
 
@@ -297,8 +299,8 @@ class ApiProfilController extends AbstractController
             return $this->render(static::$page, $render);
         }
 
-        $events = $result['events'];
-        $total = $result['total'];
+        $events = $result['json']['events'];
+        $total = $result['json']['total'];
 
         /* On créé une date */
         $date = new \DateTime('now', new \DateTimeZone(static::$europeParis));
@@ -310,10 +312,10 @@ class ApiProfilController extends AbstractController
             $dateCourte = $dc->format(static::$dateFormatShort);
             $dateModification = $event['date'];
             $action = $event['action'];
-            $auteur = $event['authorName'];
+            $auteur = $event['authorName'] ?? 'Non défini';
             $rule = $event['ruleKey'];
             $description = $event['ruleName'];
-            $detail = json_encode($event["params"]);
+            $detail = json_encode($event['params']);
 
             /** On prépare les données pour la requête */
             $map=['date_courte'=>$dateCourte, 'language'=>$language, 'date'=>$dateModification, 'action'=>$action, 'auteur'=>$auteur, 'rule'=>$rule, 'description'=>$description, 'detail'=>$detail, 'date_enregistrement'=>$date];
@@ -424,8 +426,8 @@ class ApiProfilController extends AbstractController
 
         /** On récupère la liste des profils pour un language non actif */
         $referential_default = 'false';
-        $request=$profilesRepository->selectProfiles($referential_default, $langage);
-        $compte=$profilesRepository->countProfiles($referential_default, $langage);
+        $request = $profilesRepository->selectProfiles($referential_default, $langage);
+        $compte = $profilesRepository->countProfiles($referential_default, $langage);
         return new JsonResponse([
             'code' => 200, 'listeProfil' => $request['liste'], 'countProfil' =>$compte], Response::HTTP_OK);
     }
