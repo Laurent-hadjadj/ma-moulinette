@@ -114,8 +114,8 @@ class ApiCollecteController extends AbstractController
         /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'maven_key') ) {
             return new JsonResponse(
-                ['data'=>$data,'code'=>400, 'type'=>'alert',
-                'reference'=> static::$reference, 'message'=> static::$erreur400], Response::HTTP_OK);
+                ['data' => $data,'code' => 400, 'type' => 'alert',
+                'reference' => static::$reference, 'message' => static::$erreur400], Response::HTTP_OK);
         }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
@@ -129,8 +129,9 @@ class ApiCollecteController extends AbstractController
         $utilisateur_collecte = $this->security->getUser()->getCourriel() ?? 'null';
 
         /** Information générales sur le projet */
-        $information=$this->batchCollecteInformation->batchCollecteInformation($data->maven_key, 'COLLECTE', $utilisateur_collecte);
-        if ($information['code']!=200){
+        $information = $this->batchCollecteInformation->batchCollecteInformation($data->maven_key, 'COLLECTE', $utilisateur_collecte);
+
+        if ($information['code'] != 200){
             return new JsonResponse([
                 'type' => 'erreur', 'code' => $information['code'],
                 'reference' => static::$reference,
