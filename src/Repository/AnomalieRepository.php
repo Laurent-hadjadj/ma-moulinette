@@ -67,7 +67,7 @@ class AnomalieRepository extends ServiceEntityRepository
   {
     $sql = "DELETE
             FROM ma_moulinette.anomalie
-            HERE maven_key=:maven_key";
+            WHERE maven_key=:maven_key";
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
             $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
