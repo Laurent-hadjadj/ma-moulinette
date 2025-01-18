@@ -144,9 +144,9 @@ class ApiAccueilController extends AbstractController
 
         /**
          * Si la table est vide on insert les résultats et
-         * on revoie les résultats.
+         * On revoie les résultats.
          */
-        foreach ($result['components'] as $projet) {
+        foreach ($result['json']['components'] as $projet) {
             /**
              *  On exclue les projets archivés avec la particule "-SVN".
              *  "project": "fr.domaine:mon-application-SVN"
