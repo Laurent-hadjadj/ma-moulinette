@@ -85,8 +85,8 @@ class BatchCollecteNoteController extends AbstractController
         }
 
         /** On supprime les résultats pour la maven_key. */
-        $map=['maven_key'=>$mavenKey, 'type'=>$type];
-        $delete=$noteRepository->deleteNotesMavenKey($map);
+        $map = ['maven_key' => $mavenKey, 'type' => $type];
+        $delete = $noteRepository->deleteNotesMavenKey($map);
         if ($delete['code']!=200) {
             return ['code' => $delete['code'],
                     'erreur'=>[$delete['erreur'],
@@ -99,7 +99,7 @@ class BatchCollecteNoteController extends AbstractController
 
         /** Enregistrement des nouvelles valeurs */
         /** Attention la valeur de la note est en float dans SonarQube, on le converti en integer */
-        foreach ($result['component']['measures'] as $mesure) {
+        foreach ($result['json']['component']['measures'] as $mesure) {
             $map=[
                 'maven_key' => $mavenKey,
                 'type' => $type,
@@ -132,7 +132,7 @@ class BatchCollecteNoteController extends AbstractController
         $note = $noteMap[$latestNote] ?? 'Z';
 
         /** On prépare les données pour l'historique */
-        $data=[ 'note_'.$type => $note];
+        $data = ['note_'.$type => $note];
 
         return ['code' => 200, 'message' => ['value' => $note], 'data' => $data];
     }
@@ -154,8 +154,8 @@ class BatchCollecteNoteController extends AbstractController
         $hotspotsRepository = $this->em->getRepository(Hotspots::class);
 
         // Première requête pour obtenir le nombre de hotspots à réviser
-        $map=['maven_key'=>$mavenKey, 'status'=> 'TO_REVIEW' ];
-        $toReview=$hotspotsRepository->countHotspotsStatus($map);
+        $map = ['maven_key' => $mavenKey, 'status'=> 'TO_REVIEW' ];
+        $toReview = $hotspotsRepository->countHotspotsStatus($map);
         if ($toReview['code']!=200) {
             return ['code' => $toReview['code'],
                     'erreur'=>[$toReview['erreur'],
@@ -163,8 +163,8 @@ class BatchCollecteNoteController extends AbstractController
             ];
         }
         // Seconde requête pour obtenir le nombre de hotspots révisés
-        $map=['maven_key'=>$mavenKey, 'status'=> 'REVIEWED' ];
-        $reviewed=$hotspotsRepository->countHotspotsStatus($map);
+        $map = ['maven_key' => $mavenKey, 'status' => 'REVIEWED' ];
+        $reviewed = $hotspotsRepository->countHotspotsStatus($map);
         if ($reviewed['code']!=200) {
             return ['code' => $reviewed['code'],
                     'erreur'=>[$reviewed['erreur'],
@@ -191,7 +191,7 @@ class BatchCollecteNoteController extends AbstractController
             }
         }
         /** On prépare les données pour l'historique */
-        $data=[ 'note_hotspot' => $note];
+        $data = [ 'note_hotspot' => $note];
 
         return ['code' => 200, 'message' => ['note_hotspot' => $note], 'data' => $data];
     }

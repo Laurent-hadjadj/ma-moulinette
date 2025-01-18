@@ -80,7 +80,7 @@ class BatchCollecteMesureController extends AbstractController
         }
 
         /** On supprime les résultats pour la maven_key. */
-        $map=['maven_key'=>$mavenKey];
+        $map=['maven_key' => $mavenKey];
         $delete=$mesuresRepository->deleteMesuresMavenKey($map);
         if ($delete['code']!=200) {
             return ['code' => $delete['code'], 'erreur'=>[$delete['erreur'], static::$request=>'deleteMesureMavenKey']];
@@ -89,24 +89,24 @@ class BatchCollecteMesureController extends AbstractController
         $date = new \DateTimeImmutable('now', new \DateTimeZone("Europe/Paris"));
 
         /** Initialisation des mesures avec des valeurs par défaut */
-        $lines = intval($result['measures']['lines'] ?? 0);
-        $coverage = $result['measures']['coverage'] ?? 0;
+        $lines = intval($result['json']['measures']['lines'] ?? 0);
+        $coverage = $result['json']['measures']['coverage'] ?? 0;
         // SonarQube doc -> duplicated_lines_density
-        $duplicatedLinesDensity = $result['measures']['duplicationDensity'] ?? 0;
-        $tests = intval($result['measures']['tests'] ?? 0);
-        $issues = intval($result['measures']['issues'] ?? 0);
+        $duplicatedLinesDensity = $result['json']['measures']['duplicationDensity'] ?? 0;
+        $tests = intval($result['json']['measures']['tests'] ?? 0);
+        $issues = intval($result['json']['measures']['issues'] ?? 0);
 
         /** Appelle le client HTTP */
         $queryParams = [
-        'component' => $mavenKey,
-        'metricKeys' => 'ncloc,ncloc_language_distribution'
+            'component' => $mavenKey,
+            'metricKeys' => 'ncloc,ncloc_language_distribution'
         ];
         $queryString = http_build_query($queryParams);
         /** Appelle le client HTTP */
         $result2 = $this->client->httpSonarQube("$tempoUrl/api/measures/component?$queryString");
 
         /** Initialise ncloc avec une valeur par défaut */
-        foreach($result2['component']['measures'] as $mesure){
+        foreach($result2['json']['component']['measures'] as $mesure){
             if ($mesure['metric']==='ncloc'){
                 $ncloc = $mesure['value'] ? intval($mesure['value']) : 0 ;
             }
@@ -130,12 +130,12 @@ class BatchCollecteMesureController extends AbstractController
         /** Appelle le client HTTP */
         $result3 = $this->client->httpSonarQube("$tempoUrl/api/measures/component?$queryString");
 
-        $sqaleRatio = floatval($result3['component']['measures'][0]['value'] ?? -1);
+        $sqaleRatio = floatval($result3['json']['component']['measures'][0]['value'] ?? -1);
 
          /** On enregistre les données */
         $mesureData = [
             'maven_key' => $mavenKey,
-            'project_name' => $result['projectName'],
+            'project_name' => $result['json']['projectName'],
             'lines' => $lines,
             'ncloc' => $ncloc,
             'language_distribution' => $distribution,
@@ -157,7 +157,7 @@ class BatchCollecteMesureController extends AbstractController
 
         /** On prépare les données pour l'historique */
         $data=[
-            'nom_projet' => strtolower($result['projectName']),
+            'nom_projet' => strtolower($result['json']['projectName']),
             'nombre_ligne' => $lines,
             'nombre_ligne_code' => $ncloc,
             'language_distribution' => $distribution,
@@ -170,6 +170,5 @@ class BatchCollecteMesureController extends AbstractController
 
         return ['code' => 200, 'message' => $mesureData, 'data' => $data];
     }
-
 
 }

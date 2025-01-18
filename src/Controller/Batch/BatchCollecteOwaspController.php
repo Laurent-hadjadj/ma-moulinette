@@ -77,8 +77,8 @@ class BatchCollecteOwaspController extends AbstractController
 
         /** Tableau des paramètres pour la requête HTTP */
         $queryParamsList = [
-            'owasp2017'=>['componentKeys' => $maven_key, 'facets' => 'owaspTop10', 'owaspTop10' => 'a1,a2,a3,a4,a5,a6,a7,a8,a9,a10'],
-            'owasp2021'=>['componentKeys' => $maven_key, 'facets' => 'owaspTop10-2021', 'owaspTop10-2021' => 'a1,a2,a3,a4,a5,a6,a7,a8,a9,a10'],
+            'owasp2017' => ['componentKeys' => $maven_key, 'facets' => 'owaspTop10', 'owaspTop10' => 'a1,a2,a3,a4,a5,a6,a7,a8,a9,a10'],
+            'owasp2021' => ['componentKeys' => $maven_key, 'facets' => 'owaspTop10-2021', 'owaspTop10-2021' => 'a1,a2,a3,a4,a5,a6,a7,a8,a9,a10'],
         ];
         /** On construit l'URL */
         $url = $this->getParameter(static::$sonarUrl);
@@ -89,7 +89,7 @@ class BatchCollecteOwaspController extends AbstractController
         }
 
         /** On execute si la version de SonarQube est >= 9 */
-        $owasp2021=['NC'];
+        $owasp2021 = ['NC'];
         if ($sonar_version>8){
             $owasp2021 = $this->client->httpSonarQube("$url/api/issues/search?".http_build_query($queryParamsList['owasp2021']));
             if (isset($owasp2021['code']) && in_array($owasp2021['code'], [401, 404])) {
@@ -98,19 +98,20 @@ class BatchCollecteOwaspController extends AbstractController
         }
 
         /** On récupère dans la table information_projet la version et la date du projet la plus récente. */
-        $map=['maven_key' => $maven_key];
-        $select_information=$informationProjet->selectInformationProjetProjectVersion($map);
+        $map = ['maven_key' => $maven_key];
+        $select_information = $informationProjet->selectInformationProjetProjectVersion($map);
         if ($select_information['code']!=200) {
             return ['code' => $select_information['code'], 'message'=>$select_information['erreur']];
         }
 
+        /** Il n'y a pas de projet dans la table ou la collecte des informations du projet a planté ! */
         if (!$select_information['info']) {
             return ['code' => 404, 'message' => static::$erreur404];
         }
 
-        /** On reconstruit des date au format dateTime */
-        $date_version = new \DateTimeImmutable($select_information['info'][0]['date'], new \DateTimeZone(static::$europeParis));
+        /** On reconstruit les dates au format dateTime */
         $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
+        $date_version = new \DateTimeImmutable($select_information['info'][0]['date'], new \DateTimeZone(static::$europeParis));
 
         $prepareOwaspData = function($referential) use ($maven_key, $date_version, $date, $select_information, $mode_collecte, $utilisateur_collecte) {
             /** On initialise un tableau avec comme valeur 0 */
@@ -131,7 +132,7 @@ class BatchCollecteOwaspController extends AbstractController
 
             /** Calcul du nombre d'issue par type de signalement OWASP et par type de sévérité */
             if ($referential['total'] != 0) {
-                foreach ($referential['issues'] as $issue) {
+                foreach ($referential['json']['issues'] as $issue) {
                     if (in_array($issue['status'], ['OPEN', 'CONFIRMED', 'REOPENED'])) {
                         foreach ($issue['tags'] as $tag) {
                             if (preg_match("/owasp-a(\d+)/", $tag, $matches)) {
@@ -149,7 +150,7 @@ class BatchCollecteOwaspController extends AbstractController
             $map = [
                     'total' => $total,
                     'maven_key' => $maven_key,
-                    'version' => $select_information['info'][0]['project_version'],
+                    'version' => $select_information['info'][0]['project_version'] ?? '0.0.0-SNAPSHOT',
                     'date_version' => $date_version,
                     'effort_total' => $effort_total,
                     'mode_collecte' => $mode_collecte,
@@ -172,14 +173,15 @@ class BatchCollecteOwaspController extends AbstractController
             return $map;
         };
 
-        $owaspDataList=[];
+        $owaspDataList = [];
         /* pour chaque référentiel 2017/2021 */
-        if (array_key_exists('total', $owasp2017)) {
-            $owaspDataList[] = $prepareOwaspData($owasp2017);
+        if (array_key_exists('total', $owasp2017['json'])) {
+            $owaspDataList[] = $prepareOwaspData($owasp2017['json']);
             $owaspDataList[0]['referential_owasp'] = 2017;
-            $total_2017=$owaspDataList[0]['total'];
+            $total_2017 = $owaspDataList[0]['total'];
         }
-        $total_2021='NC';
+
+        $total_2021 = 'NC';
         /** $owasp2021 = ['NC'] on a pas de données pour le référentiel 2021 */
         if (array_key_exists('total', $owasp2021)) {
             $owaspDataList[] = $prepareOwaspData($owasp2021);
@@ -188,17 +190,17 @@ class BatchCollecteOwaspController extends AbstractController
         }
 
         /** On supprime les informations sur le projet pour la dernière analyse. */
-        $map=['maven_key'=>$maven_key];
-        $delete=$owaspRepository->deleteOwaspMavenKey($map);
-        if ($delete['code']!=200) {
+        $map = ['maven_key' => $maven_key];
+        $delete = $owaspRepository->deleteOwaspMavenKey($map);
+        if ($delete['code'] != 200) {
             return ['code' => $delete['code'],
                     'erreur'=> [$delete['erreur'], static::$request=>'deleteOwaspMavenKey']
             ];
         }
 
-        /** On on enregistre */
-        $request=$owaspRepository->insertOwasp($owaspDataList);
-        if ($request['code']!=200) {
+        /** On enregistre */
+        $request = $owaspRepository->insertOwasp($owaspDataList);
+        if ($request['code'] != 200) {
             return ['code' => $request['code'],
                     'erreur' => [$request['erreur'],
                     static::$request=>'insertNote']];
