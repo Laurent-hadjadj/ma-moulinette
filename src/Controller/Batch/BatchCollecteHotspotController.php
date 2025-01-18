@@ -94,8 +94,8 @@ class BatchCollecteHotspotController extends AbstractController
         $informationProjet = $this->em->getRepository(InformationProjet::class);
 
          /** On récupère dans la table information_projet la version et la date du projet la plus récente. */
-        $map=['maven_key'=>$mavenKey];
-        $select=$informationProjet->selectInformationProjetProjectVersion($map);
+        $map = ['maven_key' => $mavenKey];
+        $select = $informationProjet->selectInformationProjetProjectVersion($map);
         if ($select['code']!=200) {
             return ['code' => $select['code'], 'message'=>$select['erreur']];
         }
@@ -123,18 +123,18 @@ class BatchCollecteHotspotController extends AbstractController
         $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
 
         /** On supprime les résultats pour la maven_key. */
-        $map=['maven_key'=>$mavenKey];
-        $delete=$hotspotsRepository->deleteHotspotsMavenKey($map);
-        if ($delete['code']!=200) {
+        $map = ['maven_key' => $mavenKey];
+        $delete = $hotspotsRepository->deleteHotspotsMavenKey($map);
+        if ($delete['code'] != 200) {
             return ['code' => $delete['code'],
-                    'erreur'=>[$delete['erreur'],
-                            static::$request=>'deleteHotspotsMavenKey']];
+                    'erreur' => [$delete['erreur'],
+                            static::$request => 'deleteHotspotsMavenKey']];
         }
 
         $map = [];
         $high = $medium = $low = 0;
         /** On traite les hotspots */
-        if ($result['paging']['total'] !== 0) {
+        if ($result['json']['paging']['total'] !== 0) {
             foreach ($result['hotspots'] as $value) {
                 // Traitement de la probabilité de vulnérabilité
                 $niveau = $this->vulnerabilityProbability($value['vulnerabilityProbability']);
