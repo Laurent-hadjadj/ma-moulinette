@@ -29,13 +29,17 @@ window.$ = $;
 export const showMessage = function(type, message) {
   const messageElement = $('#message-box');
   const textElement = $('#message-text');
+  const closeElement = $('#message-close-button');
 
   /* Réinitialise les classes d'alerte et le style inline */
-  messageElement.removeClass('alert primary secondary success warning hide');
+  messageElement.removeClass('alert primary secondary success warning default hide');
+  closeElement.removeClass('alert primary secondary success warning default');
   messageElement.css('display', ''); // Réinitialise le style inline
 
   /** Ajoute la classe correspondante */
   messageElement.addClass(type);
+  closeElement.addClass(type);
+
   /** Ajouter le message */
   textElement.html(message);
   /** Affiche l'élément */
