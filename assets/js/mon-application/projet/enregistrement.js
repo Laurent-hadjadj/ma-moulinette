@@ -19,6 +19,9 @@ import {serveur} from '../../common/properties.js';
 /** On importe les constantes */
 import {dateOptions, contentType, http_200, http_202} from '../../common/constante.js';
 
+/** On importe les fonctions d'affiche des messages JS */
+import {typeMessage, showMessage, hideMessage} from '../../common/message.js';
+
 /**
  * [Description for log]
  * Affiche la log.
@@ -30,7 +33,7 @@ import {dateOptions, contentType, http_200, http_202} from '../../common/constan
  * Created at: 13/12/2022, 12:58:45 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
-const log=function(txt) {
+const log = function(txt) {
   const textarea = document.getElementById('log');
   textarea.scrollTop = textarea.scrollHeight;
   textarea.value += `${new Intl.DateTimeFormat('default',
@@ -48,7 +51,7 @@ const log=function(txt) {
 * Created at: 13/12/2022, 12:59:18 (Europe/Paris)
 * @author     Laurent HADJADJ <laurent_h@me.com>
 */
-export const enregistrement=function(mavenKey) {
+export const enregistrement = async function(mavenKey) {
   /** On récupère les informations sur les versions */
   const nomProjet=$('#nom-projet').text().trim();
   /*
@@ -226,27 +229,27 @@ export const enregistrement=function(mavenKey) {
   const options = {
     url: `${serveur()}/api/enregistrement`, type: 'PUT',
     dataType: 'json', data: JSON.stringify(data), contentType };
-    $.ajax(options).then(t=> {
-      if (t.code === http_200) {
-        const message='Enregistrement des informations effectué.';
-        log(` - INFO : ${message}`);
-        const callbox=`<div class="callout alert-callout-border success text-justify" data-closable="slide-out-right">
-                        <p class="open-sans cell"><strong>Bravo !</strong> ${message}</p>
-                        <button class="close-button" aria-label="Fermer la fenêtre" type="button" data-close>
-                        <span aria-hidden="true">&times;</span></button></div>`;
-        $('#message').html(callbox);
-        return;
-      }
 
-      if (t.code === http_202) {
-        const message=`Cette version existe déjà dans l'historique.`;
-        const callbox=`<div class="callout alert-callout-border warning text-justify" data-closable="slide-out-right">
-                      <p class="open-sans cell"><strong>OUPS !!!</strong> ${message}</p>
-                      <button class="close-button" aria-label="Fermer la fenêtre" type="button" data-close>
-                      <span aria-hidden="true">&times;</span></button></div>`;
-        $('#message').html(callbox);
-      } else {
-        log(` - ERROR (${t.code}) : ${message}`);
+    try {
+          const t = await $.ajax(options);
+          const errorCodes = [http_400, http_401, http_403, http_404, http_500];
+          if (errorCodes.includes(t.code)){
+              showMessage(t.type, typeMessage(t.message));
+              return;
+            }
+          if (t.code === http_200) {
+            const message='Enregistrement des informations effectué.';
+            log(` - INFO : ${message}`);
+            showMessage('success', `<strong>[Enregistrement]</strong> ${message}`);
+            setTimeout(() => { hideMessage(); }, 5000);
+            return;
+          }
+
+        if (t.code === http_202) {
+          const message=`Cette version existe déjà dans l'historique.`;
+          showMessage('warning', `<strong>[Enregistrement]</strong> ${message}`);
+          }
+      } catch (err) {
+        showMessage('alert', `<strong>[Enregistrement]</strong> Une erreur inattendue s'est produite lors de l'enregistrement des données.<br>${err}`);
       }
-    });
 };
