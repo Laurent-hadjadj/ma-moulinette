@@ -237,7 +237,7 @@ const selectProjet = async function() {
     return;
   }
   if (t.code === http_200){
-    log(' - INFO   : Je construit la liste des projets autorisées.');
+    log(' - INFO   : Je construit la liste des projets autorisés.');
     $('.js-projet').select2({
       matcher: match,
       placeholder: 'Cliquez pour ouvrir la liste',
