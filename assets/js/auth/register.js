@@ -134,7 +134,7 @@ $('#registration_form_plainPassword_second').on('keyup', function(){
 $('#registration_form_plainPassword_first, #registration_form_plainPassword_second').on(
   'keyup', ()=>{
     const password=$('#registration_form_plainPassword_first').val();
-    const repassword=$('#registration_form_plainPassword_second').val();
+    const rePassword=$('#registration_form_plainPassword_second').val();
 
     if (password.length>=huit && password.length<=cinquanteDeux) {
         $('#register-info-check-password').html(checkOkSvg);
@@ -144,9 +144,9 @@ $('#registration_form_plainPassword_first, #registration_form_plainPassword_seco
           $('#register-info-check-password').html(checkKoSvg);
         }
 
-      if ( repassword.length>=huit && repassword.length<=cinquanteDeux ) {
+      if ( rePassword.length>=huit && rePassword.length<=cinquanteDeux ) {
         $('#register-info-check-re-password').html(checkOkSvg);
-        } else if (repassword.length===zero) {
+        } else if (rePassword.length===zero) {
         $('#register-info-check-re-password').html('');
         } else {
         $('#register-info-check-re-password').html(checkKoSvg);
@@ -181,13 +181,13 @@ $('#valider-formulaire-enregistrement').on('click', async ()=>{
   const courrielLength=$('#registration_form_courriel').val().length;
   const courrielValue = document.getElementById("registration_form_courriel");
   const passwordLength=$('#registration_form_plainPassword_first').val().length;
-  const repasswordLength=$('#registration_form_plainPassword_second').val().length;
+  const rePasswordLength=$('#registration_form_plainPassword_second').val().length;
   const passwordValue=$('#registration_form_plainPassword_first').val();
-  const repassordValue=$('#registration_form_plainPassword_second').val();
+  const rePassordValue=$('#registration_form_plainPassword_second').val();
 
 if (nomLength>=2 && prenomLength>=2 && courrielLength>=5 &&
-    passwordLength>=8 && repasswordLength>=8 &&
-    passwordValue===repassordValue &&
+    passwordLength>=8 && rePasswordLength>=8 &&
+    passwordValue===rePassordValue &&
     courrielValue.checkValidity()) {
       $('#message-erreur-valider').html('');
       $('#message-erreur-courriel').html('');
@@ -205,13 +205,10 @@ if (nomLength>=2 && prenomLength>=2 && courrielLength>=5 &&
   Switch actions
 */
 $('.unmask1, .unmask2').on('click', function(){
-
   if($(this).prev('input').attr('type') == 'password')
     changeType($(this).prev('input'), 'text');
-
   else
     changeType($(this).prev('input'), 'password');
-
   return false;
 });
 
