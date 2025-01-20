@@ -116,6 +116,16 @@ class Historique
     #[Assert\NotNull]
     private $nombreLigneCode;
 
+    #[ORM\Column(type: Types::INTEGER,
+    options: ['comment' => 'Nombre total de classes'])]
+    #[Assert\NotNull]
+    private $classes;
+
+    #[ORM\Column(type: Types::INTEGER,
+    options: ['comment' => 'Nombre total méthodes'])]
+    #[Assert\NotNull]
+    private $functions;
+
     #[ORM\Column(type: Types::FLOAT,
         options: ['comment' => 'Pourcentage de couverture de code par les tests'])]
     #[Assert\NotNull]
@@ -718,6 +728,70 @@ class Historique
     public function setNombreLigneCode(int $nombreLigneCode): \App\Entity\Historique
     {
         $this->nombreLigneCode = $nombreLigneCode;
+
+        return $this;
+    }
+
+    /**
+     * [Description for getClasses]
+     *
+     * @return int|null
+     *
+     * Created at: 20/01/2025 12:13:47 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function getClasses(): ?int
+    {
+        return $this->classes;
+    }
+
+    /**
+     * [Description for setClasses]
+     *
+     * @param int $classes
+     *
+     * @return \App\Entity\Historique
+     *
+     * Created at: 20/01/2025 12:13:44 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function setClasses(int $classes): \App\Entity\Historique
+    {
+        $this->classes = $classes;
+
+        return $this;
+    }
+
+    /**
+     * [Description for getFunctions]
+     *
+     * @return int|null
+     *
+     * Created at: 20/01/2025 12:13:42 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function getFunctions(): ?int
+    {
+        return $this->functions;
+    }
+
+    /**
+     * [Description for setFunctions]
+     *
+     * @param int $functions
+     *
+     * @return \App\Entity\Historique
+     *
+     * Created at: 20/01/2025 12:13:34 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function setFunctions(int $functions): \App\Entity\Historique
+    {
+        $this->functions = $functions;
 
         return $this;
     }

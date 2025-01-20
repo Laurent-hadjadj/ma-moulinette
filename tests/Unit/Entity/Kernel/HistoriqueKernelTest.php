@@ -50,7 +50,7 @@ class HistoriqueKernelTest extends KernelTestCase
         $response = $historiqueRepository->findOneBy(['mavenKey' => static::$mavenKey]);
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée');
-        $this->assertCount(1, [$response], 'MAVENKEY: Aucune réponse trouvée');
+        $this->assertCount(1, [$response], 'Maven_key: Aucune réponse trouvée');
     }
 
     public function testHistoriqueCount(): void
@@ -63,7 +63,7 @@ class HistoriqueKernelTest extends KernelTestCase
         $response = $historiqueRepository->findBy(['mavenKey' => static::$mavenKey]);
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée');
-        $this->assertCount(2, $response, 'MAVENKEY: Aucune réponse trouvée');
+        $this->assertCount(2, $response, 'Maven_Key: Aucune réponse trouvée');
     }
 
 }
