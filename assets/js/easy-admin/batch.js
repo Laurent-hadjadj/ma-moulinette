@@ -10,4 +10,3 @@
  */
 
 /** Import des dépendances */
-import '../../styles/easy-admin.css';
