@@ -15,28 +15,12 @@ import $ from 'jquery';
 // On importe les paramètres serveur
 import {serveur} from '../../common/properties.js';
 
-/** On importe les constantes */
-import {contentType, dateOptions, http_400, http_406, http_500,
-        un, deux, trois, quatre, cinq, dix, cent, dixMille} from '../../common/constante.js';
+/** On importe les fonctions d'affiche des messages JS */
+import {typeMessage, showMessage} from '../../common/message.js';
 
-/**
- * [Description for afficheMessage]
- * Mutualise l'affichage des messages d'erreur.
- *
- * @param mixed t
- *
- * @return void
- *
- * Created at: 14/03/2024 10:11:15 (Europe/Paris)
- * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
- */
-const afficheMessage=function(t){
-  $('#callout-projet-message').removeClass('hide success alert warning primary secondary');
-  $('#callout-projet-message').addClass(t.type);
-  $('#js-reference-information').html(t.reference);
-  $('#js-message-information').html(t.message);
-}
+/** On importe les constantes */
+import {contentType, dateOptions, http_400, http_401, http_403, http_406, http_500,
+        un, deux, trois, quatre, cinq, dix, cent, dixMille} from '../../common/constante.js';
 
 /**
  * [Description for remplissage]
@@ -49,7 +33,7 @@ const afficheMessage=function(t){
  * Created at: 13/12/2022, 10:08:02 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
-export const remplissage=function(mavenKey) {
+export const remplissage = async function(mavenKey) {
   const data = { maven_key: mavenKey };
 
   /**
@@ -59,47 +43,44 @@ export const remplissage=function(mavenKey) {
     url: `${serveur()}/api/peinture/projet/version`, type: 'POST',
     dataType: 'json', data: JSON.stringify(data), contentType };
 
-  $.ajax(optionsInfo).then(t=> {
-    /** La requête ajax a babaser */
-    if (t.code === http_400){
-        afficheMessage(t);
-        sessionStorage.setItem('peinture', 'Erreur - récupération des informations de la version.');
-        return;
+  try {
+        const t = await $.ajax(optionsInfo);
+        const errorCodes = [http_400, http_401, http_403, http_406, http_500];
+        if (errorCodes.includes(t.code)){
+            showMessage(t.type, typeMessage(t.message));
+            sessionStorage.setItem('peinture', 'Erreur - récupération des informations de la version.');
+            return;
+          }
+
+        /** On affiche les informations du projet */
+        const nom = mavenKey.split(':');
+        $('#nom-projet').html(nom[1]);
+        $('#key-analyse').html(t.analyse_key);
+        $('#clef-projet').html(mavenKey);
+        $('#version-release').html(t.release);
+        $('#version-snapshot').html(t.snapshot);
+        $('#version-autre').html(t.autre);
+
+        const version = document.getElementById('version-autre');
+        version.dataset.label = JSON.stringify(t.label);
+        version.dataset.dataset = JSON.stringify(t.dataset);
+        $('#version').html(t.projet);
+        $('#date-version').html(new Intl.DateTimeFormat('default', dateOptions).format(new Date(t.date)));
+
+        /** Historique */
+        const t0 = document.getElementById('key-analyse');
+        const t1 = document.getElementById('version-release');
+        const t2 = document.getElementById('version-snapshot');
+        const t3 = document.getElementById('version-autre');
+        const t4 = document.getElementById('date-version');
+        t0.dataset.analyseKey=(t.analyse_key);
+        t1.dataset.release=(t.release);
+        t2.dataset.snapshot=(t.snapshot);
+        t3.dataset.autre=(t.autre);
+        t4.dataset.dateVersion=(t.date);
+      } catch (err) {
+        showMessage('alert', `<strong>[Peinture]</strong> Une erreur inattendue s'est produite lors la récupération des informations du projet.<br>${err}`);
       }
-
-    /* Le projet n'a pas été trouvé dans la babase. */
-    if (t.code === http_406 || t.code === http_500){
-        afficheMessage(t);
-        return;
-      }
-
-    /** On affiche les informations du projet */
-    const nom = mavenKey.split(':');
-    $('#nom-projet').html(nom[1]);
-    $('#key-analyse').html(t.analyse_key);
-    $('#clef-projet').html(mavenKey);
-    $('#version-release').html(t.release);
-    $('#version-snapshot').html(t.snapshot);
-    $('#version-autre').html(t.autre);
-
-    const version = document.getElementById('version-autre');
-    version.dataset.label = JSON.stringify(t.label);
-    version.dataset.dataset = JSON.stringify(t.dataset);
-    $('#version').html(t.projet);
-    $('#date-version').html(new Intl.DateTimeFormat('default', dateOptions).format(new Date(t.date)));
-
-    /** Historique */
-    const t0 = document.getElementById('key-analyse');
-    const t1 = document.getElementById('version-release');
-    const t2 = document.getElementById('version-snapshot');
-    const t3 = document.getElementById('version-autre');
-    const t4 = document.getElementById('date-version');
-    t0.dataset.analyseKey=(t.analyse_key);
-    t1.dataset.release=(t.release);
-    t2.dataset.snapshot=(t.snapshot);
-    t3.dataset.autre=(t.autre);
-    t4.dataset.dateVersion=(t.date);
-  });
 
   /***
    * On récupère les exclusions noSonar
@@ -108,132 +89,123 @@ export const remplissage=function(mavenKey) {
     url: `${serveur()}/api/peinture/projet/nosonar`, type: 'POST',
     dataType: 'json', data: JSON.stringify(data), contentType };
 
-  $.ajax(optionsNoSonar).then(t=> {
-  /** La requête ajax a babaser */
-  if (t.code === http_400){
-    afficheMessage(t);
-    sessionStorage.setItem('peinture', 'Erreur - récupération des alertes nosonar.');
-    return;
-  }
+    try {
+      const t = await $.ajax(optionsNoSonar);
+      const errorCodes = [http_400, http_401, http_403, http_406, http_500];
+      if (errorCodes.includes(t.code)){
+          showMessage(t.type, typeMessage(t.message));
+          sessionStorage.setItem('peinture', 'Erreur - récupération des alertes nosonar.');
+          return;
+        }
 
-  /* Le projet n'a pas été trouvé dans la babase. */
-  if (t.code === http_406 || t.code === http_500){
-      afficheMessage(t);
-      return;
+      $('#suppress-warning').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.s1309));
+      $('#no-sonar').html( new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.nosonar));
+      const t5 = document.getElementById('suppress-warning');
+      const t6 = document.getElementById('no-sonar');
+      t5.dataset.s1309=(t.s1309);
+      t6.dataset.nosonar=(t.nosonar);
+    } catch (err) {
+      showMessage('alert', `<strong>[Peinture]</strong> Une erreur inattendue s'est produite lors la récupération des SuppressWarning et noSonar.<br>${err}`);
     }
-
-    $('#suppress-warning').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.s1309));
-    $('#no-sonar').html( new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.nosonar));
-    const t5 = document.getElementById('suppress-warning');
-    const t6 = document.getElementById('no-sonar');
-    t5.dataset.s1309=(t.s1309);
-    t6.dataset.nosonar=(t.nosonar);
-  });
 
   /** On récupère les to.do tags */
   const optionsTodo = {
     url: `${serveur()}/api/peinture/projet/todo`, type: 'POST',
     dataType: 'json', data: JSON.stringify(data), contentType };
 
-  $.ajax(optionsTodo).then(t=> {
-  /** La requête ajax a babaser */
-  if (t.code === http_400){
-    afficheMessage(t);
-    sessionStorage.setItem('peinture', 'Erreur - récupération de la liste des to-dos.');
-    return;
-  }
-
-  /* Le projet n'a pas été trouvé dans la babase. */
-  if (t.code === http_406 || t.code === http_500){
-      afficheMessage(t);
-      return;
-    }
-
-  /** On injecte dans la fenêtre modale les résultats */
-  $('#todo-liste').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.todo));
-  $('#js-java').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.java));
-  $('#js-javascript').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.javascript));
-  $('#js-typescript').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.typescript));
-  $('#js-html').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.html));
-  $('#js-xml').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.xml));
-
-  /* On ajoute la liste détaillée des fichiers */
-  let l, cutRule, cutComponent;
-  /** On efface le tableau */
-  $('#tableau-liste-detail').html('');
-  t.details.liste.forEach(element => {
-    cutRule=element.rule.split(':');
-    cutComponent=element.component.split(':');
-    l=`<tr><td><strong>${cutRule[0]}</strong></td><td>${cutComponent[2]}</td><td>${element.line}</td></tr>`;
-    $('#tableau-liste-detail').append(l);
-  });
-
-  const t50 = document.getElementById('todo-liste');
-  const t51 = document.getElementById('js-java');
-  const t52 = document.getElementById('js-javascript');
-  const t53 = document.getElementById('js-typescript');
-  const t54 = document.getElementById('js-html');
-  const t55 = document.getElementById('js-xml');
-  const t56 = document.getElementById('tableau-liste-detail');
-  t50.dataset.todo=(t.todo);
-  t51.dataset.java=(t.java);
-  t52.dataset.javascript=(t.javascript);
-  t53.dataset.typescript=(t.typescript);
-  t54.dataset.html=(t.html);
-  t55.dataset.xml=(t.xml);
-  t56.dataset.listeFichier=(t.details);
-  });
-
-    /***
-   * On récupère les logger
-   */
-    const optionsLogger = {
-      url: `${serveur()}/api/peinture/projet/logger`, type: 'POST',
-      dataType: 'json', data: JSON.stringify(data), contentType };
-
-    $.ajax(optionsLogger).then(t=> {
-    /** La requête ajax a babaser */
-    if (t.code === http_400){
-      afficheMessage(t);
-      sessionStorage.setItem('peinture', 'Erreur - récupération Logger.');
-      return;
-    }
-
-      /* Le projet n'a pas été trouvé dans la babase. */
-      if (t.code === http_406 || t.code === http_500){
-          afficheMessage(t);
-          return;
-        }
-
-      //Historique
-      const logger1 = document.getElementById('js-logger-info');
-      const logger2 = document.getElementById('js-logger-warn');
-      const logger3 = document.getElementById('js-logger-error');
-      const logger4 = document.getElementById('js-logger-debug');
-
-        /** Il n'y a pas de logger pour ce projet, i.e ce n'est peut être pas un projet java */
-      if (t.total === -1 || t.total === 0) {
-        $('#logger-liste').html('N.C');
-        logger1.dataset.loggerInfo=(t.logger_info);
-        logger2.dataset.loggerWarn=(t.logger_warn);
-        logger3.dataset.loggerError=(t.logger_error);
-        logger4.dataset.loggerDebug=(t.logger_debug);
+  try {
+    const t = await $.ajax(optionsTodo);
+    const errorCodes = [http_400, http_401, http_403, http_406, http_500];
+    if (errorCodes.includes(t.code)){
+        showMessage(t.type, typeMessage(t.message));
+        sessionStorage.setItem('peinture', 'Erreur - récupération de la liste des to-dos.');
         return;
       }
 
-      $('#logger-liste').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.total));
-      $('#js-logger-total').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.total));
-      $('#js-logger-info').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.logger_info));
-      $('#js-logger-warn').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.logger_warn));
-      $('#js-logger-error').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.logger_error));
-      $('#js-logger-debug').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.logger_debug));
+    /** On injecte dans la fenêtre modale les résultats */
+    $('#todo-liste').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.todo));
+    $('#js-java').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.java));
+    $('#js-javascript').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.javascript));
+    $('#js-typescript').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.typescript));
+    $('#js-html').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.html));
+    $('#js-xml').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.xml));
 
+    /* On ajoute la liste détaillée des fichiers */
+    let l, cutRule, cutComponent;
+    /** On efface le tableau */
+    $('#tableau-liste-detail').html('');
+    t.details.liste.forEach(element => {
+      cutRule=element.rule.split(':');
+      cutComponent=element.component.split(':');
+      l=`<tr><td><strong>${cutRule[0]}</strong></td><td>${cutComponent[2]}</td><td>${element.line}</td></tr>`;
+      $('#tableau-liste-detail').append(l);
+    });
+
+    const t50 = document.getElementById('todo-liste');
+    const t51 = document.getElementById('js-java');
+    const t52 = document.getElementById('js-javascript');
+    const t53 = document.getElementById('js-typescript');
+    const t54 = document.getElementById('js-html');
+    const t55 = document.getElementById('js-xml');
+    const t56 = document.getElementById('tableau-liste-detail');
+    t50.dataset.todo=(t.todo);
+    t51.dataset.java=(t.java);
+    t52.dataset.javascript=(t.javascript);
+    t53.dataset.typescript=(t.typescript);
+    t54.dataset.html=(t.html);
+    t55.dataset.xml=(t.xml);
+    t56.dataset.listeFichier=(t.details);
+  } catch (err) {
+    showMessage('alert', `<strong>[Peinture]</strong> Une erreur inattendue s'est produite lors la récupération des ToDo.<br>${err}`);
+  }
+
+
+  /***
+ * On récupère les logger
+ */
+  const optionsLogger = {
+    url: `${serveur()}/api/peinture/projet/logger`, type: 'POST',
+    dataType: 'json', data: JSON.stringify(data), contentType };
+
+  try {
+    const t = await $.ajax(optionsLogger);
+    const errorCodes = [http_400, http_401, http_403, http_406, http_500];
+    if (errorCodes.includes(t.code)){
+        showMessage(t.type, typeMessage(t.message));
+        sessionStorage.setItem('peinture', 'Erreur - récupération Logger.');
+        return;
+      }
+
+    //Historique
+    const logger1 = document.getElementById('js-logger-info');
+    const logger2 = document.getElementById('js-logger-warn');
+    const logger3 = document.getElementById('js-logger-error');
+    const logger4 = document.getElementById('js-logger-debug');
+
+      /** Il n'y a pas de logger pour ce projet, i.e ce n'est peut être pas un projet java */
+    if (t.total === -1 || t.total === 0) {
+      $('#logger-liste').html('N.C');
       logger1.dataset.loggerInfo=(t.logger_info);
       logger2.dataset.loggerWarn=(t.logger_warn);
       logger3.dataset.loggerError=(t.logger_error);
       logger4.dataset.loggerDebug=(t.logger_debug);
-    });
+      return;
+    }
 
+    $('#logger-liste').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.total));
+    $('#js-logger-total').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.total));
+    $('#js-logger-info').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.logger_info));
+    $('#js-logger-warn').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.logger_warn));
+    $('#js-logger-error').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.logger_error));
+    $('#js-logger-debug').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.logger_debug));
+
+    logger1.dataset.loggerInfo=(t.logger_info);
+    logger2.dataset.loggerWarn=(t.logger_warn);
+    logger3.dataset.loggerError=(t.logger_error);
+    logger4.dataset.loggerDebug=(t.logger_debug);
+  } catch (err) {
+    showMessage('alert', `<strong>[Peinture]</strong> Une erreur inattendue s'est produite lors la récupération des Loggers.<br>${err}`);
+  }
 
   /**
    * On récupère les mesures :
@@ -243,17 +215,13 @@ export const remplissage=function(mavenKey) {
     url: `${serveur()}/api/peinture/projet/mesures`, type: 'POST',
     dataType: 'json', data: JSON.stringify(data), contentType };
 
-  $.ajax(optionsMesures).then(t=> {
-    /** La requête ajax a babaser */
-    if (t.code === http_400){
-      afficheMessage(t);
-      sessionStorage.setItem('peinture', 'Erreur - récupération des mesures.');
-      return;
-    }
-
-    /* Le projet n'a pas été trouvé dans la babase. */
-    if (t.code === http_406 || t.code === http_500){
-        afficheMessage(t);
+  try {
+    console.log('mesures', t);
+    const t = await $.ajax(optionsMesures);
+    const errorCodes = [http_400, http_401, http_403, http_406, http_500];
+    if (errorCodes.includes(t.code)){
+        showMessage(t.type, typeMessage(t.message));
+        sessionStorage.setItem('peinture', 'Erreur - récupération des mesures.');
         return;
       }
 
@@ -290,19 +258,19 @@ export const remplissage=function(mavenKey) {
       }
     }
 
-    $('#coverage').html(new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(parseInt(t.coverage,10)/cent));
-    $('#ratio-dette-technique').html(new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(parseInt(t.sqaleDebtRatio,10)/cent));
+    $('#coverage').html(new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(parseFloat(t.coverage)/cent));
+    $('#ratio-dette-technique').html(new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(parseFloat(t.sqaleDebtRatio)/cent));
 
     /** On colorise le résultat */
-    if (t.sqaleDebtRatio<=30){
+    if (t.sqaleDebtRatio <= 30){
       /** La dette technique est soutenable */
       $('#ratio-dette-technique').addClass('couleur-vert');
     }
-    if (t.sqaleDebtRatio>30 && t.sqaleDebtRatio<=60){
+    if (t.sqaleDebtRatio > 30 && t.sqaleDebtRatio <= 60){
       /** La dette technique est importante, il faut absolument commencer à la réduire */
       $('#ratio-dette-technique').addClass('couleur-orange');
     }
-    if (t.sqaleDebtRatio>60 && t.sqaleDebtRatio<=100){
+    if (t.sqaleDebtRatio > 60 && t.sqaleDebtRatio <= 100){
       /** La dette technique n'est plus soutenable, il faut envisager de réécrire l'application ! */
       $('#ratio-dette-technique').addClass('couleur-rouge');
     }
@@ -311,7 +279,7 @@ export const remplissage=function(mavenKey) {
       $('#ratio-dette-technique').addClass('couleur-bordeaux');
     }
 
-    $('#duplicated-lines-density').html(new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(parseInt(t.duplicated_lines_density,10)/cent));
+    $('#duplicated-lines-density').html(new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(parseFloat(t.duplicated_lines_density,10)/cent));
     $('#tests').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.tests));
     $('#violations').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.issues));
 
@@ -331,7 +299,10 @@ export const remplissage=function(mavenKey) {
     t10.dataset.duplicatedLinesDensity=(t.duplicated_lines_density);
     t11.dataset.tests=(t.tests);
     t12.dataset.violations=t.issues;
-  });
+  } catch (err) {
+    showMessage('alert', `<strong>[Peinture]</strong> Une erreur inattendue s'est produite lors la récupération des Mesures.<br>${err}`);
+  }
+
 
   /**
    * On récupère les informations sur la dette technique et les anomalies.
@@ -340,18 +311,13 @@ export const remplissage=function(mavenKey) {
     url: `${serveur()}/api/peinture/projet/anomalie`, type: 'POST',
           dataType: 'json', data: JSON.stringify(data), contentType };
 
-    $.ajax(optionsAnomalie).then(t=> {
-      /** La requête ajax a babaser */
-      if (t.code === http_400){
-        afficheMessage(t);
-        sessionStorage.setItem('peinture', 'Erreur - récupération des anomalies.');
-        return;
-      }
-
-      /* Le projet n'a pas été trouvé dans la babase. */
-      if (t.code === http_406 || t.code === http_500){
-        afficheMessage(t);
-        return;
+    try {
+      const t = await $.ajax(optionsAnomalie);
+      const errorCodes = [http_400, http_401, http_403, http_406, http_500];
+      if (errorCodes.includes(t.code)){
+          showMessage(t.type, typeMessage(t.message));
+          sessionStorage.setItem('peinture', 'Erreur - récupération des anomalies.');
+          return;
         }
 
       /* Dette technique */
@@ -453,83 +419,83 @@ export const remplissage=function(mavenKey) {
           t22.dataset.nombreAutre=0;
           }
 
-    /* Répartition des anomalies par sévérité */
-    $('#nombre-anomalie-bloquant').html(t.blocker);
-    $('#nombre-anomalie-critique').html(t.critical);
-    $('#nombre-anomalie-info').html(t.info);
-    $('#nombre-anomalie-majeur').html(t.major);
-    $('#nombre-anomalie-mineur').html(t.minor);
+      /* Répartition des anomalies par sévérité */
+      $('#nombre-anomalie-bloquant').html(t.blocker);
+      $('#nombre-anomalie-critique').html(t.critical);
+      $('#nombre-anomalie-info').html(t.info);
+      $('#nombre-anomalie-majeur').html(t.major);
+      $('#nombre-anomalie-mineur').html(t.minor);
 
-    const t23 = document.getElementById('nombre-anomalie-bloquant');
-    const t24 = document.getElementById('nombre-anomalie-critique');
-    const t25 = document.getElementById('nombre-anomalie-info');
-    const t26 = document.getElementById('nombre-anomalie-majeur');
-    const t27 = document.getElementById('nombre-anomalie-mineur');
-    t23.dataset.nombreAnomalieBloquant=t.blocker;
-    t24.dataset.nombreAnomalieCritique=t.critical;
-    t25.dataset.nombreAnomalieInfo=t.info;
-    t26.dataset.nombreAnomalieMajeur=t.major;
-    t27.dataset.nombreAnomalieMineur=t.minor;
+      const t23 = document.getElementById('nombre-anomalie-bloquant');
+      const t24 = document.getElementById('nombre-anomalie-critique');
+      const t25 = document.getElementById('nombre-anomalie-info');
+      const t26 = document.getElementById('nombre-anomalie-majeur');
+      const t27 = document.getElementById('nombre-anomalie-mineur');
+      t23.dataset.nombreAnomalieBloquant=t.blocker;
+      t24.dataset.nombreAnomalieCritique=t.critical;
+      t25.dataset.nombreAnomalieInfo=t.info;
+      t26.dataset.nombreAnomalieMajeur=t.major;
+      t27.dataset.nombreAnomalieMineur=t.minor;
 
-    /** On récupère les notes SonarQube pour la version courante */
-    let couleur1, couleur2, couleur3 = '';
-    const tNotes = ['', 'A', 'B', 'C', 'D', 'E'];
+      /** On récupère les notes SonarQube pour la version courante */
+      let couleur1, couleur2, couleur3 = '';
+      const tNotes = ['', 'A', 'B', 'C', 'D', 'E'];
 
-    const noteVert1='note-vert1';
-    const noteVert2='note-vert2';
-    const noteJaune='note-jaune';
-    const noteOrange='note-orange';
-    const noteRouge='note-rouge';
+      const noteVert1='note-vert1';
+      const noteVert2='note-vert2';
+      const noteJaune='note-jaune';
+      const noteOrange='note-orange';
+      const noteRouge='note-rouge';
 
-    if (t.noteReliability === un ) {
-      couleur1 = noteVert1;
-    }
-    if (t.noteSecurity === un) {
-      couleur2 = noteVert1;
-    }
-    if (t.noteSqale === un) {
-      couleur3 = noteVert1;
-    }
+      if (t.noteReliability === un ) {
+        couleur1 = noteVert1;
+      }
+      if (t.noteSecurity === un) {
+        couleur2 = noteVert1;
+      }
+      if (t.noteSqale === un) {
+        couleur3 = noteVert1;
+      }
 
-    if (t.noteReliability === deux) {
-      couleur1 = noteVert2;
-    }
-    if (t.noteSecurity === deux) {
-      couleur2 = noteVert2;
-    }
-    if (t.noteSqale === deux) {
-      couleur3 = noteVert2;
-    }
+      if (t.noteReliability === deux) {
+        couleur1 = noteVert2;
+      }
+      if (t.noteSecurity === deux) {
+        couleur2 = noteVert2;
+      }
+      if (t.noteSqale === deux) {
+        couleur3 = noteVert2;
+      }
 
-    if (t.noteReliability === trois) {
-      couleur1 = noteJaune;
-    }
-    if (t.noteSecurity === trois) {
-      couleur2 = noteJaune;
-    }
-    if (t.noteSqale === trois) {
-      couleur3 = noteJaune;
-    }
+      if (t.noteReliability === trois) {
+        couleur1 = noteJaune;
+      }
+      if (t.noteSecurity === trois) {
+        couleur2 = noteJaune;
+      }
+      if (t.noteSqale === trois) {
+        couleur3 = noteJaune;
+      }
 
-    if (t.noteReliability === quatre) {
-      couleur1 = noteOrange;
-    }
-    if (t.noteSecurity === quatre) {
-      couleur2 = noteOrange;
-    }
-    if (t.noteSqale === quatre) {
-      couleur3 = noteOrange;
-    }
+      if (t.noteReliability === quatre) {
+        couleur1 = noteOrange;
+      }
+      if (t.noteSecurity === quatre) {
+        couleur2 = noteOrange;
+      }
+      if (t.noteSqale === quatre) {
+        couleur3 = noteOrange;
+      }
 
-    if (t.noteReliability === cinq) {
-      couleur1 = noteRouge;
-    }
-    if (t.noteSecurity === cinq) {
-      couleur2 = noteRouge;
-    }
-    if (t.noteSqale === cinq) {
-      couleur3 = noteRouge;
-    }
+      if (t.noteReliability === cinq) {
+        couleur1 = noteRouge;
+      }
+      if (t.noteSecurity === cinq) {
+        couleur2 = noteRouge;
+      }
+      if (t.noteSqale === cinq) {
+        couleur3 = noteRouge;
+      }
 
       const noteReliability = tNotes[parseInt(t.noteReliability,10)];
       const noteSecurity = tNotes[parseInt(t.noteSecurity,10)];
@@ -538,50 +504,49 @@ export const remplissage=function(mavenKey) {
       $('#note-reliability').html(`<span class="${couleur1}">${noteReliability}</span>`);
       $('#note-security').html(`<span class="${couleur2}">${noteSecurity}</span>`);
       $('#note-sqale').html(`<span class="${couleur3}">${noteSqale}</span>`);
-    });
+    } catch (err) {
+      showMessage('alert', `<strong>[Peinture]</strong> Une erreur inattendue s'est produite lors la récupération des Anomalies.<br>${err}`);
+    }
 
-    /**
-     * On récupère les hotspot.
-     */
-    const optionsHotspots = {
-      url: `${serveur()}/api/peinture/projet/hotspots`, type: 'POST',
-            dataType: 'json', data: JSON.stringify(data), contentType };
 
-    $.ajax(optionsHotspots).then(t=> {
-      let couleur='';
+  /**
+   * On récupère les hotspot.
+   */
+  const optionsHotspots = {
+    url: `${serveur()}/api/peinture/projet/hotspots`, type: 'POST',
+          dataType: 'json', data: JSON.stringify(data), contentType };
 
-      /** La requête ajax a babaser */
-      if (t.code === http_400){
-        afficheMessage(t);
-        sessionStorage.setItem('peinture', 'Erreur - récupération des hotspots.');
+  try {
+    const t = await $.ajax(optionsHotspots);
+    const errorCodes = [http_400, http_401, http_403, http_406, http_500];
+    if (errorCodes.includes(t.code)){
+        showMessage(t.type, typeMessage(t.message));
+        sessionStorage.setItem('peinture', 'Erreur - Erreur - récupération des hotspots.');
         return;
       }
 
-      /* Le projet n'a pas été trouvé dans la babase. */
-      if (t.code === http_406 || t.code === http_500){
-        afficheMessage(t);
-        return;
-      }
+    let couleur='';
 
-      if (t.note === 'E') {
-          couleur = 'note-rouge';
+    if (t.note === 'E') {
+        couleur = 'note-rouge';
+    }
+    if (t.note === 'D') {
+        couleur = 'note-orange';
+    }
+    if (t.note === 'C') {
+        couleur = 'note-jaune';
+    }
+    if (t.note === 'B') {
+        couleur = 'note-vert2';
       }
-      if (t.note === 'D') {
-          couleur = 'note-orange';
-      }
-      if (t.note === 'C') {
-          couleur = 'note-jaune';
-      }
-      if (t.note === 'B') {
-          couleur = 'note-vert2';
-        }
-      if (t.note === 'A') {
-          couleur = 'note-vert1';
-      }
+    if (t.note === 'A') {
+        couleur = 'note-vert1';
+    }
 
-      $('#note-hotspot').html(`<span class="${couleur}">${t.note}</span>`);
-    });
-
+    $('#note-hotspot').html(`<span class="${couleur}">${t.note}</span>`);
+  } catch (err) {
+    showMessage('alert', `<strong>[Peinture]</strong> Une erreur inattendue s'est produite lors la récupération des Hotspots.<br>${err}`);
+  }
 
   /**
    * On récupère la sévérité par type.
@@ -590,71 +555,68 @@ export const remplissage=function(mavenKey) {
     url: `${serveur()}/api/peinture/projet/anomalie/details`, type: 'POST',
           dataType: 'json', data: JSON.stringify(data), contentType };
 
-    $.ajax(optionsAnomalieDetails).then(t=> {
-      /** La requête ajax a babaser */
-      if (t.code === http_400){
-        afficheMessage(t);
+  try {
+    const t = await $.ajax(optionsAnomaliesDetails);
+    const errorCodes = [http_400, http_401, http_403, http_406, http_500];
+    if (errorCodes.includes(t.code)){
+        showMessage(t.type, typeMessage(t.message));
         sessionStorage.setItem('peinture', 'Erreur - récupération du détail des anomalies.');
         return;
       }
 
-      /* Le projet n'a pas été trouvé dans la babase. */
-      if (t.code === http_406 || t.code === http_500){
-          afficheMessage(t);
-          return;
-      }
+    $('#js-bug-blocker').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.bugBlocker));
+    $('#js-bug-critical').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.bugCritical));
+    $('#js-bug-major').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.bugMajor));
+    $('#js-bug-minor').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.bugMinor));
+    $('#js-bug-info').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.bugInfo));
 
-      $('#js-bug-blocker').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.bugBlocker));
-      $('#js-bug-critical').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.bugCritical));
-      $('#js-bug-major').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.bugMajor));
-      $('#js-bug-minor').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.bugMinor));
-      $('#js-bug-info').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.bugInfo));
+    const t28 = document.getElementById('js-bug-blocker');
+    const t29 = document.getElementById('js-bug-critical');
+    const t30 = document.getElementById('js-bug-major');
+    const t31 = document.getElementById('js-bug-minor');
+    const t32 = document.getElementById('js-bug-info');
+    t28.dataset.bugBlocker=t.bugBlocker;
+    t29.dataset.bugCritical=t.bugCritical;
+    t30.dataset.bugMajor=t.bugMajor;
+    t31.dataset.bugMinor=t.bugMinor;
+    t32.dataset.bugInfo=t.bugInfo;
 
-      const t28 = document.getElementById('js-bug-blocker');
-      const t29 = document.getElementById('js-bug-critical');
-      const t30 = document.getElementById('js-bug-major');
-      const t31 = document.getElementById('js-bug-minor');
-      const t32 = document.getElementById('js-bug-info');
-      t28.dataset.bugBlocker=t.bugBlocker;
-      t29.dataset.bugCritical=t.bugCritical;
-      t30.dataset.bugMajor=t.bugMajor;
-      t31.dataset.bugMinor=t.bugMinor;
-      t32.dataset.bugInfo=t.bugInfo;
+    $('#js-vulnerability-blocker').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.vulnerabilityBlocker));
+    $('#js-vulnerability-critical').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.vulnerabilityCritical));
+    $('#js-vulnerability-major').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.vulnerabilityMajor));
+    $('#js-vulnerability-minor').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.vulnerabilityMinor));
+    $('#js-vulnerability-info').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.vulnerabilityInfo));
 
-      $('#js-vulnerability-blocker').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.vulnerabilityBlocker));
-      $('#js-vulnerability-critical').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.vulnerabilityCritical));
-      $('#js-vulnerability-major').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.vulnerabilityMajor));
-      $('#js-vulnerability-minor').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.vulnerabilityMinor));
-      $('#js-vulnerability-info').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.vulnerabilityInfo));
+    const t33 = document.getElementById('js-vulnerability-blocker');
+    const t34 = document.getElementById('js-vulnerability-critical');
+    const t35 = document.getElementById('js-vulnerability-major');
+    const t36 = document.getElementById('js-vulnerability-minor');
+    const t37 = document.getElementById('js-vulnerability-info');
+    t33.dataset.vulnerabilityBlocker=t.vulnerabilityBlocker;
+    t34.dataset.vulnerabilityCritical=t.vulnerabilityCritical;
+    t35.dataset.vulnerabilityMajor=t.vulnerabilityMajor;
+    t36.dataset.vulnerabilityMinor=t.vulnerabilityMinor;
+    t37.dataset.vulnerabilityInfo=t.vulnerabilityInfo;
 
-      const t33 = document.getElementById('js-vulnerability-blocker');
-      const t34 = document.getElementById('js-vulnerability-critical');
-      const t35 = document.getElementById('js-vulnerability-major');
-      const t36 = document.getElementById('js-vulnerability-minor');
-      const t37 = document.getElementById('js-vulnerability-info');
-      t33.dataset.vulnerabilityBlocker=t.vulnerabilityBlocker;
-      t34.dataset.vulnerabilityCritical=t.vulnerabilityCritical;
-      t35.dataset.vulnerabilityMajor=t.vulnerabilityMajor;
-      t36.dataset.vulnerabilityMinor=t.vulnerabilityMinor;
-      t37.dataset.vulnerabilityInfo=t.vulnerabilityInfo;
+    $('#js-code-smell-blocker').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.codeSmellBlocker));
+    $('#js-code-smell-critical').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.codeSmellCritical));
+    $('#js-code-smell-major').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.codeSmellMajor));
+    $('#js-code-smell-minor').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.codeSmellMinor));
+    $('#js-code-smell-info').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.codeSmellInfo));
 
-      $('#js-code-smell-blocker').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.codeSmellBlocker));
-      $('#js-code-smell-critical').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.codeSmellCritical));
-      $('#js-code-smell-major').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.codeSmellMajor));
-      $('#js-code-smell-minor').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.codeSmellMinor));
-      $('#js-code-smell-info').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.codeSmellInfo));
-
-      const t38 = document.getElementById('js-code-smell-blocker');
-      const t39 = document.getElementById('js-code-smell-critical');
-      const t40 = document.getElementById('js-code-smell-major');
-      const t41 = document.getElementById('js-code-smell-minor');
-      const t42 = document.getElementById('js-code-smell-info');
-      t38.dataset.vulnerabilityBlocker=t.codeSmellBlocker;
-      t39.dataset.vulnerabilityCritical=t.codeSmellCritical;
-      t40.dataset.vulnerabilityMajor=t.codeSmellMajor;
-      t41.dataset.vulnerabilityMinor=t.codeSmellMinor;
-      t42.dataset.vulnerabilityInfo=t.codeSmellInfo;
-  });
+    const t38 = document.getElementById('js-code-smell-blocker');
+    const t39 = document.getElementById('js-code-smell-critical');
+    const t40 = document.getElementById('js-code-smell-major');
+    const t41 = document.getElementById('js-code-smell-minor');
+    const t42 = document.getElementById('js-code-smell-info');
+    t38.dataset.vulnerabilityBlocker=t.codeSmellBlocker;
+    t39.dataset.vulnerabilityCritical=t.codeSmellCritical;
+    t40.dataset.vulnerabilityMajor=t.codeSmellMajor;
+    t41.dataset.vulnerabilityMinor=t.codeSmellMinor;
+    t42.dataset.vulnerabilityInfo=t.codeSmellInfo;
+  } catch (err) {
+    showMessage('alert', `<strong>[Peinture]</strong> Une erreur inattendue s'est produite lors la récupération du détails des Anomalies.<br>${err}`);
+  }
 };
 
 /**
@@ -669,41 +631,38 @@ export const remplissage=function(mavenKey) {
  * Created at: 19/12/2022, 22:25:28 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
-export const afficheHotspotDetails=function (mavenKey){
+export const afficheHotspotDetails = async function (mavenKey){
   /* On récupère la répartition des hotspot. */
   const data = { maven_key: mavenKey };
   const options = {
     url: `${serveur()}/api/peinture/projet/hotspots/details`, type: 'POST',
           dataType: 'json', data: JSON.stringify(data), contentType };
 
-  $.ajax(options).then(t=> {
-    /** La requête ajax a babaser */
-    if (t.code === http_400){
-    afficheMessage(t);
-    sessionStorage.setItem('peinture', 'Erreur - récupération du détail des hotspots.');
-    return;
-  }
+  try {
+        const t = await $.ajax(options);
+        const errorCodes = [http_400, http_401, http_403, http_406, http_500];
+        if (errorCodes.includes(t.code)){
+            showMessage(t.type, typeMessage(t.message));
+            sessionStorage.setItem('peinture', 'Erreur - récupération du détail des hotspots.');
+            return;
+          }
 
-  /* Le projet n'a pas été trouvé dans la babase. */
-  if (t.code === http_406 || t.code === http_500){
-    afficheMessage(t);
-    return;
-    }
+        /* On efface les données.*/
+        $('#tableau-liste-hotspot').html('');
+        const str =`<tr id="hotspot-1" class="open-sans">
+                  <td id="hotspot-high" class="text-center stat" data-hotspot-high="${t.high}">
+                  ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.high)}</td>
+                  <td id="hotspot-medium" class="text-center stat" data-hotspot-medium="${t.medium}">
+                  ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.medium)}</td>
+                  <td id="hotspot-low" class="text-center stat" data-hotspot-low="${t.low}">
+                  ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.low)}</td>
+                  </tr>`;
+        $('#tableau-liste-hotspot').append(str);
+        $('#hotspot-total').html(`<span class="stat">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.total)}</span>`);
 
-    /* On efface les données.*/
-    $('#tableau-liste-hotspot').html('');
-    const str =`<tr id="hotspot-1" class="open-sans">
-              <td id="hotspot-high" class="text-center stat" data-hotspot-high="${t.high}">
-              ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.high)}</td>
-              <td id="hotspot-medium" class="text-center stat" data-hotspot-medium="${t.medium}">
-              ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.medium)}</td>
-              <td id="hotspot-low" class="text-center stat" data-hotspot-low="${t.low}">
-              ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.low)}</td>
-              </tr>`;
-    $('#tableau-liste-hotspot').append(str);
-    $('#hotspot-total').html(`<span class="stat">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.total)}</span>`);
-
-    const t1 = document.getElementById('hotspot-total');
-    t1.dataset.nombreHotspot=(t.total);
-  });
+        const t1 = document.getElementById('hotspot-total');
+        t1.dataset.nombreHotspot=(t.total);
+      } catch (err) {
+        showMessage('alert', `<strong>[Peinture]</strong> Une erreur inattendue s'est produite lors la récupération du détails des Hotspots.<br>${err}`);
+      }
 };
