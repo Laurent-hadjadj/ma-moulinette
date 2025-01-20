@@ -49,7 +49,7 @@
 
       {% if not already_added %}
         {% set unique_messages = unique_messages|merge([message]) %}
-      <div class="callout {{ message.type }} alert-callout-border" data-closable>
+      <div id="message-box" class="callout {{ message.type }} alert-callout-border callout-ombre" data-closable>
           <p class="open-sans text-justify callout-message">
               <strong>{{ message.titre }}</strong> {{ message.message }}
           </p>
@@ -142,7 +142,7 @@
 
         <div class="grid-x cell">
           {% for message in app.flashes('info') %}
-            <div class="callout alert-callout-border {{message.type}} cell" data-closable>
+            <div class="callout alert-callout-border {{message.type}} callout-ombre cell" data-closable>
               <p class="open-sans text-justify callout-message">
                 <strong>{{message.titre}}</strong>{{ message.message }}<strong>{{message.ref}}</strong>.</p>
               <button class="close-button {{message.type}}" aria-label="Dismiss alert" type="button" data-close>
