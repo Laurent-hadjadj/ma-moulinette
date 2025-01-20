@@ -89,7 +89,7 @@ $('#reset_password_form_plainPassword_second').on('keyup', function(){
 $('#reset_password_form_plainPassword_first, #reset_password_form_plainPassword_second').on(
   'keyup', ()=>{
     const password=$('#reset_password_form_plainPassword_first').val();
-    const repassword=$('#reset_password_form_plainPassword_second').val();
+    const rePassword=$('#reset_password_form_plainPassword_second').val();
 
     if (password.length>=huit && password.length<=cinquanteDeux) {
         $('#reset-info-check-password').html(checkOkSvg);
@@ -99,9 +99,9 @@ $('#reset_password_form_plainPassword_first, #reset_password_form_plainPassword_
           $('#reset-info-check-password').html(checkKoSvg);
         }
 
-      if ( repassword.length>=huit && repassword.length<=cinquanteDeux ) {
+      if ( rePassword.length>=huit && rePassword.length<=cinquanteDeux ) {
         $('#reset-info-check-re-password').html(checkOkSvg);
-        } else if (repassword.length===zero) {
+        } else if (rePassword.length===zero) {
         $('#reset-info-check-re-password').html('');
         } else {
         $('#reset-info-check-re-password').html(checkKoSvg);
@@ -117,12 +117,12 @@ $('#reset_password_form_plainPassword_second').on('focus', function(){
 $('#valider-formulaire-enregistrement').on('click', async ()=>{
   const initialPasswordLength=$('#reset_password_form_ancienMotDePasse').val().length;
   const passwordLength=$('#reset_password_form_plainPassword_first').val().length;
-  const repasswordLength=$('#reset_password_form_plainPassword_second').val().length;
+  const rePasswordLength=$('#reset_password_form_plainPassword_second').val().length;
   const passwordValue=$('#reset_password_form_plainPassword_first').val();
-  const repasswordValue=$('#reset_password_form_plainPassword_second').val();
+  const rePasswordValue=$('#reset_password_form_plainPassword_second').val();
 
-if ( initialPasswordLength>0 && passwordLength>=8 && repasswordLength>=8 &&
-    passwordValue===repasswordValue) {
+if ( initialPasswordLength>0 && passwordLength>=8 && rePasswordLength>=8 &&
+    passwordValue===rePasswordValue) {
       $('#message-erreur-valider').html('');
       $('#valider-formulaire-enregistrement').attr('type', 'submit');
       const link = document.getElementById('valider-formulaire-enregistrement');
