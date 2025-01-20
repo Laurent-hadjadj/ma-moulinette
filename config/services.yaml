@@ -81,20 +81,4 @@ services:
     # -----------------------------------------------------------------------
     # Services explicites
     # -----------------------------------------------------------------------
-
-    # RabbitMQ Service
-    App\Service\RabbitMQService:
-        arguments:
-            $host: '%env(RABBITMQ_HOST)%'
-            $port: '%env(int:RABBITMQ_PORT)%'
-            $user: '%env(RABBITMQ_USER)%'
-            $password: '%env(RABBITMQ_PASSWORD)%'
-            $vhost: '%env(RABBITMQ_VHOST)%'
-
-    # Exemple pour les tests unitaires
-    App\Controller\Batch\BatchCollecteTodoController:
-        arguments:
-            $em: '@doctrine.orm.entity_manager'
-            $client: '@App\Service\Client'
-        tags: ['controller.service_arguments']
 ...
