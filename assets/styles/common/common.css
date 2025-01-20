@@ -563,6 +563,26 @@ body { background: #eee; }
 .margin-left-2 { margin-left: 2rem; }
 .margin-left-3 { margin-left: 3rem; }
 
+/* affichage des messages JS */
+#message-box {
+  position: fixed;
+  top: 6%;
+  left: 50%;
+  max-width: 81%;
+  /* Ajustement pour un centrage parfait */
+  transform: translateX(-50%);
+  z-index: 1000;
+}
+
+/* Ombre pour les callout */
+.callout-ombre { box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); }
+.callout-ombre:hover { box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); }
+
+#message-text {
+  padding-bottom: 0;
+  padding-top: 0.3rem
+}
+
 /** On définit une marge sur la container principal */
 .main-container { margin-bottom: 5rem; }
 
