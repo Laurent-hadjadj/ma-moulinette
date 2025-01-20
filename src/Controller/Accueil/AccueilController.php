@@ -147,7 +147,7 @@ class AccueilController extends AbstractController
         $queryParams = ['qualifiers'=>'TRK', 'p'=>1, 'ps'=>500 ];
         $result = $this->client->httpSonarQube("$tempoUrl/api/components/search?".http_build_query($queryParams));
         /* On affiche un message flash pour un timeout ou si le serveur n'est pas démarré. */
-        if (in_array($result['code'] ?? -1, [503, 504])) {
+        if (in_array($result['code'] ?? -1, [401, 503, 504])) {
                 $titre=static::$oups;
                 $message = $result['erreur'];
                 $this->addFlash('notice', ['type'=>'alert', 'titre'=>$titre, 'message'=>$message]);
@@ -158,15 +158,15 @@ class AccueilController extends AbstractController
          * On compte le nombre de projet si la table n'est pas vide.
          */
         $nombre = 0;
-        if (!array_key_exists('code', $result)){
-            foreach ($result['components'] as $component) {
+        if (array_key_exists('json', $result)){
+            foreach ($result['json']['components'] as $component) {
                 /**
                  * On exclue les projets archivés avec le suffixe "-SVN".
                  *  "project": "fr.domaine:mon-application-SVN"
                  */
-                $mystring = $component["project"];
-                $findme   = '-SVN';
-                if (!strpos($mystring, $findme)) {
+                $myString = $component['project'];
+                $findMe   = '-SVN';
+                if (!strpos($myString, $findMe)) {
                     $nombre = $nombre + 1;
                 }
             }
@@ -216,7 +216,7 @@ class AccueilController extends AbstractController
         /** Appelle le client HTTP */
         $queryParams = ['defaults'=>'true', 'p'=>1, 'ps'=>500 ];
         $result = $this->client->httpSonarQube("$tempoUrl/api/qualityprofiles/search?".http_build_query($queryParams));
-        if (in_array($result['code'] ?? -1, [503, 504])) {
+        if (in_array($result['code'] ?? -1, [401, 503, 504])) {
             $titre=static::$oups;
             $message = $result['erreur'];
             $this->addFlash('notice', ['type'=>'alert', 'titre'=>$titre, 'message'=>$message]);
@@ -226,7 +226,7 @@ class AccueilController extends AbstractController
         /** Si les profils custom n'existent pas on envoi 0 */
         $count=0;
         if (key_exists('profiles', $result)) {
-            $count=count($result['profiles']);
+            $count=count($result['json']['profiles']);
         }
         return $count;
     }
@@ -540,7 +540,7 @@ class AccueilController extends AbstractController
                  * Si le nombre de projetSonar est différent de projetBD
                  * alors on envoi un message à l'utilisateur pour qu'il mette à jour.
                  */
-                $titre = '[ACCUEIL-001]';
+                $titre = '[Accueil]';
                 $message = ' Vous devez mettre à jour le référentiel local pour les ';
                 $this->addFlash('info', ['type'=>'primary', 'titre'=>$titre, 'message'=>$message, 'ref'=>'PROJETS']);
             }
@@ -562,7 +562,7 @@ class AccueilController extends AbstractController
                  * Si le nombre de projetSonar est différent de projetBD
                  * alors on envoi un message à l'utilisateur pour qu'il mette à jour.
                  */
-                $titre = '[ACCUEIL-002]';
+                $titre = '[Accueil]';
                 $message = ' Vous devez mettre à jour le référentiel local pour les ';
                 $this->addFlash('info', ['type'=>'primary', 'titre'=>$titre, 'message'=>$message, 'ref'=>'PROFILS']);
             }
