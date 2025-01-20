@@ -45,6 +45,7 @@ class HistoriqueValidatorTest extends KernelTestCase
       ->setNombreLigneCode('8928')
       ->setClasses('123')
       ->setFunctions('457')
+      ->setFunctions('226')
       ->setCoverage('50.1')
       ->setDuplicatedLinesDensity('0.2')
       ->setSqaleDebtRatio('1')
@@ -136,6 +137,7 @@ class HistoriqueValidatorTest extends KernelTestCase
     $this->assertHasErrors($this->getEntity()->setNombreLigneCode(-1), 0);
     $this->assertHasErrors($this->getEntity()->setClasses(-1), 0);
     $this->assertHasErrors($this->getEntity()->setFunctions(-1), 0);
+    $this->assertHasErrors($this->getEntity()->setFiles(-1), 0);
     $this->assertHasErrors($this->getEntity()->setTests(-1), 0);
     $this->assertHasErrors($this->getEntity()->setViolations(-1), 0);
     $this->assertHasErrors($this->getEntity()->setDette(-1), 0);
@@ -190,6 +192,6 @@ class HistoriqueValidatorTest extends KernelTestCase
       $entity = $this->getEntity();
       $reflectionClass = new \ReflectionClass($entity);
       $nbAttributs = count($reflectionClass->getProperties());
-      $this->assertEquals($nbAttributs, 64);
+      $this->assertEquals($nbAttributs, 65);
   }
 }

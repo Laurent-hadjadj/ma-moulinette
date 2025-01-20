@@ -46,6 +46,7 @@ class HistoriqueCaseTest extends TestCase
         ->setNombreLigneCode('8928')
         ->setClasses('123')
         ->setFunctions('457')
+        ->setFunctions('226')
         ->setCoverage('50.1')
         ->setDuplicatedLinesDensity('0.2')
         ->setSqaleDebtRatio('1')
@@ -198,6 +199,12 @@ class HistoriqueCaseTest extends TestCase
     {
         $this->historique->setNombreLigneCode('8928');
         $this->assertEquals('8928', $this->historique->getNombreLigneCode());
+    }
+
+    public function testSettingAndGettingFiles(): void
+    {
+        $this->historique->setFiles('226');
+        $this->assertEquals('226', $this->historique->getFiles());
     }
 
     public function testSettingAndGettingClasses(): void

@@ -117,12 +117,17 @@ class Historique
     private $nombreLigneCode;
 
     #[ORM\Column(type: Types::INTEGER,
-    options: ['comment' => 'Nombre total de classes'])]
+    options: ['comment' => 'Nombre total de fichier'])]
+    #[Assert\NotNull]
+    private $files;
+
+    #[ORM\Column(type: Types::INTEGER,
+    options: ['comment' => 'Nombre total de classe'])]
     #[Assert\NotNull]
     private $classes;
 
     #[ORM\Column(type: Types::INTEGER,
-    options: ['comment' => 'Nombre total méthodes'])]
+    options: ['comment' => 'Nombre total méthode'])]
     #[Assert\NotNull]
     private $functions;
 
@@ -796,6 +801,17 @@ class Historique
         return $this;
     }
 
+    public function getFiles(): ?int
+    {
+        return $this->files;
+    }
+
+    public function setFiles(int $files): \App\Entity\Historique
+    {
+        $this->files = $files;
+
+        return $this;
+    }
     /**
      * [Description for getCouverture]
      *
