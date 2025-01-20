@@ -43,7 +43,7 @@
 -- 28/12/2024 : Laurent HADJADJ - Le type de l'attribut erreur de la table activity_batch_report est un json ;
 -- 31/12/2024 : Laurent HADJADJ - Correction de la table activity_batch_report ;
 -- 03/01/2025 : Laurent HADJADJ - Bonne année 2025. Renommage de l'attribut start en mode_collecte  pour la table batch_traitement ;
--- 20/01/2025 : Laurent HADJADJ - Ajout des colones classes et functions à la table historique ;
+-- 20/01/2025 : Laurent HADJADJ - Ajout des colones classes, functions et files à la table historique ;
 
 -- SCHEMA: ma_moulinette
 
@@ -432,6 +432,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.historique
   nombre_ligne_code integer NOT NULL,
   classes integer NOT NULL,
   functions integer NOT NULL,
+  files integer NOT NULL,
   coverage double precision NOT NULL,
   duplicated_lines_density double precision NOT NULL,
   tests integer NOT NULL,
@@ -502,6 +503,7 @@ COMMENT ON COLUMN ma_moulinette.historique.nombre_ligne IS 'Nombre total de lign
 COMMENT ON COLUMN ma_moulinette.historique.nombre_ligne_code IS 'Nombre total de lignes de code dans le projet';
 COMMENT ON COLUMN ma_moulinette.historique.classes IS 'Nombre de classes dans le projet';
 COMMENT ON COLUMN ma_moulinette.historique.function IS 'Nombre de méthode/function dans le projet';
+COMMENT ON COLUMN ma_moulinette.historique.files IS 'Nombre de fichier dans le projet';
 COMMENT ON COLUMN ma_moulinette.historique.coverage IS 'Pourcentage de couverture de code par les tests';
 COMMENT ON COLUMN ma_moulinette.historique.duplicated_lines_density IS 'Pourcentage de duplication dans le code';
 COMMENT ON COLUMN ma_moulinette.historique.tests IS 'Nombre de tests unitaires exécutés';
