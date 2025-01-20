@@ -290,7 +290,7 @@ class SuiviController extends AbstractController
 
         /** On charge le template du render */
         $render=static::genericRender();
-        $render['suivi'] = $render['severity'] = $render['details'] = [];
+        $render['suivi'] = $render['mesure'] = $render['severity'] = $render['details'] = [];
         $render['nom'] = 'N.C';
         $render['mavenKey'] = $maven_key ?? '';
         $render['data1'] = $render['data2'] = $render['data3'] = $render['labels'] = 0;
@@ -323,6 +323,7 @@ class SuiviController extends AbstractController
         try {
             // Récupération des données
             $suivi = $this->fetchData($historiqueRepository, 'selectUnionHistoriqueProjet', $map);
+            $mesure = $this->fetchData($historiqueRepository, 'selectUnionHistoriqueMesure', $map);
             $severity = $this->fetchData($historiqueRepository, 'selectUnionHistoriqueAnomalie', $map);
             $details = $this->fetchData($historiqueRepository, 'selectUnionHistoriqueDetails', $map);
             $graph = $this->fetchData($historiqueRepository, 'selectHistoriqueAnomalieGraphique', $map);
@@ -332,6 +333,7 @@ class SuiviController extends AbstractController
 
             // Mise à jour du rendu
             $render['suivi'] = $suivi['request'];
+            $render['mesure'] = $mesure['request'];
             $render['severity'] = $severity['request'];
             $render['details'] = $details['request'];
             $render['nom'] = $suivi['request'][0]['nom'];
