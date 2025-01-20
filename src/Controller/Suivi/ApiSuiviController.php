@@ -72,17 +72,17 @@ class ApiSuiviController extends AbstractController
         $data = json_decode($request->getContent());
         if ($data === null || !property_exists($data, 'maven_key')) {
             return new JsonResponse([
-                'code' => 400, 'type' => 'alert', 'reference' => static::$reference,
-                'message' => static::$erreur400], Response::HTTP_OK);
+                'code' => 400, 'type' => 'alert',
+                'message' => static::$reference . static::$erreur400], Response::HTTP_OK);
         }
 
         /** On vérifie  */
-        $map=['maven_key'=>$data->maven_key];
-        $request=$informationProjetRepository->selectInformationProjetVersion($map);
-        if ($request['code']!=200) {
+        $map = ['maven_key' => $data->maven_key];
+        $request = $informationProjetRepository->selectInformationProjetVersion($map);
+        if ($request['code'] != 200) {
             return new JsonResponse([
-                'maven_key' => $data->maven_key,
-                'code'=>$request['code'], 'erreur' => $request['erreur']], Response::HTTP_OK);
+                'maven_key' => $data->maven_key, 'code'=>$request['code'],
+                'erreur' => $request['erreur']], Response::HTTP_OK);
         }
 
         $liste = [];
@@ -108,8 +108,8 @@ class ApiSuiviController extends AbstractController
         $data = json_decode($request->getContent());
         if ($data === null || !property_exists($data, 'maven_key')) {
             return new JsonResponse([
-                'code' => 400, 'type' => 'alert', 'reference' => static::$reference,
-                'message' => static::$erreur400], Response::HTTP_OK);
+                'code' => 400, 'type' => 'alert',
+                'message' => static::$reference . static::$erreur400], Response::HTTP_OK);
         }
 
         /** On construit l'URL */
@@ -120,15 +120,15 @@ class ApiSuiviController extends AbstractController
         $result = $this->client->httpSonarQube("$tempoUrl/api/project_analyses/search?".http_build_query($queryParams));
         if (in_array($result['code'] ?? -1, [503, 504])) {
             return new JsonResponse([
-                'code' => 500, 'type' => 'alert', 'reference' => static::$reference,
-                'message' => static::$erreur500], Response::HTTP_OK);
+                'code' => 500, 'type' => 'alert',
+                'message' => static::$reference . static::$erreur500], Response::HTTP_OK);
         }
         //analyses/date "date" => "2024-11-15T15:52:03+0100"
         //analyses/projectVersion "projectVersion" => "1.1.0-RELEASE"
         $liste = [];
         $id = 0;
         /** objet = { id: clé, text: "blablabla" }; */
-        foreach ($result['analyses'] as $version) {
+        foreach ($result['json']['analyses'] as $version) {
             $ts = new \DateTime($version['date'], new \DateTimeZone(static::$europeParis));
             $cc = $ts->format('d-m-Y H:i:sO');
             $objet = [
@@ -162,8 +162,8 @@ class ApiSuiviController extends AbstractController
         if ($data === null || !property_exists($data, 'maven_key') ||
             !property_exists($data, 'date')) {
             return new JsonResponse([
-                'code' => 400, 'type' => 'alert', 'reference' => static::$reference,
-                'message' => static::$erreur400], Response::HTTP_OK);
+                'code' => 400, 'type' => 'alert',
+                'message' => static::$reference . static::$erreur400], Response::HTTP_OK);
         }
 
         /**  On a pas besoin d'encodé la date */
@@ -213,7 +213,7 @@ class ApiSuiviController extends AbstractController
         $results = [];
         foreach ($paramsList as $key => $params) {
             $request=$this->client->httpSonarQube("$url/api/measures/search_history?".http_build_query($params));
-            $results[$key] = $request;
+            $results[$key] = $request['json'];
         }
         $keys=['coverage', 'issues', 'size', 'maintainability', 'reliability', 'security'];
 
