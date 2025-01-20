@@ -1,0 +1,85 @@
+{# Suivi des anomalies #}
+<div class="table-scroll pleine-page">
+  <table id="element2b-to-print">
+    <caption class="show-for-medium claire-hand">Suivi des Mesures.</caption>
+    <caption class="show-for-small-only text-left claire-hand">Suivi des Mesures.</caption>
+    <thead>
+      <tr>
+        <th scope="col"></th>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            {# 0 = FALSE, 1 = TRUE  #}
+            {% if suivi[i]['initial']==1 %}
+              {% set reference="reference" %}
+            {% else %}
+              {% set reference="null" %}
+            {% endif %}
+            <th scope="col" class="open-sans text-right {{reference}}">{{suivi[i]['version']}}</th>
+          {% endfor %}
+        {% endif %}
+      </tr>
+    </thead>
+    <tbody id="tableau-mesures" class="open-sans">
+      <tr class="open-sans">
+        <td class="text-left text-noir">Date</td>
+        {% if mesure is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            <td class="text-right">
+              <span>{{mesure[i]['date']|date("d/m/Y", "Europe/Paris")}}</span>
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+      <tr class="open-sans">
+        <td class="text-left text-noir">Fichier</td>
+        {% if mesure is not empty %}
+          {% for i in 0..mesure|length-1 %}
+            <td class="text-right">
+              <span>{{mesure[i]['files']|format_number(locale='fr')}}</span>
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+      <tr class="open-sans">
+        <td class="text-left text-noir">Ligne</td>
+        {% if mesure is not empty %}
+          {% for i in 0..mesure|length-1 %}
+            <td class="text-right">
+              <span>{{mesure[i]['nombre_ligne']|format_number(locale='fr')}}</span>
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+      <tr class="open-sans">
+        <td class="text-left text-noir">Code</td>
+        {% if mesure is not empty %}
+          {% for i in 0..mesure|length-1 %}
+            <td class="text-right">
+              <span>{{mesure[i]['nombre_ligne_code']|format_number(locale='fr')}}</span>
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+      <tr class="open-sans">
+        <td class="text-left text-noir">Classe</td>
+        {% if mesure is not empty %}
+          {% for i in 0..mesure|length-1 %}
+            <td class="text-right">
+              <span>{{mesure[i]['classes']|format_number(locale='fr')}}</span>
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+      <tr class="open-sans">
+        <td class="text-left text-noir">Méthode</td>
+        {% if mesure is not empty %}
+          {% for i in 0..mesure|length-1 %}
+            <td class="text-right">
+              <span>{{mesure[i]['functions']|format_number(locale='fr')}}</span>
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+    </tbody>
+  </table>
+</div>

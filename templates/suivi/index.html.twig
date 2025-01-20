@@ -36,7 +36,7 @@
 
     <div class="grid-container grid-x">
     {% for message in app.flashes('notice') %}
-      <div class="callout {{message.type}} alert-callout-border" data-closable>
+      <div class="callout {{message.type}} alert-callout-border callout-ombre" data-closable>
         <p class="open-sans text-justify callout-message"><strong>{{message.reference}}</strong> {{ message.message }}</p>
         {% if app.environment == 'dev' and message.debug is defined %}
           <p class"open-sans">{{message.debug}}</p>
@@ -74,6 +74,7 @@
 
     {# Affiche le graphique des courbes des anomalies #}
     {{ include('/suivi/_affiche_graphique_anomalie.html.twig') }}
+    {{ include('/suivi/_suivi_mesures.html.twig') }}
     {{ include('/suivi/_repartition_par_module.html.twig') }}
     {{ include('/suivi/_repartition_par_severity.html.twig') }}
 
