@@ -126,9 +126,9 @@ class SuiviController extends AbstractController
         $inTrim = rtrim($in, " OR ");
 
         /** On construit la requête de selection des projets en fonction de(s) (l')équipes */
-        $map=['clause_where'=>$inTrim];
+        $map=['clause_where' => $inTrim];
         $requestListe = $listeProjetRepository->selectListeProjetByEquipe($map);
-        if ($requestListe['code']!=200) {
+        if ($requestListe['code'] != 200) {
             return ['code' => $requestListe['code']];
         }
 
@@ -136,7 +136,7 @@ class SuiviController extends AbstractController
 
         /** j'ai pas trouvé de projet pour cette équipe. */
         if (empty($projets)) {
-            return ['code'=>406, 'message' => static::$erreur406];
+            return ['code' => 406, 'message' => static::$erreur406];
         }
 
         $searchId = $maven_key;
@@ -148,10 +148,10 @@ class SuiviController extends AbstractController
                 break;
             }
         }
-        if ($idFound===false) {
-            return ['code'=>406, 'message' => "Le projet n'est pas présent dans la liste de projets de l'utilisateur."];
+        if ($idFound === false) {
+            return ['code' => 406, 'message' => "Le projet n'est pas présent dans la liste de projets de l'utilisateur."];
         }
-        return ['code'=>200];
+        return ['code' => 200];
     }
 
     /**
@@ -192,7 +192,8 @@ class SuiviController extends AbstractController
      */
     private function addFlashAndRender(string $type, string $message, string $debug, array $render): Response
     {
-        $this->addFlash('notice', ['type' => $type, 'reference' => static::$reference, 'message' => $message, 'debug'=>$debug] );
+        $this->addFlash('notice', ['type' => $type, 'reference' => static::$reference,
+        'message' => $message, 'debug' => $debug] );
         return $this->render(static::$page, $render);
     }
 
@@ -237,16 +238,16 @@ class SuiviController extends AbstractController
         $bug = $sec = $codeSmell = $date = [];
 
         for ($i = 0; $i < $nl; $i++) {
-            $bug[$i] = $graphRequest[$i]["bug"];
-            $sec[$i] = $graphRequest[$i]["sec"];
-            $codeSmell[$i] = $graphRequest[$i]["code_smell"];
-            $date[$i] = $graphRequest[$i]["date"];
+            $bug[$i] = $graphRequest[$i]['bug'];
+            $sec[$i] = $graphRequest[$i]['sec'];
+            $codeSmell[$i] = $graphRequest[$i]['code_smell'];
+            $date[$i] = $graphRequest[$i]['date'];
         }
 
         /** On ajoute une marge plus importante dans chartjs à la place */
 
         // Ajout d'une valeur avant la première entrée (on utilise une date un jour avant la première)
-        //$firstDate = new \DateTime($graphRequest[0]["date"]);
+        //$firstDate = new \DateTime($graphRequest[0]['date']);
         //$firstDate->modify('-1 day'); // Recule d'un jour
         //array_unshift($bug, 0);  // Ajoute 0 au début de la série "bug"
         //array_unshift($sec, 0);   // Ajoute 0 au début de la série "sec"
@@ -254,7 +255,7 @@ class SuiviController extends AbstractController
         //array_unshift($date, $firstDate->format('Y-m-d'));  // Ajoute la date modifiée
 
         // Ajout d'une valeur après la dernière entrée (on utilise une date un jour après la dernière)
-        //$lastDate = new \DateTime($graphRequest[$nl - 1]["date"]);
+        //$lastDate = new \DateTime($graphRequest[$nl - 1]['date']);
         //$lastDate->modify('+1 day');  // Avance d'un jour
         //$bug[$nl] = $sec[$nl] = $codeSmell[$nl] = 0;  // Valeur 0 pour le dernier point
         //$date[$nl] = $lastDate->format('Y-m-d');  // Ajoute la date modifiée
@@ -333,7 +334,7 @@ class SuiviController extends AbstractController
             $render['suivi'] = $suivi['request'];
             $render['severity'] = $severity['request'];
             $render['details'] = $details['request'];
-            $render['nom'] = $suivi['request'][0]["nom"];
+            $render['nom'] = $suivi['request'][0]['nom'];
             $render['data1'] = json_encode($graphData['bug']);
             $render['data2'] = json_encode($graphData['sec']);
             $render['data3'] = json_encode($graphData['codeSmell']);
