@@ -42,13 +42,13 @@ sonar-project.properties
 .php-cs-fixer.dist.php
 ###< php-cs-fixe ###
 
-###> sqlite ###
+###> SQLite ###
 /var/data-*
 /var/temp-*
 /var/data_*
 /var/temp_*
 /var/data.db-journal*
-###< sqlite ###
+###< SQLite ###
 
 ###> docker ###
 composer.bat
@@ -65,6 +65,7 @@ phpunit.xml.dist
 /var/log/test.log
 /.phpunit.cache/
 /build/
+/reports/
 .env.test
 .env.test.local
 .env.local
