@@ -283,6 +283,59 @@ public function selectUnionHistoriqueProjet($map): array
 }
 
 /**
+ * [Description for selectUnionHistoriqueMesure]
+ * On remonte les mesures pour les projets du suivi
+ *
+ * @param mixed $map
+ *
+ * @return array
+ *
+ * Created at: 20/01/2025 11:28:49 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ */
+public function selectUnionHistoriqueMesure($map): array
+{
+    /** On prépare la requête */
+    $sql = "SELECT *
+            FROM (
+                    (SELECT date_version AS date,
+                            nombre_ligne,
+                            nombre_ligne_code,
+                            files,
+                            classes,
+                            functions
+                    FROM ma_moulinette.historique
+                    WHERE maven_key = :maven_key AND initial = :initial_true)
+                    UNION ALL
+                    (SELECT date_version AS date,
+                            nombre_ligne,
+                            nombre_ligne_code,
+                            files,
+                            classes,
+                            functions
+                    FROM ma_moulinette.historique
+                    WHERE maven_key = :maven_key AND initial = :initial_false
+                    ORDER BY date_version DESC
+                    LIMIT :limit)) AS versions
+            ORDER BY date ASC";
+
+    try {
+        $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+            $stmt->bindValue(static::$initialTrue, 1);
+            $stmt->bindValue(static::$initialFalse, 0);
+            $stmt->bindValue(static::$limit, $map['limit']);
+        $exec=$stmt->executeQuery();
+        $liste=$exec->fetchAllAssociative();
+    } catch (\Doctrine\DBAL\Exception $e) {
+        return $this->handleDatabaseException($e);
+    }
+    /** on prépare la réponse */
+    return ['code' => 200, 'request' => $liste, 'erreur' => ''];
+}
+
+/**
  * [Description for selectUnionHistoriqueAnomalie]
  * On remonte les anomalies des projets favoris
  * @param array $map
@@ -297,25 +350,25 @@ public function selectUnionHistoriqueAnomalie($map): array
 {
     /** On prépare la requête */
     $sql = "SELECT *
-    FROM (
-        (SELECT date_version AS date,
-                nombre_anomalie_bloquant AS bloquant,
-                nombre_anomalie_critique AS critique,
-                nombre_anomalie_majeur AS majeur,
-                nombre_anomalie_mineur AS mineur
-        FROM ma_moulinette.historique
-        WHERE maven_key = :maven_key AND initial = :initial_true)
-        UNION ALL
-        (SELECT date_version AS date,
-            nombre_anomalie_bloquant AS bloquant,
-            nombre_anomalie_critique AS critique,
-            nombre_anomalie_majeur AS majeur,
-            nombre_anomalie_mineur AS mineur
-        FROM ma_moulinette.historique
-        WHERE maven_key = :maven_key AND initial = :initial_false
-        ORDER BY date_version DESC
-        LIMIT :limit)) AS versions
-    ORDER BY date ASC";
+            FROM (
+                (SELECT date_version AS date,
+                        nombre_anomalie_bloquant AS bloquant,
+                        nombre_anomalie_critique AS critique,
+                        nombre_anomalie_majeur AS majeur,
+                        nombre_anomalie_mineur AS mineur
+                FROM ma_moulinette.historique
+                WHERE maven_key = :maven_key AND initial = :initial_true)
+                UNION ALL
+                (SELECT date_version AS date,
+                    nombre_anomalie_bloquant AS bloquant,
+                    nombre_anomalie_critique AS critique,
+                    nombre_anomalie_majeur AS majeur,
+                    nombre_anomalie_mineur AS mineur
+                FROM ma_moulinette.historique
+                WHERE maven_key = :maven_key AND initial = :initial_false
+                ORDER BY date_version DESC
+                LIMIT :limit)) AS versions
+            ORDER BY date ASC";
 
     try {
         $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
@@ -448,6 +501,7 @@ public function insertHistoriqueAjoutProjet($map,$json): array
                 suppress_warning, no_sonar, todo,
                 logger_info, logger_warn, logger_error, logger_debug,
                 nombre_ligne, nombre_ligne_code, coverage,
+                files, classes, functions,
                 duplicated_lines_density, sqale_debt_ratio, tests, violations, dette,
                 nombre_bug, nombre_vulnerability, nombre_code_smell,
                 bug_blocker, bug_critical, bug_major, bug_minor, bug_info,
@@ -470,6 +524,7 @@ public function insertHistoriqueAjoutProjet($map,$json): array
                 :suppress_warning, :no_sonar, :todo,
                 :logger_info, :logger_warn, :logger_error, :logger_debug,
                 :nombre_ligne, :nombre_ligne_code,
+                :files, :classes, :functions,
                 :coverage, :duplicated_lines_density, :sqale_debt_ratio, :tests,
                 :violations, :dette, :nombre_bug, :nombre_vulnerability,
                 :nombre_code_smell, :bug_blocker, :bug_critical, :bug_major,
@@ -506,6 +561,9 @@ public function insertHistoriqueAjoutProjet($map,$json): array
                     $stmt->bindValue(':logger_debug', $map['logger_debug']);
                     $stmt->bindValue(':nombre_ligne', $map['nombre_ligne']);
                     $stmt->bindValue(':nombre_ligne_code', $map['nombre_ligne_code']);
+                    $stmt->bindValue(':files', $map['files']);
+                    $stmt->bindValue(':classes', $map['classes']);
+                    $stmt->bindValue(':functions', $map['functions']);
                     $stmt->bindValue(':coverage', $map['coverage']);
                     $stmt->bindValue(':duplicated_lines_density', $map['duplicated_lines_density']);
                     $stmt->bindValue(':sqale_debt_ratio', $map['sqale_debt_ratio']);
