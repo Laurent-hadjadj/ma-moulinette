@@ -27,8 +27,7 @@ class BatchCollecteNoteControllerTest extends TestCase
     private ContainerInterface $container;
 
     private static $mel = 'laurent.hadjadj@ma-petite-entreprise.fr';
-    private static $request = 'requête : ';
-
+    private static $httpErreur500 = 'Internal server error';
     protected function setUp(): void
     {
         // Mocks setup
@@ -58,13 +57,44 @@ class BatchCollecteNoteControllerTest extends TestCase
         $this->controller->setContainer($this->container);
     }
 
-    public function testBatchCollecteNoteHttpError()
+    public function testBatchCollecteNoteHttpUnauthorizedError()
     {
-        $this->client->method('httpSonarQube')->willReturn(['code' => 404, 'erreur' => 'Not Found']);
+        $this->client->method('httpSonarQube')->willReturn([
+            'code' => 401, 'erreur' => 'Unauthorized']);
 
         $result = $this->controller->batchCollecteNote('some-maven-key', 'COLLECTE', static::$mel, 'quality');
 
-        $this->assertEquals(['code' => 404, 'erreur' => ['Not Found']], $result);
+        $this->assertEquals(['code' => 401, 'erreur' => 'Unauthorized'], $result);
+    }
+
+    public function testBatchCollecteNoteHttpForbiddenError()
+    {
+        $this->client->method('httpSonarQube')->willReturn([
+            'code' => 403, 'erreur' => 'Forbidden']);
+
+        $result = $this->controller->batchCollecteNote('some-maven-key', 'COLLECTE', static::$mel, 'quality');
+
+        $this->assertEquals(['code' => 403, 'erreur' => 'Forbidden'], $result);
+    }
+
+    public function testBatchCollecteNoteHttpNotFoundError()
+    {
+        $this->client->method('httpSonarQube')->willReturn([
+            'code' => 404, 'erreur' => 'Not Found']);
+
+        $result = $this->controller->batchCollecteNote('some-maven-key', 'COLLECTE', static::$mel, 'quality');
+
+        $this->assertEquals(['code' => 404, 'erreur' => 'Not Found'], $result);
+    }
+
+    public function testBatchCollecteNoteHttpInternalServerError()
+    {
+        $this->client->method('httpSonarQube')->willReturn([
+            'code' => 500, 'erreur' => 'Internal serveur error']);
+
+        $result = $this->controller->batchCollecteNote('some-maven-key', 'COLLECTE', static::$mel, 'quality');
+
+        $this->assertEquals(['code' => 500, 'erreur' => 'Internal serveur error'], $result);
     }
 
     public function testBatchCollecteNoteDeleteError()
@@ -78,13 +108,13 @@ class BatchCollecteNoteControllerTest extends TestCase
         $result = $this->controller->batchCollecteNote('some-maven-key', 'COLLECTE', static::$mel, 'quality');
 
         $this->assertEquals(500, $result['code']);
-        $this->assertEquals(['Delete error', static::$request => 'deleteNoteMavenKey'], $result['erreur']);
+        $this->assertEquals('Delete error', $result['erreur']);
     }
 
     public function testBatchCollecteNoteInsertError()
     {
         $this->client->method('httpSonarQube')->willReturn([
-            'component' => ['measures' => [['value' => 3.5]]]
+            'json' => ['component' => ['measures' => [['value' => 3.5]]]]
         ]);
 
         $this->notesRepository->method('deleteNotesMavenKey')->willReturn(['code' => 200]);
@@ -93,13 +123,13 @@ class BatchCollecteNoteControllerTest extends TestCase
         $result = $this->controller->batchCollecteNote('some-maven-key', 'COLLECTE', static::$mel, 'quality');
 
         $this->assertEquals(500, $result['code']);
-        $this->assertEquals(['Insert error', static::$request => 'insertNote'], $result['erreur']);
+        $this->assertEquals('Insert error', $result['erreur']);
     }
 
     public function testBatchCollecteNoteSuccess()
     {
         $this->client->method('httpSonarQube')->willReturn([
-            'component' => ['measures' => [['value' => 4.2]]]
+            'json' => ['component' => ['measures' => [['value' => 4.2]]]]
         ]);
 
         $this->notesRepository->method('deleteNotesMavenKey')->willReturn(['code' => 200]);
@@ -111,38 +141,119 @@ class BatchCollecteNoteControllerTest extends TestCase
         $this->assertEquals(['code' => 200, 'message' => ['value' => 'D'], 'data' => $expectedData], $result);
     }
 
-    public function testBatchCollecteNoteHotspotCountError()
-    {
-        $this->hotspotsRepository->method('countHotspotsStatus')
-            ->withConsecutive(
-                [['maven_key' => 'some-maven-key', 'status' => 'TO_REVIEW']],
-                [['maven_key' => 'some-maven-key', 'status' => 'REVIEWED']]
-            )
-            ->willReturnOnConsecutiveCalls(
-                ['code' => 500, 'erreur' => 'Error fetching to_review'],
-                ['code' => 500, 'erreur' => 'Error fetching reviewed']
-            );
-
-        $result = $this->controller->BatchCollecteNoteHotspot('some-maven-key');
-
-        $this->assertEquals(['code' => 500, 'erreur' => ['Error fetching to_review', static::$request => 'countHotspotsStatus(TO_REVIEW)']], $result);
-    }
-
     public function testBatchCollecteNoteHotspotSuccess()
     {
-        $this->hotspotsRepository->method('countHotspotsStatus')
-            ->withConsecutive(
-                [['maven_key' => 'some-maven-key', 'status' => 'TO_REVIEW']],
-                [['maven_key' => 'some-maven-key', 'status' => 'REVIEWED']]
-            )
-            ->willReturnOnConsecutiveCalls(
-                ['code' => 200, 'nombre' => [['nombre' => 20]]],
-                ['code' => 200, 'nombre' => [['nombre' => 15]]]
-            );
+        $mavenKey = 'some-maven-key';
 
-        $result = $this->controller->BatchCollecteNoteHotspot('some-maven-key');
-        $expectedData = ['note_hotspot' => 'A'];
+        // Mock des retours pour countHotspotsStatus
+        $this->hotspotsRepository->method('countHotspotsStatus')->willReturnMap([
+            [['maven_key' => $mavenKey, 'status' => 'TO_REVIEW'], ['code' => 200, 'to_review' => 10]],
+            [['maven_key' => $mavenKey, 'status' => 'REVIEWED'], ['code' => 200, 'reviewed' => 8]],
+        ]);
 
-        $this->assertEquals(['code' => 200, 'message' => ['note_hotspot' => 'A'], 'data' => $expectedData], $result);
+        $result = $this->controller->BatchCollecteNoteHotspot($mavenKey);
+
+        $this->assertEquals(200, $result['code']);
+        $this->assertEquals('A', $result['message']['note_hotspot']);
+        $this->assertEquals('A', $result['data']['note_hotspot']);
+    }
+
+    public function testBatchCollecteNoteHotspotErrorToReview()
+    {
+        $mavenKey = 'some-maven-key';
+
+        // Mock des retours pour countHotspotsStatus
+        $this->hotspotsRepository->method('countHotspotsStatus')->willReturnMap([
+            [['maven_key' => $mavenKey, 'status' => 'TO_REVIEW'], ['code' => 500, 'erreur' => static::$httpErreur500]],
+        ]);
+
+        $result = $this->controller->BatchCollecteNoteHotspot($mavenKey);
+
+        $this->assertEquals(500, $result['code']);
+        $this->assertEquals(static::$httpErreur500, $result['erreur']);
+    }
+
+    public function testBatchCollecteNoteHotspotErrorReviewed()
+    {
+        $mavenKey = 'some-maven-key';
+
+        // Mock des retours pour countHotspotsStatus
+        $this->hotspotsRepository->method('countHotspotsStatus')->willReturnMap([
+            [['maven_key' => $mavenKey, 'status' => 'TO_REVIEW'], ['code' => 200, 'to_review' => 10]],
+            [['maven_key' => $mavenKey, 'status' => 'REVIEWED'], ['code' => 500, 'erreur' => static::$httpErreur500]],
+        ]);
+
+        $result = $this->controller->BatchCollecteNoteHotspot($mavenKey);
+
+        $this->assertEquals(500, $result['code']);
+        $this->assertEquals(static::$httpErreur500, $result['erreur']);
+    }
+
+    public function testBatchCollecteNoteHotspotNoteB()
+    {
+        $mavenKey = 'some-maven-key';
+
+        // Mock des retours pour countHotspotsStatus
+        $this->hotspotsRepository->method('countHotspotsStatus')->willReturnMap([
+            [['maven_key' => $mavenKey, 'status' => 'TO_REVIEW'], ['code' => 200, 'to_review' => 10]],
+            [['maven_key' => $mavenKey, 'status' => 'REVIEWED'], ['code' => 200, 'reviewed' => 7]],
+        ]);
+
+        $result = $this->controller->BatchCollecteNoteHotspot($mavenKey);
+
+        $this->assertEquals(200, $result['code']);
+        $this->assertEquals('B', $result['message']['note_hotspot']);
+        $this->assertEquals('B', $result['data']['note_hotspot']);
+    }
+
+    public function testBatchCollecteNoteHotspotNoteC()
+    {
+        $mavenKey = 'some-maven-key';
+
+        // Mock des retours pour countHotspotsStatus
+        $this->hotspotsRepository->method('countHotspotsStatus')->willReturnMap([
+            [['maven_key' => $mavenKey, 'status' => 'TO_REVIEW'], ['code' => 200, 'to_review' => 10]],
+            [['maven_key' => $mavenKey, 'status' => 'REVIEWED'], ['code' => 200, 'reviewed' => 5]],
+        ]);
+
+        $result = $this->controller->BatchCollecteNoteHotspot($mavenKey);
+
+        $this->assertEquals(200, $result['code']);
+        $this->assertEquals('C', $result['message']['note_hotspot']);
+        $this->assertEquals('C', $result['data']['note_hotspot']);
+    }
+
+    public function testBatchCollecteNoteHotspotNoteD()
+    {
+        $mavenKey = 'some-maven-key';
+
+        // Mock des retours pour countHotspotsStatus
+        $this->hotspotsRepository->method('countHotspotsStatus')->willReturnMap([
+            [['maven_key' => $mavenKey, 'status' => 'TO_REVIEW'], ['code' => 200, 'to_review' => 10]],
+            [['maven_key' => $mavenKey, 'status' => 'REVIEWED'], ['code' => 200, 'reviewed' => 3]],
+        ]);
+
+        $result = $this->controller->BatchCollecteNoteHotspot($mavenKey);
+
+        $this->assertEquals(200, $result['code']);
+        $this->assertEquals('D', $result['message']['note_hotspot']);
+        $this->assertEquals('D', $result['data']['note_hotspot']);
+    }
+
+    public function testBatchCollecteNoteHotspotNoteE()
+    {
+        $mavenKey = 'some-maven-key';
+
+        // Mock des retours pour countHotspotsStatus
+        $this->hotspotsRepository->method('countHotspotsStatus')->willReturnMap([
+            [['maven_key' => $mavenKey, 'status' => 'TO_REVIEW'], ['code' => 200, 'to_review' => 10]],
+            [['maven_key' => $mavenKey, 'status' => 'REVIEWED'], ['code' => 200, 'reviewed' => 2]],
+        ]);
+
+        $result = $this->controller->BatchCollecteNoteHotspot($mavenKey);
+
+        $this->assertEquals(200, $result['code']);
+        $this->assertEquals('E', $result['message']['note_hotspot']);
+        $this->assertEquals('E', $result['data']['note_hotspot']);
     }
 }

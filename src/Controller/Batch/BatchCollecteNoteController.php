@@ -31,7 +31,6 @@ class BatchCollecteNoteController extends AbstractController
 {
     /** Définition des constantes */
     public static $sonarUrl = "sonar.url";
-    public static $request = "requête : ";
 
     /**
      * [Description for __construct]
@@ -80,18 +79,15 @@ class BatchCollecteNoteController extends AbstractController
 
         /** Appelle le client HTTP */
         $result = $this->client->httpSonarQube("$tempoUrl/api/measures/component?$queryString");
-        if (isset($result['code']) && in_array($result['code'], [401, 404])) {
-            return ['code' => $result['code'], 'erreur'=>[$result['erreur']]];
+        if (isset($result['code']) && in_array($result['code'], [401, 403, 404, 500])) {
+            return ['code' => $result['code'], 'erreur' => $result['erreur']];
         }
 
         /** On supprime les résultats pour la maven_key. */
         $map = ['maven_key' => $mavenKey, 'type' => $type];
         $delete = $noteRepository->deleteNotesMavenKey($map);
-        if ($delete['code']!=200) {
-            return ['code' => $delete['code'],
-                    'erreur'=>[$delete['erreur'],
-                    static::$request=>'deleteNoteMavenKey']
-                    ];
+        if ($delete['code'] != 200) {
+            return ['code' => $delete['code'], 'erreur' => $delete['erreur']];
         }
 
         /** Création de la date du jour */
@@ -100,19 +96,16 @@ class BatchCollecteNoteController extends AbstractController
         /** Enregistrement des nouvelles valeurs */
         /** Attention la valeur de la note est en float dans SonarQube, on le converti en integer */
         foreach ($result['json']['component']['measures'] as $mesure) {
-            $map=[
+            $map = [
                 'maven_key' => $mavenKey,
                 'type' => $type,
                 'value' => intval($mesure['value']),
                 'mode_collecte' => $modeCollecte,
                 'utilisateur_collecte' => $utilisateurCollecte,
                 'date_enregistrement' => $date];
-            $request=$noteRepository->insertNotes($map);
-            if ($request['code']!=200) {
-                return ['code' => $request['code'],
-                        'erreur'=>[$request['erreur'],
-                        static::$request=>'insertNote']
-                ];
+            $insert = $noteRepository->insertNotes($map);
+            if ($insert['code'] != 200) {
+                return ['code' => $insert['code'], 'erreur' => $insert['erreur']];
             }
         }
 
@@ -156,21 +149,16 @@ class BatchCollecteNoteController extends AbstractController
         // Première requête pour obtenir le nombre de hotspots à réviser
         $map = ['maven_key' => $mavenKey, 'status'=> 'TO_REVIEW' ];
         $toReview = $hotspotsRepository->countHotspotsStatus($map);
-        if ($toReview['code']!=200) {
-            return ['code' => $toReview['code'],
-                    'erreur'=>[$toReview['erreur'],
-                    static::$request=>'countHotspotsStatus(TO_REVIEW)']
-            ];
+        if ($toReview['code'] != 200) {
+            return ['code' => $toReview['code'], 'erreur' => $toReview['erreur']];
         }
         // Seconde requête pour obtenir le nombre de hotspots révisés
         $map = ['maven_key' => $mavenKey, 'status' => 'REVIEWED' ];
         $reviewed = $hotspotsRepository->countHotspotsStatus($map);
-        if ($reviewed['code']!=200) {
-            return ['code' => $reviewed['code'],
-                    'erreur'=>[$reviewed['erreur'],
-                    static::$request=>'countHotspotsStatus(REVIEWED)']
-            ];
+        if ($reviewed['code'] != 200) {
+            return ['code' => $reviewed['code'], 'erreur' => $reviewed['erreur']];
         }
+
         // Initialisation de la note
         $note = 'A';
         if (!empty($toReview['to_review']) && $toReview['to_review'] > 0) {
