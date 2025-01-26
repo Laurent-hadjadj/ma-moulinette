@@ -71,7 +71,8 @@ class BatchCollecteTodoControllerTest extends TestCase
         $this->parameterBag->method('get')->willReturn(static::$api.static::$parameters);
 
         // Création du mock du client pour la réponse
-        $this->client->method('httpSonarQube')->willReturn(['paging' => ['total' => 1], 'issues' => [['rule' => static::$s1135, 'component' => 'component', 'line' => 10]]]);
+        $this->client->method('httpSonarQube')->willReturn(
+            ['json' => ['paging' => ['total' => 1], 'issues' => [['rule' => static::$s1135, 'component' => 'component', 'line' => 10]]]]);
 
         // Création du mock pour la méthode deleteTodoMavenKey
         $this->todoRepository->method('deleteTodoMavenKey')->willReturn(['code' => 200]);
@@ -110,16 +111,17 @@ class BatchCollecteTodoControllerTest extends TestCase
 
         $this->client
             ->method('httpSonarQube')
-            ->willReturn(['paging' => ['total' => 1], 'issues' => [['rule' => static::$s1135, 'component' => 'component', 'line' => 10]]]);
+            ->willReturn(['json' => ['paging' => ['total' => 1], 'issues' => [['rule' => static::$s1135, 'component' => 'component', 'line' => 10]]]]);
 
-        $this->todoRepository->method('deleteTodoMavenKey')->willReturn(['code' => 500]);
+        $this->todoRepository->method('deleteTodoMavenKey')->willReturn(['code' => 500, 'erreur' => 'Internal server error']);
 
         // Calling the method to test
         $result = $this->controller->BatchCollecteTodo('dummyMavenKey', 'dummyModeCollecte', 'dummyUtilisateurCollecte');
 
         // Assertions
         $this->assertEquals(500, $result['code']);
-        $this->assertEquals('deleteTodoMavenKey', $result[BatchCollecteTodoController::$request]);
+        $this->assertEquals('Internal server error', $result['erreur']);
+
     }
 
     public function testBatchCollecteTodoInsertError()
@@ -130,7 +132,7 @@ class BatchCollecteTodoControllerTest extends TestCase
 
         $this->client
             ->method('httpSonarQube')
-            ->willReturn(['paging' => ['total' => 1], 'issues' => [['rule' => static::$s1135, 'component' => 'component', 'line' => 10]]]);
+            ->willReturn(['json' => ['paging' => ['total' => 1], 'issues' => [['rule' => static::$s1135, 'component' => 'component', 'line' => 10]]]]);
 
         $this->todoRepository
             ->method('deleteTodoMavenKey')
@@ -143,7 +145,6 @@ class BatchCollecteTodoControllerTest extends TestCase
         $result = $this->controller->BatchCollecteTodo('dummyMavenKey', 'dummyModeCollecte', 'dummyUtilisateurCollecte');
 
         $this->assertEquals(500, $result['code']);
-        $this->assertEquals('insertTodo', $result[BatchCollecteTodoController::$request]);
-        $this->assertEquals(['Insert error'], $result['erreur']);
+        $this->assertEquals('Insert error', $result['erreur']);
     }
 }

@@ -31,7 +31,6 @@ class BatchCollecteTodoController extends AbstractController
     /** Définition des constantes */
     public static $sonarUrl = "sonar.url";
     public static $europeParis = "Europe/Paris";
-    public static $request = "requête : ";
 
     /**
      * [Description for __construct]
@@ -86,7 +85,7 @@ class BatchCollecteTodoController extends AbstractController
         $map = ['maven_key' => $mavenKey];
         $delete = $todoRepository->deleteTodoMavenKey($map);
         if ($delete['code'] != 200) {
-            return ['code' => $delete['code'], static::$request=>'deleteTodoMavenKey'];
+            return ['code' => $delete['code'], 'erreur' => $delete['erreur']];
         }
 
         /** Si on a trouvé des to.do dans le code alors on les dénombre */
@@ -114,13 +113,12 @@ class BatchCollecteTodoController extends AbstractController
         }
 
         /* On enregistre */
-        $request = $todoRepository->insertTodo($mapData);
-        if ($request['code'] != 200) {
-            return ['code' => $request['code'],
-                    'erreur' => [$request['erreur']],
-                    static::$request => 'insertTodo'];
+        $insert = $todoRepository->insertTodo($mapData);
+        if ($insert['code'] != 200) {
+            return ['code' => $insert['code'], 'erreur' => $insert['erreur']
+            ];
         }
         /** On enregistre les données */
-        return ['code' => 200, 'nombre'=>$todo, 'message' => ['todo'=>$mapData], 'data'=> ['todo'=>$todo]];
+        return ['code' => 200, 'nombre' => $todo, 'message' => ['todo' => $mapData], 'data' => ['todo' => $todo]];
     }
 }
