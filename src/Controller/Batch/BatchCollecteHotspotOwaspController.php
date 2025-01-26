@@ -19,6 +19,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 /** Accès aux tables */
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\HotspotOwasp;
+use App\Entity\Hotspots;
 use App\Entity\InformationProjet;
 
 /** Client HTTP */
@@ -33,7 +34,6 @@ class BatchCollecteHotspotOwaspController extends AbstractController
     /** Définition des constantes */
     public static $sonarUrl = "sonar.url";
     public static $europeParis = "Europe/Paris";
-    public static $request = "requête : ";
     public static $erreur404 = "L'appel à l'API n'a pas abouti (Erreur 404).";
 
     /**
@@ -96,26 +96,25 @@ class BatchCollecteHotspotOwaspController extends AbstractController
 
         /** On récupère la version du serveur SonarQube */
         $sonarVersion = $this->getParameter('sonar.version');
-
         /** On supprime les hotspots pour la maven_key. */
         if ($menace === 'a0') {
-            $map = ['maven_key'=>$mavenKey];
+            $map = ['maven_key' => $mavenKey];
             $delete = $hotspotOwaspRepository->deleteHotspotOwaspMavenKey($map);
             if ($delete['code'] != 200) {
-                return ['code' => $delete['code'], static::$request=>'deleteHotspotOwaspMavenKey'];
+                return ['code' => $delete['code'], 'erreur' => $delete['erreur']];
             }
 
             $message = 'A0 : Effacement des données de la table hotspotOwasp pour le projet.';
             /** si on est en version 8, on envoi pas de tableau owasp2021 */
             return ($sonarVersion == (int)8) ?
-                ['code' => 200, 'info'=>'effacement', 'message' => $message] : ['code' => 200, 'owasp_2021'=> [], 'info'=>'effacement', 'message' => $message];
+                ['code' => 200, 'info' => 'effacement', 'message' => $message] : ['code' => 200, 'owasp_2021'=> [], 'info' => 'effacement', 'message' => $message];
         }
 
         /** On récupère dans la table information_projet la version et la date du projet la plus récente. */
         $map = ['maven_key' => $mavenKey];
         $information = $informationProjetRepository->selectInformationProjetProjectVersion($map);
         if ($information['code'] != 200) {
-            return ['code' => $information['code'], 'message' => $information['erreur']];
+            return ['code' => $information['code'], 'erreur' => $information['erreur']];
         }
 
         if (!$information['info']) {
@@ -137,16 +136,16 @@ class BatchCollecteHotspotOwaspController extends AbstractController
 
         /** On appelle les requêtes HTTP pour chaque référentiel */
         $owasp2017 = $this->client->httpSonarQube("$tempoUrl/api/hotspots/search?".http_build_query($queryParamsList['owasp2017']));
-        if (isset($owasp2017['code']) && in_array($owasp2017['code'], [401, 404])) {
-            return ['erreur' => $owasp2017['code']];
+        if (isset($owasp2017['code']) && in_array($owasp2017['code'], [401, 403, 404, 500])) {
+            return ['code' => $owasp2017['code'], 'erreur' => $owasp2017['erreur'], 'type' => 'owasp2017'];
         }
 
         /** On execute si la version de SonarQube est >= 9 */
-        $owasp2021=['NC'];
+        $owasp2021 = ['NC'];
         if ($sonarVersion > (int)8){
             $owasp2021 = $this->client->httpSonarQube("$tempoUrl/api/hotspots/search?".http_build_query($queryParamsList['owasp2021']));
-            if (isset($owasp2021['code']) && in_array($owasp2021['code'], [401, 404])) {
-            return ['erreur' => $owasp2021['code']];
+            if (isset($owasp2021['code']) && in_array($owasp2021['code'], [401, 403, 404, 500])) {
+            return ['code' => $owasp2021['code'], 'erreur' => $owasp2021['erreur'],'type' => 'owasp2021'];
             }
         }
 
@@ -172,22 +171,21 @@ class BatchCollecteHotspotOwaspController extends AbstractController
 
         /** Pour chaque menace owasp on ajoute la menace dans la table */
         $hotspotDataList = [];
-        if (array_key_exists('hotspots', $owasp2017)) {
-            foreach ($owasp2017['hotspots'] as $item) {
+        if (array_key_exists('hotspots', $owasp2017['json'])) {
+            foreach ($owasp2017['json']['hotspots'] as $item) {
                 $hotspotDataList[] = $prepareHotspotData($item, 2017);
             }
         }
-        if (array_key_exists('hotspots', $owasp2021)) {
-            foreach ($owasp2021['hotspots'] as $item) {
+
+        if (array_key_exists('json', $owasp2021) && array_key_exists('hotspots', $owasp2021['json'])) {
+            foreach ($owasp2021['json']['hotspots'] as $item) {
                 $hotspotDataList[] = $prepareHotspotData($item, 2021);
             }
         }
         if ($hotspotDataList){
             $insert = $hotspotOwaspRepository->insertHotspotOwasp($hotspotDataList);
             if ($insert['code'] !== 200) {
-                return ['code' => $insert['code'],
-                        static::$request => 'insertHotspotOwasp'
-                    ];
+                return ['code' => $insert['code'], 'erreur' => $insert['erreur']];
             }
         }
 
