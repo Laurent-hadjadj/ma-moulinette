@@ -133,7 +133,34 @@ class BatchCollecteLoggerControllerTest extends TestCase
         // Appeler la méthode privée
         $result = $method->invokeArgs($this->controller, [$queryParams, $tempoUrl]);
         $this->assertArrayHasKey('erreur', $result);
-        $this->assertEquals(401, $result['erreur']);
+        $this->assertEquals(401, $result['code']);
+        $this->assertEquals('Unauthorized', $result['erreur']);
+    }
+
+    public function testMakeRequestForbiddenError()
+    {
+        $queryParams = ['key' => 'value'];
+        $tempoUrl = static::$localhost;
+
+        // Réponse simulée pour une erreur 403
+        $mockErrorResponse = ['code' => 403, 'erreur' => 'Forbidden'];
+
+        // Construire l'URL attendue
+        $expectedUrl = static::$api . http_build_query($queryParams);
+
+        // Configurer le mock pour retourner la réponse d'erreur
+        $this->client->method('httpSonarQube')->with($this->equalTo($expectedUrl))->willReturn($mockErrorResponse);
+
+        // Utilisation de la réflexion pour accéder à la méthode privée
+        $reflection = new \ReflectionClass($this->controller);
+        $method = $reflection->getMethod('makeRequest');
+        $method->setAccessible(true);
+
+        // Appeler la méthode privée
+        $result = $method->invokeArgs($this->controller, [$queryParams, $tempoUrl]);
+        $this->assertArrayHasKey('erreur', $result);
+        $this->assertEquals(403, $result['code']);
+        $this->assertEquals('Forbidden', $result['erreur']);
     }
 
     public function testMakeRequestNotFoundError()
@@ -152,10 +179,11 @@ class BatchCollecteLoggerControllerTest extends TestCase
 
         $result = $method->invokeArgs($this->controller, [$queryParams, $tempoUrl]);
         $this->assertArrayHasKey('erreur', $result);
-        $this->assertEquals(404, $result['erreur']);
+        $this->assertEquals(404, $result['code']);
+        $this->assertEquals('Not Found', $result['erreur']);
     }
 
-    public function testMakeRequestOtherError()
+    public function testMakeRequestInternalError()
     {
         $queryParams = ['key' => 'value'];
         $tempoUrl = static::$localhost;
@@ -182,6 +210,161 @@ class BatchCollecteLoggerControllerTest extends TestCase
         // Vérifier les valeurs des clés 'code' et 'erreur'
         $this->assertEquals(500, $result['code']);
         $this->assertEquals('Internal Server Error', $result['erreur']);
+    }
+
+    public function testMakeRequestOtherError()
+    {
+        $queryParams = ['key' => 'value'];
+        $tempoUrl = static::$localhost;
+        $mockErrorResponse = ['code' => 400, 'erreur' => 'Bad request'];
+
+        // Construire l'URL attendue
+        $expectedUrl = static::$api . http_build_query($queryParams);
+
+        // Configurer le mock pour retourner la réponse d'erreur
+        $this->client->method('httpSonarQube')->with($this->equalTo($expectedUrl))->willReturn($mockErrorResponse);
+
+        // Utilisation de la réflexion pour accéder à la méthode privée
+        $reflection = new \ReflectionClass($this->controller);
+        $method = $reflection->getMethod('makeRequest');
+        $method->setAccessible(true);
+
+        // Appeler la méthode privée
+        $result = $method->invokeArgs($this->controller, [$queryParams, $tempoUrl]);
+
+        // Vérifier que la réponse contient les clés 'code' et 'erreur'
+        $this->assertArrayHasKey('code', $result);
+        $this->assertArrayHasKey('erreur', $result);
+
+        // Vérifier les valeurs des clés 'code' et 'erreur'
+        $this->assertEquals(400, $result['code']);
+        $this->assertEquals('Bad request', $result['erreur']);
+    }
+
+    public function testBatchCollecteLoggerError()
+    {
+        // Le plugin Logger est activé. L'URL du serveur est défini
+        $this->parameterBag->method('get')->willReturnMap([
+            ['track.logger.method', true],
+            ['sonar.url', static::$localhost]
+        ]);
+
+        $expectedResult = ['code' => 404, 'erreur' => 'Not Found'];
+        $this->client->method('httpSonarQube')->willReturn($expectedResult);
+
+        $result = $this->controller->BatchCollecteLogger('some-maven-key', 'COLLECTE', static::$mel);
+        $this->assertArrayHasKey('erreur', $result);
+        $this->assertEquals(404, $result['code']);
+        $this->assertEquals('Not Found', $result['erreur']);
+    }
+
+    public function testBatchCollecteLoggerTrackInfoMethodError()
+    {
+        // Le plugin Logger est activé. L'URL du serveur est défini
+        $this->parameterBag->method('get')->willReturnMap([
+            ['track.logger.method', true],
+            ['sonar.url', static::$localhost]
+        ]);
+
+        // Simuler une réponse d'erreur pour 'track-info-method'
+        $this->client->method('httpSonarQube')->willReturnCallback(function ($url) {
+            if (strpos($url, 'track-info-method') !== false) {
+                return ['code' => 500, 'erreur' => 'Internal Server Error'];
+            }
+            return [];
+        });
+
+        $result = $this->controller->BatchCollecteLogger('some-maven-key', 'COLLECTE', static::$mel);
+
+        $this->assertArrayHasKey('erreur', $result);
+        $this->assertArrayHasKey('tracker', $result);
+        $this->assertEquals(500, $result['code']);
+        $this->assertEquals('Internal Server Error', $result['erreur']);
+        $this->assertEquals('track-info-method', $result['tracker']);
+    }
+
+    public function testBatchCollecteLoggerTrackWarnMethodError()
+    {
+        // Le plugin Logger est activé. L'URL du serveur est défini
+        $this->parameterBag->method('get')->willReturnMap([
+            ['track.logger.method', true],
+            ['sonar.url', static::$localhost]
+        ]);
+
+        // Simuler une réponse d'erreur pour 'track-info-method'
+        $this->client->method('httpSonarQube')->willReturnCallback(function ($url) {
+            if (strpos($url, 'track-info-method') !== false) {
+                return ['code' =>200, 'erreur' => '', 'total' => 1];
+            } elseif (strpos($url, 'track-warn-method') !== false) {
+                return ['code' => 401, 'erreur' => 'Unauthorized'];
+            }
+            return [];
+        });
+
+        $result = $this->controller->BatchCollecteLogger('some-maven-key', 'COLLECTE', static::$mel);
+        $this->assertArrayHasKey('erreur', $result);
+        $this->assertArrayHasKey('tracker', $result);
+        $this->assertEquals(401, $result['code']);
+        $this->assertEquals('Unauthorized', $result['erreur']);
+        $this->assertEquals('track-warn-method', $result['tracker']);
+    }
+
+    public function testBatchCollecteLoggerTrackErrorMethodError()
+    {
+        // Le plugin Logger est activé. L'URL du serveur est défini
+        $this->parameterBag->method('get')->willReturnMap([
+            ['track.logger.method', true],
+            ['sonar.url', static::$localhost]
+        ]);
+
+        // Simuler une réponse d'erreur pour 'track-info-method'
+        $this->client->method('httpSonarQube')->willReturnCallback(function ($url) {
+            if (strpos($url, 'track-info-method') !== false) {
+                return ['code' => 200, 'erreur' => '', 'total' => 1];
+            } elseif (strpos($url, 'track-warn-method') !== false) {
+                return ['code' => 200, 'erreur' => '', 'total' => 1];
+            } elseif (strpos($url, 'track-error-method') !== false) {
+                return ['code' => 403, 'erreur' => 'Forbidden'];
+            }
+            return [];
+        });
+
+        $result = $this->controller->BatchCollecteLogger('some-maven-key', 'COLLECTE', static::$mel);
+        $this->assertArrayHasKey('erreur', $result);
+        $this->assertArrayHasKey('tracker', $result);
+        $this->assertEquals(403, $result['code']);
+        $this->assertEquals('Forbidden', $result['erreur']);
+        $this->assertEquals('track-error-method', $result['tracker']);
+    }
+
+    public function testBatchCollecteLoggerTrackDebugMethodError()
+    {
+        // Le plugin Logger est activé. L'URL du serveur est défini
+        $this->parameterBag->method('get')->willReturnMap([
+            ['track.logger.method', true],
+            ['sonar.url', static::$localhost]
+        ]);
+
+        // Simuler une réponse d'erreur pour 'track-info-method'
+        $this->client->method('httpSonarQube')->willReturnCallback(function ($url) {
+            if (strpos($url, 'track-info-method') !== false) {
+                return ['code' => 200, 'erreur' => '', 'total' => 1];
+            } elseif (strpos($url, 'track-warn-method') !== false) {
+                return ['code' => 200, 'erreur' => '', 'total' => 1];
+            } elseif (strpos($url, 'track-error-method') !== false) {
+                return ['code' => 200, 'erreur' => '', 'total' => 1];
+            } elseif (strpos($url, 'track-debug-method') !== false) {
+                return ['code' => 404, 'erreur' => 'Not found'];
+            }
+            return [];
+        });
+
+        $result = $this->controller->BatchCollecteLogger('some-maven-key', 'COLLECTE', static::$mel);
+        $this->assertArrayHasKey('erreur', $result);
+        $this->assertArrayHasKey('tracker', $result);
+        $this->assertEquals(404, $result['code']);
+        $this->assertEquals('Not found', $result['erreur']);
+        $this->assertEquals('track-debug-method', $result['tracker']);
     }
 
     public function testBatchCollecteLoggerSuccess()
