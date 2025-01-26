@@ -32,7 +32,6 @@ class BatchCollecteInformationProjetController extends AbstractController
     /** Définition des constantes */
     public static $sonarUrl = "sonar.url";
     public static $europeParis = "Europe/Paris";
-    public static $request = "requête :";
 
     /**
      * [Description for __construct]
@@ -75,24 +74,29 @@ class BatchCollecteInformationProjetController extends AbstractController
 
         /** Appelle le client HTTP */
         $result = $this->client->httpSonarQube("$tempoUrl/api/project_analyses/search?$queryString");
+        /** "code" => 503
+         *  "erreur" => "Erreur 503 - La résolution DNS n'a pas permis d'accéder au serveur SonarQube." */
 
-        /** On vérifie si le projet existe en locale */
+        /** On vérifie si le projet existe en locale dans la table information ou historique*/
         $requestInformation = $this->isValidMavenKey->isValideInformation($mavenKey);
         $requestHistorique = $this->isValidMavenKey->isValideHistorique($mavenKey);
 
         /* On vérifie le code erreur */
-        //SonarQube
-        $isFound = isset($result['json']['code']) ? false : true;
-        $inBase = ($requestInformation['code'] == 200 &&
-                    $requestHistorique['code'] == 200) ? true : false;
-        $isNotInBase = ($requestInformation['code'] == 404 ||
-                        $requestHistorique['code'] == 404) ? true : false;
+        /* SonarQube, si on récupère un json, alors le projet existe sur le serveur */
+        $isFound = isset($result['json']) ? true : false;
+        /* Le projet est présent dans les deux tables */
+        $inBase = ($requestInformation['code'] == 200 && $requestHistorique['code'] == 200) ? true : false;
+        /* Le projet n'a pas été trouvé dans le base de données */
+        $isNotInBase = ($requestInformation['code'] == 404 || $requestHistorique['code'] == 404) ? true : false;
 
+        /** Analyse du retour de la réponse du serveur SonarQube */
         $isNotFound = false;
         $isNotAuthorize = false;
-        if (isset($result['json']['code'])){
-            $isNotAuthorize=($result['code'] == 401) ? true : false;
-            $isNotFound=($result['code'] == 404) ? true : false;
+        $isNotAvailable = false;
+        if ( $isFound === false){
+            $isNotAuthorize = ($result['code'] == 401) ? true : false;
+            $isNotFound = ($result['code'] == 404) ? true : false;
+            $isNotAvailable = ($result['code'] == 503) ? true : false;
         }
 
         /**
@@ -100,27 +104,47 @@ class BatchCollecteInformationProjetController extends AbstractController
          * et sur le serveur.
          */
         if ($isFound && $inBase){
-            return ['code' => 200, 'message' => 'Le projet est présent en base et sur le serveur', 'data-sonarqube'=>$result,
-            'data-baseInformation' => $requestInformation['request'],
-            'data-baseHistorique' => $requestHistorique['request']];
+            return [
+                'code' => 200,
+                'message' => 'Le projet est présent en base et sur le serveur',
+                'data-sonarqube' => $result,
+                'data-baseInformation' => $requestInformation['request'],
+                'data-baseHistorique' => $requestHistorique['request']
+            ];
         }
 
         /** Le projet n'est pas présent en base mais existe sur le serveur */
         if ($isFound && $isNotInBase){
-            return ['code'=>202, 'message'=>"Le projet est présent en base mais pas sur le serveur", 'data-sonarqube'=>$result, 'data-baseInformation'=>[], 'data-baseHistorique'=>[]];
-        }
-
-        /** Le projet n'est pas disponible sur SonarQube */
-        if ($isNotFound){
-            return ['code'=>404, 'message'=>"Le projet n'existe pas sur le serveur SonarQube"];
+            return [
+                'code' => 202,
+                'message' => "Le projet est présent en base mais pas sur le serveur.",
+                'data-sonarqube' => $result,
+                'data-baseInformation'=>[],
+                'data-baseHistorique' => []];
         }
 
         /** L'utilisateur n'a pas les droits SonarQube nécessaires. */
         if ($isNotAuthorize){
-            return ['code'=>401, 'message'=>"Le serveur SonarQube n'autorise pas l'utilisateur à se connecter à cette API."];
+            return [
+                'code' => 401,
+                'message' => "Le serveur SonarQube n'autorise pas l'utilisateur à se connecter à cette API."];
         }
 
-        return ['code'=>500, 'message'=> 'Une erreur inattendue est survenue !'];
+        /** Le projet n'est pas disponible sur SonarQube */
+        if ($isNotFound){
+            return [
+                'code' => 404,
+                'message' => "Le projet n'existe pas sur le serveur SonarQube."];
+        }
+
+        /** Le projet n'est pas disponible sur SonarQube */
+        if ($isNotAvailable){
+            return [
+                'code' => 503,
+                'message' => "La résolution DNS n'a pas permis d'accéder au serveur SonarQube."];
+        }
+
+        return ['code' => 500, 'message' => 'Une erreur inattendue est survenue.'];
     }
 
     /**
@@ -133,7 +157,7 @@ class BatchCollecteInformationProjetController extends AbstractController
      * Created at: 09/12/2022, 17:13:32 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      */
-    private function batchInformationVersion(string $mavenKey): array
+    public function batchInformationVersion(string $mavenKey): array
     {
         /** On instancie l'entityRepository */
         $informationProjetRepository = $this->em->getRepository(InformationProjet::class);
@@ -142,28 +166,28 @@ class BatchCollecteInformationProjetController extends AbstractController
         $map = ['maven_key' => $mavenKey];
         $toutesLesVersions = $informationProjetRepository->countInformationProjetAllType($map);
         if ($toutesLesVersions['code'] != 200) {
-            return ['code' => $toutesLesVersions['code'], static::$request=>'touteLesVersions'];
+            return ['code' => $toutesLesVersions['code'], 'erreur' => $toutesLesVersions['erreur']];
         }
 
         /** On compte les releases */
-        $map = ['maven_key'=>$mavenKey, 'type'=>'RELEASE'];
+        $map = ['maven_key' => $mavenKey, 'type' => 'RELEASE'];
         $release = $informationProjetRepository->countInformationProjetType($map);
         if ($release['code'] != 200) {
-            return ['code' => $release['code'], static::$request=>'releases'];
+            return ['code' => $release['code'], 'erreur' => $release['erreur']];
         }
 
         /** On compte les snapshots */
-        $map = ['maven_key'=>$mavenKey, 'type'=>'SNAPSHOT'];
+        $map = ['maven_key' => $mavenKey, 'type' => 'SNAPSHOT'];
         $snapshot = $informationProjetRepository->countInformationProjetType($map);
         if ($snapshot['code'] != 200) {
-            return ['code' => $snapshot['code'], static::$request=>'snapshot'];
+            return ['code' => $snapshot['code'], 'erreur' => $snapshot['erreur']];
         }
 
         /** On récupère la dernière version et sa date de publication */
         $map = ['maven_key' => $mavenKey];
         $infoRelease=$informationProjetRepository->selectInformationProjetVersionLast($map);
         if ($infoRelease['code'] != 200) {
-            return ['code' => $infoRelease['code'], static::$request=>'infoRelease'];
+            return ['code' => $infoRelease['code'], 'erreur' => $infoRelease['erreur']];
         }
 
         $toutesLesVersions = isset($toutesLesVersions['nombre'][0]['total']) ? $toutesLesVersions['nombre'][0]['total'] : 0;
@@ -201,7 +225,7 @@ class BatchCollecteInformationProjetController extends AbstractController
 
         /** On récupère les informations du projet */
         $isValide = $this->controlVersionProjet($mavenKey);
-        if (in_array($isValide['code'], [401, 404, 500])) {
+        if (in_array($isValide['code'], [401, 404, 503, 500])) {
             return ['code' => $isValide['code'], 'message' => $isValide['message'] ];
         }
 
@@ -221,18 +245,17 @@ class BatchCollecteInformationProjetController extends AbstractController
             $nameAnalyseLocale = $local['name'] ?? $local['maven_key'] ?? 'VIDE';
 
             $versionMap=[
-                'Sonarqube'=>[
+                'SonarQube' => [
                         'key-analyse' => $keyAnalyseSonarQube,
                         'version' => $versionSonarQube,
                         'date-analyse'=> $dateAnalyseSonarQube],
-                'locale'=>[
+                'Locale' => [
                         'name' => $nameAnalyseLocale,
                         'key-analyse' => $keyAnalyseLocale,
                         'version' => $versionLocale,
                         'date-analyse' => $dateAnalyseLocale
                         ]
             ];
-
             /** Si le projet locale est à jour, pas la peine de lancer la collecte */
             if ($keyAnalyseSonarQube === $keyAnalyseLocale) {
                 return ['code' => 100, 'message' => 'Le projet est à jour', 'data' => $versionMap];
@@ -243,9 +266,7 @@ class BatchCollecteInformationProjetController extends AbstractController
         $map = ['maven_key' => $mavenKey];
         $delete = $informationProjetRepository->deleteInformationProjetMavenKey($map);
         if ($delete['code'] != 200) {
-            return ['code' => $delete['code'],
-                    'erreur'=> [$delete['erreur'], static::$request => 'deleteInformationProjetMavenKey']
-                ];
+            return ['code' => $delete['code'], 'erreur' => $delete['erreur']];
         }
 
         /** On ajoute les informations du projet dans la table information_projet. */
@@ -273,9 +294,7 @@ class BatchCollecteInformationProjetController extends AbstractController
 
         $insert = $informationProjetRepository->insertInformationProjet($map);
         if ($insert['code'] != 200) {
-            return ['code' => $insert['code'],
-            'erreur' => [$insert['erreur']],
-            static::$request => 'insertInformationProjet'];
+            return ['code' => $insert['code'], 'erreur' => $insert['erreur']];
         }
 
         /** On appel la méthode de traitement des données */
