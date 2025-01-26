@@ -32,8 +32,6 @@ class BatchCollecteHotspotController extends AbstractController
     /** Définition des constantes */
     public static $sonarUrl = "sonar.url";
     public static $europeParis = "Europe/Paris";
-    public static $request = "requête : ";
-    public static $erreur404 = "L'appel à l'API n'a pas abouti (Erreur 404).";
 
     /**
      * [Description for __construct]
@@ -96,12 +94,13 @@ class BatchCollecteHotspotController extends AbstractController
          /** On récupère dans la table information_projet la version et la date du projet la plus récente. */
         $map = ['maven_key' => $mavenKey];
         $select = $informationProjet->selectInformationProjetProjectVersion($map);
-        if ($select['code']!=200) {
-            return ['code' => $select['code'], 'message'=>$select['erreur']];
+        if ($select['code'] != 200) {
+            return ['code' => $select['code'], 'erreur' => $select['erreur']];
         }
 
+        /** pas d'information disponible */
         if (!$select['info']) {
-            return ['code' => 404, 'message' => static::$erreur404];
+            return ['code' => 404, 'erreur' => 'Aucune information trouvée sur le projet.'];
         }
 
         /** On reconstruit la date de version au format dateTime */
@@ -115,9 +114,9 @@ class BatchCollecteHotspotController extends AbstractController
         $queryParams = ['projectKey' => $mavenKey, 'ps' => 500, 'p' => 1];
         /** Appelle le client HTTP */
         $result = $this->client->httpSonarQube("$tempoUrl/api/hotspots/search?".http_build_query($queryParams));
-        /** On catch les erreurs HTTP 401 et 404, si possible :) */
-        if (isset($result['code']) && in_array($result['code'], [401, 404])) {
-            return ['code' => $result['code'],'erreur'=>$result['erreur']];
+        /** On catch les erreurs HTTP :) */
+        if (isset($result['code']) && in_array($result['code'], [401, 403, 404, 500])) {
+            return ['code' => $result['code'], 'erreur' => $result['erreur']];
         }
        /** Création de la date du jour */
         $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
@@ -126,16 +125,14 @@ class BatchCollecteHotspotController extends AbstractController
         $map = ['maven_key' => $mavenKey];
         $delete = $hotspotsRepository->deleteHotspotsMavenKey($map);
         if ($delete['code'] != 200) {
-            return ['code' => $delete['code'],
-                    'erreur' => [$delete['erreur'],
-                            static::$request => 'deleteHotspotsMavenKey']];
+            return ['code' => $delete['code'], 'erreur' => $delete['erreur']];
         }
 
         $map = [];
         $high = $medium = $low = 0;
         /** On traite les hotspots */
         if ($result['json']['paging']['total'] !== 0) {
-            foreach ($result['hotspots'] as $value) {
+            foreach ($result['json']['hotspots'] as $value) {
                 // Traitement de la probabilité de vulnérabilité
                 $niveau = $this->vulnerabilityProbability($value['vulnerabilityProbability']);
                 /** On compte le nombre de hotspot par niveau */
@@ -143,7 +140,7 @@ class BatchCollecteHotspotController extends AbstractController
                     case 1: $high++; break;
                     case 2: $medium++; break;
                     case 3: $low++; break;
-                    default: break;
+                    default: $message = "Ce cas n'est pas prévu."; break;
                 }
                 /** Ajout des hotspots à la liste à insérer */
                 $map[] = [
@@ -186,10 +183,7 @@ class BatchCollecteHotspotController extends AbstractController
          /** On enregistre les données */
         $insert = $hotspotsRepository->insertHotspots($map);
         if ($insert['code'] !== 200) {
-            return ['code' => $insert['code'],
-                    'erreur' => [$insert['erreur'],
-                    static::$request => 'insertHotspot']
-            ];
+            return ['code' => $insert['code'], 'erreur' => $insert['erreur']];
         }
 
         /** On prépare les données pour l'historique */

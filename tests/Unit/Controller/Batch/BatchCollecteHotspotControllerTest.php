@@ -38,6 +38,7 @@ class BatchCollecteHotspotControllerTest extends TestCase
     private MockObject $container;
 
     private static $date = '2024-08-09T00:00:00+00:00';
+    private static $httpError500 = 'Internal server error';
 
     protected function setUp(): void
     {
@@ -58,6 +59,11 @@ class BatchCollecteHotspotControllerTest extends TestCase
         $this->controller->setContainer($this->container);
     }
 
+    private function createUtcDate(string $date): \DateTimeImmutable
+    {
+        return new \DateTimeImmutable($date, new \DateTimeZone('UTC'));
+    }
+
     public function testVulnerabilityProbability(): void
     {
         $reflection = new \ReflectionClass(BatchCollecteHotspotController::class);
@@ -68,6 +74,87 @@ class BatchCollecteHotspotControllerTest extends TestCase
         $this->assertEquals(2, $method->invokeArgs($this->controller, ['MEDIUM']));
         $this->assertEquals(3, $method->invokeArgs($this->controller, ['LOW']));
         $this->assertEquals(-1, $method->invokeArgs($this->controller, ['UNKNOWN']));
+    }
+
+
+    public function testBatchCollecteHotspotHttpUnauthorizedError(): void
+    {
+        $this->informationProjetRepository
+            ->method('selectInformationProjetProjectVersion')
+            ->willReturn(['code' => 200, 'info' => [['project_version' => '1.0', 'date' => static::$date]]]);
+
+        $this->client
+            ->method('httpSonarQube')
+            ->willReturn(['code' => 401, 'erreur' => 'Unauthorized']);
+
+        $result = $this->controller->BatchCollecteHotspot('maven-key-123', 'manual', 'user123');
+        $this->assertEquals(401, $result['code']);
+        $this->assertArrayHasKey('erreur', $result);
+        $this->assertEquals('Unauthorized', $result['erreur']);
+    }
+
+    public function testBatchCollecteHotspotHttpForbiddenError(): void
+    {
+        $this->informationProjetRepository
+            ->method('selectInformationProjetProjectVersion')
+            ->willReturn(['code' => 200, 'info' => [['project_version' => '1.0', 'date' => static::$date]]]);
+
+        $this->client
+            ->method('httpSonarQube')
+            ->willReturn(['code' => 403, 'erreur' => 'Forbidden']);
+
+        $result = $this->controller->BatchCollecteHotspot('maven-key-123', 'manual', 'user123');
+        $this->assertEquals(403, $result['code']);
+        $this->assertArrayHasKey('erreur', $result);
+        $this->assertEquals('Forbidden', $result['erreur']);
+    }
+
+    public function testBatchCollecteHotspotHttpInternalServerError(): void
+    {
+        $this->informationProjetRepository
+            ->method('selectInformationProjetProjectVersion')
+            ->willReturn(['code' => 200, 'info' => [['project_version' => '1.0', 'date' => static::$date]]]);
+
+        $this->client
+            ->method('httpSonarQube')
+            ->willReturn(['code' => 500, 'erreur' => static::$httpError500]);
+
+        $result = $this->controller->BatchCollecteHotspot('maven-key-123', 'manual', 'user123');
+        $this->assertEquals(500, $result['code']);
+        $this->assertArrayHasKey('erreur', $result);
+        $this->assertEquals(static::$httpError500, $result['erreur']);
+    }
+
+    public function testBatchCollecteHotspotInformationProjetError(): void
+    {
+        $this->informationProjetRepository
+            ->method('selectInformationProjetProjectVersion')
+            ->willReturn(['code' => 500, 'erreur' => static::$httpError500]);
+
+        $this->client
+            ->method('httpSonarQube')
+            ->willReturn(['code' => 200, 'json' => []]);
+
+        $result = $this->controller->BatchCollecteHotspot('maven-key-123', 'manual', 'user123');
+        $this->assertEquals(500, $result['code']);
+        $this->assertArrayHasKey('erreur', $result);
+        $this->assertEquals(static::$httpError500, $result['erreur']);
+    }
+
+    public function testBatchCollecteHotspotInformationProjetNotFoundError(): void
+    {
+        $this->informationProjetRepository
+            ->method('selectInformationProjetProjectVersion')
+            ->willReturn(['code' => 200, 'info' => []]);
+
+        $this->client
+            ->method('httpSonarQube')
+            ->willReturn(['code' => 200, 'json' => []]);
+
+        $result = $this->controller->BatchCollecteHotspot('maven-key-123', 'manual', 'user123');
+        $this->assertEquals(404, $result['code']);
+        $this->assertArrayHasKey('erreur', $result);
+        $this->assertEquals('Aucune information trouvée sur le projet.', $result['erreur']);
     }
 
     public function testBatchCollecteHotspotDeleteHotspotsFails(): void
@@ -85,14 +172,37 @@ class BatchCollecteHotspotControllerTest extends TestCase
 
         // Vérifie que le code de retour est bien 500
         $this->assertEquals(500, $result['code']);
-
-        // Vérifie que l'erreur contient les informations correctes
         $this->assertArrayHasKey('erreur', $result);
-        $this->assertArrayHasKey('requête : ', $result['erreur']);
-        $this->assertEquals('deleteHotspotsMavenKey', $result['erreur']['requête : ']);
-        $this->assertEquals('Internal Server Error', $result['erreur'][0]);
+        $this->assertEquals('Internal Server Error', $result['erreur']);
     }
 
+    public function testBatchCollecteHotspotProbabilityUnknown(): void
+    {
+        $this->informationProjetRepository
+            ->method('selectInformationProjetProjectVersion')
+            ->willReturn(['code' => 200, 'info' => [['project_version' => '1.0', 'date' => static::$date]]]);
+
+        $this->client
+            ->method('httpSonarQube')
+            ->willReturn(
+                            ['json' => ['paging' => ['total' => 3],
+                                    'hotspots' => [
+                                        ['vulnerabilityProbability' => 'HIGH', 'key' => 'hotspot1'],
+                                        ['vulnerabilityProbability' => 'LOW', 'key' => 'hotspot2'],
+                                        ['vulnerabilityProbability' => 'LOL', 'key' => 'hotspot3']
+                                    ]]]);
+
+        $this->hotspotsRepository->method('deleteHotspotsMavenKey')->willReturn(['code' => 200]);
+        $this->hotspotsRepository->method('insertHotspots')->willReturn(['code' => 200]);
+
+        $result = $this->controller->BatchCollecteHotspot('maven-key-123', 'manual', 'user123');
+        $this->assertEquals(200, $result['code']);
+        $this->assertArrayHasKey('message', $result);
+        $this->assertEquals('LOL', $result['message'][2]['probability']);
+        $this->assertArrayHasKey('data', $result);
+        $this->assertCount(4, $result['data']);
+        $this->assertCount(3, $result['message']);
+    }
 
     public function testBatchCollecteHotspotSuccess(): void
     {
@@ -102,35 +212,23 @@ class BatchCollecteHotspotControllerTest extends TestCase
 
         $this->client
             ->method('httpSonarQube')
-            ->willReturn(['paging' => ['total' => 2], 'hotspots' => [
-                ['vulnerabilityProbability' => 'HIGH', 'key' => 'hotspot1'],
-                ['vulnerabilityProbability' => 'LOW', 'key' => 'hotspot2']
-            ]]);
+            ->willReturn(
+                            ['json' => ['paging' => ['total' => 2],
+                                    'hotspots' => [
+                                        ['vulnerabilityProbability' => 'HIGH', 'key' => 'hotspot1'],
+                                        ['vulnerabilityProbability' => 'LOW', 'key' => 'hotspot2']
+                                    ]]]);
 
         $this->hotspotsRepository->method('deleteHotspotsMavenKey')->willReturn(['code' => 200]);
         $this->hotspotsRepository->method('insertHotspots')->willReturn(['code' => 200]);
 
         $result = $this->controller->BatchCollecteHotspot('maven-key-123', 'manual', 'user123');
+
         $this->assertEquals(200, $result['code']);
         $this->assertArrayHasKey('message', $result);
         $this->assertArrayHasKey('data', $result);
         $this->assertCount(4, $result['data']);
         $this->assertCount(2, $result['message']);
-    }
-
-    public function testBatchCollecteHotspotHttp404Error(): void
-    {
-        $this->informationProjetRepository
-            ->method('selectInformationProjetProjectVersion')
-            ->willReturn(['code' => 200, 'info' => [['project_version' => '1.0', 'date' => static::$date]]]);
-
-        $this->client
-            ->method('httpSonarQube')
-            ->willReturn(['code' => 404, 'erreur' => 'Not Found']);
-
-        $result = $this->controller->BatchCollecteHotspot('maven-key-123', 'manual', 'user123');
-        $this->assertEquals(404, $result['code']);
-        $this->assertArrayHasKey('erreur', $result);
     }
 
     public function testBatchCollecteHotspotNoHotspotsFound(): void
@@ -141,11 +239,11 @@ class BatchCollecteHotspotControllerTest extends TestCase
 
         $this->client
             ->method('httpSonarQube')
-            ->willReturn([
+            ->willReturn(['json' => [
                 'paging' => ['total' => 0],
                 'hotspots' => [],
                 'date' => (new \DateTimeImmutable(self::$date))->format(\DateTime::ATOM),
-            ]);
+            ]]);
 
         $this->hotspotsRepository->method('insertHotspots')->willReturn(['code' => 200]);
         $this->hotspotsRepository->method('deleteHotspotsMavenKey')->willReturn(['code' => 200]);
@@ -192,11 +290,6 @@ class BatchCollecteHotspotControllerTest extends TestCase
         $this->assertCount(4, $result['data']);
     }
 
-    private function createUtcDate(string $date): \DateTimeImmutable
-    {
-        return new \DateTimeImmutable($date, new \DateTimeZone('UTC'));
-    }
-
     public function testBatchCollecteHotspotInsertionError(): void
     {
         $this->informationProjetRepository
@@ -205,7 +298,7 @@ class BatchCollecteHotspotControllerTest extends TestCase
 
         $this->client
             ->method('httpSonarQube')
-            ->willReturn(['paging' => ['total' => 1], 'hotspots' => [['vulnerabilityProbability' => 'HIGH']]]);
+            ->willReturn(['json' => ['paging' => ['total' => 1], 'hotspots' => [['vulnerabilityProbability' => 'HIGH']]]]);
 
         $this->hotspotsRepository
             ->method('insertHotspots')
@@ -216,5 +309,6 @@ class BatchCollecteHotspotControllerTest extends TestCase
 
         $this->assertEquals(500, $result['code']);
         $this->assertArrayHasKey('erreur', $result);
+        $this->assertEquals('Database Error', $result['erreur']);
     }
 }
