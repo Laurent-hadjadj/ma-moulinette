@@ -34,7 +34,52 @@ class BatchCollecteAnomalieDetailController extends AbstractController
     /** Définition des constantes */
     public static $sonarUrl = "sonar.url";
     public static $europeParis = "Europe/Paris";
-    public static $request = "requête : ";
+
+    /**
+     * [Description for makeRequest]
+     *
+     * @param array $queryParams
+     * @param string $tempoUrl
+     *
+     * @return array
+     *
+     * Created at: 25/01/2025 21:27:28 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function makeRequest(array $queryParams, string $tempoUrl): array
+    {
+        /** on renvoi un tableau avec le résultat de la requête ou un tableau avec un code erreur. */
+        $queryString = http_build_query($queryParams);
+        $result = $this->client->httpSonarQube("$tempoUrl/api/issues/search?$queryString");
+        if (isset($result['code']) && in_array($result['code'], [401, 403, 404, 500])) {
+            return ['code' => $result['code'], 'erreur' => $result['erreur']];
+        }
+        return $result['json'] ?? [];
+    }
+
+    /**
+     * [Description for mapSeverities]
+     *
+     * @param array $severities
+     *
+     * @return array
+     *
+     * Created at: 26/01/2025 00:29:20 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function mapSeverities(array $severities): array
+    {
+        // Initialisation du tableau de sévérités avec des valeurs par défaut
+        $severityMap = ['BLOCKER' => 0, 'CRITICAL' => 0, 'MAJOR' => 0, 'MINOR' => 0, 'INFO' => 0];
+        if (isset($severities['values'])) {
+            foreach ($severities['values'] as $severity) {
+                $severityMap[$severity['val']] = $severity['count'];
+            }
+        }
+        return $severityMap;
+    }
 
     /**
      * [Description for __construct]
@@ -78,16 +123,6 @@ class BatchCollecteAnomalieDetailController extends AbstractController
         $tempoUrl = $this->getParameter(static::$sonarUrl);
         $mavenKey = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
 
-        /* Fonction générique pour executer une requête et retourner le résultat dans un tableau */
-        $makeRequest = function($queryParams) use ($tempoUrl) {
-            $queryString = http_build_query($queryParams);
-            $result = $this->client->httpSonarQube("$tempoUrl/api/issues/search?$queryString");
-            if (isset($result['code']) && in_array($result['code'], [401, 404])) {
-                return ['erreur' => $result['code'], $result['erreur']];
-            }
-            return $result['json'];
-        };
-
         /* Tableau des paramètres pour les requêtes HTTP */
         $queryParamsList = [
             'BUG' => [ 'componentKeys' => $mavenKey, 'facets' => 'severities', 'types' => 'BUG', 'statuses' => 'OPEN', 'p' => 1, 'ps' => 1 ],
@@ -98,9 +133,12 @@ class BatchCollecteAnomalieDetailController extends AbstractController
         /* On appelle les API en passant les querryParams à la fonction générique */
         $results = [];
         foreach ($queryParamsList as $key => $queryParams) {
-            $results[$key] = $makeRequest($queryParams);
-            if (isset($results[$key]['erreur'])) {
-                return ['code' => $results[$key]['erreur'], 'erreur'=>$results['erreur']];
+            $results[$key] = self::makeRequest($queryParams, $tempoUrl);
+            if (isset($results[$key]['code'])) {
+                return [
+                    'code' => $results[$key]['code'],
+                    'erreur' => $results[$key]['erreur'],
+                    'type' => $key];
             }
         }
         $issueTypes = ['BUG', 'VULNERABILITY', 'CODE_SMELL'];
@@ -122,25 +160,13 @@ class BatchCollecteAnomalieDetailController extends AbstractController
         $map = ['maven_key' => $mavenKey];
         $delete = $anomalieDetailsRepository->deleteAnomalieDetailsMavenKey($map);
         if ($delete['code'] != 200) {
-            return ['code' => $delete['code'], 'erreur' => [$delete['erreur'], static::$request=>'deleteAnomalieDetailsMavenKey']];
-        }
-
-        /** Fonction pour mapper les résultats */
-        function mapSeverities($severities) {
-            // Initialisation du tableau de sévérités avec des valeurs par défaut
-            $severityMap = ['BLOCKER' => 0, 'CRITICAL' => 0, 'MAJOR' => 0, 'MINOR' => 0, 'INFO' => 0];
-            if (isset($severities['values'])) {
-                foreach ($severities['values'] as $severity) {
-                    $severityMap[$severity['val']] = $severity['count'];
-                }
-            }
-            return $severityMap;
+            return ['code' => $delete['code'], 'erreur' => $delete['erreur']];
         }
 
         /** On bind les résultats */
-        $bugSeverities = mapSeverities($results['BUG']['facets'][0]);
-        $vulnerabilitySeverities = mapSeverities($results['VULNERABILITY']['facets'][0]);
-        $codeSmellSeverities = mapSeverities($results['CODE_SMELL']['facets'][0]);
+        $bugSeverities = self::mapSeverities($results['BUG']['facets'][0]);
+        $vulnerabilitySeverities = self::mapSeverities($results['VULNERABILITY']['facets'][0]);
+        $codeSmellSeverities = self::mapSeverities($results['CODE_SMELL']['facets'][0]);
 
         /** On prépare les données */
         $mapData = [
@@ -170,10 +196,9 @@ class BatchCollecteAnomalieDetailController extends AbstractController
 
             $insert = $anomalieDetailsRepository->insertAnomalieDetail($mapData);
             if ($insert['code'] !== 200) {
-                return ['code' => $insert['code'],
-                        'erreur'=> [$insert['erreur'],
-                        static::$request => 'insertAnomalieDetail']];
+                return ['code' => $insert['code'], 'erreur' => $insert['erreur']];
             }
+
             $data =['bug_blocker' => $bugSeverities['BLOCKER'],
                     'bug_critical' => $bugSeverities['CRITICAL'],
                     'bug_major' => $bugSeverities['MAJOR'],
