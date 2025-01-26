@@ -57,7 +57,7 @@ class BatchCollecteMesureControllerTest extends TestCase
         ]);
 
         $result = $this->controller->BatchCollecteMesure('some-maven-key', 'COLLECTE', static::$mel);
-        $this->assertEquals(['code' => 404, 'erreur' => ['Not Found']], $result);
+        $this->assertEquals(['code' => 404, 'erreur' => 'Not Found'], $result);
     }
 
     public function testBatchCollecteMesureDeleteError(): void
@@ -65,7 +65,10 @@ class BatchCollecteMesureControllerTest extends TestCase
         // Mock the HTTP client to return valid data
         $this->client->method('httpSonarQube')->will($this->returnValueMap([
             ['http://localhost/api/components/app?component=some-maven-key', ['measures' => ['lines' => 100, 'coverage' => 75, 'duplicationDensity' => 5, 'tests' => 20, 'issues' => 3]]],
-            ['http://localhost/api/measures/component?component=some-maven-key&metricKeys=ncloc,ncloc_language_distribution', ['component' => ['measures' => [['metric' => 'ncloc', 'value' => 1500], ['metric' => 'ncloc_language_distribution', 'value' => static::$nclocDistributionValue]]]]],
+            ['http://localhost/api/measures/component?component=some-maven-key&metricKeys=ncloc,ncloc_language_distribution', ['component' => ['measures' => [['metric' => 'ncloc', 'value' => 1500], ['metric' => 'ncloc_language_distribution', 'value' => static::$nclocDistributionValue],
+            ['metric' => 'classes', 'value' => 100],
+            ['metric' => 'functions', 'value' => 100],
+            ['metric' => 'files', 'value' => 100]]]]],
             ['http://localhost/api/measures/component?component=some-maven-key&metricKeys=sqale_debt_ratio', ['component' => ['measures' => [['metric' => 'sqale_debt_ratio', 'value' => '1.23']]]]]
         ]));
 
@@ -75,20 +78,14 @@ class BatchCollecteMesureControllerTest extends TestCase
         $this->em->method('getRepository')->willReturn($mesuresRepository);
 
         $result = $this->controller->BatchCollecteMesure('some-maven-key', 'COLLECTE', static::$mel);
-        $this->assertEquals([
-            'code' => 500,
-            'erreur' => [
-                'requête : ' => 'deleteMesureMavenKey',
-                0 => 'Delete error'
-            ]
-        ], $result);
+        $this->assertEquals(['code' => 500, 'erreur' => 'Delete error'], $result);
     }
 
     public function testBatchCollecteMesureInsertError(): void
     {
         // Define a return value map for the mocked http() method
         $this->client->method('httpSonarQube')->willReturnOnConsecutiveCalls(
-            [
+            [   'json' => [
                 'projectName' => 'ma-moulinette',
                 'measures' => [
                     'lines' => 100,
@@ -96,22 +93,26 @@ class BatchCollecteMesureControllerTest extends TestCase
                     'duplicationDensity' => 5,
                     'tests' => 20,
                     'issues' => 3
-                ]
+                ]]
             ],
             [
+                'json' => [
                 'component' => [
                     'measures' => [
                         ['metric' => 'ncloc', 'value' => 1500],
-                        ['metric' => 'ncloc_language_distribution', 'value' => static::$nclocDistributionValue]
-                    ]
+                        ['metric' => 'ncloc_language_distribution', 'value' => static::$nclocDistributionValue],
+                        ['metric' => 'classes', 'value' => 100],
+                        ['metric' => 'functions', 'value' => 100],
+                        ['metric' => 'files', 'value' => 100]
+                    ]]
                 ]
             ],
-            [
+            [   'json' =>[
                 'component' => [
                     'measures' => [
                         ['metric' => 'sqale_debt_ratio', 'value' => '1.23']
                     ]
-                ]
+                ]]
             ]
         );
 
@@ -125,20 +126,14 @@ class BatchCollecteMesureControllerTest extends TestCase
         $result = $this->controller->BatchCollecteMesure('some-maven-key', 'COLLECTE', static::$mel);
 
         // Assert that the result matches the expected error format
-        $this->assertEquals([
-            'code' => 500,
-            'erreur' => [
-                'requête : ' => 'insertMesures',
-                0 => 'Insert error'
-            ]
-        ], $result);
+        $this->assertEquals(['code' => 500, 'erreur' => 'Insert error'], $result);
     }
 
     public function testBatchCollecteMesureSuccess(): void
     {
         // Mock the HTTP client to return valid data
         $this->client->method('httpSonarQube')->willReturnOnConsecutiveCalls(
-            [
+            [ 'json' => [
                 'projectName' => 'ma-moulinette',
                 'measures' => [
                     'lines' => 100,
@@ -146,21 +141,24 @@ class BatchCollecteMesureControllerTest extends TestCase
                     'duplicationDensity' => 5.0,
                     'tests' => 20,
                     'issues' => 3
-                ]
+                ]]
             ],
-            [
+            [   'json'=>[
                 'component' => [
                     'measures' => [
                         ['metric' => 'ncloc', 'value' => 1500],
-                        ['metric' => 'ncloc_language_distribution', 'value' => static::$nclocDistributionValue]
+                        ['metric' => 'ncloc_language_distribution', 'value' => static::$nclocDistributionValue],
+                        ['metric' => 'classes', 'value' => 100],
+                        ['metric' => 'functions', 'value' => 100],
+                        ['metric' => 'files', 'value' => 100]
                     ]
-                ]
+                ]]
             ],
-            [
+            [   'json' => [
                 'component' => [
                     'measures' => [
                         ['metric' => 'sqale_debt_ratio', 'value' => '1.23']
-                    ]
+                    ]]
                 ]
             ]
         );
@@ -186,6 +184,8 @@ class BatchCollecteMesureControllerTest extends TestCase
             'tests' => 20,
             'issues' => 3
         ];
+
+
         $expectedResult = [
             'code' => 200,
             'message' => [
@@ -193,6 +193,9 @@ class BatchCollecteMesureControllerTest extends TestCase
                 'project_name' => 'ma-moulinette',
                 'lines' => 100,
                 'ncloc' => 1500,
+                'classes' => 100,
+                'functions' => 100,
+                'files' => 100,
                 'language_distribution' => ['java' => 60, 'php' => 40],
                 'sqale_debt_ratio' => 1.23,
                 'coverage' => 75,

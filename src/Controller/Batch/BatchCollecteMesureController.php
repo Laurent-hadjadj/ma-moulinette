@@ -30,7 +30,6 @@ class BatchCollecteMesureController extends AbstractController
 {
     /** Définition des constantes */
     public static $sonarUrl = "sonar.url";
-    public static $request = "requête : ";
 
     /**
      * [Description for __construct]
@@ -76,14 +75,14 @@ class BatchCollecteMesureController extends AbstractController
         $result = $this->client->httpSonarQube("$tempoUrl/api/components/app?$queryString");
         /** On catch les erreurs HTTP 401 et 404, si possible :) */
         if (isset($result['code']) && in_array($result['code'], [401, 404])) {
-            return ['code' => $result['code'], 'erreur'=>[$result['erreur']]];
+            return ['code' => $result['code'], 'erreur' => $result['erreur']];
         }
 
         /** On supprime les résultats pour la maven_key. */
-        $map=['maven_key' => $mavenKey];
+        $map = ['maven_key' => $mavenKey];
         $delete=$mesuresRepository->deleteMesuresMavenKey($map);
-        if ($delete['code']!=200) {
-            return ['code' => $delete['code'], 'erreur'=>[$delete['erreur'], static::$request=>'deleteMesureMavenKey']];
+        if ($delete['code'] != 200) {
+            return ['code' => $delete['code'], 'erreur' => $delete['erreur']];
         }
         /** Création de la date du jour */
         $date = new \DateTimeImmutable('now', new \DateTimeZone("Europe/Paris"));
@@ -99,7 +98,7 @@ class BatchCollecteMesureController extends AbstractController
         /** Appelle le client HTTP */
         $queryParams = [
             'component' => $mavenKey,
-            'metricKeys' => 'ncloc,ncloc_language_distribution'
+            'metricKeys' => 'ncloc,ncloc_language_distribution,classes,functions,files'
         ];
         $queryString = http_build_query($queryParams);
         /** Appelle le client HTTP */
@@ -107,10 +106,19 @@ class BatchCollecteMesureController extends AbstractController
 
         /** Initialise ncloc avec une valeur par défaut */
         foreach($result2['json']['component']['measures'] as $mesure){
-            if ($mesure['metric']==='ncloc'){
+            if ($mesure['metric'] === 'ncloc'){
                 $ncloc = $mesure['value'] ? intval($mesure['value']) : 0 ;
             }
-            if ($mesure['metric']==='ncloc_language_distribution'){
+            if ($mesure['metric'] === 'classes'){
+                $classes = $mesure['value'] ? intval($mesure['value']) : 0 ;
+            }
+            if ($mesure['metric'] === 'functions'){
+                $functions = $mesure['value'] ? intval($mesure['value']) : 0 ;
+            }
+            if ($mesure['metric'] === 'files'){
+                $files = $mesure['value'] ? intval($mesure['value']) : 0 ;
+            }
+            if ($mesure['metric'] === 'ncloc_language_distribution'){
                 $distribution = [];
                 $asArr = explode(';', $mesure['value']);
                 foreach ($asArr as $language) {
@@ -138,6 +146,9 @@ class BatchCollecteMesureController extends AbstractController
             'project_name' => $result['json']['projectName'],
             'lines' => $lines,
             'ncloc' => $ncloc,
+            'classes' => $classes,
+            'functions' => $functions,
+            'files' => $files,
             'language_distribution' => $distribution,
             'sqale_debt_ratio' => $sqaleRatio,
             'coverage' => $coverage,
@@ -150,9 +161,7 @@ class BatchCollecteMesureController extends AbstractController
         ];
         $insert=$mesuresRepository->insertMesures($mesureData);
         if ($insert['code'] !== 200) {
-            return ['code' => $insert['code'],
-                    'erreur'=>[$insert['erreur'],
-                    static::$request => 'insertMesures']];
+            return ['code' => $insert['code'], 'erreur' => $insert['erreur']];
         }
 
         /** On prépare les données pour l'historique */
