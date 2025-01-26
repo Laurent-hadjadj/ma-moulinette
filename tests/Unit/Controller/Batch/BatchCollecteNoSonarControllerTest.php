@@ -37,7 +37,6 @@ class BatchCollecteNoSonarControllerTest extends TestCase
     private MockObject $container;
 
     private static $s1309 = 'java:S1309';
-
     private static $parameters='componentKeys=DummyMavenKey&rules=java:S1309,java:NoSonar&p=1&ps=500';
 
     protected function setUp(): void
@@ -78,11 +77,11 @@ class BatchCollecteNoSonarControllerTest extends TestCase
             ->method('httpSonarQube')
             ->willReturn([
                 'code' => 200,
-                'paging' => ['total' => 2],
+                'json' => ['paging' => ['total' => 2],
                 'issues' => [
                     ['rule' => static::$s1309, 'component' => 'component1', 'line' => 10],
                     ['rule' => 'java:NoSonar', 'component' => 'component2', 'line' => 20],
-                ]
+                ]]
             ]);
 
         // Configuration du mock NoSonarRepository pour retourner un code 200 pour delete et insert
@@ -98,11 +97,11 @@ class BatchCollecteNoSonarControllerTest extends TestCase
 
         // Vérification des résultats
         $this->assertEquals(200, $result['code']);
-        $this->assertEquals(['suppress_warning' => 1, 'no_sonar' => 1], $result['message']);
-        $this->assertEquals(['suppress_warning' => 1, 'no_sonar' => 1], $result['data']);
+        $this->assertEquals(['suppress_warning' => 1, 'no_sonar' => 1, 'inconnu' => 0 ], $result['message']);
+        $this->assertEquals(['suppress_warning' => 1, 'no_sonar' => 1, 'inconnu' => 0], $result['data']);
     }
 
-    public function testBatchCollecteNoSonarHttpError(): void
+    public function testBatchCollecteNoSonarHttpUnauthorizedError(): void
     {
         // Configuration du mock Client pour retourner une erreur HTTP
         $this->client
@@ -114,7 +113,52 @@ class BatchCollecteNoSonarControllerTest extends TestCase
 
         // Vérification des résultats
         $this->assertEquals(401, $result['code']);
-        $this->assertEquals(['Unauthorized'], $result['erreur']);
+        $this->assertEquals('Unauthorized', $result['erreur']);
+    }
+
+    public function testBatchCollecteNoSonarHttpForbiddenError(): void
+    {
+        // Configuration du mock Client pour retourner une erreur HTTP
+        $this->client
+            ->method('httpSonarQube')
+            ->willReturn(['code' => 403, 'erreur' => 'Forbidden']);
+
+        // Exécution de la méthode à tester
+        $result = $this->controller->BatchCollecteNoSonar('testKey', 'testMode', 'testUser');
+
+        // Vérification des résultats
+        $this->assertEquals(403, $result['code']);
+        $this->assertEquals('Forbidden', $result['erreur']);
+    }
+
+    public function testBatchCollecteNoSonarHttpNotFoundError(): void
+    {
+        // Configuration du mock Client pour retourner une erreur HTTP
+        $this->client
+            ->method('httpSonarQube')
+            ->willReturn(['code' => 404, 'erreur' => 'Not found']);
+
+        // Exécution de la méthode à tester
+        $result = $this->controller->BatchCollecteNoSonar('testKey', 'testMode', 'testUser');
+
+        // Vérification des résultats
+        $this->assertEquals(404, $result['code']);
+        $this->assertEquals('Not found', $result['erreur']);
+    }
+
+    public function testBatchCollecteNoSonarHttpGenericError(): void
+    {
+        // Configuration du mock Client pour retourner une erreur HTTP
+        $this->client
+            ->method('httpSonarQube')
+            ->willReturn(['code' => 500, 'erreur' => 'Internal server error']);
+
+        // Exécution de la méthode à tester
+        $result = $this->controller->BatchCollecteNoSonar('testKey', 'testMode', 'testUser');
+
+        // Vérification des résultats
+        $this->assertEquals(500, $result['code']);
+        $this->assertEquals('Internal server error', $result['erreur']);
     }
 
     public function testBatchCollecteNoSonarDeleteError(): void
@@ -124,10 +168,10 @@ class BatchCollecteNoSonarControllerTest extends TestCase
             ->method('httpSonarQube')
             ->willReturn([
                 'code' => 200,
-                'paging' => ['total' => 1],
+                'json' => ['paging' => ['total' => 1],
                 'issues' => [
                     ['rule' => static::$s1309, 'component' => 'component1', 'line' => 10],
-                ]
+                ]]
             ]);
 
         // Configuration du mock NoSonarRepository pour retourner une erreur pour delete
@@ -140,7 +184,7 @@ class BatchCollecteNoSonarControllerTest extends TestCase
 
         // Vérification des résultats
         $this->assertEquals(500, $result['code']);
-        $this->assertEquals(['Deletion failed', 'requête : ' => 'deleteNoSonarMavenKey'], $result['erreur']);
+        $this->assertEquals('Deletion failed', $result['erreur']);
     }
 
     public function testBatchCollecteNoSonarInsertError(): void
@@ -150,10 +194,10 @@ class BatchCollecteNoSonarControllerTest extends TestCase
             ->method('httpSonarQube')
             ->willReturn([
                 'code' => 200,
-                'paging' => ['total' => 1],
+                'json' => ['paging' => ['total' => 1],
                 'issues' => [
                     ['rule' => static::$s1309, 'component' => 'component1', 'line' => 10],
-                ]
+                ]]
             ]);
 
         // Configuration du mock NoSonarRepository pour retourner une erreur pour insert
@@ -169,6 +213,37 @@ class BatchCollecteNoSonarControllerTest extends TestCase
 
         // Vérification des résultats
         $this->assertEquals(500, $result['code']);
-        $this->assertEquals(['Insertion failed', 'requête : ' => 'insertNoSonar'], $result['erreur']);
+        $this->assertEquals('Insertion failed', $result['erreur']);
+    }
+
+    public function testBatchCollecteNoSonarTypeInconnu(): void
+    {
+        // Configuration du mock Client pour retourner une réponse API correcte
+        $this->client
+            ->method('httpSonarQube')
+            ->willReturn([
+                'code' => 200,
+                'json' => ['paging' => ['total' => 2],
+                'issues' => [
+                    ['rule' => static::$s1309, 'component' => 'component1', 'line' => 10],
+                    ['rule' => 'php:NoSonar', 'component' => 'component2', 'line' => 20],
+                ]]
+            ]);
+
+        // Configuration du mock NoSonarRepository pour retourner un code 200 pour delete et insert
+        $this->noSonarRepository
+            ->method('deleteNoSonarMavenKey')
+            ->willReturn(['code' => 200]);
+        $this->noSonarRepository
+            ->method('insertNoSonar')
+            ->willReturn(['code' => 200]);
+
+        // Exécution de la méthode à tester
+        $result = $this->controller->BatchCollecteNoSonar('testKey', 'testMode', 'testUser');
+
+        // Vérification des résultats
+        $this->assertEquals(200, $result['code']);
+        $this->assertEquals(['suppress_warning' => 1, 'no_sonar' => 0, 'inconnu' => 1], $result['message']);
+        $this->assertEquals(['suppress_warning' => 1, 'no_sonar' => 0, 'inconnu' => 1], $result['data']);
     }
 }
