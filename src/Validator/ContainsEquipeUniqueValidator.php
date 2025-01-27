@@ -68,7 +68,7 @@ class ContainsEquipeUniqueValidator extends ConstraintValidator
             throw new UnexpectedValueException($value, 'string');
         }
 
-        /** On cherche si la valeur exsite déjà.  */
+        /** On cherche si la valeur existe déjà.  */
         $record = $this->em->getRepository(Equipe::class)->findOneBy(['titre' => mb_strtoupper($value)]);
 
         /** Si la valeur existe, on affiche une erreur. */
