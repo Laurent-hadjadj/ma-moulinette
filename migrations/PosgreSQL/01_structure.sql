@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##         Creation des tables et des objets      ##
-##               V1.30.0 - 20/01/2025             ##
+##               V1.31.0 - 27/01/2025             ##
 ##                                                ##
 ####################################################*/
 
@@ -44,6 +44,8 @@
 -- 31/12/2024 : Laurent HADJADJ - Correction de la table activity_batch_report ;
 -- 03/01/2025 : Laurent HADJADJ - Bonne année 2025. Renommage de l'attribut start en mode_collecte  pour la table batch_traitement ;
 -- 20/01/2025 : Laurent HADJADJ - Ajout des colones classes, functions et files à la table historique ;
+-- 27/01/2025 : Laurent HADJADJ - Ajout de la clé inconnue à la table historique, pour dénombrer la répartition des valeurs inconnues ;
+
 
 -- SCHEMA: ma_moulinette
 
@@ -443,6 +445,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.historique
   frontend integer NOT NULL,
   backend integer NOT NULL,
   autre integer NOT NULL,
+  inconnue integer NOT NULL,
   dette integer NOT NULL,
   sqale_debt_ratio double precision NOT NULL,
   nombre_anomalie_bloquant integer NOT NULL,
@@ -511,9 +514,10 @@ COMMENT ON COLUMN ma_moulinette.historique.violations IS 'Nombre total de défau
 COMMENT ON COLUMN ma_moulinette.historique.nombre_bug IS 'Nombre total de bugs détectés';
 COMMENT ON COLUMN ma_moulinette.historique.nombre_vulnerability IS 'Nombre total de vulnérabilités détectées';
 COMMENT ON COLUMN ma_moulinette.historique.nombre_code_smell IS 'Nombre total de mauvaises pratiques détectés';
-COMMENT ON COLUMN ma_moulinette.historique.frontend IS 'Développements spécifiques front-end';
-COMMENT ON COLUMN ma_moulinette.historique.backend IS 'Développements spécifiques back-end';
-COMMENT ON COLUMN ma_moulinette.historique.autre IS 'Autres développements spécifiques';
+COMMENT ON COLUMN ma_moulinette.historique.frontend IS 'Développements spécifiques frontend';
+COMMENT ON COLUMN ma_moulinette.historique.backend IS 'Développements spécifiques backend';
+COMMENT ON COLUMN ma_moulinette.historique.autre IS 'Développements spécifiques';
+COMMENT ON COLUMN ma_moulinette.historique.inconnue IS 'Développements indéterminés';
 COMMENT ON COLUMN ma_moulinette.historique.dette IS 'Somme de la dette technique accumulée';
 COMMENT ON COLUMN ma_moulinette.historique.sqale_debt_ratio IS 'Ratio de la dette technique (SQALE)';
 COMMENT ON COLUMN ma_moulinette.historique.nombre_anomalie_bloquant IS 'Nombre d’anomalies bloquantes';
