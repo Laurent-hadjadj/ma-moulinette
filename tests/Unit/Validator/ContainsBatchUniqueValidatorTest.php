@@ -136,4 +136,76 @@ class ContainsBatchUniqueValidatorTest extends TestCase
         $this->validator->validate(123, $this->constraintMock);
     }
 
+    public function testValidateWithExistingTitle(): void
+    {
+        $value = 'BatchTest';
+
+        // Création d'un mock pour simuler un batch avec un portefeuille et un titre existant
+        $mockBatch = $this->createMock(Batch::class);
+
+        // Simulation du cas où un batch avec ce portefeuille existe déjà (première recherche)
+        $this->entityManagerMock
+            ->method('getRepository')
+            ->willReturn($this->createMock(\Doctrine\ORM\EntityRepository::class));
+
+        // Configurer findOneBy pour renvoyer un mock pour 'portefeuille' et 'titre' séparément
+        $this->entityManagerMock->getRepository(Batch::class)
+            ->method('findOneBy')
+            ->withConsecutive(
+                [['portefeuille' => mb_strtoupper($value)]],  // Recherche pour portefeuille
+                [['titre' => mb_strtoupper($value)]]          // Recherche pour titre
+            )
+            ->willReturnOnConsecutiveCalls(null, $mockBatch); // Retourne null pour portefeuille et un mock pour titre
+
+        // S'attend à ce qu'une violation soit ajoutée pour le titre
+        $violationBuilderMock = $this->createMock(ConstraintViolationBuilderInterface::class);
+        $violationBuilderMock
+            ->expects($this->once()) // S'assurer qu'il n'est appelé qu'une fois
+            ->method('setParameter')
+            ->with('{{ string }}', $value)
+            ->willReturnSelf();
+        $violationBuilderMock
+            ->expects($this->once()) // Vérifie que addViolation est bien appelé
+            ->method('addViolation');
+
+        $this->contextMock
+            ->expects($this->once()) // Vérifie que buildViolation est bien appelé une fois
+            ->method('buildViolation')
+            ->with($this->constraintMock->message)
+            ->willReturn($violationBuilderMock);
+
+        // Validation avec le titre existant, cette fois avec les deux conditions
+        $this->validator->validate($value, $this->constraintMock);
+    }
+
+    public function testValidateWithInvalidConstraintType(): void
+    {
+        // Crée une instance d'une classe quelconque pour simuler un type incorrect
+        $invalidConstraint = $this->createMock(Constraint::class);
+
+        // Exécute la validation avec l'instance de la contrainte incorrecte
+        $this->expectException(UnexpectedTypeException::class);
+        // Appel à la méthode validate avec le mauvais type de contrainte
+        $this->validator->validate('EXISTING_TITLE', $invalidConstraint);
+    }
+    public function testValidateWithNullValue(): void
+    {
+        // Passe une valeur nulle, aucun appel à buildViolation ne devrait être fait
+        $this->contextMock
+            ->expects($this->never())
+            ->method('buildViolation');
+
+        $this->validator->validate(null, $this->constraintMock);
+    }
+
+    public function testValidateWithEmptyString(): void
+    {
+        // Passe une chaîne vide, aucun appel à buildViolation ne devrait être fait
+        $this->contextMock
+            ->expects($this->never())
+            ->method('buildViolation');
+
+        $this->validator->validate('', $this->constraintMock);
+    }
+
 }
