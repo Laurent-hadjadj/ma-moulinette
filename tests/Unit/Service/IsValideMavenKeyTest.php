@@ -18,7 +18,7 @@ class IsValideMavenKeyTest extends TestCase
     private EntityManagerInterface $entityManager;
     private IsValideMavenKey $service;
 
-    private $notFound = 'Not Found';
+    private static $notFound = 'Not Found';
 
     protected function setUp(): void
     {
