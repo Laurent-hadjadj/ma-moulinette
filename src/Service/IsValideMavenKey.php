@@ -49,8 +49,8 @@ class IsValideMavenKey
         $informationProjetRepository = $this->em->getRepository(InformationProjet::class);
 
         /** On regarde si une analyse a été réalisée. */
-        $map=['maven_key'=>$mavenKey];
-        $request=$informationProjetRepository->selectInformationProjetIsValide($map);
+        $map = ['maven_key' => $mavenKey];
+        $request = $informationProjetRepository->selectInformationProjetIsValide($map);
         return ['code' => $request['code'], 'request'=>$request['is_valide'] ?? $request['erreur']];
     }
 
@@ -60,8 +60,8 @@ class IsValideMavenKey
         $historiqueRepository = $this->em->getRepository(Historique::class);
 
         /** On regarde si une analyse a été réalisée. */
-        $map=['maven_key'=>$mavenKey];
-        $request=$historiqueRepository->selectHistoriqueIsValide($map);
-        return ['code' => $request['code'], 'request'=>$request['is_valide'] ?? $request['erreur']];
+        $map = ['maven_key' => $mavenKey];
+        $request = $historiqueRepository->selectHistoriqueIsValide($map);
+        return ['code' => $request['code'], 'request' => $request['is_valide'] ?? $request['erreur']];
     }
 }
