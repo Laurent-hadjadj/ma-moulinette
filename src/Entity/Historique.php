@@ -167,19 +167,24 @@ class Historique
     private $nombreCodeSmell;
 
     #[ORM\Column(type: Types::INTEGER,
-        options: ['comment' => 'Développements spécifiques front-end'])]
+        options: ['comment' => 'Développements spécifiques frontend'])]
     #[Assert\NotNull]
     private $frontend;
 
     #[ORM\Column(type: Types::INTEGER,
-        options: ['comment' => 'Développements spécifiques back-end'])]
+        options: ['comment' => 'Développements spécifiques backend'])]
     #[Assert\NotNull]
-    private $backend;
+    private int $backend;
 
     #[ORM\Column(type: Types::INTEGER,
-        options: ['comment' => 'Autres développements spécifiques'])]
+        options: ['comment' => 'Développements spécifiques'])]
     #[Assert\NotNull]
-    private $autre;
+    private int $autre;
+
+    #[ORM\Column(type: Types::INTEGER,
+    options: ['comment' => 'développements indéterminées'])]
+    #[Assert\NotNull]
+    private int $inconnue;
 
     #[ORM\Column(type: Types::INTEGER,
         options: ['comment' => 'Somme de la dette technique accumulée'])]
@@ -1128,6 +1133,18 @@ class Historique
     public function setAutre(int $autre): \App\Entity\Historique
     {
         $this->autre = $autre;
+
+        return $this;
+    }
+
+    public function getInconnue(): ?int
+    {
+        return $this->inconnue;
+    }
+
+    public function setInconnue(int $inconnue): \App\Entity\Historique
+    {
+        $this->inconnue = $inconnue;
 
         return $this;
     }

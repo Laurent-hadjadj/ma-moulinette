@@ -43,9 +43,9 @@ class HistoriqueValidatorTest extends KernelTestCase
       ->setLoggerDebug('8')
       ->setNombreLigne('17049')
       ->setNombreLigneCode('8928')
+      ->setFiles('180')
       ->setClasses('123')
       ->setFunctions('457')
-      ->setFunctions('226')
       ->setCoverage('50.1')
       ->setDuplicatedLinesDensity('0.2')
       ->setSqaleDebtRatio('1')
@@ -73,6 +73,7 @@ class HistoriqueValidatorTest extends KernelTestCase
       ->setFrontend('21')
       ->setBackend('136')
       ->setAutre('0')
+      ->setInconnue('10')
       ->setNombreAnomalieBloquant('7')
       ->setNombreAnomalieCritique('13')
       ->setNombreAnomalieMajeur('153')
@@ -135,9 +136,9 @@ class HistoriqueValidatorTest extends KernelTestCase
     $this->assertHasErrors($this->getEntity()->setLoggerDebug(-1), 0);
     $this->assertHasErrors($this->getEntity()->setNombreLigne(-1), 0);
     $this->assertHasErrors($this->getEntity()->setNombreLigneCode(-1), 0);
+    $this->assertHasErrors($this->getEntity()->setFiles(-1), 0);
     $this->assertHasErrors($this->getEntity()->setClasses(-1), 0);
     $this->assertHasErrors($this->getEntity()->setFunctions(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setFiles(-1), 0);
     $this->assertHasErrors($this->getEntity()->setTests(-1), 0);
     $this->assertHasErrors($this->getEntity()->setViolations(-1), 0);
     $this->assertHasErrors($this->getEntity()->setDette(-1), 0);
@@ -162,6 +163,7 @@ class HistoriqueValidatorTest extends KernelTestCase
     $this->assertHasErrors($this->getEntity()->setFrontend(-1), 0);
     $this->assertHasErrors($this->getEntity()->setBackend(-1), 0);
     $this->assertHasErrors($this->getEntity()->setAutre(-1), 0);
+    $this->assertHasErrors($this->getEntity()->setInconnue(-1), 0);
     $this->assertHasErrors($this->getEntity()->setNombreAnomalieBloquant(-1), 0);
     $this->assertHasErrors($this->getEntity()->setNombreAnomalieCritique(-1), 0);
     $this->assertHasErrors($this->getEntity()->setNombreAnomalieMajeur(-1), 0);
@@ -192,6 +194,6 @@ class HistoriqueValidatorTest extends KernelTestCase
       $entity = $this->getEntity();
       $reflectionClass = new \ReflectionClass($entity);
       $nbAttributs = count($reflectionClass->getProperties());
-      $this->assertEquals($nbAttributs, 65);
+      $this->assertEquals($nbAttributs, 66);
   }
 }

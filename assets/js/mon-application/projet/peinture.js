@@ -348,75 +348,95 @@ export const remplissage = async function(mavenKey) {
       t16.dataset.nombreCodeSmell=(t.codeSmell);
 
       /* Répartition modules*/
-      let i1, i2, i3, p1, p2, p3, e1='', e2='', e3='';
+      let i1, i2, i3, i4, p1, p2, p3, p4, e1='', e2='', e3='', e4='';
       const html01='<span style="color:#fff;">0</span>';
       const html02='<span style="color:#fff;">00</span>';
 
-      const totalModule=parseInt(t.frontend+t.backend+t.autre,10);
+      const totalModule = parseInt(t.frontend + t.backend + t.autre + t.inconnue, 10);
 
-      if (totalModule !==0) {
-        if (t.frontend!==0) {
-          p1=t.frontend/totalModule;
-          if (p1*cent>dix && p1*cent<cent) {
-            e1=html01;
+      if (totalModule !== 0) {
+        if (t.frontend !== 0) {
+          p1 = t.frontend/totalModule;
+          if (p1 * cent > dix && p1 * cent < cent) {
+            e1 = html01;
           }
-          if (p1*cent<dix) {
-            e1=html02;
+          if (p1 * cent < dix) {
+            e1 = html02;
           }
-          i1=`<span>${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.frontend)}</span> ${e1}
+          i1 = `<span>${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.frontend)}</span> ${e1}
               <span>${new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(t.frontend/totalModule)}</span>`;
         } else {
-          i1=`<span>${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(0)}</span>`;
+          i1 = `<span>${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(0)}</span>`;
         }
         $('#nombre-frontend').html(i1);
 
-      if (t.backend!==0) {
-        p2=t.backend/totalModule;
-        if (p2*cent>dix && p2*cent<cent) {
-          e2=html01;
+      if (t.backend !== 0) {
+        p2 = t.backend / totalModule;
+        if ( p2 * cent > dix && p2 * cent < cent) {
+          e2 = html01;
         }
-        if (p2*cent<dix) {
-          e2=html02;
+        if (p2 * cent < dix) {
+          e2 = html02;
         }
-        i2=`<span>${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.backend)}</span> ${e2}
+        i2= `<span>${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.backend)}</span> ${e2}
           <span>${new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(t.backend/totalModule)}</span>`;
       } else {
-        i2=`<span>${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(0)}</span>`;
+        i2 = `<span>${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(0)}</span>`;
       }
       $('#nombre-backend').html(i2);
 
-      if (t.autre!==0) {
-        p3=t.autre/totalModule;
-        if (p3*cent>dix && p3*cent<cent) {
-          e3=html01;
+      if (t.autre !== 0) {
+        p3 = t.autre / totalModule;
+        if (p3 *cent > dix && p3 * cent < cent) {
+          e3 = html01;
         }
-        if (p3*cent<dix) {
-          e3=html02;
+        if (p3 * cent < dix) {
+          e3 = html02;
         }
-        i3=`<span>${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.autre)}</span> ${e3}
+        i3 = `<span>${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.autre)}</span> ${e3}
             <span>${new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(t.autre/totalModule)}</span>`;
       } else {
-        i3=`<span>${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(0)}</span>`;
+        i3 = `<span>${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(0)}</span>`;
       }
       $('#nombre-autre').html(i3);
+
+      if (t.inconnue !== 0) {
+        p4 = t.inconnue / totalModule;
+        if (p4 *cent > dix && p4 * cent < cent) {
+          e4 = html01;
+        }
+        if (p3 * cent < dix) {
+          e4 = html02;
+        }
+        i4 = `<span>${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.inconnue)}</span> ${e4}
+            <span>${new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(t.inconnue/totalModule)}</span>`;
+      } else {
+        i4 = `<span>${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(0)}</span>`;
+      }
+      $('#nombre-inconnue').html(i4);
 
       /** Historique */
       const t17 = document.getElementById('nombre-frontend');
       const t18 = document.getElementById('nombre-backend');
       const t19 = document.getElementById('nombre-autre');
-      t17.dataset.nombreFrontend=t.frontend;
-      t18.dataset.nombreBackend=t.backend;
-      t19.dataset.nombreAutre=t.autre;
+      const t19a = document.getElementById('nombre-inconnue');
+      t17.dataset.nombreFrontend = t.frontend;
+      t18.dataset.nombreBackend = t.backend;
+      t19.dataset.nombreAutre = t.autre;
+      t19a.dataset.nombreInconnue = t.inconnue;
       } else {
           $('#nombre-frontend').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(0));
           $('#nombre-backend').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(0));
           $('#nombre-autre').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(0));
+          $('#nombre-inconnue').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(0));
           const t20 = document.getElementById('nombre-frontend');
           const t21 = document.getElementById('nombre-backend');
           const t22 = document.getElementById('nombre-autre');
-          t20.dataset.nombreFrontend=0;
-          t21.dataset.nombreBackend=0;
-          t22.dataset.nombreAutre=0;
+          const t22a = document.getElementById('nombre-inconnue');
+          t20.dataset.nombreFrontend = 0;
+          t21.dataset.nombreBackend = 0;
+          t22.dataset.nombreAutre = 0;
+          t22a.dataset.nombreInconnue = 0;
           }
 
       /* Répartition des anomalies par sévérité */

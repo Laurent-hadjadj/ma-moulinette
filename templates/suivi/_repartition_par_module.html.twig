@@ -61,12 +61,26 @@
         </td>
       </tr>
       <tr>
-        <td class="text-left text-noir">Autres</td>
+        <td class="text-left text-noir">Autre</td>
         {% if suivi is not empty %}
           {% for i in 0..suivi|length-1 %}
             <td class="text-center">
               {% if suivi[i]["autre"] != -1 %}
                 <span>{{suivi[i]["autre"]|format_number(locale='fr')}}</span>
+              {% else %}
+                <span>&nbsp;-&nbsp;</span>
+              {% endif %}
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+      <tr>
+        <td class="text-left text-noir">Inconnue</td>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            <td class="text-center">
+              {% if suivi[i]["inconnue"] != -1 %}
+                <span>{{suivi[i]["inconnue"]|format_number(locale='fr')}}</span>
               {% else %}
                 <span>&nbsp;-&nbsp;</span>
               {% endif %}

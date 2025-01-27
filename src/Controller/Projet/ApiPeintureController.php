@@ -411,9 +411,10 @@ class ApiPeintureController extends AbstractController
         $severityMinor = $anomalie['liste'][0]['minor'];
 
         /** Module */
-        $frontend = $anomalie['liste'][0]['frontend'];
-        $backend = $anomalie['liste'][0]['backend'];
-        $autre = $anomalie['liste'][0]['autre'];
+        $frontend = $anomalie['liste'][0]['frontend'] ?? 0;
+        $backend = $anomalie['liste'][0]['backend'] ?? 0;
+        $autre = $anomalie['liste'][0]['autre'] ?? 0;
+        $inconnue = $anomalie['liste'][0]['inconnue'] ?? 0;
 
         /* On récupère les notes (A-F) */
         $types = ['reliability', 'security', 'sqale'];
@@ -453,7 +454,8 @@ class ApiPeintureController extends AbstractController
             'info' => $severityInfo,
             'major' => $severityMajor,
             'minor' => $severityMinor,
-            'frontend' => $frontend, 'backend' => $backend, 'autre' => $autre,
+            'frontend' => $frontend, 'backend' => $backend,
+            'autre' => $autre, 'inconnue' => $inconnue,
             'noteReliability' => $noteReliability,
             'noteSecurity' => $noteSecurity,
             'noteSqale' => $noteSqale

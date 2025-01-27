@@ -210,7 +210,7 @@ class BatchCollecteAnomalieController extends AbstractController
                                 $modules['backend'] += $count;
                             } elseif (in_array($module, ["$app-batch", "$app-batchs", "$app-batch-envoi-dem-aval", "$app-batch-import-billets", "$app-rdd"])) {
                                 $modules['autre'] += $count;
-                            }
+                            } else { $modules['inconnue'] += $count; }
                         }
                         break;
                     default:
@@ -236,6 +236,7 @@ class BatchCollecteAnomalieController extends AbstractController
             'frontend' => $modules['frontend'] ?? 0,
             'backend' => $modules['backend'] ?? 0,
             'autre' => $modules['autre'] ?? 0,
+            'inconnue' => $modules['inconnue'] ?? 0,
             'blocker' => $severities['BLOCKER'] ?? 0,
             'critical' => $severities['CRITICAL'] ?? 0,
             'major' => $severities['MAJOR'] ?? 0,
@@ -250,10 +251,7 @@ class BatchCollecteAnomalieController extends AbstractController
 
             $insert = $anomalieRepository->insertAnomalie($map);
             if ($insert['code'] !== 200) {
-                return [
-                    'code' => $insert['code'],
-                    'erreur' => $insert['erreur'],
-                ];
+                return [ 'code' => $insert['code'], 'erreur' => $insert['erreur']];
             }
 
         /** On prépare les données pour l'historique */
@@ -266,6 +264,7 @@ class BatchCollecteAnomalieController extends AbstractController
             'frontend' => $modules['frontend'] ?? 0,
             'backend' => $modules['backend'] ?? 0,
             'autre' => $modules['autre'] ?? 0,
+            'inconnue' => $modules['inconnue'] ?? 0,
             'nombre_anomalie_bloquant' => $severities['BLOCKER'] ?? 0,
             'nombre_anomalie_critique' =>$severities['CRITICAL'] ?? 0,
             'nombre_anomalie_info' =>$severities['INFO'] ?? 0,

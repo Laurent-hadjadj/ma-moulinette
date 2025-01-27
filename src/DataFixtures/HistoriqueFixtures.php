@@ -2,8 +2,6 @@
 
 namespace App\DataFixtures;
 
-
-
 use App\Entity\Historique;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -77,6 +75,7 @@ class HistoriqueFixtures extends Fixture
           ->setFrontend('21')
           ->setBackend('136')
           ->setAutre('0')
+          ->setInconnue('10')
           ->setNombreAnomalieBloquant('7')
           ->setNombreAnomalieCritique('13')
           ->setNombreAnomalieMajeur('153')
@@ -145,6 +144,7 @@ class HistoriqueFixtures extends Fixture
           ->setFrontend('21')
           ->setBackend('136')
           ->setAutre('0')
+          ->setInconnue('5')
           ->setNombreAnomalieBloquant('7')
           ->setNombreAnomalieCritique('13')
           ->setNombreAnomalieMajeur('153')

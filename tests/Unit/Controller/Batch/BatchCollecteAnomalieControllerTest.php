@@ -47,6 +47,7 @@ class BatchCollecteAnomalieControllerTest extends TestCase
     private static $frontend = '-presentation';
     private static $backend = '-api';
     private static $autre = '-batchs';
+    private static $inconnue = '-twig';
     private static $httpError500 =  'Internal server error';
 
     protected function setUp(): void
@@ -199,7 +200,8 @@ class BatchCollecteAnomalieControllerTest extends TestCase
                 ['property' => 'directories', 'values' => [
                     ['val' => static::$frontend, 'count' => 1],
                     ['val' => static::$backend, 'count' => 2],
-                    ['val' => static::$autre, 'count' => 3]]],
+                    ['val' => static::$autre, 'count' => 3],
+                    ['val' => static::$inconnue, 'count' => 50]]],
                 ['property' => 'inconnue', 'message' => "Ce cas n'est pas possible"],
             ],
         ]]);
@@ -231,6 +233,7 @@ class BatchCollecteAnomalieControllerTest extends TestCase
             'frontend' => 1,
             'backend' => 2,
             'autre' => 3,
+            'inconnue' => 50,
             'blocker' => 1,
             'critical' => 0,
             'major' => 0,
@@ -253,6 +256,7 @@ class BatchCollecteAnomalieControllerTest extends TestCase
             'frontend' => 1,
             'backend' => 2,
             'autre' => 3,
+            'inconnue' => 50,
             'nombre_anomalie_bloquant' => 1,
             'nombre_anomalie_critique' => 0,
             'nombre_anomalie_info' => 0,

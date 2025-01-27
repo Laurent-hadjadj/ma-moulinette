@@ -237,6 +237,7 @@ public function selectUnionHistoriqueProjet($map): array
                 frontend AS presentation,
                 backend AS metier,
                 autre,
+                inconnue,
                 note_reliability AS reliability,
                 note_security AS security,
                 note_hotspot,
@@ -258,6 +259,7 @@ public function selectUnionHistoriqueProjet($map): array
                 frontend AS presentation,
                 backend AS metier,
                 autre,
+                inconnue,
                 note_reliability AS reliability,
                 note_security AS security,
                 note_hotspot,
@@ -507,7 +509,7 @@ public function insertHistoriqueAjoutProjet($map,$json): array
                 vulnerability_minor, vulnerability_info,
                 code_smell_blocker, code_smell_critical, code_smell_major,
                 code_smell_minor, code_smell_info,
-                frontend, backend, autre,
+                frontend, backend, autre, inconnue,
                 nombre_anomalie_bloquant, nombre_anomalie_critique, nombre_anomalie_majeur,
                 nombre_anomalie_mineur, nombre_anomalie_info,
                 note_reliability, note_security, note_sqale, note_hotspot, nombre_hotspot,
@@ -529,7 +531,7 @@ public function insertHistoriqueAjoutProjet($map,$json): array
                 :bug_minor, :bug_info, :vulnerability_blocker, :vulnerability_critical,
                 :vulnerability_major, :vulnerability_minor, :vulnerability_info,
                 :code_smell_blocker, :code_smell_critical, :code_smell_major,
-                :code_smell_minor, :code_smell_info, :frontend, :backend, :autre,
+                :code_smell_minor, :code_smell_info, :frontend, :backend, :autre, :inconnue,
                 :nombre_anomalie_bloquant, :nombre_anomalie_critique,
                 :nombre_anomalie_majeur, :nombre_anomalie_mineur,
                 :nombre_anomalie_info, :note_reliability, :note_security,
@@ -589,6 +591,7 @@ public function insertHistoriqueAjoutProjet($map,$json): array
                     $stmt->bindValue(':frontend', $map['frontend']);
                     $stmt->bindValue(':backend', $map['backend']);
                     $stmt->bindValue(':autre', $map['autre']);
+                    $stmt->bindValue(':inconnue', $map['inconnue']);
                     $stmt->bindValue(':nombre_anomalie_bloquant', $map['nombre_anomalie_bloquant']);
                     $stmt->bindValue(':nombre_anomalie_critique', $map['nombre_anomalie_critique']);
                     $stmt->bindValue(':nombre_anomalie_majeur', $map['nombre_anomalie_majeur']);
@@ -817,7 +820,7 @@ public function selectHistoriqueIndicateurs(string $map): array
 {
     /** On prépare la requête */
     $sql = "SELECT DISTINCT ON (maven_key)
-                nom_projet, version, suppress_warning, no_sonar, todo, nombre_ligne, nombre_ligne_code, tests, violations, nombre_bug, nombre_vulnerability, nombre_code_smell, frontend, backend, autre, note_reliability, note_security, note_sqale, note_hotspot, logger_info, logger_warn, logger_error, logger_debug
+                nom_projet, version, suppress_warning, no_sonar, todo, nombre_ligne, nombre_ligne_code, tests, violations, nombre_bug, nombre_vulnerability, nombre_code_smell, frontend, backend, autre, inconnue, note_reliability, note_security, note_sqale, note_hotspot, logger_info, logger_warn, logger_error, logger_debug
             FROM ma_moulinette.historique
             WHERE maven_key IN (".$map.") ORDER BY maven_key ASC, version DESC, date_version DESC";
 

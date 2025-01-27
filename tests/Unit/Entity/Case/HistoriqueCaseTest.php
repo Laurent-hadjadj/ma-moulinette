@@ -22,15 +22,17 @@ use PHPUnit\Framework\TestCase;
 class HistoriqueCaseTest extends TestCase
 {
     private $historique;
-
+    private static $mel = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static $version = '1.2.0-RELEASE';
+    private static $dateVersion = '2024-07-12 16:34:46';
 
     private function getEntity(): Historique
     {
         return (new historique())
-        ->setMavenKey('fr.ma-petite-entreprise:ma-moulinette')
+        ->setMavenKey(static::$mel)
         ->setAnalyseKey('AZCc05qWgfifxdiJPzns')
-        ->setVersion('1.2.0-RELEASE')
-        ->setDateVersion('2024-07-12 16:34:46')
+        ->setVersion(static::$version)
+        ->setDateVersion(static::$dateVersion)
         ->setNomProjet('ma-moulinette')
         ->setVersionRelease('0')
         ->setVersionSnapshot('0')
@@ -74,6 +76,7 @@ class HistoriqueCaseTest extends TestCase
         ->setFrontend('21')
         ->setBackend('136')
         ->setAutre('0')
+        ->setInconnue('10')
         ->setNombreAnomalieBloquant('7')
         ->setNombreAnomalieCritique('13')
         ->setNombreAnomalieMajeur('153')
@@ -101,8 +104,8 @@ class HistoriqueCaseTest extends TestCase
 
     public function testSettingAndGettingMavenKey(): void
     {
-        $this->historique->setMavenKey('fr.ma-petite-entreprise:ma-moulinette');
-        $this->assertEquals('fr.ma-petite-entreprise:ma-moulinette', $this->historique->getMavenKey());
+        $this->historique->setMavenKey(static::$mel);
+        $this->assertEquals(static::$mel, $this->historique->getMavenKey());
     }
 
     public function testSettingAndGettingAnalyseKey(): void
@@ -113,14 +116,14 @@ class HistoriqueCaseTest extends TestCase
 
     public function testSettingAndGettingVersion(): void
     {
-        $this->historique->setVersion('1.2.0-RELEASE');
-        $this->assertEquals('1.2.0-RELEASE', $this->historique->getVersion());
+        $this->historique->setVersion(static::$version);
+        $this->assertEquals(static::$version, $this->historique->getVersion());
     }
 
     public function testSettingAndGettingDateVersion(): void
     {
-        $this->historique->setDateVersion('2024-07-12 16:34:46');
-        $this->assertEquals('2024-07-12 16:34:46', $this->historique->getDateVersion());
+        $this->historique->setDateVersion(static::$dateVersion);
+        $this->assertEquals(static::$dateVersion, $this->historique->getDateVersion());
     }
 
     public function testSettingAndGettingNomProjet(): void
@@ -379,6 +382,12 @@ class HistoriqueCaseTest extends TestCase
     {
         $this->historique->setAutre('0');
         $this->assertEquals('0', $this->historique->getAutre());
+    }
+
+    public function testSettingAndGettingInconnue(): void
+    {
+        $this->historique->setInconnue('10');
+        $this->assertEquals('10', $this->historique->getInconnue());
     }
 
     public function testSettingAndGettingNombreAnomalieBloquant(): void

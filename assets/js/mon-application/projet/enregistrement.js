@@ -129,9 +129,11 @@ export const enregistrement = async function(mavenKey) {
   const t16 = document.getElementById('nombre-frontend');
   const t17 = document.getElementById('nombre-backend');
   const t18 = document.getElementById('nombre-autre');
-  const frontend=t16.dataset.nombreFrontend;
-  const backend=t17.dataset.nombreBackend;
-  const autre=t18.dataset.nombreAutre;
+  const t18a = document.getElementById('nombre-inconnue');
+  const frontend = t16.dataset.nombreFrontend;
+  const backend = t17.dataset.nombreBackend;
+  const autre = t18.dataset.nombreAutre;
+  const inconnue = t18a.dataset.nombreInconnue;
 
   /* Répartition des anomalies par sévérité */
   const t19 = document.getElementById('nombre-anomalie-bloquant');
@@ -139,11 +141,11 @@ export const enregistrement = async function(mavenKey) {
   const t21 = document.getElementById('nombre-anomalie-info');
   const t22 = document.getElementById('nombre-anomalie-majeur');
   const t23 = document.getElementById('nombre-anomalie-mineur');
-  const nombreAnomalieBloquant=t19.dataset.nombreAnomalieBloquant;
-  const nombreAnomalieCritique=t20.dataset.nombreAnomalieCritique;
-  const nombreAnomalieInfo=t21.dataset.nombreAnomalieInfo;
-  const nombreAnomalieMajeur=t22.dataset.nombreAnomalieMajeur;
-  const nombreAnomalieMineur=t23.dataset.nombreAnomalieMineur;
+  const nombreAnomalieBloquant = t19.dataset.nombreAnomalieBloquant;
+  const nombreAnomalieCritique = t20.dataset.nombreAnomalieCritique;
+  const nombreAnomalieInfo = t21.dataset.nombreAnomalieInfo;
+  const nombreAnomalieMajeur = t22.dataset.nombreAnomalieMajeur;
+  const nombreAnomalieMineur = t23.dataset.nombreAnomalieMineur;
 
   /** On récupère les notes SonarQube pour la version courante */
   const noteReliability=$('#note-reliability').text().trim();
@@ -208,7 +210,7 @@ export const enregistrement = async function(mavenKey) {
     'violations': violations, dette,
     'nombre_bug': nombreBug, 'nombre_vulnerability':nombreVulnerability,
     'nombre_code_smell': nombreCodeSmell,
-    frontend,backend, autre,
+    frontend,backend, autre, inconnue,
     'nombre_anomalie_bloquant': nombreAnomalieBloquant, 'nombre_anomalie_critique': nombreAnomalieCritique,
     'nombre_anomalie_info': nombreAnomalieInfo,
     'nombre_anomalie_majeur': nombreAnomalieMajeur,
