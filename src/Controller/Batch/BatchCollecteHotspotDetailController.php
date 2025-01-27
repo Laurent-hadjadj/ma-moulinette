@@ -33,8 +33,8 @@ use App\Service\ExtractName;
 class BatchCollecteHotspotDetailController extends AbstractController
 {
     /** Définition des constantes */
-    public static $sonarUrl = "sonar.url";
-    public static $europeParis = "Europe/Paris";
+    public static $sonarUrl = 'sonar.url';
+    public static $europeParis = 'Europe/Paris';
 
     /**
      * [Description for __construct]
@@ -93,7 +93,7 @@ class BatchCollecteHotspotDetailController extends AbstractController
         $queryParams = [ 'hotspot' => $hotspotKey ];
 
         /** Appelle le client HTTP */
-        $result = $this->client->httpSonarQube("$tempoUrl/api/hotspots/show?".http_build_query($queryParams));
+        $result = $this->client->httpSonarQube($tempoUrl.'/api/hotspots/show?'.http_build_query($queryParams));
         /** On catch les erreurs HTTP  :) */
         if (isset($result['code']) && in_array($result['code'], [401, 403, 404, 500])) {
             return ['code' => $result['code'], 'erreur' => $result['erreur']];
@@ -125,37 +125,48 @@ class BatchCollecteHotspotDetailController extends AbstractController
 
         /**************** Components ***************/
         /** On calcule la répartition pour les application java et ?Php */
-        $frontend = $backend = $autre = 0;
+        $score_frontend = $score_backend = $score_autre = $score_inconnue = 0;
         if (array_key_exists('json', $result) && array_key_exists('path', $result['json']['component'])) {
             $path = $result['json']['component']['path'];
         } elseif (array_key_exists('json', $result) && array_key_exists('component', $result['json'])) {
             /** "key" => "fr.ma-petite-entreprise:ma-moulinette:assets/js/app-password.js" */
-            $path = str_replace($mavenKey . ":", "", $result['json']['component']['key']);
+            $path = str_replace($mavenKey . ':', '', $result['json']['component']['key']);
         }
 
-        $frontModules = ["assets", "css", "js", "templates", "front", "presentation", "webapp"];
-        $backModules= ["controller", "service", "back", "metier", "common", "api", "dao", "serviceweb", "middleoffice", "rest", "soap", "entite", "entity", "repository", "serviceweb-client"];
-        $autreModules= ["batch", "rdd"];
+        /** on récupère la liste des clés pour chaque module */
+        $liste_frontend = $this->getParameter('module.frontend');
+        $liste_backend = $this->getParameter('module.backend');
+        $liste_autre = $this->getParameter('module.autre');
 
-        /** Pour l'application frontend */
-        foreach ($frontModules as $module) {
-            if (substr_count($path, $module) === 1) {
-                $frontend++;
+        $frontend = array_map('strtolower', array_map('trim', explode(',', $liste_frontend)));
+        $backend = array_map('strtolower', array_map('trim', explode(',', $liste_backend)));
+        $autre = array_map('strtolower', array_map('trim', explode(',', $liste_autre)));
+
+        /** Vérifie si le chemin appartient au front */
+        foreach ($frontend as $module) {
+            if (preg_match("/\b$module\b/", $path)) {
+                $score_frontend = 1;
+                break;
             }
         }
 
-        /** Pour l'application backend */
-        foreach ($backModules as $module) {
-            if (substr_count($path, $module) === 1) {
-                $backend++;
+        /** Vérifie si le chemin appartient au backend */
+        foreach ($backend as $module) {
+            if (preg_match("/\b$module\b/", $path)) {
+                $score_backend = 1;
+                break;
             }
         }
 
-        foreach ($autreModules as $module) {
-            if (substr_count($path, $module) === 1) {
-                $autre++;
+        /** Vérifie si le chemin n'appartient ni au fronted, ni au backend */
+        foreach ($autre as $module) {
+            if (preg_match("/\b$module\b/", $path)) {
+                $score_autre = 1;
+                break;
             }
         }
+        /* On calcule le score pour les clés non identifiées */
+        $score_inconnue = ($score_frontend === 0 && $score_backend === 0 && $score_autre === 0) ? 1 : 0;
 
        /** On renvoie le tableau à insérer */
         return [
@@ -163,10 +174,11 @@ class BatchCollecteHotspotDetailController extends AbstractController
             'severity' => $severity,
             'niveau' => $niveau,
             'status' => $result['json']['status'],
-            'resolution' => $result['json']['resolution'] ?? "Todo",
-            'frontend' => $frontend,
-            'backend' => $backend,
-            'autre' => $autre,
+            'resolution' => $result['json']['resolution'] ?? 'Todo',
+            'frontend' => $score_frontend,
+            'backend' => $score_backend,
+            'autre' => $score_autre,
+            'inconnue' => $score_inconnue,
             'file_name' => $result['json']['component'] ? $result['json']['component']['name'] : 'NC',
             'file_path' => $path,
             'line' => empty($result['json']['line']) ? 0 : $result['json']['line'],

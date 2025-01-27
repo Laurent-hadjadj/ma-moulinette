@@ -55,6 +55,7 @@ class BatchCollecteHotspotDetailControllerTest extends TestCase
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->client = $this->createMock(Client::class);
         $this->parameterBag = $this->createMock(ParameterBagInterface::class);
+
         $this->hotspotsRepository = $this->createMock(HotspotsRepository::class);
         $this->hotspotDetailsRepository = $this->createMock(HotspotDetailsRepository::class);
         $this->informationProjetRepository = $this->createMock(InformationProjetRepository::class);
@@ -65,15 +66,50 @@ class BatchCollecteHotspotDetailControllerTest extends TestCase
 
         // Création du mock pour ContainerInterface
         $this->container = $this->createMock(ContainerInterface::class);
+
         $this->container->method('has')->with('parameter_bag')->willReturn(true);
         $this->container->method('get')->with('parameter_bag')->willReturn($this->parameterBag);
+
+        // Définir les paramètres simulés
+        $this->parameterBag->method('get')
+            ->willReturnCallback(function ($key) {
+                $params = [
+                    'module.frontend' => 'presentation,webapp,front,angular,templates,styles,css,js,ts,vue,react,svelte,scss,less,html,xhtml',
+                    'module.backend' => 'metier,back,controller,api,service,common,dao,dto,sql,liquibase,changelog,middleoffice,rest,soap,entite,entity,repository,interface,converter,serviceweb,serviceweb-client',
+                    'module.autre' => 'batch,rdd,etl,pipeline,processing'
+                ];
+                return $params[$key] ?? null;
+            });
 
         // Instanciation du contrôleur
         $this->controller = new BatchCollecteHotspotDetailController($this->serviceExtractName, $this->entityManager, $this->client);
         $this->controller->setContainer($this->container);
     }
 
-    public function testHotspotDetailHttpUnauthorizedError()
+    public function testModuleParameters(): void
+    {
+        // Création du mock pour ContainerInterface
+        $this->container = $this->createMock(ContainerInterface::class);
+        $this->container->method('get')
+            ->with('parameter_bag')
+            ->willReturn($this->parameterBag);
+
+            $listeFrontend = $this->container->get('parameter_bag')->get('module.frontend');
+            $listeBackend = $this->container->get('parameter_bag')->get('module.backend');
+            $listeAutre = $this->container->get('parameter_bag')->get('module.autre');
+
+            // Assertions pour vérifier que les paramètres ne sont pas null
+            $this->assertNotNull($listeFrontend);
+            $this->assertNotNull($listeBackend);
+            $this->assertNotNull($listeAutre);
+
+            // Optionnellement, vous pouvez tester que les valeurs sont bien ce que vous attendez
+            $this->assertEquals('presentation,webapp,front,angular,templates,styles,css,js,ts,vue,react,svelte,scss,less,html,xhtml', $listeFrontend);
+            $this->assertEquals('metier,back,controller,api,service,common,dao,dto,sql,liquibase,changelog,middleoffice,rest,soap,entite,entity,repository,interface,converter,serviceweb,serviceweb-client', $listeBackend);
+            $this->assertEquals('batch,rdd,etl,pipeline,processing', $listeAutre);
+        }
+
+    public function testHotspotDetailHttpUnauthorizedError(): void
     {
         $queryParams = ['hotspot' => 'hotspotKey'];
         $expectedUrl = static::$api . http_build_query($queryParams);
@@ -88,7 +124,7 @@ class BatchCollecteHotspotDetailControllerTest extends TestCase
         $this->assertEquals('UnAuthorized', $result['erreur']);
     }
 
-    public function testHotspotDetailHttpForbiddenError()
+    public function testHotspotDetailHttpForbiddenError(): void
     {
         $queryParams = ['hotspot' => 'hotspotKey'];
         $expectedUrl = static::$api . http_build_query($queryParams);
@@ -103,7 +139,7 @@ class BatchCollecteHotspotDetailControllerTest extends TestCase
         $this->assertEquals('Forbidden', $result['erreur']);
     }
 
-    public function testHotspotDetailHttpNotFoundError()
+    public function testHotspotDetailHttpNotFoundError(): void
     {
         $queryParams = ['hotspot' => 'hotspotKey'];
         $expectedUrl = static::$api . http_build_query($queryParams);
@@ -118,7 +154,7 @@ class BatchCollecteHotspotDetailControllerTest extends TestCase
         $this->assertEquals('Not found', $result['erreur']);
     }
 
-    public function testDetailHttpInternalServerError()
+    public function testDetailHttpInternalServerError(): void
     {
         $queryParams = ['hotspot' => 'hotspotKey'];
         $expectedUrl = static::$api . http_build_query($queryParams);
@@ -133,7 +169,7 @@ class BatchCollecteHotspotDetailControllerTest extends TestCase
         $this->assertEquals(static::$httpError500, $result['erreur']);
     }
 
-    public function testHotspotDetailWhenDataIsMissing()
+    public function testHotspotDetailWhenDataIsMissing(): void
     {
         // Simuler une réponse sans les données attendues
         $this->client->method('httpSonarQube')
@@ -160,7 +196,7 @@ class BatchCollecteHotspotDetailControllerTest extends TestCase
         ], $result);
     }
 
-    public function testHotspotDetailWithValidData()
+    public function testHotspotDetailWithValidFrontend(): void
     {
         $this->client->method('httpSonarQube')
             ->willReturn(['json' => [
@@ -171,12 +207,12 @@ class BatchCollecteHotspotDetailControllerTest extends TestCase
                                 'name' => 'SQL Injection'
                             ],
                             'component' => [
-                                'path' => 'assets/js/app-password.js',
-                                'name' => 'app-password.js',
-                                'key' => 'fr.ma-petite-entreprise:ma-moulinette:assets/js/app-password.js'
+                                'path' => 'angular/src/app/app-password.ts',
+                                'name' => 'app-password.ts',
+                                'key' => 'fr.ma-petite-entreprise:ma-moulinette:angular/src/app/app-password.ts'
                             ],
                             'status' => 'OPEN',
-                            'message' => 'This is a sample message',
+                            'message' => 'On test une clé double du frontend',
                             'key' => 'hotspot-456',
                             'line' => 15
                         ]]);
@@ -188,14 +224,15 @@ class BatchCollecteHotspotDetailControllerTest extends TestCase
         $this->assertEquals(1, $result['frontend']);
         $this->assertEquals(0, $result['backend']);
         $this->assertEquals(0, $result['autre']);
-        $this->assertEquals('app-password.js', $result['file_name']);
-        $this->assertEquals('assets/js/app-password.js', $result['file_path']);
+        $this->assertEquals(0, $result['inconnue']);
+        $this->assertEquals('app-password.ts', $result['file_name']);
+        $this->assertEquals('angular/src/app/app-password.ts', $result['file_path']);
         $this->assertEquals(15, $result['line']);
         $this->assertEquals('rule-123', $result['rule_key']);
         $this->assertEquals('SQL Injection', $result['rule_name']);
     }
 
-    public function testHotspotDetailWithBackend()
+    public function testHotspotDetailWithBackend(): void
     {
         $this->client->method('httpSonarQube')
             ->willReturn(['json' => [
@@ -230,8 +267,7 @@ class BatchCollecteHotspotDetailControllerTest extends TestCase
         $this->assertEquals('SQL Injection2', $result['rule_name']);
     }
 
-
-    public function testHotspotDetailWithNoPath()
+    public function testHotspotDetailWithAutre(): void
     {
         $this->client->method('httpSonarQube')
             ->willReturn(['json' => [
@@ -258,6 +294,7 @@ class BatchCollecteHotspotDetailControllerTest extends TestCase
         $this->assertEquals(0, $result['frontend']);
         $this->assertEquals(0, $result['backend']);
         $this->assertEquals(1, $result['autre']);
+        $this->assertEquals(0, $result['inconnue']);
         $this->assertEquals('majCool.java', $result['file_name']);
         $this->assertEquals('fr.ma-petite-entreprise:ma-moulinette:batch/majCool.java', $result['file_path']);
         $this->assertEquals(35, $result['line']);
@@ -265,8 +302,42 @@ class BatchCollecteHotspotDetailControllerTest extends TestCase
         $this->assertEquals('SQL Injection3', $result['rule_name']);
     }
 
+    public function testHotspotDetailWithInconnue(): void
+    {
+        $this->client->method('httpSonarQube')
+            ->willReturn(['json' => [
+                            'rule' => [
+                                'securityCategory' => 1,
+                                'vulnerabilityProbability' => 'HIGH',
+                                'key' => 'rule-2231',
+                                'name' => 'inconnue'
+                            ],
+                            'component' => [
+                                'name' => 'index.twig',
+                                'key' => 'fr.y:test:twig/index.twig'
+                            ],
+                            'status' => 'CLOSE',
+                            'message' => 'Test une clé inconnue',
+                            'key' => 'hotspot-5561',
+                            'line' => 30
+                        ]]);
 
-    public function testHotspotDetailWithSeverityCalculation()
+        $result = $this->controller->hotspotDetail('mavenKey', 'hotspotKey');
+
+        $this->assertEquals('HIGH', $result['severity']);
+        $this->assertEquals(1, $result['niveau']);
+        $this->assertEquals(0, $result['frontend']);
+        $this->assertEquals(0, $result['backend']);
+        $this->assertEquals(0, $result['autre']);
+        $this->assertEquals(1, $result['inconnue']);
+        $this->assertEquals('index.twig', $result['file_name']);
+        $this->assertEquals('fr.y:test:twig/index.twig', $result['file_path']);
+        $this->assertEquals(30, $result['line']);
+        $this->assertEquals('rule-2231', $result['rule_key']);
+        $this->assertEquals('inconnue', $result['rule_name']);
+    }
+
+    public function testHotspotDetailWithSeverityCalculation(): void
     {
         // Simuler une réponse avec une probabilité de vulnérabilité
         $this->client->method('httpSonarQube')
