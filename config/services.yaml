@@ -40,6 +40,11 @@ parameters:
     path.audit: '%env(PATH_AUDIT)%'
     environnement: '%env(ENVIRONNEMENT)%'
 
+    # Gestion des modules
+    module.frontend: '%env(MODULE_FRONTEND)%'
+    module.backend: '%env(MODULE_BACKEND)%'
+    module.autre: '%env(MODULE_AUTRE)%'
+
     # Identité et marque
     marque.entreprise.short: '%env(MARQUE_ENTREPRISE_SHORT)%'
     marque.entreprise.long: '%env(MARQUE_ENTREPRISE_LONG)%'
