@@ -76,9 +76,10 @@ class ContainsBatchUniqueValidator extends ConstraintValidator
             $this->context->buildViolation($constraint->message)
                 ->setParameter('{{ string }}', $value)
                 ->addViolation();
+            return;
         }
 
-        /** On cherche si la valeur existe déjà.  renvoi null ou un objet*/
+        /** On cherche si la valeur existe déjà. Renvoi null ou un objet*/
         $titre = $this->em->getRepository(Batch::class)->findOneBy(['titre' => mb_strtoupper($value)]);
 
         /** Si la valeur existe, on affiche une erreur. */
