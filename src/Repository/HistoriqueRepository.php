@@ -50,9 +50,9 @@ public function __construct(ManagerRegistry $registry)
 protected function handleDatabaseException(\Doctrine\DBAL\Exception $e): array
 {
     if (strpos($e->getMessage(), 'SQLSTATE[08006]') !== false) {
-    return ['code'=>500, 'erreur' => static::$noDataBase];
+    return ['code' => 500, 'erreur' => static::$noDataBase];
     } else {
-    return ['code'=>500, 'erreur'=> $e->getMessage()];
+    return ['code' => 500, 'erreur'=> $e->getMessage()];
     }
 }
 
@@ -74,14 +74,14 @@ public function countHistoriqueProjet($map): array
             FROM ma_moulinette.historique
             WHERE maven_key=:maven_key";
     try {
-        $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+        $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $stmt->bindValue(static::$mavenKey, $map['maven_key']);
-        $request=$stmt->executeQuery()->fetchAllAssociative();
+        $request = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Doctrine\DBAL\Exception $e) {
         return $this->handleDatabaseException($e);
     }
     /** on prépare la réponse */
-    return ['code'=>200, 'erreur'=>'', 'nombre'=>$request[0]['nombre']];
+    return ['code' => 200, 'erreur' => '', 'nombre' => $request[0]['nombre']];
 }
 
 /**
@@ -107,13 +107,13 @@ public function getProjetFavori($where): array
             FROM ma_moulinette.historique
             WHERE ". $where ." ORDER BY date DESC limit 4";
     try {
-        $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-        $request=$stmt->executeQuery()->fetchAllAssociative();
+        $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+        $request = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Doctrine\DBAL\Exception $e) {
         return $this->handleDatabaseException($e);
     }
     /** on prépare la réponse */
-    return ['code'=>200, 'erreur'=>'', 'version'=>$request];
+    return ['code' => 200, 'erreur' => '', 'version' => $request];
 }
 
 /**
@@ -134,11 +134,11 @@ public function updateHistoriqueReference($map): array
             WHERE maven_key=:maven_key";
 
     /** on prépare la réponse */
-    $response=['code'=>200, 'erreur'=>''];
+    $response=['code' => 200, 'erreur' => ''];
     try {
         /** On désactive toutes les versions */
         $this->getEntityManager()->getConnection()->beginTransaction();
-        $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+        $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $stmt->bindValue(static::$mavenKey, $map['maven_key']);
             $stmt->executeStatement();
         $this->getEntityManager()->getConnection()->commit();
@@ -156,7 +156,7 @@ public function updateHistoriqueReference($map): array
     /** On met à jour la version de reference pour le projet */
     try {
         $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql2));
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql2));
             $stmt->bindValue(':initial', $map['initial']);
             $stmt->bindValue(static::$mavenKey, $map['maven_key']);
             $stmt->bindValue(static::$version, $map['version']);
@@ -191,7 +191,7 @@ public function deleteHistoriqueProjet($map): array
 
     try {
         $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $stmt->bindValue(static::$mavenKey, $map['maven_key']);
             $stmt->bindValue(static::$version, $map['version']);
             $stmt->bindValue(static::$dateVersion, $map['date_version']);
@@ -201,7 +201,7 @@ public function deleteHistoriqueProjet($map): array
         $this->getEntityManager()->getConnection()->rollBack();
         return $this->handleDatabaseException($e);
     }
-    return ['code'=>200, 'erreur'=>''];
+    return ['code' => 200, 'erreur' => ''];
 }
 
 /**
@@ -269,17 +269,17 @@ public function selectUnionHistoriqueProjet($map): array
             LIMIT :limit)) AS versions
         ORDER BY date ASC";
     try {
-            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $stmt->bindValue(static::$mavenKey, $map['maven_key']);
                 $stmt->bindValue(static::$initialTrue, 1);
                 $stmt->bindValue(static::$initialFalse, 0);
                 $stmt->bindValue(static::$limit, $map['limit']);
-                    $suivi=$stmt->executeQuery()->fetchAllAssociative();
+            $suivi = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Doctrine\DBAL\Exception $e) {
         return $this->handleDatabaseException($e);
     }
     /** on prépare la réponse */
-    return ['code'=>200, 'request'=>$suivi, 'erreur'=>''];
+    return ['code' => 200, 'request' => $suivi, 'erreur' => ''];
 }
 
 /**
@@ -321,13 +321,12 @@ public function selectUnionHistoriqueMesure($map): array
             ORDER BY date ASC";
 
     try {
-        $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+        $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $stmt->bindValue(static::$mavenKey, $map['maven_key']);
             $stmt->bindValue(static::$initialTrue, 1);
             $stmt->bindValue(static::$initialFalse, 0);
             $stmt->bindValue(static::$limit, $map['limit']);
-        $exec=$stmt->executeQuery();
-        $liste=$exec->fetchAllAssociative();
+        $liste = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Doctrine\DBAL\Exception $e) {
         return $this->handleDatabaseException($e);
     }
@@ -371,18 +370,17 @@ public function selectUnionHistoriqueAnomalie($map): array
             ORDER BY date ASC";
 
     try {
-        $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+        $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $stmt->bindValue(static::$mavenKey, $map['maven_key']);
             $stmt->bindValue(static::$initialTrue, 1);
             $stmt->bindValue(static::$initialFalse, 0);
             $stmt->bindValue(static::$limit, $map['limit']);
-        $exec=$stmt->executeQuery();
-        $liste=$exec->fetchAllAssociative();
+        $liste = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Doctrine\DBAL\Exception $e) {
         return $this->handleDatabaseException($e);
     }
     /** on prépare la réponse */
-    return ['code'=>200, 'request'=>$liste, 'erreur'=>''];
+    return ['code' => 200, 'request' => $liste, 'erreur' => ''];
 }
 
 /**
@@ -429,17 +427,17 @@ public function selectUnionHistoriqueDetails($map): array
         ORDER BY date ASC";
 
     try {
-            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $stmt->bindValue(static::$mavenKey, $map['maven_key']);
                 $stmt->bindValue(static::$initialTrue, 1);
                 $stmt->bindValue(static::$initialFalse, 0);
                 $stmt->bindValue(static::$limit, $map['limit']);
-            $details=$stmt->executeQuery()->fetchAllAssociative();
+            $details = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Doctrine\DBAL\Exception $e) {
         return $this->handleDatabaseException($e);
     }
     /** on prépare la réponse */
-    return ['code'=>200, 'request'=>$details, 'erreur'=>''];
+    return ['code' => 200, 'request' => $details, 'erreur' => ''];
 }
 
 /**
@@ -466,9 +464,9 @@ public function selectHistoriqueAnomalieGraphique($map): array
             ORDER BY date ASC";
 
     try {
-            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $stmt->bindValue(static::$mavenKey, $map['maven_key']);
-            $graph=$stmt->executeQuery()->fetchAllAssociative();
+            $graph = $stmt->executeQuery()->fetchAllAssociative();
 
         // Conversion des dates en format ISO 8601 (DateTime::ATOM)
         array_walk($graph, function (&$row) {
@@ -478,7 +476,7 @@ public function selectHistoriqueAnomalieGraphique($map): array
         return $this->handleDatabaseException($e);
     }
     /** on prépare la réponse */
-    return ['code'=>200, 'request'=>$graph, 'erreur'=>''];
+    return ['code' => 200, 'request' => $graph, 'erreur' => ''];
 }
 
 /**
@@ -500,9 +498,9 @@ public function insertHistoriqueAjoutProjet($map,$json): array
                 nom_projet, version_release, version_snapshot, version_autre,
                 suppress_warning, no_sonar, todo,
                 logger_info, logger_warn, logger_error, logger_debug,
-                nombre_ligne, nombre_ligne_code, coverage,
+                nombre_ligne, nombre_ligne_code,
                 files, classes, functions,
-                duplicated_lines_density, sqale_debt_ratio, tests, violations, dette,
+                coverage, duplicated_lines_density, sqale_debt_ratio, tests, violations, dette,
                 nombre_bug, nombre_vulnerability, nombre_code_smell,
                 bug_blocker, bug_critical, bug_major, bug_minor, bug_info,
                 vulnerability_blocker, vulnerability_critical, vulnerability_major,
@@ -614,13 +612,13 @@ public function insertHistoriqueAjoutProjet($map,$json): array
             $this->getEntityManager()->getConnection()->commit();
     } catch (\Doctrine\DBAL\Exception $e) {
         $this->getEntityManager()->getConnection()->rollBack();
-        if ($e->getSqlState()=='23505'){
-            return ['code'=>23505, 'erreur'=>'les informations existent déjà.'];
+        if ($e->getSqlState() == '23505'){
+            return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
         }
         return $this->handleDatabaseException($e);
     }
     /** on prépare la réponse */
-    return ['code'=>200, 'erreur'=>''];
+    return ['code' => 200, 'erreur' => ''];
 }
 
 /**
@@ -646,9 +644,9 @@ public function selectHistoriqueProjetByDate($map): array
 
     try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $stmt->bindValue(static::$mavenKey, $map['maven_key']);
-                    $version=$stmt->executeQuery()->fetchAllAssociative();
+                $version = $stmt->executeQuery()->fetchAllAssociative();
             $this->getEntityManager()->getConnection()->commit();
     } catch (\Doctrine\DBAL\Exception $e) {
         $this->getEntityManager()->getConnection()->rollBack();
@@ -656,7 +654,7 @@ public function selectHistoriqueProjetByDate($map): array
     }
 
     /** on prépare la réponse */
-    return ['code'=>200, 'version'=>$version, 'erreur'=>''];
+    return ['code' => 200, 'version' => $version, 'erreur' => ''];
 }
 
 /**
@@ -685,14 +683,14 @@ public function selectHistoriqueProjetLast($map): array
             ORDER BY date_version DESC LIMIT 1";
 
     try {
-            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $stmt->bindValue(static::$mavenKey, $map['maven_key']);
-                $infos=$stmt->executeQuery()->fetchAllAssociative();
+            $infos = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Doctrine\DBAL\Exception $e) {
         return $this->handleDatabaseException($e);
     }
         /** on prépare la réponse */
-        return ['code'=>200, 'infos'=>$infos, 'erreur'=>''];
+        return ['code' => 200, 'infos' => $infos, 'erreur' => ''];
 }
 
 /**
@@ -719,15 +717,14 @@ public function selectHistoriqueProjetReference($map): array
             WHERE maven_key=:maven_key AND initial=true";
 
     try {
-            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $stmt->bindValue(static::$mavenKey, $map['maven_key']);
-            $exec=$stmt->executeQuery();
-            $liste=$exec->fetchAllAssociative();
+            $liste = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Doctrine\DBAL\Exception $e) {
         return $this->handleDatabaseException($e);
     }
     /** on prépare la réponse */
-    return ['code'=>200, 'reference'=>$liste, 'erreur'=>''];
+    return ['code' => 200, 'reference' => $liste, 'erreur' => ''];
 }
 
 /**
@@ -755,21 +752,20 @@ public function selectHistoriqueProjetFavori($map): array
                     nombre_hotspot AS hotspots,
             ROW_NUMBER() OVER (PARTITION BY maven_key ORDER BY date_version DESC) AS rn
             FROM ma_moulinette.historique
-            WHERE maven_key IN (".$map['liste_projet']."))
+            WHERE maven_key IN ('".$map['liste_projet']."'))
             SELECT  mavenkey, nom, version, date, reliability, security, hotspot, sqale, bug,
                     vulnerability, code_smell, hotspots
             FROM LastVersions
             WHERE rn = 1
             LIMIT ".$map['nombre_projet_favori'];
     try {
-            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $exec=$stmt->executeQuery();
-                    $liste=$exec->fetchAllAssociative();
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $liste = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Doctrine\DBAL\Exception $e) {
         return $this->handleDatabaseException($e);
     }
     /** on prépare la réponse */
-    return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
+    return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
 }
 
 /**
@@ -792,18 +788,18 @@ public function selectHistoriqueIsValide($map): array
             WHERE maven_key=:maven_key
             ORDER BY date_version DESC LIMIT 1";
     try {
-            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $stmt->bindValue(static::$mavenKey, $map['maven_key']);
-            $isValide=$stmt->executeQuery()->fetchAllAssociative();
+            $isValide = $stmt->executeQuery()->fetchAllAssociative();
                 /** j'ai pas trouvé de projet */
             if (!$isValide){
-                return ['code'=>404, 'erreur'=>"Je n'ai pas trouvé le projet dans la base de données."];
+                return ['code' => 404, 'erreur' => "Je n'ai pas trouvé le projet dans la base de données."];
             }
     } catch (\Doctrine\DBAL\Exception $e) {
         return $this->handleDatabaseException($e);
     }
     /** on prépare la réponse */
-    return ['code'=>200, 'is_valide'=>$isValide[0], 'erreur'=>''];
+    return ['code' => 200, 'is_valide' => $isValide[0], 'erreur' => ''];
 }
 
 /**
@@ -826,14 +822,14 @@ public function selectHistoriqueIndicateurs(string $map): array
             WHERE maven_key IN (".$map.") ORDER BY maven_key ASC, version DESC, date_version DESC";
 
     try {
-            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-            $indicateur=$stmt->executeQuery()->fetchAllAssociative();
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $indicateur = $stmt->executeQuery()->fetchAllAssociative();
             /** j'ai pas trouvé de projet */
     } catch (\Doctrine\DBAL\Exception $e) {
         return $this->handleDatabaseException($e);
     }
     /** on prépare la réponse */
-    return ['code'=>200, 'indicateur'=>$indicateur, 'erreur'=>''];
+    return ['code' => 200, 'indicateur' => $indicateur, 'erreur' => ''];
 }
 
 }
