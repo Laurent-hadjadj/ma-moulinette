@@ -124,14 +124,19 @@ class Client
             505 => static::$erreur505,
             default => "Erreur du serveur non spécifiée.",
         };
-
         $this->logger->error("Erreur ".$errorCode . " du serveur : " . $body);
         return ['code' => $errorCode, 'erreur' => $errorMessage];
     }
 
     private function handleGenericException(\Exception $e): array {
         $this->logger->error("Une erreur inattendue du serveur s'est produite : " . $e->getMessage());
-        return ['code' => 500, 'erreur' => "Une erreur inattendue du serveur s'est produite (Erreur 500)."];
+
+        $key = 'Environment variable not found: "CIPHERS".';
+        $message = "Une erreur inattendue du serveur s'est produite (Erreur 500).";
+        if (strpos($e->getMessage(), $key) !== false){
+            $message = "La variable 'ciphers' n'a pas été définie correctement.";
+        }
+        return ['code' => 500, 'erreur' => $message];
     }
 
     /**
