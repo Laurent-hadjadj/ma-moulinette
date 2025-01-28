@@ -16,6 +16,7 @@ namespace App\Controller\Accueil;
 /** Core */
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 /** Accès aux tables */
 use Doctrine\ORM\EntityManagerInterface;
@@ -57,11 +58,15 @@ class ApiAccueilController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function __construct(
+        private Client $client,
         private LoggerInterface $logger,
         private EntityManagerInterface $em,
+        private ParameterBagInterface $params,
     ) {
+        $this->client = $client;
         $this->logger = $logger;
         $this->em = $em;
+        $this->params = $params;
     }
 
     /**
@@ -76,24 +81,24 @@ class ApiAccueilController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/status', name: 'api_sonar_status', methods: ['POST'])]
-    public function apiSonarStatus(Client $client): response
+    public function apiSonarStatus(): JsonResponse
     {
-        /** On crée un objet de response JSON */
-        $response = new JsonResponse();
-
-        $url = $this->getParameter(static::$sonarUrl) . "/api/system/status";
+        $url = $this->params->get(static::$sonarUrl) . "/api/system/status";
 
         /** On appel le client http */
-        $result = $client->httpSonarQube($url);
-        return $response->setData([$result], Response::HTTP_OK);
+        $result = $this->client->httpSonarQube($url);
+        if ($result['code'] != 200) {
+            return new JsonResponse(['code' => $result['code'], 'erreur' => $result['erreur']], Response::HTTP_OK);
+        } else {
+                return new JsonResponse(['code' => $result['code'], 'result' => $result]);
+            }
     }
 
     /**
      * [Description for projetListe]
      * Récupération de la liste des projets.
-     * http://{url}}/api/components/search_projects?ps=500
+     * http://{url}/api/components/search_projects?ps=500
      *
-     * @param Client $client
      * @return JsonResponse
      *
      * Created at: 15/12/2022, 21:15:04 (Europe/Paris)
@@ -101,7 +106,7 @@ class ApiAccueilController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/accueil/projet', name: 'accueil_projet_liste', methods: ['POST'])]
-    public function accueilProjetListe(Client $client): JsonResponse
+    public function accueilProjetListe(): JsonResponse
     {
         /** On instancie l'EntityRepository */
         $listeProjetRepository = $this->em->getRepository(ListeProjet::class);
@@ -117,7 +122,13 @@ class ApiAccueilController extends AbstractController
 
         $url = $this->getParameter(static::$sonarUrl)."/api/components/search_projects?ps=500";
         /** On appel le client http */
-        $result = $client->httpSonarQube($url);
+        $result = $this->client->httpSonarQube($url);
+        if ($result['code'] != 200) {
+            return new JsonResponse([
+                'type' => 'alert',
+                'reference' => static::$reference, 'code' => $result['code'],
+                'message' => $result['erreur']], Response::HTTP_OK);
+        }
 
         /** On, initialiser les variables  */
         $public = $private = $emptyTags = $nombre = 0;
@@ -126,7 +137,7 @@ class ApiAccueilController extends AbstractController
         $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
 
         /** On vérifie que SonarQube a au moins 1 projet */
-        if (array_key_exists('total', $result) && $result['code']===404){
+        if (array_key_exists('json', $result) && empty($result['json']['components'])){
             return new JsonResponse([
                 'type' => 'warning',
                 'reference' => static::$reference, 'code' => 404,
@@ -134,12 +145,12 @@ class ApiAccueilController extends AbstractController
         }
 
         /** On supprime les données de la table avant d'importer les données. */
-        $delete=$listeProjetRepository->deleteListeProjet();
-        if ($delete['code']!=200) {
+        $delete = $listeProjetRepository->deleteListeProjet();
+        if ($delete['code'] != 200) {
             return new JsonResponse([
                 'type' => 'alert',
                 'reference' => static::$reference, 'code' => $delete['code'],
-                'message'=>$delete['erreur']], Response::HTTP_OK);
+                'message' => $delete['erreur']], Response::HTTP_OK);
         }
 
         /**
@@ -155,21 +166,22 @@ class ApiAccueilController extends AbstractController
             $findme = '-SVN';
             if (!strpos($mystring, $findme)) {
                 $listeProjet = new ListeProjet();
-                $listeProjet->setMavenKey($projet["key"]);
-                $listeProjet->setName($projet["name"]);
-                $listeProjet->setTags($projet["tags"]);
-                $listeProjet->setVisibility($projet["visibility"]);
-                $listeProjet->setDateEnregistrement($date);
-                $this->em->persist($listeProjet);
+                    $listeProjet->setMavenKey($projet["key"]);
+                    $listeProjet->setName($projet["name"]);
+                    $listeProjet->setTags($projet["tags"]);
+                    $listeProjet->setVisibility($projet["visibility"]);
+                    $listeProjet->setDateEnregistrement($date);
+                    $this->em->persist($listeProjet);
                 $this->em->flush();
                 $nombre++;
 
                 /** On calcul le nombre de projet public et privé */
-                if ($projet["visibility"] == 'public') {
+                if ($projet['visibility'] == 'public') {
                     $public++;
                 } else {
                     $private++;
                 }
+
                 /** On calcul le nombre de projet sans tags */
                 if (empty($projet["tags"])) {
                     $emptyTags++;
@@ -178,15 +190,14 @@ class ApiAccueilController extends AbstractController
         }
 
         /** On met à jour la table propriétés */
-        $map=[  'projet_bd'=>$nombre, 'projet_sonar'=>$nombre,
-                'date_modification_projet'=>$date,
-            ];
-        $r=$propertiesRepository->updatePropertiesProjet($map);
-        if ($r['code']!=200) {
+        $map = ['projet_bd' => $nombre, 'projet_sonar' => $nombre,
+                'date_modification_projet' => $date];
+        $r = $propertiesRepository->updatePropertiesProjet($map);
+        if ($r['code'] != 200) {
             return new JsonResponse([
                 'type' => 'alert',
                 'reference' => static::$reference, 'code' => $r['code'],
-                'message'=>$r['erreur']], Response::HTTP_OK);
+                'message' => $r['erreur']], Response::HTTP_OK);
         }
 
         /** on renvoie les résultats */
@@ -224,9 +235,15 @@ class ApiAccueilController extends AbstractController
         }
 
         $tag = $listeProjetRepository->countListeProjetTags();
+        if ($tag['code'] != 200) {
+            return new JsonResponse([
+                'type' => 'alert',
+                'reference' => static::$reference, 'code' => $tag['code'],
+                'message' => $tag['erreur']], Response::HTTP_OK);
+        }
 
         return new JsonResponse(
-            ['code' => 200, 'nombre_tag' => $tag['nombre'][0]['tag']], Response::HTTP_OK);
+            ['code' => 200, 'nombre_tag' => $tag['nombre'][0]['tag'] ?? 0], Response::HTTP_OK);
     }
 
 }
