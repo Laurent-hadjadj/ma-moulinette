@@ -131,11 +131,18 @@ class Client
     private function handleGenericException(\Exception $e): array {
         $this->logger->error("Une erreur inattendue du serveur s'est produite : " . $e->getMessage());
 
-        $key = 'Environment variable not found: "CIPHERS".';
-        $message = "Une erreur inattendue du serveur s'est produite (Erreur 500).";
-        if (strpos($e->getMessage(), $key) !== false){
-            $message = "La variable 'ciphers' n'a pas été définie correctement.";
-        }
+        $messages = [
+            'key1' => 'Environment variable not found: "CIPHERS".',
+            'key2' => 'Environment variable not found: "VERIFY_HOST".',
+            'key3' => 'Environment variable not found: "VERIFY_PEER".'
+        ];
+
+        $message = match (true) {
+            strpos($e->getMessage(), $messages['key1']) !== false => "La variable 'CIPHERS' n'a pas été définie correctement.",
+            strpos($e->getMessage(), $messages['key2']) !== false => "La variable 'VERIFY_HOST' n'a pas été définie correctement.",
+            strpos($e->getMessage(), $messages['key3']) !== false => "La variable 'VERIFY_PEER' n'a pas été définie correctement.",
+            default => "Une erreur inattendue du serveur s'est produite (Erreur 500).",
+        };
         return ['code' => 500, 'erreur' => $message];
     }
 
