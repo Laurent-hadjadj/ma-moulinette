@@ -14,7 +14,7 @@ class ApiEnregistrementControllerTest extends WebTestCase
 {
     private static $contentType = 'application/json';
     private static $erreur400 = 'La requête est incorrecte (Erreur 400).';
-    public static $reference = "<strong>[Enregistrement]</strong> ";
+    private static $reference = "<strong>[Enregistrement]</strong> ";
     private static $josh = 'josh.liberman@ma-moulinette.fr';
     private static $aurelie = 'aurelie.petit-coeur@ma-moulinette.fr';
     private static $apiEnregistrement = '/api/enregistrement';
@@ -42,8 +42,6 @@ class ApiEnregistrementControllerTest extends WebTestCase
         $this->assertStringContainsString($expectedMessage, $jsonResponse['message']);
     }
 
-    //"message" => "<strong>[Enregistrement]</strong> La requête est incorrecte (Erreur 400)."
-
     public function testEnregistrement(): void
     {
         $client = static::createClient();
@@ -62,67 +60,23 @@ class ApiEnregistrementControllerTest extends WebTestCase
         }
 
         $data = [
-            'maven_key' => 'example_key',
-            'analyse_key' => 'example_key',
-            'version' => '1.0.0',
-            'date_version' => '2023-10-01',
-            'nom_projet' => 'Example Project',
-            'version_release' => 2,
-            'version_snapshot' => 4,
-            'version_autre' => 0,
-            'suppress_warning' => 10,
-            'no_sonar' => 140,
-            'todo' => 13,
-            'logger_info' => 45,
-            'logger_warn' => 5,
-            'logger_error' => 12,
-            'logger_debug' => 23,
-            'nombre_ligne' => 1000,
-            'nombre_ligne_code' => 800,
-            'coverage' => 90.7,
-            'files' => 45,
-            'classes' => 120,
-            'functions' => 342,
-            'duplicated_lines_density' => 5,
-            'sqale_debt_ratio' => 0.5,
-            'tests' => 50,
-            'violations' => 10,
-            'dette' => 20,
-            'nombre_bug' => 5,
-            'nombre_vulnerability' => 2,
-            'nombre_code_smell' => 3,
-            'bug_blocker' => 1,
-            'bug_critical' => 1,
-            'bug_major' => 1,
-            'bug_minor' => 1,
-            'bug_info' => 1,
-            'vulnerability_blocker' => 1,
-            'vulnerability_critical' => 1,
-            'vulnerability_major' => 1,
-            'vulnerability_minor' => 1,
-            'vulnerability_info' => 1,
-            'code_smell_blocker' => 1,
-            'code_smell_critical' => 1,
-            'code_smell_major' => 1,
-            'code_smell_minor' => 1,
-            'code_smell_info' => 1,
-            'frontend' => 159,
-            'backend' => 30,
-            'autre' => 12,
-            'inconnue' => 0,
-            'nombre_anomalie_bloquant' => 1,
-            'nombre_anomalie_critique' => 1,
-            'nombre_anomalie_majeur' => 1,
-            'nombre_anomalie_mineur' => 1,
-            'nombre_anomalie_info' => 1,
-            'note_reliability' => 1,
-            'note_security' => 2,
-            'note_sqale' => 3,
-            'note_hotspot' => 4,
-            'nombre_hotspot' => 10,
-            'hotspot_high' => 5,
-            'hotspot_medium' => 3,
-            'hotspot_low' => 2,
+            'maven_key' => 'example_key', 'analyse_key' => 'example_key', 'version' => '1.0.1',
+            'date_version' => '2023-10-02', 'nom_projet' => 'Example Project2', 'version_release' => 2,
+            'version_snapshot' => 4, 'version_autre' => 0, 'suppress_warning' => 10, 'no_sonar' => 140,
+            'todo' => 13, 'logger_info' => 45, 'logger_warn' => 5, 'logger_error' => 12,
+            'logger_debug' => 23, 'nombre_ligne' => 1000, 'nombre_ligne_code' => 800, 'coverage' => 90.7,
+            'files' => 45, 'classes' => 120, 'functions' => 342, 'duplicated_lines_density' => 5,
+            'sqale_debt_ratio' => 0.5, 'tests' => 50, 'violations' => 10, 'dette' => 20, 'nombre_bug' => 5,
+            'nombre_vulnerability' => 2, 'nombre_code_smell' => 3, 'bug_blocker' => 1, 'bug_critical' => 1,
+            'bug_major' => 1, 'bug_minor' => 1, 'bug_info' => 1, 'vulnerability_blocker' => 1,
+            'vulnerability_critical' => 1, 'vulnerability_major' => 1, 'vulnerability_minor' => 1,
+            'vulnerability_info' => 1, 'code_smell_blocker' => 1, 'code_smell_critical' => 1,
+            'code_smell_major' => 1, 'code_smell_minor' => 1, 'code_smell_info' => 1,
+            'frontend' => 159, 'backend' => 30, 'autre' => 12, 'inconnue' => 0,
+            'nombre_anomalie_bloquant' => 1, 'nombre_anomalie_critique' => 1, 'nombre_anomalie_majeur' => 1,
+            'nombre_anomalie_mineur' => 1, 'nombre_anomalie_info' => 1, 'note_reliability' => 1,
+            'note_security' => 2, 'note_sqale' => 3, 'note_hotspot' => 4, 'nombre_hotspot' => 10,
+            'hotspot_high' => 5, 'hotspot_medium' => 3, 'hotspot_low' => 2,
         ];
 
         $client->request('PUT', static::$apiEnregistrement, [], [], ['CONTENT_TYPE' => static::$contentType], json_encode($data));
@@ -160,6 +114,15 @@ class ApiEnregistrementControllerTest extends WebTestCase
             'note_security' => 2, 'note_sqale' => 3, 'note_hotspot' => 4, 'nombre_hotspot' => 10,
             'hotspot_high' => 5, 'hotspot_medium' => 3, 'hotspot_low' => 2,
         ];
+
+        $entityManager = static::getContainer()->get('doctrine.orm.entity_manager');
+        $historiqueRepository = static::getContainer()->get(HistoriqueRepository::class);
+        $historique = $historiqueRepository->findOneBy(['mavenKey' => 'example_key', 'analyseKey' => 'example_key']);
+        /** Si la table est vide on ajoute un enregistrement */
+        if (!$historique) {
+            $entityManager->insert($historique);
+            $entityManager->flush();
+        }
 
         $client->request('PUT', static::$apiEnregistrement, [], [], ['CONTENT_TYPE' => static::$contentType], json_encode($data));
 
