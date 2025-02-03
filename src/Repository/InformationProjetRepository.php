@@ -256,7 +256,7 @@ class InformationProjetRepository extends ServiceEntityRepository
       } catch (\Doctrine\DBAL\Exception $e) {
           return $this->handleDatabaseException($e);
       }
-      return ['code' => 00, 'info' => $liste, 'erreur' => ''];
+      return ['code' => 200, 'info' => $liste, 'erreur' => ''];
   }
 
   /**
