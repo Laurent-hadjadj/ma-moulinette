@@ -826,7 +826,7 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function getCouverture(): ?float
+    public function getCoverage(): ?float
     {
         return $this->coverage;
     }
@@ -2231,11 +2231,6 @@ class Historique
         $this->loggerDebug = $loggerDebug;
 
         return $this;
-    }
-
-    public function getCoverage(): ?float
-    {
-        return $this->coverage;
     }
 
     public function getModeCollecte(): ?string
