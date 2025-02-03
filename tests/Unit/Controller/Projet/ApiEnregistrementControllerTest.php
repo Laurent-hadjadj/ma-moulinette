@@ -2,6 +2,7 @@
 
 namespace App\Tests\Unit\Controller\Projet;
 
+use App\Entity\Historique;
 use App\Repository\HistoriqueRepository;
 use App\Repository\UtilisateurRepository;
 use Symfony\Component\HttpFoundation\Response;
@@ -97,7 +98,7 @@ class ApiEnregistrementControllerTest extends WebTestCase
 
         $data = [
             'maven_key' => 'example_key', 'analyse_key' => 'example_key', 'version' => '1.0.0',
-            'date_version' => '2023-10-01', 'nom_projet' => 'Example Project', 'version_release' => 2,
+            'date_version' => '2023-10-02', 'nom_projet' => 'Exemple Project', 'version_release' => 2,
             'version_snapshot' => 4, 'version_autre' => 0, 'suppress_warning' => 10, 'no_sonar' => 140,
             'todo' => 13, 'logger_info' => 45, 'logger_warn' => 5, 'logger_error' => 12,
             'logger_debug' => 23, 'nombre_ligne' => 1000, 'nombre_ligne_code' => 800, 'coverage' => 90.7,
@@ -117,12 +118,83 @@ class ApiEnregistrementControllerTest extends WebTestCase
 
         $entityManager = static::getContainer()->get('doctrine.orm.entity_manager');
         $historiqueRepository = static::getContainer()->get(HistoriqueRepository::class);
-        $historique = $historiqueRepository->findOneBy(['mavenKey' => 'example_key', 'analyseKey' => 'example_key']);
-        /** Si la table est vide on ajoute un enregistrement */
-        if (!$historique) {
-            $entityManager->insert($historique);
+        $historique = $historiqueRepository->findOneBy(['mavenKey' => 'example_key', 'version' => '1.0.0', 'dateVersion' => '2023-10-02']);
+
+        /** Si la table contient un enregistrement, on le supprime */
+        if ($historique){
+            $entityManager->remove($historique);
             $entityManager->flush();
         }
+
+        /** Si la table est vide on ajoute un enregistrement */
+        $historique = new Historique();
+            $historique->setMavenKey('example_key');
+            $historique->setAnalyseKey('example_key');
+            $historique->setVersion('1.0.0');
+            $historique->setDateVersion('2023-10-02');
+            $historique->setNomProjet('Example Project');
+            $historique->setVersionRelease(2);
+            $historique->setVersionSnapshot(4);
+            $historique->setVersionAutre(0);
+            $historique->setSuppressWarning(10);
+            $historique->setNoSonar(140);
+            $historique->setTodo(13);
+            $historique->setLoggerInfo(45);
+            $historique->setLoggerWarn(5);
+            $historique->setLoggerError(12);
+            $historique->setLoggerDebug(23);
+            $historique->setNombreLigne(1000);
+            $historique->setNombreLigneCode(800);
+            $historique->setCoverage(90.7);
+            $historique->setFiles(45);
+            $historique->setClasses(120);
+            $historique->setFunctions(342);
+            $historique->setDuplicatedLinesDensity(5);
+            $historique->setSqaleDebtRatio(0.5);
+            $historique->setTests(50);
+            $historique->setViolations(10);
+            $historique->setDette(20);
+            $historique->setNombreBug(5);
+            $historique->setNombreVulnerability(2);
+            $historique->setNombreCodeSmell(3);
+            $historique->setBugBlocker(1);
+            $historique->setBugCritical(1);
+            $historique->setBugMajor(1);
+            $historique->setBugMinor(1);
+            $historique->setBugInfo(1);
+            $historique->setVulnerabilityBlocker(1);
+            $historique->setVulnerabilityCritical(1);
+            $historique->setVulnerabilityMajor(1);
+            $historique->setVulnerabilityMinor(1);
+            $historique->setVulnerabilityInfo(1);
+            $historique->setCodeSmellBlocker(1);
+            $historique->setCodeSmellCritical(1);
+            $historique->setCodeSmellMajor(1);
+            $historique->setCodeSmellMinor(1);
+            $historique->setCodeSmellInfo(1);
+            $historique->setFrontend(159);
+            $historique->setBackend(30);
+            $historique->setAutre(12);
+            $historique->setInconnue(0);
+            $historique->setNombreAnomalieBloquant(1);
+            $historique->setNombreAnomalieCritique(1);
+            $historique->setNombreAnomalieMajeur(1);
+            $historique->setNombreAnomalieMineur(1);
+            $historique->setNombreAnomalieInfo(1);
+            $historique->setNoteReliability(1);
+            $historique->setNoteSecurity(2);
+            $historique->setNoteSqale(3);
+            $historique->setNoteHotspot(4);
+            $historique->setNombreHotspot(10);
+            $historique->setHotspotHigh(5);
+            $historique->setHotspotMedium(3);
+            $historique->setHotspotLow(2);
+            $historique->setInitial(false);
+            $historique->setModeCollecte('COLLECTE');
+            $historique->setUtilisateurCollecte('Laurent.Hadjadj@ma-petite-entreprise.fr');
+            $historique->setDateEnregistrement(new \DateTimeImmutable('now', new \DateTimeZone('Europe/Paris')));
+        $entityManager->persist($historique);
+        $entityManager->flush();
 
         $client->request('PUT', static::$apiEnregistrement, [], [], ['CONTENT_TYPE' => static::$contentType], json_encode($data));
 
