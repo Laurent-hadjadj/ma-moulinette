@@ -30,7 +30,7 @@ class ProfilesHistoriqueRepositoryTest extends KernelTestCase
     private static $date  = '2022-08-30T18:42:41+0200';
     private static $action = 'ACTIVATED';
     private static $auteur = 'HADJADJ Laurent';
-    private static $regle = 'java:S5679';
+    private static $rule = 'java:S5679';
     private static $description = 'OpenSAML2 should be configured to prevent authentication bypass';
     private static $detail = '{"severity":"MAJOR"}';
     private static $dateEnregistrement = '2024-04-12 16:23:11';
@@ -67,7 +67,7 @@ class ProfilesHistoriqueRepositoryTest extends KernelTestCase
 
         $map=[  'date_courte'=>static::$dateCourte, 'language'=>static::$language,
                 'date'=>static::$date, 'action'=>static::$action, 'auteur'=>static::$auteur,
-                'regle'=>static::$regle, 'description'=>static::$description,
+                'rule'=>static::$rule, 'description'=>static::$description,
                 'detail'=>static::$detail, 'date_enregistrement'=> new \DateTimeImmutable(static::$dateEnregistrement)];
 
         // Appel de la méthode
