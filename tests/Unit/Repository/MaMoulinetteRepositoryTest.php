@@ -17,7 +17,6 @@ use App\Entity\MaMoulinette;
 use App\DataFixtures\MaMoulinetteFixtures;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
-
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 /**
@@ -47,7 +46,8 @@ class MaMoulinetteRepositoryTest extends KernelTestCase
         $executor->execute([new MaMoulinetteFixtures()]);
     }
 
-    public function testGetMaMoulinetteVersion(): void
+
+    public function testGetMaMoulinetteVersionSuccess(): void
     {
         // Connexion à la base de données
         self::bootKernel();
