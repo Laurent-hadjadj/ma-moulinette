@@ -43,11 +43,21 @@ class ListeProjetRepository extends ServiceEntityRepository
    */
   protected function handleDatabaseException(\Doctrine\DBAL\Exception $e): array
   {
+    $message = $e->getMessage();
+
     if (strpos($e->getMessage(), 'SQLSTATE[08006]') !== false) {
-      return ['code'=>500, 'erreur' => static::$noDataBase];
-    } else {
-      return ['code'=>500, 'erreur'=> $e->getMessage()];
+        $message = static::$noDataBase;
     }
+
+    if ($e->getSqlState() == '23502') {
+        $message = $e->getMessage();
+    }
+
+    if ($e->getSqlState() == '23505'){
+        return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
+    }
+
+    return ['code' => 500, 'erreur'=> $message];
   }
 
   /**

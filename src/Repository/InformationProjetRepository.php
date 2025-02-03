@@ -44,12 +44,23 @@ class InformationProjetRepository extends ServiceEntityRepository
    */
   protected function handleDatabaseException(\Doctrine\DBAL\Exception $e): array
   {
+    $message = $e->getMessage();
+
     if (strpos($e->getMessage(), 'SQLSTATE[08006]') !== false) {
-      return ['code' => 500, 'erreur' => static::$noDataBase];
-    } else {
-      return ['code' => 500, 'erreur' => $e->getMessage()];
+        $message = static::$noDataBase;
     }
+
+    if ($e->getSqlState() == '23502') {
+        $message = $e->getMessage();
+    }
+
+    if ($e->getSqlState() == '23505'){
+        return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
+    }
+
+    return ['code' => 500, 'erreur'=> $message];
   }
+
 
   /**
    * [Description for selectInformationProjetIsValide]
@@ -106,7 +117,7 @@ class InformationProjetRepository extends ServiceEntityRepository
       } catch (\Doctrine\DBAL\Exception $e) {
           return $this->handleDatabaseException($e);
       }
-      return ['code'=>200, 'nombre'=>$nombre, 'erreur'=>''];
+      return ['code' => 200, 'nombre' => $nombre, 'erreur' => ''];
   }
 
   /**
@@ -134,7 +145,7 @@ class InformationProjetRepository extends ServiceEntityRepository
       } catch (\Doctrine\DBAL\Exception $e) {
           return $this->handleDatabaseException($e);
       }
-      return ['code'=>200, 'nombre'=>$nombre, 'erreur'=>''];
+      return ['code' => 200, 'nombre' => $nombre, 'erreur'=>''];
   }
 
   /**
@@ -161,7 +172,7 @@ class InformationProjetRepository extends ServiceEntityRepository
       } catch (\Doctrine\DBAL\Exception $e) {
           return $this->handleDatabaseException($e);
       }
-      return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
+      return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
   }
 
   /**
@@ -189,7 +200,7 @@ class InformationProjetRepository extends ServiceEntityRepository
       } catch (\Doctrine\DBAL\Exception $e) {
           return $this->handleDatabaseException($e);
       }
-      return ['code'=>200, 'version'=>$liste, 'erreur'=>''];
+      return ['code' => 200, 'version' => $liste, 'erreur'=>''];
   }
 
   /**
@@ -217,7 +228,7 @@ class InformationProjetRepository extends ServiceEntityRepository
           $this->getEntityManager()->getConnection()->rollBack();
           return $this->handleDatabaseException($e);
       }
-      return ['code'=>200, 'versions'=>$liste, 'erreur'=>''];
+      return ['code' => 200, 'versions' => $liste, 'erreur' => ''];
   }
 
   /**
@@ -245,7 +256,7 @@ class InformationProjetRepository extends ServiceEntityRepository
       } catch (\Doctrine\DBAL\Exception $e) {
           return $this->handleDatabaseException($e);
       }
-      return ['code'=>200, 'info'=>$liste, 'erreur'=>''];
+      return ['code' => 00, 'info' => $liste, 'erreur' => ''];
   }
 
   /**
@@ -275,7 +286,7 @@ class InformationProjetRepository extends ServiceEntityRepository
           $this->getEntityManager()->getConnection()->rollBack();
           return $this->handleDatabaseException($e);
       }
-      return ['code'=>200, 'erreur'=>''];
+      return ['code' => 200, 'erreur' => ''];
   }
 
   /**
@@ -314,7 +325,7 @@ class InformationProjetRepository extends ServiceEntityRepository
         return $this->handleDatabaseException($e);
     }
 
-    return ['code'=>200, 'erreur'=>''];
+    return ['code' => 200, 'erreur' =>  ''];
   }
 
 }
