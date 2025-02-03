@@ -81,7 +81,7 @@ class OwaspRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = ['maven_key' => static::$mavenKey];
+        $map = ['maven_key' => static::$mavenKey, 'referential_owasp' => 2017];
 
         // Appel de la méthode
         $owaspRepository = $entityManager->getRepository(Owasp::class);
@@ -122,6 +122,7 @@ class OwaspRepositoryTest extends KernelTestCase
         $map = [];
 
         // Ajouter les propriétés de l'objet $owasp au tableau $map
+        $map['referential_owasp'] = 2017;
         $map['maven_key'] = static::$mavenKey;
         $map['version'] = static::$version;
         $map['date_version'] = static::$dateVersion;
@@ -142,7 +143,7 @@ class OwaspRepositoryTest extends KernelTestCase
 
         // Appel de la méthode
         $owaspRepository = $entityManager->getRepository(Owasp::class);
-        $r = $owaspRepository->insertOwasp($map);
+        $r = $owaspRepository->insertOwasp([$map]);
 
         // Assert
         $this->assertEquals(200, $r['code'], static::$erreurCode200);
