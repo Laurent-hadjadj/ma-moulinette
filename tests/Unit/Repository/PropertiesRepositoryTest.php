@@ -17,7 +17,6 @@ use App\Entity\Properties;
 use App\DataFixtures\PropertiesFixtures;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
-
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 /**
@@ -80,14 +79,15 @@ class PropertiesRepositoryTest extends KernelTestCase
         /* On se connecte à la base de tests */
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
-
+        $d1 = new \DateTimeImmutable(static::$dateModificationProjet);
+        $d2 = new \DateTimeImmutable(static::$dateModificationProfil);
         $map = ['projet_bd' => static::$projetBd,
-                'projet_sonar'=> static::$projetSonar,
+                'projet_sonar' => static::$projetSonar,
                 'profil_bd' => static::$profilBd,
-                'profil_sonar'=> static::$profilSonar,
+                'profil_sonar' => static::$profilSonar,
                 'date_creation' => static::$dateCreation,
-                'date_modification_projet' => static::$dateModificationProjet,
-                'date_modification_profil' => static::$dateModificationProfil];
+                'date_modification_projet' => $d1,
+                'date_modification_profil' => $d2];
 
         // Appel de la méthode
         $propertiesRepository = $entityManager->getRepository(Properties::class);
@@ -108,7 +108,7 @@ class PropertiesRepositoryTest extends KernelTestCase
 
         $map = ['projet_bd' => static::$projetBd,
                 'projet_sonar'=> static::$projetSonar,
-                'date_modification_projet' => new \DateTimeImmutable (static::$dateModificationProjet),
+                'date_modification_projet' => new \DateTimeImmutable(static::$dateModificationProjet),
                 'type' => static::$type];
 
         // Appel de la méthode
