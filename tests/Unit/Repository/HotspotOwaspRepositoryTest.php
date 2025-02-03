@@ -156,7 +156,7 @@ class HotspotOwaspRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map=  [['referentiel_owasp' => 2017, 'version' => '2.0.0-RELEASE',
+        $map=  [['referential_owasp' => 2017, 'version' => '2.0.0-RELEASE',
                 'maven_key' => 'fr.ma-petite-entreprise:ma-moulinette',
                 'date_version' => new \DateTimeImmutable('2024-08-10 15:26:07+02'), 'menace' => 'a1', 'security_category' => 'dos',
                 'rule_key' => 'typescript:S5852', 'probability' => 'MEDIUM',
