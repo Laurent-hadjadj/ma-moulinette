@@ -78,7 +78,7 @@ class MesuresRepository extends ServiceEntityRepository
       } catch (\Doctrine\DBAL\Exception $e) {
           return $this->handleDatabaseException($e);
       }
-      return ['code'=>200, 'mesures'=>$mesures, 'erreur'=>''];
+      return ['code' => 200, 'mesures' => $mesures, 'erreur' => ''];
   }
 
   /**
@@ -95,9 +95,9 @@ class MesuresRepository extends ServiceEntityRepository
   public function insertMesures($map): array
   {
     $sql = "INSERT INTO ma_moulinette.mesures
-                (maven_key, project_name, lines, ncloc, language_distribution, sqale_debt_ratio, coverage, duplicated_lines_density, tests, issues, mode_collecte, utilisateur_collecte, date_enregistrement)
+                (maven_key, project_name, lines, ncloc, language_distribution, sqale_debt_ratio, files, classes, functions, coverage, duplicated_lines_density, tests, issues, mode_collecte, utilisateur_collecte, date_enregistrement)
             VALUES
-                (:maven_key, :project_name, :lines, :ncloc, :language_distribution::json, :sqale_debt_ratio, :coverage, :duplicated_lines_density, :tests, :issues, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
+                (:maven_key, :project_name, :lines, :ncloc, :language_distribution::json, :sqale_debt_ratio, :files, :classes, :functions, :coverage, :duplicated_lines_density, :tests, :issues, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
     try {
         $this->getEntityManager()->getConnection()->beginTransaction();
           $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
@@ -109,6 +109,9 @@ class MesuresRepository extends ServiceEntityRepository
             $language_distribution_json = json_encode([$map['language_distribution']]);
             $stmt->bindValue(':language_distribution', $language_distribution_json);
             $stmt->bindValue(':sqale_debt_ratio', $map['sqale_debt_ratio']);
+            $stmt->bindValue(':files', $map['files']);
+            $stmt->bindValue(':classes', $map['classes']);
+            $stmt->bindValue(':functions', $map['functions']);
             $stmt->bindValue(':coverage', $map['coverage']);
             $stmt->bindValue(':duplicated_lines_density', $map['duplicated_lines_density']);
             $stmt->bindValue(':tests', $map['tests']);
