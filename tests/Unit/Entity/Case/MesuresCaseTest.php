@@ -27,7 +27,10 @@ class MesuresCaseTest extends TestCase
     private static $projectName = 'Ma-Moulinette';
     private static $lines = 22015;
     private static $ncloc = 10043;
-    private static $languageDistribution = ['java'=>4278, 'ts'=>18690];
+    private static $languageDistribution = ['java' => 4278, 'ts' => 18690];
+    private static $files = 18;
+    private static $classes = 26;
+    private static $functions = 52;
     private static $coverage = 10.3;
     private static $duplicatedLinesDensity = 5.1;
     private static $sqaleDebtRatio = 26.0;
@@ -45,6 +48,9 @@ class MesuresCaseTest extends TestCase
         ->setLines(static::$lines)
         ->setNcloc(static::$ncloc)
         ->setLanguageDistribution(static::$languageDistribution)
+        ->setFiles(static::$files)
+        ->setClasses(static::$classes)
+        ->setFunctions(static::$functions)
         ->setCoverage(static::$coverage)
         ->setDuplicatedLinesDensity(static::$duplicatedLinesDensity)
         ->setSqaleDebtRatio(static::$sqaleDebtRatio)
@@ -83,6 +89,24 @@ class MesuresCaseTest extends TestCase
     {
         $this->mesures->setNcloc(static::$ncloc);
         $this->assertEquals(static::$ncloc, $this->mesures->getNcloc());
+    }
+
+    public function testSettingAndGettingFiles(): void
+    {
+        $this->mesures->setFiles(static::$files);
+        $this->assertEquals(static::$files, $this->mesures->getFiles());
+    }
+
+    public function testSettingAndGettingClasses(): void
+    {
+        $this->mesures->setClasses(static::$classes);
+        $this->assertEquals(static::$classes, $this->mesures->getClasses());
+    }
+
+    public function testSettingAndGettingFunctions(): void
+    {
+        $this->mesures->setFiles(static::$functions);
+        $this->assertEquals(static::$functions, $this->mesures->getFunctions());
     }
 
     public function testSettingAndGettingCoverage(): void

@@ -57,7 +57,7 @@ class MesuresKernelTest extends KernelTestCase
         $response = $mesuresRepository->findOneBy(['mavenKey' => static::$mavenKey]);
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée');
-        $this->assertCount(1, [$response], 'MAVENKEY: Aucune réponse trouvée');
+        $this->assertCount(1, [$response], 'Maven_key: Aucune réponse trouvée');
     }
 
     public function testMesuresCount(): void
@@ -70,6 +70,6 @@ class MesuresKernelTest extends KernelTestCase
         $response = $mesuresRepository->findBy(['mavenKey' => static::$mavenKey]);
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée');
-        $this->assertCount(3, $response, 'MAVENKEY: Aucune réponse trouvée');
+        $this->assertCount(3, $response, 'Maven_key: Aucune réponse trouvée');
     }
 }

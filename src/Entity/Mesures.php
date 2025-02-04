@@ -55,6 +55,21 @@ class Mesures
     #[Assert\NotNull]
     private $languageDistribution;
 
+    #[ORM\Column(type: Types::INTEGER,
+    options: ['comment' => 'Nombre total de fichier'])]
+    #[Assert\NotNull]
+    private $files;
+
+    #[ORM\Column(type: Types::INTEGER,
+    options: ['comment' => 'Nombre total de classe'])]
+    #[Assert\NotNull]
+    private $classes;
+
+    #[ORM\Column(type: Types::INTEGER,
+    options: ['comment' => 'Nombre total méthode'])]
+    #[Assert\NotNull]
+    private $functions;
+
     #[ORM\Column(type: Types::FLOAT, nullable: false,
         options: ['comment' => 'Pourcentage de couverture par les tests'])]
     #[Assert\NotNull]
@@ -145,6 +160,51 @@ class Mesures
     public function setNcloc(int $ncloc): static
     {
         $this->ncloc = $ncloc;
+
+        return $this;
+    }
+
+        /**
+     * [Description for getClasses]
+     *
+     * @return int|null
+     *
+     * Created at: 20/01/2025 12:13:47 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function getClasses(): ?int
+    {
+        return $this->classes;
+    }
+
+    public function setClasses(int $classes): \App\Entity\Mesures
+    {
+        $this->classes = $classes;
+
+        return $this;
+    }
+
+    public function getFunctions(): ?int
+    {
+        return $this->functions;
+    }
+
+    public function setFunctions(int $functions): \App\Entity\Mesures
+    {
+        $this->functions = $functions;
+
+        return $this;
+    }
+
+    public function getFiles(): ?int
+    {
+        return $this->files;
+    }
+
+    public function setFiles(int $files): \App\Entity\Mesures
+    {
+        $this->files = $files;
 
         return $this;
     }

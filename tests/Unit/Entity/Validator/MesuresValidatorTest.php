@@ -27,7 +27,10 @@ class MesuresValidatorTest extends KernelTestCase
   private static $projectName = 'Ma-Moulinette';
   private static $lines = 22015;
   private static $ncloc = 10043;
-  private static $languageDistribution = ['java'=>4278, 'ts'=>18690];
+  private static $languageDistribution = ['java' => 4278, 'ts' => 18690];
+  private static $files = 18;
+  private static $classes = 26;
+  private static $functions = 52;
   private static $coverage = 10.3;
   private static $duplicatedLinesDensity = 5.1;
   private static $sqaleDebtRatio = 26.0;
@@ -45,6 +48,9 @@ class MesuresValidatorTest extends KernelTestCase
       ->setLines(static::$lines)
       ->setNcloc(static::$ncloc)
       ->setLanguageDistribution(static::$languageDistribution)
+      ->setFiles(static::$files)
+      ->setClasses(static::$classes)
+      ->setFunctions(static::$functions)
       ->setCoverage(static::$coverage)
       ->setDuplicatedLinesDensity(static::$duplicatedLinesDensity)
       ->setSqaleDebtRatio(static::$sqaleDebtRatio)
@@ -85,6 +91,9 @@ class MesuresValidatorTest extends KernelTestCase
   {
     $this->assertHasErrors($this->getEntity()->setLines(-1), 0);
     $this->assertHasErrors($this->getEntity()->setNcloc(-1), 0);
+    $this->assertHasErrors($this->getEntity()->setFiles(-1), 0);
+    $this->assertHasErrors($this->getEntity()->setClasses(-1), 0);
+    $this->assertHasErrors($this->getEntity()->setFunctions(-1), 0);
     $this->assertHasErrors($this->getEntity()->setIssues(-1), 0);
     $this->assertHasErrors($this->getEntity()->setTests(-1), 0);
   }
@@ -101,6 +110,6 @@ class MesuresValidatorTest extends KernelTestCase
       $entity = $this->getEntity();
       $reflectionClass = new \ReflectionClass($entity);
       $nbAttributs = count($reflectionClass->getProperties());
-      $this->assertEquals($nbAttributs, 14);
+      $this->assertEquals($nbAttributs, 17);
   }
 }
