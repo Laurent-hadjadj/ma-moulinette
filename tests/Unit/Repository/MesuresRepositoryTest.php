@@ -77,7 +77,7 @@ class MesuresRepositoryTest extends KernelTestCase
 
         $map = ['maven_key' => static::$mavenKey,
                 'project_name' => 'Ma-Moulinette', 'lines' => 22015,
-                'ncloc' => 10043, 'language_distribution' => ['java'=>4278, 'ts'=>18690], 'coverage' => 10.3, 'duplicated_lines_density' => 5.1, 'sqale_debt_ratio' => 26.0, 'issues' => 200, 'tests' => 123,
+                'ncloc' => 10043, 'language_distribution' => ['java' => 4278, 'ts' => 18690], 'files' => 18, 'classes' => 26, 'functions' => '52', 'coverage' => 10.3, 'duplicated_lines_density' => 5.1, 'sqale_debt_ratio' => 26.0, 'issues' => 200, 'tests' => 123,
                 'mode_collecte' => 'TRAITEMENT MANUEL','utilisateur_collecte' => 'laurent.hadjadj@ma-petite-entreprise.fr',
                 'date_enregistrement' => new \DateTimeImmutable('2024-04-12 16:23:11')];
 
