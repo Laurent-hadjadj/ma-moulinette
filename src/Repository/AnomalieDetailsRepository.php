@@ -70,7 +70,7 @@ class AnomalieDetailsRepository extends ServiceEntityRepository
             WHERE maven_key=:maven_key";
     try {
         $this->getEntityManager()->getConnection()->beginTransaction();
-          $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $stmt->bindValue(static::$mavenKey, $map['maven_key']);
             $stmt->executeStatement();
         $this->getEntityManager()->getConnection()->commit();
@@ -78,7 +78,7 @@ class AnomalieDetailsRepository extends ServiceEntityRepository
         $this->getEntityManager()->getConnection()->rollBack();
         return $this->handleDatabaseException($e);
     }
-    return ['code'=>200, 'erreur'=>''];
+    return ['code' => 200, 'erreur' => ''];
   }
 
   /**
@@ -99,13 +99,13 @@ class AnomalieDetailsRepository extends ServiceEntityRepository
             FROM ma_moulinette.anomalie_details
             WHERE maven_key=:maven_key";
     try {
-          $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $stmt->bindValue(static::$mavenKey, $map['maven_key']);
-            $liste=$stmt->executeQuery()->fetchAllAssociative();
+            $liste = $stmt->executeQuery()->fetchAllAssociative();
       } catch (\Doctrine\DBAL\Exception $e) {
         return $this->handleDatabaseException($e);
       }
-      return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
+      return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
   }
 
   /**
@@ -160,7 +160,7 @@ class AnomalieDetailsRepository extends ServiceEntityRepository
         $this->getEntityManager()->getConnection()->rollBack();
         return $this->handleDatabaseException($e);
     }
-    return ['code'=>200, 'erreur'=>''];
+    return ['code' => 200, 'erreur' => ''];
   }
 
 }
