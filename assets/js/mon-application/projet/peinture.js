@@ -259,22 +259,22 @@ export const remplissage = async function(mavenKey) {
     }
 
     $('#coverage').html(new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(parseFloat(t.coverage)/cent));
-    $('#ratio-dette-technique').html(new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(parseFloat(t.sqaleDebtRatio)/cent));
+    $('#ratio-dette-technique').html(new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(parseFloat(t.sqale_debt_ratio)/cent));
 
     /** On colorise le résultat */
-    if (t.sqaleDebtRatio <= 30){
+    if (t.sqale_debt_ratio <= 30){
       /** La dette technique est soutenable */
       $('#ratio-dette-technique').addClass('couleur-vert');
     }
-    if (t.sqaleDebtRatio > 30 && t.sqaleDebtRatio <= 60){
+    if (t.sqale_debt_ratio > 30 && t.sqale_debt_ratio <= 60){
       /** La dette technique est importante, il faut absolument commencer à la réduire */
       $('#ratio-dette-technique').addClass('couleur-orange');
     }
-    if (t.sqaleDebtRatio > 60 && t.sqaleDebtRatio <= 100){
+    if (t.sqale_debt_ratio > 60 && t.sqale_debt_ratio <= 100){
       /** La dette technique n'est plus soutenable, il faut envisager de réécrire l'application ! */
       $('#ratio-dette-technique').addClass('couleur-rouge');
     }
-    if (t.sqaleDebtRatio>60 && t.sqaleDebtRatio>100){
+    if (t.sqale_debt_ratio >60 && t.sqale_debt_ratio > 100){
       /** l'application est mauvaise, le ration est > à 100% */
       $('#ratio-dette-technique').addClass('couleur-bordeaux');
     }
@@ -295,7 +295,7 @@ export const remplissage = async function(mavenKey) {
     t7.dataset.nombreLigne=(t.lines);
     t8.dataset.nombreLigneDeCode=(t.ncloc);
     t9.dataset.coverage=(t.coverage);
-    t9a.dataset.sqaleDebtRatio=(t.sqaleDebtRatio);
+    t9a.dataset.sqaleDebtRatio=(t.sqale_debt_ratio);
     t10.dataset.duplicatedLinesDensity=(t.duplicated_lines_density);
     t11.dataset.tests=(t.tests);
     t12.dataset.violations=t.issues;
@@ -461,11 +461,11 @@ export const remplissage = async function(mavenKey) {
       let couleur1, couleur2, couleur3 = '';
       const tNotes = ['', 'A', 'B', 'C', 'D', 'E'];
 
-      const noteVert1='note-vert1';
-      const noteVert2='note-vert2';
-      const noteJaune='note-jaune';
-      const noteOrange='note-orange';
-      const noteRouge='note-rouge';
+      const noteVert1 = 'note-vert1';
+      const noteVert2 = 'note-vert2';
+      const noteJaune = 'note-jaune';
+      const noteOrange = 'note-orange';
+      const noteRouge = 'note-rouge';
 
       if (t.noteReliability === un ) {
         couleur1 = noteVert1;
@@ -571,7 +571,7 @@ export const remplissage = async function(mavenKey) {
   /**
    * On récupère la sévérité par type.
    */
-  const optionsAnomalieDetails = {
+  const optionsAnomaliesDetails = {
     url: `${serveur()}/api/peinture/projet/anomalie/details`, type: 'POST',
           dataType: 'json', data: JSON.stringify(data), contentType };
 
@@ -595,11 +595,11 @@ export const remplissage = async function(mavenKey) {
     const t30 = document.getElementById('js-bug-major');
     const t31 = document.getElementById('js-bug-minor');
     const t32 = document.getElementById('js-bug-info');
-    t28.dataset.bugBlocker=t.bugBlocker;
-    t29.dataset.bugCritical=t.bugCritical;
-    t30.dataset.bugMajor=t.bugMajor;
-    t31.dataset.bugMinor=t.bugMinor;
-    t32.dataset.bugInfo=t.bugInfo;
+    t28.dataset.bugBlocker = t.bugBlocker;
+    t29.dataset.bugCritical = t.bugCritical;
+    t30.dataset.bugMajor = t.bugMajor;
+    t31.dataset.bugMinor = t.bugMinor;
+    t32.dataset.bugInfo = t.bugInfo;
 
     $('#js-vulnerability-blocker').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.vulnerabilityBlocker));
     $('#js-vulnerability-critical').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.vulnerabilityCritical));
@@ -612,11 +612,11 @@ export const remplissage = async function(mavenKey) {
     const t35 = document.getElementById('js-vulnerability-major');
     const t36 = document.getElementById('js-vulnerability-minor');
     const t37 = document.getElementById('js-vulnerability-info');
-    t33.dataset.vulnerabilityBlocker=t.vulnerabilityBlocker;
-    t34.dataset.vulnerabilityCritical=t.vulnerabilityCritical;
-    t35.dataset.vulnerabilityMajor=t.vulnerabilityMajor;
-    t36.dataset.vulnerabilityMinor=t.vulnerabilityMinor;
-    t37.dataset.vulnerabilityInfo=t.vulnerabilityInfo;
+    t33.dataset.vulnerabilityBlocker = t.vulnerabilityBlocker;
+    t34.dataset.vulnerabilityCritical = t.vulnerabilityCritical;
+    t35.dataset.vulnerabilityMajor = t.vulnerabilityMajor;
+    t36.dataset.vulnerabilityMinor = t.vulnerabilityMinor;
+    t37.dataset.vulnerabilityInfo = t.vulnerabilityInfo;
 
     $('#js-code-smell-blocker').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.codeSmellBlocker));
     $('#js-code-smell-critical').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.codeSmellCritical));
@@ -629,11 +629,11 @@ export const remplissage = async function(mavenKey) {
     const t40 = document.getElementById('js-code-smell-major');
     const t41 = document.getElementById('js-code-smell-minor');
     const t42 = document.getElementById('js-code-smell-info');
-    t38.dataset.vulnerabilityBlocker=t.codeSmellBlocker;
-    t39.dataset.vulnerabilityCritical=t.codeSmellCritical;
-    t40.dataset.vulnerabilityMajor=t.codeSmellMajor;
-    t41.dataset.vulnerabilityMinor=t.codeSmellMinor;
-    t42.dataset.vulnerabilityInfo=t.codeSmellInfo;
+    t38.dataset.vulnerabilityBlocker = t.codeSmellBlocker;
+    t39.dataset.vulnerabilityCritical = t.codeSmellCritical;
+    t40.dataset.vulnerabilityMajor = t.codeSmellMajor;
+    t41.dataset.vulnerabilityMinor = t.codeSmellMinor;
+    t42.dataset.vulnerabilityInfo = t.codeSmellInfo;
   } catch (err) {
     showMessage('alert', `<strong>[Peinture]</strong> Une erreur inattendue s'est produite lors la récupération du détails des Anomalies.<br>${err}`);
   }
