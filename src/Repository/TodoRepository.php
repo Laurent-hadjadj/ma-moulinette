@@ -60,7 +60,7 @@ class TodoRepository extends ServiceEntityRepository
             WHERE maven_key = :maven_key";
     try {
         $this->getEntityManager()->getConnection()->beginTransaction();
-          $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $stmt->bindValue(static::$mavenKey, $map['maven_key']);
             $stmt->executeStatement();
         $this->getEntityManager()->getConnection()->commit();
@@ -68,7 +68,7 @@ class TodoRepository extends ServiceEntityRepository
       $this->getEntityManager()->getConnection()->rollBack();
       return $this->handleDatabaseException($e);
     }
-    return ['code'=>200, 'erreur'=>''];
+    return ['code' => 200, 'erreur' => ''];
   }
 
   /**
@@ -90,13 +90,13 @@ class TodoRepository extends ServiceEntityRepository
             WHERE maven_key = :maven_key
             GROUP BY rule";
     try {
-          $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
           $stmt->bindValue(static::$mavenKey, $map['maven_key']);
-          $liste=$stmt->executeQuery()->fetchAllAssociative();
+          $liste = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Doctrine\DBAL\Exception $e) {
       return $this->handleDatabaseException($e);
     }
-    return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
+    return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
   }
 
   /**
@@ -118,13 +118,13 @@ class TodoRepository extends ServiceEntityRepository
             WHERE maven_key=:maven_key
             ORDER BY rule";
     try {
-          $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $stmt->bindValue(static::$mavenKey, $map['maven_key']);
-          $liste=$stmt->executeQuery()->fetchAllAssociative();
+          $liste = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Doctrine\DBAL\Exception $e) {
         return $this->handleDatabaseException($e);
     }
-    return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
+    return ['code' => 200, 'liste' => $liste, 'erreur'=>''];
   }
 
   /**
@@ -147,7 +147,7 @@ class TodoRepository extends ServiceEntityRepository
       try {
             $this->getEntityManager()->getConnection()->beginTransaction();
               foreach($map as $item){
-                  $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+                  $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(static::$mavenKey, $item['maven_key']);
                     $stmt->bindValue(':rule', $item['rule']);
                     $stmt->bindValue(':component', $item['component']);
@@ -162,6 +162,6 @@ class TodoRepository extends ServiceEntityRepository
           $this->getEntityManager()->getConnection()->rollBack();
           return $this->handleDatabaseException($e);
       }
-      return ['code'=>200, 'erreur'=>''];
+      return ['code' => 200, 'erreur' => ''];
   }
 }
