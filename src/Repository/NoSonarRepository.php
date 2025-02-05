@@ -97,13 +97,13 @@ class NoSonarRepository extends ServiceEntityRepository
             WHERE maven_key=:maven_key
             GROUP BY rule";
     try {
-          $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $stmt->bindValue(static::$mavenKey, $map['maven_key']);
-          $liste=$stmt->executeQuery()->fetchAllAssociative();
+          $liste = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Doctrine\DBAL\Exception $e) {
         return $this->handleDatabaseException($e);
     }
-    return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
+    return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
   }
 
   /**
