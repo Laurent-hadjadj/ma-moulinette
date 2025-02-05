@@ -22,12 +22,13 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class UtilisateurRepository extends ServiceEntityRepository
 {
-  public static $removeReturnLine = "/\s+/u";
-  public static $noDataBase = 'La connexion à la base de données a échoué.';
-  public static $courriel = ':courriel';
-  public static $preference = ':preference';
-  public static $dateModification = ':date_modification';
-  public static $dateFormatted = 'Y-m-d H:i:sO';
+  private static $removeReturnLine = "/\s+/u";
+  private static $noDataBase = 'La connexion à la base de données a échoué.';
+  private static $courriel = ':courriel';
+  private static $preference = ':preference';
+  private static $dateModification = ':date_modification';
+  private static $dateFormatted = 'Y-m-d H:i:sO';
+  private static $erreur400 = 'Format des préférences invalide (Erreur 400).';
 
   public function __construct(ManagerRegistry $registry)
   {
@@ -199,6 +200,24 @@ class UtilisateurRepository extends ServiceEntityRepository
    */
   public function updateUtilisateurFavoriProjet($preference, $map): array
   {
+    // Vérifier si la structure des préférences est valide
+    if (
+      !is_array($preference) ||
+      !isset($preference['statut'], $preference['suivi_projet'], $preference['favori_projet'], $preference['favori_version'], $preference['bookmark']) ||
+      !is_array($preference['statut']) ||
+      !is_array($preference['suivi_projet']) ||
+      !is_array($preference['favori_projet']) ||
+      !is_array($preference['favori_version']) ||
+      !is_array($preference['bookmark'])
+    ) {
+      return ['code' => 400, 'erreur' => static::$erreur400];
+    }
+
+    // ✅ Vérification supplémentaire AVANT in_array()
+    if (!isset($preference['favori_projet']) || !is_array($preference['favori_projet'])) {
+      return ['code' => 400, 'erreur' => 'Liste des favoris invalide'];
+    }
+
     /** On regarde si la projet est dans la liste des favoris (true) */
     $isFavori = in_array($map['maven_key'], $preference['favori_projet']);
 
@@ -207,7 +226,7 @@ class UtilisateurRepository extends ServiceEntityRepository
      * Sinon on l'ajoute
      */
 
-    $response = ['code'=> 206, 'statut'=>-1, 'erreur'=>''];
+    $response = ['code' => 206, 'statut' => -1, 'erreur' => ''];
     $now = new \DateTime();
     if ($isFavori) {
       /** on supprime le projet de la liste */
@@ -218,7 +237,18 @@ class UtilisateurRepository extends ServiceEntityRepository
         $preference['statut']['favori_projet'] = false;
       }
 
-      /** On met à jour l'objet. */
+      // Vérifier si la structure des préférences est valide
+      if (
+        !is_array($preference) ||
+        !isset($preference['statut'], $preference['suivi_projet'], $preference['favori_projet'], $preference['favori_version'], $preference['bookmark']) ||
+        !is_array($preference['statut']) ||
+        !is_array($preference['suivi_projet']) ||
+        !is_array($preference['favori_projet']) ||
+        !is_array($preference['favori_version']) ||
+        !is_array($preference['bookmark'])
+      ) {
+        return ['code' => 400, 'erreur' => static::$erreur400];
+      }
       $jsonArray = json_encode([
         'statut' => $preference['statut'],
         'suivi_projet' => $preference['suivi_projet'],
@@ -227,8 +257,8 @@ class UtilisateurRepository extends ServiceEntityRepository
         'bookmark' => $preference['bookmark']
       ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
-        // Vérification de l'erreur JSON
-      if (json_last_error() !== JSON_ERROR_NONE) {
+      // Vérification de l'erreur JSON
+      if ($jsonArray === false || json_last_error() !== JSON_ERROR_NONE) {
         return ['code' => 400, 'erreur' => 'Invalid JSON: ' . json_last_error_msg()];
       }
 
@@ -256,6 +286,18 @@ class UtilisateurRepository extends ServiceEntityRepository
       array_push($preference['favori_projet'], $map['maven_key']);
       $preference['statut']['favori_projet'] = true;
 
+      // Vérifier si la structure des préférences est valide
+      if (
+        !is_array($preference) ||
+        !isset($preference['statut'], $preference['suivi_projet'], $preference['favori_projet'], $preference['favori_version'], $preference['bookmark']) ||
+        !is_array($preference['statut']) ||
+        !is_array($preference['suivi_projet']) ||
+        !is_array($preference['favori_projet']) ||
+        !is_array($preference['favori_version']) ||
+        !is_array($preference['bookmark'])
+      ) {
+        return ['code' => 400, 'erreur' => static::$erreur400];
+      }
       /** On met à jour l'objet. */
       $jsonArray = json_encode([
         'statut' => $preference['statut'],
@@ -264,6 +306,11 @@ class UtilisateurRepository extends ServiceEntityRepository
         'favori_version' => $preference['favori_version'],
         'bookmark' => $preference['bookmark']
       ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+      // Vérification de l'erreur JSON
+      if ($jsonArray === false || json_last_error() !== JSON_ERROR_NONE) {
+        return ['code' => 400, 'erreur' => 'Invalid JSON: ' . json_last_error_msg()];
+      }
 
       $sql = "UPDATE ma_moulinette.utilisateur
               SET preference = :preference,
