@@ -76,15 +76,15 @@ class MesuresRepository extends ServiceEntityRepository
   public function selectMesuresVersionLast($map): array
   {
     $sql = "SELECT project_name as name, ncloc, language_distribution,
-                lines, coverage, sqale_debt_ratio,
+                lines, files, classes, functions, coverage, sqale_debt_ratio,
                 duplicated_lines_density, tests, issues
             FROM ma_moulinette.mesures
             WHERE maven_key=:maven_key
             ORDER BY date_enregistrement DESC LIMIT 1";
     try {
-          $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $stmt->bindValue(static::$mavenKey, $map['maven_key']);
-          $mesures=$stmt->executeQuery()->fetchAllAssociative();
+          $mesures = $stmt->executeQuery()->fetchAllAssociative();
       } catch (\Doctrine\DBAL\Exception $e) {
           return $this->handleDatabaseException($e);
       }
@@ -161,7 +161,7 @@ class MesuresRepository extends ServiceEntityRepository
             WHERE maven_key=:maven_key";
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
               $stmt->bindValue(static::$mavenKey, $map['maven_key']);
               $stmt->executeStatement();
           $this->getEntityManager()->getConnection()->commit();
@@ -169,6 +169,6 @@ class MesuresRepository extends ServiceEntityRepository
         $this->getEntityManager()->rollback();
         return $this->handleDatabaseException($e);
     }
-    return ['code'=>200, 'erreur'=>''];
+    return ['code' => 200, 'erreur' => ''];
   }
 }
