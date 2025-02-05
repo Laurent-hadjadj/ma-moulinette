@@ -2,7 +2,6 @@
 
 namespace App\Tests\Unit\Controller\Accueil;
 
-use App\Service\Client;
 use App\Repository\PropertiesRepository;
 use App\Repository\ListeProjetRepository;
 use App\Repository\UtilisateurRepository;
@@ -276,7 +275,8 @@ class ApiAccueilControllerTest extends WebTestCase
 
         // Décoder la réponse
         $responseData = json_decode($response->getContent(), true);
-        $this->assertEquals(200, $responseData['code'], 'Le code de réponse devrait être 403.');
+
+        $this->assertEquals(200, $responseData['code'], 'Le code de réponse devrait être 200.');
         $this->assertEquals('success', $responseData['type']);
         $this->assertArrayHasKey('message', $responseData);
         $this->assertArrayHasKey('nombre', $responseData);
@@ -289,6 +289,60 @@ class ApiAccueilControllerTest extends WebTestCase
         $this->assertGreaterThanOrEqual(0, $responseData['public'], 'Le nombre de projets publics devrait être >= 0.');
         $this->assertGreaterThanOrEqual(0, $responseData['private'], 'Le nombre de projets privés devrait être >= 0.');
         $this->assertGreaterThanOrEqual(0, $responseData['empty_tags'], 'Le nombre de projets sans tags devrait être >= 0.');
+    }
+
+    public function testApiAccueilProjetPublic(): void
+    {
+        $client = static::createClient();
+        $userRepository = static::getContainer()->get(UtilisateurRepository::class);
+        $testUser = $userRepository->findOneByCourriel(static::$aurelie);
+        $client->loginUser($testUser);
+
+        // Mock du ListeProjetRepository
+        $mockListeProjetRepository = $this->createMock(ListeProjetRepository::class);
+        $mockListeProjetRepository->method('deleteListeProjet')
+            ->willReturn(['code' => 200 ]);
+
+        // Remplacer le service ListeProjetRepository dans le conteneur
+        static::getContainer()->set(ListeProjetRepository::class, $mockListeProjetRepository);
+
+        // Mock du client HTTP pour simuler une réponse SonarQube valide
+        $mockHttpClient = $this->createMock(\App\Service\Client::class);
+        $mockHttpClient->method('httpSonarQube')->willReturn([
+            'code' => 200,
+            'json' => [
+                'components' => [
+                    ['key' =>  'fr.ma-petite-entreprise:ma-moulinette',
+                    'name' => 'ma-moulinette',
+                    'tags' => [],
+                    'visibility' => 'public']
+                ]
+            ],
+        ]);
+        static::getContainer()->set(\App\Service\Client::class, $mockHttpClient);
+
+        // Simuler une requête POST vers l'API
+        $client->request('POST', static::$apiAccueilProjet);
+
+        // Vérifier que la réponse est un succès HTTP
+        $this->assertResponseIsSuccessful();
+
+        // Décoder la réponse JSON
+        $responseData = json_decode($client->getResponse()->getContent(), true);
+
+        $this->assertEquals(200, $responseData['code'], 'Le code de réponse devrait être 200.');
+        $this->assertEquals('success', $responseData['type']);
+        $this->assertArrayHasKey('message', $responseData);
+        $this->assertArrayHasKey('nombre', $responseData);
+        $this->assertArrayHasKey('public', $responseData);
+        $this->assertArrayHasKey('private', $responseData);
+        $this->assertArrayHasKey('empty_tags', $responseData);
+
+        // Vérification des données spécifiques
+        $this->assertGreaterThanOrEqual(1, $responseData['nombre']);
+        $this->assertGreaterThanOrEqual(1, $responseData['public'],);
+        $this->assertGreaterThanOrEqual(0, $responseData['private']);
+        $this->assertGreaterThanOrEqual(0, $responseData['empty_tags']);
     }
 
     public function testAccueilProjetListeNominalForbiddenError(): void
