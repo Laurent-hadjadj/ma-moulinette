@@ -59,7 +59,7 @@ class HotspotsRepository extends ServiceEntityRepository
             WHERE maven_key=:maven_key";
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
               $stmt->bindValue(static::$mavenKey, $map['maven_key']);
               $stmt->executeStatement();
           $this->getEntityManager()->getConnection()->commit();
@@ -67,7 +67,7 @@ class HotspotsRepository extends ServiceEntityRepository
         $this->getEntityManager()->getConnection()->rollBack();
         return $this->handleDatabaseException($e);
     }
-    return ['code'=>200, 'erreur'=>''];
+    return ['code' => 200, 'erreur' => ''];
   }
 
   /**
@@ -88,13 +88,13 @@ class HotspotsRepository extends ServiceEntityRepository
             WHERE maven_key=:maven_key AND status='TO_REVIEW'
             ORDER BY niveau";
     try {
-          $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $stmt->bindValue(static::$mavenKey, $map['maven_key']);
-            $liste=$stmt->executeQuery()->fetchAllAssociative();
+            $liste = $stmt->executeQuery()->fetchAllAssociative();
       } catch (\Doctrine\DBAL\Exception $e) {
         return $this->handleDatabaseException($e);
       }
-      return ['code'=>200, 'erreur'=>'', 'liste'=>$liste];
+      return ['code'=>200, 'liste' => $liste, 'erreur' => ''];
   }
 
   /**
@@ -114,14 +114,14 @@ class HotspotsRepository extends ServiceEntityRepository
             FROM ma_moulinette.hotspots
             WHERE maven_key=:maven_key AND status=:status";
       try {
-            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
               $stmt->bindValue(static::$mavenKey, $map['maven_key']);
               $stmt->bindValue(static::$status, $map['status']);
-            $nombre=$stmt->executeQuery()->fetchAllAssociative();
+            $nombre = $stmt->executeQuery()->fetchAllAssociative();
       } catch (\Doctrine\DBAL\Exception $e) {
         return $this->handleDatabaseException($e);
       }
-      return ['code'=>200, 'erreur'=>'', 'nombre'=>$nombre];
+      return ['code' => 200, 'erreur' => '', 'nombre' => $nombre];
   }
 
   /**
@@ -142,14 +142,14 @@ class HotspotsRepository extends ServiceEntityRepository
             WHERE maven_key=:maven_key AND status=:status
             GROUP BY niveau";
       try {
-            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
               $stmt->bindValue(static::$mavenKey, $map['maven_key']);
               $stmt->bindValue(static::$status, $map['status']);
-            $liste=$stmt->executeQuery()->fetchAllAssociative();
+            $liste = $stmt->executeQuery()->fetchAllAssociative();
       } catch (\Doctrine\DBAL\Exception $e) {
         return $this->handleDatabaseException($e);
       }
-      return ['code'=>200, 'erreur'=>'', 'liste'=>$liste];
+      return ['code' => 200, 'erreur' => '', 'liste' => $liste];
   }
 
   /**
@@ -173,7 +173,7 @@ class HotspotsRepository extends ServiceEntityRepository
       try {
           $this->getEntityManager()->getConnection()->beginTransaction();
             foreach( $map as $item){
-              $stmt=$this->getEntityManager()->getConnection()->prepare($sql);
+              $stmt = $this->getEntityManager()->getConnection()->prepare($sql);
                 $stmt->bindValue(static::$mavenKey, $item['maven_key']);
                 $stmt->bindValue(':version', $item['version']);
                 $stmt->bindValue(':date_version', $item['date_version']->format('Y-m-d H:i:sO'));
@@ -194,6 +194,6 @@ class HotspotsRepository extends ServiceEntityRepository
           $this->getEntityManager()->getConnection()->rollBack();
           return $this->handleDatabaseException($e);
       }
-      return ['code' => 200, 'message' => 'Insertion réussie', 'erreur' => ''];
+      return ['code' => 200, 'erreur' => ''];
   }
 }
