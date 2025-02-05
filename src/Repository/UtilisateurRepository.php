@@ -79,15 +79,15 @@ class UtilisateurRepository extends ServiceEntityRepository
      * on regarde si la version est unique.
      *  item = "fr.ma-petite-entreprise:ma-moulinette" => [ 0 => "1.0.0-RELEASE", 1 => "2.0.0-SNAPSHOT"]
      */
-    $i=$index=-1;
-    $nombreVersion=0;
+    $i = $index = -1;
+    $nombreVersion = 0;
     foreach($preference['favori_version'] as $item){
       $i++;
 
       if (array_key_exists($map['maven_key'],$item)){
         $index=$i;
         // nombre de version pour le projet
-        $nombreVersion=count($item[$map['maven_key']]);
+        $nombreVersion = count($item[$map['maven_key']]);
       }
   }
 
@@ -100,19 +100,19 @@ class UtilisateurRepository extends ServiceEntityRepository
     if (str_contains(\serialize($preference['favori_version']), $map['maven_key']) && $map['favori'] === 1){
       /** On ajoute à la liste la version */
       array_push($preference['favori_version'][$index][$map['maven_key']], $map['version']);
-      $listeVersion=$preference['favori_version'];
+      $listeVersion = $preference['favori_version'];
   }
 
     /** On ajoute la version du projet en favori si le projet n'existe pas. */
     if (!str_contains(\serialize($preference['favori_version']), $map['maven_key']) && $map['favori'] === 1){
       /** On ajoute à la liste la version */
       array_push($preference['favori_version'],[$map['maven_key'] => [$map['version']]]);
-      $listeVersion=$preference['favori_version'];
+      $listeVersion = $preference['favori_version'];
     }
 
     /** On supprime le projet en favori car il n'y a qu'une version en favori*/
     if (str_contains(\serialize($preference['favori_version']), $map['maven_key']) &&
-          $nombreVersion===1 && $map['favori'] === 0){
+          $nombreVersion === 1 && $map['favori'] === 0){
         /** On supprime le projet */
         foreach ($preference['favori_version'] as $index => $subArray) {
           if (isset($subArray[$map['maven_key']])) {
@@ -163,7 +163,7 @@ class UtilisateurRepository extends ServiceEntityRepository
           ])
     );
 
-    $response=['code'=>200, 'erreur'=>''];
+    $response=['code' => 200, 'erreur' => ''];
 
     $sql = "UPDATE ma_moulinette.utilisateur
             SET preference = :preference,
@@ -171,11 +171,11 @@ class UtilisateurRepository extends ServiceEntityRepository
             WHERE courriel=:courriel";
     try {
         $this->getEntityManager()->getConnection()->beginTransaction();
-          $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $stmt->bindValue(static::$courriel, $map['courriel']);
             $stmt->bindValue(static::$preference, $jsonArray);
             $stmt->bindValue(static::$dateModification, $now->format(static::$dateFormatted));
-          $stmt->executeStatement();
+            $stmt->executeStatement();
         $this->getEntityManager()->getConnection()->commit();
     } catch (\Doctrine\DBAL\Exception $e) {
         $this->getEntityManager()->getConnection()->rollBack();
@@ -270,7 +270,7 @@ class UtilisateurRepository extends ServiceEntityRepository
 
         try {
               $this->getEntityManager()->getConnection()->beginTransaction();
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                   $stmt->bindValue(static::$preference, $jsonArray);
                   $stmt->bindValue(static::$dateModification, $now->format(static::$dateFormatted));
                   $stmt->bindValue(static::$courriel, $map['courriel']);
@@ -320,7 +320,7 @@ class UtilisateurRepository extends ServiceEntityRepository
         /** On met à jour les préférences. */
         try {
           $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $stmt->bindValue(static::$preference, $jsonArray);
                 $stmt->bindValue(static::$courriel, $map['courriel']);
                 $stmt->bindValue(static::$dateModification, $now->format(static::$dateFormatted));
@@ -356,7 +356,7 @@ class UtilisateurRepository extends ServiceEntityRepository
 
     try {
         $this->getEntityManager()->getConnection()->beginTransaction();
-          $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $stmt->bindValue(':init', $map['init']);
             $stmt->bindValue(static::$courriel, $map['courriel']);
             $stmt->bindValue(':date_modification', $map['date_modification']->format(static::$dateFormatted));
@@ -366,7 +366,7 @@ class UtilisateurRepository extends ServiceEntityRepository
         $this->getEntityManager()->getConnection()->rollBack();
         return $this->handleDatabaseException($e);
     }
-    return ['code'=>200, 'erreur'=>''];
+    return ['code' => 200, 'erreur' => ''];
   }
 
 }
