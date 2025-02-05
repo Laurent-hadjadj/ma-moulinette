@@ -32,14 +32,35 @@ class TodoRepository extends ServiceEntityRepository
     parent::__construct($registry, Todo::class);
   }
 
+  /**
+   * [Description for handleDatabaseException]
+   *
+   * @param \Doctrine\DBAL\Exception $e
+   *
+   * @return array
+   *
+   * Created at: 05/02/2025 11:49:11 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
   protected function handleDatabaseException(\Doctrine\DBAL\Exception $e): array
-    {
-      if (strpos($e->getMessage(), 'SQLSTATE[08006]') !== false) {
-          return ['code'=>500, 'erreur' => static::$noDataBase];
-      } else {
-          return ['code'=>500, 'erreur'=> $e->getMessage()];
-      }
+  {
+    $message = $e->getMessage();
+
+    if (strpos($e->getMessage(), 'SQLSTATE[08006]') !== false) {
+        $message = static::$noDataBase;
     }
+
+    if ($e->getSqlState() == '23502') {
+        $message = $e->getMessage();
+    }
+
+    if ($e->getSqlState() == '23505'){
+        return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
+    }
+
+    return ['code' => 500, 'erreur'=> $message];
+  }
 
   /**
    * [Description for deleteTodoMavenKey]
