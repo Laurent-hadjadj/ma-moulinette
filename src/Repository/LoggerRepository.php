@@ -45,11 +45,21 @@ class LoggerRepository extends ServiceEntityRepository
    */
   protected function handleDatabaseException(\Doctrine\DBAL\Exception $e): array
   {
-    if (strpos($e->getMessage(), 'SQLSTATE[08006]') !== false) {
-      return ['code' => 500, 'erreur' => static::$noDataBase];
-    } else {
-      return ['code' => 500, 'erreur' => $e->getMessage()];
-    }
+      $message = $e->getMessage();
+
+      if (strpos($e->getMessage(), 'SQLSTATE[08006]') !== false) {
+          $message = static::$noDataBase;
+      }
+
+      if ($e->getSqlState() == '23502') {
+          $message = $e->getMessage();
+      }
+
+      if ($e->getSqlState() == '23505'){
+          return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
+      }
+
+      return ['code' => 500, 'erreur'=> $message];
   }
 
   /**
@@ -71,7 +81,7 @@ class LoggerRepository extends ServiceEntityRepository
             WHERE maven_key=:maven_key";
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
               $stmt->bindValue(static::$mavenKey, $map['maven_key']);
               $stmt->executeStatement();
         $this->getEntityManager()->getConnection()->commit();
@@ -79,7 +89,7 @@ class LoggerRepository extends ServiceEntityRepository
       $this->getEntityManager()->getConnection()->rollBack();
       return $this->handleDatabaseException($e);
     }
-    return ['code'=>200, 'erreur'=>''];
+    return ['code' => 200, 'erreur' => ''];
   }
 
   /**
@@ -99,15 +109,14 @@ class LoggerRepository extends ServiceEntityRepository
             FROM ma_moulinette.logger
             WHERE maven_key=:maven_key";
       try {
-            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
               $stmt->bindValue(static::$mavenKey, $map['maven_key']);
-            $liste=$stmt->executeQuery()->fetchAllAssociative();
+            $liste = $stmt->executeQuery()->fetchAllAssociative();
       } catch (\Doctrine\DBAL\Exception $e) {
         return $this->handleDatabaseException($e);
       }
-      return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
+      return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
   }
-
 
   /**
    * [Description for insertLogger]
@@ -128,7 +137,7 @@ class LoggerRepository extends ServiceEntityRepository
                   (:maven_key, :logger_info, :logger_warn, :logger_error, :logger_debug, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
       try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-              $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ",$sql));
+              $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ",$sql));
                 $stmt->bindValue(static::$mavenKey, $map['maven_key']);
                 $stmt->bindValue(':logger_info', $map['logger_info']);
                 $stmt->bindValue(':logger_warn', $map['logger_warn']);
@@ -143,6 +152,6 @@ class LoggerRepository extends ServiceEntityRepository
         $this->getEntityManager()->getConnection()->rollBack();
         return $this->handleDatabaseException($e);
       }
-      return ['code'=>200, 'erreur'=>''];
+      return ['code' => 200, 'erreur' => ''];
   }
 }
