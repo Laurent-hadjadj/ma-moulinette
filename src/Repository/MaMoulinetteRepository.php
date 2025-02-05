@@ -16,6 +16,7 @@ namespace App\Repository;
 use App\Entity\MaMoulinette;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\DBAL\Exception as DBALException;
 
 /**
  * [Description MaMoulinetteRepository]
@@ -43,11 +44,21 @@ class MaMoulinetteRepository extends ServiceEntityRepository
    */
   protected function handleDatabaseException(\Doctrine\DBAL\Exception $e): array
   {
-    if (strpos($e->getMessage(), 'SQLSTATE[08006]') !== false) {
-        return ['code' => 500, 'erreur' => static::$noDataBase];
-    } else {
-        return ['code' => 500, 'erreur' => $e->getMessage()];
-    }
+      $message = $e->getMessage();
+
+      if (strpos($e->getMessage(), 'SQLSTATE[08006]') !== false) {
+          $message = static::$noDataBase;
+      }
+
+      if ($e->getSqlState() == '23502') {
+          $message = $e->getMessage();
+      }
+
+      if ($e->getSqlState() == '23505'){
+          return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
+      }
+
+      return ['code' => 500, 'erreur'=> $message];
   }
 
   /**
@@ -65,12 +76,12 @@ class MaMoulinetteRepository extends ServiceEntityRepository
               FROM ma_moulinette.ma_moulinette
               ORDER BY date_version DESC LIMIT 1";
       try {
-            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-            $request=$stmt->executeQuery()->fetchAllAssociative();
-      } catch (\Doctrine\DBAL\Exception $e) {
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $request = $stmt->executeQuery()->fetchAllAssociative();
+      } catch (DBALException $e) {
           return $this->handleDatabaseException($e);
       }
-      return ['code'=>200, 'request'=>$request, 'erreur'=>''];
+      return ['code' => 200, 'request' => $request, 'erreur' => ''];
   }
 
 }
