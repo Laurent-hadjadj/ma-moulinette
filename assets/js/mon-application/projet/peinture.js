@@ -641,7 +641,7 @@ export const remplissage = async function(mavenKey) {
 
 /**
  * [Description for afficheHotspotDetails]
- * On récupère la répartition des hotspot par sévérité
+ * On récupère la répartition des hotspot par sévérité pour le type to_review et reviewed
  * http://{url}/api/peinture/projet/hotspot/details{meven_key}
  *
  * @param string mavenKey
@@ -669,19 +669,35 @@ export const afficheHotspotDetails = async function (mavenKey){
 
         /* On efface les données.*/
         $('#tableau-liste-hotspot').html('');
-        const str =`<tr id="hotspot-1" class="open-sans">
-                  <td id="hotspot-high" class="text-center stat" data-hotspot-high="${t.high}">
-                  ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.high)}</td>
-                  <td id="hotspot-medium" class="text-center stat" data-hotspot-medium="${t.medium}">
-                  ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.medium)}</td>
-                  <td id="hotspot-low" class="text-center stat" data-hotspot-low="${t.low}">
-                  ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.low)}</td>
-                  </tr>`;
+        const str =`
+          <tr colspan="3" id="titre-hotspot-to-review" class="open-sans text-center">Risques de vulnérabilité à vérifier.</tr>
+          <tr id="to-review">
+            <td id="hotspot-to-review-high" class="text-center stat" data-hotspot-to-review-high="${t.to_review_high}">
+              ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.to_review_high)}</td>
+            <td id="hotspot-to-review-medium" class="text-center stat" data-hotspot-to-review-medium="${t.to_review_medium}">
+              ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.to_review_medium)}</td>
+            <td id="hotspot-to-review-low" class="text-center stat" data-hotspot-to-review-low="${t.to_review_low}">
+              ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.to_review_low)}</td>
+          </tr>
+          <tr colspan="3" id="titre-hotspot-to-review" class="open-sans text-center">Risques de vulnérabilité déjà vérifiés.</tr>
+          <tr id="reviewed">
+            <td id="hotspot-to-review-high" class="text-center stat" data-hotspot-to-review-high="${t.reviewed_high}">
+              ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.reviewed_high)}</td>
+            <td id="hotspot-to-review-medium" class="text-center stat" data-hotspot-to-review-medium="${t.reviewed_medium}">
+              ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.reviewed_medium)}</td>
+            <td id="hotspot-to-review-low" class="text-center stat" data-hotspot-to-review-low="${t.to_review_low}">
+              ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.reviewed_low)}</td>
+          </tr>
+          `;
+
         $('#tableau-liste-hotspot').append(str);
-        $('#hotspot-total').html(`<span class="stat">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.total)}</span>`);
+        $('#hotspot-total').html(`<span class="stat">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.to_review_total)}</span>`);
+        if (t.to_review_total > 0) {
+          $('#s').html('s');
+        }
 
         const t1 = document.getElementById('hotspot-total');
-        t1.dataset.nombreHotspot=(t.total);
+        t1.dataset.nombreHotspot=(t.to_review_high_total);
       } catch (err) {
         showMessage('alert', `<strong>[Peinture]</strong> Une erreur inattendue s'est produite lors la récupération du détails des Hotspots.<br>${err}`);
       }
