@@ -93,8 +93,8 @@ class ApiEnregistrementController extends AbstractController
         /** On contrôle le mode d'utilisation */
         $utilisateur_collecte = $this->security->getUser()->getCourriel();
 
-        $json='{}';
-        $map=['maven_key' => $data->maven_key, 'analyse_key' => $data->analyse_key,
+        $json = '{}';
+        $map = ['maven_key' => $data->maven_key, 'analyse_key' => $data->analyse_key,
             'version' => $data->version, 'date_version' => $data->date_version,
             'nom_projet' => $data->nom_projet, 'version_release' => $data->version_release, 'version_snapshot' => $data->version_snapshot, 'version_autre' => $data->version_autre,
             'suppress_warning' => $data->suppress_warning, 'no_sonar' => $data->no_sonar,
