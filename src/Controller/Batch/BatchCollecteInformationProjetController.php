@@ -127,24 +127,55 @@ class BatchCollecteInformationProjetController extends AbstractController
         if ($isNotAuthorize){
             return [
                 'code' => 401,
-                'message' => "Le serveur SonarQube n'autorise pas l'utilisateur à se connecter à cette API."];
+                'message' => "Le serveur SonarQube n'autorise pas l'utilisateur à se connecter à cette API (Erreur 401)."];
         }
 
         /** Le projet n'est pas disponible sur SonarQube */
         if ($isNotFound){
             return [
                 'code' => 404,
-                'message' => "Le projet n'existe pas sur le serveur SonarQube."];
+                'message' => "Le projet n'existe pas sur le serveur SonarQube (Erreur 404)."];
         }
 
         /** Le projet n'est pas disponible sur SonarQube */
         if ($isNotAvailable){
             return [
                 'code' => 503,
-                'message' => "La résolution DNS n'a pas permis d'accéder au serveur SonarQube."];
+                'message' => "La résolution DNS n'a pas permis d'accéder au serveur SonarQube (Erreur 503)."];
         }
 
-        return ['code' => 500, 'message' => 'Une erreur inattendue est survenue.'];
+        return ['code' => 500, 'message' => 'Une erreur inattendue est survenue (Erreur500).'];
+    }
+
+    /**
+     * [Description for calculRepartitionProjet]
+     *
+     * @param mixed $analyses
+     *
+     * @return array
+     *
+     * Created at: 06/02/2025 13:28:46 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function calculRepartitionProjet($analyses): array
+    {
+        /* si $analyses est  un tableau ? */
+        $total = $release = $snapshot = $autre = 0;
+        if (is_array($analyses)){
+            foreach($analyses as $analyse){
+                if (array_key_exists('projectVersion', $analyse)){
+                    $total++;
+                    if (strpos(strtolower($analyse['projectVersion']), 'release') !== false) {
+                        $release++;
+                    } elseif (strpos(strtolower($analyse['projectVersion']), 'snapshot') !== false) {
+                        $snapshot++;
+                    }
+                }
+            }
+            $autre = $total - ($release+$snapshot);
+        }
+        return ['total' => $total, 'release' => $release, 'snapshot' => $snapshot, 'autre' => $autre];
     }
 
     /**
@@ -232,6 +263,7 @@ class BatchCollecteInformationProjetController extends AbstractController
         /** On vérifie si on doit mettre à jour la version ou pas */
         /** 01 - Version SonarQube */
         $result = $isValide['data-sonarqube']['json']['analyses'][0];
+        /** On compte le nombre de version sur le serveur */
         $versionSonarQube = $result['projectVersion'];
         $dateAnalyseSonarQube = $result['date'];
         $keyAnalyseSonarQube = $result['key'];
@@ -262,6 +294,10 @@ class BatchCollecteInformationProjetController extends AbstractController
             }
         }
 
+        /** On calcule la répartition des versions du projet présent sur SonarQube */
+        $analyses = $isValide['data-sonarqube']['json']['analyses'];
+        $repartition = self::calculRepartitionProjet($analyses);
+
         /** On supprime les informations pour la maven_key. */
         $map = ['maven_key' => $mavenKey];
         $delete = $informationProjetRepository->deleteInformationProjetMavenKey($map);
@@ -287,6 +323,10 @@ class BatchCollecteInformationProjetController extends AbstractController
                 'date' => $result['date'],
                 'project_version' => $result['projectVersion'],
                 'type' => strtoupper($explode[1]),
+                'version_sonar' => $repartition['total'],
+                'version_release_sonar' => $repartition['release'],
+                'version_snapshot_sonar' => $repartition['snapshot'],
+                'version_autre_sonar' => $repartition['autre'],
                 'mode_collecte' => $modeCollecte,
                 'utilisateur_collecte' => $utilisateurCollecte,
                 'date_enregistrement' => $date
@@ -305,9 +345,20 @@ class BatchCollecteInformationProjetController extends AbstractController
                 'version_release' => $version['release'],
                 'version_snapshot' => $version['snapshot'],
                 'version_autre' => $version['autre'],
+                'version_sonar' => $repartition['total'],
+                'version_release_sonar' => $repartition['release'],
+                'version_snapshot_sonar' => $repartition['snapshot'],
+                'version_autre_sonar' => $repartition['autre'],
                 'version' => $version['projet'],
-                'date_version' =>$version['date']];
-        return [ 'code'=>200, 'message' => $version, 'data'=>$data ];
+                'date_version' => $version['date']];
+
+        /** on injecte les résultats de SonarQube */
+        $version['version_sonar'] = $repartition['total'];
+        $version['version_release_sonar'] = $repartition['release'];
+        $version['version_snapshot_sonar'] = $repartition['snapshot'];
+        $version['version_autre_sonar'] = $repartition['autre'];
+
+        return [ 'code' => 200, 'message' => $version, 'data'=>$data ];
     }
 
 }
