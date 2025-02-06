@@ -303,9 +303,9 @@ class InformationProjetRepository extends ServiceEntityRepository
   public function insertInformationProjet($map): array
   {
     $sql = "INSERT INTO ma_moulinette.information_projet
-              (maven_key, analyse_key, date, project_version, type, mode_collecte, utilisateur_collecte, date_enregistrement)
+              (maven_key, analyse_key, date, project_version, type, version_sonar, version_release_sonar, version_snapshot_sonar, version_autre_sonar, mode_collecte, utilisateur_collecte, date_enregistrement)
             VALUES
-              (:maven_key, :analyse_key, :date, :project_version, :type, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
+              (:maven_key, :analyse_key, :date, :project_version, :type, :version_sonar, :version_release_sonar, :version_snapshot_sonar, :version_autre_sonar,:mode_collecte, :utilisateur_collecte, :date_enregistrement)";
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
             $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
@@ -314,6 +314,10 @@ class InformationProjetRepository extends ServiceEntityRepository
               $stmt->bindValue(':date', $map['date']);
               $stmt->bindValue(':project_version', $map['project_version']);
               $stmt->bindValue(':type', $map['type']);
+              $stmt->bindValue(':version_sonar', $map['version_sonar']);
+              $stmt->bindValue(':version_release_sonar', $map['version_release_sonar']);
+              $stmt->bindValue(':version_snapshot_sonar', $map['version_snapshot_sonar']);
+              $stmt->bindValue(':version_autre_sonar', $map['version_autre_sonar']);
               $stmt->bindValue(':mode_collecte', $map['mode_collecte']);
               $stmt->bindValue(':utilisateur_collecte', $map['utilisateur_collecte']);
               /** on formate la date avant de l'enregistrer */

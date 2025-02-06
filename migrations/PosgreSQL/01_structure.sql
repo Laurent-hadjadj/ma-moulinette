@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##         Creation des tables et des objets      ##
-##               V1.31.0 - 27/01/2025             ##
+##               V1.32.0 - 06/02/2025             ##
 ##                                                ##
 ####################################################*/
 
@@ -45,7 +45,7 @@
 -- 03/01/2025 : Laurent HADJADJ - Bonne année 2025. Renommage de l'attribut start en mode_collecte  pour la table batch_traitement ;
 -- 20/01/2025 : Laurent HADJADJ - Ajout des colones classes, functions et files à la table historique ;
 -- 27/01/2025 : Laurent HADJADJ - Ajout de la clé inconnue à la table historique, pour dénombrer la répartition des valeurs inconnues ;
-
+-- 06/02/2025 : Laurent HADJADJ - Ajout des attributs : version_sonar, version_release_sonar, version_snapshot_sonar, version_autre_sonar à la table information_version ;
 
 -- SCHEMA: ma_moulinette
 
@@ -704,6 +704,10 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.information_projet
   date TIMESTAMPTZ NOT NULL,
   project_version character varying(32) NOT NULL,
   type character varying(32) NOT NULL,
+  version_sonar INT DEFAULT 0 NOT NULL,
+  version_release_sonar INT  DEFAULT 0 NOT NULL,
+  version_snapshot_sonar INT  DEFAULT 0 NOT NULL,
+  version_autre_sonar INT NOT  DEFAULT 0 NULL,
   mode_collecte character varying(32),
   utilisateur_collecte character varying(320),
   date_enregistrement TIMESTAMPTZ NOT NULL
@@ -718,6 +722,10 @@ COMMENT ON COLUMN ma_moulinette.information_projet.analyse_key IS 'Clé d’anal
 COMMENT ON COLUMN ma_moulinette.information_projet.date IS 'Date de l’analyse du projet';
 COMMENT ON COLUMN ma_moulinette.information_projet.project_version IS 'Version du projet lors de l’analyse';
 COMMENT ON COLUMN ma_moulinette.information_projet.type IS 'Type d’analyse effectuée';
+COMMENT ON COLUMN ma_moulinette.information_projet.version_sonar IS 'Nombre total de version sur le serveur SonarQube.';
+COMMENT ON COLUMN ma_moulinette.information_projet.version_release_sonar IS 'Nombre de version Release sur le serveur SonarQube.';
+COMMENT ON COLUMN ma_moulinette.information_projet.version_snapshot_sonar IS 'Nombre de version Snapshot sur le serveur SonarQube.';
+COMMENT ON COLUMN ma_moulinette.information_projet.version_autre_sonar IS 'Nombre de version Autre sur le serveur SonarQube.';
 COMMENT ON COLUMN ma_moulinette.information_projet.mode_collecte IS 'Mode de collecte : collecte, traitement manuel ou traitement automatique';
 COMMENT ON COLUMN ma_moulinette.information_projet.utilisateur_collecte IS 'Compte de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.information_projet.date_enregistrement IS 'Date d’enregistrement de l’information du projet';

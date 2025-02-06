@@ -16,6 +16,10 @@ class InformationProjetFixtures extends Fixture
   private static $date = '2024-04-12 16:23:11';
   private static $projectVersion = '2.0.0-RELEASE';
   private static $type = 'RELEASE';
+  private static $versionSonar = 59;
+  private static $versionReleaseSonar = 54;
+  private static $versionSnapshotSonar = 3;
+  private static $versionAutreSonar = 2;
   private static $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
   private static $dateEnregistrement = '2024-04-12 16:23:11+01';
 
@@ -31,6 +35,10 @@ class InformationProjetFixtures extends Fixture
           ->setDate(new \DateTimeImmutable(static::$date))
           ->setProjectVersion(static::$projectVersion)
           ->setType(static::$type)
+          ->setVersionSonar(static::$versionSonar)
+          ->setVersionReleaseSonar(static::$versionReleaseSonar)
+          ->setVersionSnapshotSonar(static::$versionSnapshotSonar)
+          ->setVersionAutreSonar(static::$versionAutreSonar)
           ->setModeCollecte($mode)
           ->setUtilisateurCollecte(static::$utilisateurCollecte)
           ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));

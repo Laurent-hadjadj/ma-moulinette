@@ -25,6 +25,10 @@ class InformationProjetValidatorTest extends KernelTestCase
   private static $date = '2024-04-12 16:23:11';
   private static $projectVersion = '2.0.0-RELEASE';
   private static $type = 'RELEASE';
+  private static $versionSonar = 59;
+  private static $versionReleaseSonar = 54;
+  private static $versionSnapshotSonar = 3;
+  private static $versionAutreSonar = 2;
   private static $modeCollecte = 'TRAITEMENT MANUEL';
   private static $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
   private static $dateEnregistrement = '2024-04-12 16:23:11+01';
@@ -32,14 +36,18 @@ class InformationProjetValidatorTest extends KernelTestCase
   private function getEntity(): InformationProjet
   {
       return (new informationProjet())
-      ->setMavenKey(static::$mavenKey)
-      ->setAnalyseKey(static::$analyseKey)
-      ->setDate(new \DateTimeImmutable(static::$date))
-      ->setProjectVersion(static::$projectVersion)
-      ->setType(static::$type)
-      ->setModeCollecte(static::$modeCollecte)
-      ->setUtilisateurCollecte(static::$utilisateurCollecte)
-      ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+        ->setMavenKey(static::$mavenKey)
+        ->setAnalyseKey(static::$analyseKey)
+        ->setDate(new \DateTimeImmutable(static::$date))
+        ->setProjectVersion(static::$projectVersion)
+        ->setType(static::$type)
+        ->setVersionSonar(static::$versionSonar)
+        ->setVersionReleaseSonar(static::$versionReleaseSonar)
+        ->setVersionSnapshotSonar(static::$versionSnapshotSonar)
+        ->setVersionAutreSonar(static::$versionAutreSonar)
+        ->setModeCollecte(static::$modeCollecte)
+        ->setUtilisateurCollecte(static::$utilisateurCollecte)
+        ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
 }
 
   public function assertHasErrors(InformationProjet $entity, int $number = 0): void
@@ -71,11 +79,19 @@ class InformationProjetValidatorTest extends KernelTestCase
 
   }
 
+  public function testValidIntegerEntity(): void
+  {
+    $this->assertHasErrors($this->getEntity()->setVersionSonar(-1), 0);
+    $this->assertHasErrors($this->getEntity()->setVersionReleaseSonar(-1), 0);
+    $this->assertHasErrors($this->getEntity()->setVersionSnapshotSonar(-1), 0);
+    $this->assertHasErrors($this->getEntity()->setVersionAutreSonar(-1), 0);
+  }
+
   public function testCountAttribut(): void
   {
-      $entity = $this->getEntity();
-      $reflectionClass = new \ReflectionClass($entity);
-      $nbAttributs = count($reflectionClass->getProperties());
-      $this->assertEquals($nbAttributs, 9);
+    $entity = $this->getEntity();
+    $reflectionClass = new \ReflectionClass($entity);
+    $nbAttributs = count($reflectionClass->getProperties());
+    $this->assertEquals($nbAttributs,13);
   }
 }

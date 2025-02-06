@@ -61,6 +61,22 @@ class InformationProjet
         maxMessage: "Le type d'analyse ne doit pas dépasser 32 caractères.")]
     private $type;
 
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+    options: ['default' => 0, 'comment' => 'Nombre total de version sur le serveur SonarQube.'])]
+    private int $versionSonar=0;
+
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+    options: ['default' => 0, 'comment' => 'Nombre de version Release sur le serveur SonarQube.'])]
+    private int $versionReleaseSonar=0;
+
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+    options: ['default' => 0, 'comment' => 'Nombre de version Snapshot sur le serveur SonarQube.'])]
+    private int $versionSnapshotSonar=0;
+
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+    options: ['default' => 0, 'comment' => 'Nombre de version Autre sur le serveur SonarQube.'])]
+    private int $versionAutreSonar=0;
+
     #[ORM\Column(type: Types::STRING, length: 32, nullable: true,
     options: ['comment' => 'Mode de collecte : [COLLECTE] | [TRAITEMENT MANUEL] | [TRAITEMENT AUTOMATIQUE]'])]
     #[Assert\Length(max: 32,
@@ -143,17 +159,50 @@ class InformationProjet
         return $this;
     }
 
-    public function getDateEnregistrement(): ?\DateTimeImmutable
+    public function getVersionSonar(): int
     {
-        return $this->dateEnregistrement;
+        return $this->versionSonar;
     }
 
-    public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): static
+    public function setVersionSonar(int $versionSonar): self
     {
-        $this->dateEnregistrement = $dateEnregistrement;
-
+        $this->versionSonar = $versionSonar;
         return $this;
     }
+
+    public function getVersionReleaseSonar(): int
+    {
+        return $this->versionReleaseSonar;
+    }
+
+    public function setVersionReleaseSonar(int $versionReleaseSonar): self
+    {
+        $this->versionReleaseSonar = $versionReleaseSonar;
+        return $this;
+    }
+
+    public function getVersionSnapshotSonar(): int
+    {
+        return $this->versionSnapshotSonar;
+    }
+
+    public function setVersionSnapshotSonar(int $versionSnapshotSonar): self
+    {
+        $this->versionSonar = $versionSnapshotSonar;
+        return $this;
+    }
+
+    public function getVersionAutreSonar(): int
+    {
+        return $this->versionAutreSonar;
+    }
+
+    public function setVersionAutreSonar(int $versionAutreSonar): self
+    {
+        $this->versionAutreSonar = $versionAutreSonar;
+        return $this;
+    }
+
 
     public function getModeCollecte(): ?string
     {
@@ -175,6 +224,18 @@ class InformationProjet
     public function setUtilisateurCollecte(?string $utilisateurCollecte): static
     {
         $this->utilisateurCollecte = $utilisateurCollecte;
+
+        return $this;
+    }
+
+    public function getDateEnregistrement(): ?\DateTimeImmutable
+    {
+        return $this->dateEnregistrement;
+    }
+
+    public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): static
+    {
+        $this->dateEnregistrement = $dateEnregistrement;
 
         return $this;
     }
