@@ -328,15 +328,18 @@ $('.js-profil-information').on('click', (e) => {
   const target = e.currentTarget.id;
   const elm = document.getElementById(target);
 
-  /* on passe le mode à null */
-  const mode='null';
   /* On récupère le nom du langage. */
-  const language=elm.dataset.language;
+  const language = elm.dataset.language;
   /* On récupère le nom du profil. */
   const profil=elm.dataset.profil;
 
+  /** on créé un hash avec la méthode reduce() comme clé de salt */
+  const salt = language.split('').reduce((hash, char) => {
+    return char.charCodeAt(0) + (hash << 6) + (hash << 16) - hash;
+} , 0);
+
   /** on créé un token pour encoder les paramètres */
-  const param=`${mode}|${language}|${profil}`;
+  const param=`${salt}|${language}|${profil}`;
   const a=encode(btoa(param));
   location.href=`${serveur()}/profil/details?token=${a}`;
 });
