@@ -33,9 +33,9 @@ $('#js-identifiant-oui-non').on('click', function () {
   const oui_non = $('#js-identifiant-oui-non').is(':checked');
 
   /** Par défaut on bloque la mise à jour du mot de passe. */
-  data={ 'mode': 'null', 'init': 0 };
+  data={ 'init': 0 };
   if (oui_non===true) {
-    data={ 'mode': 'null', 'init': 1 };
+    data={ 'init': 1 };
     init=1
   }
 
