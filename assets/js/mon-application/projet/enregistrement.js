@@ -247,7 +247,7 @@ export const enregistrement = async function(mavenKey) {
             return;
           }
 
-        if (t.code === http_202) {
+        if (t.code === 23505) {
           const message=`Cette version existe déjà dans l'historique.`;
           showMessage('warning', `<strong>[Enregistrement]</strong> ${message}`);
           }
