@@ -43,7 +43,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class ApiCollecteController extends AbstractController
 {
     /** Définition des constantes */
-    public static $reference = "[Projet]";
+    public static $reference = "[Collecte]";
     public static $erreur400 = "La requête est incorrecte (Erreur 400).";
     public static $erreur403 = "Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).";
 
@@ -114,35 +114,36 @@ class ApiCollecteController extends AbstractController
         /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'maven_key') ) {
             return new JsonResponse(
-                ['data' => $data,'code' => 400, 'type' => 'alert',
-                'reference' => static::$reference, 'message' => static::$erreur400], Response::HTTP_OK);
+                ['data' => $data, 'code' => 400, 'type' => 'alert',
+                'message' => static::$reference . static::$erreur400], Response::HTTP_OK);
         }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return new JsonResponse(
-                ['type'=>'warning', 'code' => 403, 'reference' => static::$reference,
-                'message' => static::$erreur403], Response::HTTP_OK);
+                ['type'=>'warning', 'code' => 403,
+                'message' => static::$reference . static::$erreur403], Response::HTTP_OK);
         }
 
         /** On contrôle le mode d'utilisation */
         $utilisateur_collecte = $this->security->getUser()->getCourriel() ?? 'null';
 
         /** Information générales sur le projet */
-        $information = $this->batchCollecteInformation->batchCollecteInformation($data->maven_key, 'COLLECTE', $utilisateur_collecte);
+        $information = $this->batchCollecteInformation->batchCollecteInformation(
+            $data->maven_key, 'COLLECTE', $utilisateur_collecte);
 
         if ($information['code'] != 200){
             return new JsonResponse([
                 'type' => 'erreur', 'code' => $information['code'],
-                'reference' => static::$reference,
-                'message' => $information['message'] ?? $information['erreur']],
-                Response::HTTP_OK);
+                'message' => static::$reference . $information['message'] ?? static::$reference . $information['erreur']], Response::HTTP_OK);
         }
-        return new JsonResponse(['code' => 200, 'message' => [
-            'projet'=>$information['message']['projet'],
-            'release'=>$information['message']['release'],
-            'snapshot'=>$information['message']['snapshot'],
-            'autre'=>$information['message']['autre']]],
+        return new JsonResponse([
+            'code' => 200,
+            'message' => [
+                'projet' => $information['message']['projet'],
+                'release' => $information['message']['release'],
+                'snapshot' => $information['message']['snapshot'],
+                'autre' => $information['message']['autre']]],
             Response::HTTP_OK);
     }
 
@@ -166,31 +167,30 @@ class ApiCollecteController extends AbstractController
         /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'maven_key') ) {
             return new JsonResponse(
-                ['data'=>$data,'code'=>400, 'type'=>'alert',
-                'reference'=> static::$reference, 'message'=> static::$erreur400],
-                Response::HTTP_OK);
+                ['data' => $data, 'code' => 400, 'type' => 'alert',
+                'message'=> static::$reference . static::$erreur400], Response::HTTP_OK);
         }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return new JsonResponse(
-                ['type'=>'warning', 'code' => 403, 'reference' => static::$reference,
-                'message' => static::$erreur403], Response::HTTP_OK);
+                ['type' => 'warning', 'code' => 403,
+                'message' => static::$reference . static::$erreur403], Response::HTTP_OK);
         }
 
         /** On contrôle le mode d'utilisation */
         $utilisateur_collecte = $this->security->getUser()->getCourriel() ?? 'null';
 
         /** Mesures du projet (ligne de code, coverage, dette, ...) */
-        $mesure=$this->batchCollecteMesure->batchCollecteMesure($data->maven_key, 'COLLECTE', $utilisateur_collecte);
-        if ($mesure['code']!=200){
+        $mesure = $this->batchCollecteMesure->batchCollecteMesure($data->maven_key, 'COLLECTE', $utilisateur_collecte);
+        if ($mesure['code'] != 200){
             return new JsonResponse([
                 'type' => 'erreur', 'code' => $mesure['code'],
-                'reference' => static::$reference,
-                'message' => $mesure['message'] ?? $mesure['erreur']], Response::HTTP_OK);
+                'message' => static::$reference . $mesure['message'] ?? static::$reference . $mesure['erreur']],
+                Response::HTTP_OK);
         }
 
-        return new JsonResponse(['code' => 200, 'message'=>['issues'=>$mesure['message']['issues']]], Response::HTTP_OK);
+        return new JsonResponse(['code' => 200, 'message' => ['issues'=>$mesure['message']['issues']]], Response::HTTP_OK);
     }
 
     /**
@@ -215,15 +215,17 @@ class ApiCollecteController extends AbstractController
             !property_exists($data, 'maven_key') ||
             !property_exists($data, 'type')) {
             return new JsonResponse(
-                ['data'=>$data,'code'=>400, 'type'=>'alert',
-                'reference'=> static::$reference, 'message'=> static::$erreur400], Response::HTTP_OK);
+                ['data' => $data, 'code' => 400, 'type' => 'alert',
+                'message' => static::$reference . static::$erreur400],
+                Response::HTTP_OK);
         }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return new JsonResponse(
-                ['type'=>'warning', 'code' => 403, 'reference' => static::$reference,
-                'message' => static::$erreur403], Response::HTTP_OK);
+                ['type' => 'warning', 'code' => 403,
+                'message' => static::$reference . static::$erreur403],
+                Response::HTTP_OK);
         }
 
         /** On contrôle le mode d'utilisation */
@@ -231,15 +233,14 @@ class ApiCollecteController extends AbstractController
 
         /** Notes du projet  (fiabilité, sécurité, mauvaise pratique) */
         $note=$this->batchCollecteNote->batchCollecteNote($data->maven_key, 'COLLECTE', $utilisateur_collecte, $data->type);
-        if ($note['code']!=200){
+        if ($note['code'] != 200){
             return new JsonResponse([
                 'type' => 'erreur', 'code' => $note['code'],
-                'reference' => static::$reference,
-                'message' => $note['message'] ?? $note['erreur']],
+                'message' => static::$reference . $note['message'] ?? static::$reference . $note['erreur']],
                 Response::HTTP_OK);
         }
         return new JsonResponse(['code' => 200, 'type' => $data->type,
-        'message'=> ['note' => $note['message']['value']]], Response::HTTP_OK);
+        'message' => ['note' => $note['message']['value']]], Response::HTTP_OK);
     }
 
     /**
@@ -262,30 +263,35 @@ class ApiCollecteController extends AbstractController
         /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'maven_key')) {
             return new JsonResponse(
-                ['data'=>$data,'code'=>400, 'type'=>'alert',
-                'reference'=> static::$reference, 'message'=> static::$erreur400], Response::HTTP_OK);
+                ['data' => $data, 'code' => 400, 'type' => 'alert',
+                'message' => static::$reference . static::$erreur400],
+                Response::HTTP_OK);
         }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return new JsonResponse(
-                ['type'=>'warning', 'code' => 403, 'reference' => static::$reference,
-                'message' => static::$erreur403], Response::HTTP_OK);
+                ['type'=>'warning', 'code' => 403,
+                'message' => static::$reference . static::$erreur403],
+                Response::HTTP_OK);
         }
 
         /** On contrôle le mode d'utilisation */
         $utilisateur_collecte = $this->security->getUser()->getCourriel() ?? 'null';
 
         /** Signalement des Anomalies pour le projet */
-        $owasp=$this->batchCollecteOwasp->batchCollecteOwasp($data->maven_key, 'COLLECTE', $utilisateur_collecte);
-        if ($owasp['code']!=200){
+        $owasp = $this->batchCollecteOwasp->batchCollecteOwasp($data->maven_key, 'COLLECTE', $utilisateur_collecte);
+        if ($owasp['code'] != 200){
             return new JsonResponse([
                 'type' => 'erreur', 'code' => $owasp['code'],
-                'reference' => static::$reference,
-                'message' => $owasp['message'] ?? $owasp['erreur']],
+                'message' => static::$reference . $owasp['message'] ?? static::$reference . $owasp['erreur']],
                 Response::HTTP_OK);
         }
-        return new JsonResponse(['code' => 200, 'owasp2017' => $owasp['owasp2017'], 'owasp2021' => $owasp['owasp2021'], 'message'=>['Nombre de faille OWASP 2017 : ' => $owasp['owasp2017'], 'Nombre de faille OWASP 2021 : ' => $owasp['owasp2021']]], Response::HTTP_OK);
+        return new JsonResponse([
+            'code' => 200, 'owasp2017' => $owasp['owasp2017'],
+            'owasp2021' => $owasp['owasp2021'],
+            'message' => ['Nombre de faille OWASP 2017 : ' => $owasp['owasp2017'],
+            'Nombre de faille OWASP 2021 : ' => $owasp['owasp2021']]], Response::HTTP_OK);
     }
 
     /**
@@ -308,15 +314,17 @@ class ApiCollecteController extends AbstractController
         /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'maven_key')) {
             return new JsonResponse(
-                ['data'=>$data,'code'=>400, 'type'=>'alert',
-                'reference'=> static::$reference, 'message'=> static::$erreur400], Response::HTTP_OK);
+                ['data' => $data,'code' => 400, 'type' => 'alert',
+                'message'=> static::$reference . static::$erreur400],
+                Response::HTTP_OK);
         }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return new JsonResponse(
-                ['type'=>'warning', 'code' => 403, 'reference' => static::$reference,
-                'message' => static::$erreur403], Response::HTTP_OK);
+                ['code' => 403, 'type' => 'warning',
+                'message' => static::$reference . static::$erreur403],
+                Response::HTTP_OK);
         }
 
         /** On contrôle le mode d'utilisation */
@@ -324,16 +332,16 @@ class ApiCollecteController extends AbstractController
 
         /** Signalement Hotspots pour le projet */
         $hotspot=$this->batchCollecteHotspot->batchCollecteHotspot($data->maven_key, 'COLLECTE', $utilisateur_collecte);
-        if ($hotspot['code']!=200){
+        if ($hotspot['code'] != 200){
             return new JsonResponse([
-                'type' => 'erreur', 'code' => $hotspot['code'],
-                'reference' => static::$reference,
-                'message' => $hotspot['message'] ?? $hotspot['erreur']], Response::HTTP_OK);
+                'code' => $hotspot['code'], 'type' => 'erreur',
+                'message' => static::$reference . $hotspot['message'] ?? static::$reference . $hotspot['erreur']],
+                Response::HTTP_OK);
         }
 
         return new JsonResponse([
-                'code' => 200, 'nombre'=>$hotspot['data']['nombre_hotspot'],
-                'message'=>[
+                'code' => 200, 'nombre' => $hotspot['data']['nombre_hotspot'],
+                'message' => [
                     'hotspot_high' => $hotspot['data']['hotspot_high'],
                     'hotspot_medium' => $hotspot['data']['hotspot_medium'],
                     'hotspot_low' => $hotspot['data']['hotspot_low'],
@@ -360,34 +368,39 @@ class ApiCollecteController extends AbstractController
         /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'maven_key')) {
             return new JsonResponse(
-                ['data'=>$data,'code'=>400, 'type'=>'alert',
-                'reference'=> static::$reference, 'message'=> static::$erreur400], Response::HTTP_OK);
+                ['data' => $data, 'code' => 400, 'type' => 'alert',
+                'message'=> static::$reference . static::$erreur400],
+                Response::HTTP_OK);
         }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return new JsonResponse(
-                ['type'=>'warning', 'code' => 403, 'reference' => static::$reference,
-                'message' => static::$erreur403], Response::HTTP_OK);
+                ['type' => 'warning', 'code' => 403,
+                'message' => static::$reference . static::$erreur403],
+                Response::HTTP_OK);
         }
 
         /** On contrôle le mode d'utilisation */
         $utilisateur_collecte = $this->security->getUser()->getCourriel() ?? 'null';
 
         /** Signalement des Anomalies pour le projet */
-        $anomalie=$this->batchCollecteAnomalie->BatchCollecteAnomalie($data->maven_key, 'COLLECTE', $utilisateur_collecte);
-        if ($anomalie['code']!=200){
+        $anomalie = $this->batchCollecteAnomalie->BatchCollecteAnomalie($data->maven_key, 'COLLECTE', $utilisateur_collecte);
+        if ($anomalie['code'] != 200){
             return new JsonResponse([
                 'type' => 'erreur', 'code' => $anomalie['code'],
-                'reference' => static::$reference,
-                'message' => $anomalie['message'] ?? $anomalie['erreur']], Response::HTTP_OK);
+                'message' => static::$reference . $anomalie['message'] ?? static::$reference . $anomalie['erreur']],
+                Response::HTTP_OK);
         }
 
-        return new JsonResponse(['code' => 200, 'info'=>$anomalie['info'],'message'=>[
-            'violations' => $anomalie['data']['violations'],
-            'nombre_bug' => $anomalie['data']['nombre_bug'],
-            'nombre_vulnerability' => $anomalie['data']['nombre_vulnerability'],
-            'nombre_code_smell' => $anomalie['data']['nombre_code_smell']]],
+        return new JsonResponse([
+            'code' => 200,
+            'info' => $anomalie['info'],
+            'message' => [
+                'violations' => $anomalie['data']['violations'],
+                'nombre_bug' => $anomalie['data']['nombre_bug'],
+                'nombre_vulnerability' => $anomalie['data']['nombre_vulnerability'],
+                'nombre_code_smell' => $anomalie['data']['nombre_code_smell']]],
             Response::HTTP_OK);
     }
 
@@ -411,30 +424,32 @@ class ApiCollecteController extends AbstractController
         /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'maven_key')) {
             return new JsonResponse(
-                ['data'=>$data,'code'=>400, 'type'=>'alert',
-                'reference'=> static::$reference, 'message'=> static::$erreur400], Response::HTTP_OK);
+                ['data' => $data,'code' => 400, 'type' => 'alert',
+                'message'=> static::$reference . static::$erreur400],
+                Response::HTTP_OK);
         }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return new JsonResponse(
-                ['type'=>'warning', 'code' => 403, 'reference' => static::$reference,
-                'message' => static::$erreur403], Response::HTTP_OK);
+                ['code' => 403, 'type' => 'warning',
+                'message' => static::$reference . static::$erreur403],
+                Response::HTTP_OK);
         }
 
         /** On contrôle le mode d'utilisation */
         $utilisateur_collecte = $this->security->getUser()->getCourriel() ?? 'null';
 
         /** collecte des signalements du détail des Anomalies pour le projet */
-        $anomalieDetail=$this->batchCollecteAnomalieDetail->BatchCollecteAnomalieDetail($data->maven_key, 'COLLECTE', $utilisateur_collecte);
-        if ($anomalieDetail['code']!=200){
+        $anomalieDetail = $this->batchCollecteAnomalieDetail->BatchCollecteAnomalieDetail($data->maven_key, 'COLLECTE', $utilisateur_collecte);
+        if ($anomalieDetail['code'] != 200){
             return new JsonResponse([
-                'type' => 'erreur', 'code' => $anomalieDetail['code'],
-                'reference' => static::$reference,
-                'message' => $anomalieDetail['message'] ?? $anomalieDetail['erreur']], Response::HTTP_OK);
+                'code' => $anomalieDetail['code'], 'type' => 'erreur',
+                'message' => static::$reference . $anomalieDetail['message'] ?? static::$reference . $anomalieDetail['erreur']],
+                Response::HTTP_OK);
         }
 
-        return new JsonResponse(['code' => 200, 'message'=>['chargement des anomalies details']], Response::HTTP_OK);
+        return new JsonResponse(['code' => 200, 'message' => ['chargement des anomalies details']], Response::HTTP_OK);
     }
 
     /**
@@ -459,33 +474,37 @@ class ApiCollecteController extends AbstractController
             !property_exists($data, 'maven_key') ||
             !property_exists($data, 'menace')) {
             return new JsonResponse(
-                ['data'=>$data,'code'=>400, 'type'=>'alert',
-                'reference'=> static::$reference, 'message'=> static::$erreur400], Response::HTTP_OK);
+                ['data' => $data,'code' => 400, 'type' => 'alert',
+                static::$reference . 'message'=> static::$erreur400],
+                Response::HTTP_OK);
         }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return new JsonResponse(
-                ['type'=>'warning', 'code' => 403, 'reference' => static::$reference,
-                'message' => static::$erreur403], Response::HTTP_OK);
+                ['code' => 403, 'type' => 'warning',
+                'message' => static::$reference . static::$erreur403],
+                Response::HTTP_OK);
         }
 
         /** On contrôle le mode d'utilisation */
         $utilisateur_collecte = $this->security->getUser()->getCourriel() ?? 'null';
 
-        $hotspotOwasp=$this->batchCollecteHotspotOwasp->BatchCollecteHotspotOwasp($data->maven_key, 'COLLECTE', $utilisateur_collecte, $data->menace);
+        $hotspotOwasp = $this->batchCollecteHotspotOwasp->BatchCollecteHotspotOwasp($data->maven_key, 'COLLECTE', $utilisateur_collecte, $data->menace);
 
-        if ($hotspotOwasp['code']!=200){
+        if ($hotspotOwasp['code'] != 200){
             return new JsonResponse([
-                'type' => 'erreur', 'code' => $hotspotOwasp['code'],
-                'reference' => static::$reference,
-                'message' => $hotspotOwasp['message'] ?? $hotspotOwasp['erreur']], Response::HTTP_OK);
+                'code' => $hotspotOwasp['code'], 'type' => 'alert',
+                'message' => static::$reference . $hotspotOwasp['message'] ?? static::$reference . $hotspotOwasp['erreur']],
+                Response::HTTP_OK);
         }
 
-        return new JsonResponse(['code' => 200, 'info' => $hotspotOwasp['info'],
-        'owasp2017'=>$hotspotOwasp['owasp_2017'] ?? 'nc',
-        'owasp2021'=>$hotspotOwasp['owasp_2021'] ?? 'nc',
-        'message'=>$hotspotOwasp['message']], Response::HTTP_OK);
+        return new JsonResponse([
+            'code' => 200,
+            'info' => $hotspotOwasp['info'],
+            'owasp2017' => $hotspotOwasp['owasp_2017'] ?? 'nc',
+            'owasp2021' => $hotspotOwasp['owasp_2021'] ?? 'nc',
+            'message' => $hotspotOwasp['message']], Response::HTTP_OK);
     }
 
     /**
@@ -508,30 +527,31 @@ class ApiCollecteController extends AbstractController
         /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'maven_key')) {
             return new JsonResponse(
-                ['data'=>$data,'code'=>400, 'type'=>'alert',
-                'reference'=> static::$reference, 'message'=> static::$erreur400], Response::HTTP_OK);
+                ['data' => $data,'code' => 400, 'type' => 'alert',
+                'message' => static::$reference . static::$erreur400],
+                Response::HTTP_OK);
         }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return new JsonResponse(
-                ['type'=>'warning', 'code' => 403, 'reference' => static::$reference,
-                'message' => static::$erreur403], Response::HTTP_OK);
+                ['code' => 403, 'type' => 'warning',
+                'message' => static::$reference . static::$erreur403],
+                Response::HTTP_OK);
         }
 
         /** On contrôle le mode d'utilisation */
         $utilisateur_collecte = $this->security->getUser()->getCourriel() ?? 'null';
 
         /** collecte du détail des hotspots pour le projet */
-        $hotspotDetail=$this->batchCollecteHotspotDetail->BatchCollecteHotspotDetail($data->maven_key, 'COLLECTE', $utilisateur_collecte);
-        if ($hotspotDetail['code']!=200){
+        $hotspotDetail = $this->batchCollecteHotspotDetail->BatchCollecteHotspotDetail($data->maven_key, 'COLLECTE', $utilisateur_collecte);
+        if ($hotspotDetail['code'] != 200){
             return new JsonResponse([
-                'type' => 'erreur', 'code' => $hotspotDetail['code'],
-                'reference' => static::$reference,
-                'message' => $hotspotDetail['message'] ?? $hotspotDetail['erreur']], Response::HTTP_OK);
+                'code' => $hotspotDetail['code'], 'type' => 'alert',
+                'message' => static::$reference . $hotspotDetail['message'] ?? static::$reference . $hotspotDetail['erreur']], Response::HTTP_OK);
         }
 
-        return new JsonResponse(['code' => 200, 'nombre'=>count($hotspotDetail),'message'=>''], Response::HTTP_OK);
+        return new JsonResponse(['code' => 200, 'nombre' => count($hotspotDetail), 'message' => ''], Response::HTTP_OK);
     }
 
     /**
@@ -554,33 +574,38 @@ class ApiCollecteController extends AbstractController
         /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'maven_key')) {
             return new JsonResponse(
-                ['data'=>$data,'code'=>400, 'type'=>'alert',
-                'reference'=> static::$reference, 'message'=> static::$erreur400], Response::HTTP_OK);
+                ['data' => $data,'code' => 400, 'type' => 'alert',
+                'message' => static::$reference . static::$erreur400],
+                Response::HTTP_OK);
         }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return new JsonResponse(
-                ['type'=>'warning', 'code' => 403, 'reference' => static::$reference,
-                'message' => static::$erreur403], Response::HTTP_OK);
+                ['code' => 403, 'type' => 'warning',
+                'message' => static::$reference . static::$erreur403],
+                Response::HTTP_OK);
         }
 
         /** On contrôle le mode d'utilisation */
         $utilisateur_collecte = $this->security->getUser()->getCourriel() ?? 'null';
 
         /** collecte des suppressWarning et noSonar du projet */
-        $noSonar=$this->batchCollecteNoSonar->BatchCollecteNoSonar($data->maven_key, 'COLLECTE', $utilisateur_collecte);
-        if ($noSonar['code']!=200){
+        $noSonar = $this->batchCollecteNoSonar->BatchCollecteNoSonar($data->maven_key, 'COLLECTE', $utilisateur_collecte);
+        if ($noSonar['code'] != 200){
             return new JsonResponse([
-                'type' => 'erreur', 'code' => $noSonar['code'],
-                'reference' => static::$reference,
-                'message' => $noSonar['message'] ?? $noSonar['erreur']], Response::HTTP_OK);
+                'code' => $noSonar['code'], 'type' => 'alert',
+                'message' => static::$reference . $noSonar['message'] ?? static::$reference . $noSonar['erreur']], Response::HTTP_OK);
         }
 
-        $nombre=$noSonar['message']['suppress_warning']??0 + $noSonar['message']['no_sonar']??0;
-        return new JsonResponse(['code' => 200, 'nombre' => $nombre, 'message'=>[
-            'suppress_warning' => $noSonar['message']['suppress_warning']??0,
-            'no_sonar' => $noSonar['message']['no_sonar']??0]], Response::HTTP_OK);
+        $nombre = $noSonar['message']['suppress_warning']??0 + $noSonar['message']['no_sonar']??0;
+        return new JsonResponse([
+            'code' => 200,
+            'nombre' => $nombre,
+            'message' => [
+                'suppress_warning' => $noSonar['message']['suppress_warning'] ?? 0,
+                'no_sonar' => $noSonar['message']['no_sonar'] ?? 0]],
+                Response::HTTP_OK);
     }
 
     /**
@@ -603,29 +628,31 @@ class ApiCollecteController extends AbstractController
         /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'maven_key')) {
             return new JsonResponse(
-                ['data'=>$data,'code'=>400, 'type'=>'alert',
-                'reference'=> static::$reference, 'message'=> static::$erreur400], Response::HTTP_OK);
+                ['data' => $data, 'code' => 400, 'type' => 'alert',
+                'message' => static::$reference . static::$erreur400],
+                Response::HTTP_OK);
         }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return new JsonResponse(
-                ['type'=>'warning', 'code' => 403, 'reference' => static::$reference,
-                'message' => static::$erreur403], Response::HTTP_OK);
+                ['code' => 403, 'type' => 'warning',
+                'message' => static::$reference . static::$erreur403],
+                Response::HTTP_OK);
         }
 
         /** On contrôle le mode d'utilisation */
         $utilisateur_collecte = $this->security->getUser()->getCourriel() ?? 'null';
 
         /** collecte des to.do présent dans le projet */
-        $todo=$this->batchCollecteTodo->BatchCollecteTodo($data->maven_key, 'COLLECTE', $utilisateur_collecte);
-        if ($todo['code']!=200){
+        $todo = $this->batchCollecteTodo->BatchCollecteTodo($data->maven_key, 'COLLECTE', $utilisateur_collecte);
+        if ($todo['code'] != 200){
             return new JsonResponse([
-                'type' => 'erreur', 'code' => $todo['code'],
-                'reference' => static::$reference,
-                'message' => $todo['message'] ?? $todo['erreur']], Response::HTTP_OK);
+                'code' => $todo['code'], 'type' => 'alert',
+                'message' => static::$reference . $todo['message'] ?? static::$reference . $todo['erreur']],
+                Response::HTTP_OK);
         }
-        return new JsonResponse(['code' => 200, 'nombre' => $todo['nombre'], 'message'=>''], Response::HTTP_OK);
+        return new JsonResponse(['code' => 200, 'nombre' => $todo['nombre'], 'message' => ''], Response::HTTP_OK);
     }
 
     /**
@@ -646,32 +673,33 @@ class ApiCollecteController extends AbstractController
         $data = json_decode($request->getContent());
 
         /** On teste si la clé est valide */
-        if ($data === null ||
-            !property_exists($data, 'maven_key')) {
+        if ($data === null || !property_exists($data, 'maven_key')) {
             return new JsonResponse(
-                ['data'=>$data,'code'=>400, 'type'=>'alert',
-                'reference'=> static::$reference, 'message'=> static::$erreur400], Response::HTTP_OK);
+                ['data' => $data, 'code' => 400, 'type' => 'alert',
+                'message' => static::$reference . static::$erreur400],
+                Response::HTTP_OK);
         }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return new JsonResponse(
-                ['type'=>'warning', 'code' => 403, 'reference' => static::$reference,
-                'message' => static::$erreur403], Response::HTTP_OK);
+                ['code' => 403, 'type' => 'warning',
+                'message' => static::$reference . static::$erreur403],
+                Response::HTTP_OK);
         }
 
         /** On contrôle le mode d'utilisation */
         $utilisateur_collecte = $this->security->getUser()->getCourriel() ?? 'null';
 
         /** collecte des to.do présent dans le projet */
-        $actuatorInfo=$this->batchCollecteActuator->BatchCollecteActuatorInfo($data->maven_key, 'COLLECTE', $utilisateur_collecte);
-        if ($actuatorInfo['code']!=200){
+        $actuatorInfo = $this->batchCollecteActuator->BatchCollecteActuatorInfo($data->maven_key, 'COLLECTE', $utilisateur_collecte);
+        if ($actuatorInfo['code'] != 200){
             return new JsonResponse([
-                'type' => 'erreur', 'code' => $actuatorInfo['code'],
-                'reference' => static::$reference,
-                'message' => $actuatorInfo['message'] ?? $actuatorInfo['erreur']], Response::HTTP_OK);
+                'code' => $actuatorInfo['code'], 'type' => 'alert',
+                'message' => static::$reference . $actuatorInfo['message'] ?? static::$reference . $actuatorInfo['erreur']],
+                Response::HTTP_OK);
         }
-        return new JsonResponse(['code' => 200, 'message'=>[
+        return new JsonResponse(['code' => 200, 'message' => [
             'json' => $actuatorInfo['json']]], Response::HTTP_OK);
     }
 
@@ -693,31 +721,31 @@ class ApiCollecteController extends AbstractController
         $data = json_decode($request->getContent());
 
         /** On teste si la clé est valide */
-        if ($data === null ||
-            !property_exists($data, 'maven_key')) {
+        if ($data === null || !property_exists($data, 'maven_key')) {
             return new JsonResponse(
-                ['data'=>$data,'code'=>400, 'type'=>'alert',
-                'reference'=> static::$reference, 'message'=> static::$erreur400], Response::HTTP_OK);
+                ['data' => $data,'code' => 400, 'type' => 'alert',
+                'message' => static::$reference . static::$erreur400], Response::HTTP_OK);
         }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
             return new JsonResponse(
-                ['type'=>'warning', 'code' => 403, 'reference' => static::$reference,
-                'message' => static::$erreur403], Response::HTTP_OK);
+                ['code' => 403, 'type' => 'warning',
+                'message' => static::$reference . static::$erreur403],
+                Response::HTTP_OK);
         }
 
         /** On contrôle le mode d'utilisation */
         $utilisateur_collecte = $this->security->getUser()->getCourriel() ?? 'null';
 
         /** collecte des Logger présent dans le projet */
-        $logger=$this->batchCollecteLogger->BatchCollecteLogger($data->maven_key, 'COLLECTE', $utilisateur_collecte);
-        if ($logger['code']!=200){
+        $logger = $this->batchCollecteLogger->BatchCollecteLogger($data->maven_key, 'COLLECTE', $utilisateur_collecte);
+        if ($logger['code'] != 200){
             return new JsonResponse([
-                'type' => 'erreur', 'code' => $logger['code'],
-                'reference' => static::$reference,
-                'message' => $logger['message'] ?? $logger['erreur']], Response::HTTP_OK);
+                'code' => $logger['code'], 'type' => 'alert',
+                'message' => static::$reference . $logger['message'] ?? static::$reference . $logger['erreur']],
+                Response::HTTP_OK);
         }
-        return new JsonResponse(['code' => 200, 'message'=>$logger['data']], Response::HTTP_OK);
+        return new JsonResponse(['code' => 200, 'message' => $logger['data']], Response::HTTP_OK);
     }
 }
