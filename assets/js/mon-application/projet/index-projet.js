@@ -900,7 +900,7 @@ const finCollecte = function(){
 const afficheMesProjets = async function() {
   const options = {
     url: `${serveur()}/api/projet/mes-applications/liste`, type: 'POST',
-    dataType: 'json', contentType  };
+    dataType: 'json', contentType };
 
   try {
     const t = await $.ajax(options);
