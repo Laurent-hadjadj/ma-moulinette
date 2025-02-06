@@ -201,6 +201,7 @@ class ApiPeintureControllerTest extends WebTestCase
         /** On se connecte */
         $client->loginUser($testUser);
 
+
         // Simuler la préférence de l'utilisateur
         $client->request('POST', static::$apiProjetMesApplicationsListe, [], [], [static::$contentType], json_encode([]));
 
@@ -235,10 +236,6 @@ class ApiPeintureControllerTest extends WebTestCase
         $this->assertContains(static::$trackerLogger, $projetKeys);
         $this->assertEquals('tracker-logger', $projets[2]['name']);
         $this->assertEquals(false, $projets[2]['favori']);
-
-        // 🔄 **Restaurer les préférences originales après le test **
-        $testUser->setPreference($preferencesOriginales);
-        $entityManager->flush();
     }
 
     public function testPeintureProjetVersionDataNull(): void
