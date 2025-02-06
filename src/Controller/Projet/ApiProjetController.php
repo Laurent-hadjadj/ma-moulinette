@@ -34,7 +34,7 @@ use App\Entity\ListeProjet;
 class ApiProjetController extends AbstractController
 {
     /** Définition des constantes */
-    public static $reference = "<strong>[Projet]</strong>";
+    public static $reference = "<strong>[Projet]</strong> ";
     public static $erreur400 = "La requête est incorrecte (Erreur 400).";
     public static $erreur404 = "Vous devez être rattaché à une équipe (Erreur 404).";
     public static $erreur406 = "Je n'ai pas trouvé de projets pour ton équipe. ".
@@ -78,20 +78,23 @@ class ApiProjetController extends AbstractController
         /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'maven_key') ) {
             return new JsonResponse(
-                ['data'=>$data,'code'=>400, 'type'=>'alert', 'reference'=> static::$reference, 'message'=> static::$erreur400], Response::HTTP_OK);
+                ['data' => $data,'code' => 400, 'type' => 'alert',
+                'message'=> static::$reference . static::$erreur400], Response::HTTP_OK);
         }
 
         /** On récupère l'objet User du contexte de sécurité */
         $preference = $security->getUser()->getPreference();
         $courriel = $security->getUser()->getCourriel();
 
-        $map=['maven_key'=>$data->maven_key, 'courriel'=>$courriel];
+        $map = ['maven_key' => $data->maven_key, 'courriel' => $courriel];
         $request = $utilisateurRepository->updateUtilisateurFavoriProjet($preference, $map);
-        if ($request['code']!=200) {
-            return new JsonResponse(['code' => $request['code'], 'erreur' => $request['erreur']], Response::HTTP_OK);
+        if ($request['code'] != 200) {
+            return new JsonResponse([
+                'code' => $request['code'], 'type' => 'alert',
+                'message'=> static::$reference . $request['erreur']], Response::HTTP_OK);
         }
 
-        return new JsonResponse(['code'=>200, 'statut' => $request['statut']], Response::HTTP_OK);
+        return new JsonResponse(['code' => 200, 'statut' => $request['statut']], Response::HTTP_OK);
     }
 
     /**
@@ -116,8 +119,9 @@ class ApiProjetController extends AbstractController
         /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'maven_key') ) {
             return new JsonResponse(
-                ['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
-            'message'=> static::$erreur400], Response::HTTP_OK);
+                ['data' => $data,'code' => 400, 'type' => 'alert',
+                'message'=> static::$reference . static::$erreur400],
+                Response::HTTP_OK);
         }
 
         /** On récupère l'objet User du contexte de sécurité */
@@ -152,14 +156,15 @@ class ApiProjetController extends AbstractController
         if (empty($groupes)) {
             /** On envoi un message à l'utilisateur */
             return new JsonResponse([
-                'code'=>404, 'reference' => static::$reference,
-                'message' => static::$erreur404, 'type' => 'alert'], Response::HTTP_OK);
+                'code'=>404, 'type' => 'alert',
+                'message' => static::$reference . static::$erreur404], Response::HTTP_OK);
         }
 
         /** On recherche les projets pour les équipes rattaché à l'utilisateur */
         $in = '';
         foreach ($groupes as $groupe) {
-            if ($groupe !== '@TEST' || $groupe !== 'null') {
+            /** Peut être une valeur par défaut ? */
+            if ($groupe !== 'null') {
                 /** On met en minuscule */
                 $minus = trim(strtolower($groupe));
                 /** On construit la clause in et on remplace les espaces par des tirets  */
@@ -171,23 +176,25 @@ class ApiProjetController extends AbstractController
         $inTrim = rtrim($in, " OR ");
 
         /** On construit la requête de selection des projets en fonction de(s) (l')équipes */
-        $map=['clause_where'=>$inTrim];
+        $map = ['clause_where' => $inTrim];
         $requestListe = $listeProjetRepository->selectListeProjetByEquipe($map);
-        if ($requestListe['code']!=200) {
-            return new JsonResponse(['code' => $requestListe['code']], Response::HTTP_OK);
+        /** On  renvoi la liste des maven_key (id) et des nom de projets (text) */
+        if ($requestListe['code'] != 200) {
+            return new JsonResponse(['code' => $requestListe['code'], 'type' => 'alert',
+            'message' => static::$reference . $requestListe['erreur']],
+            Response::HTTP_OK);
         }
 
         $projets = $requestListe['liste'];
 
         /** j'ai pas trouvé de projet pour cette équipe. */
         if (empty($projets)) {
-            $type = 'warning';
             return new JsonResponse(
-                ['code'=>406, 'reference' =>  static::$reference,
-                'message' => static::$erreur406, 'type' => $type], Response::HTTP_OK);
+                ['code' => 406, 'type' => 'warning',
+                'message' => static::$reference . static::$erreur406], Response::HTTP_OK);
         }
 
-        return new JsonResponse(['code'=>200, 'projet' => $projets], Response::HTTP_OK);
+        return new JsonResponse(['code' => 200, 'projet' => $projets], Response::HTTP_OK);
     }
 
 }
