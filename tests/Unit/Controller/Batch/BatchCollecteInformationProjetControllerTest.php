@@ -185,7 +185,7 @@ class BatchCollecteInformationProjetControllerTest extends TestCase
         $this->assertFalse($isFound, 'IsFound doit ête false.');
         $this->assertTrue($isNotFound, 'IsNotFound est égale à 404');
         $this->assertEquals(404, $result['code']);
-        $this->assertEquals("Le projet n'existe pas sur le serveur SonarQube.", $result['message']);
+        $this->assertEquals("Le projet n'existe pas sur le serveur SonarQube (Erreur 404).", $result['message']);
     }
 
     public function testControlVersionProjetUnauthorized()
@@ -209,7 +209,7 @@ class BatchCollecteInformationProjetControllerTest extends TestCase
         $this->assertFalse($isFound, 'IsFound doit ête false.');
         $this->assertTrue($isNotAuthorize, 'IsNotAuthorize est égale à 401');
         $this->assertEquals(401, $result['code']);
-        $this->assertEquals("Le serveur SonarQube n'autorise pas l'utilisateur à se connecter à cette API.", $result['message']);
+        $this->assertEquals("Le serveur SonarQube n'autorise pas l'utilisateur à se connecter à cette API (Erreur 401).", $result['message']);
     }
 
     public function testControlVersionProjetUnAvailable()
@@ -233,7 +233,7 @@ class BatchCollecteInformationProjetControllerTest extends TestCase
         $this->assertFalse($isFound, 'IsFound doit ête false');
         $this->assertTrue($isNotAvailable, 'IsNotAvailable est égale à 503');
         $this->assertEquals(503, $result['code']);
-        $this->assertEquals("La résolution DNS n'a pas permis d'accéder au serveur SonarQube.", $result['message']);
+        $this->assertEquals("La résolution DNS n'a pas permis d'accéder au serveur SonarQube (Erreur 503).", $result['message']);
     }
 
     public function testControlVersionProjetGenericError()
@@ -261,7 +261,7 @@ class BatchCollecteInformationProjetControllerTest extends TestCase
         $this->assertFalse($isNotNotFound, 'IsNotFound est égale à 404');
         $this->assertFalse($isNotAvailable, 'IsNotAvailable est égale à 503');
         $this->assertEquals(500, $result['code']);
-        $this->assertEquals("Une erreur inattendue est survenue.", $result['message']);
+        $this->assertEquals("Une erreur inattendue est survenue (Erreur500).", $result['message']);
     }
 
     public function testBatchInformationVersionCountAllProjet()
