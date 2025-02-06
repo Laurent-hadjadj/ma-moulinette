@@ -50,12 +50,16 @@ Chart.register(ChartDataLabels);
 import { http_200, http_201,http_400, http_404, chartColors, zero, un,
         deux, soixante, cent, dateOptions, contentType } from '../../common/constante.js';
 
-/* Construction des callbox de type success */
-const callboxInformation='<div id="js-message" class="callout alert-callout-border primary" data-closable="slide-out-right" role="alert"><p class="open-sans color-bleu padding-right-1"><span class="lead"><strong>Information ! </strong></span>';
-const callboxSuccess='<div id="js-message" class="callout alert-callout-border success" data-closable="slide-out-right" role="alert"><p class="open-sans color-bleu padding-right-1"><span class="lead"><strong>Bravo ! </strong></span>';
-const callboxWarning='<div id="js-message" class="callout alert-callout-border warning" data-closable="slide-out-right" role="alert"><p class="open-sans padding-right-1 color-bleu"><span class="lead"><strong>Attention ! </strong></span>';
-const callboxError='<div id="js-message" class="callout alert-callout-border alert" data-closable="slide-out-right"><p class="open-sans padding-right-1 color-bleu"><span class="lead"><strong>Oups ! </strong></span>';
-const callboxFermer='</p><button class="close-button" aria-label="Fermer la fenêtre" type="button" data-close><span aria-hidden="true">&times;</span></button></div>';
+/* Construction des callouts pour les messages */
+const messageInformation=`<div id="js-message-info" class="callout alert-callout-border primary" data-closable="slide-out-right" role="alert"><p class="open-sans color-bleu padding-right-1"><strong>Information ! </strong>`;
+const messageSuccess=`<div id="js-message-success" class="callout alert-callout-border success" data-closable="slide-out-right" role="alert"><p class="open-sans color-bleu padding-right-1"><strong>Bravo ! </strong>`;
+const messageWarning=`<div id="js-message-warning" class="callout alert-callout-border warning" data-closable="slide-out-right" role="alert"><p class="open-sans color-bleu padding-right-1"><strong>Attention ! </strong>`;
+const messageAlert=`<div id="js-message-error" class="callout alert-callout-border alert" data-closable="slide-out-right" role="alert"><p class="open-sans color-bleu padding-right-1"><strong>Oups !!! </strong>`;
+const noticePrimary=`</p><button class="close-button primary"`;
+const noticeSuccess=`</p><button class="close-button success"`;
+const noticeWarning=`</p><button class="close-button warning"`;
+const noticeAlert=`</p><button class="close-button alert"`;
+const messageClose=` aria-label="Fermer la fenêtre" type="button" data-close><span aria-hidden="true">&times;</span></button></div>`;
 
 /**
  * [Description for dessineMoiUnMouton]
@@ -219,7 +223,8 @@ const selectVersion=async function(mavenKey) {
   const r = await $.ajax(options);
   if (r.code===http_400) {
     const message=`La requête est incorrecte (Erreur 400).`;
-    $('#message-ajout-projet').html(callboxError+message+callboxFermer);
+    $('#message-ajout-projet').html(messageAlert+message+noticeAlert+messageClose
+    );
     return;
   }
 
@@ -303,20 +308,23 @@ $('select[name="version"]').on('change', function () {
     */
     if (t.code===http_400 && t.data===null || t.code===http_400 && t.maven_key===null) {
       const message=`La requête est incorrecte (Erreur 400).`;
-      $('#message-ajout-projet').html(callboxError+message+callboxFermer);
+      $('#message-ajout-projet').html(messageAlert+message+noticeAlert+messageClose
+      );
       return;
     }
 
     if (t.code===http_404) {
       const message=`Le projet n'existe plus sur le serveur SonarQube ! (Erreur 406)`;
-      $('#message-ajout-projet').html(callboxError+message+callboxFermer);
+      $('#message-ajout-projet').html(messageAlert+message+noticeAlert+messageClose
+      );
       return;
     }
 
     /** Tout va bien. */
     if (t.code===http_200) {
       const message=`Les données pour le projet sont disponibles.`;
-      $('#message-ajout-projet').html(callboxInformation+message+callboxFermer);
+      $('#message-ajout-projet').html(messageInformation+message+noticePrimary+messageClose
+      );
     }
     const tNotes1 = ['', 'a', 'b', 'c', 'd', 'e', 'z'];
     const tNotes2 = ['', 'A', 'B', 'C', 'D', 'E', 'Z'];
@@ -469,7 +477,8 @@ $('.js-enregistrer-analyse').on('click', ()=>{
   /** Si le projet n'a pas été sélectionné */
   if (selectionVersion==='TheID') {
     const message='Vous devez choisir un projet !';
-    $('#message-ajout-projet').html(callboxError+message+callboxFermer);
+    $('#message-ajout-projet').html(messageAlert+message+noticeAlert+messageClose
+    );
     return;
   }
 
@@ -588,16 +597,19 @@ $('.js-enregistrer-analyse').on('click', ()=>{
       let message='';
       if (t.code===http_200){
         message=`Enregistrement des informations effectué.`;
-        $('#message-ajout-projet').html(callboxSuccess+message+callboxFermer);
+        $('#message-ajout-projet').html(messageSuccess+message+noticeSuccess+messageClose
+        );
       }
 
     if (t.code===23505){
-      $('#message-ajout-projet').html(callboxWarning+t.message+callboxFermer);
+      $('#message-ajout-projet').html(messageWarning+message+noticeWarning+messageClose
+      );
     }
     if (t.code!==http_200 && t.code!==23505) {
         message=`Erreur lors de la mise à jour (${t.code}).`;
-        $('#message-ajout-projet').html(callboxError+message);
-        $('#message-ajout-projet').append(t.erreur+callboxFermer);
+        $('#message-ajout-projet').html(messageAlert+message);
+        $('#message-ajout-projet').append(t.erreur+noticeAlert+messageClose
+        );
     }
 
   });
@@ -721,12 +733,12 @@ $('.js-modifier-analyse').on('click', function () {
     /* On gère le résultat de la requête */
     if (t.code===http_200) {
       const message=`La liste des versions a été chargée correctement.`;
-      $('#message').html(callboxInformation + message + callboxFermer);
+      $('#message').html(messageInformation+message+noticePrimary+messageClose);
     }
 
     if (t.code===http_400) {
       const message=`Je n'ai pas réussi à charger la liste des versions (${t.code}).`;
-      $('#message').html(callboxError+message+callboxFermer);
+      $('#message').html(messageAlert+message+noticeAlert+messageClose);
     }
 
     /* On boucle pour construire le tableau */
@@ -779,7 +791,7 @@ $('.js-modifier-analyse').on('click', function () {
     $('[id^=switch-favori-]').on('click', e =>{
       if (t.preference_favori===false) {
         const message=`Vous n'avez pas activé les favoris dans vos préférences.`;
-        $('#message').html(callboxWarning+message+callboxFermer);
+        $('#message').html(messageWarning+message+noticeWarning+messageClose);
         return;
       }
 
@@ -802,7 +814,7 @@ $('.js-modifier-analyse').on('click', function () {
         /** On vérifie la clé maven */
         if (maven_key===undefined) {
           const message=`La clé maven n'est pas valide !`;
-          $('#message').html(callboxError+message+callboxFermer);
+          $('#message').html(messageAlert+message+noticeAlert+messageClose);
           return;
         }
 
@@ -818,13 +830,13 @@ $('.js-modifier-analyse').on('click', function () {
         $.ajax(optionsFavori).then((t) => {
           if (t.code===http_200) {
             const message=`Mise à jour du favori effectuée.`;
-            $('#message').html(callboxSuccess+message+callboxFermer);
+            $('#message').html(messageSuccess+message+noticeSuccess+messageClose);
           } else if (t.code===http_201) {
             const message=`Cette version a été supprimé des favoris.`;
-            $('#message').html(callboxWarning+message+callboxFermer);
+            $('#message').html(messageWarning+message+noticeWarning+messageClose);
           } else {
             const message=`Erreur lors de la mise à jour (${t.erreur}).`;
-            $('#message').html(callboxError+message+callboxFermer);
+            $('#message').html(messageAlert+message+noticeAlert+messageClose);
           }
         });
     });
@@ -851,7 +863,7 @@ $('.js-modifier-analyse').on('click', function () {
       /** On vérifie la clé maven */
       if (maven_key===undefined) {
         const message=`La clé maven n'est pas valide !`;
-        $('#message').html(callboxError+message+callboxFermer);
+        $('#message').html(messageAlert+message+noticeAlert+messageClose);
         return;
       }
 
@@ -866,13 +878,13 @@ $('.js-modifier-analyse').on('click', function () {
       $.ajax(optionsReference).then((t) => {
       if (t.code===200) {
           const message='Mise à jour de la version de référence.';
-          $('#message').html(callboxSuccess+message+callboxFermer);
+          $('#message').html(messageSuccess+message+noticeSuccess+messageClose);
         } else if (t.code===403) {
           const message=`Vous n'êtes pas autorisé à effectuer cette opération.`;
-          $('#message').html(callboxWarning+message+callboxFermer);
+          $('#message').html(messageWarning+message+noticeWarning+messageClose);
         } else {
           const message=`Erreur lors de la mise à jour (${t.erreur}).`;
-          $('#message').html(callboxError+message+callboxFermer);
+          $('#message').html(messageAlert+message+noticeAlert+messageClose);
         }
       });
     });
@@ -889,9 +901,9 @@ $('.js-modifier-analyse').on('click', function () {
       const formatted_date = format(parsed_date, "yyyy-MM-dd HH:mm:ss");
 
       /** On vérifie que la clé maven n'est pas null */
-      let maven_key=$('#js-nom').data('maven');
+      let maven_key = $('#js-nom').data('maven');
       if (maven_key===undefined || maven_key=== null ) {
-        maven_key='null';
+        maven_key = 'null';
       }
 
       /**
@@ -908,25 +920,25 @@ $('.js-modifier-analyse').on('click', function () {
         switch (t.code) {
           case 200 :
             message=`Le projet a été correctement supprimé. ${t.message}`;
-            $('#message').html(callboxSuccess+message+callboxFermer);
+            $('#message').html(messageSuccess+message+noticeSuccess+messageClose);
             // On masque la ligne
             $('#ligne-'+l[1]).hide();
             break;
           case 202:
             message=`Le projet n'a pas été supprimé ! `;
-            $('#message').html(callboxSuccess+message+`(${t.erreur}).`+callboxFermer);
+            $('#message').html(messageAlert+message+`(${t.erreur}).`+noticeAlert+messageClose);
           break;
           case 400:
             message='La clé maven est vide !';
-            $('#message').html(callboxError+message+callboxFermer);
+            $('#message').html(messageAlert+message+noticeAlert+messageClose);
             break;
           case 403:
             message=`Vous n'êtes pas autorisé à effectuer cette opération.`;
-            $('#message').html(callboxWarning+message+callboxFermer);
+            $('#message').html(messageWarning+message+noticeWarning+messageClose);
             break;
           default:
-            message=`Le projet n'a pas été supprimé ! `;
-            $('#message').html(callboxError+message+`(${t.erreur}).`+callboxFermer);
+            message = `Le projet n'a pas été supprimé ! `;
+            $('#message').html(messageAlert+message+`(${t.erreur}).`+noticeAlert+messageClose);
         }
       });
     });
