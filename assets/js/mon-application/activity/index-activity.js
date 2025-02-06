@@ -31,6 +31,9 @@ import '../../auth/details.js';
 /** On importe les paramètres serveur */
 import {serveur} from '../../common/properties.js';
 
+/** On importe les fonctions d'affiche des messages JS */
+import {typeMessage, showMessage, hideMessage} from '../../common/message.js';
+
 /** On importe les constantes */
 import { http_200, http_400, http_401, http_403, http_404, http_500, http_504, contentType } from '../../common/constante.js';
 
@@ -46,57 +49,74 @@ Chart.register(...registerables);
 Chart.register(ChartDataLabels);
 Chart.register(zoomPlugin);
 
-/* Pour éviter d'avoir une erreur sonar */
-sessionStorage.setItem('info', 'Il y a un problème pour afficher un graphique !!!')
-
-/* Construction des callbox de type success */
-const callboxInformation='<div id="js-message" class="callout alert-callout-border primary" data-closable="slide-out-right" role="alert"><p class="open-sans color-bleu padding-right-1"><span class="lead">Information ! </span>';
-const callboxSuccess='<div id="js-message" class="callout alert-callout-border success" data-closable="slide-out-right" role="alert"><span class="open-sans color-bleu padding-right-1"><span class="lead">Bravo ! </span> ';
-const callboxWarning='<div id="js-message" class="callout alert-callout-border warning" data-closable="slide-out-right" role="alert"><span class="open-sans padding-right-1 color-bleu"><span class="lead">Attention ! </strong>';
-const callboxError='<div id="js-message" class="callout alert-callout-border alert" data-closable="slide-out-right"><span class="open-sans padding-right-1 color-bleu"><strong>Oups ! </strong>';
-const callboxFermer='</span><button class="close-button" aria-label="Fermer la fenêtre" type="button" data-close><span aria-hidden="true">&times;</span></button></div>';
-
+/**
+ * refreshActivity
+ * On met à jour la table des activité pour l'année courante
+ *
+ * @var void
+ */
 const refreshActivity=async function() {
-  const optionsRefresh = {
-        url: `${serveur()}/api/activitye/sauvegarde`, type: 'POST',
-        dataType: 'json', contentType };
-  /** On appel l'API */
-  const t = await $.ajax(optionsRefresh);
-  let message='';
+    const $spinner = $('.js-spinner');
+    const $dateEnregistrement = $('#js-date-enregistrement');
+    const $tableauStats = $('#js-tableau-stats');
+    let str = '';
 
-  if (t.code===http_403) {
-      message=`Vous n'êtes pas autorisé à effectuer cette opération.`;
-      $('#message').html(callboxWarning+message+callboxFermer);
-      return;
-  }
-  let str ='';
+  // Afficher le spinner
+  $spinner.show();
 
-  /** On efface le container */
-  const stats = t.listeDonnee.request;
-  $('#js-date-enregistrement').html('');
-  str += `<p><strong>Dernière date d'enregistrement : </strong><span class="couleur-changement">${stats[0].date_enregistrement}</span></p>`;
-  $('#js-date-enregistrement').html(str);
-  $('#js-tableau-stats').html('');
+  try {
+        // Configuration de l'appel Ajax
+        const options = {
+              url: `${serveur()}/api/activity/sauvegarde`,
+              type: 'POST',
+              dataType: 'json',
+              contentType
+          };
 
-  str ='';
+        /** On appel l'API */
+        const t = await $.ajax(options);
 
-  stats.forEach(stat =>{
-    str +=
-    `<tr>
-    <td>${ stat.year }</td>
-    <td>${ stat.day }</td>
-    <td>${ stat.analyse }</td>
-    <td>${ stat.analyse_average }</td>
-    <td>${ stat.success }</td>
-    <td>${ stat.fail }</td>
-    <td>${ stat.success_rate } %</td>
-    <td>${ stat.max_time }</td>
-  </tr>`;
-  })
-  $('#js-tableau-stats').html(str);
-}
+        if (t.code===http_403) {
+          showMessage('warning', `<strong>[ACTIVITÉ]</strong> - Vous n'êtes pas autorisé à effectuer cette opération (Erreur 403).`);
+          return;
+        }
 
-$('.js-activity-refresh').on('click', ()=>{
+        /** On efface le container */
+        const stats = t.listeDonnee?.request || [];
+        $dateEnregistrement.html('');
+        if (stats.length > 0) {
+          str += `<p><strong>Dernière date d'enregistrement : </strong><span class="couleur-changement">${stats[0].date_enregistrement}</span></p>`;
+          $dateEnregistrement.html(str);
+          /** On vide le tableau */
+          $tableauStats.html('');
+          stats.forEach(stat => {
+            str += `
+              <tr>
+                <td>${stat.year}</td>
+                <td>${stat.day}</td>
+                <td>${stat.analyse}</td>
+                <td>${stat.analyse_average}</td>
+                <td>${stat.success}</td>
+                <td>${stat.fail}</td>
+                <td>${stat.success_rate} %</td>
+                <td>${stat.max_time}</td>
+              </tr>`;
+          });
+          $tableauStats.html(str);
+        } else {
+          $tableauStats.html('<tr><td colspan="8">Aucune donnée disponible.</td></tr>');
+        }
+      } catch (erreur) {
+        // Gestion des erreurs
+        sessionStorage.setItem('erreur', 'Erreur lors de la récupération des données : ${erreur}');
+        showMessage('danger', '<strong>[ACTIVITÉ]</strong> - Une erreur est survenue lors de la mise à jour.');
+      } finally {
+        // Cacher le spinner
+        $spinner.hide();
+      }
+    };
+
+$('.js-activity-refresh').on('click', () => {
   refreshActivity();
 });
 
