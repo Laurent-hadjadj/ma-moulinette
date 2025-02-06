@@ -188,7 +188,7 @@ class InformationProjet
 
     public function setVersionSnapshotSonar(int $versionSnapshotSonar): self
     {
-        $this->versionSonar = $versionSnapshotSonar;
+        $this->versionSnapshotSonar = $versionSnapshotSonar;
         return $this;
     }
 
