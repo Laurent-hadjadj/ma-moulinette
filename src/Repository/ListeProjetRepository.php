@@ -78,9 +78,9 @@ class ListeProjetRepository extends ServiceEntityRepository
             FROM ma_moulinette.liste_projet
             WHERE visibility=:visibility";
     try {
-          $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $stmt->bindValue(":visibility", $type);
-          $request=$stmt->executeQuery()->fetchAllAssociative();
+          $request = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Doctrine\DBAL\Exception $e) {
         return $this->handleDatabaseException($e);
     }
@@ -101,12 +101,12 @@ class ListeProjetRepository extends ServiceEntityRepository
     $sql = "SELECT COUNT(*) AS total
             FROM ma_moulinette.liste_projet";
     try {
-          $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-          $nombre=$stmt->executeQuery()->fetchAllAssociative();
+          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+          $nombre = $stmt->executeQuery()->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
             return $this->handleDatabaseException($e);
     }
-    return ['code'=>200, 'request'=>$nombre, 'erreur'=>''];
+    return ['code' => 200, 'request' => $nombre, 'erreur'=>''];
   }
 
   /**
@@ -126,12 +126,12 @@ class ListeProjetRepository extends ServiceEntityRepository
             FROM ma_moulinette.liste_projet
             WHERE tags IS NOT NULL AND jsonb_array_length(tags::jsonb) > 0";
     try {
-          $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-          $nombre=$stmt->executeQuery()->fetchAllAssociative();
+          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+          $nombre = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Doctrine\DBAL\Exception $e) {
         return $this->handleDatabaseException($e);
     }
-    return ['code'=>200, 'nombre'=>$nombre, 'erreur'=>''];
+    return ['code' => 200, 'nombre' => $nombre, 'erreur' => ''];
   }
 
   /**
@@ -161,7 +161,7 @@ class ListeProjetRepository extends ServiceEntityRepository
     } catch (\Doctrine\DBAL\Exception $e) {
         return $this->handleDatabaseException($e);
     }
-    return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
+    return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
   }
 
   /**
@@ -181,14 +181,14 @@ class ListeProjetRepository extends ServiceEntityRepository
     $sql = "DELETE FROM ma_moulinette.liste_projet";
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $stmt->executeStatement();
           $this->getEntityManager()->getConnection()->commit();
     } catch (\Doctrine\DBAL\Exception $e) {
         $this->getEntityManager()->getConnection()->rollBack();
         return $this->handleDatabaseException($e);
     }
-    return ['code'=>200, 'erreur'=>''];
+    return ['code' => 200, 'erreur' => ''];
   }
 
 }
