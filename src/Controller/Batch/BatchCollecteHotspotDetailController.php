@@ -217,9 +217,8 @@ class BatchCollecteHotspotDetailController extends AbstractController
             return ['code' => $information['code'], 'erreur' => $information['erreur']];
         }
 
-
         if (array_key_exists('json', $information) && !$information['json']['info']) {
-            return ['code' => 404, 'message' => "Aucune information n'a été trouvée."];
+            return ['code' => 404, 'message' => "Aucune information n'a été trouvée (Erreur 404)."];
         }
 
         /** On reconstruit la date de version au format dateTime */
@@ -244,7 +243,7 @@ class BatchCollecteHotspotDetailController extends AbstractController
 
         /** Si la liste des hotspots est vide on envoi un code http 406 */
         if (empty($liste['liste'])) {
-            return ['code' => 406, 'message'=> 'Liste vide !!!'];
+            return ['code' => 406, 'message'=> 'Liste vide !!! (Erreur 406).'];
         }
 
         /**
