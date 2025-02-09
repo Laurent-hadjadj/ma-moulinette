@@ -19,8 +19,6 @@ class ApiProjetControllerTest extends WebTestCase
     private static $apiFavoriCheck = '/api/favori/check';
     private static $apiProjetListe = '/api/projet/liste';
 
-    private static $appRepositoryListeProjectRepository = 'App/Repository/ListeProjet';
-
     private static $message400 = '<strong>[Projet]</strong> La requête est incorrecte (Erreur 400).';
     private static $preferenceErreur400 = ' Format des préférences invalide (Erreur 400).';
     private static $message404 = "<strong>[Projet]</strong> Vous devez être rattaché à une équipe (Erreur 404).";
@@ -28,7 +26,6 @@ class ApiProjetControllerTest extends WebTestCase
     "Vérifiez le nom du tag utilisé dans SonarQube (Erreur 406).";
     private static $message500 = "<strong>[Projet]</strong> Je n'ai pas trouvé d'analyse (Erreur 500).";
     private static $messageLight500 = "Je n'ai pas trouvé d'analyse (Erreur 500).";
-
 
     public function testProjetFavoriDataNull(): void
     {
