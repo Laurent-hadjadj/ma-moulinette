@@ -392,7 +392,7 @@ class BatchCollecteHotspotDetailControllerTest extends TestCase
         $this->assertArrayHasKey('code', $result);
         $this->assertArrayHasKey('message', $result);
         $this->assertEquals(404, $result['code']);
-        $this->assertEquals("Aucune information n'a été trouvée.", $result['message']);
+        $this->assertEquals("Aucune information n'a été trouvée (Erreur 404).", $result['message']);
     }
 
     public function testBatchCollecteHotspotDetailSelectProjetError(): void
@@ -555,7 +555,7 @@ class BatchCollecteHotspotDetailControllerTest extends TestCase
         $result = $this->controller->batchCollecteHotspotDetail('maven-key-123', 'manual', static::$mel);
 
         $this->assertEquals(406, $result['code']);
-        $this->assertEquals('Liste vide !!!', $result['message']);
+        $this->assertEquals('Liste vide !!! (Erreur 406).', $result['message']);
     }
 
 }
