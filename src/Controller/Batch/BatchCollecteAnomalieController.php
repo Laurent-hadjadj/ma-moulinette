@@ -122,7 +122,7 @@ class BatchCollecteAnomalieController extends AbstractController
         ];
 
         /**
-         * On appelle les API en passant les querryParams à la fonction générique.
+         * On appelle les API en passant les queryParams à la fonction générique.
          * Si la méthode renvoi une clé 'code' alors il y a une erreur sinon on a une clé 'json'
          */
         $results = [];
@@ -171,13 +171,11 @@ class BatchCollecteAnomalieController extends AbstractController
             //** On récupère le nombre d'anomalie et la dette technique */
             $anomalieTotal = $results['general']['total'];
             $dette = $this->serviceDateTools->minutesTo($results['general']['effortTotal']);
-            $detteMinute=$results['general']['effortTotal'];
+            $detteMinute = $results['general']['effortTotal'];
             $detteReliability = $this->serviceDateTools->minutesTo($results['BUG']['effortTotal']);
-            $detteReliabilityMinute=$results['BUG']['effortTotal'];
-            $detteVulnerability = $this->serviceDateTools->minutesTo($results['VULNERABILITY']
-            ['effortTotal']);
-            $detteVulnerabilityMinute = $results['VULNERABILITY']
-            ['effortTotal'];
+            $detteReliabilityMinute = $results['BUG']['effortTotal'];
+            $detteVulnerability = $this->serviceDateTools->minutesTo($results['VULNERABILITY']['effortTotal']);
+            $detteVulnerabilityMinute = $results['VULNERABILITY']['effortTotal'];
             $detteCodeSmell = $this->serviceDateTools->minutesTo($results['CODE_SMELL']['effortTotal']);
             $detteCodeSmellMinute = $results['CODE_SMELL']['effortTotal'];
 
@@ -214,7 +212,7 @@ class BatchCollecteAnomalieController extends AbstractController
                         }
                         break;
                     default:
-                        $messsage = "Ce cas n'est pas possible";
+                        break;
                     break;
                 }
             }
@@ -255,22 +253,22 @@ class BatchCollecteAnomalieController extends AbstractController
             }
 
         /** On prépare les données pour l'historique */
-        $data=[
-            'violations' => $anomalieTotal ?? 0,
-            'dette' => $detteMinute ?? 0,
-            'nombre_bug' => $types['BUG'] ?? 0,
-            'nombre_vulnerability' => $types['VULNERABILITY'] ?? 0,
-            'nombre_code_smell' => $types['CODE_SMELL'] ?? 0,
-            'frontend' => $modules['frontend'] ?? 0,
-            'backend' => $modules['backend'] ?? 0,
-            'autre' => $modules['autre'] ?? 0,
-            'inconnue' => $modules['inconnue'] ?? 0,
-            'nombre_anomalie_bloquant' => $severities['BLOCKER'] ?? 0,
-            'nombre_anomalie_critique' =>$severities['CRITICAL'] ?? 0,
-            'nombre_anomalie_info' =>$severities['INFO'] ?? 0,
-            'nombre_anomalie_majeur' => $severities['MAJOR'] ?? 0,
-            'nombre_anomalie_mineur'=>$severities['MINOR'] ?? 0
-        ];
+        $data = [
+                    'violations' => $anomalieTotal ?? 0,
+                    'dette' => $detteMinute ?? 0,
+                    'nombre_bug' => $types['BUG'] ?? 0,
+                    'nombre_vulnerability' => $types['VULNERABILITY'] ?? 0,
+                    'nombre_code_smell' => $types['CODE_SMELL'] ?? 0,
+                    'frontend' => $modules['frontend'] ?? 0,
+                    'backend' => $modules['backend'] ?? 0,
+                    'autre' => $modules['autre'] ?? 0,
+                    'inconnue' => $modules['inconnue'] ?? 0,
+                    'nombre_anomalie_bloquant' => $severities['BLOCKER'] ?? 0,
+                    'nombre_anomalie_critique' =>$severities['CRITICAL'] ?? 0,
+                    'nombre_anomalie_info' =>$severities['INFO'] ?? 0,
+                    'nombre_anomalie_majeur' => $severities['MAJOR'] ?? 0,
+                    'nombre_anomalie_mineur'=>$severities['MINOR'] ?? 0
+                ];
 
         $total = $anomalieTotal ?? 0;
         $info = "Nombre d'anomalie : $total";
