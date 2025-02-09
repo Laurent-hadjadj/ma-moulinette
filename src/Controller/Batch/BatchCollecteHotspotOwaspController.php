@@ -106,7 +106,7 @@ class BatchCollecteHotspotOwaspController extends AbstractController
 
             $message = 'A0 : Effacement des données de la table hotspotOwasp pour le projet.';
             /** si on est en version 8, on envoi pas de tableau owasp2021 */
-            return ($sonarVersion == (int)8) ?
+            return ((int) $sonarVersion == 8) ?
                 ['code' => 200, 'info' => 'effacement', 'message' => $message] : ['code' => 200, 'owasp_2021'=> [], 'info' => 'effacement', 'message' => $message];
         }
 
@@ -142,13 +142,12 @@ class BatchCollecteHotspotOwaspController extends AbstractController
 
         /** On execute si la version de SonarQube est >= 9 */
         $owasp2021 = ['NC'];
-        if ($sonarVersion > (int)8){
+        if ((int) $sonarVersion > 8){
             $owasp2021 = $this->client->httpSonarQube("$tempoUrl/api/hotspots/search?".http_build_query($queryParamsList['owasp2021']));
             if (isset($owasp2021['code']) && in_array($owasp2021['code'], [401, 403, 404, 500])) {
             return ['code' => $owasp2021['code'], 'erreur' => $owasp2021['erreur'],'type' => 'owasp2021'];
             }
         }
-
         /** On prépare les données */
         $prepareHotspotData = function($data, $ref) use ($mavenKey, $information, $dateVersion, $date, $menace, $mode_collecte, $utilisateur_collecte) {
             return [
