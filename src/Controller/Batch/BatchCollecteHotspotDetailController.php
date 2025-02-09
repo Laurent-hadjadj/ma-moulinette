@@ -217,7 +217,7 @@ class BatchCollecteHotspotDetailController extends AbstractController
             return ['code' => $information['code'], 'erreur' => $information['erreur']];
         }
 
-        if (array_key_exists('json', $information) && !$information['json']['info']) {
+        if (empty($information['info'])) {
             return ['code' => 404, 'message' => "Aucune information n'a été trouvée (Erreur 404)."];
         }
 
@@ -235,8 +235,8 @@ class BatchCollecteHotspotDetailController extends AbstractController
         }
 
         /** On supprime les résultats pour la maven_key. */
-        $map=['maven_key'=>$mavenKey];
-        $delete=$hotspotDetailsRepository->deleteHotspotDetailsMavenKey($map);
+        $map=['maven_key' => $mavenKey];
+        $delete = $hotspotDetailsRepository->deleteHotspotDetailsMavenKey($map);
         if ($delete['code'] != 200) {
             return ['code' => $delete['code'], 'erreur' => $delete['erreur']];
         }
