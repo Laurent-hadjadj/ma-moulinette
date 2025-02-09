@@ -153,7 +153,7 @@ class BatchCollecteAnomalieDetailController extends AbstractController
 
         /** Si la somme du total des anomalies est égale à zéro, on sort */
         if (array_sum($pagingTotals) === 0) {
-            return ['code' => 200, 'message' => "Pas d'anomalie trouvée", 'data' => [] ];
+            return ['code' => 200, 'message' => "Pas d'anomalie trouvée.", 'data' => [] ];
         }
 
         /** On supprime l'enregistrement correspondant à la clé */
