@@ -41,11 +41,21 @@ class HotspotOwaspRepository extends ServiceEntityRepository
    */
   protected function handleDatabaseException(\Doctrine\DBAL\Exception $e): array
   {
-    if (strpos($e->getMessage(), 'SQLSTATE[08006]') !== false) {
-      return ['code'=>500, 'erreur' => static::$noDataBase];
-    } else {
-      return ['code'=>500, 'erreur'=> $e->getMessage()];
-    }
+      $message = $e->getMessage();
+
+      if (strpos($e->getMessage(), 'SQLSTATE[08006]') !== false) {
+          $message = static::$noDataBase;
+      }
+
+      if ($e->getSqlState() == '23502') {
+          $message = $e->getMessage();
+      }
+
+      if ($e->getSqlState() == '23505'){
+          return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
+      }
+
+      return ['code' => 500, 'erreur'=> $message];
   }
 
   /**
@@ -65,14 +75,14 @@ class HotspotOwaspRepository extends ServiceEntityRepository
               FROM ma_moulinette.hotspot_owasp
               WHERE maven_key=:maven_key AND status=:status";
       try {
-          $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $stmt->bindValue(static::$mavenKey, $map['maven_key']);
             $stmt->bindValue(':status', $map['status']);
-          $nombre=$stmt->executeQuery()->fetchAllAssociative();
+          $nombre = $stmt->executeQuery()->fetchAllAssociative();
       } catch (\Doctrine\DBAL\Exception $e) {
           return $this->handleDatabaseException($e);
       }
-      return ['code'=>200, 'request'=>$nombre, 'erreur'=>''];
+      return ['code' => 200, 'request' => $nombre, 'erreur' => ''];
   }
 
   /**
@@ -93,13 +103,13 @@ class HotspotOwaspRepository extends ServiceEntityRepository
             WHERE maven_key=:maven_key AND status='TO_REVIEW' GROUP BY probability";
 
     try {
-          $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
           $stmt->bindValue(static::$mavenKey, $map['maven_key']);
-          $nombre=$stmt->executeQuery()->fetchAllAssociative();
+          $nombre = $stmt->executeQuery()->fetchAllAssociative();
       } catch (\Doctrine\DBAL\Exception $e) {
           return $this->handleDatabaseException($e);
       }
-      return ['code'=>200, 'nombre'=>$nombre, 'erreur'=>''];
+      return ['code' => 200, 'nombre' => $nombre, 'erreur' => ''];
   }
 
   /**
@@ -121,13 +131,13 @@ class HotspotOwaspRepository extends ServiceEntityRepository
             AND status='TO_REVIEW' GROUP BY menace";
 
     try {
-        $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+        $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $stmt->bindValue(static::$mavenKey, $map['maven_key']);
-        $nombre=$stmt->executeQuery()->fetchAllAssociative();
+        $nombre = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Doctrine\DBAL\Exception $e) {
         return $this->handleDatabaseException($e);
     }
-    return ['code'=>200, 'menaces'=>$nombre, 'erreur'=>''];
+    return ['code' => 200, 'menaces' => $nombre, 'erreur' => ''];
   }
 
   /**
@@ -152,15 +162,15 @@ class HotspotOwaspRepository extends ServiceEntityRepository
             AND probability=:probability";
 
     try {
-        $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+        $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
           $stmt->bindValue(static::$mavenKey, $map['maven_key']);
           $stmt->bindValue(':menace', $map['menace']);
           $stmt->bindValue(':probability', $map['probability']);
-        $nombre=$stmt->executeQuery()->fetchAllAssociative();
+        $nombre = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Doctrine\DBAL\Exception $e) {
         return $this->handleDatabaseException($e);
     }
-    return ['code'=>200, 'nombre'=>$nombre[0], 'erreur'=>''];
+    return ['code' => 200, 'nombre' => $nombre[0], 'erreur' => ''];
   }
 
   /**
@@ -181,15 +191,15 @@ class HotspotOwaspRepository extends ServiceEntityRepository
             WHERE maven_key=:maven_key";
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
-            $conn=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-              $conn->bindValue(static::$mavenKey, $map['maven_key']);
-              $conn->executeStatement();
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+              $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+              $stmt->executeStatement();
           $this->getEntityManager()->getConnection()->commit();
     } catch (\Doctrine\DBAL\Exception $e) {
         $this->getEntityManager()->getConnection()->rollBack();
         return $this->handleDatabaseException($e);
     }
-    return ['code'=>200, 'erreur'=>''];
+    return ['code' => 200, 'erreur' => ''];
   }
 
   /**
@@ -212,7 +222,7 @@ class HotspotOwaspRepository extends ServiceEntityRepository
     try {
         $this->getEntityManager()->getConnection()->beginTransaction();
             foreach ($map as $ref) {
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(':referential_owasp', $ref['referential_owasp']);
                     $stmt->bindValue(static::$mavenKey, $ref['maven_key']);
                     $stmt->bindValue(':version', $ref['version']);
@@ -234,6 +244,6 @@ class HotspotOwaspRepository extends ServiceEntityRepository
         $this->getEntityManager()->getConnection()->rollBack();
         return $this->handleDatabaseException($e);
     }
-    return ['code'=>200, 'erreur'=>''];
+    return ['code' => 200, 'erreur' => ''];
   }
 }
