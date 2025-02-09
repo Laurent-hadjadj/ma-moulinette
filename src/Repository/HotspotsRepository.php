@@ -115,7 +115,7 @@ class HotspotsRepository extends ServiceEntityRepository
       } catch (\Doctrine\DBAL\Exception $e) {
         return $this->handleDatabaseException($e);
       }
-      return ['code'=>200, 'liste' => $liste, 'erreur' => ''];
+      return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
   }
 
   /**
