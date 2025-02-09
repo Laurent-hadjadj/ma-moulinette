@@ -43,11 +43,21 @@ class HotspotDetailsRepository extends ServiceEntityRepository
    */
   protected function handleDatabaseException(\Doctrine\DBAL\Exception $e): array
   {
-    if (strpos($e->getMessage(), 'SQLSTATE[08006]') !== false) {
-      return ['code'=>500, 'erreur' => static::$noDataBase];
-    } else {
-      return ['code'=>500, 'erreur'=> $e->getMessage()];
-    }
+      $message = $e->getMessage();
+
+      if (strpos($e->getMessage(), 'SQLSTATE[08006]') !== false) {
+          $message = static::$noDataBase;
+      }
+
+      if ($e->getSqlState() == '23502') {
+          $message = $e->getMessage();
+      }
+
+      if ($e->getSqlState() == '23505'){
+          return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
+      }
+
+      return ['code' => 500, 'erreur'=> $message];
   }
 
   /**
@@ -69,13 +79,13 @@ class HotspotDetailsRepository extends ServiceEntityRepository
             WHERE maven_key=:maven_key
             ORDER BY status ASC";
     try {
-          $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $stmt->bindValue(static::$mavenKey, $map['maven_key']);
             $nombre=$stmt->executeQuery()->fetchAllAssociative();
     } catch (\Doctrine\DBAL\Exception $e) {
         return $this->handleDatabaseException($e);
     }
-    return ['code'=>200, 'menaces'=>$nombre, 'erreur'=>''];
+    return ['code' => 200, 'menaces' => $nombre, 'erreur' => ''];
   }
 
   /**
@@ -97,7 +107,7 @@ class HotspotDetailsRepository extends ServiceEntityRepository
 
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $stmt->bindValue(static::$mavenKey, $map['maven_key']);
                 $stmt->executeStatement();
           $this->getEntityManager()->getConnection()->commit();
@@ -105,7 +115,7 @@ class HotspotDetailsRepository extends ServiceEntityRepository
         $this->getEntityManager()->getConnection()->rollBack();
         return $this->handleDatabaseException($e);
     }
-    return ['code'=>200, 'erreur'=>''];
+    return ['code' => 200, 'erreur' => ''];
 }
 
   /**
@@ -131,7 +141,7 @@ class HotspotDetailsRepository extends ServiceEntityRepository
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
             foreach($map as $item){
-              $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+              $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $stmt->bindValue(static::$mavenKey, $item['maven_key']);
                 $stmt->bindValue(':version', $item['version']);
                 $stmt->bindValue(':date_version', $item['date_version']->format('Y-m-d H:i:sO'));
@@ -160,7 +170,7 @@ class HotspotDetailsRepository extends ServiceEntityRepository
         $this->getEntityManager()->getConnection()->rollBack();
         return $this->handleDatabaseException($e);
     }
-    return ['code'=>200, 'erreur'=>''];
+    return ['code' => 200, 'erreur' => ''];
   }
 
 }
