@@ -140,8 +140,9 @@ class BatchCollecteHotspotController extends AbstractController
                     case 1: $high++; break;
                     case 2: $medium++; break;
                     case 3: $low++; break;
-                    default: $message = "Ce cas n'est pas prévu."; break;
+                    default: break;
                 }
+
                 /** Ajout des hotspots à la liste à insérer */
                 $map[] = [
                     'maven_key' => $mavenKey,
@@ -190,7 +191,6 @@ class BatchCollecteHotspotController extends AbstractController
         $data=[
             'hotspot_high' => $high, 'hotspot_medium' => $medium,
             'hotspot_low' => $low, 'nombre_hotspot' => $high+$medium+$low];
-
     return ['code' => 200, 'message' => $map, 'data' => $data];
     }
 
