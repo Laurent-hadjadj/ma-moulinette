@@ -84,7 +84,7 @@ class ListeProjetRepository extends ServiceEntityRepository
     } catch (\Doctrine\DBAL\Exception $e) {
         return $this->handleDatabaseException($e);
     }
-    return ['code'=>200, 'request'=>$request, 'erreur'=>''];
+    return ['code' => 200, 'request' => $request, 'erreur' => ''];
   }
 
   /**
@@ -156,8 +156,8 @@ class ListeProjetRepository extends ServiceEntityRepository
                 jsonb_array_elements_text(liste_projet.tags::jsonb) AS tag
             WHERE ".$map['clause_where'];
     try {
-          $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-          $liste=$stmt->executeQuery()->fetchAllAssociative();
+          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+          $liste = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Doctrine\DBAL\Exception $e) {
         return $this->handleDatabaseException($e);
     }
