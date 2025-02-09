@@ -306,7 +306,7 @@ class BatchCollecteAnomalieDetailControllerTest extends TestCase
         $result = $this->controller->BatchCollecteAnomalieDetail('mavenKey', 'manual', 'laurent.hadjadj@ma-petite-entreprise.fr');
 
         $this->assertEquals(200, $result['code']);
-        $this->assertEquals("Pas d'anomalie trouvée", $result['message']);
+        $this->assertEquals("Pas d'anomalie trouvée.", $result['message']);
         $this->assertEmpty($result['data']);
     }
 }
