@@ -70,6 +70,6 @@ class ActivityKernelTest extends KernelTestCase
         $response = $activityRepository->findBy(['mavenKey' => static::$mavenKey]);
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée');
-        $this->assertCount(2, $response, 'MAVENKEY: Aucune réponse trouvée');
+        $this->assertCount(2, $response, 'Maven_Key: Aucune réponse trouvée');
     }
 }
