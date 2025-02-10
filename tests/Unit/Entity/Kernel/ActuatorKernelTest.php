@@ -55,10 +55,10 @@ class ActuatorKernelTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         $actuatorRepository = $entityManager->getRepository(Actuator::class);
-        $response = $actuatorRepository->findOneBy(['mavenKey' => static::$mavenKey, 'nomApplication'=>static::$nomApplication]);
+        $response = $actuatorRepository->findOneBy(['mavenKey' => static::$mavenKey, 'nomApplication' => static::$nomApplication]);
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée');
-        $this->assertCount(1, [$response], 'MAVENKEY: Aucune réponse trouvée');
+        $this->assertCount(1, [$response], 'Maven_Key: Aucune réponse trouvée');
     }
 
     public function testActuatorCount(): void
