@@ -235,7 +235,7 @@ class BatchCollecteHotspotDetailController extends AbstractController
         }
 
         /** On supprime les résultats pour la maven_key. */
-        $map=['maven_key' => $mavenKey];
+        $map = ['maven_key' => $mavenKey];
         $delete = $hotspotDetailsRepository->deleteHotspotDetailsMavenKey($map);
         if ($delete['code'] != 200) {
             return ['code' => $delete['code'], 'erreur' => $delete['erreur']];
@@ -277,6 +277,6 @@ class BatchCollecteHotspotDetailController extends AbstractController
         if ($insert['code'] !== 200) {
             return ['code' => $insert['code'], 'erreur' => $insert['erreur']];
         }
-        return ['code' => 200, 'message' => $mapData];
+        return ['code' => 200, 'nombre' => count($liste), 'message' => $mapData];
     }
 }

@@ -32,8 +32,7 @@ class BatchCollecteOwaspController extends AbstractController
     /** Définition des constantes */
     public static $sonarUrl = "sonar.url";
     public static $europeParis = "Europe/Paris";
-    public static $request = "requête : ";
-    public static $erreur404 = "L'appel à l'API n'a pas abouti (Erreur 404).";
+    public static $erreur404 = "Je n'ai pas trouvé le projet dans l'application (Erreur 404).";
 
     /**
      * [Description for __construct]
@@ -80,28 +79,31 @@ class BatchCollecteOwaspController extends AbstractController
             'owasp2017' => ['componentKeys' => $maven_key, 'facets' => 'owaspTop10', 'owaspTop10' => 'a1,a2,a3,a4,a5,a6,a7,a8,a9,a10'],
             'owasp2021' => ['componentKeys' => $maven_key, 'facets' => 'owaspTop10-2021', 'owaspTop10-2021' => 'a1,a2,a3,a4,a5,a6,a7,a8,a9,a10'],
         ];
+
         /** On construit l'URL */
         $url = $this->getParameter(static::$sonarUrl);
+
         /** On appelle les requêtes HTTP pour chaque référentiel */
         $owasp2017 = $this->client->httpSonarQube("$url/api/issues/search?".http_build_query($queryParamsList['owasp2017']));
+        /** Il ne peut pas y avoir de 404, l'API renvoie toujours une response 200*/
         if (isset($owasp2017['code']) && in_array($owasp2017['code'], [401, 404])) {
-            return ['erreur' => $owasp2017['code']];
+            return ['code' => $owasp2017['code'], $owasp2017['erreur']];
         }
 
         /** On execute si la version de SonarQube est >= 9 */
         $owasp2021 = ['NC'];
-        if ($sonar_version>8){
+        if ((int) $sonar_version > 8){
             $owasp2021 = $this->client->httpSonarQube("$url/api/issues/search?".http_build_query($queryParamsList['owasp2021']));
             if (isset($owasp2021['code']) && in_array($owasp2021['code'], [401, 404])) {
-            return ['erreur' => $owasp2021['code']];
+            return ['code' => $owasp2021['code'], 'erreur' => $owasp2021['erreur']];
             }
         }
 
         /** On récupère dans la table information_projet la version et la date du projet la plus récente. */
         $map = ['maven_key' => $maven_key];
         $select_information = $informationProjet->selectInformationProjetProjectVersion($map);
-        if ($select_information['code']!=200) {
-            return ['code' => $select_information['code'], 'message'=>$select_information['erreur']];
+            if ($select_information['code'] != 200) {
+            return ['code' => $select_information['code'], 'message' => $select_information['erreur']];
         }
 
         /** Il n'y a pas de projet dans la table ou la collecte des informations du projet a planté ! */
@@ -193,17 +195,13 @@ class BatchCollecteOwaspController extends AbstractController
         $map = ['maven_key' => $maven_key];
         $delete = $owaspRepository->deleteOwaspMavenKey($map);
         if ($delete['code'] != 200) {
-            return ['code' => $delete['code'],
-                    'erreur'=> [$delete['erreur'], static::$request=>'deleteOwaspMavenKey']
-            ];
+            return ['code' => $delete['code'], 'erreur' => $delete['erreur']];
         }
 
         /** On enregistre */
-        $request = $owaspRepository->insertOwasp($owaspDataList);
-        if ($request['code'] != 200) {
-            return ['code' => $request['code'],
-                    'erreur' => [$request['erreur'],
-                    static::$request=>'insertNote']];
+        $insert = $owaspRepository->insertOwasp($owaspDataList);
+        if ($insert['code'] != 200) {
+            return ['code' => $insert['code'], 'erreur' => $insert['erreur']];
         }
 
         return ['code' => 200, 'owasp2017' => $total_2017, 'owasp2021' => $total_2021,'message' => ['nombre_2017' => $total_2017, 'nombre_2021' => $total_2021, 'data' => $owaspDataList]];

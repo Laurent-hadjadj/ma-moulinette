@@ -150,6 +150,7 @@ class BatchCollecteAnomalieController extends AbstractController
                     'type' => 'VULNERABILITY'];
             }
         $results['CODE_SMELL'] = self::makeRequest($queryParamsList['CODE_SMELL'], $tempoUrl);
+
         if (isset($results['CODE_SMELL']['code'])) {
                 return [
                     'code' => $results['CODE_SMELL']['code'],

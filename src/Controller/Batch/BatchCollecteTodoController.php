@@ -77,14 +77,14 @@ class BatchCollecteTodoController extends AbstractController
         /** On construit l'URL et on appel le WS. */
         $result = $this->client->httpSonarQube("$tempoUrl/api/issues/search?".http_build_query($queryParams));
          /** On catch les erreurs HTTP 401 et 404, si possible :) */
-        if (isset($result['code']) && in_array($result['code'], [401, 404])) {
-            return ['code' => $result['code']];
+        if (isset($result['code']) && in_array($result['code'], [401, 404, 500])) {
+            return ['code' => $result['code'], 'erreur' => $result['erreur']];
         }
 
         /** On supprime les résultats pour la maven_key. */
         $map = ['maven_key' => $mavenKey];
         $delete = $todoRepository->deleteTodoMavenKey($map);
-        if ($delete['code'] != 200) {
+        if ($delete['code'] !== 200) {
             return ['code' => $delete['code'], 'erreur' => $delete['erreur']];
         }
 

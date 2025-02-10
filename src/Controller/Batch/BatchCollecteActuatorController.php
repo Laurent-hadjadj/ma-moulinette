@@ -32,7 +32,6 @@ class BatchCollecteActuatorController extends AbstractController
     /** Définition des constantes */
     public static $sonarUrl = "sonar.url";
     public static $europeParis = "Europe/Paris";
-    public static $request = "requête : ";
 
     /**
      * [Description for __construct]
@@ -69,15 +68,17 @@ class BatchCollecteActuatorController extends AbstractController
         /** On regarde si, il y a une point d'accès défini pour le projet */
         $map = ['maven_key' => $mavenKey];
         $actuatorEndpoint = $actuatorRepository->findActuatorMavenKey($map);
-        if ($actuatorEndpoint['code'] != 200 && $actuatorEndpoint['code']!= 404 ) {
-            return ['code' => $actuatorEndpoint['code'],
-            'erreur'=>[$actuatorEndpoint['erreur'], static::$request=>'findActuatorMavenKey']];
+        if (isset($actuatorEndpoint['code']) && in_array($actuatorEndpoint['code'], [23502, 23505, 500])) {
+            return [
+                'code' => $actuatorEndpoint['code'],
+                'erreur' => $actuatorEndpoint['erreur']
+            ];
         }
 
         /** Il n'y a pas de endpoint pour ce projet */
         if ($actuatorEndpoint['code'] === 404){
             return ['code' => 404,
-                    'message' => "Il n'y a pas de point-d'accès défini pour ce projet."];
+                    'message' => "Il n'y a pas de point-d'accès défini pour ce projet (Erreur 404)."];
         }
 
         /** On construit l'URL */
@@ -86,21 +87,23 @@ class BatchCollecteActuatorController extends AbstractController
         $baseUrl = $actuatorEndpoint['url'];
         $ressource = 'actuator/info';
         $url = "$baseUrl/$ressource";
+
         /** On nettoie l'URL */
         $url = htmlspecialchars($url, ENT_QUOTES, 'UTF-8');
 
          /** Appelle le clientActuator HTTP */
         $queryParams = [];
         $actuatorInfo = $this->client->httpActuator("$url".http_build_query($queryParams), $actuatorUser, $actuatorPassword);
-        //$data = json_decode($actuatorInfo->getContent());
-        $data = $actuatorInfo;
-        /** On catch les erreurs HTTP 400, 401, 403 et 404, si possible :) */
-        if (isset($data['code']) && in_array($data['code'], [400, 401, 403, 404])) {
+
+        $data = $actuatorInfo['json'];
+
+        /** On catch les erreurs HTTP  */
+        if (isset($data['code']) && in_array($data['code'], [400, 401, 403, 404, 500])) {
                 return ['code' => $data['code'], 'erreur' => [$data['erreur']]];
         }
 
         /** On renvoi les résultats */
-        return ['code' => 200, 'message' => ['json'=>$data]];
+        return ['code' => 200, 'message' => $data];
     }
 
 }

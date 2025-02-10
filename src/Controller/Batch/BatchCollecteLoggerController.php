@@ -141,13 +141,10 @@ class BatchCollecteLoggerController extends AbstractController
             }
 
         /** On supprime les résultats pour la maven_key. */
-        $map=['maven_key'=>$mavenKey];
-        $delete=$loggerRepository->deleteLoggerMavenKey($map);
+        $map = ['maven_key'=>$mavenKey];
+        $delete = $loggerRepository->deleteLoggerMavenKey($map);
         if ($delete['code'] != 200) {
-            return [
-                    'code' => $delete['code'],
-                    'erreur' => $delete['erreur']
-                ];
+            return ['code' => $delete['code'], 'erreur' => $delete['erreur']];
         }
 
         /** Création de la date du jour */
@@ -165,16 +162,13 @@ class BatchCollecteLoggerController extends AbstractController
             'date_enregistrement' => $date
         ];
 
-        $insert=$loggerRepository->insertLogger($loggerData);
+        $insert = $loggerRepository->insertLogger($loggerData);
         if ($insert['code'] !== 200) {
-            return [
-                    'code' => $insert['code'],
-                    'erreur' => $insert['erreur']
-                ];
+            return ['code' => $insert['code'], 'erreur' => $insert['erreur']];
         }
 
         /** On prépare les données pour l'historique */
-        $data=[
+        $data = [
             'maven_key' => $mavenKey,
             'logger_info' => $results['track-info-method'],
             'logger_warn' => $results['track-warn-method'],

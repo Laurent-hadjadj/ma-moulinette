@@ -73,15 +73,15 @@ class BatchCollecteMesureController extends AbstractController
 
         /** Appelle le client HTTP */
         $result = $this->client->httpSonarQube("$tempoUrl/api/components/app?$queryString");
-        /** On catch les erreurs HTTP 401 et 404, si possible :) */
-        if (isset($result['code']) && in_array($result['code'], [401, 404])) {
+        /** On catch les erreurs HTTP 401, 404 et 500 :) */
+        if (isset($result['code']) && in_array($result['code'], [401, 404, 500])) {
             return ['code' => $result['code'], 'erreur' => $result['erreur']];
         }
 
         /** On supprime les résultats pour la maven_key. */
         $map = ['maven_key' => $mavenKey];
         $delete=$mesuresRepository->deleteMesuresMavenKey($map);
-        if ($delete['code'] != 200) {
+        if ($delete['code'] !== 200) {
             return ['code' => $delete['code'], 'erreur' => $delete['erreur']];
         }
         /** Création de la date du jour */
