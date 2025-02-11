@@ -28,7 +28,9 @@ class RepartitionCaseTest extends TestCase
     private static $component = '/controller/auth/reset-password.php';
     private static $type = 'bug';
     private static $severity = 'medium';
-    private static $setup = '2024032614';
+    private static $setup = '1707664293645';
+    private static $modeCollecte = 'TRAITEMENT MANUEL';
+    private static $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
     private static $dateEnregistrement = '2024-04-12 16:23:11+01';
 
     private function getEntity(): Repartition
@@ -40,6 +42,8 @@ class RepartitionCaseTest extends TestCase
         ->setType(static::$type)
         ->setSeverity(static::$severity)
         ->setSetup(static::$setup)
+        ->setModeCollecte(static::$modeCollecte)
+        ->setUtilisateurCollecte(static::$utilisateurCollecte)
         ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
     }
 
@@ -86,9 +90,20 @@ class RepartitionCaseTest extends TestCase
 
     public function testSettingAndGettingSetup(): void
     {
-        $newSetup = '202401011200';
+        $newSetup = '1707664293645';
         $this->repartition->setSetup($newSetup);
         $this->assertEquals($newSetup, $this->repartition->getSetup());
+    }
+
+    public function testSettingAndGettingModeCollecte(): void
+    {
+        $this->repartition->setModeCollecte(static::$modeCollecte);
+        $this->assertEquals(static::$modeCollecte, $this->repartition->getModeCollecte());
+    }
+    public function testSettingAndGettingUtilisateurCollecte(): void
+    {
+        $this->repartition->setUtilisateurCollecte(static::$utilisateurCollecte);
+        $this->assertEquals(static::$utilisateurCollecte, $this->repartition->getUtilisateurCollecte());
     }
 
     public function testSettingAndGettingDateEnregistrement(): void
@@ -106,6 +121,8 @@ class RepartitionCaseTest extends TestCase
         $this->assertEquals(static::$type, $this->repartition->getType());
         $this->assertEquals(static::$severity, $this->repartition->getSeverity());
         $this->assertEquals(static::$setup, $this->repartition->getSetup());
+        $this->assertEquals(static::$modeCollecte, $this->repartition->getModeCollecte());
+        $this->assertEquals(static::$utilisateurCollecte, $this->repartition->getUtilisateurCollecte());
         $this->assertEquals(new \DateTimeImmutable(static::$dateEnregistrement), $this->repartition->getDateEnregistrement());
     }
 
