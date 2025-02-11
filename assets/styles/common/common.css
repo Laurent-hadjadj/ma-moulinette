@@ -605,13 +605,13 @@ body { background: #eee; }
 
 /** Message d'alerte */
 .callout-message {
-  padding-right: 1rem;
+  padding-top: 0.6rem;
   margin-bottom: 0.1rem;
 }
 
 .alert-callout-border {
   width: 100%;
-  padding: 1.3rem;
+  padding: 1rem;
   border-left-width: 0.3125rem;
   border-left-color: #cacaca;
 }
@@ -633,7 +633,9 @@ body { background: #eee; }
 .close-button {
   color: white;
   border: none;
-  padding: 6px 18px;
+  right: 0.4rem;
+  top: 0.4rem;
+  padding: 4px 15px;
   cursor: pointer;
   border-radius: 4px;
   font-size: 1rem;
@@ -669,10 +671,6 @@ body { background: #eee; }
   background-color: #F2C054;
   box-shadow: 0 6px 8px rgba(0 0 0 / 20%);
 }
-
-/* Ombre pour les callout */
-.callout-ombre { box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); }
-.callout-ombre:hover { box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); }
 
 /* Titre + badge container */
 .ma-moulinette-container {
