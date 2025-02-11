@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##         Creation des tables et des objets      ##
-##               V1.32.0 - 06/02/2025             ##
+##               V1.33.0 - 11/02/2025             ##
 ##                                                ##
 ####################################################*/
 
@@ -46,6 +46,7 @@
 -- 20/01/2025 : Laurent HADJADJ - Ajout des colones classes, functions et files à la table historique ;
 -- 27/01/2025 : Laurent HADJADJ - Ajout de la clé inconnue à la table historique, pour dénombrer la répartition des valeurs inconnues ;
 -- 06/02/2025 : Laurent HADJADJ - Ajout des attributs : version_sonar, version_release_sonar, version_snapshot_sonar, version_autre_sonar à la table information_version ;
+-- 11/02/2025 : Laurent HADJADJ - Modification du type pour l'attribut setup et ajout de mode_collecte et utilisateur_collecte à la table repartition ;
 
 -- SCHEMA: ma_moulinette
 
@@ -1100,7 +1101,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.portefeuille_historique
   date TIMESTAMPTZ NOT NULL,
   action character varying(16) NOT NULL,
   auteur character varying(64) NOT NULL,
-  regle character varying(128) NOT NULL,
+  rule character varying(128) NOT NULL,
   description text NOT NULL,
   detail bytea NOT NULL,
   date_enregistrement TIMESTAMPTZ NOT NULL
@@ -1115,7 +1116,7 @@ COMMENT ON COLUMN ma_moulinette.portefeuille_historique.language IS 'language de
 COMMENT ON COLUMN ma_moulinette.portefeuille_historique.date IS 'Date complète de l’événement de l’historique';
 COMMENT ON COLUMN ma_moulinette.portefeuille_historique.action IS 'Action réalisée, par exemple modification ou création';
 COMMENT ON COLUMN ma_moulinette.portefeuille_historique.auteur IS 'Auteur de l’action dans l’historique';
-COMMENT ON COLUMN ma_moulinette.portefeuille_historique.regle IS 'Règle ou norme concernée par l’historique';
+COMMENT ON COLUMN ma_moulinette.portefeuille_historique.rule IS 'Règle ou norme concernée par l’historique';
 COMMENT ON COLUMN ma_moulinette.portefeuille_historique.description IS 'Description détaillée de l’événement historique';
 COMMENT ON COLUMN ma_moulinette.portefeuille_historique.detail IS 'Détails supplémentaires ou données binaires associées à l’événement';
 COMMENT ON COLUMN ma_moulinette.portefeuille_historique.date_enregistrement IS 'Date d’enregistrement de l’entrée historique dans la base de données';
@@ -1217,7 +1218,9 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.repartition
   component text NOT NULL,
   type character varying(16) NOT NULL,
   severity character varying(8) NOT NULL,
-  setup integer NOT NULL,
+  setup bigint NOT NULL,
+  mode_collecte character varying(32),
+  utilisateur_collecte character varying(320),
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
@@ -1230,7 +1233,9 @@ COMMENT ON COLUMN ma_moulinette.repartition.name IS 'Nom de la répartition';
 COMMENT ON COLUMN ma_moulinette.repartition.component IS 'Détails du composant concerné par la répartition';
 COMMENT ON COLUMN ma_moulinette.repartition.type IS 'Type de la répartition';
 COMMENT ON COLUMN ma_moulinette.repartition.severity IS 'Gravité de la répartition';
-COMMENT ON COLUMN ma_moulinette.repartition.setup IS 'Paramètre de configuration pour la répartition';
+COMMENT ON COLUMN ma_moulinette.repartition.setup IS 'Timestamp en milliseconde unique pour chaque analyse';
+COMMENT ON COLUMN ma_moulinette.repartition.mode_collecte IS 'Mode de collecte : collecte, traitement manuel ou traitement automatique';
+COMMENT ON COLUMN ma_moulinette.repartition.utilisateur_collecte IS 'Compte de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.repartition.date_enregistrement IS 'Date d’enregistrement de la répartition dans le système';
 
 -- Table: ma_moulinette.todo
