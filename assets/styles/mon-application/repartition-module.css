@@ -122,7 +122,7 @@
 }
 
 /* Positionnement et couleur des résultats dans une carte */
-.resultat {
+.result {
   padding-left: 0.5rem;
   color: #333;
   flex: 1;
@@ -262,4 +262,47 @@
 
 /* on aligne au centre */
 .button { text-align: center; }
+}
+
+.container-severity { display: flex; }
+
+/** Ajout d'un tooltip CSS */
+.tool-tip-severity { position: relative; }
+
+/* Propriété du texte qui sera affiché dans le tooltip */
+.tool-tip-severity .tool-tip-text-severity {
+  visibility: hidden;
+  width: 140px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  padding: 0.5rem;
+  border-radius: 6px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -70px;
+  opacity: 0;
+  transition: opacity 0.5s;
+  font-size: 0.8rem;
+  hyphens: auto;
+}
+
+/* Action après le survol du tooltip */
+.tool-tip-severity .tool-tip-text-severity::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent;
+}
+
+/* Action au moment du survol du tooltip */
+.tool-tip-severity:hover .tool-tip-text-severity {
+  visibility: visible;
+  opacity: 1;
 }
