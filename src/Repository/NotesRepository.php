@@ -22,10 +22,10 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class NotesRepository extends ServiceEntityRepository
 {
-  public static $removeReturnLine = "/\s+/u";
-  public static $mavenKey = ':maven_key';
-  public static $type = ':type';
-  public static $noDataBase = 'La connexion à la base de données a échoué.';
+  private static $removeReturnLine = "/\s+/u";
+  private static $mavenKey = ':maven_key';
+  private static $type = ':type';
+  private static $noDataBase = 'La connexion à la base de données a échoué.';
 
   public function __construct(ManagerRegistry $registry)
   {
@@ -45,11 +45,21 @@ class NotesRepository extends ServiceEntityRepository
    */
   protected function handleDatabaseException(\Doctrine\DBAL\Exception $e): array
   {
-    if (strpos($e->getMessage(), 'SQLSTATE[08006]') !== false) {
-      return ['code' => 500, 'erreur' => static::$noDataBase];
-    } else {
-      return ['code' => 500, 'erreur' => $e->getMessage()];
-    }
+      $message = $e->getMessage();
+
+      if (strpos($e->getMessage(), 'SQLSTATE[08006]') !== false) {
+          $message = static::$noDataBase;
+      }
+
+      if ($e->getSqlState() == '23502') {
+          $message = $e->getMessage();
+      }
+
+      if ($e->getSqlState() == '23505'){
+          return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
+      }
+
+      return ['code' => 500, 'erreur'=> $message];
   }
 
   /**
@@ -64,14 +74,14 @@ class NotesRepository extends ServiceEntityRepository
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function deleteNotesMavenKey($map): array
+  public function deleteNotesMavenKey(array $map): array
   {
     $sql = "DELETE
             FROM ma_moulinette.notes
             WHERE maven_key=:maven_key and type=:type";
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
               $stmt->bindValue(static::$mavenKey, $map['maven_key']);
               $stmt->bindValue(static::$type, $map['type']);
               $stmt->executeStatement();
@@ -80,7 +90,7 @@ class NotesRepository extends ServiceEntityRepository
         $this->getEntityManager()->rollback();
         return $this->handleDatabaseException($e);
     }
-    return ['code'=>200, 'erreur'=>''];
+    return ['code' => 200, 'erreur' => ''];
   }
 
   /**
@@ -95,7 +105,7 @@ class NotesRepository extends ServiceEntityRepository
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function insertNotes($map): array
+  public function insertNotes(array $map): array
   {
       $sql = "INSERT INTO ma_moulinette.notes
                   (maven_key, type, value, mode_collecte, utilisateur_collecte, date_enregistrement)
@@ -103,7 +113,7 @@ class NotesRepository extends ServiceEntityRepository
                   (:maven_key, :type, :value, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
       try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                   $stmt->bindValue(static::$mavenKey, $map['maven_key']);
                   $stmt->bindValue(static::$type, $map['type']);
                   $stmt->bindValue(':value', $map['value']);
@@ -117,7 +127,7 @@ class NotesRepository extends ServiceEntityRepository
           $this->getEntityManager()->getConnection()->rollBack();
           return $this->handleDatabaseException($e);
       }
-      return ['code'=>200, 'erreur'=>''];
+      return ['code' => 200, 'erreur' => ''];
   }
 
 /**
@@ -132,21 +142,21 @@ class NotesRepository extends ServiceEntityRepository
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function selectNotesMavenType($map): array
+  public function selectNotesMavenType(array $map): array
   {
     $sql = "SELECT type, value, date_enregistrement
             FROM ma_moulinette.notes
             WHERE maven_key=:maven_key AND type=:type
             ORDER BY date_enregistrement DESC LIMIT 1";
     try {
-          $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $stmt->bindValue(static::$mavenKey, $map['maven_key']);
             $stmt->bindValue(static::$type, $map['type']);
-          $liste=$stmt->executeQuery()->fetchAllAssociative();
+          $liste = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Doctrine\DBAL\Exception $e) {
         return $this->handleDatabaseException($e);
     }
-    return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
+    return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
   }
 
 }
