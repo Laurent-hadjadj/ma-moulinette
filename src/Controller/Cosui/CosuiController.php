@@ -58,6 +58,7 @@ class CosuiController extends AbstractController
     {
         $this->em = $em;
         $this->mr = $mr;
+        $this->params = $params;
         $this->serviceExtractName = $serviceExtractName;
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
@@ -105,22 +106,22 @@ class CosuiController extends AbstractController
     {
         switch ($note) {
             case 'A':
-                $p=100;
+                $p = 100;
                 break;
             case 'B':
-                $p=80;
+                $p = 80;
                 break;
             case 'C':
-                $p=60;
+                $p = 60;
                 break;
             case 'D':
-                $p=30;
+                $p = 30;
                 break;
             case 'E':
-                $p=10;
+                $p = 10;
                 break;
             default:
-                $p=0;
+                $p = 0;
         }
         return $p;
     }
@@ -143,7 +144,7 @@ class CosuiController extends AbstractController
         $response = $this->mr->getRepository(Repartition::class)
                     ->findBy(['mavenKey' => $mavenKey], ['setup' => 'DESC'], 1);
 
-        $setup = "NaN";
+        $setup = 'NaN';
         if (!empty($response)) {
             $setup = $response[0]->getSetup();
         }
@@ -169,8 +170,8 @@ class CosuiController extends AbstractController
         $historiqueRepository = $this->em->getRepository(Historique::class);
 
         /** On récupère les informations du projet de la table historique */
-        $map=['maven_key'=>$mavenKey];
-        $request=$historiqueRepository->selectHistoriqueProjetLast($map);
+        $map = ['maven_key'=>$mavenKey];
+        $request = $historiqueRepository->selectHistoriqueProjetLast($map);
         if ($request['code']!=200) {
             return [
                     'maven_key' => $mavenKey,'code'=>$request['code'],
@@ -231,8 +232,8 @@ class CosuiController extends AbstractController
         $historiqueRepository = $this->em->getRepository(Historique::class);
 
         /** On récupère les informations du projet de référence */
-        $map=['maven_key'=>$mavenKey];
-        $request=$historiqueRepository->selectHistoriqueProjetReference($map);
+        $map = ['maven_key'=>$mavenKey];
+        $request = $historiqueRepository->selectHistoriqueProjetReference($map);
         if ($request['code']!=200) {
             return [
                     'maven_key' => $mavenKey,'code'=>$request['code'],
@@ -281,70 +282,53 @@ class CosuiController extends AbstractController
      */
     private function repartition($mavenKey, $contents): array
     {
-        $frontend = $backend = $autre = 0;
+        /** On calcule la répartition pour les application java et ?Php */
+        $score_frontend = $score_backend = $score_autre = $score_inconnue = 0;
 
-        /**
-         * fr.ma-petite-entreprise:ma-moulinette : valeur par défaut pour les Tests
-         */
-        if (is_null($mavenKey)) {
-            $mavenKey = "fr.ma-petite-entreprise:ma-moulinette";
+        /** on récupère la liste des clés pour chaque module */
+        $liste_frontend = $this->getParameter('module.frontend');
+        $liste_backend = $this->getParameter('module.backend');
+        $liste_autre = $this->getParameter('module.autre');
+
+        $frontend = array_map('strtolower', array_map('trim', explode(',', $liste_frontend)));
+        $backend = array_map('strtolower', array_map('trim', explode(',', $liste_backend)));
+        $autre = array_map('strtolower', array_map('trim', explode(',', $liste_autre)));
+
+        /** Vérifie si le chemin appartient au front */
+        foreach ($frontend as $module) {
+            $path = str_replace($mavenKey . ':', '', $contents['components']);
+            if (preg_match("/\b$module\b/", $path)) {
+                $score_frontend++;
+                break;
+            }
         }
 
-        $app=$this->serviceExtractName->extractNameFromMavenKey($mavenKey);
-
-        foreach ($contents as $el) {
-            /**
-             * On supprime le début de la ligne
-             * monapplication-metier/monapplication-metier-service/src/
-             */
-            $file = str_replace($mavenKey . ":", "", $el->getComponent());
-            /**
-             * On découpe le chemin.
-             * monapplication-metier, monapplication-metier-service, src,...
-             */
-            $module = explode("/", $file);
-            /** On prend la première entrée */
-            if ($module[0] === "du-presentation" ||
-                $module[0] === "rs-presentation") {
-                $frontend = $frontend + 1;
-            }
-            if ($module[0] === $app . "-presentation" ||
-                $module[0] === $app . "-presentation-commun" ||
-                $module[0] === $app . "-presentation-ear" ||
-                $module[0] === $app . "-webapp") {
-                $frontend = $frontend + 1;
-            }
-            if ($module[0] === "rs-metier") {
-                $backend = $backend + 1;
-            }
-            if ($module[0] === $app . "-metier" ||
-                $module[0] === $app . "-common" ||
-                $module[0] === $app . "-api" ||
-                $module[0] === $app . "-dao") {
-                $backend = $backend + 1;
-            }
-            if ($module[0] === $app . "-metier-ear" ||
-                $module[0] === $app . "-service" ||
-                $module[0] === $app . "-serviceweb" ||
-                $module[0] === $app . "-middleoffice") {
-                $backend = $backend + 1;
-            }
-            if ($module[0] === $app . "-metier-rest" ||
-                $module[0] === $app . "-entite" ||
-                $module[0] === $app . "-serviceweb-client") {
-                $backend = $backend + 1;
-            }
-            if ($module[0] === $app . "-batch" ||
-                $module[0] === $app . "-batchs" ||
-                $module[0] === $app . "-batch-envoi-dem-aval" ||
-                $module[0] === $app . "-batch-import-billets") {
-                $autre = $autre + 1;
-            }
-            if ($module[0] === $app . "-rdd") {
-                $autre = $autre + 1;
+        /** Vérifie si le chemin appartient au backend */
+        foreach ($backend as $module) {
+            $path = str_replace($mavenKey . ':', '', $contents['components']);
+            if (preg_match("/\b$module\b/", $path)) {
+                $score_backend++;
+                break;
             }
         }
-        return ['frontend' => $frontend, 'backend' => $backend, 'autre' => $autre];
+
+        /** Vérifie si le chemin n'appartient ni au fronted, ni au backend */
+        foreach ($autre as $module) {
+            $path = str_replace($mavenKey . ':', '', $contents['components']);
+            if (preg_match("/\b$module\b/", $path)) {
+                $score_autre++;
+                break;
+            }
+        }
+
+        /* On calcule le score pour les clés non identifiées */
+        $score_inconnue = count($contents['components']) - ($score_frontend + $score_backend + $score_autre);
+
+        return [
+            'frontend' => $score_frontend,
+            'backend' => $score_backend,
+            'autre' => $score_autre,
+            'inconnue' => $score_inconnue];
     }
 
     /**
