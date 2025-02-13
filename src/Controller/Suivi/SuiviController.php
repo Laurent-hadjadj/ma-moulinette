@@ -65,6 +65,7 @@ class SuiviController extends AbstractController
     ) {
         $this->em = $em;
         $this->security = $security;
+        $this->params = $params;
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
         $this->marqueEntrepriseLong = $params->get('marque.entreprise.long');
