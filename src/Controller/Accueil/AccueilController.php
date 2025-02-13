@@ -290,12 +290,12 @@ class AccueilController extends AbstractController
             $dateCreationFormat = $date;
             $dateModificationProjet = $date;
             $dateModificationProfil = $date;
-            $map=[
-                'projet_bd'=>$projetBd, 'projet_sonar'=>$projetSonar,
-                'profil_bd'=>$profilBd, 'profil_sonar'=>$profilSonar,
-                'date_creation'=>$dateCreationFormat,
-                'date_modification_projet'=>$dateModificationProjet,
-                'date_modification_profil'=>$dateModificationProfil];
+            $map = [
+                'projet_bd' => $projetBd, 'projet_sonar' => $projetSonar,
+                'profil_bd' => $profilBd, 'profil_sonar' => $profilSonar,
+                'date_creation'=> $dateCreationFormat,
+                'date_modification_projet' => $dateModificationProjet,
+                'date_modification_profil' => $dateModificationProfil];
 
             $propertiesRepository->insertProperties($map);
         } else {
