@@ -69,6 +69,7 @@ phpunit.xml.dist
 .env.test
 .env.test.local
 .env.local
+*.tmp
 ###< phpunit/phpunit ###
 
 ###> Traces batch ###
