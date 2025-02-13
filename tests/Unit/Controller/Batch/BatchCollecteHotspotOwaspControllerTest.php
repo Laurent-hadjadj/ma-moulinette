@@ -15,6 +15,9 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Psr\Container\ContainerInterface;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * [Description BatchCollecteHotspotOwaspControllerTest]
+ */
 class BatchCollecteHotspotOwaspControllerTest extends TestCase
 {
     private EntityManagerInterface $em;
@@ -26,7 +29,7 @@ class BatchCollecteHotspotOwaspControllerTest extends TestCase
     private static $date = '2024-08-09';
     private static $mel = 'laurent.hadjadj@ma-petite-entreprise.fr';
     private static $messageA0 = 'A0 : Effacement des données de la table hotspotOwasp pour le projet.';
-    private static $httpError500 = 'Internal server error';
+    private static $httpError500 = 'Internal server error (Erreur 500).';
 
     protected function setUp(): void
     {
