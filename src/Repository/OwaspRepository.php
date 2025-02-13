@@ -156,7 +156,7 @@ class OwaspRepository extends ServiceEntityRepository
                   if ($value instanceof \DateTimeImmutable) {
                       $stmt->bindValue(":$key", $value->format('Y-m-d H:i:sO'));
                   } else {
-                      if ( $key!=='total'){
+                      if ( $key !== 'total'){
                           $stmt->bindValue(":$key", $value);
                       }
                   }
