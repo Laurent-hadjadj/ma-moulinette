@@ -440,9 +440,9 @@ class BatchCollecteLoggerControllerTest extends TestCase
             ['sonar.url', static::$localhost]
         ]);
 
-        $this->client->method('httpSonarQube')->willReturn(["total" => -1]);
+        $this->client->method('httpSonarQube')->willReturn(['total' => -1]);
         $this->loggerRepository->method('deleteLoggerMavenKey')->willReturn(['code' => 200]);
-        $this->loggerRepository->method('insertLogger')->willReturn(['erreur'=>'', 'code' => 500, 'erreur' => ['Insert erreur', "requête : " => "insertLogger"]]);
+        $this->loggerRepository->method('insertLogger')->willReturn(['code' => 500, 'erreur' => 'Erreur 500']);
 
         $result = $this->controller->BatchCollecteLogger('some-maven-key', 'COLLECTE', static::$mel);
         $this->assertArrayHasKey('code', $result);
