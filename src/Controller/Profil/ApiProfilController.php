@@ -69,6 +69,7 @@ class ApiProfilController extends AbstractController
     ) {
         $this->em = $em;
         $this->client = $client;
+        $this->params = $params;
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
         $this->marqueEntrepriseLong = $params->get('marque.entreprise.long');
@@ -249,7 +250,7 @@ class ApiProfilController extends AbstractController
         $render['liste'] = null;
         $render['badge'] = null;
 
-        /** si le mode n'est pas défini ou si le tableau ne contient pas trois clé alors */
+        /** si le salt n'est pas défini ou si le tableau ne contient pas trois clé alors */
         if (count($explode) !=3) {
              /** On prepare un message flash */
             $this->addFlash('notice', ['type'=>'alert', 'titre'=> '[DÉTAILS-001]', 'message'=>"Le token est incorrecte (Erreur 400)."]);

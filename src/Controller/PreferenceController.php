@@ -56,6 +56,7 @@ class PreferenceController extends AbstractController
         private ParameterBagInterface $params)
     {
         $this->em = $em;
+        $this->params = $params;
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
         $this->marqueEntrepriseLong = $params->get('marque.entreprise.long');
