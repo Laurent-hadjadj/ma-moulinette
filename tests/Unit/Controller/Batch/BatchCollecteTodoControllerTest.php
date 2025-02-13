@@ -90,18 +90,22 @@ class BatchCollecteTodoControllerTest extends TestCase
         $this->assertArrayHasKey('data', $result);
     }
 
-    public function testBatchCollecteTodoHttpError()
+    public function testBatchCollecteTodoHttp401Error()
     {
         $this->parameterBag->method('get')
             ->willReturn(static::$api.static::$parameters);
 
         $this->client->method('httpSonarQube')
-            ->willReturn(['code' => 401]);
+            ->willReturn(['code' => 401, 'erreur' => 'Unauthorized']);
 
         $result = $this->controller->BatchCollecteTodo('dummyMavenKey', 'dummyModeCollecte', 'dummyUtilisateurCollecte');
 
         // Assertions
+        $this->assertArrayHasKey('code', $result);
+        $this->assertArrayHasKey('erreur', $result);
         $this->assertEquals(401, $result['code']);
+        $this->assertEquals('Unauthorized', $result['erreur']);
+
     }
 
     public function testBatchCollecteTodoDeleteError()
@@ -119,6 +123,8 @@ class BatchCollecteTodoControllerTest extends TestCase
         $result = $this->controller->BatchCollecteTodo('dummyMavenKey', 'dummyModeCollecte', 'dummyUtilisateurCollecte');
 
         // Assertions
+        $this->assertArrayHasKey('code', $result);
+        $this->assertArrayHasKey('erreur', $result);
         $this->assertEquals(500, $result['code']);
         $this->assertEquals('Internal server error', $result['erreur']);
 
@@ -144,6 +150,8 @@ class BatchCollecteTodoControllerTest extends TestCase
 
         $result = $this->controller->BatchCollecteTodo('dummyMavenKey', 'dummyModeCollecte', 'dummyUtilisateurCollecte');
 
+        $this->assertArrayHasKey('code', $result);
+        $this->assertArrayHasKey('erreur', $result);
         $this->assertEquals(500, $result['code']);
         $this->assertEquals('Insert error', $result['erreur']);
     }
