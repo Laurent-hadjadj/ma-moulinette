@@ -279,7 +279,8 @@ class Owasp
     private $a7Info;
 
     #[ORM\Column(type: Types::INTEGER,  nullable: false,
-        options: ['comment' => 'Nombre de mineurs pour A7'])]#[Assert\NotNull]
+        options: ['comment' => 'Nombre de mineurs pour A7'])]
+    #[Assert\NotNull]
     private $a7Minor;
 
     #[ORM\Column(type: Types::INTEGER,  nullable: false,
