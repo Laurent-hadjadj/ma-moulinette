@@ -6,8 +6,6 @@ use App\Entity\Actuator;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-use function PHPUnit\Framework\isEmpty;
-
 /**
  * @extends ServiceEntityRepository<Actuator>
  *
@@ -69,7 +67,7 @@ class ActuatorRepository extends ServiceEntityRepository
               $stmt->executeStatement();
           $this->getEntityManager()->getConnection()->commit();
     } catch (\Doctrine\DBAL\Exception $e) {
-        $this->getEntityManager()->rollback();
+        $this->getEntityManager()->getConnection()->rollback();
         return ['code'=>500, 'erreur'=> $e->getMessage()];
     }
     return ['code'=>200, 'erreur'=>''];

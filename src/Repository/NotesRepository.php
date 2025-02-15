@@ -87,7 +87,7 @@ class NotesRepository extends ServiceEntityRepository
               $stmt->executeStatement();
           $this->getEntityManager()->getConnection()->commit();
     } catch (\Doctrine\DBAL\Exception $e) {
-        $this->getEntityManager()->rollback();
+        $this->getEntityManager()->getConnection()->rollback();
         return $this->handleDatabaseException($e);
     }
     return ['code' => 200, 'erreur' => ''];
