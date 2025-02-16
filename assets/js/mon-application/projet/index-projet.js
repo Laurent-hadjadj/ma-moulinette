@@ -39,6 +39,9 @@ import {typeMessage, showMessage} from '../../common/message.js';
 /** On importe les constantes */
 import { http_200, http_400, http_401, http_403, http_404, http_406, http_500, deuxMille, cinqMille, contentType, paletteCouleur, matrice, dateOptions } from '../../common/constante.js';
 
+/** On importe l'encoder */
+import {encode} from '../../common/encode.js';
+
 import {Chart, registerables} from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
@@ -231,6 +234,7 @@ const selectProjet = async function() {
   };
 
   const t = await $.ajax(options);
+// 📌 Vérification des erreurs
   if (t.code !== http_200){
     showMessage(t.type, typeMessage(t.message));
     sessionStorage.setItem('liste des projets autorisés', "L'utilisateur n'est pas rattaché à une équipe ou à un projet.");
@@ -281,6 +285,7 @@ const projetInformation = async function(mavenKey) {
 
   try {
     const t = await $.ajax(options);
+    // 📌 Vérification des erreurs
     const errorCodes = [http_400, http_401, http_403, http_404, http_500];
     if (errorCodes.includes(t.code)){
         showMessage(t.type, typeMessage(t.message));
@@ -289,6 +294,7 @@ const projetInformation = async function(mavenKey) {
       }
 
     if (t.code === http_200){
+      // 📌 Vérification des erreurs
       log(` - INFO   : (01) Collecte des informations pour la version : ${t.message.projet}`);
       const release = parseInt(t.message.release, 10) || 0;
       const snapshot = parseInt(t.message.snapshot, 10) || 0;
@@ -329,6 +335,7 @@ const projetMesure = async function(mavenKey) {
 
   try {
     const t = await $.ajax(options);
+    // 📌 Vérification des erreurs
     const errorCodes = [http_400, http_401, http_403, http_404, http_500];
     if (errorCodes.includes(t.code)){
         showMessage(t.type, typeMessage(t.message));
@@ -363,7 +370,7 @@ const projetMesure = async function(mavenKey) {
   */
 const projetRating = async function(mavenKey, type) {
   const collecte = sessionStorage.getItem('collecte');
-  if (!collecte || collecte!='Tout va bien!') {
+  if (!collecte || collecte != 'Tout va bien!') {
     return;
   }
 
@@ -374,6 +381,7 @@ const projetRating = async function(mavenKey, type) {
 
   try {
     const t = await $.ajax(options);
+    // 📌 Vérification des erreurs
     const errorCodes = [http_400, http_401, http_403, http_404, http_500];
     if (errorCodes.includes(t.code)){
         showMessage(t.type, typeMessage(t.message));
@@ -419,6 +427,7 @@ const projetOwasp = async function(mavenKey) {
 
   try {
     const t = await $.ajax(options);
+    // 📌 Vérification des erreurs
     const errorCodes = [http_400, http_401, http_403, http_404, http_500];
     if (errorCodes.includes(t.code)){
         showMessage(t.type, typeMessage(t.message));
@@ -483,6 +492,7 @@ const projetHotspot = async function(mavenKey) {
 
   try {
     const t = await $.ajax(options);
+    // 📌 Vérification des erreurs
     const errorCodes = [http_400, http_401, http_403, http_404, http_500];
     if (errorCodes.includes(t.code)){
         showMessage(t.type, typeMessage(t.message));
@@ -532,6 +542,7 @@ const projetAnomalie = async function(mavenKey) {
 
   try {
     const t = await $.ajax(options);
+    // 📌 Vérification des erreurs
     const errorCodes = [http_400, http_401, http_403, http_404, http_500];
     if (errorCodes.includes(t.code)){
         showMessage(t.type, typeMessage(t.message));
@@ -576,6 +587,7 @@ const projetAnomalieDetails = async function(mavenKey) {
 
   try {
     const t = await $.ajax(options);
+    // 📌 Vérification des erreurs
     const errorCodes = [http_400, http_401, http_403, http_404, http_500];
     if (errorCodes.includes(t.code)){
         showMessage(t.type, typeMessage(t.message));
@@ -627,6 +639,7 @@ const projetHotspotOwasp = async function(mavenKey, menace) {
 
   try {
     const t = await $.ajax(options);
+    // 📌 Vérification des erreurs
     const errorCodes = [http_400, http_401, http_403, http_404, http_500];
     if (errorCodes.includes(t.code)){
         showMessage(t.type, typeMessage(t.message));
@@ -692,6 +705,7 @@ const projetHotspotOwaspDetails = async function(mavenKey) {
 
   try {
     const t = await $.ajax(options);
+    // 📌 Vérification des erreurs
     const errorCodes = [http_400, http_401, http_403, http_404, http_500];
     if (errorCodes.includes(t.code)){
         showMessage(t.type, typeMessage(t.message));
@@ -741,6 +755,7 @@ const projetNoSonar = async function(mavenKey){
 
   try {
     const t = await $.ajax(options);
+    // 📌 Vérification des erreurs
     const errorCodes = [http_400, http_401, http_403, http_404, http_500];
     if (errorCodes.includes(t.code)){
         showMessage(t.type, typeMessage(t.message));
@@ -791,6 +806,7 @@ const projetTodo = async function(mavenKey){
 
   try {
     const t = await $.ajax(options);
+    // 📌 Vérification des erreurs
     const errorCodes = [http_400, http_401, http_403, http_404, http_500];
     if (errorCodes.includes(t.code)){
         showMessage(t.type, typeMessage(t.message));
@@ -839,6 +855,7 @@ const options = {
 
   try {
     const t = await $.ajax(options);
+    // 📌 Vérification des erreurs
     const errorCodes = [http_400, http_401, http_403, http_500];
     if (errorCodes.includes(t.code)){
         showMessage(t.type, typeMessage(t.message));
@@ -904,6 +921,7 @@ const afficheMesProjets = async function() {
 
   try {
     const t = await $.ajax(options);
+    // 📌 Vérification des erreurs
     const errorCodes = [http_400, http_406, http_500];
     if (errorCodes.includes(t.code)){
         showMessage(t.type, typeMessage(t.message));
@@ -1131,10 +1149,12 @@ $('.js-analyse').on('click', function () {
     await projetInformation(idProject);           /*(01)*/
     await projetMesure(idProject);                /*(02)*/
 
-    /* Analyse Sécurité et Owasp. */
+    /* Collecte des notes */
     await projetRating(idProject, 'reliability'); /*(03)*/
     await projetRating(idProject, 'security');    /*(03)*/
+    await projetRating(idProject, 'sqale');      /*(03)*/
 
+    /* Analyse Sécurité et Owasp. */
     await projetOwasp(idProject);                 /*(04)*/
     await projetHotspot(idProject);               /*(05)*/
 
@@ -1167,7 +1187,7 @@ $('.js-analyse').on('click', function () {
     /* Récupération des signalements To do (TS, JAVA, XML). */
     await projetTodo(idProject);                  /*(12)*/
 
-    /* Récupération des signalements To do (TS, JAVA, XML). */
+    /* Récupération des signalements Logger (logger_info, logger_warn, logger_error_, logger_debug). */
     await projetLogger(idProject);                /*(13)*/
 
     /* Renvoie le statut de fin */
@@ -1212,6 +1232,7 @@ $('select[name="projet"]').on('change', function () {
     url: `${serveur()}/api/favori/check`, type: 'POST',
           dataType: 'json', data: JSON.stringify(data), contentType };
   $.ajax(options).then(t=> {
+    // 📌 Vérification des erreurs
     const errorCodes = [http_400, http_401, http_403, http_500];
     if (errorCodes.includes(t.code)){
         showMessage(t.type, typeMessage(t.message));
@@ -1345,6 +1366,7 @@ $('.favori-svg').on('click', () => {
       url: `${serveur()}/api/favori`, type: 'POST',
       dataType: 'json',  data: JSON.stringify(data), contentType };
     $.ajax(options).then( t => {
+      // 📌 Vérification des erreurs
       const errorCodes = [http_400, http_401, http_403, http_500];
       if (errorCodes.includes(t.code)){
           showMessage(t.type, typeMessage(t.message));
@@ -1438,7 +1460,7 @@ $('.js-enregistrement').on('click', () => {
 $('.js-tableau-de-bord').on('click', () => {
   if ($('select[name="projet"]').val() !== '' && $('select[name="projet"]').val() !== 'TheID'){
     const apiMaven = $('#select-result').text().trim();
-    window.location.href=`/suivi/set?maven_key=${apiMaven}`;
+    window.location.href=`${serveur()}/suivi/set?maven_key=${apiMaven}`;
     } else {
     log(' - ERROR - [SUIVI] - Vous devez choisir un projet dans la liste !! !');
     }
@@ -1451,7 +1473,7 @@ $('.js-tableau-de-bord').on('click', () => {
 $('.js-cosui').on('click', () => {
   if ($('select[name="projet"]').val() !== '' && $('select[name="projet"]').val() !== 'TheID'){
     const apiMaven = $('#select-result').text().trim();
-    window.location.href='/projet/cosui?mavenKey='+apiMaven;
+    window.location.href = `${serveur()}/projet/cosui?mavenKey=${apiMaven}`;
     } else {
     log(' - ERROR - [COSUI] - Vous devez choisir un projet dans la liste !! !');
     }
@@ -1469,7 +1491,7 @@ $('.js-cosui').on('click', () => {
       sessionStorage.setItem('projet', mavenKey);
 
       /** On ne passe plus de paramètre dans le get */
-      window.location.href='/owasp';
+      window.location.href = `${server()}/owasp`;
     } else {
       log(' - ERROR - [OWASP] - Vous devez choisir un projet dans la liste !! !');
       }
@@ -1482,7 +1504,15 @@ $('.js-cosui').on('click', () => {
 $('.js-repartition-module').on('click', () => {
   if ($('select[name="projet"]').val() !== '' && $('select[name="projet"]').val() !== 'TheID'){
     const apiMaven = $('#select-result').text().trim();
-    window.location.href='/projet/repartition?mavenKey='+apiMaven;
+    /** on créé un hash avec la méthode reduce() comme clé de salt */
+    const salt = apiMaven.split('').reduce((hash, char) => {
+      return char.charCodeAt(0) + (hash << 6) + (hash << 16) - hash;
+    } , 0);
+
+  /** on créé un token pour encoder les paramètres */
+  const param = `${salt}|${apiMaven}`;
+  const a = encode(btoa(param));
+  location.href=`${serveur()}/repartition?token=${a}`;
   } else {
     log(' - ERROR - [Répartition] Vous devez choisir un projet dans la liste !! !');
     }

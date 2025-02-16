@@ -17,7 +17,7 @@ import $ from 'jquery';
 import {serveur} from '../../common/properties.js';
 
 /** On importe les constantes */
-import {dateOptions, contentType, http_200, http_202, http_400, http_401, http_403, http_500} from '../../common/constante.js';
+import {dateOptions, contentType, http_200, http_400, http_401, http_403, http_500} from '../../common/constante.js';
 
 /** On importe les fonctions d'affiche des messages JS */
 import {typeMessage, showMessage, hideMessage} from '../../common/message.js';
@@ -234,6 +234,7 @@ export const enregistrement = async function(mavenKey) {
 
     try {
           const t = await $.ajax(options);
+          // 📌 Vérification des erreurs
           const errorCodes = [http_400, http_401, http_403, http_500];
           if (errorCodes.includes(t.code)){
               showMessage(t.type, typeMessage(t.message));

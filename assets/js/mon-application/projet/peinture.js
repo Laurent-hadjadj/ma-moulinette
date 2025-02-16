@@ -660,6 +660,7 @@ export const afficheHotspotDetails = async function (mavenKey){
 
   try {
         const t = await $.ajax(options);
+        // 📌 Vérification des erreurs
         const errorCodes = [http_400, http_401, http_403, http_406, http_500];
         if (errorCodes.includes(t.code)){
             showMessage(t.type, typeMessage(t.message));
