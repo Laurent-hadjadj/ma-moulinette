@@ -56,6 +56,7 @@ const sonarIsUp = async function() {
   {
     return await $.ajax(options);
   } catch (t) {
+    // 📌 Vérification des erreurs
     if (t.status === http_404){
       showMessage('alert', `<strong>[Accueil]</strong> La requête est incorrecte (Erreur 404).`);
     }
@@ -82,6 +83,7 @@ const miseAJourListe = async function() {
     url: `${serveur()}/api/accueil/projet`, type: 'POST', dataType: 'json', contentType };
   try {
         const t = await $.ajax(options);
+        // 📌 Vérification des erreurs
         const errorCodes = [http_400, http_401, http_403, http_404, http_500];
         if (errorCodes.includes(t.code)){
             showMessage(t.type, typeMessage(t.message));
@@ -134,6 +136,7 @@ const miseAJourTags = async function() {
 
     try {
       const t = await $.ajax(options);
+      // 📌 Vérification des erreurs
       const errorCodes = [http_400, http_401, http_403, http_404, http_500];
       if (errorCodes.includes(t.code)){
           showMessage(t.type, typeMessage(t.message));

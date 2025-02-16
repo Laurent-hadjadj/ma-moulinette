@@ -75,8 +75,8 @@ const refreshActivity=async function() {
 
         /** On appel l'API */
         const t = await $.ajax(options);
-
-        if (t.code===http_403) {
+        // 📌 Vérification des erreurs
+        if (t.code === http_403) {
           showMessage('warning', `<strong>[ACTIVITÉ]</strong> - Vous n'êtes pas autorisé à effectuer cette opération (Erreur 403).`);
           return;
         }
