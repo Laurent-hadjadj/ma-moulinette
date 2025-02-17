@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##         Creation des tables et des objets      ##
-##               V1.33.0 - 11/02/2025             ##
+##               V2.0.0 - 14/02/2025             ##
 ##                                                ##
 ####################################################*/
 
@@ -47,6 +47,8 @@
 -- 27/01/2025 : Laurent HADJADJ - Ajout de la clé inconnue à la table historique, pour dénombrer la répartition des valeurs inconnues ;
 -- 06/02/2025 : Laurent HADJADJ - Ajout des attributs : version_sonar, version_release_sonar, version_snapshot_sonar, version_autre_sonar à la table information_version ;
 -- 11/02/2025 : Laurent HADJADJ - Modification du type pour l'attribut setup et ajout de mode_collecte et utilisateur_collecte à la table repartition ;
+-- 14/02/25 : Laurent HADJADJ - Réorganisation de la table repartition en repartition_temp et repartition
+
 
 -- SCHEMA: ma_moulinette
 
@@ -1207,7 +1209,27 @@ COMMENT ON COLUMN ma_moulinette.properties.date_creation IS 'Date de création d
 COMMENT ON COLUMN ma_moulinette.properties.date_modification_projet IS 'Date de la dernière modification du projet';
 COMMENT ON COLUMN ma_moulinette.properties.date_modification_profil IS 'Date de la dernière modification du profil';
 
--- Table: ma_moulinette.repartition
+-- Table: ma_moulinette.repartition_temp
+
+DROP TABLE IF EXISTS ma_moulinette.repartition_temp;
+CREATE UNLOGGED TABLE IF NOT EXISTS ma_moulinette.repartition_temp (
+    maven_key character varying(255) NOT NULL,
+    component text NOT NULL,
+    type character varying(16) NOT NULL,
+    severity character varying(8) NOT NULL,
+    setup bigint NOT NULL,
+    CONSTRAINT uq_repartition_temp UNIQUE (maven_key, setup)
+);
+
+ALTER TABLE ma_moulinette.repartition_temp OWNER TO db_user;
+GRANT ALL ON TABLE ma_moulinette.repartition_temp TO db_user;
+
+COMMENT ON COLUMN ma_moulinette.repartition_temp.maven_key IS 'Clé identification du projet';
+COMMENT ON COLUMN ma_moulinette.repartition_temp.type IS 'Catégorie : BUG, VULNERABILITY ou CODE_SMELL';
+COMMENT ON COLUMN ma_moulinette.repartition_temp.severity IS 'Niveau de sévérité de l’anomalie';
+COMMENT ON COLUMN ma_moulinette.repartition_temp.setup IS 'Timestamp en milliseconde unique pour chaque analyse';
+
+-- Table: ma_moulinette.repartition_temp
 
 DROP TABLE IF EXISTS ma_moulinette.repartition;
 CREATE TABLE IF NOT EXISTS ma_moulinette.repartition
@@ -1215,10 +1237,87 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.repartition
   id SERIAL PRIMARY KEY,
   maven_key character varying(255) NOT NULL,
   name character varying(128) NOT NULL,
-  component text NOT NULL,
-  type character varying(16) NOT NULL,
-  severity character varying(8) NOT NULL,
+  bug_blocker int DEFAULT -1,
+  bug_critical int DEFAULT -1,
+  bug_major int DEFAULT -1,
+  bug_minor int DEFAULT -1,
+  bug_info int DEFAULT -1,
+  vulnerability_blocker int DEFAULT -1,
+  vulnerability_critical int DEFAULT -1,
+  vulnerability_major int DEFAULT -1,
+  vulnerability_minor int DEFAULT -1,
+  vulnerability_info int DEFAULT -1,
+  code_smell_blocker int DEFAULT -1,
+  code_smell_critical int DEFAULT -1,
+  code_smell_major int DEFAULT -1,
+  code_smell_minor int DEFAULT -1,
+  code_smell_info int DEFAULT -1,
+  frontend int DEFAULT -1,
+  frontend_bug_blocker int DEFAULT -1,
+  frontend_bug_critical int DEFAULT -1,
+  frontend_bug_major int DEFAULT -1,
+  frontend_bug_minor int DEFAULT -1,
+  frontend_bug_info int DEFAULT -1,
+  frontend_vulnerability_blocker int DEFAULT -1,
+  frontend_vulnerability_critical int DEFAULT -1,
+  frontend_vulnerability_major int DEFAULT -1,
+  frontend_vulnerability_minor int DEFAULT -1,
+  frontend_vulnerability_info int DEFAULT -1,
+  frontend_code_smell_blocker int DEFAULT -1,
+  frontend_code_smell_critical int DEFAULT -1,
+  frontend_code_smell_major int DEFAULT -1,
+  frontend_code_smell_minor int DEFAULT -1,
+  frontend_code_smell_info int DEFAULT -1,
+  backend int DEFAULT -1,
+  backend_bug_blocker int DEFAULT -1,
+  backend_bug_critical int DEFAULT -1,
+  backend_bug_major int DEFAULT -1,
+  backend_bug_minor int DEFAULT -1,
+  backend_bug_info int DEFAULT -1,
+  backend_vulnerability_blocker int DEFAULT -1,
+  backend_vulnerability_critical int DEFAULT -1,
+  backend_vulnerability_major int DEFAULT -1,
+  backend_vulnerability_minor int DEFAULT -1,
+  backend_vulnerability_info int DEFAULT -1,
+  backend_code_smell_blocker int DEFAULT -1,
+  backend_code_smell_critical int DEFAULT -1,
+  backend_code_smell_major int DEFAULT -1,
+  backend_code_smell_minor int DEFAULT -1,
+  backend_code_smell_info int DEFAULT -1,
+  autre int DEFAULT -1,
+  autre_bug_blocker int DEFAULT -1,
+  autre_bug_critical int DEFAULT -1,
+  autre_bug_major int DEFAULT -1,
+  autre_bug_minor int DEFAULT -1,
+  autre_bug_info int DEFAULT -1,
+  autre_vulnerability_blocker int DEFAULT -1,
+  autre_vulnerability_critical int DEFAULT -1,
+  autre_vulnerability_major int DEFAULT -1,
+  autre_vulnerability_minor int DEFAULT -1,
+  autre_vulnerability_info int DEFAULT -1,
+  autre_code_smell_blocker int DEFAULT -1,
+  autre_code_smell_critical int DEFAULT -1,
+  autre_code_smell_major int DEFAULT -1,
+  autre_code_smell_minor int DEFAULT -1,
+  autre_code_smell_info int DEFAULT -1,
+  inconnue int DEFAULT -1,
+  inconnue_bug_blocker int DEFAULT -1,
+  inconnue_bug_critical int DEFAULT -1,
+  inconnue_bug_major int DEFAULT -1,
+  inconnue_bug_minor int DEFAULT -1,
+  inconnue_bug_info int DEFAULT -1,
+  inconnue_vulnerability_blocker int DEFAULT -1,
+  inconnue_vulnerability_critical int DEFAULT -1,
+  inconnue_vulnerability_major int DEFAULT -1,
+  inconnue_vulnerability_minor int DEFAULT -1,
+  inconnue_vulnerability_info int DEFAULT -1,
+  inconnue_code_smell_blocker int DEFAULT -1,
+  inconnue_code_smell_critical int DEFAULT -1,
+  inconnue_code_smell_major int DEFAULT -1,
+  inconnue_code_smell_minor int DEFAULT -1,
+  inconnue_code_smell_info int DEFAULT -1,
   setup bigint NOT NULL,
+  control character varying(32) NOT NULL DEFAULT 'initial',
   mode_collecte character varying(32),
   utilisateur_collecte character varying(320),
   date_enregistrement TIMESTAMPTZ NOT NULL
@@ -1228,12 +1327,106 @@ ALTER TABLE ma_moulinette.repartition OWNER TO db_user;
 GRANT ALL ON TABLE ma_moulinette.repartition TO db_user;
 
 COMMENT ON COLUMN ma_moulinette.repartition.id IS 'ID unique pour chaque répartition';
-COMMENT ON COLUMN ma_moulinette.repartition.maven_key IS 'Clé identification la répartition';
-COMMENT ON COLUMN ma_moulinette.repartition.name IS 'Nom de la répartition';
-COMMENT ON COLUMN ma_moulinette.repartition.component IS 'Détails du composant concerné par la répartition';
-COMMENT ON COLUMN ma_moulinette.repartition.type IS 'Type de la répartition';
-COMMENT ON COLUMN ma_moulinette.repartition.severity IS 'Gravité de la répartition';
+COMMENT ON COLUMN ma_moulinette.repartition.maven_key IS 'Clé identification du projet';
+COMMENT ON COLUMN ma_moulinette.repartition.name IS 'Nom de l’application';
+COMMENT ON COLUMN ma_moulinette.repartition.bug_blocker IS 'Nombre de bug bloquant';
+COMMENT ON COLUMN ma_moulinette.repartition.bug_critical IS 'Nombre de bug critique';
+COMMENT ON COLUMN ma_moulinette.repartition.bug_major IS 'Nombre de bug majeur';
+COMMENT ON COLUMN ma_moulinette.repartition.bug_minor IS 'Nombre de bug mineur';
+COMMENT ON COLUMN ma_moulinette.repartition.bug_info IS 'Nombre de bug info';
+
+COMMENT ON COLUMN ma_moulinette.repartition.vulnerability_blocker IS 'Nombre de vulnérabilité bloquante';
+COMMENT ON COLUMN ma_moulinette.repartition.vulnerability_critical IS 'Nombre de vulnérabilité critique';
+COMMENT ON COLUMN ma_moulinette.repartition.vulnerability_major IS 'Nombre de vulnérabilité majeure';
+COMMENT ON COLUMN ma_moulinette.repartition.vulnerability_minor IS 'Nombre de vulnérabilité mineure';
+COMMENT ON COLUMN ma_moulinette.repartition.vulnerability_info IS 'Nombre de vulnérabilité en info';
+
+COMMENT ON COLUMN ma_moulinette.repartition.code_smell_blocker IS 'Nombre de mauvaise pratique bloquante';
+COMMENT ON COLUMN ma_moulinette.repartition.code_smell_critical IS 'Nombre de mauvaise pratique critique';
+COMMENT ON COLUMN ma_moulinette.repartition.code_smell_major IS 'Nombre de mauvaise pratique majeure';
+COMMENT ON COLUMN ma_moulinette.repartition.code_smell_minor IS 'Nombre de mauvaise pratique mineure';
+COMMENT ON COLUMN ma_moulinette.repartition.code_smell_info IS 'Nombre de mauvaise pratique en info';
+
+COMMENT ON COLUMN ma_moulinette.repartition.frontend IS 'Répartition des anomalies de l’application frontend';
+COMMENT ON COLUMN ma_moulinette.repartition.backend IS 'Répartition des anomalies de l’application backend';
+COMMENT ON COLUMN ma_moulinette.repartition.autre IS 'Répartition des anomalies de l’application autres';
+COMMENT ON COLUMN ma_moulinette.repartition.inconnue IS 'Répartition des anomalies de l’application non définies';
+
+COMMENT ON COLUMN ma_moulinette.repartition.frontend_bug_blocker IS 'Nombre de bug bloquant (frontend)';
+COMMENT ON COLUMN ma_moulinette.repartition.frontend_bug_critical IS 'Nombre de bug critique (frontend)';
+COMMENT ON COLUMN ma_moulinette.repartition.frontend_bug_major IS 'Nombre de bug majeur (frontend)';
+COMMENT ON COLUMN ma_moulinette.repartition.frontend_bug_minor IS 'Nombre de bug mineur (frontend)';
+COMMENT ON COLUMN ma_moulinette.repartition.frontend_bug_info IS 'Nombre de bug informatif (frontend)';
+
+COMMENT ON COLUMN ma_moulinette.repartition.frontend_vulnerability_blocker IS 'Nombre de vulnérabilité bloquante (frontend)';
+COMMENT ON COLUMN ma_moulinette.repartition.frontend_vulnerability_critical IS 'Nombre de vulnérabilité critique (frontend)';
+COMMENT ON COLUMN ma_moulinette.repartition.frontend_vulnerability_major IS 'Nombre de vulnérabilité majeure (frontend)';
+COMMENT ON COLUMN ma_moulinette.repartition.frontend_vulnerability_minor IS 'Nombre de vulnérabilité mineure (frontend)';
+COMMENT ON COLUMN ma_moulinette.repartition.frontend_vulnerability_info IS 'Nombre de vulnérabilité informative (frontend)';
+
+COMMENT ON COLUMN ma_moulinette.repartition.frontend_code_smell_blocker IS 'Nombre de code smell bloquant (frontend)';
+COMMENT ON COLUMN ma_moulinette.repartition.frontend_code_smell_critical IS 'Nombre de code smell critique (frontend)';
+COMMENT ON COLUMN ma_moulinette.repartition.frontend_code_smell_major IS 'Nombre de code smell majeur (frontend)';
+COMMENT ON COLUMN ma_moulinette.repartition.frontend_code_smell_minor IS 'Nombre de code smell mineur (frontend)';
+COMMENT ON COLUMN ma_moulinette.repartition.frontend_code_smell_info IS 'Nombre de code smell informatif (frontend)';
+
+COMMENT ON COLUMN ma_moulinette.repartition.backend_bug_blocker IS 'Nombre de bug bloquant (backend)';
+COMMENT ON COLUMN ma_moulinette.repartition.backend_bug_critical IS 'Nombre de bug critique (backend)';
+COMMENT ON COLUMN ma_moulinette.repartition.backend_bug_major IS 'Nombre de bug majeur (backend)';
+COMMENT ON COLUMN ma_moulinette.repartition.backend_bug_minor IS 'Nombre de bug mineur (backend)';
+COMMENT ON COLUMN ma_moulinette.repartition.backend_bug_info IS 'Nombre de bug informatif (backend)';
+
+COMMENT ON COLUMN ma_moulinette.repartition.backend_vulnerability_blocker IS 'Nombre de vulnérabilité bloquante (backend)';
+COMMENT ON COLUMN ma_moulinette.repartition.backend_vulnerability_critical IS 'Nombre de vulnérabilité critique (backend)';
+COMMENT ON COLUMN ma_moulinette.repartition.backend_vulnerability_major IS 'Nombre de vulnérabilité majeure (backend)';
+COMMENT ON COLUMN ma_moulinette.repartition.backend_vulnerability_minor IS 'Nombre de vulnérabilité mineure (backend)';
+COMMENT ON COLUMN ma_moulinette.repartition.backend_vulnerability_info IS 'Nombre de vulnérabilité informative (backend)';
+
+COMMENT ON COLUMN ma_moulinette.repartition.backend_code_smell_blocker IS 'Nombre de code smell bloquant (backend)';
+COMMENT ON COLUMN ma_moulinette.repartition.backend_code_smell_critical IS 'Nombre de code smell critique (backend)';
+COMMENT ON COLUMN ma_moulinette.repartition.backend_code_smell_major IS 'Nombre de code smell majeur (backend)';
+COMMENT ON COLUMN ma_moulinette.repartition.backend_code_smell_minor IS 'Nombre de code smell mineur (backend)';
+COMMENT ON COLUMN ma_moulinette.repartition.backend_code_smell_info IS 'Nombre de code smell informatif (backend)';
+
+COMMENT ON COLUMN ma_moulinette.repartition.autre_bug_blocker IS 'Nombre de bug bloquant (autre)';
+COMMENT ON COLUMN ma_moulinette.repartition.autre_bug_critical IS 'Nombre de bug critique (autre)';
+COMMENT ON COLUMN ma_moulinette.repartition.autre_bug_major IS 'Nombre de bug majeur (autre)';
+COMMENT ON COLUMN ma_moulinette.repartition.autre_bug_minor IS 'Nombre de bug mineur (autre)';
+COMMENT ON COLUMN ma_moulinette.repartition.autre_bug_info IS 'Nombre de bug informatif (autre)';
+
+COMMENT ON COLUMN ma_moulinette.repartition.autre_vulnerability_blocker IS 'Nombre de vulnérabilité bloquante (autre)';
+COMMENT ON COLUMN ma_moulinette.repartition.autre_vulnerability_critical IS 'Nombre de vulnérabilité critique (autre)';
+COMMENT ON COLUMN ma_moulinette.repartition.autre_vulnerability_major IS 'Nombre de vulnérabilité majeure (autre)';
+COMMENT ON COLUMN ma_moulinette.repartition.autre_vulnerability_minor IS 'Nombre de vulnérabilité mineure (autre)';
+COMMENT ON COLUMN ma_moulinette.repartition.autre_vulnerability_info IS 'Nombre de vulnérabilité informative (autre)';
+
+COMMENT ON COLUMN ma_moulinette.repartition.autre_code_smell_blocker IS 'Nombre de code smell bloquant (autre)';
+COMMENT ON COLUMN ma_moulinette.repartition.autre_code_smell_critical IS 'Nombre de code smell critique (autre)';
+COMMENT ON COLUMN ma_moulinette.repartition.autre_code_smell_major IS 'Nombre de code smell majeur (autre)';
+COMMENT ON COLUMN ma_moulinette.repartition.autre_code_smell_minor IS 'Nombre de code smell mineur (autre)';
+COMMENT ON COLUMN ma_moulinette.repartition.autre_code_smell_info IS 'Nombre de code smell informatif (autre)';
+
+COMMENT ON COLUMN ma_moulinette.repartition.inconnue_bug_blocker IS 'Nombre de bug bloquant (inconnue)';
+COMMENT ON COLUMN ma_moulinette.repartition.inconnue_bug_critical IS 'Nombre de bug critique (inconnue)';
+COMMENT ON COLUMN ma_moulinette.repartition.inconnue_bug_major IS 'Nombre de bug majeur (inconnue)';
+COMMENT ON COLUMN ma_moulinette.repartition.inconnue_bug_minor IS 'Nombre de bug mineur (inconnue)';
+COMMENT ON COLUMN ma_moulinette.repartition.inconnue_bug_info IS 'Nombre de bug informatif (inconnue)';
+
+COMMENT ON COLUMN ma_moulinette.repartition.inconnue_vulnerability_blocker IS 'Nombre de vulnérabilité bloquante (inconnue)';
+COMMENT ON COLUMN ma_moulinette.repartition.inconnue_vulnerability_critical IS 'Nombre de vulnérabilité critique (inconnue)';
+COMMENT ON COLUMN ma_moulinette.repartition.inconnue_vulnerability_major IS 'Nombre de vulnérabilité majeure (inconnue)';
+COMMENT ON COLUMN ma_moulinette.repartition.inconnue_vulnerability_minor IS 'Nombre de vulnérabilité mineure (inconnue)';
+COMMENT ON COLUMN ma_moulinette.repartition.inconnue_vulnerability_info IS 'Nombre de vulnérabilité informative (inconnue)';
+
+COMMENT ON COLUMN ma_moulinette.repartition.inconnue_code_smell_blocker IS 'Nombre de code smell bloquant (inconnue)';
+COMMENT ON COLUMN ma_moulinette.repartition.inconnue_code_smell_critical IS 'Nombre de code smell critique (inconnue)';
+COMMENT ON COLUMN ma_moulinette.repartition.inconnue_code_smell_major IS 'Nombre de code smell majeur (inconnue)';
+COMMENT ON COLUMN ma_moulinette.repartition.inconnue_code_smell_minor IS 'Nombre de code smell mineur (inconnue)';
+COMMENT ON COLUMN ma_moulinette.repartition.inconnue_code_smell_info IS 'Nombre de code smell informatif (inconnue)';
+
 COMMENT ON COLUMN ma_moulinette.repartition.setup IS 'Timestamp en milliseconde unique pour chaque analyse';
+COMMENT ON COLUMN ma_moulinette.repartition.control IS 'Indique l’état d’avancement du process';
+
 COMMENT ON COLUMN ma_moulinette.repartition.mode_collecte IS 'Mode de collecte : collecte, traitement manuel ou traitement automatique';
 COMMENT ON COLUMN ma_moulinette.repartition.utilisateur_collecte IS 'Compte de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.repartition.date_enregistrement IS 'Date d’enregistrement de la répartition dans le système';
