@@ -12,6 +12,245 @@
 
 /* stylelint-disable selector-class-pattern */
 
+/**
+  * Propriétés pour les class en fonction des media type
+  *
+  */
+
+/* Media Small */
+@media (width <= 20em) {
+  .stats-list > li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 0.1rem;
+  }
+
+  .stats-list-bleu,
+  .stats-list-vert,
+  .stats-list-orange,
+  .stats-list-rouge-claire,
+  .stats-list-rouge-intense {
+    padding-right: 0.5rem;
+    text-align: right;
+    width: 5rem;
+  }
+
+  /* on aligne à droite */
+  .button { text-align: left; }
+}
+
+/* Media Small */
+@media (20.025em <= width <= 22em) {
+  .stats-list > li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 0.1rem;
+  }
+
+  .stats-list-bleu,
+  .stats-list-vert,
+  .stats-list-orange,
+  .stats-list-rouge-claire,
+  .stats-list-rouge-intense {
+    padding-right: 0.5rem;
+    text-align: right;
+    width: 5rem;
+  }
+
+  /* on aligne à droite */
+  .button { text-align: left; }
+}
+
+/* Media Small */
+@media (22.025em <= width <= 30em) {
+  .stats-list > li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 0.1rem;
+  }
+
+  .stats-list-bleu,
+  .stats-list-vert,
+  .stats-list-orange,
+  .stats-list-rouge-claire,
+  .stats-list-rouge-intense {
+    padding-right: 0.5rem;
+    text-align: right;
+    width: 5rem;
+  }
+
+  /* on aligne à droite */
+  .button { text-align: left; }
+}
+
+/* Media Small */
+@media (30.025em <= width <= 40em) {
+  .stats-list > li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 0.1rem;
+  }
+
+  .stats-list-bleu,
+  .stats-list-vert,
+  .stats-list-orange,
+  .stats-list-rouge-claire,
+  .stats-list-rouge-intense {
+    padding-right: 0.5rem;
+    text-align: right;
+    width: 5rem;
+  }
+
+  /* on aligne à droite */
+  .button { text-align: left; }
+}
+
+/* Media Medium */
+@media (40.025em <= width <= 64em) {
+  .stats-list {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 0.1rem;
+  }
+
+  .stats-list-bleu,
+  .stats-list-vert,
+  .stats-list-orange,
+  .stats-list-rouge-claire,
+  .stats-list-rouge-intense {
+    display: flex;
+    justify-content: space-around;
+    margin-right: 1rem;
+  }
+
+  .stats-list-label {
+    display: flex;
+    justify-content: space-around;
+  }
+
+  .bouton-afficher-right { padding-right: 1rem; }
+  .bouton-afficher-left { padding-left: 1rem; }
+
+  /* on aligne au centre */
+  .button { text-align: center; }
+}
+
+/* Media Large */
+@media (64.025em <= width <= 90em) {
+  .stats-list {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 0.1rem;
+  }
+
+  .stats-list-bleu,
+  .stats-list-vert,
+  .stats-list-orange,
+  .stats-list-rouge-claire,
+  .stats-list-rouge-intense {
+    display: flex;
+    justify-content: space-around;
+    margin-right: 1rem;
+  }
+
+  .stats-list-label {
+    display: flex;
+    justify-content: space-around;
+  }
+
+  /* on aligne au centre */
+  .button { text-align: center; }
+}
+
+/* Media Large */
+@media (90.025em <= width <= 120em) {
+  .stats-list {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 0.1rem;
+  }
+
+  .stats-list-bleu,
+  .stats-list-vert,
+  .stats-list-orange,
+  .stats-list-rouge-claire,
+  .stats-list-rouge-intense {
+    display: flex;
+    justify-content: space-around;
+    margin-right: 1rem;
+  }
+
+  .stats-list-label {
+    display: flex;
+    justify-content: space-around;
+  }
+
+  /* on aligne au centre */
+  .button { text-align: center; }
+}
+
+/* Media Extra-Large */
+@media (120.025em <= width <= 160em) {
+  .stats-list {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 0.1rem;
+  }
+
+  .stats-list-bleu,
+  .stats-list-vert,
+  .stats-list-orange,
+  .stats-list-rouge-claire,
+  .stats-list-rouge-intense {
+    display: flex;
+    justify-content: space-around;
+    margin-right: 1rem;
+  }
+
+  .stats-list-label {
+    display: flex;
+    justify-content: space-around;
+  }
+
+  /* on aligne au centre */
+  .button { text-align: center; }
+}
+
+@media (width >= 160.025em) {
+  .stats-list {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 0.1rem;
+  }
+
+  .stats-list-bleu,
+  .stats-list-vert,
+  .stats-list-orange,
+  .stats-list-rouge-claire,
+  .stats-list-rouge-intense {
+    display: flex;
+    justify-content: space-around;
+    margin-right: 1rem;
+  }
+
+  .stats-list-label {
+    display: flex;
+    justify-content: space-around;
+  }
+
+/* on aligne au centre */
+.button { text-align: center; }
+}
+
 /*************************          Global     *********************************/
 
 /* Surpression du style inline */
@@ -29,10 +268,8 @@
 /* Couleur des boutons */
 .bouton-collecte-bug,
 .bouton-collecte-vulnerability,
-.bouton-collecte-mauvaise-pratique,
-.bouton-supprime-donnees,
-.bouton-repartition-traitement-donnees,
-.bouton-repartition-affiche-result {
+.bouton-collecte-code-smell,
+.bouton-analyse {
   color: #fff;
   background-color: #00445b;
 }
@@ -40,86 +277,47 @@
 /* Gestion du hover sur les boutons */
 .bouton-collecte-bug:hover,
 .bouton-collecte-vulnerability:hover,
-.bouton-collecte-mauvaise-pratique:hover,
-.bouton-supprime-donnees:hover,
-.bouton-repartition-traitement-donnees:hover,
-.bouton-repartition-affiche-result:hover { background-color: #006182; }
+.bouton-collecte-code-smell:hover,
+.bouton-analyse:hover { background-color: #006182; }
 
 /* Gestion des boutons désactivés */
 .bouton-collecte-bug-disabled,
 .bouton-collecte-vulnerability-disabled,
-.bouton-collecte-mauvaise-pratique-disabled,
-.bouton-repartition-affiche-result-disabled {
+.bouton-collecte-code-smell-disabled {
   background-color: #4c7c8c;
   cursor: not-allowed;
+  pointer-events: none;
+}
+
+.bouton-collecte-bug-disabled:hover,
+.bouton-collecte-vulnerability-disabled:hover,
+.bouton-collecte-code-smell-disabled:hover,
+.bouton-collecte-bug-disabled:focus,
+.bouton-collecte-vulnerability-disabled:focus,
+.bouton-collecte-code-smell-disabled:focus {
+  background-color: #4c7c8c !important;
 }
 
 /* Information bug, vulnérabilité et code_smell  */
-.stats-list {
-  list-style-type: none;
-  clear: left;
-  margin: 0;
-  padding: 0;
-  text-align: center;
-  margin-bottom: 30px;
-}
+.stats-list { list-style-type: none; }
 
 /* Couleur pour la sévérité */
-.stats-list-vert {
-  border: 1px solid #cacaca;
-  background-color: #fff;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  color: #187e3d;
-}
+.stats-list-bleu,
+  .stats-list-vert,
+  .stats-list-orange,
+  .stats-list-rouge-claire,
+  .stats-list-rouge-intense {
+    border: 1px solid #cacaca;
+    background-color: #fff;
+    padding-left: 1rem;
+    font-weight: bold;
+  }
 
-.stats-list-orange {
-  border: 1px solid #cacaca;
-  background-color: #fff;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  color: #c45d4e;
-}
-
-.stats-list-rouge-intense {
-  border: 1px solid #cacaca;
-  background-color: #fff;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  color: #771404;
-}
-
-.stats-list-rouge-claire {
-  border: 1px solid #cacaca;
-  background-color: #fff;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  color: #b33926;
-}
-
-.stats-list-bleu {
-  border: 1px solid #cacaca;
-  background-color: #fff;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  color: #3b89a3;
-}
-
-/* propriété du sélecteur */
-.stats-list > li {
-  display: inline-block;
-  text-align: center;
-  font-size: 1.1em;
-  font-weight: bold;
-  margin-right: 4rem;
-}
-
-.stats-list > li .stats-list-label {
-  display: block;
-  margin-top: 2px;
-  font-size: 0.9em;
-  font-weight: normal;
-}
+.stats-list-vert { color: #187e3d;}
+.stats-list-orange { color: #c45d4e; }
+.stats-list-rouge-intense { color: #771404; }
+.stats-list-rouge-claire { color: #b33926; }
+.stats-list-bleu { color: #3b89a3; }
 
 /* Positionnement et couleur des résultats dans une carte */
 .result {
@@ -136,7 +334,10 @@
 /* Propriété de la ligne */
 .ligne {
   margin: 0.1rem;
+  padding-bottom: 0.2rem;
+  padding-top: 0.2rem;
   display: flex;
+  align-items: center;
 }
 
 /* Taille de pour les stats */
@@ -147,8 +348,8 @@
 
 /* Progress */
 .progress-meter {
-  background: #ff4754;
-  transition: width 0.4s ease;
+  background: #75060e;
+  transition: width 0.8s ease-in-out;
 }
 
 .progress-meter-text {
@@ -172,105 +373,11 @@
 .texte-bleu { color: #3b89a3; }
 .texte-vert { color: #187e3d; }
 
-/**
-  * Propriétés pour les class en fonction des media type
-  *
-  */
-
-/* Media Small */
-@media (width <= 20em) {
-  .stats-list > li { width: 3rem; }
-  .stats-list > li .stats-list-label { width: 3rem; }
-
-  /* on aligne à droite */
-  .button { text-align: left; }
-}
-
-/* Media Small */
-@media (20.025em <= width <= 22em) {
-  .stats-list > li { width: 2rem; }
-  .stats-list > li .stats-list-label { width: 3rem; }
-
-  /* on aligne à droite */
-  .button { text-align: left; }
-}
-
-/* Media Small */
-@media (22.025em <= width <= 30em) {
-  .stats-list > li { width: 2rem; }
-  .stats-list > li .stats-list-label { width: 3rem; }
-}
-
-/* Media Small */
-@media (30.025em <= width <= 40em) {
-  .stats-list > li { width: 2rem; }
-  .stats-list > li .stats-list-label { width: 3rem; }
-
-  /* on aligne à droite */
-  .button { text-align: left; }
-}
-
-/* Media Medium */
-@media (40.025em <= width <= 64em) {
-  .stats-list > li { width: 5rem; }
-  .stats-list > li .stats-list-label { width: 5rem; }
-  .bouton-afficher-right { padding-right: 1rem; }
-  .bouton-afficher-left { padding-left: 1rem; }
-
-  /* on aligne au centre */
-  .button { text-align: center; }
-}
-
-/* Media Large */
-@media (64.025em <= width <= 90em) {
-  .stats-list > li { width: 5rem; }
-  .stats-list > li .stats-list-label { width: 5rem; }
-  .bouton-afficher-right { padding-right: 1rem; }
-  .bouton-afficher-left { padding-left: 1rem; }
-
-  /* on aligne au centre */
-  .button { text-align: center; }
-}
-
-/* Media Large */
-@media (90.025em <= width <= 120em) {
-  .stats-list > li { width: 5rem; }
-  .stats-list > li .stats-list-label { width: 5rem; }
-  .bouton-afficher-right { padding-right: 1rem; }
-  .bouton-afficher-left { padding-left: 1rem; }
-
-  /* on aligne au centre */
-  .button { text-align: center; }
-}
-
-/* Media Extra-Large */
-@media (120.025em <= width <= 160em) {
-  .stats-list > li { width: 5rem; }
-  .stats-list > li .stats-list-label { width: 5rem; }
-  .bouton-afficher-right { padding-right: 1rem; }
-  .bouton-afficher-left { padding-left: 1rem; }
-
-  /* on aligne au centre */
-  .button { text-align: center; }
-}
-
-@media (width >= 160.025em) {
-.stats-list > li { width: 5rem; }
-.stats-list > li .stats-list-label { width: 5rem; }
-.bouton-afficher-right { padding-right: 1rem; }
-.bouton-afficher-left { padding-left: 1rem; }
-
-/* on aligne au centre */
-.button { text-align: center; }
-}
-
-.container-severity { display: flex; }
-
 /** Ajout d'un tooltip CSS */
-.tool-tip-severity { position: relative; }
+.tool-tip-repartition { position: relative; }
 
 /* Propriété du texte qui sera affiché dans le tooltip */
-.tool-tip-severity .tool-tip-text-severity {
+.tool-tip-repartition .tool-tip-text-repartition {
   visibility: hidden;
   width: 140px;
   background-color: #555;
@@ -290,7 +397,7 @@
 }
 
 /* Action après le survol du tooltip */
-.tool-tip-severity .tool-tip-text-severity::after {
+.tool-tip-repartition .tool-tip-text-repartition::after {
   content: "";
   position: absolute;
   top: 100%;
@@ -302,7 +409,7 @@
 }
 
 /* Action au moment du survol du tooltip */
-.tool-tip-severity:hover .tool-tip-text-severity {
+.tool-tip-repartition:hover .tool-tip-text-repartition {
   visibility: visible;
   opacity: 1;
 }
