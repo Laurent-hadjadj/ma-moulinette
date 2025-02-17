@@ -306,7 +306,6 @@ const updateRepartition = async function(phase){
 
     // Exécution de la requête AJAX
     const t = await $.ajax(options);
-    console.log(t);
     if (t.code !== http_200){
         // 📌 Vérification des erreurs
         showMessage(t.type, t.erreur);
@@ -567,9 +566,7 @@ $('.bouton-analyse').on('click', async () =>{
     <th scope="col" class="text-center"><strong>Application Métier</strong></th>
     <th scope="col" class="text-center"><strong>Autre</strong></th>
     <th scope="col" class="text-center"><strong>Inconnue</strong></th>
-    <th scope="col" class="text-center"><strong>IdC</strong></th></tr>`;
-
-    let setup = '1739813379645';
+    <th scope="col" class="text-center tool-tip-repartition"><strong>IdC</strong><span class="tool-tip-text-repartition">Indice de Confiance</span></th></tr>`;
 
     /** BLOCKER */
     /** On affiche le tableau */
