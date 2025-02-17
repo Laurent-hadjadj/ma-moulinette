@@ -60,6 +60,10 @@ return [
         'path' => './assets/js/mon-application/owasp/index-owasp.js',
         'entrypoint' => true,
     ],
+    'repartition-module' => [
+        'path' => './assets/js/mon-application/repartition-module/index-repartition-module.js',
+        'entrypoint' => true,
+    ],
     'activity' => [
         'path' => './assets/js/mon-application/activity/index-activity.js',
         'entrypoint' => true,
