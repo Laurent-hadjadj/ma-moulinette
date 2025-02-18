@@ -13,38 +13,110 @@
 
 namespace App\Controller\Repartition;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-
-use Symfony\Component\HttpFoundation\JsonResponse;
-
-/** Accès aux tables */
-use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Repartition;
-
-/** Import des services */
 use App\Service\ExtractName;
+use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use App\Controller\Batch\BatchCollecteRepartitionController;
+
 
 /**
  * [Description RepartitionController]
  */
 class RepartitionController extends AbstractController
 {
+
+    private static $titre = "[Répartition-Module] ";
+    private static $erreur400 = "La requête est incorrecte (Erreur 400).";
+    private static $erreur403 = "Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).";
+    private static $page = 'projet/repartition-module.html.twig';
+
+    private $logoEntreprise;
+    private $marqueEntrepriseShort;
+    private $marqueEntrepriseLong;
+    private $environnement;
+    private $version;
+    private $dateCopyright;
+
     /**
      * [Description for __construct]
      *
      * Created at: 15/12/2022, 22:32:06 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function __construct(
-        private ManagerRegistry $doctrine,
-        private ExtractName $serviceExtractName)
+        private EntityManagerInterface $em,
+        private ExtractName $serviceExtractName,
+        private ParameterBagInterface $params,
+        private BatchCollecteRepartitionController $batchCollecteRepartition)
     {
-        $this->doctrine = $doctrine;
+        $this->em = $em;
         $this->serviceExtractName = $serviceExtractName;
+        $this->params = $params;
+        $this->batchCollecteRepartition = $batchCollecteRepartition;
+
+        $this->logoEntreprise = $params->get('logo.entreprise');
+        $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
+        $this->marqueEntrepriseLong = $params->get('marque.entreprise.long');
+        $this->environnement = $params->get('environnement');
+        $this->version = $params->get('version');
+        $this->dateCopyright = \date('Y');
+    }
+
+        /**
+     * [Description for genericRender]
+     *
+     * @return array
+     *
+     * Created at: 30/10/2024 08:21:04 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function genericRender(): array
+    {
+        return [
+            'type_footer' => null,
+            'logo_entreprise' => $this->logoEntreprise,
+            'marque_entreprise_short' => $this->marqueEntrepriseShort,
+            'marque_entreprise_long' => $this->marqueEntrepriseLong,
+            'env' => $this->environnement,
+            'version' => $this->version,
+            'date_copyright' => $this->dateCopyright];
+    }
+
+    private function addFlashAndRender(string $type, string $message, string $debug, array $render): Response
+    {
+        $this->addFlash('notice', ['type' => $type, 'titre' => static::$titre,
+        'message' => $message, 'debug' => $debug] );
+        return $this->render(static::$page, $render);
+    }
+
+    /**
+     * [Description for decodeToken]
+     *
+     * @param string $token
+     *
+     * @return string|null
+     *
+     * Created at: 14/02/2025 12:20:18 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function decodeToken(string $token): ?string
+    {
+        //token=BGR2ZQL5ZQLjA3kzpv5zpzShL2IuM3WcoJIlBaMcp3H=
+        //b64=bnVsbHxDU1N8RnJhbmNlQWdyaU1lciB2Mi4wLjAgKDIwMjEp
+        //rot13=oaIfoUkQH1A8EaWuozAyDJqlnH1ypvO2Zv4jYwNtXQVjZwRc
+        $string = str_rot13($token);
+        $decoded = base64_decode($string);
+        $parts = preg_split("/[|]+/", $decoded);
+        return (count($parts) === 2) ? strtolower($parts[1]) : null;
     }
 
     /**
@@ -58,48 +130,102 @@ class RepartitionController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/projet/repartition', name: 'projet_repartition')]
-    public function projetRepartition(Request $request): Response
+    #[Route('/repartition', name: 'repartition', methods: ['GET'])]
+    public function repartition(Security $security, Request $request): Response
     {
-        /** On récupère la clé du projet */
-        $mavenKey = $request->get('mavenKey');
-        $response = new JsonResponse();
+        // Instanciation des repositories
+        $repartitionRepository = $this->em->getRepository(Repartition::class);
+
+        /** On charge le template du render */
+        $render = static::genericRender();
+        $render['mon_application'] = 'N.C';
+        $render['maven_key'] = 'N.C';
+        $render['setup'] = 'N.C';
+        $render['statut'] = 'N.C';
+        $render['information'] = [
+            'BUG' => ['total' => 0, 'blocker' => 0 , 'critical' => 0 , 'major' => 0, 'minor' => 0, 'info' => 0],
+            'VULNERABILITY' => ['total' => 0, 'blocker' => 0 , 'critical' => 0 , 'major' => 0, 'minor' => 0, 'info' => 0 ],
+            'CODE_SMELL' => ['total' => 0, 'blocker' => 0 , 'critical' => 0 , 'major' => 0, 'minor' => 0, 'info' => 0 ]
+        ];
+        $token = $request->get('token');
+        $debug = '';
 
         /** On teste si la clé est valide */
-        if (is_null($mavenKey)) {
-            return $response->setData(["message" => "la clé maven est vide!", Response::HTTP_BAD_REQUEST]);
+        if (empty($token)) {
+            return $this->addFlashAndRender('alert', static::$erreur400, $debug, $render);
+        }
+
+        /** On vérifie si l'utilisateur à un rôle Collecte ? */
+        if (!$this->isGranted('ROLE_COLLECTE')) {
+            return $this->addFlashAndRender('warning', static::$erreur403, $debug, $render);
+        }
+
+        /** On récupère la maven_key du token */
+        $mavenKey = $this->decodeToken($token);
+        if (null === $mavenKey) {
+            return $this->addFlashAndRender('alert', static::$erreur400, $debug, $render);
+        }
+
+        /** On lance la collecte des informations par type et sévérité */
+        $types = ['BUG', 'VULNERABILITY', 'CODE_SMELL'];
+        $information = [];
+
+        foreach ($types as $type) {
+            $information[$type] = $this->batchCollecteRepartition->CollecteRepartitionModule($mavenKey, $type);
+            if ($information[$type]['code'] != 200){
+                return $this->addFlashAndRender('alert', "La collecte des données SonarQube à échouée.",
+                                                $information[$type]['erreur'], $render);
+            }
         }
 
         /** On enregistre le nom du projet */
-        $app=$this->serviceExtractName->extractNameFromMavenKey($mavenKey);
+        $app = $this->serviceExtractName->extractNameFromMavenKey($mavenKey);
 
+        /** On calcul une valeur pour le setup */
+        $setup = (int) round(microtime(true) * 1000);
 
-        /** On se connecte à la base pour connaitre la version du dernier setup pour le projet. */
-        $reponse = $this->doctrine->getManager()
-                        ->getRepository(Repartition::class)
-                        ->findBy(['mavenKey' => $mavenKey], ['setup' => 'DESC'], 1);
+        /** on enregistre les informations dans la table repartition */
+        $map = [
+            'maven_key' => $mavenKey,
+            'name' => $app,
+            'setup' => $setup,
 
-        if (empty($reponse)) {
-            $setup = "NaN";
-            $statut = "NaN";
-        } else {
-            $setup = $reponse[0]->getSetup();
-            $statut = "actuel";
+            // Initialisation des valeurs des bugs
+            'bug_blocker' => $information['BUG']['blocker'] ?? 0,
+            'bug_critical' => $information['BUG']['critical'] ?? 0,
+            'bug_major' => $information['BUG']['major'] ?? 0,
+            'bug_minor' => $information['BUG']['minor'] ?? 0,
+            'bug_info' => $information['BUG']['info'] ?? 0,
+
+            // Initialisation des valeurs des vulnérabilités
+            'vulnerability_blocker' => $information['VULNERABILITY']['blocker'] ?? 0,
+            'vulnerability_critical' => $information['VULNERABILITY']['critical'] ?? 0,
+            'vulnerability_major' => $information['VULNERABILITY']['major'] ?? 0,
+            'vulnerability_minor' => $information['VULNERABILITY']['minor'] ?? 0,
+            'vulnerability_info' => $information['VULNERABILITY']['info'] ?? 0,
+
+            // Initialisation des valeurs des code smells
+            'code_smell_blocker' => $information['CODE_SMELL']['blocker'] ?? 0,
+            'code_smell_critical' => $information['CODE_SMELL']['critical'] ?? 0,
+            'code_smell_major' => $information['CODE_SMELL']['major'] ?? 0,
+            'code_smell_minor' => $information['CODE_SMELL']['minor'] ?? 0,
+            'code_smell_info' => $information['CODE_SMELL']['info'] ?? 0,
+
+            'mode_collecte' => 'COLLECTE',
+            'utilisateur_collecte' => $security->getUser()->getCourriel(),
+            'date_enregistrement' => new \DateTimeImmutable('now', new \DateTimeZone('Europe/Paris'))
+        ];
+        $repartition = $repartitionRepository->selectOrUpdateRepartitionInitial($map);
+        if ($repartition['code'] != 200) {
+            return $this->addFlashAndRender('alert', "L'enregistrement des données initiales a échouées.", $repartition['erreur'], $render);
         }
 
-        return $this->render(
-            'projet/details.html.twig',
-            [
-                'monApplication' => $app,
-                'mavenKey' => $mavenKey,
-                'setup' =>  $setup,
-                'statut' => $statut,
-                'marque_entreprise_short' => $this->getParameter('marque.entreprise.short'),
-                'marque_entreprise_long' => $this->getParameter('marque.entreprise.long'),
-                'logo_entreprise' => $this->getParameter('logo.entreprise'),
-                'env' => $this->getParameter('environnement'),
-                'version' => $this->getParameter('version'), 'dateCopyright' => \date('Y')
-            ]
-        );
+        // Mise à jour du rendu
+        $render['mon_application'] = $app;
+        $render['maven_key'] = $mavenKey;
+        $render['setup'] = $setup;
+        $render['statut'] = 'initial';
+        $render['information'] = $information;
+        return $this->render(static::$page, $render);
     }
 }
