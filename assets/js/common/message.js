@@ -87,5 +87,7 @@ export const typeMessage = function(t){
 
 /** Exemple pour afficher un message */
 // -- showMessage('alert', `<strong>[Titre]</strong> - message`);
+/** Exemple pour normaliser un message */
+// showMessage(t.type, typeMessage(t.message))
 /** Exemple pour masquer un message */
 // -- setTimeout(() => { hideMessage(); }, 5000);
