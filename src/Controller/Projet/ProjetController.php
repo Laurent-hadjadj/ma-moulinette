@@ -36,7 +36,7 @@ use App\Entity\Historique;
 class ProjetController extends AbstractController
 {
     public static $page= "projet/mes-projets.html.twig";
-    public static $reference = "<strong>[MES-PROJETS]</strong>";
+    public static $reference = "<strong>[Mes-Projets]</strong>";
     public static $erreur404 = "Tu dois être rattaché à une équipe (Erreur 404).";
     public static $erreur406 = "Je n'ai pas trouvé de projets pour ton équipe. ".
     "Vérifiez le nom du tag utilisé dans SonarQube (Erreur 406).";
@@ -61,6 +61,7 @@ class ProjetController extends AbstractController
     ) {
         $this->mesProjets = $mesProjets;
         $this->security = $security;
+        $this->params = $params;
         $this->em = $em;
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
@@ -121,44 +122,43 @@ class ProjetController extends AbstractController
         return $this->render('projet/index.html.twig', $render);
     }
 
-
     #[Route('/projet/mes-projets', name: 'mes_projets', methods: 'GET')]
     public function mesProjets(): Response
     {
         /** On instancie l'entityRepository */
         $historiqueRepository = $this->em->getRepository(Historique::class);
 
-        $render=static::genericRender();
+        $render = static::genericRender();
         $teams = $this->security->getUser()->getEquipe();
-        $debug='';
+        $debug = '';
 
         /** Si l'utilisateur n'est pas rattaché à une équipe on ne charge rien */
         if (empty($teams)) {
             /** On envoi un message à l'utilisateur */
             $render['liste_projet'] = [];
-            $this->addFlash('notice', ['type' => 'warning', 'reference' => static::$reference, 'message' => static::$erreur404, 'debug'=>$debug] );
+            $this->addFlash('notice', ['type' => 'warning', 'titre' => static::$reference, 'message' => static::$erreur404, 'debug'=> $debug] );
             return $this->render(static::$page, $render);
         }
 
-        $mes_projets=$this->mesProjets->liste($teams);
-        if ($mes_projets['code'] === 406) {
+        $mes_projets = $this->mesProjets->liste($teams);
+        if ($mes_projets['code'] === 406 || !isset($mes_projets['projets'])) {
             $render['liste_projet'] = [];
-            $this->addFlash('notice', ['type' => 'warning', 'reference' => static::$reference, 'message' => $mes_projets['message'], 'debug'=>$mes_projets['erreur']] );
+            $this->addFlash('notice', ['type' => 'warning', 'titre' => static::$reference, 'message' => $mes_projets['message'], 'debug' => $mes_projets['erreur']] );
             return $this->render(static::$page, $render);
         }
 
         /** On construit la clause where  */
         $c = '';
-        foreach ($mes_projets[0] as $projet) {
+        foreach ($mes_projets['projets'] as $projet) {
                 $c = $c."'".$projet['id']."', ";
             }
 
         /** On supprime la dernière virgule */
         $rtrim = rtrim($c, " ,");
         $liste = $historiqueRepository->selectHistoriqueIndicateurs($rtrim);
-        if ($liste['code']!=200) {
+        if ($liste['code'] != 200) {
             $render['liste_projet'] = [];
-            $this->addFlash('notice', ['type' => 'erreur', 'reference' => static::$reference, 'message' => static::$erreur404, 'debug'=>$liste['erreur']] );
+            $this->addFlash('notice', ['type' => 'erreur', 'titre' => static::$reference, 'message' => static::$erreur404, 'debug'=>$liste['erreur']] );
             return $this->render(static::$page, $render);
         }
 
