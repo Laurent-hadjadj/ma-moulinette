@@ -13,32 +13,22 @@
 
 namespace App\Controller\Repartition;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-
-/** Gestion de accès aux API */
 use Symfony\Component\HttpFoundation\JsonResponse;
-
-/** Accès aux tables SLQLite */
-use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Repartition;
-
-/** Logger */
-use Psr\Log\LoggerInterface;
-
-/** Client HTTP */
-use App\Service\Client;
-
-/** Import des services */
-use App\Service\ExtractName;
+use App\Controller\Batch\BatchCollecteRepartitionController;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
  * [Description ApiRepartitionController]
  */
 class ApiRepartitionController extends AbstractController
 {
+    private static $reference = "<strong>[Répartition-Module]</strong> ";
+    private static $erreur400 = "La requête est incorrecte (Erreur 400).";
+    private static $erreur403 = "Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).";
+
     /**
      * [Description for __construct]
      *
@@ -47,185 +37,9 @@ class ApiRepartitionController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function __construct(
-        private LoggerInterface $logger,
-        private EntityManagerInterface $em,
-        private ExtractName $serviceExtractName
+        private BatchCollecteRepartitionController $batchCollecteRepartition
     ) {
-        $this->logger = $logger;
-        $this->em = $em;
-        $this->serviceExtractName = $serviceExtractName;
-    }
-
-    public static $sonarUrl = "sonar.url";
-    public static $strContentType = 'application/json';
-    public static $apiIssuesSearch = "/api/issues/search?componentKeys=";
-    public static $regex = "/\s+/u";
-
-    /**
-     * [Description for batch_Analyse]
-     *
-     * @param mixed $elements
-     * @param mixed $mavenKey
-     *
-     * @return ['frontend'=>$frontend, 'backend'=>$backend, 'autre'=>$autre];
-     *
-     * Created at: 04/12/2022, 09:00:59 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     *
-     */
-    protected function batch_Analyse($elements, $mavenKey)
-    {
-        $frontend = $backend = $autre = 0;
-        $app=$this->serviceExtractName->extractNameFromMavenKey($mavenKey);
-
-        foreach ($elements as $element) {
-            $file = str_replace($mavenKey . ":", "", $element->getComponent());
-            $module = explode("/", $file);
-            if ($module[0] === "du-presentation" ||
-                $module[0] === "rs-presentation") {
-                $frontend = $frontend + 1;
-            }
-            if ($module[0] === $app . "-presentation" ||
-                $module[0] === $app . "-presentation-commun" ||
-                $module[0] === $app . "-presentation-ear" ||
-                $module[0] === $app . "-webapp") {
-                $frontend = $frontend + 1;
-            }
-            if ($module[0] === "rs-metier") {
-                $backend = $backend + 1;
-            }
-            if ($module[0] === $app . "-metier" ||
-                $module[0] === $app . "-common" ||
-                $module[0] === $app . "-api" ||
-                $module[0] === $app . "-dao") {
-                $backend = $backend + 1;
-            }
-            if ($module[0] === $app . "-metier-ear" ||
-                $module[0] === $app . "-service" ||
-                $module[0] === $app . "-serviceweb" ||
-                $module[0] === $app . "-middleoffice") {
-                $backend = $backend + 1;
-            }
-            if ($module[0] === $app . "-metier-rest" ||
-                $module[0] === $app . "-entite" ||
-                $module[0] === $app . "-serviceweb-client") {
-                $backend = $backend + 1;
-            }
-            if ($module[0] === $app . "-batch" ||
-                $module[0] === $app . "-batchs" ||
-                $module[0] === $app . "-batch-envoi-dem-aval" ||
-                $module[0] === $app . "-batch-import-billets") {
-                $autre = $autre + 1;
-            }
-            if ($module[0] === $app . "-rdd") {
-                $autre = $autre + 1;
-            }
-        }
-        return ['frontend' => $frontend, 'backend' => $backend, 'autre' => $autre];
-    }
-
-    /**
-     * [Description for batch_anomalie]
-     * Fonction qui permet de parser les anomalies par type selon le nombre
-     * de page disponible.
-     * $pageSize = 1 à 500
-     * $index = 1 à 20 max ==> 10000 anomalies
-     * $type = BUG,VULNERABILITY,CODE_SMELL
-     * $severite = INFO,MINOR,MAJOR,CRITICAL,BLOCKER
-     * http://{url}/api/issues/search?componentKeys={key}&statuses=OPEN,CONFIRMED,REOPENED&
-     * resolutions=&s=STATUS&asc=no&types={type}&severities={severite}=&ps={pageSize}&p=
-     *
-     * @param mixed $mavenKey
-     * @param mixed $index
-     * @param mixed $pageSize
-     * @param mixed $type
-     * @param mixed $severity
-     *
-     * @return [type]
-     *
-     * Created at: 04/12/2022, 09:02:29 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    protected function batch_anomalie(Client $client, $mavenKey, $index, $pageSize, $type, $severity)
-    {
-
-        /** On bind les variables */
-        $tempoPageSize = "&ps=$pageSize";
-        $tempoPageindex = "&p=$index";
-        $tempoStates = "&statuses=OPEN,CONFIRMED,REOPENED&resolutions=&s=STATUS&asc=no";
-        $tempoType = "&types=$type";
-        $tempoSeverity = "&severities=$severity";
-
-        /** On bind les variables */
-        $tempoUrl = $this->getParameter(static::$sonarUrl);
-        $tempoApi = static::$apiIssuesSearch;
-
-        /** On construit l'URL */
-        $url1 = "$tempoUrl$tempoApi$mavenKey$tempoStates$tempoType";
-        $url2 = "$tempoSeverity$tempoPageSize$tempoPageindex";
-        /** On appel l'Api et on renvoie le résultat */
-        return $client->http($url1.$url2);
-    }
-
-    /**
-     * [Description for projetRepartitionDetails]
-     * Récupère le total des anomalies par severité.
-     *
-     * @param Request $request
-     *
-     * @return response
-     * INFO,MINOR,MAJOR,CRITICAL,BLOCKER
-     *
-     * Created at: 04/12/2022, 09:03:46 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    #[Route('/api/projet/repartition/details', name: 'projet_repartition_details', methods: ['GET'])]
-    public function projetRepartitionDetails(Client $client, Request $request): response
-    {
-        $mavenKey = $request->get('mavenKey');
-        $type = $request->get('type');
-
-        $response = new JsonResponse();
-        /** On teste si la clé est valide */
-        if (is_null($mavenKey)) {
-            return $response->setData(["message" => "La clé maven est vide!", Response::HTTP_BAD_REQUEST]);
-        }
-
-        /** On récupère le nombre d'anomalie pour le type */
-        $severity = ['INFO','MINOR','MAJOR','CRITICAL','BLOCKER'];
-        $total = 0;
-        foreach ($severity as $value) {
-            $result = $this->batch_anomalie($client, $mavenKey, 1, 1, $type, $value);
-            if ($value === 'INFO') {
-                $info = $result['total'];
-            }
-            if ($value === 'MINOR') {
-                $minor = $result['total'];
-            }
-            if ($value === 'MAJOR') {
-                $major = $result['total'];
-            }
-            if ($value === 'CRITICAL') {
-                $critical = $result['total'];
-            }
-            if ($value === 'BLOCKER') {
-                $blocker = $result['total'];
-            }
-            $total = $total + $result['total'];
-        }
-
-        return $response->setData(
-            ["total" => $total,
-            "type" => $type,
-            "blocker" => $blocker,
-            "critical" => $critical,
-            "major" => $major,
-            "minor" => $minor,
-            "info" => $info],
-            Response::HTTP_OK);
+        $this->batchCollecteRepartition = $batchCollecteRepartition;
     }
 
     /**
@@ -234,95 +48,50 @@ class ApiRepartitionController extends AbstractController
      *
      * @param Request $request
      *
-     * @return response
+     * @return JsonResponse
      *
      * Created at: 04/12/2022, 09:04:35 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/projet/repartition/collecte', name: 'projet_repartition_collecte', methods: ['PUT'])]
-    public function projetRepartitionCollecte(Client $client, Request $request): response
+    #[Route('/api/repartition/collecte', name: 'api_repartition_collecte', methods: ['PUT'])]
+    public function apiRepartitionCollecte(Request $request): JsonResponse
     {
         /** On décode le body */
         $data = json_decode($request->getContent());
-
-        /** On bind les variables */
-        $mavenKey = $data->mavenKey;
-        $type = $data->type;
-        $severity = $data->severity;
-        $setup = $data->setup;
-
-        /** on créé un objet date */
-        $date = new \DateTimeImmutable('now', new \DateTimeZone('Europe/Paris'));
-
-        /** On récupère le nombre d'anomalie pour le type */
-        $result = $this->batch_anomalie($client, $mavenKey, 1, 1, $type, $severity);
-        $i = 1;
-        $date1 = time();
-        while (!empty($result["issues"]) && $i < 21) {
-            $result = $this->batch_anomalie($client, $mavenKey, $i, 500, $type, $severity);
-            foreach ($result["issues"] as $issue) {
-                $type = $issue["type"];
-                $severity = $issue["severity"];
-                $component = $issue["component"];
-
-                $issue = new Repartition();
-                $issue->setMavenKey($mavenKey);
-                $app=$this->serviceExtractName->extractNameFromMavenKey($data->maven_key);
-
-                $issue->setName($app);
-                $issue->setComponent($component);
-                $issue->setType($type);
-                $issue->setSeverity($severity);
-                $issue->setSetup($setup);
-                $issue->setDateEnregistrement($date);
-
-                $manager = $this->em->getManager();
-                $manager->persist($issue);
-
-                $manager->flush();
-
-            }
-            $i++;
+        /** On teste si la clé est valide */
+        if ($data === null ||
+            !isset($data->maven_key, $data->category, $data->severity, $data->setup)) {
+            return new JsonResponse(
+                ['data' => $data, 'code' => 400, 'type' => 'alert',
+                'message' => static::$reference . static::$erreur400],
+                Response::HTTP_OK);
         }
-        $date2 = time();
-        $response = new JsonResponse();
-        return $response->setData([
-            "total" => $result["total"],
-            "type" => $type,
-            "severity" => $severity,
-            "setup" => $setup,
-            "temps" => abs($date1 - $date2) + 2],
-            Response::HTTP_OK);
-    }
 
-    /**
-     * [Description for projetRepartitionClear]
-     * On fait un PUT pour un Delete
-     * @param Request $request
-     *
-     * @return Response
-     *
-     * Created at: 04/12/2022, 09:05:01 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    #[Route('/api/projet/repartition/clear', name: 'projet_repartition_clear', methods: ['PUT'])]
-    public function projetRepartitionClear(Request $request): Response
-    {
-        /** On décode le body */
-        $data = json_decode($request->getContent());
+        /** On vérifie si l'utilisateur à un rôle Collecte ? */
+        if (!$this->isGranted('ROLE_COLLECTE')) {
+            return new JsonResponse(
+                ['code' => 403, 'type' => 'warning',
+                'message' => static::$reference . static::$erreur403], Response::HTTP_OK);
+        }
 
-        /** On bind les variables */
-        $mavenKey = $data->mavenKey;
+        $repartitionCollecte = $this->batchCollecteRepartition->batchCollecteRepartition($data->maven_key,  $data->category, $data->severity, $data->setup);
+        if ($repartitionCollecte['code'] !== 200){
+            return new JsonResponse([
+                'code' => $repartitionCollecte['code'],
+                'type' => $repartitionCollecte['type'] ?? 'alert',
+                'message' => $repartitionCollecte['message'] ?? $repartitionCollecte['erreur']
+            ], Response::HTTP_OK);
+        }
 
-        /** On créé un nouvel objet Json */
-        $response = new JsonResponse();
-
-        /** On surprime de la table historique le projet */
-        $sql = "DELETE FROM repartition WHERE maven_key='$mavenKey'";
-        $this->em->getConnection()->prepare($sql)->executeStatement();
-        return $response->setData(["code" => "OK"], Response::HTTP_OK);
+        return new JsonResponse([
+            'code' => 200,
+            'total' => $repartitionCollecte['data']['total'],
+            'category' => $data->category,
+            'severity' => $data->severity,
+            'setup' => $data->setup,
+            'temps' => $repartitionCollecte['data']['temps']
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -330,44 +99,97 @@ class ApiRepartitionController extends AbstractController
      *
      * @param Request $request
      *
-     * @return Response
-     * ["code" => "OK", "repartition"=>$result], Response::HTTP_OK
+     * @return JsonResponse
      *
      * Created at: 04/12/2022, 09:05:20 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/projet/repartition/analyse', name: 'projet_repartition_analyse', methods: ['PUT', 'GET'])]
-    public function projetRepartitionAnalyse(Request $request): Response
+    #[Route('/api/repartition/analyse', name: 'repartition_analyse', methods: ['PUT'])]
+    public function apiRepartitionAnalyse(Request $request): JsonResponse
     {
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On bind les variables */
-        $mavenKey = $data->mavenKey;
-        $type = $data->type;
-        $severity = $data->severity;
-        $setup = $data->setup;
+        /** On teste si la clé est valide */
+        if ($data === null ||
+            !isset($data->maven_key, $data->category, $data->severity, $data->setup)) {
+            return new JsonResponse(
+                ['data' => $data, 'code' => 400, 'type' => 'alert',
+                'message' => static::$reference . static::$erreur400],
+                Response::HTTP_OK);
+        }
 
-        /**$mavenKey = "fr.ma-moulinette:projet-marche";
-        $type = "CODE_SMELL";
-        $severity = "MAJOR";
-        $setup = 1685694576592;**/
+        /** On vérifie si l'utilisateur à un rôle Collecte ? */
+        if (!$this->isGranted('ROLE_COLLECTE')) {
+            return new JsonResponse(
+                ['code' => 403, 'type' => 'warning',
+                'message' => static::$reference . static::$erreur403], Response::HTTP_OK);
+        }
 
-        /** On créé un nouvel objet Json */
-        $response = new JsonResponse();
+        $repartitionAnalyse = $this->batchCollecteRepartition->batchCollecteAnalyse($data->maven_key,  $data->calcul, $data->severity, $data->setup);
+        if ($repartitionAnalyse['code'] !== 200){
+            return new JsonResponse([
+                'code' => $repartitionAnalyse['code'],
+                'type' => $repartitionAnalyse['type'] ?? 'alert',
+                'message' => $repartitionAnalyse['message'] ?? $repartitionAnalyse['erreur']
+            ], Response::HTTP_OK);
+        }
 
-        /** On récupère la liste des bugs */
-        $liste = $this->em->getManager()->getRepository(Repartition::class)->findBy(
-                [
-                'mavenKey' => $mavenKey,
-                'type' => $type,
-                'severity' => $severity,
-                'setup' => $setup]
-            );
-        /** on appelle le service d'analyse */
-        $result = $this->batch_analyse($liste, $mavenKey);
-        return $response->setData(["code" => "OK", "repartition" => $result], Response::HTTP_OK);
+        return new JsonResponse([
+            'code' => 200,
+            'repartition' => $repartitionAnalyse['data']],
+            Response::HTTP_OK);
+    }
+
+    /**
+     * [Description for apiRepartitionAnalyseMaj]
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     *
+     * Created at: 18/02/2025 09:14:16 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    #[Route('/api/repartition/analyse/mise-a-jour', name: 'repartition_analyse_maj', methods: ['PUT'])]
+    public function apiRepartitionAnalyseMaj(Request $request): JsonResponse
+    {
+        /** On décode le body */
+        $data = json_decode($request->getContent());
+
+        /** On teste si la clé est valide */
+        if ($data === null ||
+            !isset($data->maven_key, $data->setup, $data->calcul)) {
+            return new JsonResponse(
+                ['data' => $data, 'code' => 400, 'type' => 'alert',
+                'message' => static::$reference . static::$erreur400],
+                Response::HTTP_OK);
+        }
+
+        /** On vérifie si l'utilisateur à un rôle Collecte ? */
+        if (!$this->isGranted('ROLE_COLLECTE')) {
+            return new JsonResponse(
+                ['code' => 403, 'type' => 'warning',
+                'message' => static::$reference . static::$erreur403],
+                Response::HTTP_OK);
+        }
+
+        $repartitionMaJ = $this->batchCollecteRepartition->batchCollecteRepartitionMaJ($data->maven_key,  $data->calcul, $data->severity, $data->setup);
+        if ($repartitionMaJ['code'] !== 200){
+            return new JsonResponse([
+                'code' => $repartitionMaJ['code'],
+                'type' => $repartitionMaJ['type'] ?? 'alert',
+                'message' => $repartitionMaJ['message'] ?? $repartitionMaJ['erreur']
+            ], Response::HTTP_OK);
+        }
+
+        return new JsonResponse(
+            [
+                'code' => 200,
+                'message' => $repartitionMaJ['message']
+            ], Response::HTTP_OK);
     }
 
 }
