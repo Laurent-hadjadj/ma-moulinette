@@ -151,7 +151,7 @@ class CollecteController extends AbstractController
         /** Pour les autres messages d'erreur */
         if (!in_array($informationProjet['code'], ['200', '100'])) {
             $collecte[] = [
-                '**** ERREUR : INFORMATION PROJET '.$informationProjet['code']. ' ****',
+                '**** ERREUR : INFORMATION PROJET '.$informationProjet['code']. '****',
                 $informationProjet['message'] ?? $informationProjet['erreur'],
                 '~************* FIN DU TRAITEMENT ***************~'];
             $this->logger->file($portefeuille, $collecte);
@@ -165,7 +165,7 @@ class CollecteController extends AbstractController
             $mapMerged = array_merge($mapMerged, $mesure['data']);
         } else {
             $collecte[]=[
-                '**** ERREUR : MESURE '.$mesure['code'].' ****',
+                '**** ERREUR : MESURE '.$mesure['code'].'****',
                 $mesure['message'] ?? $mesure['erreur']];
                 $this->logger->file($portefeuille, $collecte);
                 return ['code' => $mesure['code'], 'Collecte' => $collecte];
