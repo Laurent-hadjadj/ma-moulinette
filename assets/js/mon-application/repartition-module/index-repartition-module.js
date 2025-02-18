@@ -30,7 +30,7 @@ import '../../auth/details.js';
 import {serveur} from '../../common/properties.js';
 
 /** On importe les fonctions d'affiche des messages JS */
-import {showMessage, hideMessage} from '../../common/message.js';
+import {showMessage, hideMessage, typeMessage} from '../../common/message.js';
 
 /** On importe les constantes */
 import { contentType, zero, cent, mille, http_200} from '../../common/constante.js';
@@ -40,7 +40,7 @@ const maven_key = $('#js-app').data('application');
 const setup = $('#js-setup').text().trim();
 
 /** On initialise le tableau de résultats pour l'analyse */
-/** type, severity, frontend, backend, autre, inconnue, inconnue, idc */
+/** category, severity, frontend, backend, autre, inconnue, inconnue, idc */
 let analyseCollecteRepartition = [];
 
 /**
@@ -74,24 +74,24 @@ async function updateProgressGradually(start, stop) {
  * On lance le service d'analyse des données pour le projet
  *
  * @param string mavenKey
- * @param string type
+ * @param string category
  * @param string severity
  * @param string  css
  *
  * @returns void
  */
-const analyse = async function (maven_key, type, severity, css, setup) {
+const analyse = async function (maven_key, category, severity, css, setup) {
   /**
    * 🏁 Animation de démarrage et de fin
    */
   const startAnalyse = a => {
-      const types = {
+      const categories = {
           'BUG': 'Bug :',
           'VULNERABILITY': 'Vulnérabilité :',
           'CODE_SMELL': 'Mauvaise Pratique :'
       };
       $('#analyse-animation').addClass('sp-volume');
-      $('#analyse-texte').html(types[a] + ' Analyse en cours...');
+      $('#analyse-texte').html(categories[a] + ' Analyse en cours...');
   };
 
   const stopAnalyse = () => {
@@ -125,14 +125,14 @@ const analyse = async function (maven_key, type, severity, css, setup) {
   };
 
   // 📌 Configuration AJAX
-  const data = { maven_key, type, severity, setup };
+  const data = { maven_key, category, severity, setup };
   const options = {
       url: `${serveur()}/api/repartition/analyse`,
       type: 'PUT',
       dataType: 'json',
       data: JSON.stringify(data),
       contentType,
-      beforeSend: () => setTimeout(() => startAnalyse(type), 1),
+      beforeSend: () => setTimeout(() => startAnalyse(category), 1),
       complete: () => setTimeout(stopAnalyse, 1)
   };
 
@@ -140,7 +140,7 @@ const analyse = async function (maven_key, type, severity, css, setup) {
   const t = await $.ajax(options);
   // 📌 Vérification des erreurs
   if (t.code !== http_200){
-    showMessage(t['type'], t['message']);
+    showMessage(t.type, typeMessage(t.message));
     sessionStorage.setItem('erreur-analyse', 'true');
     return;
   }
@@ -148,22 +148,22 @@ const analyse = async function (maven_key, type, severity, css, setup) {
   /** On calcule le total des anomalies analysé? */
   const nombreTotalModule = +t.repartition.frontend + +t.repartition.backend + +t.repartition.autre + +t.repartition.inconnue;
 
-  let idc = '-', calculIdc = 0, lowerType, capitalizeType;
+  let idc = '-', calculIdc = 0, lowerCategory, capitalizeCategory;
   // 📌 Vérification de l'indice de confiance (idc)
-  if (elements[type][severity]) {
-      const element = elements[type][severity];
+  if (elements[category][severity]) {
+      const element = elements[category][severity];
       const lowerSeverity = severity.toLowerCase();
       const capitalizeSeverity = lowerSeverity.charAt(0).toUpperCase() + lowerSeverity.slice(1);
 
-      if (type !== 'CODE_SMELL'){
-        lowerType = type.toLowerCase();
-        capitalizeType = lowerType.charAt(0).toUpperCase() + lowerType.slice(1);
+      if (category !== 'CODE_SMELL'){
+        lowerCategory = category.toLowerCase();
+        capitalizeCategory = lowerCategory.charAt(0).toUpperCase() + lowerCategory.slice(1);
       } else {
-        capitalizeType = 'CodeSmell';
+        capitalizeCategory = 'CodeSmell';
       }
 
-      if (element.dataset[`nombre${capitalizeType}${capitalizeSeverity}`] !== '0') {
-          calculIdc = +nombreTotalModule / +element.dataset[`nombre${capitalizeType}${capitalizeSeverity}`];
+      if (element.dataset[`nombre${capitalizeCategory}${capitalizeSeverity}`] !== '0') {
+          calculIdc = +nombreTotalModule / +element.dataset[`nombre${capitalizeCategory}${capitalizeSeverity}`];
           idc = new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(calculIdc);
       }
 
@@ -171,10 +171,10 @@ const analyse = async function (maven_key, type, severity, css, setup) {
 
       let tableId;
 
-      //'const tableId = type === 'BUG' ? 'mon-bo-tableau1' : type === 'VULNERABILITY' ? 'mon-bo-tableau2' : 'mon-bo-tableau3';
-      if (type === 'BUG') {
+      //'const tableId = category === 'BUG' ? 'mon-bo-tableau1' : category === 'VULNERABILITY' ? 'mon-bo-tableau2' : 'mon-bo-tableau3';
+      if (category === 'BUG') {
           tableId = 'mon-bo-tableau1';
-      } else if (type === 'VULNERABILITY') {
+      } else if (category === 'VULNERABILITY') {
           tableId = 'mon-bo-tableau2';
       } else {
           tableId = 'mon-bo-tableau3';
@@ -194,8 +194,8 @@ const analyse = async function (maven_key, type, severity, css, setup) {
       $(`#${tableId}`).append(row);
 
       /** On enregistre les informations dans le tableau de résultat.*/
-      /** type, severity, frontend, backend, autre, inconnue, inconnue */
-      analyseCollecteRepartition.push([type, severity, t.repartition.frontend, t.repartition.backend, t.repartition.autre, t.repartition.inconnue]);
+      /** category, severity, frontend, backend, autre, inconnue, inconnue */
+      analyseCollecteRepartition.push([category, severity, t.repartition.frontend, t.repartition.backend, t.repartition.autre, t.repartition.inconnue]);
   }
 };
 
@@ -204,7 +204,7 @@ const analyse = async function (maven_key, type, severity, css, setup) {
  * On lance la collecte et on affiche la répartition
  *
  * @param string maven_key
- * @param string type
+ * @param string category
  * @param string severity
  * @param integer start
  * @param integer stop
@@ -215,35 +215,35 @@ const analyse = async function (maven_key, type, severity, css, setup) {
  * Created at: 19/12/2022, 22:46:29 (Europe/Paris)
  * @author Laurent HADJADJ <laurent_h@me.com>
  */
-const collecte = async function (maven_key, type, severity, counter, timer) {
+const collecte = async function (maven_key, category, severity, counter, timer) {
   // Vérification immédiate pour éviter les traitements inutiles
-  if (maven_key === 'NaN' || type === 'NaN') {
+  if (maven_key === 'NaN' || category === 'NaN') {
       showMessage('warning', "Les paramètres pour récupérer les données sont incorrects (Erreur 500).");
       return;
   }
 
-  // Mapping pour simplifier la conversion de `type` en `typeTime`
-  const typeMap = {
+  // Mapping pour simplifier la conversion de `category` en `categoryTime`
+  const categoryMap = {
       'BUG': 'bug',
       'VULNERABILITY': 'vulnerability',
       'CODE_SMELL': 'code-smell'
   };
-  const typeTime = typeMap[type] || 'unknown';
+  const categoryTime = categoryMap[category] || 'unknown';
 
   // Récupération de l'élément du DOM pour éviter des accès répétés
-  const typeTimeLower = typeTime.toLowerCase();
-  const timerElement = document.getElementById(`js-${typeTimeLower}-time`);
+  const categoryTimeLower = categoryTime.toLowerCase();
+  const timerElement = document.getElementById(`js-${categoryTimeLower}-time`);
 
   // Fonction pour mettre à jour le timer
   const changeTimer = value => {
       const minute = Math.floor(value / 60);
       const restSeconds = value % 60;
-      $(`#js-${typeTimeLower}-time`).html(`${minute}.${restSeconds}`);
+      $(`#js-${categoryTimeLower}-time`).html(`${minute}.${restSeconds}`);
   };
 
   // Configuration de la requête AJAX
   sessionStorage.setItem('erreur-collect-repartition', 'false');
-  const data = JSON.stringify({ maven_key, type, severity, setup });
+  const data = JSON.stringify({ maven_key, category, severity, setup });
 
   const options = {
       url: `${serveur()}/api/repartition/collecte`,
@@ -269,7 +269,7 @@ const collecte = async function (maven_key, type, severity, counter, timer) {
       const response = await $.ajax(options);
       if (response.code !== http_200){
         // 📌 Vérification des erreurs
-        showMessage(response['type'], response['message']);
+        showMessage(response.type, typeMessage(response.message));
         sessionStorage.setItem('erreur-collect-repartition', 'true')
         return;
       }
@@ -278,7 +278,7 @@ const collecte = async function (maven_key, type, severity, counter, timer) {
       // Mise à jour du timer dataset
       timerElement.dataset.timer = response.temps;
   } catch (error) {
-      sessionStorage.setItem('error', `Erreur lors de la collecte [${type}, ${severity}] : ${error}`);
+      sessionStorage.setItem('error', `Erreur lors de la collecte [${category}, ${severity}] : ${error}`);
   }
 };
 
@@ -308,7 +308,7 @@ const updateRepartition = async function(phase){
     const t = await $.ajax(options);
     if (t.code !== http_200){
         // 📌 Vérification des erreurs
-        showMessage(t.type, t.erreur);
+        showMessage(t.type, typeMessage(t.message));
       }
   }
 
@@ -321,8 +321,8 @@ $('#collecte-bug').on('click', async () => {
   const total = +document.getElementById('nombre-bug').dataset.nombreBug;
 
   if (total == 0){
-    showMessage('warning', "Il n'y a pas de données à collecter pour cette catégorie.");
-    setTimeout(() => { hideMessage(); }, 4000);
+    showMessage('warning', "Il n'y a pas de données à collecter pour cette catégorie (Erreur 404).");
+    setTimeout(() => { hideMessage(); }, 3000);
     return;
   }
 
@@ -395,8 +395,8 @@ $('#collecte-vulnerability').on('click', async () => {
   const total = +document.getElementById('nombre-vulnerability').dataset.nombreVulnerability;
 
   if (total == 0){
-    showMessage('primary', "Il n'y a pas de données à collecter pour cette catégorie.");
-    setTimeout(() => { hideMessage(); }, 4000);
+    showMessage('warning', "Il n'y a pas de données à collecter pour cette catégorie (Erreur 404).");
+    setTimeout(() => { hideMessage(); }, 3000);
     return;
   }
 
@@ -479,8 +479,8 @@ $('#collecte-code-smell').on('click', async () => {
   const total = +document.getElementById('nombre-code-smell').dataset.nombreCodeSmell;
 
   if (total == 0){
-    showMessage('primary', "Il n'y a pas de données à collecter pour cette catégorie.");
-    setTimeout(() => { hideMessage(); }, 4000);
+    showMessage('warning', "Il n'y a pas de données à collecter pour cette catégorie (Erreur 404).");
+    setTimeout(() => { hideMessage(); }, 3000);
     return;
   }
 
