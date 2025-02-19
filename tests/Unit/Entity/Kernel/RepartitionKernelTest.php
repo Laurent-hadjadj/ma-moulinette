@@ -25,8 +25,8 @@ use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 class RepartitionKernelTest extends KernelTestCase
 {
 
-    private static $name = 'ma-moulinette';
-    private static $type = 'bug';
+    private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static $setup = '1739816022572';
 
     protected function setUp(): void
     {
@@ -55,10 +55,10 @@ class RepartitionKernelTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         $repartitionRepository = $entityManager->getRepository(Repartition::class);
-        $response = $repartitionRepository->findOneBy(['name' => static::$name]);
+        $response = $repartitionRepository->findOneBy(['mavenKey' => static::$mavenKey, 'setup' => static::$setup]);
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée');
-        $this->assertCount(1, [$response], 'NAME: Aucune réponse trouvée');
+        $this->assertCount(1, [$response], 'MavenKey & Setup: Aucune réponse trouvée');
     }
 
     public function testRepartitionCount(): void
@@ -68,10 +68,10 @@ class RepartitionKernelTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         $repartitionRepository = $entityManager->getRepository(Repartition::class);
-        $response = $repartitionRepository->findBy(['type' => static::$type]);
+        $response = $repartitionRepository->findBy(['setup' => static::$setup]);
 
-        $this->assertNotNull($response, 'Aucune entité a été trouvée');
-        $this->assertCount(3, $response, 'TYPE: Aucune réponse trouvée');
+        $this->assertNotNull($response, 'Une entité doit être présente.');
+        $this->assertCount(1, $response, 'Une valeur pour setup doit être trouvée.');
     }
 
 }
