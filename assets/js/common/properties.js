@@ -35,8 +35,8 @@ export const serveur_uri= async () => {
             } else {
                 return location.origin;
             }
-        } catch (error){
-            sessionStorage.setItem('error', `Error fetching data: ${error}`);
+        } catch(error){
+            sessionStorage.setItem('error', `Error fetching data :  ${JSON.stringify(error, null, 2)}}`);
             throw error;
         }
     };

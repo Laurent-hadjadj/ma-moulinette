@@ -252,7 +252,7 @@ export const enregistrement = async function(mavenKey) {
           const message=`Cette version existe déjà dans l'historique.`;
           showMessage('warning', `<strong>[Enregistrement]</strong> ${message}`);
           }
-      } catch (err) {
-        showMessage('alert', `<strong>[Enregistrement]</strong> Une erreur inattendue s'est produite lors de l'enregistrement des données.<br>${err}`);
+      } catch (error) {
+        showMessage('alert', `<strong>[Enregistrement]</strong> Une erreur inattendue s'est produite lors de l'enregistrement des données.<br>${error.message}`);
       }
 };

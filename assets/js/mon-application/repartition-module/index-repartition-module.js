@@ -277,8 +277,8 @@ const collecte = async function (maven_key, category, severity, counter, timer) 
       $('#nombre-anomalie').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(counter));
       // Mise à jour du timer dataset
       timerElement.dataset.timer = response.temps;
-  } catch (error) {
-      sessionStorage.setItem('error', `Erreur lors de la collecte [${category}, ${severity}] : ${error}`);
+  } catch(error) {
+      sessionStorage.setItem('error', `Erreur lors de la collecte [${category}, ${severity}] : ${error.message}`);
   }
 };
 

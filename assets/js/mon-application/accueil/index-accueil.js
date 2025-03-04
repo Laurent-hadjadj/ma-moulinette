@@ -48,19 +48,20 @@ import { http_400, http_401, http_403, http_404, http_500, http_504, contentType
 const sonarIsUp = async function() {
   /**  si le bouton de mise à jour des projets est désactivé on sort */
   if ($('.refresh-bd').hasClass('bouton-disabled')){
-    return {code: http_401};
+    return { code: http_401 };
   }
+
   const options = {
     url: `${serveur()}/api/status`, type: 'POST', dataType: 'json',  contentType };
   try
   {
     return await $.ajax(options);
-  } catch (t) {
+  } catch(error) {
     // 📌 Vérification des erreurs
-    if (t.status === http_404){
+    if (error.status === http_404){
       showMessage('alert', `<strong>[Accueil]</strong> La requête est incorrecte (Erreur 404).`);
     }
-    if (t.status === http_500 || t.status === 'DOWN'){
+    if (error.status === http_500 || error.status === 'DOWN'){
       showMessage('alert', `<strong>[Accueil]</strong> État du serveur SonarQube : <strong>DOWN</strong>.`);
     }
     return;
@@ -112,8 +113,8 @@ const miseAJourListe = async function() {
           /** On affiche un message à l'utilisateur */
           showMessage(t.type, typeMessage(t.message));
           setTimeout(() => { hideMessage(); }, 5000);
-  } catch (err) {
-    showMessage('alert', `<strong>[Accueil]</strong> Une erreur inattendue s'est produite lors de la mise à jour des projets.<br>${err}`);
+  } catch(error) {
+    showMessage('alert', `<strong>[Accueil]</strong> Une erreur inattendue s'est produite lors de la mise à jour des projets.<br>${error.message}`);
   }
 };
 
@@ -145,8 +146,8 @@ const miseAJourTags = async function() {
 
       /** On affiche le nombre de tags */
       $('#js-tag-nombre').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.nombre_tag));
-    } catch (err) {
-      showMessage('alert', `<strong>[Accueil]</strong> Une erreur inattendue s'est produite lors de la récupération du nombre de tags.<br>${err}`);
+    } catch (error) {
+      showMessage('alert', `<strong>[Accueil]</strong> Une erreur inattendue s'est produite lors de la récupération du nombre de tags.<br>${error.message}`);
     }
 };
 

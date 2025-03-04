@@ -302,8 +302,8 @@ const projetInformation = async function(mavenKey) {
       const nombre = release + snapshot + autre;
       log(` ----------- Nombre de version disponible : ${nombre}`);
       }
-  } catch (err) {
-    showMessage('alert', `<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 01.<br>${err}`);
+  } catch(error) {
+    showMessage('alert', `<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 01.<br>${error.message}`);
   }
 };
 
@@ -346,8 +346,8 @@ const projetMesure = async function(mavenKey) {
         log(' - INFO   : (02) Collecte des mesures globales.');
         log(` ----------- ${t.message.issues} problème(s) trouvé(s).`);
     }
-  } catch (err) {
-    showMessage('alert', `<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 02.<br>${err}`);
+  } catch(error) {
+    showMessage('alert', `<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 02.<br>${error.message}`);
   }
 };
 
@@ -392,8 +392,8 @@ const projetRating = async function(mavenKey, type) {
       log(` - INFO   : (03) Collecte de la note pour le type : ${t.type}`);
       log(` ----------- La note est : ${t.message.note}`);
     }
-  } catch (err) {
-    showMessage('alert', `<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 03.<br>${err}`);
+  } catch(error) {
+    showMessage('alert', `<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 03.<br>${error.message}`);
   }
 };
 
@@ -456,8 +456,8 @@ const projetOwasp = async function(mavenKey) {
       if(parseInt(t.owasp2021,10)>1){ s='s' ;}
       log(` - WARN : (04) J'ai trouvé ${t.owasp2021} faille${s}.`);
     }
-  } catch (err) {
-    showMessage('alert', `<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 04.<br>${err}`);
+  } catch(error) {
+    showMessage('alert', `<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 04.<br>${error.message}`);
   }
 };
 
@@ -507,8 +507,8 @@ const projetHotspot = async function(mavenKey) {
         if(parseInt(t.nombre,10) > 1){ s='s'; }
         log(` - WARN : (05) J'ai trouvé ${t.nombre} faille${s} potentielle${s}.`);
     }
-  } catch (err) {
-    showMessage('alert', `<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 05.<br>${err}`);
+  } catch(error) {
+    showMessage('alert', `<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 05.<br>${error.message}`);
   }
 };
 
@@ -553,8 +553,8 @@ const projetAnomalie = async function(mavenKey) {
       if (t.code === http_200){
           log(` - INFO   : (06) ${t.info}`);
       }
-    } catch (err) {
-      showMessage('alert', `<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 06.<br>${err}`);
+    } catch(error) {
+      showMessage('alert', `<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 06.<br>${error.message}`);
     }
 };
 
@@ -600,8 +600,8 @@ const projetAnomalieDetails = async function(mavenKey) {
     } else {
         log(` - ERROR  : (07) Je n'ai pas réussi à collecter les données (${t.erreur}).`);
     }
-  } catch (err) {
-    showMessage('alert', `<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 07.<br>${err}`);
+  } catch(error) {
+    showMessage('alert', `<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 07.<br>${error.message}`);
   }
 };
 
@@ -671,8 +671,8 @@ const projetHotspotOwasp = async function(mavenKey, menace) {
         if(parseInt(t.owasp2021,10)>1){ s='s' ;}
         log(` ----------- J'ai trouvé ${t.owasp2021} faille${s} OWASP ${menace} potentielle${s}.`);
       }
-    } catch (err) {
-      showMessage('alert', `<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 08/09.<br>${err}`);
+    } catch(error) {
+      showMessage('alert', `<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 08/09.<br>${error.message}`);
     }
 };
 
@@ -721,8 +721,8 @@ const projetHotspotOwaspDetails = async function(mavenKey) {
     if (t.code===http_406){
       log(` - INFO   : (10) Aucune information n'est disponible pour les hotspots.`);
     }
-  } catch (err) {
-    showMessage('alert', `<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 10.<br>${err}`);
+  } catch(error) {
+    showMessage('alert', `<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 10.<br>${error.message}`);
   }
 };
 
@@ -772,8 +772,8 @@ const projetNoSonar = async function(mavenKey){
     } else {
       log(` - INFO   : (11) Bravo !!! ${t.nombre} exclusion NoSonar trouvée.`);
     }
-  } catch (err) {
-    showMessage('alert', `<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 11.<br>${err}`);
+  } catch(error) {
+    showMessage('alert', `<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 11.<br>${error.message}`);
   }
 };
 
@@ -821,8 +821,8 @@ const projetTodo = async function(mavenKey){
       } else {
         log(` - INFO   : (12) Bravo !!! ${t.nombre} ToDo trouvé.`);
       }
-    } catch (err) {
-      showMessage('alert', `<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 12.<br>${err}`);
+    } catch(error) {
+      showMessage('alert', `<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 12.<br>${error.message}`);
     }
 };
 
@@ -881,8 +881,8 @@ const options = {
           log(` - INFO  : (13) Je n'ai pas trouvé de Logger.`);
       }
     }
-  } catch (err) {
-    showMessage('alert', `<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 13.<br>${err}`);
+  } catch(error) {
+    showMessage('alert', `<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 13.<br>${error.message}`);
   }
 };
 
@@ -1102,8 +1102,8 @@ const afficheMesProjets = async function() {
         $('.js-repartition-module').trigger('click');
       });
     }
-  } catch (err) {
-    showMessage('alert', `<strong>[Projet]</strong> Une erreur inattendue s'est produite.<br>${err}`);
+  } catch(error) {
+    showMessage('alert', `<strong>[Projet]</strong> Une erreur inattendue s'est produite.<br>${error.message}`);
   }
 };
 

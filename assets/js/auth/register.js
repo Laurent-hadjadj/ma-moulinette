@@ -217,7 +217,7 @@ function changeType(x, type) {
   return x; //That was easy.
   try {
     return x.prop('type', type); //Stupid IE security will not allow this
-  } catch(e) {
-    sessionStorage.setItem('info', 'Stupid IE security will not allow this !!!')
+  } catch(error) {
+    sessionStorage.setItem('info', `Stupid IE security will not allow this !!! :  ${JSON.stringify(error, null, 2)}}`);
   }
 }

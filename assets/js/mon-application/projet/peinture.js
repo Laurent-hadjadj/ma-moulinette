@@ -78,8 +78,8 @@ export const remplissage = async function(mavenKey) {
         t2.dataset.snapshot=(t.snapshot);
         t3.dataset.autre=(t.autre);
         t4.dataset.dateVersion=(t.date);
-      } catch (err) {
-        showMessage('alert', `<strong>[Peinture]</strong> Une erreur inattendue s'est produite lors la récupération des informations du projet.<br>${err}`);
+      } catch(error) {
+        showMessage('alert', `<strong>[Peinture]</strong> Une erreur inattendue s'est produite lors la récupération des informations du projet.<br>${error.message}`);
       }
 
   /***
@@ -104,8 +104,8 @@ export const remplissage = async function(mavenKey) {
       const t6 = document.getElementById('no-sonar');
       t5.dataset.s1309=(t.s1309);
       t6.dataset.nosonar=(t.nosonar);
-    } catch (err) {
-      showMessage('alert', `<strong>[Peinture]</strong> Une erreur inattendue s'est produite lors la récupération des SuppressWarning et noSonar.<br>${err}`);
+    } catch(error) {
+      showMessage('alert', `<strong>[Peinture]</strong> Une erreur inattendue s'est produite lors la récupération des SuppressWarning et noSonar.<br>${error.message}`);
     }
 
   /** On récupère les to.do tags */
@@ -155,8 +155,8 @@ export const remplissage = async function(mavenKey) {
     t54.dataset.html=(t.html);
     t55.dataset.xml=(t.xml);
     t56.dataset.listeFichier=(t.details);
-  } catch (err) {
-    showMessage('alert', `<strong>[Peinture]</strong> Une erreur inattendue s'est produite lors la récupération des ToDo.<br>${err}`);
+  } catch(error) {
+    showMessage('alert', `<strong>[Peinture]</strong> Une erreur inattendue s'est produite lors la récupération des ToDo.<br>${error.message}`);
   }
 
 
@@ -203,8 +203,8 @@ export const remplissage = async function(mavenKey) {
     logger2.dataset.loggerWarn=(t.logger_warn);
     logger3.dataset.loggerError=(t.logger_error);
     logger4.dataset.loggerDebug=(t.logger_debug);
-  } catch (err) {
-    showMessage('alert', `<strong>[Peinture]</strong> Une erreur inattendue s'est produite lors la récupération des Loggers.<br>${err}`);
+  } catch(error) {
+    showMessage('alert', `<strong>[Peinture]</strong> Une erreur inattendue s'est produite lors la récupération des Loggers.<br>${error.message}`);
   }
 
   /**
@@ -299,8 +299,8 @@ export const remplissage = async function(mavenKey) {
     t10.dataset.duplicatedLinesDensity=(t.duplicated_lines_density);
     t11.dataset.tests=(t.tests);
     t12.dataset.violations=t.issues;
-  } catch (err) {
-    showMessage('alert', `<strong>[Peinture]</strong> Une erreur inattendue s'est produite lors la récupération des Mesures.<br>${err}`);
+  } catch(error) {
+    showMessage('alert', `<strong>[Peinture]</strong> Une erreur inattendue s'est produite lors la récupération des Mesures.<br>${error.message}`);
   }
 
 
@@ -524,8 +524,8 @@ export const remplissage = async function(mavenKey) {
       $('#note-reliability').html(`<span class="${couleur1}">${noteReliability}</span>`);
       $('#note-security').html(`<span class="${couleur2}">${noteSecurity}</span>`);
       $('#note-sqale').html(`<span class="${couleur3}">${noteSqale}</span>`);
-    } catch (err) {
-      showMessage('alert', `<strong>[Peinture]</strong> Une erreur inattendue s'est produite lors la récupération des Anomalies.<br>${err}`);
+    } catch(error) {
+      showMessage('alert', `<strong>[Peinture]</strong> Une erreur inattendue s'est produite lors la récupération des Anomalies.<br>${error.message}`);
     }
 
 
@@ -564,8 +564,8 @@ export const remplissage = async function(mavenKey) {
     }
 
     $('#note-hotspot').html(`<span class="${couleur}">${t.note}</span>`);
-  } catch (err) {
-    showMessage('alert', `<strong>[Peinture]</strong> Une erreur inattendue s'est produite lors la récupération des Hotspots.<br>${err}`);
+  } catch(error) {
+    showMessage('alert', `<strong>[Peinture]</strong> Une erreur inattendue s'est produite lors la récupération des Hotspots.<br>${error.message}`);
   }
 
   /**
@@ -634,8 +634,8 @@ export const remplissage = async function(mavenKey) {
     t40.dataset.vulnerabilityMajor = t.codeSmellMajor;
     t41.dataset.vulnerabilityMinor = t.codeSmellMinor;
     t42.dataset.vulnerabilityInfo = t.codeSmellInfo;
-  } catch (err) {
-    showMessage('alert', `<strong>[Peinture]</strong> Une erreur inattendue s'est produite lors la récupération du détails des Anomalies.<br>${err}`);
+  } catch(error) {
+    showMessage('alert', `<strong>[Peinture]</strong> Une erreur inattendue s'est produite lors la récupération du détails des Anomalies.<br>${error.message}`);
   }
 };
 
@@ -699,7 +699,7 @@ export const afficheHotspotDetails = async function (mavenKey){
 
         const t1 = document.getElementById('hotspot-total');
         t1.dataset.nombreHotspot=(t.to_review_high_total);
-      } catch (err) {
-        showMessage('alert', `<strong>[Peinture]</strong> Une erreur inattendue s'est produite lors la récupération du détails des Hotspots.<br>${err}`);
+      } catch(error) {
+        showMessage('alert', `<strong>[Peinture]</strong> Une erreur inattendue s'est produite lors la récupération du détails des Hotspots.<br>${error.message}`);
       }
 };

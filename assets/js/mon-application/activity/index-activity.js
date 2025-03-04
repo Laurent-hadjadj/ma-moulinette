@@ -106,10 +106,10 @@ const refreshActivity=async function() {
         } else {
           $tableauStats.html('<tr><td colspan="8">Aucune donnée disponible.</td></tr>');
         }
-      } catch (erreur) {
+      } catch(error) {
         // Gestion des erreurs
-        sessionStorage.setItem('erreur', 'Erreur lors de la récupération des données : ${erreur}');
-        showMessage('danger', '<strong>[ACTIVITÉ]</strong> - Une erreur est survenue lors de la mise à jour.');
+        sessionStorage.setItem('error', `Erreur lors de la récupération des données : ${JSON.stringify(error, null, 2)}`);
+        showMessage('alert', '<strong>[ACTIVITÉ]</strong> - Une erreur est survenue lors de la mise à jour.');
       } finally {
         // Cacher le spinner
         $spinner.hide();
