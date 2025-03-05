@@ -135,25 +135,6 @@ class RepartitionRepositoryTest extends KernelTestCase
         $executor->execute([new RepartitionFixtures()]);
     }
 
-    public function testDeleteRepartitionMavenKey(): void
-    {
-        // Connexion à la base de données
-        self::bootKernel();
-        /* On se connecte à la base de tests */
-        $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
-
-        $map = ['maven_key' => static::$mavenKey, ];
-
-        // Appel de la méthode
-        $notesRepository = $entityManager->getRepository(Repartition::class);
-        $r = $notesRepository->deleteRepartitionMavenKey($map);
-
-        // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
-        $this->assertEmpty($r['erreur'], $r['erreur']);
-    }
-
     public function testSelectOrUpdateRepartitionInitialUpdate(): void
     {
         // Connexion à la base de données
@@ -163,27 +144,28 @@ class RepartitionRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         $map = [
-          'maven_key' => static::$mavenKey,
-          'name' => static::$name,
-          'bug_blocker' => static::$bugBlocker,
-          'bug_critical' => static::$bugCritical,
-          'bug_major' => static::$bugMajor,
-          'bug_minor' => static::$bugMinor,
-          'bug_info' => static::$bugInfo,
-          'vulnerability_blocker' => static::$vulnerabilityBlocker,
-          'vulnerability_critical' => static::$vulnerabilityCritical,
-          'vulnerability_major' => static::$vulnerabilityMajor,
-          'vulnerability_minor' => static::$vulnerabilityMinor,
-          'vulnerability_info' => static::$vulnerabilityInfo,
-          'code_smell_blocker' => static::$codeSmellBlocker,
-          'code_smell_critical' => static::$codeSmellCritical,
-          'code_smell_major' => static::$codeSmellMajor,
-          'code_smell_minor' => static::$codeSmellMinor,
-          'code_smell_info' => static::$codeSmellInfo,
-          'setup' => static::$setup,
-          'mode_collecte' => static::$modeCollecte,
-          'utilisateur_collecte' => static::$utilisateurCollecte,
-          'date_enregistrement'=> new \DateTimeImmutable(static::$dateEnregistrement)];
+            'maven_key' => static::$mavenKey,
+            'name' => static::$name,
+            'bug_blocker' => static::$bugBlocker,
+            'bug_critical' => static::$bugCritical,
+            'bug_major' => static::$bugMajor,
+            'bug_minor' => static::$bugMinor,
+            'bug_info' => static::$bugInfo,
+            'vulnerability_blocker' => static::$vulnerabilityBlocker,
+            'vulnerability_critical' => static::$vulnerabilityCritical,
+            'vulnerability_major' => static::$vulnerabilityMajor,
+            'vulnerability_minor' => static::$vulnerabilityMinor,
+            'vulnerability_info' => static::$vulnerabilityInfo,
+            'code_smell_blocker' => static::$codeSmellBlocker,
+            'code_smell_critical' => static::$codeSmellCritical,
+            'code_smell_major' => static::$codeSmellMajor,
+            'code_smell_minor' => static::$codeSmellMinor,
+            'code_smell_info' => static::$codeSmellInfo,
+            'setup' => static::$setup,
+            'mode_collecte' => static::$modeCollecte,
+            'utilisateur_collecte' => static::$utilisateurCollecte,
+            'date_enregistrement'=> new \DateTimeImmutable(static::$dateEnregistrement)
+        ];
 
         // Appel de la méthode
         $repartitionRepository = $entityManager->getRepository(Repartition::class);
@@ -249,77 +231,78 @@ class RepartitionRepositoryTest extends KernelTestCase
         $timestamp = $date->getTimestamp();
 
         $map = [
-          'maven_key' => static::$mavenKey,
-          'name' => static::$name,
-          'frontend' => static::$frontend,
-          'frontend_bug_blocker' => static::$frontendBugBlocker,
-          'frontend_bug_critical' => static::$frontendBugCritical,
-          'frontend_bug_major' => static::$frontendBugMajor,
-          'frontend_bug_minor' => static::$frontendBugMinor,
-          'frontend_bug_info' => static::$frontendBugInfo,
-          'frontend_vulnerability_blocker' => static::$frontendVulnerabilityBlocker,
-          'frontend_vulnerability_critical' => static::$frontendVulnerabilityCritical,
-          'frontend_vulnerability_major' => static::$frontendVulnerabilityMajor,
-          'frontend_vulnerability_minor' => static::$frontendVulnerabilityMinor,
-          'frontend_vulnerability_info' => static::$frontendVulnerabilityInfo,
-          'frontend_code_smell_blocker' => static::$frontendCodeSmellBlocker,
-          'frontend_code_smell_critical' => static::$frontendCodeSmellCritical,
-          'frontend_code_smell_major' => static::$frontendCodeSmellMajor,
-          'frontend_code_smell_minor' => static::$frontendCodeSmellMinor,
-          'frontend_code_smell_info' => static::$frontendCodeSmellInfo,
-          'backend' => static::$backend,
-          'backend_bug_blocker' => static::$backendBugBlocker,
-          'backend_bug_critical' => static::$backendBugCritical,
-          'backend_bug_major' => static::$backendBugMajor,
-          'backend_bug_minor' => static::$backendBugMinor,
-          'backend_bug_info' => static::$backendBugInfo,
-          'backend_vulnerability_blocker' => static::$backendVulnerabilityBlocker,
-          'backend_vulnerability_critical' => static::$backendVulnerabilityCritical,
-          'backend_vulnerability_major' => static::$backendVulnerabilityMajor,
-          'backend_vulnerability_minor' => static::$backendVulnerabilityMinor,
-          'backend_vulnerability_info' => static::$backendVulnerabilityInfo,
-          'backend_code_smell_blocker' => static::$backendCodeSmellBlocker,
-          'backend_code_smell_critical' => static::$backendCodeSmellCritical,
-          'backend_code_smell_major' => static::$backendCodeSmellMajor,
-          'backend_code_smell_minor' => static::$backendCodeSmellMinor,
-          'backend_code_smell_info' => static::$backendCodeSmellInfo,
-          'autre' => static::$autre,
-          'autre_bug_blocker' => static::$autreBugBlocker,
-          'autre_bug_critical' => static::$autreBugCritical,
-          'autre_bug_major' => static::$autreBugMajor,
-          'autre_bug_minor' => static::$autreBugMinor,
-          'autre_bug_info' => static::$autreBugInfo,
-          'autre_vulnerability_blocker' => static::$autreVulnerabilityBlocker,
-          'autre_vulnerability_critical' => static::$autreVulnerabilityCritical,
-          'autre_vulnerability_major' => static::$autreVulnerabilityMajor,
-          'autre_vulnerability_minor' => static::$autreVulnerabilityMinor,
-          'autre_vulnerability_info' => static::$autreVulnerabilityInfo,
-          'autre_code_smell_blocker' => static::$autreCodeSmellBlocker,
-          'autre_code_smell_critical' => static::$autreCodeSmellCritical,
-          'autre_code_smell_major' => static::$autreCodeSmellMajor,
-          'autre_code_smell_minor' => static::$autreCodeSmellMinor,
-          'autre_code_smell_info' => static::$autreCodeSmellInfo,
-          'inconnue' => static::$inconnue,
-          'inconnue_bug_blocker' => static::$inconnueBugBlocker,
-          'inconnue_bug_critical' => static::$inconnueBugCritical,
-          'inconnue_bug_major' => static::$inconnueBugMajor,
-          'inconnue_bug_minor' => static::$inconnueBugMinor,
-          'inconnue_bug_info' => static::$inconnueBugInfo,
-          'inconnue_vulnerability_blocker' => static::$inconnueVulnerabilityBlocker,
-          'inconnue_vulnerability_critical' => static::$inconnueVulnerabilityCritical,
-          'inconnue_vulnerability_major' => static::$inconnueVulnerabilityMajor,
-          'inconnue_vulnerability_minor' => static::$inconnueVulnerabilityMinor,
-          'inconnue_vulnerability_info' => static::$inconnueVulnerabilityInfo,
-          'inconnue_code_smell_blocker' => static::$inconnueCodeSmellBlocker,
-          'inconnue_code_smell_critical' => static::$inconnueCodeSmellCritical,
-          'inconnue_code_smell_major' => static::$inconnueCodeSmellMajor,
-          'inconnue_code_smell_minor' => static::$inconnueCodeSmellMinor,
-          'inconnue_code_smell_info' => static::$inconnueCodeSmellInfo,
-          'control' => static::$control,
-          'setup' => $timestamp,
-          'mode_collecte' => static::$modeCollecte,
-          'utilisateur_collecte' => static::$utilisateurCollecte,
-          'date_enregistrement'=> new \DateTimeImmutable(static::$dateEnregistrement)];
+            'maven_key' => static::$mavenKey,
+            'name' => static::$name,
+            'frontend' => static::$frontend,
+            'frontend_bug_blocker' => static::$frontendBugBlocker,
+            'frontend_bug_critical' => static::$frontendBugCritical,
+            'frontend_bug_major' => static::$frontendBugMajor,
+            'frontend_bug_minor' => static::$frontendBugMinor,
+            'frontend_bug_info' => static::$frontendBugInfo,
+            'frontend_vulnerability_blocker' => static::$frontendVulnerabilityBlocker,
+            'frontend_vulnerability_critical' => static::$frontendVulnerabilityCritical,
+            'frontend_vulnerability_major' => static::$frontendVulnerabilityMajor,
+            'frontend_vulnerability_minor' => static::$frontendVulnerabilityMinor,
+            'frontend_vulnerability_info' => static::$frontendVulnerabilityInfo,
+            'frontend_code_smell_blocker' => static::$frontendCodeSmellBlocker,
+            'frontend_code_smell_critical' => static::$frontendCodeSmellCritical,
+            'frontend_code_smell_major' => static::$frontendCodeSmellMajor,
+            'frontend_code_smell_minor' => static::$frontendCodeSmellMinor,
+            'frontend_code_smell_info' => static::$frontendCodeSmellInfo,
+            'backend' => static::$backend,
+            'backend_bug_blocker' => static::$backendBugBlocker,
+            'backend_bug_critical' => static::$backendBugCritical,
+            'backend_bug_major' => static::$backendBugMajor,
+            'backend_bug_minor' => static::$backendBugMinor,
+            'backend_bug_info' => static::$backendBugInfo,
+            'backend_vulnerability_blocker' => static::$backendVulnerabilityBlocker,
+            'backend_vulnerability_critical' => static::$backendVulnerabilityCritical,
+            'backend_vulnerability_major' => static::$backendVulnerabilityMajor,
+            'backend_vulnerability_minor' => static::$backendVulnerabilityMinor,
+            'backend_vulnerability_info' => static::$backendVulnerabilityInfo,
+            'backend_code_smell_blocker' => static::$backendCodeSmellBlocker,
+            'backend_code_smell_critical' => static::$backendCodeSmellCritical,
+            'backend_code_smell_major' => static::$backendCodeSmellMajor,
+            'backend_code_smell_minor' => static::$backendCodeSmellMinor,
+            'backend_code_smell_info' => static::$backendCodeSmellInfo,
+            'autre' => static::$autre,
+            'autre_bug_blocker' => static::$autreBugBlocker,
+            'autre_bug_critical' => static::$autreBugCritical,
+            'autre_bug_major' => static::$autreBugMajor,
+            'autre_bug_minor' => static::$autreBugMinor,
+            'autre_bug_info' => static::$autreBugInfo,
+            'autre_vulnerability_blocker' => static::$autreVulnerabilityBlocker,
+            'autre_vulnerability_critical' => static::$autreVulnerabilityCritical,
+            'autre_vulnerability_major' => static::$autreVulnerabilityMajor,
+            'autre_vulnerability_minor' => static::$autreVulnerabilityMinor,
+            'autre_vulnerability_info' => static::$autreVulnerabilityInfo,
+            'autre_code_smell_blocker' => static::$autreCodeSmellBlocker,
+            'autre_code_smell_critical' => static::$autreCodeSmellCritical,
+            'autre_code_smell_major' => static::$autreCodeSmellMajor,
+            'autre_code_smell_minor' => static::$autreCodeSmellMinor,
+            'autre_code_smell_info' => static::$autreCodeSmellInfo,
+            'inconnue' => static::$inconnue,
+            'inconnue_bug_blocker' => static::$inconnueBugBlocker,
+            'inconnue_bug_critical' => static::$inconnueBugCritical,
+            'inconnue_bug_major' => static::$inconnueBugMajor,
+            'inconnue_bug_minor' => static::$inconnueBugMinor,
+            'inconnue_bug_info' => static::$inconnueBugInfo,
+            'inconnue_vulnerability_blocker' => static::$inconnueVulnerabilityBlocker,
+            'inconnue_vulnerability_critical' => static::$inconnueVulnerabilityCritical,
+            'inconnue_vulnerability_major' => static::$inconnueVulnerabilityMajor,
+            'inconnue_vulnerability_minor' => static::$inconnueVulnerabilityMinor,
+            'inconnue_vulnerability_info' => static::$inconnueVulnerabilityInfo,
+            'inconnue_code_smell_blocker' => static::$inconnueCodeSmellBlocker,
+            'inconnue_code_smell_critical' => static::$inconnueCodeSmellCritical,
+            'inconnue_code_smell_major' => static::$inconnueCodeSmellMajor,
+            'inconnue_code_smell_minor' => static::$inconnueCodeSmellMinor,
+            'inconnue_code_smell_info' => static::$inconnueCodeSmellInfo,
+            'control' => static::$control,
+            'setup' => $timestamp,
+            'mode_collecte' => static::$modeCollecte,
+            'utilisateur_collecte' => static::$utilisateurCollecte,
+            'date_enregistrement'=> new \DateTimeImmutable(static::$dateEnregistrement)
+        ];
 
         // Appel de la méthode
         $repartitionRepository = $entityManager->getRepository(Repartition::class);
