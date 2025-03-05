@@ -51,9 +51,9 @@
       {# Message d'information du contrôleur #}
       <div class="grid-container grid-x" role="alert" aria-label="messages d'information">
         {% for message in app.flashes('notice') %}
-          <div class="callout alert-callout-border js-message-flash {{message.type}} role="alert" cell" data-closable>
+          <div class="callout alert-callout-border {{message.type}} js-message-flash cell"  role="alert" data-closable>
             <p class="open-sans text-justify callout-message">
-              <strong>{{message.titre}}</strong> {{ message.message }}.<br>{{ message.debug|default('')}} </p>
+              <strong>{{message.titre}}</strong> {{ message.message }}<br>{{ message.debug|default('')}} </p>
             <button class="close-button {{message.type}}" aria-label="Dismiss alert" type="button" data-close>
               <span aria-hidden="true">&times;</span>
             </button>
