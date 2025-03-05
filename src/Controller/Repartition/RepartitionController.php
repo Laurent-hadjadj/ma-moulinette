@@ -31,7 +31,7 @@ use App\Controller\Batch\BatchCollecteRepartitionController;
 class RepartitionController extends AbstractController
 {
 
-    private static $titre = "[Répartition-Module] ";
+    private static $titre = "[Répartition-Module]";
     private static $erreur400 = "La requête est incorrecte (Erreur 400).";
     private static $erreur403 = "Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).";
     private static $page = 'projet/repartition-module.html.twig';
@@ -110,9 +110,9 @@ class RepartitionController extends AbstractController
      */
     private function decodeToken(string $token): ?string
     {
-        //token=BGR2ZQL5ZQLjA3kzpv5zpzShL2IuM3WcoJIlBaMcp3H=
-        //b64=bnVsbHxDU1N8RnJhbmNlQWdyaU1lciB2Mi4wLjAgKDIwMjEp
-        //rot13=oaIfoUkQH1A8EaWuozAyDJqlnH1ypvO2Zv4jYwNtXQVjZwRc
+        //token=BGR2ZQL5ZQLjA3kzpv5gLF1go3IfnJ5yqUEyBzkyYJAbLKD=
+        //b64=OTE2MDY5MDYwN3xmci5tYS1tb3VsaW5ldHRlOmxlLWNoYXQ=
+        //rot13=BGR2ZQL5ZQLjA3kzpv5gLF1go3IfnJ5yqUEyBzkyYJAbLKD=
         $string = str_rot13($token);
         $decoded = base64_decode($string);
         $parts = preg_split("/[|]+/", $decoded);
@@ -167,16 +167,16 @@ class RepartitionController extends AbstractController
         }
 
         /** On lance la collecte des informations par type et sévérité */
-        $types = ['BUG', 'VULNERABILITY', 'CODE_SMELL'];
+        $categories = ['BUG', 'VULNERABILITY', 'CODE_SMELL'];
         $information = [];
 
-        foreach ($types as $type) {
-            $information[$type] = $this->batchCollecteRepartition->CollecteRepartitionModule($mavenKey, $type);
-            if ($information[$type]['code'] != 200){
-                return $this->addFlashAndRender('alert', "La collecte des données SonarQube à échouée.",
-                                                $information[$type]['erreur'], $render);
+        foreach ($categories as $category) {
+            $information[$category] = $this->batchCollecteRepartition->CollecteRepartitionModule($mavenKey, $category);
+            if ($information[$category]['code'] != 200){
+                return $this->addFlashAndRender('alert', "La collecte des données SonarQube à échouée.", $debug, $render);
             }
         }
+
 
         /** On enregistre le nom du projet */
         $app = $this->serviceExtractName->extractNameFromMavenKey($mavenKey);
@@ -215,6 +215,7 @@ class RepartitionController extends AbstractController
             'utilisateur_collecte' => $security->getUser()->getCourriel(),
             'date_enregistrement' => new \DateTimeImmutable('now', new \DateTimeZone('Europe/Paris'))
         ];
+
         $repartition = $repartitionRepository->selectOrUpdateRepartitionInitial($map);
         if ($repartition['code'] != 200) {
             return $this->addFlashAndRender('alert', "L'enregistrement des données initiales a échouées.", $repartition['erreur'], $render);

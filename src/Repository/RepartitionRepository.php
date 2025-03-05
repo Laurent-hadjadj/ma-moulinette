@@ -208,7 +208,8 @@ class RepartitionRepository extends ServiceEntityRepository
   public function updateRepartition(array $map): array
   {
     // Requête pour récupérer l'ID de l'enregistrement concerné
-    $sqlCheck = "SELECT id FROM ma_moulinette.repartition
+    $sqlCheck = "SELECT id
+                FROM ma_moulinette.repartition
                 WHERE maven_key = :maven_key
                 AND setup = :setup
                 AND control = 'initial'
