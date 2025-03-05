@@ -51,6 +51,7 @@ class CollecteController extends AbstractController
 
     public static $erreur400 = 'La requête est incorrecte (Erreur 400).';
     public static $erreur404 = "L'appel à l'API n'a pas abouti (Erreur 404).";
+    public static $decorationEnd = ' ****';
 
     /**
      * [Description for __construct]
@@ -151,7 +152,7 @@ class CollecteController extends AbstractController
         /** Pour les autres messages d'erreur */
         if (!in_array($informationProjet['code'], ['200', '100'])) {
             $collecte[] = [
-                '**** ERREUR : INFORMATION PROJET '.$informationProjet['code']. ' ****~',
+                '**** ERREUR : INFORMATION PROJET '.$informationProjet['code']. static::$decorationEnd,
                 $informationProjet['message'] ?? $informationProjet['erreur'],
                 '~************* FIN DU TRAITEMENT ***************~'];
             $this->logger->file($portefeuille, $collecte);
@@ -165,7 +166,7 @@ class CollecteController extends AbstractController
             $mapMerged = array_merge($mapMerged, $mesure['data']);
         } else {
             $collecte[]=[
-                '**** ERREUR : MESURE '.$mesure['code'].'****',
+                '**** ERREUR : MESURE '.$mesure['code'].static::$decorationEnd,
                 $mesure['message'] ?? $mesure['erreur']];
                 $this->logger->file($portefeuille, $collecte);
                 return ['code' => $mesure['code'], 'Collecte' => $collecte];
@@ -178,7 +179,7 @@ class CollecteController extends AbstractController
             $mapMerged = array_merge($mapMerged, $noteReliability['data']);
         } else {
             $collecte[] = [
-                '**** ERREUR : NOTE RELIABILITY '.$noteReliability['code'].' ****', $noteReliability['message'] ?? $noteReliability['erreur']];
+                '**** ERREUR : NOTE RELIABILITY '.$noteReliability['code'].static::$decorationEnd, $noteReliability['message'] ?? $noteReliability['erreur']];
                 $this->logger->file($portefeuille, $collecte);
                 return ['code' => $noteReliability['code'], 'Collecte' => $collecte];
         }
@@ -188,7 +189,7 @@ class CollecteController extends AbstractController
             $collecte[] = ['03 - NOTE SECURITY'=> $noteSecurity['message']];
             $mapMerged = array_merge($mapMerged, $noteSecurity['data']);
         } else { $collecte[] = [
-                '**** ERREUR : NOTE SECURITY '.$noteSecurity['code'].' ****', $noteSecurity['message'] ?? $noteSecurity['erreur']];
+                '**** ERREUR : NOTE SECURITY '.$noteSecurity['code'].static::$decorationEnd, $noteSecurity['message'] ?? $noteSecurity['erreur']];
                 $this->logger->file($portefeuille, $collecte);
                 return ['code' => $noteSecurity['code'], 'Collecte' => $collecte];
         }
@@ -197,7 +198,7 @@ class CollecteController extends AbstractController
             $collecte[] = ['03 - NOTE SQALE' => $noteSqale['message']];
             $mapMerged = array_merge($mapMerged, $noteSqale['data']);
         } else {
-            $collecte[] = ['**** ERREUR : NOTE SQALE '.$noteSqale['code'].' ****', $noteSqale['message'] ?? $noteSqale['erreur']];
+            $collecte[] = ['**** ERREUR : NOTE SQALE '.$noteSqale['code'].static::$decorationEnd, $noteSqale['message'] ?? $noteSqale['erreur']];
             $this->logger->file($portefeuille, $collecte);
             return ['code' => $noteSqale['code'], 'Collecte' => $collecte];
         }
@@ -208,7 +209,7 @@ class CollecteController extends AbstractController
             $collecte[] = ['04 - ANOMALIE' => $anomalie['message']];
             $mapMerged = array_merge($mapMerged, $anomalie['data']);
         } else {
-                $collecte[] = ['**** ERREUR : ANOMALIE '.$anomalie['code'].' ****',
+                $collecte[] = ['**** ERREUR : ANOMALIE '.$anomalie['code'].static::$decorationEnd,
                 $anomalie['message'] ?? $anomalie['erreur']];
                 $this->logger->file($portefeuille, $collecte);
                 return ['code' => $anomalie['code'], 'Collecte' => $collecte];
@@ -220,7 +221,7 @@ class CollecteController extends AbstractController
             $collecte[]=['05 - ANOMALIE DETAIL' => $anomalieDetail['message']];
             $mapMerged = array_merge($mapMerged, $anomalieDetail['data']);
         } else {
-                $collecte[] = ['**** ERREUR : ANOMALIE DETAIL '.$anomalieDetail['code'].' ****', $anomalieDetail['message'] ?? $anomalieDetail['erreur']];
+                $collecte[] = ['**** ERREUR : ANOMALIE DETAIL '.$anomalieDetail['code'].static::$decorationEnd, $anomalieDetail['message'] ?? $anomalieDetail['erreur']];
                 $this->logger->file($portefeuille, $collecte);
                 return ['code' => $anomalieDetail['code'], 'Collecte' => $collecte];
         }
@@ -230,7 +231,7 @@ class CollecteController extends AbstractController
             $collecte[] = ['06 - HOTSPOT' => $hotspot['message']];
             $mapMerged = array_merge($mapMerged, $hotspot['data']);
         } else {
-                $collecte[] = ['**** ERREUR : HOTSPOT '.$hotspot['code'].' ****',
+                $collecte[] = ['**** ERREUR : HOTSPOT '.$hotspot['code'].static::$decorationEnd,
                 $hotspot['message'] ?? $hotspot['erreur']];
                 $this->logger->file($portefeuille, $collecte);
                 return ['code' => $hotspot['code'], 'Collecte' => $collecte];
@@ -242,7 +243,7 @@ class CollecteController extends AbstractController
                 $collecte[] = ['07 - NOTE HOTSPOT' => $noteHotspot['message']];
                 $mapMerged = array_merge($mapMerged, $noteHotspot['data']);
             } else {
-                    $collecte[] = ['**** ERREUR : NOTE HOTSPOT '.$noteHotspot['code'].' ****',$noteHotspot['message'] ?? $noteHotspot['erreur']];
+                    $collecte[] = ['**** ERREUR : NOTE HOTSPOT '.$noteHotspot['code'].static::$decorationEnd,$noteHotspot['message'] ?? $noteHotspot['erreur']];
                     $this->logger->file($portefeuille, $collecte);
                     return ['code' => $noteHotspot['code'], 'Collecte' => $collecte];
             }
@@ -253,7 +254,7 @@ class CollecteController extends AbstractController
             $collecte[] = ['08 - HOTSPOT DETAIL' => $hotspotDetails['message']];
         } else {
             $collecte[] = [
-                '**** ERREUR : HOTSPOT DETAIL ' .$hotspotDetails['code'].' ****',
+                '**** ERREUR : HOTSPOT DETAIL ' .$hotspotDetails['code'].static::$decorationEnd,
                 $hotspotDetails['message'] ?? $hotspotDetails['erreur']];
             $this->logger->file($portefeuille, $collecte);
             return ['code' => $hotspotDetails['code'], 'Collecte' => $collecte];
@@ -264,7 +265,7 @@ class CollecteController extends AbstractController
             $collecte[] = ['09 - OWASP' => ['message' => $owasp['message'], 'data' => $owasp['data']]];
         } else {
             $collecte[]=[
-                '**** ERREUR : OWASP '.$owasp['code'].' ****',
+                '**** ERREUR : OWASP '.$owasp['code'].static::$decorationEnd,
                 $owasp['message'] ?? $owasp['erreur']];
             $this->logger->file($portefeuille, $collecte);
             return ['code'=> $owasp['code'], 'Collecte' => $collecte];
@@ -279,7 +280,7 @@ class CollecteController extends AbstractController
                 $collecte[] = ['10 - HOTSPOT OWASP ' . strtoupper($owaspKey) => $hotspotOwasp['message'], 'info' => $hotspotOwasp['info'],'owasp_2017' => $hotspotOwasp['owasp_2017'], 'owasp_2021' => $hotspotOwasp['owasp_2021'], 'data'=> $hotspotOwasp['data']];
             } else {
                 $collecte[]=[
-                    '**** ERREUR : HOTSPOT OWASP '.$owaspKey.' --> '.$hotspotOwasp['code']. ' ****',
+                    '**** ERREUR : HOTSPOT OWASP '.$owaspKey.' --> '.$hotspotOwasp['code']. static::$decorationEnd,
                     $hotspotOwasp['message'] ?? $hotspotOwasp['erreur']
                 ];
                 $errorEncountered = true;
@@ -298,7 +299,7 @@ class CollecteController extends AbstractController
             $mapMerged = array_merge($mapMerged, $noSonar['data']);
         } else {
             $collecte[] = [
-                    '**** ERREUR : NOSONAR '.$noSonar['code'].' ****',
+                    '**** ERREUR : NOSONAR '.$noSonar['code'].static::$decorationEnd,
                     $noSonar['message'] ?? $noSonar['erreur']];
             $this->logger->file($portefeuille, $collecte);
             return ['code' => $noSonar['code'], 'Collecte' => $collecte];
@@ -311,7 +312,7 @@ class CollecteController extends AbstractController
             $mapMerged = array_merge($mapMerged, $todo['data']);
         } else {
             $collecte[] = [
-                    '**** ERREUR : TODO '.$todo['code'].' ****',
+                    '**** ERREUR : TODO '.$todo['code'].static::$decorationEnd,
                     $todo['message'] ?? $todo['erreur']
                 ];
             $this->logger->file($portefeuille, $collecte);
@@ -325,7 +326,7 @@ class CollecteController extends AbstractController
             $json = $actuatorInfo['message']['json'] ?? '{}';
         } else {
             $collecte[]=[
-                '**** ERREUR : ACTUATOR INFO '.$actuatorInfo['code'].' ****',
+                '**** ERREUR : ACTUATOR INFO '.$actuatorInfo['code'].static::$decorationEnd,
                 $actuatorInfo['message'] ?? $actuatorInfo['erreur']
             ];
             $this->logger->file($portefeuille, $collecte);
@@ -339,7 +340,7 @@ class CollecteController extends AbstractController
             $mapMerged = array_merge($mapMerged, $logger['data'] ?? []);
         } else {
             $collecte[] = [
-                '**** ERREUR : LOGGER '.$logger['code'].' ****',
+                '**** ERREUR : LOGGER '.$logger['code'].static::$decorationEnd,
                 $logger['message'] ?? $logger['erreur']
             ];
             $this->logger->file($portefeuille, $collecte);

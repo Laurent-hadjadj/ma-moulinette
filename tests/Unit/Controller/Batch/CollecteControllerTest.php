@@ -467,14 +467,14 @@ class CollecteControllerTest extends TestCase
 
         $this->assertSame(500, $result['code']);
         $this->assertArrayHasKey('Collecte', $result);
-        $this->assertContains('**** ERREUR : INFORMATION PROJET 500 ****~', $result['Collecte'][1]);
+        $this->assertContains('**** ERREUR : INFORMATION PROJET 500 ****', $result['Collecte'][1]);
 
         // Optionnel : vous pouvez également vérifier le message d'erreur complet
         $this->assertSame("Erreur lors de la collecte des informations", $result['Collecte'][1][1]);
 
         // Vérification complète du contenu de l'élément Collecte[1]
         $expectedErrorArray = [
-        '**** ERREUR : INFORMATION PROJET 500 ****~',
+        '**** ERREUR : INFORMATION PROJET 500 ****',
         static::$erreurCollecte,
         '~************* FIN DU TRAITEMENT ***************~'];
         $this->assertSame($expectedErrorArray, $result['Collecte'][1]);
