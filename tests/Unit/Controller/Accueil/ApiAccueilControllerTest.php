@@ -27,6 +27,7 @@ class ApiAccueilControllerTest extends WebTestCase
     private static $josh = 'josh.liberman@ma-moulinette.fr';
     private static $aurelie = 'aurelie.petit-coeur@ma-moulinette.fr';
 
+
     public function testApiSonarStatusNominal(): void
     {
         $client = static::createClient();
@@ -34,17 +35,23 @@ class ApiAccueilControllerTest extends WebTestCase
         $testUser = $userRepository->findOneByCourriel(static::$josh);
         $client->loginUser($testUser);
 
-        // Cas nominal : code = 200
+        // Effectuer la requête
         $client->request('POST', static::$apiStatus);
-        $responseData = json_decode($client->getResponse()->getContent(), true);
+        $response = $client->getResponse();
 
         // Vérifier que la réponse est bien un tableau
+        $responseData = json_decode($response->getContent(), true);
         $this->assertIsArray($responseData);
+
+        // Si le 'code' dans la réponse est 503, on ignore le test
+        if (($responseData['code'] ?? null) === 503) {
+            $this->markTestSkipped('SonarQube est indisponible, test ignoré.');
+        }
 
         // Vérifier que le code est 200
         $this->assertEquals(200, $responseData['code'] ?? null, 'Le code devrait être 200 dans le cas nominal.');
 
-        // Facultatif : Ajouter une vérification des autres champs si nécessaire
+        // Vérifications des autres champs
         $this->assertArrayHasKey('code', $responseData);
         $this->assertArrayHasKey('result', $responseData, 'Un résultat est toujours présent.');
         $this->assertArrayHasKey('json', $responseData['result'], 'Un tableau ["json"] devrait toujours être présent.');
@@ -275,6 +282,11 @@ class ApiAccueilControllerTest extends WebTestCase
 
         // Décoder la réponse
         $responseData = json_decode($response->getContent(), true);
+
+        // Si le 'code' dans la réponse est 503, on ignore le test
+        if (($responseData['code'] ?? null) === 503) {
+            $this->markTestSkipped('SonarQube est indisponible, test ignoré.');
+        }
 
         $this->assertEquals(200, $responseData['code'], 'Le code de réponse devrait être 200.');
         $this->assertEquals('success', $responseData['type']);
