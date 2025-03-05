@@ -133,14 +133,14 @@ class CollecteController extends AbstractController
         $informationProjet = $this->batchCollecteInformation->batchCollecteInformation($maven_key, $mode_collecte, $utilisateur_collecte);
         /** Tout vas bien, on peut lancer la collecte */
         if ($informationProjet['code'] === 200){
-            $collecte[] = ['01 - INFORMATION PROJET'=>$informationProjet['message']];
-            $mapMerged=array_merge($mapMerged, $informationProjet['data']);
+            $collecte[] = ['01 - INFORMATION PROJET' => $informationProjet['message']];
+            $mapMerged = array_merge($mapMerged, $informationProjet['data']);
         }
 
         /** Le projet existe déjà, il est à jour. On arrête la collecte */
         if ($informationProjet['code'] === 100){
             $collecte[] = [
-                '01 - INFORMATION PROJET'=>$informationProjet['message'],
+                '01 - INFORMATION PROJET' =>$informationProjet['message'],
                 $informationProjet['data'],
                 '~************* FIN DU TRAITEMENT ***************~'];
 
@@ -151,7 +151,7 @@ class CollecteController extends AbstractController
         /** Pour les autres messages d'erreur */
         if (!in_array($informationProjet['code'], ['200', '100'])) {
             $collecte[] = [
-                '**** ERREUR : INFORMATION PROJET '.$informationProjet['code']. '****',
+                '**** ERREUR : INFORMATION PROJET '.$informationProjet['code']. ' ****~',
                 $informationProjet['message'] ?? $informationProjet['erreur'],
                 '~************* FIN DU TRAITEMENT ***************~'];
             $this->logger->file($portefeuille, $collecte);
