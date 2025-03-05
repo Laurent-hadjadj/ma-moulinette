@@ -20,6 +20,7 @@ class ProjetControllerTest extends WebTestCase
     private static $leChat = 'fr.ma-petite-entreprise:le-chat';
     private static $maMoulinette = 'fr.ma-petite-entreprise:ma-moulinette';
     private static $erreur406 = 'Erreur 406: Not Acceptable';
+    private static $projetMesProjets = '/projet/mes-projets';
 
     public function testProjet(): void
     {
@@ -72,10 +73,10 @@ class ProjetControllerTest extends WebTestCase
         $mesProjetsMock->method('liste')->willReturn([
             'code' => 200,
             'projets' =>
-              [
+            [
                 ['id' => static::$leChat],
                 ['id' => static::$maMoulinette]
-              ]
+            ]
         ]);
         $container->set(MesProjets::class, $mesProjetsMock);
 
@@ -85,7 +86,7 @@ class ProjetControllerTest extends WebTestCase
             'code' => 200,
             'indicateur' =>
             [
-              [
+                [
                 "nom_projet" => static::$leChat,
                 "version" => "2.2.1-RELEASE",
                 "suppress_warning" => 8,
@@ -110,33 +111,33 @@ class ProjetControllerTest extends WebTestCase
                 "logger_warn" => 0,
                 "logger_error" => 15,
                 "logger_debug" => 8
-              ],
-              [
-                "nom_projet" => static::$maMoulinette,
-                "version" => "1.1.0-RELEASE",
-                "suppress_warning" => 0,
-                "no_sonar" => 0,
-                "todo" => 0,
-                "nombre_ligne" => 1404,
-                "nombre_ligne_code" => 1200,
-                "tests" => 1,
-                "violations" => 701,
-                "nombre_bug" => 29,
-                "nombre_vulnerability" => 2,
-                "nombre_code_smell" => 670,
-                "frontend" => 0,
-                "backend" => 0,
-                "autre" => 0,
-                "inconnue" => null,
-                "note_reliability" => "C",
-                "note_security" => "C",
-                "note_sqale" => "D",
-                "note_hotspot" => "A",
-                "logger_info" => -1,
-                "logger_warn" => -1,
-                "logger_error" => -1,
-                "logger_debug" => -1
-              ]
+                ],
+                [
+                    "nom_projet" => static::$maMoulinette,
+                    "version" => "1.1.0-RELEASE",
+                    "suppress_warning" => 0,
+                    "no_sonar" => 0,
+                    "todo" => 0,
+                    "nombre_ligne" => 1404,
+                    "nombre_ligne_code" => 1200,
+                    "tests" => 1,
+                    "violations" => 701,
+                    "nombre_bug" => 29,
+                    "nombre_vulnerability" => 2,
+                    "nombre_code_smell" => 670,
+                    "frontend" => 0,
+                    "backend" => 0,
+                    "autre" => 0,
+                    "inconnue" => null,
+                    "note_reliability" => "C",
+                    "note_security" => "C",
+                    "note_sqale" => "D",
+                    "note_hotspot" => "A",
+                    "logger_info" => -1,
+                    "logger_warn" => -1,
+                    "logger_error" => -1,
+                    "logger_debug" => -1
+                ]
             ]
         ]);
         $container->set(HistoriqueRepository::class, $historiqueRepositoryMock);
@@ -147,7 +148,7 @@ class ProjetControllerTest extends WebTestCase
         $client->loginUser($testUser);
 
         // Envoyer une requête GET
-        $client->request('GET', '/projet/mes-projets');
+        $client->request('GET', static::$projetMesProjets);
 
         $response = $client->getResponse();
 
@@ -177,7 +178,7 @@ class ProjetControllerTest extends WebTestCase
         $client->loginUser($testUser);
 
         // Envoyer une requête GET
-        $crawler = $client->request('GET', '/projet/mes-projets');
+        $crawler = $client->request('GET', static::$projetMesProjets);
 
         $response = $client->getResponse();
 
@@ -220,7 +221,7 @@ class ProjetControllerTest extends WebTestCase
         $client->loginUser($testUser);
 
         // Envoyer une requête GET
-        $crawler = $client->request('GET', '/projet/mes-projets');
+        $crawler = $client->request('GET', static::$projetMesProjets);
 
         $response = $client->getResponse();
 
@@ -270,7 +271,7 @@ class ProjetControllerTest extends WebTestCase
         $client->loginUser($testUser);
 
         // Envoyer une requête GET
-        $crawler = $client->request('GET', '/projet/mes-projets');
+        $crawler = $client->request('GET', static::$projetMesProjets);
 
         $response = $client->getResponse();
 
