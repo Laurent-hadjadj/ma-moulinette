@@ -150,6 +150,11 @@ class ApiCollecteControllerTest extends WebTestCase
         $this->assertJson($response->getContent());
         $jsonResponse = json_decode($response->getContent(), true);
 
+        // Si le 'code' dans la réponse est 503, on ignore le test
+        if (($responseData['code'] ?? null) === 503) {
+        $this->markTestSkipped('SonarQube est indisponible, test ignoré.');
+        }
+
         $this->assertArrayHasKey('code', $jsonResponse);
         $this->assertArrayHasKey('type', $jsonResponse);
         $this->assertArrayHasKey('message', $jsonResponse);
