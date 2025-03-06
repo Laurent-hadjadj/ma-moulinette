@@ -170,11 +170,11 @@ class CosuiController extends AbstractController
         $historiqueRepository = $this->em->getRepository(Historique::class);
 
         /** On récupère les informations du projet de la table historique */
-        $map = ['maven_key'=>$mavenKey];
+        $map = ['maven_key' => $mavenKey];
         $request = $historiqueRepository->selectHistoriqueProjetLast($map);
         if ($request['code']!=200) {
             return [
-                    'maven_key' => $mavenKey,'code'=>$request['code'],
+                    'maven_key' => $mavenKey, 'code' => $request['code'],
                     'erreur' => $request['erreur']
                 ];
         }
@@ -232,11 +232,11 @@ class CosuiController extends AbstractController
         $historiqueRepository = $this->em->getRepository(Historique::class);
 
         /** On récupère les informations du projet de référence */
-        $map = ['maven_key'=>$mavenKey];
+        $map = ['maven_key'=> $mavenKey];
         $request = $historiqueRepository->selectHistoriqueProjetReference($map);
         if ($request['code']!=200) {
             return [
-                    'maven_key' => $mavenKey,'code'=>$request['code'],
+                    'maven_key' => $mavenKey,'code'=> $request['code'],
                     'erreur' => $request['erreur']
                     ];
         }
@@ -410,7 +410,7 @@ class CosuiController extends AbstractController
     public function projetCosui(Request $request): Response
     {
         /** On charge le template du render */
-        $render=static::genericRender();
+        $render = static::genericRender();
 
         /** On bind les variables */
         $mavenKey = $request->get('mavenKey');
@@ -656,47 +656,47 @@ class CosuiController extends AbstractController
         // >100, 70, 50 30 10
 
         /** On calcul la valeur des notes pour le Radar */
-        $i_data1=$i_data2=$i_data3=$i_data4=$i_data5=$i_data6=0;
-        $i_data1=static::note2point($initialNoteReliability);
-        $i_data2=static::note2point($initialNoteSecurity);
-        $i_data3=static::note2point($initialNoteHotspot);
-        $i_data4=static::note2point($initialNoteCodeSmell);
-        $i_data5=$initialCoverage;
+        $i_data1 = $i_data2 = $i_data3 = $i_data4 = $i_data5 = $i_data6 = 0;
+        $i_data1 = static::note2point($initialNoteReliability);
+        $i_data2 = static::note2point($initialNoteSecurity);
+        $i_data3 = static::note2point($initialNoteHotspot);
+        $i_data4 = static::note2point($initialNoteCodeSmell);
+        $i_data5 = $initialCoverage;
 
         /** On inverse la courbe, plus le résultat est proche de 100 et plus la dette est petite */
-        $i_data6=100-$initialSqaleDebtRatio;
+        $i_data6 = 100-$initialSqaleDebtRatio;
 
         /* si la dette technique est > à 100M alors le ration est de 100% */
-        if ($initialSqaleDebtRatio>100) {
-            $i_data6=100;
+        if ($initialSqaleDebtRatio > 100) {
+            $i_data6 = 100;
         }
         /** Si on a pad de données pour l'indicateur on fixe le niveau à 50 */
-        if ($initialSqaleDebtRatio<0) {
-            $i_data6=50;
+        if ($initialSqaleDebtRatio < 0) {
+            $i_data6 = 50;
         }
 
-        $data1=$data2=$data3=$data4=$data5=$data6=0;
-        $data1=static::note2point($noteReliability);
-        $data2=static::note2point($noteSecurity);
-        $data3=static::note2point($noteHotspot);
-        $data4=static::note2point($noteCodeSmell);
-        $data5=$coverage;
+        $data1 = $data2 = $data3 = $data4 = $data5 = $data6 = 0;
+        $data1 = static::note2point($noteReliability);
+        $data2 = static::note2point($noteSecurity);
+        $data3 = static::note2point($noteHotspot);
+        $data4 = static::note2point($noteCodeSmell);
+        $data5 = $coverage;
 
         /** On inverse la courbe, plus le résultat est proche de 100 et plus la dette est petite */
-        $data6=100-$sqaleDebtRatio;
+        $data6 = 100-$sqaleDebtRatio;
 
         /* si la dette technique est > à 100M alors le ration est de 100% */
-        if ($sqaleDebtRatio>100) {
-            $data6=100;
+        if ($sqaleDebtRatio > 100) {
+            $data6 = 100;
         }
         /** Si on a pad de données pour l'indicateur on fixe le niveau à 50 */
-        if ($sqaleDebtRatio<0) {
-            $data6=50;
+        if ($sqaleDebtRatio < 0) {
+            $data6 = 50;
         }
 
         /** On constitue les dataSet */
-        $dataSet1="$i_data1, $i_data2, $i_data3, $i_data4, $i_data5, $i_data6";
-        $dataSet2="$data1, $data2, $data3, $data4, $data5, $data6";
+        $dataSet1 = "$i_data1, $i_data2, $i_data3, $i_data4, $i_data5, $i_data6";
+        $dataSet2 = "$data1, $data2, $data3, $data4, $data5, $data6";
 
         $render['dataset1'] = $dataSet1;
         $render['dataset2'] = $dataSet2;
