@@ -1473,8 +1473,17 @@ $('.js-tableau-de-bord').on('click', () => {
 $('.js-cosui').on('click', () => {
   if ($('select[name="projet"]').val() !== '' && $('select[name="projet"]').val() !== 'TheID'){
     const apiMaven = $('#select-result').text().trim();
-    window.location.href = `${serveur()}/projet/cosui?mavenKey=${apiMaven}`;
-    } else {
+
+    /** on créé un hash avec la méthode reduce() comme clé de salt */
+    const salt = apiMaven.split('').reduce((hash, char) => {
+      return char.charCodeAt(0) + (hash << 6) + (hash << 16) - hash;
+    } , 0);
+
+  /** on créé un token pour encoder les paramètres */
+  const param = `${salt}|${apiMaven}`;
+  const a = encode(btoa(param));
+  location.href=`${serveur()}/projet/cosui?mavenKey=${a}`;
+  } else {
     log(' - ERROR - [COSUI] - Vous devez choisir un projet dans la liste !! !');
     }
 });
