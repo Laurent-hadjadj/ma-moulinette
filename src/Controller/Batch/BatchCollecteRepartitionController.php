@@ -159,7 +159,7 @@ class BatchCollecteRepartitionController extends AbstractController
             'p' => $index, 'ps' => $batchSize];
         $result = $this->client->httpSonarQube("$tempoUrl/api/issues/search?".http_build_query($queryParams));
         /** On catch les erreurs HTTP :) */
-        if (isset($result['code']) && in_array($result['code'], [401, 403, 404, 500])) {
+        if (isset($result['code']) && in_array($result['code'], [401, 403, 404, 500, 503])) {
             return ['code' => $result['code'], 'erreur' => $result['erreur']];
         }
 
@@ -193,7 +193,7 @@ class BatchCollecteRepartitionController extends AbstractController
             'p' => 1, 'ps' => 1];
         $result = $this->client->httpSonarQube("$tempoUrl/api/issues/search?".http_build_query($queryParams));
         /** On catch les erreurs HTTP :) */
-        if (isset($result['code']) && in_array($result['code'], [401, 403, 404, 500])) {
+        if (isset($result['code']) && in_array($result['code'], [401, 403, 404, 500, 503])) {
             return ['code' => $result['code'], 'erreur' => $result['erreur']];
         }
 

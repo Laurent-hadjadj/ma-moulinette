@@ -136,7 +136,7 @@ class BatchCollecteHotspotOwaspController extends AbstractController
 
         /** On appelle les requêtes HTTP pour chaque référentiel */
         $owasp2017 = $this->client->httpSonarQube("$tempoUrl/api/hotspots/search?".http_build_query($queryParamsList['owasp2017']));
-        if (isset($owasp2017['code']) && in_array($owasp2017['code'], [401, 403, 404, 500])) {
+        if (isset($owasp2017['code']) && in_array($owasp2017['code'], [401, 403, 404, 500, 503])) {
             return ['code' => $owasp2017['code'], 'erreur' => $owasp2017['erreur'], 'type' => 'owasp2017'];
         }
 
@@ -144,7 +144,7 @@ class BatchCollecteHotspotOwaspController extends AbstractController
         $owasp2021 = ['NC'];
         if ((int) $sonarVersion > 8){
             $owasp2021 = $this->client->httpSonarQube("$tempoUrl/api/hotspots/search?".http_build_query($queryParamsList['owasp2021']));
-            if (isset($owasp2021['code']) && in_array($owasp2021['code'], [401, 403, 404, 500])) {
+            if (isset($owasp2021['code']) && in_array($owasp2021['code'], [401, 403, 404, 500, 503])) {
             return ['code' => $owasp2021['code'], 'erreur' => $owasp2021['erreur'],'type' => 'owasp2021'];
             }
         }

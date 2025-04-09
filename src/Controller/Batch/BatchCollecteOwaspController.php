@@ -86,7 +86,7 @@ class BatchCollecteOwaspController extends AbstractController
         /** On appelle les requêtes HTTP pour chaque référentiel */
         $owasp2017 = $this->client->httpSonarQube("$url/api/issues/search?".http_build_query($queryParamsList['owasp2017']));
         /** Il ne peut pas y avoir de 404, l'API renvoie toujours une response 200*/
-        if (isset($owasp2017['code']) && in_array($owasp2017['code'], [401, 404])) {
+        if (isset($owasp2017['code']) && in_array($owasp2017['code'], [401, 403, 404, 500, 503])) {
             return ['code' => $owasp2017['code'], $owasp2017['erreur']];
         }
 
@@ -94,7 +94,7 @@ class BatchCollecteOwaspController extends AbstractController
         $owasp2021 = ['NC'];
         if ((int) $sonar_version > 8){
             $owasp2021 = $this->client->httpSonarQube("$url/api/issues/search?".http_build_query($queryParamsList['owasp2021']));
-            if (isset($owasp2021['code']) && in_array($owasp2021['code'], [401, 404])) {
+            if (isset($owasp2021['code']) && in_array($owasp2021['code'], [401, 403, 404, 500, 503])) {
             return ['code' => $owasp2021['code'], 'erreur' => $owasp2021['erreur']];
             }
         }

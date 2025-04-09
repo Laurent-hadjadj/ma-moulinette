@@ -52,7 +52,7 @@ class BatchCollecteAnomalieDetailController extends AbstractController
         /** on renvoi un tableau avec le résultat de la requête ou un tableau avec un code erreur. */
         $queryString = http_build_query($queryParams);
         $result = $this->client->httpSonarQube("$tempoUrl/api/issues/search?$queryString");
-        if (isset($result['code']) && in_array($result['code'], [401, 403, 404, 500])) {
+        if (isset($result['code']) && in_array($result['code'], [401, 403, 404, 500, 503])) {
             return ['code' => $result['code'], 'erreur' => $result['erreur']];
         }
         return $result['json'] ?? [];

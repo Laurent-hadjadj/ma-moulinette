@@ -74,7 +74,7 @@ class BatchCollecteMesureController extends AbstractController
         /** Appelle le client HTTP */
         $result = $this->client->httpSonarQube("$tempoUrl/api/components/app?$queryString");
         /** On catch les erreurs HTTP 401, 404 et 500 :) */
-        if (isset($result['code']) && in_array($result['code'], [401, 404, 500])) {
+        if (isset($result['code']) && in_array($result['code'], [401, 403, 404, 500, 503])) {
             return ['code' => $result['code'], 'erreur' => $result['erreur']];
         }
 

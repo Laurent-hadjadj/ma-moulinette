@@ -65,7 +65,7 @@ class BatchCollecteLoggerController extends AbstractController
         $queryString = http_build_query($queryParams);
         /** Appelle le client HTTP */
         $result = $this->client->httpSonarQube("$tempoUrl/api/issues/search?$queryString");
-        if (isset($result['code']) && in_array($result['code'], [401, 403, 404, 500])) {
+        if (isset($result['code']) && in_array($result['code'], [401, 403, 404, 500, 503])) {
             return ['code' => $result['code'], 'erreur' => $result['erreur']];
         }
         if (isset($result['code']) && $result['code'] != 200) {

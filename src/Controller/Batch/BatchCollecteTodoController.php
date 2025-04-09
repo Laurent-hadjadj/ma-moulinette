@@ -77,7 +77,7 @@ class BatchCollecteTodoController extends AbstractController
         /** On construit l'URL et on appel le WS. */
         $result = $this->client->httpSonarQube("$tempoUrl/api/issues/search?".http_build_query($queryParams));
          /** On catch les erreurs HTTP 401 et 404, si possible :) */
-        if (isset($result['code']) && in_array($result['code'], [401, 404, 500])) {
+        if (isset($result['code']) && in_array($result['code'], [401, 403, 404, 500, 503])) {
             return ['code' => $result['code'], 'erreur' => $result['erreur']];
         }
 

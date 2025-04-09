@@ -68,7 +68,7 @@ class BatchCollecteActuatorController extends AbstractController
         /** On regarde si, il y a une point d'accès défini pour le projet */
         $map = ['maven_key' => $mavenKey];
         $actuatorEndpoint = $actuatorRepository->findActuatorMavenKey($map);
-        if (isset($actuatorEndpoint['code']) && in_array($actuatorEndpoint['code'], [23502, 23505, 500])) {
+        if (isset($actuatorEndpoint['code']) && in_array($actuatorEndpoint['code'], [23502, 23505, 500, 503])) {
             return [
                 'code' => $actuatorEndpoint['code'],
                 'erreur' => $actuatorEndpoint['erreur']

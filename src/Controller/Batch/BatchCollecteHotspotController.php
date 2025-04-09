@@ -115,7 +115,7 @@ class BatchCollecteHotspotController extends AbstractController
         /** Appelle le client HTTP */
         $result = $this->client->httpSonarQube("$tempoUrl/api/hotspots/search?".http_build_query($queryParams));
         /** On catch les erreurs HTTP :) */
-        if (isset($result['code']) && in_array($result['code'], [401, 403, 404, 500])) {
+        if (isset($result['code']) && in_array($result['code'], [401, 403, 404, 500, 503])) {
             return ['code' => $result['code'], 'erreur' => $result['erreur']];
         }
        /** Création de la date du jour */

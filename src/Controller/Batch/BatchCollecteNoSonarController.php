@@ -76,7 +76,7 @@ class BatchCollecteNoSonarController extends AbstractController
         $queryParams = ['componentKeys' => $mavenKey, 'rules' => 'java:S1309,java:NoSonar', 'p'=>1, 'ps'=>500 ];
         $result = $this->client->httpSonarQube("$tempoUrl/api/issues/search?".http_build_query($queryParams));
          /** On catch les erreurs HTTP :) */
-        if (isset($result['code']) && in_array($result['code'], [401, 403, 404, 500])) {
+        if (isset($result['code']) && in_array($result['code'], [401, 403, 404, 500, 503])) {
             return ['code' => $result['code'], 'erreur' => $result['erreur']];
         }
 
