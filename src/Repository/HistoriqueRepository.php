@@ -760,7 +760,7 @@ public function selectHistoriqueProjetFavori($map): array
                     nombre_hotspot AS hotspots,
             ROW_NUMBER() OVER (PARTITION BY maven_key ORDER BY date_version DESC) AS rn
             FROM ma_moulinette.historique
-            WHERE maven_key IN ('".$map['liste_projet']."'))
+            WHERE maven_key IN (".$map['liste_projet']."))
             SELECT  mavenkey, nom, version, date, reliability, security, hotspot, sqale, bug,
                     vulnerability, code_smell, hotspots
             FROM LastVersions
