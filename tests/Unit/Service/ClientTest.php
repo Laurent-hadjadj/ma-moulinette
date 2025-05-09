@@ -477,7 +477,7 @@ class ClientTest extends TestCase
 
         // Si le code d'erreur est 500, vérifier l'absence de JSON
         if ($resultActivity['code'] === 500) {
-            $this->assertArrayNotHasKey('json', $resultActivity, 'Le résultat ne doit pas contenir de JSON en cas d\'erreur 500');
+            $this->assertArrayNotHasKey('json', $resultActivity);
         } else {
             $this->assertArrayHasKey('json', $resultActivity, 'Le résultat de httpActivity doit contenir des données JSON');
         }
