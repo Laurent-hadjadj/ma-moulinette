@@ -123,15 +123,15 @@
           </div>
           <div class="small-4 medium-2 large-2 referential-result cell">
             <p id="nombre-profil" class="margin-left-2">
-              <span class="stat color-noir">{{profil_bd|format_number}}</span>
+              <span id="profil-bd" class="stat color-noir">{{profil_bd|format_number}}</span>
               {% set difference = profil_bd - profil_sonar %}
               {% if difference > 0 %}
-                <span class="plus">
+                <span id="profil-en-plus" class="plus">
                   <strong>-{{difference}}</strong>
                 </span>
               {% endif %}
               {% if difference < 0 %}
-                <span class="moins">
+                <span id="profil-en-moins" class="moins">
                   <strong>+{{difference|abs}}</strong>
                 </span>
               {% endif %}
