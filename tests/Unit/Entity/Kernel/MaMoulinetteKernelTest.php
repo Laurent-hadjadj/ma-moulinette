@@ -25,7 +25,7 @@ use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 class MaMoulinetteKernelTest extends KernelTestCase
 {
 
-    private static $version = '2.0.0';
+    private static $version = '1.0.0';
 
     protected function setUp(): void
     {
