@@ -12,7 +12,7 @@ use Doctrine\Persistence\ObjectManager;
 class MaMoulinetteFixtures extends Fixture
 {
 
-  private static $version = '2.0.0';
+  private static $version = '1.0.0';
   private static $dateVersion = '2024-04-12 16:23:11';
   private static $dateEnregistrement = '2024-04-12 16:23:11+01';
 

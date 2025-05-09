@@ -11,14 +11,35 @@ use Doctrine\Persistence\ObjectManager;
  */
 class UtilisateurFixtures extends Fixture
 {
-  public static $preference = ['{
-    "statut":{"projet":false,"favori":false,"version":false,"bookmark":false},
-    "projet":[],"favori":[],"version":[],"bookmark":[]}'];
+    public static $preferenceVide = ['{
+      "statut":{"projet":false,"favori":false,"version":false,"bookmark":false},
+      "projet":[],"favori":[],"version":[],"bookmark":[]}'];
+
+    public static array $preference = [
+      'statut' => [
+          'bookmark' => true,
+          'suivi_projet' => false,
+          'favori_projet' => true,
+          'favori_version' => true,
+      ],
+      'suivi_projet' => [],
+      'favori_projet' => ['fr.ma-petite-entreprise:ma-moulinette'],
+      'favori_version' => [
+          [
+              'fr.ma-petite-entreprise:ma-moulinette' => [
+                  '1.2.0-RELEASE',
+                  '1.2.3-RELEASE'
+              ]
+          ]
+      ]
+  ];
+
   public static $dateEnregistrement = '1980-01-01 00:00:00+01';
 
   public function load(ObjectManager $manager): void
     {
-     /** création de l'utilisateur  ADMIN */
+
+      /** création de l'utilisateur  ADMIN */
       $admin=(new Utilisateur())
         ->setInit(1)
         ->setAvatar('chiffre/01.png')
