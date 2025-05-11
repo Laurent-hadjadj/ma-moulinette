@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2025.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -21,11 +21,34 @@ class ActivityRepository extends ServiceEntityRepository
 {
     public static $removeReturnLine = "/\s+/u";
     public static $formatDate = 'Y-m-d H:i:sO';
+    public static $noDataBase = 'La connexion à la base de données a échoué.';
     public static $year = ':year';
 
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Activity::class);
+    }
+
+    public function handleDatabaseException(\Throwable $e): array
+    {
+        $message = $e->getMessage();
+
+        // message = 'SQLSTATE[08006]'
+        if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
+            $message = static::$noDataBase;
+        }
+
+        // state = '23502'
+        if ($e instanceof \Doctrine\DBAL\Exception\NotNullConstraintViolationException) {
+            $message = $e->getMessage();
+        }
+
+        // state = '23505'
+        if ($e instanceof \Doctrine\DBAL\Exception\UniqueConstraintViolationException) {
+            return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
+        }
+
+        return ['code' => 500, 'erreur' => $message];
     }
 
     /**
@@ -40,7 +63,6 @@ class ActivityRepository extends ServiceEntityRepository
      */
     public function selectActivity($year): array
     {
-
         $sql = "SELECT *
                 FROM ma_moulinette.activity
                 WHERE EXTRACT(YEAR FROM started_at) = :year ";
@@ -48,10 +70,10 @@ class ActivityRepository extends ServiceEntityRepository
                     $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                         $stmt->bindValue(static::$year, $year);
                     $liste = $stmt->executeQuery()->fetchAllAssociative();
-            } catch (\Doctrine\DBAL\Exception $e) {
-            return ['code'=>500, 'erreur'=> $e->getMessage()];
+            } catch (\Throwable $e) {
+                return $this->handleDatabaseException($e);
         }
-        return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
+        return [ 'code' => 200, 'liste' => $liste, 'erreur' => ''];
     }
 
     /**
@@ -90,11 +112,11 @@ class ActivityRepository extends ServiceEntityRepository
                         $stmt->executeStatement();
                 }
             $this->getEntityManager()->getConnection()->commit();
-        } catch (\Doctrine\DBAL\Exception $e) {
+        } catch (\Throwable $e) {
             $this->getEntityManager()->getConnection()->rollBack();
-            return ['code'=>500, 'erreur'=> $e->getMessage()];
+            return $this->handleDatabaseException($e);
         }
-        return ['code'=>200, 'erreur'=>''];
+        return [ 'code' => 200, 'erreur' => ''];
     }
 
     /**
@@ -113,13 +135,13 @@ class ActivityRepository extends ServiceEntityRepository
                 FROM ma_moulinette.activity
                 WHERE EXTRACT(YEAR FROM started_at) = :year ";
         try {
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(static::$year, $year);
-                $request=$stmt->executeQuery()->fetchAllAssociative();
-        } catch (\Doctrine\DBAL\Exception $e) {
-            return ['code'=>500, 'erreur'=> $e->getMessage()];
+                $request = $stmt->executeQuery()->fetchAllAssociative();
+        } catch (\Throwable $e) {
+            return $this->handleDatabaseException($e);
         }
-        return ['request'=>$request[0], 'code'=>200, 'erreur'=>''];
+        return [ 'code' => 200, 'request' => $request[0], 'erreur' => ''];
     }
 
     /**
@@ -138,13 +160,13 @@ class ActivityRepository extends ServiceEntityRepository
                 FROM ma_moulinette.activity
                 WHERE EXTRACT(YEAR FROM started_at) = :year ";
         try {
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue("year", $year);
-                $request=$stmt->executeQuery()->fetchAllAssociative();
-        } catch (\Doctrine\DBAL\Exception $e) {
-            return ['code'=>500, 'erreur'=> $e->getMessage()];
+                $request = $stmt->executeQuery()->fetchAllAssociative();
+        } catch (\Throwable $e) {
+            return $this->handleDatabaseException($e);
         }
-        return ['request'=>$request[0], 'code'=>200, 'erreur'=>''];
+        return [ 'code' => 200, 'request' => $request[0], 'erreur' => ''];
     }
 
     /**
@@ -165,14 +187,14 @@ class ActivityRepository extends ServiceEntityRepository
                 AND status LIKE :status";
 
         try {
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(static::$year, $year);
                     $stmt->bindValue(':status', $status);
-                $request=$stmt->executeQuery()->fetchAllAssociative();
-        } catch (\Doctrine\DBAL\Exception $e) {
-            return ['code'=>500, 'erreur'=> $e->getMessage()];
+                $request = $stmt->executeQuery()->fetchAllAssociative();
+        } catch (\Throwable $e) {
+            return $this->handleDatabaseException($e);
         }
-        return ['request'=>$request[0], 'code'=>200, 'erreur'=>''];
+        return [ 'code' => 200, 'request' => $request[0], 'erreur' => ''];
     }
 
     /**
@@ -192,13 +214,13 @@ class ActivityRepository extends ServiceEntityRepository
                 WHERE EXTRACT(YEAR FROM started_at) = :year";
 
         try {
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(static::$year, $year);
-                $request=$stmt->executeQuery()->fetchAllAssociative();
-        } catch (\Doctrine\DBAL\Exception $e) {
-            return ['code'=>500, 'erreur'=> $e->getMessage()];
+                $request = $stmt->executeQuery()->fetchAllAssociative();
+        } catch (\Throwable $e) {
+            return $this->handleDatabaseException($e);
         }
-        return ['request'=>$request[0], 'code'=>200, 'erreur'=>''];
+        return [ 'code' => 200, 'request' => $request[0], 'erreur' => ''];
     }
 
     /**
@@ -232,8 +254,8 @@ class ActivityRepository extends ServiceEntityRepository
             }
             // Exécution de la requête
             $liste = $stmt->executeQuery()->fetchAssociative();
-        } catch (\Doctrine\DBAL\Exception $e) {
-            return ['code'=>500, 'erreur'=> $e->getMessage()];
+        } catch (\Throwable $e) {
+            return $this->handleDatabaseException($e);
         }
         return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
     }
@@ -275,16 +297,12 @@ class ActivityRepository extends ServiceEntityRepository
 
             // Retourne une réponse formatée avec le code de succès
             return [
-                'liste' => $liste ?: [], // Retourne un tableau vide si aucun résultat n'est trouvé
-                'code' => 200,
-                'erreur' => '',
+                // Retourne un tableau vide si aucun résultat n'est trouvé
+                'liste' => $liste ?: [],
+                'code' => 200, 'erreur' => '',
             ];
-        } catch (\Doctrine\DBAL\Exception $e) {
-            // Gestion des exceptions en loguant ou en masquant les informations sensibles
-            return [
-                'code' => 500,
-                'erreur' => 'Une erreur s’est produite lors de l’exécution de la requête.',
-            ];
+        } catch (\Throwable $e) {
+            return $this->handleDatabaseException($e);
         }
     }
 
@@ -306,7 +324,7 @@ class ActivityRepository extends ServiceEntityRepository
                 FROM ma_moulinette.activity ";
         try {
             if ($year !== null) {
-                $sql.= "WHERE EXTRACT(YEAR FROM executed_at) = :year
+                $sql .= "WHERE EXTRACT(YEAR FROM executed_at) = :year
                         GROUP BY DATE(executed_at) ORDER BY day ASC";
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $stmt->bindValue(static::$year, $year);
@@ -315,10 +333,10 @@ class ActivityRepository extends ServiceEntityRepository
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             }
             $request = $stmt->executeQuery()->fetchAllAssociative();
-        } catch (\Doctrine\DBAL\Exception $e) {
-            return ['code'=>500, 'erreur'=> $e->getMessage()];
+        } catch (\Throwable $e) {
+            return $this->handleDatabaseException($e);
         }
-        return ['request' => $request, 'code' => 200, 'erreur' => ''];
+        return [ 'code' => 200, 'request' => $request, 'erreur' => ''];
     }
 
     /**
@@ -337,7 +355,7 @@ class ActivityRepository extends ServiceEntityRepository
             $sql = "SELECT DATE(executed_at) AS day,
                             COUNT(*) AS count FROM ma_moulinette.activity ";
             if ($year !== null) {
-                $sql.= "WHERE EXTRACT(YEAR FROM executed_at) = :year
+                $sql .= "WHERE EXTRACT(YEAR FROM executed_at) = :year
                 GROUP BY DATE(executed_at) ORDER BY day ASC";
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $stmt->bindValue(static::$year, $year);
@@ -346,10 +364,10 @@ class ActivityRepository extends ServiceEntityRepository
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             }
             $request = $stmt->executeQuery()->fetchAllAssociative();
-        } catch (\Doctrine\DBAL\Exception $e) {
-            return ['code'=>500, 'erreur'=> $e->getMessage()];
+        } catch (\Throwable $e) {
+            return $this->handleDatabaseException($e);
         }
-        return ['request' => $request, 'code' => 200, 'erreur' => ''];
+        return [ 'code' => 200, 'request' => $request, 'erreur' => ''];
     }
 
     /**
@@ -370,8 +388,8 @@ class ActivityRepository extends ServiceEntityRepository
                         COUNT(DISTINCT project_name) AS projet
                     FROM ma_moulinette.activity ";
             if ($year !== null) {
-                $sql.= "WHERE EXTRACT(YEAR FROM executed_at) = :year
-                GROUP BY DATE(executed_at) ORDER BY day ASC";
+                $sql .= "WHERE EXTRACT(YEAR FROM executed_at) = :year
+                        GROUP BY DATE(executed_at) ORDER BY day ASC";
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $stmt->bindValue(static::$year, $year);
             } else {
@@ -379,9 +397,9 @@ class ActivityRepository extends ServiceEntityRepository
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             }
             $request = $stmt->executeQuery()->fetchAllAssociative();
-        } catch (\Doctrine\DBAL\Exception $e) {
-            return ['code'=>500, 'erreur'=> $e->getMessage()];
+        } catch (\Throwable $e) {
+            return $this->handleDatabaseException($e);
         }
-        return ['request' => $request, 'code' => 200, 'erreur' => ''];
+        return [ 'code' => 200, 'request' => $request, 'erreur' => ''];
     }
 }
