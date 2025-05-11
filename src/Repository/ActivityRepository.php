@@ -306,7 +306,6 @@ class ActivityRepository extends ServiceEntityRepository
         }
     }
 
-
     /**
      * [Description for listeProjectAnalyse]
      * On récupère la date la plus récente dans la table pour une année donnée
