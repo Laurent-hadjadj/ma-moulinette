@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2025.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -67,15 +67,16 @@ class AnomalieDetailsRepositoryTest extends KernelTestCase
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
-    public function TestSelectAnomalieDetailsMavenKey(): void
+    public function testSelectAnomalieDetailsMavenKey(): void
     {
         // Connexion à la base de données
         self::bootKernel();
+
         /* On se connecte à la base de tests */
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map=['maven_key' => 'fr.ma-petite-entreprise:ma-moulinette'];
+        $map = ['maven_key' => 'fr.ma-petite-entreprise:ma-moulinette'];
 
         $anomalieDetailsRepository = $entityManager->getRepository(AnomalieDetails::class);
         $r = $anomalieDetailsRepository->selectAnomalieDetailsMavenKey($map);
