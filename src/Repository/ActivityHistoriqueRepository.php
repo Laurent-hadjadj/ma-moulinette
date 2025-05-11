@@ -22,10 +22,33 @@ class ActivityHistoriqueRepository extends ServiceEntityRepository
   public static $removeReturnLine = "/\s+/u";
   public static $formatDate = 'Y-m-d H:i:sO';
   public static $year = ':year';
+  public static $noDataBase = 'La connexion à la base de données a échoué.';
 
   public function __construct(ManagerRegistry $registry)
   {
       parent::__construct($registry, ActivityHistorique::class);
+  }
+
+  public function handleDatabaseException(\Throwable $e): array
+  {
+      $message = $e->getMessage();
+
+      // message = 'SQLSTATE[08006]'
+      if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
+          $message = static::$noDataBase;
+      }
+
+      // state = '23502'
+      if ($e instanceof \Doctrine\DBAL\Exception\NotNullConstraintViolationException) {
+          $message = $e->getMessage();
+      }
+
+      // state = '23505'
+      if ($e instanceof \Doctrine\DBAL\Exception\UniqueConstraintViolationException) {
+          return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
+      }
+
+      return ['code' => 500, 'erreur' => $message];
   }
 
   /**
@@ -41,32 +64,32 @@ class ActivityHistoriqueRepository extends ServiceEntityRepository
   public function insertHistoriqueActivity($data): array
   {
     $sql = "INSERT INTO ma_moulinette.activity_historique
-                    (year, day, analyse, analyse_average,
-                    success, fail, success_rate, max_time,
+                    (year, day, \"analyse\", analyse_average,
+                    success, failed, success_rate, max_time,
                     date_enregistrement)
-            VALUES (:year, :nb_hour, :analyse, :analyse_average,
-                    :success, :fail, :success_rate, :max_time, :date_enregistrement)";
+            VALUES (:year, :day, :analyse, :analyse_average,
+                    :success, :failed, :success_rate, :max_time, :date_enregistrement)";
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
             foreach ($data as $year => $valeur) {
               $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $stmt->bindValue(static::$year, $year);
-                $stmt->bindValue(':nb_hour', $valeur['day']);
+                $stmt->bindValue(':day', $valeur['day']);
                 $stmt->bindValue(':analyse', $valeur['analyse']);
                 $stmt->bindValue(':analyse_average', $valeur['analyse_average']);
                 $stmt->bindValue(':success', $valeur['success']);
-                $stmt->bindValue(':fail', $valeur['fail']);
+                $stmt->bindValue(':failed', $valeur['failed']);
                 $stmt->bindValue(':success_rate', $valeur['success_rate']);
                 $stmt->bindValue(':max_time', $valeur['max_time']);
                 $stmt->bindValue(':date_enregistrement', $valeur['date_enregistrement']->format(static::$formatDate));
                 $stmt->executeStatement();
             }
         $this->getEntityManager()->getConnection()->commit();
-    } catch (\Doctrine\DBAL\Exception $e) {
+    } catch (\Throwable $e) {
         $this->getEntityManager()->getConnection()->rollBack();
-        return ['code'=>500, 'erreur'=> $e->getMessage()];
+        return $this->handleDatabaseException($e);
     }
-    return ['code'=>200, 'erreur'=>''];
+    return [ 'code' => 200, 'erreur' => ''];
   }
 
   /**
@@ -83,10 +106,10 @@ class ActivityHistoriqueRepository extends ServiceEntityRepository
   {
     $sql = "UPDATE ma_moulinette.activity_historique
             SET day = :day,
-                analyse = :analyse,
+                \"analyse\" = :analyse,
                 analyse_average = :analyse_average,
                 success = :success,
-                fail = :fail,
+                failed = :failed,
                 success_rate = :success_rate,
                 max_time = :max_time,
                 date_enregistrement = :date_enregistrement
@@ -100,16 +123,16 @@ class ActivityHistoriqueRepository extends ServiceEntityRepository
                 $stmt->bindValue(':analyse', $valeur['analyse']);
                 $stmt->bindValue(':analyse_average', $valeur['analyse_average']);
                 $stmt->bindValue(':success', $valeur['success']);
-                $stmt->bindValue(':fail', $valeur['fail']);
+                $stmt->bindValue(':failed', $valeur['failed']);
                 $stmt->bindValue(':success_rate', $valeur['success_rate']);
                 $stmt->bindValue(':max_time', $valeur['max_time']);
                 $stmt->bindValue(':date_enregistrement', $valeur['date_enregistrement']->format(static::$formatDate));
                 $stmt->executeStatement();
             }
             $this->getEntityManager()->getConnection()->commit();
-      } catch (\Doctrine\DBAL\Exception $e) {
+      } catch (\Throwable $e) {
           $this->getEntityManager()->getConnection()->rollBack();
-          return ['code' => 500, 'erreur' => $e->getMessage()];
+          return $this->handleDatabaseException($e);
       }
       return ['code' => 200, 'erreur' => ''];
   }
@@ -126,7 +149,8 @@ class ActivityHistoriqueRepository extends ServiceEntityRepository
    */
   public function selectActivity($year = null): array
   {
-    $sql = "SELECT * FROM ma_moulinette.activity_historique";
+    $sql = "SELECT *
+            FROM ma_moulinette.activity_historique";
     $params = [];
 
     if ($year !== null) {
@@ -145,9 +169,8 @@ class ActivityHistoriqueRepository extends ServiceEntityRepository
         }
 
         $liste = $stmt->executeQuery()->fetchAllAssociative();
-
-    } catch (\Doctrine\DBAL\Exception $e) {
-        return [ 'code' => 500, 'erreur' => $e->getMessage()];
+    } catch (\Throwable $e) {
+      return $this->handleDatabaseException($e);
     }
     return [ 'code' => 200, 'liste' => $liste, 'erreur' => '' ];
   }
