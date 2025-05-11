@@ -83,10 +83,10 @@ class Client
 
         if ($customMessage) {
             $this->logger->error(static::$erreurTransport . $errorMessage);
-            $code=503;
+            $code = 503;
         } else {
             $this->logger->error(static::$erreurTransport . $errorMessage . " | Détails : " . $e->getMessage());
-            $code=504;
+            $code = 504;
         }
 
         return ['code' => $code, 'erreur' => $errorMessage];
@@ -179,7 +179,7 @@ class Client
     public function httpSonarQube(string $url): array
     {
         if (empty($this->params->get('sonar.token')) && empty($this->params->get('sonar.user'))){
-            return ['code'=> 401];
+            return ['code' => 401];
         }
 
         if (empty($this->params->get('sonar.token'))) {
@@ -229,10 +229,10 @@ class Client
 
             $this->logger->info($message);
             return [
-                    'message' => $message,
-                    'code' => $response->getStatusCode(),
-                    'json' => json_decode($responseJson, true, 512, JSON_THROW_ON_ERROR)
-                ];
+                'message' => $message,
+                'code' => $response->getStatusCode(),
+                'json' => json_decode($responseJson, true, 512, JSON_THROW_ON_ERROR)
+            ];
         } catch (TimeoutException $e) {
             return $this->handleTimeoutException($e);
         } catch (TransportException $e) {
@@ -303,11 +303,6 @@ class Client
             $message = "[" . $httpMethod . "] - " . $httpCode . " - " . $totalTime . " - " . $url;
 
             $this->logger->info($message);
-            return [
-                'message' => $message,
-                'code' => $response->getStatusCode(),
-                'json' => json_decode($responseJson, true, 512, JSON_THROW_ON_ERROR)
-            ];
         } catch (TimeoutException $e) {
             return $this->handleTimeoutException($e);
         } catch (TransportException $e) {
@@ -321,6 +316,11 @@ class Client
         } catch (\Exception $e) {
             return $this->handleGenericException($e);
         }
+        return [
+            'message' => $message,
+            'code' => $response->getStatusCode(),
+            'json' => json_decode($responseJson, true, 512, JSON_THROW_ON_ERROR)
+        ];
     }
 
     /**
@@ -387,10 +387,10 @@ class Client
 
             $this->logger->info($message);
             return [
-                    'message' => $message,
-                    'code' => $response->getStatusCode(),
-                    'json' => json_decode($responseJson, true, 512, JSON_THROW_ON_ERROR)
-                ];
+                'message' => $message,
+                'code' => $response->getStatusCode(),
+                'json' => json_decode($responseJson, true, 512, JSON_THROW_ON_ERROR)
+            ];
         } catch (TimeoutException $e) {
             return $this->handleTimeoutException($e);
         } catch (TransportException $e) {
@@ -404,7 +404,6 @@ class Client
         } catch (\Exception $e) {
             return $this->handleGenericException($e);
         }
-
     }
 
 }
