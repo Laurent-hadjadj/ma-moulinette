@@ -168,7 +168,7 @@ class AnomalieDetailsRepositoryHandlerTest extends TestCase
   public function testDeleteAnomalieDetailsMavenKey_WhenSQLException(): void
   {
     // 1) Crée une vraie exception qui implémente DBAL\Exception et Throwable
-    $fakeException = new class('erreur insert') extends \Exception implements DBALExceptionInterface {
+    $fakeException = new class('erreur delete') extends \Exception implements DBALExceptionInterface {
         public function getSqlState(): ?string { return null; }
     };
 
@@ -178,26 +178,20 @@ class AnomalieDetailsRepositoryHandlerTest extends TestCase
                       ->onlyMethods(['bindValue', 'executeStatement'])
                       ->getMock();
     $stmtStub->method('bindValue')->withAnyParameters();
-    $stmtStub->method('executeStatement')
-              ->willThrowException($fakeException);
+    $stmtStub->method('executeStatement')->willThrowException($fakeException);
 
     // 3) Mock de Connection : beginTransaction, prepare, rollBack et commit
     $connectionMock = $this->createMock(Connection::class);
-    $connectionMock->expects($this->once())
-                    ->method('beginTransaction');
-    $connectionMock->method('prepare')
-                    ->with($this->isType('string'))
+    $connectionMock->expects($this->once())->method('beginTransaction');
+    $connectionMock->method('prepare')->with($this->isType('string'))
                     ->willReturn($stmtStub);
-    $connectionMock->expects($this->once())
-                    ->method('rollBack');
+    $connectionMock->expects($this->once())->method('rollBack');
     // commit ne doit **jamais** être appelé dans ce scénario
-    $connectionMock->expects($this->never())
-                    ->method('commit');
+    $connectionMock->expects($this->never())->method('commit');
 
     // 4) Stub d'EntityManager pour retourner notre Connection
     $emStub = $this->createMock(EntityManagerInterface::class);
-    $emStub->method('getConnection')
-            ->willReturn($connectionMock);
+    $emStub->method('getConnection')->willReturn($connectionMock);
 
     // 5) Partial mock du Repository pour surcharger getEntityManager() & handleDatabaseException()
     $registry = $this->createMock(ManagerRegistry::class);
@@ -208,17 +202,15 @@ class AnomalieDetailsRepositoryHandlerTest extends TestCase
 
     // 6) Quand handleDatabaseException() est appelé avec notre exception, on renvoie ce tableau
     $expected = ['code' => 500, 'erreur' => 'gestion test'];
-    $repo->expects($this->once())
-          ->method('handleDatabaseException')
+    $repo->expects($this->once())->method('handleDatabaseException')
           ->with($fakeException)
           ->willReturn($expected);
 
     // 7) getEntityManager() renvoie notre EM stub
-    $repo->method('getEntityManager')
-          ->willReturn($emStub);
+    $repo->method('getEntityManager')->willReturn($emStub);
 
     // 8) Prépare un jeu de données minimal pour le $map
-    $map = [ 'maven_key' => 'MK'];
+    $map = [ 'maven_key' => 'fr.ma-petite-entreprise:ma-moulinette'];
 
     // 9) Appel de la méthode : elle doit entrer dans le catch et renvoyer $expected
     $result = $repo->deleteAnomalieDetailsMavenKey($map);
