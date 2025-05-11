@@ -3,7 +3,7 @@
 /*
 *  Ma-Moulinette
 *  --------------
-*  Copyright (c) 2021-2024.
+*  Copyright (c) 2021-2025.
 *  Laurent HADJADJ <laurent_h@me.com>.
 *  Licensed Creative Common  CC-BY-NC-SA 4.0.
 *  ---
@@ -26,39 +26,32 @@ class AnomalieDetailsRepository extends ServiceEntityRepository
   public static $mavenKey = ':maven_key';
   public static $noDataBase = 'La connexion à la base de données a échoué.';
 
-  public function __construct(ManagerRegistry $registry)
+  public function __construct(
+    ManagerRegistry $registry)
   {
       parent::__construct($registry, AnomalieDetails::class);
   }
 
-  /**
-   * [Description for handleDatabaseException]
-   *
-   * @param \Doctrine\DBAL\Exception $e
-   *
-   * @return array
-   *
-   * Created at: 21/12/2024 20:22:43 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
-  protected function handleDatabaseException(\Doctrine\DBAL\Exception $e): array
+  public function handleDatabaseException(\Throwable $e): array
   {
-      $message = $e->getMessage();
+    $message = $e->getMessage();
 
-      if (strpos($e->getMessage(), 'SQLSTATE[08006]') !== false) {
-          $message = static::$noDataBase;
-      }
+    // message = 'SQLSTATE[08006]'
+    if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
+        $message = static::$noDataBase;
+    }
 
-      if ($e->getSqlState() == '23502') {
-          $message = $e->getMessage();
-      }
+    // state = '23502'
+    if ($e instanceof \Doctrine\DBAL\Exception\NotNullConstraintViolationException) {
+        $message = $e->getMessage();
+    }
 
-      if ($e->getSqlState() == '23505'){
-          return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
-      }
+    // state = '23505'
+    if ($e instanceof \Doctrine\DBAL\Exception\UniqueConstraintViolationException) {
+        return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
+    }
 
-      return ['code' => 500, 'erreur'=> $message];
+    return ['code' => 500, 'erreur' => $message];
   }
 
   /**
@@ -84,7 +77,7 @@ class AnomalieDetailsRepository extends ServiceEntityRepository
             $stmt->bindValue(static::$mavenKey, $map['maven_key']);
             $stmt->executeStatement();
         $this->getEntityManager()->getConnection()->commit();
-    } catch (\Doctrine\DBAL\Exception $e) {
+    } catch (\Throwable $e) {
         $this->getEntityManager()->getConnection()->rollBack();
         return $this->handleDatabaseException($e);
     }
@@ -112,7 +105,7 @@ class AnomalieDetailsRepository extends ServiceEntityRepository
           $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $stmt->bindValue(static::$mavenKey, $map['maven_key']);
             $liste = $stmt->executeQuery()->fetchAllAssociative();
-      } catch (\Doctrine\DBAL\Exception $e) {
+      } catch (\Throwable $e) {
         return $this->handleDatabaseException($e);
       }
       return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
@@ -166,7 +159,7 @@ class AnomalieDetailsRepository extends ServiceEntityRepository
               $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
               $stmt->executeStatement();
             $this->getEntityManager()->getConnection()->commit();
-    } catch (\Doctrine\DBAL\Exception $e) {
+    } catch (\Throwable $e) {
         $this->getEntityManager()->getConnection()->rollBack();
         return $this->handleDatabaseException($e);
     }
