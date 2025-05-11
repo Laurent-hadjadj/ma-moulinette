@@ -27,6 +27,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 class AnomalieRepositoryTest extends KernelTestCase
 {
     private static $erreurCode200 = 'Erreur le code retour doit être 200';
+    private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
 
     protected function setUp(): void
     {
@@ -57,7 +58,7 @@ class AnomalieRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map=['maven_key' => 'fr.ma-petite-entreprise:ma-moulinette'];
+        $map = ['maven_key' => static::$mavenKey];
 
         $anomalieRepository = $entityManager->getRepository(Anomalie::class);
         $r = $anomalieRepository->deleteAnomalieMavenKey($map);
@@ -91,7 +92,7 @@ class AnomalieRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map=['maven_key' => 'fr.ma-petite-entreprise:ma-moulinette'];
+        $map=['maven_key' => static::$mavenKey];
 
         // Appel de la méthode
         $anomalieRepository = $entityManager->getRepository(Anomalie::class);
@@ -110,7 +111,7 @@ class AnomalieRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = ['maven_key' => 'fr.ma-petite-entreprise:ma-moulinette',
+        $map = ['maven_key' => static::$mavenKey,
         'project_name' => 'ma-moulinette', 'anomalie_total' => 1956,
         'dette_minute' => 19586, 'dette_reliability_minute' => 107,
         'dette_vulnerability_minute' => 0, 'dette_code_smell_minute' => 7369,
