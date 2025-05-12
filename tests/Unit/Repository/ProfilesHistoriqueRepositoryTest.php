@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2025.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -87,7 +87,7 @@ class ProfilesHistoriqueRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map=['language'=>static::$language, 'action'=>static::$action];
+        $map=[ 'language' => static::$language, 'action' => static::$action];
 
         // Appel de la méthode
         $profilesHistoriqueRepository = $entityManager->getRepository(ProfilesHistorique::class);
@@ -106,7 +106,7 @@ class ProfilesHistoriqueRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map=['language'=>static::$language, 'tri'=>'ASC', 'limit'=>1];
+        $map = ['language' => static::$language, 'tri' => 'ASC', 'limit' => 1];
 
         // Appel de la méthode
         $profilesHistoriqueRepository = $entityManager->getRepository(ProfilesHistorique::class);
@@ -125,7 +125,7 @@ class ProfilesHistoriqueRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map=['language'=>static::$language];
+        $map = ['language' => static::$language];
 
         // Appel de la méthode
         $profilesHistoriqueRepository = $entityManager->getRepository(ProfilesHistorique::class);
@@ -144,7 +144,7 @@ class ProfilesHistoriqueRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map=['language'=>static::$language, 'date_courte'=>static::$dateCourte];
+        $map = ['language' => static::$language, 'date_courte' => static::$dateCourte];
 
         // Appel de la méthode
         $profilesHistoriqueRepository = $entityManager->getRepository(ProfilesHistorique::class);
