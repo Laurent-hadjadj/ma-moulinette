@@ -1,6 +1,16 @@
 <?php
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2021-2025.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
 
-namespace App\Tests\Service;
+namespace App\Tests\Unit\Service;
 
 use App\Entity\ActivityBatchReport;
 use App\Service\ActivityReportService;
@@ -13,9 +23,6 @@ use PHPUnit\Framework\MockObject\MockObject;
  */
 class ActivityReportServiceTest extends TestCase
 {
-    /** @var EntityManagerInterface */
-    private EntityManagerInterface $entityManager;
-
     /** @var ActivityReportService */
     private $activityReportService;
 
@@ -24,10 +31,11 @@ class ActivityReportServiceTest extends TestCase
         parent::setUp();
 
         // Mock de l'EntityManager
-        $this->entityManager = $this->createMock(EntityManagerInterface::class);
+        /** @var \Doctrine\ORM\EntityManagerInterface&\PHPUnit\Framework\MockObject\MockObject  */
+        $mockEm = $this->createMock(EntityManagerInterface::class);
 
         // Création de l'instance du service avec le mock
-        $this->activityReportService = new ActivityReportService($this->entityManager);
+        $this->activityReportService = new ActivityReportService($mockEm);
     }
 
     public function testGenerateReportWithValidData(): void
