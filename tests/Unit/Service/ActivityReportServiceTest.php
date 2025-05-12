@@ -16,13 +16,15 @@ use App\Entity\ActivityBatchReport;
 use App\Service\ActivityReportService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
-use PHPUnit\Framework\MockObject\MockObject;
 
 /**
  * [Description ActivityReportServiceTest]
  */
 class ActivityReportServiceTest extends TestCase
 {
+    /** @var EntityManagerInterface */
+    private EntityManagerInterface $entityManager;
+
     /** @var ActivityReportService */
     private $activityReportService;
 
@@ -31,11 +33,10 @@ class ActivityReportServiceTest extends TestCase
         parent::setUp();
 
         // Mock de l'EntityManager
-        /** @var \Doctrine\ORM\EntityManagerInterface&\PHPUnit\Framework\MockObject\MockObject  */
-        $mockEm = $this->createMock(EntityManagerInterface::class);
+        $this->entityManager = $this->createMock(EntityManagerInterface::class);
 
         // Création de l'instance du service avec le mock
-        $this->activityReportService = new ActivityReportService($mockEm);
+        $this->activityReportService = new ActivityReportService($this->entityManager);
     }
 
     public function testGenerateReportWithValidData(): void
