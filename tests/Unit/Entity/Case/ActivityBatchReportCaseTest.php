@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2025.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -30,7 +30,6 @@ class ActivityBatchReportCaseTest extends TestCase
     private static $page = 1;
     private static $lastError = ['Erreur inconnue.'];
     private static $dateEnregistrement = '2024-07-31 12:27:05+02';
- 
 
     private function getEntity(): ActivityBatchReport
     {
@@ -94,7 +93,5 @@ class ActivityBatchReportCaseTest extends TestCase
         $this->activityBatchReport->setDateEnregistrement($newDate);
         $this->assertEquals($newDate, $this->activityBatchReport->getDateEnregistrement());
     }
-
-
 
 }
