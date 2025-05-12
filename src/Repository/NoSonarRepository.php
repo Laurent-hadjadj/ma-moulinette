@@ -61,7 +61,6 @@ class NoSonarRepository extends ServiceEntityRepository
       return ['code' => 500, 'erreur' => $message];
   }
 
-
   /**
    * [Description for deleteNoSonarMavenKey]
    * Supprime les données de la version courante (i.e. correspondant à la maven_key)
