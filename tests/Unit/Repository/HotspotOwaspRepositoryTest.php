@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2025.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -27,6 +27,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 class HotspotOwaspRepositoryTest extends KernelTestCase
 {
     private static $erreurCode200 = 'Erreur le code retour doit être 200.';
+    private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
 
     protected function setUp(): void
     {
@@ -57,8 +58,8 @@ class HotspotOwaspRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map1=['maven_key' => 'fr.ma-petite-entreprise:ma-moulinette', 'status' =>'TO_REVIEW'];
-        $map2=['maven_key' => 'fr.ma-petite-entreprise:ma-moulinette', 'status' =>'REVIEWED'];
+        $map1=['maven_key' => static::$mavenKey, 'status' =>'TO_REVIEW'];
+        $map2=['maven_key' => static::$mavenKey, 'status' =>'REVIEWED'];
 
         $hotspotOwaspRepository = $entityManager->getRepository(HotspotOwasp::class);
         $r1 = $hotspotOwaspRepository->countHotspotOwaspStatus($map1);
@@ -80,7 +81,7 @@ class HotspotOwaspRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map=['maven_key' => 'fr.ma-petite-entreprise:ma-moulinette'];
+        $map = ['maven_key' => static::$mavenKey];
 
         $hotspotOwaspRepository = $entityManager->getRepository(HotspotOwasp::class);
         $r = $hotspotOwaspRepository->countHotspotOwaspProbability($map);
@@ -99,7 +100,7 @@ class HotspotOwaspRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map= ['maven_key' => 'fr.ma-petite-entreprise:ma-moulinette'];
+        $map = ['maven_key' => static::$mavenKey];
 
         $hotspotOwaspRepository = $entityManager->getRepository(HotspotOwasp::class);
         $r = $hotspotOwaspRepository->countHotspotOwaspMenaces($map);
@@ -118,7 +119,7 @@ class HotspotOwaspRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map= ['maven_key' => 'fr.ma-petite-entreprise:ma-moulinette', 'menace' => 'a1', 'probability' => 'MEDIUM'];
+        $map = ['maven_key' => static::$mavenKey, 'menace' => 'a1', 'probability' => 'MEDIUM'];
 
         $hotspotOwaspRepository = $entityManager->getRepository(HotspotOwasp::class);
         $r = $hotspotOwaspRepository->countHotspotOwaspMenaceByStatus($map);
@@ -137,7 +138,7 @@ class HotspotOwaspRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map= ['maven_key' => 'fr.ma-petite-entreprise:ma-moulinette'];
+        $map = ['maven_key' => static::$mavenKey];
 
         $hotspotOwaspRepository = $entityManager->getRepository(HotspotOwasp::class);
         $r = $hotspotOwaspRepository->deleteHotspotOwaspMavenKey($map);
@@ -156,8 +157,8 @@ class HotspotOwaspRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map=  [['referential_owasp' => 2017, 'version' => '2.0.0-RELEASE',
-                'maven_key' => 'fr.ma-petite-entreprise:ma-moulinette',
+        $map = [['referential_owasp' => 2017, 'version' => '2.0.0-RELEASE',
+                'maven_key' => static::$mavenKey,
                 'date_version' => new \DateTimeImmutable('2024-08-10 15:26:07+02'), 'menace' => 'a1', 'security_category' => 'dos',
                 'rule_key' => 'typescript:S5852', 'probability' => 'MEDIUM',
                 'status' => 'TO_REVIEW', 'resolution' => 'Todo', 'niveau' => 2,
