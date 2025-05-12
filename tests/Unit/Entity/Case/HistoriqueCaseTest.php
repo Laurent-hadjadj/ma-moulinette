@@ -91,6 +91,7 @@ class HistoriqueCaseTest extends TestCase
         ->setHotspotMedium('0')
         ->setHotspotLow('0')
         ->setInitial('false')
+        ->setActuatorInfo([])
         ->setModeCollecte('COLLECTE')
         ->setUtilisateurCollecte('admin@ma-moulinette.fr')
         ->setDateEnregistrement(new \DateTimeImmutable('2024-06-28 17:55:45+02'));
@@ -472,6 +473,12 @@ class HistoriqueCaseTest extends TestCase
     {
         $this->historique->setInitial('false');
         $this->assertEquals('false', $this->historique->isInitial());
+    }
+
+    public function testSettingAndGettingActuatorInfo(): void
+    {
+        $this->historique->setActuatorInfo([]);
+        $this->assertEquals([], $this->historique->getActuatorInfo());
     }
 
     public function testSettingAndGettingModeCollecte(): void

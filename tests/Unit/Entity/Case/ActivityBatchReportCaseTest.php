@@ -49,6 +49,12 @@ class ActivityBatchReportCaseTest extends TestCase
         $this->activityBatchReport = $this->getEntity();
     }
 
+    public function testSettingAndGettingId(): void
+    {
+        $this->activityBatchReport->setId(1);
+        $this->assertEquals(1, $this->activityBatchReport->getId());
+    }
+
     public function testSettingAndGettingDateStart(): void
     {
         $newDate=new \DateTimeImmutable(static::$dateStart);

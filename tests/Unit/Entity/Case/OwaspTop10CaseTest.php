@@ -3,7 +3,7 @@
 /*
 *  Ma-Moulinette
 *  --------------
-*  Copyright (c) 2021-2024.
+*  Copyright (c) 2021-2025.
 *  Laurent HADJADJ <laurent_h@me.com>.
 *  Licensed Creative Common  CC-BY-NC-SA 4.0.
 *  ---
@@ -45,6 +45,13 @@ class OwaspTop10CaseTest extends TestCase
         parent::setUp();
         $this->owaspTop10 = $this->getEntity();
     }
+
+    public function testSettingAndGettingId(): void
+    {
+        $this->owaspTop10->setId(1);
+        $this->assertEquals(1, $this->owaspTop10->getId());
+    }
+
     public function testSettingAndGettingYear(): void
     {
         $newYear = 2021;

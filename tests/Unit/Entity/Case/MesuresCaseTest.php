@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2025.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -67,6 +67,12 @@ class MesuresCaseTest extends TestCase
         $this->mesures = $this->getEntity();
     }
 
+    public function testSettingAndGettingId(): void
+    {
+        $this->mesures->setId(1);
+        $this->assertEquals(1, $this->mesures->getId());
+    }
+
     public function testSettingAndGettingMavenKey(): void
     {
         $this->mesures->setMavenKey(static::$mavenKey);
@@ -89,6 +95,12 @@ class MesuresCaseTest extends TestCase
     {
         $this->mesures->setNcloc(static::$ncloc);
         $this->assertEquals(static::$ncloc, $this->mesures->getNcloc());
+    }
+
+    public function testSettingAndGettingLanguageDistribution(): void
+    {
+        $this->mesures->setLanguageDistribution(static::$ncloc);
+        $this->assertEquals(static::$languageDistribution, $this->mesures->getLanguageDistribution());
     }
 
     public function testSettingAndGettingFiles(): void

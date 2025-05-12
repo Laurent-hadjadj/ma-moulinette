@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2025.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -73,6 +73,12 @@ class AnomalieDetailsCaseTest extends TestCase
     {
         parent::setUp();
         $this->anomalieDetails = $this->getEntity();
+    }
+
+    public function testSettingAndGettingId(): void
+    {
+        $this->anomalieDetails->setId(1);
+        $this->assertEquals(1, $this->anomalieDetails->getId());
     }
 
     public function testSettingAndGettingMavenKey(): void

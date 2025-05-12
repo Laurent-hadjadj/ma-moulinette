@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2025.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -51,6 +51,12 @@ class BatchCaseTest extends TestCase
     {
         parent::setUp();
         $this->batch = $this->getEntity();
+    }
+
+    public function testSettingAndGettingId(): void
+    {
+        $this->batch->setId(1);
+        $this->assertEquals(1, $this->batch->getId());
     }
 
     public function testSettingAndGettingStatut(): void
