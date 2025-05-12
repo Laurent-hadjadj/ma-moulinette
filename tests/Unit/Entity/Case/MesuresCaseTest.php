@@ -99,7 +99,7 @@ class MesuresCaseTest extends TestCase
 
     public function testSettingAndGettingLanguageDistribution(): void
     {
-        $this->mesures->setLanguageDistribution(static::$ncloc);
+        $this->mesures->setLanguageDistribution(static::$languageDistribution);
         $this->assertEquals(static::$languageDistribution, $this->mesures->getLanguageDistribution());
     }
 
