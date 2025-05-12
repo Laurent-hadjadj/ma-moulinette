@@ -352,6 +352,24 @@ class HistoriqueRepositoryTest extends KernelTestCase
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
+    public function testSelectHistoriqueIndicateurs(): void
+    {
+        // Connexion à la base de données
+        self::bootKernel();
+        /* On se connecte à la base de tests */
+        $container = static::getContainer();
+        $entityManager = $container->get('doctrine')->getManager();
+        /* C'est une liste 'xxx', 'yyy' */
+        $map = "'" . static::$mavenKey. "'";
+
+        // Appel de la méthode
+        $historiqueRepository = $entityManager->getRepository(Historique::class);
+        $r = $historiqueRepository->selectHistoriqueIndicateurs($map);
+
+        // Assert
+        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEmpty($r['erreur'], $r['erreur']);
+    }
 
     protected function tearDown(): void
     {
