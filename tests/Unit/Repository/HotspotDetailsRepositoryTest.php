@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2025.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -27,6 +27,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 class HotspotDetailsRepositoryTest extends KernelTestCase
 {
     private static $erreurCode200 = 'Erreur le code retour doit être 200';
+    private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
 
     protected function setUp(): void
     {
@@ -57,7 +58,7 @@ class HotspotDetailsRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map=['maven_key' => 'fr.ma-petite-entreprise:ma-moulinette'];
+        $map=['maven_key' => static::$mavenKey];
 
         $hotspotDetailsRepository = $entityManager->getRepository(HotspotDetails::class);
         $r = $hotspotDetailsRepository->selectHotspotDetailsByStatus($map);
@@ -76,7 +77,7 @@ class HotspotDetailsRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map=['maven_key' => 'fr.ma-petite-entreprise:ma-moulinette'];
+        $map=['maven_key' => static::$mavenKey];
 
         $hotspotDetailsRepository = $entityManager->getRepository(HotspotDetails::class);
         $r = $hotspotDetailsRepository->deleteHotspotDetailsMavenKey($map);
@@ -95,7 +96,7 @@ class HotspotDetailsRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map= [['maven_key' => 'fr.ma-petite-entreprise:ma-moulinette',
+        $map= [['maven_key' => static::$mavenKey,
         'version' => '2.0.0-RELEASE', 'date_version' => new \DateTimeImmutable('2024-08-30 10:12:17+02'),
         'security_category' => 'dos', 'rule_key' => 'typescript:S5852',
         'rule_name' => 'Using slow regular expressions is security-sensitive',
