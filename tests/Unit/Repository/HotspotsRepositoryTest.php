@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2025.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -27,6 +27,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 class HotspotsRepositoryTest extends KernelTestCase
 {
     private static $erreurCode200 = 'Erreur le code retour doit être 200.';
+    private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
 
     protected function setUp(): void
     {
@@ -57,7 +58,7 @@ class HotspotsRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map=['maven_key' => 'fr.ma-petite-entreprise:ma-moulinette'];
+        $map = ['maven_key' => static::$mavenKey];
 
         $hotspotsRepository = $entityManager->getRepository(Hotspots::class);
         $r = $hotspotsRepository->deleteHotspotsMavenKey($map);
@@ -76,7 +77,7 @@ class HotspotsRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map=['maven_key' => 'fr.ma-petite-entreprise:ma-moulinette'];
+        $map=['maven_key' => static::$mavenKey];
 
         $hotspotsRepository = $entityManager->getRepository(Hotspots::class);
         $r = $hotspotsRepository->selectHotspotsToReview($map);
@@ -95,12 +96,12 @@ class HotspotsRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map1=['maven_key' => 'fr.ma-petite-entreprise:ma-moulinette', 'status' => 'TO_REVIEW'];
-        $map2=['maven_key' => 'fr.ma-petite-entreprise:ma-moulinette', 'status' => 'REVIEWED'];
+        $map1 = ['maven_key' => static::$mavenKey, 'status' => 'TO_REVIEW'];
+        $map2 = ['maven_key' => static::$mavenKey, 'status' => 'REVIEWED'];
 
         $hotspotsRepository = $entityManager->getRepository(Hotspots::class);
-        $r1 = $hotspotsRepository->selectHotspotsToReview($map1);
-        $r2 = $hotspotsRepository->selectHotspotsToReview($map2);
+        $r1 = $hotspotsRepository->countHotspotsStatus($map1);
+        $r2 = $hotspotsRepository->countHotspotsStatus($map2);
 
         // Assert
         $this->assertEquals(200, $r1['code'], static::$erreurCode200);
@@ -118,17 +119,19 @@ class HotspotsRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map1=['maven_key' => 'fr.ma-petite-entreprise:ma-moulinette', 'status' => 'TO_REVIEW'];
-        $map2=['maven_key' => 'fr.ma-petite-entreprise:ma-moulinette', 'status' => 'REVIEWED'];
+        $map1 = ['maven_key' => static::$mavenKey, 'status' => 'TO_REVIEW'];
+        $map2 = ['maven_key' => static::$mavenKey, 'status' => 'REVIEWED'];
 
         $hotspotsRepository = $entityManager->getRepository(Hotspots::class);
-        $r1 = $hotspotsRepository->selectHotspotsToReview($map1);
-        $r2 = $hotspotsRepository->selectHotspotsToReview($map2);
+        $r1 = $hotspotsRepository->selectHotspotsByNiveau($map1);
+        $r2 = $hotspotsRepository->selectHotspotsByNiveau($map2);
 
         // Assert
         $this->assertEquals(200, $r1['code'], static::$erreurCode200);
+        $this->assertArrayHasKey('liste', $r1);
         $this->assertEmpty($r1['erreur'], $r1['erreur']);
         $this->assertEquals(200, $r2['code'], static::$erreurCode200);
+        $this->assertArrayHasKey('liste', $r2);
         $this->assertEmpty($r2['erreur'], $r2['erreur']);
     }
 
@@ -141,7 +144,7 @@ class HotspotsRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map=[['maven_key' => 'fr.ma-petite-entreprise:ma-moulinette',
+        $map = [['maven_key' => static::$mavenKey,
             'version' => '2.0.0-RELEASE',
             'date_version' => new \DateTimeImmutable('2024-07-10 15:26:07+02'),
             'hotspot_key' => 'AZCc06XbgfifxdiJPzw6', 'security_category' => 'dos',
