@@ -146,8 +146,8 @@ class HistoriqueRepository extends ServiceEntityRepository
     public function updateHistoriqueReference($map): array
     {
         $sql = "UPDATE ma_moulinette.historique
-                SET initial=false
-                WHERE maven_key=:maven_key";
+                SET initial = false
+                WHERE maven_key = :maven_key";
 
         /** on prépare la réponse */
         $response=['code' => 200, 'erreur' => ''];
@@ -509,54 +509,54 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function insertHistoriqueAjoutProjet($map,$json): array
+    public function insertHistoriqueAjoutProjet($map, $json): array
     {
-                    /** On prépare la requête */
-                    $sql = "INSERT INTO ma_moulinette.historique
-                    (maven_key, analyse_key, version, date_version,
-                    nom_projet, version_release, version_snapshot, version_autre,
-                    suppress_warning, no_sonar, todo,
-                    logger_info, logger_warn, logger_error, logger_debug,
-                    nombre_ligne, nombre_ligne_code,
-                    files, classes, functions,
-                    coverage, duplicated_lines_density, sqale_debt_ratio, tests, violations, dette,
-                    nombre_bug, nombre_vulnerability, nombre_code_smell,
-                    bug_blocker, bug_critical, bug_major, bug_minor, bug_info,
-                    vulnerability_blocker, vulnerability_critical, vulnerability_major,
-                    vulnerability_minor, vulnerability_info,
-                    code_smell_blocker, code_smell_critical, code_smell_major,
-                    code_smell_minor, code_smell_info,
-                    frontend, backend, autre, inconnue,
-                    nombre_anomalie_bloquant, nombre_anomalie_critique, nombre_anomalie_majeur,
-                    nombre_anomalie_mineur, nombre_anomalie_info,
-                    note_reliability, note_security, note_sqale, note_hotspot, nombre_hotspot,
-                    hotspot_high, hotspot_medium, hotspot_low,
-                    initial,
-                    mode_collecte, utilisateur_collecte,
-                    actuator_info,
-                    date_enregistrement)
-                VALUES (
-                    :maven_key, :analyse_key, :version, :date_version, :nom_projet,
-                    :version_release, :version_snapshot, :version_autre,
-                    :suppress_warning, :no_sonar, :todo,
-                    :logger_info, :logger_warn, :logger_error, :logger_debug,
-                    :nombre_ligne, :nombre_ligne_code,
-                    :files, :classes, :functions,
-                    :coverage, :duplicated_lines_density, :sqale_debt_ratio, :tests,
-                    :violations, :dette, :nombre_bug, :nombre_vulnerability,
-                    :nombre_code_smell, :bug_blocker, :bug_critical, :bug_major,
-                    :bug_minor, :bug_info, :vulnerability_blocker, :vulnerability_critical,
-                    :vulnerability_major, :vulnerability_minor, :vulnerability_info,
-                    :code_smell_blocker, :code_smell_critical, :code_smell_major,
-                    :code_smell_minor, :code_smell_info, :frontend, :backend, :autre, :inconnue,
-                    :nombre_anomalie_bloquant, :nombre_anomalie_critique,
-                    :nombre_anomalie_majeur, :nombre_anomalie_mineur,
-                    :nombre_anomalie_info, :note_reliability, :note_security,
-                    :note_sqale, :note_hotspot, :nombre_hotspot,
-                    :hotspot_high, :hotspot_medium, :hotspot_low,
-                    :initial,
-                    :mode_collecte, :utilisateur_collecte, '".json_encode($json)."',
-                    :date_enregistrement)";
+        /** On prépare la requête */
+        $sql = "INSERT INTO ma_moulinette.historique
+            (maven_key, analyse_key, version, date_version,
+            nom_projet, version_release, version_snapshot, version_autre,
+            suppress_warning, no_sonar, todo,
+            logger_info, logger_warn, logger_error, logger_debug,
+            nombre_ligne, nombre_ligne_code,
+            files, classes, functions,
+            coverage, duplicated_lines_density, sqale_debt_ratio, tests, violations, dette,
+            nombre_bug, nombre_vulnerability, nombre_code_smell,
+            bug_blocker, bug_critical, bug_major, bug_minor, bug_info,
+            vulnerability_blocker, vulnerability_critical, vulnerability_major,
+            vulnerability_minor, vulnerability_info,
+            code_smell_blocker, code_smell_critical, code_smell_major,
+            code_smell_minor, code_smell_info,
+            frontend, backend, autre, inconnue,
+            nombre_anomalie_bloquant, nombre_anomalie_critique, nombre_anomalie_majeur,
+            nombre_anomalie_mineur, nombre_anomalie_info,
+            note_reliability, note_security, note_sqale, note_hotspot, nombre_hotspot,
+            hotspot_high, hotspot_medium, hotspot_low,
+            initial,
+            mode_collecte, utilisateur_collecte,
+            actuator_info,
+            date_enregistrement)
+            VALUES (
+                :maven_key, :analyse_key, :version, :date_version, :nom_projet,
+                :version_release, :version_snapshot, :version_autre,
+                :suppress_warning, :no_sonar, :todo,
+                :logger_info, :logger_warn, :logger_error, :logger_debug,
+                :nombre_ligne, :nombre_ligne_code,
+                :files, :classes, :functions,
+                :coverage, :duplicated_lines_density, :sqale_debt_ratio, :tests,
+                :violations, :dette, :nombre_bug, :nombre_vulnerability,
+                :nombre_code_smell, :bug_blocker, :bug_critical, :bug_major,
+                :bug_minor, :bug_info, :vulnerability_blocker, :vulnerability_critical,
+                :vulnerability_major, :vulnerability_minor, :vulnerability_info,
+                :code_smell_blocker, :code_smell_critical, :code_smell_major,
+                :code_smell_minor, :code_smell_info, :frontend, :backend, :autre, :inconnue,
+                :nombre_anomalie_bloquant, :nombre_anomalie_critique,
+                :nombre_anomalie_majeur, :nombre_anomalie_mineur,
+                :nombre_anomalie_info, :note_reliability, :note_security,
+                :note_sqale, :note_hotspot, :nombre_hotspot,
+                :hotspot_high, :hotspot_medium, :hotspot_low,
+                :initial,
+                :mode_collecte, :utilisateur_collecte, '".json_encode($json)."',
+                :date_enregistrement)";
 
         try {
                 $this->getEntityManager()->getConnection()->beginTransaction();
@@ -631,6 +631,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                         $stmt->executeStatement();
                 $this->getEntityManager()->getConnection()->commit();
         } catch (\Throwable $e) {
+            $this->getEntityManager()->getConnection()->rollBack();
             return $this->handleDatabaseException($e);
         }
         /** on prépare la réponse */
