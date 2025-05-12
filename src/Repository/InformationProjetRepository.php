@@ -3,7 +3,7 @@
 /*
 *  Ma-Moulinette
 *  --------------
-*  Copyright (c) 2021-2024.
+*  Copyright (c) 2021-2025.
 *  Laurent HADJADJ <laurent_h@me.com>.
 *  Licensed Creative Common  CC-BY-NC-SA 4.0.
 *  ---
@@ -34,7 +34,7 @@ class InformationProjetRepository extends ServiceEntityRepository
   /**
    * [Description for handleDatabaseException]
    *
-   * @param \Doctrine\DBAL\Exception $e
+   * @param \Throwable $e
    *
    * @return array
    *
@@ -42,25 +42,27 @@ class InformationProjetRepository extends ServiceEntityRepository
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  protected function handleDatabaseException(\Doctrine\DBAL\Exception $e): array
+  public function handleDatabaseException(\Throwable $e): array
   {
-    $message = $e->getMessage();
+      $message = $e->getMessage();
 
-    if (strpos($e->getMessage(), 'SQLSTATE[08006]') !== false) {
-        $message = static::$noDataBase;
-    }
+      // message = 'SQLSTATE[08006]'
+      if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
+          $message = static::$noDataBase;
+      }
 
-    if ($e->getSqlState() == '23502') {
-        $message = $e->getMessage();
-    }
+      // state = '23502'
+      if ($e instanceof \Doctrine\DBAL\Exception\NotNullConstraintViolationException) {
+          $message = $e->getMessage();
+      }
 
-    if ($e->getSqlState() == '23505'){
-        return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
-    }
+      // state = '23505'
+      if ($e instanceof \Doctrine\DBAL\Exception\UniqueConstraintViolationException) {
+          return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
+      }
 
-    return ['code' => 500, 'erreur'=> $message];
+      return ['code' => 500, 'erreur' => $message];
   }
-
 
   /**
    * [Description for selectInformationProjetIsValide]
@@ -80,14 +82,14 @@ class InformationProjetRepository extends ServiceEntityRepository
             FROM ma_moulinette.information_projet
             WHERE maven_key=:maven_key LIMIT 1";
       try {
-            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
               $stmt->bindValue(static::$mavenKey, $map['maven_key']);
-            $isValide=$stmt->executeQuery()->fetchAllAssociative();
+            $isValide = $stmt->executeQuery()->fetchAllAssociative();
             /** j'ai pas trouvé de projet */
             if (!$isValide){
               return ['code'=>404, 'erreur'=>"Je n'ai pas trouvé le projet dans la base de données."];
             }
-          } catch (\Doctrine\DBAL\Exception $e) {
+          } catch (\Throwable $e) {
               return $this->handleDatabaseException($e);
       }
       return ['code' => 200, 'is_valide' => $isValide[0], 'erreur' => ''];
@@ -111,10 +113,10 @@ class InformationProjetRepository extends ServiceEntityRepository
             FROM ma_moulinette.information_projet
             WHERE maven_key=:maven_key";
       try {
-            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
               $stmt->bindValue(static::$mavenKey, $map['maven_key']);
-            $nombre=$stmt->executeQuery()->fetchAllAssociative();
-      } catch (\Doctrine\DBAL\Exception $e) {
+            $nombre = $stmt->executeQuery()->fetchAllAssociative();
+      } catch (\Throwable $e) {
           return $this->handleDatabaseException($e);
       }
       return ['code' => 200, 'nombre' => $nombre, 'erreur' => ''];
@@ -142,7 +144,7 @@ class InformationProjetRepository extends ServiceEntityRepository
               $stmt->bindValue(static::$mavenKey, $map['maven_key']);
               $stmt->bindValue(':type', $map['type']);
             $nombre = $stmt->executeQuery()->fetchAllAssociative();
-      } catch (\Doctrine\DBAL\Exception $e) {
+      } catch (\Throwable $e) {
           return $this->handleDatabaseException($e);
       }
       return ['code' => 200, 'nombre' => $nombre, 'erreur'=>''];
@@ -169,7 +171,7 @@ class InformationProjetRepository extends ServiceEntityRepository
             $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
               $stmt->bindValue(static::$mavenKey, $map['maven_key']);
             $liste = $stmt->executeQuery()->fetchAllAssociativeIndexed();
-      } catch (\Doctrine\DBAL\Exception $e) {
+      } catch (\Throwable $e) {
           return $this->handleDatabaseException($e);
       }
       return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
@@ -197,7 +199,7 @@ class InformationProjetRepository extends ServiceEntityRepository
             $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
               $stmt->bindValue(static::$mavenKey, $map['maven_key']);
             $liste = $stmt->executeQuery()->fetchAllAssociative();
-      } catch (\Doctrine\DBAL\Exception $e) {
+      } catch (\Throwable $e) {
           return $this->handleDatabaseException($e);
       }
       return ['code' => 200, 'version' => $liste, 'erreur'=>''];
@@ -224,7 +226,7 @@ class InformationProjetRepository extends ServiceEntityRepository
             $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
               $stmt->bindValue(static::$mavenKey, $map['maven_key']);
             $liste = $stmt->executeQuery()->fetchAllAssociative();
-      } catch (\Doctrine\DBAL\Exception $e) {
+      } catch (\Throwable $e) {
           $this->getEntityManager()->getConnection()->rollBack();
           return $this->handleDatabaseException($e);
       }
@@ -253,7 +255,7 @@ class InformationProjetRepository extends ServiceEntityRepository
           $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $stmt->bindValue(static::$mavenKey, $map['maven_key']);
           $liste = $stmt->executeQuery()->fetchAllAssociative();
-      } catch (\Doctrine\DBAL\Exception $e) {
+      } catch (\Throwable $e) {
           return $this->handleDatabaseException($e);
       }
       return ['code' => 200, 'info' => $liste, 'erreur' => ''];
@@ -282,7 +284,7 @@ class InformationProjetRepository extends ServiceEntityRepository
               $stmt->bindValue(static::$mavenKey, $map['maven_key']);
               $stmt->executeStatement();
           $this->getEntityManager()->getConnection()->commit();
-      } catch (\Doctrine\DBAL\Exception $e) {
+      } catch (\Throwable $e) {
           $this->getEntityManager()->getConnection()->rollBack();
           return $this->handleDatabaseException($e);
       }
@@ -324,7 +326,7 @@ class InformationProjetRepository extends ServiceEntityRepository
               $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
               $stmt->executeStatement();
           $this->getEntityManager()->getConnection()->commit();
-    } catch (\Doctrine\DBAL\Exception $e) {
+    } catch (\Throwable $e) {
         $this->getEntityManager()->getConnection()->rollBack();
         return $this->handleDatabaseException($e);
     }
