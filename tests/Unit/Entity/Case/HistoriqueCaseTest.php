@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2025.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -25,6 +25,7 @@ class HistoriqueCaseTest extends TestCase
     private static $mel = 'fr.ma-petite-entreprise:ma-moulinette';
     private static $version = '1.2.0-RELEASE';
     private static $dateVersion = '2024-07-12 16:34:46';
+    private static $courriel = 'admin@ma-moulinette.fr';
 
     private function getEntity(): Historique
     {
@@ -93,7 +94,7 @@ class HistoriqueCaseTest extends TestCase
         ->setInitial('false')
         ->setActuatorInfo([])
         ->setModeCollecte('COLLECTE')
-        ->setUtilisateurCollecte('admin@ma-moulinette.fr')
+        ->setUtilisateurCollecte(static::$courriel)
         ->setDateEnregistrement(new \DateTimeImmutable('2024-06-28 17:55:45+02'));
     }
 
@@ -489,8 +490,8 @@ class HistoriqueCaseTest extends TestCase
 
     public function testSettingAndGettingUtilisateurCollecte(): void
     {
-        $this->historique->setUtilisateurCollecte('admin@ma-moulinette.fr');
-        $this->assertEquals('admin@ma-moulinette.fr', $this->historique->getUtilisateurCollecte());
+        $this->historique->setUtilisateurCollecte(static::$courriel);
+        $this->assertEquals(static::$courriel, $this->historique->getUtilisateurCollecte());
     }
 
     public function testSettingAndGettingDateEnregistrement(): void
