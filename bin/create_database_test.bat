@@ -49,7 +49,7 @@ echo php         	: 8.3.0-NTS
 echo nodejs      	: 18.17.1
 echo:
 
-echo "Création de la base de données de tests"
+echo "Création de la base de donnes de tests"
 echo:
 php bin/console --env=test cache:clear
 php bin/console --env=test doctrine:database:drop --force
@@ -57,7 +57,8 @@ php bin/console --env=test doctrine:database:create --if-not-exists
 php bin/console --env=test doctrine:migrations:status
 php bin/console --env=test doctrine:schema:update --force
 php bin/console doctrine:schema:validate --env=test
-php bin/console --env=test doctrine:migrations:migrate -n
+rem Optionnel
+rem php bin/console --env=test doctrine:migrations:migrate -n
 
 exit:
 rem  Laurent HADJADJ - 2024-08-25 v1.0.0 - création du script
