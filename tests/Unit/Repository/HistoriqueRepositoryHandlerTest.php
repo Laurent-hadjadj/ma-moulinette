@@ -137,7 +137,7 @@ class HistoriqueRepositoryHandlerTest extends TestCase
     public function testUpdateHistoriqueReference_WhenSQLException(): void
     {
         // 1) Crée une vraie exception qui implémente DBAL\Exception et Throwable
-        $fakeException = new class('erreur insert') extends \Exception implements DBALExceptionInterface {
+        $fakeException = new class('erreur update') extends \Exception implements DBALExceptionInterface {
             public function getSqlState(): ?string { return null; }
         };
 
@@ -930,4 +930,5 @@ class HistoriqueRepositoryHandlerTest extends TestCase
         // 9) Vérification
         $this->assertSame($expected, $result);
     }
+
 }
