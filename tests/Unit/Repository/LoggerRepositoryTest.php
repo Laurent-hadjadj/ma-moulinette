@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2025.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -27,6 +27,7 @@ class LoggerRepositoryTest extends KernelTestCase
 {
 
     private static $erreurCode200 = 'Erreur le code retour doit être 200.';
+    private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
 
     protected function setUp(): void
     {
@@ -57,7 +58,7 @@ class LoggerRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map=['maven_key' => 'fr.ma-petite-entreprise:ma-moulinette'];
+        $map=['maven_key' => static::$mavenKey];
 
         $notesRepository = $entityManager->getRepository(Logger::class);
         $r = $notesRepository->deleteLoggerMavenKey($map);
@@ -76,7 +77,7 @@ class LoggerRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map=['maven_key' => 'fr.ma-petite-entreprise:ma-moulinette'];
+        $map=['maven_key' => static::$mavenKey];
 
         $loggerRepository = $entityManager->getRepository(Logger::class);
         $r = $loggerRepository->selectLogger($map);
@@ -94,8 +95,8 @@ class LoggerRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map=[
-            'maven_key' => 'fr.ma-petite-entreprise:ma-moulinette',
+        $map = [
+            'maven_key' => static::$mavenKey,
             'logger_info' => 14,
             'logger_warn' => 0,
             'logger_error' => 15,
