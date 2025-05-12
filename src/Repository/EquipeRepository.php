@@ -32,22 +32,4 @@ class EquipeRepository extends ServiceEntityRepository
         parent::__construct($registry, Equipe::class);
     }
 
-    public function save(Equipe $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->persist($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
-    public function remove(Equipe $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->remove($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
 }
