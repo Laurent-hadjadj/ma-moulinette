@@ -3,7 +3,7 @@
 /*
 *  Ma-Moulinette
 *  --------------
-*  Copyright (c) 2021-2024.
+*  Copyright (c) 2021-2025.
 *  Laurent HADJADJ <laurent_h@me.com>.
 *  Licensed Creative Common  CC-BY-NC-SA 4.0.
 *  ---
@@ -33,7 +33,7 @@ class ListeProjetRepository extends ServiceEntityRepository
   /**
    * [Description for handleDatabaseException]
    *
-   * @param \Doctrine\DBAL\Exception $e
+   * @param \Throwable $e
    *
    * @return array
    *
@@ -41,23 +41,26 @@ class ListeProjetRepository extends ServiceEntityRepository
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Lilmod & Lelamed - Creative Common CC-BY-NC-SA 4.0.
    */
-  protected function handleDatabaseException(\Doctrine\DBAL\Exception $e): array
+  public function handleDatabaseException(\Throwable $e): array
   {
-    $message = $e->getMessage();
+      $message = $e->getMessage();
 
-    if (strpos($e->getMessage(), 'SQLSTATE[08006]') !== false) {
-        $message = static::$noDataBase;
-    }
+      // message = 'SQLSTATE[08006]'
+      if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
+          $message = static::$noDataBase;
+      }
 
-    if ($e->getSqlState() == '23502') {
-        $message = $e->getMessage();
-    }
+      // state = '23502'
+      if ($e instanceof \Doctrine\DBAL\Exception\NotNullConstraintViolationException) {
+          $message = $e->getMessage();
+      }
 
-    if ($e->getSqlState() == '23505'){
-        return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
-    }
+      // state = '23505'
+      if ($e instanceof \Doctrine\DBAL\Exception\UniqueConstraintViolationException) {
+          return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
+      }
 
-    return ['code' => 500, 'erreur'=> $message];
+      return ['code' => 500, 'erreur' => $message];
   }
 
   /**
@@ -81,7 +84,7 @@ class ListeProjetRepository extends ServiceEntityRepository
           $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $stmt->bindValue(":visibility", $type);
           $request = $stmt->executeQuery()->fetchAllAssociative();
-    } catch (\Doctrine\DBAL\Exception $e) {
+    } catch (\Throwable $e) {
         return $this->handleDatabaseException($e);
     }
     return ['code' => 200, 'request' => $request, 'erreur' => ''];
@@ -103,7 +106,7 @@ class ListeProjetRepository extends ServiceEntityRepository
     try {
           $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
           $nombre = $stmt->executeQuery()->fetchAllAssociative();
-        } catch (\Doctrine\DBAL\Exception $e) {
+        } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
     }
     return ['code' => 200, 'request' => $nombre, 'erreur'=>''];
@@ -128,7 +131,7 @@ class ListeProjetRepository extends ServiceEntityRepository
     try {
           $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
           $nombre = $stmt->executeQuery()->fetchAllAssociative();
-    } catch (\Doctrine\DBAL\Exception $e) {
+    } catch (\Throwable $e) {
         return $this->handleDatabaseException($e);
     }
     return ['code' => 200, 'nombre' => $nombre, 'erreur' => ''];
@@ -158,7 +161,7 @@ class ListeProjetRepository extends ServiceEntityRepository
     try {
           $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
           $liste = $stmt->executeQuery()->fetchAllAssociative();
-    } catch (\Doctrine\DBAL\Exception $e) {
+    } catch (\Throwable $e) {
         return $this->handleDatabaseException($e);
     }
     return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
@@ -184,7 +187,7 @@ class ListeProjetRepository extends ServiceEntityRepository
             $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $stmt->executeStatement();
           $this->getEntityManager()->getConnection()->commit();
-    } catch (\Doctrine\DBAL\Exception $e) {
+    } catch (\Throwable $e) {
         $this->getEntityManager()->getConnection()->rollBack();
         return $this->handleDatabaseException($e);
     }
