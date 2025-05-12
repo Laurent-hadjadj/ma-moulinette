@@ -3,7 +3,7 @@
 /*
 *  Ma-Moulinette
 *  --------------
-*  Copyright (c) 2021-2022.
+*  Copyright (c) 2021-2025.
 *  Laurent HADJADJ <laurent_h@me.com>.
 *  Licensed Creative Common  CC-BY-NC-SA 4.0.
 *  ---
@@ -11,7 +11,7 @@
 *  http://creativecommons.org/licenses/by-nc-sa/4.0/
 */
 
-namespace App\Tests\Validator;
+namespace App\Tests\Unit\Validator;
 
 use App\Entity\Equipe;
 use App\Validator\ContainsEquipeUnique;
