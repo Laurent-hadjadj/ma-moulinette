@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2025.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -40,7 +40,7 @@ class ActivityHistoriqueValidatorTest extends KernelTestCase
       ->setSuccess(static::$success)
       ->setFailed(static::$failed)
       ->setSuccessRate(static::$successRate)
-      ->setmaxTime(static::$maxTime)
+      ->setMaxTime(static::$maxTime)
       ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
 }
 
