@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2025.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -210,16 +210,16 @@ class InformationProjetRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         $map = ['maven_key' => static::$mavenKey,
-        'analyse_key' => 'BYVyxZcQo0TJpgSeq-ph',
-        'date' => '2024-08-12 16:23:11+02',
-        'project_version' => '3.0.0-RELEASE',
-        'version_sonar' => 59,
-        'version_release_sonar' => 54,
-        'version_snapshot_sonar' => 3,
-        'version_autre_sonar' => 2,
-        'type' => 'RELEASE', 'mode_collecte' => 'TRAITEMENT MANUEL',
-        'utilisateur_collecte' => 'laurent.hadjadj@ma-petite-entreprise.fr',
-        'date_enregistrement' => new \DateTimeImmutable('2024-04-12 16:23:11+01')];
+                'analyse_key' => 'BYVyxZcQo0TJpgSeq-ph',
+                'date' => '2024-08-12 16:23:11+02',
+                'project_version' => '3.0.0-RELEASE',
+                'version_sonar' => 59,
+                'version_release_sonar' => 54,
+                'version_snapshot_sonar' => 3,
+                'version_autre_sonar' => 2,
+                'type' => 'RELEASE', 'mode_collecte' => 'TRAITEMENT MANUEL',
+                'utilisateur_collecte' => 'laurent.hadjadj@ma-petite-entreprise.fr',
+                'date_enregistrement' => new \DateTimeImmutable('2024-04-12 16:23:11+01')];
 
         // Appel de la méthode
         $informationProjetRepository = $entityManager->getRepository(InformationProjet::class);
@@ -229,7 +229,6 @@ class InformationProjetRepositoryTest extends KernelTestCase
         $this->assertEquals(200, $r['code'], static::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
-
 
     protected function tearDown(): void
     {
