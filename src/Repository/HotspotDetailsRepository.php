@@ -29,7 +29,6 @@ class HotspotDetailsRepository extends ServiceEntityRepository
       parent::__construct($registry, HotspotDetails::class);
   }
 
-
   /**
    * [Description for handleDatabaseException]
    *
@@ -62,7 +61,6 @@ class HotspotDetailsRepository extends ServiceEntityRepository
 
       return ['code' => 500, 'erreur' => $message];
   }
-
 
   /**
    * [Description for selectHotspotDetailsByNiveau]
