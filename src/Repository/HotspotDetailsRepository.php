@@ -33,7 +33,7 @@ class HotspotDetailsRepository extends ServiceEntityRepository
   /**
    * [Description for handleDatabaseException]
    *
-   * @param \Doctrine\DBAL\Exception $e
+   * @param \Throwable $e
    *
    * @return array
    *
@@ -41,24 +41,28 @@ class HotspotDetailsRepository extends ServiceEntityRepository
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  protected function handleDatabaseException(\Doctrine\DBAL\Exception $e): array
+  public function handleDatabaseException(\Throwable $e): array
   {
       $message = $e->getMessage();
 
-      if (strpos($e->getMessage(), 'SQLSTATE[08006]') !== false) {
+      // message = 'SQLSTATE[08006]'
+      if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
           $message = static::$noDataBase;
       }
 
-      if ($e->getSqlState() == '23502') {
+      // state = '23502'
+      if ($e instanceof \Doctrine\DBAL\Exception\NotNullConstraintViolationException) {
           $message = $e->getMessage();
       }
 
-      if ($e->getSqlState() == '23505'){
+      // state = '23505'
+      if ($e instanceof \Doctrine\DBAL\Exception\UniqueConstraintViolationException) {
           return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
       }
 
-      return ['code' => 500, 'erreur'=> $message];
+      return ['code' => 500, 'erreur' => $message];
   }
+
 
   /**
    * [Description for selectHotspotDetailsByNiveau]
@@ -78,11 +82,12 @@ class HotspotDetailsRepository extends ServiceEntityRepository
             FROM ma_moulinette.hotspot_details
             WHERE maven_key=:maven_key
             ORDER BY status ASC";
+
     try {
           $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $stmt->bindValue(static::$mavenKey, $map['maven_key']);
             $nombre=$stmt->executeQuery()->fetchAllAssociative();
-    } catch (\Doctrine\DBAL\Exception $e) {
+    } catch (\Throwable $e) {
         return $this->handleDatabaseException($e);
     }
     return ['code' => 200, 'menaces' => $nombre, 'erreur' => ''];
@@ -111,12 +116,12 @@ class HotspotDetailsRepository extends ServiceEntityRepository
                 $stmt->bindValue(static::$mavenKey, $map['maven_key']);
                 $stmt->executeStatement();
           $this->getEntityManager()->getConnection()->commit();
-    } catch (\Doctrine\DBAL\Exception $e) {
+    } catch (\Throwable $e) {
         $this->getEntityManager()->getConnection()->rollBack();
         return $this->handleDatabaseException($e);
     }
     return ['code' => 200, 'erreur' => ''];
-}
+  }
 
   /**
    * [Description for insertHotspotDetails]
@@ -138,6 +143,7 @@ class HotspotDetailsRepository extends ServiceEntityRepository
             VALUES
                 (:maven_key, :version, :date_version, :security_category, :rule_key, :rule_name, :severity, :status, :resolution, :niveau, :frontend, :backend, :autre, :file_name, :file_path, :line, :message, :hotspot_key, :mode_collecte, :utilisateur_collecte,
                 :date_enregistrement)";
+
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
             foreach($map as $item){
@@ -166,7 +172,7 @@ class HotspotDetailsRepository extends ServiceEntityRepository
                 $stmt->executeStatement();
             }
         $this->getEntityManager()->getConnection()->commit();
-    } catch (\Doctrine\DBAL\Exception $e) {
+    } catch (\Throwable $e) {
         $this->getEntityManager()->getConnection()->rollBack();
         return $this->handleDatabaseException($e);
     }
