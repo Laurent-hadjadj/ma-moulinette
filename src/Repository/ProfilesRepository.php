@@ -33,7 +33,7 @@ class ProfilesRepository extends ServiceEntityRepository
   /**
    * [Description for handleDatabaseException]
    *
-   * @param \Doctrine\DBAL\Exception $e
+   * @param \Throwable $e
    *
    * @return array
    *
@@ -41,13 +41,26 @@ class ProfilesRepository extends ServiceEntityRepository
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Lilmod & Lelamed - Creative Common CC-BY-NC-SA 4.0.
    */
-  protected function handleDatabaseException(\Doctrine\DBAL\Exception $e): array
+  public function handleDatabaseException(\Throwable $e): array
   {
-    if (strpos($e->getMessage(), 'SQLSTATE[08006]') !== false) {
-      return ['code'=>500, 'erreur' => static::$noDataBase];
-    } else {
-      return ['code' => 500, 'erreur' => $e->getMessage()];
-    }
+      $message = $e->getMessage();
+
+      // message = 'SQLSTATE[08006]'
+      if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
+          $message = static::$noDataBase;
+      }
+
+      // state = '23502'
+      if ($e instanceof \Doctrine\DBAL\Exception\NotNullConstraintViolationException) {
+          $message = $e->getMessage();
+      }
+
+      // state = '23505'
+      if ($e instanceof \Doctrine\DBAL\Exception\UniqueConstraintViolationException) {
+          return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
+      }
+
+      return ['code' => 500, 'erreur' => $message];
   }
 
   /**
@@ -76,10 +89,10 @@ class ProfilesRepository extends ServiceEntityRepository
             $stmt->bindValue('referential_default', $referential_default);
       }
       $request=$stmt->executeQuery()->fetchAllAssociative();
-    } catch (\Doctrine\DBAL\Exception $e) {
+    } catch (\Throwable $e) {
         return $this->handleDatabaseException($e);
     }
-    return ['request'=>$request, 'code'=>200, 'erreur'=>''];
+    return ['request' => $request, 'code' => 200, 'erreur' => ''];
   }
 
   /**
@@ -111,11 +124,11 @@ class ProfilesRepository extends ServiceEntityRepository
             $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, ' ', $sql));
             $stmt->bindValue('referential_default', $referential_default);
           }
-          $liste=$stmt->executeQuery()->fetchAllAssociative();
-    } catch (\Doctrine\DBAL\Exception $e) {
+          $liste = $stmt->executeQuery()->fetchAllAssociative();
+    } catch (\Throwable $e) {
         return $this->handleDatabaseException($e);
     }
-    return ['liste'=>$liste, 'code'=>200, 'erreur'=>''];
+    return ['liste' => $liste, 'code' => 200, 'erreur' => ''];
   }
 
   /**
@@ -137,11 +150,11 @@ class ProfilesRepository extends ServiceEntityRepository
             $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
               $stmt->executeStatement();
           $this->getEntityManager()->getConnection()->commit();
-    } catch (\Doctrine\DBAL\Exception $e) {
+    } catch (\Throwable $e) {
         $this->getEntityManager()->getConnection()->rollBack();
         return $this->handleDatabaseException($e);
     }
-    return ['code'=>200, 'erreur'=>''];
+    return ['code' => 200, 'erreur' => ''];
   }
 
   /**
@@ -160,11 +173,11 @@ class ProfilesRepository extends ServiceEntityRepository
             WHERE referential_default = true";
     try {
           $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-          $labels=$stmt->executeQuery()->fetchAllAssociative();
-    } catch (\Doctrine\DBAL\Exception $e) {
+          $labels = $stmt->executeQuery()->fetchAllAssociative();
+    } catch (\Throwable $e) {
         return $this->handleDatabaseException($e);
     }
-    return ['code'=>200, 'labels'=>$labels, 'erreur'=>''];
+    return ['code' => 200, 'labels' => $labels, 'erreur' => ''];
   }
 
   /**
@@ -184,11 +197,11 @@ class ProfilesRepository extends ServiceEntityRepository
               WHERE referential_default = true";
       try {
             $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-            $dataSets=$stmt->executeQuery()->fetchAllAssociative();
-      } catch (\Doctrine\DBAL\Exception $e) {
+            $dataSets = $stmt->executeQuery()->fetchAllAssociative();
+      } catch (\Throwable $e) {
           return $this->handleDatabaseException($e);
       }
-      return ['code'=>200, 'data-set'=>$dataSets, 'erreur'=>''];
+      return ['code' => 200, 'data-set' => $dataSets, 'erreur' => ''];
   }
 
   /**
@@ -209,7 +222,7 @@ class ProfilesRepository extends ServiceEntityRepository
               VALUES
                   (:key, :name, :language_name, :referential_default, :active_rule_count, :rules_updated_at, :date_enregistrement)";
       try {
-            $nombre=0;
+            $nombre = 0;
             $this->getEntityManager()->getConnection()->beginTransaction();
               foreach($map['profiles'] as $profil){
                 $nombre = $nombre + 1;
@@ -227,10 +240,10 @@ class ProfilesRepository extends ServiceEntityRepository
                     $stmt->executeStatement();
                 }
             $this->getEntityManager()->getConnection()->commit();
-      } catch (\Doctrine\DBAL\Exception $e) {
+      } catch (\Throwable $e) {
           $this->getEntityManager()->getConnection()->rollBack();
           return $this->handleDatabaseException($e);
       }
-      return ['code'=>200, 'nombre'=>$nombre, 'erreur'=>''];
+      return ['code' => 200, 'nombre' => $nombre, 'erreur' => ''];
   }
 }
