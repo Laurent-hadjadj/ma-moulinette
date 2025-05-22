@@ -35,7 +35,7 @@ class PropertiesRepository extends ServiceEntityRepository
   /**
    * [Description for handleDatabaseException]
    *
-   * @param \Doctrine\DBAL\Exception $e
+   * @param \Throwable $e
    *
    * @return array
    *
@@ -43,13 +43,26 @@ class PropertiesRepository extends ServiceEntityRepository
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Lilmod & Lelamed - Creative Common CC-BY-NC-SA 4.0.
    */
-  protected function handleDatabaseException(\Doctrine\DBAL\Exception $e): array
+  public function handleDatabaseException(\Throwable $e): array
   {
-    if (strpos($e->getMessage(), 'SQLSTATE[08006]') !== false) {
-        return ['code'=>500, 'erreur' => static::$noDataBase];
-    } else {
-        return ['code'=>500, 'erreur'=> $e->getMessage()];
-    }
+      $message = $e->getMessage();
+
+      // message = 'SQLSTATE[08006]'
+      if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
+          $message = static::$noDataBase;
+      }
+
+      // state = '23502'
+      if ($e instanceof \Doctrine\DBAL\Exception\NotNullConstraintViolationException) {
+          $message = $e->getMessage();
+      }
+
+      // state = '23505'
+      if ($e instanceof \Doctrine\DBAL\Exception\UniqueConstraintViolationException) {
+          return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
+      }
+
+      return ['code' => 500, 'erreur' => $message];
   }
 
   /**
@@ -75,7 +88,7 @@ class PropertiesRepository extends ServiceEntityRepository
             $stmt->bindValue(static::$type, $type);
           $request = $stmt->executeQuery()->fetchAllAssociative();
         return ['code' => 200, 'request' => $request, 'erreur' => ''];
-    } catch (\Doctrine\DBAL\Exception $e) {
+    } catch (\Throwable $e) {
         return $this->handleDatabaseException($e);
     }
   }
@@ -110,7 +123,7 @@ class PropertiesRepository extends ServiceEntityRepository
                         :date_creation)";
     try {
         $this->getEntityManager()->getConnection()->beginTransaction();
-          $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $stmt->bindValue(":type", 'properties');
             $stmt->bindValue(":projet_bd", $map["projet_bd"]);
             $stmt->bindValue(":projet_sonar", $map["projet_sonar"]);
@@ -122,11 +135,11 @@ class PropertiesRepository extends ServiceEntityRepository
             $stmt->bindValue(":date_creation", $map["date_creation"]);
             $stmt->executeStatement();
         $this->getEntityManager()->getConnection()->commit();
-    } catch (\Doctrine\DBAL\Exception $e) {
+    } catch (\Throwable $e) {
         $this->getEntityManager()->getConnection()->rollBack();
         return $this->handleDatabaseException($e);
     }
-    return ['code'=>200, 'erreur'=>''];
+    return ['code' => 200, 'erreur' => ''];
   }
 
   /**
@@ -151,18 +164,18 @@ class PropertiesRepository extends ServiceEntityRepository
 
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
               $stmt->bindValue(':projet_bd', $map['projet_bd']);
               $stmt->bindValue(':projet_sonar', $map['projet_sonar']);
               $stmt->bindValue(':date_modification_projet', $map['date_modification_projet']->format(static::$horodatage));
               $stmt->bindValue(static::$type, 'properties');
-              $stmt->executeQuery();
+              $stmt->executeStatement();
           $this->getEntityManager()->getConnection()->commit();
-    } catch (\Doctrine\DBAL\Exception $e) {
+    } catch (\Throwable $e) {
         $this->getEntityManager()->getConnection()->rollBack();
         return $this->handleDatabaseException($e);
     }
-    return ['code'=>200, 'erreur'=>''];
+    return ['code' => 200, 'erreur' => ''];
   }
 
   /**
@@ -184,19 +197,20 @@ class PropertiesRepository extends ServiceEntityRepository
                 profil_sonar=:profil_sonar,
                 date_modification_profil=:date_modification_profil
             WHERE type=:type";
+
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
               $stmt->bindValue(':profil_bd', $map['profil_bd']);
               $stmt->bindValue(':profil_sonar', $map['profil_sonar']);
               $stmt->bindValue(':date_modification_profil', $map['date_modification_profil']->format(static::$horodatage));
               $stmt->bindValue(static::$type, 'properties');
               $stmt->executeStatement();
           $this->getEntityManager()->getConnection()->commit();
-    } catch (\Doctrine\DBAL\Exception $e) {
+    } catch (\Throwable $e) {
         $this->getEntityManager()->getConnection()->rollBack();
         return $this->handleDatabaseException($e);
     }
-    return ['code'=>200, 'erreur'=>''];
+    return ['code' => 200, 'erreur' => ''];
   }
 }
