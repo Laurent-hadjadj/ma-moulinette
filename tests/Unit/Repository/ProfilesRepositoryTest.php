@@ -146,6 +146,24 @@ class ProfilesRepositoryTest extends KernelTestCase
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
+    public function testInsertProfiles(): void
+    {
+        // Connexion à la base de données
+        self::bootKernel();
+        $container = static::getContainer();
+        $entityManager = $container->get('doctrine')->getManager();
+
+        // Appel de la méthode
+        $profilesRepository = $entityManager->getRepository(Profiles::class);
+        $map = ['profiles' => [
+            ['key' => 'AXyXMubJRtAGLwAs7Zcv', 'name'  => 'Ma-Petite-Entreprise v1.0.0 (2024)', 'languageName' => 'css', 'isDefault' => true, 'activeRuleCount' => 31, 'rulesUpdatedAt' => '2024-04-13 12:10:51+01', ]],
+            'date_enregistrement' => new \DateTimeImmutable('2024-04-12 16:23:11+01')];
+        $r = $profilesRepository->insertProfiles($map);
+        // Assert
+        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEmpty($r['erreur'], $r['erreur']);
+    }
+
     protected function tearDown(): void
     {
         parent::tearDown();
