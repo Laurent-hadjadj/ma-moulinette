@@ -1,4 +1,4 @@
-@echo off
+﻿@echo off
 cls
 if "%1"=="" (
     echo Erreur : Aucun paramètre fourni.
@@ -23,6 +23,7 @@ for %%d in (C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (
 if %found%==0 (
 echo Le fichier %filename% n'a pas été trouvé sur les disques disponibles.
 goto :exit
+) else (
 call  %%d:\environnement\lecteur.bat
 )
 
@@ -43,8 +44,8 @@ echo    https://github.com/Laurent-hadjadj/ma-moulinette
 echo    © 2024 - CC BY-SA-NC 4.0
 echo:
 echo [93m###                                                                         ###[0m
-echo [93m### Attention le fichier doit être encodé en UTF-8 avec une séquence        ###[0m
-echo [93m### de fin de ligne Windows (CRLF).                                         ###[0m
+echo [93m### Attention le fichier doit être encodé en UTF-8 avec BOM et              ###[0m
+echo [93m### une séquence  de fin de ligne Windows (CRLF).                           ###[0m
 echo [93m###                                                                         ###[0m
 echo:
 
