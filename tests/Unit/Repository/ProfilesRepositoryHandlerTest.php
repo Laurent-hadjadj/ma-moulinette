@@ -286,7 +286,7 @@ class ProfilesRepositoryHandlerTest extends TestCase
     public function testInsertProfiles_WhenSQLException(): void
     {
         // 1) Crée une vraie exception qui implémente DBAL\Exception et Throwable
-        $fakeException = new class('erreur delete') extends \Exception implements DBALExceptionInterface {
+        $fakeException = new class('erreur insert') extends \Exception implements DBALExceptionInterface {
             public function getSqlState(): ?string { return null; }
         };
 
