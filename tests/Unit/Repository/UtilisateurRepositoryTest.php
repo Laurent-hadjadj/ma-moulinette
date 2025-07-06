@@ -62,6 +62,216 @@ class UtilisateurRepositoryTest extends KernelTestCase
         $executor->execute([new UtilisateurFixtures()]);
     }
 
+    public function testUpdateUtilisateurFavoriVersionAjoutProjetEtVersion(): void
+    {
+        // Connexion à la base de données
+        self::bootKernel();
+        $container = static::getContainer();
+        $entityManager = $container->get('doctrine')->getManager();
+
+        // Récupère un utilisateur de test depuis les fixtures
+        $utilisateurRepository = $entityManager->getRepository(Utilisateur::class);
+        $utilisateur = $utilisateurRepository->findOneBy(['courriel' => static::$courriel]);
+        $preference = $utilisateur->getPreference();
+
+        // Assurer un état de départ contrôlé
+
+        $preference['statut'] = [];
+        $preference['suivi_projet'] = [];
+        $preference['favori_projet'] = [];
+        $preference['favori_version'] =  [];
+        $preference['bookmark'] = 'mon projet en bookmark';
+
+        // Nouveau projet à ajouter en favori
+        $map = [
+            'favori' => 1,
+            'courriel' => static::$courriel,
+            'maven_key' => static::$mavenKey,
+            'version' => static::$version,
+            'date_version' => static::$dateModification,
+        ];
+
+        // Appel de la méthode à tester
+        $response = $utilisateurRepository->updateUtilisateurFavoriVersion($preference, $map);
+        // Assertions
+        $this->assertEquals(200, $response['code']);
+        $this->assertContains(static::$mavenKey, $response['preference']['favori_projet']);
+        $this->assertEquals([
+                [static::$mavenKey => [static::$version]]
+            ], $response['preference']['favori_version']);
+    }
+
+    /**
+     * [Description for testUpdateUtilisateurFavoriVersionAjoutProjetEtVersion_favoriIsFalse]
+     *
+     * @return void
+     *
+     * Created at: 06/07/2025 15:41:46 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function testUpdateUtilisateurFavoriVersionAjoutProjetEtVersion_favoriIsFalse(): void
+    {
+        // Connexion à la base de données
+        self::bootKernel();
+        $container = static::getContainer();
+        $entityManager = $container->get('doctrine')->getManager();
+
+        // Récupère un utilisateur de test depuis les fixtures
+        $utilisateurRepository = $entityManager->getRepository(Utilisateur::class);
+        $utilisateur = $utilisateurRepository->findOneBy(['courriel' => static::$courriel]);
+        $preference = $utilisateur->getPreference();
+
+        // Assurer un état de départ contrôlé
+
+        $preference['statut'] = [];
+        $preference['suivi_projet'] = [];
+        $preference['favori_projet'] = [];
+        $preference['bookmark'] = [];
+        $preference['favori_version'] = [
+            [
+                "fr.ma-petite-entreprise:ma-moulinette" => ["1.0.1-RELEASE"]
+            ]
+        ];
+        // Nouveau projet à ajouter en favori
+        $map = [
+            'favori' => 0,
+            'courriel' => static::$courriel,
+            'maven_key' => static::$mavenKey,
+            'version' => static::$version,
+            'date_version' => static::$dateModification,
+        ];
+
+        // Appel de la méthode à tester
+        $response = $utilisateurRepository->updateUtilisateurFavoriVersion($preference, $map);
+        // Assertions
+        $this->assertEquals(200, $response['code']);
+    }
+
+    /**
+     * [Description for testUpdateUtilisateurFavoriVersionAjoutProjetEtVersion_favoriIsFalse2]
+     *
+     * @return void
+     *
+     * Created at: 06/07/2025 15:43:23 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function testUpdateUtilisateurFavoriVersionAjoutProjetEtVersion_favoriIsFalse2(): void
+    {
+        // Connexion à la base de données
+        self::bootKernel();
+        $container = static::getContainer();
+        $entityManager = $container->get('doctrine')->getManager();
+
+        // Récupère un utilisateur de test depuis les fixtures
+        $utilisateurRepository = $entityManager->getRepository(Utilisateur::class);
+        $utilisateur = $utilisateurRepository->findOneBy(['courriel' => static::$courriel]);
+        $preference = $utilisateur->getPreference();
+
+        // Assurer un état de départ contrôlé
+
+        $preference['statut'] = [];
+        $preference['suivi_projet'] = [];
+        $preference['favori_projet'] = [];
+        $preference['bookmark'] = [];
+        $preference['favori_version'] = [
+            [
+                "fr.ma-petite-entreprise:ma-moulinette" => [
+                    "1.0.0-RELEASE",
+                    '2.0.0-RELEASE',
+                    '3.0.0-RELEASE']
+            ]
+        ];
+
+        // Nouveau projet à ajouter en favori
+        $map = [
+            'favori' => 0,
+            'courriel' => static::$courriel,
+            'maven_key' => static::$mavenKey,
+            'version' => static::$version,
+            'date_version' => static::$dateModification,
+        ];
+
+        // Appel de la méthode à tester
+        $response = $utilisateurRepository->updateUtilisateurFavoriVersion($preference, $map);
+
+        // Assertions
+        $this->assertEquals(200, $response['code']);
+        // On décode le jsonArray qui a été utilisé pour stocker les données
+        $updatedPreferences = json_decode($response[0], true);
+
+        $versions = $updatedPreferences['favori_version'][0]['fr.ma-petite-entreprise:ma-moulinette'] ?? [];
+
+        $this->assertNotContains('2.0.0-RELEASE', $versions);
+        $this->assertContains('1.0.0-RELEASE', $versions);
+        $this->assertContains('3.0.0-RELEASE', $versions);
+        $this->assertCount(2, $versions);
+    }
+
+    /**
+     * [Description for testUpdateUtilisateurFavoriProjet_Errer400]
+     *
+     * @return void
+     *
+     * Created at: 06/07/2025 15:04:30 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function testUpdateUtilisateurFavoriProjet_Errer400(): void
+    {
+        // Connexion à la base de données
+        self::bootKernel();
+        $container = static::getContainer();
+        $entityManager = $container->get('doctrine')->getManager();
+
+        // Récupère un utilisateur de test depuis les fixtures
+        $utilisateurRepository = $entityManager->getRepository(Utilisateur::class);
+        $utilisateur = $utilisateurRepository->findOneBy(['courriel' => static::$courriel]);
+        $preference = $utilisateur->getPreference();
+
+        $map = [ 'maven_key' => static::$mavenKey, 'courriel' => static::$courriel ];
+        $preference['statut'] = [];
+        $preference['suivi_projet'] = [];
+        $preference['favori_projet'] = [static::$mavenKey];
+        $preference['favori_version'] = [];
+        $preference['bookmark'] = ''; // erreur 400
+
+        // Appel de la méthode à tester
+        $response = $utilisateurRepository->updateUtilisateurFavoriProjet($preference, $map);
+        // Assertions
+        $this->assertEquals(400, $response['code']);
+    }
+
+    public function testUpdateUtilisateurFavoriProjetFavoriProjet_isNull(): void
+    {
+        // Connexion à la base de données
+        self::bootKernel();
+        $container = static::getContainer();
+        $entityManager = $container->get('doctrine')->getManager();
+
+        // Récupère un utilisateur de test depuis les fixtures
+        $utilisateurRepository = $entityManager->getRepository(Utilisateur::class);
+        $utilisateur = $utilisateurRepository->findOneBy(['courriel' => static::$courriel]);
+        $preference = $utilisateur->getPreference();
+
+        $map = [ 'maven_key' => static::$mavenKey, 'courriel' => static::$courriel ];
+        $preference['statut'] = [];
+        $preference['suivi_projet'] = [];
+        $preference['favori_projet'] = [];
+        $preference['favori_version'] = [];
+        $preference['bookmark'] = [];
+
+        // Appel de la méthode à tester
+        $response = $utilisateurRepository->updateUtilisateurFavoriProjet($preference, $map);
+
+        // Assertions
+        $this->assertEquals(200, $response['code']);
+        $this->assertEquals(1, $response['statut']);
+        $this->assertEmpty($response['erreur']);
+    }
+
+
     /**
      * [Description for testUpdateUtilisateurResetPassword]
      *  Teste la mise à jour du paramètre init pour le reset du password
