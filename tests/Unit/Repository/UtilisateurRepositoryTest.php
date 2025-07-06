@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2025.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -130,7 +130,7 @@ class UtilisateurRepositoryTest extends KernelTestCase
         $preference['bookmark'] = [];
         $preference['favori_version'] = [
             [
-                "fr.ma-petite-entreprise:ma-moulinette" => ["1.0.1-RELEASE"]
+                static::$mavenKey => ['1.0.1-RELEASE']
             ]
         ];
         // Nouveau projet à ajouter en favori
@@ -177,7 +177,7 @@ class UtilisateurRepositoryTest extends KernelTestCase
         $preference['bookmark'] = [];
         $preference['favori_version'] = [
             [
-                "fr.ma-petite-entreprise:ma-moulinette" => [
+                static::$mavenKey => [
                     "1.0.0-RELEASE",
                     '2.0.0-RELEASE',
                     '3.0.0-RELEASE']
@@ -201,9 +201,9 @@ class UtilisateurRepositoryTest extends KernelTestCase
         // On décode le jsonArray qui a été utilisé pour stocker les données
         $updatedPreferences = json_decode($response[0], true);
 
-        $versions = $updatedPreferences['favori_version'][0]['fr.ma-petite-entreprise:ma-moulinette'] ?? [];
+        $versions = $updatedPreferences['favori_version'][0][static::$mavenKey] ?? [];
 
-        $this->assertNotContains('2.0.0-RELEASE', $versions);
+        $this->assertNotContains(static::$version, $versions);
         $this->assertContains('1.0.0-RELEASE', $versions);
         $this->assertContains('3.0.0-RELEASE', $versions);
         $this->assertCount(2, $versions);
