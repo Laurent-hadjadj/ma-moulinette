@@ -1,327 +1,213 @@
 <?php
 
-/*
- *  Ma-Moulinette
- *  --------------
- *  Copyright (c) 2021-2024.
- *  Laurent HADJADJ <laurent_h@me.com>.
- *  Licensed Creative Common  CC-BY-NC-SA 4.0.
- *  ---
- *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
- *  http://creativecommons.org/licenses/by-nc-sa/4.0/
- */
+namespace App\Tests\Repository;
 
-namespace App\Tests\Unit\Repository;
-
-use App\Entity\Repartition;
 use App\DataFixtures\RepartitionFixtures;
-use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
+use App\Entity\Repartition;
+use App\Repository\RepartitionRepository;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
-
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
-
-/**
- * [Description RepartitionRepositoryTest]
- */
 class RepartitionRepositoryTest extends KernelTestCase
 {
+    private ?EntityManagerInterface $em = null;
 
-    private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
-    private static $name = 'ma-moulinette';
-    private static $bugBlocker = 0;
-    private static $bugCritical = 0;
-    private static $bugMajor = 1843;
-    private static $bugMinor = 29;
-    private static $bugInfo = 0;
-    private static $vulnerabilityBlocker = 0;
-    private static $vulnerabilityCritical = 0;
-    private static $vulnerabilityMajor = 0;
-    private static $vulnerabilityMinor = 1427;
-    private static $vulnerabilityInfo = 3;
-    private static $codeSmellBlocker = 0;
-    private static $codeSmellCritical = 1194;
-    private static $codeSmellMajor = 13272;
-    private static $codeSmellMinor = 8207;
-    private static $codeSmellInfo = 13632;
-    private static $frontend = 0;
-    private static $frontendBugBlocker = 0;
-    private static $frontendBugCritical = 0;
-    private static $frontendBugMajor = 1232;
-    private static $frontendBugMinor = 21;
-    private static $frontendBugInfo = 0;
-    private static $frontendVulnerabilityBlocker = 0;
-    private static $frontendVulnerabilityCritical = 0;
-    private static $frontendVulnerabilityMajor = 0;
-    private static $frontendVulnerabilityMinor = 898;
-    private static $frontendVulnerabilityInfo = 3;
-    private static $frontendCodeSmellBlocker = 0;
-    private static $frontendCodeSmellCritical = 554;
-    private static $frontendCodeSmellMajor = 4441;
-    private static $frontendCodeSmellMinor = 6603;
-    private static $frontendCodeSmellInfo = 4009;
-    private static $backend = 0;
-    private static $backendBugBlocker = 0;
-    private static $backendBugCritical = 0;
-    private static $backendBugMajor = 611;
-    private static $backendBugMinor = 8;
-    private static $backendBugInfo = 0;
-    private static $backendVulnerabilityBlocker = 0;
-    private static $backendVulnerabilityCritical = 0;
-    private static $backendVulnerabilityMajor = 0;
-    private static $backendVulnerabilityMinor = 529;
-    private static $backendVulnerabilityInfo = 0;
-    private static $backendCodeSmellBlocker = 0;
-    private static $backendCodeSmellCritical = 640;
-    private static $backendCodeSmellMajor = 5559;
-    private static $backendCodeSmellMinor = 3396;
-    private static $backendCodeSmellInfo = 4155;
-    private static $autre = 0;
-    private static $autreBugBlocker = 0;
-    private static $autreBugCritical = 0;
-    private static $autreBugMajor = 0;
-    private static $autreBugMinor = 0;
-    private static $autreBugInfo = 0;
-    private static $autreVulnerabilityBlocker = 0;
-    private static $autreVulnerabilityCritical = 0;
-    private static $autreVulnerabilityMajor = 0;
-    private static $autreVulnerabilityMinor = 0;
-    private static $autreVulnerabilityInfo = 0;
-    private static $autreCodeSmellBlocker = 0;
-    private static $autreCodeSmellCritical = 0;
-    private static $autreCodeSmellMajor = 0;
-    private static $autreCodeSmellMinor = 0;
-    private static $autreCodeSmellInfo = 0;
-    private static $inconnue = 0;
-    private static $inconnueBugBlocker = 0;
-    private static $inconnueBugCritical = 0;
-    private static $inconnueBugMajor = 0;
-    private static $inconnueBugMinor = 0;
-    private static $inconnueBugInfo = 0;
-    private static $inconnueVulnerabilityBlocker = 0;
-    private static $inconnueVulnerabilityCritical = 0;
-    private static $inconnueVulnerabilityMajor = 0;
-    private static $inconnueVulnerabilityMinor = 0;
-    private static $inconnueVulnerabilityInfo = 0;
-    private static $inconnueCodeSmellBlocker = 0;
-    private static $inconnueCodeSmellCritical = 0;
-    private static $inconnueCodeSmellMajor = 0;
-    private static $inconnueCodeSmellMinor = 1;
-    private static $inconnueCodeSmellInfo = 43;
-    private static $control = 'complet (100%)';
-    private static $setup = '1739816022572';
-    private static $modeCollecte = 'COLLECTE';
-    private static $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
-    private static $dateEnregistrement = '2025-02-17 19:13:59';
-    private static $erreurCode200 = 'Erreur le code retour doit être 200.';
+    private static $setup = 1000000000000;
 
     protected function setUp(): void
     {
         self::bootKernel();
-        $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
-
-        // Réinitialiser la séquence
-        $connection = $entityManager->getConnection();
-        $platform = $connection->getDatabasePlatform('SET search_path TO ma_moulinette_test');
-
-        if ($platform instanceof \Doctrine\DBAL\Platforms\PostgreSqlPlatform) {
-            $sequence = 'ma_moulinette.repartition_id_seq';
-            $connection->executeQuery("SELECT setval('$sequence', 1, false);");
-        }
-
-        $purger = new ORMPurger($entityManager);
-        $executor = new ORMExecutor($entityManager, $purger);
-        $executor->execute([new RepartitionFixtures()]);
-    }
-
-    public function testSelectOrUpdateRepartitionInitialUpdate(): void
-    {
-        // Connexion à la base de données
-        self::bootKernel();
-        /* On se connecte à la base de tests */
-        $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
-
-        $map = [
-            'maven_key' => static::$mavenKey,
-            'name' => static::$name,
-            'bug_blocker' => static::$bugBlocker,
-            'bug_critical' => static::$bugCritical,
-            'bug_major' => static::$bugMajor,
-            'bug_minor' => static::$bugMinor,
-            'bug_info' => static::$bugInfo,
-            'vulnerability_blocker' => static::$vulnerabilityBlocker,
-            'vulnerability_critical' => static::$vulnerabilityCritical,
-            'vulnerability_major' => static::$vulnerabilityMajor,
-            'vulnerability_minor' => static::$vulnerabilityMinor,
-            'vulnerability_info' => static::$vulnerabilityInfo,
-            'code_smell_blocker' => static::$codeSmellBlocker,
-            'code_smell_critical' => static::$codeSmellCritical,
-            'code_smell_major' => static::$codeSmellMajor,
-            'code_smell_minor' => static::$codeSmellMinor,
-            'code_smell_info' => static::$codeSmellInfo,
-            'setup' => static::$setup,
-            'mode_collecte' => static::$modeCollecte,
-            'utilisateur_collecte' => static::$utilisateurCollecte,
-            'date_enregistrement'=> new \DateTimeImmutable(static::$dateEnregistrement)
-        ];
-
-        // Appel de la méthode
-        $repartitionRepository = $entityManager->getRepository(Repartition::class);
-        $r = $repartitionRepository->SelectOrUpdateRepartitionInitial($map);
-
-        // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
-        $this->assertEmpty($r['erreur'], $r['erreur']);
-    }
-
-    public function testSelectOrUpdateRepartitionInitialInsert(): void
-    {
-        // Connexion à la base de données
-        self::bootKernel();
-        /* On se connecte à la base de tests */
-        $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
-
-        $date = new \DateTime('now');
-        $timestamp = $date->getTimestamp();
-
-        $map = [
-          'maven_key' => static::$mavenKey,
-          'name' => static::$name,
-          'bug_blocker' => static::$bugBlocker,
-          'bug_critical' => static::$bugCritical,
-          'bug_major' => static::$bugMajor,
-          'bug_minor' => static::$bugMinor,
-          'bug_info' => static::$bugInfo,
-          'vulnerability_blocker' => static::$vulnerabilityBlocker,
-          'vulnerability_critical' => static::$vulnerabilityCritical,
-          'vulnerability_major' => static::$vulnerabilityMajor,
-          'vulnerability_minor' => static::$vulnerabilityMinor,
-          'vulnerability_info' => static::$vulnerabilityInfo,
-          'code_smell_blocker' => static::$codeSmellBlocker,
-          'code_smell_critical' => static::$codeSmellCritical,
-          'code_smell_major' => static::$codeSmellMajor,
-          'code_smell_minor' => static::$codeSmellMinor,
-          'code_smell_info' => static::$codeSmellInfo,
-          'setup' => $timestamp,
-          'mode_collecte' => static::$modeCollecte,
-          'utilisateur_collecte' => static::$utilisateurCollecte,
-          'date_enregistrement'=> new \DateTimeImmutable(static::$dateEnregistrement)];
-
-        // Appel de la méthode
-        $repartitionRepository = $entityManager->getRepository(Repartition::class);
-        $r = $repartitionRepository->SelectOrUpdateRepartitionInitial($map);
-
-        // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
-        $this->assertEmpty($r['erreur'], $r['erreur']);
-    }
-
-    public function testUpdateRepartition(): void
-    {
-        // Connexion à la base de données
-        self::bootKernel();
-        /* On se connecte à la base de tests */
-        $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
-
-        $date = new \DateTime('now');
-        $timestamp = $date->getTimestamp();
-
-        $map = [
-            'maven_key' => static::$mavenKey,
-            'name' => static::$name,
-            'frontend' => static::$frontend,
-            'frontend_bug_blocker' => static::$frontendBugBlocker,
-            'frontend_bug_critical' => static::$frontendBugCritical,
-            'frontend_bug_major' => static::$frontendBugMajor,
-            'frontend_bug_minor' => static::$frontendBugMinor,
-            'frontend_bug_info' => static::$frontendBugInfo,
-            'frontend_vulnerability_blocker' => static::$frontendVulnerabilityBlocker,
-            'frontend_vulnerability_critical' => static::$frontendVulnerabilityCritical,
-            'frontend_vulnerability_major' => static::$frontendVulnerabilityMajor,
-            'frontend_vulnerability_minor' => static::$frontendVulnerabilityMinor,
-            'frontend_vulnerability_info' => static::$frontendVulnerabilityInfo,
-            'frontend_code_smell_blocker' => static::$frontendCodeSmellBlocker,
-            'frontend_code_smell_critical' => static::$frontendCodeSmellCritical,
-            'frontend_code_smell_major' => static::$frontendCodeSmellMajor,
-            'frontend_code_smell_minor' => static::$frontendCodeSmellMinor,
-            'frontend_code_smell_info' => static::$frontendCodeSmellInfo,
-            'backend' => static::$backend,
-            'backend_bug_blocker' => static::$backendBugBlocker,
-            'backend_bug_critical' => static::$backendBugCritical,
-            'backend_bug_major' => static::$backendBugMajor,
-            'backend_bug_minor' => static::$backendBugMinor,
-            'backend_bug_info' => static::$backendBugInfo,
-            'backend_vulnerability_blocker' => static::$backendVulnerabilityBlocker,
-            'backend_vulnerability_critical' => static::$backendVulnerabilityCritical,
-            'backend_vulnerability_major' => static::$backendVulnerabilityMajor,
-            'backend_vulnerability_minor' => static::$backendVulnerabilityMinor,
-            'backend_vulnerability_info' => static::$backendVulnerabilityInfo,
-            'backend_code_smell_blocker' => static::$backendCodeSmellBlocker,
-            'backend_code_smell_critical' => static::$backendCodeSmellCritical,
-            'backend_code_smell_major' => static::$backendCodeSmellMajor,
-            'backend_code_smell_minor' => static::$backendCodeSmellMinor,
-            'backend_code_smell_info' => static::$backendCodeSmellInfo,
-            'autre' => static::$autre,
-            'autre_bug_blocker' => static::$autreBugBlocker,
-            'autre_bug_critical' => static::$autreBugCritical,
-            'autre_bug_major' => static::$autreBugMajor,
-            'autre_bug_minor' => static::$autreBugMinor,
-            'autre_bug_info' => static::$autreBugInfo,
-            'autre_vulnerability_blocker' => static::$autreVulnerabilityBlocker,
-            'autre_vulnerability_critical' => static::$autreVulnerabilityCritical,
-            'autre_vulnerability_major' => static::$autreVulnerabilityMajor,
-            'autre_vulnerability_minor' => static::$autreVulnerabilityMinor,
-            'autre_vulnerability_info' => static::$autreVulnerabilityInfo,
-            'autre_code_smell_blocker' => static::$autreCodeSmellBlocker,
-            'autre_code_smell_critical' => static::$autreCodeSmellCritical,
-            'autre_code_smell_major' => static::$autreCodeSmellMajor,
-            'autre_code_smell_minor' => static::$autreCodeSmellMinor,
-            'autre_code_smell_info' => static::$autreCodeSmellInfo,
-            'inconnue' => static::$inconnue,
-            'inconnue_bug_blocker' => static::$inconnueBugBlocker,
-            'inconnue_bug_critical' => static::$inconnueBugCritical,
-            'inconnue_bug_major' => static::$inconnueBugMajor,
-            'inconnue_bug_minor' => static::$inconnueBugMinor,
-            'inconnue_bug_info' => static::$inconnueBugInfo,
-            'inconnue_vulnerability_blocker' => static::$inconnueVulnerabilityBlocker,
-            'inconnue_vulnerability_critical' => static::$inconnueVulnerabilityCritical,
-            'inconnue_vulnerability_major' => static::$inconnueVulnerabilityMajor,
-            'inconnue_vulnerability_minor' => static::$inconnueVulnerabilityMinor,
-            'inconnue_vulnerability_info' => static::$inconnueVulnerabilityInfo,
-            'inconnue_code_smell_blocker' => static::$inconnueCodeSmellBlocker,
-            'inconnue_code_smell_critical' => static::$inconnueCodeSmellCritical,
-            'inconnue_code_smell_major' => static::$inconnueCodeSmellMajor,
-            'inconnue_code_smell_minor' => static::$inconnueCodeSmellMinor,
-            'inconnue_code_smell_info' => static::$inconnueCodeSmellInfo,
-            'control' => static::$control,
-            'setup' => $timestamp,
-            'mode_collecte' => static::$modeCollecte,
-            'utilisateur_collecte' => static::$utilisateurCollecte,
-            'date_enregistrement'=> new \DateTimeImmutable(static::$dateEnregistrement)
-        ];
-
-        // Appel de la méthode
-        $repartitionRepository = $entityManager->getRepository(Repartition::class);
-        $r = $repartitionRepository->updateRepartition($map);
-
-        // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
-        $this->assertEmpty($r['erreur'], $r['erreur']);
+        $this->em = self::getContainer()->get('doctrine')->getManager();
+        $this->purgeDatabase();
+        $this->loadFixtures();
     }
 
     protected function tearDown(): void
     {
         parent::tearDown();
-
-        // On se déconnecte pour éviter des problèmes de mémoires
-        $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
-        $entityManager->close();
-        $entityManager = null;
+        $this->em?->close();
+        $this->em = null;
     }
 
+    private function purgeDatabase(): void
+    {
+        $purger = new ORMPurger($this->em);
+        $purger->setPurgeMode(ORMPurger::PURGE_MODE_TRUNCATE);
+        $purger->purge();
+    }
+
+    /**
+     * [Description for loadFixtures]
+     *
+     * @return void
+     *
+     * Created at: 06/07/2025 12:07:24 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function loadFixtures(): void
+    {
+        $fixture = new RepartitionFixtures();
+        $fixture->load($this->em);
+    }
+
+    /**
+     * [Description for getRepository]
+     *
+     * @return RepartitionRepository
+     *
+     * Created at: 06/07/2025 12:07:19 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function getRepository(): RepartitionRepository
+    {
+        return $this->em->getRepository(Repartition::class);
+    }
+
+    /**
+     * [Description for buildCompleteMap]
+     *
+     * @return array
+     *
+     * Created at: 06/07/2025 12:07:16 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function buildCompleteMap(): array {
+        $defaultFields = ['bug_blocker', 'bug_critical', 'bug_major', 'bug_minor', 'bug_info',
+            'vulnerability_blocker', 'vulnerability_critical', 'vulnerability_major', 'vulnerability_minor', 'vulnerability_info',
+            'code_smell_blocker', 'code_smell_critical', 'code_smell_major', 'code_smell_minor', 'code_smell_info',
+            'frontend', 'backend',  'autre','inconnue'
+        ];
+
+        $fieldsBug = [
+            'frontend_bug_blocker', 'backend_bug_blocker', 'autre_bug_blocker', 'inconnue_bug_blocker',
+            'frontend_bug_critical', 'backend_bug_critical', 'autre_bug_critical', 'inconnue_bug_critical',
+            'frontend_bug_major', 'backend_bug_major', 'autre_bug_major', 'inconnue_bug_major',
+            'frontend_bug_minor', 'backend_bug_minor', 'autre_bug_minor', 'inconnue_bug_minor',
+            'frontend_bug_info', 'backend_bug_info', 'autre_bug_info', 'inconnue_bug_info',
+        ];
+
+        $fieldsVulnerability = [
+            'frontend_vulnerability_blocker', 'backend_vulnerability_blocker', 'autre_vulnerability_blocker', 'inconnue_vulnerability_blocker',
+            'frontend_vulnerability_critical', 'backend_vulnerability_critical', 'autre_vulnerability_critical', 'inconnue_vulnerability_critical',
+            'frontend_vulnerability_major', 'backend_vulnerability_major', 'autre_vulnerability_major', 'inconnue_vulnerability_major',
+            'frontend_vulnerability_minor', 'backend_vulnerability_minor', 'autre_vulnerability_minor', 'inconnue_vulnerability_minor',
+            'frontend_vulnerability_info', 'backend_vulnerability_info', 'autre_vulnerability_info', 'inconnue_vulnerability_info',
+        ];
+
+        $fieldsCodeSmell = [
+            'frontend_code_smell_blocker', 'backend_code_smell_blocker', 'autre_code_smell_blocker', 'inconnue_code_smell_blocker',
+            'frontend_code_smell_critical', 'backend_code_smell_critical', 'autre_code_smell_critical', 'inconnue_code_smell_critical',
+            'frontend_code_smell_major', 'backend_code_smell_major', 'autre_code_smell_major', 'inconnue_code_smell_major',
+            'frontend_code_smell_minor', 'backend_code_smell_minor', 'autre_code_smell_minor', 'inconnue_code_smell_minor',
+            'frontend_code_smell_info', 'backend_code_smell_info', 'autre_code_smell_info', 'inconnue_code_smell_info',
+        ];
+
+        $allFields = array_merge($defaultFields, $fieldsBug, $fieldsVulnerability, $fieldsCodeSmell);
+
+        // Construction du tableau avec valeurs par défaut (0)
+        $map = [];
+        foreach ($allFields as $field) {
+            $map[$field] = 0;
+        }
+
+        // Valeurs essentielles à remplir pour l'appel
+        $map['maven_key'] = 'ma-cle-maven';
+        $map['name'] = 'ma-moulinette';
+        $map['setup'] = static::$setup;
+        $map['mode_collecte'] = 'COLLECTE';
+        $map['utilisateur_collecte'] = 'mOi';
+        $map['control'] = 'initial';
+        $map['date_enregistrement'] = new \DateTime('2025-02-17 19:13:59');
+        return $map;
+    }
+
+    /**
+     * [Description for testInitialInsert]
+     *
+     * @return void
+     *
+     * Created at: 06/07/2025 12:07:09 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function testInitialInsert(): void
+    {
+        $repo = $this->getRepository();
+        $map = $this->buildCompleteMap();
+
+        $result = $repo->selectOrUpdateRepartitionInitial($map);
+
+        $this->assertEquals(200, $result['code']);
+        $this->assertEmpty($result['erreur'] ?? '');
+
+        $repartition = $repo->findOneBy(['mavenKey' => $map['maven_key']]);
+        $this->assertNotNull($repartition);
+        $this->assertEquals('ma-moulinette', $repartition->getName());
+    }
+
+    /**
+     * [Description for testUpdateExistingRepartition]
+     *
+     * @return void
+     *
+     * Created at: 06/07/2025 12:07:07 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function testUpdateExistingRepartition(): void
+    {
+        $map = $this->buildCompleteMap();
+        // Première insertion
+        $repo = $this->getRepository();
+        $repo->selectOrUpdateRepartitionInitial($map);
+
+        // Mise à jour avec nouveau nom
+        $map['name'] = 'update-ma-moulinette';
+        $result = $repo->selectOrUpdateRepartitionInitial($map);
+        $this->assertEquals(200, $result['code']);
+        $this->assertNotEmpty($result['erreur'] ?? '', 'Le champ "erreur" est vide ou non défini.');
+        $this->assertSame('Mise à jour effectuée.', $result['erreur'], 'Le message de mise à jour est incorrect.');
+
+        $repartition = $repo->findOneBy(['mavenKey' => $map['maven_key']]);
+        $this->assertNotNull($repartition);
+        $this->assertEquals('update-ma-moulinette', $repartition->getName());
+    }
+
+
+    /**
+     * [Description for testDirectUpdateRepartition]
+     *
+     * @return void
+     *
+     * Created at: 06/07/2025 12:07:03 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function testDirectUpdateRepartition(): void
+    {
+        $repo = $this->getRepository();
+
+        $now = new \DateTimeImmutable();
+        $name = 'test-setup';
+        $map = $this->buildCompleteMap();
+        $mavenKey = $map['maven_key'];
+
+        $repo->selectOrUpdateRepartitionInitial($map);
+
+        // Création du tableau de mise à jour
+        $updateMap = [
+            'maven_key' => $mavenKey,
+            'setup' => $map['setup'],
+            'name' => $name,
+            'control' => 'initial',
+            'date_enregistrement' => $now
+        ];
+
+        $result = $repo->updateRepartition($updateMap);
+        $this->assertEquals(200, $result['code']);
+    }
 }
