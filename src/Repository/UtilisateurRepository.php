@@ -38,30 +38,34 @@ class UtilisateurRepository extends ServiceEntityRepository
   /**
    * [Description for handleDatabaseException]
    *
-   * @param \Doctrine\DBAL\Exception $e
+   * @param \Throwable $e
    *
    * @return array
    *
-   * Created at: 21/10/2024 16:55:20 (Europe/Paris)
+   * Created at: 06/07/2025 12:50:49 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Lilmod & Lelamed - Creative Common CC-BY-NC-SA 4.0.
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  protected function handleDatabaseException(\Doctrine\DBAL\Exception $e): array
+  public function handleDatabaseException(\Throwable $e): array
   {
       $message = $e->getMessage();
-      if (strpos($e->getMessage(), 'SQLSTATE[08006]') !== false) {
+
+      // message = 'SQLSTATE[08006]'
+      if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
           $message = static::$noDataBase;
       }
 
-      if ($e->getSqlState() == '23502') {
+      // state = '23502'
+      if ($e instanceof \Doctrine\DBAL\Exception\NotNullConstraintViolationException) {
           $message = $e->getMessage();
       }
 
-      if ($e->getSqlState() == '23505'){
+      // state = '23505'
+      if ($e instanceof \Doctrine\DBAL\Exception\UniqueConstraintViolationException) {
           return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
       }
 
-      return ['code' => 500, 'erreur'=> $message];
+      return ['code' => 500, 'erreur' => $message];
   }
 
   /**
@@ -144,6 +148,7 @@ class UtilisateurRepository extends ServiceEntityRepository
 
     /** On supprime la version du projet en favori, le nombre de version est > 1 */
     if (str_contains(\serialize($preference['favori_version']), $map['maven_key']) && $map['favori'] === 0){
+
       /** On supprime pour le projet la version */
       $nouvelleListeVersion = array_diff($preference['favori_version'][$index][$map['maven_key']], [$map['version']]);
       /** On crée une nouvelle version avec la nouvelleListe */
@@ -172,12 +177,10 @@ class UtilisateurRepository extends ServiceEntityRepository
           ])
     );
 
-    $response=['code' => 200, 'erreur' => ''];
-
     $sql = "UPDATE ma_moulinette.utilisateur
             SET preference = :preference,
                 date_modification = :date_modification
-            WHERE courriel=:courriel";
+            WHERE courriel = :courriel";
     try {
         $this->getEntityManager()->getConnection()->beginTransaction();
           $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
@@ -186,11 +189,11 @@ class UtilisateurRepository extends ServiceEntityRepository
             $stmt->bindValue(static::$dateModification, $now->format(static::$dateFormatted));
             $stmt->executeStatement();
         $this->getEntityManager()->getConnection()->commit();
-    } catch (\Doctrine\DBAL\Exception $e) {
+    } catch (\Throwable $e) {
         $this->getEntityManager()->getConnection()->rollBack();
         return $this->handleDatabaseException($e);
     }
-    return $response;
+    return  ['code' => 200, 'erreur' => '', 'preference' => $preference, $jsonArray];
   }
 
   /**
@@ -220,11 +223,6 @@ class UtilisateurRepository extends ServiceEntityRepository
       !is_array($preference['bookmark'])
     ) {
       return ['code' => 400, 'erreur' => static::$erreur400];
-    }
-
-    // ✅ Vérification supplémentaire AVANT in_array()
-    if (!isset($preference['favori_projet']) || !is_array($preference['favori_projet'])) {
-      return ['code' => 400, 'erreur' => 'Liste des favoris invalide'];
     }
 
     /** On regarde si la projet est dans la liste des favoris (true) */
@@ -258,6 +256,7 @@ class UtilisateurRepository extends ServiceEntityRepository
       ) {
         return ['code' => 400, 'erreur' => static::$erreur400];
       }
+
       $jsonArray = json_encode([
         'statut' => $preference['statut'],
         'suivi_projet' => $preference['suivi_projet'],
@@ -285,7 +284,7 @@ class UtilisateurRepository extends ServiceEntityRepository
                   $stmt->bindValue(static::$courriel, $map['courriel']);
                   $stmt->executeStatement();
               $this->getEntityManager()->getConnection()->commit();
-        } catch (\Doctrine\DBAL\Exception $e) {
+        } catch (\Throwable $e) {
             $this->getEntityManager()->getConnection()->rollBack();
             return $this->handleDatabaseException($e);
         }
@@ -335,7 +334,7 @@ class UtilisateurRepository extends ServiceEntityRepository
                 $stmt->bindValue(static::$dateModification, $now->format(static::$dateFormatted));
                 $stmt->executeStatement();
           $this->getEntityManager()->getConnection()->commit();
-        } catch (\Doctrine\DBAL\Exception $e) {
+        } catch (\Throwable $e) {
             $this->getEntityManager()->getConnection()->rollBack();
             return $this->handleDatabaseException($e);
         }
@@ -371,7 +370,7 @@ class UtilisateurRepository extends ServiceEntityRepository
             $stmt->bindValue(':date_modification', $map['date_modification']->format(static::$dateFormatted));
             $stmt->executeStatement();
         $this->getEntityManager()->getConnection()->commit();
-    } catch (\Doctrine\DBAL\Exception $e) {
+    } catch (\Throwable $e) {
         $this->getEntityManager()->getConnection()->rollBack();
         return $this->handleDatabaseException($e);
     }
