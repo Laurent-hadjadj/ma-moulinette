@@ -207,6 +207,12 @@ class RepartitionCaseTest extends TestCase
         $this->repartition = $this->getEntity();
     }
 
+    public function testSettingAndGettingId(): void
+    {
+        $this->repartition->setId(1);
+        $this->assertEquals(1, $this->repartition->getId());
+    }
+
     public function testSettingAndGettingMavenKey(): void
     {
         $this->repartition->setMavenKey(static::$mavenKey);
