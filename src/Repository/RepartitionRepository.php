@@ -31,7 +31,7 @@ class RepartitionRepository extends ServiceEntityRepository
   /**
    * [Description for handleDatabaseException]
    *
-   * @param \Doctrine\DBAL\Exception $e
+   * @param \Throwable $e
    *
    * @return array
    *
@@ -39,49 +39,26 @@ class RepartitionRepository extends ServiceEntityRepository
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  protected function handleDatabaseException(\Doctrine\DBAL\Exception $e): array
+  public function handleDatabaseException(\Throwable $e): array
   {
       $message = $e->getMessage();
 
-      if (strpos($e->getMessage(), 'SQLSTATE[08006]') !== false) {
+      // message = 'SQLSTATE[08006]'
+      if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
           $message = static::$noDataBase;
       }
 
-    // Récupération de l'exception précédente qui contient le SQLState
-    $previousException = $e->getPrevious();
+      // state = '23502'
+      if ($e instanceof \Doctrine\DBAL\Exception\NotNullConstraintViolationException) {
+          $message = $e->getMessage();
+      }
 
-    if ($previousException instanceof \Doctrine\DBAL\Driver\Exception) {
-        $sqlState = $previousException->getSQLState();
+      // state = '23505'
+      if ($e instanceof \Doctrine\DBAL\Exception\UniqueConstraintViolationException) {
+          return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
+      }
 
-        // Violation de contrainte NOT NULL
-        if ($sqlState === '23502') {
-            return ['code' =>'23502', 'erreur' => $e->getMessage()];
-        }
-
-        // Violation de contrainte UNIQUE
-        if ($sqlState === '23505') {
-            return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
-        }
-    }
-
-      return ['code' => 500, 'erreur'=> $message];
-  }
-
-  /**
-   * [Description for handleErrorException]
-   *
-   * @param \ErrorException $e
-   *
-   * @return array
-   *
-   * Created at: 15/02/2025 22:05:49 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
-  protected function handleErrorException(\ErrorException $e): array
-  {
-      $message = $e->getMessage();
-      return ['code' => 500, 'erreur'=> $message];
+      return ['code' => 500, 'erreur' => $message];
   }
 
   /**
@@ -100,7 +77,6 @@ class RepartitionRepository extends ServiceEntityRepository
     $sqlCheck = "SELECT id FROM ma_moulinette.repartition
                   WHERE maven_key = :maven_key AND control = 'initial'
                   ORDER BY date_enregistrement DESC LIMIT 1";
-
     $sqlUpdate = "UPDATE ma_moulinette.repartition SET
                     name = :name,
                     bug_blocker = :bug_blocker,
@@ -130,42 +106,43 @@ class RepartitionRepository extends ServiceEntityRepository
 
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
-          // Vérification d'existence
-          $stmtCheck = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sqlCheck));
-            $stmtCheck->bindValue(static::$mavenKey, $map['maven_key']);
-            $result = $stmtCheck->executeQuery();
-            $existingId = $result->fetchOne();
+            // Vérification d'existence
+            $stmtCheck = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sqlCheck));
+              $stmtCheck->bindValue(static::$mavenKey, $map['maven_key']);
+              $result = $stmtCheck->executeQuery();
+              $existingId = $result->fetchOne();
+            /** Si control = initial  on update */
+            if ($existingId) {
+                $stmtUpdate = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sqlUpdate));
+                  $stmtUpdate->bindValue(':name', $map['name']);
+                  $stmtUpdate->bindValue(static::$setup, $map['setup']);
+                  $stmtUpdate->bindValue(':bug_blocker', $map['bug_blocker']);
+                  $stmtUpdate->bindValue(':bug_critical', $map['bug_critical']);
+                  $stmtUpdate->bindValue(':bug_major', $map['bug_major']);
+                  $stmtUpdate->bindValue(':bug_minor', $map['bug_minor']);
+                  $stmtUpdate->bindValue(':bug_info', $map['bug_info']);
 
-          if ($existingId) {
-              $stmtUpdate = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sqlUpdate));
-                $stmtUpdate->bindValue(':name', $map['name']);
-                $stmtUpdate->bindValue(static::$setup, $map['setup']);
-                $stmtUpdate->bindValue(':bug_blocker', $map['bug_blocker']);
-                $stmtUpdate->bindValue(':bug_critical', $map['bug_critical']);
-                $stmtUpdate->bindValue(':bug_major', $map['bug_major']);
-                $stmtUpdate->bindValue(':bug_minor', $map['bug_minor']);
-                $stmtUpdate->bindValue(':bug_info', $map['bug_info']);
+                  $stmtUpdate->bindValue(':vulnerability_blocker', $map['vulnerability_blocker']);
+                  $stmtUpdate->bindValue(':vulnerability_critical', $map['vulnerability_critical']);
+                  $stmtUpdate->bindValue(':vulnerability_major', $map['vulnerability_major']);
+                  $stmtUpdate->bindValue(':vulnerability_minor', $map['vulnerability_minor']);
+                  $stmtUpdate->bindValue(':vulnerability_info', $map['vulnerability_info']);
 
-                $stmtUpdate->bindValue(':vulnerability_blocker', $map['vulnerability_blocker']);
-                $stmtUpdate->bindValue(':vulnerability_critical', $map['vulnerability_critical']);
-                $stmtUpdate->bindValue(':vulnerability_major', $map['vulnerability_major']);
-                $stmtUpdate->bindValue(':vulnerability_minor', $map['vulnerability_minor']);
-                $stmtUpdate->bindValue(':vulnerability_info', $map['vulnerability_info']);
+                  $stmtUpdate->bindValue(':code_smell_blocker', $map['code_smell_blocker']);
+                  $stmtUpdate->bindValue(':code_smell_critical', $map['code_smell_critical']);
+                  $stmtUpdate->bindValue(':code_smell_major', $map['code_smell_major']);
+                  $stmtUpdate->bindValue(':code_smell_minor', $map['code_smell_minor']);
+                  $stmtUpdate->bindValue(':code_smell_info', $map['code_smell_info']);
+                  $stmtUpdate->bindValue(':mode_collecte', $map['mode_collecte']);
+                  $stmtUpdate->bindValue(':utilisateur_collecte', $map['utilisateur_collecte']);
+                  $stmtUpdate->bindValue(static::$dateEnregistrement, $map['date_enregistrement']->format(static::$dateFormated));
+                  $stmtUpdate->bindValue('id', $existingId);
+                  $stmtUpdate->executeStatement();
+                $this->getEntityManager()->getConnection()->commit();
+                return ['code' => 200, 'erreur' => 'Mise à jour effectuée.'];
+            }
 
-                $stmtUpdate->bindValue(':code_smell_blocker', $map['code_smell_blocker']);
-                $stmtUpdate->bindValue(':code_smell_critical', $map['code_smell_critical']);
-                $stmtUpdate->bindValue(':code_smell_major', $map['code_smell_major']);
-                $stmtUpdate->bindValue(':code_smell_minor', $map['code_smell_minor']);
-                $stmtUpdate->bindValue(':code_smell_info', $map['code_smell_info']);
-                $stmtUpdate->bindValue(':mode_collecte', $map['mode_collecte']);
-                $stmtUpdate->bindValue(':utilisateur_collecte', $map['utilisateur_collecte']);
-                $stmtUpdate->bindValue(static::$dateEnregistrement, $map['date_enregistrement']->format(static::$dateFormated));
-                $stmtUpdate->bindValue('id', $existingId);
-                $stmtUpdate->executeStatement();
-              $this->getEntityManager()->getConnection()->commit();
-              return ['code' => 200, 'erreur' => 'Mise à jour effectuée.'];
-          }
-
+          /** sinon on insert  */
           $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sqlInsert));
             $stmt->bindValue(static::$mavenKey, $map['maven_key']);
             $stmt->bindValue(':name', $map['name']);
@@ -193,14 +170,11 @@ class RepartitionRepository extends ServiceEntityRepository
             $stmt->bindValue(':utilisateur_collecte', $map['utilisateur_collecte']);
             $stmt->bindValue(static::$dateEnregistrement, $map['date_enregistrement']->format(static::$dateFormated));
             $stmt->executeStatement();
-          $this->getEntityManager()->getConnection()->commit();
-    } catch (\Doctrine\DBAL\Exception $e) {
+        $this->getEntityManager()->getConnection()->commit();
+    } catch (\Throwable $e) {
         $this->getEntityManager()->getConnection()->rollBack();
         return $this->handleDatabaseException($e);
-      } catch(\ErrorException $e){
-        $this->getEntityManager()->getConnection()->rollBack();
-        return $this->handleErrorException($e);
-    }
+      }
 
     return ['code' => 200, 'erreur' => ''];
   }
@@ -269,40 +243,36 @@ class RepartitionRepository extends ServiceEntityRepository
                   AND setup = :setup";
 
     try {
-        $this->getEntityManager()->getConnection()->beginTransaction();
-        // Vérification de l'existence de l'enregistrement
-        $stmtCheck = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sqlCheck));
-          $stmtCheck->bindValue(':maven_key', $map['maven_key']);
-          $stmtCheck->bindValue(static::$setup, $map['setup']);
-          $result = $stmtCheck->executeQuery();
-        $existingId = $result->fetchOne();
+      $this->getEntityManager()->getConnection()->beginTransaction();
+          // Vérification de l'existence de l'enregistrement
+          $stmtCheck = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sqlCheck));
+            $stmtCheck->bindValue(':maven_key', $map['maven_key']);
+            $stmtCheck->bindValue(static::$setup, $map['setup']);
+            $result = $stmtCheck->executeQuery();
+            $existingId = $result->fetchOne();
+          if ($existingId) {
+              $stmtUpdate = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sqlUpdate));
 
-        if ($existingId) {
-            $stmtUpdate = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sqlUpdate));
+              // Pour chaque champ des 3 types, vérification dans $map,
+              // et affectation de -1 si la donnée n'est pas présente
+              foreach ($allFields as $field) {
+                  $value = isset($map[$field]) ? $map[$field] : -1;
+                  $stmtUpdate->bindValue(":$field", $value);
+              }
 
-            // Pour chaque champ des 3 types, vérification dans $map,
-            // et affectation de -1 si la donnée n'est pas présente
-            foreach ($allFields as $field) {
-                $value = isset($map[$field]) ? $map[$field] : -1;
-                $stmtUpdate->bindValue(":$field", $value);
-            }
+              // Liaison des autres paramètres obligatoires
+              $stmtUpdate->bindValue(':control', $map['control']);
+              $stmtUpdate->bindValue(static::$dateEnregistrement, $map['date_enregistrement']->format(static::$dateFormated));
+              $stmtUpdate->bindValue(':id', $existingId);
+              $stmtUpdate->bindValue(static::$setup, $map['setup']);
 
-            // Liaison des autres paramètres obligatoires
-            $stmtUpdate->bindValue(':control', $map['control']);
-            $stmtUpdate->bindValue(static::$dateEnregistrement, $map['date_enregistrement']->format(static::$dateFormated));
-            $stmtUpdate->bindValue(':id', $existingId);
-            $stmtUpdate->bindValue(static::$setup, $map['setup']);
-
-            // Exécution de la mise à jour
-            $stmtUpdate->executeStatement();
-            $this->getEntityManager()->getConnection()->commit();
-        }
-    } catch (\Doctrine\DBAL\Exception $e) {
+              // Exécution de la mise à jour
+              $stmtUpdate->executeStatement();
+          }
+          $this->getEntityManager()->getConnection()->commit();
+    } catch (\Throwable $e) {
       $this->getEntityManager()->getConnection()->rollBack();
         return $this->handleDatabaseException($e);
-    } catch (\ErrorException $e) {
-      $this->getEntityManager()->getConnection()->rollBack();
-        return $this->handleErrorException($e);
     }
     return ['code' => 200, 'erreur' => ''];
   }
