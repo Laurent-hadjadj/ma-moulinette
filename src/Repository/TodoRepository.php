@@ -35,31 +35,34 @@ class TodoRepository extends ServiceEntityRepository
   /**
    * [Description for handleDatabaseException]
    *
-   * @param \Doctrine\DBAL\Exception $e
+   * @param \Throwable $e
    *
    * @return array
    *
-   * Created at: 05/02/2025 11:49:11 (Europe/Paris)
+   * Created at: 06/07/2025 12:11:45 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  protected function handleDatabaseException(\Doctrine\DBAL\Exception $e): array
+  public function handleDatabaseException(\Throwable $e): array
   {
-    $message = $e->getMessage();
+      $message = $e->getMessage();
 
-    if (strpos($e->getMessage(), 'SQLSTATE[08006]') !== false) {
-        $message = static::$noDataBase;
-    }
+      // message = 'SQLSTATE[08006]'
+      if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
+          $message = static::$noDataBase;
+      }
 
-    if ($e->getSqlState() == '23502') {
-        $message = $e->getMessage();
-    }
+      // state = '23502'
+      if ($e instanceof \Doctrine\DBAL\Exception\NotNullConstraintViolationException) {
+          $message = $e->getMessage();
+      }
 
-    if ($e->getSqlState() == '23505'){
-        return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
-    }
+      // state = '23505'
+      if ($e instanceof \Doctrine\DBAL\Exception\UniqueConstraintViolationException) {
+          return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
+      }
 
-    return ['code' => 500, 'erreur'=> $message];
+      return ['code' => 500, 'erreur' => $message];
   }
 
   /**
@@ -85,7 +88,7 @@ class TodoRepository extends ServiceEntityRepository
             $stmt->bindValue(static::$mavenKey, $map['maven_key']);
             $stmt->executeStatement();
         $this->getEntityManager()->getConnection()->commit();
-    } catch (\Doctrine\DBAL\Exception $e) {
+    } catch (\Throwable $e) {
       $this->getEntityManager()->getConnection()->rollBack();
       return $this->handleDatabaseException($e);
     }
@@ -114,7 +117,7 @@ class TodoRepository extends ServiceEntityRepository
           $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
           $stmt->bindValue(static::$mavenKey, $map['maven_key']);
           $liste = $stmt->executeQuery()->fetchAllAssociative();
-    } catch (\Doctrine\DBAL\Exception $e) {
+    } catch (\Throwable $e) {
       return $this->handleDatabaseException($e);
     }
     return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
@@ -142,7 +145,7 @@ class TodoRepository extends ServiceEntityRepository
           $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $stmt->bindValue(static::$mavenKey, $map['maven_key']);
           $liste = $stmt->executeQuery()->fetchAllAssociative();
-    } catch (\Doctrine\DBAL\Exception $e) {
+    } catch (\Throwable $e) {
         return $this->handleDatabaseException($e);
     }
     return ['code' => 200, 'liste' => $liste, 'erreur'=>''];
@@ -179,7 +182,7 @@ class TodoRepository extends ServiceEntityRepository
                     $stmt->executeStatement();
                 }
             $this->getEntityManager()->getConnection()->commit();
-      } catch (\Doctrine\DBAL\Exception $e) {
+      } catch (\Throwable $e) {
           $this->getEntityManager()->getConnection()->rollBack();
           return $this->handleDatabaseException($e);
       }
