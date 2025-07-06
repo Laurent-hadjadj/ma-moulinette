@@ -26,10 +26,14 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Table(name: 'repartition_temp', schema: 'ma_moulinette')]
 class RepartitionTemp
 {
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: Types::INTEGER)]
+    private int $id;
+
     /**
      * Clé d'identification de la répartition
      */
-    #[ORM\Id]
     #[ORM\Column(type: Types::STRING, length: 255, nullable: false,
                 options: ['comment' => "Clé identification du projet"])]
     #[Assert\NotBlank(groups: ['default'])]
@@ -61,13 +65,23 @@ class RepartitionTemp
     /**
      * Timestamp en milliseconde unique pour chaque analyse (utilisé comme partie de la clé composite)
      */
-    #[ORM\Id]
     #[ORM\Column(type: Types::BIGINT, nullable: false,
                 options: ['comment' => "Timestamp en milliseconde unique pour chaque analyse"])]
     #[Assert\NotBlank(groups: ['default'])]
     private int $setup;
 
     // ----- Getters et Setters -----
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function setId(string $id): self
+    {
+        $this->id = $id;
+        return $this;
+    }
 
     public function getMavenKey(): string
     {
