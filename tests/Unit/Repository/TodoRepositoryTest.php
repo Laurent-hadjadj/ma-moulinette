@@ -83,7 +83,7 @@ class TodoRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map=['maven_key' => static::$mavenKey];
+        $map = ['maven_key' => static::$mavenKey];
 
         // Appel de la méthode
         $todoRepository = $entityManager->getRepository(Todo::class);
@@ -102,7 +102,7 @@ class TodoRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map=['maven_key' => static::$mavenKey];
+        $map = ['maven_key' => static::$mavenKey];
 
         // Appel de la méthode
         $todoRepository = $entityManager->getRepository(Todo::class);
