@@ -18,6 +18,8 @@ class RepartitionTempRepository extends ServiceEntityRepository
 {
     private static $removeReturnLine = "/\s+/u";
     private static $noDataBase = 'La connexion à la base de données a échoué.';
+    private static $mavenKey = ':maven_key';
+    private static $setup = ':setup';
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -27,7 +29,7 @@ class RepartitionTempRepository extends ServiceEntityRepository
     /**
      * [Description for handleDatabaseException]
      *
-     * @param \Doctrine\DBAL\Exception $e
+     * @param \Throwable $e
      *
      * @return array
      *
@@ -35,49 +37,26 @@ class RepartitionTempRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    protected function handleDatabaseException(\Doctrine\DBAL\Exception $e): array
+    public function handleDatabaseException(\Throwable $e): array
     {
         $message = $e->getMessage();
 
-        if (strpos($e->getMessage(), 'SQLSTATE[08006]') !== false) {
+        // message = 'SQLSTATE[08006]'
+        if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
             $message = static::$noDataBase;
         }
 
-        // Récupération de l'exception précédente qui contient le SQLState
-        $previousException = $e->getPrevious();
-
-        if ($previousException instanceof \Doctrine\DBAL\Driver\Exception) {
-            $sqlState = $previousException->getSQLState();
-
-            // Violation de contrainte NOT NULL
-            if ($sqlState === '23502') {
-                return ['code' =>'23502', 'erreur' => $e->getMessage()];
-            }
-
-            // Violation de contrainte UNIQUE
-            if ($sqlState === '23505') {
-                return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
-            }
+        // state = '23502'
+        if ($e instanceof \Doctrine\DBAL\Exception\NotNullConstraintViolationException) {
+            $message = $e->getMessage();
         }
 
-        return ['code' => 500, 'erreur'=> $message];
-    }
+        // state = '23505'
+        if ($e instanceof \Doctrine\DBAL\Exception\UniqueConstraintViolationException) {
+            return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
+        }
 
-    /**
-     * [Description for handleErrorException]
-     *
-     * @param \ErrorException $e
-     *
-     * @return array
-     *
-     * Created at: 15/02/2025 22:05:49 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    protected function handleErrorException(\ErrorException $e): array
-    {
-        $message = $e->getMessage();
-        return ['code' => 500, 'erreur'=> $message];
+        return ['code' => 500, 'erreur' => $message];
     }
 
     /**
@@ -128,10 +107,8 @@ class RepartitionTempRepository extends ServiceEntityRepository
 
                     $connection->executeStatement($fullSql, $params);
                 }
-        } catch (\Doctrine\DBAL\Exception $e) {
+        } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
-        } catch(\ErrorException $e){
-            return $this->handleErrorException($e);
         }
 
         return ['code' => 200, 'erreur' => ''];
@@ -162,27 +139,28 @@ class RepartitionTempRepository extends ServiceEntityRepository
                         FROM ma_moulinette.repartition_temp
                         WHERE maven_key = :maven_key and setup <> :setup";
         try {
-                // Vérification d'existence
-                $stmtCheck = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sqlCheck));
-                    $stmtCheck->bindValue(':maven_key', $map['maven_key']);
-                    $stmtCheck->bindValue(':setup', $map['setup']);
-                $result = $stmtCheck->executeQuery();
-                $existingId = $result->fetchOne();
+                $this->getEntityManager()->getConnection()->beginTransaction();
+                    $stmtCheck = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sqlCheck));
+                        $stmtCheck->bindValue(static::$mavenKey, $map['maven_key']);
+                        $stmtCheck->bindValue(static::$setup, $map['setup']);
+                    $result = $stmtCheck->executeQuery();
+                    $existingId = $result->fetchOne();
 
                 if ($existingId) {
                     $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sqlDelete));
-                        $stmt->bindValue(':maven_key', $map['maven_key']);
-                        $stmt->bindValue(':setup', $map['setup']);
+                        $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+                        $stmt->bindValue(static::$setup, $map['setup']);
                         $stmt->executeStatement();
                     }
-        } catch (\Doctrine\DBAL\Exception $e) {
+                $this->getEntityManager()->getConnection()->commit();
+        } catch (\Throwable $e) {
+            $this->getEntityManager()->getConnection()->rollBack();
             return $this->handleDatabaseException($e);
-        } catch(\ErrorException $e){
-            return $this->handleErrorException($e);
         }
 
         return ['code' => 200, 'erreur' => ''];
     }
+
 
     /**
      * [Description for selectRepartitionByTypeAndSeverity]
@@ -205,16 +183,15 @@ class RepartitionTempRepository extends ServiceEntityRepository
                 AND setup = :setup";
         try {
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(':maven_key', $map['maven_key']);
+                    $stmt->bindValue(static::$mavenKey, $map['maven_key']);
                     $stmt->bindValue(':type', $map['type']);
                     $stmt->bindValue(':severity', $map['severity']);
-                    $stmt->bindValue(':setup', $map['setup']);
+                    $stmt->bindValue(static::$setup, $map['setup']);
                 $liste = $stmt->executeQuery()->fetchAllAssociative();
-        } catch (\Doctrine\DBAL\Exception $e) {
+        } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
-        } catch(\ErrorException $e){
-            return $this->handleErrorException($e);
         }
+
         return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
     }
 
