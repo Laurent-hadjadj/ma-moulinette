@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##         Creation des tables et des objets      ##
-##               V2.0.1 - 18/02/2025              ##
+##               V2.2.0 - 06/07/2025              ##
 ##                                                ##
 ####################################################*/
 
@@ -47,8 +47,10 @@
 -- 27/01/2025 : Laurent HADJADJ - Ajout de la clé inconnue à la table historique, pour dénombrer la répartition des valeurs inconnues ;
 -- 06/02/2025 : Laurent HADJADJ - Ajout des attributs : version_sonar, version_release_sonar, version_snapshot_sonar, version_autre_sonar à la table information_version ;
 -- 11/02/2025 : Laurent HADJADJ - Modification du type pour l'attribut setup et ajout de mode_collecte et utilisateur_collecte à la table repartition ;
--- 14/02/25 : Laurent HADJADJ - Réorganisation de la table repartition en repartition_temp et repartition
--- 18/02/25 : Laurent HADJADJ - mise à jour de la valeur par défaut de la table repartition.
+-- 14/02/2025 : Laurent HADJADJ - Réorganisation de la table repartition en repartition_temp et repartition
+-- 18/02/2025 : Laurent HADJADJ - Mise à jour de la valeur par défaut de la table repartition.
+-- 06/07/2025 : Laurent HADJADJ - Ajout de la colonne id et suppression de containte d'unicité maven_key+setup pour la table repartition_temp.
+
 
 -- SCHEMA: ma_moulinette
 
@@ -508,7 +510,7 @@ COMMENT ON COLUMN ma_moulinette.historique.todo IS 'Compteur de l’utilisation 
 COMMENT ON COLUMN ma_moulinette.historique.nombre_ligne IS 'Nombre total de lignes dans le projet';
 COMMENT ON COLUMN ma_moulinette.historique.nombre_ligne_code IS 'Nombre total de lignes de code dans le projet';
 COMMENT ON COLUMN ma_moulinette.historique.classes IS 'Nombre de classes dans le projet';
-COMMENT ON COLUMN ma_moulinette.historique.function IS 'Nombre de méthode/function dans le projet';
+COMMENT ON COLUMN ma_moulinette.historique.functions IS 'Nombre de méthode/function dans le projet';
 COMMENT ON COLUMN ma_moulinette.historique.files IS 'Nombre de fichier dans le projet';
 COMMENT ON COLUMN ma_moulinette.historique.coverage IS 'Pourcentage de couverture de code par les tests';
 COMMENT ON COLUMN ma_moulinette.historique.duplicated_lines_density IS 'Pourcentage de duplication dans le code';
@@ -710,7 +712,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.information_projet
   version_sonar INT DEFAULT 0 NOT NULL,
   version_release_sonar INT  DEFAULT 0 NOT NULL,
   version_snapshot_sonar INT  DEFAULT 0 NOT NULL,
-  version_autre_sonar INT NOT  DEFAULT 0 NULL,
+  version_autre_sonar INT DEFAULT 0 NULL,
   mode_collecte character varying(32),
   utilisateur_collecte character varying(320),
   date_enregistrement TIMESTAMPTZ NOT NULL
@@ -1213,23 +1215,24 @@ COMMENT ON COLUMN ma_moulinette.properties.date_modification_profil IS 'Date de 
 
 DROP TABLE IF EXISTS ma_moulinette.repartition_temp;
 CREATE UNLOGGED TABLE IF NOT EXISTS ma_moulinette.repartition_temp (
+    id SERIAL PRIMARY KEY,
     maven_key character varying(255) NOT NULL,
     component text NOT NULL,
     type character varying(16) NOT NULL,
     severity character varying(8) NOT NULL,
-    setup bigint NOT NULL,
-    CONSTRAINT uq_repartition_temp UNIQUE (maven_key, setup)
+    setup bigint NOT NULL
 );
 
 ALTER TABLE ma_moulinette.repartition_temp OWNER TO db_user;
 GRANT ALL ON TABLE ma_moulinette.repartition_temp TO db_user;
 
+COMMENT ON COLUMN ma_moulinette.repartition_temp.id IS 'Identifiant unique pour chaque propriété';
 COMMENT ON COLUMN ma_moulinette.repartition_temp.maven_key IS 'Clé identification du projet';
 COMMENT ON COLUMN ma_moulinette.repartition_temp.type IS 'Catégorie : BUG, VULNERABILITY ou CODE_SMELL';
 COMMENT ON COLUMN ma_moulinette.repartition_temp.severity IS 'Niveau de sévérité de l’anomalie';
 COMMENT ON COLUMN ma_moulinette.repartition_temp.setup IS 'Timestamp en milliseconde unique pour chaque analyse';
 
--- Table: ma_moulinette.repartition_temp
+-- Table: ma_moulinette.repartition
 
 DROP TABLE IF EXISTS ma_moulinette.repartition;
 CREATE TABLE IF NOT EXISTS ma_moulinette.repartition
