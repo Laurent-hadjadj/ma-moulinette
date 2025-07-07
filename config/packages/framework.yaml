@@ -3,9 +3,13 @@ framework:
     test: true
     secret: '%env(APP_SECRET)%'
     csrf_protection: true
+    annotations: false
     http_method_override: false
     handle_all_throwables: true
     default_locale: 'fr'
+
+    cache:
+        app: cache.adapter.filesystem
 
     # the IP address (or range) of your proxy
     trusted_hosts: ['127.0.0.1', 'localhost', '%env(TRUST_HOST1)%','%env(TRUST_HOST2)%',]
@@ -13,9 +17,7 @@ framework:
     trusted_headers: ['x-forwarded-for', 'x-forwarded-host', 'x-forwarded-proto', 'x-forwarded-port', 'x-forwarded-prefix']
 
     session:
-        enabled: true
-        storage_factory_id: 'session.storage.factory.native'
-        #handler_id: 'session.handler.native_file'
+        handler_id: 'session.handler.native_file'
         save_path: '%kernel.project_dir%/var/sessions/%kernel.environment%'
 
     esi: false
@@ -23,15 +25,14 @@ framework:
     php_errors:
         log: true
 
+# Controller de page d'erreur custom
+when@prod:
+    framework:
+        error_controller: App\Controller\ErrorController::show
 when@test:
     framework:
         test: true
         session:
             enabled: true
             storage_factory_id: session.storage.factory.mock_file
-
-# Controller de page d'erreur custom
-when@prod:
-    framework:
-        error_controller: App\Controller\ErrorController::show
 ...

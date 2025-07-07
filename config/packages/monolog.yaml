@@ -1,48 +1,37 @@
 ---
 monolog:
     channels:
-        - deprecation # Pour capturer les dépréciations
+        - deprecation
         - doctrine
         - messenger
-
-    handlers:
-        main:
-            type: stream
-            path: '%kernel.logs_dir%/%kernel.environment%.log'
-            level: debug
-            channels: ['!event']
-        console:
-            type: console
-            channels: ['!event', '!doctrine']
-        doctrine:
-            type: stream
-            path: '%kernel.logs_dir%/doctrine.log'
-            level: debug
-            channels: ['doctrine']
-        messenger:
-            type: stream
-            path: '%kernel.logs_dir%/messenger.log'
-            level: debug
-            channels: ['messenger']
 
 when@dev:
     monolog:
         handlers:
             main:
                 type: stream
-                path: '%kernel.logs_dir%/%kernel.environment%.log'
+                path: "%kernel.logs_dir%/%kernel.environment%.log"
                 level: debug
-                channels: ['!event']
+                channels: ["!event"]
+            request:
+                type: stream
+                path: "%kernel.logs_dir%/request.log"
+                level: error
+                channels: ["request"]
+            messenger:
+                type: stream
+                path: "%kernel.logs_dir%/messenger.log"
+                level: info
+                channels: ['messenger']
             console:
                 type: console
                 process_psr_3_messages: false
-                channels: ['!event', '!doctrine', '!console']
-            messenger:
+                channels: ["!event", "!doctrine", "!console"]
+            deprecation:
                 type: stream
-                path: '%kernel.logs_dir%/messenger_dev.log'
+                path: "%kernel.logs_dir%/deprecations.log"
                 level: debug
-                channels: ['messenger']
-
+                channels: ["deprecation"]
 when@test:
     monolog:
         handlers:
@@ -51,14 +40,15 @@ when@test:
                 action_level: error
                 handler: nested
                 excluded_http_codes: [404, 405]
-                channels: ['!event']
+                channels: ["!event"]
+            request:
+                type: stream
+                path: "%kernel.logs_dir%/request.log"
+                level: error
+                channels: ["request"]
             nested:
                 type: stream
-                path: '%kernel.logs_dir%/%kernel.environment%.log'
-                level: debug
-            doctrine:
-                type: stream
-                path: '%kernel.logs_dir%/doctrine_test.log'
+                path: "%kernel.logs_dir%/%kernel.environment%.log"
                 level: debug
                 channels: ['doctrine']
 
@@ -70,28 +60,29 @@ when@prod:
                 action_level: error
                 handler: nested
                 excluded_http_codes: [404, 405]
-                buffer_size: 50 # Évite les fuites de mémoire
+                buffer_size: 50
+            application_logs:
+                type: stream
+                path: "%kernel.logs_dir%/app.log"
+                level: info
+                channels: ["!security", "!event", "!doctrine", "!request", "!messenger"]
+                formatter: monolog.formatter.line
+            request:
+                type: stream
+                path: "%kernel.logs_dir%/request.log"
+                level: error
+                channels: ["request"]
+            messenger:
+                type: stream
+                path: "%kernel.logs_dir%/messenger.log"
+                level: info
+                channels: ['messenger']
             nested:
                 type: stream
-                path: php://stderr
+                path: "%kernel.logs_dir%/%kernel.environment%.log"
                 level: debug
                 formatter: monolog.formatter.json
             console:
                 type: console
                 process_psr_3_messages: false
-                channels: ['!event', '!doctrine']
-            deprecation:
-                type: stream
-                channels: ['deprecation']
-                path: php://stderr
-            messenger:
-                type: stream
-                path: '%kernel.logs_dir%/messenger_prod.log'
-                level: debug
-                channels: ['messenger']
-            doctrine:
-                type: stream
-                path: '%kernel.logs_dir%/doctrine_prod.log'
-                level: error
-                channels: ['doctrine']
-...
+                channels: ["!event", "!doctrine"]
