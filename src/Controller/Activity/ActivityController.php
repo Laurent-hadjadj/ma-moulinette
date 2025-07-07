@@ -14,21 +14,24 @@
 namespace App\Controller\Activity;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Routing\Annotation\Route;
-
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Activity;
 use App\Entity\ActivityHistorique;
-
 use App\Service\Client;
-use Symfony\Component\HttpFoundation\Response;
 
+
+/**
+ * [Description ActivityController]
+ */
 class ActivityController extends AbstractController
 {
 
     public static $sonarUrl = "sonar.url";
     public static $page = "activity/index.html.twig";
+    public static $reference = "[ACTIVITÉ]";
 
     private $logoEntreprise;
     private $marqueEntrepriseShort;
@@ -47,7 +50,8 @@ class ActivityController extends AbstractController
     public function __construct(
         private EntityManagerInterface $em,
         private ParameterBagInterface $params,
-        private Client $client)
+        private Client $client
+        )
     {
         $this->em = $em;
         $this->client = $client;
@@ -93,12 +97,12 @@ class ActivityController extends AbstractController
     public function index()
     {
         /** On instancie l'EntityRepository */
-        $activityEntity = $this->em->getRepository(Activity::class);
+        $activityRepository = $this->em->getRepository(Activity::class);
+        $activityHistoriqueRepository = $this->em->getRepository(ActivityHistorique::class);
 
         // On récupère l'année actuelle
-        $dateMoins1 = new \DateTime();
-            $dateMoins1->setTimezone(new \DateTimeZone('Europe/Paris'));
-        $actualYear = $dateMoins1->format('Y');
+        $actualDate = new \DateTime('now', new \DateTimeZone('Europe/Paris'));
+        $actualYear = $actualDate->format('Y');
 
         // Initialise les valeurs par défaut
         $data['year'] = '---';
@@ -111,15 +115,15 @@ class ActivityController extends AbstractController
         $data['success_rate'] = '---';
         $data['date_enregistrement'] = '---';
 
+        /** On récupère la dernière task */
         $url = $this->getParameter(static::$sonarUrl);
-        $queryParams = [];
-        $result = $this->client->httpActivity("$url/api/ce/activity".http_build_query($queryParams));
-
+        $queryParams = ['ps' => 1];
+        $result = $this->client->httpActivity("$url/api/ce/activity?".http_build_query($queryParams));
         /** On catch les erreurs HTTP 401 et 404, si possible :) */
-        if (isset($result['code']) && in_array($result['code'], [401, 404])) {
+        if (isset($result['code']) && in_array($result['code'], [400, 401, 403, 404, 500, 503, 504])) {
             $this->addFlash('notice', [
                 'type' => 'alert',
-                'titre' => '[ACTIVITÉ]',
+                'titre' => static::$reference,
                 'message' => $result['erreur']
             ]);
             $render = static::genericRender();
@@ -127,54 +131,63 @@ class ActivityController extends AbstractController
             return $this->render(static::$page, $render);
         }
 
-
-        /** On appel directement la requête et on récupère le résultat */
-        if (empty($activityEntity->selectActivity($actualYear)['request'])) {
-            // Ajouter un message flash pour informer l'utilisateur que la liste des analyses est vide
+        /** On vérifie si pour l'année courante, il y des enregistrement ou non  */
+        $listeAnalyse=$activityRepository->selectActivity($actualYear)['liste'];
+        if (empty($listeAnalyse)) {
+            // Ajoute un message flash pour informer l'utilisateur que la liste des analyses est vide pour l'année courante.
             $this->addFlash('notice', [
-                'type' => 'alert',
-                'titre' => '[ACTIVITÉ-003]',
-                'message' => "La liste des analyses SonarQube est vide. Veuillez rafraîchir la liste"
+                'type' => 'warning',
+                'titre' => static::$reference,
+                'message' => "La liste des analyses SonarQube est vide. Veuillez rafraîchir la liste."
             ]);
 
-            // Initialiser la variable $request avec des valeurs par défaut
-            $request['-'] = [
-                'year' => "-",
-                'day' => "-",
-                'analyse' => "-",
-                'success' => "-",
-                'fail' => "-",
-                'max_time' => "-",
-                'analyse_average' => "-",
-                'success_rate' => "-"
-            ];
-
-            $render=static::genericRender();
-            $render['data'] = $request;
+            $render = static::genericRender();
+            $render['data'] = [$data];
             return $this->render(static::$page, $render);
         }
 
-        $dateBase = new \DateTime($activityEntity->dernierDate()['request'][0]['date']);
-        $dateSonar = new \DateTime($respond['tasks'][0]['executedAt']);
+        /** On prend la date la plus récente en base et la dernière de l'analyse */
+        $dateBase = new \DateTime($activityRepository->dernierDate()['liste']['date']);
+        $dateSonar = new \DateTime($result['json']['tasks'][0]['executedAt']);
 
-        if($dateSonar > $dateBase){
+        /** Si SonarQube contient des nouvelles tâches */
+        if ($dateSonar > $dateBase){
             // Ici on calcule l'interval de jour entre la base et sonar
-            $interval = $dateBase->diff(new \DateTime($respond['tasks'][0]['executedAt']))->format('%d');
-            $this->addFlash('notice', ['type'=>'warning', 'titre'=> '[ACTIVITÉ-002]', 'message'=>"Vous pouvez mettre à jour  La liste des analyses SonarQube. Il y a " .$interval. " jours de retard"]);
-        }
-        if($dateSonar == $dateBase){
-            $this->addFlash('notice', ['type'=>'default', 'titre'=> '[ACTIVITÉ-001]', 'message'=>" La liste des analyses SonarQube est à jour."]);
-        }
-
-        $historiqueActivityEntity = $this->em->getRepository(ActivityHistorique::class);
-
-        $result = $historiqueActivityEntity->selectActivity();
-        for ($i = 0; $i < count($result['request']); $i++){
-            $formatedDate = new \DateTimeImmutable($result['request'][$i]['max_time']);
-            $result['request'][$i]['max_time'] = $formatedDate->format('H:i:s');
+            $interval = $dateBase->diff(new \DateTime($result['tasks'][0]['executedAt']))->format('%d');
+            $this->addFlash('notice', [
+                'type'=>'warning',
+                'titre'=>static::$reference,
+                'message'=>"Vous pouvez mettre à jour la liste des analyses SonarQube. Il y a " .$interval. " jours de retard"]);
         }
 
-        $result['request'][0]["date_enregistrement"] = (new \DateTime($result['request'][0]["date_enregistrement"]))->format('d-m-Y H:i:s');
+        /** Si SonarQube ne contient pas de nouvelles tâches */
+        if ($dateSonar == $dateBase){
+            $this->addFlash('notice', [
+                'type'=>'default',
+                'titre'=> static::$reference,
+                'message'=>" La liste des analyses SonarQube est à jour."]);
+        }
+
+        /** On récupère la listes des données statistiques. On suppose que la mise à jour a été faite. */
+        $listeHistorique = $activityHistoriqueRepository->selectActivity();
+        if (empty($listeHistorique['liste'])){
+            $this->addFlash('notice', [
+                'type' => 'alert',
+                'titre' => static::$reference,
+                'message' => "L'historique n'a pas correctement été initialisé pour cette année."
+            ]);
+            $render=static::genericRender();
+            $render['data'] = [$data];
+            return $this->render(static::$page, $render);
+        }
+
+        /** Pour chaque durée d'execution on converti les secondes en h:m:s */
+        for ($i = 0; $i < count($listeHistorique['liste']); $i++){
+            $maxTime = new \DateTimeImmutable($listeHistorique['liste'][$i]['max_time']);
+            $listeHistorique['liste'][$i]['max_time'] = $maxTime->format('H:i:s');
+        }
+        // On injecte la date d'enregistrement à condition que la mise à jour ait été faite !
+        $listeHistorique['liste'][0]["date_enregistrement"] ? (new \DateTime($result['request'][0]["date_enregistrement"]))->format('d-m-Y H:i:s') : (new \DateTime('01/01/1980 00:00:00'))->format('d-m-Y H:i:s');
 
         $render=static::genericRender();
         return $this->render(static::$page, $render);
