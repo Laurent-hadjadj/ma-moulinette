@@ -71,8 +71,8 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private $resetPassword = true;
 
     #[ORM\Column(type: Types::INTEGER, nullable: false,
-    options: ['default' => 0, 'comment' => 'Nombre de tentative de changement du mot de passe.'])]
-    private ?int $resetPasswordCount = 0;
+    options: ['default' => 1, 'comment' => 'Nombre de tentative de changement du mot de passe.'])]
+    private ?int $resetPasswordCount = 1;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true, options: ['comment' => "Date de modification"])]
     private ?\DateTime $dateModification = null;
@@ -84,7 +84,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->roles = [];
         $this->preference = [];
-        $this->resetPasswordCount = 0;
+        $this->resetPasswordCount = 1;
         $this->resetPassword = true;
         $this->actif = false;
         $this->dateEnregistrement = new \DateTimeImmutable();
