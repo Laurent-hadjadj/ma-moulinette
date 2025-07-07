@@ -28,14 +28,14 @@ class FileLogger
     public function __construct(
         private ParameterBagInterface $params,
         private Filesystem $filesystem,
-        private Finder $finder,
-        private Rotation $rotation
+        //private Finder $finder,
+        //private Rotation $rotation
         )
     {
         $this->params = $params;
         $this->filesystem = $filesystem;
-        $this->finder = $finder;
-        $this->rotation = $rotation;
+        //$this->finder = $finder;
+        //$this->rotation = $rotation;
 
         // Obtenir le chemin avec nettoyage des barres obliques inversées
         $projectDir = rtrim($this->params->get('kernel.project_dir'), '\\');
