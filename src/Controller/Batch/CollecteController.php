@@ -320,7 +320,7 @@ class CollecteController extends AbstractController
         }
 
         /** Actuator Info du projet (java spring-boot) */
-        $actuatorInfo=$this->batchCollecteActuator->BatchCollecteActuatorInfo($maven_key);
+        $actuatorInfo = $this->batchCollecteActuator->BatchCollecteActuatorInfo($maven_key);
         if ($actuatorInfo['code'] === 200 || $actuatorInfo['code'] === 404){
             $collecte[] = ['13 - Actuator' => $actuatorInfo['message']];
             $json = $actuatorInfo['message']['json'] ?? '{}';
