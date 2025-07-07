@@ -7,8 +7,10 @@
 * Migration PHP 8.3.0 NTS ;
 * Migration symfony/core 6.4 (6.4.8) ;
 * Migration symfony/core 6.4 vers 7.1 (7.1.6) ;
+* Migrayion Symfony/core 7.1 vers 7.2 (7.2.1) ;
 * Décommissionnement de webpack pour asset-mapper ;
 * Redimensionnement de toutes les images SVG à leur taille nominale (512 -> 92/72/64/32...) ;
+* Normalisation des messages flash ;
 * Migration de la base SQLite vers PostgreSQL ;
 * Mise à jour Twig 3 (3.10.3) ;
 * Mise à jour doctrine/dbal 4 (4.0.5) ;
@@ -17,7 +19,7 @@
 * Mise à jour de twig/twig 3.10 (3.10.3) ;
 * Mise à jour de phpstan/phpstan 1.11 (1.11.11) ;
 * Mise à jour de phpunit/phpunit 9.6 (9.6.21) ;
-* Intégration de php-amqplib/php-amqplib 3.7 (3.7.1) ;
+* ~~Intégration de php-amqplib/php-amqplib 3.7 (3.7.1)~~ ;
 * Intégration de knplabs/knp-paginator-bundle 6.6 (6.6.1) ;
 
 ### Transverse
@@ -38,6 +40,8 @@
 * Refactor : Ajout de traces lors des appel HTTP 200, 400, 401 et 404.
 * Refactor : Définition de la timezone [Europe/Paris] pour la gestion des dates ;
 * Refactor : Utilisation de DATETIME_IMMUTABLE à la place de DATETIME ;
+* Refactor : Réécriture de la classe Client ;
+* Refactor : Réécriture du système de messages en Javascript ;
 
 * Code Clean W3C & SonarQube ;
 
@@ -150,7 +154,17 @@
 > Tests Unitaires
 
 * [TU] Mise à jour des TU (Entity, EntityRepository).
-* [TU] OK (251 tests, 2865 assertions) ;
+  * [ ] Entity : 334 case de tests, 411 assertions ;
+    * [ ] Kernel : 54 cas de tests, 112 assertions ;
+    * [ ] Performance : 1 cas de tests, 1000 assertions ;
+    * [ ] Validators : 109 cas de tests, 363 assertions ;
+  * [ ] Repository : 98 cas de tests; 239 assertions ;
+  * [ ] Handler : 4 cas de tests, 5 assertions ;
+  * [ ] Messenger : 10 case de tests, 37 assertions ;
+  * [ ] Service : 4+6+15+4+23+3 case de tests, 18+6+25+4+73+11 assertions ;
+  * [ ] Controller : 157 cas de tests, 733 assertions ;
+  * [ ] Validators : 5+5+9 cas de tests, 6+6+11 assertions ;
+* [TU] OK (822+1 cas de tests, 3038+1000 assertions) ;
 * [TF] Mise en place de Cypress ;
 
 ## v1.6.0 - 30/11/2022 - Release
