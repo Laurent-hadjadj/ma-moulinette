@@ -11,8 +11,6 @@ use Doctrine\Persistence\ObjectManager;
  */
 class ActuatorFixtures extends Fixture
 {
-    private static $date='2024-06-23 11:59:51.854783+02';
-
     /**
      * [Description for load]
      *
