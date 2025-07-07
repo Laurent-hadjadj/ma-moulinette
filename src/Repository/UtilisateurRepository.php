@@ -358,14 +358,16 @@ class UtilisateurRepository extends ServiceEntityRepository
   public function updateUtilisateurResetPassword($map): array
   {
     $sql = "UPDATE ma_moulinette.utilisateur
-            SET init = :init,
+            SET reset_password = :reset_password,
+                reset_password_count = :reset_password_count,
                 date_modification = :date_modification
             WHERE courriel=:courriel";
 
     try {
         $this->getEntityManager()->getConnection()->beginTransaction();
           $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-            $stmt->bindValue(':init', $map['init']);
+            $stmt->bindValue(':reset_password', $map['reset_password']);
+            $stmt->bindValue(':reset_password_count', 1);
             $stmt->bindValue(static::$courriel, $map['courriel']);
             $stmt->bindValue(':date_modification', $map['date_modification']->format(static::$dateFormatted));
             $stmt->executeStatement();
