@@ -25,7 +25,8 @@ use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 class UtilisateurKernelTest extends KernelTestCase
 {
 
-  public static $init = 0;
+  public static $resetPassword = 0;
+  public static $resetPasswordCount = 1;
   public static $avatar = 'chiffre/01.png';
   public static $prenom = 'admin';
   public static $nom = '@ma-moulinette';
@@ -42,7 +43,8 @@ class UtilisateurKernelTest extends KernelTestCase
   public function getEntity(): Utilisateur
   {
     return (new utilisateur())
-      ->setInit(static::$init)
+      ->setResetPassword((bool) static::$resetPassword)
+      ->setResetPasswordCount(1)
       ->setAvatar(static::$avatar)
       ->setPrenom(static::$prenom)
       ->setNom(static::$nom)

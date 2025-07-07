@@ -23,7 +23,8 @@ use Symfony\Component\Validator\ConstraintViolation;
 class UtilisateurValidatorTest extends KernelTestCase
 {
 
-  public static $init = 1;
+  public static $resetPassword = 1;
+  public static $resetPasswordCount = 1;
   public static $avatar = 'chiffre/01.png';
   public static $prenom = 'Laurent';
   public static $nom = 'HADJADJ';
@@ -41,7 +42,8 @@ class UtilisateurValidatorTest extends KernelTestCase
   public function getEntity(): Utilisateur
   {
     return (new utilisateur())
-      ->setInit(static::$init)
+      ->setResetPassword((bool) static::$resetPassword)
+      ->setResetPasswordCount(1)
       ->setAvatar(static::$avatar)
       ->setPrenom(static::$prenom)
       ->setNom(static::$nom)
@@ -91,12 +93,13 @@ class UtilisateurValidatorTest extends KernelTestCase
 
   public function testValidIntegerEntity(): void
   {
-    $this->assertHasErrors($this->getEntity()->setInit(-1), 0);
+    $this->assertHasErrors($this->getEntity()->setResetPasswordCount(-1), 0);
   }
 
   public function testValidBooleanEntity(): void
   {
     $this->assertHasErrors($this->getEntity()->setActif(true), 0);
+    $this->assertHasErrors($this->getEntity()->setResetCount(true), 0);
   }
 
   public function testCountAttribut(): void
@@ -104,6 +107,6 @@ class UtilisateurValidatorTest extends KernelTestCase
       $entity = $this->getEntity();
       $reflectionClass = new \ReflectionClass($entity);
       $nbAttributs = count($reflectionClass->getProperties());
-      $this->assertEquals($nbAttributs, 13);
+      $this->assertEquals($nbAttributs, 14);
   }
 }
