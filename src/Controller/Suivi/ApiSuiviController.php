@@ -554,7 +554,7 @@ class ApiSuiviController extends AbstractController
         $preference = $this->getUser()->getPreference();
         $courriel = $this->getUser()->getCourriel();
 
-        $map=[
+        $map = [
             'favori'=>$data->favori,
             'courriel'=> $courriel,
             'maven_key'=>$data->maven_key,
@@ -562,10 +562,12 @@ class ApiSuiviController extends AbstractController
             'date_version'=>$data->date_version
         ];
 
-        $request=$utilisateurRepository->updateUtilisateurFavoriVersion($preference, $map);
+        $request = $utilisateurRepository->updateUtilisateurFavoriVersion($preference, $map);
         if ($request['code']!=200) {
             return new JsonResponse([
-                'code'=>$request['code'], 'erreur' => $request['erreur']], Response::HTTP_OK);
+                'code'=>$request['code'],
+                'erreur' => $request['erreur']
+            ], Response::HTTP_OK);
         }
 
         /** Tout c'est bien passé */
