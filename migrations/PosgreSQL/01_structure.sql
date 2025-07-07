@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##         Creation des tables et des objets      ##
-##               V2.2.0 - 06/07/2025              ##
+##               V2.3.0 - 07/07/2025              ##
 ##                                                ##
 ####################################################*/
 
@@ -50,6 +50,7 @@
 -- 14/02/2025 : Laurent HADJADJ - Réorganisation de la table repartition en repartition_temp et repartition
 -- 18/02/2025 : Laurent HADJADJ - Mise à jour de la valeur par défaut de la table repartition.
 -- 06/07/2025 : Laurent HADJADJ - Ajout de la colonne id et suppression de containte d'unicité maven_key+setup pour la table repartition_temp.
+-- 07/07/2025 : Laurent HADJADJ - Suppression de la colonne init, ajout de reset_password et reset_password_count pour la table utilisateur.
 
 
 -- SCHEMA: ma_moulinette
@@ -1476,7 +1477,8 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.utilisateur
   password character varying(64) NOT NULL,
   actif boolean NOT NULL DEFAULT false,
   preference json NOT NULL,
-  init integer NOT NULL,
+  reset_password BOOLEAN DEFAULT TRUE NOT NULL,
+  reset_password_count SMALLINT DEFAULT 1 NOT NULL,
   date_modification TIMESTAMP DEFAULT NULL,
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
@@ -1494,7 +1496,8 @@ COMMENT ON COLUMN ma_moulinette.utilisateur.equipe IS 'Liste des équipes';
 COMMENT ON COLUMN ma_moulinette.utilisateur.password IS 'Mot de passe de l’utilisateur';
 COMMENT ON COLUMN ma_moulinette.utilisateur.actif IS 'L’utilisateur est désactivé';
 COMMENT ON COLUMN ma_moulinette.utilisateur.preference IS 'Préférences de l’utilisateur';
-COMMENT ON COLUMN ma_moulinette.utilisateur.init IS 'Indicateur de réinitialisation du mot de passe';
+COMMENT ON COLUMN ma_moulinette.utilisateur.reset_password IS 'Indicateur de réinitialisation du mot de passe';
+COMMENT ON COLUMN ma_moulinette.utilisateur.reset_password_count IS 'Nombre de tentative avant blocage';
 COMMENT ON COLUMN ma_moulinette.utilisateur.date_modification IS 'Date de modification';
 COMMENT ON COLUMN ma_moulinette.utilisateur.date_enregistrement IS 'Date de création';
 
