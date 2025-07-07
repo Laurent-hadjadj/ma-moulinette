@@ -38,8 +38,7 @@ import '../../auth/details.js';
 /** On importe les paramètres serveur */
 import {serveur} from '../../common/properties.js';
 
-/** On importe les fonctions d'affiche des messages JS */
-import {showMessage,} from '../../common/message.js';
+import { showMessage,  hideMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
 
 /** On importe les constantes */
 import {dateOptions, contentType, couleur, note, espace, rien,

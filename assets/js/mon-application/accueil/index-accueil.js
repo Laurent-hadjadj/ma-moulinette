@@ -31,9 +31,8 @@ import '../../auth/details.js';
 /** On importe les paramètres serveur */
 import {serveur} from '../../common/properties.js';
 
-/** On importe les fonctions d'affiche des messages JS */
-import {typeMessage, showMessage, hideMessage} from '../../common/message.js';
-
+/** La gestion des messagesJS */
+import { showMessage,  hideMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
 /** On importe les constantes */
 import { http_400, http_401, http_403, http_404, http_500, http_504, contentType } from '../../common/constante.js';
 

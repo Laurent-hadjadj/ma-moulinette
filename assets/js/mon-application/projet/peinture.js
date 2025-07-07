@@ -15,8 +15,7 @@ import $ from 'jquery';
 // On importe les paramètres serveur
 import {serveur} from '../../common/properties.js';
 
-/** On importe les fonctions d'affiche des messages JS */
-import {typeMessage, showMessage} from '../../common/message.js';
+import { showMessage,  hideMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
 
 /** On importe les constantes */
 import {contentType, dateOptions, http_400, http_401, http_403, http_406, http_500,

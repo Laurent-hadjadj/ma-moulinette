@@ -19,8 +19,7 @@ import {serveur} from '../../common/properties.js';
 /** On importe les constantes */
 import {dateOptions, contentType, http_200, http_400, http_401, http_403, http_500} from '../../common/constante.js';
 
-/** On importe les fonctions d'affiche des messages JS */
-import {typeMessage, showMessage, hideMessage} from '../../common/message.js';
+import { showMessage,  hideMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
 
 /**
  * [Description for log]

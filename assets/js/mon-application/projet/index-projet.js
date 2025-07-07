@@ -33,8 +33,7 @@ import '../../auth/details.js';
 /** On importe les paramètres serveur */
 import {serveur} from '../../common/properties.js';
 
-/** On importe les fonctions d'affiche des messages JS */
-import {typeMessage, showMessage} from '../../common/message.js';
+import { showMessage,  hideMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
 
 /** On importe les constantes */
 import { http_200, http_400, http_401, http_403, http_404, http_406, http_500, deuxMille, cinqMille, contentType, paletteCouleur, matrice, dateOptions } from '../../common/constante.js';
