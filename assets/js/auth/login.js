@@ -1,7 +1,7 @@
 /**
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2025.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -33,7 +33,7 @@ const configurationOptions = {
   required: { i: 11, e: -3, c: -3, f: -3, o: -3, s: -3 },
   insecure: true,
   unsupported: true,
-  api: 2024.2,
+  api: 2025.7,
   reminder: 24 };
 
 /* Chargement de browser update */
@@ -58,21 +58,17 @@ $(function () {
 /*
   Switch actions
 */
-$('.afficher-masquer').on('click', function(){
+$('.afficher-masquer').on('click', function () {
+  const $input = $(this).prev('input');
+  const $button = $(this);
+  const isPassword = $input.attr('type') === 'password';
+  // Changer le type
+  $input.attr('type', isPassword ? 'text' : 'password');
 
-  if($(this).prev('input').attr('type') == 'password')
-    changeType($(this).prev('input'), 'text');
-  else
-    changeType($(this).prev('input'), 'password');
+  // Mise à jour des attributs d'accessibilité
+  $button.attr('aria-pressed', !isPassword);
+  $button.attr('aria-label', isPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe');
+  $button.text(isPassword ? 'Masquer' : 'Afficher');
+
   return false;
 });
-
-function changeType(x, type) {
-  if(x.prop('type') == type)
-  return x; //That was easy.
-  try {
-    return x.prop('type', type); //Stupid IE security will not allow this
-  } catch(error) {
-    sessionStorage.setItem('info', `Stupid IE security will not allow this: ${JSON.stringify(error, null, 2)}`);
-  }
-}
