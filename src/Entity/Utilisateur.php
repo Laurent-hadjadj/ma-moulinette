@@ -66,8 +66,13 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::JSON, nullable: false, options: ['comment' => "Préférences de l'utilisateur"])]
     private array $preference = [];
 
-    #[ORM\Column(type: Types::INTEGER, nullable: false, options: ['comment' => "Indicateur de réinitialisation du mot de passe"])]
-    private int $init = 0;
+    #[ORM\Column(type: Types::BOOLEAN, nullable: false,
+    options: ['default' => true, 'comment' => "Indicateur de réinitialisation du mot de passe"])]
+    private $resetPassword = true;
+
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+    options: ['default' => 0, 'comment' => 'Nombre de tentative de changement du mot de passe.'])]
+    private ?int $resetPasswordCount = 0;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true, options: ['comment' => "Date de modification"])]
     private ?\DateTime $dateModification = null;
@@ -79,7 +84,8 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->roles = [];
         $this->preference = [];
-        $this->init = 0;
+        $this->resetPasswordCount = 0;
+        $this->resetPassword = true;
         $this->actif = false;
         $this->dateEnregistrement = new \DateTimeImmutable();
     }
@@ -509,34 +515,27 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * [Description for getInit]
-     *
-     * @return int|null
-     *
-     * Created at: 31/01/2024 09:15:07 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getInit(): ?int
+ public function isResetPassword(): ?bool
     {
-        return $this->init;
+        return $this->resetPassword;
     }
 
-    /**
-     * [Description for setInt]
-     *
-     * @param int $init
-     *
-     * @return self
-     *
-     * Created at: 31/01/2024 09:15:19 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setInit(int $init): \App\Entity\Utilisateur
+    public function setResetPassword(?bool $resetPassword): static
     {
-        $this->init = $init;
+        $this->resetPassword = $resetPassword;
+
+        return $this;
+    }
+
+    public function getResetPasswordCount(): ?int
+    {
+        return $this->resetPasswordCount;
+    }
+
+    public function setResetPasswordCount(int $resetPasswordCount): static
+    {
+        $this->resetPasswordCount = $resetPasswordCount
+        ;
 
         return $this;
     }
