@@ -1,5 +1,6 @@
 {% set title = 'Authentification' %}
-{% set description = 'Authentification' %}
+{% set description = 'Ma-Moulinette - Authentification' %}
+{% set type_content = "Application Ma-Moulinette, l'authentification sécurisée." %}
 {% set bottom="footer-fixed" %}
 <!DOCTYPE html>
 <!--
@@ -23,6 +24,8 @@
   </head>
 
   <body>
+    {# no-script #}
+    {{ include('no-script.html.twig') }}
     {# Chargement de la section header #}
     {{ include('header.html.twig') }}
 
@@ -36,7 +39,8 @@
       </nav>
     </header>
 
-    <main class="grid-container main-container">
+    <main class="grid-container main-container" role="main">
+      <h1 class="h3 claire-hand">Bienvebue sur Ma-Moulinette</h1>
       <div class="grid-x">
         <div class="small-12 medium-7 large-7 cell">
           <video id="video-hongkong" class="video-hongkong" preload="metadata" loop autoplay muted>
@@ -57,36 +61,49 @@
         </div>
         <div class="small-12 medium-5 large-5 cell">
           <form class="callout" method="post">
-            <h1 class="h3 claire-hand text-center">Authentification.</h1>
+            <h2 class="h4 claire-hand text-center">Authentification.</h1>
             <div class="floated-label-wrapper">
               <label for="courriel">Courriel</label>
-              <input type="email" id="courriel" name="courriel" placeholder="laurent.hadjadj@ma-petite-entreprise.fr" required autofocus autocomplete="email">
+              <input id="courriel"
+                    type="email"
+                    name="courriel"
+                    placeholder="laurent.hadjadj@ma-petite-entreprise.fr" 
+                    require aria-required="true"
+                    autofocus autocomplete="email">
             </div>
             <div class="floated-label-wrapper">
-                  <label for="mot-de-passe">Mot de passe</label>
-                  <input id="mot-de-passe" class="open-sans" type="password" name="password" placeholder="Mot de passe" required autocomplete="current-password">
-                  <button id="afficher-masquer-mot-de-passe" class="afficher-masquer" type="button" title="Affiche/masque le mot de passe">Afficher|masquer
-                  </button>
-                </div>
-                <label>
-                  <input type="checkbox" name="_remember_me" class="float-left text-left" aria-label="Se souvenir">
-                  <span id="remember-me" class="float-left text-left open-sans remember-me">Se souvenir de moi.</span>
-                </label>
-                <input id="valider-formulaire-login" class="button expanded" type="submit" value="Valider" aria-label="Valider">
-                {% if is_granted('IS_AUTHENTICATED_REMEMBERED') == false %}
-                  <a href="{{ path('register', {}) }}" class="float-left open-sans pas-encore-inscrit">Pas encore inscrit ?</a>
-                  <br>
-                {% endif %}
-                <input
-                type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-              </form>
-              {% if erreur %}
-                <div class="label alert" role="alert">{{ erreur.messageKey|trans(erreur.messageData, 'security') }}
-                </div>
-              {% endif %}
+              <label for="mot-de-passe">Mot de passe</label>
+              <input id="mot-de-passe"
+                      class="open-sans"
+                      type="password"
+                      name="password"
+                      placeholder="Mot de passe"
+                      required aria-required="true"
+                      autocomplete="current-password">
+              <button id="afficher-masquer-mot-de-passe"
+                      class="afficher-masquer"
+                      type="button"
+                      aria-pressed="false"
+                      aria-label="Afficher le mot de passe">Afficher
+              </button>
             </div>
+            {% if is_granted('IS_AUTHENTICATED_REMEMBERED') == false %}
+            <a href="{{ path('register', {}) }}" class="float-left open-sans pas-encore-inscrit">Pas encore inscrit ?</a>
+              <br>
+            {% endif %}
+            <div class="grid-x grid-padding-x align-right margin-top-2">
+              <div class="cell shrink">
+                <input id="valider-formulaire-login" class="button button no-select focus-dark-light" type="submit" aria-label="Valider" value="✅ Valider">
+              </div>
+            </div>
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+          </form>
+          {% if erreur %}
+            <div class="label alert" role="alert">{{ erreur.messageKey|trans(erreur.messageData, 'security') }}
+            </div>
+          {% endif %}
         </div>
-      </main>
+      </div>
     </main>
     {# Chargement de la section footer #}
     {{ include('footer.html.twig') }}
