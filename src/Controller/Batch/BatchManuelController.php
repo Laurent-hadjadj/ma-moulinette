@@ -16,17 +16,12 @@ namespace App\Controller\Batch;
 use App\Service\FileLogger;
 use App\Entity\Portefeuille;
 use App\Entity\BatchTraitement;
-use App\Service\RabbitMQService;
-
 use Doctrine\ORM\EntityManagerInterface;
-
 use Symfony\Bundle\SecurityBundle\Security;
 use App\Controller\Batch\CollecteController;
-
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
@@ -57,55 +52,17 @@ class BatchManuelController extends AbstractController
         private $logger;
         private $collecte;
         private $security;
-        private $rabbitMQService;
 
     public function __construct(
         EntityManagerInterface $em,
         FileLogger $logger,
         CollecteController $collecte,
         Security $security,
-        RabbitMQService $rabbitMQService,
     ) {
         $this->em = $em;
         $this->logger = $logger;
         $this->collecte = $collecte;
         $this->security = $security;
-        $this->rabbitMQService = $rabbitMQService;
-    }
-
-    /**
-     * [Description for getMessageCount]
-     * Compte le nombre de message dans une queue RabbitMQ
-     *
-     * @param string $queueName
-     *
-     * @return Response
-     *
-     * Created at: 14/06/2024 18:01:59 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    #[Route('/messages/count/{queueName}', name: 'messages_count_queue', methods: ['GET'])]
-    public function getMessageCount(string $queueName): Response
-    {
-         /** On créé on objet de response HTTP */
-        $response = new JsonResponse();
-        $messageCount = $this->rabbitMQService->getMessageCount($queueName.'_queue');
-        return $response->setData(['nombre' => $messageCount], Response::HTTP_OK);
-    }
-
-    #[Route('/message/send', name: 'send_message', methods: ['GET'])]
-    public function sendMessage($queueName): Response
-    {
-        $message = 'Hello, RabbitMQ!';
-
-        // Envoyer un message à la queue
-        $this->rabbitMQService->sendMessage($queueName, $message);
-
-        // Fermer la connexion
-        $this->rabbitMQService->close();
-
-        return new Response('Message sent to RabbitMQ!');
     }
 
     /**
