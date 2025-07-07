@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2022.
+ *  Copyright (c) 2021-2025.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -50,10 +50,10 @@ final class EasyAdminListener implements EventSubscriberInterface
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function __construct(
-        private RequestStack $requestStack,
+        private RequestStack $rs,
         private EntityManagerInterface $em
     ) {
-        $this->rs = $requestStack;
+        $this->rs = $rs;
         $this->em = $em;
     }
 
@@ -73,7 +73,6 @@ final class EasyAdminListener implements EventSubscriberInterface
           AfterEntityPersistedEvent::class => ['flashMessageAfterPersist'],
           AfterEntityUpdatedEvent::class => ['flashMessageAfterUpdate'],
           AfterEntityDeletedEvent::class => ['flashMessageAfterDelete'],
-          AfterCrudActionEvent::class => ['ignoreFollowingFlashMsgIfXhrUpdate']
         ];
     }
 
