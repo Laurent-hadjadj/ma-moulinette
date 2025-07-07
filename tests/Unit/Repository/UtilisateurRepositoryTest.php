@@ -274,7 +274,7 @@ class UtilisateurRepositoryTest extends KernelTestCase
 
     /**
      * [Description for testUpdateUtilisateurResetPassword]
-     *  Teste la mise à jour du paramètre init pour le reset du password
+     *  Teste la mise à jour du paramètre resetPassword pour le reset du password
      *
      * @return void
      *
@@ -291,7 +291,7 @@ class UtilisateurRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         $map = [
-            'init' => 1,
+            'reset_password' => 1,
             'date_modification' => new \DateTimeImmutable(static::$dateModification),
             'courriel' => static::$courriel
         ];
