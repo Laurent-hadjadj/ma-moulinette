@@ -16,8 +16,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
-use App\Service\RabbitMQService;
-
 /**
  * [Description BatchCrudController]
  */
@@ -30,18 +28,17 @@ class BatchCrudController extends AbstractCrudController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private $rabbitMQService;
+
     private $emm;
     private $token;
 
     public function __construct(
         EntityManagerInterface $emm,
         TokenStorageInterface $token,
-        RabbitMQService $rabbitMQService
+
     ) {
         $this->emm = $emm;
         $this->token = $token;
-        $this->rabbitMQService = $rabbitMQService;
     }
 
     /**
@@ -206,19 +203,6 @@ class BatchCrudController extends AbstractCrudController
         if ($r['code']!=200){
             throw new \RuntimeException('Erreur : '.$r['code'].' '.$r['erreur']);
         }
-
-        /** On créé les queue RabbitMQ si elle n'existe pas encore */
-        try {
-            $queues = ['traitement_manuel_queue', 'traitement_automatique_queue'];
-
-            foreach ($queues as $queue) {
-                $this->rabbitMQService->createQueueIfNotExists($queue);
-            }
-        } catch (\Exception $e) {
-            throw new \RuntimeException('Déclaration de la queue en erreur : ' . $queue, 0, $e);
-        } finally {
-            $this->rabbitMQService->close();
-        }
     }
 
     /**
@@ -231,7 +215,7 @@ class BatchCrudController extends AbstractCrudController
      * @return void
      *
      * Created at: 02/01/2023, 18:33:27 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function updateEntity(EntityManagerInterface $em, $entityInstance): void
