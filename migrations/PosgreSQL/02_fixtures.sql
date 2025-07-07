@@ -32,27 +32,27 @@ VALUES
 ('2.0.0-RC3', '2024-04-22', NOW());
 
 -- ## Ajout du compte admin
-INSERT INTO  ma_moulinette.utilisateur (preference, init, courriel, roles, password, prenom, nom, date_enregistrement, actif, avatar, equipe)
+INSERT INTO  ma_moulinette.utilisateur (preference, reset_password, courriel, roles, password, prenom, nom, date_enregistrement, actif, avatar, equipe)
 VALUES ('{"statut":{"suivi_projet":false,"favori_projet":false,"favori_version":false,"bookmark":false},
 "suivi_projet":[],"favori_projet":[],"favori_version":[],"bookmark":[]}', 1, 'admin@ma-moulinette.fr', '["ROLE_GESTIONNAIRE"]', '$2y$13$6n72QhYwz.iufebkV.XaAOO4IOm3zOYcfzPUmal.jDTs8/QFq1p4K', 'Admin', '@ma-moulinette', '1980-01-01 00:00:00', true, 'chiffre/01.png', '["AUCUNE"]');
 
 -- Insertion pour 'Aurélie PETIT COEUR'
-INSERT INTO  ma_moulinette.utilisateur (preference, init, courriel, roles, password, prenom, nom, date_enregistrement, actif, avatar, equipe)
+INSERT INTO  ma_moulinette.utilisateur (preference, reset_password, courriel, roles, password, prenom, nom, date_enregistrement, actif, avatar, equipe)
 VALUES ('{"statut":{"suivi_projet":false,"favori_projet":false,"favori_version":false,"bookmark":false},
 "suivi_projet":[],"favori_projet":[],"favori_version":[],"bookmark":[]}', 0, 'aurelie.petit-coeur@ma-moulinette.fr', '["ROLE_GESTIONNAIRE"]', '$2y$13$HMk1rgFp5OiveduUd.dNXeaxq1y/HiActAv3hiMpAFCNsCjNHIFya', 'Aurélie', 'PETIT COEUR', '1980-01-01 00:00:00', false, 'fille-1/05.png', '["AUCUNE"]');
 
 -- Insertion pour 'Emma VAN DE BERG'
-INSERT INTO  ma_moulinette.utilisateur (preference, init, courriel, roles, password, prenom, nom, date_enregistrement, actif, avatar, equipe)
+INSERT INTO  ma_moulinette.utilisateur (preference, reset_password, courriel, roles, password, prenom, nom, date_enregistrement, actif, avatar, equipe)
 VALUES ('{"statut":{"_suivi_projet":false,"favori_projet":false,"favori_version":false,"bookmark":false},
 "suivi_projet":[],"favori_projet":[],"favori_version":[],"bookmark":[]}', 0, 'emma.van-de-berg@ma-moulinette.fr', '["ROLE_BATCH"]', '$2y$13$BrmmLZ3WiFwZcOllwh9zNOrjBRH9RSLEdLCW2y8by5CFX5zS.b1MG', 'Emma', 'VAN DE BERG','1980-01-01 00:00:00', false, 'fille-2/03.png', '["AUCUNE"]');
 
 -- Insertion pour 'Nathan Jones'
-INSERT INTO  ma_moulinette.utilisateur (preference, init, courriel, roles, password, prenom, nom, date_enregistrement, actif, avatar, equipe)
+INSERT INTO  ma_moulinette.utilisateur (preference, reset_password, courriel, roles, password, prenom, nom, date_enregistrement, actif, avatar, equipe)
 VALUES ('{"statut":{"suivi_projet":false,"favori_projet":false,"favori_version":false,"bookmark":false},
 "suivi_projet":[],"favori_projet":[],"favori_version":[],"bookmark":[]}', 0, 'nathan.jones@ma-moulinette.fr', '["ROLE_COLLECTE"]', '$2y$13$hwX0QJOw8fSgjiBq1CL/FuJsf4miOeLJRBw8jzt1WrsV/qLR.DxN.', 'Nathan', 'Jones', '1980-01-01 00:00:00', false, 'garcon-1/05.png', '["AUCUNE"]');
 
 -- Insertion pour 'Josh LIBERMAN'
-INSERT INTO  ma_moulinette.utilisateur (preference, init, courriel, roles, password, prenom, nom, date_enregistrement, actif, avatar, equipe)
+INSERT INTO  ma_moulinette.utilisateur (preference, reset_password, courriel, roles, password, prenom, nom, date_enregistrement, actif, avatar, equipe)
 VALUES ('{"statut":{"suivi_projet":false,"favori_projet":false,"favori_version":false,"bookmark":false},
 "suivi_projet":[],"favori_projet":[],"favori_version":[],"bookmark":[]}', 0, 'josh.liberman@ma-moulinette.fr', '["ROLE_UTILISATEUR"]', '$2y$13$ON.wYv3nmwkB9N3eOSubt.HFA46NjBHgyvOo6PBs3PVcCPtRb5MSa', 'Josh', 'LIBERMAN', '1980-01-01 00:00:00', false, 'garcon-1/10.png', '["AUCUNE"]');
 
