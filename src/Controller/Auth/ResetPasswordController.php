@@ -205,7 +205,7 @@ class ResetPasswordController extends AbstractController
 
         /** On récupère le filtre de recherche */
         $data = json_decode($request->getContent());
-        $init = $data->init;
+        $reset_password = $data->reset_password;
 
         /** On créé un objet DateTime */
         $date = new \DateTime('now', new \DateTimeZone(static::$europeParis));
@@ -215,9 +215,9 @@ class ResetPasswordController extends AbstractController
         $courriel = $this->getUser()->getCourriel();
 
         /** On met à jour la table propriétés */
-        $map=[ 'init'=>$init, 'date_modification'=>$dateModification,
+        $map = [ 'reset_password'=> $reset_password, 'date_modification'=>$dateModification,
                 'courriel'=>$courriel ];
-        $r=$utilisateurEntity->updateUtilisateurResetPassword($map);
+        $r = $utilisateurEntity->updateUtilisateurResetPassword($map);
         if ($r['code']!=200) {
             return new JsonResponse([
                 'type' => 'alert',
