@@ -32,6 +32,17 @@ class AnomalieDetailsRepository extends ServiceEntityRepository
       parent::__construct($registry, AnomalieDetails::class);
   }
 
+  /**
+   * [Description for handleDatabaseException]
+   *
+   * @param \Throwable $e
+   *
+   * @return array
+   *
+   * Created at: 07/07/2025 09:36:06 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
   public function handleDatabaseException(\Throwable $e): array
   {
     $message = $e->getMessage();
