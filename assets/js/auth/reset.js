@@ -1,7 +1,7 @@
 /**
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2025.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -36,14 +36,14 @@ import { zero, huit, cinquanteDeux  } from '../common/constante.js';
 /**
  * checkOkSvg
  *
- * @member [type]
+ * @member void
  */
 const checkOkSvg = `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewbox="0 0 32 32" class="info-check-ok-svg"><title>Valide</title><desc>Vérification OK.</desc><path d="M12.36 31.31c-.3.39-.71.61-1.14.61s-.84-.22-1.14-.61L.96 19.51c-.95-1.22-.95-3.21 0-4.43L2.1 13.6c.95-1.22 2.48-1.22 3.43 0l5.69 7.36L26.6 1.06c.95-1.22 2.48-1.22 3.43 0l1.14 1.48c.95 1.22.95 3.21 0 4.43L12.36 31.3zm0 0"/></svg>`;
 
 /**
  * checkKoSvg
  *
- * @member [type]
+ * @member void
  */
 const checkKoSvg = `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewbox="0 0 32 32" class="info-check-ko-svg"><title>IncorrecteValide</title><desc>Vérification KO.</desc><path d="M23.17 15.99l7.15-7.12a5.028 5.028 0 000-7.12c-1.97-1.96-5.17-1.96-7.15 0l-7.14 7.12-7.14-7.12c-1.97-1.96-5.17-1.96-7.15 0s-1.97 5.15 0 7.12l7.15 7.12-7.15 7.12a5.028 5.028 0 000 7.12c1.97 1.96 5.17 1.96 7.15 0l7.14-7.12 7.14 7.12c1.97 1.96 5.17 1.96 7.15 0a5.028 5.028 0 000-7.12l-7.15-7.12z"/></svg>`;
 
@@ -136,21 +136,18 @@ if ( initialPasswordLength>0 && passwordLength>=8 && rePasswordLength>=8 &&
 /*
   Switch actions
 */
-$('.unmask0, .unmask1, .unmask2').on('click', function(){
+$('.unmask0, .unmask1, .unmask2').on('click', function () {
+  const $input = $(this).prev('input');
+  const $button = $(this);
+  const isPassword = $input.attr('type') === 'password';
 
-  if($(this).prev('input').attr('type') == 'password')
-    changeType($(this).prev('input'), 'text');
-  else
-    changeType($(this).prev('input'), 'password');
+  // Changer le type d'input
+  $input.attr('type', isPassword ? 'text' : 'password');
+
+  // Accessibilité et retour utilisateur
+  $button.attr('aria-pressed', !isPassword);
+  $button.attr('aria-label', isPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe');
+  $button.text(isPassword ? 'Masquer' : 'Afficher');
+
   return false;
 });
-
-function changeType(x, type) {
-  if(x.prop('type') == type)
-  return x; //That was easy.
-  try {
-    return x.prop('type', type); //Stupid IE security will not allow this
-  } catch(error) {
-    sessionStorage.setItem('info', `Stupid IE security will not allow this !!! :  ${JSON.stringify(error, null, 2)}}`);
-  }
-}
