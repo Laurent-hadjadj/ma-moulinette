@@ -22,7 +22,8 @@ use App\Entity\Utilisateur;
 class UtilisateurCaseTest extends TestCase
 {
 
-  public static $init = 1;
+  public static $resetPassword = 1;
+  public static $resetPasswordCount = 1;
   public static $avatar = 'chiffre/01.png';
   public static $prenom = 'admin';
   public static $nom = '@ma-moulinette';
@@ -40,7 +41,8 @@ class UtilisateurCaseTest extends TestCase
   public function getEntity(): Utilisateur
   {
     return (new utilisateur())
-      ->setInit(static::$init)
+      ->setResetPassword((bool) static::$resetPassword)
+      ->setResetPasswordCount(1)
       ->setAvatar(static::$avatar)
       ->setPrenom(static::$prenom)
       ->setNom(static::$nom)
@@ -88,7 +90,8 @@ class UtilisateurCaseTest extends TestCase
 
     // Définition des valeurs
     $entity->setId(1);
-    $entity->setInit(static::$init);
+    $entity->setResetPassword((bool) static::$resetPassword);
+    $entity->setResetPasswordCount(1);
     $entity->setAvatar(static::$avatar);
     $entity->setPrenom(static::$prenom);
     $entity->setNom(static::$nom);
@@ -103,7 +106,8 @@ class UtilisateurCaseTest extends TestCase
 
     // Vérification des valeurs
     $this->assertEquals(1, $entity->getId(), "Erreur ID");
-    $this->assertEquals(static::$init, $entity->getInit(), "Erreur INIT");
+    $this->assertEquals(static::$resetPassword, $entity->isResetPassword(), "Erreur Reset Password");
+    $this->assertEquals(static::$resetPasswordCount, $entity->getResetPasswordCount(), "Erreur Reset Password Count");
     $this->assertEquals(static::$avatar, $entity->getAvatar(), "Erreur AVATAR");
     $this->assertEquals(static::$prenom, $entity->getPrenom(), "Erreur PRENOM");
     $this->assertEquals(static::$nom, $entity->getNom(), "Erreur NOM");
