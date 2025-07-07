@@ -221,7 +221,8 @@ const selectVersion=async function(mavenKey) {
     dataType: 'json', data: JSON.stringify(data), contentType };
 
   const r = await $.ajax(options);
-  if (r.code===http_400) {
+  // 📌 Vérification des erreurs
+  if (r.code === http_400) {
     const message=`La requête est incorrecte (Erreur 400).`;
     $('#message-ajout-projet').html(messageAlert+message+noticeAlert+messageClose
     );
@@ -301,19 +302,19 @@ $('select[name="version"]').on('change', function () {
     dataType: 'json', data: JSON.stringify(data), contentType };
 
     $.ajax(options).then(t => {
-    /** On récupère le message
+    // 📌 Vérification des erreurs
+      /** On récupère le message
      * Si 404 --> le projet n'existe plus
      * Si 200 --> on continue
      * si <> 200 et 404, exception symfony
     */
-    if (t.code===http_400 && t.data===null || t.code===http_400 && t.maven_key===null) {
+    if (t.code === http_400 && t.data===null || t.code === http_400 && t.maven_key === null) {
       const message=`La requête est incorrecte (Erreur 400).`;
       $('#message-ajout-projet').html(messageAlert+message+noticeAlert+messageClose
       );
       return;
     }
-
-    if (t.code===http_404) {
+    if (t.code === http_404) {
       const message=`Le projet n'existe plus sur le serveur SonarQube ! (Erreur 406)`;
       $('#message-ajout-projet').html(messageAlert+message+noticeAlert+messageClose
       );
@@ -594,6 +595,7 @@ $('.js-enregistrer-analyse').on('click', ()=>{
     dataType: 'json', data: JSON.stringify(data), contentType };
 
     $.ajax(options).then(t => {
+      // 📌 Vérification des erreurs
       let message='';
       if (t.code===http_200){
         message=`Enregistrement des informations effectué.`;
@@ -729,15 +731,15 @@ $('.js-modifier-analyse').on('click', function () {
     dataType: 'json', data: JSON.stringify(data), contentType };
 
   $.ajax(options).then(t => {
-
+    // 📌 Vérification des erreurs
     /* On gère le résultat de la requête */
-    if (t.code===http_200) {
+    if (t.code === http_200) {
       const message=`La liste des versions a été chargée correctement.`;
       $('#message').html(messageInformation+message+noticePrimary+messageClose);
     }
 
-    if (t.code===http_400) {
-      const message=`Je n'ai pas réussi à charger la liste des versions (${t.code}).`;
+    if (t.code === http_400) {
+      const message = `Je n'ai pas réussi à charger la liste des versions (${t.code}).`;
       $('#message').html(messageAlert+message+noticeAlert+messageClose);
     }
 
