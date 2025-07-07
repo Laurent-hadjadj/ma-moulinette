@@ -40,7 +40,7 @@
     </header>
 
     <main class="grid-container main-container" role="main">
-      <h1 class="h3 claire-hand">Bienvebue sur Ma-Moulinette</h1>
+      <h1 class="h3 claire-hand">Bienvenue sur Ma-Moulinette</h1>
       <div class="grid-x">
         <div class="small-12 medium-7 large-7 cell">
           <video id="video-hongkong" class="video-hongkong" preload="metadata" loop autoplay muted>
@@ -61,14 +61,14 @@
         </div>
         <div class="small-12 medium-5 large-5 cell">
           <form class="callout" method="post">
-            <h2 class="h4 claire-hand text-center">Authentification.</h1>
+            <h2 class="h4 claire-hand text-center">Authentification.</h2>
             <div class="floated-label-wrapper">
               <label for="courriel">Courriel</label>
               <input id="courriel"
                     type="email"
                     name="courriel"
-                    placeholder="laurent.hadjadj@ma-petite-entreprise.fr" 
-                    require aria-required="true"
+                    placeholder="laurent.hadjadj@ma-petite-entreprise.fr"
+                    required aria-required="true"
                     autofocus autocomplete="email">
             </div>
             <div class="floated-label-wrapper">
@@ -81,7 +81,7 @@
                       required aria-required="true"
                       autocomplete="current-password">
               <button id="afficher-masquer-mot-de-passe"
-                      class="afficher-masquer"
+                      class="afficher-masquer focus-light"
                       type="button"
                       aria-pressed="false"
                       aria-label="Afficher le mot de passe">Afficher
@@ -99,8 +99,8 @@
             <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
           </form>
           {% if erreur %}
-            <div class="label alert" role="alert">{{ erreur.messageKey|trans(erreur.messageData, 'security') }}
-            </div>
+            <output class="label alert" role="alert">{{ erreur.messageKey|trans(erreur.messageData, 'security') }}
+            </output>
           {% endif %}
         </div>
       </div>
