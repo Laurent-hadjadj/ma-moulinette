@@ -22,7 +22,7 @@ use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 /**
- * [Description UtilisateurRepositoryTest]
+ * [Description OwaspRepositoryTest]
  */
 class OwaspRepositoryTest extends KernelTestCase
 {
