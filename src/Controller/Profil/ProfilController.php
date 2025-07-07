@@ -17,7 +17,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 use Doctrine\ORM\EntityManagerInterface;
@@ -44,6 +43,7 @@ class ProfilController extends AbstractController
         private ParameterBagInterface $params)
     {
         $this->em = $em;
+        $this->params = $params;
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
         $this->marqueEntrepriseLong = $params->get('marque.entreprise.long');
@@ -83,13 +83,13 @@ class ProfilController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/profil', name: 'profil', methods: 'GET')]
-    public function index(Request $request): Response
+    public function index(): Response
     {
         /** On instancie l'EntityRepository */
         $profilesRepository = $this->em->getRepository(Profiles::class);
 
           /** On récupère la liste des profiles; */
-        $r=$profilesRepository->selectProfiles();
+        $r = $profilesRepository->selectProfiles();
         if  ($r['code'] === 500) {
             $this->addFlash('notice', ['type'=>'alert', 'titre'=> '[PROFIL-002]', 'message'=>"La liste des profils n'a pas été récupérée."]);
         }
@@ -100,7 +100,7 @@ class ProfilController extends AbstractController
             $this->addFlash('notice', ['type'=>'success', 'titre'=> '[PROFIL-001]', 'message'=>"La liste des profils a été récupérée."]);
         }
 
-        $render=static::genericRender();
+        $render = static::genericRender();
         $render['liste'] = $r['liste'];
         return $this->render('profil/index.html.twig', $render);
     }
