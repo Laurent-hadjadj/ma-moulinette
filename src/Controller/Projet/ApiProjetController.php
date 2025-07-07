@@ -86,7 +86,7 @@ class ApiProjetController extends AbstractController
         $preference = $security->getUser()->getPreference();
         $courriel = $security->getUser()->getCourriel();
 
-        $map = ['maven_key' => $data->maven_key, 'courriel' => $courriel];
+        $map = [ 'maven_key' => $data->maven_key, 'courriel' => $courriel];
         $request = $utilisateurRepository->updateUtilisateurFavoriProjet($preference, $map);
         if ($request['code'] != 200) {
             return new JsonResponse([
