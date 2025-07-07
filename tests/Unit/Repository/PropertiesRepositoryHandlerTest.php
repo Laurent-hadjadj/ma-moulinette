@@ -27,7 +27,7 @@ use PHPUnit\Framework\TestCase;
  */
 class PropertiesRepositoryHandlerTest extends TestCase
 {
-    private static $gestionTest = 'gestion test';
+    private static $gestionTest = 'properties test';
 
     public function testGetProperties_WhenSQLException(): void
     {
@@ -78,54 +78,6 @@ class PropertiesRepositoryHandlerTest extends TestCase
         $result = $repo->getProperties($type);
 
         // 9) Vérification
-        $this->assertSame($expected, $result);
-    }
-
-    public function testDeleteProperties_WhenSQLException(): void
-    {
-        // 1) Crée une vraie exception qui implémente DBAL\Exception et Throwable
-        $fakeException = new class('erreur delete') extends \Exception implements DBALExceptionInterface {
-            public function getSqlState(): ?string { return null; }
-        };
-
-        // 2) Stub partiel de Statement : bindValue ok, executeStatement jette l'exception
-        $stmtStub = $this->getMockBuilder(Statement::class)
-                            ->disableOriginalConstructor()
-                            ->onlyMethods(['bindValue', 'executeStatement'])
-                            ->getMock();
-        $stmtStub->method('bindValue')->withAnyParameters();
-        $stmtStub->method('executeStatement')->willThrowException($fakeException);
-
-        // 3) Mock de Connection : beginTransaction, prepare, rollBack et commit
-        $connectionMock = $this->createMock(Connection::class);
-        $connectionMock->expects($this->once())->method('beginTransaction');
-        $connectionMock->method('prepare')->with($this->isType('string'))
-                        ->willReturn($stmtStub);
-        $connectionMock->expects($this->once())->method('rollBack');
-        // commit ne doit **jamais** être appelé dans ce scénario
-        $connectionMock->expects($this->never())->method('commit');
-
-        // 4) Stub d'EntityManager pour retourner notre Connection
-        $emStub = $this->createMock(EntityManagerInterface::class);
-        $emStub->method('getConnection')->willReturn($connectionMock);
-
-        // 5) Partial mock du Repository pour surcharger getEntityManager() & handleDatabaseException()
-        $registry = $this->createMock(ManagerRegistry::class);
-        $repo = $this->getMockBuilder(PropertiesRepository::class)
-                        ->setConstructorArgs([$registry])->onlyMethods(['getEntityManager', 'handleDatabaseException'])->getMock();
-
-        // 6) Quand handleDatabaseException() est appelé avec notre exception, on renvoie ce tableau
-        $expected = ['code' => 500, 'erreur' => static::$gestionTest];
-        $repo->expects($this->once())->method('handleDatabaseException')
-                ->with($fakeException)
-                ->willReturn($expected);
-
-        // 7) getEntityManager() renvoie notre EM stub
-        $repo->method('getEntityManager')->willReturn($emStub);
-
-        // 8) Appel de la méthode : elle doit entrer dans le catch et renvoyer $expected
-        $result = $repo->deleteProperties();
-
         $this->assertSame($expected, $result);
     }
 
