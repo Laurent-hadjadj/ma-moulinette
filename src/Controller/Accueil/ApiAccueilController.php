@@ -87,6 +87,7 @@ class ApiAccueilController extends AbstractController
 
         /** On appel le client http */
         $result = $this->client->httpSonarQube($url);
+
         if ($result['code'] != 200) {
             return new JsonResponse(['code' => $result['code'], 'erreur' => $result['erreur']], Response::HTTP_OK);
         } else {
@@ -129,7 +130,6 @@ class ApiAccueilController extends AbstractController
                 'reference' => static::$reference, 'code' => $result['code'],
                 'message' => $result['erreur']], Response::HTTP_OK);
         }
-
         /** On, initialiser les variables  */
         $public = $private = $emptyTags = $nombre = 0;
 
