@@ -105,43 +105,4 @@
 </div>
 
 {# fenêtre modal details #}
-{% if is_granted('ROLE_UTILISATEUR') %}
-  <dialog id="modal-details" class="reveal small" data-reveal data-close-on-click="true" data-animation-in="fade-in" data-animation-out="fade-out" aria-modal="true">
-    <h1 class="h4 claire-hand">Informations utilisateur.</h1>
-    <p class="open-sans">
-      <strong>Nom&nbsp;:</strong>
-      <span class="color-noir">{{ app.user.nom}}</span>
-    </p>
-    <p class="open-sans">
-      <strong>Prénom&nbsp;:</strong>
-      <span class="color-noir">{{ app.user.prenom }}</span>
-    </p>
-    <p class="open-sans">
-      <strong>Courriel&nbsp;:</strong>
-      <span class="color-noir">{{ app.user.courriel }}</span>
-    </p>
-    <p class="open-sans">
-      <strong>Créer le&nbsp;:</strong>
-      <span class="color-noir">{{ app.user.dateEnregistrement|date("d/m/Y", "Europe/Paris")}}</span>
-    </p>
-    <p class="open-sans">
-      <strong>Modifier le&nbsp;:</strong>
-      <span class="color-noir">{{ app.user.dateModification|date("d/m/Y H:i:s", "Europe/Paris") }}</span>
-    </p>
-    <div class="grid-x">
-      <p class="open-sans">Mise à jour du mot-de-passe&nbsp;?&nbsp;</p>
-      <div class="switch switch-identifiant small">
-        <input class="switch-input" id="js-identifiant-oui-non" type="checkbox" name="variationSwitch" data-init="{{app.user.init}}">
-        <label class="switch-paddle switch-paddle-identifiant" for="js-identifiant-oui-non">
-          <span class="show-for-sr">Mise à jour du mot-de-passe?</span>
-          <span class="switch-active switch-identifiant-active" aria-hidden="true">Oui</span>
-          <span class="switch-inactive switch-identifiant-inactive" aria-hidden="true">Non</span>
-        </label>
-      </div>
-    </div>
-    <p id="mise-a-jour-message" class="open-sans text-justify"></p>
-    <br>
-    {# fermeture de la fenêtre modale #}
-    <button id="fermer-identifiant-details" class="expanded button open-sans" data-close aria-label="Fermeture" type="button">Fermer</button>
-  </dialog>
-{% endif %}
+{{ include('information.utilisateur.html.twig') }}
