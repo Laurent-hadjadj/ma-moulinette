@@ -76,10 +76,6 @@ phpunit.xml.dist
 /var/audit/*
 ###< Traces batch ###
 
-###> rabbitMQ ###
-/RabbitMQ
-###< rabbitMQ ###
-
 ###> phpstan/phpstan ###
 phpstan.neon
 ###< phpstan/phpstan ###
