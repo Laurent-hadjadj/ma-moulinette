@@ -1,5 +1,6 @@
 {% set title = 'Réinitialisation' %}
-{% set description = 'Ma Moulinette - Changer son mot de passe.' %}
+{% set description = 'Ma-Moulinette - Changer son mot de passe.' %}
+{% set type_content = "Application Ma-Moulinette, changer son mot de passe très compliqué." %}
 {% set bottom="footer-fixed" %}
 <!DOCTYPE html>
 <!--
@@ -19,16 +20,29 @@
   <head>
     <title>{{ title }}</title>
     {{ include('head.html.twig') }}
-    {# Chargement du code javascript #}
+    {# Chargement des assets JS et CSS #}
     {% block importmap %}{{ importmap('reset') }}{% endblock %}
   </head>
 
   <body>
+    {# no-script #}
+    {{ include('noscript.html.twig') }}
     {# Chargement de la section header #}
     {{ include('header.html.twig') }}
-    <br><br>
+    {# On ajoute les informations de l'utilisateur #}
+    {{ include('information.utilisateur.html.twig') }}
 
-    <main class="grid-container">
+    {# Fil d’Ariane #}
+    <header class="grid-container">
+      <nav id="fil-ariane" aria-label="vous êtes ici :">
+        <ol class="claire-hand breadcrumbs">
+          <li><a href="{{ path('accueil', {}) }}">Ma-Moulinette</a></li>
+          <li><span class="show-for-sr">Vous êtes sur la page :</span>changer-mot-de-passe</li>
+        </ol>
+      </nav>
+    </header>
+
+    <main class="grid-container" role="main">
       {# On affiche les messages #}
       {% for message in app.flashes('notice') %}
       <div class="callout {{message.type}} alert-callout-border" data-closable>
@@ -81,8 +95,10 @@
                       {{ form_label(resetPasswordForm.ancienMotDePasse) }}
                     </div>
                     {{ form_widget(resetPasswordForm.ancienMotDePasse) }}
-                    <button class="unmask0" type="button" title="Affiche/masque le mot de passe">Afficher|Masquer
-                    </button>
+                    <button class="unmask0" type="button"
+                  aria-pressed="false"
+                  aria-label="Afficher le mot de passe">Afficher
+                </button>
                   </div>
                   <div class="small-1 medium-1 large-1 cell">
                     <span aria-hidden>&nbsp;</span>
@@ -96,8 +112,10 @@
                       {{ form_label(resetPasswordForm.plainPassword.first) }}
                     </div>
                     {{ form_widget(resetPasswordForm.plainPassword.first) }}
-                    <button class="unmask1" type="button" title="Affiche/masque le mot de passe">Afficher|Masquer
-                    </button>
+                   <button class="unmask1" type="button"
+                  aria-pressed="false"
+                  aria-label="Afficher le nouveau mot de passe">Afficher
+                </button>
                   </div>
                   <div class="check-svg small-1 medium-1 large-1 cell">
                     <div class="container-check-password"><span id="reset-info-check-password"></span></div>
@@ -112,6 +130,7 @@
                     </div>
                     {{ form_widget(resetPasswordForm.plainPassword.second) }}
                     <button class="unmask2" type="button" title="Affiche/masque le mot de passe">Afficher|Masquer</button>
+              </div>
                   </div>
                   <div class="check-svg small-1 medium-1 large-1 cell">
                     <div class="container-check-password"><span id="reset-info-check-re-password"></span></div>
@@ -122,15 +141,22 @@
                 <div class="affiche-info-mot-de-passe cell"></div>
 
                 {# Affiche des messages d'erreur pour le champ mot-de-passe et re-mot-de-passe #}
-                <div class="form_erreur">
+                <output class="form_erreur" role="alert">
                   {{ form_errors(resetPasswordForm.plainPassword.first) }}
                   {{ form_errors(resetPasswordForm.plainPassword.second) }}
-                </div>
+                </output>
 
-                {# Bouton de validation #}
-                <input id="valider-formulaire-enregistrement" class="button expanded disabled-custom no-select" type="button" value="Valider">
+            {# Bouton de validation #}
+            <section class="grid-x grid-padding-x align-right margin-top-2">
+              <div class="cell shrink">
+                <input id="valider-formulaire-enregistrement"
+                class="button disabled-custom no-select focus-dark-light"
+                type="button" value="✅ Valider">
+              </div>
+            </section>
                 <div role="alert" id="message-erreur-valider"></div>
               </div>
+              <output role="alert" aria-live="assertive" id="message-erreur-valider"></output>
             </div>
             {{ form_end(resetPasswordForm) }}
           </div>
