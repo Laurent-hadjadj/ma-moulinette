@@ -562,6 +562,7 @@ body {
 .background-color-vert { background-color: #037505; }
 
 .margin-bottom-05 { margin-bottom: 0.5rem; }
+.margin-top-05 { margin-top: 0.5rem; }
 .margin-left-1 { margin-left: 1rem; }
 .margin-left-2 { margin-left: 2rem; }
 .margin-left-3 { margin-left: 3rem; }
@@ -618,7 +619,6 @@ body {
   padding: 0.4rem;
 }
 
-
 /* === Message JS === */
 .message-bouton-details:hover {
   border: 1px solid #000;
@@ -674,8 +674,6 @@ body {
   outline: 2px solid #00445b;
   outline-offset: 4px;
 }
-
-
 
 /* ==== Message d'alerte ==== */
 .callout-message {
@@ -826,6 +824,7 @@ body {
 .breadcrumbs li { font-size: 1rem; }
 .breadcrumbs a { color: #850385; }
 
+/* === Information utilisateur === */
 /* menu utilisateur */
 .menu-identifiant {
   display: flex;
@@ -836,18 +835,20 @@ body {
 .menu-identifiant-titre:hover,
 .menu-identifiant-item:hover { color: #e7552c; }
 
-/** Ajoute un bouton fermer à la fenêtre modale */
-#fermer-identifiant-details {
+#bouton-fermer-information-utilisateur {
+  min-width: 9rem;
+  font-size: 0.95rem;
+  border-radius: 0.375rem;
+  margin: 0 0.25rem 0.5rem 0.25rem;
+  padding: 0.8rem 0.6rem;
   color: #fff;
+  text-align: center;
   background-color: #00445b;
 }
 
-#fermer-identifiant-details:hover { background-color: #006182; }
+#bouton-fermer-information-utilisateur:hover { background-color: #006182; }
 
-/**
-  * gestion du switch pour la mise à jour du mot de passe
-  */
-
+/* === gestion du switch pour la mise à jour du mot de passe ==== */
 /* décalage vers la droite */
 .switch-identifiant { padding-left: 1rem; }
 
@@ -865,6 +866,7 @@ input:checked ~ .switch-paddle-identifiant { background-color: #00445b; }
   color: #fff;
 }
 
+/* ===== Footer ===== */
 /* bas de page - container */
 .footer { width: 100%; }
 
