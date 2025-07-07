@@ -42,4 +42,9 @@ La version 2.0.0 est en cours de développement. Elle contient les fonctionnalit
 - [x] Des tableaux de suivi des indicateurs de qualité ;
 - [x] Un nouveau système de gestion de la documentation (mkDocs) ;
 
+Compte **Admin** (cf. securite.md).
+
+- [x] Son identifiant de connexion est <admin@ma-moulinette.fr>.
+- [x] Son mot de passe est : `eYK8k4[T;99N!em^`
+
 -**-- FIN --**-
