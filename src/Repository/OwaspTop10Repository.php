@@ -30,7 +30,7 @@ class OwaspTop10Repository extends ServiceEntityRepository
   /**
    * [Description for handleDatabaseException]
    *
-   * @param \Doctrine\DBAL\Exception $e
+   * @param \Throwable $e
    *
    * @return array
    *
@@ -38,13 +38,26 @@ class OwaspTop10Repository extends ServiceEntityRepository
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Lilmod & Lelamed - Creative Common CC-BY-NC-SA 4.0.
    */
-  protected function handleDatabaseException(\Doctrine\DBAL\Exception $e): array
+  public function handleDatabaseException(\Throwable $e): array
   {
-    if (strpos($e->getMessage(), 'SQLSTATE[08006]') !== false) {
-      return ['code' => 500, 'erreur' => static::$noDataBase];
-    } else {
-      return ['code' => 500, 'erreur' => $e->getMessage()];
-    }
+      $message = $e->getMessage();
+
+      // message = 'SQLSTATE[08006]'
+      if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
+          $message = static::$noDataBase;
+      }
+
+      // state = '23502'
+      if ($e instanceof \Doctrine\DBAL\Exception\NotNullConstraintViolationException) {
+          $message = $e->getMessage();
+      }
+
+      // state = '23505'
+      if ($e instanceof \Doctrine\DBAL\Exception\UniqueConstraintViolationException) {
+          return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
+      }
+
+      return ['code' => 500, 'erreur' => $message];
   }
 
   /**
@@ -62,12 +75,13 @@ class OwaspTop10Repository extends ServiceEntityRepository
   {
     $sql = "SELECT *
             FROM ma_moulinette.owasp_top10
-            WHERE year = :referential_version ORDER BY id";
+            WHERE year = :referential_version
+            ORDER BY id";
     try {
-          $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $stmt->bindValue(':referential_version', $map['referential_version']);
             $liste = $stmt->executeQuery()->fetchAllAssociative();
-    } catch (\Doctrine\DBAL\Exception $e) {
+    } catch (\Throwable $e) {
       return $this->handleDatabaseException($e);
     }
     return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
@@ -90,10 +104,10 @@ class OwaspTop10Repository extends ServiceEntityRepository
             FROM ma_moulinette.owasp_top10
             WHERE id = :menace";
     try {
-          $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $stmt->bindValue(':menace', $map['menace']);
           $details = $stmt->executeQuery()->fetchAllAssociative();
-    } catch (\Doctrine\DBAL\Exception $e) {
+    } catch (\Throwable $e) {
         return $this->handleDatabaseException($e);
     }
     return ['code' => 200, 'details' => $details, 'erreur' => ''];
