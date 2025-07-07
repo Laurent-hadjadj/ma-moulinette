@@ -24,25 +24,40 @@ class ActuatorRepository extends ServiceEntityRepository
       parent::__construct($registry, Actuator::class);
   }
 
+
   /**
    * [Description for handleDatabaseException]
    *
-   * @param \Doctrine\DBAL\Exception $e
+   * @param \Throwable $e
    *
    * @return array
    *
-   * Created at: 21/12/2024 20:27:13 (Europe/Paris)
+   * Created at: 07/07/2025 09:36:59 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  protected function handleDatabaseException(\Doctrine\DBAL\Exception $e): array
+  public function handleDatabaseException(\Throwable $e): array
   {
-    if (strpos($e->getMessage(), 'SQLSTATE[08006]') !== false) {
-      return ['code'=>500, 'erreur' => static::$noDataBase];
-    } else {
-      return ['code'=>500, 'erreur'=> $e->getMessage()];
+    $message = $e->getMessage();
+
+    // message = 'SQLSTATE[08006]'
+    if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
+        $message = static::$noDataBase;
     }
+
+    // state = '23502'
+    if ($e instanceof \Doctrine\DBAL\Exception\NotNullConstraintViolationException) {
+        $message = $e->getMessage();
+    }
+
+    // state = '23505'
+    if ($e instanceof \Doctrine\DBAL\Exception\UniqueConstraintViolationException) {
+        return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
+    }
+
+    return ['code' => 500, 'erreur' => $message];
   }
+
 
   /**
    * [Description for deleteActuatorUrl]
@@ -59,18 +74,18 @@ class ActuatorRepository extends ServiceEntityRepository
   {
     $sql = "DELETE
             FROM actuator
-            WHERE url=:url";
+            WHERE url = :url";
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
             $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
               $stmt->bindValue(':url', $map['url']);
               $stmt->executeStatement();
           $this->getEntityManager()->getConnection()->commit();
-    } catch (\Doctrine\DBAL\Exception $e) {
+    } catch (\Throwable $e) {
         $this->getEntityManager()->getConnection()->rollback();
-        return ['code'=>500, 'erreur'=> $e->getMessage()];
+        return $this->handleDatabaseException($e);
     }
-    return ['code'=>200, 'erreur'=>''];
+    return ['code' => 200, 'erreur' => ''];
   }
 
   /**
@@ -94,10 +109,10 @@ class ActuatorRepository extends ServiceEntityRepository
     try {
           $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
           $paginator=$stmt->executeQuery()->fetchAllAssociative();
-      } catch (\Doctrine\DBAL\Exception $e) {
-          return ['code'=>500, 'erreur'=> $e->getMessage()];
+      } catch (\Throwable $e) {
+          return $this->handleDatabaseException($e);
       }
-      return ['code'=>200, 'paginator_query'=>$paginator,'erreur'=>''];
+      return ['code' => 200, 'paginator_query' => $paginator, 'erreur' => ''];
   }
 
   /**
@@ -122,10 +137,10 @@ class ActuatorRepository extends ServiceEntityRepository
     try {
           $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
           $paginator=$stmt->executeQuery()->fetchAllAssociative();
-      } catch (\Doctrine\DBAL\Exception $e) {
-          return ['code'=>500, 'erreur'=> $e->getMessage()];
+      } catch (\Throwable $e) {
+          return $this->handleDatabaseException($e);
       }
-      return ['code'=>200, 'paginator_query'=>$paginator,'erreur'=>''];
+      return ['code' => 200, 'paginator_query' => $paginator, 'erreur' => ''];
   }
 
   /**
@@ -143,7 +158,7 @@ class ActuatorRepository extends ServiceEntityRepository
   {
     $sql = "SELECT id, url, actuator_user, actuator_password
             FROM ma_moulinette.actuator
-            WHERE maven_key= :maven_key";
+            WHERE maven_key = :maven_key";
     try {
           $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $stmt->bindValue(':maven_key', $map['maven_key']);
@@ -151,7 +166,7 @@ class ActuatorRepository extends ServiceEntityRepository
             if (empty($liste)) {
                 return ['code' => 404, 'message' => "Le projet n'a pas de point d'accès défini"];
             }
-      } catch (\Doctrine\DBAL\Exception $e) {
+      } catch (\Throwable $e) {
           return $this->handleDatabaseException($e);
       }
 
@@ -160,6 +175,6 @@ class ActuatorRepository extends ServiceEntityRepository
       $user=$liste[0]['actuator_user'] ?? null;
       $password=$liste[0]['actuator_password'] ?? null;
 
-      return ['code'=>200, 'erreur'=>''] + compact('url', 'user', 'password', 'id');
+      return ['code' => 200, 'erreur' => ''] + compact('url', 'user', 'password', 'id');
   }
 }
