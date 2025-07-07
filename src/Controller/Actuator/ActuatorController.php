@@ -3,7 +3,7 @@
 /**
 *  Ma-Moulinette
 *  --------------
-*  Copyright (c) 2021-2024.
+*  Copyright (c) 2021-2025.
 *  Laurent HADJADJ <laurent_h@me.com>.
 *  Licensed Creative Common CC-BY-NC-SA 4.0.
 *  ---
@@ -36,7 +36,7 @@ class ActuatorController extends AbstractController
     public static $europeParis = "Europe/Paris";
     public static $request = "requête : ";
     public static $titre = 'Traitement';
-    public static $erreur403 = "Vous devez avoir le rôle 'ACTUATOR' accéder à cette page [Erreur 403].";
+    public static $erreur403 = "Vous devez avoir le rôle 'ACTUATOR' pour accéder à cette page (Erreur 403).";
 
     private $logoEntreprise;
     private $marqueEntrepriseShort;
@@ -141,7 +141,7 @@ class ActuatorController extends AbstractController
         // Créer un objet date avec le fuseau horaire Europe/Paris
         $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
 
-        $actuatorInfo=[
+        $actuatorInfo = [
             "nom" => "monapplication-mat-api",
             "description" => "Mon Application Mat",
             "version" => "3.2.1-RC1",
