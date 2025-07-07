@@ -41,7 +41,8 @@ class UtilisateurFixtures extends Fixture
 
       /** création de l'utilisateur  ADMIN */
       $admin=(new Utilisateur())
-        ->setInit(1)
+        ->setResetPassword(false)
+        ->setResetPasswordCount(1)
         ->setAvatar('chiffre/01.png')
         ->setPrenom('admin')
         ->setNom('@ma-moulinette')
@@ -56,7 +57,8 @@ class UtilisateurFixtures extends Fixture
 
         /** Création de l'utilisateur AURELIE */
         $aurelie=(new Utilisateur())
-        ->setInit(0)
+        ->setResetPassword(true)
+        ->setResetPasswordCount(1)
         ->setAvatar('fille-1/05.png')
         ->setPrenom('Aurélie')
         ->setNom('PETIT COEUR')
@@ -71,7 +73,8 @@ class UtilisateurFixtures extends Fixture
 
         /** Création de l'utilisateur EMMA */
         $emma=(new Utilisateur())
-        ->setInit(0)
+        ->setResetPassword(false)
+        ->setResetPasswordCount(1)
         ->setAvatar('fille-2/03.png')
         ->setPrenom('Emma')
         ->setNom('VAN DE BERG')
@@ -86,7 +89,8 @@ class UtilisateurFixtures extends Fixture
 
         /** Création de l'utilisateur NATHAN */
         $nathan=(new Utilisateur())
-        ->setInit(0)
+        ->setResetPassword(false)
+        ->setResetPasswordCount(1)
         ->setAvatar('garcon-1/05.png')
         ->setPrenom('Nathan')
         ->setNom('JONES')
@@ -101,7 +105,8 @@ class UtilisateurFixtures extends Fixture
 
         /** Création de l'utilisateur JOSH */
         $josh=(new Utilisateur())
-        ->setInit(0)
+        ->setResetPassword(false)
+        ->setResetPasswordCount(1)
         ->setAvatar('garcon-1/10.png')
         ->setPrenom('Josh')
         ->setNom('LIBERMAN')
