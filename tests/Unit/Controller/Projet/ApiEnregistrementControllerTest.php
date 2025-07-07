@@ -19,6 +19,7 @@ class ApiEnregistrementControllerTest extends WebTestCase
     private static $josh = 'josh.liberman@ma-moulinette.fr';
     private static $aurelie = 'aurelie.petit-coeur@ma-moulinette.fr';
     private static $apiEnregistrement = '/api/enregistrement';
+    private static $mavenKey = 'fr.ma-moulinette:le-chat';
 
     public function testEnregistrementAvecDataNull(): void
     {
@@ -54,14 +55,14 @@ class ApiEnregistrementControllerTest extends WebTestCase
         $historiqueRepository = static::getContainer()->get(HistoriqueRepository::class);
         $entityManager = static::getContainer()->get('doctrine.orm.entity_manager');
 
-        $historique = $historiqueRepository->findOneBy(['mavenKey' => 'example_key', 'analyseKey' => 'example_key']);
+        $historique = $historiqueRepository->findOneBy(['mavenKey' => static::$mavenKey, 'analyseKey' => 'example_key']);
         if ($historique) {
             $entityManager->remove($historique);
             $entityManager->flush();
         }
 
         $data = [
-            'maven_key' => 'example_key', 'analyse_key' => 'example_key', 'version' => '1.0.1',
+            'maven_key' => static::$mavenKey, 'analyse_key' => 'example_key', 'version' => '1.0.1',
             'date_version' => '2023-10-02', 'nom_projet' => 'Example Project2', 'version_release' => 2,
             'version_snapshot' => 4, 'version_autre' => 0, 'suppress_warning' => 10, 'no_sonar' => 140,
             'todo' => 13, 'logger_info' => 45, 'logger_warn' => 5, 'logger_error' => 12,
@@ -97,7 +98,7 @@ class ApiEnregistrementControllerTest extends WebTestCase
         $client->loginUser($testUser);
 
         $data = [
-            'maven_key' => 'example_key', 'analyse_key' => 'example_key', 'version' => '1.0.0',
+            'maven_key' => static::$mavenKey, 'analyse_key' => 'example_key', 'version' => '1.0.0',
             'date_version' => '2023-10-02', 'nom_projet' => 'Exemple Project', 'version_release' => 2,
             'version_snapshot' => 4, 'version_autre' => 0, 'suppress_warning' => 10, 'no_sonar' => 140,
             'todo' => 13, 'logger_info' => 45, 'logger_warn' => 5, 'logger_error' => 12,
@@ -118,7 +119,7 @@ class ApiEnregistrementControllerTest extends WebTestCase
 
         $entityManager = static::getContainer()->get('doctrine.orm.entity_manager');
         $historiqueRepository = static::getContainer()->get(HistoriqueRepository::class);
-        $historique = $historiqueRepository->findOneBy(['mavenKey' => 'example_key', 'version' => '1.0.0', 'dateVersion' => '2023-10-02']);
+        $historique = $historiqueRepository->findOneBy(['mavenKey' => static::$mavenKey, 'version' => '1.0.0', 'dateVersion' => '2023-10-02']);
 
         /** Si la table contient un enregistrement, on le supprime */
         if ($historique){
@@ -128,7 +129,7 @@ class ApiEnregistrementControllerTest extends WebTestCase
 
         /** Si la table est vide on ajoute un enregistrement */
         $historique = new Historique();
-            $historique->setMavenKey('example_key');
+            $historique->setMavenKey(static::$mavenKey);
             $historique->setAnalyseKey('example_key');
             $historique->setVersion('1.0.0');
             $historique->setDateVersion('2023-10-02');
@@ -230,7 +231,7 @@ class ApiEnregistrementControllerTest extends WebTestCase
         $testUser = $userRepository->findOneByCourriel(static::$aurelie);
         $client->loginUser($testUser);
 
-        // Données mal formattées (ex: valeur non attendue)
+        // Données mal formatées (ex: valeur non attendue)
         $data = [
             'maven_key' => null, 'analyse_key' => 'example_key', 'version' => '1.0.0',
             'date_version' => '2023-10-01', 'nom_projet' => 'Example Project', 'version_release' => 2,
