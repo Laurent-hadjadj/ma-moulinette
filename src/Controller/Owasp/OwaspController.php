@@ -151,7 +151,7 @@ class OwaspController extends AbstractController
         $owaspTop10Repository = $this->em->getRepository(OwaspTop10::class);
 
         /** On récupère les informations du projet de la table historique */
-        $map=['menace' => $id];
+        $map = [ 'menace' => $id ];
         $liste=$owaspTop10Repository->selectOwaspTop10Details($map);
         if ($liste['code'] != 200) {
             $titre=static::$oups;
