@@ -26,7 +26,7 @@
 
   <body>
     {# no-script #}
-    {{ include('noscript.html.twig') }}
+    {{ include('no-script.html.twig') }}
     {# Chargement de la section header #}
     {{ include('header.html.twig') }}
     {# On ajoute les informations de l'utilisateur #}
@@ -45,125 +45,130 @@
     <main class="grid-container" role="main">
       {# On affiche les messages #}
       {% for message in app.flashes('notice') %}
-      <div class="callout {{message.type}} alert-callout-border" data-closable>
-        <p class="open-sans text-justify callout-message"><strong>{{message.titre}}</strong> {{ message.message }}</p>
-        <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
+      <div class="callout {{message.type}} alert-callout-border" role="alert" data-closable>
+          <p class="open-sans text-justify callout-message color"><strong>{{message.titre}}</strong> {{ message.message }}</p>
+          {% if app.environment == 'dev' and message.debug is defined %}
+            <p class"open-sans">{{message.debug}}</p>
+          {% endif %}
+          <button class="close-button {{message.type}}" aria-label="Dismiss alert" type="button" data-close>
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
       {% endfor %}
 
+      <h1 class="h3 claire-hand"><span aria-hidden="true">🔒</span>Modification du mot de passe</h1>
       <div class="grid-x">
+        {# Formulaire de changement de mot de passe #}
         <div class="small-12 medium-6 large-6 cell">
-          <video id="video-dessin-anime" class="video-dessin-anime" preload="metadata" loop autoplay muted>
-            <source src="{{ asset('video/dessin_anime.mp4') }}">
-            <track label="Français" kind="captions" srclang="fr" default src="{{ asset('video/dessin_anime_subtitles_fr.vtt') }}">
-              <track label="English" kind="captions" srclang="en" src="{{ asset('video/dessin_anime_subtitles_en.vtt') }}"></video>
-              <span class="open-sans float-center text-center">
-                {% set a="https://pixabay.com/fr/" %}
-                {% set b="users/u_cakf541pns-41051938/" %}
-                {% set c="?utm_source=link-attribution&amp;utm_medium=referral"%}
-                {% set d="&amp;utm_campaign=video&amp;utm_content=191860" %}
-                <a class="open-sans credit source-link" href="{{a}}{{b}}{{c}}{{d}}">u_cakf541pns</a>
-                <span id="sur">sur</span>
-                <a class="open-sans credit source-link" href="{{a}}{{c}}{{d}}">Pixabay</a>
-              </span>
-            </div>
-
-            <div class="small-12 medium-6 large-6 cell">
-              {% form_theme resetPasswordForm 'foundation_6_layout.html.twig' %}
-              {{ form_start(resetPasswordForm) }}
-              <div class="callout">
-                <h1 class="h3 claire-hand text-center">Mise-à-jour.</h1>
-                {# Ajout du courriel #}
-                <div class="isolation grid-x cell">
-                  <div class="small-11 medium-11 large-11 cell">
-                    <div>
-                      <label for="mel" class="affiche color-bleu">Compte utilisateur</label>
-                    </div>
-                    <input type="text" id="mel" readonly="readonly" class="color-noir" value="{{courriel}}">
+          <div class="margin-top-1125 margin-right-05">
+            {% form_theme resetPasswordForm 'foundation_6_layout.html.twig' %}
+            {{ form_start(resetPasswordForm) }}
+            <div class="callout">
+              <h2 class="h4 claire-hand text-center">
+                <span aria-hidden="true">✏️</span>Nouveau mot de passe sécurisé</h2>
+              {# Ajout du courriel #}
+              <div class="isolation grid-x cell">
+                <div class="small-11 medium-11 large-11 cell">
+                  <div>
+                    <label for="mel" class="affiche color-bleu">Compte utilisateur</label>
                   </div>
-                  <div class="small-1 medium-1 large-1 cell">
-                    <span id="reset-info-check-courriel" aria-hidden></span>
-                  </div>
+                  <input type="text" id="mel" readonly="readonly" class="color-noir" value="{{courriel}}">
                 </div>
-
-                {# Ancien mot de passe #}
-                <div class="isolation grid-x cell">
-                  <div class="small-11 medium-11 large-11 cell">
-                    <div class="floated-label-wrapper">
-                      {{ form_label(resetPasswordForm.ancienMotDePasse) }}
-                    </div>
-                    {{ form_widget(resetPasswordForm.ancienMotDePasse) }}
-                    <button class="unmask0" type="button"
-                  aria-pressed="false"
-                  aria-label="Afficher le mot de passe">Afficher
-                </button>
-                  </div>
-                  <div class="small-1 medium-1 large-1 cell">
-                    <span aria-hidden>&nbsp;</span>
-                  </div>
+                <div class="small-1 medium-1 large-1 cell">
+                  <span aria-hidden>&nbsp;</span>
                 </div>
-
-                {# nouveau Mot de passe #}
-                <div class="isolation grid-x cell">
-                  <div class="small-11 medium-11 large-11 cell">
-                    <div class="floated-label-wrapper">
-                      {{ form_label(resetPasswordForm.plainPassword.first) }}
-                    </div>
-                    {{ form_widget(resetPasswordForm.plainPassword.first) }}
-                   <button class="unmask1" type="button"
-                  aria-pressed="false"
-                  aria-label="Afficher le nouveau mot de passe">Afficher
-                </button>
-                  </div>
-                  <div class="check-svg small-1 medium-1 large-1 cell">
-                    <div class="container-check-password"><span id="reset-info-check-password"></span></div>
-                  </div>
-                </div>
-
-                {# reMot de passe #}
-                <div class="isolation grid-x cell">
-                  <div class="small-11 medium-11 large-11 cell check-svg">
-                    <div class="floated-label-wrapper">
-                      {{ form_label(resetPasswordForm.plainPassword.second) }}
-                    </div>
-                    {{ form_widget(resetPasswordForm.plainPassword.second) }}
-                    <button class="unmask2" type="button" title="Affiche/masque le mot de passe">Afficher|Masquer</button>
               </div>
+
+              {# Ancien mot de passe #}
+              <div class="isolation grid-x cell">
+                <div class="small-11 medium-11 large-11 cell">
+                  <div class="floated-label-wrapper">
+                    {{ form_label(resetPasswordForm.ancienMotDePasse) }}
                   </div>
-                  <div class="check-svg small-1 medium-1 large-1 cell">
-                    <div class="container-check-password"><span id="reset-info-check-re-password"></span></div>
-                  </div>
+                  {{ form_widget(resetPasswordForm.ancienMotDePasse) }}
+                  <button class="unmask0 focus-dark-light"
+                          type="button"
+                          aria-pressed="false"
+                          aria-label="Afficher le mot de passe">Afficher
+                  </button>
                 </div>
-
-                {# Affiche la qualité du mot de passe. #}
-                <div class="affiche-info-mot-de-passe cell"></div>
-
-                {# Affiche des messages d'erreur pour le champ mot-de-passe et re-mot-de-passe #}
-                <output class="form_erreur" role="alert">
-                  {{ form_errors(resetPasswordForm.plainPassword.first) }}
-                  {{ form_errors(resetPasswordForm.plainPassword.second) }}
-                </output>
-
-            {# Bouton de validation #}
-            <section class="grid-x grid-padding-x align-right margin-top-2">
-              <div class="cell shrink">
-                <input id="valider-formulaire-enregistrement"
-                class="button disabled-custom no-select focus-dark-light"
-                type="button" value="✅ Valider">
               </div>
-            </section>
-                <div role="alert" id="message-erreur-valider"></div>
+
+              {# nouveau Mot de passe #}
+              <div class="isolation margin-bottom-05 grid-x cell">
+                <div class="small-11 medium-11 large-11 cell">
+                  <div class="floated-label-wrapper">
+                    {{ form_label(resetPasswordForm.plainPassword.first) }}
+                  </div>
+                  {{ form_widget(resetPasswordForm.plainPassword.first) }}
+                  <button class="unmask1 focus-dark-light"
+                          type="button"
+                          aria-pressed="false"
+                          aria-label="Afficher le nouveau mot de passe">Afficher
+                  </button>
+                </div>
+                <div class="check-svg margin-top-05 text-center small-1 medium-1 large-1 cell">
+                  <span id="reset-info-check-password"></span>
+                </div>
               </div>
+
+              {# reMot de passe #}
+              <div class="isolation grid-x cell">
+                <div class="small-11 medium-11 large-11 cell check-svg">
+                  <div class="floated-label-wrapper">
+                    {{ form_label(resetPasswordForm.plainPassword.second) }}
+                  </div>
+                  {{ form_widget(resetPasswordForm.plainPassword.second) }}
+                  <button class="unmask2 focus-dark-light"
+                          type="button"
+                          aria-pressed="false"
+                          aria-label="Afficher le nouveau mot de passe">Afficher
+                  </button>
+                </div>
+                <div class="check-svg margin-top-05 text-center small-1 medium-1 large-1 cell">
+                  <span id="reset-info-check-re-password"></span>
+                </div>
+              </div>
+
+              {# Affiche la qualité du mot de passe. #}
+              <output class="affiche-info-mot-de-passe cell" role="alert"></output>
+
+              {# Affiche des messages d'erreur pour le champ mot-de-passe et re-mot-de-passe #}
+              <output class="form_erreur" role="alert">
+                {{ form_errors(resetPasswordForm.plainPassword.first) }}
+                {{ form_errors(resetPasswordForm.plainPassword.second) }}
+              </output>
               <output role="alert" aria-live="assertive" id="message-erreur-valider"></output>
+              {# Bouton de validation #}
+              <section class="grid-x grid-padding-x align-right margin-top-2">
+                <div class="cell shrink">
+                  <input id="valider-formulaire-reset-password"
+                  class="button disabled-custom no-select focus-dark-light"
+                  type="button" value="✅ Valider">
+                </div>
+              </section>
             </div>
             {{ form_end(resetPasswordForm) }}
           </div>
-        </main>
+        </div>
+
+        {# Information #}
+        <div class="small-12 medium-6 large-6 cell">
+          <fieldset id="container-recommandation" class="fieldset">
+            <h1 class="h4 claire-hand">Recommandations.</h1>
+            <p class="open-sans text-justify">Un mot de passe fort doit être suffisamment long, complexe et inattendu pour résister aux attaques par force brute et autres techniques de piratage.</p>
+            <p class="open-sans text-justify">Voici quelques conseils pour créer un mot de passe sécurisé :</span>
+            <ol class="open-sans text-justify">
+              <li><strong>Longueur</strong> : Un mot de passe doit avoir au moins 12 caractères. Plus il est long, plus il est sécurisé.</li>
+              <li><strong>Complexité</strong> : Inclure une combinaison de minuscules, majuscules, chiffres et caractères spéciaux.</li>
+              <li><strong>Inattendu</strong> : Évitez les mots de passe basés sur des informations personnelles facilement devinables (comme des noms, dates de naissance, etc.).</li>
+            </ol>
+          </fieldset>
+        </div>
       </div>
-      {# Chargement de la section footer #}
-      {{ include('footer.html.twig') }}
-    </body>
+    </main>
+
+    {# Chargement de la section footer #}
+    {{ include('footer.html.twig') }}
   </body>
 </html>
