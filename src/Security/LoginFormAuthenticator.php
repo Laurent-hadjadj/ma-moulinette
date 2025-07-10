@@ -13,23 +13,27 @@
 
 namespace App\Security;
 
-use App\Repository\UtilisateurRepository;
-
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use Symfony\Component\Security\Http\Authenticator\AbstractLoginFormAuthenticator;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\CsrfTokenBadge;
+use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge;
-use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordCredentials;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
+use Doctrine\ORM\EntityManagerInterface;
 
+use App\Repository\UtilisateurRepository;
+
+/**
+ * [Description LoginFormAuthenticator]
+ */
 class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
 {
     use TargetPathTrait;
@@ -38,13 +42,19 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
 
     private UtilisateurRepository $utilisateurRepository;
     private UrlGeneratorInterface $urlGenerator;
+    private UserPasswordHasherInterface $passwordHasher;
+    private EntityManagerInterface $em;
 
     public function __construct(
         UtilisateurRepository $utilisateurRepository,
-        UrlGeneratorInterface $urlGenerator
+        UrlGeneratorInterface $urlGenerator,
+        UserPasswordHasherInterface $passwordHasher,
+        EntityManagerInterface $em,
     ) {
         $this->utilisateurRepository = $utilisateurRepository;
         $this->urlGenerator = $urlGenerator;
+        $this->em = $em;
+        $this->passwordHasher = $passwordHasher;
     }
 
     /**
@@ -61,32 +71,39 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
      */
     public function authenticate(Request $request): Passport
     {
-        $courriel = $request->request->get('courriel', '');
-        $motDePasse = $request->request->get('password', '');
+        $courriel = strtolower($request->request->get('courriel', ''));
+        $passwordRaw = $request->request->get('password', '');
 
-        //$request->getSession()->set(self::LAST_USERNAME, $courriel);
+        $passwordNormalized = \Normalizer::normalize($passwordRaw, \Normalizer::FORM_C);
+
+        $utilisateur = $this->utilisateurRepository->findOneBy([
+            'courriel' => $courriel,
+            'actif' => true,
+        ]);
+
+        if (!$utilisateur) {
+            throw new UserNotFoundException('Identifiant invalide ou utilisateur inactif.');
+        }
+        if ($this->passwordHasher->isPasswordValid($utilisateur, $passwordNormalized)) {
+            // OK — rien à faire
+        } elseif ($this->passwordHasher->isPasswordValid($utilisateur, $passwordRaw)) {
+            // Ancien hash (non normalisé) — on corrige
+            $correctHash = $this->passwordHasher->hashPassword($utilisateur, $passwordNormalized);
+            $utilisateur->setPassword($correctHash);
+            $this->em->flush();
+
+              // Ajout d'un message flash
+            $request->getSession()->getFlashBag()->add('notice', [
+                'type' => 'success',
+                'titre' => 'Mot de passe mis à jour',
+                'message' => 'Votre mot de passe a été automatiquement mis à jour pour garantir une meilleure compatibilité.'
+            ]);
+        } else {
+            throw new UserNotFoundException('Mot de passe incorrect.');
+        }
         // On cherche si l'utilisateur existe !
-        return new Passport(
-            /**
-             * Si l'utilisateur n'existe pas on génère une exception.
-             * Si l'utilisateur existe mais que son statut est 'FALSE',
-             *  i.e. l'attribut 'actif', on génère une exception.
-             * Si l'utilisateur existe et son statut est à "TRUE" et
-             *  que le mot de passe est correcte :
-             * 1 - On ajoute le support CSRF ;
-             * 2 - On ajoute le support de "Remember-me" ;
-             */
-
-            new UserBadge($courriel, function (string $utilisateurIdentifier) {
-                //'actif => TRUE
-                $utilisateur = $this->utilisateurRepository
-                    ->findOneBy(['courriel' => $utilisateurIdentifier, 'actif' => true]);
-                if (!$utilisateur) {
-                    throw new UserNotFoundException();
-                }
-                return $utilisateur;
-            }),
-            new PasswordCredentials($motDePasse),
+        return new SelfValidatingPassport(
+            new UserBadge($courriel, fn() => $utilisateur),
             [
                 new CsrfTokenBadge('authenticate', $request->request->get('_csrf_token')),
                 (new RememberMeBadge())->enable(),
@@ -113,7 +130,7 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
      */
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
-        $init=$token->getUser()->getInit();
+        (bool) $resetPassword = $token->getUser()->isResetPassword();
         $targetPath = $this->getTargetPath($request->getSession(), $firewallName);
         /** si target n'est pas null,
          * on est déjà connecté, on ne peut pas se reconnecter */
@@ -121,7 +138,7 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
             return new RedirectResponse($targetPath);
         }
         /** Ce n'est pas la première connexion ! */
-        if ($init==0){
+        if ($resetPassword === false){
             return new RedirectResponse($this->urlGenerator->generate('accueil'));
         } else {
             return new RedirectResponse($this->urlGenerator->generate('reset_mot_de_passe'));

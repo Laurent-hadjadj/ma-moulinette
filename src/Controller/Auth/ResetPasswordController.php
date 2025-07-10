@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2025.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -16,23 +16,19 @@ namespace App\Controller\Auth;
 /** Symfony Core */
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
-
-/** Accès aux tables*/
-use Doctrine\ORM\EntityManagerInterface;
-use App\Repository\UtilisateurRepository;
-use App\Entity\Utilisateur;
-
-/** API */
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-
-use App\Form\ResetPasswordFormType;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
+use Symfony\Component\Routing\Annotation\Route;
+use Psr\Log\LoggerInterface;
+use Doctrine\ORM\EntityManagerInterface;
+
+use App\Entity\Utilisateur;
+use App\Form\ResetPasswordFormType;
+use App\Repository\UtilisateurRepository;
 
 /**
  * [Description ResetPasswordController]
@@ -56,9 +52,14 @@ class ResetPasswordController extends AbstractController
         private UtilisateurRepository $utilisateurRepository,
         private EntityManagerInterface $em,
         private ParameterBagInterface $params,
+        private LoggerInterface $logger,
+        private UserPasswordHasherInterface $passwordHasher,
     ) {
         $this->utilisateurRepository = $utilisateurRepository;
         $this->em = $em;
+        $this->params = $params;
+        $this->passwordHasher = $passwordHasher;
+
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
         $this->marqueEntrepriseLong = $params->get('marque.entreprise.long');
@@ -91,7 +92,6 @@ class ResetPasswordController extends AbstractController
     /**
      * [Description for resetMotDePasse]
      * Validation et lancement du formulaire de réinitialisation du mot de passe
-     * si init>0
      *
      * @param Request $request
      * @param UserPasswordHasherInterface $passwordHasher
@@ -104,22 +104,24 @@ class ResetPasswordController extends AbstractController
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/mot-de-passe/mise-a-jour', name: 'reset_mot_de_passe')]
-    public function resetMotDePasse(Request $request,
-        UserPasswordHasherInterface $passwordHasher, TokenInterface $token): Response
+    public function resetMotDePasse(Request $request, TokenInterface $token): Response
     {
-        /** on récupère le login de l'utilisateur connecté */
-        $courriel=$token->getUser()->getCourriel();
-         /**  On récupère la valeur de init */
-        $init=$token->getUser()->getInit();
+        $utilisateur = $token->getUser();
 
-        /** On récupère les données de l'utilisateur connecté */
-        $utilisateur = $this->utilisateurRepository->findOneBy(['courriel' => $courriel]);
-        if (!$utilisateur || null == $utilisateur) {
-                throw new UserNotFoundException('L\'utilisateur n\'existe pas');
-            }
+        if (!$utilisateur instanceof Utilisateur) {
+            $this->logger->error('[ResetPassword] Utilisateur non valide dans le token');
+            throw new  UserNotFoundException('$user doit être une instance de User.');
+        }
+
+        /** On récupère le login de l'utilisateur connecté */
+        $courriel = $token->getUser()->getCourriel();
+         /**  On récupère les valeurs pour resetPassword */
+        $resetPasswordCount = $token->getUser()->getResetPasswordCount();
 
         /** On créé un objet DateTime */
-        $date = new \DateTime('now', new \DateTimeZone(static::$europeParis));
+        $date = new \DateTime();
+        $timezone = new \DateTimeZone(static::$europeParis);
+        $date->setTimezone($timezone);
 
         /**
          * Le mot de passe actuel de l'utilisateur est valide,
@@ -129,49 +131,57 @@ class ResetPasswordController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-        /** on récupère l'ancien mot de passe et on le vérifie */
-        $ancienMotDePasse=$form->get('ancienMotDePasse')->getData();
-        $isValid=$passwordHasher->isPasswordValid($utilisateur, $ancienMotDePasse);
+            /** on récupère l'ancien mot de passe et on le vérifie */
+            $ancienMotDePasse = $form->get('ancienMotDePasse')->getData();
+            $isValidPassword = $this->passwordHasher->isPasswordValid($utilisateur, $ancienMotDePasse);
 
-        /** Si l'ancien mot de passe est incorrecte */
-        if ($isValid===false){
-            /** On verrouille après 5 tentatives */
-            if ($init>5) {
-                return $this->redirectToRoute('logout');
-            }
+                /** Si l'ancien mot de passe est incorrecte */
+                if ($isValidPassword === false){
+                    /** On verrouille après 5 tentatives */
+                    if ($resetPasswordCount >= 5) {
+                        return $this->redirectToRoute('logout');
+                    }
+                    $this->logger->warning("[ResetPassword] Mot de passe incorrect pour $courriel (tentative n°$resetPasswordCount)");
 
-            /** On prepare un message flash */
-            $this->addFlash('warning', sprintf(
-                '%s : %s', "[Erreur 001]","Votre mot de passe est incorrect."
-            ));
+                    /** On prepare un message flash */
+                    $titre = "Oups !!! ";
+                    $r = 5-$resetPasswordCount;
+                    $s = ($r === 1) ? '' : 's';
+                    $message= "Votre mot de passe est incorrect (".$r." tentative".$s." restante".$s.").";
+                    $this->addFlash('notice', ['type' => 'warning', 'titre' => $titre, 'message'=>$message]);
 
-            /** On incrémente le nombre de tentative */
-            $utilisateur->setInit($init+1);
-            $utilisateur->setDateModification($date);
-            $this->em->flush();
-            return $this->redirectToRoute('reset_mot_de_passe');
-        }
-            /** On repasse le statut init à 0 */
-            $utilisateur->setInit(0);
-            $this->em->flush();
+                    /** On incrémente le nombre de tentative */
+                    $utilisateur->setResetPasswordCount($resetPasswordCount + 1);
+                    $utilisateur->setDateModification($date);
+                    $utilisateur->setActif(false);
+                    $this->em->flush();
 
-            // Encode(hash) the plain password, and set it.
-            $encodedPassword = $passwordHasher->hashPassword(
-                $utilisateur,$form->get('plainPassword')->getData()
-            );
+                    $this->logger->info("[ResetPassword] le nombre de tentative a été incrémenté $courriel");
+                    return $this->redirectToRoute('reset_mot_de_passe');
+                }
 
+            // Encode(hash) le mot de passe en clair.
+            $plainPassword = \Normalizer::normalize($form->get('plainPassword')->getData(), \Normalizer::FORM_C);
+            $encodedPassword = $this->passwordHasher->hashPassword($utilisateur, $plainPassword);
+
+            // Mises à jour supplémentaires
+            $utilisateur->setResetpassword(false);
+            $utilisateur->setResetpasswordCount(1);
             $utilisateur->setPassword($encodedPassword);
+            $utilisateur->setDateModification($date);
+            //dd($plainPassword, $encodedPassword, $utilisateur);
             $this->em->flush();
+
             /** On prepare un message flash */
-            $this->addFlash('success', sprintf(
-                '%s : %s', "[AUTH]","Votre mot de passe a été changé."
-            ));
-            return $this->redirectToRoute('reset_mot_de_passe');
+            $titre = "[AUTH] ";
+            $message = "Votre mot de passe a été changé avec succès.";
+            $this->addFlash('notice', ['type' => 'primary', 'titre' => $titre, 'message' => $message]);
+            return $this->redirectToRoute('accueil');
         }
 
-        $render=static::genericRender();
+        $render = static::genericRender();
         $render['resetPasswordForm'] = $form->createView();
-        $render['courriel'] = 'laurent.hadjadj@ma-petite-entreprise.fr';
+        $render['courriel'] = $courriel;
         return $this->render('auth/reset.html.twig', $render);
     }
 
@@ -187,44 +197,56 @@ class ResetPasswordController extends AbstractController
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/mot-de-passe/mise-a-jour', name: 'api_reset_mot_de_passe', methods:'POST')]
-    public function apiResetMotDePasse(Request $request): JsonResponse
+    public function apiResetMotDePasse(Request $request): Response
     {
         /** On instancie l'EntityRepository */
-        $utilisateurEntity = $this->em->getRepository(Utilisateur::class);
+        $userEntity = $this->em->getRepository(Utilisateur::class);
 
         /** On décode le body */
         $data = json_decode($request->getContent());
 
+        /** On créé on objet de response HTTP */
+        $response = new JsonResponse();
+
         /** On teste si le body est correcte */
-        if ($data === null || !property_exists($data, 'init')) {
-            return new JsonResponse(
-                    ['data'=>$data,'code'=>400, 'reference'=>static::$reference,
-                    'message'=>static::$erreur400,
-                    'type'=>'alert'], Response::HTTP_OK);
+        if ($data === null || !property_exists($data, 'reset_password')) {
+            $this->logger->warning('[API ResetPassword] Body invalide dans la requête');
+            return $response->setData([
+                'code' => 400,
+                'type' => 'alert',
+                'reference' => static::$reference,
+                'message' => static::$erreur400], Response::HTTP_OK);
             }
 
         /** On récupère le filtre de recherche */
         $data = json_decode($request->getContent());
-        $reset_password = $data->reset_password;
+        $resetPassword = $data->reset_password;
 
         /** On créé un objet DateTime */
-        $date = new \DateTime('now', new \DateTimeZone(static::$europeParis));
+        $date = new \DateTime();
+        $timezone = new \DateTimeZone(static::$europeParis);
+        $date->setTimezone($timezone);
         $dateModification = $date->format(static::$dateFormat);
 
         /** on récupère l'adresse mél de l'utilisateur qui fait la demande */
-        $courriel = $this->getUser()->getCourriel();
+        $username = $this->getUser()->getUsername();
 
         /** On met à jour la table propriétés */
-        $map = [ 'reset_password'=> $reset_password, 'date_modification'=>$dateModification,
-                'courriel'=>$courriel ];
-        $r = $utilisateurEntity->updateUtilisateurResetPassword($map);
-        if ($r['code']!=200) {
-            return new JsonResponse([
+        $map = [
+            'reset_password' => $resetPassword,
+            'update_at' => $dateModification,
+            'username' => $username];
+        $r = $userEntity->updateUtilisateurResetPassword($map);
+        if ($r['code'] != 200) {
+            $this->logger->error("[API ResetPassword] Erreur update BDD pour $username : " . $r['error']);
+            return $response->setData([
+                'code' => $r['code'],
                 'type' => 'alert',
-                'reference' => static::$reference, 'code' => $r['code'],
-                'message'=>$r['erreur']], Response::HTTP_OK);
+                'reference' => static::$reference,
+                'message' => $r['error']], Response::HTTP_OK);
         }
 
-        return new JsonResponse(['code'=>200], Response::HTTP_OK);
+        $this->logger->info("[API ResetPassword] Succès update pour $username");
+        return $response->setData(['code' => 200], Response::HTTP_OK);
     }
 }
