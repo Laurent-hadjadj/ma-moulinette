@@ -561,11 +561,15 @@ body {
 .background-color-rouge { background-color: #a00a14; }
 .background-color-vert { background-color: #037505; }
 
-.margin-bottom-05 { margin-bottom: 0.5rem; }
 .margin-top-05 { margin-top: 0.5rem; }
+.margin-top-1 { margin-top: 1rem; }
+.margin-top-1125 { margin-top: 1.125rem; }
+.margin-bottom-05 { margin-bottom: 0.5rem; }
+.margin-left-05 { margin-left: 0.5rem; }
 .margin-left-1 { margin-left: 1rem; }
 .margin-left-2 { margin-left: 2rem; }
 .margin-left-3 { margin-left: 3rem; }
+.margin-right-05 { margin-right: 0.5rem; }
 
 /* si on a pas activé javascript */
 .javascript-obligatoire {  font-weight: bold; }
