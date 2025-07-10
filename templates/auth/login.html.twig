@@ -19,7 +19,7 @@
   <head>
     <title>{{ title }}</title>
     {{ include('head.html.twig') }}
-    {# Chargement du code javascript #}
+    {# Chargement des assets JS et CSS #}
     {% block importmap %}{{ importmap('login') }}{% endblock %}
   </head>
 
@@ -40,31 +40,35 @@
     </header>
 
     <main class="grid-container main-container" role="main">
-      <h1 class="h3 claire-hand">Bienvenue sur Ma-Moulinette</h1>
+      <h1 class="h3 claire-hand"><span aria-hidden="true">🛠️</span>Bienvenue sur Ma-Moulinette</h1>
       <div class="grid-x">
-        <div class="small-12 medium-7 large-7 cell">
-          <video id="video-hongkong" class="video-hongkong" preload="metadata" loop autoplay muted>
-            <source src="{{ asset('video/hongkong.mp4') }}" type="video/mp4">
-            <track label="Français" kind="captions" srclang="fr" default src="{{ asset('video/hongkong_subtitles_fr.vtt') }}">
-              <track label="English" kind="captions" srclang="en" src="{{ asset('video/hongkong_subtitles_en.vtt') }}">
-          </video>
+        <div class="small-12 medium-6 large-6 cell">
+          <video id="video-dessin-anime" class="video-dessin-anime" preload="metadata" loop autoplay muted>
+            <source src="{{ asset('video/dessin_anime.mp4') }}">
+            <track label="Français" kind="captions" srclang="fr" default src="{{ asset('video/dessin_anime_subtitles_fr.vtt') }}">
+              <track label="English" kind="captions" srclang="en" src="{{ asset('video/dessin_anime_subtitles_en.vtt') }}"></video>
 
-          <span class="open-sans float-center text-center">
-            {% set a="https://pixabay.com/fr/" %}
-            {% set b="users/magictv-18171246/" %}
-            {% set c="?utm_source=link-attribution&amp;utm_medium=referral"%}
-            {% set d="&amp;utm_campaign=video&amp;utm_content=116732" %}
-            <a class="open-sans credit source-link" href="{{a}}{{b}}{{c}}{{d}}">Timo Volz</a>
-            <span id="sur">sur</span>
-            <a class="open-sans credit source-link" href="{{a}}{{c}}{{d}}">Pixabay</a>
-          </span>
+            <span class="open-sans float-center text-center">
+                {% set a="https://pixabay.com/fr/" %}
+                {% set b="users/u_cakf541pns-41051938/" %}
+                {% set c="?utm_source=link-attribution&amp;utm_medium=referral"%}
+                {% set d="&amp;utm_campaign=video&amp;utm_content=191860" %}
+                <a class="open-sans credit source-link" href="{{a}}{{b}}{{c}}{{d}}">u_cakf541pns</a>
+                <span id="sur">sur</span>
+                <a class="open-sans credit source-link" href="{{a}}{{c}}{{d}}">Pixabay</a>
+            </span>
         </div>
-        <div class="small-12 medium-5 large-5 cell">
-          <form class="callout" method="post">
-            <h2 class="h4 claire-hand text-center">Authentification.</h2>
+        <div class="small-12 medium-6 large-6 cell">
+          <form class="callout" method="post"
+                aria-labelledby="titre-formulaire"
+                aria-describedby="desc-formulaire">
+            <h2 id="titre-formulaire" class="h4 claire-hand text-center"><span aria-hidden="true">🔐</span>Authentification.</h2>
+            <p id="desc-formulaire" class="show-for-sr">
+              Formulaire d'authentification. Utiliser votre adresse mèl et saisissez votre mot de passe.</p>
             <div class="floated-label-wrapper">
               <label for="courriel">Courriel</label>
               <input id="courriel"
+                    class="open-sans"
                     type="email"
                     name="courriel"
                     placeholder="laurent.hadjadj@ma-petite-entreprise.fr"
@@ -81,7 +85,7 @@
                       required aria-required="true"
                       autocomplete="current-password">
               <button id="afficher-masquer-mot-de-passe"
-                      class="afficher-masquer focus-light"
+                      class="afficher-masquer focus-dark"
                       type="button"
                       aria-pressed="false"
                       aria-label="Afficher le mot de passe">Afficher
@@ -93,7 +97,11 @@
             {% endif %}
             <div class="grid-x grid-padding-x align-right margin-top-2">
               <div class="cell shrink">
-                <input id="valider-formulaire-login" class="button button no-select focus-dark-light" type="submit" aria-label="Valider" value="✅ Valider">
+                <input id="valider-formulaire-login"
+                      class="button button no-select focus-dark-light"
+                      type="submit"
+                      aria-label="Valider"
+                      value="✅ Valider">
               </div>
             </div>
             <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
@@ -103,8 +111,10 @@
             </output>
           {% endif %}
         </div>
+        <div class="small-1 medium-3 large-3 cell">&nbsp;</div>
       </div>
     </main>
+
     {# Chargement de la section footer #}
     {{ include('footer.html.twig') }}
   </body>
