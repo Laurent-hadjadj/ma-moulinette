@@ -17,7 +17,7 @@
 
 /* Media Small */
 @media (width <= 20em) {
-  .video-hongkong {
+  .video-dessin-anime {
     height: auto;
     width: 100%;
   }
@@ -25,7 +25,7 @@
 
 /* Media Small */
 @media (20.025em <= width <= 22em) {
-  .video-hongkong {
+  .video-dessin-anime {
     height: auto;
     width: 100%;
   }
@@ -33,7 +33,7 @@
 
 /* Media Small */
 @media (22.025em <= width <= 30em) {
-  .video-hongkong {
+  .video-dessin-anime {
     height: auto;
     width: 100%;
   }
@@ -41,7 +41,7 @@
 
 /* Media Small */
 @media (30.025em <= width <= 40em) {
-  .video-hongkong {
+  .video-dessin-anime {
     height: auto;
     width: 100%;
   }
@@ -49,7 +49,7 @@
 
 /* Media Medium */
 @media (40.025em <= width <= 64em) {
-  .video-hongkong {
+  .video-dessin-anime {
     height: auto;
     width: 96%;
   }
@@ -57,7 +57,7 @@
 
 /* Media Large */
 @media (64.025em <= width <= 90em) {
-  .video-hongkong {
+  .video-dessin-anime {
     height: auto;
     width: 98%;
   }
@@ -65,7 +65,7 @@
 
 /* Media Large */
 @media (90.025em <= width <= 120em) {
-  .video-hongkong {
+  .video-dessin-anime {
     height: auto;
     width: 98%;
   }
@@ -73,7 +73,7 @@
 
 /* Media Extra-Large 4k */
 @media (120.025em <= width <= 160em) {
-  .video-hongkong {
+  .video-dessin-anime {
     height: auto;
     width: 98%;
   }
@@ -82,7 +82,7 @@
 
 /* Media Extra-Large 8k */
 @media (width >= 160.025em) {
-  .video-hongkong {
+  .video-dessin-anime {
   height: auto;
   width: 98%;
   }
