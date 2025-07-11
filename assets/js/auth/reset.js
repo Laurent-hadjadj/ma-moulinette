@@ -91,7 +91,7 @@ $('#reset_password_form_plainPassword_first, #reset_password_form_plainPassword_
     const password=$('#reset_password_form_plainPassword_first').val();
     const rePassword=$('#reset_password_form_plainPassword_second').val();
 
-    if (password.length>=huit && password.length<=cinquanteDeux) {
+    if (password.length >= huit && password.length <= cinquanteDeux) {
         $('#reset-info-check-password').html(checkOkSvg);
       } else if (password.length===zero) {
           $('#reset-info-check-password').html('');
@@ -99,9 +99,9 @@ $('#reset_password_form_plainPassword_first, #reset_password_form_plainPassword_
           $('#reset-info-check-password').html(checkKoSvg);
         }
 
-      if ( rePassword.length>=huit && rePassword.length<=cinquanteDeux ) {
+      if ( rePassword.length >= huit && rePassword.length <= cinquanteDeux && password === rePassword) {
         $('#reset-info-check-re-password').html(checkOkSvg);
-        } else if (rePassword.length===zero) {
+        } else if (rePassword.length === zero) {
         $('#reset-info-check-re-password').html('');
         } else {
         $('#reset-info-check-re-password').html(checkKoSvg);
@@ -110,22 +110,22 @@ $('#reset_password_form_plainPassword_first, #reset_password_form_plainPassword_
 
 /** Activation du bouton d'enregistrement */
 $('#reset_password_form_plainPassword_second').on('focus', function(){
-  $('#valider-formulaire-enregistrement').removeClass('disabled-custom');
+  $('#valider-formulaire-reset-password').removeClass('disabled-custom');
 });
 
   /** Vérification des informations du formulaire */
-$('#valider-formulaire-enregistrement').on('click', async ()=>{
-  const initialPasswordLength=$('#reset_password_form_ancienMotDePasse').val().length;
-  const passwordLength=$('#reset_password_form_plainPassword_first').val().length;
-  const rePasswordLength=$('#reset_password_form_plainPassword_second').val().length;
-  const passwordValue=$('#reset_password_form_plainPassword_first').val();
-  const rePasswordValue=$('#reset_password_form_plainPassword_second').val();
+$('#valider-formulaire-reset-password').on('click', async ()=>{
+  const initialPasswordLength = $('#reset_password_form_ancienMotDePasse').val().length;
+  const passwordLength = $('#reset_password_form_plainPassword_first').val().length;
+  const rePasswordLength = $('#reset_password_form_plainPassword_second').val().length;
+  const passwordValue = $('#reset_password_form_plainPassword_first').val();
+  const rePasswordValue = $('#reset_password_form_plainPassword_second').val();
 
-if ( initialPasswordLength>0 && passwordLength>=8 && rePasswordLength>=8 &&
-    passwordValue===rePasswordValue) {
+if ( initialPasswordLength > 0 && passwordLength >= 8 && rePasswordLength >= 8 &&
+    passwordValue === rePasswordValue) {
       $('#message-erreur-valider').html('');
-      $('#valider-formulaire-enregistrement').attr('type', 'submit');
-      const link = document.getElementById('valider-formulaire-enregistrement');
+      $('#valider-formulaire-reset-password').attr('type', 'submit');
+      const link = document.getElementById('valider-formulaire-reset-password');
       link.click()
   } else {
     const message='<ul><li>[001] - Le formulaire contient des erreurs !!!</li></ul>';
