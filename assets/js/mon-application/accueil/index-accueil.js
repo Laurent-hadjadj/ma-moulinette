@@ -86,7 +86,7 @@ const miseAJourListe = async function() {
         // 📌 Vérification des erreurs
         const errorCodes = [http_400, http_401, http_403, http_404, http_500];
         if (errorCodes.includes(t.code)){
-            showMessage(t.type, typeMessage(t.message));
+            showMessage(t.type, t.message);
             return;
           }
 
@@ -110,7 +110,7 @@ const miseAJourListe = async function() {
         $('#js-tag-projet').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.nombre));
 
           /** On affiche un message à l'utilisateur */
-          showMessage(t.type, typeMessage(t.message));
+          showMessage(t.type, t.message);
           setTimeout(() => { hideMessage(); }, 5000);
   } catch(error) {
     showMessage('alert', `<strong>[Accueil]</strong> Une erreur inattendue s'est produite lors de la mise à jour des projets.<br>${error.message}`);
@@ -139,7 +139,7 @@ const miseAJourTags = async function() {
       // 📌 Vérification des erreurs
       const errorCodes = [http_400, http_401, http_403, http_404, http_500];
       if (errorCodes.includes(t.code)){
-          showMessage(t.type, typeMessage(t.message));
+          showMessage(t.type, t.message);
           return;
         }
 
@@ -167,7 +167,7 @@ $('.refresh-bd').on('click', ()=> {
           return;
         }
         /** On affiche le message d'erreur du serveur */
-        showMessage(t.type, typeMessage(t.message));
+        showMessage(t.type, t.message);
         return;
       }
 
