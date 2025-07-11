@@ -173,7 +173,7 @@ export function prepareTechnicalDetails(traceCandidate) {
 export const showMessage = function(type, message, technicalDetails = null) {
     const messageElement = $('#message-box');
     const textElement = $('#message-text');
-    const buttonElement = $('#message-bytton-close');
+    const buttonElement = $('#message-button-close');
 
     // Réinitialise les classes d'alerte et le style inline
     messageElement.removeClass('alert primary secondary success warning hide');
