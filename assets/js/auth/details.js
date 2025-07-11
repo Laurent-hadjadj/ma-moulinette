@@ -14,63 +14,91 @@ import $ from 'jquery';
 window.$ = $;
 
 /** On importe les constantes */
-import { http_200, http_400, http_500, un, contentType } from '../common/constante.js';
+import { http_200, un, contentType } from '../common/constante.js';
 
 /* On importe les paramètres serveur. */
 import {serveur} from '../common/properties.js';
 
-/**
+/** La gestion des messagesJS */
+import { showMessage, prepareTechnicalDetails } from '../common/messageHelper.js';
+
+  /**
+   * [Description for getResetPasswordChange]
+   *
+   * @return [type]
+   *
+   * Created at: 07/07/2025 12:30:10 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  const getResetPasswordChange = async function(reset_password){
+    const data = { reset_password };
+    const options = {
+        url:  serveur()+`/api/mot-de-passe/mise-a-jour`,
+        method: 'POST',
+        dataType: 'json',
+        data: JSON.stringify(data),
+        contentType,
+    };
+
+    try {
+          const t = await $.ajax(options);
+          if (t.code !== http_200){
+              const trace = prepareTechnicalDetails(t.trace);
+              showMessage(t.type, t.message, trace);
+            return;
+          }
+
+          if (reset_password === un) {
+            const message = '<span class="color-rouge">Vous devez vous reconnecter pour changer votre mot de passe.</span><br>';
+            $('#mise-a-jour-message').html(message);
+          } else {
+            $('#mise-a-jour-message').html('');
+          }
+    } catch (erreur) {
+          if (typeof error === 'object') {
+                    sessionStorage.setItem('ma_moulinette_error', `Erreur inattendue : ${JSON.stringify(erreur, null, 2)}`);
+            } else {
+                    sessionStorage.setItem('ma_moulinette_error', `Erreur inattendue : ${erreur}`);
+            }
+
+          // Gestion d'erreurs génériques
+          const message = `<strong>[Info-Utilisateur]</strong> - Une erreur inattendue est survenue.`;
+          const trace = prepareTechnicalDetails(erreur);
+          showMessage('alert', message, trace);
+    }
+  }
+
+  /**
  * description
  * On active ou non la mise à jour du mot de passe.
  *
  * @type {"#js-identifiant-oui-non"}
  */
 $('#js-identifiant-oui-non').on('click', function () {
-  let data={}, init=0;
   /** On efface les messages */
   $('#mise-a-jour-message').html('');
 
-  const oui_non = $('#js-identifiant-oui-non').is(':checked');
+  const $switch = $('#js-identifiant-oui-non');
+  const $oui_non = $switch.is(':checked');
 
-  /** Par défaut on bloque la mise à jour du mot de passe. */
-  data={ 'init': 0 };
-  if (oui_non===true) {
-    data={ 'init': 1 };
-    init=1
-  }
-
-  const options = {
-    url: `${serveur()}/api/mot-de-passe/mise-a-jour`,
-          type: 'POST', dataType: 'json', data: JSON.stringify(data), contentType
-  };
-
-  return new Promise(resolve => {
-      $.ajax(options).then(t=> {
-        if (t.code===http_400 || t.code===http_500){
-          $('#mise-a-jour-message').html(t.message)
-          return;
-        }
-        const message='<span class="color-rouge">Vous devez vous reconnecter pour changer votre mot de passe.</span>';
-        if (t.code===http_200) {
-          const r=document.getElementById('js-identifiant-oui-non');
-          r.dataset.init=init;
-        }
-        if (init===1) {
-          $('#mise-a-jour-message').html(message);
-        } else {
-          $('#mise-a-jour-message').html('');
-        }
-        resolve();
-      });
-    });
+  // Mise à jour de l'attribut aria-checked
+  $switch.attr('aria-checked', $oui_non ? 'true' : 'false');
+  const OuiNonConverter = $oui_non ? 1 : 0;
+  /** On appel l'api pour mettre à jour */
+  getResetPasswordChange(OuiNonConverter);
 });
 
-/** On récupère la valeur de data-init et on met à jour le switch */
-const r=document.getElementById('js-identifiant-oui-non');
-const init=r.dataset.init;
-  if (init>=un) {
-    $('#js-identifiant-oui-non').trigger('click');
-  }
+/** On récupère la valeur de data-reset-password et on met à jour le switch */
+// Initialisation de l'état du switch à l'ouverture
+const $r = document.getElementById('js-identifiant-oui-non');
+const resetPassword = $r.dataset.resetPassword;
 
-  /** On efface les messages */
-  $('#mise-a-jour-message').html('');
+if (resetPassword >= un) {
+  const $r = $('#js-identifiant-oui-non');
+  $r.prop('checked', true);
+  $r.attr('aria-checked', 'true');
+}
+
+/** On efface les messages */
+$('#mise-a-jour-message').html('');
