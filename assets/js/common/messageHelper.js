@@ -174,9 +174,11 @@ export function prepareTechnicalDetails(traceCandidate) {
 export const showMessage = function(type, message, technicalDetails = null) {
     const messageElement = $('#message-box');
     const textElement = $('#message-text');
+    const buttonElement = $('#message-bytton-close');
 
     // Réinitialise les classes d'alerte et le style inline
     messageElement.removeClass('alert primary secondary success warning hide');
+    buttonElement.removeClass('alert primary secondary success warning');
     messageElement.css('display', '');
 
     // Icône par type
@@ -193,6 +195,7 @@ export const showMessage = function(type, message, technicalDetails = null) {
 
     // Applique la classe de style
     messageElement.addClass(type);
+    buttonElement.addClass(type);
 
     // Message principal
     const role = (type === 'alert') ? 'alert' : 'status';
@@ -200,14 +203,8 @@ export const showMessage = function(type, message, technicalDetails = null) {
     let html = `<span class="message-icon" aria-hidden="true">${icon}</span> ${message}`;
 
     let cleanedDetails = null;
-    if (technicalDetails || debug) {
-        if (technicalDetails) {
-            cleanedDetails = extractSemanticalErrorMessage(technicalDetails);
-        }
-        else {
-            cleanedDetails = debug;
-        }
-
+    if (technicalDetails) {
+        cleanedDetails = extractSemanticalErrorMessage(technicalDetails);
         if (cleanedDetails) {
             html += formatErrorDetails(cleanedDetails);
         }
