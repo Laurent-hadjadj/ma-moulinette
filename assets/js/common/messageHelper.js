@@ -163,7 +163,6 @@ export function prepareTechnicalDetails(traceCandidate) {
  * @param string type
  * @param string message
  * @param string technicalDetails
- * @param string debug
  *
  * @return void
  *
@@ -215,7 +214,7 @@ export const showMessage = function(type, message, technicalDetails = null) {
     messageElement.removeClass('hide');
 
     // Comportement du bouton toggle
-    if (technicalDetails || debug) {
+    if (technicalDetails) {
         $('#toggle-error-details').on('click', function () {
             const details = $('#error-details');
             const isVisible = details.is(':visible');
