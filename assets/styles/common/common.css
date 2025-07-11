@@ -603,7 +603,7 @@ body {
   position: fixed;
   top: 6%;
   left: 50%;
-  max-width: 81%;
+  max-width: 70%;
   /* Ajustement pour un centrage parfait */
   transform: translateX(-50%);
   z-index: 2000;
@@ -611,7 +611,8 @@ body {
 
 #message-text {
   padding-bottom: 0;
-  padding-top: 0.3rem
+  padding-top: 0.8rem;
+  margin-bottom: 1rem;
 }
 
 .message-icon { font-size: 1.2rem; }
