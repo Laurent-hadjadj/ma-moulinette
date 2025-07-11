@@ -1,3 +1,0 @@
-chrome_devtools:
-    path: /.well-known/appspecific/com.chrome.devtools.json
-    controller: App\Controller\DefaultController::chromeDevtools
