@@ -1,5 +1,6 @@
 {% set title = "Accueil" %}
-{% set description = "Ma Moulinette, Accueil" %}
+{% set description = "Ma Moulinette - Accueil" %}
+{% set type_content = "Application Ma-Moulinette, l'authentification sécurisée." %}
 {% set bottom="footer-fixed" %}
 <!DOCTYPE html>
 <!--
@@ -24,6 +25,8 @@
   </head>
 
   <body dir="ltr">
+    {# no-script #}
+    {{ include('no-script.html.twig') }}
     {# Chargement de la section header #}
     {{ include('header.html.twig') }}
 
@@ -36,7 +39,7 @@
     </header>
 
     <main class="grid-container">
-{% set unique_messages = [] %}
+    {% set unique_messages = [] %}
     {% for message in app.flashes('notice') %}
         {% set already_added = false %}
 
@@ -52,22 +55,23 @@
           <p class="open-sans text-justify callout-message">
               <strong>{{ message.titre }}</strong> {{ message.message }}
           </p>
-          <button class="close-button {{message.type}}" aria-label="Dismiss alert" type="button" data-close>
-              <span aria-hidden="true">&times;</span>
+          <button class="close-button {{message.type}}"
+                  type="button"
+                  aria-label="Dismiss alert" data-close><span aria-hidden="true">&times;</span>
           </button>
       </div>
       {% endif %}
     {% endfor %}
 
-      <h1 class="h4 claire-hand">Informations et outils.</h1>
-      {# Message d'information #}
-      <div id="callout-accueil-message" class="callout alert-callout-border hide">
-        <p class="open-sans text-justify js-message">
-          <span id="js-reference-information"></span>
-          <span id="js-message-information"></span>
-        </p>
+    {# Message d'information JS#}
+    <div id="message-box" class="callout alert-callout-border callout-ombre hide" role="alert" data-closable>
+        <button id="message-button-close" class="close-button" aria-label="Close alert" type="button" data-close>
+        <span aria-hidden="true">&times;</span>
+        </button>
+        <p id="message-text"></p>
       </div>
 
+      <h1 class="h4 claire-hand">Informations et outils.</h1>
       <fieldset class="fieldset cell fieldset-container">
         <legend class="open-sans">Référentiel local.</legend>
         <div class="grid-x cell">
