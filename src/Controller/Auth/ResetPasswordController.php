@@ -37,8 +37,7 @@ class ResetPasswordController extends AbstractController
 {
     /** Définition des constantes */
     public static $europeParis = "Europe/Paris";
-    public static $dateFormat = "Y-m-d H:i:s";
-    public static $reference = '<strong>[Auth]</strong>';
+    public static $reference = "<strong>[Auth]</strong> ";
     public static $erreur400 = "La requête est incorrecte (Erreur 400).";
 
     private $logoEntreprise;
@@ -119,9 +118,7 @@ class ResetPasswordController extends AbstractController
         $resetPasswordCount = $token->getUser()->getResetPasswordCount();
 
         /** On créé un objet DateTime */
-        $date = new \DateTime();
-        $timezone = new \DateTimeZone(static::$europeParis);
-        $date->setTimezone($timezone);
+        $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
 
         /**
          * Le mot de passe actuel de l'utilisateur est valide,
@@ -147,8 +144,8 @@ class ResetPasswordController extends AbstractController
                     $titre = "Oups !!! ";
                     $r = 5-$resetPasswordCount;
                     $s = ($r === 1) ? '' : 's';
-                    $message= "Votre mot de passe est incorrect (".$r." tentative".$s." restante".$s.").";
-                    $this->addFlash('notice', ['type' => 'warning', 'titre' => $titre, 'message'=>$message]);
+                    $message = "Votre mot de passe est incorrect (".$r." tentative".$s." restante".$s.").";
+                    $this->addFlash('notice', ['type' => 'warning', 'titre' => $titre, 'message' => $message]);
 
                     /** On incrémente le nombre de tentative */
                     $utilisateur->setResetPasswordCount($resetPasswordCount + 1);
@@ -169,11 +166,10 @@ class ResetPasswordController extends AbstractController
             $utilisateur->setResetpasswordCount(1);
             $utilisateur->setPassword($encodedPassword);
             $utilisateur->setDateModification($date);
-            //dd($plainPassword, $encodedPassword, $utilisateur);
             $this->em->flush();
 
             /** On prepare un message flash */
-            $titre = "[AUTH] ";
+            $titre = "[Auth] ";
             $message = "Votre mot de passe a été changé avec succès.";
             $this->addFlash('notice', ['type' => 'primary', 'titre' => $titre, 'message' => $message]);
             return $this->redirectToRoute('accueil');
@@ -214,39 +210,37 @@ class ResetPasswordController extends AbstractController
             return $response->setData([
                 'code' => 400,
                 'type' => 'alert',
-                'reference' => static::$reference,
-                'message' => static::$erreur400], Response::HTTP_OK);
+                'message' => static::$reference.static::$erreur400,
+                'trace' => null], Response::HTTP_OK);
             }
 
         /** On récupère le filtre de recherche */
         $data = json_decode($request->getContent());
-        $resetPassword = $data->reset_password;
+        $reset_password = $data->reset_password ?? (bool) false;
 
         /** On créé un objet DateTime */
-        $date = new \DateTime();
-        $timezone = new \DateTimeZone(static::$europeParis);
-        $date->setTimezone($timezone);
-        $dateModification = $date->format(static::$dateFormat);
-
+        $date_modification = new \DateTime('now', new \DateTimeZone(static::$europeParis));
         /** on récupère l'adresse mél de l'utilisateur qui fait la demande */
-        $username = $this->getUser()->getUsername();
+        $courriel = $this->getUser()->getCourriel();
 
         /** On met à jour la table propriétés */
         $map = [
-            'reset_password' => $resetPassword,
-            'update_at' => $dateModification,
-            'username' => $username];
+                'reset_password' => $reset_password,
+                'date_modification' => $date_modification,
+                'courriel' => $courriel
+        ];
+
         $r = $userEntity->updateUtilisateurResetPassword($map);
         if ($r['code'] != 200) {
-            $this->logger->error("[API ResetPassword] Erreur update BDD pour $username : " . $r['error']);
+            $this->logger->error("[API ResetPassword] Erreur update BDD pour $courriel : " . $r['erreur']);
             return $response->setData([
                 'code' => $r['code'],
                 'type' => 'alert',
-                'reference' => static::$reference,
-                'message' => $r['error']], Response::HTTP_OK);
+                'message' => static::$reference . `Échec de mise à jour du status de mise à jour du mot de passe (Erreur {$r['erreur']}).`,
+                'trace' => $r['erreur']], Response::HTTP_OK);
         }
 
-        $this->logger->info("[API ResetPassword] Succès update pour $username");
+        $this->logger->info("[API ResetPassword] Succès update pour $courriel");
         return $response->setData(['code' => 200], Response::HTTP_OK);
     }
 }
