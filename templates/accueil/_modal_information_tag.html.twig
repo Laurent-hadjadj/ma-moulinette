@@ -1,0 +1,44 @@
+<dialog id="modal-information-tag" data-reveal
+        class="reveal small"
+        data-close-on-click="true"
+        data-animation-in="fade-in" data-animation-out="fade-out"
+        aria-modal="true"
+        aria-labelledby="titre-modal-information-tag"
+        aria-describedby="desc-modal-information-tag">
+
+  <div class="show-for-sr">Appuyez sur la touche Échap pour fermer cette fenêtre.</div>
+
+  <header class="grid-x align-justify align-middle margin-bottom-1">
+      <div class="cell auto">
+        <h1 id="titre-modal-information-tag" class="h3 claire-hand">
+          <span aria-hidden="true">ℹ️</span> Informations</h1>
+        <div id="desc-modal-information-tag" class="show-for-sr">
+            Cette fenêtre affiche les informations concernant l'utilisation des tags dans la prise en compte des projets.
+        </div>
+        <h2 class="h4 claire-hand">Utilisation des tags dans la prise en compte des projets</h2>
+      </div>
+    </header>
+
+      <section id="information-message"
+              class="callout alert-callout-border secondary ombre"
+              aria-label="Informations tags">
+        <p class="open-sans text-justify">
+          <strong>Chaque projet Ma-Moulinette doit avoir un Tag SonarQube.
+            <br><br>
+          </strong>Un projet qui n'aurait pas de Tag SonarQube, ne serait pas disponible dans la liste des projets de Ma-Moulinette.
+          <br><br>
+          En d'autres termes,
+          <strong>il faut ajouter un Tag</strong> au niveau du projet dans SonarQube et
+          <strong>mettre à jour la liste des projets</strong> dans Ma-Moulinette.
+        </p>
+      </section>
+
+      <footer class="grid-x grid-margin-x align-right margin-top-2">
+        <div class="cell shrink">
+          <button id="bouton-fermer-information-tag" data-close
+                  class="button open-sans focus-light"
+                  type="button"
+                  aria-label="Ferme modale" >❌ Fermer
+          </button>
+      </footer>
+    </dialog>
