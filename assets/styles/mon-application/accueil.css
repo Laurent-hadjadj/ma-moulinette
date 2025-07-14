@@ -13,8 +13,6 @@
 /**
   * Propriété pour les class :
   *  - Pour les images SVG : refresh-bd-svg, affiche-profil-svg, projet-svg, gomme-svg
-  *  - Pour le container de log : logger
-  *  - Pour la ligne de log : log
   *  - Pour le container des favoris : callout-information
   *  - Pour les lignes et les résultats des favoris : ligne-favori, result-favori
   *
@@ -23,6 +21,20 @@
 
 /* Media SMALL  */
 @media (width <= 20em) {
+  .stat-tag,
+  .stat-favori,
+  .stat-projet,
+  .stat-profil,
+  .stat-visibility { font-size: 1.5rem; }
+  .titre-stat { font-size: 1.4rem; }
+
+  #bouton-mise-a-jour-referential,
+  #bouton-profil-quality { min-width: 11rem; }
+
+  /* On ajoute un écart entre les deux box */
+  .tag-box-projet,
+  .visibility-box-public { margin-bottom: 0.5rem; }
+
   .stat-visibility { line-height: 0.7; }
 
   .tableau-de-board-svg {
@@ -32,13 +44,6 @@
 
   .bulle-information-svg { max-width: 32px; }
 
-  .logger {
-    padding-left: 1rem;
-    margin-top: -2rem;
-  }
-
-  .log { font-size: 0.75rem; }
-
   .callout-information { width: 17.4rem; }
 
   .ligne-favori,
@@ -47,6 +52,20 @@
 
 /* Media SMALL  */
 @media (20.025em <= width <= 22em) {
+  .stat-tag,
+  .stat-favori,
+  .stat-projet,
+  .stat-profil,
+  .stat-visibility { font-size: 1.5rem; }
+  .titre-stat { font-size: 1.4rem; }
+
+  #bouton-mise-a-jour-referential,
+  #bouton-profil-quality { min-width: 11rem; }
+
+  /* On ajoute un écart entre les deux box */
+  .tag-box-projet,
+  .visibility-box-public { margin-bottom: 0.5rem; }
+
   .stat-visibility { line-height: 0.7; }
 
   .tableau-de-board-svg {
@@ -62,6 +81,20 @@
 
 /* Media SMALL  */
 @media (22.025em <= width <= 30em) {
+  .stat-tag,
+  .stat-favori,
+  .stat-projet,
+  .stat-profil,
+  .stat-visibility { font-size: 1.6rem; }
+  .titre-stat { font-size: 1.4rem; }
+
+  #bouton-mise-a-jour-referential,
+  #bouton-profil-quality { min-width: 13rem; }
+
+  /* On ajoute un écart entre les deux box */
+  .tag-box-projet,
+  .visibility-box-public { margin-bottom: 0.5rem; }
+
   .stat-visibility { line-height: 0.7; }
 
   .tableau-de-board-svg {
@@ -76,6 +109,20 @@
 }
 
 @media (30.025em <= width <= 40em) {
+  .stat-tag,
+  .stat-favori,
+  .stat-projet,
+  .stat-profil,
+  .stat-visibility { font-size: 2.4rem; }
+  .titre-stat { font-size: 1.8rem; }
+
+  #bouton-mise-a-jour-referential,
+  #bouton-profil-quality { min-width: 15rem; }
+
+  /* On ajoute un écart entre les deux box */
+  .tag-box-projet,
+  .visibility-box-public { margin-bottom: 0.5rem; }
+
   .stat-visibility { line-height: 0.7; }
 
   .tableau-de-board-svg {
@@ -91,7 +138,17 @@
 
 /* Media MEDIUM  */
 @media (40.025em <= width <= 64em) {
-  .projet { margin-top: 1rem; }
+  .stat-tag,
+  .stat-favori,
+  .stat-projet,
+  .stat-profil,
+  .stat-visibility { font-size: 1.6rem; }
+  .titre-stat { font-size: 1.4rem; }
+
+  #bouton-mise-a-jour-referential,
+  #bouton-profil-quality { min-width: 12rem; }
+
+  #container-information-referential { margin-right: 0.5rem; }
   .visibility-box-public, .tag-box-projet { margin-right: 0.2rem; }
   .visibility-box-private, .tag-box-tag { margin-left: 0.2rem; }
 
@@ -108,9 +165,21 @@
 
 /* Media LARGE  */
 @media (64.025em <= width <= 90em) {
-  .projet { margin-top: 1rem; }
+  .stat-tag,
+  .stat-favori,
+  .stat-projet,
+  .stat-profil,
+  .stat-visibility { font-size: 2.4rem; }
+  .titre-stat { font-size: 1.8rem; }
+
+  #bouton-mise-a-jour-referential,
+  #bouton-profil-quality { min-width: 18rem; }
+
+  #container-information-referential { margin-right: 0.5rem; }
   .visibility-box-public, .tag-box-projet { margin-right: 0.2rem; }
   .visibility-box-private, .tag-box-tag { margin-left: 0.2rem; }
+
+  .projet { margin-top: 1rem; }
 
   .tableau-de-board-svg {
     margin-bottom: -0.2rem;
@@ -126,7 +195,17 @@
 
 /* Media LARGE  */
 @media (90.025em <= width <= 120em) {
-  .projet { margin-top: 1rem; }
+  .stat-tag,
+  .stat-favori,
+  .stat-projet,
+  .stat-profil,
+  .stat-visibility { font-size: 2.4rem; }
+  .titre-stat { font-size: 1.8rem; }
+
+  #bouton-mise-a-jour-referential,
+  #bouton-profil-quality { min-width: 18rem; }
+
+  #container-information-referential { margin-right: 0.5rem; }
   .visibility-box-public, .tag-box-projet { margin-right: 0.2rem; }
   .visibility-box-private, .tag-box-tag { margin-left: 0.2rem; }
 
@@ -143,9 +222,20 @@
 
 /* Media Extra-large  */
 @media (120.025em <= width <= 160em) {
-  .projet { margin-top: 1rem; }
-  .visibility-box-public, .tag-box-projet { margin-right: 0.4rem; }
-  .visibility-box-private, .tag-box-tag { margin-left: 0.4rem; }
+  .stat-tag,
+  .stat-favori,
+  .stat-projet,
+  .stat-profil,
+  .stat-visibility { font-size: 2.4rem; }
+  .titre-stat { font-size: 1.8rem; }
+
+  #bouton-mise-a-jour-referential,
+  #bouton-profil-quality { min-width: 18rem; }
+
+
+  #container-information-referential { margin-right: 0.5rem; }
+  .visibility-box-public, .tag-box-projet { margin-right: 0.2rem; }
+  .visibility-box-private, .tag-box-tag { margin-left: 0.2rem; }
 
   .tableau-de-board-svg {
     margin-bottom: -0.2rem;
@@ -159,12 +249,10 @@
 }
 
 @media (width >= 160.025em) {
-  .projet { margin-top: 1rem; }
   .visibility-box-public, .tag-box-projet { margin-right: 0.4rem; }
   .visibility-box-private, .tag-box-tag { margin-left: 0.4rem; }
 
-  .tableau-de-board-svg
-  {
+  .tableau-de-board-svg{
     margin-bottom: -0.2rem;
     max-width: 48px;
   }
@@ -177,38 +265,66 @@
 
 /*************************          Global     *********************************/
 
-.fieldset-container { padding-bottom: 0.5rem; }
-.ref-bouton { padding-right: 0.4rem; }
-
-.referential-result {
-  padding-left: 0.4rem;
-  padding-top: 0.5rem;
-}
-
 /* callout de message */
 .plus, .couleur-rouge { color: #971c09!important; }
 .moins, .couleur-vert { color: #187e3d!important; }
 
-/* bouton */
-.refresh-bd,
-.profil-quality,
-.mon-projet,
-#fermer-liste-profil,
-#fermer-info-tag { background-color: #00445b; }
+/* ==== Référentiel ==== */
+.referential-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* pour ajuster la hauteur du fieldset de la première colonne */
+.referential-filler { height: 100%; }
+
+.result-projet,
+.result-profil {
+  display: flex;
+  align-items: center;
+  padding-bottom: 1rem;
+}
+
+/* ==== bouton ==== */
+#bouton-mise-a-jour-referential,
+#bouton-profil-quality,
+#bouton-ouvrir-projet,
+#bouton-fermer-information-tag {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  height: 3.5rem;
+  padding: 0.8rem 1.2rem;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+
+  background-color: #00445b;
+  color: #ffffff;
+  text-decoration: none;
+
+  transition: background-color 0.2s ease-in-out;
+}
+
+#bouton-ouvrir-projet,
+#bouton-fermer-information-tag {
+  min-width: 15rem;
+  text-align: center;
+  justify-content: center;
+  margin-right: 2rem;
+}
+
+#button-mon-projet:hover,
+#bouton-fermer-information-tag:hover,
+#bouton-mise-a-jour-referential:hover,
+#bouton-profil-quality:hover { background-color: #006182; }
 
 /* hover des boutons */
 .refresh-bd:hover,
 .profil-quality:hover,
-.mon-projet:hover,
 #fermer-liste-profil:hover,
 #fermer-info-tag:hover { background-color: #006182; }
-
-.refresh-container,
-.profil-quality-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
 
 /* Images SVG : couleur blanc
  *
@@ -248,6 +364,44 @@
 .bouton-disabled {
   cursor: not-allowed;
   background-color: #4c7c8c;
+}
+
+/* ===== Affichage de la visibilité des projets ==== */
+.fieldset-visibility,
+.fieldset-tag,
+.fieldset-projet {
+  /* haut | droit | bas | gauche */
+  padding: 0.5rem;
+  margin-bottom: 0.2rem;
+}
+
+.fieldset-legend-custom { display: flex; }
+
+/* police pour les stats */
+.titre-stat {
+  font-family: "Claire Hand", sans-serif;
+  color: #00445b;
+}
+
+.container-stat {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.visibility-box, .tag-box {
+  padding-left: 0.6rem;
+  padding-right: 0.6rem;
+  padding-top: 0.1rem;
+    padding-bottom: 0.1rem;
+  border: solid 1px #00445b;
+  border-radius: 0.2rem;
+  background-color: #fff;
+}
+
+.stat-visibility, .stat-tag, .stat-projet {
+  color: #222;
+  font-family: "open sans", sans-serif;
 }
 
 /************* Mini tableau de suivi des indicateurs ***********/
@@ -312,26 +466,5 @@
 .color-security { color: #794044; }
 .color-hotspot { color: #065535; }
 .color-code-smell { color: #670267; }
-
-/* Affichage de la visibilité des projets */
-.fieldset-visibility, .fieldset-tag {
-  /* haut | droit | bas | gauche */
-  padding: 0.5rem;
-  margin-top: -1rem;
-}
-
-.fieldset-legend-custom { display: flex; }
-
-.visibility-box, .tag-box {
-  padding: 0.6rem;
-  border: solid 1px #00445b;
-  border-radius: 0.2rem;
-  background-color: #fff;
-}
-
-.stat-visibility, .stat-tag {
-  color: #222;
-  font-family: "open sans", sans-serif;
-}
 
 /********************* FIN *********************/
