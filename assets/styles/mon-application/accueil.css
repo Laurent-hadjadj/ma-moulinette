@@ -321,7 +321,6 @@
 #bouton-profil-quality:hover { background-color: #006182; }
 
 /* hover des boutons */
-.refresh-bd:hover,
 .profil-quality:hover,
 #fermer-liste-profil:hover,
 #fermer-info-tag:hover { background-color: #006182; }
