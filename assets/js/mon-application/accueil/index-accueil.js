@@ -46,7 +46,7 @@ import { http_400, http_401, http_403, http_404, http_500, http_504, contentType
   */
 const sonarIsUp = async function() {
   /**  si le bouton de mise à jour des projets est désactivé on sort */
-  if ($('.refresh-bd').hasClass('bouton-disabled')){
+  if ($('#bouton-mise-a-jour-referential').hasClass('bouton-disabled')){
     return { code: http_401 };
   }
 
@@ -58,10 +58,12 @@ const sonarIsUp = async function() {
   } catch(error) {
     // 📌 Vérification des erreurs
     if (error.status === http_404){
-      showMessage('alert', `<strong>[Accueil]</strong> La requête est incorrecte (Erreur 404).`);
+      const message = `<strong>[Accueil]</strong> La requête est incorrecte (Erreur 404).`;
+      showMessage('alert', message);
     }
     if (error.status === http_500 || error.status === 'DOWN'){
-      showMessage('alert', `<strong>[Accueil]</strong> État du serveur SonarQube : <strong>DOWN</strong>.`);
+      const message = `<strong>[Accueil]</strong> État du serveur SonarQube : <strong>DOWN</strong>.`;
+      showMessage('alert', message);
     }
     return;
   }
@@ -75,7 +77,7 @@ const sonarIsUp = async function() {
   *
   */
 const miseAJourListe = async function() {
-  if ($('.refresh-bd').hasClass('bouton-disabled') === true){
+  if ($('#bouton-mise-a-jour-referential').hasClass('bouton-disabled') === true){
     return;
   }
 
@@ -86,7 +88,9 @@ const miseAJourListe = async function() {
         // 📌 Vérification des erreurs
         const errorCodes = [http_400, http_401, http_403, http_404, http_500];
         if (errorCodes.includes(t.code)){
-            showMessage(t.type, t.message);
+            const hasTrace = !!t.trace;
+            const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+            showMessage(t.type, t.message, trace);
             return;
           }
 
@@ -94,8 +98,6 @@ const miseAJourListe = async function() {
         $('#js-nombre-projet').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.nombre));
         /** On efface le plus|moins */
         $('#js-moins, #js-plus').html('');
-        /** On ferme la callout */
-        $('#info-close').trigger('click');
 
         /** On met à jour le nombre de projet public */
         $('#js-public').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.public));
@@ -110,10 +112,14 @@ const miseAJourListe = async function() {
         $('#js-tag-projet').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.nombre));
 
           /** On affiche un message à l'utilisateur */
-          showMessage(t.type, t.message);
+          const hasTrace = !!t.trace;
+          const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+          showMessage(t.type, t.message, trace);
           setTimeout(() => { hideMessage(); }, 5000);
   } catch(error) {
-    showMessage('alert', `<strong>[Accueil]</strong> Une erreur inattendue s'est produite lors de la mise à jour des projets.<br>${error.message}`);
+    const message = `<strong>[Accueil]</strong> Une erreur inattendue s'est produite lors de la mise à jour des projets.`
+    const trace = prepareTechnicalDetails(error);
+    showMessage('alert', message, trace);
   }
 };
 
@@ -127,7 +133,7 @@ const miseAJourListe = async function() {
  * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
 const miseAJourTags = async function() {
-  if ($('.refresh-bd').hasClass('bouton-disabled') === true){
+  if ($('#bouton-mise-a-jour-referential').hasClass('bouton-disabled') === true){
     return;
   }
 
@@ -139,14 +145,18 @@ const miseAJourTags = async function() {
       // 📌 Vérification des erreurs
       const errorCodes = [http_400, http_401, http_403, http_404, http_500];
       if (errorCodes.includes(t.code)){
-          showMessage(t.type, t.message);
+          const hasTrace = !!t.trace;
+          const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+          showMessage(t.type, t.message, trace);
           return;
         }
 
       /** On affiche le nombre de tags */
       $('#js-tag-nombre').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.nombre_tag));
     } catch (error) {
-      showMessage('alert', `<strong>[Accueil]</strong> Une erreur inattendue s'est produite lors de la récupération du nombre de tags.<br>${error.message}`);
+      const message = `<strong>[Accueil]</strong> Une erreur inattendue s'est produite lors de la récupération du nombre de tags.`;
+      const trace = prepareTechnicalDetails(error);
+      showMessage('alert', message, trace);
     }
 };
 
@@ -156,7 +166,7 @@ const miseAJourTags = async function() {
  * description
  * Événement : on recharge la liste des projets.
  */
-$('.refresh-bd').on('click', ()=> {
+$('#bouton-mise-a-jour-referential').on('click', ()=> {
   sonarIsUp()
     .then((t)=> {
       /** On regarde si le serveur SonarQube est disponible */
@@ -167,7 +177,9 @@ $('.refresh-bd').on('click', ()=> {
           return;
         }
         /** On affiche le message d'erreur du serveur */
-        showMessage(t.type, t.message);
+        const hasTrace = !!t.trace;
+        const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+        showMessage(t.type, t.message, trace);
         return;
       }
 
@@ -188,7 +200,7 @@ $('.tableau-de-board-svg').on('click', function(e) {
   const element = document.getElementById(id);
   const mavenKey = element.dataset.mavenkey;
   if (mavenKey !== ''){
-    window.location.href = '/suivi/set?maven_key='+mavenKey;
+    window.location.href = `/suivi/set?maven_key=${mavenKey}`;
     } else {
       sessionStorage.set('error', "La clé maven n'est pas correcte !! !");
   }
