@@ -52,7 +52,7 @@
 
         {% if not already_added %}
           {% set unique_messages = unique_messages|merge([message]) %}
-      <div class="callout {{ message.type }} alert-callout-border callout-ombre js-flash-box" data-closable>
+      <div class="callout {{ message.type }} alert-callout-border callout-ombre js-flash-box" role="alert" data-closable>
         <p class="open-sans text-justify callout-message">
             <strong>{{ message.titre }}</strong> {{ message.message }}
         </p>
