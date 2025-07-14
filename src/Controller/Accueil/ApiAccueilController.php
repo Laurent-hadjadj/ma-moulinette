@@ -135,7 +135,7 @@ class ApiAccueilController extends AbstractController
             return new JsonResponse([
                 'code' => $result['code'],
                 'type' => 'alert',
-                'message' => static::$reference.$result['erreur']],
+                'message' => static::$reference . $result['erreur']],
                 Response::HTTP_OK);
         }
 
@@ -162,7 +162,7 @@ class ApiAccueilController extends AbstractController
             return new JsonResponse([
                 'code' => $delete['code'],
                 'type' => 'alert',
-                'message' => static::$reference."Échec de l’exécution de la requête deleteListeProjet ({$delete['code']}).",
+                'message' => static::$reference . "Échec de l’exécution de la requête deleteListeProjet ({$delete['code']}).",
                 'trace' => $delete['erreur']
             ], Response::HTTP_OK);
         }
