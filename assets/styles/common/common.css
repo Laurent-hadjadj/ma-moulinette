@@ -563,6 +563,7 @@ body {
 
 .margin-top-05 { margin-top: 0.5rem; }
 .margin-top-1 { margin-top: 1rem; }
+.margin-top-2 { margin-top: 2rem; }
 .margin-top-1125 { margin-top: 1.125rem; }
 .margin-bottom-05 { margin-bottom: 0.5rem; }
 .margin-left-05 { margin-left: 0.5rem; }
@@ -570,6 +571,7 @@ body {
 .margin-left-2 { margin-left: 2rem; }
 .margin-left-3 { margin-left: 3rem; }
 .margin-right-05 { margin-right: 0.5rem; }
+.margin-right-1 { margin-right: 1rem; }
 
 /* si on a pas activé javascript */
 .javascript-obligatoire {  font-weight: bold; }
@@ -599,7 +601,7 @@ body {
 }
 
 /* === affichage des messages JS ==== */
-#message-box {
+#message-box, .js-flash-box {
   position: fixed;
   top: 6%;
   left: 50%;
@@ -680,10 +682,10 @@ body {
   outline-offset: 4px;
 }
 
-/* ==== Message d'alerte ==== */
+/* ==== Message Flash d'alerte ==== */
 .callout-message {
-  padding-top: 0.6rem;
-  margin-bottom: 0.1rem;
+  padding-top: 0.8rem;
+  margin-bottom: 0.5rem;
 }
 
 /* Ombre pour les callout */
