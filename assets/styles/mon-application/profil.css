@@ -11,21 +11,27 @@
  */
 
 @media (width <= 20em) {
-  .profil-font-size { font-size: 0.8rem; }
+  .profil-font-size { font-size: 0.7rem; }
   .mini-stat { font-size: 1.1rem }
   #graphique-langage { height: 400px; }
+  #bouton-affiche-graphique,
+  #bouton-refresh-profil { min-width: 6rem; }
 }
 
 @media (20.025em <= width <= 22em) {
   .profil-font-size { font-size: 0.8rem; }
   .mini-stat { font-size: 1.1rem }
   #graphique-langage { height: 400px; }
+  #bouton-affiche-graphique,
+  #bouton-refresh-profil { min-width: 6rem; }
 }
 
 @media (22.025em <= width <= 30em) {
   .profil-font-size { font-size: 0.8rem; }
   .mini-stat { font-size: 1.1rem }
   #graphique-langage { height: 400px; }
+  #bouton-affiche-graphique,
+  #bouton-refresh-profil { min-width: 6rem; }
 }
 
 @media (30.025em <= width <= 40em) {
@@ -33,9 +39,11 @@
   .mini-stat { font-size: 1.1rem }
   .box-langage{
     margin-right: 1rem;
-    margin-left: 1rem; }
-
+    margin-left: 1rem;
+  }
   #graphique-langage { height: 400px; }
+  #bouton-affiche-graphique,
+  #bouton-refresh-profil { min-width: 6rem; }
 }
 
 @media (40.025em <= width <= 64em) {
@@ -47,6 +55,8 @@
   .bouton-profil-refresh-left { padding-right: 0.5rem; }
   .bouton-profil-graphique-right { padding-left: 0.5rem; }
   #graphique-langage { height: 482px; }
+  #bouton-affiche-graphique,
+  #bouton-refresh-profil { min-width: 17rem; }
 }
 
 @media (64.025em <= width <= 90em) {
@@ -56,6 +66,8 @@
   .bouton-profil-refresh-left { padding-right: 0.5rem; }
   .bouton-profil-graphique-right { padding-left: 0.5rem; }
   #graphique-langage { height: 600px; }
+  #bouton-affiche-graphique,
+  #bouton-refresh-profil { min-width: 17rem; }
 }
 
 @media (90.025em <= width <= 120em) {
@@ -65,6 +77,8 @@
   .bouton-profil-refresh-left { padding-right: 0.5rem; }
   .bouton-profil-graphique-right { padding-left: 0.5rem; }
   #graphique-langage { height: 600px; }
+  #bouton-affiche-graphique,
+  #bouton-refresh-profil { min-width: 17rem; }
 }
 
 @media (120.025em <= width <= 160em) {
@@ -74,6 +88,8 @@
   .bouton-profil-refresh-left { padding-right: 0.5rem; }
   .bouton-profil-graphique-right { padding-left: 0.5rem; }
   #graphique-langage { height: 600px; }
+  #bouton-affiche-graphique,
+  #bouton-refresh-profil { min-width: 17rem; }
 }
 
 @media (width >= 160.025em) {
@@ -82,28 +98,66 @@
 .bouton-profil-refresh-left { padding-right: 0.5rem; }
 .bouton-profil-graphique-right { padding-left: 0.5rem; }
 #graphique-langage { height: 600px; }
+#bouton-affiche-graphique,
+#bouton-refresh-profil { min-width: 17rem; }
 }
 
 /*************************          Global     *********************************/
 
-/* bouton mise-a-jour et graphique */
-.bouton-container {
+/* ===== bouton mise-a-jour et graphique ===== */
+.bouton-wrapper {
   display: flex;
-  justify-content: center;
-    align-items: center;
+  flex-direction: row;
+  flex-wrap: wrap; /* pour éviter tout débordement */
+  gap: 1rem;
+  padding-right: 1rem;
 }
 
-.bouton-profil-refresh,
-.bouton-profil-graphique,
+#bouton-affiche-graphique,
+#bouton-refresh-profil {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  height: 3rem;
+  padding: 0.8rem 1.2rem;
+  border-radius: 0.375rem;
+
+  background-color: #00445b;
+  color: #ffffff;
+  text-decoration: none;
+  justify-content: center;
+
+  transition: background-color 0.2s ease-in-out;
+}
+
+#bouton-affiche-graphique:hover,
+#bouton-refresh-profil:hover { background-color: #006182; }
+
+[id^="bouton-language-"] {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  height: 3rem;
+  padding: 0.8rem 1.2rem;
+  border-radius: 0.375rem;
+
+  background-color: #00445b;
+  color: #ffffff;
+  text-decoration: none;
+  justify-content: center;
+
+  transition: background-color 0.2s ease-in-out;
+}
+
+button[id^="bouton-language-"]:hover {background-color: #006182; }
+
 #bouton-fermer-autre-profil {
   color: #fff;
   background-color: #00445b;
 }
-
-
 /* hover des boutons */
-.bouton-profil-refresh:hover,
-.bouton-profil-graphique:hover,
 #bouton-fermer-autre-profil:hover { background-color: #006182; }
 
 .profil-graphique-svg,

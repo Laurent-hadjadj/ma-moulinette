@@ -41,7 +41,7 @@
     {# Gestion des messages flash & JS #}
     <header>
       {% for message in app.flashes('notice') %}
-      <div class="callout {{ message.type }} alert-callout-border callout-ombre" role="alert" data-closable>
+      <div class="callout {{ message.type }} alert-callout-border callout-ombre js-flash-box" role="alert" data-closable>
         <p class="open-sans text-justify callout-message">
             <strong>{{ message.titre }}</strong> {{ message.message }}
         </p>
@@ -61,45 +61,44 @@
       </div>
     </header>
 
-    <main class="grid-container">
+    <main class="grid-container margin-bottom-1" role="main">
       {% if liste|length <= 1 %}
         {% set s='' %}
       {% else %}
         {% set s='s' %}
       {% endif %}
-      <h1 class="h2 claire-hand">Liste des profils qualités.</h1>
-      <h2 class="h3 claire-hand">
+      <h1 class="h3 claire-hand" aria-label="Liste des profils qualités">
+        <span aria-hidden="true">📋</span> Liste des profils qualités
+      </h1>
+      <h2 class="h4 claire-hand" aria-label="{{liste|length}} profils qualité par défaut trouvés">
         <span id="affiche-total-profil" class="h4 stat">{{liste|length}}</span>
-        profil{{s}}	par défaut trouvé{{s}}.
+        <span aria-hidden="true">🗂️</span> profil{{s}} par défaut trouvé{{s}}.
       </h2>
 
-      {# Message d'information javascript #}
-      <div id="message" class="cell"></div>
-
-      <div class="grid-x cell">
-        {# Bouton mise à jour du référentiel de règles #}
-        <div class="small-12 medium-6 large-6 bouton-profil-refresh-left cell">
-          <button class="button expanded float-center bouton-profil-refresh js-profil-refresh">
+      <header class="grid-x grid-margin-x align-right margin-top-1">
+        <div class="cell shrink bouton-wrapper">
+          <button id="bouton-refresh-profil"
+                  class="button open-sans focus-light"
+                  type="button"
+                  aria-label="Rafraîchir la liste des profils qualités">
             <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewbox="0 0 32 32" class="profil-refresh-svg">
               <path d="M23.329 2.501C19.845-.143 15.644-.719 11.693.91c-.742.306-2.128 1.09-2.403 1.356-.798.77-1.046 2.097-.588 3.164.416.98 1.255 1.49 2.17 1.32.299-.054.577-.175 1.103-.484 1.81-1.055 3.631-1.403 5.53-1.054 2.953.546 5.524 2.889 6.696 6.105.21.567.504 1.623.468 1.677-.013.02-.252-.115-.533-.306-.825-.553-1.19-.567-1.579-.059-.24.314-.32.643-.243.984.084.379 3.378 7.87 3.55 8.077.288.34.81.365 1.163.06.076-.064 1.198-1.71 2.492-3.655l2.347-3.537.042-.301c.096-.662-.38-1.286-.941-1.23-.092.009-.523.162-.955.33-.436.172-.806.303-.818.291-.012-.01-.056-.273-.096-.57-.35-2.66-1.35-5.313-2.797-7.418-.728-1.056-2.028-2.438-2.972-3.158zM5.624 9.702a.813.813 0 00-.731.19c-.075.065-1.198 1.711-2.492 3.656L.054 17.085l-.042.302c-.096.662.38 1.285.942 1.23.091-.01.522-.163.955-.33.436-.172.805-.303.817-.292.012.011.056.273.096.571.297 2.253 1.097 4.61 2.194 6.46 1.906 3.22 4.694 5.416 7.939 6.265 2.913.754 5.949.309 8.701-1.277.83-.479 1.061-.66 1.327-1.06.83-1.254.494-3.172-.675-3.84-.718-.414-1.33-.343-2.363.264-1.81 1.055-3.63 1.403-5.53 1.053-2.953-.545-5.524-2.888-6.696-6.105-.21-.567-.504-1.623-.468-1.677.013-.02.252.116.533.306.825.553 1.19.568 1.579.06.24-.315.32-.644.243-.985-.027-.127-.802-1.956-1.723-4.061-1.17-2.685-1.722-3.886-1.842-4.022a.705.705 0 00-.417-.245z"/>
             </svg>
-            <span class="show-for-medium open-sans color-blanc"> Mise à jour de la liste.</span>
-            <span class="show-for-small-only open-sans color-blanc"> Mise à jour.</span>
+            <span class="show-for-medium open-sans color-blanc">Mise à jour de la liste</span>
           </button>
-        </div>
-        {# Bouton affiche Graphique #}
-        <div class="small-12 medium-6 large-6 bouton-profil-graphique-right cell">
-          <button class="button expanded float-center bouton-profil-graphique js-profil-graphique">
-            <div class="bouton-container">
-              <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewbox="0 0 32 32" class="profil-graphique-svg">
+
+          <button id="bouton-affiche-graphique"
+                  class="button open-sans focus-light js-profil-graphique"
+                  type="button"
+                  aria-label="Affiche la répartition des langages">
+            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewbox="0 0 32 32" class="profil-graphique-svg">
                 <path d="M13.65.425C7.32 1.335 2.076 5.97.5 12.06c-.4 1.553-.492 2.294-.492 3.952 0 1.652.1 2.527.464 3.945 1.37 5.399 5.693 9.795 11.115 11.298 4.21 1.165 8.761.586 12.443-1.588 4.252-2.505 7.027-6.626 7.72-11.467.056-.388.106-.776.106-.861v-.162l-8.161-.014c-8.12-.022-8.17-.022-8.362-.17a1.934 1.934 0 01-.343-.339c-.15-.19-.15-.24-.17-8.27L14.804.312l-.235.007c-.122.007-.543.05-.92.106z"/><path d="M17.088 7.616v7.303h14.768v-.162c0-.085-.05-.473-.107-.86-.47-3.303-1.912-6.274-4.209-8.702-2.461-2.59-6-4.368-9.596-4.806a11.163 11.163 0 00-.728-.077c-.12 0-.128.352-.128 7.304z"/>
-              </svg>
-              <span class="show-for-medium open-sans color-blanc"> Répartition des langages.</span>
-              <span class="show-for-small-only open-sans color-blanc"> Répartition.</span>
-            </div>
+            </svg>
+              <span class="show-for-medium open-sans color-blanc">Répartition des langages</span>
           </button>
         </div>
-      </div>
+      </header>
+
       {# affiche Graphique #}
       <div class="float-center graphique-langage-container">
         <canvas id="graphique-langage" aria-label="Distribution des langages."></canvas>
@@ -139,10 +138,17 @@
                   </tr>
                 </tbody>
               </table>
-              {# Ce bouton active aussi la fenêtre modal #}
-              <p class="button expanded float-center bouton-profil-refresh js-bouton-autre-profil" data-language="{{profil.langage}}" id="language-{{profil.langage}}">
-                <button class="open-sans color-blanc">Afficher les autres profils</button>
-              </p>
+              <footer class="grid-x grid-margin-x align-right margin-top-1">
+                <div class="cell shrink">
+                <button id="bouton-language-{{profil.langage}}"
+                        class="button open-sans focus-light"
+                        type="button"
+                        data-language="{{profil.langage}}"
+                        aria-label="Affiche la liste des autres langages">
+                  <span class="show-for-small-only open-sans color-blanc"><span aria-hidden="true">📂</span>Détails</span>
+                  <span class="show-for-medium open-sans color-blanc"><span aria-hidden="true">📂</span>Afficher les autres profils</span>
+                </button>
+              </footer>
             </div>
           </div>
         {% endfor %}
