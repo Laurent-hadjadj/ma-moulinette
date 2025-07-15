@@ -14,24 +14,18 @@
 namespace App\Controller\Profil;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\Routing\Annotation\Route;
-
-/** Sécurité */
 use Symfony\Bundle\SecurityBundle\Security;
-
-/** Gestion de accès aux API */
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
-
-/** Accès aux tables */
+use Symfony\Component\Routing\Annotation\Route;
+use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
+
 use App\Entity\Properties;
 use App\Entity\Profiles;
 use App\Entity\ProfilesHistorique;
-
-/** Client HTTP */
 use App\Service\Client;
 
 /**
@@ -40,12 +34,12 @@ use App\Service\Client;
 class ApiProfilController extends AbstractController
 {
     /** Définition des constantes */
-    public static $sonarUrl = "sonar.url";
-    public static $oups = "OUPS !!!";
-    public static $page = "profil/details.html.twig";
     public static $europeParis = "Europe/Paris";
-    public static $dateFormat = "Y-m-d H:i:s";
     public static $dateFormatShort = "Y-m-d";
+    public static $sonarUrl = "sonar.url";
+    public static $page = "profil/details.html.twig";
+    public static $reference= '<strong>[Profil]</strong> ';
+    public static $erreur400 = "La requête est incorrecte (Erreur 400).";
 
     private $logoEntreprise;
     private $marqueEntrepriseShort;
@@ -65,10 +59,9 @@ class ApiProfilController extends AbstractController
     public function __construct(
         private EntityManagerInterface $em,
         private Client $client,
-        private ParameterBagInterface $params
+        private ParameterBagInterface $params,
+        private LoggerInterface $logger
     ) {
-        $this->em = $em;
-        $this->client = $client;
         $this->params = $params;
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
@@ -128,10 +121,10 @@ class ApiProfilController extends AbstractController
         $queryParams = [];
         $result = $this->client->httpSonarQube("$baseUrl/api/qualityprofiles/search?".http_build_query($queryParams));
         if (in_array($result['code'] ?? -1, [503, 504])) {
-            $titre = static::$oups;
+            $titre = static::$reference;
             $message = $result['erreur'];
             $this->addFlash('notice', ['type'=>'alert', 'titre'=>$titre, 'message'=>$message]);
-            return 0;
+            //return 0;
         }
 
         /** On Vérifie qu'il existe au moins un profil */
@@ -406,30 +399,61 @@ class ApiProfilController extends AbstractController
      *
      * @return JsonResponse
      *
+     * Created at: 15/07/2025 09:50:15 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/quality/off', name: 'liste_quality_off', methods: ['POST'])]
     public function listeQualityOff(Request $request): JsonResponse
     {
-        /** On instancie la classe */
         $profilesRepository = $this->em->getRepository(Profiles::class);
+
+        $this->logger->info('Requête reçue sur /api/quality/off', [
+        'raw_body' => $request->getContent()]);
 
         /** On décode le body */
         $data = json_decode($request->getContent());
 
       /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'langage')) {
-            return new JsonResponse(
-                ['data'=>$data,'code'=>400], Response::HTTP_BAD_REQUEST);
+            $this->logger->error('Requête invalide : langage manquant ou malformé', [
+            'data' => $data]);
+            return new JsonResponse([
+                    'code' => 400,
+                    'type' => 'alert',
+                    'message' => static::$reference . static::$erreur400
+                ], Response::HTTP_OK);
         }
 
         /** On récupère le language */
         $langage = $data->langage;
 
-        /** On récupère la liste des profils pour un language non actif */
-        $referential_default = 'false';
-        $request = $profilesRepository->selectProfiles($referential_default, $langage);
-        $compte = $profilesRepository->countProfiles($referential_default, $langage);
-        return new JsonResponse([
-            'code' => 200, 'listeProfil' => $request['liste'], 'countProfil' =>$compte], Response::HTTP_OK);
+        try {
+                $referential_default = 'false';
+
+                $liste = $profilesRepository->selectProfiles($referential_default, $langage);
+                $count = $profilesRepository->countProfiles($referential_default, $langage);
+                // Log des résultats
+                $this->logger->info('Profils non actifs récupérés', [
+                    'langage' => $langage,
+                    'count' => $count['request'][0]['total'] ?? 0 ]);
+
+                return new JsonResponse([
+                    'code' => 200,
+                    'listeProfil' => $liste['liste'],
+                    'countProfil' => $count
+                ], Response::HTTP_OK);
+        } catch (\Throwable $e) {
+            $this->logger->error('Erreur lors de la récupération des profils non actifs', [
+            'langage' => $langage,
+            'exception' => $e->getMessage()]);
+
+            return new JsonResponse([
+                'code' => 500,
+                'type' => 'alert',
+                'message' => 'Une erreur est survenue lors du traitement des profils',
+                'trace' => $e->getMessage()
+            ], Response::HTTP_OK);
+        }
     }
 }
