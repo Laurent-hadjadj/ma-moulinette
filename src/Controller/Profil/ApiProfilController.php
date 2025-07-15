@@ -39,7 +39,8 @@ class ApiProfilController extends AbstractController
     public static $dateFormatShort = "Y-m-d";
     public static $sonarUrl = "sonar.url";
     public static $page = "profil/details.html.twig";
-    public static $reference= '<strong>[Profil]</strong> ';
+    public static $reference = '<strong>[Profil]</strong> ';
+    public static $referenceDetail = '[Détails]';
     public static $erreur400 = "La requête est incorrecte (Erreur 400).";
     public static $erreur403 = "Vous devez avoir le rôle GESTIONNAIRE pour réaliser cette action (Erreur 403).";
     public static $erreur404 = "Vous devez au moins avoir un profil déclaré sur le serveur SonarQube (Erreur 404).";
@@ -322,6 +323,43 @@ class ApiProfilController extends AbstractController
             Response::HTTP_OK);
     }
 
+    private function getCount($repo, string $language, string $action): int
+    {
+        $result = $repo->selectProfilesHistoriqueAction([
+            'language' => $language,
+            'action' => $action
+        ]);
+        return $result['nombre'][0]['nombre'] ?? 0;
+    }
+
+    private function getDateTri($repo, string $language, string $tri): ?array
+    {
+        $result = $repo->selectProfilesHistoriqueDateTri([
+            'language' => $language,
+            'tri' => $tri,
+            'limit' => 1
+        ]);
+        return $result['liste'][0] ?? null;
+    }
+
+    private function genericDetailsRender(): array
+    {
+        return [
+            'profil' => 'NC',
+            'langage' => 'aucun',
+            'opened' => 0,
+            'closed' => 0,
+            'updated' => 0,
+            'total_rule' => null,
+            'premier' => null,
+            'dernier' => null,
+            'date_groupe' => null,
+            'nombre_groupe' => null,
+            'liste' => null,
+            'badge' => null
+        ];
+    }
+
     /**
      * [Description for profilDetails]
      * Affichage des règles par profils avec les changement.
@@ -337,177 +375,173 @@ class ApiProfilController extends AbstractController
     #[Route('/profil/details', name: 'profil_details', methods: ['GET'])]
     public function profilDetails(Request $request)
     {
-        /** On instancie la classe */
+        $this->logger->info('[Profil Détail] Début du traitement de la méthode profilDetails');
+
         $profilesHistoriqueRepository = $this->em->getRepository(ProfilesHistorique::class);
 
         $token = $request->get('token');
-        if (empty($token)){
-            return;
+        if (empty($token)) {
+            $this->logger->warning('[Profil Détail] Token vide ou manquant');
+            return $this->render(static::$page, ['profil' => 'NC']);
         }
-        //b64=bnVsbHxDU1N8RnJhbmNlQWdyaU1lciB2Mi4wLjAgKDIwMjEp
-        //rot13=oaIfoUkQH1A8EaWuozAyDJqlnH1ypvO2Zv4jYwNtXQVjZwRc
-        $string=str_rot13($token);
-        $decode=base64_decode($string);
-        $explode=preg_split("/[|]+/",$decode);
 
-        $render=static::genericRender();
-        $render['profil'] = 'NC';
-        $render['langage'] = 'aucun';
-        $render['opened'] = 0;
-        $render['closed'] = 0;
-        $render['updated'] = 0;
-        $render['total_rule'] = null;
-        $render['premier'] = null;
-        $render['dernier'] = null;
-        $render['date_groupe'] = null;
-        $render['nombre_groupe'] = null;
-        $render['liste'] = null;
-        $render['badge'] = null;
+        try {
+            //b64=bnVsbHxDU1N8RnJhbmNlQWdyaU1lciB2Mi4wLjAgKDIwMjEp
+            //rot13=oaIfoUkQH1A8EaWuozAyDJqlnH1ypvO2Zv4jYwNtXQVjZwRc
+            $string = str_rot13($token);
+            $decode = base64_decode($string);
+            $explode = preg_split("/[|]+/", $decode);
+        } catch (\Throwable $e) {
+            $this->logger->error('[ProfilDetails] Erreur lors du décodage du token.', ['exception' => $e]);
+            return $this->redirectToRoute('profil');
+        }
 
-        /** si le salt n'est pas défini ou si le tableau ne contient pas trois clé alors */
-        if (count($explode) !=3) {
-             /** On prepare un message flash */
-            $this->addFlash('notice', ['type'=>'alert', 'titre'=> '[DÉTAILS-001]', 'message'=>"Le token est incorrecte (Erreur 400)."]);
+        $render = array_merge(
+            $this->genericRender(),        // contient : date_copyright, titre, etc.
+            $this->genericDetailsRender()  // contient : profil, langage, opened, closed, etc.
+        );
+
+        $render += [
+            'profil' => 'NC', 'langage' => 'aucun', 'opened' => 0, 'closed' => 0,
+            'updated' => 0, 'total_rule' => null, 'premier' => null, 'dernier' => null,
+            'date_groupe' => null, 'nombre_groupe' => null, 'liste' => null, 'badge' => null
+        ];
+
+        if (count($explode) !== 3) {
+            $this->logger->warning('[ProfilDetails] Token invalide.', ['token' => $token]);
+            $this->addFlash('notice', ['type' => 'alert', 'titre' => static::$referenceDetail, 'message' => "Le token fourni est invalide ou mal formé (Erreur 400)."]);
             return $this->render(static::$page, $render);
         }
-        /** On récupère le nom du langage et le nom du profil */
-        $language = strtolower($explode[1]);
-        $profil = $explode[2];
-        /** Liste des langages pour SonarQube */
+
+        [$salt, $language, $profil] = $explode;
+        $this->logger->debug("Décomposition du token", ['salt' => $salt, 'language' => $language, 'profil' => $profil]);
+
+        $language = strtolower($language);
+
         $sonarLanguage = ['delphi', 'css', 'jsp', 'py', 'js', 'secrets', 'ruby', 'java', 'web', 'xml', 'php', 'json', 'text', 'grvy', 'ts', 'yaml'];
-        /** Liste des langages Ma-Moulinette */
         $maMoulinetteLanguage = ['java properties', 'javascript', 'html', 'typescript', 'python', 'groovy'];
 
-        if (!in_array($language, $sonarLanguage) && !in_array($language, $maMoulinetteLanguage)){
-            $titre="[DÉTAILS-002]";
-            $message = "Le langage sélectionné ne fait pas partir des langages supporté par SonarQube (Erreur 404)";
-            $this->addFlash('notice', ['type'=>'alert', 'titre'=>$titre, 'message'=>$message]);
+        if (!in_array($language, [...$sonarLanguage, ...$maMoulinetteLanguage])) {
+            $this->logger->warning('[ProfilDetails] Langage non supporté.', ['langage' => $language]);
+            $this->addFlash('notice', ['type' => 'alert', 'titre' => static::$referenceDetail, 'message' => "Le langage sélectionné n'est pas supporté (Erreur 404)."]);
             return $this->render(static::$page, $render);
         }
 
-        switch ($language) {
-            case 'java properties': $language = 'jproperties';
-                break;
-            case 'javascript': $language = 'js';
-                break;
-            case 'html': $language = 'web';
-                break;
-            case 'typescript': $language = 'ts';
-                break;
-            case 'python': $language = 'py';
-                break;
-            case 'groovy': $language = 'grvy';
-                break;
-            default: $language;
-        }
+        $language = match ($language) {
+            'java properties' => 'jproperties',
+            'javascript' => 'js',
+            'html' => 'web',
+            'typescript' => 'ts',
+            'python' => 'py',
+            'groovy' => 'grvy',
+            default => $language,
+        };
 
         /* On récupère que les 500 premiers */
-        /** On construit l'URL */
-        $baseUrl = $this->getParameter(static::$sonarUrl);
-        /** On définit l'URL et on ajoute le nom des profils SonarQube*/
-        $queryParams = ['language' => $language, 'qualityProfile' => $profil, 'ps' => 500, 'p' => 1 ];
-        $result = $this->client->httpSonarQube("$baseUrl/api/qualityprofiles/changelog?".http_build_query($queryParams));
-        if (in_array($result['code'] ?? -1, [400, 503, 504])) {
-            $titre="OUPS !!!";
-            $message = $result['erreur'];
-            $this->addFlash('notice', ['type'=>'alert', 'titre'=>$titre, 'message'=>$message]);
+        $url = $this->urlBuilder->build(
+        $this->getParameter(static::$sonarUrl),
+        '/api/qualityprofiles/changelog',
+        ['language' => $language, 'qualityProfile' => $profil, 'ps' => 500, 'p' => 1]);
+
+        $this->logger->info('[Profil Détail] Appel API SonarQube', ['url' => $url]);
+
+        $result = $this->client->httpSonarQube($url);
+        if (in_array($result['code'] ?? -1, [400, 401, 403, 404, 500, 503, 504])) {
+            $this->logger->error('[ProfilDetails] Erreur API SonarQube.', ['url' => $url, 'result' => $result]);
+            $this->addFlash('notice', ['type' => 'alert', 'titre' => static::$referenceDetail, 'message' => $result['erreur']]);
             return $this->render(static::$page, $render);
         }
 
-        $events = $result['json']['events'];
-        $total = $result['json']['total'];
-
-        /* On créé une date */
         $date = new \DateTime('now', new \DateTimeZone(static::$europeParis));
+        $events = $result['json']['events'] ?? [];
+        $total = $result['json']['total'] ?? null;
 
         /** On met à jour la table contenant l'historique des changements. */
-        foreach($events as $event) {
-            /* On bind les données avant de les enregistrer */
-            $dc = new \DateTime($event['date'], new \DateTimeZone(static::$europeParis));
-            $dateCourte = $dc->format(static::$dateFormatShort);
-            $dateModification = $event['date'];
-            $action = $event['action'];
-            $auteur = $event['authorName'] ?? 'Non défini';
-            $rule = $event['ruleKey'];
-            $description = $event['ruleName'];
-            $detail = json_encode($event['params']);
-
-            /** On prépare les données pour la requête */
-            $map=['date_courte'=>$dateCourte, 'language'=>$language, 'date'=>$dateModification, 'action'=>$action, 'auteur'=>$auteur, 'rule'=>$rule, 'description'=>$description, 'detail'=>$detail, 'date_enregistrement'=>$date];
-            /** on lance la requête */
-            $profilesHistoriqueRepository->insertProfilesHistorique($map);
-        }
-
-        /** Nombre de règles activé **/
-        $map = ['language'=>$language, 'action'=>'ACTIVATED'];
-        $activated=$profilesHistoriqueRepository->selectProfilesHistoriqueAction($map);
-
-        /** Nombre de règles désactivé --> DEACTIVATED **/
-        $map = ['language'=>$language, 'action'=>'DEACTIVATE'];
-        $deactivated = $profilesHistoriqueRepository->selectProfilesHistoriqueAction($map);
-
-        /** Nombre de règles mise à jour **/
-        $map = ['language'=>$language, 'action'=>'UPDATED'];
-        $updated = $profilesHistoriqueRepository->selectProfilesHistoriqueAction($map);
-
-        /** Date de la première modification **/
-        $map2 = ['language'=>$language, 'tri'=>'ASC', 'limit'=>1];
-        $first = $profilesHistoriqueRepository->selectProfilesHistoriqueDateTri($map2);
-
-        /** Date de la dernière modification **/
-        $map3 = ['language'=>$language, 'tri'=>'DESC', 'limit'=>1];
-        $last = $profilesHistoriqueRepository->selectProfilesHistoriqueDateTri($map3);
-
-        /** Calcul le  nombre de groupe de modification **/
-        $map = ['language'=>$language];
-        $groupes = $profilesHistoriqueRepository->selectProfilesHistoriqueDateCourteGroupeBy($map);
-
-        /** Pour chaque groupe on récupère dans un tableau les modifications */
-        $i = 0;
-        $liste = $tempoDateGroupe = $badge = [];
-        foreach ($groupes['liste'] as $groupe) {
-            $dateGroupe = $groupe['date_courte'];
-            $badgeA = $badgeU = $badgeD = 0;
-            $tempo = [];
-            $map=['language'=>$language, 'date_courte'=>$dateGroupe];
-            $modif = $profilesHistoriqueRepository->selectProfilesHistoriqueLangageDateCourte($map);
-            /* On ajoute la date du groupe */
-            array_push($tempoDateGroupe, $dateGroupe);
-
-            foreach ($modif['liste'] as $m) {
-                $g = [  'groupe' => $i, 'date' => $m['date'], 'action' => $m['action'],
-                        'auteur' => $m['auteur'], 'rule' => $m['rule'],
-                        'description' => $m['description'], 'detail' => $m['detail']];
-                array_push($tempo, $g);
-                if ($m["action"] === "UPDATED") {
-                    $badgeU += 1;
-                }
-                if ($m["action"] === "DEACTIVATED") {
-                    $badgeD += 1;
-                }
-                if ($m["action"] === "ACTIVATED") {
-                    $badgeA += 1;
-                }
+        foreach ($events as $event) {
+            try {
+                $dc = new \DateTime($event['date'], new \DateTimeZone(static::$europeParis));
+                $map = [
+                    'date_courte' => $dc->format(static::$dateFormatShort),
+                    'language' => $language,
+                    'date' => $event['date'],
+                    'action' => $event['action'],
+                    'auteur' => $event['authorName'] ?? 'Non défini',
+                    'rule' => $event['ruleKey'],
+                    'description' => $event['ruleName'],
+                    'detail' => json_encode($event['params']),
+                    'date_enregistrement' => $date
+                ];
+                $profilesHistoriqueRepository->insertProfilesHistorique($map);
+            } catch (\Throwable $e) {
+                $this->logger->error('[ProfilDetails] Insertion historique échouée.', ['event' => $event, 'exception' => $e]);
             }
-
-            $tempoBadge = ['badgeU' => $badgeU, 'badgeD' => $badgeD, 'badgeA' => $badgeA];
-            array_push($badge, $tempoBadge);
-            array_push($liste, $tempo);
-            $i += 1;
         }
+
+        $this->logger->info('[Profil Détail] Insertion des événements SonarQube réussie', ['nombre_evenements' => count($events)]);
 
         $render['profil'] = $profil;
         $render['langage'] = $language;
-        $render['opened'] = $activated['nombre'][0]['nombre'];
-        $render['closed'] = $deactivated['nombre'][0]['nombre'];
-        $render['updated'] = $updated['nombre'][0]['nombre'];
+        $render['opened'] = $this->getCount($profilesHistoriqueRepository, $language, 'ACTIVATED');
+        $render['closed'] = $this->getCount($profilesHistoriqueRepository, $language, 'DEACTIVATE');
+        $render['updated'] = $this->getCount($profilesHistoriqueRepository, $language, 'UPDATED');
         $render['total_rule'] = $total;
-        $render['premier'] = $first['liste'][0];
-        $render['dernier'] = $last['liste'][0];
-        $render['date_groupe'] = $tempoDateGroupe;
-        $render['nombre_groupe'] = $i;
+        $render['premier'] = $this->getDateTri($profilesHistoriqueRepository, $language, 'ASC');
+        $render['dernier'] = $this->getDateTri($profilesHistoriqueRepository, $language, 'DESC');
+
+        $groupes = $profilesHistoriqueRepository->selectProfilesHistoriqueDateCourteGroupeBy(['language' => $language]);
+        $render['nombre_groupe'] = count($groupes['liste']);
+
+        $liste = [];
+        $dateGroupes = [];
+        $badges = [];
+        $i = 0;
+
+        foreach ($groupes['liste'] as $groupe) {
+            $date = $groupe['date_courte'];
+            $modif = $profilesHistoriqueRepository->selectProfilesHistoriqueLangageDateCourte([
+                'language' => $language,
+                'date_courte' => $date
+            ]);
+
+            $dateGroupes[] = $date;
+
+            $groupModifications = [];
+            $badgeU = $badgeD = $badgeA = 0;
+
+            foreach ($modif['liste'] as $m) {
+                $groupModifications[] = [
+                    'groupe' => $i,
+                    'date' => $m['date'],
+                    'action' => $m['action'],
+                    'auteur' => $m['auteur'],
+                    'rule' => $m['rule'],
+                    'description' => $m['description'],
+                    'detail' => $m['detail']
+                ];
+
+                match ($m['action']) {
+                    'UPDATED' => $badgeU++,
+                    'DEACTIVATED' => $badgeD++,
+                    'ACTIVATED' => $badgeA++,
+                    default => null
+                };
+            }
+
+            $liste[] = $groupModifications;
+            $badges[] = [
+                'badgeU' => $badgeU,
+                'badgeD' => $badgeD,
+                'badgeA' => $badgeA
+            ];
+
+            $i++;
+        }
+
+        $render['date_groupe'] = $dateGroupes;
         $render['liste'] = $liste;
-        $render['badge'] = $badge;
+        $render['badge'] = $badges;
+
+        $this->logger->info('[Profil Détail] Données prêtes à être affichées', ['profil' => $profil, 'langage' => $language]);
 
         return $this->render(static::$page, $render);
     }
