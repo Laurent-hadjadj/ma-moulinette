@@ -221,17 +221,9 @@ button[id^="bouton-language-"]:hover {background-color: #006182; }
 
 /* ===== Pour les graphiques de type donuts ==== */
 .chart-container-donuts {
-  width: 50%;
+  width: 70%;
   max-width: 600px;
   margin: 20px auto;
-}
-
-/* Défini la taille du graphique */
-.graphique-langage-container {
-  display: none;
-  width: 60vw;
-  height: 50vw;
-  margin-bottom: 2rem;
 }
 
 canvas {
