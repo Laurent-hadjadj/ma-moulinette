@@ -171,7 +171,7 @@
                     : "Affiche la liste des autres langages" %}
                   {% set ariaDisabled = isDisabled ? 'true' : null %}
                   {% set tabIndex = isDisabled ? '-1' : null %}
-                  {% set icone = isDisabled ? '🚫' : '📂' %}
+                  {% set icon = isDisabled ? '🚫' : '📂' %}
 
                   <button id="bouton-language-{{ profil.langage }}"
                           class="button open-sans focus-light js-bouton-autre-profil {{ boutonClass }}"
@@ -180,11 +180,11 @@
                           aria-label="{{ ariaLabel }}"
                           {% if ariaDisabled %} aria-disabled="{{ ariaDisabled }}" {% endif %}
                           {% if tabIndex %} tabindex="{{ tabIndex }}" {% endif %}>
-                    <span class="show-for-small-only open-sans color-blanc">
-                      <span aria-hidden="true">{{ icone }}</span>Détails
+                    <span class="show-for-small-only open-sans color-blanc no-select">
+                      <span aria-hidden="true">{{ icon }}</span>Détails
                     </span>
-                    <span class="show-for-medium open-sans color-blanc">
-                      <span aria-hidden="true">{{ icone }}</span>Afficher les autres profils
+                    <span class="show-for-medium open-sans color-blanc no-select">
+                      <span aria-hidden="true">{{ icon }}</span>Afficher les autres profils
                     </span>
                   </button>
                 </div>
