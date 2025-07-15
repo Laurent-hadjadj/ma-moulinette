@@ -1,0 +1,34 @@
+<dialog class="reveal small"
+        id="modal-autre-profil"
+        data-reveal
+        aria-modal="true"
+        aria-labelledby="titre-autre-profil"
+        aria-describedby="desc-autre-profil">
+
+      <h1 class="h3 claire-hand js-titre-modal" tabindex="-1"><span aria-hidden="true">🧑‍💻</span> Profils</h1>
+      <h2 id="js-nombre-profil" class="h4 open-sans">Il y a 1 profil disponible dans SonarQube</h2>
+      {# Construction du tableau #}
+      <table class="hover">
+        <caption>Liste des autres profils disponibles.</caption>
+        <thead>
+          <tr>
+            <th scope="col" class="open-sans text-center"></th>
+            <th scope="col" class="open-sans text-center">Version</th>
+            <th scope="col" class="open-sans text-center">Règle</th>
+            <th scope="col" class="open-sans text-center">Date</th>
+          </tr>
+        </thead>
+
+        {# Injection des lignes #}
+        <tbody id="js-contenu-autre-profil"></tbody>
+      </table>
+
+      <footer class="grid-x grid-margin-x align-right margin-top-2">
+        <div class="cell shrink">
+          <button id="bouton-fermer-autre-profil" data-close
+                  class="button open-sans focus-light"
+                  type="button"
+                  aria-label="Ferme modale">❌ Fermer
+          </button>
+      </footer>
+    </dialog>
