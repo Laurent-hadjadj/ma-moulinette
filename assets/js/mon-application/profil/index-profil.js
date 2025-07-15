@@ -401,19 +401,19 @@ $('#bouton-affiche-graphique').on('click', async () => {
  * Appel la fonction d'affichage de la liste des modifications du profil.
  */
 $('.js-profil-information').on('click', (e) => {
-  /* On récupère l'id */
-  const target = e.currentTarget.id;
-  const elm = document.getElementById(target);
+  const elm = e.currentTarget;
 
-  /* On récupère le nom du langage. */
   const language = elm.dataset.language;
-  /* On récupère le nom du profil. */
-  const profil=elm.dataset.profil;
+  const profil = elm.dataset.profil;
 
+  if (!language || !profil) {
+    console.warn('Attributs manquants sur l’élément cliqué :', elm);
+    return;
+  }
   /** on créé un hash avec la méthode reduce() comme clé de salt */
   const salt = language.split('').reduce((hash, char) => {
-    return char.charCodeAt(0) + (hash << 6) + (hash << 16) - hash;
-} , 0);
+    return (char.charCodeAt(0) + (hash << 6) + (hash << 16) - hash) | 0;
+  }, 0);
 
   /** on créé un token pour encoder les paramètres */
   const param=`${salt}|${language}|${profil}`;
