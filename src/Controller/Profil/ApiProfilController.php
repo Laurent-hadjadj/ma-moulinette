@@ -266,24 +266,60 @@ class ApiProfilController extends AbstractController
         /** On instancie la classe */
         $profilesRepository = $this->em->getRepository(Profiles::class);
 
+        $this->logger->info('[Profil] Requête POST /api/quality/langage');
+
         $listeLabel = [];
         $listeDataset = [];
 
         /** On récupère la liste des langages */
-        $selectProfilesLanguage=$profilesRepository->selectProfilesLanguage();
+        $r1 = $profilesRepository->selectProfilesLanguage();
+        if ($r1['code'] !== 200) {
+            $this->logger->error('[Profil] Échec récupération des profils par langage (selectProfilesLanguage)', [
+            'erreur' => $r1['erreur'] ?? null]);
+            $message = "Une erreur s'est produite lors du chargement des données concernant les langages (Erreur 500).";
+            return new JsonResponse([
+                'code' => $r1['code'],
+                'type' => 'alert',
+                'message' => static::$reference . $message,
+                'trace' => $r1['erreur'] ?? null],
+                Response::HTTP_OK);
+        }
 
         /** On créé la liste des libellés et des données */
-        foreach ($selectProfilesLanguage['labels'] as $label) {
+        foreach ($r1['labels'] as $label) {
             array_push($listeLabel, $label['profile']);
         }
 
+        $this->logger->info('[Profil] Libellés de langages récupérés', [
+            'total' => count($listeLabel),
+            'labels' => $listeLabel
+        ]);
+
         /** On récupère le nombre de règle de chaque profil */
-        $selectProfilesRuleCount=$profilesRepository->selectProfilesRuleCount();
-        foreach ($selectProfilesRuleCount['data-set'] as $dataSet) {
+        $r2 = $profilesRepository->selectProfilesRuleCount();
+        if ($r2['code'] !== 200 || empty($r2['data-set'])) {
+            $this->logger->error('[Profil] Échec récupération du nombre de règles (selectProfilesRuleCount)', [
+            'erreur' => $r2['erreur'] ?? null]);
+            return new JsonResponse([
+                'code' => $r2['code'] ?? 500,
+                'type' => 'alert',
+                'message' => static::$reference . "Une erreur s'est produite lors de la récupération des données (Erreur 500).",
+                'trace' => $r2['erreur'] ?? null,
+            ], Response::HTTP_OK);
+        }
+        foreach ($r2['data-set'] as $dataSet) {
             array_push($listeDataset, $dataSet['total']);
         }
 
-        return new JsonResponse(['label' => $listeLabel, 'dataset' => $listeDataset], Response::HTTP_OK);
+        $this->logger->info('[Profil] Dataset des règles construit', [
+            'total' => count($listeDataset),
+            'dataset' => $listeDataset]);
+
+        return new JsonResponse([
+            'code' => '200',
+            'label' => $listeLabel,
+            'dataset' => $listeDataset],
+            Response::HTTP_OK);
     }
 
     /**
@@ -512,7 +548,6 @@ class ApiProfilController extends AbstractController
 
         /** On récupère le language */
         $langage = $data->langage;
-
         try {
                 $referential_default = 'false';
 
@@ -522,11 +557,11 @@ class ApiProfilController extends AbstractController
                 $this->logger->info('Profils non actifs récupérés', [
                     'langage' => $langage,
                     'count' => $count['request'][0]['total'] ?? 0 ]);
-
                 return new JsonResponse([
                     'code' => 200,
                     'listeProfil' => $liste['liste'],
-                    'countProfil' => $count
+                    'countProfil' => $count,
+                    //'autreVersion' => count($liste['liste']) ?? 0
                 ], Response::HTTP_OK);
         } catch (\Throwable $e) {
             $this->logger->error('Erreur lors de la récupération des profils non actifs', [
