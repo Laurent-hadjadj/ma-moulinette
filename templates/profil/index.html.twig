@@ -104,14 +104,6 @@
         </div>
       </header>
 
-      {# affiche Graphique #}
-      <div class="chart-container-donuts">
-        <canvas id="graphique-langage" aria-label="Distribution des langages">
-          Graphique non disponible sans JavaScript ou données manquantes.
-        </canvas>
-        <div class="chart-empty-message">Aucune donnée disponible pour ce graphique.</div>
-      </div>
-
       <p class="open-sans">ℹ️ Le référentiel des règles de développement contient
           <strong><span class="js-total">{{ total|format_number(locale='fr') }}</span></strong>
           règles.
@@ -197,6 +189,9 @@
 
     {# Fenêtre modale pour afficher les autres référentiels #}
     {{ include('/profil/_modal_autres_versions.html.twig') }}
+
+    {# Fenêtre modale pour afficher le graphique #}
+    {{ include('/profil/_modal_affiche_graphique.html.twig') }}
 
     {# Chargement de la section footer #}
     {{ include('footer.html.twig') }}

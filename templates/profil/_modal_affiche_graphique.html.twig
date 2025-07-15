@@ -1,0 +1,27 @@
+<dialog class="reveal small"
+        id="modal-affiche-graphique"
+        data-reveal
+        aria-modal="true"
+        aria-labelledby="titre-affiche-graphique"
+        aria-describedby="desc-affiche-graphique">
+
+      <h1 id="titre-affiche-graphique" class="h3 claire-hand" tabindex="-1"><span aria-hidden="true">🧑‍💻</span>Profils</h1>
+      <h2 id="desc-affiche-graphique" class="h4 open-sans">Répartition du nombre de règles par langage</h2>
+
+      {# affiche Graphique #}
+      <div class="chart-container-donuts">
+        <canvas id="graphique-langage" aria-label="Distribution des langages">
+          Graphique non disponible sans JavaScript ou données manquantes.
+        </canvas>
+        <div class="chart-empty-message">Aucune donnée disponible pour ce graphique.</div>
+      </div>
+
+      <footer class="grid-x grid-margin-x align-right margin-top-2">
+        <div class="cell shrink">
+          <button id="bouton-fermer-affiche-graphique" data-close
+                  class="button open-sans focus-light"
+                  type="button"
+                  aria-label="Ferme modale">❌ Fermer
+          </button>
+      </footer>
+    </dialog>
