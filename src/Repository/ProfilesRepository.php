@@ -105,15 +105,28 @@ class ProfilesRepository extends ServiceEntityRepository
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function selectProfiles($referential_default = 'true' ,$langage = null): array
+  public function selectProfiles($referential_default = 'true', $langage = null): array
   {
-    $sql = "SELECT name as profil,
+    $sql1 = "SELECT name as profil,
                 language_name as langage,
                 active_rule_count as rule,
                 rules_updated_at as date,
                 referential_default as actif
             FROM ma_moulinette.profiles
             WHERE referential_default = :referential_default";
+    $sql = "SELECT name AS profil,
+                language_name AS langage,
+                active_rule_count AS rule,
+                rules_updated_at AS date,
+                referential_default AS actif,
+              (
+                SELECT COUNT(*)
+                FROM ma_moulinette.profiles p2
+                WHERE p2.language_name = p1.language_name
+              ) AS nb_profils_par_langage
+            FROM ma_moulinette.profiles p1
+            WHERE referential_default = :referential_default";
+            //ORDER BY langage, name;
     try {
           if ($langage !== null ){
             $sql .= ' AND language_name LIKE :langage ';
@@ -121,7 +134,8 @@ class ProfilesRepository extends ServiceEntityRepository
             $stmt->bindValue('referential_default', $referential_default);
             $stmt->bindValue('langage', $langage);
           } else {
-            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, ' ', $sql));
+            //On sélectionne les profils actifs
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, ' ', $sql));
             $stmt->bindValue('referential_default', $referential_default);
           }
           $liste = $stmt->executeQuery()->fetchAllAssociative();

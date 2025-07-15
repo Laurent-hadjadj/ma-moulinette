@@ -195,6 +195,35 @@ button[id^="bouton-language-"]:hover {background-color: #006182; }
 .profil-information-svg:hover,
 .profil-information-fixe-svg:hover { fill: #c46e27; }
 
+/* ombre sur les cards */
+.box-langage{ box-shadow: 2px 2px 10px rgb(0 0 0 / 25%); }
+
+/* Affiche le nombre de profil dans une bulle */
+.bulle-nombre-profil {
+  border-radius: 50%;
+  color: #fff;
+  font-size: 0.8rem;
+  padding-top: 0.2rem;
+  padding-left: 0.4rem;
+  padding-right: 0.4rem;
+  padding-bottom: 0.2rem;
+  background-color: #00445b;
+}
+
+/* On desactive le bouton si on a qu'un profil */
+.disabled-bouton {
+  pointer-events: none;
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* ===== Pour les graphiques de type donuts ==== */
+.chart-container-donuts {
+  width: 50%;
+  max-width: 600px;
+  margin: 20px auto;
+}
+
 /* Défini la taille du graphique */
 .graphique-langage-container {
   display: none;
@@ -203,5 +232,31 @@ button[id^="bouton-language-"]:hover {background-color: #006182; }
   margin-bottom: 2rem;
 }
 
-/* ombre sur les cards */
-.box-langage{ box-shadow: 2px 2px 10px rgb(0 0 0 / 25%); }
+canvas {
+  width: 100% !important;
+  height: auto !important;
+  display: block;
+}
+
+.chart-empty-message {
+  display: none;
+  align-items: center;
+  color: #00445b;
+  text-align: center;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 2rem 1rem;
+  background-color: #f9f9f9;
+  border: 1px dashed #ccc;
+  border-radius: 0.375rem;
+  margin-top: 3rem;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.03);
+  transition: all 0.3s ease-in-out;
+}
+
+.chart-empty-message::before {
+  content: "📉 ";
+  font-size: 1.5rem;
+  display: block;
+}
