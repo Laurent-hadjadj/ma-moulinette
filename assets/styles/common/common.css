@@ -605,7 +605,7 @@ body {
   position: fixed;
   top: 6%;
   left: 50%;
-  max-width: 70%;
+  max-width: 80%;
   /* Ajustement pour un centrage parfait */
   transform: translateX(-50%);
   z-index: 2000;
