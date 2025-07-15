@@ -153,8 +153,15 @@
 
 button[id^="bouton-language-"]:hover {background-color: #006182; }
 
+
 #bouton-fermer-autre-profil {
+  min-width: 9rem;
+  font-size: 0.95rem;
+  border-radius: 0.375rem;
+  margin: 0 0.25rem 0.5rem 0.25rem;
+  padding: 0.8rem 0.6rem;
   color: #fff;
+  text-align: center;
   background-color: #00445b;
 }
 /* hover des boutons */
