@@ -27,6 +27,7 @@ use App\Entity\Properties;
 use App\Entity\Profiles;
 use App\Entity\ProfilesHistorique;
 use App\Service\Client;
+use App\Service\UrlBuilderService;
 
 /**
  * [Description ApiProfilController]
@@ -40,6 +41,8 @@ class ApiProfilController extends AbstractController
     public static $page = "profil/details.html.twig";
     public static $reference= '<strong>[Profil]</strong> ';
     public static $erreur400 = "La requête est incorrecte (Erreur 400).";
+    public static $erreur403 = "Vous devez avoir le rôle GESTIONNAIRE pour réaliser cette action (Erreur 403).";
+    public static $erreur404 = "Vous devez au moins avoir un profil déclaré sur le serveur SonarQube (Erreur 404).";
 
     private $logoEntreprise;
     private $marqueEntrepriseShort;
@@ -60,7 +63,8 @@ class ApiProfilController extends AbstractController
         private EntityManagerInterface $em,
         private Client $client,
         private ParameterBagInterface $params,
-        private LoggerInterface $logger
+        private LoggerInterface $logger,
+        private UrlBuilderService $urlBuilder,
     ) {
         $this->params = $params;
         $this->logoEntreprise = $params->get('logo.entreprise');
@@ -110,58 +114,139 @@ class ApiProfilController extends AbstractController
         $profilesRepository = $this->em->getRepository(Profiles::class);
         $propertiesRepository = $this->em->getRepository(Properties::class);
 
+        $this->logger->info('[Profil] Appel POST /api/quality/profiles', [
+            'utilisateur' => $this->getUser()?->getUserIdentifier(),
+            'environnement' => $this->environnement
+        ]);
+
         /** si on est pas GESTIONNAIRE on ne fait rien. */
         if (!$security->isGranted('ROLE_GESTIONNAIRE')){
-            return new JsonResponse(['code' => 403], Response::HTTP_OK);
+            $this->logger->warning('[Profil] Accès refusé - rôle GESTIONNAIRE requis');
+            return new JsonResponse([
+                'code' => 403,
+                'alert' => 'warning',
+                'message' => static::$reference . static::$erreur403],
+                Response::HTTP_OK);
         }
 
-        /** On construit l'URL */
-        $baseUrl = $this->getParameter(static::$sonarUrl);
+        /** Sécurisation de l'URL */
+        $url = $this->urlBuilder->build(
+            $this->getParameter(static::$sonarUrl),
+            '/api/qualityprofiles/search'
+        );
+
         /** On définit l'URL et on ajoute le nom des profils SonarQube*/
-        $queryParams = [];
-        $result = $this->client->httpSonarQube("$baseUrl/api/qualityprofiles/search?".http_build_query($queryParams));
-        if (in_array($result['code'] ?? -1, [503, 504])) {
-            $titre = static::$reference;
-            $message = $result['erreur'];
-            $this->addFlash('notice', ['type'=>'alert', 'titre'=>$titre, 'message'=>$message]);
-            //return 0;
+        $this->logger->info('[Profil] Appel à SonarQube pour récupérer les profils qualité',
+        [ 'url' => $url]);
+
+        $result = $this->client->httpSonarQube($url);
+        if (in_array($result['code'] ?? -1, [400, 401, 403, 404, 500, 503, 504])) {
+            $this->logger->error('[Profil] Erreur retour API SonarQube', [
+            'code' => $result['code'],
+            'erreur' => $result['erreur'] ?? null,
+            ]);
+
+            return new JsonResponse([
+                'code' => $result['code'],
+                'alert' => 'alert',
+                'message' => static::$reference . $result['erreur'] ?? 'Erreur SonarQube'],
+                Response::HTTP_OK);
         }
 
         /** On Vérifie qu'il existe au moins un profil */
         if (empty($result['json']['profiles'])) {
-            return new JsonResponse(['code' => 404], Response::HTTP_OK);
+            $this->logger->warning('[Profil] Aucun profil qualité trouvé sur SonarQube');
+            return new JsonResponse([
+                'code' => 404,
+                'type' => 'warning',
+                'message' => static::$reference . static::$erreur404],
+                Response::HTTP_OK);
         }
 
         /*** Super on a récupéré la liste des profils par langage */
         $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
+        $profilsCount = count($result['json']['profiles']);
+
+        $this->logger->info('[Profil] Nombre de profils qualité SonarQube récupérés', [
+            'total' => $profilsCount,
+            'date' => $date->format('Y-m-d H:i')]);
 
         /** On supprime les données de la table avant d'importer les données;*/
-        $r1=$profilesRepository->deleteProfiles();
-        if ($r1['code']===500) {
-            return new JsonResponse(['code' => 500, 'erreur'=>$r1['erreur']], Response::HTTP_OK);
+        $r1 = $profilesRepository->deleteProfiles();
+        if ($r1['code'] !== 200) {
+            $this->logger->error('[Profil] Échec suppression des anciens profils (deleteProfiles)', [
+            'erreur' => $r1['erreur'] ?? null]);
+            $message = "Une erreur s'est produite lors de la suppression des données (Erreur 500).";
+            return new JsonResponse([
+                'code' => $r1['code'],
+                'type' => 'alert',
+                'message' => static::$reference . $message,
+                'trace' => $r1['erreur'] ?? null],
+                Response::HTTP_OK);
         }
 
         /** On insert les profils dans la table profiles. */
-        $map=[ 'profiles' => $result['json']['profiles'], 'date_enregistrement' => $date ];
-        $r2=$profilesRepository->insertProfiles($map);
-        if ($r2['code']===500) {
-            return new JsonResponse(['code' => 500, 'erreur'=>$r2['erreur']], Response::HTTP_OK);
+        $map = [
+            'profiles' => $result['json']['profiles'],
+            'date_enregistrement' => $date
+        ];
+
+        $r2 = $profilesRepository->insertProfiles($map);
+        if ($r2['code'] !== 200) {
+            $this->logger->error('[Profil] Échec insertion des profils (insertProfiles)', [
+            'erreur' => $r2['erreur'] ?? null]);
+
+            $message = "Une erreur s'est produite lors de l'enregistrement des profils (Erreur 500).";
+            return new JsonResponse([
+                'code' => $r2['code'],
+                'type' => 'alert',
+                'message' => static::$reference . $message,
+                'trace' => $r2['erreur'] ?? null],
+                Response::HTTP_OK);
         }
 
         /** On récupère la nouvelle liste des profils */
-        $r3=$profilesRepository->selectProfiles();
-        if ($r3['code']===500) {
-            return new JsonResponse(['code' => 500, 'erreur'=>$r3['erreur']], Response::HTTP_OK);
+        $r3 = $profilesRepository->selectProfiles();
+        if ($r3['code'] !== 200) {
+            $this->logger->error('[Profil] Échec récupération des profils après insertion (selectProfiles)', ['erreur' => $r3['erreur'] ?? null]);
+
+            $message = "Une erreur s'est produite lors de la recherche des informations (Erreur 500).";
+            return new JsonResponse([
+                'code' => $r3['code'],
+                'type' => 'alert',
+                'message' => static::$reference . $message,
+                'trace' => $r3['erreur'] ?? null],
+                Response::HTTP_OK);
         }
 
         /** On met à jour la table propriétés */
-        $map=['profil_bd'=>$r2['nombre'], 'profil_sonar'=>$r2['nombre'], 'date_modification_profil' => $date];
-        $r4=$propertiesRepository->updatePropertiesProfiles($map);
-        if ($r4['code']===500) {
-            return new JsonResponse(['code' => 500, 'erreur'=>$r4['erreur']], Response::HTTP_OK);
+        $map = [
+                'profil_bd' => $r2['nombre'],
+                'profil_sonar'=>$r2['nombre'],
+                'date_modification_profil' => $date
+        ];
+
+        $r4 = $propertiesRepository->updatePropertiesProfiles($map);
+        if ($r4['code'] !== 200) {
+            $this->logger->error('[Profil] Échec mise à jour des propriétés (updatePropertiesProfiles)', [
+            'erreur' => $r4['erreur'] ?? null]);
+            $message = "Une erreur s'est produite lors de la mise à jour des données (Erreur 500).";
+            return new JsonResponse([
+                'code' => $r4['code'],
+                'type' => 'alert',
+                'message' => static::$reference . $message,
+                'trace' => $r4['erreur'] ?? null],
+                Response::HTTP_OK);
         }
 
-        return new JsonResponse(['code' => 200, 'liste_profil' => $r3['liste']], Response::HTTP_OK);
+        $this->logger->info('[Profil] Mise à jour des profils qualité réussie', [
+        'total' => count($r3['liste']),
+        'date' => $date->format('Y-m-d H:i')]);
+
+        return new JsonResponse([
+            'code' => 200,
+            'liste_profil' => $r3['liste']],
+            Response::HTTP_OK);
     }
 
     /**
