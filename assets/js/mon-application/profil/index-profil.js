@@ -29,8 +29,11 @@ import '../../auth/details.js';
 /** On importe les paramètres serveur */
 import {serveur} from '../../common/properties.js';
 
+/** La gestion des messagesJS */
+import { showMessage,  hideMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
+
 /** On importe les constantes */
-import { http_200, http_400, http_403, http_404, contentType, paletteCouleur, matrice, dateOptions, dateOptionsShort } from '../../common/constante.js';
+import { http_200, http_400, http_401, http_403, http_404, http_500, contentType, paletteCouleur, matrice, dateOptions, dateOptionsShort } from '../../common/constante.js';
 
 import {encode} from '../../common/encode.js';
 import {Chart, registerables} from 'chart.js';
@@ -150,61 +153,84 @@ const messageClose=` aria-label="Fermer la fenêtre" type="button" data-close><s
   $('#js-container-langage').html(str_container+str_total);
 };
 
-const profilNonActif=async function(langage){
-  /** Construction de la requête */
-  const dataRefresh = {langage: langage};
+/**
+  * [Description for autreProfil]
+  *
+  * @param mixed langage
+  *
+  * @return [type]
+  *
+  * Created at: 15/07/2025 09:04:03 (Europe/Paris)
+  * @author     Laurent HADJADJ <laurent_h@me.com>
+  * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+  */
+const autreProfil = async function(langage) {
+  const dataRefresh = { langage };
   const optionsRefresh = {
-        url: `${serveur()}/api/quality/off`, type: 'POST',
-        dataType: 'json', data: JSON.stringify(dataRefresh), contentType };
-  /** On appel l'API */
+    url: `${serveur()}/api/quality/off`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(dataRefresh),
+    contentType
+  };
+
   const t = await $.ajax(optionsRefresh);
 
-  let str = '', strNombreProfil='';
-  $('#contenu-fenetre-modal').html('');
-  $('#js-nombre-profil').html('');
+  // 📌 Vérification des erreurs
+  const errorCodes = [http_400, http_401, http_403, http_404, http_500];
+  if (errorCodes.includes(t.code)){
+      const hasTrace = !!t.trace;
+      const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+      showMessage(t.type, t.message, trace);
+      return;
+    }
 
   const profils = t.listeProfil;
-  const nombreProfils = t.countProfil;
+  const nombreProfils = t.countProfil?.request[0]?.total || 0;
 
-  /** Mise à jour du titre de la fenêtre modale */
-  $('.js-titre-modal').html(langage);
+  // Mise à jour des titres de la modale
+  const titre = document.querySelector('.js-titre-modal');
+  const sousTitre = document.getElementById('js-nombre-profil');
+  const tableBody = document.getElementById('js-contenu-autre-profil');
 
-  /** Mise à jour du nombre de profil */
-  strNombreProfil = `Il y a ${ nombreProfils.request[0].total } profil disponible dans SonarQube`;
-  if (nombreProfils.request[0].total > 1){
-    strNombreProfil= `Il y a ${ nombreProfils.request[0].total } profils disponibles dans SonarQube`;
-  }
-  $('#js-nombre-profil').html(strNombreProfil);
+  titre.innerHTML = `<span aria-hidden="true">🧑‍💻</span>Profils ${langage}`;
+  sousTitre.innerHTML = nombreProfils === 1
+    ? `<span aria-hidden="true">📋</span>Il y a 1 profil disponible dans SonarQube`
+    : `<span aria-hidden="true">📋</span>Il y a ${nombreProfils} profils disponibles dans SonarQube`;
 
-  /** Boucle sur le profil pour construire le tableau */
-  profils.forEach(profil =>
-    {
-      str +=
-      `<tr class="open-sans">
+  // Construction du tableau
+  let str = '';
+  profils.forEach(profil => {
+    str += `
+      <tr class="open-sans">
         <td></td>
-        <td class="text-left">${ profil.profil }</td>
-        <td class="text-center">${ new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(profil.rule) }</td>
+        <td class="text-left">${profil.profil}</td>
+        <td class="text-center">${new Intl.NumberFormat('fr-FR').format(profil.rule)}</td>
         <td class="text-center">
-          <span class="show-for-small-only"> ${ new Intl.DateTimeFormat('default', dateOptionsShort).format(new Date(profil.date)) }</span>
-          <span class="show-for-medium">${ new Intl.DateTimeFormat('default', dateOptions).format(new Date(profil.date)) }</span>
+          <span class="show-for-small-only">${new Intl.DateTimeFormat('fr-FR', dateOptionsShort).format(new Date(profil.date))}</span>
+          <span class="show-for-medium">${new Intl.DateTimeFormat('fr-FR', dateOptions).format(new Date(profil.date))}</span>
         </td>
       </tr>`;
-    }
-  )
-  /** Injection des lignes dans le tableau */
-  $('#js-contenu-fenetre-modal').html(str);
-  /** Ouverture de la fenêtre modale */
-  $('#fenetre-modal').foundation('open');
-}
+  });
 
-$('#js-container-langage').on('click', '.js-bouton-autre-profil', (e)=>{
+  tableBody.innerHTML = str;
+
+  // Ouverture de la modale Foundation
+  $('#modal-autre-profil').foundation('open');
+};
+
+$('#js-container-langage').on('click', '.js-bouton-autre-profil', (e) => {
   /* On récupère l'id */
-  const target = e.currentTarget.id;
-  const elm = document.getElementById(target);
-  /* On récupère le nom du langage. */
-  const language=elm.dataset.language;
-  // Méthode qui appel l'api et qui envoie le tableau qui ce trouveras dans la fenêtre modal
-  profilNonActif(language);
+  const elm = e.currentTarget;
+  const language = elm.dataset.language;
+
+  // Appel de l'API et mise à jour de la modale
+  autreProfil(language);
+
+  // Accessibilité : focus automatique sur le titre de la modale
+  setTimeout(() => {
+    document.getElementById('titre-modal')?.focus();
+  }, 100); // Petit délai pour laisser le DOM s'afficher
 });
 
 /**
