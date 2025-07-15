@@ -367,17 +367,19 @@ $('#bouton-affiche-graphique').on('click', async () => {
       return;
   }
 
-const canvasId = 'graphique-langage';
-const canvas = document.getElementById(canvasId);
-const emptyMessage = canvas?.nextElementSibling;
-  const hasNoData = !t.label?.length || !t.dataset?.length;
-  console.log('nodata ', hasNoData);
-  // Cas sans données : on affiche le message HTML
-  if (hasNoData) {
-    if (canvas) canvas.style.display = 'none';
-    if (emptyMessage) emptyMessage.style.display = 'flex';
-        return;
-  }
+  $('#modal-affiche-graphique').foundation('open');
+
+  const canvasId = 'graphique-langage';
+  const canvas = document.getElementById(canvasId);
+  const emptyMessage = canvas?.nextElementSibling;
+    const hasNoData = !t.label?.length || !t.dataset?.length;
+
+    // Cas sans données : on affiche le message HTML
+    if (hasNoData) {
+      if (canvas) canvas.style.display = 'none';
+      if (emptyMessage) emptyMessage.style.display = 'flex';
+          return;
+    }
 
   // Cas avec données : on cache le message HTML
   if (canvas) canvas.style.display = 'block';
