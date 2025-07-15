@@ -118,7 +118,7 @@ class ProfilController extends AbstractController
 
                 $this->addFlash('notice', [
                     'type' => 'warning',
-                    'titre'=> static::$reference,
+                    'titre' => static::$reference,
                     'message' => "La liste des profils est vide. Vous devez la mettre à jour ! (Erreur 404)"]);
                 } else {
                     $this->logger->info('[Profil] Profils récupérés avec succès', [
@@ -141,6 +141,7 @@ class ProfilController extends AbstractController
             $render['liste'] = [];
             return $this->render('profil/index.html.twig', $render);
         }
+
         // Tou vas bien.
         $render = static::genericRender();
         $render['liste'] = $r['liste'];
