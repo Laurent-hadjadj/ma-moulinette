@@ -47,51 +47,22 @@ class ApiCollecteController extends AbstractController
     public static $erreur400 = "La requête est incorrecte (Erreur 400).";
     public static $erreur403 = "Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).";
 
-    private $security;
-    private $batchCollecteMesure;
-    private $batchCollecteNote;
-    private $batchCollecteOwasp;
-    private $batchCollecteHotspot;
-    private $batchCollecteAnomalie;
-    private $batchCollecteAnomalieDetail;
-    private $batchCollecteHotspotOwasp;
-    private $batchCollecteHotspotDetail;
-    private $batchCollecteNoSonar;
-    private $batchCollecteTodo;
-    private $batchCollecteActuator;
-    private $batchCollecteInformation;
-    private $batchCollecteLogger;
-
     public function __construct(
-        BatchCollecteInformationProjetController $batchCollecteInformation,
-        BatchCollecteMesureController $batchCollecteMesure,
-        BatchCollecteNoteController $batchCollecteNote,
-        BatchCollecteOwaspController $batchCollecteOwasp,
-        BatchCollecteHotspotController $batchCollecteHotspot,
-        BatchCollecteAnomalieController $batchCollecteAnomalie,
-        BatchCollecteAnomalieDetailController $batchCollecteAnomalieDetail,
-        BatchCollecteHotspotOwaspController $batchCollecteHotspotOwasp,
-        BatchCollecteHotspotDetailController $batchCollecteHotspotDetail,
-        BatchCollecteNoSonarController $batchCollecteNoSonar,
-        BatchCollecteTodoController $batchCollecteTodo,
-        BatchCollecteActuatorController $batchCollecteActuator,
-        BatchCollecteLoggerController $batchCollecteLogger,
-        Security $security,
+        private BatchCollecteInformationProjetController $batchCollecteInformation,
+        private BatchCollecteMesureController $batchCollecteMesure,
+        private BatchCollecteNoteController $batchCollecteNote,
+        private BatchCollecteOwaspController $batchCollecteOwasp,
+        private BatchCollecteHotspotController $batchCollecteHotspot,
+        private BatchCollecteAnomalieController $batchCollecteAnomalie,
+        private BatchCollecteAnomalieDetailController $batchCollecteAnomalieDetail,
+        private BatchCollecteHotspotOwaspController $batchCollecteHotspotOwasp,
+        private BatchCollecteHotspotDetailController $batchCollecteHotspotDetail,
+        private BatchCollecteNoSonarController $batchCollecteNoSonar,
+        private BatchCollecteTodoController $batchCollecteTodo,
+        private BatchCollecteActuatorController $batchCollecteActuator,
+        private BatchCollecteLoggerController $batchCollecteLogger,
+        private Security $security,
     ) {
-        $this->batchCollecteInformation = $batchCollecteInformation;
-        $this->batchCollecteMesure = $batchCollecteMesure;
-        $this->batchCollecteNote = $batchCollecteNote;
-        $this->batchCollecteOwasp = $batchCollecteOwasp;
-        $this->batchCollecteHotspot = $batchCollecteHotspot;
-        $this->batchCollecteAnomalie = $batchCollecteAnomalie;
-        $this->batchCollecteAnomalieDetail = $batchCollecteAnomalieDetail;
-        $this->batchCollecteHotspotOwasp = $batchCollecteHotspotOwasp;
-        $this->batchCollecteHotspotDetail = $batchCollecteHotspotDetail;
-        $this->batchCollecteNoSonar = $batchCollecteNoSonar;
-        $this->batchCollecteTodo = $batchCollecteTodo;
-        $this->batchCollecteActuator = $batchCollecteActuator;
-        $this->batchCollecteLogger = $batchCollecteLogger;
-        $this->security = $security;
     }
 
     /**
