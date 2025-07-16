@@ -1,5 +1,6 @@
 {% set title = 'Profils qualités' %}
-{% set description = 'Ma Moulinette - détails des changements.' %}
+{% set description = 'Ma Moulinette - Liste des modifications.' %}
+{% set type_content = "Application Ma-Moulinette, Liste des modifications sur les profils qualités." %}
 {% set bottom="footer-fixed" %}
 <!DOCTYPE html>
 <!--
@@ -22,7 +23,9 @@
     {% block importmap %}{{ importmap('profil-details') }}{% endblock %}
   </head>
 
-  <body>
+  <body dir="ltr">
+    {# no-script #}
+    {{ include('no-script.html.twig') }}
     {# Chargement de la section header #}
     {{ include('header.html.twig') }}
 
@@ -36,18 +39,29 @@
       </nav>
     </header>
 
-    {# Message d'information du contrôleur #}
-    <div class="grid-container grid-x" role="alert" aria-label="messages d'information">
+    {# Gestion des messages flash & JS #}
+    <header>
       {% for message in app.flashes('notice') %}
-        <div class="callout alert-callout-border js-message-flash {{message.type}} role="alert" cell" data-closable>
-          <p class="open-sans text-justify callout-message">
-            <strong>{{message.titre}}</strong> {{ message.message }}.</p>
-          <button class="close-button {{message.type}}" aria-label="Dismiss alert" type="button" data-close>
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
+      <div class="callout {{ message.type }} alert-callout-border callout-ombre js-flash-box" role="alert" data-closable>
+        <p class="open-sans text-justify callout-message">
+            <strong>{{ message.titre }}</strong> {{ message.message }}
+        </p>
+        <button class="close-button {{message.type}}"
+                type="button"
+                aria-label="Dismiss alert" data-close><span aria-hidden="true">&times;</span>
+        </button>
+      </div>
       {% endfor %}
-    </div>
+
+      {# Message d'information JS#}
+      <div id="message-box" class="callout alert-callout-border callout-ombre hide" role="alert" data-closable>
+          <button id="message-button-close" class="close-button" aria-label="Close alert" type="button" data-close>
+          <span aria-hidden="true">&times;</span>
+          </button>
+          <p id="message-text"></p>
+      </div>
+    </header>
+
 
     <div class="grid-container">
       <h1 class="h3 claire-hand">Détails des changements pour le profil.</h1>
