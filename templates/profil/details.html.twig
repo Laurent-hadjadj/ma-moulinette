@@ -62,30 +62,29 @@
       </div>
     </header>
 
+    <main class="grid-container" role="main">
+      <h1 class="h3 claire-hand" aria-label="Page Profil/Détails">
+        <span aria-hidden="true">🧾</span>Profil - Détails
+      </h1>
+      <h2 class="h4 claire-hand" aria-label="Liste des modifications et changements du profil.">
+        <span aria-hidden="true">📈</span>Liste des modifications du profil {{langage|upper}}
+      </h2>
 
-    <div class="grid-container">
-      <h1 class="h3 claire-hand">Détails des changements pour le profil.</h1>
+      <h3 class="h4 profil-titre">Informations générales</h3>
+      {# Message d'alerte sur le nombre de changements récupéré #}
+      <div class="callout alert-callout-border primary callout-ombre">
+        <strong>Attention</strong> - Seul les 500 premiers changements sont affichés.
+      </div>
+
       {% if total_rule|length > 1 %}
         {% set s = "s" %}
       {% else %}
         {% set s = "" %}
       {% endif %}
-      <h2 class="h4 profil-titre">
-        <span id="affiche-titre">Langage</span>
-        <span class="color-noir">{{langage|upper}}, </span>
+      <p class="profil-titre">
         <span id="affiche-total-profil" class="stat">{{total_rule|length}}</span>
-        changement{{s}} trouvé{{s}}.
-      </h2>
-
-      <br>
-      <h3 class="h4 profil-titre">Informations générales</h3>
-      {# Message d'alerte sur le nombre de changements récupéré #}
-      <div class="callout alert-callout-border primary">
-        <strong>Attention</strong> - Seul les 500 premiers changements sont affichés.
-        <button class="close-button primary" aria-label="Dismiss alert"
-                type="button" data-close><span aria-hidden="true">&times;</span>
-        </button>
-      </div>
+        changement{{s}} trouvé{{s}} pour le profil.
+      </p>
 
       {# Version initiale #}
       <div class="grid-x">
@@ -96,7 +95,7 @@
         <div class="open-sans color-noir small-6 cell">
           {% if premier is not empty %}
           <span class="show-for-small-only profil-first-date float-right">{{premier["date"]|date("d/m/y H:m", "Europe/Paris")}}</span>
-          <span class="show-for-medium profil-first-date float-right">{{premier["date"]|date("d/m/y H:m:s", "Europe/Paris")}}</span>
+          <span class="show-for-medium profil-first-date float-right">{{premier["date"]|date("d/m/y H:i:s", "Europe/Paris")}}</span>
           {% endif %}
         </div>
       </div>
@@ -193,7 +192,7 @@
           <ul class="vertical menu accordion-menu" data-accordion-menu>
             <li class="liste-changement-menu">
               <a class="claire-hand liste-changement-titre">
-                <span>{{date_groupe[i]|date("d/m/y H:m", "Europe/Paris")}}</span>
+                <span>{{date_groupe[i]|date("d/m/y H:i", "Europe/Paris")}}</span>
                 <span class="bulle activated bulle-marge">{{a|raw}}{{badge[i].badgeA}}{{aa|raw}}</span>
                 <span class="bulle updated">{{b|raw}}{{badge[i].badgeU}}{{bb|raw}}</span>
                 <span class="bulle deactivated">{{c|raw}}{{badge[i].badgeD}}{{cc|raw}}</span>
@@ -249,7 +248,7 @@
           {% set i = i + 1 %}
         {% endfor %}
       {% endif %}
-    </div>
+    </main>
 
     <br><br>
     {# Chargement de la section footer #}
