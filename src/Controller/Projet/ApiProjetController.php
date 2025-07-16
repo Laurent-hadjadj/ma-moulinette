@@ -109,22 +109,58 @@ class ApiProjetController extends AbstractController
     #[Route('/api/favori/check', name: 'favori_check', methods: ['POST'])]
     public function favoriCheck(Security $security, Request $request): JsonResponse
     {
-        /** On décode le body */
-        $data = json_decode($request->getContent());
+        $user = $security->getUser();
 
-        /** On teste si la clé est valide */
-        if ($data === null || !property_exists($data, 'maven_key') ) {
-            return new JsonResponse(
-                ['data' => $data,'code' => 400, 'type' => 'alert',
-                'message'=> static::$reference . static::$erreur400],
-                Response::HTTP_OK);
+        if (!$user) {
+            $this->logger->error('[Favori Check] Aucun utilisateur connecté.');
+            return new JsonResponse([
+                'code' => 401,
+                'type' => 'alert',
+                'message' => static::$reference . 'Utilisateur non authentifié (Erreur 401).'
+            ], Response::HTTP_OK);
         }
 
-        /** On récupère l'objet User du contexte de sécurité */
-        $preference = $security->getUser()->getPreference();
+        $username = $user->getUserIdentifier();
+        $rawContent = $request->getContent();
+        $data = json_decode($rawContent);
+
+        if ($data === null || !property_exists($data, 'maven_key') || !is_string($data->maven_key)) {
+            $this->logger->warning('[Favori Check] Requête JSON invalide ou clé maven_key absente.', [
+                'utilisateur' => $username,
+                'payload' => $rawContent
+            ]);
+            return new JsonResponse([
+                'code' => 400,
+                'type' => 'alert',
+                'message'=> static::$reference . static::$erreur400,
+            ], Response::HTTP_OK);
+        }
+
+        $preference = $user->getPreference();
+        if (!isset($preference['favori_projet']) || !is_array($preference['favori_projet'])) {
+            $this->logger->error('[Favori Check] Clé "favori_projet" manquante ou invalide dans les préférences.', [
+                'utilisateur' => $username,
+                'preferences' => $preference
+            ]);
+            return new JsonResponse([
+                'code' => 500,
+                'type' => 'alert',
+                'message' => static::$reference . "Impossible d'accéder aux favoris de l'utilisateur (Erreur 500)."
+            ], Response::HTTP_OK);
+        }
 
         $favori = in_array($data->maven_key, $preference['favori_projet']);
-        return new JsonResponse(['code' => 200, 'favori' => $favori], Response::HTTP_OK);
+
+        $this->logger->info('[Favori Check] Favori vérifié avec succès.', [
+            'utilisateur' => $username,
+            'maven_key' => $data->maven_key,
+            'est_favori' => $favori
+        ]);
+
+        return new JsonResponse([
+            'code' => 200,
+            'favori' => $favori
+        ], Response::HTTP_OK);
     }
 
     /**
