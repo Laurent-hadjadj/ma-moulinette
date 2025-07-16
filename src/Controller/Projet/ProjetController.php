@@ -31,13 +31,7 @@ class ProjetController extends AbstractController
     public static $page= "projet/mes-projets.html.twig";
     public static $reference = "<strong>[Mes-Projets]</strong>";
     public static $erreur404 = "Tu dois être rattaché à une équipe (Erreur 404).";
-    public static $erreur406 = "Je n'ai pas trouvé de projets pour ton équipe. ".
-    "Vérifiez le nom du tag utilisé dans SonarQube (Erreur 406).";
-
-
-    private $mesProjets;
-    private $security;
-    private $em;
+    public static $erreur406 = "Je n'ai pas trouvé de projets pour ton équipe. Vérifie le nom du tag utilisé dans SonarQube (Erreur 406).";
 
     private $logoEntreprise;
     private $marqueEntrepriseShort;
@@ -47,15 +41,12 @@ class ProjetController extends AbstractController
     private $dateCopyright;
 
     public function __construct(
-        MesProjets $mesProjets,
-        Security $security,
-        EntityManagerInterface $em,
+        private MesProjets $mesProjets,
+        private Security $security,
+        private EntityManagerInterface $em,
         private ParameterBagInterface $params,
     ) {
-        $this->mesProjets = $mesProjets;
-        $this->security = $security;
         $this->params = $params;
-        $this->em = $em;
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
         $this->marqueEntrepriseLong = $params->get('marque.entreprise.long');
