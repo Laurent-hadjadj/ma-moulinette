@@ -36,7 +36,7 @@ import {serveur} from '../../common/properties.js';
 import { showMessage,  hideMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
 
 /** On importe les constantes */
-import { http_200, http_400, http_401, http_403, http_404, http_406, http_500, deuxMille, cinqMille, contentType, paletteCouleur, matrice, dateOptions } from '../../common/constante.js';
+import { http_200, http_400, http_401, http_403, http_404, http_406, http_500, http_503, http_504, deuxMille, cinqMille, contentType, paletteCouleur, matrice, dateOptions } from '../../common/constante.js';
 
 /** On importe l'encoder */
 import {encode} from '../../common/encode.js';
@@ -235,7 +235,9 @@ const selectProjet = async function() {
   const t = await $.ajax(options);
 // 📌 Vérification des erreurs
   if (t.code !== http_200){
-    showMessage(t.type, typeMessage(t.message));
+    const hasTrace = !!t.trace;
+    const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+    showMessage(t.type, t.message, trace);
     sessionStorage.setItem('liste des projets autorisés', "L'utilisateur n'est pas rattaché à une équipe ou à un projet.");
     return;
   }
@@ -285,9 +287,11 @@ const projetInformation = async function(mavenKey) {
   try {
     const t = await $.ajax(options);
     // 📌 Vérification des erreurs
-    const errorCodes = [http_400, http_401, http_403, http_404, http_500];
+    const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
     if (errorCodes.includes(t.code)){
-        showMessage(t.type, typeMessage(t.message));
+        const hasTrace = !!t.trace;
+        const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+        showMessage(t.type, t.message, trace);
         sessionStorage.setItem('collecte', 'Erreur phase 01');
         return;
       }
@@ -335,9 +339,11 @@ const projetMesure = async function(mavenKey) {
   try {
     const t = await $.ajax(options);
     // 📌 Vérification des erreurs
-    const errorCodes = [http_400, http_401, http_403, http_404, http_500];
+    const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
     if (errorCodes.includes(t.code)){
-        showMessage(t.type, typeMessage(t.message));
+        const hasTrace = !!t.trace;
+        const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+        showMessage(t.type, t.message, trace);
         sessionStorage.setItem('collecte', 'Erreur phase 02');
         return;
       }
@@ -381,9 +387,11 @@ const projetRating = async function(mavenKey, type) {
   try {
     const t = await $.ajax(options);
     // 📌 Vérification des erreurs
-    const errorCodes = [http_400, http_401, http_403, http_404, http_500];
+    const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
     if (errorCodes.includes(t.code)){
-        showMessage(t.type, typeMessage(t.message));
+        const hasTrace = !!t.trace;
+        const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+        showMessage(t.type, t.message, trace);
         sessionStorage.setItem('collecte', 'Erreur phase 03');
         return;
       }
@@ -427,9 +435,11 @@ const projetOwasp = async function(mavenKey) {
   try {
     const t = await $.ajax(options);
     // 📌 Vérification des erreurs
-    const errorCodes = [http_400, http_401, http_403, http_404, http_500];
+    const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
     if (errorCodes.includes(t.code)){
-        showMessage(t.type, typeMessage(t.message));
+        const hasTrace = !!t.trace;
+        const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+        showMessage(t.type, t.message, trace);
         sessionStorage.setItem('collecte', 'Erreur phase 04');
         return;
       }
@@ -492,9 +502,11 @@ const projetHotspot = async function(mavenKey) {
   try {
     const t = await $.ajax(options);
     // 📌 Vérification des erreurs
-    const errorCodes = [http_400, http_401, http_403, http_404, http_500];
+    const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
     if (errorCodes.includes(t.code)){
-        showMessage(t.type, typeMessage(t.message));
+        const hasTrace = !!t.trace;
+        const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+        showMessage(t.type, t.message, trace);
         sessionStorage.setItem('collecte', 'Erreur phase 05');
         return;
       }
@@ -542,9 +554,11 @@ const projetAnomalie = async function(mavenKey) {
   try {
     const t = await $.ajax(options);
     // 📌 Vérification des erreurs
-    const errorCodes = [http_400, http_401, http_403, http_404, http_500];
+    const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
     if (errorCodes.includes(t.code)){
-        showMessage(t.type, typeMessage(t.message));
+        const hasTrace = !!t.trace;
+        const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+        showMessage(t.type, t.message, trace);
         sessionStorage.setItem('collecte', 'Erreur phase 06');
         return;
       }
@@ -587,9 +601,11 @@ const projetAnomalieDetails = async function(mavenKey) {
   try {
     const t = await $.ajax(options);
     // 📌 Vérification des erreurs
-    const errorCodes = [http_400, http_401, http_403, http_404, http_500];
+    const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
     if (errorCodes.includes(t.code)){
-        showMessage(t.type, typeMessage(t.message));
+        const hasTrace = !!t.trace;
+        const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+        showMessage(t.type, t.message, trace);
         sessionStorage.setItem('collecte', 'Erreur phase 07');
         return;
       }
@@ -639,9 +655,11 @@ const projetHotspotOwasp = async function(mavenKey, menace) {
   try {
     const t = await $.ajax(options);
     // 📌 Vérification des erreurs
-    const errorCodes = [http_400, http_401, http_403, http_404, http_500];
+    const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
     if (errorCodes.includes(t.code)){
-        showMessage(t.type, typeMessage(t.message));
+        const hasTrace = !!t.trace;
+        const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+        showMessage(t.type, t.message, trace);
         sessionStorage.setItem('collecte', 'Erreur phase 08/09');
         return;
       }
@@ -705,9 +723,11 @@ const projetHotspotOwaspDetails = async function(mavenKey) {
   try {
     const t = await $.ajax(options);
     // 📌 Vérification des erreurs
-    const errorCodes = [http_400, http_401, http_403, http_404, http_500];
+    const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
     if (errorCodes.includes(t.code)){
-        showMessage(t.type, typeMessage(t.message));
+        const hasTrace = !!t.trace;
+        const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+        showMessage(t.type, t.message, trace);
         sessionStorage.setItem('collecte', 'Erreur phase 10');
         return;
       }
@@ -755,9 +775,11 @@ const projetNoSonar = async function(mavenKey){
   try {
     const t = await $.ajax(options);
     // 📌 Vérification des erreurs
-    const errorCodes = [http_400, http_401, http_403, http_404, http_500];
+    const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
     if (errorCodes.includes(t.code)){
-        showMessage(t.type, typeMessage(t.message));
+        const hasTrace = !!t.trace;
+        const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+        showMessage(t.type, t.message, trace);
         sessionStorage.setItem('collecte', 'Erreur phase 11');
         return;
       }
@@ -806,9 +828,11 @@ const projetTodo = async function(mavenKey){
   try {
     const t = await $.ajax(options);
     // 📌 Vérification des erreurs
-    const errorCodes = [http_400, http_401, http_403, http_404, http_500];
+    const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
     if (errorCodes.includes(t.code)){
-        showMessage(t.type, typeMessage(t.message));
+        const hasTrace = !!t.trace;
+        const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+        showMessage(t.type, t.message, trace);
         sessionStorage.setItem('collecte', 'Erreur phase 12');
         return;
       }
@@ -855,9 +879,11 @@ const options = {
   try {
     const t = await $.ajax(options);
     // 📌 Vérification des erreurs
-    const errorCodes = [http_400, http_401, http_403, http_500];
+    const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
     if (errorCodes.includes(t.code)){
-        showMessage(t.type, typeMessage(t.message));
+        const hasTrace = !!t.trace;
+        const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+        showMessage(t.type, t.message, trace);
         sessionStorage.setItem('collecte', 'Erreur phase 13');
         return;
       }
@@ -923,7 +949,9 @@ const afficheMesProjets = async function() {
     // 📌 Vérification des erreurs
     const errorCodes = [http_400, http_406, http_500];
     if (errorCodes.includes(t.code)){
-        showMessage(t.type, typeMessage(t.message));
+        const hasTrace = !!t.trace;
+        const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+        showMessage(t.type, t.message, trace);
         return;
       }
 
@@ -1232,9 +1260,11 @@ $('select[name="projet"]').on('change', function () {
           dataType: 'json', data: JSON.stringify(data), contentType };
   $.ajax(options).then(t=> {
     // 📌 Vérification des erreurs
-    const errorCodes = [http_400, http_401, http_403, http_500];
+    const errorCodes = [http_400, http_401, http_403, http_500, http_503, http_504];
     if (errorCodes.includes(t.code)){
-        showMessage(t.type, typeMessage(t.message));
+        const hasTrace = !!t.trace;
+        const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+        showMessage(t.type, t.message, trace);
         sessionStorage.setItem('favori', 'Erreur check.');
         return;
       }
@@ -1366,9 +1396,11 @@ $('.favori-svg').on('click', () => {
       dataType: 'json',  data: JSON.stringify(data), contentType };
     $.ajax(options).then( t => {
       // 📌 Vérification des erreurs
-      const errorCodes = [http_400, http_401, http_403, http_500];
+      const errorCodes = [http_400, http_401, http_403, http_500, http_503, http_504];
       if (errorCodes.includes(t.code)){
-          showMessage(t.type, typeMessage(t.message));
+          const hasTrace = !!t.trace;
+          const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+          showMessage(t.type, t.message, trace);
           sessionStorage.setItem('favori', 'Erreur update.');
           return;
         }
