@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##         Creation des tables et des objets      ##
-##               V2.3.0 - 07/07/2025              ##
+##               V2.4.0 - 16/07/2025              ##
 ##                                                ##
 ####################################################*/
 
@@ -51,6 +51,7 @@
 -- 18/02/2025 : Laurent HADJADJ - Mise à jour de la valeur par défaut de la table repartition.
 -- 06/07/2025 : Laurent HADJADJ - Ajout de la colonne id et suppression de containte d'unicité maven_key+setup pour la table repartition_temp.
 -- 07/07/2025 : Laurent HADJADJ - Suppression de la colonne init, ajout de reset_password et reset_password_count pour la table utilisateur.
+-- 16/07/2025 : Laurent HADJADJ - Ajout dans la relation mesures, files, classes et functions.
 
 
 -- SCHEMA: ma_moulinette
@@ -819,6 +820,9 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.mesures
   ncloc integer NOT NULL,
   language_distribution JSON NOT NULL,
   coverage double precision NOT NULL,
+  files integer NOT NULL,
+  classes integer NOT NULL,
+  functions integer NOT NULL,
   sqale_debt_ratio double precision NOT NULL,
   duplicated_lines_density double precision NOT NULL,
   tests integer NOT NULL,
@@ -837,6 +841,9 @@ COMMENT ON COLUMN ma_moulinette.mesures.project_name IS 'Nom du projet';
 COMMENT ON COLUMN ma_moulinette.mesures.lines IS 'Nombre total de lignes du projet';
 COMMENT ON COLUMN ma_moulinette.mesures.ncloc IS 'Lignes de code non commentées';
 COMMENT ON COLUMN ma_moulinette.mesures.language_distribution IS 'Distribution des langages de programmation';
+COMMENT ON COLUMN ma_moulinette.mesures.files IS 'Nombre total de fichiers';
+COMMENT ON COLUMN ma_moulinette.mesures.classes IS 'Nombre total de classes';
+COMMENT ON COLUMN ma_moulinette.mesures.functions IS 'Nombre total de fonctions';
 COMMENT ON COLUMN ma_moulinette.mesures.coverage IS 'Pourcentage de couverture par les tests';
 COMMENT ON COLUMN ma_moulinette.mesures.sqale_debt_ratio IS 'Ratio de dette technique (SQALE)';
 COMMENT ON COLUMN ma_moulinette.mesures.duplicated_lines_density IS 'Densité de duplication du code';
