@@ -151,7 +151,7 @@ const dessineMoiUnMouton = function(label, dataset) {
   const ctx = document.getElementById('graphique-autre-version').getContext('2d');
   const charts = new Chart(ctx, { type: 'doughnut', data, options });
   if (charts===null){
-    sessionStorage.setItem('info','Pour éviter une erreur SonarQube !!!');
+    sessionStorage.setItem('ma_moulinette_info','Pour éviter une erreur SonarQube !!!');
   }
 };
 
@@ -233,12 +233,12 @@ const selectProjet = async function() {
   };
 
   const t = await $.ajax(options);
-// 📌 Vérification des erreurs
+  // 📌 Vérification des erreurs
   if (t.code !== http_200){
     const hasTrace = !!t.trace;
     const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
     showMessage(t.type, t.message, trace);
-    sessionStorage.setItem('liste des projets autorisés', "L'utilisateur n'est pas rattaché à une équipe ou à un projet.");
+    sessionStorage.setItem('ma_moulinette_error', "L'utilisateur n'est pas rattaché à une équipe ou à un projet.");
     return;
   }
   if (t.code === http_200){
@@ -273,7 +273,7 @@ const selectProjet = async function() {
  */
 const projetInformation = async function(mavenKey) {
   /** On vérifie s'il n'y a pas d'erreur lors du traitement */
-  const collecte = sessionStorage.getItem('collecte');
+  const collecte = sessionStorage.getItem('ma_moulinette_collecte');
   if (!collecte || collecte != 'Tout va bien!') {
     return;
   }
@@ -292,7 +292,7 @@ const projetInformation = async function(mavenKey) {
         const hasTrace = !!t.trace;
         const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
         showMessage(t.type, t.message, trace);
-        sessionStorage.setItem('collecte', 'Erreur phase 01');
+        sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 01');
         return;
       }
 
@@ -326,7 +326,7 @@ const projetInformation = async function(mavenKey) {
  */
 const projetMesure = async function(mavenKey) {
   /** On vérifie s'il n'y a pas d'erreur lors du traitement */
-  const collecte = sessionStorage.getItem('collecte');
+  const collecte = sessionStorage.getItem('ma_moulinette_collecte');
   if (!collecte || collecte!='Tout va bien!') {
     return;
   }
@@ -344,7 +344,7 @@ const projetMesure = async function(mavenKey) {
         const hasTrace = !!t.trace;
         const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
         showMessage(t.type, t.message, trace);
-        sessionStorage.setItem('collecte', 'Erreur phase 02');
+        sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 02');
         return;
       }
     if ( t.code === http_200){
@@ -374,7 +374,7 @@ const projetMesure = async function(mavenKey) {
   * @author     Laurent HADJADJ <laurent_h@me.com>
   */
 const projetRating = async function(mavenKey, type) {
-  const collecte = sessionStorage.getItem('collecte');
+  const collecte = sessionStorage.getItem('ma_moulinette_collecte');
   if (!collecte || collecte != 'Tout va bien!') {
     return;
   }
@@ -392,7 +392,7 @@ const projetRating = async function(mavenKey, type) {
         const hasTrace = !!t.trace;
         const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
         showMessage(t.type, t.message, trace);
-        sessionStorage.setItem('collecte', 'Erreur phase 03');
+        sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 03');
         return;
       }
     if (t.code === http_200){
@@ -422,7 +422,7 @@ const projetRating = async function(mavenKey, type) {
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const projetOwasp = async function(mavenKey) {
-  const collecte = sessionStorage.getItem('collecte');
+  const collecte = sessionStorage.getItem('ma_moulinette_collecte');
   if (!collecte || collecte!='Tout va bien!') {
     return;
   }
@@ -440,7 +440,7 @@ const projetOwasp = async function(mavenKey) {
         const hasTrace = !!t.trace;
         const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
         showMessage(t.type, t.message, trace);
-        sessionStorage.setItem('collecte', 'Erreur phase 04');
+        sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 04');
         return;
       }
 
@@ -489,7 +489,7 @@ const projetOwasp = async function(mavenKey) {
  */
 const projetHotspot = async function(mavenKey) {
   /** On vérifie s'il n'y a pas d'erreur lors du traitement */
-  const collecte = sessionStorage.getItem('collecte');
+  const collecte = sessionStorage.getItem('ma_moulinette_collecte');
   if (!collecte || collecte!='Tout va bien!') {
     return;
   }
@@ -507,7 +507,7 @@ const projetHotspot = async function(mavenKey) {
         const hasTrace = !!t.trace;
         const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
         showMessage(t.type, t.message, trace);
-        sessionStorage.setItem('collecte', 'Erreur phase 05');
+        sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 05');
         return;
       }
 
@@ -541,7 +541,7 @@ const projetHotspot = async function(mavenKey) {
  */
 const projetAnomalie = async function(mavenKey) {
   /** On vérifie s'il n'y a pas d'erreur lors du traitement */
-  const collecte = sessionStorage.getItem('collecte');
+  const collecte = sessionStorage.getItem('ma_moulinette_collecte');
   if (!collecte || collecte!='Tout va bien!') {
     return;
   }
@@ -559,7 +559,7 @@ const projetAnomalie = async function(mavenKey) {
         const hasTrace = !!t.trace;
         const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
         showMessage(t.type, t.message, trace);
-        sessionStorage.setItem('collecte', 'Erreur phase 06');
+        sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 06');
         return;
       }
 
@@ -588,7 +588,7 @@ const projetAnomalie = async function(mavenKey) {
  */
 const projetAnomalieDetails = async function(mavenKey) {
   /** On vérifie s'il n'y a pas d'erreur lors du traitement */
-  const collecte = sessionStorage.getItem('collecte');
+  const collecte = sessionStorage.getItem('ma_moulinette_collecte');
   if (!collecte || collecte!='Tout va bien!') {
     return;
   }
@@ -606,7 +606,7 @@ const projetAnomalieDetails = async function(mavenKey) {
         const hasTrace = !!t.trace;
         const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
         showMessage(t.type, t.message, trace);
-        sessionStorage.setItem('collecte', 'Erreur phase 07');
+        sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 07');
         return;
       }
 
@@ -642,7 +642,7 @@ const projetAnomalieDetails = async function(mavenKey) {
  */
 const projetHotspotOwasp = async function(mavenKey, menace) {
   /** On vérifie s'il n'y a pas d'erreur lors du traitement */
-  const collecte = sessionStorage.getItem('collecte');
+  const collecte = sessionStorage.getItem('ma_moulinette_collecte');
   if (!collecte || collecte!='Tout va bien!') {
     return;
   }
@@ -660,7 +660,7 @@ const projetHotspotOwasp = async function(mavenKey, menace) {
         const hasTrace = !!t.trace;
         const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
         showMessage(t.type, t.message, trace);
-        sessionStorage.setItem('collecte', 'Erreur phase 08/09');
+        sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 08/09');
         return;
       }
 
@@ -710,7 +710,7 @@ const projetHotspotOwasp = async function(mavenKey, menace) {
  */
 const projetHotspotOwaspDetails = async function(mavenKey) {
   /** On vérifie s'il n'y a pas d'erreur lors du traitement */
-  const collecte = sessionStorage.getItem('collecte');
+  const collecte = sessionStorage.getItem('ma_moulinette_collecte');
   if (!collecte || collecte!='Tout va bien!') {
     return;
   }
@@ -728,7 +728,7 @@ const projetHotspotOwaspDetails = async function(mavenKey) {
         const hasTrace = !!t.trace;
         const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
         showMessage(t.type, t.message, trace);
-        sessionStorage.setItem('collecte', 'Erreur phase 10');
+        sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 10');
         return;
       }
 
@@ -762,7 +762,7 @@ const projetHotspotOwaspDetails = async function(mavenKey) {
  */
 const projetNoSonar = async function(mavenKey){
     /** On vérifie s'il n'y a pas d'erreur lors du traitement */
-    const collecte = sessionStorage.getItem('collecte');
+    const collecte = sessionStorage.getItem('ma_moulinette_collecte');
     if (!collecte || collecte!='Tout va bien!') {
       return;
     }
@@ -780,7 +780,7 @@ const projetNoSonar = async function(mavenKey){
         const hasTrace = !!t.trace;
         const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
         showMessage(t.type, t.message, trace);
-        sessionStorage.setItem('collecte', 'Erreur phase 11');
+        sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 11');
         return;
       }
 
@@ -815,7 +815,7 @@ const projetNoSonar = async function(mavenKey){
  */
 const projetTodo = async function(mavenKey){
     /** On vérifie s'il n'y a pas d'erreur lors du traitement */
-    const collecte = sessionStorage.getItem('collecte');
+    const collecte = sessionStorage.getItem('ma_moulinette_collecte');
     if (!collecte || collecte!='Tout va bien!') {
       return;
     }
@@ -833,7 +833,7 @@ const projetTodo = async function(mavenKey){
         const hasTrace = !!t.trace;
         const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
         showMessage(t.type, t.message, trace);
-        sessionStorage.setItem('collecte', 'Erreur phase 12');
+        sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 12');
         return;
       }
 
@@ -866,7 +866,7 @@ const projetTodo = async function(mavenKey){
  */
 const projetLogger = async function(mavenKey){
   /** On vérifie s'il n'y a pas d'erreur lors du traitement */
-  const collecte = sessionStorage.getItem('collecte');
+  const collecte = sessionStorage.getItem('ma_moulinette_collecte');
   if (!collecte || collecte!='Tout va bien!') {
     return;
   }
@@ -884,7 +884,7 @@ const options = {
         const hasTrace = !!t.trace;
         const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
         showMessage(t.type, t.message, trace);
-        sessionStorage.setItem('collecte', 'Erreur phase 13');
+        sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 13');
         return;
       }
 
@@ -923,7 +923,7 @@ const options = {
 const finCollecte = function(){
   log(` - INFO   : (14) La collecte des données est terminée.`);
   /** On vérifie s'il n'y a pas d'erreur lors du traitement */
-  const collecte = sessionStorage.getItem('collecte');
+  const collecte = sessionStorage.getItem('ma_moulinette_collecte');
   if (!collecte || collecte != 'Tout va bien!') {
     showMessage('secondary', `<strong>${collecte}</strong> Le processus de collecte a été interrompu !`);
   }
@@ -1248,10 +1248,10 @@ $('select[name="projet"]').on('change', function () {
   $('#select-result').html(`<strong>${$('select[name="projet"]').val().trim()}</strong>`);
 
   /** On enregistre la clé maven dans le session storage (utile pour la page Owasp) */
-  sessionStorage.setItem('projet', $('select[name="projet"]').val().trim());
+  sessionStorage.setItem('ma_moulinette_projet', $('select[name="projet"]').val().trim());
 
   /** On supprime la clé de collecte */
-  sessionStorage.setItem('collecte', 'Tout va bien!');
+  sessionStorage.setItem('ma_moulinette_collecte', 'Tout va bien!');
 
   /* On regarde si le projet est en favori */
   const data = { maven_key: $('#select-result').text().trim() };
@@ -1265,7 +1265,7 @@ $('select[name="projet"]').on('change', function () {
         const hasTrace = !!t.trace;
         const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
         showMessage(t.type, t.message, trace);
-        sessionStorage.setItem('favori', 'Erreur check.');
+        sessionStorage.setItem('ma_moulinette_favori', 'Erreur check.');
         return;
       }
 
@@ -1401,7 +1401,7 @@ $('.favori-svg').on('click', () => {
           const hasTrace = !!t.trace;
           const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
           showMessage(t.type, t.message, trace);
-          sessionStorage.setItem('favori', 'Erreur update.');
+          sessionStorage.setItem('ma_moulinette_favori', 'Erreur update.');
           return;
         }
 
@@ -1445,7 +1445,7 @@ $('.js-affiche-result').on('click', () => {
   /* On récupère la clé du projet. */
   const apiMaven = $('#select-result').text().trim();
   /** On regarde si tou vas bien ! */
-  const collecte=sessionStorage.getItem('collecte');
+  const collecte=sessionStorage.getItem('ma_moulinette_collecte');
   if (collecte===undefined || collecte!='Tout va bien!') {
     const  t = {};
     sessionStorage.info('peinture', `Pas de données. ${json_encode(t)}.`);
@@ -1528,7 +1528,7 @@ $('.js-cosui').on('click', () => {
       const mavenKey = $('#select-result').text().trim();
 
       /* on écrase la clé maven au cas ou */
-      sessionStorage.setItem('projet', mavenKey);
+      sessionStorage.setItem('ma_moulinette_projet', mavenKey);
 
       /** On ne passe plus de paramètre dans le get */
       window.location.href = `${server()}/owasp`;
