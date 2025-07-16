@@ -238,8 +238,8 @@ class AccueilController extends AbstractController
         /** Sécurisation de l'URL */
         $url = $this->urlBuilder->build(
             $this->getParameter(static::$sonarUrl),
-            '/api/components/search',
-            ['qualifiers' => 'TRK', 'defaults' => 'true', 'p' => 1, 'ps' => 500]
+            '/api/qualityprofiles/search',
+            ['defaults' => 'true', 'p' => 1, 'ps' => 500]
         );
 
         $this->logger->info('[Accueil] Appel à SonarQube pour le comptage des profils.', ['url' => $url]);
@@ -551,8 +551,8 @@ class AccueilController extends AbstractController
 
         /** 1 - Les Dates  */
          /** On applique la la fréquence de mise à jour pour les projets et les profils. */
-        $majProjet = '-' . $this->params->get('maj.projet') . ' day';
-        $majProfil = '-' . $this->params->get('maj.profil') . ' day';
+        $majProjet = "-{$this->params->get('maj.projet')} day";
+        $majProfil = "-{$this->params->get('maj.profil')} day";
 
         $dateModProjet = new \DateTimeImmutable($properties['date_modification_projet']);
         $dateModProfil = new \DateTimeImmutable($properties['date_modification_profil']);
@@ -572,7 +572,6 @@ class AccueilController extends AbstractController
             }
             /** On récupère le nombre de projet en base */
             $projetBd = static::getCountProjetBD();
-
             $dateVerificationProjet = true;
         } else {
             /** Sinon, on récupère les valeurs de la table de properties */
@@ -592,6 +591,7 @@ class AccueilController extends AbstractController
 
             /** On récupère le nombre de projet depuis le serveur sonar */
             $profilSonar = static::getCountProfilSonar();
+
             if ($profilSonar === -1){
                 return $this->render(static::$page, $render);
             }
