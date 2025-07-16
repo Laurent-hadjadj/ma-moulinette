@@ -18,6 +18,7 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
 use App\Entity\Historique;
@@ -45,6 +46,7 @@ class ProjetController extends AbstractController
         private Security $security,
         private EntityManagerInterface $em,
         private ParameterBagInterface $params,
+        private LoggerInterface $logger,
     ) {
         $this->params = $params;
         $this->logoEntreprise = $params->get('logo.entreprise');
@@ -91,21 +93,62 @@ class ProjetController extends AbstractController
     #[Route('/projet', name: 'projet', methods: 'GET')]
     public function index(Security $security): Response
     {
-        /** On récupère l'objet User du contexte de sécurité */
-        $preference = $security->getUser()->getPreference();
-
-        /** On regarde si le bookmark est actif */
-        $bookmark = ['null'];
-        if ($preference['statut']['bookmark']) {
-            $bookmark = $preference['bookmark'];
+        $user = $security->getUser();
+        if (!$user) {
+            $this->logger->warning('[Projet] Accès refusé : utilisateur non connecté.');
+            throw $this->createAccessDeniedException("Utilisateur non authentifié (Erreur 403).");
         }
 
-        // Mise à jour du rendu
-        $render=static::genericRender();
+        $this->logger->info('[Projet] Chargement des préférences utilisateur.', [
+            'user' => $user->getUserIdentifier()
+        ]);
+
+        $preference = $user->getPreference();
+        $bookmark = ['null'];
+
+        if ($preference['statut']['bookmark'] ?? false) {
+            $bookmark = $preference['bookmark'];
+            $this->logger->debug('[Projet] Préférence de bookmark activée.', [
+                'bookmark' => $bookmark
+            ]);
+        } else {
+            $this->logger->debug('[Projet] Aucun bookmark activé dans les préférences.');
+        }
+
+        $historiqueRepo = $this->em->getRepository(Historique::class);
+
+        /** Vérifie si le bookmark est valide */
+        $map = ['maven_key' => $bookmark[0]];
+        $countProjet = $historiqueRepo->countHistoriqueProjet($map);
+
+        if ($countProjet === 0) {
+            $this->logger->info('[Projet] Le projet en bookmark est introuvable dans le catalogue.', [
+                'bookmark_maven_key' => $bookmark[0]
+            ]);
+            $bookmark = ['null'];
+        } else {
+            $this->logger->info('[Projet] Projet trouvé en base.', [
+                'bookmark_maven_key' => $bookmark[0],
+                'projet_count' => $countProjet
+            ]);
+        }
+
+        $render = static::genericRender();
         $render['bookmark'] = $bookmark;
+
+        $this->logger->info('[Projet] Affichage de la page projet.');
         return $this->render('projet/index.html.twig', $render);
     }
 
+    /**
+     * [Description for mesProjets]
+     *
+     * @return Response
+     *
+     * Created at: 16/07/2025 09:22:16 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     #[Route('/projet/mes-projets', name: 'mes_projets', methods: 'GET')]
     public function mesProjets(): Response
     {
