@@ -24,7 +24,9 @@
     {% block importmap %}{{ importmap('projet') }}{% endblock %}
   </head>
 
-  <body>
+  <body dir="ltr">
+    {# no-script #}
+    {{ include('no-script.html.twig') }}
     {# Chargement de la section header #}
     {{ include('header.html.twig') }}
 
