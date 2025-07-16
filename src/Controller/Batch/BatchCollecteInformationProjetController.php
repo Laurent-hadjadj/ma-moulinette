@@ -23,6 +23,7 @@ use App\Entity\InformationProjet;
 /** Client HTTP */
 use App\Service\Client;
 use App\Service\IsValideMavenKey;
+use App\Service\UrlBuilderService;
 
 /**
  * [Description BatchCollecteInformationProjetController]
@@ -44,6 +45,7 @@ class BatchCollecteInformationProjetController extends AbstractController
         private EntityManagerInterface $em,
         private IsValideMavenKey $isValidMavenKey,
         private Client $client,
+        private UrlBuilderService $urlBuilder,
 
     ) {
         $this->em = $em;
@@ -64,16 +66,16 @@ class BatchCollecteInformationProjetController extends AbstractController
      */
     public function controlVersionProjet($mavenKey): array
     {
-        /** On construit l'URL */
-        $tempoUrl = $this->getParameter(static::$sonarUrl);
-        $mavenKey = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
-
-        /** Construit l'URL en utilisant http_build_query pour les paramètres de la requête */
-        $queryParams = [ 'project' => $mavenKey ];
-        $queryString = http_build_query($queryParams);
+        /** Sécurisation de l'URL */
+        $maven_key = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
+        $url = $this->urlBuilder->build(
+            $this->getParameter(static::$sonarUrl),
+            '/api/project_analyses/search',
+            [ 'project' => $maven_key ]
+        );
 
         /** Appelle le client HTTP */
-        $result = $this->client->httpSonarQube("$tempoUrl/api/project_analyses/search?$queryString");
+        $result = $this->client->httpSonarQube($url);
         /** "code" => 503
          *  "erreur" => "Erreur 503 - La résolution DNS n'a pas permis d'accéder au serveur SonarQube." */
 
@@ -256,6 +258,7 @@ class BatchCollecteInformationProjetController extends AbstractController
 
         /** On récupère les informations du projet */
         $isValide = $this->controlVersionProjet($mavenKey);
+        dd($isValide);
         if (in_array($isValide['code'], [401, 404, 503, 500])) {
             return ['code' => $isValide['code'], 'message' => $isValide['message'] ];
         }
