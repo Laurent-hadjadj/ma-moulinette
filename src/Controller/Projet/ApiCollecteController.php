@@ -13,11 +13,13 @@
 
 namespace App\Controller\Projet;
 
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\SecurityBundle\Security;
+use Psr\Log\LoggerInterface;
 
 /** Gestion de accès aux API */
 use App\Controller\Batch\BatchCollecteInformationProjetController;
@@ -34,8 +36,6 @@ use App\Controller\Batch\BatchCollecteTodoController;
 use App\Controller\Batch\BatchCollecteActuatorController;
 use App\Controller\Batch\BatchCollecteLoggerController;
 
-/** Collecte */
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
  * [Description ApiMesureController]
@@ -62,6 +62,7 @@ class ApiCollecteController extends AbstractController
         private BatchCollecteActuatorController $batchCollecteActuator,
         private BatchCollecteLoggerController $batchCollecteLogger,
         private Security $security,
+        private LoggerInterface $logger,
     ) {
     }
 
@@ -79,34 +80,72 @@ class ApiCollecteController extends AbstractController
     #[Route('/api/collecte/information', name: 'api_collecte_information', methods: ['POST'])]
     public function apiCollecteInformation(Request $request): JsonResponse
     {
-        /** On décode le body */
+        // On décode le body
         $data = json_decode($request->getContent());
 
-        /** On teste si la clé est valide */
-        if ($data === null || !property_exists($data, 'maven_key') ) {
-            return new JsonResponse(
-                ['data' => $data, 'code' => 400, 'type' => 'alert',
-                'message' => static::$reference . static::$erreur400], Response::HTTP_OK);
-        }
-
-        /** On vérifie si l'utilisateur à un rôle Collecte ? */
-        if (!$this->isGranted('ROLE_COLLECTE')) {
-            return new JsonResponse(
-                ['type'=>'warning', 'code' => 403,
-                'message' => static::$reference . static::$erreur403], Response::HTTP_OK);
-        }
-
-        /** On contrôle le mode d'utilisation */
-        $utilisateur_collecte = $this->security->getUser()->getCourriel();
-
-        /** Information générales sur le projet */
-        $information = $this->batchCollecteInformation->batchCollecteInformation(
-            $data->maven_key, 'COLLECTE', $utilisateur_collecte);
-        if ($information['code'] != 200){
+        // Vérification de la validité du corps de la requête
+        if ($data === null || !property_exists($data, 'maven_key')) {
+            $this->logger->warning('[Collecte] Requête mal formée : maven_key manquant ou invalide.', [
+                'data' => $request->getContent()
+            ]);
             return new JsonResponse([
-                'code' => $information['code'], 'type' => 'warning',
-                'message' => static::$reference . ($information['message'] ?? $information['erreur'])], Response::HTTP_OK);
+                'code' => 400,
+                'type' => 'alert',
+                'message' => static::$reference . static::$erreur400,
+                'trace' => null
+            ], Response::HTTP_OK);
         }
+
+        // Vérifie si l'utilisateur a bien le rôle nécessaire
+        if (!$this->isGranted('ROLE_COLLECTE')) {
+            $this->logger->warning('[Collecte] Accès refusé : rôle manquant.', [
+                'maven_key' => $data->maven_key,
+                'user' => $this->security->getUser()?->getUserIdentifier()
+            ]);
+            return new JsonResponse([
+                'type' => 'warning',
+                'code' => 403,
+                'message' => static::$reference . static::$erreur403,
+                'trace' => null
+            ], Response::HTTP_OK);
+        }
+
+        // Récupération du courriel pour la collecte
+        $utilisateur_collecte = $this->security->getUser()->getCourriel();
+        $this->logger->info('[Collecte] Début de la collecte des informations.', [
+            'maven_key' => $data->maven_key,
+            'user' => $utilisateur_collecte
+        ]);
+
+        // Appel à la collecte
+        $information = $this->batchCollecteInformation->batchCollecteInformation(
+            $data->maven_key,
+            'COLLECTE',
+            $utilisateur_collecte
+        );
+
+        // Gestion des erreurs de collecte
+        if (($information['code'] ?? 500) !== 200) {
+            $this->logger->error('[Collecte] Échec de la collecte des informations du projet.', [
+                'code' => $information['code'] ?? 'inconnu',
+                'message' => $information['message'] ?? 'message absent',
+                'trace' => $information['erreur'] ?? 'non fournie',
+                'maven_key' => $data->maven_key
+            ]);
+
+            return new JsonResponse([
+                'code' => $information['code'] ?? 500,
+                'type' => 'warning',
+                'message' => static::$reference . ($information['message'] ?? 'Collecte des informations du projet.'),
+                'trace' => $information['erreur'] ?? null
+            ], Response::HTTP_OK);
+        }
+
+        $this->logger->info('[Collecte] Collecte des informations réussie.', [
+            'projet' => $information['message']['projet'] ?? 'non défini',
+            'maven_key' => $data->maven_key,
+            'user' => $utilisateur_collecte
+        ]);
 
         return new JsonResponse([
             'code' => 200,
@@ -115,12 +154,12 @@ class ApiCollecteController extends AbstractController
                 'release' => $information['message']['release'],
                 'snapshot' => $information['message']['snapshot'],
                 'autre' => $information['message']['autre'],
-                'total_sonar' =>  $information['message']['version_sonar'],
-                'release_sonar' =>  $information['message']['version_release_sonar'],
-                'snapshot_sonar' =>  $information['message']['version_snapshot_sonar'],
-                'autre_sonar' =>  $information['message']['version_autre_sonar']
-            ]],
-            Response::HTTP_OK);
+                'total_sonar' => $information['message']['version_sonar'],
+                'release_sonar' => $information['message']['version_release_sonar'],
+                'snapshot_sonar' => $information['message']['version_snapshot_sonar'],
+                'autre_sonar' => $information['message']['version_autre_sonar']
+            ]
+        ], Response::HTTP_OK);
     }
 
     /**
