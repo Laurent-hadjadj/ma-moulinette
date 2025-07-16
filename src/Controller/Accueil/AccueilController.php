@@ -534,9 +534,7 @@ class AccueilController extends AbstractController
          *     properties.
          */
         $this->logger->info('[Accueil] Chargement de la page d\'accueil');
-        /** On instancie l'entityRepository */
-        $listeProjetRepository = $this->em->getRepository(ListeProjet::class);
-
+        $listeProjetRepo = $this->em->getRepository(ListeProjet::class);
 
         $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
 
@@ -642,7 +640,6 @@ class AccueilController extends AbstractController
 
 
         /** 4 - Visibility   */
-        $listeProjetRepo = $this->em->getRepository(ListeProjet::class);
         $public = $listeProjetRepo->countListeProjetVisibility('public')['request'][0]['visibility'] ?? 0;
         $private = $listeProjetRepo->countListeProjetVisibility('private')['request'][0]['visibility'] ?? 0;
 
