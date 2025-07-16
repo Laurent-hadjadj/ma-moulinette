@@ -13,22 +13,15 @@
 
 namespace App\Controller\Projet;
 
-/** Core */
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\Routing\Annotation\Route;
-
-/** Sécurité */
 use Symfony\Bundle\SecurityBundle\Security;
-
-/** API */
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Response;
-
-/** Services */
-use App\Service\MesProjets;
-
+use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
+
 use App\Entity\Historique;
+use App\Service\MesProjets;
 
 /**
  * [Description ProjetController]
