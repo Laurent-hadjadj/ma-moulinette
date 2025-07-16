@@ -53,17 +53,32 @@
       </nav>
     </header>
 
-    <main class="grid-container">
-      {# On récupère les droits de l'utilisateur #}
-      <div class="js-user-rating" data-user="{{ app.user.roles|serialize(format = 'json') }}"></div>
-
-      {# Message d'alerte JS #}
-      <div id="message-box" class="callout alert-callout-border callout-ombre hide" data-closable>
-        <p id="message-text" role="alert"></p>
-        <button id="message-close-button" class="close-button" aria-label="Close alert" type="button" data-close>
-        <span aria-hidden="true">&times;</span>
+        {# Gestion des messages flash & JS #}
+    <header>
+      {% for message in app.flashes('notice') %}
+      <div class="callout {{ message.type }} alert-callout-border callout-ombre js-flash-box" role="alert" data-closable>
+        <p class="open-sans text-justify callout-message">
+            <strong>{{ message.titre }}</strong> {{ message.message }}
+        </p>
+        <button class="close-button {{message.type}}"
+                type="button"
+                aria-label="Dismiss alert" data-close><span aria-hidden="true">&times;</span>
         </button>
       </div>
+      {% endfor %}
+
+      {# Message d'information JS#}
+      <div id="message-box" class="callout alert-callout-border callout-ombre hide" role="alert" data-closable>
+          <button id="message-button-close" class="close-button" aria-label="Close alert" type="button" data-close>
+          <span aria-hidden="true">&times;</span>
+          </button>
+          <p id="message-text"></p>
+      </div>
+    </header>
+
+    <main class="grid-container" role="main">
+      {# On récupère les droits de l'utilisateur #}
+      <div class="js-user-rating" data-user="{{ app.user.roles|serialize(format = 'json') }}"></div>
 
       <h1 class="h4 grid-x cell claire-hand">Je choisis mon projet.
         <span id="j-aime">
