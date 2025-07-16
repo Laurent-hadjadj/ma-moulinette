@@ -32,7 +32,7 @@ class ApiProjetController extends AbstractController
     /** Définition des constantes */
     private static $reference = "<strong>[Projet]</strong> ";
     private static $erreur400 = "La requête est incorrecte (Erreur 400).";
-    private static $erreur401 = "Utilisateur non authentifié (Erreur 401)."; 
+    private static $erreur401 = "Utilisateur non authentifié (Erreur 401).";
     private static $erreur404 = "Vous devez être rattaché à une équipe (Erreur 404).";
     private static $erreur406 = "Je n'ai pas trouvé de projets pour ton équipe. ".
     "Vérifie le nom du tag utilisé dans SonarQube (Erreur 406).";
@@ -158,7 +158,7 @@ class ApiProjetController extends AbstractController
             return new JsonResponse([
                 'code' => 401,
                 'type' => 'alert',
-                'message' => static::$reference . 'Utilisateur non authentifié (Erreur 401).'
+                'message' => static::$reference . static::$erreur401
             ], Response::HTTP_OK);
         }
 
@@ -228,7 +228,7 @@ class ApiProjetController extends AbstractController
             return new JsonResponse([
                 'code' => 401,
                 'type' => 'alert',
-                'message' => static::$reference . 'Utilisateur non authentifié (Erreur 401).'
+                'message' => static::$reference . static::$erreur401
             ], Response::HTTP_OK);
         }
 
