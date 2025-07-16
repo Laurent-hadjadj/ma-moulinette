@@ -306,7 +306,9 @@ const projetInformation = async function(mavenKey) {
       log(` ----------- Nombre de version disponible : ${nombre}`);
       }
   } catch(error) {
-    showMessage('alert', `<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 01.<br>${error.message}`);
+      const trace = prepareTechnicalDetails(error);
+      const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 01.";
+      showMessage('alert', message, trace);
   }
 };
 
@@ -352,7 +354,9 @@ const projetMesure = async function(mavenKey) {
         log(` ----------- ${t.message.issues} problème(s) trouvé(s).`);
     }
   } catch(error) {
-    showMessage('alert', `<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 02.<br>${error.message}`);
+      const trace = prepareTechnicalDetails(error);
+      const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 02.";
+      showMessage('alert', message, trace);
   }
 };
 
@@ -400,7 +404,9 @@ const projetRating = async function(mavenKey, type) {
       log(` ----------- La note est : ${t.message.note}`);
     }
   } catch(error) {
-    showMessage('alert', `<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 03.<br>${error.message}`);
+      const trace = prepareTechnicalDetails(error);
+      const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 03.";
+      showMessage('alert', message, trace);
   }
 };
 
@@ -466,7 +472,9 @@ const projetOwasp = async function(mavenKey) {
       log(` - WARN : (04) J'ai trouvé ${t.owasp2021} faille${s}.`);
     }
   } catch(error) {
-    showMessage('alert', `<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 04.<br>${error.message}`);
+      const trace = prepareTechnicalDetails(error);
+      const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 04.";
+      showMessage('alert', message, trace);
   }
 };
 
@@ -519,7 +527,9 @@ const projetHotspot = async function(mavenKey) {
         log(` - WARN : (05) J'ai trouvé ${t.nombre} faille${s} potentielle${s}.`);
     }
   } catch(error) {
-    showMessage('alert', `<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 05.<br>${error.message}`);
+      const trace = prepareTechnicalDetails(error);
+      const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 05.";
+      showMessage('alert', message, trace);
   }
 };
 
@@ -567,7 +577,9 @@ const projetAnomalie = async function(mavenKey) {
           log(` - INFO   : (06) ${t.info}`);
       }
     } catch(error) {
-      showMessage('alert', `<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 06.<br>${error.message}`);
+      const trace = prepareTechnicalDetails(error);
+      const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 06.";
+      showMessage('alert', message, trace);
     }
 };
 
@@ -616,7 +628,9 @@ const projetAnomalieDetails = async function(mavenKey) {
         log(` - ERROR  : (07) Je n'ai pas réussi à collecter les données (${t.erreur}).`);
     }
   } catch(error) {
-    showMessage('alert', `<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 07.<br>${error.message}`);
+      const trace = prepareTechnicalDetails(error);
+      const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 07.";
+      showMessage('alert', message, trace);
   }
 };
 
@@ -689,7 +703,9 @@ const projetHotspotOwasp = async function(mavenKey, menace) {
         log(` ----------- J'ai trouvé ${t.owasp2021} faille${s} OWASP ${menace} potentielle${s}.`);
       }
     } catch(error) {
-      showMessage('alert', `<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 08/09.<br>${error.message}`);
+      const trace = prepareTechnicalDetails(error);
+      const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 08/09.";
+      showMessage('alert', message, trace);
     }
 };
 
@@ -741,7 +757,9 @@ const projetHotspotOwaspDetails = async function(mavenKey) {
       log(` - INFO   : (10) Aucune information n'est disponible pour les hotspots.`);
     }
   } catch(error) {
-    showMessage('alert', `<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 10.<br>${error.message}`);
+      const trace = prepareTechnicalDetails(error);
+      const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 10.";
+      showMessage('alert', message, trace);
   }
 };
 
@@ -794,7 +812,9 @@ const projetNoSonar = async function(mavenKey){
       log(` - INFO   : (11) Bravo !!! ${t.nombre} exclusion NoSonar trouvée.`);
     }
   } catch(error) {
-    showMessage('alert', `<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 11.<br>${error.message}`);
+      const trace = prepareTechnicalDetails(error);
+      const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 11.";
+      showMessage('alert', message, trace);
   }
 };
 
@@ -845,7 +865,9 @@ const projetTodo = async function(mavenKey){
         log(` - INFO   : (12) Bravo !!! ${t.nombre} ToDo trouvé.`);
       }
     } catch(error) {
-      showMessage('alert', `<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 12.<br>${error.message}`);
+      const trace = prepareTechnicalDetails(error);
+      const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 12.";
+      showMessage('alert', message, trace);
     }
 };
 
@@ -907,7 +929,9 @@ const options = {
       }
     }
   } catch(error) {
-    showMessage('alert', `<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 13.<br>${error.message}`);
+      const trace = prepareTechnicalDetails(error);
+      const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 13.";
+      showMessage('alert', message, trace);
   }
 };
 
@@ -1130,7 +1154,9 @@ const afficheMesProjets = async function() {
       });
     }
   } catch(error) {
-    showMessage('alert', `<strong>[Projet]</strong> Une erreur inattendue s'est produite.<br>${error.message}`);
+      const trace = prepareTechnicalDetails(error);
+      const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite.";
+      showMessage('alert', message, trace);
   }
 };
 
@@ -1375,7 +1401,6 @@ $('#js-affiche-detail-logger').on('click', function () {
   $('#modal-liste-logger').foundation('open');
 });
 
-
 /**
  * description
  * Événement : on marque le projet comme favori.
@@ -1560,7 +1585,7 @@ $('.js-repartition-module').on('click', () => {
 
 /***********    Main */
 const e = document.getElementById('feedback');
-const dernierBidule=e.dataset.bookmark;
+const dernierBidule = e.dataset.bookmark;
 
 if (dernierBidule !== 'null'){
   /* On récupère le nom du projet */
