@@ -30,10 +30,11 @@ use App\Entity\ListeProjet;
 class ApiProjetController extends AbstractController
 {
     /** Définition des constantes */
-    public static $reference = "<strong>[Projet]</strong> ";
-    public static $erreur400 = "La requête est incorrecte (Erreur 400).";
-    public static $erreur404 = "Vous devez être rattaché à une équipe (Erreur 404).";
-    public static $erreur406 = "Je n'ai pas trouvé de projets pour ton équipe. ".
+    private static $reference = "<strong>[Projet]</strong> ";
+    private static $erreur400 = "La requête est incorrecte (Erreur 400).";
+    private static $erreur401 = "Utilisateur non authentifié (Erreur 401)."; 
+    private static $erreur404 = "Vous devez être rattaché à une équipe (Erreur 404).";
+    private static $erreur406 = "Je n'ai pas trouvé de projets pour ton équipe. ".
     "Vérifie le nom du tag utilisé dans SonarQube (Erreur 406).";
 
     /**
@@ -65,32 +66,73 @@ class ApiProjetController extends AbstractController
     #[Route('/api/favori', name: 'favori', methods: ['POST'])]
     public function favori(Security $security, Request $request): JsonResponse
     {
-        /** On instancie l'entityRepository */
-        $utilisateurRepository = $this->em->getRepository(Utilisateur::class);
+        $user = $security->getUser();
 
-        /** On décode le body */
-        $data = json_decode($request->getContent());
-
-        /** On teste si la clé est valide */
-        if ($data === null || !property_exists($data, 'maven_key') ) {
-            return new JsonResponse(
-                ['data' => $data,'code' => 400, 'type' => 'alert',
-                'message'=> static::$reference . static::$erreur400], Response::HTTP_OK);
-        }
-
-        /** On récupère l'objet User du contexte de sécurité */
-        $preference = $security->getUser()->getPreference();
-        $courriel = $security->getUser()->getCourriel();
-
-        $map = [ 'maven_key' => $data->maven_key, 'courriel' => $courriel];
-        $request = $utilisateurRepository->updateUtilisateurFavoriProjet($preference, $map);
-        if ($request['code'] != 200) {
+        if (!$user) {
+            $this->logger->error('[Favori] Aucun utilisateur connecté.');
             return new JsonResponse([
-                'code' => $request['code'], 'type' => 'alert',
-                'message'=> static::$reference . $request['erreur']], Response::HTTP_OK);
+                'code' => 401,
+                'type' => 'alert',
+                'message' => static::$reference . static::$erreur401
+            ], Response::HTTP_OK);
         }
 
-        return new JsonResponse(['code' => 200, 'statut' => $request['statut']], Response::HTTP_OK);
+        $username = $user->getUserIdentifier();
+        $courriel = $user->getCourriel();
+        $preference = $user->getPreference();
+
+        $utilisateurRepos = $this->em->getRepository(Utilisateur::class);
+        $payload = $request->getContent();
+        $data = json_decode($payload);
+
+        if ($data === null || !property_exists($data, 'maven_key') || !is_string($data->maven_key)) {
+            $this->logger->warning('[Favori] Requête mal formée ou maven_key manquante.', [
+                'utilisateur' => $username,
+                'payload' => $payload
+            ]);
+            return new JsonResponse([
+                'code' => 400,
+                'type' => 'alert',
+                'message' => static::$reference . static::$erreur400,
+            ], Response::HTTP_OK);
+        }
+
+        $map = [
+            'maven_key' => $data->maven_key,
+            'courriel' => $courriel
+        ];
+
+        $this->logger->info('[Favori] Début mise à jour du favori.', [
+            'utilisateur' => $username,
+            'maven_key' => $data->maven_key
+        ]);
+
+        $requestUpdate = $utilisateurRepos->updateUtilisateurFavoriProjet($preference, $map);
+
+        if ($requestUpdate['code'] !== 200) {
+            $this->logger->error('[Favori] Échec mise à jour du favori.', [
+                'utilisateur' => $username,
+                'maven_key' => $data->maven_key,
+                'erreur' => $requestUpdate['erreur'] ?? 'non précisée'
+            ]);
+            return new JsonResponse([
+                'code' => $requestUpdate['code'],
+                'type' => 'alert',
+                'message' => static::$reference . "La mise à jour du projet en favori a échoué (Erreur 500).",
+                'trace' => $requestUpdate['erreur']
+            ], Response::HTTP_OK);
+        }
+
+        $this->logger->info('[Favori] Mise à jour réussie.', [
+            'utilisateur' => $username,
+            'maven_key' => $data->maven_key,
+            'statut' => $requestUpdate['statut']
+        ]);
+
+        return new JsonResponse([
+            'code' => 200,
+            'statut' => $requestUpdate['statut']
+        ], Response::HTTP_OK);
     }
 
     /**
