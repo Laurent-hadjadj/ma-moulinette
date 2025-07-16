@@ -180,10 +180,18 @@ class ApiProjetController extends AbstractController
     public function liste_projet(Security $security): JsonResponse
     {
         $user = $security->getUser();
-        $username = $user ? $user->getUserIdentifier() : 'inconnu';
 
+        if (!$user) {
+            $this->logger->error('[Projet Liste] Aucun utilisateur connecté.');
+            return new JsonResponse([
+                'code' => 401,
+                'type' => 'alert',
+                'message' => static::$reference . 'Utilisateur non authentifié (Erreur 401).'
+            ], Response::HTTP_OK);
+        }
+
+        $username = $user->getUserIdentifier();
         $listeProjetRepos = $this->em->getRepository(ListeProjet::class);
-
         $groupes = $user->getEquipe();
 
         if (empty($groupes)) {
