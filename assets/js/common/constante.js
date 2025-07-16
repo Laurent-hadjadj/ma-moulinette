@@ -19,6 +19,7 @@ export const http_403=403;
 export const http_404=404;
 export const http_406=406;
 export const http_500=500;
+export const http_503=503;
 export const http_504=504;
 
 /** Liste des constantes clientHTML */
