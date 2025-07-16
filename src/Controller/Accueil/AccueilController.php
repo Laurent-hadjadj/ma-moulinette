@@ -550,10 +550,6 @@ class AccueilController extends AbstractController
         ], 0);
 
         /** 1 - Les Dates  */
-         /** On applique la la fréquence de mise à jour pour les projets et les profils. */
-        $majProjet = "-{$this->params->get('maj.projet')} day";
-        $majProfil = "-{$this->params->get('maj.profil')} day";
-
         $dateModProjet = new \DateTimeImmutable($properties['date_modification_projet']);
         $dateModProfil = new \DateTimeImmutable($properties['date_modification_profil']);
 
