@@ -14,16 +14,12 @@
 namespace App\Controller\Projet;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
-
-/** Gestion de accès aux API */
 use Symfony\Component\HttpFoundation\JsonResponse;
-
-/** Sécurité */
-use Symfony\Bundle\SecurityBundle\Security;
-
+use Symfony\Component\Routing\Annotation\Route;
+use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Utilisateur;
 use App\Entity\ListeProjet;
@@ -38,7 +34,7 @@ class ApiProjetController extends AbstractController
     public static $erreur400 = "La requête est incorrecte (Erreur 400).";
     public static $erreur404 = "Vous devez être rattaché à une équipe (Erreur 404).";
     public static $erreur406 = "Je n'ai pas trouvé de projets pour ton équipe. ".
-    "Vérifiez le nom du tag utilisé dans SonarQube (Erreur 406).";
+    "Vérifie le nom du tag utilisé dans SonarQube (Erreur 406).";
 
     /**
      * [Description for __construct]
@@ -48,9 +44,9 @@ class ApiProjetController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function __construct(
-        private EntityManagerInterface $em
+        private EntityManagerInterface $em,
+        private LoggerInterface $logger
     ) {
-        $this->em = $em;
     }
 
     /**
@@ -147,54 +143,85 @@ class ApiProjetController extends AbstractController
     #[Route('/api/projet/liste', name: 'projet_liste', methods: ['POST'])]
     public function liste_projet(Security $security): JsonResponse
     {
-        /** On instancie l'entityRepository */
-        $listeProjetRepository = $this->em->getRepository(ListeProjet::class);
+        $user = $security->getUser();
+        $username = $user ? $user->getUserIdentifier() : 'inconnu';
 
-        /* On bind les informations utilisateur */
-        $groupes = $security->getUser()->getEquipe();
-        /** Si l'utilisateur n'est pas rattaché à une équipe on ne charge rien */
+        $listeProjetRepos = $this->em->getRepository(ListeProjet::class);
+
+        $groupes = $user->getEquipe();
+
         if (empty($groupes)) {
-            /** On envoi un message à l'utilisateur */
+            $this->logger->warning("[Projet Liste] Aucun groupe associé à l'utilisateur.", [
+                'utilisateur' => $username
+            ]);
+
             return new JsonResponse([
-                'code'=>404, 'type' => 'alert',
-                'message' => static::$reference . static::$erreur404], Response::HTTP_OK);
+                'code' => 404,
+                'type' => 'alert',
+                'message' => static::$reference . static::$erreur404
+            ], Response::HTTP_OK);
         }
 
-        /** On recherche les projets pour les équipes rattaché à l'utilisateur */
+        $this->logger->info('[Projet Liste] Groupes récupérés.', [
+            'utilisateur' => $username,
+            'groupes' => $groupes
+        ]);
+
         $in = '';
         foreach ($groupes as $groupe) {
-            /** Peut être une valeur par défaut ? */
             if ($groupe !== 'null') {
-                /** On met en minuscule */
                 $minus = trim(strtolower($groupe));
-                /** On construit la clause in et on remplace les espaces par des tirets  */
-                $in = $in." tag LIKE '".preg_replace('/\s+/', '-', $minus)."%' OR ";
+                $in .= " tag LIKE '" . preg_replace('/\s+/', '-', $minus) . "%' OR ";
             }
         }
 
-        /** On supprime le dernier OR */
         $inTrim = rtrim($in, " OR ");
-
-        /** On construit la requête de selection des projets en fonction de(s) (l')équipes */
         $map = ['clause_where' => $inTrim];
-        $requestListe = $listeProjetRepository->selectListeProjetByEquipe($map);
-        /** On  renvoi la liste des maven_key (id) et des nom de projets (text) */
+
+        $this->logger->debug('[Projet Liste] Clause WHERE construite.', [
+            'clause' => $inTrim
+        ]);
+
+        $requestListe = $listeProjetRepos->selectListeProjetByEquipe($map);
+
         if ($requestListe['code'] != 200) {
-            return new JsonResponse(['code' => $requestListe['code'], 'type' => 'alert',
-            'message' => static::$reference . $requestListe['erreur']],
-            Response::HTTP_OK);
+            $this->logger->error("[Projet Liste] Erreur lors de la récupération des projets.", [
+                'utilisateur' => $username,
+                'code' => $requestListe['code'],
+                'erreur' => $requestListe['erreur'] ?? 'Erreur inconnue'
+            ]);
+
+            return new JsonResponse([
+                'code' => $requestListe['code'],
+                'type' => 'alert',
+                'message' => static::$reference . "Une erreur s'est produite lors de la construction de la liste des projets (Erreur 500).",
+                'trace' => $requestListe['erreur'] ?? null
+            ], Response::HTTP_OK);
         }
 
         $projets = $requestListe['liste'];
 
-        /** j'ai pas trouvé de projet pour cette équipe. */
         if (empty($projets)) {
-            return new JsonResponse(
-                ['code' => 406, 'type' => 'warning',
-                'message' => static::$reference . static::$erreur406], Response::HTTP_OK);
+            $this->logger->notice('[Projet Liste] Aucun projet trouvé pour les groupes spécifiés.', [
+                'utilisateur' => $username,
+                'groupes' => $groupes
+            ]);
+
+            return new JsonResponse([
+                'code' => 406,
+                'type' => 'warning',
+                'message' => static::$reference . static::$erreur406
+            ], Response::HTTP_OK);
         }
 
-        return new JsonResponse(['code' => 200, 'projet' => $projets], Response::HTTP_OK);
-    }
+        $this->logger->info('[Projet Liste] Projets récupérés avec succès.', [
+            'utilisateur' => $username,
+            'nombre_projets' => count($projets)
+        ]);
 
+        return new JsonResponse([
+            'code' => 200,
+            'projet' => $projets
+        ], Response::HTTP_OK);
+    }
 }
