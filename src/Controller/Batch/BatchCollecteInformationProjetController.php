@@ -258,7 +258,6 @@ class BatchCollecteInformationProjetController extends AbstractController
 
         /** On récupère les informations du projet */
         $isValide = $this->controlVersionProjet($mavenKey);
-        dd($isValide);
         if (in_array($isValide['code'], [401, 404, 503, 500])) {
             return ['code' => $isValide['code'], 'message' => $isValide['message'] ];
         }
