@@ -13,15 +13,12 @@
 
 namespace App\Controller\Batch;
 
-/** Core */
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
-/** Accès aux tables */
+use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Mesures;
-
-/** Client HTTP */
 use App\Service\Client;
+use App\Service\UrlBuilderService;
 
 /**
  * [Description BatchCollecteMesureController]
@@ -41,11 +38,10 @@ class BatchCollecteMesureController extends AbstractController
     public function __construct(
         private EntityManagerInterface $em,
         private Client $client,
+        private UrlBuilderService $urlBuilder,
+        private LoggerInterface $logger
     ) {
-        $this->em = $em;
-        $this->client = $client;
     }
-
 
     /**
      * [Description for BatchCollecteMesure]
@@ -60,90 +56,109 @@ class BatchCollecteMesureController extends AbstractController
      */
     public function BatchCollecteMesure(string $mavenKey, string $modeCollecte, string $utilisateurCollecte): array
     {
-        /** On instancie l'EntityRepository */
-        $mesuresRepository = $this->em->getRepository(Mesures::class);
+        $mesuresRepos = $this->em->getRepository(Mesures::class);
+        $maven_key = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
 
-        /** On construit l'URL */
-        $tempoUrl = $this->getParameter(static::$sonarUrl);
-        $mavenKey = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
+        // [1] Récupération du projet
+        $url = $this->urlBuilder->build(
+            $this->getParameter(static::$sonarUrl),
+            '/api/components/app',
+            ['component' => $maven_key]
+        );
+        $this->logger->info('[Collecte] Appel à SonarQube /components/app', [
+            'url' => $url,
+            'user' => $utilisateurCollecte
+        ]);
 
-        /** Construit l'URL en utilisant http_build_query pour les paramètres de la requête */
-        $queryParams = [ 'component' => $mavenKey ];
-        $queryString = http_build_query($queryParams);
-
-        /** Appelle le client HTTP */
-        $result = $this->client->httpSonarQube("$tempoUrl/api/components/app?$queryString");
-        /** On catch les erreurs HTTP 401, 404 et 500 :) */
+        $result = $this->client->httpSonarQube($url);
         if (isset($result['code']) && in_array($result['code'], [401, 403, 404, 500, 503])) {
-            return ['code' => $result['code'], 'erreur' => $result['erreur']];
+            $this->logger->error('[Collecte] Erreur API SonarQube /components/app', [
+                'code' => $result['code'],
+                'erreur' => $result['erreur'] ?? 'inconnue'
+            ]);
+            return [
+                'code' => $result['code'],
+                'erreur' => $result['erreur'] ?? 'Erreur Sonar inconnue.'
+            ];
         }
 
-        /** On supprime les résultats pour la maven_key. */
-        $map = ['maven_key' => $mavenKey];
-        $delete=$mesuresRepository->deleteMesuresMavenKey($map);
+        // [2] Suppression des anciennes mesures
+        $delete = $mesuresRepos->deleteMesuresMavenKey(['maven_key' => $maven_key]);
         if ($delete['code'] !== 200) {
-            return ['code' => $delete['code'], 'erreur' => $delete['erreur']];
+            $this->logger->error('[Collecte] Échec suppression mesures', [
+                'code' => $delete['code'],
+                'erreur' => $delete['erreur']
+            ]);
+            return [
+                'code' => $delete['code'],
+                'erreur' => $delete['erreur']
+            ];
         }
-        /** Création de la date du jour */
-        $date = new \DateTimeImmutable('now', new \DateTimeZone("Europe/Paris"));
+        $this->logger->info('[Collecte] Suppression ancienne mesure OK', ['maven_key' => $maven_key]);
 
-        /** Initialisation des mesures avec des valeurs par défaut */
+        // [3] Collecte secondaire : lignes de code, fichiers...
+        $url = $this->urlBuilder->build(
+            $this->getParameter(static::$sonarUrl),
+            '/api/measures/component',
+            ['component' => $maven_key, 'metricKeys' => 'ncloc,ncloc_language_distribution,classes,functions,files']
+        );
+        $this->logger->info('[Collecte] Appel à SonarQube /measures/component (bloc 1)', ['url' => $url]);
+        $result2 = $this->client->httpSonarQube($url);
+
+        $ncloc = $classes = $functions = $files = 0;
+        $distribution = [];
+
+        foreach ($result2['json']['component']['measures'] ?? [] as $mesure) {
+            switch ($mesure['metric']) {
+                case 'ncloc':
+                    $ncloc = intval($mesure['value'] ?? 0);
+                    break;
+                case 'classes':
+                    $classes = intval($mesure['value'] ?? 0);
+                    break;
+                case 'functions':
+                    $functions = intval($mesure['value'] ?? 0);
+                    break;
+                case 'files':
+                    $files = intval($mesure['value'] ?? 0);
+                    break;
+                case 'ncloc_language_distribution':
+                    $asArr = explode(';', $mesure['value'] ?? '');
+                    foreach ($asArr as $language) {
+                        $tmp = explode('=', $language);
+                        if (count($tmp) === 2) {
+                            $distribution[$tmp[0]] = intval($tmp[1]);
+                        }
+                    }
+                    arsort($distribution);
+                    break;
+                default :
+                    $this->logger->error('[Batch Mesures - Erreur switch improbable.');
+                    break;
+            }
+        }
+
+        // [4] Récupération du SQALE ratio
+        $url = $this->urlBuilder->build(
+            $this->getParameter(static::$sonarUrl),
+            '/api/measures/component',
+            ['component' => $maven_key, 'metricKeys' => 'sqale_debt_ratio']
+        );
+        $this->logger->info('[Collecte] Appel à SonarQube /measures/component (SQALE)', ['url' => $url]);
+        $result3 = $this->client->httpSonarQube($url);
+        $sqaleRatio = floatval($result3['json']['component']['measures'][0]['value'] ?? -1);
+
+        // [5] Création des données mesures
+        $date = new \DateTimeImmutable('now', new \DateTimeZone("Europe/Paris"));
         $lines = intval($result['json']['measures']['lines'] ?? 0);
-        $coverage = $result['json']['measures']['coverage'] ?? 0;
-        // SonarQube doc -> duplicated_lines_density
-        $duplicatedLinesDensity = $result['json']['measures']['duplicationDensity'] ?? 0;
+        $coverage = floatval($result['json']['measures']['coverage'] ?? 0);
+        $duplicatedLinesDensity = floatval($result['json']['measures']['duplicationDensity'] ?? 0);
         $tests = intval($result['json']['measures']['tests'] ?? 0);
         $issues = intval($result['json']['measures']['issues'] ?? 0);
 
-        /** Appelle le client HTTP */
-        $queryParams = [
-            'component' => $mavenKey,
-            'metricKeys' => 'ncloc,ncloc_language_distribution,classes,functions,files'
-        ];
-        $queryString = http_build_query($queryParams);
-        /** Appelle le client HTTP */
-        $result2 = $this->client->httpSonarQube("$tempoUrl/api/measures/component?$queryString");
-
-        /** Initialise ncloc avec une valeur par défaut */
-        foreach($result2['json']['component']['measures'] as $mesure){
-            if ($mesure['metric'] === 'ncloc'){
-                $ncloc = $mesure['value'] ? intval($mesure['value']) : 0 ;
-            }
-            if ($mesure['metric'] === 'classes'){
-                $classes = $mesure['value'] ? intval($mesure['value']) : 0 ;
-            }
-            if ($mesure['metric'] === 'functions'){
-                $functions = $mesure['value'] ? intval($mesure['value']) : 0 ;
-            }
-            if ($mesure['metric'] === 'files'){
-                $files = $mesure['value'] ? intval($mesure['value']) : 0 ;
-            }
-            if ($mesure['metric'] === 'ncloc_language_distribution'){
-                $distribution = [];
-                $asArr = explode(';', $mesure['value']);
-                foreach ($asArr as $language) {
-                    $tmp = explode('=', $language);
-                    $distribution[$tmp[0]] = $tmp[1];
-                }
-                arsort($distribution);
-            }
-        }
-
-        /** On récupère le ratio de dette technique */
-        $queryParams = [
-            'component' => $mavenKey,
-            'metricKeys' => 'sqale_debt_ratio'
-            ];
-            $queryString = http_build_query($queryParams);
-        /** Appelle le client HTTP */
-        $result3 = $this->client->httpSonarQube("$tempoUrl/api/measures/component?$queryString");
-
-        $sqaleRatio = floatval($result3['json']['component']['measures'][0]['value'] ?? -1);
-
-         /** On enregistre les données */
         $mesureData = [
-            'maven_key' => $mavenKey,
-            'project_name' => $result['json']['projectName'],
+            'maven_key' => $maven_key,
+            'project_name' => $result['json']['projectName'] ?? 'inconnu',
             'lines' => $lines,
             'ncloc' => $ncloc,
             'classes' => $classes,
@@ -159,25 +174,40 @@ class BatchCollecteMesureController extends AbstractController
             'utilisateur_collecte' => $utilisateurCollecte,
             'date_enregistrement' => $date
         ];
-        $insert=$mesuresRepository->insertMesures($mesureData);
+
+        $insert = $mesuresRepos->insertMesures($mesureData);
         if ($insert['code'] !== 200) {
-            return ['code' => $insert['code'], 'erreur' => $insert['erreur']];
+            $this->logger->error('[Collecte] Échec insertion mesures', [
+                'maven_key' => $maven_key,
+                'erreur' => $insert['erreur']
+            ]);
+            return [
+                'code' => $insert['code'],
+                'erreur' => $insert['erreur']
+            ];
         }
 
-        /** On prépare les données pour l'historique */
-        $data=[
-            'nom_projet' => strtolower($result['json']['projectName']),
-            'nombre_ligne' => $lines,
-            'nombre_ligne_code' => $ncloc,
-            'language_distribution' => $distribution,
-            'coverage'=> (float)$coverage,
-            'sqale_debt_ratio' => $sqaleRatio,
-            'duplicated_lines_density' => (float)$duplicatedLinesDensity,
-            'tests' => $tests,
-            'issues' => $issues,
-        ];
+        $this->logger->info('[Collecte] Insertion mesures OK', [
+            'maven_key' => $maven_key,
+            'lines' => $lines,
+            'coverage' => $coverage
+        ]);
 
-        return ['code' => 200, 'message' => $mesureData, 'data' => $data];
+        return [
+            'code' => 200,
+            'message' => $mesureData,
+            'data' => [
+                'nom_projet' => strtolower($result['json']['projectName'] ?? 'inconnu'),
+                'nombre_ligne' => $lines,
+                'nombre_ligne_code' => $ncloc,
+                'language_distribution' => $distribution,
+                'coverage' => $coverage,
+                'sqale_debt_ratio' => $sqaleRatio,
+                'duplicated_lines_density' => $duplicatedLinesDensity,
+                'tests' => $tests,
+                'issues' => $issues
+            ]
+        ];
     }
 
 }
