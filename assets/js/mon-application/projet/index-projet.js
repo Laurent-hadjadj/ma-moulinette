@@ -309,6 +309,8 @@ const projetInformation = async function(mavenKey) {
       const trace = prepareTechnicalDetails(error);
       const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 01.";
       showMessage('alert', message, trace);
+      sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 01');
+      return;
   }
 };
 
@@ -357,6 +359,8 @@ const projetMesure = async function(mavenKey) {
       const trace = prepareTechnicalDetails(error);
       const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 02.";
       showMessage('alert', message, trace);
+      sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 02');
+      return;
   }
 };
 
@@ -407,6 +411,8 @@ const projetRating = async function(mavenKey, type) {
       const trace = prepareTechnicalDetails(error);
       const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 03.";
       showMessage('alert', message, trace);
+      sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 03');
+      return;
   }
 };
 
@@ -475,6 +481,8 @@ const projetOwasp = async function(mavenKey) {
       const trace = prepareTechnicalDetails(error);
       const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 04.";
       showMessage('alert', message, trace);
+      sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 04');
+      return;
   }
 };
 
@@ -530,6 +538,8 @@ const projetHotspot = async function(mavenKey) {
       const trace = prepareTechnicalDetails(error);
       const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 05.";
       showMessage('alert', message, trace);
+      sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 05');
+      return;
   }
 };
 
@@ -580,6 +590,8 @@ const projetAnomalie = async function(mavenKey) {
       const trace = prepareTechnicalDetails(error);
       const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 06.";
       showMessage('alert', message, trace);
+      sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 06');
+      return;
     }
 };
 
@@ -631,6 +643,8 @@ const projetAnomalieDetails = async function(mavenKey) {
       const trace = prepareTechnicalDetails(error);
       const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 07.";
       showMessage('alert', message, trace);
+      sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 07');
+      return;
   }
 };
 
@@ -668,6 +682,7 @@ const projetHotspotOwasp = async function(mavenKey, menace) {
 
   try {
     const t = await $.ajax(options);
+    console.log(t);
     // 📌 Vérification des erreurs
     const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
     if (errorCodes.includes(t.code)){
@@ -706,6 +721,8 @@ const projetHotspotOwasp = async function(mavenKey, menace) {
       const trace = prepareTechnicalDetails(error);
       const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 08/09.";
       showMessage('alert', message, trace);
+      sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 08/09');
+      return;
     }
 };
 
@@ -760,6 +777,8 @@ const projetHotspotOwaspDetails = async function(mavenKey) {
       const trace = prepareTechnicalDetails(error);
       const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 10.";
       showMessage('alert', message, trace);
+      sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 10');
+      return;
   }
 };
 
@@ -815,6 +834,8 @@ const projetNoSonar = async function(mavenKey){
       const trace = prepareTechnicalDetails(error);
       const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 11.";
       showMessage('alert', message, trace);
+      sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 11');
+      return;
   }
 };
 
@@ -868,6 +889,8 @@ const projetTodo = async function(mavenKey){
       const trace = prepareTechnicalDetails(error);
       const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 12.";
       showMessage('alert', message, trace);
+      sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 12');
+      return;
     }
 };
 
@@ -932,6 +955,8 @@ const options = {
       const trace = prepareTechnicalDetails(error);
       const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 13.";
       showMessage('alert', message, trace);
+      sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 13');
+      return;
   }
 };
 
@@ -949,7 +974,7 @@ const finCollecte = function(){
   /** On vérifie s'il n'y a pas d'erreur lors du traitement */
   const collecte = sessionStorage.getItem('ma_moulinette_collecte');
   if (!collecte || collecte != 'Tout va bien!') {
-    showMessage('secondary', `<strong>${collecte}</strong> Le processus de collecte a été interrompu !`);
+    showMessage('primary', `<strong>${collecte}</strong> Le processus de collecte a été interrompu !`);
   }
 }
 
@@ -1199,23 +1224,23 @@ $('.js-analyse').on('click', function () {
 
   async function fnAsync() {
     /* Analyse du projet */
-    await projetInformation(idProject);           /*(01)*/
-    await projetMesure(idProject);                /*(02)*/
+    //await projetInformation(idProject);           /*(01)*/
+    //await projetMesure(idProject);                /*(02)*/
 
     /* Collecte des notes */
-    await projetRating(idProject, 'reliability'); /*(03)*/
-    await projetRating(idProject, 'security');    /*(03)*/
-    await projetRating(idProject, 'sqale');      /*(03)*/
-    return;
+    //await projetRating(idProject, 'reliability'); /*(03)*/
+    //await projetRating(idProject, 'security');    /*(03)*/
+    //await projetRating(idProject, 'sqale');      /*(03)*/
+
     /* Analyse Sécurité et Owasp. */
-    await projetOwasp(idProject);                 /*(04)*/
-    await projetHotspot(idProject);               /*(05)*/
+    //await projetOwasp(idProject);                 /*(04)*/
+    //await projetHotspot(idProject);               /*(05)*/
 
     /* On récupère les infos sur les anomalies*/
-    await projetAnomalie(idProject);              /*(06)*/
+    //await projetAnomalie(idProject);              /*(06)*/
 
     /* On récupère le détails sur les anomalies*/
-    await projetAnomalieDetails(idProject);       /*(07)*/
+    //await projetAnomalieDetails(idProject);       /*(07)*/
 
     /* On efface les traces :)*/
     await projetHotspotOwasp(idProject, 'a0');    /*(08)*/
@@ -1244,7 +1269,7 @@ $('.js-analyse').on('click', function () {
     await projetLogger(idProject);                /*(13)*/
 
     /* Renvoie le statut de fin */
-    finCollecte();
+    //finCollecte();
   }
 
   /* On appelle la fonction de récupération des sévérités pour les VULNERABILITY. */
