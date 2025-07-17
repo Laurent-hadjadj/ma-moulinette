@@ -109,7 +109,7 @@ class BatchCollecteHotspotOwaspController extends AbstractController
             $message = 'A0 : Effacement des données de la table hotspotOwasp pour le projet.';
             /** si on est en version 8, on envoi pas de tableau owasp2021 */
             return ((int) $sonarVersion == 8) ?
-                ['code' => 200, 'info' => 'effacement', 'message' => $message] : ['code' => 200, 'owasp_2021'=> [], 'info' => 'effacement', 'message' => $message];
+                ['code' => 200, 'info' => 'effacement', 'message' => $message] : ['code' => 200, 'owasp_2021'=> [], 'data' => [], 'info' => 'effacement', 'message' => $message];
         }
 
         /** On récupère dans la table information_projet la version et la date du projet la plus récente. */
