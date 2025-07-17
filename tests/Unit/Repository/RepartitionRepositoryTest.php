@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Repository;
+namespace App\Tests\Unit\Repository;
 
 use App\DataFixtures\RepartitionFixtures;
 use App\Entity\Repartition;

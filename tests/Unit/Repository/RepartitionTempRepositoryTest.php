@@ -11,7 +11,7 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
-namespace App\Tests\Repository;
+namespace App\Tests\Unit\Repository;
 
 use App\DataFixtures\RepartitionTempFixtures;
 use App\Entity\RepartitionTemp;
