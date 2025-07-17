@@ -36,7 +36,7 @@ import {serveur} from '../../common/properties.js';
 import { showMessage,  hideMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
 
 /** On importe les constantes */
-import { http_200, http_400, http_401, http_403, http_404, http_406, http_500, http_503, http_504, deuxMille, cinqMille, contentType, paletteCouleur, matrice, dateOptions } from '../../common/constante.js';
+import { http_200, http_400, http_401, http_403, http_404, http_406, http_500, http_503, http_504, deuxMille, cinqMille, contentType, paletteCouleur, matrice, dateOptions, troisMille } from '../../common/constante.js';
 
 /** On importe l'encoder */
 import {encode} from '../../common/encode.js';
@@ -183,7 +183,7 @@ const log = function(txt) {
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const ditBonjour = function() {
-  log(' - Initialisation de la log...');
+  log(' - 📌 Initialisation de la log...');
 };
 
 /**
@@ -242,7 +242,7 @@ const selectProjet = async function() {
     return;
   }
   if (t.code === http_200){
-    log(' - INFO   : Je construit la liste des projets autorisés.');
+    log(' - ℹ️ Je construit la liste des projets autorisés.');
     $('.js-projet').select2({
       matcher: match,
       placeholder: 'Cliquez pour ouvrir la liste',
@@ -298,13 +298,16 @@ const projetInformation = async function(mavenKey) {
 
     if (t.code === http_200){
       // 📌 Vérification des erreurs
-      log(` - INFO   : (01) Collecte des informations pour la version : ${t.message.projet}`);
+      log(` - ℹ️ (01) Collecte des informations pour la version : ${t.message.projet}`);
       const release = parseInt(t.message.release, 10) || 0;
       const snapshot = parseInt(t.message.snapshot, 10) || 0;
       const autre = parseInt(t.message.autre, 10) || 0;
       const nombre = release + snapshot + autre;
-      log(` ----------- Nombre de version disponible : ${nombre}`);
+      log(` -     📌 Nombre de version disponible : ${nombre}`);
+      } else {
+      log(` - ❌ (01) Collecte des informations pour la version en échec.`);
       }
+
   } catch(error) {
       const trace = prepareTechnicalDetails(error);
       const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 01.";
@@ -352,9 +355,11 @@ const projetMesure = async function(mavenKey) {
         return;
       }
     if ( t.code === http_200){
-        log(' - INFO   : (02) Collecte des mesures globales.');
-        log(` ----------- ${t.message.issues} problème(s) trouvé(s).`);
-    }
+        log(' - ℹ️ (02) Collecte des mesures globales.');
+        log(` -     📌 ${t.message.issues} problème(s) trouvé(s).`);
+    } else {
+        log(` - ❌ (02) Collecte des mesures en échec.`);
+      }
   } catch(error) {
       const trace = prepareTechnicalDetails(error);
       const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 02.";
@@ -404,9 +409,11 @@ const projetRating = async function(mavenKey, type) {
         return;
       }
     if (t.code === http_200){
-      log(` - INFO   : (03) Collecte de la note pour le type : ${t.type}`);
-      log(` ----------- La note est : ${t.message.note}`);
-    }
+      log(` - ℹ️ (03) Collecte de la note pour le type : ${t.type}`);
+      log(` -     📌 La note est : ${t.message.note}`);
+    } else {
+      log(` - ❌ (03) Collecte de la note pour ${t.message.note} en échec.`);
+      }
   } catch(error) {
       const trace = prepareTechnicalDetails(error);
       const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 03.";
@@ -456,26 +463,31 @@ const projetOwasp = async function(mavenKey) {
         return;
       }
 
-    if (t.owasp2021 === 'NC') {
-      log(` - INFO   : (04) Le référentiel OWASP2021 n'est pas supporté par votre serveur SonarQube.`);
+    if (t.code === http_200){
+      log(' - ℹ️ (04) Collecte des menaces OWASP.');
+      if (t.owasp2021 === 'NC') {
+      log(` -     📌  Le référentiel OWASP2021 n'est pas supporté par votre serveur SonarQube.`);
       }
+    } else {
+      log(' - ❌ (04) Collecte des menaces OWASP en échec.')
+    }
 
     if (t.code === http_200 && t.owasp2017 === 0) {
-      log(' - INFO   : (04) Bravo aucune faille OWASP 2017 détectée.');
+      log(' -     ✅ Bravo aucune faille OWASP 2017 détectée.');
     }
     if (t.code === http_200 && t.owasp2021 === 0) {
-      log(' - INFO   : (04) Bravo aucune faille OWASP 2021 détectée.');
+      log(' -     ✅ Bravo aucune faille OWASP 2021 détectée.');
     }
 
     if (t.code === http_200 && t.owasp2017 !== 0) {
       let s='';
       if(parseInt(t.owasp2017,10) > 1 ){ s='s' ;}
-      log(` - WARN : (04) J'ai trouvé ${t.owasp2017} faille${s}.`);
+      log(` -     ⚠️ J'ai trouvé ${t.owasp2017} faille${s}.`);
     }
     if (t.code===http_200 && t.owasp2021 !== 0 && t.owasp2021 !== 'NC') {
       let s='';
       if(parseInt(t.owasp2021,10)>1){ s='s' ;}
-      log(` - WARN : (04) J'ai trouvé ${t.owasp2021} faille${s}.`);
+      log(` -     ⚠️ J'ai trouvé ${t.owasp2021} faille${s}.`);
     }
   } catch(error) {
       const trace = prepareTechnicalDetails(error);
@@ -527,12 +539,18 @@ const projetHotspot = async function(mavenKey) {
         return;
       }
 
+    if (t.code === http_200){
+        log(' - ℹ️ (05) Collecte des menaces potentielles.');
+    } else {
+        log(' - ❌ (05) Collecte des menaces potentielles en échec.')
+    }
+
     if (t.code === http_200 && t.nombre === 0){
-        log(' - INFO   : (05) Bravo aucune faille potentielle détectée.');
+        log(' -     ✅ Bravo aucune faille potentielle détectée.');
     } else {
         let s='';
         if(parseInt(t.nombre,10) > 1){ s='s'; }
-        log(` - WARN : (05) J'ai trouvé ${t.nombre} faille${s} potentielle${s}.`);
+        log(` -     ⚠️ J'ai trouvé ${t.nombre} faille${s} potentielle${s}.`);
     }
   } catch(error) {
       const trace = prepareTechnicalDetails(error);
@@ -584,7 +602,10 @@ const projetAnomalie = async function(mavenKey) {
       }
 
       if (t.code === http_200){
-          log(` - INFO   : (06) ${t.info}`);
+          log(' - ℹ️ (06) Collecte des anomalies.');
+          log(` -     📌 ${t.info}`);
+      } else {
+        log(' - ❌ (05) Collecte des anomalies en échec.')
       }
     } catch(error) {
       const trace = prepareTechnicalDetails(error);
@@ -635,9 +656,9 @@ const projetAnomalieDetails = async function(mavenKey) {
       }
 
     if (t.code === http_200){
-        log(' - INFO   : (07) La fréquence des sévérités par type a été collectée.');
+        log(' - ℹ️ (07) La fréquence des sévérités par type a été collectée.');
     } else {
-        log(` - ERROR  : (07) Je n'ai pas réussi à collecter les données (${t.erreur}).`);
+        log(` - ❌ (07) Je n'ai pas réussi à collecter les données.`);
     }
   } catch(error) {
       const trace = prepareTechnicalDetails(error);
@@ -682,7 +703,6 @@ const projetHotspotOwasp = async function(mavenKey, menace) {
 
   try {
     const t = await $.ajax(options);
-    console.log(t);
     // 📌 Vérification des erreurs
     const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
     if (errorCodes.includes(t.code)){
@@ -694,28 +714,28 @@ const projetHotspotOwasp = async function(mavenKey, menace) {
       }
 
       if (t.code === http_200 && t.info === 'effacement'){
-        log(' - INFO   : (08) Les enregistrements ont été supprimé de la table hostspot_owasp.');
+        log(' - ℹ️ (08) Les enregistrements ont été supprimé de la table hostspot_owasp.');
         if (t.owasp2021 === 'NC') {
-        log(` - INFO   : (09) Le référentiel OWASP2021 n'est pas supporté par votre serveur SonarQube.`);
+        log(` - 📌 (09) Le référentiel OWASP2021 n'est pas supporté par votre serveur SonarQube.`);
         }
       }
 
       if (t.code === http_200 && t.owasp2017 === 0 && t.info === 'enregistrement') {
-        log(` ----------- Bravo aucune faille OWASP2017 ${menace} potentielle détectée.`);
+        log(` -     ✅ Bravo aucune faille OWASP2017 ${menace} potentielle détectée.`);
       }
       if (t.code === http_200 && t.owasp2021 === 0 && t.info === 'enregistrement' && t.owasp2021 != 'NC') {
-        log(` ----------- Bravo aucune faille OWASP2021 ${menace} potentielle détectée.`);
+        log(` -     ✅ Bravo aucune faille OWASP2021 ${menace} potentielle détectée.`);
       }
 
       if (t.code === http_200 && t.owasp2017 !== 0 && t.info === 'enregistrement' && t.owasp2017 != 'NC') {
         let s='';
         if(parseInt(t.owasp2017,10)>1){ s='s' ;}
-        log(` ----------- J'ai trouvé ${t.owasp2017} faille${s} OWASP ${menace} potentielle${s}.`);
+        log(` -     ⚠️ J'ai trouvé ${t.owasp2017} faille${s} OWASP ${menace} potentielle${s}.`);
       }
       if (t.code === http_200 && t.owasp2021 !== 0 && t.owasp2021 !== 'NC' && t.info === 'enregistrement') {
         let s='';
         if(parseInt(t.owasp2021,10)>1){ s='s' ;}
-        log(` ----------- J'ai trouvé ${t.owasp2021} faille${s} OWASP ${menace} potentielle${s}.`);
+        log(` -     ⚠️ J'ai trouvé ${t.owasp2021} faille${s} OWASP ${menace} potentielle${s}.`);
       }
     } catch(error) {
       const trace = prepareTechnicalDetails(error);
@@ -766,12 +786,15 @@ const projetHotspotOwaspDetails = async function(mavenKey) {
       }
 
     if (t.code === http_200) {
+      log(` - ℹ️ (10) Collecte des informations détaillées pour les hotspots.`);
       let s='';
       if (parseInt(t.nombre,10) > 1){ s='s'; }
-      log(` - INFO   : (10) On a trouvé ${t.nombre} description${s}.`);
+      log(` -     ✅ On a trouvé ${t.nombre} description${s}.`);
     }
     if (t.code===http_406){
-      log(` - INFO   : (10) Aucune information n'est disponible pour les hotspots.`);
+      log(` -     ✅ Aucune information n'est disponible pour les hotspots.`);
+    }  else {
+      log(` - ❌ (10) Collecte des informations détaillées pour les hotspots en échec.`);
     }
   } catch(error) {
       const trace = prepareTechnicalDetails(error);
@@ -821,14 +844,20 @@ const projetNoSonar = async function(mavenKey){
         return;
       }
 
+    if (t.code === http_200) {
+      log (` - ℹ️ (11) Collecte des annotations NoSonar/SuppressWarning.`);
+    } else {
+      log (` - ❌ (11) Collecte des annotations NoSonar/SuppressWarning en échec.`);
+    }
+
     if (t.code === http_200 && t.nombre !== 0) {
       let s='';
       if (t.nombre>1) { s='s'; }
-      log(` - WARN   : (11) J'ai trouvé ${t.nombre} exclusion${s} NoSonar.`);
-      log(` ----------- NoSonar : ${t.message.no_sonar}`);
-      log(` ----------- Suppress Warning : ${t.message.suppress_warning}`);
+      log(` -     ⚠️ J'ai trouvé ${t.nombre} exclusion${s}.`);
+      log(`          📌 NoSonar : ${t.message.no_sonar}`);
+      log(`          📌 Suppress warning : ${t.message.suppress_warning}`);
     } else {
-      log(` - INFO   : (11) Bravo !!! ${t.nombre} exclusion NoSonar trouvée.`);
+      log(` -     ✅ Bravo !!! ${t.nombre} exclusion NoSonar trouvée.`);
     }
   } catch(error) {
       const trace = prepareTechnicalDetails(error);
@@ -878,12 +907,18 @@ const projetTodo = async function(mavenKey){
         return;
       }
 
+    if (t.code === http_200) {
+      log (` - ℹ️ (12) Collecte des commentaires Todo.`);
+    } else {
+      log (` - ❌ (12) Collecte des commentaires Todo.`);
+    }
+
     if (t.code === http_200 && t.nombre !== 0) {
       let s='';
       if (t.nombre>1){ s = 's'; }
-        log(` - WARN : (12) J'ai trouvé ${t.nombre} ToDo${s} à vérifier.`);
+        log(` -     ⚠️ J'ai trouvé ${t.nombre} ToDo${s} à vérifier.`);
       } else {
-        log(` - INFO   : (12) Bravo !!! ${t.nombre} ToDo trouvé.`);
+        log(` -     ✅ Bravo !!! ${t.nombre} ToDo trouvé.`);
       }
     } catch(error) {
       const trace = prepareTechnicalDetails(error);
@@ -934,10 +969,11 @@ const options = {
       }
 
     if (t.code === http_404){
-      log(` - INFO   : (13) La collecte des LOGGERS n'a pas été activée.`);
+      log(` - 📌 (13) La collecte des LOGGERS n'a pas été activée.`);
     }
 
     if (t.code === http_200) {
+      log(` - ℹ️ (13) Collecte des LOGGERS pour l'application JAVA.`);
       const a = parseInt(t.message.logger_info,10);
       const b = parseInt(t.message.logger_warn,10);
       const c = parseInt(t.message.logger_error,10);
@@ -946,9 +982,9 @@ const options = {
       let s='';
       if (t.nombre>1){
           s = 's';
-          log(` - INFO  : (13) J'ai trouvé ${nombre} Logger${s}.`);
+          log(` -     ✅ J'ai trouvé ${nombre} Logger${s}.`);
       } else {
-          log(` - INFO  : (13) Je n'ai pas trouvé de Logger.`);
+          log(` -     ⚠️ Je n'ai pas trouvé de Logger.`);
       }
     }
   } catch(error) {
@@ -969,12 +1005,13 @@ const options = {
  * Created at: 19/12/2022, 22:20:20 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
-const finCollecte = function(){
-  log(` - INFO   : (14) La collecte des données est terminée.`);
+const finCollecte = function(maven_key){
   /** On vérifie s'il n'y a pas d'erreur lors du traitement */
   const collecte = sessionStorage.getItem('ma_moulinette_collecte');
-  if (!collecte || collecte != 'Tout va bien!') {
-    showMessage('primary', `<strong>${collecte}</strong> Le processus de collecte a été interrompu !`);
+  if (collecte === 'Tout va bien!') {
+    log(` - ℹ️ (14) La collecte des données est terminée.`);
+    showMessage('success', `<strong>${collecte}</strong> Le processus de collecte a été réalisé avec success pour le projet ${maven_key} !`);
+    setTimeout( ()=> { hideMessage(); }, troisMille);
   }
 }
 
@@ -1210,37 +1247,44 @@ $('.js-analyse').on('click', function () {
     return;
   }
 
-  log(' - INFO   : On lance la collecte...');
+  /* On récupère la clé du projet qui est affichée. */
+  const idProject = $('#select-result').text().trim();
+  if (idProject === 'N.C') {
+    log(' - ❌ Vous devez choisir un projet !!!');
+    return;
+  }
+
+  const collecte = sessionStorage.getItem('ma_moulinette_collecte');
+  if (!collecte || collecte != 'Tout va bien!') {
+    log(` - ❌ Une erreur s'est produite sur le projet ${maven_key}.`);
+    log(`      Vous ne pouvez pas relancer d'analyse pour ce projet. Essayer un autre projet.`);
+    showMessage('primary', `<strong>${collecte}</strong> Le processus de collecte a été interrompu !`);
+  }
+
+  log(' - ℹ️ On lance la collecte...');
   /* On bloque le bouton afficher les résultats. */
   $('.js-affiche-result').removeClass('affiche-result-enabled');
   $('.js-affiche-result').addClass('affiche-result-disabled');
 
-  /* On récupère la clé du projet qui est affichée. */
-  const idProject = $('#select-result').text().trim();
-  if (idProject === 'N.C') {
-    log(' - ERROR : Vous devez choisir un projet !!!');
-    return;
-  }
-
   async function fnAsync() {
     /* Analyse du projet */
-    //await projetInformation(idProject);           /*(01)*/
-    //await projetMesure(idProject);                /*(02)*/
+    await projetInformation(idProject);           /*(01)*/
+    await projetMesure(idProject);                /*(02)*/
 
     /* Collecte des notes */
-    //await projetRating(idProject, 'reliability'); /*(03)*/
-    //await projetRating(idProject, 'security');    /*(03)*/
-    //await projetRating(idProject, 'sqale');      /*(03)*/
+    await projetRating(idProject, 'reliability'); /*(03)*/
+    await projetRating(idProject, 'security');    /*(03)*/
+    await projetRating(idProject, 'sqale');      /*(03)*/
 
     /* Analyse Sécurité et Owasp. */
-    //await projetOwasp(idProject);                 /*(04)*/
-    //await projetHotspot(idProject);               /*(05)*/
+    await projetOwasp(idProject);                 /*(04)*/
+    await projetHotspot(idProject);               /*(05)*/
 
     /* On récupère les infos sur les anomalies*/
-    //await projetAnomalie(idProject);              /*(06)*/
+    await projetAnomalie(idProject);              /*(06)*/
 
     /* On récupère le détails sur les anomalies*/
-    //await projetAnomalieDetails(idProject);       /*(07)*/
+    await projetAnomalieDetails(idProject);       /*(07)*/
 
     /* On efface les traces :)*/
     await projetHotspotOwasp(idProject, 'a0');    /*(08)*/
@@ -1269,7 +1313,7 @@ $('.js-analyse').on('click', function () {
     await projetLogger(idProject);                /*(13)*/
 
     /* Renvoie le statut de fin */
-    //finCollecte();
+    finCollecte(idProject);
   }
 
   /* On appelle la fonction de récupération des sévérités pour les VULNERABILITY. */
@@ -1457,10 +1501,10 @@ $('.favori-svg').on('click', () => {
 
       /* 0 (false) and 1 (true). */
       if (t.code === http_200 && (t.statut === 0 || t.statut === false)) {
-        log(' - INFO   : Suppression du projet à la liste des favoris.');
+        log(' - ℹ️ : Suppression du projet à la liste des favoris.');
       }
       if (t.code === http_200 && (t.statut === 1 || t.statut === true)) {
-        log(' - INFO   : Ajout du projet à la liste des favoris.');
+        log(' - ℹ️ : Ajout du projet à la liste des favoris.');
       }
     });
   }
