@@ -13,16 +13,15 @@
 
 namespace App\Controller\Batch;
 
-/** Core */
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-/** Accès aux tables */
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
+
 use App\Entity\Notes;
 use App\Entity\Hotspots;
-
-/** Client HTTP */
 use App\Service\Client;
+use App\Service\UrlBuilderService;
 
 /**
  * [Description BatchCollecteNoteController]
@@ -42,9 +41,9 @@ class BatchCollecteNoteController extends AbstractController
     public function __construct(
         private EntityManagerInterface $em,
         private Client $client,
+        private UrlBuilderService $urlBuilder,
+        private LoggerInterface $logger
     ) {
-        $this->em = $em;
-        $this->client = $client;
     }
 
     /**
@@ -64,30 +63,52 @@ class BatchCollecteNoteController extends AbstractController
     public function batchCollecteNote(string $mavenKey, string $modeCollecte, string $utilisateurCollecte, string $type): array
     {
         /** On instancie l'EntityRepository */
-        $noteRepository = $this->em->getRepository(Notes::class);
+        $noteRepos = $this->em->getRepository(Notes::class);
+
+        $maven_key = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
+        $this->logger->info('[Collecte][Note] Démarrage de la collecte de note', [
+            'maven_key' => $maven_key,
+            'type' => $type,
+            'mode' => $modeCollecte,
+            'utilisateur' => $utilisateurCollecte
+        ]);
 
         /** On construit l'URL */
-        $tempoUrl = $this->getParameter(static::$sonarUrl);
-        $mavenKey = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
-
-        /** Construit l'URL en utilisant http_build_query pour les paramètres de la requête */
-        $queryParams = [
-            'component' => $mavenKey,
-            'metricKeys' => $type."_rating",
-        ];
-        $queryString = http_build_query($queryParams);
+        $url = $this->urlBuilder->build(
+            $this->getParameter(static::$sonarUrl),
+            '/api/measures/component',
+            [
+                'component' => $maven_key,
+                'metricKeys' => $type . "_rating",
+            ]
+        );
 
         /** Appelle le client HTTP */
-        $result = $this->client->httpSonarQube("$tempoUrl/api/measures/component?$queryString");
+        $result = $this->client->httpSonarQube($url);
         if (isset($result['code']) && in_array($result['code'], [401, 403, 404, 500, 503])) {
-            return ['code' => $result['code'], 'erreur' => $result['erreur']];
+            $this->logger->error('[Collecte][Note] Erreur SonarQube', [
+                'url' => $url,
+                'code' => $result['code'],
+                'erreur' => $result['erreur'] ?? 'non spécifiée'
+            ]);
+            return [
+                'code' => $result['code'],
+                'erreur' => $result['erreur']
+            ];
         }
 
         /** On supprime les résultats pour la maven_key. */
         $map = ['maven_key' => $mavenKey, 'type' => $type];
-        $delete = $noteRepository->deleteNotesMavenKey($map);
+        $delete = $noteRepos->deleteNotesMavenKey($map);
         if ($delete['code'] != 200) {
-            return ['code' => $delete['code'], 'erreur' => $delete['erreur']];
+            $this->logger->error('[Collecte][Note] Échec suppression ancienne note', [
+                'code' => $delete['code'],
+                'erreur' => $delete['erreur']
+            ]);
+            return [
+                'code' => $delete['code'],
+                'erreur' => $delete['erreur']
+            ];
         }
 
         /** Création de la date du jour */
@@ -95,39 +116,47 @@ class BatchCollecteNoteController extends AbstractController
 
         /** Enregistrement des nouvelles valeurs */
         /** Attention la valeur de la note est en float dans SonarQube, on le converti en integer */
+        $latestNote = null;
         foreach ($result['json']['component']['measures'] as $mesure) {
+            $latestNote = intval($mesure['value']);
             $map = [
-                'maven_key' => $mavenKey,
+                'maven_key' => $maven_key,
                 'type' => $type,
-                'value' => intval($mesure['value']),
+                'value' => $latestNote,
                 'mode_collecte' => $modeCollecte,
                 'utilisateur_collecte' => $utilisateurCollecte,
-                'date_enregistrement' => $date];
-            $insert = $noteRepository->insertNotes($map);
+                'date_enregistrement' => $date
+            ];
+
+            $insert = $noteRepos->insertNotes($map);
             if ($insert['code'] != 200) {
-                return ['code' => $insert['code'], 'erreur' => $insert['erreur']];
+                $this->logger->error('[Collecte][Note] Échec insertion note', [
+                    'code' => $insert['code'],
+                    'erreur' => $insert['erreur']
+                ]);
+                return [
+                    'code' => $insert['code'],
+                    'erreur' => $insert['erreur']
+                ];
             }
         }
 
-        /** Attention, la valeur est un float. */
-        $latestNote = \intval($mesure['value']);
-       /** Établi une correspondance entre les valeurs des notes et les notes par lettre */
-        $noteMap = [
-            1 => 'A',
-            2 => 'B',
-            3 => 'C',
-            4 => 'D',
-            5 => 'E'
-        ];
-
-        /** Vérifier si la dernière valeur de la note existe dans la carte, sinon définir une note par défaut.
-        */
+        $noteMap = [1 => 'A', 2 => 'B', 3 => 'C', 4 => 'D', 5 => 'E'];
         $note = $noteMap[$latestNote] ?? 'Z';
+        $data = ['note_' . $type => $note];
 
-        /** On prépare les données pour l'historique */
-        $data = ['note_'.$type => $note];
+        $this->logger->info('[Collecte][Note] Collecte réussie', [
+            'note_brute' => $latestNote,
+            'note_lettre' => $note,
+            'type' => $type,
+            'maven_key' => $maven_key
+        ]);
 
-        return ['code' => 200, 'message' => ['value' => $note], 'data' => $data];
+        return [
+            'code' => 200,
+            'message' => ['value' => $note],
+            'data' => $data
+        ];
     }
 
     /**
@@ -143,29 +172,49 @@ class BatchCollecteNoteController extends AbstractController
      */
     public function BatchCollecteNoteHotspot($mavenKey): array
     {
-        /** On instancie l'EntityRepository */
-        $hotspotsRepository = $this->em->getRepository(Hotspots::class);
+        $hotspotsRepos = $this->em->getRepository(Hotspots::class);
+        $maven_key = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
+
+        $this->logger->info('[Collecte][Hotspot] Début collecte de la note hotspot.', [
+            'maven_key' => $maven_key
+        ]);
 
         // Première requête pour obtenir le nombre de hotspots à réviser
-        $map = ['maven_key' => $mavenKey, 'status'=> 'TO_REVIEW' ];
-        $toReview = $hotspotsRepository->countHotspotsStatus($map);
+        $map = ['maven_key' => $maven_key, 'status'=> 'TO_REVIEW'];
+        $toReview = $hotspotsRepos->countHotspotsStatus($map);
         if ($toReview['code'] != 200) {
-            return ['code' => $toReview['code'], 'erreur' => $toReview['erreur']];
+            $this->logger->error('[Collecte][Hotspot] Erreur lors du comptage des hotspots TO_REVIEW.', [
+                'code' => $toReview['code'],
+                'erreur' => $toReview['erreur']
+            ]);
+            return [
+                'code' => $toReview['code'],
+                'erreur' => $toReview['erreur']
+            ];
         }
-        // Seconde requête pour obtenir le nombre de hotspots révisés
-        $map = ['maven_key' => $mavenKey, 'status' => 'REVIEWED' ];
-        $reviewed = $hotspotsRepository->countHotspotsStatus($map);
+
+        // Deuxième requête pour les hotspots révisés
+        $map = ['maven_key' => $maven_key, 'status' => 'REVIEWED'];
+        $reviewed = $hotspotsRepos->countHotspotsStatus($map);
         if ($reviewed['code'] != 200) {
-            return ['code' => $reviewed['code'], 'erreur' => $reviewed['erreur']];
+            $this->logger->error('[Collecte][Hotspot] Erreur lors du comptage des hotspots REVIEWED.', [
+                'code' => $reviewed['code'],
+                'erreur' => $reviewed['erreur']
+            ]);
+            return [
+                'code' => $reviewed['code'],
+                'erreur' => $reviewed['erreur']
+            ];
         }
 
-        // Initialisation de la note
+        // Initialisation et calcul de la note
         $note = 'A';
+        $ratio = null;
         if (!empty($toReview['to_review']) && $toReview['to_review'] > 0) {
-            // Calcul du ratio si 'to_review' n'est pas vide et supérieur à 0
-            $ratio = intval($reviewed['reviewed']) * 100 / intval($toReview['to_review']) + intval($reviewed['reviewed']);
+            $toReviewCount = intval($toReview['to_review']);
+            $reviewedCount = intval($reviewed['reviewed']);
+            $ratio = ($reviewedCount * 100) / ($toReviewCount + $reviewedCount);
 
-            // Détermination de la note en fonction du ratio
             if ($ratio >= 80) {
                 $note = 'A';
             } elseif ($ratio >= 70) {
@@ -178,9 +227,19 @@ class BatchCollecteNoteController extends AbstractController
                 $note = 'E';
             }
         }
-        /** On prépare les données pour l'historique */
-        $data = [ 'note_hotspot' => $note];
 
-        return ['code' => 200, 'message' => ['note_hotspot' => $note], 'data' => $data];
+        $this->logger->info('[Collecte][Hotspot] Note calculée avec succès.', [
+            'maven_key' => $maven_key,
+            'to_review' => $toReview['to_review'] ?? 0,
+            'reviewed' => $reviewed['reviewed'] ?? 0,
+            'ratio' => $ratio ?? 'non calculé',
+            'note' => $note
+        ]);
+
+        return [
+            'code' => 200,
+            'message' => ['note_hotspot' => $note],
+            'data' => ['note_hotspot' => $note]
+        ];
     }
 }
