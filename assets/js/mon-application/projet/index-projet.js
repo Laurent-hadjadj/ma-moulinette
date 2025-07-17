@@ -304,15 +304,16 @@ const projetInformation = async function(mavenKey) {
       const autre = parseInt(t.message.autre, 10) || 0;
       const nombre = release + snapshot + autre;
       log(` -     📌 Nombre de version disponible : ${nombre}`);
-      } else {
+    } else {
       log(` - ❌ (01) Collecte des informations pour la version en échec.`);
-      }
+    }
 
   } catch(error) {
       const trace = prepareTechnicalDetails(error);
       const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 01.";
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 01');
+      log(` - ❌ (01) Collecte des informations pour la version en échec.`);
       return;
   }
 };
@@ -359,12 +360,13 @@ const projetMesure = async function(mavenKey) {
         log(` -     📌 ${t.message.issues} problème(s) trouvé(s).`);
     } else {
         log(` - ❌ (02) Collecte des mesures en échec.`);
-      }
+    }
   } catch(error) {
       const trace = prepareTechnicalDetails(error);
       const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 02.";
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 02');
+      log(` - ❌ (02) Collecte des mesures en échec.`);
       return;
   }
 };
@@ -413,12 +415,13 @@ const projetRating = async function(mavenKey, type) {
       log(` -     📌 La note est : ${t.message.note}`);
     } else {
       log(` - ❌ (03) Collecte de la note pour ${t.message.note} en échec.`);
-      }
+    }
   } catch(error) {
       const trace = prepareTechnicalDetails(error);
       const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 03.";
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 03');
+      log(` - ❌ (03) Collecte de la note pour ${t.message.note} en échec.`);
       return;
   }
 };
@@ -469,7 +472,7 @@ const projetOwasp = async function(mavenKey) {
       log(` -     📌  Le référentiel OWASP2021 n'est pas supporté par votre serveur SonarQube.`);
       }
     } else {
-      log(' - ❌ (04) Collecte des menaces OWASP en échec.')
+      log(' - ❌ (04) Collecte des menaces OWASP en échec.');
     }
 
     if (t.code === http_200 && t.owasp2017 === 0) {
@@ -494,6 +497,7 @@ const projetOwasp = async function(mavenKey) {
       const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 04.";
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 04');
+      log(' - ❌ (04) Collecte des menaces OWASP en échec.');
       return;
   }
 };
@@ -542,7 +546,7 @@ const projetHotspot = async function(mavenKey) {
     if (t.code === http_200){
         log(' - ℹ️ (05) Collecte des menaces potentielles.');
     } else {
-        log(' - ❌ (05) Collecte des menaces potentielles en échec.')
+        log(' - ❌ (05) Collecte des menaces potentielles en échec.');
     }
 
     if (t.code === http_200 && t.nombre === 0){
@@ -557,6 +561,7 @@ const projetHotspot = async function(mavenKey) {
       const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 05.";
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 05');
+      log(' - ❌ (05) Collecte des menaces potentielles en échec.');
       return;
   }
 };
@@ -605,13 +610,14 @@ const projetAnomalie = async function(mavenKey) {
           log(' - ℹ️ (06) Collecte des anomalies.');
           log(` -     📌 ${t.info}`);
       } else {
-        log(' - ❌ (05) Collecte des anomalies en échec.')
+        log(' - ❌ (06) Collecte des anomalies en échec.');
       }
     } catch(error) {
       const trace = prepareTechnicalDetails(error);
       const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 06.";
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 06');
+      log(' - ❌ (06) Collecte des anomalies en échec.');
       return;
     }
 };
@@ -665,6 +671,7 @@ const projetAnomalieDetails = async function(mavenKey) {
       const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 07.";
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 07');
+      log(` - ❌ (07) Je n'ai pas réussi à collecter les données.`);
       return;
   }
 };
@@ -742,6 +749,7 @@ const projetHotspotOwasp = async function(mavenKey, menace) {
       const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 08/09.";
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 08/09');
+      log(` - ❌ (08/09) Collecte des menaces potentielles Owasp en échec.`);
       return;
     }
 };
@@ -801,6 +809,7 @@ const projetHotspotOwaspDetails = async function(mavenKey) {
       const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 10.";
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 10');
+      log(` - ❌ (10) Collecte des informations détaillées pour les hotspots en échec.`);
       return;
   }
 };
@@ -854,8 +863,8 @@ const projetNoSonar = async function(mavenKey){
       let s='';
       if (t.nombre>1) { s='s'; }
       log(` -     ⚠️ J'ai trouvé ${t.nombre} exclusion${s}.`);
-      log(`          📌 NoSonar : ${t.message.no_sonar}`);
-      log(`          📌 Suppress warning : ${t.message.suppress_warning}`);
+      log(`           📌 NoSonar : ${t.message.no_sonar}`);
+      log(`           📌 Suppress warning : ${t.message.suppress_warning}`);
     } else {
       log(` -     ✅ Bravo !!! ${t.nombre} exclusion NoSonar trouvée.`);
     }
@@ -864,6 +873,7 @@ const projetNoSonar = async function(mavenKey){
       const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 11.";
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 11');
+      log (` - ❌ (11) Collecte des annotations NoSonar/SuppressWarning en échec.`);
       return;
   }
 };
@@ -925,6 +935,7 @@ const projetTodo = async function(mavenKey){
       const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 12.";
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 12');
+      log (` - ❌ (12) Collecte des commentaires Todo.`);
       return;
     }
 };
@@ -992,6 +1003,7 @@ const options = {
       const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 13.";
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 13');
+      log (` - ❌ (13) Collecte des Loggers en échec.`);
       return;
   }
 };
@@ -1256,8 +1268,8 @@ $('.js-analyse').on('click', function () {
 
   const collecte = sessionStorage.getItem('ma_moulinette_collecte');
   if (!collecte || collecte != 'Tout va bien!') {
-    log(` - ❌ Une erreur s'est produite sur le projet ${maven_key}.`);
-    log(`      Vous ne pouvez pas relancer d'analyse pour ce projet. Essayer un autre projet.`);
+    log(` - ❌ Une erreur s'est produite sur le projet ${idProject}.`);
+    log(`      Vous ne pouvez pas relancer d'analyse pour ce projet.`);
     showMessage('primary', `<strong>${collecte}</strong> Le processus de collecte a été interrompu !`);
   }
 
