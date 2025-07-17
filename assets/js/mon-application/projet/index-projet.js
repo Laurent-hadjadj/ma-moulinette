@@ -329,7 +329,7 @@ const projetInformation = async function(mavenKey) {
 const projetMesure = async function(mavenKey) {
   /** On vérifie s'il n'y a pas d'erreur lors du traitement */
   const collecte = sessionStorage.getItem('ma_moulinette_collecte');
-  if (!collecte || collecte!='Tout va bien!') {
+  if (!collecte || collecte != 'Tout va bien!') {
     return;
   }
 
@@ -429,7 +429,7 @@ const projetRating = async function(mavenKey, type) {
  */
 const projetOwasp = async function(mavenKey) {
   const collecte = sessionStorage.getItem('ma_moulinette_collecte');
-  if (!collecte || collecte!='Tout va bien!') {
+  if (!collecte || collecte != 'Tout va bien!') {
     return;
   }
 
@@ -498,7 +498,7 @@ const projetOwasp = async function(mavenKey) {
 const projetHotspot = async function(mavenKey) {
   /** On vérifie s'il n'y a pas d'erreur lors du traitement */
   const collecte = sessionStorage.getItem('ma_moulinette_collecte');
-  if (!collecte || collecte!='Tout va bien!') {
+  if (!collecte || collecte != 'Tout va bien!') {
     return;
   }
 
@@ -552,7 +552,7 @@ const projetHotspot = async function(mavenKey) {
 const projetAnomalie = async function(mavenKey) {
   /** On vérifie s'il n'y a pas d'erreur lors du traitement */
   const collecte = sessionStorage.getItem('ma_moulinette_collecte');
-  if (!collecte || collecte!='Tout va bien!') {
+  if (!collecte || collecte != 'Tout va bien!') {
     return;
   }
 
@@ -601,7 +601,7 @@ const projetAnomalie = async function(mavenKey) {
 const projetAnomalieDetails = async function(mavenKey) {
   /** On vérifie s'il n'y a pas d'erreur lors du traitement */
   const collecte = sessionStorage.getItem('ma_moulinette_collecte');
-  if (!collecte || collecte!='Tout va bien!') {
+  if (!collecte || collecte != 'Tout va bien!') {
     return;
   }
 
@@ -657,7 +657,7 @@ const projetAnomalieDetails = async function(mavenKey) {
 const projetHotspotOwasp = async function(mavenKey, menace) {
   /** On vérifie s'il n'y a pas d'erreur lors du traitement */
   const collecte = sessionStorage.getItem('ma_moulinette_collecte');
-  if (!collecte || collecte!='Tout va bien!') {
+  if (!collecte || collecte != 'Tout va bien!') {
     return;
   }
 
@@ -727,7 +727,7 @@ const projetHotspotOwasp = async function(mavenKey, menace) {
 const projetHotspotOwaspDetails = async function(mavenKey) {
   /** On vérifie s'il n'y a pas d'erreur lors du traitement */
   const collecte = sessionStorage.getItem('ma_moulinette_collecte');
-  if (!collecte || collecte!='Tout va bien!') {
+  if (!collecte || collecte != 'Tout va bien!') {
     return;
   }
 
@@ -836,7 +836,7 @@ const projetNoSonar = async function(mavenKey){
 const projetTodo = async function(mavenKey){
     /** On vérifie s'il n'y a pas d'erreur lors du traitement */
     const collecte = sessionStorage.getItem('ma_moulinette_collecte');
-    if (!collecte || collecte!='Tout va bien!') {
+    if (!collecte || collecte != 'Tout va bien!') {
       return;
     }
 
@@ -889,7 +889,7 @@ const projetTodo = async function(mavenKey){
 const projetLogger = async function(mavenKey){
   /** On vérifie s'il n'y a pas d'erreur lors du traitement */
   const collecte = sessionStorage.getItem('ma_moulinette_collecte');
-  if (!collecte || collecte!='Tout va bien!') {
+  if (!collecte || collecte != 'Tout va bien!') {
     return;
   }
 
@@ -1001,7 +1001,7 @@ const afficheMesProjets = async function() {
         if (element.favori){
           favori = favoriSvg;
         } else {
-          favori=' - ';
+          favori =' - ';
         }
 
         str = `<tr id="name-${i}" class="open-sans">
@@ -1049,11 +1049,11 @@ const afficheMesProjets = async function() {
         /* On récupère la valeur de l'ID. */
         const id = e.currentTarget.id;
         const a = id.split('-');
-        const key='key-'+a[1];
+        const key = `key-${a[1]}`;
 
         /* On récupère la clé maven du projet. */
         const element = document.getElementById(key);
-        const mavenKey=element.dataset.mavenkey;
+        const mavenKey = element.dataset.mavenkey;
 
         /* On récupère le nom du projet */
         const b = mavenKey.split(':');
@@ -1076,7 +1076,7 @@ const afficheMesProjets = async function() {
 
         /* On récupère la clé maven du projet */
         const element = document.getElementById(key);
-        const mavenKey=element.dataset.mavenkey;
+        const mavenKey = element.dataset.mavenkey;
         $('#select-result').html(`<strong>${mavenKey}</strong>`);
         /* on active le bouton pour afficher les infos du projet */
         $('.js-affiche-result').removeClass('affiche-result-disabled');
@@ -1094,11 +1094,11 @@ const afficheMesProjets = async function() {
         /* On récupère la valeur de l'ID. */
         const id = e.currentTarget.id;
         const a = id.split('-');
-        const key='key-'+a[1];
+        const key = `key-${a[1]}`;
 
         /* On récupère la clé maven du projet */
         const element = document.getElementById(key);
-        const mavenKey=element.dataset.mavenkey;
+        const mavenKey = element.dataset.mavenkey;
         $('#select-result').html(`<strong>${mavenKey}</strong>`);
         /* On clique sur le bouton tableau de suivi */
         $('.js-tableau-de-bord').trigger('click');
@@ -1109,11 +1109,11 @@ const afficheMesProjets = async function() {
         /* On récupère la valeur de l'ID */
         const id = e.currentTarget.id;
         const a = id.split('-');
-        const key='key-'+a[1];
+        const key = `key-${a[1]}`;
 
         /* On récupère la clé maven du projet */
         const element = document.getElementById(key);
-        const mavenKey=element.dataset.mavenkey;
+        const mavenKey = element.dataset.mavenkey;
         $('#select-result').html(`<strong>${mavenKey}</strong>`);
 
         /* On clique sur le bouton COSUI */
@@ -1131,7 +1131,7 @@ const afficheMesProjets = async function() {
 
         /* On récupère la clé maven du projet */
         const element = document.getElementById(key);
-        const mavenKey=element.dataset.mavenkey;
+        const mavenKey = element.dataset.mavenkey;
         $('#select-result').html(`<strong>${mavenKey}</strong>`);
         /* On clique sur le bouton OWASP */
         $('.js-analyse-owasp').trigger('click');
@@ -1143,11 +1143,11 @@ const afficheMesProjets = async function() {
         /* On récupère la valeur de l'ID */
         const id = e.currentTarget.id;
         const a = id.split('-');
-        const key='key-'+a[1];
+        const key=`key-${a[1]}`;
 
         /* On récupère la clé maven du projet */
         const element = document.getElementById(key);
-        const mavenKey=element.dataset.mavenkey;
+        const mavenKey = element.dataset.mavenkey;
         $('#select-result').html(`<strong>${mavenKey}</strong>`);
         /* On clique sur le bouton Répartition par module */
         $('.js-repartition-module').trigger('click');
@@ -1206,7 +1206,7 @@ $('.js-analyse').on('click', function () {
     await projetRating(idProject, 'reliability'); /*(03)*/
     await projetRating(idProject, 'security');    /*(03)*/
     await projetRating(idProject, 'sqale');      /*(03)*/
-
+    return;
     /* Analyse Sécurité et Owasp. */
     await projetOwasp(idProject);                 /*(04)*/
     await projetHotspot(idProject);               /*(05)*/
