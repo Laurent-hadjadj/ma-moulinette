@@ -25,6 +25,7 @@ package-lock.json
 .git.store
 .git-credentials
 .gitconfig
+.gitconfig.git
 ###< git ###
 
 ###> audit ###
