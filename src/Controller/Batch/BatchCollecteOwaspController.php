@@ -23,6 +23,8 @@ use App\Entity\InformationProjet;
 
 /** Client HTTP */
 use App\Service\Client;
+use App\Service\UrlBuilderService;
+use Soap\Url;
 
 /**
  * [Description BatchCollecteOwaspController]
@@ -44,6 +46,7 @@ class BatchCollecteOwaspController extends AbstractController
     public function __construct(
         private EntityManagerInterface $em,
         private Client $client,
+        private UrlBuilderService $urlBuilder
     ) {
         $this->em = $em;
         $this->client = $client;
@@ -64,6 +67,8 @@ class BatchCollecteOwaspController extends AbstractController
      */
     public function BatchCollecteOwasp(string $maven_key, string $mode_collecte, string $utilisateur_collecte): array
     {
+        $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
+
         /** On instancie l'EntityRepository */
         $informationProjet = $this->em->getRepository(InformationProjet::class);
         $owaspRepository = $this->em->getRepository(Owasp::class);
@@ -80,11 +85,15 @@ class BatchCollecteOwaspController extends AbstractController
             'owasp2021' => ['componentKeys' => $maven_key, 'facets' => 'owaspTop10-2021', 'owaspTop10-2021' => 'a1,a2,a3,a4,a5,a6,a7,a8,a9,a10'],
         ];
 
-        /** On construit l'URL */
-        $url = $this->getParameter(static::$sonarUrl);
+        /** Sécurisation de l'URL */
+        $url = $this->urlBuilder->build(
+            $this->getParameter(static::$sonarUrl),
+            '/api/issues/search',
+            $queryParamsList['owasp2017']
+        );
 
         /** On appelle les requêtes HTTP pour chaque référentiel */
-        $owasp2017 = $this->client->httpSonarQube("$url/api/issues/search?".http_build_query($queryParamsList['owasp2017']));
+        $owasp2017 = $this->client->httpSonarQube($url);
         /** Il ne peut pas y avoir de 404, l'API renvoie toujours une response 200*/
         if (isset($owasp2017['code']) && in_array($owasp2017['code'], [401, 403, 404, 500, 503])) {
             return ['code' => $owasp2017['code'], $owasp2017['erreur']];
@@ -93,7 +102,12 @@ class BatchCollecteOwaspController extends AbstractController
         /** On execute si la version de SonarQube est >= 9 */
         $owasp2021 = ['NC'];
         if ((int) $sonar_version > 8){
-            $owasp2021 = $this->client->httpSonarQube("$url/api/issues/search?".http_build_query($queryParamsList['owasp2021']));
+            $url = $this->urlBuilder->build(
+            $this->getParameter(static::$sonarUrl),
+            '/api/issues/search',
+            $queryParamsList['owasp2021']
+        );
+            $owasp2021 = $this->client->httpSonarQube($url);
             if (isset($owasp2021['code']) && in_array($owasp2021['code'], [401, 403, 404, 500, 503])) {
             return ['code' => $owasp2021['code'], 'erreur' => $owasp2021['erreur']];
             }

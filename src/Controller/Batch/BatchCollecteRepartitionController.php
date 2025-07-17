@@ -24,6 +24,7 @@ use App\Entity\RepartitionTemp;
 /** Client HTTP */
 use App\Service\Client;
 use Exception;
+use App\Service\UrlBuilderService;
 
 /**
  * [Description BatchCollecteNoSonarController]
@@ -46,7 +47,8 @@ class BatchCollecteRepartitionController extends AbstractController
      */
     public function __construct(
         private EntityManagerInterface $em,
-        private Client $client
+        private Client $client,
+        private UrlBuilderService $urlBuilder
     ) {
         $this->em = $em;
         $this->client = $client;
@@ -144,20 +146,23 @@ class BatchCollecteRepartitionController extends AbstractController
      */
     private function batchCollecteAnomalie($mavenKey, $index, $batchSize, $category, $severity) :array
     {
-        /** On construit l'URL */
-        $tempoUrl = $this->getParameter(static::$sonarUrl);
-        $mavenKey = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
+         /** Sécurisation de l'URL */
+        $maven_key = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
+        $url = $this->urlBuilder->build(
+            $this->getParameter(static::$sonarUrl),
+            '/api/issues/search',
+            [
+                'componentKeys' => $maven_key,
+                'statuses' => 'OPEN,CONFIRMED,REOPENED',
+                's' => 'STATUS',
+                'asc' => 'no',
+                'types' => $category,
+                'severities' => $severity,
+                'p' => $index, 'ps' => $batchSize
+            ]
+        );
 
-        /** Appelle le client HTTP */
-        $queryParams = [
-            'componentKeys' => $mavenKey,
-            'statuses' => 'OPEN,CONFIRMED,REOPENED',
-            's' => 'STATUS',
-            'asc' => 'no',
-            'types' => $category,
-            'severities' => $severity,
-            'p' => $index, 'ps' => $batchSize];
-        $result = $this->client->httpSonarQube("$tempoUrl/api/issues/search?".http_build_query($queryParams));
+        $result = $this->client->httpSonarQube($url);
         /** On catch les erreurs HTTP :) */
         if (isset($result['code']) && in_array($result['code'], [401, 403, 404, 500, 503])) {
             return ['code' => $result['code'], 'erreur' => $result['erreur']];
@@ -181,17 +186,21 @@ class BatchCollecteRepartitionController extends AbstractController
      */
     private function batchCollecteInformation($mavenKey, $category): array
     {
-        /** On construit l'URL */
-        $tempoUrl = $this->getParameter(static::$sonarUrl);
-        $mavenKey = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
-        /** Appelle le client HTTP */
-        $queryParams = [
-            'componentKeys' => $mavenKey,
+        /** Sécurisation de l'URL */
+        $maven_key = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
+        $url = $this->urlBuilder->build(
+            $this->getParameter(static::$sonarUrl),
+            '/api/issues/search',
+            [
+            'componentKeys' => $maven_key,
             'statuses' => 'OPEN,CONFIRMED,REOPENED',
             'types' => $category,
             'facets' => 'severities',
-            'p' => 1, 'ps' => 1];
-        $result = $this->client->httpSonarQube("$tempoUrl/api/issues/search?".http_build_query($queryParams));
+            'p' => 1, 'ps' => 1
+            ]
+        );
+
+        $result = $this->client->httpSonarQube($url);
         /** On catch les erreurs HTTP :) */
         if (isset($result['code']) && in_array($result['code'], [401, 403, 404, 500, 503])) {
             return ['code' => $result['code'], 'erreur' => $result['erreur']];

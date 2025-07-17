@@ -22,6 +22,7 @@ use App\Entity\Logger;
 
 /** Client HTTP */
 use App\Service\Client;
+use App\Service\UrlBuilderService;
 
 /**
  * [Description BatchCollecteLoggerController]
@@ -42,6 +43,7 @@ class BatchCollecteLoggerController extends AbstractController
     public function __construct(
         private EntityManagerInterface $em,
         private Client $client,
+        private UrlBuilderService $urlBuilder
     ) {
         $this->em = $em;
         $this->client = $client;
@@ -51,7 +53,6 @@ class BatchCollecteLoggerController extends AbstractController
      * [Description for makeRequest]
      *
      * @param array $queryParams
-     * @param string $tempoUrl
      *
      * @return array
      *
@@ -59,12 +60,19 @@ class BatchCollecteLoggerController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function makeRequest(array $queryParams, string $tempoUrl): array
+    private function makeRequest(array $queryParams): array
     {
         /* Fonction générique pour executer une requête et retourner le résultat dans un tableau */
-        $queryString = http_build_query($queryParams);
+
+         /** Sécurisation de l'URL */
+        $url = $this->urlBuilder->build(
+            $this->getParameter(static::$sonarUrl),
+            '/api/project_analyses/search',
+            $queryParams
+        );
+
         /** Appelle le client HTTP */
-        $result = $this->client->httpSonarQube("$tempoUrl/api/issues/search?$queryString");
+        $result = $this->client->httpSonarQube($url);
         if (isset($result['code']) && in_array($result['code'], [401, 403, 404, 500, 503])) {
             return ['code' => $result['code'], 'erreur' => $result['erreur']];
         }
@@ -87,6 +95,8 @@ class BatchCollecteLoggerController extends AbstractController
      */
     public function BatchCollecteLogger(string $mavenKey, string $modeCollecte, string $utilisateurCollecte): array
     {
+        $maven_key = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
+
         /** On instancie l'EntityRepository */
         $loggerRepository = $this->em->getRepository(Logger::class);
 
@@ -96,44 +106,40 @@ class BatchCollecteLoggerController extends AbstractController
             return ['code' => 404, 'message' => "La collecte des LOGGERS n'a pas été lancée. (TRACK_LOGGER_METHOD=false).", 'data' => ''];
         }
 
-        /** On construit l'URL */
-        $tempoUrl = $this->getParameter(static::$sonarUrl);
-        $mavenKey = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
-
         /* Liste des différents Logger */
         $method = [ 'track-info-method', 'track-warn-method', 'track-error-method', 'track-debug-method' ];
         $queryParams = [
-            $method[0] => [ 'componentKeys' => $mavenKey,
+            $method[0] => [ 'componentKeys' => $maven_key,
             'facets'  => 'rules', 'statuses' => 'OPEN', 'rules' => static::$trackLoggerMethod.$method[0], 'ps' => 500],
-            $method[1] => [ 'componentKeys' => $mavenKey,
+            $method[1] => [ 'componentKeys' => $maven_key,
             'facets'  => 'rules', 'statuses' => 'OPEN', 'rules' => static::$trackLoggerMethod.$method[1], 'ps' => 500],
-            $method[2] => [ 'componentKeys' => $mavenKey,
+            $method[2] => [ 'componentKeys' => $maven_key,
             'facets'  => 'rules', 'statuses' => 'OPEN', 'rules' => static::$trackLoggerMethod.$method[2], 'ps' => 500],
-            $method[3] => [ 'componentKeys' => $mavenKey,
+            $method[3] => [ 'componentKeys' => $maven_key,
             'facets'  => 'rules', 'statuses' => 'OPEN', 'rules' => static::$trackLoggerMethod.$method[3], 'ps' => 500]
         ];
 
         /* On appelle les API en passant les QueryParams à la fonction générique */
         $results = [];
-        $results['track-info-method'] = self::makeRequest($queryParams['track-info-method'], $tempoUrl);
+        $results['track-info-method'] = self::makeRequest($queryParams['track-info-method']);
         if (isset($results['track-info-method']['code']) && $results['track-info-method']['code'] != 200) {
                 return ['code' => $results['track-info-method']['code'],
                         'erreur' => $results['track-info-method']['erreur'],
                         'tracker' => 'track-info-method'];
             }
-        $results['track-warn-method'] = self::makeRequest($queryParams['track-warn-method'], $tempoUrl);
+        $results['track-warn-method'] = self::makeRequest($queryParams['track-warn-method']);
         if (isset($results['track-warn-method']['code']) && $results['track-warn-method']['code'] != 200) {
                 return ['code' => $results['track-warn-method']['code'],
                         'erreur' => $results['track-warn-method']['erreur'],
                         'tracker' => 'track-warn-method'];
             }
-        $results['track-error-method'] = self::makeRequest($queryParams['track-error-method'], $tempoUrl);
+        $results['track-error-method'] = self::makeRequest($queryParams['track-error-method']);
         if (isset($results['track-error-method']['erreur']) && $results['track-error-method']['code'] != 200) {
                 return ['code' => $results['track-error-method']['code'],
                         'erreur' => $results['track-error-method']['erreur'],
                         'tracker' => 'track-error-method'];
             }
-        $results['track-debug-method'] = self::makeRequest($queryParams['track-debug-method'], $tempoUrl);
+        $results['track-debug-method'] = self::makeRequest($queryParams['track-debug-method']);
         if (isset($results['track-debug-method']['erreur']) && $results['track-debug-method']['code'] != 200) {
                 return ['code' => $results['track-debug-method']['code'],
                         'erreur' => $results['track-debug-method']['erreur'],
@@ -152,7 +158,7 @@ class BatchCollecteLoggerController extends AbstractController
 
          /** On enregistre les données */
         $loggerData = [
-            'maven_key' => $mavenKey,
+            'maven_key' => $maven_key,
             'logger_info' => $results['track-info-method']['total'],
             'logger_warn' => $results['track-warn-method']['total'],
             'logger_error' => $results['track-error-method']['total'],
@@ -169,7 +175,7 @@ class BatchCollecteLoggerController extends AbstractController
 
         /** On prépare les données pour l'historique */
         $data = [
-            'maven_key' => $mavenKey,
+            'maven_key' => $maven_key,
             'logger_info' => $results['track-info-method'],
             'logger_warn' => $results['track-warn-method'],
             'logger_error' => $results['track-error-method'],

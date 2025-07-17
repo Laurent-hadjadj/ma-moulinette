@@ -24,7 +24,7 @@ use App\Entity\InformationProjet;
 
 /** Client HTTP */
 use App\Service\Client;
-
+use App\Service\UrlBuilderService;
 
 /**
  * [Description BatchCollecteHotspotOwaspController]
@@ -46,6 +46,7 @@ class BatchCollecteHotspotOwaspController extends AbstractController
     public function __construct(
         private EntityManagerInterface $em,
         private Client $client,
+        private UrlBuilderService $urlBuilder
     ) {
         $this->em = $em;
         $this->client = $client;
@@ -87,15 +88,16 @@ class BatchCollecteHotspotOwaspController extends AbstractController
      */
     public function batchCollecteHotspotOwasp(string $mavenKey, string $mode_collecte, string $utilisateur_collecte, string $menace): array
     {
+        /** On contrôle la variable mavenKey */
+        $maven_key = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
+
         /** On instancie l'EntityRepository */
         $informationProjetRepository = $this->em->getRepository(InformationProjet::class);
         $hotspotOwaspRepository = $this->em->getRepository(HotspotOwasp::class);
 
-        /** On contrôle la variable mavenKey */
-        $mavenKey = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
-
         /** On récupère la version du serveur SonarQube */
         $sonarVersion = $this->getParameter('sonar.version');
+
         /** On supprime les hotspots pour la maven_key. */
         if ($menace === 'a0') {
             $map = ['maven_key' => $mavenKey];
@@ -125,9 +127,6 @@ class BatchCollecteHotspotOwaspController extends AbstractController
         $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
         $dateVersion = new \DateTimeImmutable($information['info'][0]['date'], new \DateTimeZone(static::$europeParis));
 
-        /** On construit l'URL */
-        $tempoUrl = $this->getParameter(static::$sonarUrl);
-
         /** Tableau des paramètres pour la requête HTTP */
         $queryParamsList = [
             'owasp2017' => ['projectKey' => $mavenKey, 'owaspTop10' => $menace,'p' => 1, 'ps' => 500 ],
@@ -135,7 +134,12 @@ class BatchCollecteHotspotOwaspController extends AbstractController
         ];
 
         /** On appelle les requêtes HTTP pour chaque référentiel */
-        $owasp2017 = $this->client->httpSonarQube("$tempoUrl/api/hotspots/search?".http_build_query($queryParamsList['owasp2017']));
+        $url = $this->urlBuilder->build(
+            $this->getParameter(static::$sonarUrl),
+            '/api/hotspots/search',
+            $queryParamsList['owasp2017']
+        );
+        $owasp2017 = $this->client->httpSonarQube($url);
         if (isset($owasp2017['code']) && in_array($owasp2017['code'], [401, 403, 404, 500, 503])) {
             return ['code' => $owasp2017['code'], 'erreur' => $owasp2017['erreur'], 'type' => 'owasp2017'];
         }
@@ -143,16 +147,22 @@ class BatchCollecteHotspotOwaspController extends AbstractController
         /** On execute si la version de SonarQube est >= 9 */
         $owasp2021 = ['NC'];
         if ((int) $sonarVersion > 8){
-            $owasp2021 = $this->client->httpSonarQube("$tempoUrl/api/hotspots/search?".http_build_query($queryParamsList['owasp2021']));
+            $url = $this->urlBuilder->build(
+                $this->getParameter(static::$sonarUrl),
+                '/api/hotspots/search',
+                $queryParamsList['owasp2021']
+            );
+            $owasp2021 = $this->client->httpSonarQube($url);
             if (isset($owasp2021['code']) && in_array($owasp2021['code'], [401, 403, 404, 500, 503])) {
             return ['code' => $owasp2021['code'], 'erreur' => $owasp2021['erreur'],'type' => 'owasp2021'];
             }
         }
+
         /** On prépare les données */
-        $prepareHotspotData = function($data, $ref) use ($mavenKey, $information, $dateVersion, $date, $menace, $mode_collecte, $utilisateur_collecte) {
+        $prepareHotspotData = function($data, $ref) use ($maven_key, $information, $dateVersion, $date, $menace, $mode_collecte, $utilisateur_collecte) {
             return [
                 'referential_owasp' => $ref,
-                'maven_key' => $mavenKey,
+                'maven_key' => $maven_key,
                 'version' => $information['info'][0]['project_version'],
                 'date_version' => $dateVersion,
                 'menace' => $menace,

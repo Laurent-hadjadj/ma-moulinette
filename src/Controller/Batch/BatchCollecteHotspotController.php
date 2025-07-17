@@ -23,6 +23,7 @@ use App\Entity\InformationProjet;
 
 /** Client HTTP */
 use App\Service\Client;
+use App\Service\UrlBuilderService;
 
 /**
  * [Description BatchCollecteInformationProjetController]
@@ -42,7 +43,8 @@ class BatchCollecteHotspotController extends AbstractController
      */
     public function __construct(
         private EntityManagerInterface $em,
-        private Client $client
+        private Client $client,
+        private UrlBuilderService $urlBuilder
     ) {
         $this->em = $em;
         $this->client = $client;
@@ -106,14 +108,14 @@ class BatchCollecteHotspotController extends AbstractController
         /** On reconstruit la date de version au format dateTime */
         $dateVersion = new \DateTimeImmutable($select['info'][0]['date'], new \DateTimeZone(static::$europeParis));
 
-        /** On construit l'URL */
-        $tempoUrl = $this->getParameter(static::$sonarUrl);
-        $mavenKey = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
-
-        /** Construit l'URL en utilisant http_build_query pour les paramètres de la requête */
-        $queryParams = ['projectKey' => $mavenKey, 'ps' => 500, 'p' => 1];
-        /** Appelle le client HTTP */
-        $result = $this->client->httpSonarQube("$tempoUrl/api/hotspots/search?".http_build_query($queryParams));
+        /** Sécurisation de l'URL */
+        $maven_key = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
+        $url = $this->urlBuilder->build(
+            $this->getParameter(static::$sonarUrl),
+            '/api/hotspots/search',
+            [ 'projectKey' => $maven_key, 'ps' => 500, 'p' => 1 ]
+        );
+        $result = $this->client->httpSonarQube($url);
         /** On catch les erreurs HTTP :) */
         if (isset($result['code']) && in_array($result['code'], [401, 403, 404, 500, 503])) {
             return ['code' => $result['code'], 'erreur' => $result['erreur']];
@@ -122,7 +124,7 @@ class BatchCollecteHotspotController extends AbstractController
         $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
 
         /** On supprime les résultats pour la maven_key. */
-        $map = ['maven_key' => $mavenKey];
+        $map = ['maven_key' => $maven_key];
         $delete = $hotspotsRepository->deleteHotspotsMavenKey($map);
         if ($delete['code'] != 200) {
             return ['code' => $delete['code'], 'erreur' => $delete['erreur']];
@@ -145,7 +147,7 @@ class BatchCollecteHotspotController extends AbstractController
 
                 /** Ajout des hotspots à la liste à insérer */
                 $map[] = [
-                    'maven_key' => $mavenKey,
+                    'maven_key' => $maven_key,
                     'version' => $select['info'][0]['project_version'],
                     'date_version' => $dateVersion,
                     'hotspot_key' => $value['key'] ?? 'NC',
@@ -165,7 +167,7 @@ class BatchCollecteHotspotController extends AbstractController
             $niveau = $this->vulnerabilityProbability('NC');
             /** Ajout des hotspots à la liste à insérer */
             $map[] = [
-                'maven_key' => $mavenKey,
+                'maven_key' => $maven_key,
                 'version' => $select['info'][0]['project_version'],
                 'date_version' => $dateVersion,
                 'hotspot_key' => 'NC',

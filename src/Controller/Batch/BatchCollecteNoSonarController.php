@@ -22,6 +22,7 @@ use App\Entity\NoSonar;
 
 /** Client HTTP */
 use App\Service\Client;
+use App\service\UrlBuilderService;
 
 /**
  * [Description BatchCollecteNoSonarController]
@@ -41,7 +42,8 @@ class BatchCollecteNoSonarController extends AbstractController
      */
     public function __construct(
         private EntityManagerInterface $em,
-        private Client $client
+        private Client $client,
+        private UrlBuilderService $urlBuilder
     ) {
         $this->em = $em;
         $this->client = $client;
@@ -62,26 +64,29 @@ class BatchCollecteNoSonarController extends AbstractController
      */
     public function BatchCollecteNoSonar(string $mavenKey, string $modeCollecte, string $utilisateurCollecte): array
     {
+        $maven_key = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
+
         /** On instancie l'EntityRepository */
         $noSonarRepository = $this->em->getRepository(NoSonar::class);
 
         /** On créé un objet date. */
         $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
 
-        /** On construit l'URL */
-        $tempoUrl = $this->getParameter(static::$sonarUrl);
-        $mavenKey = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
+        /** Sécurisation de l'URL */
+        $url = $this->urlBuilder->build(
+            $this->getParameter(static::$sonarUrl),
+            '/api/issues/search',
+            ['componentKeys' => $maven_key, 'rules' => 'java:S1309,java:NoSonar', 'p'=>1, 'ps'=>500 ]
+        );
 
-        /** Appelle le client HTTP */
-        $queryParams = ['componentKeys' => $mavenKey, 'rules' => 'java:S1309,java:NoSonar', 'p'=>1, 'ps'=>500 ];
-        $result = $this->client->httpSonarQube("$tempoUrl/api/issues/search?".http_build_query($queryParams));
+        $result = $this->client->httpSonarQube($url);
          /** On catch les erreurs HTTP :) */
         if (isset($result['code']) && in_array($result['code'], [401, 403, 404, 500, 503])) {
             return ['code' => $result['code'], 'erreur' => $result['erreur']];
         }
 
         /** On supprime les résultats pour la maven_key. */
-        $map = ['maven_key' => $mavenKey];
+        $map = ['maven_key' => $maven_key];
         $delete = $noSonarRepository->deleteNoSonarMavenKey($map);
         if ($delete['code'] != 200) {
             return ['code' => $delete['code'], 'erreur' => $delete['erreur']];
@@ -106,12 +111,12 @@ class BatchCollecteNoSonarController extends AbstractController
                         $inconnu++;
                         break;
                 }
-                $component = str_replace('$mavenKey :', '', $issue['component']);
+                $component = str_replace('$maven_key :', '', $issue['component']);
                 $line = empty($issue['line']) ? 0 : $issue['line'];
 
                 /** On créé la map */
                 $mapData[] = [
-                    'maven_key' => $mavenKey,
+                    'maven_key' => $maven_key,
                     'rule' => $issue["rule"],
                     'component' => $component,
                     'line' => $line,

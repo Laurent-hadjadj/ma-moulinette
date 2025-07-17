@@ -22,6 +22,7 @@ use App\Entity\Todo;
 
 /** Client HTTP */
 use App\Service\Client;
+use App\Service\UrlBuilderService;
 
 /**
  * [Description BatchCollecteTodoController]
@@ -41,7 +42,8 @@ class BatchCollecteTodoController extends AbstractController
      */
     public function __construct(
         private EntityManagerInterface $em,
-        private Client $client
+        private Client $client,
+        private UrlBuilderService $urlBuilder
     ) {
         $this->em = $em;
         $this->client = $client;
@@ -60,22 +62,27 @@ class BatchCollecteTodoController extends AbstractController
      */
     public function BatchCollecteTodo(string $mavenKey, string $modeCollecte, string $utilisateurCollecte): array
     {
+        $maven_key = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
         /** On instancie l'EntityRepository */
         $todoRepository = $this->em->getRepository(Todo::class);
 
         /** On créé un objet date. */
         $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
 
-        /** On construit l'URL */
-        $tempoUrl = $this->getParameter(static::$sonarUrl);
-        $mavenKey = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
-
-        /** Appelle le client HTTP */
-        $queryParams = ['componentKeys'=>$mavenKey,
-        'rules' => 'javascript:S1135,xml:S1135,typescript:S1135,Web:S1135,java:S1135,php:s1135,ruby:s1135,python:s1135', 'p'=>1, 'ps'=>500 ];
+        /** Sécurisation de l'URL */
+        $url = $this->urlBuilder->build(
+            $this->getParameter(static::$sonarUrl),
+            '/api/project_analyses/search',
+            [
+                'componentKeys'=>$mavenKey,
+                'rules' => 'javascript:S1135,xml:S1135,typescript:S1135,Web:S1135,java:S1135,php:s1135,ruby:s1135,python:s1135',
+                'p'=>1,
+                'ps'=>500
+            ]
+        );
 
         /** On construit l'URL et on appel le WS. */
-        $result = $this->client->httpSonarQube("$tempoUrl/api/issues/search?".http_build_query($queryParams));
+        $result = $this->client->httpSonarQube($url);
          /** On catch les erreurs HTTP 401 et 404, si possible :) */
         if (isset($result['code']) && in_array($result['code'], [401, 403, 404, 500, 503])) {
             return ['code' => $result['code'], 'erreur' => $result['erreur']];
@@ -94,7 +101,7 @@ class BatchCollecteTodoController extends AbstractController
         if ($result['json']['paging']['total'] !== 0) {
             foreach ($result['json']['issues'] as $issue) {
                 $todo++;
-                $component = str_replace('$mavenKey :', '', $issue['component']);
+                $component = str_replace('$maven_key :', '', $issue['component']);
                 $line = empty($issue['line']) ? 0 : $issue['line'];
 
                 /** On créé la map */

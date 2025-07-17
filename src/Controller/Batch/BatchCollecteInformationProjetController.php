@@ -66,13 +66,7 @@ class BatchCollecteInformationProjetController extends AbstractController
      */
     public function controlVersionProjet($mavenKey): array
     {
-        /** Sécurisation de l'URL */
-        $maven_key = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
-        $url = $this->urlBuilder->build(
-            $this->getParameter(static::$sonarUrl),
-            '/api/project_analyses/search',
-            [ 'project' => $maven_key ]
-        );
+       $maven_key = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
 
         /** Appelle le client HTTP */
         $result = $this->client->httpSonarQube($url);

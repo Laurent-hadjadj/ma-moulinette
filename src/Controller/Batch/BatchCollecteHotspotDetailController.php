@@ -26,6 +26,7 @@ use App\Entity\HotspotDetails;
 use App\Service\Client;
 /** Import des services */
 use App\Service\ExtractName;
+use App\Service\UrlBuilderService;
 
 /**
  * [Description BatchCollecteHotspotDetailController]
@@ -47,6 +48,7 @@ class BatchCollecteHotspotDetailController extends AbstractController
         private ExtractName $serviceExtractName,
         private EntityManagerInterface $em,
         private Client $client,
+        private UrlBuilderService $urlBuilder
     ) {
         $this->serviceExtractName = $serviceExtractName;
         $this->em = $em;
@@ -86,14 +88,18 @@ class BatchCollecteHotspotDetailController extends AbstractController
      */
     public function hotspotDetail(string $mavenKey, string $hotspotKey): array
     {
-        /** On construit l'URL */
-        $tempoUrl = $this->getParameter(static::$sonarUrl);
 
-        /** Construit l'URL en utilisant http_build_query pour les paramètres de la requête */
-        $queryParams = [ 'hotspot' => $hotspotKey ];
+         /** Sécurisation de l'URL */
+        $maven_key = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
+        $url = $this->urlBuilder->build(
+            $this->getParameter(static::$sonarUrl),
+            '/api/hotspots/show',
+            [ 'hotspot' => $hotspotKey ]
+        );
+
 
         /** Appelle le client HTTP */
-        $result = $this->client->httpSonarQube($tempoUrl.'/api/hotspots/show?'.http_build_query($queryParams));
+        $result = $this->client->httpSonarQube($url);
         /** On catch les erreurs HTTP  :) */
         if (isset($result['code']) && in_array($result['code'], [401, 403, 404, 500, 503])) {
             return ['code' => $result['code'], 'erreur' => $result['erreur']];
@@ -130,7 +136,7 @@ class BatchCollecteHotspotDetailController extends AbstractController
             $path = $result['json']['component']['path'];
         } elseif (array_key_exists('json', $result) && array_key_exists('component', $result['json'])) {
             /** "key" => "fr.ma-petite-entreprise:ma-moulinette:assets/js/app-password.js" */
-            $path = str_replace($mavenKey . ':', '', $result['json']['component']['key']);
+            $path = str_replace($maven_key . ':', '', $result['json']['component']['key']);
         }
 
         /** on récupère la liste des clés pour chaque module */
@@ -202,13 +208,13 @@ class BatchCollecteHotspotDetailController extends AbstractController
      */
     public function batchCollecteHotspotDetail(string $mavenKey, string $modeCollecte, string $utilisateurCollecte): array
     {
+        /** On contrôle la variable mavenKey */
+        $mavenKey = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
+
         /** On instancie l'EntityRepository */
         $hotspotsRepository = $this->em->getRepository(Hotspots::class);
         $hotspotDetailsRepository = $this->em->getRepository(HotspotDetails::class);
         $informationProjet = $this->em->getRepository(InformationProjet::class);
-
-        /** On contrôle la variable mavenKey */
-        $mavenKey = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
 
         /** On récupère dans la table information_projet la version et la date du projet la plus récente. */
         $map = ['maven_key'=>$mavenKey];
