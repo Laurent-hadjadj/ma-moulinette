@@ -133,10 +133,11 @@ class ApiCollecteController extends AbstractController
                 'maven_key' => $data->maven_key
             ]);
 
+            $message = 'Collecte des informations du projet.';
             return new JsonResponse([
                 'code' => $information['code'] ?? 500,
                 'type' => 'warning',
-                'message' => static::$reference . ($information['message'] ?? 'Collecte des informations du projet.'),
+                'message' => static::$reference . ($information['message'] ?? $message),
                 'trace' => $information['erreur'] ?? null
             ], Response::HTTP_OK);
         }
@@ -181,29 +182,69 @@ class ApiCollecteController extends AbstractController
 
         /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'maven_key') ) {
+            $this->logger->warning('[Collecte] Requête invalide : maven_key manquant ou
+            malformé.', [
+                'payload' => $request->getContent()
+            ]);
+
             return new JsonResponse(
-                ['data' => $data, 'code' => 400, 'type' => 'alert',
-                'message'=> static::$reference . static::$erreur400], Response::HTTP_OK);
+                [
+                    'code' => 400,
+                    'type' => 'alert',
+                    'message' => static::$reference . static::$erreur400,
+                    'trace' => null
+                ], Response::HTTP_OK);
         }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
+            $this->logger->warning('[Collecte] Accès refusé : rôle COLLECTE manquant.',
+            [
+                'maven_key' => $data->maven_key,
+                'user' => $this->security->getUser()?->getUserIdentifier()
+            ]);
+
             return new JsonResponse(
-                ['code' => 403, 'type' => 'warning',
-                'message' => static::$reference . static::$erreur403], Response::HTTP_OK);
+                [
+                    'code' => 403,
+                    'type' => 'warning',
+                    'message' => static::$reference . static::$erreur403,
+                    'trace' => null
+                ], Response::HTTP_OK);
         }
 
         /** On contrôle le mode d'utilisation */
         $utilisateur_collecte = $this->security->getUser()->getCourriel() ?? 'null';
 
+        $this->logger->info('[Collecte] Début de la collecte des mesures.',
+        [
+            'maven_key' => $data->maven_key,
+            'user' => $utilisateur_collecte
+        ]);
+
         /** Mesures du projet (ligne de code, coverage, dette, ...) */
         $mesure = $this->batchCollecteMesure->batchCollecteMesure($data->maven_key, 'COLLECTE', $utilisateur_collecte);
-        if ($mesure['code'] != 200){
+        if (($mesure['code'] ?? 500) !== 200) {
+            $this->logger->error('[Collecte] Échec de la collecte des mesures.', [
+                'maven_key' => $data->maven_key,
+                'code' => $mesure['code'] ?? 'inconnu',
+                'message' => $mesure['message'] ?? 'absent',
+                'trace' => $mesure['erreur'] ?? 'non fournie'
+            ]);
+
+            $message = 'Collecte des indicateurs de mesures du projet.';
             return new JsonResponse([
-                'code' => $mesure['code'], 'type' => 'alert',
-                'message' => static::$reference . ($mesure['message'] ?? $mesure['erreur'])],
-                Response::HTTP_OK);
+                'code' => $mesure['code'],
+                'type' => 'alert',
+                'message' => static::$reference . ($mesure['message'] ?? $message),
+                'trace' => $mesure['erreur'] ?? null
+            ], Response::HTTP_OK);
         }
+
+        $this->logger->info('[Collecte] Mesures collectées avec succès.', [
+            'maven_key' => $mesure['message']['maven_key'],
+            'project_name' => $mesure['message']['project_name']
+        ]);
 
         /** on balance ton quoi :) */
         $information = [
@@ -221,7 +262,10 @@ class ApiCollecteController extends AbstractController
                     'tests' => $mesure['message']['tests'],
                     'issues' => $mesure['message']['issues']
                 ];
-        return new JsonResponse(['code' => 200, 'message' => $information], Response::HTTP_OK);
+        return new JsonResponse([
+            'code' => 200,
+            'message' => $information
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -242,36 +286,81 @@ class ApiCollecteController extends AbstractController
         $data = json_decode($request->getContent());
 
         /** On teste si la clé est valide */
-        if ($data === null ||
+        if (
+            $data === null ||
             !property_exists($data, 'maven_key') ||
-            !property_exists($data, 'type') || !in_array($data->type, ['reliability', 'security', 'sqale' ])) {
-            return new JsonResponse(
-                ['data' => $data, 'code' => 400, 'type' => 'alert',
-                'message' => static::$reference . static::$erreur400],
-                Response::HTTP_OK);
+            !property_exists($data, 'type') ||
+            !in_array($data->type, ['reliability', 'security', 'sqale'])
+        ) {
+            $this->logger->warning('[Collecte][Note] Requête invalide reçue', [
+                'body' => $request->getContent()
+            ]);
+
+            return new JsonResponse([
+                'code' => 400,
+                'type' => 'alert',
+                'message' => static::$reference . static::$erreur400,
+                'trace' => null
+            ], Response::HTTP_OK);
         }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
-            return new JsonResponse(
-                ['type' => 'warning', 'code' => 403,
-                'message' => static::$reference . static::$erreur403],
-                Response::HTTP_OK);
+            $this->logger->warning('[Collecte][Note] Accès refusé - ROLE_COLLECTE manquant', [
+                'utilisateur' => $this->security->getUser()?->getUserIdentifier()
+            ]);
+
+            return new JsonResponse([
+                'code' => 403,
+                'type' => 'warning',
+                'message' => static::$reference . static::$erreur403,
+                'trace' => null
+            ], Response::HTTP_OK);
         }
 
         /** On contrôle le mode d'utilisation */
         $utilisateur_collecte = $this->security->getUser()->getCourriel();
+        $this->logger->info('[Collecte][Note] Début de collecte', [
+            'maven_key' => $data->maven_key,
+            'type' => $data->type,
+            'utilisateur' => $utilisateur_collecte
+        ]);
 
-        /** Notes du projet  (fiabilité, sécurité, mauvaise pratique) */
-        $note = $this->batchCollecteNote->batchCollecteNote($data->maven_key, 'COLLECTE', $utilisateur_collecte, $data->type);
-        if ($note['code'] != 200){
+        /** Appel à la collecte de note (reliability, security, sqale) */
+        $note = $this->batchCollecteNote->batchCollecteNote(
+            $data->maven_key,
+            'COLLECTE',
+            $utilisateur_collecte,
+            $data->type
+        );
+
+        if ($note['code'] != 200) {
+            $this->logger->error('[Collecte][Note] Échec de collecte', [
+                'code' => $note['code'],
+                'maven_key' => $data->maven_key,
+                'type' => $data->type,
+                'erreur' => $note['erreur'] ?? 'non spécifiée'
+            ]);
+
             return new JsonResponse([
-                'code' => $note['code'], 'type' => 'alert',
-                'message' => static::$reference . ($note['message'] ?? $note['erreur'])],
-                Response::HTTP_OK);
+                'code' => $note['code'],
+                'type' => 'alert',
+                'message' => static::$reference . ($note['message'] ?? 'Collecte des notes du projet.'),
+                'trace' => $note['erreur'] ?? null
+            ], Response::HTTP_OK);
         }
 
-        return new JsonResponse(['code' => 200, 'type' => $data->type, 'message' => ['note' => $note['message']['value']]], Response::HTTP_OK);
+        $this->logger->info('[Collecte][Note] Succès de collecte', [
+            'maven_key' => $data->maven_key,
+            'type' => $data->type,
+            'note' => $note['message']['value'] ?? null
+        ]);
+
+        return new JsonResponse([
+            'code' => 200,
+            'type' => $data->type,
+            'message' => ['note' => $note['message']['value']]
+        ], Response::HTTP_OK);
     }
 
     /**
