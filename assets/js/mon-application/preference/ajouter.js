@@ -10,7 +10,7 @@
  */
 
 /** Import des dépendances */
-import '../css/preference.css';
+import '../../../styles/mon-application/preference.css';
 
 /** Intégration de jquery */
 import $ from 'jquery';
@@ -23,7 +23,7 @@ import 'select2';
 import 'select2/dist/js/i18n/fr.js';
 
 import '../../common/foundation.js';
-import './app-authentification-details.js';
+import '../../auth/details.js';
 
 /** On importe les constantes */
 import {contentType} from '../../common/constante.js';

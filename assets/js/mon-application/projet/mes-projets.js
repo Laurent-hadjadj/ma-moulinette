@@ -10,7 +10,7 @@
  */
 
 /** Import des dépendances */
-import '../css/mes-projets.css';
+import '../../../styles/mon-application/mes-projets.css';
 
 /** Intégration de jquery */
 import $ from 'jquery';

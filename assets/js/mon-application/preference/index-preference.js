@@ -10,7 +10,7 @@
  */
 
 /** Import des dépendances */
-import '../css/preference.css';
+import '../../../styles/mon-application/preference.css';
 
 /** Intégration de jquery */
 import $ from 'jquery';
@@ -20,7 +20,7 @@ import 'foundation-sites';
 import 'motion-ui';
 
 import '../../common/foundation.js';
-import './app-authentification-details.js';
+import '../../auth/details.js';
 
 /** On importe les constantes */
 import {contentType} from '../../common/constante.js';

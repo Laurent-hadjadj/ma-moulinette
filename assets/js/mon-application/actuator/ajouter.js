@@ -10,7 +10,7 @@
  */
 
 /** Import des dépendances */
-import '../css/actuator-ajouter.css';
+import '../../../styles/mon-application/actuator-ajouter.css';
 
 /** Intégration de jquery */
 import $ from 'jquery';
