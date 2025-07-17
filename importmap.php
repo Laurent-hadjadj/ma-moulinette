@@ -109,19 +109,19 @@ return [
         'version' => '5.2.12',
     ],
     'browser-update' => [
-        'version' => '3.3.55',
+        'version' => '3.3.59',
     ],
     'chart.js' => [
-        'version' => '4.4.7',
+        'version' => '4.5.0',
     ],
     '@kurkle/color' => [
-        'version' => '0.3.4',
+        'version' => '0.4.0',
     ],
     'chartjs-plugin-datalabels' => [
         'version' => '2.2.0',
     ],
     'chart.js/helpers' => [
-        'version' => '4.4.7',
+        'version' => '4.5.0',
     ],
     'chartjs-plugin-zoom' => [
         'version' => '2.2.0',
@@ -130,13 +130,13 @@ return [
         'version' => '2.0.8',
     ],
     'chance' => [
-        'version' => '1.1.12',
+        'version' => '1.1.13',
     ],
     'es6-promise' => [
         'version' => '4.2.8',
     ],
     '@babel/runtime/helpers/typeof' => [
-        'version' => '7.26.0',
+        'version' => '7.27.6',
     ],
     'fflate' => [
         'version' => '0.8.2',
@@ -145,7 +145,7 @@ return [
         'version' => '1.4.1',
     ],
     'jspdf' => [
-        'version' => '2.5.2',
+        'version' => '3.0.1',
     ],
     'chartjs-adapter-date-fns' => [
         'version' => '3.0.0',
