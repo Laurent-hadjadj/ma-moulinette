@@ -25,6 +25,7 @@ use App\Service\ExtractName;
 
 /** Client HTTP */
 use App\Service\Client;
+use App\Service\UrlBuilderService;
 
 /**
  * [Description BatchCollecteAnomalieDetailController]
@@ -34,6 +35,24 @@ class BatchCollecteAnomalieDetailController extends AbstractController
     /** Définition des constantes */
     public static $sonarUrl = "sonar.url";
     public static $europeParis = "Europe/Paris";
+
+        /**
+     * [Description for __construct]
+     * On ajoute un constructeur pour éviter à chaque fois d'injecter la même class
+     *
+     * Created at: 04/12/2022, 08:53:04 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     */
+    public function __construct(
+        private EntityManagerInterface $em,
+        private Client $client,
+        private ExtractName $serviceExtractName,
+        private UrlBuilderService $urlBuilder
+    ) {
+        $this->em = $em;
+        $this->client = $client;
+        $this->serviceExtractName = $serviceExtractName;
+    }
 
     /**
      * [Description for makeRequest]
@@ -47,11 +66,18 @@ class BatchCollecteAnomalieDetailController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function makeRequest(array $queryParams, string $tempoUrl): array
+    private function makeRequest(array $queryParams): array
     {
-        /** on renvoi un tableau avec le résultat de la requête ou un tableau avec un code erreur. */
-        $queryString = http_build_query($queryParams);
-        $result = $this->client->httpSonarQube("$tempoUrl/api/issues/search?$queryString");
+        /** On renvoi un tableau avec le résultat de la requête ou un tableau avec un code erreur. */
+
+        /** Sécurisation de l'URL */
+        $url = $this->urlBuilder->build(
+            $this->getParameter(static::$sonarUrl),
+            '/api/issues/search',
+            $queryParams
+        );
+
+        $result = $this->client->httpSonarQube($url);
         if (isset($result['code']) && in_array($result['code'], [401, 403, 404, 500, 503])) {
             return ['code' => $result['code'], 'erreur' => $result['erreur']];
         }
@@ -82,23 +108,6 @@ class BatchCollecteAnomalieDetailController extends AbstractController
     }
 
     /**
-     * [Description for __construct]
-     * On ajoute un constructeur pour éviter à chaque fois d'injecter la même class
-     *
-     * Created at: 04/12/2022, 08:53:04 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     */
-    public function __construct(
-        private EntityManagerInterface $em,
-        private Client $client,
-        private ExtractName $serviceExtractName
-    ) {
-        $this->em = $em;
-        $this->client = $client;
-        $this->serviceExtractName = $serviceExtractName;
-    }
-
-    /**
      * [Description for BatchCollecteAnomalieDetail]
      *
      * @param string $mavenKey
@@ -120,20 +129,19 @@ class BatchCollecteAnomalieDetailController extends AbstractController
         $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
 
         /** On construit l'URL */
-        $tempoUrl = $this->getParameter(static::$sonarUrl);
-        $mavenKey = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
+        $maven_key = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
 
         /* Tableau des paramètres pour les requêtes HTTP */
         $queryParamsList = [
-            'BUG' => [ 'componentKeys' => $mavenKey, 'facets' => 'severities', 'types' => 'BUG', 'statuses' => 'OPEN', 'p' => 1, 'ps' => 1 ],
-            'VULNERABILITY' => [ 'componentKeys' => $mavenKey, 'facets' => 'severities', 'types' => 'VULNERABILITY', 'statuses' => 'OPEN', 'p' => 1, 'ps' => 1 ],
-            'CODE_SMELL' => [ 'componentKeys' => $mavenKey, 'facets' => 'severities', 'types' => 'CODE_SMELL', 'statuses' => 'OPEN', 'p' => 1, 'ps' => 1 ]
+            'BUG' => [ 'componentKeys' => $maven_key, 'facets' => 'severities', 'types' => 'BUG', 'statuses' => 'OPEN', 'p' => 1, 'ps' => 1 ],
+            'VULNERABILITY' => [ 'componentKeys' => $maven_key, 'facets' => 'severities', 'types' => 'VULNERABILITY', 'statuses' => 'OPEN', 'p' => 1, 'ps' => 1 ],
+            'CODE_SMELL' => [ 'componentKeys' => $maven_key, 'facets' => 'severities', 'types' => 'CODE_SMELL', 'statuses' => 'OPEN', 'p' => 1, 'ps' => 1 ]
         ];
 
         /* On appelle les API en passant les querryParams à la fonction générique */
         $results = [];
         foreach ($queryParamsList as $key => $queryParams) {
-            $results[$key] = self::makeRequest($queryParams, $tempoUrl);
+            $results[$key] = self::makeRequest($queryParams);
             if (isset($results[$key]['code'])) {
                 return [
                     'code' => $results[$key]['code'],
@@ -157,7 +165,7 @@ class BatchCollecteAnomalieDetailController extends AbstractController
         }
 
         /** On supprime l'enregistrement correspondant à la clé */
-        $map = ['maven_key' => $mavenKey];
+        $map = ['maven_key' => $maven_key];
         $delete = $anomalieDetailsRepository->deleteAnomalieDetailsMavenKey($map);
         if ($delete['code'] != 200) {
             return ['code' => $delete['code'], 'erreur' => $delete['erreur']];
@@ -170,8 +178,8 @@ class BatchCollecteAnomalieDetailController extends AbstractController
 
         /** On prépare les données */
         $mapData = [
-            'maven_key' => $mavenKey,
-            'name' =>$this->serviceExtractName->extractNameFromMavenKey($mavenKey),
+            'maven_key' => $maven_key,
+            'name' =>$this->serviceExtractName->extractNameFromMavenKey($maven_key),
             'bug_blocker' => $bugSeverities['BLOCKER'],
             'bug_critical' => $bugSeverities['CRITICAL'],
             'bug_major' => $bugSeverities['MAJOR'],
