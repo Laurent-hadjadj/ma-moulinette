@@ -26,6 +26,7 @@ use App\Service\DateTools;
 
 /** Client HTTP */
 use App\Service\Client;
+use App\Service\UrlBuilderService;
 
 /**
  * [Description BatchCollecteAnomalieController]
@@ -51,6 +52,7 @@ class BatchCollecteAnomalieController extends AbstractController
         private Client $client,
         private ExtractName $serviceExtractName,
         private DateTools $serviceDateTools,
+        private UrlBuilderService $urlBuilder
     ) {
         $this->em = $em;
         $this->client = $client;
@@ -71,11 +73,17 @@ class BatchCollecteAnomalieController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function makeRequest(array $queryParams, string $tempoUrl): array
+    private function makeRequest(array $queryParams): array
         {
-            /** on renvoi un tableau avec le résultat de la requête ou un tableau avec un code erreur. */
-            $queryString = http_build_query($queryParams);
-            $result = $this->client->httpSonarQube("$tempoUrl/api/issues/search?$queryString");
+            /** On renvoi un tableau avec le résultat de la requête ou un tableau avec un code erreur. */
+            /** Sécurisation de l'URL */
+            $url = $this->urlBuilder->build(
+                $this->getParameter(static::$sonarUrl),
+                '/api/issues/search',
+                $queryParams
+            );
+
+            $result = $this->client->httpSonarQube($url);
             if (isset($result['code']) && in_array($result['code'], [401, 403, 404, 500, 503])) {
                 return ['code' => $result['code'], 'erreur' => $result['erreur']];
             }
@@ -100,15 +108,13 @@ class BatchCollecteAnomalieController extends AbstractController
         /** On instancie l'EntityRepository */
         $anomalieRepository = $this->em->getRepository(Anomalie::class);
 
+        $maven_key = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
+
         /** On créé un objet date. */
         $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
 
         /** On récupère le nom du projet */
         $app = $this->serviceExtractName->extractNameFromMavenKey($mavenKey);
-
-        /** On construit l'URL */
-        $tempoUrl = $this->getParameter(static::$sonarUrl);
-        $mavenKey = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
 
         /* Tableau des paramètres pour les requêtes HTTP */
         $queryParamsList = [
@@ -126,7 +132,7 @@ class BatchCollecteAnomalieController extends AbstractController
          * Si la méthode renvoi une clé 'code' alors il y a une erreur sinon on a une clé 'json'
          */
         $results = [];
-        $results['general'] = self::makeRequest($queryParamsList['general'], $tempoUrl);
+        $results['general'] = self::makeRequest($queryParamsList['general']);
         if (isset($results['general']['code'])) {
                 return [
                     'code' => $results['general']['code'],
@@ -134,7 +140,7 @@ class BatchCollecteAnomalieController extends AbstractController
                     'type' => 'general'];
             }
 
-        $results['BUG'] = self::makeRequest($queryParamsList['BUG'], $tempoUrl);
+        $results['BUG'] = self::makeRequest($queryParamsList['BUG']);
         if (isset($results['BUG']['code'])) {
                 return [
                     'code' => $results['BUG']['code'],
@@ -142,14 +148,14 @@ class BatchCollecteAnomalieController extends AbstractController
                     'type' => 'BUG'];
             }
 
-        $results['VULNERABILITY'] = self::makeRequest($queryParamsList['VULNERABILITY'], $tempoUrl);
+        $results['VULNERABILITY'] = self::makeRequest($queryParamsList['VULNERABILITY']);
         if (isset($results['VULNERABILITY']['code'])) {
                 return [
                     'code' => $results['VULNERABILITY']['code'],
                     'erreur' => $results['VULNERABILITY']['erreur'],
                     'type' => 'VULNERABILITY'];
             }
-        $results['CODE_SMELL'] = self::makeRequest($queryParamsList['CODE_SMELL'], $tempoUrl);
+        $results['CODE_SMELL'] = self::makeRequest($queryParamsList['CODE_SMELL']);
 
         if (isset($results['CODE_SMELL']['code'])) {
                 return [
