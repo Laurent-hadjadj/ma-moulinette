@@ -13,16 +13,13 @@
 
 namespace App\Controller\Batch;
 
-/** Core */
-use App\Service\Client;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Doctrine\ORM\EntityManagerInterface;
 
-/** Accès aux tables */
+use App\Service\Client;
 use App\Entity\Actuator;
 use App\Entity\ActuatorInfo;
-
-/** Client HTTP */
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Service\UrlBuilderService;
 
 /**
  * [Description BatchCollecteActuatorController]
@@ -42,10 +39,9 @@ class BatchCollecteActuatorController extends AbstractController
      */
     public function __construct(
         private EntityManagerInterface $em,
-        private Client $client
+        private Client $client,
+        private UrlBuilderService $urlBuilder
     ) {
-        $this->em = $em;
-        $this->client = $client;
     }
 
     /**
@@ -64,9 +60,11 @@ class BatchCollecteActuatorController extends AbstractController
         /** On instancie l'EntityRepository */
         $actuatorRepository = $this->em->getRepository(Actuator::class);
 
-        $mavenKey = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
+         /** Sécurisation de l'URL */
+        $maven_key = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
+
         /** On regarde si, il y a une point d'accès défini pour le projet */
-        $map = ['maven_key' => $mavenKey];
+        $map = ['maven_key' => $maven_key];
         $actuatorEndpoint = $actuatorRepository->findActuatorMavenKey($map);
         if (isset($actuatorEndpoint['code']) && in_array($actuatorEndpoint['code'], [23502, 23505, 500, 503])) {
             return [
@@ -85,15 +83,15 @@ class BatchCollecteActuatorController extends AbstractController
         $actuatorUser = $actuatorEndpoint['user'];
         $actuatorPassword = $actuatorEndpoint['password'];
         $baseUrl = $actuatorEndpoint['url'];
-        $ressource = 'actuator/info';
-        $url = "$baseUrl/$ressource";
 
-        /** On nettoie l'URL */
-        $url = htmlspecialchars($url, ENT_QUOTES, 'UTF-8');
+        $url = $this->urlBuilder->build(
+            $baseUrl,
+            'actuator/info',
+            [ 'project' => $maven_key ]
+        );
 
          /** Appelle le clientActuator HTTP */
-        $queryParams = [];
-        $actuatorInfo = $this->client->httpActuator("$url".http_build_query($queryParams), $actuatorUser, $actuatorPassword);
+        $actuatorInfo = $this->client->httpActuator($url, $actuatorUser, $actuatorPassword);
 
         $data = $actuatorInfo['json'];
 
