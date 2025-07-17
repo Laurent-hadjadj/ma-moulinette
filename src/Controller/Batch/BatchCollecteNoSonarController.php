@@ -22,7 +22,7 @@ use App\Entity\NoSonar;
 
 /** Client HTTP */
 use App\Service\Client;
-use App\service\UrlBuilderService;
+use App\Service\UrlBuilderService;
 
 /**
  * [Description BatchCollecteNoSonarController]
