@@ -63,6 +63,7 @@ class BatchCollecteTodoController extends AbstractController
     public function BatchCollecteTodo(string $mavenKey, string $modeCollecte, string $utilisateurCollecte): array
     {
         $maven_key = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
+
         /** On instancie l'EntityRepository */
         $todoRepository = $this->em->getRepository(Todo::class);
 
@@ -74,7 +75,7 @@ class BatchCollecteTodoController extends AbstractController
             $this->getParameter(static::$sonarUrl),
             '/api/project_analyses/search',
             [
-                'componentKeys'=>$mavenKey,
+                'project' => $maven_key,
                 'rules' => 'javascript:S1135,xml:S1135,typescript:S1135,Web:S1135,java:S1135,php:s1135,ruby:s1135,python:s1135',
                 'p'=>1,
                 'ps'=>500
@@ -83,13 +84,14 @@ class BatchCollecteTodoController extends AbstractController
 
         /** On construit l'URL et on appel le WS. */
         $result = $this->client->httpSonarQube($url);
+
          /** On catch les erreurs HTTP 401 et 404, si possible :) */
-        if (isset($result['code']) && in_array($result['code'], [401, 403, 404, 500, 503])) {
+        if (isset($result['code']) && in_array($result['code'], [400, 401, 403, 404, 500, 503])) {
             return ['code' => $result['code'], 'erreur' => $result['erreur']];
         }
 
         /** On supprime les résultats pour la maven_key. */
-        $map = ['maven_key' => $mavenKey];
+        $map = ['maven_key' => $maven_key];
         $delete = $todoRepository->deleteTodoMavenKey($map);
         if ($delete['code'] !== 200) {
             return ['code' => $delete['code'], 'erreur' => $delete['erreur']];
