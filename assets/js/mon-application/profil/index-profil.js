@@ -59,7 +59,18 @@ const path = `<path d="M9.142.079c-.932.228-1.804 1.055-2.07 1.963l-.08.288h-.98
  * @author    Laurent HADJADJ <laurent_h@me.com>
  * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
-  const refreshQuality = async function() {
+const refreshQuality = async function() {
+  const $boutonRefreshProfil = $('#bouton-refresh-profil');
+
+  /** Réinitialisation préalable de toutes les classes liées à l'état */
+  $boutonRefreshProfil.removeClass('clicked-false clicked-true');
+
+  // Désactivation visuelle et fonctionnelle du bouton
+  $boutonRefreshProfil.addClass('disabled-bouton clicked-true');
+  $boutonRefreshProfil.attr('aria-disabled', 'true');
+  $boutonRefreshProfil.attr('aria-label', "Mise à jour indisponible pour le moment.");
+  $boutonRefreshProfil.attr('tabindex', '-1');
+
   const optionsRefresh = {
         url: `${serveur()}/api/quality/profiles`,
         type: 'POST',
@@ -67,15 +78,24 @@ const path = `<path d="M9.142.079c-.932.228-1.804 1.055-2.07 1.963l-.08.288h-.98
         contentType
       };
 
-  /** On appel l'API */
-  const t = await $.ajax(optionsRefresh);
+  let response;
+  try {
+        /** On appel l'API */
+        response = await $.ajax(optionsRefresh);
 
-  // 📌 Vérification des erreurs
-  const errorCodes = [http_400, http_401, http_403, http_404, http_500];
-  if (errorCodes.includes(t.code)){
-      const hasTrace = !!t.trace;
-      const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
-      showMessage(t.type, t.message, trace);
+        // 📌 Vérification des erreurs
+        const errorCodes = [http_400, http_401, http_403, http_404, http_500];
+        if (errorCodes.includes(response.code)){
+            const hasTrace = !! response.trace;
+            const trace = hasTrace ? prepareTechnicalDetails(response.trace) : null;
+            showMessage(response.type, response.message, trace);
+            $boutonRefreshProfil.removeClass('clicked-true').addClass('clicked-false');
+            return;
+        }
+  } catch (error) {
+      const trace = prepareTechnicalDetails(error);
+      showMessage('alert', "Erreur technique lors de l'appel à l’API.", trace);
+      $boutonRefreshProfil.removeClass('clicked-true').addClass('clicked-false');
       return;
   }
 
@@ -83,86 +103,86 @@ const path = `<path d="M9.142.079c-.932.228-1.804 1.055-2.07 1.963l-.08.288h-.98
 
   /** On efface le container */
   $('#js-container-langage').html('');
-  const profils = t.liste_profil;
+  const profils = response.liste_profil;
 
   /** on recréé le container */
   profils.forEach(profil => {
-  id = id + 1;
-  const nombre_profil = profil.nb_profils_par_langage.toString().padStart(2, '0');
-  const isDisabled = profil.nb_profils_par_langage === 1;
-  const boutonClass = isDisabled ? 'disabled-bouton' : '';
-  const ariaLabel = isDisabled
-    ? 'Aucun autre profil n\'est disponible'
-    : 'Affiche la liste des autres langages';
-  const ariaDisabled = isDisabled ? 'true' : '';
-  const tabIndex = isDisabled ? '-1' : '';
-  const icon = isDisabled ? '🚫' : '📂';
+    id = id + 1;
+    const nombre_profil = profil.nb_profils_par_langage.toString().padStart(2, '0');
+    const isDisabled = profil.nb_profils_par_langage === 1;
+    const boutonClass = isDisabled ? 'disabled-bouton' : '';
+    const ariaLabel = isDisabled
+      ? 'Aucun autre profil n\'est disponible'
+      : 'Affiche la liste des autres langages';
+    const ariaDisabled = isDisabled ? 'true' : '';
+    const tabIndex = isDisabled ? '-1' : '';
+    const icon = isDisabled ? '🚫' : '📂';
 
-  str_container += `
-    <div class="small-12 medium-12 large-6 cell">
-      <div class="callout secondary box-langage">
-        <h3 class="h5 claire-hand">${profil.langage} <span class="open-sans float-right text-right bulle-nombre-profil">${nombre_profil}</span></h3>
+    str_container += `
+      <div class="small-12 medium-12 large-6 cell">
+        <div class="callout secondary box-langage">
+          <h3 class="h5 claire-hand">${profil.langage} <span class="open-sans float-right text-right bulle-nombre-profil">${nombre_profil}</span></h3>
 
-        <table class="hover">
-          <caption><span class="show-for-sr">Détails du langage ${profil.langage}</span></caption>
-          <thead>
-            <tr>
-              <th scope="col" class="open-sans text-center"></th>
-              <th scope="col" id="profil-version-${id}" class="open-sans text-center">Version</th>
-              <th scope="col" id="profil-rule-${id}" class="open-sans text-center">Règle</th>
-              <th scope="col" id="profil-${id}" class="open-sans text-center">Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr class="open-sans">
-              <td id="profil-${id}"
-                  class="js-profil-information profil-font-size"
-                  data-profil="${profil.profil}"
-                  role="button"
-                  tabindex="${id}"
-                  data-language="${profil.langage}"
-                  aria-labelledby="title-${id} desc-${id}">
-                <svg id="i-${id}" version="1.1" xmlns="http://www.w3.org/2000/svg"
-                    width="100%" height="100%" viewBox="0 0 28 28"
-                    class="profil-information-fixe-svg"
-                    role="img"
+          <table class="hover">
+            <caption><span class="show-for-sr">Détails du langage ${profil.langage}</span></caption>
+            <thead>
+              <tr>
+                <th scope="col" class="open-sans text-center"></th>
+                <th scope="col" id="profil-version-${id}" class="open-sans text-center">Version</th>
+                <th scope="col" id="profil-rule-${id}" class="open-sans text-center">Règle</th>
+                <th scope="col" id="profil-${id}" class="open-sans text-center">Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="open-sans">
+                <td id="profil-${id}"
+                    class="js-profil-information profil-font-size"
+                    data-profil="${profil.profil}"
+                    role="button"
+                    tabindex="${id}"
+                    data-language="${profil.langage}"
                     aria-labelledby="title-${id} desc-${id}">
-                  <title id="title-${id}">Afficher les informations du profil ${profil.langage}</title>
-                  <desc id="desc-${id}">Cliquer pour voir les détails du langage ${profil.langage} associé au profil ${profil.profil}</desc>
-                  ${path}
-                </svg>
-              </td>
-              <td class="profil-font-size">${profil.profil}</td>
-              <td class="text-center mini-stat color-noir">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(profil.rule)}</td>
-              <td class="text-left profil-font-size">
-                <span class="show-for-small-only">${new Intl.DateTimeFormat('default', dateOptionsShort).format(new Date(profil.date))}</span>
-                <span class="show-for-medium">${new Intl.DateTimeFormat('default', dateOptions).format(new Date(profil.date))}</span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                  <svg id="i-${id}" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                      width="100%" height="100%" viewBox="0 0 28 28"
+                      class="profil-information-fixe-svg"
+                      role="img"
+                      aria-labelledby="title-${id} desc-${id}">
+                    <title id="title-${id}">Afficher les informations du profil ${profil.langage}</title>
+                    <desc id="desc-${id}">Cliquer pour voir les détails du langage ${profil.langage} associé au profil ${profil.profil}</desc>
+                    ${path}
+                  </svg>
+                </td>
+                <td class="profil-font-size">${profil.profil}</td>
+                <td class="text-center mini-stat color-noir">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(profil.rule)}</td>
+                <td class="text-left profil-font-size">
+                  <span class="show-for-small-only">${new Intl.DateTimeFormat('default', dateOptionsShort).format(new Date(profil.date))}</span>
+                  <span class="show-for-medium">${new Intl.DateTimeFormat('default', dateOptions).format(new Date(profil.date))}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
 
-        <footer class="grid-x grid-margin-x align-right margin-top-1">
-          <div class="cell shrink">
-            <button id="bouton-language-${profil.langage}"
-              class="button open-sans focus-light js-bouton-autre-profil ${boutonClass}"
-              type="button"
-              data-language="${profil.langage}"
-              aria-label="${ariaLabel}"
-              ${ariaDisabled ? `aria-disabled="${ariaDisabled}"` : ''}
-              ${tabIndex ? `tabindex="${tabIndex}"` : ''}>
-              <span class="show-for-small-only open-sans color-blanc no-select">
-                <span aria-hidden="true">${icon}</span>Détails
-              </span>
-              <span class="show-for-medium open-sans color-blanc no-select">
-                <span aria-hidden="true">${icon}</span>Afficher les autres profils
-              </span>
-            </button>
-          </div>
-        </footer>
-      </div>
-    </div>`;
-    total = total + profil.rule;
+          <footer class="grid-x grid-margin-x align-right margin-top-1">
+            <div class="cell shrink">
+              <button id="bouton-language-${profil.langage}"
+                class="button open-sans focus-light js-bouton-autre-profil ${boutonClass}"
+                type="button"
+                data-language="${profil.langage}"
+                aria-label="${ariaLabel}"
+                ${ariaDisabled ? `aria-disabled="${ariaDisabled}"` : ''}
+                ${tabIndex ? `tabindex="${tabIndex}"` : ''}>
+                <span class="show-for-small-only open-sans color-blanc no-select">
+                  <span aria-hidden="true">${icon}</span>Détails
+                </span>
+                <span class="show-for-medium open-sans color-blanc no-select">
+                  <span aria-hidden="true">${icon}</span>Afficher les autres profils
+                </span>
+              </button>
+            </div>
+          </footer>
+        </div>
+      </div>`;
+      total = total + profil.rule;
   });
 
   str_total = new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(total);
@@ -171,7 +191,12 @@ const path = `<path d="M9.142.079c-.932.228-1.804 1.055-2.07 1.963l-.08.288h-.98
   $('.js-total').html(str_total);
   $('#js-container-langage').html(str_container);
   showMessage('success', 'La liste des profils qualités a été mise à jour.');
-  setTimeout(()=>hideMessage(),3000);
+  setTimeout(()=> hideMessage(), 3000);
+
+  // ✅ Réactivation propre du bouton
+  $boutonRefreshProfil.removeClass('clicked-true disabled-bouton');
+  $boutonRefreshProfil.attr('aria-label', "Rafraîchir la liste des profils qualités.");
+  $boutonRefreshProfil.removeAttr('aria-disabled tabindex');
 }
 
 /**
