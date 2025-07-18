@@ -1,3 +1,9 @@
+###> VSCode ###
+.venv
+.vscode/
+.VSCodeCounter/
+###< VSCode ###
+
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php
@@ -34,8 +40,6 @@ jslint-report.json
 phpstan-report.json
 .scannerwork/
 settings.json
-.vscode/
-.VSCodeCounter/
 sonar-project.properties
 ###< audit ###
 
