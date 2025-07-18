@@ -212,13 +212,6 @@ button[id^="bouton-language-"]:hover {background-color: #006182; }
   background-color: #00445b;
 }
 
-/* On désactive le bouton si on a qu'un profil */
-.disabled-bouton {
-  pointer-events: none;
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
 /* ===== Pour les graphiques de type donuts ==== */
 .chart-container-donuts {
   width: 70%;
