@@ -82,7 +82,7 @@
       {% endfor %}
       <header class="grid-x grid-margin-x align-right margin-top-1">
         <div class="cell shrink bouton-wrapper">
-          <div class="disabled-wrapper">
+          <div class="js-wrapper-refresh disabled-wrapper">
             <button id="bouton-refresh-profil"
                     class="button open-sans focus-light"
                     type="button"
@@ -96,6 +96,8 @@
           <button id="bouton-affiche-graphique"
                   class="button open-sans focus-light js-profil-graphique"
                   type="button"
+                  aria-haspopup="dialog"
+                  aria-controls="modal-affiche-graphique"
                   aria-label="Affiche la répartition des langages">
             <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewbox="0 0 32 32" class="profil-graphique-svg">
                 <path d="M13.65.425C7.32 1.335 2.076 5.97.5 12.06c-.4 1.553-.492 2.294-.492 3.952 0 1.652.1 2.527.464 3.945 1.37 5.399 5.693 9.795 11.115 11.298 4.21 1.165 8.761.586 12.443-1.588 4.252-2.505 7.027-6.626 7.72-11.467.056-.388.106-.776.106-.861v-.162l-8.161-.014c-8.12-.022-8.17-.022-8.362-.17a1.934 1.934 0 01-.343-.339c-.15-.19-.15-.24-.17-8.27L14.804.312l-.235.007c-.122.007-.543.05-.92.106z"/><path d="M17.088 7.616v7.303h14.768v-.162c0-.085-.05-.473-.107-.86-.47-3.303-1.912-6.274-4.209-8.702-2.461-2.59-6-4.368-9.596-4.806a11.163 11.163 0 00-.728-.077c-.12 0-.128.352-.128 7.304z"/>
@@ -170,6 +172,8 @@
                           class="button open-sans focus-light js-bouton-autre-profil {{ boutonClass }}"
                           type="button"
                           data-language="{{ profil.langage }}"
+                          aria-haspopup="dialog"
+                          aria-controls="modal-autre-profil"
                           aria-label="{{ ariaLabel }}"
                           {% if ariaDisabled %} aria-disabled="{{ ariaDisabled }}" {% endif %}
                           {% if tabIndex %} tabindex="{{ tabIndex }}" {% endif %}>
