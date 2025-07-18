@@ -14,7 +14,7 @@
 
 /*************************          Global     *********************************/
 
-/* ***** Gestion des logs ****** */
+/* ===== Gestion des logs ====== */
 .label-log { padding-left: 1rem; }
 
 /* Container de logs */
@@ -35,7 +35,7 @@ textarea[readonly] {
   cursor: not-allowed;
 }
 
-/** Container flex */
+/* === Container flex === */
 
 .container-analyse,
 .container-result,
@@ -56,7 +56,7 @@ textarea[readonly] {
   align-items: center;
 }
 
-/* ****  Boutons **** */
+/* =====  Boutons ===== */
 
 /* Images SVG cursor pointer */
 .favori-svg,
@@ -153,9 +153,33 @@ textarea[readonly] {
 }
 
 /* Couleur des boutons */
-.lance-analyse-enabled,
-.affiche-liste-enabled,
-.affiche-result-enabled,
+#bouton-collecte-indicateur,
+#bouton-affiche-indicateur,
+#bouton-affiche-liste {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+
+  height: 3.5rem;
+  padding: 0.8rem 1.2rem;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+
+  background-color: #00445b;
+  color: #ffffff;
+  text-decoration: none;
+
+  transition: background-color 0.2s ease-in-out;
+}
+
+#bouton-collecte-indicateur:hover,
+#bouton-affiche-indicateur:hover,
+#bouton-affiche-liste:hover { background-color: #006182; }
+
+.xlance-analyse-enabled,
+.xaffiche-liste-enabled,
+.xaffiche-result-enabled,
 .analyse-owasp-enabled,
 .tableau-de-bord-enabled,
 .cosui-enabled,
@@ -173,9 +197,9 @@ textarea[readonly] {
 }
 
 /* Gestion du hover sur les boutons */
-.lance-analyse-enabled:hover,
-.affiche-liste-enabled:hover,
-.affiche-result-enabled:hover,
+.xlance-analyse-enabled:hover,
+.xaffiche-liste-enabled:hover,
+.xaffiche-result-enabled:hover,
 .analyse-owasp-enabled:hover,
 .tableau-de-bord-enabled:hover,
 .cosui-enabled:hover,
@@ -189,8 +213,8 @@ textarea[readonly] {
 #fermer-liste-severity:hover { background-color: #006182; }
 
 /* Gestion des boutons désactivés */
-.lance-analyse-disabled,
-.affiche-result-disabled,
+.xlance-analyse-disabled,
+.xaffiche-result-disabled,
 .analyse-owasp-disabled,
 .tableau-de-bord-disabled,
 .cosui-disabled,
