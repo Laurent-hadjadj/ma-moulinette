@@ -24,6 +24,61 @@ import { log } from '../../common/log.js';
 import {contentType, dateOptions, http_400, http_401, http_403, http_404, http_406, http_500,
         http_503, http_504, un, deux, trois, quatre, cinq, dix, cent, dixMille} from '../../common/constante.js';
 
+
+/**
+ * [Description for enableButtonAnalyse]
+ *
+ * @return void
+ *
+ * Created at: 21/07/2025 12:05:07 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ */
+const enableButtonAnalyse = function(){
+  const $buttonAfficheResult = $('.js-affiche-result');
+
+  // ✅ Réactivation propre du bouton
+  $buttonAfficheResult.removeClass('clicked-true disabled-bouton');
+  $buttonAfficheResult.attr('aria-label', "Afficher les résultats.");
+  $buttonAfficheResult.removeAttr('aria-disabled tabindex');
+}
+
+/**
+ * [Description for disableButtonAffiche]
+ *
+ * @return void
+ *
+ * Created at: 21/07/2025 12:06:39 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ */
+const disableButtonAffiche = function(){
+  const $buttonAfficheResult = $('.js-affiche-result');
+
+  /** Réinitialisation préalable de toutes les classes liées à l'état */
+  $buttonAfficheResult.removeClass('clicked-false clicked-true');
+
+  $buttonAfficheResult.addClass('disabled-bouton clicked-true');
+  $buttonAfficheResult.attr('aria-disabled', 'true');
+  $buttonAfficheResult.attr('aria-label', "Affiche des informations en cours.");
+  $buttonAfficheResult.attr('tabindex', '-1');
+}
+
+/**
+ * [Description for ErrorButtonAffiche]
+ *
+ * @return [type]
+ *
+ * Created at: 21/07/2025 12:15:16 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ */
+const ErrorButtonAffiche = function(){
+  const $buttonAfficheResult = $('.js-affiche-result');
+
+  $buttonAfficheResult.removeClass('clicked-true').addClass('clicked-false');
+}
+
 /**
  * [Description for remplissage]
  * Fonction de remplissage des tableaux.
@@ -38,6 +93,9 @@ import {contentType, dateOptions, http_400, http_401, http_403, http_404, http_4
 export const remplissage = async function(maven_key) {
   const data = { maven_key };
 
+  /** On bloque le bouton */
+  disableButtonAffiche();
+
   /**
    * On récupère les informations sur les versions, et le dernier audit.
    */
@@ -48,13 +106,14 @@ export const remplissage = async function(maven_key) {
   try {
         const t = await $.ajax(optionsInfo);
         const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
-            if (errorCodes.includes(t.code)){
-                const hasTrace = !!t.trace;
-                const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
-                showMessage(t.type, t.message, trace);
-                sessionStorage.setItem('peinture', 'Erreur - récupération des informations de la version.');
-                return;
-              }
+        if (errorCodes.includes(t.code)){
+            const hasTrace = !!t.trace;
+            const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+            showMessage(t.type, t.message, trace);
+            sessionStorage.setItem('peinture', 'Erreur - récupération des informations de la version.');
+            log(' - ❌ [Peinture] Affichage des informations sur les versions en échec.');
+            return;
+          }
 
         /** On affiche les informations du projet */
         const nom = maven_key.split(':');
@@ -82,15 +141,17 @@ export const remplissage = async function(maven_key) {
         t2.dataset.snapshot=(t.snapshot);
         t3.dataset.autre=(t.autre);
         t4.dataset.dateVersion=(t.date);
+        log(' - 🎨 [Peinture] Affichage des informations sur les versions.');
       } catch(error) {
+            ErrorButtonAffiche();
             const trace = prepareTechnicalDetails(error);
-            const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors l'affichage du bloc informations générales.";
+            const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors l'affichage des informations sur les versions.";
               showMessage('alert', message, trace);
-              sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Informations Générales.');
-              log(' - ❌ [Peinture] Affichage du bloc Informations générales en échec.');
+              sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Informations.');
+              log(' - ❌ [Peinture] Affichage des informations sur les versions en échec.');
               return;
       }
-      return;
+
   /***
    * On récupère les exclusions noSonar
    */
@@ -100,10 +161,13 @@ export const remplissage = async function(maven_key) {
 
     try {
       const t = await $.ajax(optionsNoSonar);
-      const errorCodes = [http_400, http_401, http_403, http_406, http_500];
+      const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
       if (errorCodes.includes(t.code)){
-          showMessage(t.type, typeMessage(t.message));
-          sessionStorage.setItem('peinture', 'Erreur - récupération des alertes nosonar.');
+          const hasTrace = !!t.trace;
+          const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+          showMessage(t.type, t.message, trace);
+          sessionStorage.setItem('peinture', 'Erreur - récupération des informations noSonar.');
+          log(' - ❌ [Peinture] Affichage des informations NoSonar en échec.');
           return;
         }
 
@@ -113,8 +177,15 @@ export const remplissage = async function(maven_key) {
       const t6 = document.getElementById('no-sonar');
       t5.dataset.s1309=(t.s1309);
       t6.dataset.nosonar=(t.nosonar);
+      log(' - 🎨 [Peinture] Affichage des informations NoSOnar.');
     } catch(error) {
-      showMessage('alert', `<strong>[Peinture]</strong> Une erreur inattendue s'est produite lors la récupération des SuppressWarning et noSonar.<br>${error.message}`);
+          ErrorButtonAffiche();
+          const trace = prepareTechnicalDetails(error);
+          const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors l'affichage des informations noSonar.";
+            showMessage('alert', message, trace);
+            sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc NoSonar.');
+            log(' - ❌ [Peinture] Affichage des informations NoSonar en échec.');
+            return;
     }
 
   /** On récupère les to.do tags */
@@ -168,6 +239,9 @@ export const remplissage = async function(maven_key) {
     showMessage('alert', `<strong>[Peinture]</strong> Une erreur inattendue s'est produite lors la récupération des ToDo.<br>${error.message}`);
   }
 
+  /** Débloque le bouton afficher */
+  enableButtonAnalyse()
+  return;
 
   /***
  * On récupère les logger
