@@ -1443,19 +1443,23 @@ $('.js-analyse').on('click', function () {
 $('.js-affiche-result').on('click', () => {
   /* On récupère la clé du projet. */
   const apiMaven = $('#select-result').text().trim();
+  console.log('api-maven',apiMaven);
   /** On regarde si tou vas bien ! */
-  const collecte=sessionStorage.getItem('ma_moulinette_collecte');
+  const collecte = sessionStorage.getItem('ma_moulinette_collecte');
+  console.log('collecte', collecte);
   if (collecte===undefined || collecte!='Tout va bien!') {
     const  t = {};
-    sessionStorage.info('peinture', `Pas de données. ${json_encode(t)}.`);
+    sessionStorage.setItem('peinture', `Pas de données. ${json_encode(t)}.`);
     return;
   };
+
+  return;
 
   /* On appel une fonction externe. */
   if ( $('.js-affiche-result').hasClass('affiche-result-enabled')){
       /* On récupère les résultats. */
-      remplissage(apiMaven);
-      afficheHotspotDetails(apiMaven);
+      //remplissage(apiMaven);
+      //afficheHotspotDetails(apiMaven);
 
       if ($('#enregistrement').hasClass('enregistrement-disabled')){
             $('#enregistrement').addClass('enregistrement');
