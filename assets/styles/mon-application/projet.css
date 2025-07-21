@@ -40,6 +40,7 @@ textarea[readonly] {
 .container-analyse,
 .container-result,
 .container-liste,
+.container-enregistrement,
 .container-information-general,
 .container-information,
 .container-nosonar,
@@ -155,7 +156,12 @@ textarea[readonly] {
 /* Couleur des boutons */
 #bouton-collecte-indicateur,
 #bouton-affiche-indicateur,
-#bouton-affiche-liste {
+#bouton-affiche-liste,
+#bouton-enregistrement-indicateur,
+#bouton-repartition-module,
+#bouton-tableau-de-bord,
+#bouton-cosui,
+#bouton-analyse-owasp {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -175,16 +181,21 @@ textarea[readonly] {
 
 #bouton-collecte-indicateur:hover,
 #bouton-affiche-indicateur:hover,
-#bouton-affiche-liste:hover { background-color: #006182; }
+#bouton-affiche-liste:hover,
+#bouton-enregistrement-indicateur:hover,
+#bouton-repartition-module:hover,
+#bouton-tableau-de-bord:hover,
+#bouton-cosui:hover,
+#bouton-analyse-owasp:hover { background-color: #006182; }
 
 .xlance-analyse-enabled,
 .xaffiche-liste-enabled,
 .xaffiche-result-enabled,
-.analyse-owasp-enabled,
-.tableau-de-bord-enabled,
-.cosui-enabled,
-.repartition-module-enabled,
-.enregistrement-enabled,
+.xanalyse-owasp-enabled,
+.xtableau-de-bord-enabled,
+.xcosui-enabled,
+.xrepartition-module-enabled,
+.xenregistrement-enabled,
 #fermer-liste-projet,
 #fermer-liste-hotspot,
 #fermer-liste-logger,
@@ -200,11 +211,11 @@ textarea[readonly] {
 .xlance-analyse-enabled:hover,
 .xaffiche-liste-enabled:hover,
 .xaffiche-result-enabled:hover,
-.analyse-owasp-enabled:hover,
-.tableau-de-bord-enabled:hover,
-.cosui-enabled:hover,
-.repartition-module-enabled:hover,
-.enregistrement-enabled:hover,
+.xanalyse-owasp-enabled:hover,
+.xtableau-de-bord-enabled:hover,
+.xcosui-enabled:hover,
+.xrepartition-module-enabled:hover,
+.xenregistrement-enabled:hover,
 #fermer-liste-projet:hover,
 #fermer-autre-version:hover,
 #fermer-liste-hotspot:hover,
@@ -215,22 +226,22 @@ textarea[readonly] {
 /* Gestion des boutons désactivés */
 .xlance-analyse-disabled,
 .xaffiche-result-disabled,
-.analyse-owasp-disabled,
-.tableau-de-bord-disabled,
-.cosui-disabled,
-.repartition-module-disabled,
-.enregistrement-disabled {
+.xanalyse-owasp-disabled,
+.xtableau-de-bord-disabled,
+.xcosui-disabled,
+.xrepartition-module-disabled,
+.xenregistrement-disabled {
   background-color: #4c7c8c;
   cursor: not-allowed;
 }
 
-.lance-analyse-disabled:hover,
-.affiche-result-disabled:hover,
-.analyse-owasp-disabled:hover,
-.tableau-de-bord-disabled:hover,
-.cosui-disabled:hover,
-.repartition-module-disabled:hover,
-.enregistrement-disabled:hover { background-color: #006182; }
+.xlance-analyse-disabled:hover,
+.xaffiche-result-disabled:hover,
+.xanalyse-owasp-disabled:hover,
+.xtableau-de-bord-disabled:hover,
+.xcosui-disabled:hover,
+.xrepartition-module-disabled:hover,
+.xenregistrement-disabled:hover { background-color: #006182; }
 
 /* select2 custom
  *  placeholder
@@ -573,52 +584,40 @@ textarea[readonly] {
 /* Media Small */
 @media (22.025em <= width <= 30em) {
   .label-langage { font-size: 1rem; }
-  .callout-information { width: 22rem; }
+  .callout-information { width: 27rem; }
 }
 
 /* Media Small */
 @media (30.025em <= width <= 40em) {
   .label-langage { font-size: 1rem; }
-  .callout-information { width: 22rem; }
+  .callout-information { width: 37rem; }
 }
 
 /* Media Medium */
 @media (40.025em <= width <= 64em) {
   .label-langage { font-size: 1.1rem; }
-  .bouton-analyse-right { padding-right: 1rem; }
-  .bouton-afficher-left { padding-left: 1rem; }
-  .callout-information { width: 22rem; }
+  .callout-information { width: 18rem; }
 }
 
 /* Media Large */
 @media (64.025em <= width <= 90em) {
   .label-langage { font-size: 1.2rem; }
-  .bouton-analyse-right { padding-right: 1rem; }
-  .bouton-afficher-left { padding-left: 1rem; }
-  .callout-information { width: 24.1rem; }
+  .callout-information { width: 24rem; }
 }
 
 /* Media Large */
 @media (90.025em <= width <= 120em) {
   .label-langage { font-size: 1.2rem; }
-  .bouton-analyse-right { padding-right: 1rem; }
-  .bouton-afficher-left { padding-left: 1rem; }
-  .callout-information { width: 24.1rem; }
+  .callout-information { width: 24rem; }
 }
 
 /* Media Extra-Large */
 @media (120.025em <= width <= 160em) {
   .label-langage { font-size: 1.2rem; }
-
-  .bouton-analyse-right { padding-right: 1rem; }
-  .bouton-afficher-left { padding-left: 1rem; }
-  .callout-information { width: 24.1rem; }
+  .callout-information { width: 24rem; }
 }
 
 @media (width >= 160.025em) {
   .label-langage { font-size: 1.2rem; }
-
-  .bouton-analyse-right { padding-right: 1rem; }
-  .bouton-afficher-left { padding-left: 1rem; }
-  .callout-information { width: 24.1rem; }
+  .callout-information { width: 24rem; }
 }
