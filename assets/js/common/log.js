@@ -26,4 +26,5 @@ export const log = function(txt) {
   const textarea = document.getElementById('log');
   textarea.value += `${new Intl.DateTimeFormat('default',
   dateOptions).format(new Date())} ${txt}\n`;
+  textarea.scrollTop = textarea.scrollHeight;
 };
