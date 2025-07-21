@@ -59,6 +59,7 @@ class ApiPeintureController extends AbstractController
     /** Définition des constantes */
     public static $reference = "<strong>[Peinture]</strong> ";
     public static $erreur400 = "La requête est incorrecte (Erreur 400).";
+    public static $loggerE400 = "[Peinture] Requête mal formée : maven_key manquant ou invalide.";
     public static $erreur404 = "Je n'ai pas trouvé les données. Vous devez lancer une collecte (Erreur 404).";
     public static $erreur500 = "Je n'ai pas trouvé d'analyse (Erreur 500).";
 
@@ -365,32 +366,48 @@ class ApiPeintureController extends AbstractController
     public function peintureProjetMesures(Request $request): JsonResponse
     {
         /** On instancie l'entityRepository */
-        $mesuresRepository = $this->em->getRepository(Mesures::class);
+        $mesuresRepos = $this->em->getRepository(Mesures::class);
 
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On teste si la clé est valide */
-        if ($data === null || !property_exists($data, 'maven_key') ) {
+       // Vérification de la validité du corps de la requête
+        if ($data === null || !property_exists($data, 'maven_key')) {
+            $this->logger->alert(static::$loggerE400, [
+                'data' => $request->getContent()
+            ]);
             return new JsonResponse([
-                'data' => $data,'code' => 400, 'type' => 'alert',
-                'message' => static::$reference . static::$erreur400], Response::HTTP_OK);
+                'code' => 400,
+                'type' => 'alert',
+                'message' => static::$reference . static::$erreur400,
+                'trace' => null
+            ], Response::HTTP_OK);
         }
+
+        /** On nettoie la clé */
+        $maven_key = htmlspecialchars($data->maven_key, ENT_QUOTES, 'UTF-8');
 
         /** On regarde si le projet existe */
-        $isValide = $this->isValideMavenKey->isValideInformation($data->maven_key);
+        $isValide = $this->isValideMavenKey->isValideInformation($maven_key);
         if ($isValide['code'] === 404) {
-            return new JsonResponse([
-                'code' => 404, 'type' => 'secondary',
-                'message' => static::$reference . static::$erreur404], response::HTTP_OK);
-        }
+                return new JsonResponse([
+                    'code' => 404,
+                    'type' => 'secondary',
+                    'message' => static::$reference . static::$erreur404,
+                    'trace' => null
+                ], Response::HTTP_OK);
+            }
 
         /** On récupère la dernière version et sa date de publication */
-        $map = ['maven_key' => $data->maven_key];
-        $request = $mesuresRepository->selectMesuresVersionLast($map);
+        $map = [ 'maven_key' => $maven_key ];
+        $request = $mesuresRepos->selectMesuresVersionLast($map);
         if ($request['code'] != 200) {
-            return new JsonResponse(['code' => $request['code'], 'type' => 'alert',
-            'message' => static::$reference . $request['erreur']], Response::HTTP_OK);
+            return new JsonResponse([
+                'code' => $request['code'],
+                'type' => 'alert',
+                'message' => static::$reference  . "La récupération des données a échouée pour selectMesuresVersionLast (Erreur {$request['code']}).",
+                'trace' => $request['erreur']
+            ], Response::HTTP_OK);
         }
 
         /** On récupère le tableau des language de programmation. */
@@ -409,7 +426,8 @@ class ApiPeintureController extends AbstractController
             'sqale_debt_ratio' => $request['mesures'][0]['sqale_debt_ratio'],
             'duplicated_lines_density' => $request['mesures'][0]['duplicated_lines_density'],
             'tests' => $request['mesures'][0]['tests'],
-            'issues' => $request['mesures'][0]['issues']], Response::HTTP_OK
+            'issues' => $request['mesures'][0]['issues']
+            ], Response::HTTP_OK
         );
     }
 

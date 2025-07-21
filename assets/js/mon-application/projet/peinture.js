@@ -306,10 +306,6 @@ export const remplissage = async function(maven_key) {
       return;
   }
 
-  /** Débloque le bouton afficher */
-  enableButtonAnalyse()
-  return;
-
   /**
    * On récupère les mesures :
    * lignes, coverage fonctionnelle, ration de dette technique, duplication, tests unitaires et le nombre de défaut.
@@ -319,12 +315,14 @@ export const remplissage = async function(maven_key) {
     dataType: 'json', data: JSON.stringify(data), contentType };
 
   try {
-    console.log('mesures', t);
     const t = await $.ajax(optionsMesures);
-    const errorCodes = [http_400, http_401, http_403, http_406, http_500];
+    const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
     if (errorCodes.includes(t.code)){
-        showMessage(t.type, typeMessage(t.message));
-        sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des mesures.');
+        const hasTrace = !!t.trace;
+        const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+        showMessage(t.type, t.message, trace);
+        sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des informations sur les mesures.');
+        log(' - ❌ [Peinture] Affichage des informations sur mesures en échec.');
         return;
       }
 
@@ -402,10 +400,20 @@ export const remplissage = async function(maven_key) {
     t10.dataset.duplicatedLinesDensity=(t.duplicated_lines_density);
     t11.dataset.tests=(t.tests);
     t12.dataset.violations=t.issues;
+    log(' - 🎨 [Peinture] Affichage des informations sur les mesures.');
   } catch(error) {
-    showMessage('alert', `<strong>[Peinture]</strong> Une erreur inattendue s'est produite lors la récupération des Mesures.<br>${error.message}`);
+      ErrorButtonAffiche();
+      const trace = prepareTechnicalDetails(error);
+      const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors l'affichage des informations sur les mesures.";
+      showMessage('alert', message, trace);
+      sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Mesures.');
+      log(' - ❌ [Peinture] Affichage des informations sur les Mesures en échec.');
+      return;
   }
 
+  /** Débloque le bouton afficher */
+  enableButtonAnalyse()
+  return;
 
   /**
    * On récupère les informations sur la dette technique et les anomalies.
