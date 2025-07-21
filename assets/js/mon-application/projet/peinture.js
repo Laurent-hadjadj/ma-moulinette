@@ -263,14 +263,8 @@ export const remplissage = async function(maven_key) {
         const hasTrace = !!t.trace;
         const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
         showMessage(t.type, t.message, trace);
-        sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des informations noSonar.');
-        log(' - ❌ [Peinture] Affichage des informations NoSonar en échec.');
-        return;
-      }
-    const errorCodes = [http_400, http_401, http_403, http_406, http_500];
-    if (errorCodes.includes(t.code)){
-        showMessage(t.type, typeMessage(t.message));
-        sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération Logger.');
+        sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des informations sur les loggers JAVA.');
+        log(' - ❌ [Peinture] Affichage des informations sur les loggers JAVA en échec.');
         return;
       }
 
@@ -301,8 +295,15 @@ export const remplissage = async function(maven_key) {
     logger2.dataset.loggerWarn=(t.logger_warn);
     logger3.dataset.loggerError=(t.logger_error);
     logger4.dataset.loggerDebug=(t.logger_debug);
+    log(' - 🎨 [Peinture] Affichage des informations sur les loggers JAVA.');
   } catch(error) {
-    showMessage('alert', `<strong>[Peinture]</strong> Une erreur inattendue s'est produite lors la récupération des Loggers.<br>${error.message}`);
+      ErrorButtonAffiche();
+      const trace = prepareTechnicalDetails(error);
+      const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors l'affichage des informations sur les loggers JAVA.";
+      showMessage('alert', message, trace);
+      sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Loggers.');
+      log(' - ❌ [Peinture] Affichage des informations sur les loggers JAVA en échec.');
+      return;
   }
 
   /** Débloque le bouton afficher */
