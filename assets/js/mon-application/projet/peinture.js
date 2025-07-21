@@ -110,7 +110,7 @@ export const remplissage = async function(maven_key) {
             const hasTrace = !!t.trace;
             const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
             showMessage(t.type, t.message, trace);
-            sessionStorage.setItem('peinture', 'Erreur - récupération des informations de la version.');
+            sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des informations de la version.');
             log(' - ❌ [Peinture] Affichage des informations sur les versions en échec.');
             return;
           }
@@ -166,7 +166,7 @@ export const remplissage = async function(maven_key) {
           const hasTrace = !!t.trace;
           const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
           showMessage(t.type, t.message, trace);
-          sessionStorage.setItem('peinture', 'Erreur - récupération des informations noSonar.');
+          sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des informations noSonar.');
           log(' - ❌ [Peinture] Affichage des informations NoSonar en échec.');
           return;
         }
@@ -200,7 +200,7 @@ export const remplissage = async function(maven_key) {
         const hasTrace = !!t.trace;
         const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
         showMessage(t.type, t.message, trace);
-        sessionStorage.setItem('peinture', 'Erreur - récupération des informations todo.');
+        sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des informations todo.');
         log(' - ❌ [Peinture] Affichage des informations ToDO en échec.');
         return;
       }
@@ -249,10 +249,6 @@ export const remplissage = async function(maven_key) {
       return;
   }
 
-  /** Débloque le bouton afficher */
-  enableButtonAnalyse()
-  return;
-
   /***
  * On récupère les logger
  */
@@ -262,10 +258,19 @@ export const remplissage = async function(maven_key) {
 
   try {
     const t = await $.ajax(optionsLogger);
+    const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
+    if (errorCodes.includes(t.code)){
+        const hasTrace = !!t.trace;
+        const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+        showMessage(t.type, t.message, trace);
+        sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des informations noSonar.');
+        log(' - ❌ [Peinture] Affichage des informations NoSonar en échec.');
+        return;
+      }
     const errorCodes = [http_400, http_401, http_403, http_406, http_500];
     if (errorCodes.includes(t.code)){
         showMessage(t.type, typeMessage(t.message));
-        sessionStorage.setItem('peinture', 'Erreur - récupération Logger.');
+        sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération Logger.');
         return;
       }
 
@@ -300,6 +305,10 @@ export const remplissage = async function(maven_key) {
     showMessage('alert', `<strong>[Peinture]</strong> Une erreur inattendue s'est produite lors la récupération des Loggers.<br>${error.message}`);
   }
 
+  /** Débloque le bouton afficher */
+  enableButtonAnalyse()
+  return;
+
   /**
    * On récupère les mesures :
    * lignes, coverage fonctionnelle, ration de dette technique, duplication, tests unitaires et le nombre de défaut.
@@ -314,7 +323,7 @@ export const remplissage = async function(maven_key) {
     const errorCodes = [http_400, http_401, http_403, http_406, http_500];
     if (errorCodes.includes(t.code)){
         showMessage(t.type, typeMessage(t.message));
-        sessionStorage.setItem('peinture', 'Erreur - récupération des mesures.');
+        sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des mesures.');
         return;
       }
 
@@ -409,7 +418,7 @@ export const remplissage = async function(maven_key) {
       const errorCodes = [http_400, http_401, http_403, http_406, http_500];
       if (errorCodes.includes(t.code)){
           showMessage(t.type, typeMessage(t.message));
-          sessionStorage.setItem('peinture', 'Erreur - récupération des anomalies.');
+          sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des anomalies.');
           return;
         }
 
@@ -634,7 +643,7 @@ export const remplissage = async function(maven_key) {
     const errorCodes = [http_400, http_401, http_403, http_406, http_500];
     if (errorCodes.includes(t.code)){
         showMessage(t.type, typeMessage(t.message));
-        sessionStorage.setItem('peinture', 'Erreur - Erreur - récupération des hotspots.');
+        sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - Erreur - récupération des hotspots.');
         return;
       }
 
@@ -673,7 +682,7 @@ export const remplissage = async function(maven_key) {
     const errorCodes = [http_400, http_401, http_403, http_406, http_500];
     if (errorCodes.includes(t.code)){
         showMessage(t.type, typeMessage(t.message));
-        sessionStorage.setItem('peinture', 'Erreur - récupération du détail des anomalies.');
+        sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération du détail des anomalies.');
         return;
       }
 
@@ -757,7 +766,7 @@ export const afficheHotspotDetails = async function (mavenKey){
         const errorCodes = [http_400, http_401, http_403, http_406, http_500];
         if (errorCodes.includes(t.code)){
             showMessage(t.type, typeMessage(t.message));
-            sessionStorage.setItem('peinture', 'Erreur - récupération du détail des hotspots.');
+            sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération du détail des hotspots.');
             return;
           }
 
