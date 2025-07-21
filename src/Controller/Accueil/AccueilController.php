@@ -282,7 +282,7 @@ class AccueilController extends AbstractController
     {
         $this->logger->info('[Accueil] Mise à jour des propriétés.', ['type' => $type, 'bd' => $bd, 'sonar' => $sonar]);
         /** On instancie l'entityRepository */
-        $propertiesRepository = $this->em->getRepository(Properties::class);
+        $propertiesRepos = $this->em->getRepository(Properties::class);
 
         /** On met à jour la date de modification */
         $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
@@ -295,9 +295,9 @@ class AccueilController extends AbstractController
             ];
 
         if ($type === 'projet') {
-            $propertiesRepository->updatePropertiesProjet($map);
+            $propertiesRepos->updatePropertiesProjet($map);
         } else {
-            $propertiesRepository->updatePropertiesProfiles($map);
+            $propertiesRepos->updatePropertiesProfiles($map);
         }
     }
 
@@ -314,10 +314,10 @@ class AccueilController extends AbstractController
     private function getProperties(): array
     {
         $this->logger->info('[Accueil] Récupération des propriétés projets/profils.');
-        $propertiesRepository = $this->em->getRepository(Properties::class);
+        $propertiesRepos = $this->em->getRepository(Properties::class);
 
         /** On récupère le nombre de projet et de profil */
-        $getProperties = $propertiesRepository->getProperties('properties');
+        $getProperties = $propertiesRepos->getProperties('properties');
 
         /** La table est vide. On initialise les valeurs */
         if (!$getProperties['request']) {
@@ -332,7 +332,7 @@ class AccueilController extends AbstractController
                 'date_modification_profil' => $date
             ];
 
-            $propertiesRepository->insertProperties($map);
+            $propertiesRepos->insertProperties($map);
             return $map;
         }
 
@@ -386,7 +386,7 @@ class AccueilController extends AbstractController
     private function getListeFavoriProjet(Security $security): JsonResponse
     {
         /** On instancie l'entityRepository */
-        $historiqueRepository = $this->em->getRepository(Historique::class);
+        $historiqueRepos = $this->em->getRepository(Historique::class);
 
         /** On récupère le nombre de favori que l'on souhaite afficher au max (10) */
         $nombreProjetFavori = $this->params->get('nombre.favori');
@@ -417,7 +417,7 @@ class AccueilController extends AbstractController
             /* on prépare les données pour la requête */
             $map = [
                 'liste_projet' => rtrim($liste, " , "), 'nombre_projet_favori' => $nombreProjetFavori];
-            $listeProjet = $historiqueRepository->selectHistoriqueProjetFavori($map);
+            $listeProjet = $historiqueRepos->selectHistoriqueProjetFavori($map);
         } else {
             $map = [];
         }
@@ -479,7 +479,7 @@ class AccueilController extends AbstractController
     private function getListeFavoriVersion(Security $security): JsonResponse
     {
         /** On instancie l'entityRepository */
-        $historiqueRepository = $this->em->getRepository(Historique::class);
+        $historiqueRepos = $this->em->getRepository(Historique::class);
 
         /** On récupère l'objet User du contexte de sécurité */
         $preference = $security->getUser()->getPreference();
@@ -494,7 +494,7 @@ class AccueilController extends AbstractController
             /** pour chaque projet */
             for ($i = 0; $i < count($keys); $i++) {
                 $where = static::construitMaRequest($keys, array_keys($keys[$i]), $i);
-                $favori = $historiqueRepository->getProjetFavori($where);
+                $favori = $historiqueRepos->getProjetFavori($where);
                 array_push($liste, $favori);
             }
         }
