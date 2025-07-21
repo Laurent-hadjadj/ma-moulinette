@@ -1243,6 +1243,22 @@ ditBonjour();
 /* On met ajour la liste des projets disponibles */
 selectProjet();
 
+/*************************************************************/
+/************************** Events ***************************/
+/*************************************************************/
+/**
+ * description
+ * Active la gomme pour nettoyer la log.
+ */
+$('.gomme-svg').on('click', function () {
+  $('.log').val('');
+});
+
+
+/******************************************************/
+/***        Lance la collecte des indicateurs         */
+/******************************************************/
+
 /**
  * description
  * Lance la collecte des données du projet sélectionné.
@@ -1336,17 +1352,9 @@ $('.js-analyse').on('click', function () {
   $('.js-affiche-result').addClass('affiche-result-enabled');
 });
 
-/*************************************************************/
-/************************** Events ***************************/
-/*************************************************************/
-/**
- * description
- * Active la gomme pour nettoyer la log.
- */
-$('.gomme-svg').on('click', function () {
-  $('.log').val('');
-});
-
+/******************************************************/
+/***                 Choix du projet                  */
+/******************************************************/
 /**
  * description
  * Événement : Affiche le nom de la clé du projet, active le bouton pour l'analyse.
@@ -1425,6 +1433,150 @@ $('select[name="projet"]').on('change', function () {
   $('.js-enregistrement').attr('aria-disabled', 'false');
 });
 
+/******************************************************/
+/***           Affiche les indicateurs                */
+/******************************************************/
+
+/**
+ * description
+ * On passe à la peinture
+ */
+$('.js-affiche-result').on('click', () => {
+  /* On récupère la clé du projet. */
+  const apiMaven = $('#select-result').text().trim();
+  /** On regarde si tou vas bien ! */
+  const collecte=sessionStorage.getItem('ma_moulinette_collecte');
+  if (collecte===undefined || collecte!='Tout va bien!') {
+    const  t = {};
+    sessionStorage.info('peinture', `Pas de données. ${json_encode(t)}.`);
+    return;
+  };
+
+  /* On appel une fonction externe. */
+  if ( $('.js-affiche-result').hasClass('affiche-result-enabled')){
+      /* On récupère les résultats. */
+      remplissage(apiMaven);
+      afficheHotspotDetails(apiMaven);
+
+      if ($('#enregistrement').hasClass('enregistrement-disabled')){
+            $('#enregistrement').addClass('enregistrement');
+            $('#enregistrement').removeClass('enregistrement-disabled');
+        }
+    }
+});
+
+/******************************************************/
+/***   Enregistre les résultats dans l'historique     */
+/******************************************************/
+
+/**
+ * description
+ * On lance l'enregistrement des données
+ */
+$('.js-enregistrement').on('click', () => {
+  /** On vérifie le rôle */
+  const userRating = document.querySelector('.js-user-rating');
+  const roles = JSON.parse(userRating.dataset.user);
+
+  if (!roles.includes('ROLE_COLLECTE') && !roles.includes('ROLE_BATCH') && !roles.includes('ROLE_GESTIONNAIRE')) {
+    showMessage('alert', `<strong>[PROJET-000]</strong> Vous devez avoir au moins le rôle COLLECTE pour lancer la commande d'enregistrement.` );
+    return;
+  }
+
+  /* On récupère la clé du projet. */
+  const apiMaven = $('#select-result').text().trim();
+  enregistrement(apiMaven);
+});
+
+/******************************************************/
+/***           Ouvre la page de SUIVI                */
+/******************************************************/
+
+/**
+ * description
+ * On génère la route et on ouvre la page des tableau de suivi
+ */
+$('.js-tableau-de-bord').on('click', () => {
+  if ($('select[name="projet"]').val() !== '' && $('select[name="projet"]').val() !== 'TheID'){
+    const apiMaven = $('#select-result').text().trim();
+    window.location.href=`${serveur()}/suivi/set?maven_key=${apiMaven}`;
+    } else {
+    log(' - ERROR - [SUIVI] - Vous devez choisir un projet dans la liste !! !');
+    }
+});
+
+/******************************************************/
+/***              Ouvre la page COSUI                 */
+/******************************************************/
+
+/**
+ * description
+ * On ouvre la page COSUI
+ */
+$('.js-cosui').on('click', () => {
+  if ($('select[name="projet"]').val() !== '' && $('select[name="projet"]').val() !== 'TheID'){
+    const apiMaven = $('#select-result').text().trim();
+
+    /** on créé un hash avec la méthode reduce() comme clé de salt */
+    const salt = apiMaven.split('').reduce((hash, char) => {
+      return char.charCodeAt(0) + (hash << 6) + (hash << 16) - hash;
+    } , 0);
+
+  /** on créé un token pour encoder les paramètres */
+  const param = `${salt}|${apiMaven}`;
+  const a = encode(btoa(param));
+  location.href=`${serveur()}/projet/cosui?maven_key=${a}`;
+  } else {
+    log(' - ERROR - [COSUI] - Vous devez choisir un projet dans la liste !! !');
+    }
+});
+
+/******************************************************/
+/***           Ouvre la page répartition              */
+/******************************************************/
+
+/**
+ * description
+ * On génère la route et on ouvre la page de répartition des indicateurs par module
+ */
+  $('.js-analyse-owasp').on('click', () => {
+    if ($('select[name="projet"]').val() !== '' && $('select[name="projet"]').val() !== 'TheID'){
+      const mavenKey = $('#select-result').text().trim();
+
+      /* on écrase la clé maven au cas ou */
+      sessionStorage.setItem('ma_moulinette_projet', mavenKey);
+
+      /** On ne passe plus de paramètre dans le get */
+      window.location.href = `${server()}/owasp`;
+    } else {
+      log(' - ERROR - [OWASP] - Vous devez choisir un projet dans la liste !! !');
+      }
+  });
+
+/**
+ * description
+ * On génère la route et on ouvre la page de répartition des indicateurs par module
+ */
+$('.js-repartition-module').on('click', () => {
+  if ($('select[name="projet"]').val() !== '' && $('select[name="projet"]').val() !== 'TheID'){
+    const apiMaven = $('#select-result').text().trim();
+    /** on créé un hash avec la méthode reduce() comme clé de salt */
+    const salt = apiMaven.split('').reduce((hash, char) => {
+      return char.charCodeAt(0) + (hash << 6) + (hash << 16) - hash;
+    } , 0);
+
+  /** on créé un token pour encoder les paramètres */
+  const param = `${salt}|${apiMaven}`;
+  const a = encode(btoa(param));
+  location.href=`${serveur()}/repartition?token=${a}`;
+  } else {
+    log(' - ERROR - [Répartition] Vous devez choisir un projet dans la liste !! !');
+    }
+});
+
+/******************************************************/
+/***                  Les modales                     */
+/******************************************************/
 /**
  * description
  * On affiche la liste des projets déjà analysés et des favoris
@@ -1433,7 +1585,6 @@ $('#js-affiche-liste').on('click', function () {
   afficheMesProjets();
   $('#modal-liste-projet').foundation('open');
 });
-
 /**
  * description
  * On affiche la liste des types d'anomalies par sévérité.
@@ -1543,128 +1694,9 @@ $('#js-version-autre').on('click', () => {
   }
 });
 
-/**
- * description
- * On passe à la peinture
- */
-$('.js-affiche-result').on('click', () => {
-  /* On récupère la clé du projet. */
-  const apiMaven = $('#select-result').text().trim();
-  /** On regarde si tou vas bien ! */
-  const collecte=sessionStorage.getItem('ma_moulinette_collecte');
-  if (collecte===undefined || collecte!='Tout va bien!') {
-    const  t = {};
-    sessionStorage.info('peinture', `Pas de données. ${json_encode(t)}.`);
-    return;
-  };
-
-  /* On appel une fonction externe. */
-  if ( $('.js-affiche-result').hasClass('affiche-result-enabled')){
-      /* On récupère les résultats. */
-      remplissage(apiMaven);
-      afficheHotspotDetails(apiMaven);
-
-      if ($('#enregistrement').hasClass('enregistrement-disabled')){
-            $('#enregistrement').addClass('enregistrement');
-            $('#enregistrement').removeClass('enregistrement-disabled');
-        }
-    }
-});
-
-/**
- * description
- * On lance l'enregistrement des données
- */
-$('.js-enregistrement').on('click', () => {
-  /** On vérifie le rôle */
-  const userRating = document.querySelector('.js-user-rating');
-  const roles = JSON.parse(userRating.dataset.user);
-
-  if (!roles.includes('ROLE_COLLECTE') && !roles.includes('ROLE_BATCH') && !roles.includes('ROLE_GESTIONNAIRE')) {
-    showMessage('alert', `<strong>[PROJET-000]</strong> Vous devez avoir au moins le rôle COLLECTE pour lancer la commande d'enregistrement.` );
-    return;
-  }
-
-  /* On récupère la clé du projet. */
-  const apiMaven = $('#select-result').text().trim();
-  enregistrement(apiMaven);
-});
-
-/**
- * description
- * On génère la route et on ouvre la page des tableau de suivi
- */
-$('.js-tableau-de-bord').on('click', () => {
-  if ($('select[name="projet"]').val() !== '' && $('select[name="projet"]').val() !== 'TheID'){
-    const apiMaven = $('#select-result').text().trim();
-    window.location.href=`${serveur()}/suivi/set?maven_key=${apiMaven}`;
-    } else {
-    log(' - ERROR - [SUIVI] - Vous devez choisir un projet dans la liste !! !');
-    }
-});
-
-/**
- * description
- * On ouvre la page COSUI
- */
-$('.js-cosui').on('click', () => {
-  if ($('select[name="projet"]').val() !== '' && $('select[name="projet"]').val() !== 'TheID'){
-    const apiMaven = $('#select-result').text().trim();
-
-    /** on créé un hash avec la méthode reduce() comme clé de salt */
-    const salt = apiMaven.split('').reduce((hash, char) => {
-      return char.charCodeAt(0) + (hash << 6) + (hash << 16) - hash;
-    } , 0);
-
-  /** on créé un token pour encoder les paramètres */
-  const param = `${salt}|${apiMaven}`;
-  const a = encode(btoa(param));
-  location.href=`${serveur()}/projet/cosui?maven_key=${a}`;
-  } else {
-    log(' - ERROR - [COSUI] - Vous devez choisir un projet dans la liste !! !');
-    }
-});
-
-/**
- * description
- * On génère la route et on ouvre la page de répartition des indicateurs par module
- */
-  $('.js-analyse-owasp').on('click', () => {
-    if ($('select[name="projet"]').val() !== '' && $('select[name="projet"]').val() !== 'TheID'){
-      const mavenKey = $('#select-result').text().trim();
-
-      /* on écrase la clé maven au cas ou */
-      sessionStorage.setItem('ma_moulinette_projet', mavenKey);
-
-      /** On ne passe plus de paramètre dans le get */
-      window.location.href = `${server()}/owasp`;
-    } else {
-      log(' - ERROR - [OWASP] - Vous devez choisir un projet dans la liste !! !');
-      }
-  });
-
-/**
- * description
- * On génère la route et on ouvre la page de répartition des indicateurs par module
- */
-$('.js-repartition-module').on('click', () => {
-  if ($('select[name="projet"]').val() !== '' && $('select[name="projet"]').val() !== 'TheID'){
-    const apiMaven = $('#select-result').text().trim();
-    /** on créé un hash avec la méthode reduce() comme clé de salt */
-    const salt = apiMaven.split('').reduce((hash, char) => {
-      return char.charCodeAt(0) + (hash << 6) + (hash << 16) - hash;
-    } , 0);
-
-  /** on créé un token pour encoder les paramètres */
-  const param = `${salt}|${apiMaven}`;
-  const a = encode(btoa(param));
-  location.href=`${serveur()}/repartition?token=${a}`;
-  } else {
-    log(' - ERROR - [Répartition] Vous devez choisir un projet dans la liste !! !');
-    }
-});
-
-/***********    Main */
+/******************************************************/
+/***                  Main                            */
+/******************************************************/
 const e = document.getElementById('feedback');
 const dernierBidule = e.dataset.bookmark;
 
