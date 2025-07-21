@@ -263,7 +263,7 @@ class ApiPeintureController extends AbstractController
             return new JsonResponse([
                 'code' => $toutesLesVersions['code'],
                 'type' => 'alert',
-                'message' => static::$reference . static::$erreur500 . " (toutes-les-versions)",
+                'message' => static::$reference . "La récupération des données a échouée pour countInformationProjetAllType (Erreur {$toutesLesVersions['code']}).",
                 'trace' => $toutesLesVersions['erreur'] ?? null
             ], Response::HTTP_OK);
         }
@@ -275,7 +275,7 @@ class ApiPeintureController extends AbstractController
             return new JsonResponse([
                 'code' => $release['code'],
                 'type' => 'alert',
-                'message' => static::$reference . static::$erreur500 . " (version-release)",
+                'message' => static::$reference . "La récupération des données a échouée pour countInformationProjetType (Erreur {$release['code']}).",
                 'trace' => $release['erreur'] ?? null
             ], Response::HTTP_OK);
         }
@@ -290,7 +290,7 @@ class ApiPeintureController extends AbstractController
             return new JsonResponse([
                 'code' => $snapshot['code'],
                 'type' => 'alert',
-                'message' => static::$reference . static::$erreur500 . " (version-snapshot)",
+                'message' => static::$reference . "La récupération des données a échouée pour countInformationProjetType (Erreur {$snapshot['code']}).",
                 'trace' => $snapshot['erreur'] ?? null
             ], Response::HTTP_OK);
         }
@@ -311,7 +311,7 @@ class ApiPeintureController extends AbstractController
             return new JsonResponse([
                 'code' => $infoVersion['code'],
                 'type' => 'alert',
-                'message' => static::$reference . static::$erreur500 . " (info-version)",
+                'message' => static::$reference . "La récupération des données a échouée pour selectInformationProjetType (Erreur {$infoVersion['code']}).",
                 'trace' => $infoVersion['erreur'] ?? null
             ], Response::HTTP_OK);
         }
@@ -330,7 +330,7 @@ class ApiPeintureController extends AbstractController
             return new JsonResponse([
                 'code' => $infoRelease['code'],
                 'type' => 'alert',
-                'message' => static::$reference . static::$erreur500 . " (info-release)",
+                'message' => static::$reference . "La récupération des données a échouée pour selectInformationProjetType (Erreur {$infoRelease['code']}).",
                 'trace' => $infoRelease['erreur'] ?? null
             ], Response::HTTP_OK);
         }
@@ -405,7 +405,7 @@ class ApiPeintureController extends AbstractController
             return new JsonResponse([
                 'code' => $request['code'],
                 'type' => 'alert',
-                'message' => static::$reference  . "La récupération des données a échouée pour selectMesuresVersionLast (Erreur {$request['code']}).",
+                'message' => static::$reference . "La récupération des données a échouée pour selectMesuresVersionLast (Erreur {$request['code']}).",
                 'trace' => $request['erreur']
             ], Response::HTTP_OK);
         }
