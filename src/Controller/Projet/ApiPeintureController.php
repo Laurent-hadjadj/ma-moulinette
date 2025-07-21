@@ -766,31 +766,49 @@ class ApiPeintureController extends AbstractController
     public function peintureProjetNoSonar(Request $request): JsonResponse
     {
         /** On instancie l'entityRepository */
-        $noSonarRepository = $this->em->getRepository(NoSonar::class);
+        $noSonarRepos = $this->em->getRepository(NoSonar::class);
 
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On teste si la clé est valide */
+        // Vérification de la validité du corps de la requête
         if ($data === null || !property_exists($data, 'maven_key')) {
-            return new JsonResponse(['data' => $data, 'code' => 400, 'type' => 'alert',
-            'message' => static::$reference . static::$erreur400], Response::HTTP_OK);
+            $this->logger->warning('[Peinture] Requête mal formée : maven_key manquant ou invalide.', [
+                'data' => $request->getContent()
+            ]);
+            return new JsonResponse([
+                'code' => 400,
+                'type' => 'alert',
+                'message' => static::$reference . static::$erreur400,
+                'trace' => null
+            ], Response::HTTP_OK);
         }
 
+        /** On nettoie la clé */
+        $maven_key = htmlspecialchars($data->maven_key, ENT_QUOTES, 'UTF-8');
+
         /** On regarde si le projet existe */
-        $isValide = $this->isValideMavenKey->isValideInformation($data->maven_key);
+        $isValide = $this->isValideMavenKey->isValideInformation($maven_key);
         if ($isValide['code'] === 404) {
             return new JsonResponse([
-                'code' => 404, 'type' => 'secondary',
-                'message' => static::$reference . static::$erreur404], Response::HTTP_OK);
+                'code' => 404,
+                'type' => 'secondary',
+                'message' => static::$reference . static::$erreur404,
+                'trace' => null
+            ], Response::HTTP_OK);
         }
         /** On récupère la liste des règles et leur nombre pour un projet. */
-        $map = ['maven_key' => $data->maven_key];
+        $map = [ 'maven_key' => $maven_key ];
+
         /** On revoie une liste avec la rule ["java:NoSonar",  "java:S1309"] et le total */
-        $rules = $noSonarRepository->selectNoSonarRuleGroupByRule($map);
+        $rules = $noSonarRepos->selectNoSonarRuleGroupByRule($map);
         if ($rules['code'] != 200) {
-            return new JsonResponse(['code' => $rules['code'], 'type' => 'alert',
-            'message' => static::$reference . $rules['erreur'] ], Response::HTTP_OK);
+            return new JsonResponse([
+                'code' => $rules['code'],
+                'type' => 'alert',
+                'message' => static::$reference . "La récupération des données a échouée pour selectNoSonarRuleGroupByRule (Erreur {$rules['code']}).",
+                'trace' => $rules['erreur']
+            ], Response::HTTP_OK);
         }
 
         $sonar1309 = $nosonar = $total = 0;
@@ -806,8 +824,12 @@ class ApiPeintureController extends AbstractController
             $total = intval($sonar1309, 10) + intval($nosonar, 10);
         }
 
-        return new JsonResponse(
-            ['code' => 200, 'total' => $total, 's1309' => $sonar1309, 'nosonar' => $nosonar], Response::HTTP_OK
+        return new JsonResponse([
+            'code' => 200,
+            'total' => $total,
+            's1309' => $sonar1309,
+            'nosonar' => $nosonar
+            ], Response::HTTP_OK
         );
     }
 
