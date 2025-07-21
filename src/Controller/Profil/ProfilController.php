@@ -94,11 +94,11 @@ class ProfilController extends AbstractController
         'env' => $this->environnement]);
 
         /** On instancie l'EntityRepository */
-        $profilesRepository = $this->em->getRepository(Profiles::class);
+        $profilesRepos = $this->em->getRepository(Profiles::class);
 
         try {
                 /** On récupère la liste des profiles; */
-                $r = $profilesRepository->selectProfiles();
+                $r = $profilesRepos->selectProfiles();
 
                 if ($r['code'] !== 200) {
                     $this->logger->error('[Profil] Erreur lors de la récupération des profils (selectProfiles)', [
