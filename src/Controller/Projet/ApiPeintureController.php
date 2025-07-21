@@ -19,8 +19,8 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
-
 use Symfony\Component\Routing\Annotation\Route;
+use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
 use App\Entity\InformationProjet;
@@ -52,7 +52,8 @@ class ApiPeintureController extends AbstractController
     public function __construct(
         private EntityManagerInterface $em,
         private IsValideMavenKey $isValideMavenKey,
-        private UrlBuilderService $urlBuilderService
+        private UrlBuilderService $urlBuilderService,
+        private LoggerInterface $logger,
     ) { }
 
     /** Définition des constantes */
@@ -220,69 +221,98 @@ class ApiPeintureController extends AbstractController
      */
     #[Route('/api/peinture/projet/version', name: 'peinture_projet_version', methods: ['POST'])]
     public function peintureProjetVersion(Request $request): JsonResponse
-    { //refactor
+    {
         /** On instancie l'entityRepository */
-        $informationProjetRepository = $this->em->getRepository(InformationProjet::class);
+        $informationProjetRepos = $this->em->getRepository(InformationProjet::class);
 
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On teste si la clé est valide */
-        if ($data === null || !property_exists($data, 'maven_key') ) {
+         // Vérification de la validité du corps de la requête
+        if ($data === null || !property_exists($data, 'maven_key')) {
+            $this->logger->warning('[Peinture] Requête mal formée : maven_key manquant ou invalide.', [
+                'data' => $request->getContent()
+            ]);
             return new JsonResponse([
-                'data' =>$data,'code' => 400, 'type' => 'alert',
-                'message' => static::$reference . static::$erreur400], Response::HTTP_OK);
+                'code' => 400,
+                'type' => 'alert',
+                'message' => static::$reference . static::$erreur400,
+                'trace' => null
+            ], Response::HTTP_OK);
         }
 
+        /** On nettoie la clé */
+        $maven_key = htmlspecialchars($data->maven_key, ENT_QUOTES, 'UTF-8');
+
         /** On regarde si le projet existe */
-        $isValide = $this->isValideMavenKey->isValideInformation($data->maven_key);
+        $isValide = $this->isValideMavenKey->isValideInformation($maven_key);
         if ($isValide['code'] === 404) {
             return new JsonResponse([
-                'code' => 404, 'type' => 'secondary',
-                'message' => static::$reference. static::$erreur404], Response::HTTP_OK);
+                'code' => 404,
+                'type' => 'secondary',
+                'message' => static::$reference . static::$erreur404,
+                'trace' => null
+            ], Response::HTTP_OK);
         }
 
         /** Toutes les versions par type (RELEASE, SNAPSHOT, AUTRE) */
-        $map = ['maven_key' => $data->maven_key];
-        $toutesLesVersions = $informationProjetRepository->countInformationProjetAllType($map);
+        $map = ['maven_key' => $maven_key ];
+        $toutesLesVersions = $informationProjetRepos->countInformationProjetAllType($map);
         if ($toutesLesVersions['code'] != 200) {
             return new JsonResponse([
-                'code' => $toutesLesVersions['code'], 'type' => 'alert',
-                'message' => static::$reference . static::$erreur500, 'debug' => 'Tous les projets.'], Response::HTTP_OK);
+                'code' => $toutesLesVersions['code'],
+                'type' => 'alert',
+                'message' => static::$reference . static::$erreur500 . " (toutes-les-versions)",
+                'trace' => $toutesLesVersions['erreur'] ?? null
+            ], Response::HTTP_OK);
         }
+
         /** Les releases */
-        $map = ['maven_key' => $data->maven_key, 'type' => 'RELEASE'];
-        $release = $informationProjetRepository->countInformationProjetType($map);
+        $map = ['maven_key' => $maven_key, 'type' => 'RELEASE' ];
+        $release = $informationProjetRepos->countInformationProjetType($map);
         if ($release['code'] != 200) {
-            return new JsonResponse(['code' => $release['code'], 'type' => 'alert',
-                'message' => static::$reference . static::$erreur500, 'debug' => 'Seul les Releases.'], Response::HTTP_OK);
+            return new JsonResponse([
+                'code' => $release['code'],
+                'type' => 'alert',
+                'message' => static::$reference . static::$erreur500 . " (version-release)",
+                'trace' => $release['erreur'] ?? null
+            ], Response::HTTP_OK);
         }
 
         /** La requête renvoie le type et un total si le type existe sinon rien*/
         $releaseCount = isset($release['nombre'][0]['total']) ? $release['nombre'][0]['total'] : 0;
 
         /** Les snapshots */
-        $map = ['maven_key' => $data->maven_key, 'type' => 'SNAPSHOT'];
-        $snapshot = $informationProjetRepository->countInformationProjetType($map);
+        $map = [ 'maven_key' => $maven_key, 'type' => 'SNAPSHOT' ];
+        $snapshot = $informationProjetRepos->countInformationProjetType($map);
         if ($snapshot['code'] != 200) {
-            return new JsonResponse([ 'code' => $snapshot['code'], 'type' => 'alert',
-            'message' => static::$reference . static::$erreur500, 'debug' => 'Seul les Snapshots.'], Response::HTTP_OK);
+            return new JsonResponse([
+                'code' => $snapshot['code'],
+                'type' => 'alert',
+                'message' => static::$reference . static::$erreur500 . " (version-snapshot)",
+                'trace' => $snapshot['erreur'] ?? null
+            ], Response::HTTP_OK);
         }
 
         $snapshotCount = isset($snapshot['nombre'][0]['total']) ? $snapshot['nombre'][0]['total'] : 0;
 
         /** On calcul la valeur pour les autres types de version */
         $toutesLesVersionsCount = isset($toutesLesVersions['nombre'][0]['total']) ? $toutesLesVersions['nombre'][0]['total'] : 0;
+
         /** On calcule le nombre des autres versions disponibles */
         $lesAutres = $toutesLesVersionsCount - $releaseCount - $snapshotCount;
 
         /** On récupère le nombre de version par type pour le graphique */
-        $map = ['maven_key' => $data->maven_key];
-        /** on renvoie un tableau avec type et total ['type' => RELEASE, 'total' => 12] pour chaque type de version */
-        $infoVersion = $informationProjetRepository->selectInformationProjetTypeIndexed($map);
+        $map = ['maven_key' => $maven_key ];
+        /** On renvoie un tableau avec type et total ['type' => RELEASE, 'total' => 12] pour chaque type de version */
+        $infoVersion = $informationProjetRepos->selectInformationProjetType($map);
         if ($infoVersion['code'] != 200) {
-            return new JsonResponse(['code' => $infoVersion['code'], 'type' => 'alert',
-            'message' => static::$reference . $infoVersion['erreur']], Response::HTTP_OK);
+            return new JsonResponse([
+                'code' => $infoVersion['code'],
+                'type' => 'alert',
+                'message' => static::$reference . static::$erreur500 . " (info-version)",
+                'trace' => $infoVersion['erreur'] ?? null
+            ], Response::HTTP_OK);
         }
 
         $label = [];
@@ -293,21 +323,28 @@ class ApiPeintureController extends AbstractController
         }
 
         /** On récupère la dernière version et sa date de publication */
-        $map = ['maven_key' => $data->maven_key];
-        $infoRelease = $informationProjetRepository->selectInformationProjetVersionLast($map);
+        $map = [ 'maven_key' => $maven_key ];
+        $infoRelease = $informationProjetRepos->selectInformationProjetVersionLast($map);
         if ($infoRelease['code'] != 200) {
-            return new JsonResponse(['code' => $infoRelease['code'], 'type' => 'alert',
-            'message' => static::$reference . $infoRelease['erreur']], Response::HTTP_OK);
+            return new JsonResponse([
+                'code' => $infoRelease['code'],
+                'type' => 'alert',
+                'message' => static::$reference . static::$erreur500 . " (info-release)",
+                'trace' => $infoRelease['erreur'] ?? null
+            ], Response::HTTP_OK);
         }
 
         return new JsonResponse(
             [
                 'code' => 200,
-                'release' => $releaseCount, 'snapshot' => $snapshotCount,  'autre' => $lesAutres,
+                'release' => $releaseCount,
+                'snapshot' => $snapshotCount,
+                'autre' => $lesAutres,
                 'label' => $label, 'dataset' => $dataset,
                 'projet' => $infoRelease['version'][0]['projet'],
                 'date' => $infoRelease['version'][0]['date'],
-                'analyse_key' => $infoRelease['version'][0]['analyse_key']], Response::HTTP_OK
+                'analyse_key' => $infoRelease['version'][0]['analyse_key']
+            ], Response::HTTP_OK
         );
     }
 
