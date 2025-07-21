@@ -660,7 +660,7 @@ export const remplissage = async function(maven_key) {
           const hasTrace = !!t.trace;
           const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
           showMessage(t.type, t.message, trace);
-          sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des informations sur les anomalies.');
+          sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des informations sur les menaces potentielles.');
           log(' - ❌ [Peinture] Affichage des informations sur les menaces potentielles en échec.');
           return;
       }
@@ -695,9 +695,6 @@ export const remplissage = async function(maven_key) {
           return;
     }
 
-          /** Débloque le bouton afficher */
-  enableButtonAnalyse()
-  return;
   /**
    * On récupère la sévérité par type.
    */
@@ -707,12 +704,16 @@ export const remplissage = async function(maven_key) {
 
   try {
     const t = await $.ajax(optionsAnomaliesDetails);
-    const errorCodes = [http_400, http_401, http_403, http_406, http_500];
+    const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
     if (errorCodes.includes(t.code)){
-        showMessage(t.type, typeMessage(t.message));
-        sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération du détail des anomalies.');
+        const hasTrace = !!t.trace;
+        const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+        showMessage(t.type, t.message, trace);
+        sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des informations sur le détail des anomalies.');
+        log(' - ❌ [Peinture] Affichage des informations sur le détail des anomalies en échec.');
         return;
       }
+
 
     $('#js-bug-blocker').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.bugBlocker));
     $('#js-bug-critical').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.bugCritical));
@@ -764,9 +765,19 @@ export const remplissage = async function(maven_key) {
     t40.dataset.vulnerabilityMajor = t.codeSmellMajor;
     t41.dataset.vulnerabilityMinor = t.codeSmellMinor;
     t42.dataset.vulnerabilityInfo = t.codeSmellInfo;
+    log(' - 🎨 [Peinture] Affichage des informations sur le détail des anomalies.');
   } catch(error) {
-    showMessage('alert', `<strong>[Peinture]</strong> Une erreur inattendue s'est produite lors la récupération du détails des Anomalies.<br>${error.message}`);
+      ErrorButtonAffiche();
+      const trace = prepareTechnicalDetails(error);
+      const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors l'affichage des informations sur le détail des anomalies.";
+      showMessage('alert', message, trace);
+      sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Anomalie.');
+      log(' - ❌ [Peinture] Affichage des informations sur le détail des anomalies en échec.');
+      return;
   }
+
+  log(' - ✅ [Peinture] Affichage des informations terminé.');
+  return 0;
 };
 
 /**
@@ -781,55 +792,68 @@ export const remplissage = async function(maven_key) {
  * Created at: 19/12/2022, 22:25:28 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
-export const afficheHotspotDetails = async function (mavenKey){
+export const afficheHotspotDetails = async function (maven_key){
   /* On récupère la répartition des hotspot. */
-  const data = { maven_key: mavenKey };
+  const data = { maven_key };
   const options = {
     url: `${serveur()}/api/peinture/projet/hotspots/details`, type: 'POST',
           dataType: 'json', data: JSON.stringify(data), contentType };
 
   try {
-        const t = await $.ajax(options);
-        // 📌 Vérification des erreurs
-        const errorCodes = [http_400, http_401, http_403, http_406, http_500];
-        if (errorCodes.includes(t.code)){
-            showMessage(t.type, typeMessage(t.message));
-            sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération du détail des hotspots.');
-            return;
-          }
+    const t = await $.ajax(options);
+    const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
+    if (errorCodes.includes(t.code)){
+        const hasTrace = !!t.trace;
+        const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+        showMessage(t.type, t.message, trace);
+        sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des informations sur les menaces potentielles.');
+        log(' - ❌ [Peinture] Affichage des informations sur le détail des menaces potentielles en échec.');
+        return;
+    }
 
-        /* On efface les données.*/
-        $('#tableau-liste-hotspot').html('');
-        const str =`
-          <tr colspan="3" id="titre-hotspot-to-review" class="open-sans text-center">Risques de vulnérabilité à vérifier.</tr>
-          <tr id="to-review">
-            <td id="hotspot-to-review-high" class="text-center stat" data-hotspot-to-review-high="${t.to_review_high}">
-              ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.to_review_high)}</td>
-            <td id="hotspot-to-review-medium" class="text-center stat" data-hotspot-to-review-medium="${t.to_review_medium}">
-              ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.to_review_medium)}</td>
-            <td id="hotspot-to-review-low" class="text-center stat" data-hotspot-to-review-low="${t.to_review_low}">
-              ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.to_review_low)}</td>
-          </tr>
-          <tr colspan="3" id="titre-hotspot-to-review" class="open-sans text-center">Risques de vulnérabilité déjà vérifiés.</tr>
-          <tr id="reviewed">
-            <td id="hotspot-to-review-high" class="text-center stat" data-hotspot-to-review-high="${t.reviewed_high}">
-              ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.reviewed_high)}</td>
-            <td id="hotspot-to-review-medium" class="text-center stat" data-hotspot-to-review-medium="${t.reviewed_medium}">
-              ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.reviewed_medium)}</td>
-            <td id="hotspot-to-review-low" class="text-center stat" data-hotspot-to-review-low="${t.to_review_low}">
-              ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.reviewed_low)}</td>
-          </tr>
-          `;
+      /* On efface les données.*/
+      $('#tableau-liste-hotspot').html('');
+      const str =`
+        <tr colspan="3" id="titre-hotspot-to-review" class="open-sans text-center">Risques de vulnérabilité à vérifier.</tr>
+        <tr id="to-review">
+          <td id="hotspot-to-review-high" class="text-center stat" data-hotspot-to-review-high="${t.to_review_high}">
+            ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.to_review_high)}</td>
+          <td id="hotspot-to-review-medium" class="text-center stat" data-hotspot-to-review-medium="${t.to_review_medium}">
+            ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.to_review_medium)}</td>
+          <td id="hotspot-to-review-low" class="text-center stat" data-hotspot-to-review-low="${t.to_review_low}">
+            ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.to_review_low)}</td>
+        </tr>
+        <tr colspan="3" id="titre-hotspot-to-review" class="open-sans text-center">Risques de vulnérabilité déjà vérifiés.</tr>
+        <tr id="reviewed">
+          <td id="hotspot-to-review-high" class="text-center stat" data-hotspot-to-review-high="${t.reviewed_high}">
+            ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.reviewed_high)}</td>
+          <td id="hotspot-to-review-medium" class="text-center stat" data-hotspot-to-review-medium="${t.reviewed_medium}">
+            ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.reviewed_medium)}</td>
+          <td id="hotspot-to-review-low" class="text-center stat" data-hotspot-to-review-low="${t.to_review_low}">
+            ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.reviewed_low)}</td>
+        </tr>
+        `;
 
-        $('#tableau-liste-hotspot').append(str);
-        $('#hotspot-total').html(`<span class="stat">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.to_review_total)}</span>`);
-        if (t.to_review_total > 0) {
-          $('#s').html('s');
-        }
-
-        const t1 = document.getElementById('hotspot-total');
-        t1.dataset.nombreHotspot=(t.to_review_high_total);
-      } catch(error) {
-        showMessage('alert', `<strong>[Peinture]</strong> Une erreur inattendue s'est produite lors la récupération du détails des Hotspots.<br>${error.message}`);
+      $('#tableau-liste-hotspot').append(str);
+      $('#hotspot-total').html(`<span class="stat">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.to_review_total)}</span>`);
+      if (t.to_review_total > 0) {
+        $('#s').html('s');
       }
+
+      const t1 = document.getElementById('hotspot-total');
+      t1.dataset.nombreHotspot=(t.to_review_high_total);
+      log(' - 🎨 [Peinture] Mise à jour du tableau du détail des menaces potentielles.');
+    } catch(error) {
+      ErrorButtonAffiche();
+      const trace = prepareTechnicalDetails(error);
+      const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors l'affichage des informations sur le détail des menaces potentielles.";
+      showMessage('alert', message, trace);
+      sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Menaces potentielles.');
+      log(' - ❌ [Peinture] Affichage des informations sur le détail des menaces potentielles en échec.');
+      return;
+    }
+
+  log(' - ✅ [Peinture] Mise à jour du tableau terminée.');
+  enableButtonAnalyse();
+  return 0;
 };
