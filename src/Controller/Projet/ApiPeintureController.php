@@ -14,18 +14,15 @@
 namespace App\Controller\Projet;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
-
-// Gestion de accès aux API
-use Symfony\Component\HttpFoundation\JsonResponse;
-
-/** Sécurité */
 use Symfony\Bundle\SecurityBundle\Security;
 
-// Accès aux tables
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
+
+use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
+
 use App\Entity\InformationProjet;
 use App\Entity\Anomalie;
 use App\Entity\AnomalieDetails;
@@ -35,9 +32,8 @@ use App\Entity\Hotspots;
 use App\Entity\Notes;
 use App\Entity\Todo;
 use App\Entity\Logger;
-
-/** Les services */
 use App\Service\IsValideMavenKey;
+use App\Service\UrlBuilderService;
 
 /**
  * [Description ApiPeintureController]
@@ -56,10 +52,8 @@ class ApiPeintureController extends AbstractController
     public function __construct(
         private EntityManagerInterface $em,
         private IsValideMavenKey $isValideMavenKey,
-        ) {
-            $this->em = $em;
-            $this->isValideMavenKey = $isValideMavenKey;
-        }
+        private UrlBuilderService $urlBuilderService
+    ) { }
 
     /** Définition des constantes */
     public static $reference = "<strong>[Peinture]</strong> ";
@@ -226,7 +220,7 @@ class ApiPeintureController extends AbstractController
      */
     #[Route('/api/peinture/projet/version', name: 'peinture_projet_version', methods: ['POST'])]
     public function peintureProjetVersion(Request $request): JsonResponse
-    {
+    { //refactor
         /** On instancie l'entityRepository */
         $informationProjetRepository = $this->em->getRepository(InformationProjet::class);
 
